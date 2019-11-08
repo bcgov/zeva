@@ -1,0 +1,14 @@
+.centered {
+  text-align: center;
+}
+
+a {
+  :visited {
+    color: red;
+  }
+  :hover {
+    color: pink;
+  }
+  color: red;
+  text-decoration: none;
+}
