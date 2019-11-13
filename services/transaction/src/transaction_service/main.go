@@ -50,7 +50,7 @@ func newServer() *transactionListServer {
 }
 
 func main() {
-	lis, err := net.Listen("tcp", "localhost:10101")
+	lis, err := net.Listen("tcp", "0.0.0.0:10101")
 
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)

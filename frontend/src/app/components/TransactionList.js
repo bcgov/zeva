@@ -25,7 +25,7 @@ const TransactionList = (props) => {
   };
 
   useEffect(() => {
-    const client = new TransactionListClient('http://localhost:8200');
+    const client = new TransactionListClient('http://localhost:10000/grpc');
 
     const request = new TransactionListRequest();
     const call = client.getTransactions(request, {});
