@@ -15,6 +15,9 @@ static_resources:
                 "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
                 stat_prefix: ingress_http
                 codec_type: AUTO
+                upgrade_configs:
+                  - upgrade_type: "websocket"
+                    enabled: true
                 route_config:
                   name: local_route
                   virtual_hosts:
@@ -26,12 +29,43 @@ static_resources:
                             prefix_rewrite: "/"
                             cluster: transaction_service
                             max_grpc_timeout: 0s
+                        - match: { prefix: "/sockjs-node/" }
+                          route:
+                            cluster: frontend
                         - match: { prefix: "/" }
                           route: { cluster: frontend }
                 http_filters:
                 - name: envoy.grpc_web
                 - name: envoy.router
+    - name: listener_1
+      address:
+        socket_address: { address: 0.0.0.0, port_value: 8888 }
+      filter_chains:
+        - filters:
+            - name: envoy.http_connection_manager
+              typed_config:
+                "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+                stat_prefix: ingress_http
+                codec_type: AUTO
+                route_config:
+                  name: local_route
+                  virtual_hosts:
+                    - name: local_service
+                      domains: ["*"]
+                      routes:
+                        - match: { prefix: "/" }
+                          route: { cluster: keycloak }
+                http_filters:
+                  - name: envoy.router
   clusters:
+    - name: keycloak
+      connect_timeout: 0.25s
+      type: LOGICAL_DNS
+      lb_policy: ROUND_ROBIN
+      hosts:
+        - socket_address:
+            address: keycloak
+            port_value: 8080
     - name: frontend
       connect_timeout: 0.25s
       type: LOGICAL_DNS
@@ -50,5 +84,5 @@ static_resources:
           keepalive_time: 300
       hosts:
         - socket_address:
-            address: transaction_service
+            address: transaction-service
             port_value: 10101

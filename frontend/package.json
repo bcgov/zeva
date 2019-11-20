@@ -8,10 +8,12 @@
     "google-protobuf": "^3.10.0",
     "grpc-web": "^1.0.7",
     "history": "^4.9.0",
+    "keycloak-js": "^7.0.1",
     "moment": "^2.24.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-hot-loader": "^4.12.11",
+    "react-keycloak": "^7.0.1-191016",
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1"
   },

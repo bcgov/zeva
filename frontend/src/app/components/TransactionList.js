@@ -4,6 +4,7 @@ import {hot} from "react-hot-loader";
 import CONFIG from "../config";
 import {TransactionListClient} from '../../generated/transactions.protos_grpc_web_pb';
 import {TransactionListRequest, TransactionType} from '../../generated/transactions.protos_pb';
+import {withKeycloak} from "react-keycloak";
 
 const TransactionList = (props) => {
 
@@ -24,18 +25,27 @@ const TransactionList = (props) => {
     }
   };
 
-  useEffect(() => {
+  const refreshTransactions = () => {
+    props.keycloak.updateToken(30).then(
+      () => {
     const client = new TransactionListClient('http://localhost:10000/grpc');
 
     const request = new TransactionListRequest();
-    const call = client.getTransactions(request, {});
+
+    console.log(props.keycloak.token);
+
+    const md = {
+      'authorization': props.keycloak.idToken // || token for auth token
+    };
+
+    const call = client.getTransactions(request, md);
 
     let downloaded = [];
 
     call.on('data', s => {
       downloaded.push({
         id: s.getId(),
-        amount: s.getAmount().getCents()/100,
+        amount: s.getAmount().getCents() / 100,
         credits: s.getCredits().getCredits(),
         type: typeName(s.getType())
       });
@@ -51,10 +61,14 @@ const TransactionList = (props) => {
       console.log('update complete');
       setTransactions(downloaded);
     });
+      }).catch(e => {
+      console.error('error refreshing token');
+    })
+  };
 
-    return undefined;
-
-  }, []);
+  useEffect(() => {
+    refreshTransactions();
+  }, [props.keycloak.authenticated]);
 
 
   return (
@@ -83,9 +97,11 @@ const TransactionList = (props) => {
           }
           </tbody>
         </table>
+        <hr/>
+        {props.keycloak.authenticated && <button onClick={() => refreshTransactions()}>Refresh Transactions</button>}
       </div>
     </>
   );
 };
 
-export default hot(module)(TransactionList);
+export default hot(module)(withKeycloak(TransactionList));

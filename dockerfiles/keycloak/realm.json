@@ -631,7 +631,7 @@
     "enabled" : true,
     "clientAuthenticatorType" : "client-secret",
     "secret" : "edee3dee-eb63-4122-96bc-59229b128c5b",
-    "redirectUris" : [ "http://localhost:5001/*" ],
+    "redirectUris" : [ "http://localhost:10000/*", "http://localhost:5001/*" ],
     "webOrigins" : [ "+" ],
     "notBefore" : 0,
     "bearerOnly" : false,

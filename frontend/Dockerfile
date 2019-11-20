@@ -6,3 +6,6 @@ RUN apt-get install git
 ADD https://github.com/vishnubob/wait-for-it/compare/master...HEAD /dev/null
 RUN git clone https://github.com/vishnubob/wait-for-it.git /wfi
 COPY . .
+RUN npm install
+RUN npm rebuild node-sass
+CMD npm run start

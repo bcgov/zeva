@@ -3,9 +3,12 @@
 package main
 
 import (
-	"log"
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	"go.uber.org/zap"
+	"google.golang.org/grpc/metadata"
 	"net"
 	"google.golang.org/grpc"
+	"github.com/grpc-ecosystem/go-grpc-middleware"
 	pb "zeva_transactions"
 )
 
@@ -15,11 +18,18 @@ type transactionListServer struct {
 
 func (s *transactionListServer) GetTransactions(req *pb.TransactionListRequest, stream pb.TransactionList_GetTransactionsServer) error {
 
+	zapLogger, _ := zap.NewDevelopment()
+	md, ok := metadata.FromIncomingContext(stream.Context())
+	if ok {
+		var token []string = md.Get("authorization")
+		zapLogger.Info("context:", zap.String("token", token[0]))
+	}
+
 	values := []pb.TransactionSummary{
 		pb.TransactionSummary{
 			Id:      1,
 			Type:    pb.TransactionType_BOUGHT,
-			Amount:  &pb.DollarValue{Cents: 30012},
+			Amount:  &pb.DollarValue{Cents: 19191},
 			Credits: &pb.CreditValue{Credits: 402},
 		},
 		pb.TransactionSummary{
@@ -50,18 +60,29 @@ func newServer() *transactionListServer {
 }
 
 func main() {
+	zapLogger, _ := zap.NewDevelopment()
+	defer zapLogger.Sync()
+
 	lis, err := net.Listen("tcp", "0.0.0.0:10101")
 
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		zapLogger.Fatal("failed to listen.", zap.Error(err))
 	}
 
-	var opts []grpc.ServerOption
+	opts := []grpc.ServerOption{
+		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
+			grpc_zap.StreamServerInterceptor(zapLogger),
+		)),
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+			grpc_zap.UnaryServerInterceptor(zapLogger),
+		)),
+	}
 
 	grpcServer := grpc.NewServer(opts...)
+
 	pb.RegisterTransactionListServer(grpcServer, newServer())
 
-	log.Println("Ready to serve requests")
+	zapLogger.Info("Ready to serve requests")
 
-	grpcServer.Serve(lis)
+	_ = grpcServer.Serve(lis)
 }
