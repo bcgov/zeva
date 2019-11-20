@@ -130,7 +130,7 @@ kind: Deployment
 metadata:
   name: golang-transaction-service
 spec:
-  replicas: 5
+  replicas: 2
   template:
     metadata:
       name: golang-transaction-service-pod
