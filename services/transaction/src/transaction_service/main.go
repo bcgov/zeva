@@ -14,23 +14,23 @@ import (
 
 type transactionListServer struct {
 	pb.UnimplementedTransactionListServer
+	log *zap.Logger
 }
 
 func (s *transactionListServer) GetTransactions(req *pb.TransactionListRequest, stream pb.TransactionList_GetTransactionsServer) error {
 
-	zapLogger, _ := zap.NewDevelopment()
 	md, ok := metadata.FromIncomingContext(stream.Context())
 	if ok {
 		var token []string = md.Get("authorization")
-		zapLogger.Info("context:", zap.String("token", token[0]))
+		s.log.Info("context:", zap.String("token", token[0]))
 	}
 
 	values := []pb.TransactionSummary{
 		pb.TransactionSummary{
 			Id:      1,
 			Type:    pb.TransactionType_BOUGHT,
-			Amount:  &pb.DollarValue{Cents: 19191},
-			Credits: &pb.CreditValue{Credits: 402},
+			Amount:  &pb.DollarValue{Cents: 19023},
+			Credits: &pb.CreditValue{Credits: 401},
 		},
 		pb.TransactionSummary{
 			Id:      2,
@@ -56,6 +56,8 @@ func (s *transactionListServer) GetTransactions(req *pb.TransactionListRequest, 
 
 func newServer() *transactionListServer {
 	s := &transactionListServer{}
+	s.log, _ = zap.NewDevelopment()
+	defer s.log.Sync()
 	return s
 }
 
