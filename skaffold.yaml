@@ -19,16 +19,3 @@ deploy:
   kubectl:
     manifests:
       - k8s-*
-#portForward:
-#    - resourceType: deployment
-#      resourceName: envoy
-#      port: 9901
-#      localPort: 9901
-#    - resourceType: deployment
-#      resourceName: envoy
-#      port: 10000
-#      localPort: 10000
-#    - resourceType: pod
-#      resourceName: keycloak
-#      port: 8888
-#      localPort: 8888
