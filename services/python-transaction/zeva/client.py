@@ -1,22 +1,15 @@
-from concurrent import futures
-
 import grpc
 
 from generated import transactions_pb2_grpc
-from services.transaction_service import TransactionServicer
+from generated.transactions_pb2 import TransactionListRequest
 
 
-def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
+def connect():
 
-    transactions_pb2_grpc.add_TransactionListServicer_to_server(
-        TransactionServicer(),
-        server
-    )
+    channel = grpc.insecure_channel('localhost:10102')
+    stub = transactions_pb2_grpc.TransactionListStub(channel)
+    result = stub.GetTransactions(TransactionListRequest())
+    for transaction in result:
+        print('loaded transaction: {}'.format(transaction))
 
-    server.add_insecure_port('[::]:10102')
-    server.start()
-    server.wait_for_termination()
-
-
-serve()
+connect()

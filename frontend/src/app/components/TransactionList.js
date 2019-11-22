@@ -9,7 +9,6 @@ import {withKeycloak} from "react-keycloak";
 const TransactionList = (props) => {
 
   const [transactions, setTransactions] = useState([]);
-
   const typeName = (type) => {
     switch (type) {
       case TransactionType.BOUGHT:
@@ -81,7 +80,7 @@ const TransactionList = (props) => {
             <th>ID</th>
             <th>Type</th>
             <th>Amount</th>
-            <th>Credits</th>
+            <th>Credit Amount</th>
           </tr>
           </thead>
           <tbody>

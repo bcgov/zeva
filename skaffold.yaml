@@ -10,6 +10,8 @@ build:
     context: dockerfiles/smtplogger
   - image: transaction-service
     context: services/transaction
+  - image: python-backend
+    context: services/python-transaction/
   - image: frontend
     context: frontend
     sync:

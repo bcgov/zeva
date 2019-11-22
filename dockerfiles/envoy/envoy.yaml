@@ -27,7 +27,7 @@ static_resources:
                         - match: { prefix: "/grpc/" }
                           route:
                             prefix_rewrite: "/"
-                            cluster: transaction_service
+                            cluster: python_transaction_service
                             max_grpc_timeout: 0s
                         - match: { prefix: "/sockjs-node/" }
                           route:
@@ -86,3 +86,15 @@ static_resources:
         - socket_address:
             address: transaction-service
             port_value: 10101
+    - name: python_transaction_service
+      connect_timeout: 0.25s
+      type: LOGICAL_DNS
+      lb_policy: ROUND_ROBIN
+      http2_protocol_options: {}
+      upstream_connection_options:
+        tcp_keepalive:
+          keepalive_time: 300
+      hosts:
+        - socket_address:
+            address: python-backend
+            port_value: 10102

@@ -29,13 +29,13 @@ func (s *transactionListServer) GetTransactions(req *pb.TransactionListRequest, 
 		pb.TransactionSummary{
 			Id:      1,
 			Type:    pb.TransactionType_BOUGHT,
-			Amount:  &pb.DollarValue{Cents: 19023},
+			Amount:  &pb.DollarValue{Cents: 6565},
 			Credits: &pb.CreditValue{Credits: 401},
 		},
 		pb.TransactionSummary{
 			Id:      2,
 			Type:    pb.TransactionType_SOLD,
-			Amount:  &pb.DollarValue{Cents: 39412330912},
+			Amount:  &pb.DollarValue{Cents: 56454},
 			Credits: &pb.CreditValue{Credits: 1},
 		},
 		pb.TransactionSummary{

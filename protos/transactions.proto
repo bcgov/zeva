@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package zeva.transactions;
+import "google/protobuf/timestamp.proto";
 
 service TransactionList {
   rpc GetTransactions (TransactionListRequest) returns (stream TransactionSummary);
@@ -29,4 +30,5 @@ message TransactionSummary {
     TransactionType type = 2;
     DollarValue amount = 3;
     CreditValue credits = 4;
+    google.protobuf.Timestamp timestamp = 5;
 }
