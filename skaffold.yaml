@@ -1,0 +1,23 @@
+apiVersion: skaffold/v1
+kind: Config
+build:
+  artifacts:
+  - image: envoy
+    context: dockerfiles/envoy
+  - image: keycloak
+    context: dockerfiles/keycloak
+  - image: smtplogger
+    context: dockerfiles/smtplogger
+  - image: transaction-service
+    context: services/transaction
+  - image: python-backend
+    context: services/python-transaction/
+  - image: frontend
+    context: frontend
+    sync:
+      infer:
+      - 'src/**/*'
+deploy:
+  kubectl:
+    manifests:
+      - k8s-*

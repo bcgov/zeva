@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: golang-transaction-service
+spec:
+  replicas: 2
+  template:
+    metadata:
+      name: golang-transaction-service-pod
+      labels:
+        app: transaction-service
+    spec:
+      containers:
+        - name: transaction-service
+          image: transaction-service
+          ports:
+            - containerPort: 10101
+  selector:
+      matchLabels:
+        app: transaction-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: transaction-service
+spec:
+  selector:
+    app: transaction-service
+  ports:
+    - port: 10101
+      targetPort: 10101
