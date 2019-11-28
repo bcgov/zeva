@@ -32,6 +32,7 @@ const TransactionList = (props) => {
     const request = new TransactionListRequest();
 
     console.log(props.keycloak.token);
+    console.dir(props.keycloak);
 
     const md = {
       'authorization': props.keycloak.idToken // || token for auth token
