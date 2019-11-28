@@ -12,6 +12,9 @@ build:
     context: services/transaction
   - image: python-backend
     context: services/python-transaction/
+    sync:
+      infer:
+        - '**/*'
   - image: frontend
     context: frontend
     sync:
