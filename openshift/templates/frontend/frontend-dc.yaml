@@ -1,0 +1,113 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: frontend
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    name: frontend
+  spec:
+    ports:
+    - name: web
+      port: 5001
+      protocol: TCP
+      targetPort: 5001
+    selector:
+      name: frontend
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    name: frontend
+    labels:
+      name: frontend
+      app: zeva
+      role: frontend
+      env: dev
+    annotations:
+      description: Defines how to deploy the frontend application
+    creationTimestamp: null
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      name: frontend
+    strategy:
+      activeDeadlineSeconds: 21600
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          name: frontend
+        name: frontend
+      spec:
+        containers:
+        - env: {}
+          image:
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 40
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 5001
+            timeoutSeconds: 3
+          name: frontend
+          ports:
+          - containerPort: 5100
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 5001
+            timeoutSeconds: 3
+          resources:
+            limits:
+              cpu: 300m
+              memory: 1G
+            requests:
+              cpu: 100m
+              memory: 300M
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - frontend
+        from:
+          kind: ImageStreamTag
+          name: frontend:dev
+          namespace: tbiwaq-tools
+        lastTriggeredImage:
+      type: ImageChange
+    - type: ConfigChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0

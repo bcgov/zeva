@@ -1,0 +1,50 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: envoy
+objects:
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      description: Keeps track of changes in the envoy image
+    creationTimestamp: null
+    name: envoy
+  spec:
+    lookupPolicy:
+      local: false
+  status:
+    dockerImageRepository: ""
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    name: envoy
+  spec:
+    failedBuildsHistoryLimit: 5
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: envoy:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      dockerfile: |-
+        FROM envoyproxy/envoy:v1.12.1
+        RUN apt-get update
+        RUN apt-get install -y git
+        RUN git clone https://github.com/kuanfandevops/zeva-experiment.git /tmp/zeva-experiment
+        RUN cp /tmp/zeva-experiment/openshift/templates/envoy/envoy.yaml /etc/envoy/envoy.yaml
+      type: Dockerfile
+    strategy:
+      dockerStrategy:
+        forcePull: true
+        noCache: true
+      type: Docker
+    successfulBuildsHistoryLimit: 5
+    triggers: []
+  status:
+    lastVersion: 0
