@@ -24,11 +24,6 @@ static_resources:
                     - name: local_service
                       domains: ["*"]
                       routes:
-                        - match: { prefix: "/grpc/" }
-                          route:
-                            prefix_rewrite: "/"
-                            cluster: python_transaction_service
-                            max_grpc_timeout: 0s
                         - match: { prefix: "/sockjs-node/" }
                           route:
                             cluster: frontend
