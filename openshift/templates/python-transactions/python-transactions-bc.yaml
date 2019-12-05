@@ -1,0 +1,55 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: python-transactions
+objects:
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      description: Keeps track of changes in the python-transactions image
+    creationTimestamp: null
+    name: python-transactions
+  spec:
+    lookupPolicy:
+      local: false
+  status:
+    dockerImageRepository: ""
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    name: python-transactions
+  spec:
+    failedBuildsHistoryLimit: 5
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: python-transactions:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      dockerfile: |-
+        FROM python:3.7-stretch
+        ENV PYTHONUNBUFFERED 1
+        RUN apt-get update
+        RUN apt-get install -y git supervisor
+        RUN git clone --branch devops-openshift https://github.com/bcgov/zeva.git /tmp/zeva
+        RUN mv /tmp/zeva/services/python-transactions /app
+        WORKDIR /app
+        RUN pip install -r requirements.txt
+        WORKDIR /app/zeva
+        CMD alembic upgrade head && python3 service.py
+      type: Dockerfile
+    strategy:
+      dockerStrategy:
+        forcePull: true
+        noCache: true
+      type: Docker
+    successfulBuildsHistoryLimit: 5
+    triggers: []
+  status:
+    lastVersion: 0

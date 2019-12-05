@@ -87,10 +87,10 @@ objects:
           resources:
             limits:
               cpu: 300m
-              memory: 1G
+              memory: 500M
             requests:
               cpu: 100m
-              memory: 300M
+              memory: 200M
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           volumeMounts:
