@@ -1,0 +1,1 @@
+oc process -f ./postgresql.yaml CPU_REQUEST=100m CPU_LIMIT=500m MEMORY_REQUEST=1100M MEMORY_LIMIT=2G
