@@ -4,32 +4,6 @@ orbs:
   redhat-openshift: circleci/redhat-openshift@0.2.0
 
 jobs:
-  test:
-    docker:
-      - image: circleci/python:3.6-stretch ##primary container
-      - image: circleci/postgres:9.6-alpine
-    steps:
-      - checkout
-      - run:
-          name: Waiting for Postgres to be ready
-          command: |
-            for i in `seq 1 10`;
-            do
-              nc -z localhost 5432 && echo Success && exit 0
-              echo -n .
-              sleep 1
-            done
-            echo Failed waiting for Postgres && exit 1
-      - run:
-          name: "Install required packages"
-          command: |
-            cd backend
-            pip install --upgrade pip && pip install -r requirements.txt --user && pip install nose-exclude --user
-      - run:
-          name: "Run unit tests"
-          command: |
-            cd backend
-            python manage.py test --noinput -c nose.cfg
   build-in-Openshift:
     executor: redhat-openshift/default
     steps:
