@@ -16,6 +16,10 @@ jobs:
       - run:
           name: test oc connection to path finder
           command: oc projects
+      - run:
+          name: build frontend
+          command: |
+            oc start-build frontend -n tbiwaq-tools
 workflows:
   version: 2
   build-deploy:
