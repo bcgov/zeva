@@ -7,6 +7,7 @@ jobs:
   build-in-Openshift:
     executor: redhat-openshift/default
     steps:
+      - checkout
       - redhat-openshift/login-and-update-kubeconfig:
           insecure-skip-tls-verify: true
           openshift-platform-version: 3.x
@@ -14,7 +15,7 @@ jobs:
           token: $OC_TOKEN
       - run:
           name: test oc connection to path finder
-          command: oc projects            
+          command: oc projects
 workflows:
   version: 2
   build-deploy:
