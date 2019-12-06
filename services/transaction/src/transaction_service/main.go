@@ -65,7 +65,7 @@ func main() {
 	zapLogger, _ := zap.NewDevelopment()
 	defer zapLogger.Sync()
 
-	lis, err := net.Listen("tcp", "transaction-service.tbiwaq-dev.svc.cluster.local:10101")
+	lis, err := net.Listen("tcp", "0.0.0.0:10101")
 
 	if err != nil {
 		zapLogger.Fatal("failed to listen.", zap.Error(err))
