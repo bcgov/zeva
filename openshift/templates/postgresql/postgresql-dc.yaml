@@ -92,7 +92,7 @@ objects:
     metadata:
       name: postgresql-backup
       annotations:
-        volume.beta.kubernetes.io/storage-class: nfs-backup
+        volume.beta.kubernetes.io/storage-class: gluster-file
         template.openshift.io.bcgov/create: 'true'
     spec:
       accessModes:
@@ -168,7 +168,6 @@ objects:
                   mountPath: "/var/lib/pgsql/data"
                 - name: postgresql-backup
                   mountPath: "/postgresql-backup"
-                  subPath: postgresql-backup
               livenessProbe:
                 tcpSocket:
                   port: 5432
