@@ -2,15 +2,15 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: python-transactions
+  name: python-backend
 objects:
 - apiVersion: image.openshift.io/v1
   kind: ImageStream
   metadata:
     annotations:
-      description: Keeps track of changes in the python-transactions image
+      description: Keeps track of changes in the python-backend image
     creationTimestamp: null
-    name: python-transactions
+    name: python-backend
   spec:
     lookupPolicy:
       local: false
@@ -20,14 +20,14 @@ objects:
   kind: BuildConfig
   metadata:
     creationTimestamp: null
-    name: python-transactions
+    name: python-backend
   spec:
     failedBuildsHistoryLimit: 5
     nodeSelector: null
     output:
       to:
         kind: ImageStreamTag
-        name: python-transactions:latest
+        name: python-backend:latest
     postCommit: {}
     resources: {}
     runPolicy: Serial
@@ -38,7 +38,7 @@ objects:
         RUN apt-get update
         RUN apt-get install -y git supervisor
         RUN git clone --branch devops-openshift https://github.com/bcgov/zeva.git /tmp/zeva
-        RUN mv /tmp/zeva/services/python-transactions /app
+        RUN mv /tmp/zeva/services/python-transaction /app
         WORKDIR /app
         RUN pip install -r requirements.txt
         WORKDIR /app/zeva
