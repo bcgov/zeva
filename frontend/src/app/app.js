@@ -4,7 +4,6 @@ import { KeycloakProvider } from 'react-keycloak';
 
 import Router from './router';
 
-
 // Setup Keycloak instance as needed
 const keycloak = new Keycloak({
   url: 'http://localhost:8888/auth',

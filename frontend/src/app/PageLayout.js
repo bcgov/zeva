@@ -1,12 +1,18 @@
 import React from 'react';
 import { hot } from 'react-hot-loader/root';
-import './css/App.scss';
 import { withRouter } from 'react-router';
 import { withKeycloak } from 'react-keycloak';
 import PropTypes from 'prop-types';
 
+import './css/App.scss';
+import Login from './Login';
+
 const PageLayout = (props) => {
   const { children, keycloak } = props;
+
+  if (!keycloak.authenticated) {
+    return <Login />;
+  }
 
   return (
     <div>

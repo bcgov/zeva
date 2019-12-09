@@ -90,7 +90,7 @@ const config = {
       __VERSION__: JSON.stringify(packageJson.version),
     }),
     new HtmlWebpackPlugin({
-      title: 'ZEVA GRPC Demo',
+      title: 'ZEVA',
       chunks: ['bundle', 'vendor'],
       filename: 'generated_index.html',
       inject: false,

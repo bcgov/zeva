@@ -26,15 +26,15 @@ const TransactionList = (props) => {
   const { keycloak } = props;
 
   const refreshTransactions = () => {
-    props.keycloak.updateToken(30).then(() => {
+    keycloak.updateToken(30).then(() => {
       const client = new TransactionListClient('http://localhost:10000/grpc');
 
       const request = new TransactionListRequest();
 
-      console.log(props.keycloak.token);
+      console.log(keycloak.token);
 
       const md = {
-        authorization: props.keycloak.idToken, // || token for auth token
+        authorization: keycloak.idToken, // || token for auth token
       };
 
       const call = client.getTransactions(request, md);

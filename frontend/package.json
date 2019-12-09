@@ -62,7 +62,7 @@
     "webpack-dev-server": "^3.9.0"
   },
   "scripts": {
-    "prepublish": "eslint src",
+    "prepare": "eslint src",
     "start": "node start",
     "dist": "webpack --production",
     "test": "jest --coverage"
