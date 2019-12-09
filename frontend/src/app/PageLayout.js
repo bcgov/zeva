@@ -1,24 +1,42 @@
-import React, {Component} from 'react';
-import {hot} from 'react-hot-loader/root';
+import React from 'react';
+import { hot } from 'react-hot-loader/root';
 import './css/App.scss';
-import {withRouter} from "react-router";
-import {withKeycloak} from "react-keycloak";
+import { withRouter } from 'react-router';
+import { withKeycloak } from 'react-keycloak';
+import PropTypes from 'prop-types';
 
-class PageLayout extends Component {
+const PageLayout = (props) => {
+  const { children, keycloak } = props;
 
-  render() {
-    return (
-      <div>
-        {this.props.keycloak.authenticated && <span>Authenticated</span>}
-        {this.props.keycloak.authenticated || <div>
+  return (
+    <div>
+      {keycloak.authenticated && <span>Authenticated</span>}
+      {keycloak.authenticated || (
+        <div>
           <span>Not Authenticated</span>
-          <button onClick={() => this.props.keycloak.login()}>Login</button>
-        </div>}
-        {this.props.children}
-      </div>
-    );
-  }
-}
+          <button
+            onClick={() => props.keycloak.login()}
+            type="button"
+          >
+            Login
+          </button>
+        </div>
+      )}
+      {children}
+    </div>
+  );
+};
 
+PageLayout.defaultProps = {
+  children: [],
+};
+
+PageLayout.propTypes = {
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]),
+  keycloak: PropTypes.shape().isRequired,
+};
 
 export default hot(withRouter(withKeycloak(PageLayout)));

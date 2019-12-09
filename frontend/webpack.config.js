@@ -11,15 +11,14 @@ const buildPath = path.resolve(__dirname, 'public', 'build');
 const mainPath = path.resolve(__dirname, 'src', 'index.js');
 
 const config = {
-
   mode: 'development',
   entry: {
     bundle: [
       'webpack/hot/dev-server',
       'react-hot-loader/patch',
       '@babel/polyfill',
-      mainPath
-    ]
+      mainPath,
+    ],
   },
   optimization: {
     splitChunks: {
@@ -27,75 +26,67 @@ const config = {
         commons: {
           test: /[\\/]node_modules[\\/]/,
           name: 'vendor',
-          chunks: 'all'
-        }
-      }
-    }
+          chunks: 'all',
+        },
+      },
+    },
   },
   output: {
     path: buildPath,
     filename: '[name].js',
-    publicPath: '/'
+    publicPath: '/',
   },
   resolve: {
     extensions: ['.js', '.jsx'],
     alias: {
-      'react-dom': '@hot-loader/react-dom'
-    }
+      'react-dom': '@hot-loader/react-dom',
+    },
   },
   module: {
-    rules: [
-      {
-        test: /\.jsx?$/,
-        loader: 'babel-loader',
-        exclude: [nodeModulesPath],
-        query: {
-          presets: ['@babel/preset-react', '@babel/preset-env'],
-          plugins: ['@babel/plugin-proposal-object-rest-spread', 'react-hot-loader/babel']
-        }
+    rules: [{
+      test: /\.jsx?$/,
+      loader: 'babel-loader',
+      exclude: [nodeModulesPath],
+      query: {
+        presets: ['@babel/preset-react', '@babel/preset-env'],
+        plugins: ['@babel/plugin-proposal-object-rest-spread', 'react-hot-loader/babel'],
       },
-      {
-        test: /\.(s?)css$/,
-        use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              hmr: true,
-              reloadAll: true
-            }
-          },
-          {
-            loader: 'css-loader',
-            options: {
-              sourceMap: true
-            }
-          },
-          {
-            loader: 'sass-loader',
-            options: {
-              sourceMap: true
-            }
-          }
-        ]
-      },
-      {
-        test: /\.(jpe?g|png|gif|svg)$/i,
-        loaders: ['file-loader?name=[name].[ext]']
-      }
-    ]
+    }, {
+      test: /\.(s?)css$/,
+      use: [{
+        loader: MiniCssExtractPlugin.loader,
+        options: {
+          hmr: true,
+          reloadAll: true,
+        },
+      }, {
+        loader: 'css-loader',
+        options: {
+          sourceMap: true,
+        },
+      }, {
+        loader: 'sass-loader',
+        options: {
+          sourceMap: true,
+        },
+      }],
+    }, {
+      test: /\.(jpe?g|png|gif|svg)$/i,
+      loaders: ['file-loader?name=[name].[ext]'],
+    }],
   },
   devServer: {
-    historyApiFallback: true
+    historyApiFallback: true,
   },
   devtool: 'source-map',
   plugins: [
     new MiniCssExtractPlugin({
       filename: '[name].css',
-      chunkFilename: '[id].css'
+      chunkFilename: '[id].css',
     }),
     new Webpack.HotModuleReplacementPlugin(),
     new Webpack.DefinePlugin({
-      _APIBASE__: "APIBASE" in process.env ? JSON.stringify(process.env.APIBASE) : "'http://localhost:8000/'",
+      __APIBASE__: 'APIBASE' in process.env ? JSON.stringify(process.env.APIBASE) : "'http://localhost:8000/'",
       __VERSION__: JSON.stringify(packageJson.version),
     }),
     new HtmlWebpackPlugin({
@@ -106,12 +97,12 @@ const config = {
       mobile: true,
       appMountId: 'root',
       links: [
-          // array of css links to include (eg hosted fonts)
+        // array of css links to include (eg hosted fonts)
       ],
       // eslint-disable-next-line global-require
-      template: require('html-webpack-template')
-    })
-  ]
+      template: require('html-webpack-template'),
+    }),
+  ],
 };
 
 module.exports = config;

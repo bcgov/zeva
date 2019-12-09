@@ -1,21 +1,21 @@
 import React from 'react';
-import {Route, Switch, withRouter} from 'react-router';
+import { Route, Switch, withRouter } from 'react-router';
+import { BrowserRouter } from 'react-router-dom';
 
 import PageLayout from './PageLayout';
-import TransactionList from "./components/TransactionList";
-import {BrowserRouter} from "react-router-dom";
+import TransactionList from './components/TransactionList';
 
-const Router = props => (
-    <BrowserRouter>
-      <PageLayout>
-        <Switch>
-          <Route
-            path="/"
-            component={withRouter(TransactionList)}
-          />
-        </Switch>
-      </PageLayout>
-    </BrowserRouter>
+const Router = () => (
+  <BrowserRouter>
+    <PageLayout>
+      <Switch>
+        <Route
+          path="/"
+          component={withRouter(TransactionList)}
+        />
+      </Switch>
+    </PageLayout>
+  </BrowserRouter>
 );
 
 
