@@ -1,18 +1,12 @@
 import React from 'react';
 import { hot } from 'react-hot-loader/root';
 import { withRouter } from 'react-router';
-import { withKeycloak } from 'react-keycloak';
 import PropTypes from 'prop-types';
 
 import './css/App.scss';
-import Login from './Login';
 
 const PageLayout = (props) => {
   const { children, keycloak } = props;
-
-  if (!keycloak.authenticated) {
-    return <Login />;
-  }
 
   return (
     <div>
@@ -21,7 +15,7 @@ const PageLayout = (props) => {
         <div>
           <span>Not Authenticated</span>
           <button
-            onClick={() => props.keycloak.login()}
+            onClick={() => keycloak.login()}
             type="button"
           >
             Login
@@ -42,7 +36,10 @@ PageLayout.propTypes = {
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
   ]),
-  keycloak: PropTypes.shape().isRequired,
+  keycloak: PropTypes.shape({
+    authenticated: PropTypes.bool,
+    login: PropTypes.func,
+  }).isRequired,
 };
 
-export default hot(withRouter(withKeycloak(PageLayout)));
+export default hot(withRouter(PageLayout));

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { withRouter } from 'react-router';
 import { hot } from 'react-hot-loader';
-import { withKeycloak } from 'react-keycloak';
 import PropTypes from 'prop-types';
 
 import { TransactionListClient } from '../../generated/transactions.protos_grpc_web_pb';
@@ -98,14 +98,12 @@ const TransactionList = (props) => {
           </tbody>
         </table>
         <hr />
-        {keycloak.authenticated && (
-          <button
-            onClick={() => refreshTransactions()}
-            type="button"
-          >
-            Refresh Transactions
-          </button>
-        )}
+        <button
+          onClick={() => refreshTransactions()}
+          type="button"
+        >
+          Refresh Transactions
+        </button>
       </div>
     </>
   );
@@ -115,4 +113,4 @@ TransactionList.propTypes = {
   keycloak: PropTypes.shape().isRequired,
 };
 
-export default hot(module)(withKeycloak(TransactionList));
+export default hot(module)(withRouter(TransactionList));

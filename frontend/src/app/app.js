@@ -1,20 +1,48 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Keycloak from 'keycloak-js';
-import { KeycloakProvider } from 'react-keycloak';
 
+import Login from './Login';
 import Router from './router';
 
-// Setup Keycloak instance as needed
-const keycloak = new Keycloak({
-  url: 'http://localhost:8888/auth',
-  realm: 'zeva',
-  clientId: 'zeva-app',
-});
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      authenticated: false,
+      keycloak: null,
+    };
+  }
 
-const App = () => (
-  <KeycloakProvider keycloak={keycloak} initConfig={{ promiseType: 'native' }}>
-    <Router />
-  </KeycloakProvider>
-);
+  componentDidMount() {
+    const keycloak = Keycloak({
+      url: 'http://localhost:8888/auth',
+      realm: 'zeva',
+      clientId: 'zeva-app',
+    });
+
+    keycloak.init({ onLoad: 'check-sso', checkLoginIframe: false, promiseType: 'native' }).then((authenticated) => {
+      this.setState({
+        keycloak,
+        authenticated,
+      });
+    });
+  }
+
+  render() {
+    const { authenticated, keycloak } = this.state;
+
+    if (!keycloak) {
+      return <div>Loading...</div>;
+    }
+
+    if (keycloak && !authenticated) {
+      return <Login />;
+    }
+
+    return (
+      <Router keycloak={keycloak} />
+    );
+  }
+}
 
 export default App;
