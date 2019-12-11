@@ -7,7 +7,7 @@ import React from "react";
 const keycloak = new Keycloak({
     url: 'http://localhost:8888/auth',
     realm: 'zeva',
-    clientId: 'zeva-client'
+    clientId: 'zeva-app'
   }
 );
 

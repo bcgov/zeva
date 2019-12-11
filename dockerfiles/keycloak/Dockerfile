@@ -1,2 +1,2 @@
-FROM jboss/keycloak:4.7.0.Final
+FROM jboss/keycloak:4.5.0.Final
 COPY realm.json /tmp/realm.json
