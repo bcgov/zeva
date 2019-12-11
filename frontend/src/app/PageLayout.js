@@ -9,7 +9,15 @@ class PageLayout extends Component {
   render() {
     return (
       <div>
-        {this.props.keycloak.authenticated && <span>Authenticated</span>}
+        {this.props.keycloak.authenticated && <>
+        <span>Authenticated</span>
+        <strong>Authenticated</strong>
+        Active Roles
+          <ul>
+          {this.props.keycloak.realmAccess.roles.map(role => (<li>{role}</li>))}
+          </ul>
+        </>
+        }
         {this.props.keycloak.authenticated || <div>
           <span>Not Authenticated</span>
           <button onClick={() => this.props.keycloak.login()}>Login</button>
