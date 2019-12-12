@@ -7,27 +7,40 @@
 /* BC Sans Bold */
 @font-face {
 	font-family: "BCSans";
-	src: url('./fonts/BCSans-Bold.woff') format('woff');
 	font-weight: bold;
+	src: url('./fonts/BCSans-Bold.woff') format('woff');
 }
 
 /* BC Sans Bold + Italic */
 @font-face {
 	font-family: "BCSans";
-	src: url('./fonts/BCSans-BoldItalic.woff') format('woff');
-	font-weight: bold;
 	font-style: italic;
+	font-weight: bold;
+	src: url('./fonts/BCSans-BoldItalic.woff') format('woff');
 }
 
 /* BC Sans Italic */
 @font-face {
 	font-family: "BCSans";
-	src: url('./fonts/BCSans-Italic.woff') format('woff');
 	font-style: italic;
+	src: url('./fonts/BCSans-Italic.woff') format('woff');
+}
+
+/* Variables for colours */
+$default-background-blue: #38598A;
+$default-background-grey: #F2F2F2;
+$default-text-black: #494949;
+$primary-blue: #003366;
+$primary-yellow: #FCBA19;
+$white: #FFFFFF;
+
+html, body, #root {
+	height: 100%;
 }
 
 body {
+	color: $default-text-black;
+  font-family: "BCSans", sans-serif;
   margin: 0;
   padding: 0;
-  font-family: "BCSans", "sans serif";
 }
