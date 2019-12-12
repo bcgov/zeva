@@ -8,7 +8,16 @@ const PageLayout = (props) => {
 
   return (
     <div>
-      {keycloak.authenticated && <span>Authenticated</span>}
+      {keycloak.authenticated && (
+        <div>
+          <strong>Authenticated</strong>
+          <ul>
+            {keycloak.realmAccess.roles.map((role) => (
+              <li>{role}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       {keycloak.authenticated || (
         <div>
           <span>Not Authenticated</span>
@@ -37,6 +46,9 @@ PageLayout.propTypes = {
   keycloak: PropTypes.shape({
     authenticated: PropTypes.bool,
     login: PropTypes.func,
+    realmAccess: PropTypes.shape({
+      roles: PropTypes.arrayOf(PropTypes.string),
+    }),
   }).isRequired,
 };
 
