@@ -3,8 +3,6 @@ import { hot } from 'react-hot-loader/root';
 import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
 
-import './css/App.scss';
-
 const PageLayout = (props) => {
   const { children, keycloak } = props;
 

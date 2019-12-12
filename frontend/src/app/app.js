@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Keycloak from 'keycloak-js';
 
+import CONFIG from './config';
 import Login from './Login';
 import Router from './router';
 
@@ -15,9 +16,9 @@ class App extends Component {
 
   componentDidMount() {
     const keycloak = Keycloak({
-      url: 'http://localhost:8888/auth',
-      realm: 'zeva',
-      clientId: 'zeva-app',
+      clientId: CONFIG.KEYCLOAK.CLIENT_ID,
+      realm: CONFIG.KEYCLOAK.REALM,
+      url: CONFIG.KEYCLOAK.URL,
     });
 
     keycloak.init({ onLoad: 'check-sso', checkLoginIframe: false, promiseType: 'native' }).then((authenticated) => {

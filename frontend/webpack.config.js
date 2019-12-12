@@ -2,6 +2,7 @@ const Webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const SriPlugin = require('webpack-subresource-integrity');
 require('dotenv').config();
 
 const packageJson = require('./package.json');
@@ -32,8 +33,9 @@ const config = {
     },
   },
   output: {
-    path: buildPath,
+    crossOriginLoading: 'anonymous',
     filename: '[name].js',
+    path: buildPath,
     publicPath: '/',
   },
   resolve: {
@@ -73,6 +75,14 @@ const config = {
     }, {
       test: /\.(jpe?g|png|gif|svg)$/i,
       loaders: ['file-loader?name=[name].[ext]'],
+    }, {
+      test: /\.(otf|eot|svg|ttf|woff|woff2)$/i,
+      use: [{
+        loader: 'url-loader',
+        options: {
+          limit: 10000,
+        },
+      }],
     }],
   },
   devServer: {
@@ -80,6 +90,10 @@ const config = {
   },
   devtool: 'source-map',
   plugins: [
+    new SriPlugin({
+      hashFuncNames: ['sha256', 'sha384'],
+      enabled: true,
+    }),
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[id].css',
@@ -97,6 +111,7 @@ const config = {
       mobile: true,
       appMountId: 'root',
       links: [
+        'https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css',
         // array of css links to include (eg hosted fonts)
       ],
       // eslint-disable-next-line global-require

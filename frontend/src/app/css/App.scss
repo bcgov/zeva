@@ -1,14 +1,33 @@
-.centered {
-  text-align: center;
+/* BC Sans Regular */
+@font-face {
+	font-family: "BCSans";
+	src: url('./fonts/BCSans-Regular.woff') format('woff');
 }
 
-a {
-  :visited {
-    color: red;
-  }
-  :hover {
-    color: pink;
-  }
-  color: red;
-  text-decoration: none;
+/* BC Sans Bold */
+@font-face {
+	font-family: "BCSans";
+	src: url('./fonts/BCSans-Bold.woff') format('woff');
+	font-weight: bold;
+}
+
+/* BC Sans Bold + Italic */
+@font-face {
+	font-family: "BCSans";
+	src: url('./fonts/BCSans-BoldItalic.woff') format('woff');
+	font-weight: bold;
+	font-style: italic;
+}
+
+/* BC Sans Italic */
+@font-face {
+	font-family: "BCSans";
+	src: url('./fonts/BCSans-Italic.woff') format('woff');
+	font-style: italic;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "BCSans", "sans serif";
 }
