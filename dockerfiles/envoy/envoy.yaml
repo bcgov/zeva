@@ -74,18 +74,6 @@ static_resources:
       - socket_address:
           address: frontend
           port_value: 5001
-    - name: transaction_service
-      connect_timeout: 0.25s
-      type: LOGICAL_DNS
-      lb_policy: ROUND_ROBIN
-      http2_protocol_options: {}
-      upstream_connection_options:
-        tcp_keepalive:
-          keepalive_time: 300
-      hosts:
-        - socket_address:
-            address: transaction-service
-            port_value: 10101
     - name: python_transaction_service
       connect_timeout: 0.25s
       type: LOGICAL_DNS

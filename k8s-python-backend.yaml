@@ -27,6 +27,10 @@ spec:
           image: python-backend
           ports:
             - containerPort: 10102
+      initContainers:
+        - name: init-psql
+          image: busybox
+          command: ['sh', '-c', 'until nslookup postgres; do echo waiting for postgres; sleep 5; done;']
   selector:
     matchLabels:
       app: python-backend
