@@ -13,6 +13,7 @@ from generated import transactions_pb2_grpc
 import services
 import services.transaction_service
 
+
 class ReloadHandler(FileSystemEventHandler):
 
     def on_any_event(self, event):

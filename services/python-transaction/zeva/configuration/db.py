@@ -1,3 +1,5 @@
+import os
+
 DB = {
-    'url': "postgresql://zeva:zevadev@postgres/zeva"
+    'url': os.getenv('DATABASE_URL')
 }
