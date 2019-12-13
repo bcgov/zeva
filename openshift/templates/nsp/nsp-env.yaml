@@ -18,6 +18,7 @@ objects:
       name: custom-pods-to-api-zeva
     spec:
       description: |
+        pods <---> OCP
         Allow pods to talk to the internal OCP api so deployments work.
         This only needs to be specified once per environment.
         Without this policy, pods could have PU Update error when starting container
@@ -25,33 +26,18 @@ objects:
       - - $namespace=tbiwaq-${ENV_NAME}
       destination:
       - - int:network=internal-cluster-api-endpoint
-
+        -
   - kind: NetworkSecurityPolicy
     apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
     metadata:
-      name: custom-internet-to-envoy
+      name: custom-internet-to-frontend
     spec:
       description: |
-        Allow envoy to accept requests from internet.
-        Also allow envy to communication with kKeycloak.
+        internet <---> frontend, frontend <---> keycloak
+        Allow frontend to accept requests from internet.
+        This also covers frontend to keycloak
       source:
         - - ext:network=any
-      destination:
-        - - app=zeva
-          - role=envoy
-          - env=${ENV_NAME}
-
-  - kind: NetworkSecurityPolicy
-    apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
-    metadata:
-      name: custom-envy-to-frontend
-    spec:
-      description: |
-        Allow envoy to talk with frontend.
-      source:
-        - - app=zeva
-          - role=envoy
-          - env=${ENV_NAME}
       destination:
         - - app=zeva
           - role=frontend
@@ -60,9 +46,60 @@ objects:
   - kind: NetworkSecurityPolicy
     apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
     metadata:
+      name: custom-frontend-to-envoy
+    spec:
+      description: |
+        frontend <---> envoy
+        Allow frontend to accept requests from internet.
+      source:
+        - - app=zeva
+          - role=frontend
+          - env=${ENV_NAME}
+      destination:
+        - - app=zeva
+          - role=envoy
+          - env=${ENV_NAME}
+
+  - kind: NetworkSecurityPolicy
+    apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+    metadata:
+      name: custom-envoy-to-keycloak
+    spec:
+      description: |
+        internet <---> keycloak
+        Allow envoy to accept requests from internet.
+        It mainly allow envy to communication with keycloak.
+      source:
+        - - app=zeva
+          - role=envoy
+          - env=${ENV_NAME}
+      destination:
+        - - ext:network=any
+
+  - kind: NetworkSecurityPolicy
+    apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+    metadata:
+      name: custom-envy-to-frontend
+    spec:
+      description: |
+        Frontend <---> Envoy
+        Allow envoy to talk with frontend.
+      source:
+        - - app=zeva
+          - role=frontend
+          - env=${ENV_NAME}
+      destination:
+        - - app=zeva
+          - role=envoy
+          - env=${ENV_NAME}
+
+  - kind: NetworkSecurityPolicy
+    apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+    metadata:
       name: custom-envy-to-python-backend
     spec:
       description: |
+        envoy <---> python backend
         Allow envoy to talk with python backend.
       source:
         - - app=zeva
@@ -79,6 +116,7 @@ objects:
       name: custom-python-backend-to-postgresql
     spec:
       description: |
+        python backend <---> postgresql
         Allow python-backend to talk with postgresql database
       source:
         - - app=zeva
