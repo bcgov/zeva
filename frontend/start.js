@@ -10,7 +10,7 @@ const devServerOptions = {
   index: '/generated_index.html',
   historyApiFallback: {
     verbose: true,
-    index: '/generated_index.html'
+    index: '/generated_index.html',
   },
   port: 5001,
   compress: true,
@@ -18,8 +18,8 @@ const devServerOptions = {
   hot: true,
   watchOptions: {
     ignored: ['node_modules'],
-    poll: 1500
-  }
+    poll: 1500,
+  },
 };
 
 WebpackDevServer.addDevServerEntrypoints(webpackConfig, devServerOptions);

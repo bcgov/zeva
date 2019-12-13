@@ -1,14 +1,46 @@
-.centered {
-  text-align: center;
+/* BC Sans Regular */
+@font-face {
+	font-family: "BCSans";
+	src: url('./fonts/BCSans-Regular.woff') format('woff');
 }
 
-a {
-  :visited {
-    color: red;
-  }
-  :hover {
-    color: pink;
-  }
-  color: red;
-  text-decoration: none;
+/* BC Sans Bold */
+@font-face {
+	font-family: "BCSans";
+	font-weight: bold;
+	src: url('./fonts/BCSans-Bold.woff') format('woff');
+}
+
+/* BC Sans Bold + Italic */
+@font-face {
+	font-family: "BCSans";
+	font-style: italic;
+	font-weight: bold;
+	src: url('./fonts/BCSans-BoldItalic.woff') format('woff');
+}
+
+/* BC Sans Italic */
+@font-face {
+	font-family: "BCSans";
+	font-style: italic;
+	src: url('./fonts/BCSans-Italic.woff') format('woff');
+}
+
+/* Variables for colours */
+$default-background-blue: #38598A;
+$default-background-grey: #F2F2F2;
+$default-text-black: #494949;
+$primary-blue: #003366;
+$primary-yellow: #FCBA19;
+$white: #FFFFFF;
+
+html, body, #root {
+	height: 100%;
+}
+
+body {
+	color: $default-text-black;
+  font-family: "BCSans", sans-serif;
+  margin: 0;
+  padding: 0;
 }
