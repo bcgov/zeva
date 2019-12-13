@@ -8,26 +8,23 @@ const Login = () => {
   url += `&redirect_uri=${window.location.href}`;
 
   return (
-    <div id="login">
+    <div id="login-page">
       <div id="header">
-        <div id="header-wrapper" className="login-zeva-page-header-text">Zero Emission Vehicle Reporting System</div>
+        <div className="text">Zero Emission Vehicle Reporting System</div>
       </div>
-      <div className="login-zeva-page">
-        <div className="login-zeva-brand" />
+      <div className="main-content">
         <div className="card-zeva">
+          <div className="brand-logo" />
+
           <div className="buttons-section">
-            <div className="oidc">
-              <a href={`${url}&kc_idp_hint=bceid`} id="link-bceid" className="oidc">
-                <span className="text"> Login with </span>
-                <span className="display-name"> BCeID </span>
-              </a>
-            </div>
-            <div className="oidc">
-              <a href={`${url}&kc_idp_hint=idir`} id="link-idir" className="oidc">
-                <span className="text">Login with</span>
-                <span className="display-name"> IDIR </span>
-              </a>
-            </div>
+            <a href={`${url}&kc_idp_hint=bceid`} id="link-bceid" className="button">
+              <span className="text"> Login with </span>
+              <span className="display-name"> BCeID </span>
+            </a>
+            <a href={`${url}&kc_idp_hint=idir`} id="link-idir" className="button">
+              <span className="text">Login with</span>
+              <span className="display-name"> IDIR </span>
+            </a>
           </div>
         </div>
       </div>
