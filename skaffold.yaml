@@ -10,9 +10,9 @@ build:
     context: dockerfiles/smtplogger
   - image: python-backend
     context: services/python-transaction/
-#    sync:
-#      infer:
-#      - '**/*'
+    sync:
+      infer:
+        - '**/*'
   - image: frontend
     context: frontend
     sync:
