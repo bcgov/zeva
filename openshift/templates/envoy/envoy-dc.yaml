@@ -3,12 +3,22 @@ kind: Template
 metadata:
   creationTimestamp: null
   name: envoy
+parameters:
+  - name: ENV_NAME
+    displayName: Environment Name
+    description: Environment Name
+    required: true
 objects:
 - apiVersion: v1
   kind: Service
   metadata:
     creationTimestamp: null
     name: envoy
+      labels:
+        name: envoy
+        app: zeva
+        role: envoy
+        env: ${ENV_NAME}
   spec:
     ports:
     - name: admin
@@ -34,7 +44,7 @@ objects:
       name: envoy
       app: zeva
       role: envoy
-      env: dev
+      env: ${ENV_NAME}
     annotations:
       description: Defines how to deploy the envoy proxy
     creationTimestamp: null
@@ -108,7 +118,7 @@ objects:
         - envoy
         from:
           kind: ImageStreamTag
-          name: envoy:dev
+          name: envoy:${ENV_NAME}
           namespace: tbiwaq-tools
         lastTriggeredImage:
       type: ImageChange

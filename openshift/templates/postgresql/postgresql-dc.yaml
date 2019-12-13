@@ -7,6 +7,10 @@ metadata:
   name: postgresql-dc
   creationTimestamp:
 parameters:
+  - name: ENV_NAME
+    displayName: Environment Name
+    description: Environment Name
+    required: true
   - description: Username for PostgreSQL user that will be used for accessing the database.
     from: zeva[A-Z0-9]{3}
     generate: expression
@@ -62,6 +66,11 @@ objects:
       name: postgresql
       annotations:
         template.openshift.io/expose-uri: postgres://{.spec.clusterIP}:{.spec.ports[?(.name=="postgresql")].port}
+      labels:
+        name: postgresql
+        app: zeva
+        role: postgresql
+        env: ${ENV_NAME}
     spec:
       ports:
         - name: postgresql
@@ -106,6 +115,11 @@ objects:
       annotations:
         template.alpha.openshift.io/wait-for-ready: 'true'
       name: postgresql
+      labels:
+        name: postgresql
+        app: zeva
+        role: postgresql
+        env: ${ENV_NAME}
     spec:
       replicas: 1
       strategy:

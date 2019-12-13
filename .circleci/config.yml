@@ -19,7 +19,11 @@ jobs:
       - run:
           name: build frontend
           command: |
-            oc start-build frontend -n tbiwaq-tools
+            oc start-build frontend --wait=true -n tbiwaq-tools
+            oc start-build frontend --wait=true -n tbiwaq-tools
+            oc start-build frontend --wait=true -n tbiwaq-tools
+            oc start-build frontend --wait=true -n tbiwaq-tools
+            oc start-build frontend --wait=true -n tbiwaq-tools
 workflows:
   version: 2
   build-deploy:

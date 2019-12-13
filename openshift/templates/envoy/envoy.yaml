@@ -24,6 +24,11 @@ static_resources:
                     - name: local_service
                       domains: ["*"]
                       routes:
+                        - match: { prefix: "/grpc/" }
+                          route:
+                            prefix_rewrite: "/"
+                            cluster: python_transaction_service
+                            max_grpc_timeout: 0s
                         - match: { prefix: "/sockjs-node/" }
                           route:
                             cluster: frontend
@@ -41,3 +46,27 @@ static_resources:
       - socket_address:
           address: frontend.tbiwaq-dev.svc.cluster.local
           port_value: 5001
+    - name: transaction_service
+      connect_timeout: 0.25s
+      type: LOGICAL_DNS
+      lb_policy: ROUND_ROBIN
+      http2_protocol_options: {}
+      upstream_connection_options:
+        tcp_keepalive:
+          keepalive_time: 300
+      hosts:
+        - socket_address:
+            address: transaction-service.tbiwaq-dev.svc.cluster.local
+            port_value: 10101
+    - name: python_transaction_service
+      connect_timeout: 0.25s
+      type: LOGICAL_DNS
+      lb_policy: ROUND_ROBIN
+      http2_protocol_options: {}
+      upstream_connection_options:
+        tcp_keepalive:
+          keepalive_time: 300
+      hosts:
+        - socket_address:
+            address: python-backend.tbiwaq-dev.svc.cluster.local
+            port_value: 10102

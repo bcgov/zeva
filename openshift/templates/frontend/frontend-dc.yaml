@@ -2,13 +2,24 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: frontend
+  name: frontend-dc
+parameters:
+  - name: ENV_NAME
+    value: dev
+    displayName: Environment name
+    description: Environment name, dev, test and prod
+    required: true
 objects:
 - apiVersion: v1
   kind: Service
   metadata:
     creationTimestamp: null
     name: frontend
+    labels:
+      name: frontend
+      app: zeva
+      role: frontend
+      env: ${ENV_NAME}
   spec:
     ports:
     - name: web
@@ -29,7 +40,7 @@ objects:
       name: frontend
       app: zeva
       role: frontend
-      env: dev
+      env: ${ENV_NAME}
     annotations:
       description: Defines how to deploy the frontend application
     creationTimestamp: null

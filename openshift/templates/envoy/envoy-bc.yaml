@@ -41,7 +41,7 @@ objects:
       type: Dockerfile
     strategy:
       dockerStrategy:
-        forcePull: true
+        forcePull: false
         noCache: true
       type: Docker
     successfulBuildsHistoryLimit: 5
