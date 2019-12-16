@@ -10,21 +10,32 @@ const Login = () => {
   return (
     <div id="login-page">
       <div id="header">
-        <div className="text">Zero Emission Vehicle Reporting System</div>
+        <div className="text">Zero Emission Vehicle Credit System</div>
       </div>
-      <div className="main-content">
-        <div className="card-zeva">
+      <div id="main-content">
+        <div className="flex-container">
           <div className="brand-logo" />
 
           <div className="buttons-section">
-            <a href={`${url}&kc_idp_hint=bceid`} id="link-bceid" className="button">
-              <span className="text"> Login with </span>
-              <span className="display-name"> BCeID </span>
-            </a>
-            <a href={`${url}&kc_idp_hint=idir`} id="link-idir" className="button">
-              <span className="text">Login with</span>
-              <span className="display-name"> IDIR </span>
-            </a>
+            <div className="section">
+              Auto Manufacturers
+
+              <a href={`${url}&kc_idp_hint=bceid`} id="link-bceid" className="button">
+                <span className="text"> Login with </span>
+                <span className="display-name"> BCeID </span>
+              </a>
+            </div>
+
+            <hr className="divider" />
+
+            <div className="section">
+              Government
+
+              <a href={`${url}&kc_idp_hint=idir`} id="link-idir" className="button">
+                <span className="text">Login with</span>
+                <span className="display-name"> IDIR </span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
