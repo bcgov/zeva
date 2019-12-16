@@ -7,3 +7,5 @@ package-lock.json
 venv/
 .DS_Store
 .vscode/
+__pycache__/
+TEST-*xml
