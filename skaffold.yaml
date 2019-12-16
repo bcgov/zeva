@@ -10,9 +10,6 @@ build:
     context: dockerfiles/smtplogger
   - image: python-backend
     context: services/python-transaction/
-    sync:
-      infer:
-        - '**/*'
   - image: frontend
     context: frontend
     sync:
@@ -22,3 +19,9 @@ deploy:
   kubectl:
     manifests:
       - k8s-*
+profiles:
+  - name: test
+    deploy:
+      kubectl:
+        manifests:
+          - k8stests-*

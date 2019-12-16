@@ -1,7 +1,7 @@
 from logging.config import fileConfig
 
 from sqlalchemy import create_engine
-
+import os
 from alembic import context
 
 # this is the Alembic Config object, which provides
@@ -25,7 +25,7 @@ target_metadata = None
 # ... etc.
 
 ALEMBIC_CONFIGURATION = {
-    'url': "postgresql://zeva:zevadev@postgres/zeva"
+    'url': os.getenv('DATABASE_URL')
 }
 
 

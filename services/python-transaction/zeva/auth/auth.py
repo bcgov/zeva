@@ -24,9 +24,11 @@ def authenticated(func):
                 )
 
             logging.info('auth_header: {}'.format(auth_header))
-            user = auth.validate_token_and_load_user(auth_header[1])
+            token = auth_header[1]
+            if token.startswith('Bearer '):
+                token = token[len('Bearer '):]
+            user = auth.validate_token_and_load_user(token)
             setattr(context, 'user', user)
-            # request.user = user
 
         except AuthenticationFailed as e:
             logging.error(e)
