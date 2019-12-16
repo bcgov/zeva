@@ -1,0 +1,95 @@
+#navbar {
+  background-color: $primary-blue;
+
+  .brand-logo {
+    background-image: url('./images/BCID_H_rgb_rev.png');
+    background-position-x: center;
+    background-position-y: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: inline-block;
+    height: 3.5rem;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+    width: 12rem;
+  }
+
+  .header {
+    border-bottom: 2px solid $primary-yellow;
+    padding: 0.5rem 1rem;
+  }
+
+  .links, .user-control-panel {
+    a {
+      color: $white;
+      display: inline-block;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      position: relative;
+      vertical-align: middle;
+
+      &:not(:first-child):before {
+        border-right: 1px solid $default-background-grey;
+        bottom: 25%;
+        content: "";
+        height: 50%;
+        left: 0;
+        position: absolute;
+        width: 1px;
+      }
+
+      &.active {
+        border-bottom: 1px solid $primary-yellow;
+      }
+    }
+  }
+
+  .logged-in-info {
+    align-items: center;
+    color: $white;
+    display: flex;
+    float: right;
+    height: 100%;
+    text-align: right;
+
+    h5 {
+      font-size: 1rem;
+      margin: 0;
+    }
+  }
+
+  .sub-header {
+    align-items: center;
+    background-color: $default-background-blue;
+    display: flex;
+    padding: 0 1rem;
+  }
+
+  .user-control-panel {
+    color: $white;
+    text-align: right;
+
+    div {
+      color: $white;
+      display: inline-block;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      position: relative;
+      vertical-align: middle;
+    }
+
+    .notifications, .help {
+      font-size: 1.3rem;
+      padding: 0.2rem 1rem;
+    }
+  }
+
+  h1 {
+    color: $white;
+    display: inline-block;
+    font-size: 1.5rem;
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+  }
+}
