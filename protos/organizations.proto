@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package zeva.organizations;
+
+service OrganizationDetails {
+  rpc GetMyOrganization (GetMyOrganizationRequest) returns (MyOrganizationResponse);
+}
+
+enum OrganizationType {
+    GOVERNMENT = 0;
+    VEHICLE_SUPPLIER = 1;
+}
+
+message GetMyOrganizationRequest {
+}
+
+message MyOrganizationResponse {
+    reserved 1; //in case we decide to put ID here in future, I think it's nice to have it at slot 1
+
+    OrganizationType type = 2;
+    string name = 3;
+}
