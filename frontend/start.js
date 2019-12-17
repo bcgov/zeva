@@ -1,10 +1,9 @@
 const Webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
 const path = require('path');
+const http = require('http');
 
 const webpackConfig = require('./webpack.config');
-
-const http = require('http');
 const notifications = require('./notifications');
 
 const devServerOptions = {
@@ -35,6 +34,7 @@ const websocketServer = http.createServer((req, res) => {
 });
 
 const io = require('socket.io')(websocketServer);
+
 notifications.setup(io);
 
 websocketServer.listen(5002, '0.0.0.0');

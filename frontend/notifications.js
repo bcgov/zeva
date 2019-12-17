@@ -14,7 +14,7 @@ const amqpEnabled = process.env.RABBITMQ_ENABLED === 'True' || false;
 const winston = require('winston');
 
 const consoleTransport = new winston.transports.Console();
-const log = new winston.createLogger({
+const log = winston.createLogger({
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.prettyPrint(),
@@ -22,72 +22,6 @@ const log = new winston.createLogger({
   transports: [consoleTransport],
 });
 
-
-const client = jwksClient({ jwksUri: jwksURI });
-
-function getSigningKey(header, callback) {
-  client.getSigningKey(header.kid, (err, key) => {
-    if (err) {
-      callback({ error: 'certificate download failed' }, null);
-      return;
-    }
-    const signingKey = key.publicKey || key.rsaPublicKey;
-    callback(null, signingKey);
-  });
-}
-
-const setup = (io) => {
-  if (!jwksURI) {
-    log.error('No KEYCLOAK_CERTS_URL in environment,'
-      + ' cannot validate tokens and will not serve socket.io clients');
-    return;
-  }
-
-
-  io.on('connect', (socket) => {
-    socket.join('global');
-    let authenticated = false;
-    let roomName;
-
-    socket.on('action', (action) => {
-      switch (action.type) {
-        case 'socketio/AUTHENTICATE':
-          jwt.verify(action.token, getSigningKey, {}, (err, decoded) => {
-            if (err) {
-              log.error(`error verifying token ${err}`);
-              authenticated = false;
-            } else {
-              roomName = `user_${decoded.user_id}`;
-              socket.join(roomName);
-              authenticated = true;
-              io.in(roomName).emit('action', {
-                type: 'socketio/AUTHENTICATE_SUCCESS',
-              });
-              io.in(roomName).emit('action', {
-                type: 'message',
-                data: `Hello from nodejs@${process.env.HOSTNAME}, ${decoded.user_id}`
-              });
-            }
-          });
-          break;
-        case 'socketio/DEAUTHENTICATE':
-          authenticated = false;
-          if (authenticated) {
-            socket.leave(roomName);
-          }
-          break;
-        default:
-          log.error(`unknown action received ${action.type}`);
-      }
-    });
-  });
-
-  if (amqpEnabled) {
-    connect(io);
-  } else {
-    log.info('AMQP is disabled. Clients can connect and be authenticated but no messages will be relayed to them.');
-  }
-};
 
 const connect = (io) => {
   const connection = amqp.createConnection({
@@ -143,6 +77,73 @@ const connect = (io) => {
       });
     });
   });
+};
+
+
+const client = jwksClient({ jwksUri: jwksURI });
+
+function getSigningKey(header, callback) {
+  client.getSigningKey(header.kid, (err, key) => {
+    if (err) {
+      callback({ error: 'certificate download failed' }, null);
+      return;
+    }
+    const signingKey = key.publicKey || key.rsaPublicKey;
+    callback(null, signingKey);
+  });
+}
+
+const setup = (io) => {
+  if (!jwksURI) {
+    log.error('No KEYCLOAK_CERTS_URL in environment,'
+      + ' cannot validate tokens and will not serve socket.io clients');
+    return;
+  }
+
+
+  io.on('connect', (socket) => {
+    socket.join('global');
+    let authenticated = false;
+    let roomName;
+
+    socket.on('action', (action) => {
+      switch (action.type) {
+        case 'socketio/AUTHENTICATE':
+          jwt.verify(action.token, getSigningKey, {}, (err, decoded) => {
+            if (err) {
+              log.error(`error verifying token ${err}`);
+              authenticated = false;
+            } else {
+              roomName = `user_${decoded.user_id}`;
+              socket.join(roomName);
+              authenticated = true;
+              io.in(roomName).emit('action', {
+                type: 'socketio/AUTHENTICATE_SUCCESS',
+              });
+              io.in(roomName).emit('action', {
+                type: 'message',
+                data: `Hello from nodejs@${process.env.HOSTNAME}, ${decoded.user_id}`,
+              });
+            }
+          });
+          break;
+        case 'socketio/DEAUTHENTICATE':
+          authenticated = false;
+          if (authenticated) {
+            socket.leave(roomName);
+          }
+          break;
+        default:
+          log.error(`unknown action received ${action.type}`);
+      }
+    });
+  });
+
+  if (amqpEnabled) {
+    connect(io);
+  } else {
+    log.info('AMQP is disabled. Clients can connect and be authenticated but no messages will be relayed to them.');
+  }
 };
 
 module.exports = {
