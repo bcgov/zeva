@@ -24,6 +24,7 @@
       line-height: normal;
       position: relative;
       top: 2rem;
+      @include text-shadow;
     }
   }
 

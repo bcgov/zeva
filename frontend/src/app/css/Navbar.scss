@@ -1,5 +1,6 @@
 #navbar {
   background-color: $primary-blue;
+  @include shadow;
 
   .brand-logo {
     background-image: url('./images/BCID_H_rgb_rev.png');

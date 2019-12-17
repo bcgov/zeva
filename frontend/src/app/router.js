@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import PageLayout from './PageLayout';
-import TransactionList from './components/TransactionList';
+import DashboardContainer from '../dashboard/DashboardContainer';
 
 const Router = (props) => {
   const { keycloak } = props;
@@ -16,7 +16,7 @@ const Router = (props) => {
           <Route
             exact
             path="/"
-            render={() => <TransactionList keycloak={keycloak} />}
+            render={() => <DashboardContainer />}
           />
         </Switch>
       </PageLayout>

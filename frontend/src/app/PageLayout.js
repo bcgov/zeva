@@ -14,33 +14,15 @@ import Navbar from './components/Navbar';
 library.add(fab, far, fas);
 
 const PageLayout = (props) => {
-  const { children, keycloak } = props;
+  const { children } = props;
 
   return ([
     <div id="main" key="main">
       <Navbar />
-      {keycloak.authenticated && (
-        <div>
-          <strong>Authenticated</strong>
-          <ul>
-            {keycloak.realmAccess.roles.map((role) => (
-              <li key={role}>{role}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {keycloak.authenticated || (
-        <div>
-          <span>Not Authenticated</span>
-          <button
-            onClick={() => keycloak.login()}
-            type="button"
-          >
-            Login
-          </button>
-        </div>
-      )}
-      {children}
+
+      <div id="content">
+        {children}
+      </div>
     </div>,
     <Footer key="footer" />,
   ]);

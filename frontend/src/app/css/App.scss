@@ -26,6 +26,17 @@
 	src: url('./fonts/BCSans-Italic.woff') format('woff');
 }
 
+@mixin shadow {
+  @content;
+  box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
+  -moz-box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
+  -webkit-box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
+}
+
+@mixin text-shadow {
+	text-shadow: 2px 2px rgba(51, 51, 51, 0.5);
+}
+
 /* Variables for colours */
 $default-background-blue: #38598A;
 $default-background-grey: #F2F2F2;
@@ -50,4 +61,8 @@ body {
 #main {
 	min-height: 100%;
 	padding-bottom: 3rem;
+}
+
+#content {
+	padding: 1rem;
 }

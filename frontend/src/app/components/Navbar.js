@@ -13,14 +13,14 @@ class Navbar extends Component {
           <div className="col-sm-9">
             <div className="brand-logo" />
 
-            <h1>Zero Emission Vehicle Credit System</h1>
+            <h1>Zero Emission Vehicle Reporting System</h1>
           </div>
 
           <div className="col-sm-3">
             <div className="logged-in-info">
               <div>
-                <h5>TFRS Fantasic Fuels</h5>
-                <span>Credit Balance: 123,456</span>
+                <h5>Optimus Autoworks</h5>
+                <span>Credit Balance: 23,456-A / 12,345-B</span>
               </div>
             </div>
           </div>
@@ -80,7 +80,7 @@ class Navbar extends Component {
 
           <div className="col-sm-3 user-control-panel">
             <div>
-              Richard Tan
+              Buzz Collins
             </div>
             <NavLink
               activeClassName="active"
