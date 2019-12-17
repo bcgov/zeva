@@ -4,6 +4,9 @@ const path = require('path');
 
 const webpackConfig = require('./webpack.config');
 
+const http = require('http');
+const notifications = require('./notifications');
+
 const devServerOptions = {
   contentBase: path.join(__dirname, 'public/build'),
   publicPath: '/',
@@ -24,7 +27,18 @@ const devServerOptions = {
 
 WebpackDevServer.addDevServerEntrypoints(webpackConfig, devServerOptions);
 const compiler = Webpack(webpackConfig);
-const server = new WebpackDevServer(compiler, devServerOptions);
+const devServer = new WebpackDevServer(compiler, devServerOptions);
 
-server.listen(5001, '0.0.0.0', () => {
+
+const websocketServer = http.createServer((req, res) => {
+  res.end();
+});
+
+const io = require('socket.io')(websocketServer);
+notifications.setup(io);
+
+websocketServer.listen(5002, '0.0.0.0');
+
+
+devServer.listen(5001, '0.0.0.0', () => {
 });
