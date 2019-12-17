@@ -15,7 +15,7 @@ objects:
   - kind: NetworkSecurityPolicy
     apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
     metadata:
-      name: custom-pods-to-api-zeva
+      name: custom-pods-to-ocp-api
     spec:
       description: |
         pods <---> OCP
@@ -26,7 +26,7 @@ objects:
       - - $namespace=tbiwaq-${ENV_NAME}
       destination:
       - - int:network=internal-cluster-api-endpoint
-        -
+
   - kind: NetworkSecurityPolicy
     apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
     metadata:
@@ -46,6 +46,22 @@ objects:
   - kind: NetworkSecurityPolicy
     apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
     metadata:
+      name: custom-internet-to-python-backend
+    spec:
+      description: |
+        internet <---> python backend, python backend <---> keycloak
+        Allow backend to accept requests from internet.
+        This also covers backend to keycloak
+      source:
+        - - app=zeva
+          - role=python-backend
+          - env=${ENV_NAME}
+      destination:
+        - - ext:network=any
+
+  - kind: NetworkSecurityPolicy
+    apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+    metadata:
       name: custom-frontend-to-envoy
     spec:
       description: |
@@ -59,22 +75,6 @@ objects:
         - - app=zeva
           - role=envoy
           - env=${ENV_NAME}
-
-  - kind: NetworkSecurityPolicy
-    apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
-    metadata:
-      name: custom-envoy-to-keycloak
-    spec:
-      description: |
-        internet <---> keycloak
-        Allow envoy to accept requests from internet.
-        It mainly allow envy to communication with keycloak.
-      source:
-        - - app=zeva
-          - role=envoy
-          - env=${ENV_NAME}
-      destination:
-        - - ext:network=any
 
   - kind: NetworkSecurityPolicy
     apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1

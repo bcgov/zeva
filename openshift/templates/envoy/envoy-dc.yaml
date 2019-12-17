@@ -12,13 +12,12 @@ objects:
 - apiVersion: v1
   kind: Service
   metadata:
-    creationTimestamp: null
     name: envoy
-      labels:
-        name: envoy
-        app: zeva
-        role: envoy
-        env: ${ENV_NAME}
+    labels:
+      name: envoy
+      app: zeva
+      role: envoy
+      env: ${ENV_NAME}
   spec:
     ports:
     - name: admin
