@@ -16,7 +16,8 @@
 
   .header {
     border-bottom: 2px solid $primary-yellow;
-    padding: 0.5rem 1rem;
+    margin: 0;
+    padding: 0.5rem 1rem 0.5rem 0;
   }
 
   .links, .user-control-panel {
@@ -62,7 +63,8 @@
     align-items: center;
     background-color: $default-background-blue;
     display: flex;
-    padding: 0 1rem;
+    margin: 0;
+    padding: 0;
   }
 
   .user-control-panel {
