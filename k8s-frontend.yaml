@@ -41,6 +41,8 @@ spec:
               value: 'http://localhost:8888/auth/realms/zeva'
             - name: KEYCLOAK_ISSUER
               value: 'http://localhost:8888/auth/realms/zeva'
+            - name: KEYCLOAK_URL
+              value: 'http://localhost:8888/auth'
             - name: KEYCLOAK_AUDIENCE
               value: 'zeva-app'
             - name: KEYCLOAK_CLIENT_ID
