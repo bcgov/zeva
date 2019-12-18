@@ -1,0 +1,163 @@
+#dashboard {
+  padding: 1rem;
+
+  .dashboard-card, .dashboard-fieldset {
+    margin: 2rem 0;
+    padding: 1rem;
+
+    &:first-child {
+      margin-top: 1rem;
+    }
+
+    &:last-child {
+      margin-bottom: 1rem;
+    }
+  }
+
+  .dashboard-card {
+    background-color: $default-background-grey;
+    color: $default-text-blue;
+    font-size: 1rem;
+
+    text-align: center;
+
+    a, a > span {
+      color: $default-link-blue;
+      text-decoration: underline;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .content {
+      margin-bottom: 1rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .icon {
+      svg {
+        color: $primary-yellow;
+        font-size: 3rem;
+      }
+    }
+
+    .pdf-link {
+      svg {
+        color: $primary-yellow;
+        font-size: 2rem;
+        margin-left: 0.5rem;
+      }
+    }
+
+    .label {
+      font-size: 1.2rem;
+    }
+
+    .value {
+      color: $primary-yellow;
+      font-size: 2rem;
+    }
+  }
+
+  .dashboard-fieldset {
+    border: 1px solid #000;
+    font-size: 1.2rem;
+    position: relative;
+  
+    a {
+      color: $default-link-blue;
+      text-decoration: underline;
+    }
+  
+    button {
+      background-color: transparent;
+      border: none;
+      color: $default-link-blue;
+      margin: 0;
+      outline: none;
+      padding: 0;
+      text-align: left;
+      text-decoration: underline;
+  
+      &:hover, &:focus {
+        text-decoration: underline;
+      }
+    }
+
+    h1 {
+      background-color: $white; 
+      font-size: 2rem;
+      padding: 0 0.5rem;
+      position: absolute;
+      top: -1.5rem;
+      left: 1.5rem;
+    }
+
+    .content {
+      &:first-child {
+        margin-top: 1rem;
+      }
+
+      &:last-child {
+        margin-bottom: 1rem;
+      }
+    }
+
+    .divider {
+      margin: 0 1rem;
+    }
+
+    .icon-upload {
+      display: inline-block;
+      font-size: 2.5rem;
+      vertical-align: middle;
+    }
+
+    .icon-secure {
+      display: inline-block;
+      font-size: 1rem;
+      vertical-align: middle;
+    }
+
+    .text {
+      margin-left: 5rem;
+      padding: 1.5rem 1rem 0;
+  
+      > a, > button {
+        display: inline-block;
+        vertical-align: middle;
+      }
+  
+      svg {
+        color: $primary-yellow;
+        display: inline-block;
+        font-size: 1rem;
+        margin: 0 1rem 0 2rem;
+        vertical-align: middle;
+      }
+    }
+
+    .value {
+      color: $primary-yellow;
+      display: inline-block;
+      font-size: 3rem;
+      position: absolute;
+      text-align: right;
+      vertical-align: top;
+      width: 4rem;
+    }
+  }
+
+  .pdf-link {
+    * {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+}
