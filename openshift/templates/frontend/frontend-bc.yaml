@@ -39,7 +39,7 @@ objects:
         RUN apt-get install git
         ADD https://github.com/vishnubob/wait-for-it/compare/master...HEAD /dev/null
         RUN git clone https://github.com/vishnubob/wait-for-it.git /wfi
-        RUN git clone --branch devops-openshift2 https://github.com/bcgov/zeva.git /tmp/zeva
+        RUN git clone https://github.com/bcgov/zeva.git /tmp/zeva
         RUN mv /tmp/zeva/frontend /app
         WORKDIR /app
         RUN npm install
