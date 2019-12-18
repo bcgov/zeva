@@ -10,6 +10,7 @@ const devServerOptions = {
   contentBase: path.join(__dirname, 'public/build'),
   publicPath: '/',
   index: '/generated_index.html',
+  disableHostCheck: true,
   historyApiFallback: {
     verbose: true,
     index: '/generated_index.html',

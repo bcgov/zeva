@@ -4,7 +4,7 @@ const CONFIG = {
   KEYCLOAK: {
     CLIENT_ID: 'zeva-app',
     REALM: 'zeva',
-    URL: 'http://localhost:8888/auth',
+    URL: __KEYCLOAK_URL__,
   },
   VERSION: __VERSION__,
 };
