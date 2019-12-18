@@ -2,26 +2,29 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const UserSettings = () => (
-  <div className="dashboard-fieldset user-settings">
+  <div id="user-settings" className="dashboard-fieldset">
     <h1>User Settings</h1>
 
-    <div>
-      Buzz Collins, Senior Signing Officer
+    <div className="content">
+      <div className="text">
+        Buzz Collins, Senior Signing Officer
+      </div>
     </div>
 
-    <div>
-      <div className="content">
+    <div className="content">
+      <div className="text">
         <button type="button">
           User profile
         </button>
       </div>
     </div>
 
-    <div>
+    <div className="content">
       <div className="value">
         6
       </div>
-      <div className="content">
+
+      <div className="text">
         <button type="button">
           Notifications
         </button>
@@ -31,28 +34,22 @@ const UserSettings = () => (
       </span>
     </div>
 
-    <div>
-      <div className="content">
+    <div className="content">
+      <div className="text">
         <button type="button">
           Configure your notifications
         </button>
       </div>
     </div>
 
-    <div>
-      <div className="content">
+    <div className="content">
+      <div className="text pdf-link">
         <a
           href="/"
           rel="noopener noreferrer"
           target="_blank"
         >
           Help
-        </a>
-        <a
-          href="/"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
           <FontAwesomeIcon icon={['far', 'file-pdf']} />
         </a>
       </div>

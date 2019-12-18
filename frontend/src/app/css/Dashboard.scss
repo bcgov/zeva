@@ -100,6 +100,8 @@
     }
 
     .content {
+      position: relative;
+
       &:first-child {
         margin-top: 1rem;
       }
@@ -119,12 +121,6 @@
       vertical-align: middle;
     }
 
-    .icon-secure {
-      display: inline-block;
-      font-size: 1rem;
-      vertical-align: middle;
-    }
-
     .text {
       margin-left: 5rem;
       padding: 1.5rem 1rem 0;
@@ -134,7 +130,7 @@
         vertical-align: middle;
       }
   
-      svg {
+      .fa-play {
         color: $primary-yellow;
         display: inline-block;
         font-size: 1rem;
@@ -159,5 +155,40 @@
       display: inline-block;
       vertical-align: middle;
     }
+
+    svg {
+      color: $primary-yellow;
+      font-size: 2rem;
+      margin-left: 0.5rem;
+    }
+  }
+}
+
+#actions {
+  .icon-secure {
+    display: inline-block;
+    font-size: 1rem;
+    vertical-align: middle;
+  }
+}
+
+#organization-details, #user-settings {
+  .content {
+    .text {
+      margin-left: 2rem;
+      padding: 1.5rem 1rem 0;
+    }
+
+    .value {
+      width: 2rem;
+    }
+  }
+
+  .icon {
+    color: $primary-yellow;
+    font-size: 3rem;
+    position: absolute;
+    right: 2rem;
+    top: 0;
   }
 }

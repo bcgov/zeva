@@ -2,7 +2,7 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Feedback = () => (
-  <div className="dashboard-card feedback">
+  <div id="feedback" className="dashboard-card">
     <div className="content icon">
       <FontAwesomeIcon icon={['fas', 'envelope']} />
     </div>

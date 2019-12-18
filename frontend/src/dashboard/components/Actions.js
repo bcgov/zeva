@@ -2,7 +2,7 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Actions = () => (
-  <div className="dashboard-fieldset">
+  <div id="actions" className="dashboard-fieldset">
     <h1>Actions</h1>
 
     <div className="content">
