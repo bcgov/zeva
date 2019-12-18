@@ -32,6 +32,9 @@ static_resources:
                         - match: { prefix: "/sockjs-node/" }
                           route:
                             cluster: frontend
+                        - match: { prefix: "/socket.io/" }
+                          route:
+                            cluster: frontend-notifications
                         - match: { prefix: "/" }
                           route: { cluster: frontend }
                 http_filters:
@@ -81,6 +84,14 @@ static_resources:
       - socket_address:
           address: frontend
           port_value: 5001
+    - name: frontend-notifications
+      connect_timeout: 0.25s
+      type: LOGICAL_DNS
+      lb_policy: ROUND_ROBIN
+      hosts:
+        - socket_address:
+            address: frontend
+            port_value: 5002
     - name: python_transaction_service
       connect_timeout: 0.25s
       type: LOGICAL_DNS

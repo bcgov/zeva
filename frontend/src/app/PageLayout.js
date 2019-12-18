@@ -2,6 +2,7 @@ import React from 'react';
 import { hot } from 'react-hot-loader/root';
 import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
+import NotificationsClient from "./NotificationsClient";
 
 const PageLayout = (props) => {
   const { children, keycloak } = props;
@@ -13,7 +14,7 @@ const PageLayout = (props) => {
           <strong>Authenticated</strong>
           <ul>
             {keycloak.realmAccess.roles.map((role) => (
-              <li>{role}</li>
+              <li key={role}>{role}</li>
             ))}
           </ul>
         </div>
@@ -29,6 +30,7 @@ const PageLayout = (props) => {
           </button>
         </div>
       )}
+      <NotificationsClient keycloak={keycloak} />
       {children}
     </div>
   );
