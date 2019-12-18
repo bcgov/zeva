@@ -32,6 +32,28 @@ objects:
     type: ClusterIP
   status:
     loadBalancer: {}
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      name: frontend
+      app: zeva
+      role: frontend
+      env: ${ENV_NAME}
+    name: dev-zeva-frontend
+  spec:
+    host: dev-zeva.pathfinder.gov.bc.ca
+    port:
+      targetPort: web
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: edge
+    to:
+      kind: Service
+      name: frontend
+      weight: 100
+    wildcardPolicy: None
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
   metadata:

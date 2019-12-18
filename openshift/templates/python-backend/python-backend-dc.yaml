@@ -9,6 +9,11 @@ parameters:
     displayName: Environment name
     description: Environment name, dev, test and prod
     required: true
+  - name: DASH_ENV_NAME
+    value: dev
+    displayName: Environment name
+    description: Environment name, -dev, -test and empty for prod
+    required: true
   - name: CPU_REQUEST
     displayName: Requested CPU
     description: Requested CPU
@@ -24,6 +29,14 @@ parameters:
   - name: MEMORY_LIMIT
     displayName: Memory upper limit
     description: Memory upper limit
+    required: true
+  - name: POSTGRESQL_USER
+    displayName: Postgresql database user
+    description: Postgresql database user
+    required: true
+  - name: POSTGRESQL_PASSWORD
+    displayName: Postgresql database password
+    description: Postgresql database password
     required: true
 objects:
 - apiVersion: v1
@@ -79,29 +92,43 @@ objects:
         name: python-backend
       spec:
         containers:
-        - env: {}
+        - env:
+            - name: DATABASE_URL
+              value: "postgresql://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgresql.tbiwaq-${ENV_NAME}.svc.cluster.local/zeva"
+            - name: KEYCLOAK_CERTS_URL
+              value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq/protocol/openid-connect/certs"
+            - name: KEYCLOAK_REALM
+              value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
+            - name: KEYCLOAK_AUTHORITY
+              value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
+            - name: KEYCLOAK_ISSUER
+              value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
+            - name: KEYCLOAK_AUDIENCE
+              value: 'rzh2zkjq'
+            - name: KEYCLOAK_CLIENT_ID
+              value: 'rzh2zkjq'
           image:
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
-            initialDelaySeconds: 40
+            initialDelaySeconds: 60
             periodSeconds: 10
             successThreshold: 1
             tcpSocket:
               port: 10102
-            timeoutSeconds: 3
+            timeoutSeconds: 10
           name: python-backend
           ports:
           - containerPort: 10102
             protocol: TCP
           readinessProbe:
             failureThreshold: 3
-            initialDelaySeconds: 30
+            initialDelaySeconds: 60
             periodSeconds: 10
             successThreshold: 1
             tcpSocket:
               port: 10102
-            timeoutSeconds: 3
+            timeoutSeconds: 10
           resources:
             limits:
               cpu: ${CPU_LIMIT}
