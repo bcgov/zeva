@@ -3,7 +3,7 @@ const CONFIG = {
   APIBASE: __APIBASE__, // injected by webpack
   KEYCLOAK: {
     CLIENT_ID: 'zeva-app',
-    REALM: 'rzh2zkjq',
+    REALM: 'zeva',
     URL: __KEYCLOAK_URL__,
   },
   VERSION: __VERSION__,
