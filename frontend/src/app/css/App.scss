@@ -37,7 +37,7 @@
 	text-shadow: 2px 2px rgba(51, 51, 51, 0.5);
 }
 
-/* Variables for colours */
+/* variables for colours */
 $default-background-blue: #38598A;
 $default-background-grey: #F2F2F2;
 $default-link-blue: #1A5A96;
@@ -47,6 +47,9 @@ $primary-blue: #003366;
 $primary-yellow: #FCBA19;
 $white: #FFFFFF;
 $yellow: #E3AB2B;
+
+/* variables for screen sizes */
+$md: 991px;
 
 html, body, #root {
 	height: 100%;

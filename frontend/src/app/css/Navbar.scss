@@ -18,32 +18,7 @@
   .header {
     border-bottom: 2px solid $primary-yellow;
     margin: 0;
-    padding: 0.5rem 1rem 0.5rem 0;
-  }
-
-  .links, .user-control-panel {
-    a {
-      color: $white;
-      display: inline-block;
-      font-size: 0.9rem;
-      padding: 0.5rem 1rem;
-      position: relative;
-      vertical-align: middle;
-
-      &:not(:first-child):before {
-        border-right: 1px solid $default-background-grey;
-        bottom: 25%;
-        content: "";
-        height: 50%;
-        left: 0;
-        position: absolute;
-        width: 1px;
-      }
-
-      &.active {
-        border-bottom: 1px solid $primary-yellow;
-      }
-    }
+    padding: 0.5rem 0;
   }
 
   .logged-in-info {
@@ -54,31 +29,85 @@
     height: 100%;
     text-align: right;
 
-    h5 {
+    .organization-name {
       font-size: 1rem;
       margin: 0;
     }
   }
 
-  .sub-header {
+  .navbar {
     align-items: center;
     background-color: $default-background-blue;
     display: flex;
     margin: 0;
-    padding: 0;
+    padding: 0 15rem 0 0;
+    position: relative;
+  }
+
+  .navbar-nav, .user-control-panel {
+    a {
+      color: $white;
+      font-size: 0.9rem;
+      height: 100%;
+      padding: 0.5rem 1rem;
+      text-align: center;
+
+      &.active {
+        border-bottom: 1px solid $primary-yellow;
+      }
+    }
+  }
+
+  .nav-item, .user-control-panel li {
+    position: relative;
+
+    &:not(:first-child):before {
+      border-right: 1px solid $default-background-grey;
+      bottom: 25%;
+      content: "";
+      height: 50%;
+      left: 0;
+      position: absolute;
+      width: 1px;
+    }
+  }
+
+  .navbar-nav a {
+    display: flex;
+
+    * {
+      align-self: center;
+    }
+  }
+
+  .navbar-toggler {
+    color: $white;
+    font-size: 1.5rem;
+    padding: 0.5rem 1rem;
+    text-align: center;
   }
 
   .user-control-panel {
+    bottom: 0;
     color: $white;
+    display: flex;
+    flex-direction: row;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    right: 0;
     text-align: right;
+    top: 0;
 
-    div {
-      color: $white;
-      display: inline-block;
-      font-size: 0.9rem;
+    li * {
+      align-items: center;
+      display: flex;
+    }
+
+    .display-name {
+      height: 100%;
       padding: 0.5rem 1rem;
-      position: relative;
-      vertical-align: middle;
     }
 
     .notifications, .help {
@@ -94,5 +123,62 @@
     margin: 0;
     padding: 0;
     vertical-align: middle;
+  }
+
+  @media (max-width: $md) {
+    .header {
+      padding: 0;
+    }
+
+    .logged-in-info {
+      width: 100%;
+
+      > div {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        float: none;
+        width: 100%;
+      }
+    }
+
+    .navbar {
+      padding: 0;
+    }
+
+    .navbar-nav {
+      border-top: 1px solid $primary-yellow;
+    }
+
+    .nav-item {
+      &:not(:first-child):before {
+        display: none;
+      }
+
+      .active {
+        background-color: $default-background-grey;
+        border: none;
+        color: $default-text-black;
+      }
+    }
+
+    .user-control-panel {
+      bottom: unset;
+    }
+  }
+
+  @media (max-width: 695px) {
+    .header {
+      text-align: center;
+
+      .brand-logo {
+        display: none;
+      }
+
+      h1 {
+        padding: 0.5rem 0;
+      }
+    }
   }
 }
