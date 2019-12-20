@@ -19,11 +19,9 @@ jobs:
       - run:
           name: build frontend
           command: |
+            oc start-build envoy --wait=true -n tbiwaq-tools
             oc start-build frontend --wait=true -n tbiwaq-tools
-            oc start-build frontend --wait=true -n tbiwaq-tools
-            oc start-build frontend --wait=true -n tbiwaq-tools
-            oc start-build frontend --wait=true -n tbiwaq-tools
-            oc start-build frontend --wait=true -n tbiwaq-tools
+            oc start-build python-backend --wait=true -n tbiwaq-tools
 workflows:
   version: 2
   build-deploy:
