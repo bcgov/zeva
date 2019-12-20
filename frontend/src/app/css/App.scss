@@ -51,7 +51,7 @@ $yellow: #E3AB2B;
 /* variables for screen sizes */
 $md: 991px;
 
-html, body, #root {
+body, html, #root {
 	height: 100%;
 }
 
@@ -74,4 +74,16 @@ p {
 
 #content {
 	padding: 1rem;
+}
+
+.page {
+	padding: 1rem;
+
+	h1 {
+		font-size: 2rem;
+	}
+
+	h2 {
+		font-size: 1.5rem;
+	}
 }

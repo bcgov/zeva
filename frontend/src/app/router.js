@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 
 import PageLayout from './PageLayout';
 import DashboardContainer from '../dashboard/DashboardContainer';
+import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
 
 const Router = (props) => {
   const { keycloak } = props;
@@ -17,6 +18,14 @@ const Router = (props) => {
             exact
             path="/"
             render={() => <DashboardContainer />}
+          />
+        </Switch>
+
+        <Switch>
+          <Route
+            exact
+            path="/organization-details"
+            render={() => <OrganizationDetailsContainer />}
           />
         </Switch>
       </PageLayout>

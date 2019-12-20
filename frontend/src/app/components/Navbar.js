@@ -89,6 +89,7 @@ class Navbar extends Component {
               <li className="nav-item">
                 <NavLink
                   activeClassName="active"
+                  exact
                   to="/"
                 >
                   <span>Home</span>
