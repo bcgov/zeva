@@ -38,14 +38,6 @@ static_resources:
                 - name: envoy.grpc_web
                 - name: envoy.router
   clusters:
-    - name: keycloak
-      connect_timeout: 0.25s
-      type: LOGICAL_DNS
-      lb_policy: ROUND_ROBIN
-      hosts:
-        - socket_address:
-            address: sso-dev.pathfinder.gov.bc.ca
-            port_value: 443
     - name: frontend
       connect_timeout: 0.25s
       type: LOGICAL_DNS

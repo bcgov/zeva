@@ -33,10 +33,10 @@ spec:
   selector:
     app: envoy
   ports:
-    - name: admin
+    - name: http-in
       port: 10000
       targetPort: 10000
-    - name: http-in
+    - name: admin
       port: 9901
       targetPort: 9901
     - name: keycloak-in

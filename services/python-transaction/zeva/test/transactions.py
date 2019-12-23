@@ -7,9 +7,9 @@ from generated import transactions_pb2_grpc
 from .basetest import BaseTest
 
 
-class SampleTest(BaseTest):
+class TransactionsTest(BaseTest):
 
-    def testSample(self):
+    def testTransactionList(self):
         _token = self.users['test_vs_1']['jwt']
         _certificate = self.channel_certificate
 

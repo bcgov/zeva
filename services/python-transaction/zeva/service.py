@@ -7,9 +7,10 @@ import grpc
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
-from generated import transactions_pb2_grpc
+from generated import transactions_pb2_grpc, organizations_pb2_grpc
 import services
 import services.transaction_service
+import services.organizations_service
 
 
 class ReloadHandler(FileSystemEventHandler):
@@ -28,6 +29,10 @@ def add_services_to_server(server):
     """ bind services to a server instance. used in testing also. """
     transactions_pb2_grpc.add_TransactionListServicer_to_server(
         services.transaction_service.TransactionServicer(),
+        server
+    )
+    organizations_pb2_grpc.add_OrganizationDetailsServicer_to_server(
+        services.organizations_service.OrganizationsServicer(),
         server
     )
 

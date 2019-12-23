@@ -23,8 +23,6 @@ class TransactionServicer(TransactionListServicer):
             cur.execute("select id, type, credits, transaction_amount, updated from transactions")
 
             for row in cur:
-                print(row)
-
                 trans = TransactionSummary(
                     id=row['id'],
                     amount=DollarValue(cents=row['transaction_amount']),
