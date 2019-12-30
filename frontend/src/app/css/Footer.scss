@@ -1,0 +1,39 @@
+#footer {
+  background-color: $primary-blue;
+  border-top: 2px solid $primary-yellow;
+  color: $white;
+  font-size: 0.8rem;
+  height: 2.5rem;
+  margin-top: -2.5rem;
+  padding: 0 2rem;
+
+  #version {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    float: right;
+    min-height: 100%;
+  }
+
+  a {
+    color: $white;
+    display: inline-block;
+    margin: 0 1rem;
+    vertical-align: middle;
+
+    &:first-child {
+      margin-left: 0;
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  .links {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    min-height: 100%;
+  }
+}

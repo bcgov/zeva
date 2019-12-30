@@ -10,7 +10,7 @@ const Login = () => {
   return (
     <div id="login-page">
       <div id="header">
-        <div className="text">Zero Emission Vehicle Credit System</div>
+        <div className="text">Zero Emission Vehicle Reporting System</div>
       </div>
       <div id="main-content">
         <div className="flex-container">
@@ -18,7 +18,7 @@ const Login = () => {
 
           <div className="buttons-section">
             <div className="section">
-              Auto Manufacturers
+              Vehicle Suppliers
 
               <a href={`${url}&kc_idp_hint=bceid`} id="link-bceid" className="button">
                 <span className="text"> Login with </span>

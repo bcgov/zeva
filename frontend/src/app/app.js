@@ -5,6 +5,8 @@ import CONFIG from './config';
 import Login from './Login';
 import Router from './router';
 
+import 'react-table/react-table.css';
+
 class App extends Component {
   constructor(props) {
     super(props);

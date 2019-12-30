@@ -4,8 +4,9 @@ import { BrowserRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import PageLayout from './PageLayout';
-import TransactionList from './components/TransactionList';
-import OrganizationDetails from "./components/OrganizationDetails";
+import DashboardContainer from '../dashboard/DashboardContainer';
+import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
+import OrganizationDetails from './components/OrganizationDetails';
 
 const Router = (props) => {
   const { keycloak } = props;
@@ -17,7 +18,15 @@ const Router = (props) => {
           <Route
             exact
             path="/"
-            render={() => <TransactionList keycloak={keycloak} />}
+            render={() => <DashboardContainer />}
+          />
+        </Switch>
+
+        <Switch>
+          <Route
+            exact
+            path="/organization-details"
+            render={() => <OrganizationDetailsContainer />}
           />
           <Route
             exact

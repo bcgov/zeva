@@ -24,6 +24,7 @@
       line-height: normal;
       position: relative;
       top: 2rem;
+      @include text-shadow;
     }
   }
 
@@ -140,7 +141,7 @@
     width: 100%;
   }
 
-  @media (min-width: 992px) {
+  @media (min-width: $md) {
     #header {
       padding-left: 35rem;
     }
@@ -150,7 +151,7 @@
     }  
   }
   
-  @media (max-width: 992px) {
+  @media (max-width: $md) {
     #header {
       background-color: $primary-blue;
       display: flex;

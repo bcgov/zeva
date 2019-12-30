@@ -1,4 +1,4 @@
-/* global __APIBASE__, __VERSION__ */
+/* global __APIBASE__, __KEYCLOAK_URL__, __VERSION__ */
 const CONFIG = {
   APIBASE: __APIBASE__, // injected by webpack
   KEYCLOAK: {

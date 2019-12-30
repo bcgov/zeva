@@ -6,10 +6,11 @@ import PropTypes from 'prop-types';
 import { OrganizationDetailsClient } from '../../generated/organizations_grpc_web_pb';
 import { GetMyOrganizationRequest, OrganizationType } from '../../generated/organizations_pb';
 
+import NotificationsClient from '../NotificationsClient';
 
 const OrganizationDetails = (props) => {
   const [details, setDetails] = useState([]);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
 
   const typeName = (type) => {
     switch (type) {
@@ -38,18 +39,15 @@ const OrganizationDetails = (props) => {
 
       const call = client.getMyOrganization(request, md);
 
-      const downloaded = [];
-
       call.on('data', (s) => {
         setDetails(
           {
             name: s.getName(),
-            type: typeName(s.getType())
-          }
+            type: typeName(s.getType()),
+          },
         );
         setLoading(false);
-      }
-      );
+      });
 
       call.on('status', (s) => {
         console.log(s);
@@ -74,13 +72,21 @@ const OrganizationDetails = (props) => {
   return (
     <>
       <h1>My Organization</h1>
-      {loading ||
+      {loading
+      || (
       <div>
-        <h2>Name: {details.name}</h2>
-        <h2>Type: {details.type}</h2>
+        <h2>
+        Name:
+          {details.name}
+        </h2>
+        <h2>
+        Type:
+          {details.type}
+        </h2>
       </div>
-      }
+      )}
 
+      <NotificationsClient keycloak={keycloak} />
     </>
   );
 };
