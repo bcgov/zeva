@@ -4,6 +4,18 @@ metadata:
   creationTimestamp: null
   name: frontend-dc
 parameters:
+  - name: NAME
+    displayName:
+    description: the module name entered when run yo bcdk:pipeline, which is zeva
+    required: true
+  - name: SUFFIX
+    displayName:
+    description: sample is -pr-0
+    required: true
+  - name: VERSION
+    displayName:
+    description:  image tag name for output
+    required: true
   - name: ENV_NAME
     value: dev
     displayName: Environment name
@@ -31,11 +43,26 @@ parameters:
     description: Memory upper limit
     required: true
 objects:
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      description: Keeps track of changes in the client / front end image
+    labels:
+      shared: "true"
+    creationTimestamp: null
+    generation: 643
+    name: ${NAME}-frontend
+  spec:
+    lookupPolicy:
+      local: false
+  status:
+    dockerImageRepository: ""
 - apiVersion: v1
   kind: Service
   metadata:
     creationTimestamp: null
-    name: frontend
+    name: ${NAME}-frontend${SUFFIX}
     labels:
       name: frontend
       app: zeva
@@ -52,7 +79,7 @@ objects:
       protocol: TCP
       targetPort: 5002
     selector:
-      name: frontend
+      name: ${NAME}-frontend${SUFFIX}
     sessionAffinity: None
     type: ClusterIP
   status:
@@ -66,7 +93,7 @@ objects:
       app: zeva
       role: frontend
       env: ${ENV_NAME}
-    name: ${ENV_NAME}-zeroemissionvehicles-frontend
+    name: ${NAME}-frontend${SUFFIX}
   spec:
     host: ${ENV_NAME}-zeroemissionvehicles.pathfinder.gov.bc.ca
     port:
@@ -82,7 +109,7 @@ objects:
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
   metadata:
-    name: frontend
+    name: ${NAME}-frontend${SUFFIX}
     labels:
       name: frontend
       app: zeva
@@ -95,7 +122,7 @@ objects:
     replicas: 1
     revisionHistoryLimit: 10
     selector:
-      name: frontend
+      name: ${NAME}-frontend${SUFFIX}
     strategy:
       activeDeadlineSeconds: 21600
       recreateParams:
@@ -106,8 +133,7 @@ objects:
       metadata:
         creationTimestamp: null
         labels:
-          name: frontend
-        name: frontend
+          name: ${NAME}-frontend${SUFFIX}
       spec:
         containers:
         - env:
@@ -175,8 +201,7 @@ objects:
         - frontend
         from:
           kind: ImageStreamTag
-          name: frontend:dev
-          namespace: tbiwaq-tools
+          name: ${NAME}-frontend:${VERSION}
         lastTriggeredImage:
       type: ImageChange
     - type: ConfigChange

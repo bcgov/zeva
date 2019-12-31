@@ -53,7 +53,13 @@ objects:
         kind: ImageStreamTag
         name: ${NAME}-frontend:${VERSION}
     postCommit: {}
-    resources: {}
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 2G
+      requests:
+        cpu: 500m
+        memory: 200M
     runPolicy: Serial
     source:
       git:
@@ -65,6 +71,7 @@ objects:
       dockerStrategy:
         forcePull: false
         noCache: true
+        imageOptimizationPolicy: SkipLayers
       type: Docker
     successfulBuildsHistoryLimit: 5
     triggers: []
