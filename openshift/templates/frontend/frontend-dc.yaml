@@ -47,6 +47,10 @@ objects:
       port: 5001
       protocol: TCP
       targetPort: 5001
+    - name: websocket-notifications
+      port: 5002
+      protocol: TCP
+      targetPort: 5002
     selector:
       name: frontend
     sessionAffinity: None
@@ -135,7 +139,9 @@ objects:
             timeoutSeconds: 3
           name: frontend
           ports:
-          - containerPort: 5100
+          - containerPort: 5001
+            protocol: TCP
+          - containerPort: 5002
             protocol: TCP
           readinessProbe:
             failureThreshold: 3
