@@ -1,0 +1,27 @@
+{
+  "@bcgov/bcdk": {
+    "promptValues": {
+      "modules": {
+        "zeva": {
+          "name": "zeva",
+          "version": "1.0.0",
+          "path": ".",
+          "environments": {
+            "build": {
+              "namespace": "tbiwaq-tools"
+            },
+            "dev": {
+              "namespace": "tbiwaq-dev"
+            },
+            "test": {
+              "namespace": "tbiwaq-test"
+            },
+            "prod": {
+              "namespace": "tbiwaq-prod"
+            }
+          }
+        }
+      }
+    }
+  }
+}

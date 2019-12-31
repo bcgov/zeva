@@ -9,3 +9,4 @@ venv/
 .vscode/
 __pycache__/
 TEST-*xml
+node_modules/
