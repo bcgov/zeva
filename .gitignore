@@ -2,7 +2,6 @@
 node_modules/
 public/
 build/
-package-lock.json
 .env
 venv/
 .DS_Store
