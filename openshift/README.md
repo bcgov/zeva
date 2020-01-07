@@ -6,7 +6,7 @@ The first component to be built and deployed is frontend.
 
 Create a branch called zeva-bcdk from master and all the following work are based on this branch.
 
-## Create a PR based pipeline
+## Section 1: Create a PR based pipeline
 
 The Pipeline created is PR based and it can run under command line. It means that a pull request can be deployed using command line.
 
@@ -92,7 +92,7 @@ The deployment configuration such as deployment config, service and route relate
 ~/Projects/zeva/.pipeline$ nnpm run clean -- --pr=18 --env=dev
 ```
 
-## Setup Jenkins on Openshift
+## Section 2: Setup Jenkins on Openshift
 
 Create Jenkins master and slave instances on Openshift. Also create Zeva pipeline job on Jenkins.
 
@@ -156,7 +156,7 @@ Writing 'jenkins-job' files.
    create .jenkins/docker/contrib/jenkins/configuration/jobs/zeva/config.xml
 ```
 
-### Rebuild jenkins to include the new pipline job created 
+### Rebuild Jenkins to include the new pipline job created 
 
 If builds could not start, manually delete two jenkins image stream and rerun the command.
 ```
@@ -176,7 +176,7 @@ Re-using image  tbiwaq-tools/ImageStreamImage/jenkins-slave-main@sha256:56afeca0
 ~/Projects/zeva/.jenkins/.pipeline$ npm run deploy -- --pr=0 --env=dev
 ```
 
-### Tips
+## Tips
 
 * Project team should be responsible to build jenkins slave, such as add npm modules into it, then no need to use npmw anymore
 * Jenkins dev should not leave long, it is for testing only, once testing passed, should deploy Jenkins prod.
