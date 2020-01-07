@@ -48,7 +48,7 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: ${NAME}-frontend:${VERSION}
+        name: ${NAME}-envoy:${VERSION}
     postCommit: {}
     resources:
       limits:
