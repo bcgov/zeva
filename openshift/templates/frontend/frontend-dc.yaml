@@ -95,7 +95,7 @@ objects:
       env: ${ENV_NAME}
     name: ${NAME}-frontend${SUFFIX}
   spec:
-    host: ${ENV_NAME}{SUFFIX}-zeroemissionvehicles.pathfinder.gov.bc.ca
+    host: ${ENV_NAME}${SUFFIX}-zeroemissionvehicles.pathfinder.gov.bc.ca
     port:
       targetPort: http-in
     tls:
