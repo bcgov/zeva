@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package zeva.transactions;
+
+message DollarValue {
+    uint64 cents = 1;
+}
+
+message CreditValue {
+    uint64 credits = 1;
+}

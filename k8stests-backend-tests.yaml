@@ -71,8 +71,8 @@ spec:
               value: 'True'
       initContainers:
         - name: init-psql
-          image: busybox
-          command: ['sh', '-c', 'until (nslookup test-postgres > /dev/null); do echo waiting for test-postgres; sleep 1; done; echo test-postgres ready; sleep 1;']
+          image: busybox:1.28
+          command: ['sh', '-c', 'until (nslookup test-postgres); do echo waiting for test-postgres; sleep 1; done; echo test-postgres ready; sleep 2;']
   selector:
     matchLabels:
       app: python-test-backend

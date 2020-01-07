@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package zeva.transactions;
 import "google/protobuf/timestamp.proto";
+import "common.proto";
 
 service TransactionList {
   rpc GetTransactions (TransactionListRequest) returns (stream TransactionSummary);
@@ -12,14 +13,6 @@ enum TransactionType {
     REDUCTION = 1;
     SOLD = 2;
     BOUGHT = 3;
-}
-
-message DollarValue {
-    uint64 cents = 1;
-}
-
-message CreditValue {
-    uint64 credits = 1;
 }
 
 message TransactionListRequest {
