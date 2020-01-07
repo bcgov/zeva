@@ -13,6 +13,7 @@ module.exports = settings => {
   var objects = [];
 
   // The deployment of your cool app goes here ▼▼▼
+  // deploy frontend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-dc.yaml`, {
     'param':{
       'NAME': phases[phase].name,
@@ -24,6 +25,20 @@ module.exports = settings => {
       'CPU_LIMIT': '500m',
       'MEMORY_REQUEST': '1100M',
       'MEMORY_LIMIT': '2G'
+    }
+  }))
+  //deploy envoy
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/envoy/envoy-dc.yaml`, {
+    'param':{
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix,
+      'VERSION': phases[phase].tag,
+      'ENV_NAME': phases[phase].instance,
+      'DASH_ENV_NAME': phases[phase].ssoSuffix,
+      'CPU_REQUEST': '100m',
+      'CPU_LIMIT': '300m',
+      'MEMORY_REQUEST': '200m',
+      'MEMORY_LIMIT': '500M'
     }
   }))
 

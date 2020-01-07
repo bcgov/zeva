@@ -95,7 +95,7 @@ objects:
       env: ${ENV_NAME}
     name: ${NAME}-frontend${SUFFIX}
   spec:
-    host: ${ENV_NAME}-zeroemissionvehicles.pathfinder.gov.bc.ca
+    host: ${ENV_NAME}{SUFFIX}-zeroemissionvehicles.pathfinder.gov.bc.ca
     port:
       targetPort: http-in
     tls:
@@ -103,7 +103,7 @@ objects:
       termination: edge
     to:
       kind: Service
-      name: envoy
+      name: ${NAME}-envoy${SUFFIX}
       weight: 100
     wildcardPolicy: None
 - apiVersion: apps.openshift.io/v1

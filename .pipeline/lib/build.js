@@ -11,7 +11,18 @@ module.exports = settings => {
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, "../../openshift"));
 
   // The building of your cool app goes here ▼▼▼
+  // build frontend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-bc.yaml`, {
+    'param':{
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix,
+      'VERSION': phases[phase].tag,
+      'GIT_URL': oc.git.http_url,
+      'GIT_REF': oc.git.ref
+    }
+  }))
+  //build envoy
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/envoy/envoy-bc.yaml`, {
     'param':{
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
