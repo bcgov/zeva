@@ -1,0 +1,57 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: frontend
+objects:
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      annotations:
+        description: Keeps track of changes in the client / front end image
+      creationTimestamp: null
+      generation: 643
+      name: frontend
+    spec:
+      lookupPolicy:
+        local: false
+    status:
+      dockerImageRepository: ""
+  - apiVersion: build.openshift.io/v1
+    kind: BuildConfig
+    metadata:
+      creationTimestamp: null
+      name: frontend
+    spec:
+      failedBuildsHistoryLimit: 5
+      nodeSelector: null
+      output:
+        to:
+          kind: ImageStreamTag
+          name: frontend:latest
+      postCommit: {}
+      resources: {}
+      runPolicy: Serial
+      source:
+        dockerfile: |-
+          FROM node:8-jessie
+          RUN apt-get update
+          RUN apt-get install git
+          ADD https://github.com/vishnubob/wait-for-it/compare/master...HEAD /dev/null
+          RUN git clone https://github.com/vishnubob/wait-for-it.git /wfi
+          RUN git clone https://github.com/bcgov/zeva.git /tmp/zeva
+          RUN mv /tmp/zeva/frontend /app
+          WORKDIR /app
+          RUN npm install
+          RUN npm rebuild node-sass
+          CMD npm run start
+        type: Dockerfile
+      strategy:
+        dockerStrategy:
+          forcePull: false
+          noCache: true
+        type: Docker
+      successfulBuildsHistoryLimit: 5
+      triggers: []
+    status:
+      lastVersion: 0
