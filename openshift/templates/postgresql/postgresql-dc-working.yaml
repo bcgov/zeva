@@ -7,18 +7,6 @@ metadata:
   name: postgresql-dc
   creationTimestamp:
 parameters:
-  - name: NAME
-    displayName:
-    description: the module name entered when run yo bcdk:pipeline, which is zeva
-    required: true
-  - name: SUFFIX
-    displayName:
-    description: sample is -pr-0
-    required: true
-  - name: VERSION
-    displayName:
-    description:  image tag name for output
-    required: true
   - name: ENV_NAME
     displayName: Environment Name
     description: Environment Name
@@ -54,6 +42,11 @@ parameters:
     displayName: PVC Size
     description: PVC Size
     required: true
+  - name: DB_BACKUP_NFS_SIZE
+    value: 5Gi
+    displayName: DB PVC Size
+    description: DB BACKUP NFS Size
+    required: true
 objects:
   - apiVersion: v1
     kind: Secret
@@ -62,7 +55,7 @@ objects:
         template.openshift.io/expose-database_name: "{.data['database-name']}"
         template.openshift.io/expose-password: "{.data['database-password']}"
         template.openshift.io/expose-username: "{.data['database-user']}"
-      name: ${NAME}-postgresql${SUFFIX}
+      name: postgresql
       labels: {}
     stringData:
       DATABASE_USER: "${ZEVA_DB_USER}"
@@ -70,7 +63,7 @@ objects:
   - kind: Service
     apiVersion: v1
     metadata:
-      name: ${NAME}-postgresql${SUFFIX}
+      name: postgresql
       annotations:
         template.openshift.io/expose-uri: postgres://{.spec.clusterIP}:{.spec.ports[?(.name=="postgresql")].port}
       labels:
@@ -85,7 +78,7 @@ objects:
           port: 5432
           targetPort: 5432
       selector:
-        name: ${NAME}-postgresql${SUFFIX}
+        name: postgresql
       type: ClusterIP
       sessionAffinity: None
     status:
@@ -93,9 +86,9 @@ objects:
   - apiVersion: v1
     kind: PersistentVolumeClaim
     metadata:
-      name: ${NAME}-postgresql${SUFFIX}
+      name: postgresql
       annotations:
-        volume.beta.kubernetes.io/storage-class: netapp-file-standard
+        volume.beta.kubernetes.io/storage-class: gluster-file-db
         template.openshift.io.bcgov/create: 'true'
     spec:
       accessModes:
@@ -103,12 +96,25 @@ objects:
       resources:
         requests:
           storage: "${DB_PVC_SIZE}"
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: postgresql-backup
+      annotations:
+        volume.beta.kubernetes.io/storage-class: gluster-file
+        template.openshift.io.bcgov/create: 'true'
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: "${DB_BACKUP_NFS_SIZE}"
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
       annotations:
         template.alpha.openshift.io/wait-for-ready: 'true'
-      name: ${NAME}-postgresql${SUFFIX}
+      name: postgresql
       labels:
         name: postgresql
         app: zeva
@@ -119,30 +125,32 @@ objects:
       strategy:
         type: Recreate
       triggers:
-      - imageChangeParams:
-          automatic: true
-          containerNames:
-            - postgresql
-          from:
-            kind: ImageStreamTag
-            namespace: openshift
-            name: postgresql:10
-          lastTriggeredImage:
-        type: ImageChange
-      - type: ConfigChange
+        - type: ImageChange
+          imageChangeParams:
+            automatic: false
+            containerNames:
+              - postgresql
+            from:
+              kind: ImageStreamTag
+              namespace: openshift
+              name: postgresql:10
+        - type: ConfigChange
       test: false
       selector:
-        name: ${NAME}-postgresql${SUFFIX}
+        name: postgresql
       template:
         metadata:
           creationTimestamp:
           labels:
-            name: ${NAME}-postgresql${SUFFIX}
+            name: postgresql
         spec:
           volumes:
             - name: postgresql-data
               persistentVolumeClaim:
-                claimName: ${NAME}-postgresql${SUFFIX}
+                claimName: postgresql
+            - name: postgresql-backup
+              persistentVolumeClaim:
+                claimName: postgresql-backup
           containers:
             - name: postgresql
               image: " "
@@ -155,12 +163,12 @@ objects:
                 - name: POSTGRESQL_USER
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-postgresql${SUFFIX}
+                      name: postgresql
                       key: DATABASE_USER
                 - name: POSTGRESQL_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-postgresql${SUFFIX}
+                      name: postgresql
                       key: DATABASE_PASSWORD
               resources:
                 request:
@@ -172,6 +180,8 @@ objects:
               volumeMounts:
                 - name: postgresql-data
                   mountPath: "/var/lib/pgsql/data"
+                - name: postgresql-backup
+                  mountPath: "/postgresql-backup"
               readinessProbe:
                 tcpSocket:
                   port: 5432

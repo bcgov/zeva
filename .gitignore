@@ -2,10 +2,10 @@
 node_modules/
 public/
 build/
-package-lock.json
 .env
 venv/
 .DS_Store
 .vscode/
 __pycache__/
 TEST-*xml
+node_modules/
