@@ -165,7 +165,6 @@ objects:
         from:
           kind: ImageStreamTag
           name: ${NAME}-envoy:${VERSION}
-          namespace: tbiwaq-tools
         lastTriggeredImage:
       type: ImageChange
     - type: ConfigChange

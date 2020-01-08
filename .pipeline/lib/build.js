@@ -32,7 +32,6 @@ module.exports = settings => {
     }
   }))
 
-
   oc.applyRecommendedLabels(
     objects,
     phases[phase].name,
