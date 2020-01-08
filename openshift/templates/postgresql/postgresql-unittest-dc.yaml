@@ -7,18 +7,6 @@ metadata:
   name: postgresql-dc
   creationTimestamp:
 parameters:
-  - name: NAME
-    displayName:
-    description: the module name entered when run yo bcdk:pipeline, which is zeva
-    required: true
-  - name: SUFFIX
-    displayName:
-    description: sample is -pr-0
-    required: true
-  - name: VERSION
-    displayName:
-    description:  image tag name for output
-    required: true
   - name: ENV_NAME
     displayName: Environment Name
     description: Environment Name
@@ -62,7 +50,7 @@ objects:
         template.openshift.io/expose-database_name: "{.data['database-name']}"
         template.openshift.io/expose-password: "{.data['database-password']}"
         template.openshift.io/expose-username: "{.data['database-user']}"
-      name: ${NAME}-postgresql${SUFFIX}
+      name: postgresql-unittest
       labels: {}
     stringData:
       DATABASE_USER: "${ZEVA_DB_USER}"
@@ -70,13 +58,13 @@ objects:
   - kind: Service
     apiVersion: v1
     metadata:
-      name: ${NAME}-postgresql${SUFFIX}
+      name: postgresql-unittest
       annotations:
         template.openshift.io/expose-uri: postgres://{.spec.clusterIP}:{.spec.ports[?(.name=="postgresql")].port}
       labels:
-        name: postgresql
+        name: postgresql-unittest
         app: zeva
-        role: postgresql
+        role: postgresql-unittest
         env: ${ENV_NAME}
     spec:
       ports:
@@ -85,7 +73,7 @@ objects:
           port: 5432
           targetPort: 5432
       selector:
-        name: ${NAME}-postgresql${SUFFIX}
+        name: postgresql-unittest
       type: ClusterIP
       sessionAffinity: None
     status:
@@ -93,9 +81,9 @@ objects:
   - apiVersion: v1
     kind: PersistentVolumeClaim
     metadata:
-      name: ${NAME}-postgresql${SUFFIX}
+      name: postgresql-unittest
       annotations:
-        volume.beta.kubernetes.io/storage-class: netapp-file-standard
+        volume.beta.kubernetes.io/storage-class: netapp-block-standard
         template.openshift.io.bcgov/create: 'true'
     spec:
       accessModes:
@@ -108,41 +96,40 @@ objects:
     metadata:
       annotations:
         template.alpha.openshift.io/wait-for-ready: 'true'
-      name: ${NAME}-postgresql${SUFFIX}
+      name: postgresql-unittest
       labels:
-        name: postgresql
+        name: postgresql-unittest
         app: zeva
-        role: postgresql
+        role: postgresql-unittest
         env: ${ENV_NAME}
     spec:
       replicas: 1
       strategy:
         type: Recreate
       triggers:
-      - imageChangeParams:
-          automatic: true
-          containerNames:
-            - postgresql
-          from:
-            kind: ImageStreamTag
-            namespace: openshift
-            name: postgresql:10
-          lastTriggeredImage:
-        type: ImageChange
-      - type: ConfigChange
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - postgresql
+            from:
+              kind: ImageStreamTag
+              namespace: openshift
+              name: postgresql:10
+        - type: ConfigChange
       test: false
       selector:
-        name: ${NAME}-postgresql${SUFFIX}
+        name: postgresql-unittest
       template:
         metadata:
           creationTimestamp:
           labels:
-            name: ${NAME}-postgresql${SUFFIX}
+            name: postgresql-unittest
         spec:
           volumes:
             - name: postgresql-data
               persistentVolumeClaim:
-                claimName: ${NAME}-postgresql${SUFFIX}
+                claimName: postgresql-unittest
           containers:
             - name: postgresql
               image: " "
@@ -155,12 +142,12 @@ objects:
                 - name: POSTGRESQL_USER
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-postgresql${SUFFIX}
+                      name: postgresql-unittest
                       key: DATABASE_USER
                 - name: POSTGRESQL_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-postgresql${SUFFIX}
+                      name: postgresql-unittest
                       key: DATABASE_PASSWORD
               resources:
                 request:
