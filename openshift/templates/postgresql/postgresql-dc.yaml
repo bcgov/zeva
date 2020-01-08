@@ -62,7 +62,7 @@ objects:
         template.openshift.io/expose-database_name: "{.data['database-name']}"
         template.openshift.io/expose-password: "{.data['database-password']}"
         template.openshift.io/expose-username: "{.data['database-user']}"
-      name: ${name}-postgresql${SUFFIX}
+      name: ${NAME}-postgresql${SUFFIX}
       labels: {}
     stringData:
       DATABASE_USER: "${ZEVA_DB_USER}"
@@ -70,7 +70,7 @@ objects:
   - kind: Service
     apiVersion: v1
     metadata:
-      name: ${name}-postgresql${SUFFIX}
+      name: ${NAME}-postgresql${SUFFIX}
       annotations:
         template.openshift.io/expose-uri: postgres://{.spec.clusterIP}:{.spec.ports[?(.name=="postgresql")].port}
       labels:
@@ -85,7 +85,7 @@ objects:
           port: 5432
           targetPort: 5432
       selector:
-        name: ${name}-postgresql${SUFFIX}
+        name: ${NAME}-postgresql${SUFFIX}
       type: ClusterIP
       sessionAffinity: None
     status:
@@ -93,7 +93,7 @@ objects:
   - apiVersion: v1
     kind: PersistentVolumeClaim
     metadata:
-      name: ${name}-postgresql${SUFFIX}
+      name: ${NAME}-postgresql${SUFFIX}
       annotations:
         volume.beta.kubernetes.io/storage-class: netapp-file-standard
         template.openshift.io.bcgov/create: 'true'
@@ -108,7 +108,7 @@ objects:
     metadata:
       annotations:
         template.alpha.openshift.io/wait-for-ready: 'true'
-      name: ${name}-postgresql${SUFFIX}
+      name: ${NAME}-postgresql${SUFFIX}
       labels:
         name: postgresql
         app: zeva
@@ -131,17 +131,17 @@ objects:
         - type: ConfigChange
       test: false
       selector:
-        name: ${name}-postgresql${SUFFIX}
+        name: ${NAME}-postgresql${SUFFIX}
       template:
         metadata:
           creationTimestamp:
           labels:
-            name: ${name}-postgresql${SUFFIX}
+            name: ${NAME}-postgresql${SUFFIX}
         spec:
           volumes:
             - name: postgresql-data
               persistentVolumeClaim:
-                claimName: ${name}-postgresql${SUFFIX}
+                claimName: ${NAME}-postgresql${SUFFIX}
           containers:
             - name: postgresql
               image: " "
@@ -154,12 +154,12 @@ objects:
                 - name: POSTGRESQL_USER
                   valueFrom:
                     secretKeyRef:
-                      name: ${name}-postgresql${SUFFIX}
+                      name: ${NAME}-postgresql${SUFFIX}
                       key: DATABASE_USER
                 - name: POSTGRESQL_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${name}-postgresql${SUFFIX}
+                      name: ${NAME}-postgresql${SUFFIX}
                       key: DATABASE_PASSWORD
               resources:
                 request:
