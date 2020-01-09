@@ -100,7 +100,7 @@ const config = {
     }),
     new Webpack.HotModuleReplacementPlugin(),
     new Webpack.DefinePlugin({
-      __APIBASE__: 'APIBASE' in process.env ? JSON.stringify(process.env.APIBASE) : "'http://localhost:8000/'",
+      __APIBASE__: 'APIBASE' in process.env ? JSON.stringify(process.env.APIBASE) : "'http://localhost/api/'",
       __KEYCLOAK_URL__: 'KEYCLOAK_URL' in process.env ? JSON.stringify(process.env.KEYCLOAK_URL) : "'http://localhost:8888/auth'",
       __VERSION__: JSON.stringify(packageJson.version),
     }),

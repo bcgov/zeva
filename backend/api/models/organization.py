@@ -14,7 +14,12 @@ class Organization(Auditable):
     considered an organization.
     """
     name = models.CharField(
-        max_length=500
+        max_length=500,
+        db_comment="Name of the organization"
+    )
+    is_government = models.BooleanField(
+        default=False,
+        db_comment="Flag to check whether this is the Government organization"
     )
 
     @property
@@ -49,7 +54,7 @@ class Organization(Auditable):
     class Meta:
         db_table = 'organization'
 
-    db_table_comment = "Contains a list of all of the recognized Part 3 " \
+    db_table_comment = "Contains a list of all of the recognized Vehicle " \
                        "fuel suppliers, both past and present, as well as " \
                        "an entry for the government which is also " \
                        "considered an organization."

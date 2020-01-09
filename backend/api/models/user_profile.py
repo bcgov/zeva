@@ -63,6 +63,14 @@ class UserProfile(Auditable):
 
     objects = UserProfileManager()
 
+    @property
+    def is_government(self):
+        """
+        Boolean to indicate whether user is an IDIR user.
+        (User is a BCEID user if false)
+        """
+        return self.organization.is_government
+
     class Meta:
         db_table = 'user_profile'
 
