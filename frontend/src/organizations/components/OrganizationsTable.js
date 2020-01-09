@@ -12,7 +12,7 @@ const OrganizationsTable = (props) => {
     className: 'col-name',
     Header: 'Company Name',
   }, {
-    accessor: (item) => (item % 2 ? 'A' : 'B'),
+    accessor: (item) => (item.id % 2 ? 'A' : 'B'),
     className: 'col-class',
     Header: 'Class',
     id: 'class',
@@ -108,7 +108,18 @@ OrganizationsTable.defaultProps = {
 };
 
 OrganizationsTable.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  items: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.number,
+    organizationAddress: PropTypes.shape({
+      addressLine1: PropTypes.string,
+      addressLine2: PropTypes.string,
+      addressLine3: PropTypes.string,
+      city: PropTypes.string,
+      country: PropTypes.string,
+      postalCode: PropTypes.string,
+      state: PropTypes.string,
+    }),
+  })).isRequired,
 };
 
 export default OrganizationsTable;
