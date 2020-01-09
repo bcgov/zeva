@@ -49,6 +49,8 @@ spec:
               value: 'zeva-app'
             - name: RABBITMQ_ENABLED
               value: 'False'
+            - name: APIBASE
+              value: 'http://localhost:10000'
   selector:
     matchLabels:
       app: frontend

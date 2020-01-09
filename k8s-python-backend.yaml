@@ -28,8 +28,20 @@ spec:
           ports:
             - containerPort: 10102
           env:
-            - name: DATABASE_URL
-              value: 'postgresql://zeva:zevadev@postgres/zeva'
+            - name: DATABASE_NAME
+              value: 'zeva'
+            - name: DATABASE_USER
+              value: 'zeva'
+            - name: DATABASE_PASSWORD
+              value: 'zevadev'
+            - name: DATABASE_ENGINE
+              value: 'postgresql'
+            - name: DATABASE_SERVICE_NAME
+              value: 'postgresql'
+            - name: POSTGRESQL_SERVICE_HOST
+              value: 'postgres'
+            - name: POSTGRESQL_SERVICE_PORT
+              value: '5432'
             - name: KEYCLOAK_CERTS_URL
               value: 'http://keycloak:8080/auth/realms/zeva/protocol/openid-connect/certs'
             - name: KEYCLOAK_REALM

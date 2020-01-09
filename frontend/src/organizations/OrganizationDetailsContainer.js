@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 
 import OrganizationDetailsPage from './components/OrganizationDetailsPage';
+import CONFIG from "../app/config";
 
 const OrganizationDetailsContainer = (props) => {
   const [details, setDetails] = useState({});
@@ -20,7 +21,7 @@ const OrganizationDetailsContainer = (props) => {
 
     setLoading(true);
 
-    const organizationPromise = axios.get('http://localhost/api/organizations/mine', {
+    const organizationPromise = axios.get(`${CONFIG.APIBASE}/api/organizations/mine`, {
       headers: { Authorization: `Bearer ${token}` },
     }).then((response) => {
       const { users } = response.data;
@@ -28,7 +29,7 @@ const OrganizationDetailsContainer = (props) => {
       setMembers(users);
     });
 
-    const usersPromise = axios.get('http://localhost/api/users/current', {
+    const usersPromise = axios.get(`${CONFIG.APIBASE}/api/users/current`, {
       headers: { Authorization: `Bearer ${token}` },
     }).then((response) => {
       const { organization, displayName } = response.data;

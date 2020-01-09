@@ -26,7 +26,7 @@ spec:
           image: postgres:12.0
           env:
             - name: POSTGRES_DB
-              value: zevatest
+              value: zeva-test
             - name: POSTGRES_USER
               value: zeva
             - name: POSTGRES_PASSWORD
