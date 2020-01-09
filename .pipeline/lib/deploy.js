@@ -22,7 +22,7 @@ module.exports = settings => {
       'ENV_NAME': phases[phase].phase,
       'CPU_REQUEST': '100m',
       'CPU_LIMIT': '300m',
-      'MEMORY_REQUEST': '200m',
+      'MEMORY_REQUEST': '200M',
       'MEMORY_LIMIT': '500M'
     }
   }))
