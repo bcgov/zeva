@@ -3,6 +3,27 @@ kind: Template
 metadata:
   creationTimestamp: null
   name: envoy
+parameters:
+  - name: NAME
+    displayName:
+    description: the module name entered when run yo bcdk:pipeline, which is zeva
+    required: true
+  - name: SUFFIX
+    displayName:
+    description: sample is -pr-0
+    required: true
+  - name: VERSION
+    displayName:
+    description:  image tag name for output
+    required: true
+  - name: GIT_URL
+    displayName:
+    description: zeva repo
+    required: true
+  - name: GIT_REF
+    displayName:
+    description: zeva branch name of the pr
+    required: true
 objects:
 - apiVersion: image.openshift.io/v1
   kind: ImageStream
@@ -10,7 +31,7 @@ objects:
     annotations:
       description: Keeps track of changes in the envoy image
     creationTimestamp: null
-    name: envoy
+    name: ${NAME}-envoy
   spec:
     lookupPolicy:
       local: false
@@ -20,31 +41,34 @@ objects:
   kind: BuildConfig
   metadata:
     creationTimestamp: null
-    name: envoy
+    name: ${NAME}-envoy${SUFFIX}
   spec:
     failedBuildsHistoryLimit: 5
     nodeSelector: null
     output:
       to:
         kind: ImageStreamTag
-        name: envoy:latest
+        name: ${NAME}-envoy:${VERSION}
     postCommit: {}
-    resources: {}
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 2G
+      requests:
+        cpu: 500m
+        memory: 200M
     runPolicy: Serial
     source:
-      dockerfile: |-
-        FROM envoyproxy/envoy:v1.12.1
-        RUN apt-get update
-        RUN apt-get install -y git wget curl telnet tzdata dnsutils
-        RUN ln -fs /usr/share/zoneinfo/Canada/Pacific /etc/localtime \
-            && dpkg-reconfigure --frontend noninteractive tzdata
-        RUN git clone https://github.com/bcgov/zeva.git /tmp/zeva
-        RUN cp /tmp/zeva/openshift/templates/envoy/envoy.yaml /etc/envoy/envoy.yaml
-      type: Dockerfile
+      git:
+        ref: ${GIT_REF}
+        uri: ${GIT_URL}
+      type: Git
+      contextDir: openshift/templates/envoy
     strategy:
       dockerStrategy:
         forcePull: false
         noCache: true
+        imageOptimizationPolicy: SkipLayers
       type: Docker
     successfulBuildsHistoryLimit: 5
     triggers: []

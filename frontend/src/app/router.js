@@ -26,7 +26,7 @@ const Router = (props) => {
           <Route
             exact
             path="/organization-details"
-            render={() => <OrganizationDetailsContainer />}
+            render={() => <OrganizationDetailsContainer keycloak={keycloak} />}
           />
           <Route
             exact

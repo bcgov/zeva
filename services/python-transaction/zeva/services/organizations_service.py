@@ -1,11 +1,7 @@
-import psycopg2
-import psycopg2.extras
 import logging
 
-from google.protobuf.timestamp_pb2 import Timestamp
-
-from configuration.db import DB
 from auth.auth import authenticated
+from auth.session import inject_session
 
 from generated.organizations_pb2 import GetMyOrganizationRequest, MyOrganizationResponse, OrganizationType
 from generated.organizations_pb2_grpc import OrganizationDetailsServicer
@@ -13,18 +9,14 @@ from generated.organizations_pb2_grpc import OrganizationDetailsServicer
 
 class OrganizationsServicer(OrganizationDetailsServicer):
 
+    # @inject_session
     @authenticated
     def GetMyOrganization(self, request, context):
 
-        logging.info('calling user: {}'.format(context.user))
+        logging.info('calling user: {}, of {}'.format(context.user, context.user.organization.name))
 
-        with psycopg2.connect(DB['url'], cursor_factory=psycopg2.extras.DictCursor) as conn:
-            cur = conn.cursor()
-            cur.execute("select 'Test Organization' as organization_name")
-            row = cur.fetchone()
-
-            org = MyOrganizationResponse(
-                name = row['organization_name'],
-                type = OrganizationType.Value('VEHICLE_SUPPLIER')
-            )
-            return org
+        org = MyOrganizationResponse(
+            name=context.user.organization.name,
+            type=OrganizationType.Value('VEHICLE_SUPPLIER')
+        )
+        return org

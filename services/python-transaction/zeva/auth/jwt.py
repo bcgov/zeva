@@ -2,6 +2,10 @@ import jwt
 import requests
 import json
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from configuration.db import DB, get_session
 from configuration.keycloak import KEYCLOAK
 from jwt import InvalidTokenError
 
@@ -9,6 +13,8 @@ from jwt.algorithms import RSAAlgorithm
 from cryptography.hazmat.primitives import serialization
 
 import logging
+
+from models.user import User
 
 
 class AuthenticationFailed(Exception):
@@ -85,7 +91,10 @@ class JWTAuthenticator:
         if not user_token:
             raise AuthenticationFailed
 
-        return {
-            'username': user_token['preferred_username'],
-            'email': user_token['email']
-        }
+        session = get_session()
+
+        db_user = session.query(User).filter(User.username == user_token['user_id']).first()
+        if db_user is None:
+            raise AuthenticationFailed
+
+        return db_user

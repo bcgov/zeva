@@ -7,10 +7,11 @@ import grpc
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
-from generated import transactions_pb2_grpc, organizations_pb2_grpc
+from generated import transactions_pb2_grpc, organizations_pb2_grpc, zevs_pb2_grpc
 import services
 import services.transaction_service
 import services.organizations_service
+import services.zevs_service
 
 
 class ReloadHandler(FileSystemEventHandler):
@@ -33,6 +34,10 @@ def add_services_to_server(server):
     )
     organizations_pb2_grpc.add_OrganizationDetailsServicer_to_server(
         services.organizations_service.OrganizationsServicer(),
+        server
+    )
+    zevs_pb2_grpc.add_ZEVModelsServicer_to_server(
+        services.zevs_service.ZEVService(),
         server
     )
 

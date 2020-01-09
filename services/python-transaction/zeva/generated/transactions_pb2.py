@@ -15,6 +15,7 @@ _sym_db = _symbol_database.Default()
 
 
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
+import generated.common_pb2 as common__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -22,9 +23,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='zeva.transactions',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x12transactions.proto\x12\x11zeva.transactions\x1a\x1fgoogle/protobuf/timestamp.proto\"\x1c\n\x0b\x44ollarValue\x12\r\n\x05\x63\x65nts\x18\x01 \x01(\x04\"\x1e\n\x0b\x43reditValue\x12\x0f\n\x07\x63redits\x18\x01 \x01(\x04\"\x18\n\x16TransactionListRequest\"\xe2\x01\n\x12TransactionSummary\x12\n\n\x02id\x18\x01 \x01(\x04\x12\x30\n\x04type\x18\x02 \x01(\x0e\x32\".zeva.transactions.TransactionType\x12.\n\x06\x61mount\x18\x03 \x01(\x0b\x32\x1e.zeva.transactions.DollarValue\x12/\n\x07\x63redits\x18\x04 \x01(\x0b\x32\x1e.zeva.transactions.CreditValue\x12-\n\ttimestamp\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp*F\n\x0fTransactionType\x12\x0e\n\nVALIDATION\x10\x00\x12\r\n\tREDUCTION\x10\x01\x12\x08\n\x04SOLD\x10\x02\x12\n\n\x06\x42OUGHT\x10\x03\x32x\n\x0fTransactionList\x12\x65\n\x0fGetTransactions\x12).zeva.transactions.TransactionListRequest\x1a%.zeva.transactions.TransactionSummary0\x01\x62\x06proto3')
+  serialized_pb=_b('\n\x12transactions.proto\x12\x11zeva.transactions\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x0c\x63ommon.proto\"\x18\n\x16TransactionListRequest\"\xe2\x01\n\x12TransactionSummary\x12\n\n\x02id\x18\x01 \x01(\x04\x12\x30\n\x04type\x18\x02 \x01(\x0e\x32\".zeva.transactions.TransactionType\x12.\n\x06\x61mount\x18\x03 \x01(\x0b\x32\x1e.zeva.transactions.DollarValue\x12/\n\x07\x63redits\x18\x04 \x01(\x0b\x32\x1e.zeva.transactions.CreditValue\x12-\n\ttimestamp\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp*F\n\x0fTransactionType\x12\x0e\n\nVALIDATION\x10\x00\x12\r\n\tREDUCTION\x10\x01\x12\x08\n\x04SOLD\x10\x02\x12\n\n\x06\x42OUGHT\x10\x03\x32x\n\x0fTransactionList\x12\x65\n\x0fGetTransactions\x12).zeva.transactions.TransactionListRequest\x1a%.zeva.transactions.TransactionSummary0\x01\x62\x06proto3')
   ,
-  dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,])
+  dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,common__pb2.DESCRIPTOR,])
 
 _TRANSACTIONTYPE = _descriptor.EnumDescriptor(
   name='TransactionType',
@@ -51,8 +52,8 @@ _TRANSACTIONTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=391,
-  serialized_end=461,
+  serialized_start=343,
+  serialized_end=413,
 )
 _sym_db.RegisterEnumDescriptor(_TRANSACTIONTYPE)
 
@@ -62,68 +63,6 @@ REDUCTION = 1
 SOLD = 2
 BOUGHT = 3
 
-
-
-_DOLLARVALUE = _descriptor.Descriptor(
-  name='DollarValue',
-  full_name='zeva.transactions.DollarValue',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='cents', full_name='zeva.transactions.DollarValue.cents', index=0,
-      number=1, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=74,
-  serialized_end=102,
-)
-
-
-_CREDITVALUE = _descriptor.Descriptor(
-  name='CreditValue',
-  full_name='zeva.transactions.CreditValue',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='credits', full_name='zeva.transactions.CreditValue.credits', index=0,
-      number=1, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=104,
-  serialized_end=134,
-)
 
 
 _TRANSACTIONLISTREQUEST = _descriptor.Descriptor(
@@ -145,8 +84,8 @@ _TRANSACTIONLISTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=136,
-  serialized_end=160,
+  serialized_start=88,
+  serialized_end=112,
 )
 
 
@@ -204,34 +143,18 @@ _TRANSACTIONSUMMARY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=163,
-  serialized_end=389,
+  serialized_start=115,
+  serialized_end=341,
 )
 
 _TRANSACTIONSUMMARY.fields_by_name['type'].enum_type = _TRANSACTIONTYPE
-_TRANSACTIONSUMMARY.fields_by_name['amount'].message_type = _DOLLARVALUE
-_TRANSACTIONSUMMARY.fields_by_name['credits'].message_type = _CREDITVALUE
+_TRANSACTIONSUMMARY.fields_by_name['amount'].message_type = common__pb2._DOLLARVALUE
+_TRANSACTIONSUMMARY.fields_by_name['credits'].message_type = common__pb2._CREDITVALUE
 _TRANSACTIONSUMMARY.fields_by_name['timestamp'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
-DESCRIPTOR.message_types_by_name['DollarValue'] = _DOLLARVALUE
-DESCRIPTOR.message_types_by_name['CreditValue'] = _CREDITVALUE
 DESCRIPTOR.message_types_by_name['TransactionListRequest'] = _TRANSACTIONLISTREQUEST
 DESCRIPTOR.message_types_by_name['TransactionSummary'] = _TRANSACTIONSUMMARY
 DESCRIPTOR.enum_types_by_name['TransactionType'] = _TRANSACTIONTYPE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
-DollarValue = _reflection.GeneratedProtocolMessageType('DollarValue', (_message.Message,), {
-  'DESCRIPTOR' : _DOLLARVALUE,
-  '__module__' : 'transactions_pb2'
-  # @@protoc_insertion_point(class_scope:zeva.transactions.DollarValue)
-  })
-_sym_db.RegisterMessage(DollarValue)
-
-CreditValue = _reflection.GeneratedProtocolMessageType('CreditValue', (_message.Message,), {
-  'DESCRIPTOR' : _CREDITVALUE,
-  '__module__' : 'transactions_pb2'
-  # @@protoc_insertion_point(class_scope:zeva.transactions.CreditValue)
-  })
-_sym_db.RegisterMessage(CreditValue)
 
 TransactionListRequest = _reflection.GeneratedProtocolMessageType('TransactionListRequest', (_message.Message,), {
   'DESCRIPTOR' : _TRANSACTIONLISTREQUEST,
@@ -255,8 +178,8 @@ _TRANSACTIONLIST = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=463,
-  serialized_end=583,
+  serialized_start=415,
+  serialized_end=535,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetTransactions',

@@ -4,6 +4,18 @@ metadata:
   creationTimestamp: null
   name: envoy
 parameters:
+  - name: NAME
+    displayName:
+    description: the module name entered when run yo bcdk:pipeline, which is zeva
+    required: true
+  - name: SUFFIX
+    displayName:
+    description: sample is -pr-0
+    required: true
+  - name: VERSION
+    displayName:
+    description:  image tag name for output
+    required: true
   - name: ENV_NAME
     displayName: Environment Name
     description: Environment Name
@@ -25,10 +37,24 @@ parameters:
     description: Memory upper limit
     required: true
 objects:
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      description: Keeps track of changes in the envoy image
+    labels:
+      shared: "true"
+    creationTimestamp: null
+    name: ${NAME}-envoy
+  spec:
+    lookupPolicy:
+      local: false
+  status:
+    dockerImageRepository: ""
 - apiVersion: v1
   kind: Service
   metadata:
-    name: envoy
+    name: ${NAME}-envoy${SUFFIX}
     labels:
       name: envoy
       app: zeva
@@ -46,7 +72,7 @@ objects:
       port: 8888
       targetPort: 8888
     selector:
-      name: envoy
+      name: ${NAME}-envoy${SUFFIX}
     sessionAffinity: None
     type: ClusterIP
   status:
@@ -54,7 +80,7 @@ objects:
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
   metadata:
-    name: envoy
+    name: ${NAME}-envoy${SUFFIX}
     labels:
       name: envoy
       app: zeva
@@ -67,7 +93,7 @@ objects:
     replicas: 1
     revisionHistoryLimit: 10
     selector:
-      name: envoy
+      name: ${NAME}-envoy${SUFFIX}
     strategy:
       activeDeadlineSeconds: 21600
       recreateParams:
@@ -84,8 +110,7 @@ objects:
       metadata:
         creationTimestamp: null
         labels:
-          name: envoy
-        name: envoy
+          name: ${NAME}-envoy${SUFFIX}
       spec:
         containers:
         - env: {}
@@ -117,11 +142,11 @@ objects:
             timeoutSeconds: 3
           resources:
             limits:
-              cpu: 300m
-              memory: 500M
+              cpu: ${CPU_LIMIT}
+              memory: ${MEMORY_LIMIT}
             requests:
-              cpu: 100m
-              memory: 200M
+              cpu: ${CPU_REQUEST}
+              memory: ${MEMORY_REQUEST}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           volumeMounts:
@@ -139,8 +164,7 @@ objects:
         - envoy
         from:
           kind: ImageStreamTag
-          name: envoy:${ENV_NAME}
-          namespace: tbiwaq-tools
+          name: ${NAME}-envoy:${VERSION}
         lastTriggeredImage:
       type: ImageChange
     - type: ConfigChange

@@ -26,6 +26,7 @@ module.exports = {
   rules: {
     "react/jsx-props-no-spreading": [0],
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }]
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
+    "react/jsx-one-expression-per-line": "off"
   },
 };
