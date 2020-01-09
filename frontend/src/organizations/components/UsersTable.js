@@ -9,7 +9,7 @@ import ReactTable from 'react-table';
 
 const UsersTable = (props) => {
   const columns = [{
-    accessor: 'name',
+    accessor: 'displayName',
     className: 'col-name',
     Header: 'Name',
   }, {
@@ -17,9 +17,10 @@ const UsersTable = (props) => {
     className: 'col-roles',
     Header: 'Roles',
   }, {
-    accessor: 'status',
+    accessor: (item) => (item.isActive ? 'Active' : 'Inactive'),
     className: 'col-status',
     Header: 'Status',
+    id: 'status',
   }];
 
   const filterMethod = (filter, row) => {
@@ -41,7 +42,7 @@ const UsersTable = (props) => {
       defaultFilterMethod={filterMethod}
       defaultPageSize={10}
       defaultSorted={[{
-        id: 'name',
+        id: 'displayName',
       }]}
       filterable={filterable}
       pageSizeOptions={[5, 10, 15, 20, 25, 50, 100]}
