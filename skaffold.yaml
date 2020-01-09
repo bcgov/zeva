@@ -8,8 +8,11 @@ build:
     context: dockerfiles/keycloak
   - image: smtplogger
     context: dockerfiles/smtplogger
-  - image: python-backend
-    context: services/python-transaction/
+  - image: django-backend
+    context: backend
+    sync:
+        infer:
+        - src '**/*'
   - image: frontend
     context: frontend
     sync:

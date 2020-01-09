@@ -24,11 +24,9 @@ static_resources:
                     - name: local_service
                       domains: ["*"]
                       routes:
-                        - match: { prefix: "/grpc/" }
+                        - match: { prefix: "/api/" }
                           route:
-                            prefix_rewrite: "/"
-                            cluster: python_transaction_service
-                            max_grpc_timeout: 0s
+                            cluster: django
                         - match: { prefix: "/sockjs-node/" }
                           route:
                             cluster: frontend
@@ -38,7 +36,6 @@ static_resources:
                         - match: { prefix: "/" }
                           route: { cluster: frontend }
                 http_filters:
-                - name: envoy.grpc_web
                 - name: envoy.router
     - name: listener_1
       address:
@@ -92,15 +89,14 @@ static_resources:
         - socket_address:
             address: frontend
             port_value: 5002
-    - name: python_transaction_service
+    - name: django
       connect_timeout: 0.25s
       type: LOGICAL_DNS
       lb_policy: ROUND_ROBIN
-      http2_protocol_options: {}
       upstream_connection_options:
         tcp_keepalive:
           keepalive_time: 300
       hosts:
         - socket_address:
-            address: python-backend
+            address: django-backend
             port_value: 10102
