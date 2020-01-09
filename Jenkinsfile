@@ -31,7 +31,7 @@ pipeline {
                 sh "cd .pipeline && ./npmw ci && ./npmw run deploy -- --pr=${CHANGE_ID} --env=dev"
             }
         }
-        /****
+        /**** commented test abd prod deployment
         stage('Deploy (TEST)') {
             agent { label 'deploy' }
             when {
