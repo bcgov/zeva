@@ -7,7 +7,8 @@ from google.protobuf.timestamp_pb2 import Timestamp
 from configuration.db import DB
 from auth.auth import authenticated
 
-from generated.transactions_pb2 import TransactionSummary, DollarValue, CreditValue, TransactionType
+from generated.common_pb2 import DollarValue, CreditValue
+from generated.transactions_pb2 import TransactionSummary, TransactionType
 from generated.transactions_pb2_grpc import TransactionListServicer
 
 
