@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -5,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 class Navbar extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       collapsed: true,
     };
@@ -23,6 +25,7 @@ class Navbar extends Component {
   }
 
   render() {
+    const { user } = this.props;
     const { collapsed } = this.state;
 
     return (
@@ -37,8 +40,10 @@ class Navbar extends Component {
           <div className="col-lg-3">
             <div className="logged-in-info">
               <div>
-                <h5 className="organization-name">Optimus Autoworks</h5>
-                <span className="credit-balance">Credit Balance: 23,456-A / 12,345-B</span>
+                <h5 className="organization-name">{user.organization.name}</h5>
+                {!user.isGovernment && (
+                  <span className="credit-balance">Credit Balance: 23,456-A / 12,345-B</span>
+                )}
               </div>
             </div>
           </div>
@@ -61,7 +66,7 @@ class Navbar extends Component {
           <ul className="user-control-panel">
             <li>
               <div className="display-name">
-                <span>Buzz Collins</span>
+                <span>{user.displayName}</span>
               </div>
             </li>
             <li>
@@ -141,14 +146,27 @@ class Navbar extends Component {
                 </NavLink>
               </li>
 
-              <li className="nav-item">
-                <NavLink
-                  activeClassName="active"
-                  to="/organization-details"
-                >
-                  <span>Organization Details</span>
-                </NavLink>
-              </li>
+              {!user.isGovernment && (
+                <li className="nav-item">
+                  <NavLink
+                    activeClassName="active"
+                    to="/organization-details"
+                  >
+                    <span>Organization Details</span>
+                  </NavLink>
+                </li>
+              )}
+
+              {user.isGovernment && (
+                <li className="nav-item">
+                  <NavLink
+                    activeClassName="active"
+                    to="/organizations"
+                  >
+                    <span>Organizations</span>
+                  </NavLink>
+                </li>
+              )}
             </ul>
           </div>
         </div>
@@ -161,6 +179,13 @@ Navbar.defaultProps = {
 };
 
 Navbar.propTypes = {
+  user: PropTypes.shape({
+    displayName: PropTypes.string,
+    isGovernment: PropTypes.bool,
+    organization: PropTypes.shape({
+      name: PropTypes.string,
+    }),
+  }).isRequired,
 };
 
 export default Navbar;

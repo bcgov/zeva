@@ -1,35 +1,33 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import Loading from '../../app/components/Loading';
 import UsersTable from './UsersTable';
 
 const OrganizationDetailsPage = (props) => {
   const { details, loading, members } = props;
-  const { organization } = details;
 
   if (loading) {
-    return (
-      <div>Loading...</div>
-    );
+    return <Loading />;
   }
 
   return (
     <div id="organization-details" className="page">
       <div className="row">
         <div className="col-sm-12">
-          <h1>{organization.name}</h1>
+          <h1>{details.name}</h1>
         </div>
       </div>
 
       <div className="row">
         <div className="col-sm-6">
-          {organization.organizationAddress && (
+          {details.organizationAddress && (
             <div className="organization-address">
-              {organization.organizationAddress.addressLine1}
+              {details.organizationAddress.addressLine1}
               <br />
-              {organization.organizationAddress.city} {organization.organizationAddress.state}
+              {details.organizationAddress.city} {details.organizationAddress.state}
               <br />
-              {organization.organizationAddress.postalCode}
+              {details.organizationAddress.postalCode}
             </div>
           )}
         </div>
@@ -68,16 +66,14 @@ OrganizationDetailsPage.defaultProps = {
 
 OrganizationDetailsPage.propTypes = {
   details: PropTypes.shape({
-    organization: PropTypes.shape({
-      name: PropTypes.string,
-      organizationAddress: PropTypes.shape({
-        addressLine1: PropTypes.string,
-        addressLine2: PropTypes.string,
-        addressLine3: PropTypes.string,
-        city: PropTypes.string,
-        postalCode: PropTypes.string,
-        state: PropTypes.string,
-      }),
+    name: PropTypes.string,
+    organizationAddress: PropTypes.shape({
+      addressLine1: PropTypes.string,
+      addressLine2: PropTypes.string,
+      addressLine3: PropTypes.string,
+      city: PropTypes.string,
+      postalCode: PropTypes.string,
+      state: PropTypes.string,
     }),
   }).isRequired,
   loading: PropTypes.bool.isRequired,
