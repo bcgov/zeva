@@ -12,7 +12,7 @@ class UserCreationRequest(Auditable):
     keycloak_email = models.EmailField(
         blank=False,
         null=False,
-        db_comment="Keycloak email address to associate on first login."
+        db_comment="Keycloak email address to associate on first login"
     )
     external_username = models.CharField(
         blank=True,
@@ -25,7 +25,7 @@ class UserCreationRequest(Auditable):
         related_name='creation_request',
         on_delete=models.PROTECT,
         unique=True,
-        db_comment="The user to be associated with a Keycloak account."
+        db_comment="The user to be associated with a Keycloak account"
     )
     is_mapped = models.BooleanField(
         default=False,

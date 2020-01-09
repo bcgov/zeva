@@ -23,13 +23,15 @@ const OrganizationDetailsPage = (props) => {
 
       <div className="row">
         <div className="col-sm-6">
-          <div className="organization-address">
-            {organization.organizationAddress.addressLine1}
-            <br />
-            {organization.organizationAddress.city} {organization.organizationAddress.state}
-            <br />
-            {organization.organizationAddress.postalCode}
-          </div>
+          {organization.organizationAddress && (
+            <div className="organization-address">
+              {organization.organizationAddress.addressLine1}
+              <br />
+              {organization.organizationAddress.city} {organization.organizationAddress.state}
+              <br />
+              {organization.organizationAddress.postalCode}
+            </div>
+          )}
         </div>
 
         <div className="col-sm-6">
@@ -61,6 +63,7 @@ const OrganizationDetailsPage = (props) => {
 };
 
 OrganizationDetailsPage.defaultProps = {
+  members: [],
 };
 
 OrganizationDetailsPage.propTypes = {
@@ -78,6 +81,7 @@ OrganizationDetailsPage.propTypes = {
     }),
   }).isRequired,
   loading: PropTypes.bool.isRequired,
+  members: PropTypes.arrayOf(PropTypes.shape()),
 };
 
 export default OrganizationDetailsPage;
