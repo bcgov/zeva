@@ -17,19 +17,19 @@ class OrganizationAddress(Auditable, EffectiveDates):
         blank=True,
         max_length=500,
         null=True,
-        db_comment="The first line of the organization's address."
+        db_comment="The first line of the organization's address"
     )
     address_line_2 = models.CharField(
         blank=True,
         max_length=100,
         null=True,
-        db_comment="The second line of the organization's address."
+        db_comment="The second line of the organization's address"
     )
     address_line_3 = models.CharField(
         blank=True,
         max_length=100,
         null=True,
-        db_comment="The third line of the organization's address."
+        db_comment="The third line of the organization's address"
     )
     city = models.CharField(
         blank=True,

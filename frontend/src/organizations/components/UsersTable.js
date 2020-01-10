@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 
 import ReactTable from 'react-table';
 
-
 const UsersTable = (props) => {
   const columns = [{
     accessor: 'displayName',

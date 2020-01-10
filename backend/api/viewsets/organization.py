@@ -5,7 +5,8 @@ from rest_framework.response import Response
 from django.db.models import F, Q
 
 from api.models.organization import Organization
-from api.serializers.organization import OrganizationWithMembersSerializer
+from api.serializers.organization import \
+    OrganizationSerializer, OrganizationWithMembersSerializer
 from auditable.views import AuditableMixin
 
 
@@ -23,7 +24,8 @@ class OrganizationViewSet(
     queryset = Organization.objects.all()
 
     serializer_classes = {
-        'default': OrganizationWithMembersSerializer
+        'default': OrganizationSerializer,
+        'mine': OrganizationWithMembersSerializer,
     }
 
     def get_serializer_class(self):
@@ -32,10 +34,21 @@ class OrganizationViewSet(
 
         return self.serializer_classes['default']
 
+    def list(self, request):
+        """
+        Get all the organizations
+        """
+        organizations = Organization.objects.filter(
+            is_government=False
+        ).order_by('name')
+
+        serializer = self.get_serializer(organizations, many=True)
+        return Response(serializer.data)
+
     @action(detail=False)
     def mine(self, request):
         """
-        Get the current user
+        Get the organization of the user
         """
         organization = request.user.organization
         serializer = self.get_serializer(organization)
