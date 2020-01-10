@@ -26,7 +26,7 @@ spec:
           image: postgres:12.0
           env:
             - name: POSTGRES_DB
-              value: zeva-test
+              value: zeva
             - name: POSTGRES_USER
               value: zeva
             - name: POSTGRES_PASSWORD
@@ -35,12 +35,12 @@ spec:
             - containerPort: 5432
           readinessProbe:
             exec:
-              command: ["psql", "-w", "-U", "zeva", "-d", "zevatest", "-c", "SELECT 1"]
+              command: ["psql", "-w", "-U", "zeva", "-d", "zeva", "-c", "SELECT 1"]
             initialDelaySeconds: 1
             timeoutSeconds: 2
           livenessProbe:
             exec:
-              command: ["psql", "-w", "-U", "zeva", "-d", "zevatest", "-c", "SELECT 1"]
+              command: ["psql", "-w", "-U", "zeva", "-d", "zeva", "-c", "SELECT 1"]
             initialDelaySeconds: 45
             timeoutSeconds: 2
   selector:
@@ -62,8 +62,8 @@ spec:
     spec:
       containers:
         - name: python-test-backend
-          image: python-backend
-          command: ["sh", "-c", "python3 manage.py test"]
+          image: django-backend
+          command: ["sh", "-c", "python3 manage.py test -v 3"]
           env:
             - name: DATABASE_NAME
               value: 'zeva'
@@ -95,7 +95,7 @@ spec:
       initContainers:
         - name: init-psql
           image: busybox:1.28
-          command: ['sh', '-c', 'until (nslookup test-postgres); do echo waiting for test-postgres; sleep 1; done; echo test-postgres ready; sleep 2;']
+          command: ['sh', '-c', 'until (nslookup test-postgres); do echo waiting for test-postgres; sleep 1; done; echo test-postgres ready; sleep 5;']
   selector:
     matchLabels:
       app: python-test-backend
