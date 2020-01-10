@@ -6,7 +6,7 @@ The sample component built and deployed by the pipeline is frontend.
 
 Create a branch called zeva-bcdk from master and all the following works are based on this branch.
 
-##Section 1 Create pull request based pipeline
+## Section 1 Create pull request based pipeline
 
 A folder .pipeline will be created under project root.  
 If all steps are gone through smoothly, it will have the following structure.  
@@ -116,7 +116,7 @@ Recommend to run the cleanup command if a redeployment of a pull request encount
 ~/Projects/zeva/.pipeline$ nnpm run clean -- --pr=18 --env=dev
 ```
 
-## 2 Setup Jenkins on Openshift
+## Section 2 Setup Jenkins on Openshift
 
 Create Jenkins master and slave instances on Openshift. Also create Zeva pipeline job on Jenkins. The pipeline job is able to scan pull requests when they are created/modified and trigger the pipeline as describe in the Jenkinsfile under project root.  
 If all steps can go through smoothly, the following folder structure will be created under project root folder.  
