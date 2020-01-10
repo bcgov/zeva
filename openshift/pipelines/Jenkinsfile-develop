@@ -38,4 +38,14 @@ podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${e
             }
         }
 
+        //load deployment scripts
+        def prepareDeployments = load "openshift/pipelines/scripts/prepareDeployments.groovy"
+
+        //apply deployment config
+        prepareDeployments.frontendDeployStage("dev").call()
+
+        openshift.withProject("tbiwaq-dev") {
+            openshift.tag("tbiwaq-dev/frontend:${zevaRelease}", 'tbiwaq-dev/frontend:dev')
+        }
+
 }

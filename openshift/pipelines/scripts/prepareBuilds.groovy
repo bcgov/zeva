@@ -12,7 +12,7 @@ def prepareBuildFrontend(String envName, String zevaRelease) {
             timeout(30) {
                 script {
                     openshift.withProject("tbiwaq-tools") {
-                        def frontendJson = openshift.process(readFile(file:'openshift/templates/frontend/frontend-bc-working.json'), "-p", "RELEASE=${zevaRelease}", 'GIT_URL=$https://github.com/bcgov/zeva.git', "GIT_REF=${RELEASE}")
+                        def frontendJson = openshift.process(readFile(file:'openshift/templates/frontend/frontend-bc-release.json'), "-p", "RELEASE=${zevaRelease}", 'GIT_URL=$https://github.com/bcgov/zeva.git', "GIT_REF=${RELEASE}")
                         openshift.apply(frontendJson)
                         def frontendBuildSelector = openshift.selector("bc", "frontend")
                         frontendBuildSelector.startBuild("--wait")
