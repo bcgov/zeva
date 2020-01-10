@@ -1,16 +1,17 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const VehicleForm = () => (
   <div id="vehicle-form" className="page">
     <div className="row">
-      <div className="col-sm-12">
+      <div className="col-md-12">
         <h1>Enter ZEV</h1>
       </div>
     </div>
 
     <form>
-      <div className="row">
-        <div className="col-sm-6">
+      <div className="row align-items-center">
+        <div className="col-md-6">
           <fieldset>
             <legend>Model Details</legend>
 
@@ -121,10 +122,24 @@ const VehicleForm = () => (
                 />
               </div>
             </div>
+
+            <div className="action-bar form-group row">
+              <span className="left-content">
+                <button className="button" type="button">
+                  <FontAwesomeIcon icon="arrow-left" /> Back
+                </button>
+              </span>
+
+              <span className="right-content">
+                <button className="button primary" type="button">
+                  <FontAwesomeIcon icon="save" /> Save
+                </button>
+              </span>
+            </div>
           </fieldset>
         </div>
 
-        <div className="col-sm-6">
+        <div className="col-md-6">
           <div className="form-group">
             <label htmlFor="vin">
               VIN
