@@ -63,12 +63,35 @@ spec:
       containers:
         - name: python-test-backend
           image: python-backend
-          command: ["sh", "-c", "alembic upgrade head && python3 test.py"]
+          command: ["sh", "-c", "python3 manage.py test"]
           env:
-            - name: DATABASE_URL
-              value: 'postgresql://zeva:zevadev@test-postgres/zevatest'
-            - name: LOAD_TEST_FIXTURES
-              value: 'True'
+            - name: DATABASE_NAME
+              value: 'zeva'
+            - name: DATABASE_USER
+              value: 'zeva'
+            - name: DATABASE_PASSWORD
+              value: 'zevadev'
+            - name: DATABASE_ENGINE
+              value: 'postgresql'
+            - name: DATABASE_SERVICE_NAME
+              value: 'postgresql'
+            - name: POSTGRESQL_SERVICE_HOST
+              value: 'test-postgres'
+            - name: POSTGRESQL_SERVICE_PORT
+              value: '5432'
+            - name: KEYCLOAK_CERTS_URL
+              value: 'http://keycloak:8080/auth/realms/zeva/protocol/openid-connect/certs'
+            - name: KEYCLOAK_REALM
+              value: 'http://localhost:8888/auth/realms/zeva'
+            - name: KEYCLOAK_AUTHORITY
+              value: 'http://localhost:8888/auth/realms/zeva'
+            - name: KEYCLOAK_ISSUER
+              value: 'http://localhost:8888/auth/realms/zeva'
+            - name: KEYCLOAK_AUDIENCE
+              value: 'zeva-app'
+            - name: KEYCLOAK_CLIENT_ID
+              value: 'zeva-app'
+            - name: DJANGO_DEBUG
       initContainers:
         - name: init-psql
           image: busybox:1.28
