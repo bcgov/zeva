@@ -5,6 +5,7 @@ from django.db.models import F
 from auditable.models import Auditable
 from .organization_address import OrganizationAddress
 from .user_profile import UserProfile
+from ..managers.organization import OrganizationManager
 
 
 class Organization(Auditable):
