@@ -29,4 +29,4 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'first_name', 'last_name', 'email',
             'username', 'display_name', 'is_active',
-            'organization', 'phone')
+            'organization', 'phone', 'is_government')

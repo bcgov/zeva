@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Keycloak from 'keycloak-js';
 
+import Loading from './components/Loading';
 import CONFIG from './config';
 import Login from './Login';
 import Router from './router';
@@ -35,7 +36,7 @@ class App extends Component {
     const { authenticated, keycloak } = this.state;
 
     if (!keycloak) {
-      return <div>Loading...</div>;
+      return <Loading />;
     }
 
     if (keycloak && !authenticated) {
