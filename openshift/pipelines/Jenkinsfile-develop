@@ -1,6 +1,6 @@
 result = 0
 runParallel = true
-zevaRelease="v0.0.3"
+zevaRelease="release-pipeline"
 
 podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${env.BUILD_NUMBER}", serviceAccount: 'jenkins-basic', cloud: 'openshift',
         containers: [
