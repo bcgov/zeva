@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import Loading from '../../app/components/Loading';
 import OrganizationsTable from './OrganizationsTable';
@@ -22,16 +23,12 @@ const OrganizationListPage = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <div className="action-bar">
-            <button type="button">
-              Back
+            <button className="button" type="button">
+              <FontAwesomeIcon icon="download" /> Download as Excel
             </button>
 
-            <button type="button">
-              Download as Excel
-            </button>
-
-            <button type="button">
-              New Supplier
+            <button className="button primary" type="button">
+              <FontAwesomeIcon icon="plus" /> New Supplier
             </button>
           </div>
 
@@ -40,16 +37,12 @@ const OrganizationListPage = (props) => {
           />
 
           <div className="action-bar">
-            <button type="button">
-              Back
+            <button className="button" type="button">
+              <FontAwesomeIcon icon="download" /> Download as Excel
             </button>
 
-            <button type="button">
-              Download as Excel
-            </button>
-
-            <button type="button">
-              New Supplier
+            <button className="button primary" type="button">
+              <FontAwesomeIcon icon="plus" /> New Supplier
             </button>
           </div>
         </div>

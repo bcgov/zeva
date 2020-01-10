@@ -76,6 +76,30 @@ p {
 	padding: 1rem;
 }
 
+.action-bar {
+	background-color: $default-background-grey;
+	margin: 0.5rem 0;
+	padding: 1rem;
+	text-align: right;
+
+	.button {
+		margin-left: 1rem;
+	}
+}
+
+.button {
+	background-color: $white;
+	border: 1px solid $default-background-blue;
+	border-radius: 0.2rem;
+	color: $primary-blue;
+	padding: 0.5rem;
+
+	&.primary {
+		background-color: $default-background-blue;
+		color: $white;
+	}
+}
+
 .page {
 	padding: 1rem;
 
