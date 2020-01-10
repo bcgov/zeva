@@ -9,6 +9,7 @@ import CONFIG from './config';
 import PageLayout from './PageLayout';
 import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
+import OrganizationListContainer from '../organizations/OrganizationListContainer';
 
 class Router extends Component {
   constructor(props) {
@@ -54,9 +55,6 @@ class Router extends Component {
               path="/"
               render={() => <DashboardContainer user={user} />}
             />
-          </Switch>
-
-          <Switch>
             <Route
               exact
               path="/organization-details"
@@ -66,6 +64,10 @@ class Router extends Component {
               exact
               path="/organizations/mine"
               render={() => <OrganizationDetailsContainer keycloak={keycloak} user={user} />}
+            />
+            <Route
+              path="/organizations"
+              render={() => <OrganizationListContainer keycloak={keycloak} user={user} />}
             />
           </Switch>
         </PageLayout>

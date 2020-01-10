@@ -87,24 +87,24 @@ objects:
       role: envoy
       env: ${ENV_NAME}
     annotations:
-      description: Defines how to deploy the envoy proxy
+      description: Defines how to deploy the envoy application
     creationTimestamp: null
   spec:
     replicas: 1
     revisionHistoryLimit: 10
     selector:
-      name: ${NAME}-envoy${SUFFIX}
+      deploymentConfig: ${NAME}-envoy${SUFFIX}
     strategy:
       activeDeadlineSeconds: 21600
       recreateParams:
         timeoutSeconds: 600
       resources:
         limits:
-          cpu: ${CPU_LIMIT}
-          memory: ${MEMORY_LIMIT}
+          cpu: 300m
+          memory: 500M
         requests:
-          cpu: ${CPU_REQUEST}
-          memory: ${MEMORY_REQUEST}
+          cpu: 100m
+          memory: 200M
       type: Recreate
     template:
       metadata:
@@ -113,61 +113,61 @@ objects:
           name: ${NAME}-envoy${SUFFIX}
       spec:
         containers:
-        - env: {}
-          image:
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            failureThreshold: 3
-            initialDelaySeconds: 40
-            periodSeconds: 10
-            successThreshold: 1
-            tcpSocket:
-              port: 10000
-            timeoutSeconds: 3
-          name: envoy
-          ports:
-          - name: admin
-            containerPort: 9901
-          - name: http-in
-            containerPort: 10000
-          - name: keycloak-in
-            containerPort: 8888
-          readinessProbe:
-            failureThreshold: 3
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            successThreshold: 1
-            tcpSocket:
-              port: 10000
-            timeoutSeconds: 3
-          resources:
-            limits:
-              cpu: ${CPU_LIMIT}
-              memory: ${MEMORY_LIMIT}
-            requests:
-              cpu: ${CPU_REQUEST}
-              memory: ${MEMORY_REQUEST}
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
-          volumeMounts:
+          - image:
+            imagePullPolicy: IfNotPresent
+            livenessProbe:
+              failureThreshold: 3
+              initialDelaySeconds: 40
+              periodSeconds: 10
+              successThreshold: 1
+              tcpSocket:
+                port: 10000
+              timeoutSeconds: 3
+            name: envoy
+            ports:
+              - containerPort: 9901
+                name: admin
+                protocol: TCP
+              - containerPort: 10000
+                name: http-in
+                protocol: TCP
+              - containerPort: 8888
+                name: keycloak-in
+                protocol: TCP
+            readinessProbe:
+              failureThreshold: 3
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              successThreshold: 1
+              tcpSocket:
+                port: 10000
+              timeoutSeconds: 3
+            resources:
+              limits:
+                cpu: 300m
+                memory: 500M
+              requests:
+                cpu: 100m
+                memory: 200M
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         schedulerName: default-scheduler
         securityContext: {}
         terminationGracePeriodSeconds: 30
-        volumes:
     test: false
     triggers:
-    - imageChangeParams:
-        automatic: true
-        containerNames:
-        - envoy
-        from:
-          kind: ImageStreamTag
-          name: ${NAME}-envoy:${VERSION}
-        lastTriggeredImage:
-      type: ImageChange
-    - type: ConfigChange
+      - imageChangeParams:
+          automatic: true
+          containerNames:
+            - envoy
+          from:
+            kind: ImageStreamTag
+            name: ${NAME}-envoy:${VERSION}
+          lastTriggeredImage:
+        type: ImageChange
+      - type: ConfigChange
   status:
     availableReplicas: 0
     latestVersion: 0
