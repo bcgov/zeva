@@ -73,14 +73,14 @@ Update ./pipeline/line/build.js line 14. The value of the param are included in 
 ```
 Save the file, commit all changes, push to GitHub and create a pull request from zeva-bcdk to master. Assume the pull request number is #18.
 
-### Build the pul request on commandline
+### 1.4 Build the pul request on commandline
 
 Build Config zeva-frontend-build-18 will be created under tools namespace.
 ```
 ~/Projects/zeva/.pipeline$ npm run build -- --pr=18
 ```
 
-### Customize deploy process in pipeline
+### 1.5 Customize deploy process in pipeline
 
 Update ./pipeline/line/deploy.js line 15. The values of param are also from ./pipeline/lib/config.js.
 
@@ -101,14 +101,14 @@ Update ./pipeline/line/deploy.js line 15. The values of param are also from ./pi
   }))
 ```
 
-### Deploy the pull request to dev on command line
+### 1.6 Deploy the pull request to dev on command line
 
 Deployment config zeva-frontend-dev-18 will be created under dev namespace.
 ```
 ~/Projects/zeva/.pipeline$ npm run deploy -- --pr=18 --env=dev
 ```
 
-### Cleanup deployment configurations created for the pull request
+### 1.7 Cleanup deployment configurations created for the pull request
 
 The deployment configs, services, routes and image tags related to the pull request will be removed.  
 Recommend to run the cleanup command if a redeployment of a pull request encountering an issue.
