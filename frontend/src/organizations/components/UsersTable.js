@@ -9,15 +9,15 @@ import ReactTable from 'react-table';
 const UsersTable = (props) => {
   const columns = [{
     accessor: 'displayName',
-    className: 'col-name',
+    className: 'text-left',
     Header: 'Name',
   }, {
     accessor: 'roles',
-    className: 'col-roles',
+    className: 'text-left',
     Header: 'Roles',
   }, {
     accessor: (item) => (item.isActive ? 'Active' : 'Inactive'),
-    className: 'col-status',
+    className: 'text-center',
     Header: 'Status',
     id: 'status',
   }];

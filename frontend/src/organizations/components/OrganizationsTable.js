@@ -1,10 +1,11 @@
 /*
  * Presentational component
  */
-import React from 'react';
 import PropTypes from 'prop-types';
-
+import React from 'react';
 import ReactTable from 'react-table';
+
+import history from '../../app/History';
 
 const OrganizationsTable = (props) => {
   const columns = [{
@@ -99,6 +100,20 @@ const OrganizationsTable = (props) => {
         id: 'displayName',
       }]}
       filterable={filterable}
+      getTrProps={(state, row) => {
+        if (row && row.original) {
+          return {
+            onClick: () => {
+              const { id } = row.original;
+
+              history.push(`/organizations/${id}`);
+            },
+            className: 'clickable',
+          };
+        }
+
+        return {};
+      }}
       pageSizeOptions={[5, 10, 15, 20, 25, 50, 100]}
     />
   );

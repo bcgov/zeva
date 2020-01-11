@@ -1,0 +1,13 @@
+.ReactTable {
+  .-odd {
+    background-color: $default-background-grey;
+  }
+
+  .clickable {
+    cursor: pointer;
+  
+    &:hover {
+      background-color: $primary-yellow;
+    }
+  }
+}

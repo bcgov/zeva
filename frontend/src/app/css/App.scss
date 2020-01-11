@@ -76,6 +76,45 @@ p {
 	padding: 1rem;
 }
 
+.action-bar {
+	background-color: $default-background-grey;
+	display: flex;
+	justify-content: space-between;
+	margin: 1rem 0;
+	padding: 1rem;
+	text-align: right;
+
+	> * {
+		align-self: center;
+		display: flex;
+	}
+
+	.left-content > * {
+		margin-right: 1rem;
+	}
+
+	.right-content > * {
+		margin-left: 1rem;
+	}
+
+	.button svg {
+		margin-right: 0.25rem;
+	}
+}
+
+.button {
+	background-color: $white;
+	border: 1px solid $default-background-blue;
+	border-radius: 0.2rem;
+	color: $primary-blue;
+	padding: 0.5rem 1rem;
+
+	&.primary {
+		background-color: $default-background-blue;
+		color: $white;
+	}
+}
+
 .page {
 	padding: 1rem;
 
