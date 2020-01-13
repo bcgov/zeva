@@ -4,17 +4,13 @@ metadata:
   creationTimestamp: null
   name: frontend
 parameters:
-  - name: RELEASE
-    displayName:
-    description:  image tag name for output
-    required: true
   - name: GIT_URL
     displayName:
     description: zeva repo
     required: true
   - name: GIT_REF
     displayName:
-    description: zeva branch name of the pr
+    description: zeva release name
     required: true
 objects:
   - apiVersion: image.openshift.io/v1
@@ -41,13 +37,13 @@ objects:
       output:
         to:
           kind: ImageStreamTag
-          name: frontend:${RELEASE}
+          name: frontend:${GIT_REF}
       postCommit: {}
       resources: {}
       runPolicy: Serial
     source:
       git:
-        ref: ${GIT_REF}
+        ref: ${RELEASE}
         uri: ${GIT_URL}
       type: Git
       contextDir: frontend
