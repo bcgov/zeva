@@ -2,9 +2,6 @@ result = 0
 runParallel = true
 zevaRelease="release-pipeline"
 
-echo "computer.jnlpmac=${computer.jnlpmac}"
-echo "computer.name={computer.name}"
-
 podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${env.BUILD_NUMBER}", serviceAccount: 'jenkins-prod', cloud: 'openshift',
         containers: [
             containerTemplate(
@@ -19,9 +16,11 @@ podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${e
                 slaveConnectTimeout: 600,
                 command: '',
                 args: '${computer.jnlpmac} ${computer.name}'
+
             )
         ]
 ) {
+
     node("develop-maven-${env.BUILD_NUMBER}") {
         //checkout code
         checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: "${zevaRelease}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-account', url: 'https://github.com/bcgov/zeva.git']]]
