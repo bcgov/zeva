@@ -47,12 +47,12 @@ objects:
           cpu: 500m
           memory: 200M
       runPolicy: Serial
-    source:
-      git:
-        ref: ${GIT_REF}
-        uri: ${GIT_URL}
-      type: Git
-      contextDir: frontend
+      source:
+        git:
+          ref: ${GIT_REF}
+          uri: ${GIT_URL}
+        type: Git
+        contextDir: frontend
       strategy:
         dockerStrategy:
           forcePull: false
