@@ -47,6 +47,7 @@ podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${e
         //apply deployment config
         prepareDeployments.frontendDeployStage("dev").call()
 
+        //refresh the dev tag to deploy on dev
         openshift.withProject("tbiwaq-dev") {
             openshift.tag("tbiwaq-dev/frontend:${zevaRelease}", 'tbiwaq-dev/frontend:dev')
         }

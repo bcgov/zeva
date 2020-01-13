@@ -20,7 +20,7 @@ def frontendDeployStage (String envName) {
                         MEMORY_LIMIT='256Mi'
                     }
                     openshift.withProject("${projectName}") {
-                        def frontendDCJson = openshift.process(readFile(file:'openshift/templates/frontend/frontend-dc-release.json'),
+                        def frontendDCYaml = openshift.process(readFile(file:'openshift/templates/frontend/frontend-dc-release.yaml'),
                             "-p",
                             "ENV_NAME=${ENV_NAME}",
                             "DASH_ENV_NAME=${DASH_ENV_NAME}",
@@ -29,10 +29,12 @@ def frontendDeployStage (String envName) {
                             "MEMORY_REQUEST=${MEMORY_REQUEST}",
                             "MEMORY_LIMIT=${MEMORY_LIMIT}"
                         )
-                        openshift.apply(frontendDCJson)
+                        openshift.apply(frontendDCYaml)
                     }
                 }
             }
         }
     }
 }
+
+return this
