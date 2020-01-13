@@ -58,7 +58,7 @@ spec:
               value: 'True'
       initContainers:
         - name: init-psql
-          image: busybox:1.29
+          image: busybox:1.28
           command: ['sh', '-c', 'until nslookup postgres; do echo waiting for postgres; sleep 5; done;']
   selector:
     matchLabels:

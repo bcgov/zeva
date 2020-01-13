@@ -50,7 +50,7 @@ spec:
             - name: RABBITMQ_ENABLED
               value: 'False'
             - name: APIBASE
-              value: 'http://localhost:10000'
+              value: 'http://localhost:10000/api'
   selector:
     matchLabels:
       app: frontend

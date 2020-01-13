@@ -5,9 +5,6 @@ from auditable.models import Auditable
 
 
 class OrganizationAddress(Auditable, EffectiveDates):
-    """
-    Address(es) of the Fuel Supplier
-    """
     organization = models.ForeignKey(
         'Organization',
         related_name='addresses',

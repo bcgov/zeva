@@ -9,11 +9,6 @@ from ..managers.organization import OrganizationManager
 
 
 class Organization(Auditable):
-    """
-    Contains a list of all of the recognized Part 3 fuel suppliers, both
-    past and present, as well as an entry for the government which is also
-    considered an organization.
-    """
     name = models.CharField(
         max_length=500,
         db_comment="Name of the organization",
