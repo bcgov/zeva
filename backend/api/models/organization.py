@@ -5,6 +5,7 @@ from django.db.models import F
 from auditable.models import Auditable
 from .organization_address import OrganizationAddress
 from .user_profile import UserProfile
+from ..managers.organization import OrganizationManager
 
 
 class Organization(Auditable):
@@ -15,7 +16,9 @@ class Organization(Auditable):
     """
     name = models.CharField(
         max_length=500,
-        db_comment="Name of the organization"
+        db_comment="Name of the organization",
+        unique=True,
+        null=False
     )
     is_government = models.BooleanField(
         default=False,
@@ -54,7 +57,9 @@ class Organization(Auditable):
     class Meta:
         db_table = 'organization'
 
+    objects = OrganizationManager()
+
     db_table_comment = "Contains a list of all of the recognized Vehicle " \
-                       "fuel suppliers, both past and present, as well as " \
+                       "suppliers, both past and present, as well as " \
                        "an entry for the government which is also " \
                        "considered an organization."
