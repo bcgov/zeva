@@ -26,7 +26,9 @@ podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${e
         checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: "${zevaRelease}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-account', url: 'https://github.com/bcgov/zeva.git']]]
 
         //load groovy scripts
-        def prepareBuilds = load "openshift/pipelines/scripts/prepareBuilds.groovy"
+        def prepareBuilds = load "/home/jenkins/workspace/zeva-release-pipelines/develop-pipeline/openshift/pipelines/scripts/prepareBuilds.groovy"
+
+
 
         sleep 90
 
