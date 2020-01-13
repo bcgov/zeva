@@ -19,6 +19,7 @@ podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${e
             )
         ]
 ) {
+    node("develop-maven-${env.BUILD_NUMBER}") {
         //checkout code
         checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: "${zevaRelease}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-account', url: 'https://github.com/bcgov/zeva.git']]]
 
@@ -48,4 +49,5 @@ podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${e
             openshift.tag("tbiwaq-dev/frontend:${zevaRelease}", 'tbiwaq-dev/frontend:dev')
         }
 *****/
+    }
 }
