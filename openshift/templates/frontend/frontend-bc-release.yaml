@@ -49,7 +49,7 @@ objects:
       runPolicy: Serial
     source:
       git:
-        ref: ${RELEASE}
+        ref: ${GIT_REF}
         uri: ${GIT_URL}
       type: Git
       contextDir: frontend
