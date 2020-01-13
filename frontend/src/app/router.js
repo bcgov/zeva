@@ -11,6 +11,7 @@ import PageLayout from './PageLayout';
 import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
 import OrganizationListContainer from '../organizations/OrganizationListContainer';
+import VehicleAddContainer from '../vehicles/VehicleAddContainer';
 import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
 
 class Router extends Component {
@@ -72,6 +73,14 @@ class Router extends Component {
             />
             <Route
               exact
+<<<<<<< HEAD
+              path="/vehicles/add"
+              render={() => <VehicleAddContainer keycloak={keycloak} user={user} />}
+            />
+            <Route
+              exact
+=======
+>>>>>>> master
               path="/"
               render={() => <DashboardContainer user={user} />}
             />
