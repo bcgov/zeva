@@ -39,7 +39,13 @@ objects:
           kind: ImageStreamTag
           name: frontend:${GIT_REF}
       postCommit: {}
-      resources: {}
+      resources:
+        limits:
+          cpu: 2000m
+          memory: 2G
+        requests:
+          cpu: 500m
+          memory: 200M
       runPolicy: Serial
     source:
       git:
