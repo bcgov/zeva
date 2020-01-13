@@ -26,3 +26,5 @@ def prepareBuildFrontend(String envName, String zevaRelease) {
         }
     }
 }
+
+return this
