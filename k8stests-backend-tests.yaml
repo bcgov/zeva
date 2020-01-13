@@ -26,7 +26,7 @@ spec:
           image: postgres:12.0
           env:
             - name: POSTGRES_DB
-              value: zevatest
+              value: zeva
             - name: POSTGRES_USER
               value: zeva
             - name: POSTGRES_PASSWORD
@@ -35,12 +35,12 @@ spec:
             - containerPort: 5432
           readinessProbe:
             exec:
-              command: ["psql", "-w", "-U", "zeva", "-d", "zevatest", "-c", "SELECT 1"]
+              command: ["psql", "-w", "-U", "zeva", "-d", "zeva", "-c", "SELECT 1"]
             initialDelaySeconds: 1
             timeoutSeconds: 2
           livenessProbe:
             exec:
-              command: ["psql", "-w", "-U", "zeva", "-d", "zevatest", "-c", "SELECT 1"]
+              command: ["psql", "-w", "-U", "zeva", "-d", "zeva", "-c", "SELECT 1"]
             initialDelaySeconds: 45
             timeoutSeconds: 2
   selector:
@@ -62,17 +62,40 @@ spec:
     spec:
       containers:
         - name: python-test-backend
-          image: python-backend
-          command: ["sh", "-c", "alembic upgrade head && python3 test.py"]
+          image: django-backend
+          command: ["sh", "-c", "python3 manage.py test -v 3"]
           env:
-            - name: DATABASE_URL
-              value: 'postgresql://zeva:zevadev@test-postgres/zevatest'
-            - name: LOAD_TEST_FIXTURES
-              value: 'True'
+            - name: DATABASE_NAME
+              value: 'zeva'
+            - name: DATABASE_USER
+              value: 'zeva'
+            - name: DATABASE_PASSWORD
+              value: 'zevadev'
+            - name: DATABASE_ENGINE
+              value: 'postgresql'
+            - name: DATABASE_SERVICE_NAME
+              value: 'postgresql'
+            - name: POSTGRESQL_SERVICE_HOST
+              value: 'test-postgres'
+            - name: POSTGRESQL_SERVICE_PORT
+              value: '5432'
+            - name: KEYCLOAK_CERTS_URL
+              value: 'http://keycloak:8080/auth/realms/zeva/protocol/openid-connect/certs'
+            - name: KEYCLOAK_REALM
+              value: 'http://localhost:8888/auth/realms/zeva'
+            - name: KEYCLOAK_AUTHORITY
+              value: 'http://localhost:8888/auth/realms/zeva'
+            - name: KEYCLOAK_ISSUER
+              value: 'http://localhost:8888/auth/realms/zeva'
+            - name: KEYCLOAK_AUDIENCE
+              value: 'zeva-app'
+            - name: KEYCLOAK_CLIENT_ID
+              value: 'zeva-app'
+            - name: DJANGO_DEBUG
       initContainers:
         - name: init-psql
           image: busybox:1.28
-          command: ['sh', '-c', 'until (nslookup test-postgres); do echo waiting for test-postgres; sleep 1; done; echo test-postgres ready; sleep 2;']
+          command: ['sh', '-c', 'until (nslookup test-postgres); do echo waiting for test-postgres; sleep 1; done; echo test-postgres ready; sleep 5;']
   selector:
     matchLabels:
       app: python-test-backend

@@ -1,0 +1,68 @@
+[
+  {
+    "fields": {
+      "name": "Test Org 1"
+    },
+    "model": "api.organization",
+    "pk": null
+  },
+  {
+    "fields": {
+      "name": "Test Org 2"
+    },
+    "model": "api.organization",
+    "pk": null
+  },
+  {
+    "fields": {
+      "name": "Test Org 3"
+    },
+    "model": "api.organization",
+    "pk": null
+  },
+  {
+    "fields": {
+      "email": "vehicle_supplier_1@test.com",
+      "username": "vs_user_1",
+      "display_name": "Vehicle Supplier User 1",
+      "first_name": "Vehicle",
+      "last_name": "Supplier 1",
+      "organization": [
+        "Test Org 1"
+      ],
+      "is_active": true
+    },
+    "model": "api.userprofile",
+    "pk": null
+  },
+  {
+    "fields": {
+      "email": "vehicle_supplier_2@test.com",
+      "username": "vs_user_2",
+      "display_name": "Vehicle Supplier User 2",
+      "first_name": "Vehicle",
+      "last_name": "Supplier 2",
+      "organization": [
+        "Test Org 2"
+      ],
+      "is_active": true
+    },
+    "model": "api.userprofile",
+    "pk": null
+  },
+  {
+    "fields": {
+      "email": "vehicle_supplier_3@test.com",
+      "username": "vs_user_3",
+      "display_name": "Vehicle Supplier User 3",
+      "first_name": "Vehicle",
+      "last_name": "Supplier 3",
+      "organization": [
+        "Test Org 3"
+      ],
+      "is_active": true
+    },
+    "model": "api.userprofile",
+    "pk": null
+  }
+]

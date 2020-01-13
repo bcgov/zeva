@@ -73,11 +73,14 @@ class Router extends Component {
             />
             <Route
               exact
+<<<<<<< HEAD
               path="/vehicles/add"
               render={() => <VehicleAddContainer keycloak={keycloak} user={user} />}
             />
             <Route
               exact
+=======
+>>>>>>> master
               path="/"
               render={() => <DashboardContainer user={user} />}
             />
