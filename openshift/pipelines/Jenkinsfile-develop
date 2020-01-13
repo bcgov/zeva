@@ -28,6 +28,8 @@ podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${e
         //load groovy scripts
         def prepareBuilds = load "openshift/pipelines/scripts/prepareBuilds.groovy"
 
+        sleep 90
+
         buildStages = prepareBuilds.buildStages('dev',zevaRelease)
 
         for (builds in buildStages) {
