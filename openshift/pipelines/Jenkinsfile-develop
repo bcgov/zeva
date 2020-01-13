@@ -2,6 +2,9 @@ result = 0
 runParallel = true
 zevaRelease="release-pipeline"
 
+echo "computer.jnlpmac=${computer.jnlpmac}"
+echo "computer.name={computer.name}"
+
 podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${env.BUILD_NUMBER}", serviceAccount: 'jenkins-prod', cloud: 'openshift',
         containers: [
             containerTemplate(
