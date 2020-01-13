@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
-import { Route, Switch } from 'react-router';
-import { BrowserRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import { Switch } from 'react-router';
+import { Router as BrowserRouter, Route } from 'react-router-dom';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 
 import Loading from './components/Loading';
 import CONFIG from './config';
+import History from './History';
 import PageLayout from './PageLayout';
 import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
 import OrganizationListContainer from '../organizations/OrganizationListContainer';
+import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
 
 class Router extends Component {
   constructor(props) {
@@ -47,14 +49,9 @@ class Router extends Component {
     }
 
     return (
-      <BrowserRouter>
+      <BrowserRouter history={History}>
         <PageLayout keycloak={keycloak} user={user}>
           <Switch>
-            <Route
-              exact
-              path="/"
-              render={() => <DashboardContainer user={user} />}
-            />
             <Route
               exact
               path="/organization-details"
@@ -66,8 +63,17 @@ class Router extends Component {
               render={() => <OrganizationDetailsContainer keycloak={keycloak} user={user} />}
             />
             <Route
+              path="/organizations/:id"
+              render={() => <VehicleSupplierDetailsContainer keycloak={keycloak} user={user} />}
+            />
+            <Route
               path="/organizations"
               render={() => <OrganizationListContainer keycloak={keycloak} user={user} />}
+            />
+            <Route
+              exact
+              path="/"
+              render={() => <DashboardContainer user={user} />}
             />
           </Switch>
         </PageLayout>
