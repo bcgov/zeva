@@ -12,7 +12,7 @@ build:
     context: backend
     sync:
         infer:
-        - src '**/*'
+        - '**/*'
   - image: frontend
     context: frontend
     sync:

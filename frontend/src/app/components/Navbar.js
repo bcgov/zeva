@@ -140,7 +140,7 @@ class Navbar extends Component {
               <li className="nav-item">
                 <NavLink
                   activeClassName="active"
-                  to="/zev-models"
+                  to="/vehicles"
                 >
                   <span>ZEV Models</span>
                 </NavLink>

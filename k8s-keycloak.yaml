@@ -81,7 +81,7 @@ spec:
             - containerPort: 8080
       initContainers:
         - name: init-psql-keycloak
-          image: busybox
+          image: busybox:1.28
           command: ['sh', '-c', 'until nslookup postgres-keycloak; do echo waiting for postgres; sleep 5; done;']
   selector:
     matchLabels:
