@@ -8,7 +8,7 @@ from auditable.views import AuditableMixin
 
 class VehicleViewSet(
     AuditableMixin, viewsets.GenericViewSet,
-    mixins.ListModelMixin, mixins.RetrieveModelMixin
+    mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin
 ):
     permission_classes = (AllowAny,)
     http_method_names = ['get', 'post', 'put', 'patch']
@@ -23,4 +23,3 @@ class VehicleViewSet(
             return self.serializer_classes[self.action]
 
         return self.serializer_classes['default']
-

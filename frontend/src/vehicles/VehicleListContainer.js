@@ -2,11 +2,12 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-import React, {useEffect, useState} from 'react';
-import axios from "axios";
+import axios from 'axios';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 
 import VehicleList from './components/VehicleList';
-import Loading from "../app/components/Loading";
+import Loading from '../app/components/Loading';
 
 const VehicleListContainer = (props) => {
   const [vehicles, setVehicles] = useState([]);
@@ -17,7 +18,7 @@ const VehicleListContainer = (props) => {
   const refreshList = () => {
     setLoading(true);
 
-    axios.get(`vehicles`).then((response) => {
+    axios.get('vehicles').then((response) => {
       setVehicles(response.data);
       setLoading(false);
     });
@@ -33,9 +34,10 @@ const VehicleListContainer = (props) => {
   }
 
   return (<VehicleList vehicles={vehicles} />);
-}
+};
 
 VehicleListContainer.propTypes = {
+  keycloak: PropTypes.shape().isRequired,
 };
 
 export default VehicleListContainer;

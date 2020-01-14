@@ -1,40 +1,46 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const VehicleList = (props) => (
-  <div>
-    <table>
-      <thead>
-        <tr>
-          <th>Make</th>
-          <th>Model</th>
+const VehicleList = (props) => {
+  const { vehicles } = props;
 
-          <th>Trim</th>
-          <th>Type</th>
-          <th>Range (kms)</th>
-          <th>Model Year</th>
-          <th>Validated</th>
-          <th>A Class Credits</th>
-          <th>B Class Credits</th>
-        </tr>
-      </thead>
-      <tbody>
-      {props.vehicles.map(v => (<tr key={v.id}>
-        <td>{v.make}</td>
-        <td>{v.model}</td>
-        <td>{v.trim}</td>
+  return (
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>Make</th>
+            <th>Model</th>
 
-        <td>{v.type}</td>
-        <td>{v.range}</td>
-        <td>{v.modelYear.name}</td>
-        <td>{v.validated ? 'Yes' : 'No'}</td>
-        <td>{(v.creditValue && v.creditValue.a) ? v.creditValue.a : ''}</td>
-        <td>{(v.creditValue && v.creditValue.b) ? v.creditValue.b : ''}</td>
-      </tr>))}
-      </tbody>
-    </table>
-  </div>
-);
+            <th>Trim</th>
+            <th>Type</th>
+            <th>Range (kms)</th>
+            <th>Model Year</th>
+            <th>Validated</th>
+            <th>A Class Credits</th>
+            <th>B Class Credits</th>
+          </tr>
+        </thead>
+        <tbody>
+          {vehicles.map((vehicle) => (
+            <tr key={vehicle.id}>
+              <td>{vehicle.make}</td>
+              <td>{vehicle.model}</td>
+              <td>{vehicle.trim}</td>
+
+              <td>{vehicle.type}</td>
+              <td>{vehicle.range}</td>
+              <td>{vehicle.modelYear.name}</td>
+              <td>{vehicle.validated ? 'Yes' : 'No'}</td>
+              <td>{(vehicle.creditValue && vehicle.creditValue.a) ? vehicle.creditValue.a : ''}</td>
+              <td>{(vehicle.creditValue && vehicle.creditValue.b) ? vehicle.creditValue.b : ''}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 VehicleList.defaultProps = {};
 

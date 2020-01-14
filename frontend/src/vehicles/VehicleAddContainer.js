@@ -2,13 +2,33 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
+import axios from 'axios';
 import React from 'react';
 
+import BaseController from '../app/BaseController';
 import VehicleForm from './components/VehicleForm';
 
-const VehicleAddContainer = () => (
-  <VehicleForm />
-);
+class VehicleAddContainer extends BaseController {
+  handleSubmit(event) {
+    event.preventDefault();
+
+    const data = this.state.fields;
+
+    axios.post('vehicles', data).then((response) => {
+    });
+
+    return false;
+  }
+
+  render() {
+    return (
+      <VehicleForm
+        handleInputChange={this.handleInputChange}
+        handleSubmit={this.handleSubmit}
+      />
+    );
+  }
+}
 
 VehicleAddContainer.propTypes = {
 };

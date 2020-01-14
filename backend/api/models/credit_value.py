@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import F
 
 from auditable.models import Auditable
-from .mixins.Named import UniquelyNamed
+from .mixins.named import UniquelyNamed
 from .organization_address import OrganizationAddress
 from .user_profile import UserProfile
 from ..managers.organization import OrganizationManager

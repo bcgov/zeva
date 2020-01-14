@@ -1,7 +1,12 @@
 from rest_framework import serializers
 
-from ..models.credit_value import CreditValue
-from ..models.vehicle import Vehicle, ModelYear
+from api.models.credit_value import CreditValue
+from api.models.vehicle import Vehicle
+from api.models.vehicle_make import Make
+from api.models.vehicle_model import Model
+from api.models.vehicle_model_year import ModelYear
+from api.models.vehicle_trim import Trim
+from api.models.vehicle_type import Type
 
 
 class CreditValueSerializer(serializers.ModelSerializer):
@@ -12,7 +17,31 @@ class CreditValueSerializer(serializers.ModelSerializer):
         )
 
 
-class ModelYearSerializer(serializers.ModelSerializer):
+class VehicleMakeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Make
+        fields = (
+            'name'
+        )
+
+
+class VehicleModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Model
+        fields = (
+            'name'
+        )
+
+
+class VehicleTrimSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Trim
+        fields = (
+            'name'
+        )
+
+
+class VehicleModelYearSerializer(serializers.ModelSerializer):
     class Meta:
         model = ModelYear
         fields = (
@@ -20,14 +49,21 @@ class ModelYearSerializer(serializers.ModelSerializer):
         )
 
 
-class VehicleSerializer(serializers.ModelSerializer):
+class VehicleTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Type
+        fields = (
+            'name'
+        )
 
+
+class VehicleSerializer(serializers.ModelSerializer):
     credit_value = CreditValueSerializer()
-    type = serializers.SlugRelatedField(slug_field='name', read_only=True)
-    make = serializers.SlugRelatedField(slug_field='name', read_only=True)
-    model = serializers.SlugRelatedField(slug_field='name', read_only=True)
-    trim = serializers.SlugRelatedField(slug_field='name', read_only=True)
-    model_year = ModelYearSerializer()
+    type = VehicleTypeSerializer()
+    make = VehicleMakeSerializer()
+    model = VehicleModelSerializer()
+    trim = VehicleTrimSerializer()
+    model_year = VehicleModelYearSerializer()
 
     class Meta:
         model = Vehicle
@@ -35,4 +71,3 @@ class VehicleSerializer(serializers.ModelSerializer):
             'id', 'type', 'make', 'model', 'trim', 'validated',
             'range', 'credit_value', 'model_year'
         )
-
