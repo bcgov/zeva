@@ -15,6 +15,7 @@ class VehicleAddContainer extends BaseController {
     const data = this.state.fields;
 
     axios.post('vehicles', data).then((response) => {
+      console.log(response);
     });
 
     return false;

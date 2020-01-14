@@ -6,19 +6,21 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 
-import VehicleList from './components/VehicleList';
+import { useParams } from 'react-router-dom';
+import VehicleDetailsPage from './components/VehicleDetailsPage';
 
-const VehicleListContainer = (props) => {
-  const [vehicles, setVehicles] = useState([]);
+const VehicleDetailContainer = (props) => {
+  const [vehicle, setVehicle] = useState({});
   const [loading, setLoading] = useState(true);
+  const { id } = useParams();
 
   const { keycloak } = props;
 
   const refreshList = () => {
     setLoading(true);
 
-    axios.get('vehicles').then((response) => {
-      setVehicles(response.data);
+    axios.get(`vehicles/${id}`).then((response) => {
+      setVehicle(response.data);
       setLoading(false);
     });
   };
@@ -27,13 +29,13 @@ const VehicleListContainer = (props) => {
     refreshList();
   }, [keycloak.authenticated]);
 
-  return (<VehicleList loading={loading} vehicles={vehicles} />);
+  return (<VehicleDetailsPage loading={loading} details={vehicle} />);
 };
 
-VehicleListContainer.propTypes = {
+VehicleDetailContainer.propTypes = {
   keycloak: PropTypes.shape({
     authenticated: PropTypes.bool,
   }).isRequired,
 };
 
-export default VehicleListContainer;
+export default VehicleDetailContainer;

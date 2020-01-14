@@ -1,43 +1,58 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import Loading from '../../app/components/Loading';
+import VehicleListTable from './VehicleListTable';
 
 const VehicleList = (props) => {
-  const { vehicles } = props;
+  const { loading, vehicles } = props;
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
-    <div>
-      <table>
-        <thead>
-          <tr>
-            <th>Make</th>
-            <th>Model</th>
+    <div id="organization-list" className="page">
+      <div className="row">
+        <div className="col-sm-12">
+          <h1>Vehicle Suppliers</h1>
+        </div>
+      </div>
 
-            <th>Trim</th>
-            <th>Type</th>
-            <th>Range (kms)</th>
-            <th>Model Year</th>
-            <th>Validated</th>
-            <th>A Class Credits</th>
-            <th>B Class Credits</th>
-          </tr>
-        </thead>
-        <tbody>
-          {vehicles.map((vehicle) => (
-            <tr key={vehicle.id}>
-              <td>{vehicle.make}</td>
-              <td>{vehicle.model}</td>
-              <td>{vehicle.trim}</td>
+      <div className="row">
+        <div className="col-sm-12">
+          <div className="action-bar">
+            <span className="left-content" />
 
-              <td>{vehicle.type}</td>
-              <td>{vehicle.range}</td>
-              <td>{vehicle.modelYear.name}</td>
-              <td>{vehicle.validated ? 'Yes' : 'No'}</td>
-              <td>{(vehicle.creditValue && vehicle.creditValue.a) ? vehicle.creditValue.a : ''}</td>
-              <td>{(vehicle.creditValue && vehicle.creditValue.b) ? vehicle.creditValue.b : ''}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            <span className="right-content">
+              <button className="button" type="button">
+                <FontAwesomeIcon icon="download" /> Download as Excel
+              </button>
+
+              <button className="button primary" type="button">
+                <FontAwesomeIcon icon="plus" /> New Vehicle
+              </button>
+            </span>
+          </div>
+
+          <VehicleListTable items={vehicles} />
+
+          <div className="action-bar">
+            <span className="left-content" />
+
+            <span className="right-content">
+              <button className="button" type="button">
+                <FontAwesomeIcon icon="download" /> Download as Excel
+              </button>
+
+              <button className="button primary" type="button">
+                <FontAwesomeIcon icon="plus" /> New Vehicle
+              </button>
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
@@ -45,6 +60,7 @@ const VehicleList = (props) => {
 VehicleList.defaultProps = {};
 
 VehicleList.propTypes = {
+  loading: PropTypes.bool.isRequired,
   vehicles: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
