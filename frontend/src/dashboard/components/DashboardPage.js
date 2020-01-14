@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
 import Actions from './Actions';
@@ -6,26 +7,36 @@ import Feedback from './Feedback';
 import OrganizationDetails from './OrganizationDetails';
 import UserSettings from './UserSettings';
 
-const DashboardPage = () => (
-  <div id="dashboard">
-    <div className="row">
-      <div className="col-lg-3">
-        <Balance />
+const DashboardPage = (props) => {
+  const { user } = props;
 
-        <Feedback />
-      </div>
+  return (
+    <div id="dashboard">
+      <div className="row">
+        <div className="col-lg-3">
+          <Balance organization={user.organization} />
 
-      <div className="col-lg-5">
-        <Actions />
-      </div>
+          <Feedback />
+        </div>
 
-      <div className="col-lg-4">
-        <OrganizationDetails />
+        <div className="col-lg-5">
+          <Actions />
+        </div>
 
-        <UserSettings />
+        <div className="col-lg-4">
+          <OrganizationDetails details={user.organization} />
+
+          <UserSettings details={user} />
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
+
+DashboardPage.propTypes = {
+  user: PropTypes.shape({
+    organization: PropTypes.shape(),
+  }).isRequired,
+};
 
 export default DashboardPage;

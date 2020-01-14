@@ -13,7 +13,7 @@ class CreditValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = CreditValue
         fields = (
-            'a', 'b'
+            'a', 'b',
         )
 
 
@@ -21,7 +21,7 @@ class VehicleMakeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Make
         fields = (
-            'name'
+            'name',
         )
 
 
@@ -29,7 +29,7 @@ class VehicleModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Model
         fields = (
-            'name'
+            'name',
         )
 
 
@@ -37,7 +37,7 @@ class VehicleTrimSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trim
         fields = (
-            'name'
+            'name',
         )
 
 
@@ -45,7 +45,7 @@ class VehicleModelYearSerializer(serializers.ModelSerializer):
     class Meta:
         model = ModelYear
         fields = (
-            'name', 'effective_date', 'expiration_date'
+            'name', 'effective_date', 'expiration_date',
         )
 
 
@@ -53,7 +53,7 @@ class VehicleTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Type
         fields = (
-            'name'
+            'name',
         )
 
 
@@ -69,5 +69,5 @@ class VehicleSerializer(serializers.ModelSerializer):
         model = Vehicle
         fields = (
             'id', 'type', 'make', 'model', 'trim', 'validated',
-            'range', 'credit_value', 'model_year'
+            'range', 'credit_value', 'model_year',
         )

@@ -2,26 +2,26 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-
-import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import DashboardPage from './components/DashboardPage';
 
-class DashboardContainer extends Component {
-  componentDidMount() {
-  }
+const DashboardContainer = (props) => {
+  const { user } = props;
 
-  render() {
-    return (
-      <DashboardPage />
-    );
-  }
-}
+  return (
+    <DashboardPage user={user} />
+  );
+};
 
 DashboardContainer.defaultProps = {
 };
 
 DashboardContainer.propTypes = {
+  user: PropTypes.shape({
+    organization: PropTypes.shape({}),
+  }).isRequired,
 };
 
 export default DashboardContainer;

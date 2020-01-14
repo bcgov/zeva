@@ -30,41 +30,41 @@ const VehiclesTable = (props) => {
   };
 
   const columns = [{
-    accessor: 'make',
-    className: 'text-left',
+    accessor: (row) => (row.make ? row.make.name : ''),
     Header: 'Make',
+    id: 'make',
   }, {
-    accessor: 'model',
-    className: 'text-left',
+    accessor: (row) => (row.model ? row.model.name : ''),
     Header: 'Model',
+    id: 'model',
   }, {
-    accessor: 'type',
-    className: 'text-center',
-    Header: 'Type',
-  }, {
-    accessor: 'trim',
-    className: 'text-center',
+    accessor: (row) => (row.trim ? row.trim.name : ''),
     Header: 'Trim',
+    id: 'trim',
+  }, {
+    accessor: (row) => (row.modelYear ? row.modelYear.name : ''),
+    Header: 'Model Year',
+    id: 'col-my',
+  }, {
+    accessor: (row) => (row.type ? row.type.name : ''),
+    Header: 'Type',
+    id: 'type',
   }, {
     accessor: 'range',
-    className: 'text-right',
     Header: 'Range (km)',
+    id: 'ranger',
   }, {
-    accessor: 'credit',
-    className: 'text-right',
-    Header: 'Credit',
+    accessor: (row) => ((row.creditValue && row.creditValue.a) ? row.creditValue.a : ''),
+    Header: 'Class A Credits',
+    id: 'col-class-a',
   }, {
-    accessor: 'class',
-    className: 'text-center',
-    Header: 'Class',
+    accessor: (row) => ((row.creditValue && row.creditValue.b) ? row.creditValue.b : ''),
+    Header: 'Class B Credits',
+    id: 'col-class-b',
   }, {
-    accessor: 'state',
-    className: 'text-center',
-    Header: 'State',
-  }, {
-    accessor: 'validate',
+    accessor: 'validated',
     Cell: (row) => (
-      <input type="checkbox" checked={row.original.validate} readOnly />
+      <input type="checkbox" checked={row.original.validated} readOnly />
     ),
     className: 'text-center',
     Filter: FilterCheckbox,

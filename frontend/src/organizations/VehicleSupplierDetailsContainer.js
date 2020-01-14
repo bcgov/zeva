@@ -14,14 +14,21 @@ const VehicleSupplierDetailsContainer = (props) => {
   const { id } = useParams();
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
+  const [vehicles, setVehicles] = useState([]);
   const { keycloak } = props;
 
   const refreshDetails = () => {
     setLoading(true);
 
-    axios.get(`organizations/${id}`).then((response) => {
+    const detailsPromise = axios.get(`organizations/${id}`).then((response) => {
       setDetails(response.data);
+    });
 
+    const vehiclesPromise = axios.get('vehicles').then((response) => {
+      setVehicles(response.data);
+    });
+
+    Promise.all([detailsPromise, vehiclesPromise]).then(() => {
       setLoading(false);
     });
   };
@@ -34,6 +41,7 @@ const VehicleSupplierDetailsContainer = (props) => {
     <VehicleSupplierDetailsPage
       details={details}
       loading={loading}
+      vehicles={vehicles}
     />
   );
 };

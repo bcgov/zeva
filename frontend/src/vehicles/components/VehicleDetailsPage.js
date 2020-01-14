@@ -20,10 +20,10 @@ const VehicleDetailsPage = (props) => {
       </div>
       <div className="row align-items-center">
         <div className="col-sm-12">
-          <DetailField label="Make" value={details.make} />
-          <DetailField label="Model" value={details.model} />
-          <DetailField label="Trim" value={details.trim} />
-          <DetailField label="Type" value={details.type} />
+          <DetailField label="Make" value={details.make.name} />
+          <DetailField label="Model" value={details.model.name} />
+          <DetailField label="Trim" value={details.trim.name} />
+          <DetailField label="Type" value={details.type.name} />
           <DetailField label="Range" value={details.range} />
           <DetailField label="Model Year" value={details.modelYear.name} />
           <DetailField label="Class A Credits" value={(details.creditValue && details.creditValue.a) ? details.creditValue.a : ''} />
