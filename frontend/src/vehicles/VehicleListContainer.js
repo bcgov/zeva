@@ -6,13 +6,12 @@ import React, {useEffect, useState} from 'react';
 import axios from "axios";
 
 import VehicleList from './components/VehicleList';
-import Loading from "../app/components/Loading";
 
 const VehicleListContainer = (props) => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const { keycloak } = props;
+  const {keycloak} = props;
 
   const refreshList = () => {
     setLoading(true);
@@ -27,15 +26,9 @@ const VehicleListContainer = (props) => {
     refreshList();
   }, [keycloak.authenticated]);
 
-
-  if (loading) {
-    return (<Loading />);
-  }
-
-  return (<VehicleList vehicles={vehicles} />);
-}
-
-VehicleListContainer.propTypes = {
+  return (<VehicleList loading={loading} vehicles={vehicles}/>);
 };
+
+VehicleListContainer.propTypes = {};
 
 export default VehicleListContainer;

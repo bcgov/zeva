@@ -14,6 +14,7 @@ import OrganizationListContainer from '../organizations/OrganizationListContaine
 import VehicleAddContainer from '../vehicles/VehicleAddContainer';
 import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
 import VehicleListContainer from "../vehicles/VehicleListContainer";
+import VehicleDetailContainer from "../vehicles/VehicleDetailContainer";
 
 class Router extends Component {
   constructor(props) {
@@ -81,6 +82,11 @@ class Router extends Component {
               exact
               path="/vehicles"
               render={() => <VehicleListContainer keycloak={keycloak} user={user} />}
+            />
+            <Route
+              exact
+              path="/vehicles/:id"
+              render={() => <VehicleDetailContainer keycloak={keycloak} user={user} />}
             />
             <Route
               exact

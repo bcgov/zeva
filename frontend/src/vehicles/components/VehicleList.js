@@ -1,44 +1,66 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Loading from "../../app/components/Loading";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import OrganizationsTable from "../../organizations/components/OrganizationsTable";
+import VehicleListTable from "./VehicleListTable";
 
-const VehicleList = (props) => (
-  <div>
-    <table>
-      <thead>
-        <tr>
-          <th>Make</th>
-          <th>Model</th>
+const VehicleList = (props) => {
+  const {loading, vehicles} = props;
 
-          <th>Trim</th>
-          <th>Type</th>
-          <th>Range (kms)</th>
-          <th>Model Year</th>
-          <th>Validated</th>
-          <th>A Class Credits</th>
-          <th>B Class Credits</th>
-        </tr>
-      </thead>
-      <tbody>
-      {props.vehicles.map(v => (<tr key={v.id}>
-        <td>{v.make}</td>
-        <td>{v.model}</td>
-        <td>{v.trim}</td>
+  if (loading) {
+    return <Loading/>;
+  }
 
-        <td>{v.type}</td>
-        <td>{v.range}</td>
-        <td>{v.modelYear.name}</td>
-        <td>{v.validated ? 'Yes' : 'No'}</td>
-        <td>{(v.creditValue && v.creditValue.a) ? v.creditValue.a : ''}</td>
-        <td>{(v.creditValue && v.creditValue.b) ? v.creditValue.b : ''}</td>
-      </tr>))}
-      </tbody>
-    </table>
-  </div>
-);
+  return (
+    <div id="organization-list" className="page">
+      <div className="row">
+        <div className="col-sm-12">
+          <h1>Vehicle Suppliers</h1>
+        </div>
+      </div>
+
+      <div className="row">
+        <div className="col-sm-12">
+          <div className="action-bar">
+            <span className="left-content"/>
+
+            <span className="right-content">
+              <button className="button" type="button">
+                <FontAwesomeIcon icon="download"/> Download as Excel
+              </button>
+
+              <button className="button primary" type="button">
+                <FontAwesomeIcon icon="plus"/> New Vehicle
+              </button>
+            </span>
+          </div>
+
+          <VehicleListTable items={vehicles}/>
+
+          <div className="action-bar">
+            <span className="left-content"/>
+
+            <span className="right-content">
+              <button className="button" type="button">
+                <FontAwesomeIcon icon="download"/> Download as Excel
+              </button>
+
+              <button className="button primary" type="button">
+                <FontAwesomeIcon icon="plus"/> New Vehicle
+              </button>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 VehicleList.defaultProps = {};
 
 VehicleList.propTypes = {
+  loading: PropTypes.bool.isRequired,
   vehicles: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
