@@ -2,6 +2,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import history from '../../app/History';
+
 const VehicleForm = (props) => {
   const { handleInputChange, handleSubmit } = props;
 
@@ -141,7 +143,13 @@ const VehicleForm = (props) => {
 
               <div className="action-bar form-group row">
                 <span className="left-content">
-                  <button className="button" type="button">
+                  <button
+                    className="button"
+                    onClick={() => {
+                      history.goBack();
+                    }}
+                    type="button"
+                  >
                     <FontAwesomeIcon icon="arrow-left" /> Back
                   </button>
                 </span>
