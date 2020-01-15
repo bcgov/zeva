@@ -2,7 +2,7 @@ from rest_framework import mixins, viewsets
 from rest_framework.permissions import AllowAny
 
 from api.models.vehicle import Vehicle
-from api.serializers.vehicle import VehicleSerializer
+from api.serializers.vehicle import VehicleSerializer, VehicleSaveSerializer
 from auditable.views import AuditableMixin
 
 
@@ -15,7 +15,8 @@ class VehicleViewSet(
     queryset = Vehicle.objects.all()
 
     serializer_classes = {
-        'default': VehicleSerializer
+        'default': VehicleSerializer,
+        'create': VehicleSaveSerializer
     }
 
     def get_serializer_class(self):

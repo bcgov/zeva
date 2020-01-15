@@ -71,3 +71,12 @@ class VehicleSerializer(serializers.ModelSerializer):
             'id', 'type', 'make', 'model', 'trim', 'validated',
             'range', 'credit_value', 'model_year',
         )
+
+
+class VehicleSaveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vehicle
+        fields = (
+            'id', 'type', 'make', 'model', 'trim', 'validated',
+            'range', 'credit_value', 'model_year',
+        )

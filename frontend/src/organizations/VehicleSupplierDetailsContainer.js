@@ -8,6 +8,8 @@ import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 
+import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
+import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import VehicleSupplierDetailsPage from './components/VehicleSupplierDetailsPage';
 
 const VehicleSupplierDetailsContainer = (props) => {
@@ -20,11 +22,11 @@ const VehicleSupplierDetailsContainer = (props) => {
   const refreshDetails = () => {
     setLoading(true);
 
-    const detailsPromise = axios.get(`organizations/${id}`).then((response) => {
+    const detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
       setDetails(response.data);
     });
 
-    const vehiclesPromise = axios.get('vehicles').then((response) => {
+    const vehiclesPromise = axios.get(ROUTES_VEHICLES.LIST).then((response) => {
       setVehicles(response.data);
     });
 

@@ -92,11 +92,12 @@ const VehicleForm = (props) => {
                 <div className="col-sm-10">
                   <select
                     className="form-control"
-                    id="bev"
-                    name="bev"
+                    id="type"
+                    name="type"
                     onChange={handleInputChange}
                   >
-                    <option>BEV</option>
+                    <option value="1">BEV</option>
+                    <option value="2">BEEV</option>
                   </select>
                 </div>
               </div>

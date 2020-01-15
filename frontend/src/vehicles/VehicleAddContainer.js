@@ -6,6 +6,7 @@ import axios from 'axios';
 import React from 'react';
 
 import BaseController from '../app/BaseController';
+import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import VehicleForm from './components/VehicleForm';
 
 class VehicleAddContainer extends BaseController {
@@ -14,7 +15,7 @@ class VehicleAddContainer extends BaseController {
 
     const data = this.state.fields;
 
-    axios.post('vehicles', data).then((response) => {
+    axios.post(ROUTES_VEHICLES.LIST, data).then((response) => {
       console.log(response);
     });
 

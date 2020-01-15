@@ -6,6 +6,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 
+import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import VehicleList from './components/VehicleList';
 
 const VehicleListContainer = (props) => {
@@ -17,7 +18,7 @@ const VehicleListContainer = (props) => {
   const refreshList = () => {
     setLoading(true);
 
-    axios.get('vehicles').then((response) => {
+    axios.get(ROUTES_VEHICLES.LIST).then((response) => {
       setVehicles(response.data);
       setLoading(false);
     });

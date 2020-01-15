@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import History from '../../app/History';
 import Loading from '../../app/components/Loading';
-import VehiclesTable from './VehiclesTable';
+import VehicleListTable from '../../vehicles/components/VehicleListTable';
 
 const VehicleSupplierDetailsPage = (props) => {
   const { details, loading, vehicles } = props;
@@ -76,7 +76,7 @@ const VehicleSupplierDetailsPage = (props) => {
             </span>
           </div>
 
-          <VehiclesTable
+          <VehicleListTable
             items={vehicles}
           />
 
