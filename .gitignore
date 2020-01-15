@@ -4,6 +4,7 @@ __pycache__/
 .idea/
 .vscode/
 *.py[cod]
+*/**/.DS_Store
 build/
 node_modules/
 public/
