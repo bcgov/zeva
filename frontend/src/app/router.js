@@ -33,6 +33,27 @@ class Router extends Component {
 
     axios.defaults.baseURL = CONFIG.APIBASE;
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    axios.interceptors.request.use(async (_config) => {
+      const config = _config;
+
+      // only refresh the token, when it's expired
+      if (!keycloak.isTokenExpired()) {
+        return config;
+      }
+
+      await keycloak.updateToken().then((refreshed) => {
+        if (refreshed) {
+          const { token: newToken } = keycloak;
+
+          config.headers.Authorization = `Bearer ${newToken}`; // update the token for the current request
+          axios.defaults.headers.common.Authorization = `Bearer ${newToken}`; // update the token for the succeeding requests
+        }
+      }).catch(() => {
+        props.logout(); // show sign in page if we can't refresh the token
+      });
+
+      return config;
+    });
   }
 
   componentDidMount() {
@@ -100,6 +121,7 @@ class Router extends Component {
 
 Router.propTypes = {
   keycloak: PropTypes.shape().isRequired,
+  logout: PropTypes.func.isRequired,
 };
 
 export default Router;

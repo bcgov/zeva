@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { Component } from 'react';
 import Keycloak from 'keycloak-js';
 
@@ -11,10 +12,13 @@ import 'react-table/react-table.css';
 class App extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       authenticated: false,
       keycloak: null,
     };
+
+    this.logout = this.logout.bind(this);
   }
 
   componentDidMount() {
@@ -32,6 +36,12 @@ class App extends Component {
     });
   }
 
+  logout() {
+    this.setState({
+      authenticated: false,
+    });
+  }
+
   render() {
     const { authenticated, keycloak } = this.state;
 
@@ -44,7 +54,7 @@ class App extends Component {
     }
 
     return (
-      <Router keycloak={keycloak} />
+      <Router keycloak={keycloak} logout={this.logout} />
     );
   }
 }

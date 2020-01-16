@@ -13,8 +13,14 @@ const DetailField = (props) => {
 };
 
 DetailField.propTypes = {
-  label: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
+  label: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]).isRequired,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]).isRequired,
 };
 
 export default DetailField;

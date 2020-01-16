@@ -44,11 +44,22 @@ VehicleDetailsPage.defaultProps = {
 VehicleDetailsPage.propTypes = {
   details: PropTypes.shape({
     id: PropTypes.any,
-    make: PropTypes.string,
-    model: PropTypes.string,
-    trim: PropTypes.string,
-    type: PropTypes.string,
-    range: PropTypes.string,
+    make: PropTypes.shape({
+      name: PropTypes.string,
+    }),
+    model: PropTypes.shape({
+      name: PropTypes.string,
+    }),
+    trim: PropTypes.shape({
+      name: PropTypes.string,
+    }),
+    type: PropTypes.shape({
+      name: PropTypes.string,
+    }),
+    range: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.string,
+    ]),
     modelYear: PropTypes.shape({
       name: PropTypes.string,
     }),
