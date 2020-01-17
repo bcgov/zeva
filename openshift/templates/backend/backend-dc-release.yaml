@@ -9,11 +9,6 @@ parameters:
     displayName: Environment name
     description: Environment name, dev, test and prod
     required: true
-  - name: DASH_ENV_NAME
-    value: -dev
-    displayName: Environment name
-    description: Environment name, -dev, -test and empty for prod
-    required: true
   - name: CPU_REQUEST
     displayName: Requested CPU
     description: Requested CPU
@@ -29,14 +24,6 @@ parameters:
   - name: MEMORY_LIMIT
     displayName: Memory upper limit
     description: Memory upper limit
-    required: true
-  - name: POSTGRESQL_USER
-    displayName: Postgresql database user
-    description: Postgresql database user
-    required: true
-  - name: POSTGRESQL_PASSWORD
-    displayName: Postgresql database password
-    description: Postgresql database password
     required: true
 objects:
 - apiVersion: image.openshift.io/v1
@@ -109,56 +96,99 @@ objects:
         name: backend
       spec:
         containers:
-        - env:
-            - name: DATABASE_URL
-              value: "postgresql://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgresql.tbiwaq-${ENV_NAME}.svc.cluster.local/zeva"
-            - name: KEYCLOAK_CERTS_URL
-              value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq/protocol/openid-connect/certs"
-            - name: KEYCLOAK_REALM
-              value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
-            - name: KEYCLOAK_AUTHORITY
-              value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
-            - name: KEYCLOAK_ISSUER
-              value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
-            - name: KEYCLOAK_AUDIENCE
-              value: 'rzh2zkjq'
-            - name: KEYCLOAK_CLIENT_ID
-              value: 'rzh2zkjq'
-          image:
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /health
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 3
-          name: backend
-          ports:
-          - containerPort: 8080
-            protocol: TCP
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /health
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 3
-          resources:
-            limits:
-              cpu: ${CPU_LIMIT}
-              memory: ${MEMORY_LIMIT}
-            requests:
-              cpu: ${CPU_REQUEST}
-              memory: ${MEMORY_REQUEST}
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
+          - name: backend
+            image:
+            imagePullPolicy: IfNotPresent
+            env:
+              - name: DATABASE_NAME
+                value: zeva
+              - name: DATABASE_USER
+                valueFrom:
+                  secretKeyRef:
+                    name: postgresql
+                    key: DATABASE_USER
+              - name: DATABASE_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: postgresql
+                    key: DATABASE_PASSWORD
+              - name: DATABASE_ENGINE
+                value: postgresql
+              - name: DATABASE_SERVICE_NAME
+                value: postgresql
+              - name: DATABASE_SERVICE_HOST
+                value: postgresql.tbiwaq-${ENV_NAME}.svc.cluster.local
+              - name: KEYCLOAK_CERTS_URL
+                value: postgres
+              - name: POSTGRESQL_SERVICE_PORT
+                value: '5432'
+              - name: KEYCLOAK_CERTS_URL
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_certs_url
+              - name: KEYCLOAK_REALM
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_realm
+              - name: KEYCLOAK_AUTHORITY
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_authority
+              - name: KEYCLOAK_ISSUER
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_issuer
+              - name: KEYCLOAK_AUDIENCE
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_audience
+              - name: KEYCLOAK_CLIENT_ID
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_client_id
+              - name: DJANGO_DEBUG
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: django_debug
+            livenessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /health
+                port: 8080
+                scheme: HTTP
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 3
+            ports:
+            - containerPort: 8080
+              protocol: TCP
+            readinessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /health
+                port: 8080
+                scheme: HTTP
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 3
+            resources:
+              limits:
+                cpu: ${CPU_LIMIT}
+                memory: ${MEMORY_LIMIT}
+              requests:
+                cpu: ${CPU_REQUEST}
+                memory: ${MEMORY_REQUEST}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         schedulerName: default-scheduler

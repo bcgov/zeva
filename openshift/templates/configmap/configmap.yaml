@@ -1,0 +1,35 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: zeva-configmap
+parameters:
+  - name: ENV_NAME
+    displayName: SSO Name
+    description: values include dev, test and prod
+    required: true
+  - name: SSO_NAME
+    displayName: SSO Name
+    description: values include sso-dev, sso-test and sso
+    required: true
+  - name: KEYCLOAK_REALM
+    displayName: keycload realm name
+    description: keycload realm name
+    required: true
+objects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      creationTimestamp: null
+      name: zeva-config
+    data:
+      keycloak_certs_url: https://${SSO_NAME}.pathfinder.gov.bc.ca/auth/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs
+      keycloak_realm: https://${SSO_NAME}.pathfinder.gov.bc.ca/auth/realms/${KEYCLOAK_REALM}
+      keycloak_authority: https://${SSO_NAME}.pathfinder.gov.bc.ca/auth/realms/${KEYCLOAK_REALM}
+      keycloak_issuer: https://${SSO_NAME}.pathfinder.gov.bc.ca/auth/realms/${KEYCLOAK_REALM}
+      keycloak_audience: ${KEYCLOAK_REALM}
+      keycloak_client_id: ${KEYCLOAK_REALM}
+      keycloak_url: https://${SSO_NAME}.pathfinder.gov.bc.ca/auth
+      django_debug: 'true'
+      rabbitmq_enabled: 'false'
+      apibase: http://envoy.tbiwaq-${ENV_NAME}.svc.cluster.local:10000/api

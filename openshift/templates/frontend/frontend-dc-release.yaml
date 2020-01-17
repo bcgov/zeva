@@ -9,11 +9,6 @@ parameters:
     displayName: Environment name
     description: Environment name, dev, test and prod
     required: true
-  - name: DASH_ENV_NAME
-    value: dev
-    displayName: Environment name
-    description: Environment name, -dev, -test and empty for prod
-    required: true
   - name: CPU_REQUEST
     displayName: Requested CPU
     description: Requested CPU
@@ -110,24 +105,54 @@ objects:
           name: frontend
         spec:
           containers:
-            - env:
-                - name: KEYCLOAK_CERTS_URL
-                  value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq/protocol/openid-connect/certs"
-                - name: KEYCLOAK_REALM
-                  value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
-                - name: KEYCLOAK_AUTHORITY
-                  value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
-                - name: KEYCLOAK_ISSUER
-                  value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
-                - name: KEYCLOAK_URL
-                  value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth"
-                - name: KEYCLOAK_AUDIENCE
-                  value: 'rzh2zkjq'
-                - name: KEYCLOAK_CLIENT_ID
-                  value: 'rzh2zkjq'
-                - name: RABBITMQ_ENABLED
-                  value: 'False'
+            - name: frontend
               image:
+              env:
+                - name: KEYCLOAK_CERTS_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_certs_url
+                - name: KEYCLOAK_REALM
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_realm
+                - name: KEYCLOAK_AUTHORITY
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_authority
+                - name: KEYCLOAK_ISSUER
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_issuer
+                - name: KEYCLOAK_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_url
+                - name: KEYCLOAK_AUDIENCE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_audience
+                - name: KEYCLOAK_CLIENT_ID
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_client_id
+                - name: RABBITMQ_ENABLED
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: rabbitmq_enabled
+                - name: APIBASE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: apibase
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 3
@@ -137,7 +162,6 @@ objects:
                 tcpSocket:
                   port: 5001
                 timeoutSeconds: 3
-              name: frontend
               ports:
                 - containerPort: 5001
                   protocol: TCP
