@@ -175,8 +175,8 @@ objects:
               - frontend
             from:
               kind: ImageStreamTag
-              name: frontend:dev
-              namespace: tbiwaq-tools
+              name: frontend:${ENV_NAME}
+              namespace: tbiwaq-${ENV_NAME}
             lastTriggeredImage:
           type: ImageChange
         - type: ConfigChange
