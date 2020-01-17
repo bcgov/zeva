@@ -19,7 +19,6 @@ objects:
       annotations:
         description: Keeps track of changes in the client / front end image
       creationTimestamp: null
-      generation: 643
       name: frontend
     spec:
       lookupPolicy:
