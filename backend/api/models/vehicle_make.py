@@ -4,6 +4,7 @@ from .mixins.named import Named
 
 class Make(Auditable, Named):
     class Meta:
-        db_table = 'make'
+        db_table = 'vehicle_make'
 
-    db_table_comment = "Set of all vehicle Makes"
+    db_table_comment = "Brand of the vehicle" \
+                       "e.g. Tesla, Honda"

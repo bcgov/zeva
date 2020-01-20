@@ -4,6 +4,8 @@ from .mixins.named import Named
 
 class Type(Auditable, Named):
     class Meta:
-        db_table = 'type'
+        db_table = 'vehicle_type'
 
-    db_table_comment = 'Set of all vehicle Types'
+    db_table_comment = "Type of engine the vehicle uses" \
+                       "e.g. BEV - Battery Electric Vehicle" \
+                       "FCEV - Fuel Cell Electric Vehicle"

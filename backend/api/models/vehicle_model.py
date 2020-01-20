@@ -6,7 +6,7 @@ from .mixins.named import Named
 
 class Model(Auditable, Named):
     class Meta:
-        db_table = 'model'
+        db_table = 'vehicle_model'
 
     make = models.ForeignKey(
         'Make',
@@ -15,4 +15,4 @@ class Model(Auditable, Named):
         null=False
     )
 
-    db_table_comment = 'Set of all vehicle Models'
+    db_table_comment = "Set of all vehicle models"

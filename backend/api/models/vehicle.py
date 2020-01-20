@@ -29,7 +29,7 @@ class Vehicle(Auditable):
     )
 
     range = models.IntegerField(
-        db_comment='Range in km'
+        db_comment='Vehicle Range in km'
     )
 
     model_year = models.ForeignKey(
@@ -39,10 +39,11 @@ class Vehicle(Auditable):
         null=False
     )
 
-    validated = models.BooleanField(
+    is_validated = models.BooleanField(
         default=False,
-        db_comment="Whether this vehicle description has been validated"
-                   " by the regulator.")
+        db_comment="Whether this vehicle has been an accepted ZEV "
+                   "by the regulator."
+    )
 
     credit_value = models.OneToOneField(
         'CreditValue',

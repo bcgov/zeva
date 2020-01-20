@@ -6,7 +6,7 @@ from .mixins.named import Named
 
 class Trim(Auditable, Named):
     class Meta:
-        db_table = 'trim'
+        db_table = 'vehicle_trim'
 
     model = models.ForeignKey(
         'Model',

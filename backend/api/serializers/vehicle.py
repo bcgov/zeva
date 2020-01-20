@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
 from api.models.credit_value import CreditValue
+from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle
 from api.models.vehicle_make import Make
 from api.models.vehicle_model import Model
-from api.models.vehicle_model_year import ModelYear
 from api.models.vehicle_trim import Trim
 from api.models.vehicle_type import Type
 
@@ -59,11 +59,11 @@ class VehicleTypeSerializer(serializers.ModelSerializer):
 
 class VehicleSerializer(serializers.ModelSerializer):
     credit_value = CreditValueSerializer()
-    type = VehicleTypeSerializer()
     make = VehicleMakeSerializer()
     model = VehicleModelSerializer()
-    trim = VehicleTrimSerializer()
     model_year = VehicleModelYearSerializer()
+    trim = VehicleTrimSerializer()
+    type = VehicleTypeSerializer()
 
     class Meta:
         model = Vehicle
