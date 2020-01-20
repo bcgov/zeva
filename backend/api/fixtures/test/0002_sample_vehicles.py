@@ -61,7 +61,6 @@ class AddSampleVehicles(OperationalDataScript):
                 trim=v[2],
                 range=50 + (random.random() * 1000),
                 model_year=my2020,
-                validated=random.choice([True, False]),
                 credit_value=random.choice(credit_roll)()
             )
 

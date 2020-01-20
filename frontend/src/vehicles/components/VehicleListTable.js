@@ -50,8 +50,8 @@ const VehicleListTable = (props) => {
       id: 'col-class-b',
     },
     {
-      accessor: (v) => v.validated ? 'Yes' : 'No',
-      Header: 'Validated',
+      accessor: (v) => v.state,
+      Header: 'State',
       id: 'col-validated',
     },
   ];

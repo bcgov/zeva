@@ -1,3 +1,4 @@
+import django
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
@@ -136,7 +137,8 @@ class VehicleChangeHistory(Auditable):
                               default=VehicleDefinitionStates.NEW,
                               db_comment='The review state of this vehicle. Valid states: {states}'
                               .format(states=[c.name for c in VehicleDefinitionStates]))
-
+    at = models.DateTimeField(default=django.utils.timezone.now,
+                              db_comment='The time of the state change')
 
     class Meta:
         db_table = 'vehicle_change_history'

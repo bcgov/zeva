@@ -1,6 +1,14 @@
 [
   {
     "fields": {
+      "name": "Gov",
+      "is_government": true
+    },
+    "model": "api.organization",
+    "pk": null
+  },
+  {
+    "fields": {
       "name": "Test Org 1"
     },
     "model": "api.organization",
@@ -18,6 +26,21 @@
       "name": "Test Org 3"
     },
     "model": "api.organization",
+    "pk": null
+  },
+  {
+    "fields": {
+      "email": "engineer@test.com",
+      "username": "engineer",
+      "display_name": "Engineer",
+      "first_name": "Problem",
+      "last_name": "Solver",
+      "organization": [
+        "Gov"
+      ],
+      "is_active": true
+    },
+    "model": "api.userprofile",
     "pk": null
   },
   {

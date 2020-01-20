@@ -28,7 +28,8 @@ class BaseTestCase(TestCase):
     usernames = [
         'vs_user_1',
         'vs_user_2',
-        'vs_user_3'
+        'vs_user_3',
+        'engineer'
     ]
 
     # For use in child classes
