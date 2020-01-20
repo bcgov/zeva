@@ -13,7 +13,7 @@ class CreditValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = CreditValue
         fields = (
-            'a', 'b',
+            'class_a_credit_value', 'class_b_credit_value',
         )
 
 
@@ -68,7 +68,7 @@ class VehicleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vehicle
         fields = (
-            'id', 'type', 'make', 'model', 'trim', 'validated',
+            'id', 'type', 'make', 'model', 'trim', 'is_validated',
             'range', 'credit_value', 'model_year',
         )
 
@@ -77,6 +77,6 @@ class VehicleSaveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vehicle
         fields = (
-            'id', 'type', 'make', 'model', 'trim', 'validated',
+            'id', 'type', 'make', 'model', 'trim', 'is_validated',
             'range', 'credit_value', 'model_year',
         )
