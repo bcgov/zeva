@@ -1,4 +1,8 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
+
+from enum import Enum, unique
+from enumfields import EnumField
 
 from auditable.models import Auditable
 from .credit_value import CreditValue
@@ -7,13 +11,11 @@ from .mixins.effective_dates import EffectiveDates
 
 
 class ModelYear(Auditable, EffectiveDates, UniquelyNamed):
-
     class Meta:
         db_table = 'model_year'
 
 
 class Type(Auditable, Named):
-
     class Meta:
         db_table = 'type'
 
@@ -21,7 +23,6 @@ class Type(Auditable, Named):
 
 
 class Make(Auditable, Named):
-
     class Meta:
         db_table = 'make'
 
@@ -29,7 +30,6 @@ class Make(Auditable, Named):
 
 
 class Model(Auditable, Named):
-
     class Meta:
         db_table = 'model'
 
@@ -44,7 +44,6 @@ class Model(Auditable, Named):
 
 
 class Trim(Auditable, Named):
-
     class Meta:
         db_table = 'trim'
 
@@ -58,8 +57,16 @@ class Trim(Auditable, Named):
     db_table_comment = 'Set of all vehicle Trims'
 
 
-class Vehicle(Auditable):
+@unique
+class VehicleDefinitionStates(Enum):
+    NEW = 'NEW'
+    DRAFT = 'DRAFT'
+    SUBMITTED = 'SUBMITTED'
+    VALIDATED = 'VALIDATED'
+    REJECTED = 'REJECTED'
 
+
+class Vehicle(Auditable):
     make = models.ForeignKey(
         Make,
         related_name=None,
@@ -95,9 +102,12 @@ class Vehicle(Auditable):
         null=False
     )
 
-    validated = models.BooleanField(default=False,
-                                    db_comment='Whether this vehicle description has been validated'
-                                               ' by the regulator')
+    state = EnumField(VehicleDefinitionStates,
+                      max_length=20,
+                      null=False,
+                      default=VehicleDefinitionStates.NEW,
+                      db_comment='The review state of this vehicle. Valid states: {states}'
+                      .format(states=[c.name for c in VehicleDefinitionStates]))
 
     credit_value = models.OneToOneField(CreditValue, on_delete=models.CASCADE, null=True)
 
@@ -106,3 +116,29 @@ class Vehicle(Auditable):
         unique_together = [['make', 'model', 'trim', 'model_year']]
 
     db_table_comment = "List of credit-generating vehicle definitions"
+
+
+class VehicleChangeHistory(Auditable):
+    vehicle = models.ForeignKey(Vehicle, null=False, on_delete=models.CASCADE, related_name='changelog')
+    actor = models.ForeignKey('UserProfile', related_name=None, on_delete=models.PROTECT, null=False,
+                              db_comment='The user who changed the state')
+    in_roles = ArrayField(models.CharField(max_length=50, blank=False, null=False),
+                          db_comment='The roles the actor had at the moment the state changed')
+    previous_state = EnumField(VehicleDefinitionStates,
+                               max_length=20,
+                               null=False,
+                               default=VehicleDefinitionStates.NEW,
+                               db_comment='The previous review state of this vehicle. Valid states: {states}'
+                               .format(states=[c.name for c in VehicleDefinitionStates]))
+    current_state = EnumField(VehicleDefinitionStates,
+                              max_length=20,
+                              null=False,
+                              default=VehicleDefinitionStates.NEW,
+                              db_comment='The review state of this vehicle. Valid states: {states}'
+                              .format(states=[c.name for c in VehicleDefinitionStates]))
+
+
+    class Meta:
+        db_table = 'vehicle_change_history'
+
+    db_table_comment = 'Record vehicle state changes'

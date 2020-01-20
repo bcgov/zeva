@@ -15,6 +15,7 @@ from api.models.user_creation_request import UserCreationRequest
 from api.services.keycloak_api import map_user
 
 cache = caches['keycloak']
+FILTERED_ROLES = ['uma_authorization', 'offline_access']
 
 
 class UserAuthentication(authentication.BaseAuthentication):
@@ -163,6 +164,13 @@ class UserAuthentication(authentication.BaseAuthentication):
             if not user.is_active:
                 raise exceptions.AuthenticationFailed(
                     'user_id "{}" does not exist'.format(username))
+
+            if 'realm_access' in user_token:
+                if 'roles' in user_token['realm_access']:
+                    for role in user_token['realm_access']['roles']:
+                        if role not in FILTERED_ROLES:
+                            user.roles.append(role)
+
         except UserProfile.DoesNotExist:
             raise exceptions.AuthenticationFailed(
                 'user_id "{}" does not exist'.format(username))
