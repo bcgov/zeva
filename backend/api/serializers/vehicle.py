@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from ..models.credit_value import CreditValue
-from ..models.vehicle import Vehicle, ModelYear
+from ..models.vehicle import Vehicle, ModelYear, Make, Model, Type, Trim
 
 
 class CreditValueSerializer(serializers.ModelSerializer):
@@ -12,11 +12,43 @@ class CreditValueSerializer(serializers.ModelSerializer):
         )
 
 
+class MakeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Make
+        fields = (
+             'name', 'id'
+        )
+
+
 class ModelYearSerializer(serializers.ModelSerializer):
     class Meta:
         model = ModelYear
         fields = (
-            'name', 'effective_date', 'expiration_date'
+            'name', 'effective_date', 'expiration_date', 'id'
+        )
+
+
+class TrimSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Trim
+        fields = (
+             'name', 'id'
+        )
+
+
+class TypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Type
+        fields = (
+             'name', 'id'
+        )
+
+
+class VehicleModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Model
+        fields = (
+             'name', 'id'
         )
 
 
@@ -35,4 +67,3 @@ class VehicleSerializer(serializers.ModelSerializer):
             'id', 'type', 'make', 'model', 'trim', 'validated',
             'range', 'credit_value', 'model_year'
         )
-
