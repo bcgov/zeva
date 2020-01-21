@@ -34,7 +34,7 @@ const OrganizationDetailsPage = (props) => {
 
         <div className="col-sm-6">
           <div className="organization-info">
-            Organization Class: B
+            Organization Class: {(details.id % 2) ? 'Medium' : 'Large'}
             <br />
             2019 Compliance target: 55,000
             <br />
@@ -66,6 +66,7 @@ OrganizationDetailsPage.defaultProps = {
 
 OrganizationDetailsPage.propTypes = {
   details: PropTypes.shape({
+    id: PropTypes.number,
     name: PropTypes.string,
     organizationAddress: PropTypes.shape({
       addressLine1: PropTypes.string,

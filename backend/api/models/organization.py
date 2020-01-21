@@ -10,10 +10,16 @@ from ..managers.organization import OrganizationManager
 
 class Organization(Auditable):
     name = models.CharField(
-        max_length=500,
+        db_column="organization_name",
         db_comment="Name of the organization",
-        unique=True,
-        null=False
+        max_length=500,
+        null=False,
+        unique=True
+    )
+    is_active = models.BooleanField(
+        default=False,
+        db_comment="Boolean Field to see if the organization is disabled "
+                   "or not."
     )
     is_government = models.BooleanField(
         default=False,

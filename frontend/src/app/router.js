@@ -11,10 +11,13 @@ import PageLayout from './PageLayout';
 import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
 import OrganizationListContainer from '../organizations/OrganizationListContainer';
+import ROUTES_ORGANIZATIONS from './routes/Organizations';
+import ROUTES_USERS from './routes/Users';
+import ROUTES_VEHICLES from './routes/Vehicles';
 import VehicleAddContainer from '../vehicles/VehicleAddContainer';
 import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
-import VehicleListContainer from "../vehicles/VehicleListContainer";
-import VehicleDetailContainer from "../vehicles/VehicleDetailContainer";
+import VehicleListContainer from '../vehicles/VehicleListContainer';
+import VehicleDetailContainer from '../vehicles/VehicleDetailContainer';
 
 class Router extends Component {
   constructor(props) {
@@ -30,10 +33,31 @@ class Router extends Component {
 
     axios.defaults.baseURL = CONFIG.APIBASE;
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    axios.interceptors.request.use(async (_config) => {
+      const config = _config;
+
+      // only refresh the token, when it's expired
+      if (!keycloak.isTokenExpired()) {
+        return config;
+      }
+
+      await keycloak.updateToken().then((refreshed) => {
+        if (refreshed) {
+          const { token: newToken } = keycloak;
+
+          config.headers.Authorization = `Bearer ${newToken}`; // update the token for the current request
+          axios.defaults.headers.common.Authorization = `Bearer ${newToken}`; // update the token for the succeeding requests
+        }
+      }).catch(() => {
+        props.logout(); // show sign in page if we can't refresh the token
+      });
+
+      return config;
+    });
   }
 
   componentDidMount() {
-    axios.get('users/current').then((response) => {
+    axios.get(ROUTES_USERS.ME).then((response) => {
       this.setState({
         loading: false,
         user: {
@@ -57,35 +81,30 @@ class Router extends Component {
           <Switch>
             <Route
               exact
-              path="/organization-details"
+              path={ROUTES_ORGANIZATIONS.MINE}
               render={() => <OrganizationDetailsContainer keycloak={keycloak} user={user} />}
             />
             <Route
-              exact
-              path="/organizations/mine"
-              render={() => <OrganizationDetailsContainer keycloak={keycloak} user={user} />}
-            />
-            <Route
-              path="/organizations/:id"
+              path={ROUTES_ORGANIZATIONS.DETAILS}
               render={() => <VehicleSupplierDetailsContainer keycloak={keycloak} user={user} />}
             />
             <Route
-              path="/organizations"
+              path={ROUTES_ORGANIZATIONS.LIST}
               render={() => <OrganizationListContainer keycloak={keycloak} user={user} />}
             />
             <Route
               exact
-              path="/vehicles/add"
+              path={ROUTES_VEHICLES.ADD}
               render={() => <VehicleAddContainer keycloak={keycloak} user={user} />}
             />
             <Route
               exact
-              path="/vehicles"
+              path={ROUTES_VEHICLES.LIST}
               render={() => <VehicleListContainer keycloak={keycloak} user={user} />}
             />
             <Route
               exact
-              path="/vehicles/:id"
+              path={ROUTES_VEHICLES.DETAILS}
               render={() => <VehicleDetailContainer keycloak={keycloak} user={user} />}
             />
             <Route
@@ -102,6 +121,7 @@ class Router extends Component {
 
 Router.propTypes = {
   keycloak: PropTypes.shape().isRequired,
+  logout: PropTypes.func.isRequired,
 };
 
 export default Router;

@@ -2,11 +2,11 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import axios from 'axios';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 
+import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import OrganizationDetailsPage from './components/OrganizationDetailsPage';
 
 const OrganizationDetailsContainer = (props) => {
@@ -17,7 +17,7 @@ const OrganizationDetailsContainer = (props) => {
   const refreshDetails = () => {
     setLoading(true);
 
-    axios.get('organizations/mine').then((response) => {
+    axios.get(ROUTES_ORGANIZATIONS.MINE).then((response) => {
       const { users } = response.data;
 
       setMembers(users);

@@ -1,15 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Loading from "../../app/components/Loading";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import OrganizationsTable from "../../organizations/components/OrganizationsTable";
-import VehicleListTable from "./VehicleListTable";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import history from '../../app/History';
+import Loading from '../../app/components/Loading';
+import VehicleListTable from './VehicleListTable';
 
 const VehicleList = (props) => {
-  const {loading, vehicles} = props;
+  const { loading, vehicles } = props;
 
   if (loading) {
-    return <Loading/>;
+    return <Loading />;
   }
 
   return (
@@ -23,31 +24,43 @@ const VehicleList = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <div className="action-bar">
-            <span className="left-content"/>
+            <span className="left-content" />
 
             <span className="right-content">
               <button className="button" type="button">
-                <FontAwesomeIcon icon="download"/> Download as Excel
+                <FontAwesomeIcon icon="download" /> Download as Excel
               </button>
 
-              <button className="button primary" type="button">
-                <FontAwesomeIcon icon="plus"/> New Vehicle
+              <button
+                className="button primary"
+                onClick={() => {
+                  history.push('/vehicles/add');
+                }}
+                type="button"
+              >
+                <FontAwesomeIcon icon="plus" /> New Vehicle
               </button>
             </span>
           </div>
 
-          <VehicleListTable items={vehicles}/>
+          <VehicleListTable items={vehicles} />
 
           <div className="action-bar">
-            <span className="left-content"/>
+            <span className="left-content" />
 
             <span className="right-content">
               <button className="button" type="button">
-                <FontAwesomeIcon icon="download"/> Download as Excel
+                <FontAwesomeIcon icon="download" /> Download as Excel
               </button>
 
-              <button className="button primary" type="button">
-                <FontAwesomeIcon icon="plus"/> New Vehicle
+              <button
+                className="button primary"
+                onClick={() => {
+                  history.push('/vehicles/add');
+                }}
+                type="button"
+              >
+                <FontAwesomeIcon icon="plus" /> New Vehicle
               </button>
             </span>
           </div>
