@@ -21,7 +21,7 @@ class VehicleMakeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Make
         fields = (
-            'name',
+            'name', 'id'
         )
 
 
@@ -29,7 +29,7 @@ class VehicleModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Model
         fields = (
-            'name',
+            'name', 'id'
         )
 
 
@@ -37,7 +37,7 @@ class VehicleTrimSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trim
         fields = (
-            'name',
+            'name', 'id'
         )
 
 
@@ -45,7 +45,7 @@ class VehicleModelYearSerializer(serializers.ModelSerializer):
     class Meta:
         model = ModelYear
         fields = (
-            'name', 'effective_date', 'expiration_date',
+            'name', 'effective_date', 'expiration_date', 'id'
         )
 
 

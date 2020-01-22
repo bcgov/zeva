@@ -1,127 +1,56 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from 'prop-types';
 import React from 'react';
-
-import history from '../../app/History';
+import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import VehicleFormDropdown from './VehicleFormDropdown';
+import Loading from '../../app/components/Loading';
 
 const VehicleForm = (props) => {
-  const { handleInputChange, handleSubmit } = props;
-
+  const {
+    loading,
+    vehicleMakes,
+    vehicleModels,
+    vehicleYears,
+    vehicleTypes,
+    vehicleTrims,
+    handleInputChange,
+  } = props;
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div id="vehicle-form" className="page">
+
       <div className="row">
         <div className="col-md-12">
           <h1>Enter ZEV</h1>
         </div>
       </div>
 
-      <form onSubmit={(event) => handleSubmit(event)}>
+      <form>
         <div className="row align-items-center">
           <div className="col-md-6">
             <fieldset>
               <legend>Model Details</legend>
-
-              <div className="form-group row">
-                <label
-                  className="col-sm-2 col-form-label"
-                  htmlFor="make"
-                >
-                  Make
-                </label>
-
-                <div className="col-sm-10">
-                  <input
-                    className="form-control"
-                    id="make"
-                    name="make"
-                    onChange={handleInputChange}
-                    placeholder="Optimus Prime"
-                    type="text"
-                  />
-                </div>
-              </div>
-
-              <div className="form-group row">
-                <label
-                  className="col-sm-2 col-form-label"
-                  htmlFor="model"
-                >
-                  Model
-                </label>
-
-                <div className="col-sm-10">
-                  <input
-                    className="form-control"
-                    id="model"
-                    name="model"
-                    onChange={handleInputChange}
-                    placeholder="Model A"
-                    type="text"
-                  />
-                </div>
-              </div>
-
-              <div className="form-group row">
-                <label
-                  className="col-sm-2 col-form-label"
-                  htmlFor="model-year"
-                >
-                  Model Year
-                </label>
-
-                <div className="col-sm-10">
-                  <input
-                    className="form-control"
-                    id="model-year"
-                    name="modelYear"
-                    onChange={handleInputChange}
-                    placeholder="2019"
-                    type="text"
-                  />
-                </div>
-              </div>
-
-              <div className="form-group row">
-                <label
-                  className="col-sm-2 col-form-label"
-                  htmlFor="bev"
-                >
-                  Type
-                </label>
-
-                <div className="col-sm-10">
-                  <select
-                    className="form-control"
-                    id="type"
-                    name="type"
-                    onChange={handleInputChange}
-                  >
-                    <option value="1">BEV</option>
-                    <option value="2">BEEV</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-group row">
-                <label
-                  className="col-sm-2 col-form-label"
-                  htmlFor="trim"
-                >
-                  Trim
-                </label>
-
-                <div className="col-sm-10">
-                  <input
-                    className="form-control"
-                    id="trim"
-                    name="trim"
-                    onChange={handleInputChange}
-                    placeholder="XL"
-                    type="text"
-                  />
-                </div>
-              </div>
-
+              <VehicleFormDropdown
+                dropdownName="Model Year"
+                dropdownData={vehicleYears}
+              />
+              <VehicleFormDropdown
+                dropdownName="Make"
+                dropdownData={vehicleMakes}
+              />
+              <VehicleFormDropdown
+                dropdownName="Model"
+                dropdownData={vehicleModels}
+              />
+              <VehicleFormDropdown
+                dropdownName="Type"
+                dropdownData={vehicleTypes}
+              />
+              <VehicleFormDropdown
+                dropdownName="Trim (Optional)"
+                dropdownData={vehicleTrims}
+              />
               <div className="form-group row">
                 <label
                   className="col-sm-2 col-form-label"
@@ -129,13 +58,10 @@ const VehicleForm = (props) => {
                 >
                   Range (km)
                 </label>
-
                 <div className="col-sm-10">
                   <input
                     className="form-control"
                     id="range"
-                    name="range"
-                    onChange={handleInputChange}
                     placeholder="505"
                     type="text"
                   />
@@ -144,13 +70,7 @@ const VehicleForm = (props) => {
 
               <div className="action-bar form-group row">
                 <span className="left-content">
-                  <button
-                    className="button"
-                    onClick={() => {
-                      history.goBack();
-                    }}
-                    type="button"
-                  >
+                  <button className="button" type="button">
                     <FontAwesomeIcon icon="arrow-left" /> Back
                   </button>
                 </span>
@@ -190,8 +110,13 @@ VehicleForm.defaultProps = {
 };
 
 VehicleForm.propTypes = {
+  loading: PropTypes.bool.isRequired,
+  vehicleMakes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  vehicleModels: PropTypes.arrayOf(PropTypes.object).isRequired,
+  vehicleTrims: PropTypes.arrayOf(PropTypes.object).isRequired,
+  vehicleTypes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  vehicleYears: PropTypes.arrayOf(PropTypes.object).isRequired,
   handleInputChange: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
 };
 
 export default VehicleForm;
