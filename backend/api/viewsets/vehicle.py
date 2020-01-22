@@ -2,6 +2,7 @@ from rest_framework import mixins, viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from api.models.credit_value import CreditValue
 from api.models.vehicle import Vehicle
 from api.serializers.vehicle import VehicleSerializer, VehicleSaveSerializer
 from auditable.views import AuditableMixin
@@ -35,7 +36,7 @@ class VehicleViewSet(
 
         if not is_government:
             vehicles = Vehicle.objects.filter(
-                make__organization_id=organization_id
+                organization_id=organization_id
             )
         else:
             vehicles = self.get_queryset()
