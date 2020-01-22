@@ -1,11 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import ReactTable from 'react-table';
 import Loading from '../../app/components/Loading';
 import DetailField from '../../app/components/DetailField';
 import VehicleHistoryTable from './VehicleHistoryTable';
-import DetailField from '../../app/components/DetailField';
 
 const VehicleDetailsPage = (props) => {
   const { details, loading, requestStateChange } = props;
@@ -55,7 +53,9 @@ const VehicleDetailsPage = (props) => {
           <div className="action-bar">
             <span className="left-content">
               {details.actions.map((action) => (
-                <button key={action} onClick={() => requestStateChange(action)}>Set state to {action}</button>
+                <button type="button" key={action} onClick={() => requestStateChange(action)}>
+                  Set state to {action}
+                </button>
               ))}
             </span>
           </div>
@@ -73,7 +73,7 @@ VehicleDetailsPage.propTypes = {
   details: PropTypes.shape({
     id: PropTypes.any,
     actions: PropTypes.arrayOf(PropTypes.string).isRequired,
-
+    changelog: PropTypes.arrayOf(PropTypes.object).isRequired,
     make: PropTypes.shape({
       name: PropTypes.string,
     }),

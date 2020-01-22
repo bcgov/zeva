@@ -8,13 +8,13 @@ import enumfields.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0008_auto_20200113_1107'),
+        ('api', '0009_auto_20200120_2005'),
     ]
 
     operations = [
         migrations.RemoveField(
             model_name='vehicle',
-            name='validated',
+            name='is_validated',
         ),
         migrations.AddField(
             model_name='vehicle',

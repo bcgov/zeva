@@ -3,8 +3,14 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle
-from api.serializers.vehicle import VehicleSerializer
+from api.models.vehicle_make import Make
+from api.models.vehicle_model import Model
+from api.models.vehicle_trim import Trim
+from api.models.vehicle_type import Type
+from api.serializers.vehicle import VehicleSerializer, VehicleStateChangeSerializer, VehicleSaveSerializer, \
+    VehicleModelSerializer, VehicleTrimSerializer, VehicleMakeSerializer, VehicleTypeSerializer, ModelYearSerializer
 from auditable.views import AuditableMixin
 
 
@@ -34,7 +40,7 @@ class VehicleViewSet(
         Get the makes
         """
         makes = Make.objects.all()
-        serializer = MakeSerializer(makes, many=True)
+        serializer = VehicleMakeSerializer(makes, many=True)
         return Response(serializer.data)
 
     @action(detail=False)
@@ -52,7 +58,7 @@ class VehicleViewSet(
         Get the trims
         """
         trims = Trim.objects.all()
-        serializer = TrimSerializer(trims, many=True)
+        serializer = VehicleTrimSerializer(trims, many=True)
         return Response(serializer.data)
 
     @action(detail=False)
@@ -61,7 +67,7 @@ class VehicleViewSet(
         Get the types
         """
         types = Type.objects.all()
-        serializer = TypeSerializer(types, many=True)
+        serializer = VehicleTypeSerializer(types, many=True)
         return Response(serializer.data)
 
     @action(detail=False)
@@ -72,6 +78,7 @@ class VehicleViewSet(
         years = ModelYear.objects.all()
         serializer = ModelYearSerializer(years, many=True)
         return Response(serializer.data)
+
     @action(detail=True, methods=['patch'])
     def state_change(self, request, pk=None):
         """

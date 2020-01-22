@@ -2,17 +2,13 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useParams } from 'react-router-dom';
-
-import { useParams } from 'react-router-dom';
-import VehicleDetailsPage from './components/VehicleDetailsPage';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import VehicleDetailsPage from './components/VehicleDetailsPage';
+
 
 const VehicleDetailContainer = (props) => {
   const [vehicle, setVehicle] = useState({});
@@ -44,7 +40,13 @@ const VehicleDetailContainer = (props) => {
     refreshList();
   }, [keycloak.authenticated]);
 
-  return (<VehicleDetailsPage loading={loading} details={vehicle} requestStateChange={stateChange} />);
+  return (
+    <VehicleDetailsPage
+      loading={loading}
+      details={vehicle}
+      requestStateChange={stateChange}
+    />
+  );
 };
 
 VehicleDetailContainer.propTypes = {
