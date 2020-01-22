@@ -8,28 +8,6 @@ import ReactTable from 'react-table';
 import history from '../../app/History';
 
 const VehicleListTable = (props) => {
-  const FilterCheckbox = ({ filter, onChange }) => (
-    <select
-      onChange={(event) => onChange(event.target.value)}
-      value={filter ? filter.value : ''}
-    >
-      <option value="">Show All</option>
-      <option value="true">Validated</option>
-      <option value="false">Not Validated</option>
-    </select>
-  );
-
-  FilterCheckbox.defaultProps = {
-    filter: {},
-  };
-
-  FilterCheckbox.propTypes = {
-    filter: PropTypes.shape({
-      value: PropTypes.string,
-    }),
-    onChange: PropTypes.func.isRequired,
-  };
-
   const columns = [{
     accessor: (row) => (row.make ? row.make.name : ''),
     Header: 'Make',
@@ -63,13 +41,9 @@ const VehicleListTable = (props) => {
     Header: 'Class B Credits',
     id: 'col-class-b',
   }, {
-    accessor: 'validated',
-    Cell: (row) => (
-      <input type="checkbox" checked={row.original.validated} readOnly />
-    ),
-    className: 'text-center',
-    Filter: FilterCheckbox,
-    Header: 'Validate',
+    accessor: (v) => v.state,
+    Header: 'State',
+    id: 'col-validated',
   }];
 
   const filterMethod = (filter, row) => {

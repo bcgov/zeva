@@ -1,3 +1,5 @@
+import string
+
 from django.db import models
 from django.db.models import F, Q
 import django.contrib.auth.validators
@@ -15,19 +17,19 @@ class UserProfile(Auditable):
         blank=True,
         max_length=500,
         null=True,
-        db_comment="Display Name (retrieved from Siteminder)"
+        db_comment="Display Name (retrieved from Keycloak)"
     )
     first_name = models.CharField(
         blank=True,
         max_length=50,
         null=True,
-        db_comment="First name (retrieved from Siteminder)"
+        db_comment="First name (retrieved from Keycloak)"
     )
     last_name = models.CharField(
         blank=True,
         max_length=50,
         null=True,
-        db_comment="Last name (retrieved from Siteminder)"
+        db_comment="Last name (retrieved from Keycloak)"
     )
     email = models.EmailField(
         blank=True,
@@ -60,6 +62,12 @@ class UserProfile(Auditable):
         max_length=130,
         db_comment="Username that we can connect the user to Keycloak."
     )
+
+    # Unpersisted (supplied by Keycloak authentication filter)
+    roles = []
+
+    def has_role(self, role: string):
+        return role in self.roles
 
     objects = UserProfileManager()
 

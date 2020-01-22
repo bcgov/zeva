@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-import history from '../../app/History';
 import Loading from '../../app/components/Loading';
+import history from '../../app/History';
 import VehicleListTable from './VehicleListTable';
 
 const VehicleList = (props) => {

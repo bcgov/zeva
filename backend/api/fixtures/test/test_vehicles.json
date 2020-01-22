@@ -1,0 +1,21 @@
+[
+  {"fields":  { "name":  "test make 1"}, "model": "api.make", "pk":  1},
+  {"fields":  { "name":  "test model 1", "make":  1}, "model": "api.model", "pk":  1},
+  {"fields":  { "name":  "test trim 1", "model":  1}, "model": "api.trim", "pk":  1},
+  {"fields":  { "name":  "bev"}, "model": "api.type", "pk":  1},
+  {"fields":  { "name":  "test modelyear"}, "model": "api.modelYear", "pk":  1},
+  {
+    "fields": {
+      "type": 1,
+      "make": 1,
+      "model": 1,
+      "trim": 1,
+      "model_year": 1,
+      "range": 100.2,
+      "state": "DRAFT"
+    },
+
+    "model": "api.vehicle",
+    "pk": 1
+  }
+]
