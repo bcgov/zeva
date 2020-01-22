@@ -2,9 +2,11 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 
+import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import VehicleList from './components/VehicleList';
 
 const VehicleListContainer = (props) => {
@@ -16,7 +18,7 @@ const VehicleListContainer = (props) => {
   const refreshList = () => {
     setLoading(true);
 
-    axios.get('vehicles').then((response) => {
+    axios.get(ROUTES_VEHICLES.LIST).then((response) => {
       setVehicles(response.data);
       setLoading(false);
     });
@@ -29,6 +31,10 @@ const VehicleListContainer = (props) => {
   return (<VehicleList loading={loading} vehicles={vehicles} />);
 };
 
-VehicleListContainer.propTypes = {};
+VehicleListContainer.propTypes = {
+  keycloak: PropTypes.shape({
+    authenticated: PropTypes.bool,
+  }).isRequired,
+};
 
 export default VehicleListContainer;

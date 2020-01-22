@@ -8,48 +8,43 @@ import ReactTable from 'react-table';
 import history from '../../app/History';
 
 const VehicleListTable = (props) => {
-  const columns = [
-    {
-      accessor: 'make',
-      Header: 'Make',
-    },
-    {
-      accessor: 'model',
-      Header: 'Model',
-    },
-    {
-      accessor: 'trim',
-      Header: 'Trim',
-    },
-    {
-      accessor: (v) => v.modelYear.name,
-      Header: 'Model Year',
-      id: 'col-my',
-    },
-    {
-      accessor: 'type',
-      Header: 'Type',
-    },
-    {
-      accessor: 'range',
-      Header: 'Range (km)',
-    },
-    {
-      accessor: (v) => ((v.creditValue && v.creditValue.a) ? v.creditValue.a : ''),
-      Header: 'Class A Credits',
-      id: 'col-class-a',
-    },
-    {
-      accessor: (v) => ((v.creditValue && v.creditValue.b) ? v.creditValue.b : ''),
-      Header: 'Class B Credits',
-      id: 'col-class-b',
-    },
-    {
-      accessor: (v) => v.state,
-      Header: 'State',
-      id: 'col-validated',
-    },
-  ];
+  const columns = [{
+    accessor: (row) => (row.make ? row.make.name : ''),
+    Header: 'Make',
+    id: 'make',
+  }, {
+    accessor: (row) => (row.model ? row.model.name : ''),
+    Header: 'Model',
+    id: 'model',
+  }, {
+    accessor: (row) => (row.trim ? row.trim.name : ''),
+    Header: 'Trim',
+    id: 'trim',
+  }, {
+    accessor: (row) => (row.modelYear ? row.modelYear.name : ''),
+    Header: 'Model Year',
+    id: 'col-my',
+  }, {
+    accessor: (row) => (row.type ? row.type.name : ''),
+    Header: 'Type',
+    id: 'type',
+  }, {
+    accessor: 'range',
+    Header: 'Range (km)',
+    id: 'ranger',
+  }, {
+    accessor: (v) => ((v.creditValue && v.creditValue.a) ? v.creditValue.a : ''),
+    Header: 'Class A Credits',
+    id: 'col-class-a',
+  }, {
+    accessor: (v) => ((v.creditValue && v.creditValue.b) ? v.creditValue.b : ''),
+    Header: 'Class B Credits',
+    id: 'col-class-b',
+  }, {
+    accessor: (v) => v.state,
+    Header: 'State',
+    id: 'col-validated',
+  }];
 
   const filterMethod = (filter, row) => {
     const id = filter.pivotId || filter.id;

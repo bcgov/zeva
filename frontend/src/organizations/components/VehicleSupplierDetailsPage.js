@@ -4,10 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import History from '../../app/History';
 import Loading from '../../app/components/Loading';
-import VehiclesTable from './VehiclesTable';
+import VehicleListTable from '../../vehicles/components/VehicleListTable';
 
 const VehicleSupplierDetailsPage = (props) => {
-  const { details, loading } = props;
+  const { details, loading, vehicles } = props;
 
   if (loading) {
     return <Loading />;
@@ -37,7 +37,7 @@ const VehicleSupplierDetailsPage = (props) => {
 
         <div className="col-sm-6">
           <div className="organization-info">
-            Organization Class: B
+            Organization Class: {(details.id % 2) ? 'Medium' : 'Large'}
             <br />
             2019 Compliance target: 55,000
             <br />
@@ -76,38 +76,8 @@ const VehicleSupplierDetailsPage = (props) => {
             </span>
           </div>
 
-          <VehiclesTable
-            items={[{
-              class: 'A',
-              credit: 3.88,
-              make: 'Optimus',
-              model: 'Prime',
-              range: 505,
-              state: 'Validated',
-              trim: 'XL',
-              type: 'BEV',
-              validate: true,
-            }, {
-              class: 'B',
-              credit: 3.12,
-              make: 'Bumble',
-              model: 'Bee',
-              range: 412,
-              state: 'Validated',
-              trim: 'SL',
-              type: 'FCEV',
-              validate: false,
-            }, {
-              class: 'A',
-              credit: 2.87,
-              make: 'Ecto-1',
-              model: 'Bee',
-              range: 387,
-              state: 'Validated',
-              trim: 'SLX',
-              type: 'PHEV',
-              validate: true,
-            }]}
+          <VehicleListTable
+            items={vehicles}
           />
 
           <div className="action-bar">
@@ -138,10 +108,12 @@ const VehicleSupplierDetailsPage = (props) => {
 };
 
 VehicleSupplierDetailsPage.defaultProps = {
+  vehicles: [],
 };
 
 VehicleSupplierDetailsPage.propTypes = {
   details: PropTypes.shape({
+    id: PropTypes.number,
     name: PropTypes.string,
     organizationAddress: PropTypes.shape({
       addressLine1: PropTypes.string,
@@ -153,6 +125,7 @@ VehicleSupplierDetailsPage.propTypes = {
     }),
   }).isRequired,
   loading: PropTypes.bool.isRequired,
+  vehicles: PropTypes.arrayOf(PropTypes.shape({})),
 };
 
 export default VehicleSupplierDetailsPage;

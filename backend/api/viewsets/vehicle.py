@@ -4,13 +4,13 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from api.models.vehicle import Vehicle
-from api.serializers.vehicle import VehicleSerializer, VehicleStateChangeSerializer
+from api.serializers.vehicle import VehicleSerializer
 from auditable.views import AuditableMixin
 
 
 class VehicleViewSet(
     AuditableMixin, viewsets.GenericViewSet,
-    mixins.ListModelMixin, mixins.RetrieveModelMixin
+    mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin
 ):
     permission_classes = (AllowAny,)
     http_method_names = ['get', 'post', 'put', 'patch']
@@ -18,7 +18,8 @@ class VehicleViewSet(
 
     serializer_classes = {
         'default': VehicleSerializer,
-        'state_change': VehicleStateChangeSerializer
+        'state_change': VehicleStateChangeSerializer,
+        'create': VehicleSaveSerializer
     }
 
     def get_serializer_class(self):
@@ -27,6 +28,50 @@ class VehicleViewSet(
 
         return self.serializer_classes['default']
 
+    @action(detail=False)
+    def makes(self, _request):
+        """
+        Get the makes
+        """
+        makes = Make.objects.all()
+        serializer = MakeSerializer(makes, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False)
+    def models(self, _request):
+        """
+        Get the models
+        """
+        models = Model.objects.all()
+        serializer = VehicleModelSerializer(models, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False)
+    def trims(self, _request):
+        """
+        Get the trims
+        """
+        trims = Trim.objects.all()
+        serializer = TrimSerializer(trims, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False)
+    def types(self,_request):
+        """
+        Get the types
+        """
+        types = Type.objects.all()
+        serializer = TypeSerializer(types, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False)
+    def years(self, _request):
+        """
+        Get the years
+        """
+        years = ModelYear.objects.all()
+        serializer = ModelYearSerializer(years, many=True)
+        return Response(serializer.data)
     @action(detail=True, methods=['patch'])
     def state_change(self, request, pk=None):
         """

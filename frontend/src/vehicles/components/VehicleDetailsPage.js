@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import ReactTable from 'react-table';
 import Loading from '../../app/components/Loading';
 import DetailField from '../../app/components/DetailField';
 import VehicleHistoryTable from './VehicleHistoryTable';
+import DetailField from '../../app/components/DetailField';
 
 const VehicleDetailsPage = (props) => {
   const { details, loading, requestStateChange } = props;
@@ -23,10 +23,10 @@ const VehicleDetailsPage = (props) => {
       </div>
       <div className="row align-items-center">
         <div className="col-sm-12">
-          <DetailField label="Make" value={details.make} />
-          <DetailField label="Model" value={details.model} />
-          <DetailField label="Trim" value={details.trim} />
-          <DetailField label="Type" value={details.type} />
+          <DetailField label="Make" value={details.make.name} />
+          <DetailField label="Model" value={details.model.name} />
+          <DetailField label="Trim" value={details.trim.name} />
+          <DetailField label="Type" value={details.type.name} />
           <DetailField label="Range" value={details.range} />
           <DetailField label="Model Year" value={details.modelYear.name} />
           <DetailField
@@ -73,9 +73,35 @@ VehicleDetailsPage.propTypes = {
   details: PropTypes.shape({
     id: PropTypes.any,
     actions: PropTypes.arrayOf(PropTypes.string).isRequired,
+
+    make: PropTypes.shape({
+      name: PropTypes.string,
+    }),
+    model: PropTypes.shape({
+      name: PropTypes.string,
+    }),
+    trim: PropTypes.shape({
+      name: PropTypes.string,
+    }),
+    type: PropTypes.shape({
+      name: PropTypes.string,
+    }),
+    range: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.string,
+    ]),
+    modelYear: PropTypes.shape({
+      name: PropTypes.string,
+    }),
+    creditValue: PropTypes.shape({
+      a: PropTypes.string,
+      b: PropTypes.string,
+    }),
+    state: PropTypes.string,
   }).isRequired,
-  requestStateChange: PropTypes.func.isRequired,
+  actions: PropTypes.arrayOf(PropTypes.string).isRequired,
   loading: PropTypes.bool.isRequired,
+  requestStateChange: PropTypes.func.isRequired,
 };
 
 export default VehicleDetailsPage;

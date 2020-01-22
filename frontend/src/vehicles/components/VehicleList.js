@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Loading from '../../app/components/Loading';
-import OrganizationsTable from '../../organizations/components/OrganizationsTable';
+import history from '../../app/History';
 import VehicleListTable from './VehicleListTable';
 
 const VehicleList = (props) => {
@@ -30,7 +30,13 @@ const VehicleList = (props) => {
                 <FontAwesomeIcon icon="download" /> Download as Excel
               </button>
 
-              <button className="button primary" type="button">
+              <button
+                className="button primary"
+                onClick={() => {
+                  history.push('/vehicles/add');
+                }}
+                type="button"
+              >
                 <FontAwesomeIcon icon="plus" /> New Vehicle
               </button>
             </span>
@@ -46,7 +52,13 @@ const VehicleList = (props) => {
                 <FontAwesomeIcon icon="download" /> Download as Excel
               </button>
 
-              <button className="button primary" type="button">
+              <button
+                className="button primary"
+                onClick={() => {
+                  history.push('/vehicles/add');
+                }}
+                type="button"
+              >
                 <FontAwesomeIcon icon="plus" /> New Vehicle
               </button>
             </span>

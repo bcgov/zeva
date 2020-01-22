@@ -4,8 +4,14 @@
  */
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import axios from 'axios';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import { useParams } from 'react-router-dom';
+import VehicleDetailsPage from './components/VehicleDetailsPage';
+import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import VehicleDetailsPage from './components/VehicleDetailsPage';
 
 const VehicleDetailContainer = (props) => {
@@ -28,7 +34,7 @@ const VehicleDetailContainer = (props) => {
   const refreshList = () => {
     setLoading(true);
 
-    axios.get(`vehicles/${id}`).then((response) => {
+    axios.get(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id)).then((response) => {
       setVehicle(response.data);
       setLoading(false);
     });
@@ -41,6 +47,10 @@ const VehicleDetailContainer = (props) => {
   return (<VehicleDetailsPage loading={loading} details={vehicle} requestStateChange={stateChange} />);
 };
 
-VehicleDetailContainer.propTypes = {};
+VehicleDetailContainer.propTypes = {
+  keycloak: PropTypes.shape({
+    authenticated: PropTypes.bool,
+  }).isRequired,
+};
 
 export default VehicleDetailContainer;
