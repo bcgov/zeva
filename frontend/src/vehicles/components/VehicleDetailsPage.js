@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 
 import Loading from '../../app/components/Loading';
 import DetailField from '../../app/components/DetailField';
+import VehicleHistoryTable from './VehicleHistoryTable';
 
 const VehicleDetailsPage = (props) => {
-  const { details, loading } = props;
+  const { details, loading, requestStateChange } = props;
 
   if (loading) {
     return <Loading />;
@@ -26,24 +27,53 @@ const VehicleDetailsPage = (props) => {
           <DetailField label="Type" value={details.type.name} />
           <DetailField label="Range" value={details.range} />
           <DetailField label="Model Year" value={details.modelYear.name} />
-          <DetailField label="Class A Credits" value={(details.creditValue && details.creditValue.a) ? details.creditValue.a : ''} />
-          <DetailField label="Class B Credits" value={(details.creditValue && details.creditValue.b) ? details.creditValue.b : ''} />
-          <DetailField label="Validated" value={details.validated ? 'Yes' : 'No'} />
+          <DetailField
+            label="Class A Credits"
+            value={(details.creditValue && details.creditValue.a) ? details.creditValue.a : ''}
+          />
+          <DetailField
+            label="Class B Credits"
+            value={(details.creditValue && details.creditValue.b) ? details.creditValue.b : ''}
+          />
+          <DetailField label="State" value={details.state} />
         </div>
       </div>
 
+      <div className="row">
+        <div className="col-sm-12">
+          <h1>Vehicle State History</h1>
+        </div>
+        <div className="col-sm-12">
+          <VehicleHistoryTable items={details.changelog} />
+        </div>
+      </div>
+
+      <div className="row">
+        <div className="col-sm-12">
+          <div className="action-bar">
+            <span className="left-content">
+              {details.actions.map((action) => (
+                <button type="button" key={action} onClick={() => requestStateChange(action)}>
+                  Set state to {action}
+                </button>
+              ))}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
 
 
   );
 };
 
-VehicleDetailsPage.defaultProps = {
-};
+VehicleDetailsPage.defaultProps = {};
 
 VehicleDetailsPage.propTypes = {
   details: PropTypes.shape({
     id: PropTypes.any,
+    actions: PropTypes.arrayOf(PropTypes.string).isRequired,
+    changelog: PropTypes.arrayOf(PropTypes.object).isRequired,
     make: PropTypes.shape({
       name: PropTypes.string,
     }),
@@ -67,10 +97,11 @@ VehicleDetailsPage.propTypes = {
       a: PropTypes.string,
       b: PropTypes.string,
     }),
-    validated: PropTypes.bool,
-
+    state: PropTypes.string,
   }).isRequired,
+  actions: PropTypes.arrayOf(PropTypes.string).isRequired,
   loading: PropTypes.bool.isRequired,
+  requestStateChange: PropTypes.func.isRequired,
 };
 
 export default VehicleDetailsPage;

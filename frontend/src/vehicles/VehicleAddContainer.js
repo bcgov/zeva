@@ -13,7 +13,7 @@ const VehicleAddContainer = (props) => {
   const [trims, setTrims] = useState([]);
   const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
-  const {keycloak} = props;
+  const { keycloak } = props;
 
   const refreshList = () => {
     setLoading(true);

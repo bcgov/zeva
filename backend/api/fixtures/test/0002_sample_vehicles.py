@@ -5,7 +5,12 @@ from django.db import transaction
 
 from api.management.data_script import OperationalDataScript
 from api.models.credit_value import CreditValue
-from api.models.vehicle import Make, Model, Trim, Type, Vehicle, ModelYear
+from api.models.model_year import ModelYear
+from api.models.vehicle import Vehicle
+from api.models.vehicle_make import Make
+from api.models.vehicle_model import Model
+from api.models.vehicle_trim import Trim
+from api.models.vehicle_type import Type
 
 
 class AddSampleVehicles(OperationalDataScript):
@@ -51,8 +56,8 @@ class AddSampleVehicles(OperationalDataScript):
             v = created_tuples.pop()
 
             credit_roll = [lambda: None,
-                           lambda: CreditValue.objects.create(a=random.random()*100),
-                           lambda: CreditValue.objects.create(b=random.random()*100)]
+                           lambda: CreditValue.objects.create(class_a_credit_value=random.random()*100),
+                           lambda: CreditValue.objects.create(class_b_credit_value=random.random()*100)]
 
             Vehicle.objects.create(
                 type=random.choice(created_types),
@@ -61,7 +66,6 @@ class AddSampleVehicles(OperationalDataScript):
                 trim=v[2],
                 range=50 + (random.random() * 1000),
                 model_year=my2020,
-                validated=random.choice([True, False]),
                 credit_value=random.choice(credit_roll)()
             )
 

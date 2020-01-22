@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.fields import SerializerMethodField
 
 from api.models.user_profile import UserProfile
 from .organization import OrganizationSerializer
@@ -23,10 +24,15 @@ class UserSerializer(serializers.ModelSerializer):
     the user has
     """
     organization = OrganizationSerializer(read_only=True)
+    roles = SerializerMethodField()
+
+    def get_roles(self, object):
+        return object.roles
 
     class Meta:
         model = UserProfile
         fields = (
             'id', 'first_name', 'last_name', 'email',
             'username', 'display_name', 'is_active',
-            'organization', 'phone', 'is_government')
+            'organization', 'phone', 'is_government',
+            'roles')
