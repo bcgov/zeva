@@ -8,7 +8,6 @@ import ReactTable from 'react-table';
 import history from '../../app/History';
 
 const VehicleListTable = (props) => {
-
   const columns = [
     {
       accessor: 'make',
@@ -36,16 +35,12 @@ const VehicleListTable = (props) => {
       Header: 'Range (km)',
     },
     {
-      accessor: (v) => {
-        return ((v.creditValue && v.creditValue.a) ? v.creditValue.a : '');
-      },
+      accessor: (v) => ((v.creditValue && v.creditValue.a) ? v.creditValue.a : ''),
       Header: 'Class A Credits',
       id: 'col-class-a',
     },
     {
-      accessor: (v) => {
-        return ((v.creditValue && v.creditValue.b) ? v.creditValue.b : '');
-      },
+      accessor: (v) => ((v.creditValue && v.creditValue.b) ? v.creditValue.b : ''),
       Header: 'Class B Credits',
       id: 'col-class-b',
     },
@@ -65,7 +60,7 @@ const VehicleListTable = (props) => {
 
   const filterable = true;
 
-  const {items} = props;
+  const { items } = props;
 
   return (
     <ReactTable
@@ -82,7 +77,7 @@ const VehicleListTable = (props) => {
         if (row && row.original) {
           return {
             onClick: () => {
-              const {id} = row.original;
+              const { id } = row.original;
 
               history.push(`/vehicles/${id}`);
             },

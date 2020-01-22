@@ -6,7 +6,6 @@ import React from 'react';
 import ReactTable from 'react-table';
 
 const VehicleHistoryTable = (props) => {
-
   const columns = [
     {
       accessor: 'actor',
@@ -36,7 +35,7 @@ const VehicleHistoryTable = (props) => {
 
   const filterable = true;
 
-  const {items} = props;
+  const { items } = props;
 
   return (
     <ReactTable

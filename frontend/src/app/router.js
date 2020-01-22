@@ -13,8 +13,8 @@ import OrganizationDetailsContainer from '../organizations/OrganizationDetailsCo
 import OrganizationListContainer from '../organizations/OrganizationListContainer';
 import VehicleAddContainer from '../vehicles/VehicleAddContainer';
 import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
-import VehicleListContainer from "../vehicles/VehicleListContainer";
-import VehicleDetailContainer from "../vehicles/VehicleDetailContainer";
+import VehicleListContainer from '../vehicles/VehicleListContainer';
+import VehicleDetailContainer from '../vehicles/VehicleDetailContainer';
 
 class Router extends Component {
   constructor(props) {
