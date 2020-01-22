@@ -3,6 +3,9 @@ import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import ROUTES_ORGANIZATIONS from '../routes/Organizations';
+import ROUTES_VEHICLES from '../routes/Vehicles';
+
 class Navbar extends Component {
   constructor(props) {
     super(props);
@@ -140,7 +143,7 @@ class Navbar extends Component {
               <li className="nav-item">
                 <NavLink
                   activeClassName="active"
-                  to="/vehicles"
+                  to={ROUTES_VEHICLES.LIST}
                 >
                   <span>ZEV Models</span>
                 </NavLink>
@@ -150,7 +153,7 @@ class Navbar extends Component {
                 <li className="nav-item">
                   <NavLink
                     activeClassName="active"
-                    to="/organization-details"
+                    to={ROUTES_ORGANIZATIONS.MINE}
                   >
                     <span>Organization Details</span>
                   </NavLink>
@@ -161,7 +164,7 @@ class Navbar extends Component {
                 <li className="nav-item">
                   <NavLink
                     activeClassName="active"
-                    to="/organizations"
+                    to={ROUTES_ORGANIZATIONS.LIST}
                   >
                     <span>Organizations</span>
                   </NavLink>

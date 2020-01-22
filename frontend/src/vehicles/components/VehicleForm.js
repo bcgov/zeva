@@ -12,6 +12,7 @@ const VehicleForm = (props) => {
     vehicleYears,
     vehicleTypes,
     vehicleTrims,
+    handleInputChange,
   } = props;
   if (loading) {
     return <Loading />;
@@ -75,7 +76,7 @@ const VehicleForm = (props) => {
                 </span>
 
                 <span className="right-content">
-                  <button className="button primary" type="button">
+                  <button className="button primary" type="submit">
                     <FontAwesomeIcon icon="save" /> Save
                   </button>
                 </span>
@@ -92,6 +93,8 @@ const VehicleForm = (props) => {
               <input
                 className="form-control"
                 id="vin"
+                name="vin"
+                onChange={handleInputChange}
                 placeholder="###A13FC##3######"
                 type="text"
               />
@@ -113,6 +116,7 @@ VehicleForm.propTypes = {
   vehicleTrims: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleTypes: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.object).isRequired,
+  handleInputChange: PropTypes.func.isRequired,
 };
 
 export default VehicleForm;

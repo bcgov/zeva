@@ -1,28 +1,36 @@
-import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
+import React from 'react';
 
-const Balance = () => (
-  <div className="dashboard-card">
-    <div className="content">
-      <h2>Optimus Autoworks</h2>
-      has a balance of
-      <div className="value">45,000</div>
-      <div className="label">validated credits</div>
-    </div>
+const Balance = (props) => {
+  const { organization } = props;
 
-    <div className="content">
-      <a className="pdf-link" href="/" rel="noopener noreferrer" target="_blank">
-        <span>Credit Market Report </span>
-        <FontAwesomeIcon icon={['far', 'file-pdf']} />
-      </a>
+  return (
+    <div className="dashboard-card">
+      <div className="content">
+        <h2>{organization.name}</h2>
+        has a balance of
+        <div className="value">45,000</div>
+        <div className="label">validated credits</div>
+      </div>
+
+      <div className="content">
+        <a className="pdf-link" href="/" rel="noopener noreferrer" target="_blank">
+          <span>Credit Market Report </span>
+          <FontAwesomeIcon icon={['far', 'file-pdf']} />
+        </a>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 Balance.defaultProps = {
 };
 
 Balance.propTypes = {
+  organization: PropTypes.shape({
+    name: PropTypes.string,
+  }).isRequired,
 };
 
 export default Balance;

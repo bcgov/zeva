@@ -51,7 +51,6 @@ objects:
     labels:
       shared: "true"
     creationTimestamp: null
-    generation: 643
     name: ${NAME}-frontend
   spec:
     lookupPolicy:

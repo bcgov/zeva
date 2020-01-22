@@ -8,53 +8,69 @@ import ReactTable from 'react-table';
 import history from '../../app/History';
 
 const VehicleListTable = (props) => {
+  const FilterCheckbox = ({ filter, onChange }) => (
+    <select
+      onChange={(event) => onChange(event.target.value)}
+      value={filter ? filter.value : ''}
+    >
+      <option value="">Show All</option>
+      <option value="true">Validated</option>
+      <option value="false">Not Validated</option>
+    </select>
+  );
 
-  const columns = [
-    {
-      accessor: 'make',
-      Header: 'Make',
-    },
-    {
-      accessor: 'model',
-      Header: 'Model',
-    },
-    {
-      accessor: 'trim',
-      Header: 'Trim',
-    },
-    {
-      accessor: (v) => v.modelYear.name,
-      Header: 'Model Year',
-      id: 'col-my',
-    },
-    {
-      accessor: 'type',
-      Header: 'Type',
-    },
-    {
-      accessor: 'range',
-      Header: 'Range (km)',
-    },
-    {
-      accessor: (v) => {
-        return ((v.creditValue && v.creditValue.a) ? v.creditValue.a : '');
-      },
-      Header: 'Class A Credits',
-      id: 'col-class-a',
-    },
-    {
-      accessor: (v) => {
-        return ((v.creditValue && v.creditValue.b) ? v.creditValue.b : '');
-      },
-      Header: 'Class B Credits',
-      id: 'col-class-b',
-    },
-    {
-      accessor: (v) => v.validated ? 'Yes' : 'No',
-      Header: 'Validated',
-      id: 'col-validated',
-    },
-  ];
+  FilterCheckbox.defaultProps = {
+    filter: {},
+  };
+
+  FilterCheckbox.propTypes = {
+    filter: PropTypes.shape({
+      value: PropTypes.string,
+    }),
+    onChange: PropTypes.func.isRequired,
+  };
+
+  const columns = [{
+    accessor: (row) => (row.make ? row.make.name : ''),
+    Header: 'Make',
+    id: 'make',
+  }, {
+    accessor: (row) => (row.model ? row.model.name : ''),
+    Header: 'Model',
+    id: 'model',
+  }, {
+    accessor: (row) => (row.trim ? row.trim.name : ''),
+    Header: 'Trim',
+    id: 'trim',
+  }, {
+    accessor: (row) => (row.modelYear ? row.modelYear.name : ''),
+    Header: 'Model Year',
+    id: 'col-my',
+  }, {
+    accessor: (row) => (row.type ? row.type.name : ''),
+    Header: 'Type',
+    id: 'type',
+  }, {
+    accessor: 'range',
+    Header: 'Range (km)',
+    id: 'ranger',
+  }, {
+    accessor: (v) => ((v.creditValue && v.creditValue.a) ? v.creditValue.a : ''),
+    Header: 'Class A Credits',
+    id: 'col-class-a',
+  }, {
+    accessor: (v) => ((v.creditValue && v.creditValue.b) ? v.creditValue.b : ''),
+    Header: 'Class B Credits',
+    id: 'col-class-b',
+  }, {
+    accessor: 'validated',
+    Cell: (row) => (
+      <input type="checkbox" checked={row.original.validated} readOnly />
+    ),
+    className: 'text-center',
+    Filter: FilterCheckbox,
+    Header: 'Validate',
+  }];
 
   const filterMethod = (filter, row) => {
     const id = filter.pivotId || filter.id;
@@ -65,7 +81,7 @@ const VehicleListTable = (props) => {
 
   const filterable = true;
 
-  const {items} = props;
+  const { items } = props;
 
   return (
     <ReactTable
@@ -82,7 +98,7 @@ const VehicleListTable = (props) => {
         if (row && row.original) {
           return {
             onClick: () => {
-              const {id} = row.original;
+              const { id } = row.original;
 
               history.push(`/vehicles/${id}`);
             },

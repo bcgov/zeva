@@ -3,6 +3,15 @@ kind: Template
 metadata:
   creationTimestamp: null
   name: frontend
+parameters:
+  - name: GIT_URL
+    displayName:
+    description: zeva repo
+    required: true
+  - name: GIT_REF
+    displayName:
+    description: zeva release name
+    required: true
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
@@ -28,28 +37,27 @@ objects:
       output:
         to:
           kind: ImageStreamTag
-          name: frontend:latest
+          name: frontend:${GIT_REF}
       postCommit: {}
-      resources: {}
+      resources:
+        limits:
+          cpu: 2000m
+          memory: 2G
+        requests:
+          cpu: 500m
+          memory: 200M
       runPolicy: Serial
       source:
-        dockerfile: |-
-          FROM node:8-jessie
-          RUN apt-get update
-          RUN apt-get install git
-          ADD https://github.com/vishnubob/wait-for-it/compare/master...HEAD /dev/null
-          RUN git clone https://github.com/vishnubob/wait-for-it.git /wfi
-          RUN git clone https://github.com/bcgov/zeva.git /tmp/zeva
-          RUN mv /tmp/zeva/frontend /app
-          WORKDIR /app
-          RUN npm install
-          RUN npm rebuild node-sass
-          CMD npm run start
-        type: Dockerfile
+        git:
+          ref: ${GIT_REF}
+          uri: ${GIT_URL}
+        type: Git
+        contextDir: frontend
       strategy:
         dockerStrategy:
           forcePull: false
           noCache: true
+          imageOptimizationPolicy: SkipLayers
         type: Docker
       successfulBuildsHistoryLimit: 5
       triggers: []

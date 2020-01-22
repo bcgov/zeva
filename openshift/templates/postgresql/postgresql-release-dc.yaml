@@ -88,7 +88,7 @@ objects:
     metadata:
       name: postgresql
       annotations:
-        volume.beta.kubernetes.io/storage-class: gluster-file-db
+        volume.beta.kubernetes.io/storage-class: netapp-block-standard
         template.openshift.io.bcgov/create: 'true'
     spec:
       accessModes:
@@ -101,7 +101,7 @@ objects:
     metadata:
       name: postgresql-backup
       annotations:
-        volume.beta.kubernetes.io/storage-class: gluster-file
+        volume.beta.kubernetes.io/storage-class: netapp-file-standard
         template.openshift.io.bcgov/create: 'true'
     spec:
       accessModes:

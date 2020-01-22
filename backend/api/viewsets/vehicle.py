@@ -3,7 +3,13 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
-from api.models.vehicle import Vehicle, Make, Model, ModelYear, Type, Trim
+from api.models.vehicle import Vehicle
+from api.models.vehicle_make import Make
+from api.models.vehicle_model import Model
+from api.models.vehicle_trim import Trim
+from api.models.vehicle_type import Type
+from api.models.model_year import ModelYear
+
 from api.serializers.vehicle import VehicleSerializer, MakeSerializer, \
 VehicleModelSerializer, ModelYearSerializer, TypeSerializer, TrimSerializer
 from auditable.views import AuditableMixin
@@ -11,14 +17,15 @@ from auditable.views import AuditableMixin
 
 class VehicleViewSet(
     AuditableMixin, viewsets.GenericViewSet,
-    mixins.ListModelMixin, mixins.RetrieveModelMixin
+    mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin
 ):
     permission_classes = (AllowAny,)
     http_method_names = ['get', 'post', 'put', 'patch']
     queryset = Vehicle.objects.all()
 
     serializer_classes = {
-        'default': VehicleSerializer
+        'default': VehicleSerializer,
+        'create': VehicleSaveSerializer
     }
 
     def get_serializer_class(self):
