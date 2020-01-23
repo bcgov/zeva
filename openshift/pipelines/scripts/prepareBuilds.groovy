@@ -1,7 +1,7 @@
 def buildStages(String envName, String zevaRelease) {
     def buildList = []
     def buildStages = [:]
-    buildStages.put('Build Frontend', prepareBuildFrontend(envName, zevaRelease))
+    //buildStages.put('Build Frontend', prepareBuildFrontend(envName, zevaRelease))
     buildStages.put('Build Backend', prepareBuildBackend(envName, zevaRelease))
     buildList.add(buildStages)
     return buildList
