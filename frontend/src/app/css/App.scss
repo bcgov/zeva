@@ -95,10 +95,20 @@ p {
 
 	.right-content > * {
 		margin-left: 1rem;
+		white-space: nowrap;
+		align-self: center;
+
 	}
 
+	#supplier {
+		width:auto;
+	}
 	.button svg {
 		margin-right: 0.25rem;
+	}
+	label {
+		margin-top: 1rem;
+		margin-bottom: 1rem;
 	}
 }
 

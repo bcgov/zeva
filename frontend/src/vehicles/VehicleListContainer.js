@@ -12,9 +12,7 @@ import VehicleList from './components/VehicleList';
 const VehicleListContainer = (props) => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const { keycloak } = props;
-
+  const { keycloak, user } = props;
   const refreshList = () => {
     setLoading(true);
 
@@ -28,7 +26,7 @@ const VehicleListContainer = (props) => {
     refreshList();
   }, [keycloak.authenticated]);
 
-  return (<VehicleList loading={loading} vehicles={vehicles} />);
+  return (<VehicleList loading={loading} vehicles={vehicles} user={user} />);
 };
 
 VehicleListContainer.propTypes = {
