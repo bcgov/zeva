@@ -44,7 +44,7 @@ class VehicleViewSet(
 
         if not is_government:
             vehicles = Vehicle.objects.filter(
-                organization_id=organization_id
+                make__vehicle_make_organizations__organization_id=organization_id
             )
         else:
             vehicles = self.get_queryset()
