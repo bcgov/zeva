@@ -41,7 +41,7 @@ objects:
         requests:
           cpu: 500m
           memory: 200M
-      runPolicy: Serial
+      runPolicy: SerialLatestOnly
       source:
         git:
           ref: ${ZEVA_RELEASE}

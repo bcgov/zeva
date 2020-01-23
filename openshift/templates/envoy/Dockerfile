@@ -1,2 +1,3 @@
 FROM envoyproxy/envoy:v1.12.1
-COPY envoy.yaml /etc/envoy/envoy.yaml
+ARG env_name
+COPY envoy-${env_name}.yaml /etc/envoy/envoy.yaml
