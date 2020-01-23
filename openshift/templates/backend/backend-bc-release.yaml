@@ -4,11 +4,7 @@ metadata:
   creationTimestamp: null
   name: backend
 parameters:
-  - name: GIT_URL
-    displayName:
-    description: zeva repo
-    required: true
-  - name: GIT_REF
+  - name: ZEVA_RELEASE
     displayName:
     description: zeva release name
     required: true
@@ -37,7 +33,7 @@ objects:
       output:
         to:
           kind: ImageStreamTag
-          name: backend:${GIT_REF}
+          name: backend:${ZEVA_RELEASE}
       postCommit: {}
       resources:
         limits:
@@ -50,8 +46,8 @@ objects:
       source:
         contextDir: backend
         git:
-          ref: ${GIT_REF}
-          uri: ${GIT_URL}
+          ref: ${ZEVA_RELEASE}
+          uri: https://github.com/bcgov/zeva.git
         type: Git
       strategy:
         sourceStrategy:
