@@ -2,7 +2,7 @@ def buildStages(String envName, String zevaRelease) {
     def buildList = []
     def buildStages = [:]
     //buildStages.put('Build Frontend', prepareBuildFrontend(envName, zevaRelease))
-    buildStages.put('Build Backend', prepareBuildBackend(envName, zevaRelease))
+    //buildStages.put('Build Backend', prepareBuildBackend(envName, zevaRelease))
     buildList.add(buildStages)
     return buildList
 }
@@ -41,4 +41,20 @@ def prepareBuildBackend(String envName, String zevaRelease) {
     }
 }
 
+def prepareBuildEnvoy(String envName, String zevaRelease) {
+    return {
+        stage('Build-Envoy') {
+            timeout(30) {
+                script {
+                    openshift.withProject("tbiwaq-tools") {
+                        def envoyyaml = openshift.process(readFile(file:'openshift/templates/envoy/envoy-bc-release.yaml'), '-p', "ENV_NAME=${envName}", "ZEVA_RELEASE=${zevaRelease}")
+                        openshift.apply(envoyyaml)
+                        def envoyBuildSelector = openshift.selector("bc", "envoy")
+                        envoyBuildSelector.startBuild("--wait")
+                    }
+                } //end of script
+            } //end of timeout
+        }
+    }
+}
 return this
