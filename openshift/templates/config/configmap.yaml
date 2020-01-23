@@ -14,7 +14,7 @@ parameters:
     required: true
   - name: KEYCLOAK_REALM
     displayName: keycload realm name
-    description: keycload realm name
+    description: keycload realm name, value is rzh2zkjq
     required: true
 objects:
   - apiVersion: v1
@@ -23,6 +23,12 @@ objects:
       creationTimestamp: null
       name: zeva-config
     data:
+      database_name: zeva
+      database_engine: postgresql
+      database_service_name: postgresql
+      databse_service_host: postgresql.tbiwaq-${ENV_NAME}.svc.cluster.local
+      postgresql_service_host: postgresql.tbiwaq-${ENV_NAME}.svc.cluster.local
+      postgresql_service_port: '5432'
       keycloak_certs_url: https://${SSO_NAME}.pathfinder.gov.bc.ca/auth/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs
       keycloak_realm: https://${SSO_NAME}.pathfinder.gov.bc.ca/auth/realms/${KEYCLOAK_REALM}
       keycloak_authority: https://${SSO_NAME}.pathfinder.gov.bc.ca/auth/realms/${KEYCLOAK_REALM}
@@ -30,6 +36,18 @@ objects:
       keycloak_audience: ${KEYCLOAK_REALM}
       keycloak_client_id: ${KEYCLOAK_REALM}
       keycloak_url: https://${SSO_NAME}.pathfinder.gov.bc.ca/auth
+      keycloak_sa_baseurl: https://${SSO_NAME}.pathfinder.gov.bc.ca
+      keycloak_sa_client_id: zeva-app-sa
+      keycloak_sa_realm: ${KEYCLOAK_REALM}
       django_debug: 'true'
       rabbitmq_enabled: 'false'
       apibase: http://envoy.tbiwaq-${ENV_NAME}.svc.cluster.local:10000/api
+      kecloak_sa_client_secret: 04dcb145-aa9a-4d9c-807e-859f3e3477eb
+      rabbitmq_default_vhost: unknown
+      rabbitmq_host: unknown
+      rabbitmq_port: unknown
+      smtp_server_host: unknown
+      smtp_server_port: unknown
+      email_sending_enabled: unknown
+      email_from_address: unknown
+

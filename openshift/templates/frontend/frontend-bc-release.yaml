@@ -4,11 +4,7 @@ metadata:
   creationTimestamp: null
   name: frontend
 parameters:
-  - name: GIT_URL
-    displayName:
-    description: zeva repo
-    required: true
-  - name: GIT_REF
+  - name: ZEVA_RELEASE
     displayName:
     description: zeva release name
     required: true
@@ -36,7 +32,7 @@ objects:
       output:
         to:
           kind: ImageStreamTag
-          name: frontend:${GIT_REF}
+          name: frontend:${ZEVA_RELEASE}
       postCommit: {}
       resources:
         limits:
@@ -48,8 +44,8 @@ objects:
       runPolicy: Serial
       source:
         git:
-          ref: ${GIT_REF}
-          uri: ${GIT_URL}
+          ref: ${ZEVA_RELEASE}
+          uri: https://github.com/bcgov/zeva.git
         type: Git
         contextDir: frontend
       strategy:

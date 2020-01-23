@@ -105,23 +105,38 @@ objects:
               - name: DATABASE_USER
                 valueFrom:
                   secretKeyRef:
-                    name: postgresql
+                    name: zeva-postgresql
                     key: DATABASE_USER
               - name: DATABASE_PASSWORD
                 valueFrom:
                   secretKeyRef:
-                    name: postgresql
+                    name: zeva-postgresql
                     key: DATABASE_PASSWORD
               - name: DATABASE_ENGINE
-                value: postgresql
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: database_engine
               - name: DATABASE_SERVICE_NAME
-                value: postgresql
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: database_service_name
               - name: DATABASE_SERVICE_HOST
-                value: postgresql.tbiwaq-${ENV_NAME}.svc.cluster.local
-              - name: KEYCLOAK_CERTS_URL
-                value: postgres
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: databse_service_host
+              - name: POSTGRESQL_SERVICE_HOST
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: postgresql_service_host
               - name: POSTGRESQL_SERVICE_PORT
-                value: '5432'
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: postgresql_service_port
               - name: KEYCLOAK_CERTS_URL
                 valueFrom:
                   configMapKeyRef:
@@ -157,6 +172,83 @@ objects:
                   configMapKeyRef:
                     name: zeva-config
                     key: django_debug
+              - name: DJANGO_SECRET_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: zeva-django-secret-key
+                    key: DJANGO_SECRET_KEY
+              - name: KEYCLOAK_REALM_URL
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_realm
+              - name: KEYCLOAK_SA_BASEURL
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_sa_baseurl
+              - name: KEYCLOAK_SA_CLIENT_ID
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_sa_client_id
+              - name: KEYCLOAK_SA_REALM
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_sa_realm
+              - name: KEYCLOAK_SA_CLIENT_SECRET
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: kecloak_sa_client_secret
+              - name: RABBITMQ_DEFAULT_USER
+                valueFrom:
+                  secretKeyRef:
+                    name: zeva-rabbitmq
+                    key: RABBITMQ_DEFAULT_USER
+              - name: RABBITMQ_DEFAULT_PASS
+                valueFrom:
+                  secretKeyRef:
+                    name: zeva-rabbitmq
+                    key: RABBITMQ_DEFAULT_PASS
+              - name: RABBITMQ_DEFAULT_VHOST
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: rabbitmq_default_vhost
+              - name: RABBITMQ_PORT
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: rabbitmq_port
+              - name: RABBITMQ_HOST
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: rabbitmq_host
+              - name: SMTP_SERVER_HOST
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: smtp_server_host
+              - name: SMTP_SERVER_PORT
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: smtp_server_port
+              - name: EMAIL_SENDING_ENABLED
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: email_sending_enabled
+              - name: EMAIL_FROM_ADDRESS
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: email_from_address
+              - name: APP_CONFIG
+                value: /opt/app-root/src/gunicorn.cfg
             livenessProbe:
               failureThreshold: 3
               httpGet:
