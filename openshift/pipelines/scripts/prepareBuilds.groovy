@@ -1,13 +1,14 @@
 def buildStages(String envName, String zevaRelease) {
     def buildList = []
     def buildStages = [:]
-    //buildStages.put('Build Frontend', prepareBuildFrontend(envName, zevaRelease))
-    //buildStages.put('Build Backend', prepareBuildBackend(envName, zevaRelease))
+    //buildStages.put('Build Frontend', prepareBuildFrontend(zevaRelease))
+    //buildStages.put('Build Backend', prepareBuildBackend(zevaRelease))
+    buildStages.put('Build Envoy', prepareBuildEnvoy(envName, zevaRelease))
     buildList.add(buildStages)
     return buildList
 }
 
-def prepareBuildFrontend(String envName, String zevaRelease) {
+def prepareBuildFrontend(String zevaRelease) {
     return {
         stage('Build-Frontend') {
             timeout(30) {
@@ -24,7 +25,7 @@ def prepareBuildFrontend(String envName, String zevaRelease) {
     }
 }
 
-def prepareBuildBackend(String envName, String zevaRelease) {
+def prepareBuildBackend(String zevaRelease) {
     return {
         stage('Build-Backend') {
             timeout(30) {
