@@ -58,9 +58,6 @@ objects:
             name: python:3.6
             namespace: openshift
         type: Source
-      triggers:
-      - imageChange: {}
-        type: ImageChange
-      - type: ConfigChange
+      triggers: []
     status:
       lastVersion: 0

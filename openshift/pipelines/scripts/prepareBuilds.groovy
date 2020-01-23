@@ -30,7 +30,7 @@ def prepareBuildBackend(String envName, String zevaRelease) {
             timeout(30) {
                 script {
                     openshift.withProject("tbiwaq-tools") {
-                        def backendyaml = openshift.process(readFile(file:'openshift/templates/backend/backend-bc-release.yaml'), '-p', "GIT_REF=${zevaRelease}")
+                        def backendyaml = openshift.process(readFile(file:'openshift/templates/backend/backend-bc-release.yaml'), '-p', "ZEVA_RELEASE=${zevaRelease}")
                         openshift.apply(backendyaml)
                         def backendBuildSelector = openshift.selector("bc", "backend")
                         backendBuildSelector.startBuild("--wait")
