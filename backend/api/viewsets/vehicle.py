@@ -8,7 +8,7 @@ from api.models.vehicle import Vehicle
 from api.models.vehicle_make import Make
 from api.models.vehicle_model import Model
 from api.models.vehicle_trim import Trim
-from api.models.vehicle_type import Type
+from api.models.vehicle_type import FuelType
 from api.serializers.vehicle import VehicleSerializer, VehicleStateChangeSerializer, VehicleSaveSerializer, \
     VehicleModelSerializer, VehicleTrimSerializer, VehicleMakeSerializer, VehicleTypeSerializer, ModelYearSerializer
 from auditable.views import AuditableMixin
@@ -62,11 +62,11 @@ class VehicleViewSet(
         return Response(serializer.data)
 
     @action(detail=False)
-    def types(self,_request):
+    def types(self, _request):
         """
         Get the types
         """
-        types = Type.objects.all()
+        types = FuelType.objects.all()
         serializer = VehicleTypeSerializer(types, many=True)
         return Response(serializer.data)
 

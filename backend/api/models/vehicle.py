@@ -30,14 +30,14 @@ class Vehicle(Auditable):
         on_delete=models.PROTECT
     )
 
-    trim = models.ForeignKey(
-        'Trim',
+    vehicle_class = models.ForeignKey(
+        'VehicleClass',
         related_name=None,
         on_delete=models.PROTECT
     )
 
-    type = models.ForeignKey(
-        'Type',
+    fuel_type = models.ForeignKey(
+        'FuelType',
         related_name=None,
         on_delete=models.PROTECT
     )
@@ -53,21 +53,20 @@ class Vehicle(Auditable):
         null=False
     )
 
-    state = EnumField(VehicleDefinitionStates,
-                      max_length=20,
-                      null=False,
-                      default=VehicleDefinitionStates.NEW,
-                      db_comment='The review state of this vehicle. Valid states: {states}'
-                      .format(states=[c.name for c in VehicleDefinitionStates]))
-
-    credit_value = models.OneToOneField(
-        'CreditValue',
-        on_delete=models.CASCADE, null=True
+    state = EnumField(
+        VehicleDefinitionStates,
+        max_length=20,
+        null=False,
+        default=VehicleDefinitionStates.NEW,
+        db_comment="The review state of this vehicle. Valid states: {states}"
+        .format(states=[c.name for c in VehicleDefinitionStates])
     )
 
     class Meta:
         db_table = 'vehicle'
-        unique_together = [['make', 'model', 'trim', 'model_year']]
+        unique_together = [[
+            'make', 'model', 'vehicle_class', 'fuel_type', 'model_year'
+        ]]
 
     db_table_comment = "List of credit-generating vehicle definitions"
 

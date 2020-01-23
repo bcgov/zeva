@@ -7,7 +7,7 @@ from api.models.vehicle import Vehicle, VehicleDefinitionStates, VehicleChangeHi
 from api.models.vehicle_make import Make
 from api.models.vehicle_model import Model
 from api.models.vehicle_trim import Trim
-from api.models.vehicle_type import Type
+from api.models.vehicle_type import FuelType
 from api.services.vehicle import change_state
 
 
@@ -53,7 +53,7 @@ class ModelYearSerializer(serializers.ModelSerializer):
 
 class VehicleTypeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Type
+        model = FuelType
         fields = (
             'name',
         )
