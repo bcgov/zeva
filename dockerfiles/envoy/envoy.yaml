@@ -27,6 +27,9 @@ static_resources:
                         - match: { prefix: "/api/" }
                           route:
                             cluster: django
+                        - match: { prefix: "/health" }
+                          route:
+                              cluster: django
                         - match: { prefix: "/sockjs-node/" }
                           route:
                             cluster: frontend
