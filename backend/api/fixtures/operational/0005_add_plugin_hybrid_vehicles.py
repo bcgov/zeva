@@ -13,8 +13,8 @@ class AddPluginHybridVehicles(OperationalDataScript):
     Fuel Consumption Guide
     """
     is_revertable = False
-    comment = 'Adds the Fuel types found in the NRCAN 2019 Fuel Consumption ' \
-              'Guide'
+    comment = 'Adds the Plug-in hybrid electric vehicles found in the ' \
+              'NRCAN 2019 Fuel Consumption Guide'
 
     def check_run_preconditions(self):
         return True

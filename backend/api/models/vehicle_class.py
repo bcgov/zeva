@@ -6,7 +6,7 @@ from .mixins.named import Description
 
 
 class VehicleClass(Auditable, Description, EffectiveDates):
-    code = models.CharField(
+    id = models.CharField(
         blank=False,
         db_comment="Vehicle Class Code (e.g. T, I, S, C, M, L)",
         max_length=3,

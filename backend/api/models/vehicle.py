@@ -32,12 +32,14 @@ class Vehicle(Auditable):
 
     vehicle_class = models.ForeignKey(
         'VehicleClass',
+        db_column='vehicle_class_code',
         related_name=None,
         on_delete=models.PROTECT
     )
 
     fuel_type = models.ForeignKey(
         'FuelType',
+        db_column='fuel_type_code',
         related_name=None,
         on_delete=models.PROTECT
     )

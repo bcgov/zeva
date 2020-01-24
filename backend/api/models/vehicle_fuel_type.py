@@ -6,7 +6,7 @@ from .mixins.named import Description
 
 
 class FuelType(Auditable, Description, EffectiveDates):
-    code = models.CharField(
+    id = models.CharField(
         blank=False,
         db_comment="Fuel type (e.g. B, BX, BZ)",
         max_length=3,
