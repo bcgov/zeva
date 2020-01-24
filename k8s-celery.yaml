@@ -1,0 +1,143 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-worker
+spec:
+  replicas: 1
+  minReadySeconds: 20
+  template:
+    metadata:
+      name: celery-worker-pod
+      labels:
+        app: celery-worker
+    spec:
+      containers:
+        - name: celery-worker
+          image: django-backend
+          command: ['celery','worker','-A','zeva', '-l', 'info', '-E']
+          env:
+            - name: DATABASE_NAME
+              value: 'zeva'
+            - name: DATABASE_USER
+              value: 'zeva'
+            - name: DATABASE_PASSWORD
+              value: 'zevadev'
+            - name: DATABASE_ENGINE
+              value: 'postgresql'
+            - name: DATABASE_SERVICE_NAME
+              value: 'postgresql'
+            - name: POSTGRESQL_SERVICE_HOST
+              value: 'postgres'
+            - name: POSTGRESQL_SERVICE_PORT
+              value: '5432'
+            - name: KEYCLOAK_CERTS_URL
+              value: 'http://keycloak:8080/auth/realms/zeva/protocol/openid-connect/certs'
+            - name: KEYCLOAK_REALM
+              value: 'http://localhost:8888/auth/realms/zeva'
+            - name: KEYCLOAK_AUTHORITY
+              value: 'http://localhost:8888/auth/realms/zeva'
+            - name: KEYCLOAK_ISSUER
+              value: 'http://localhost:8888/auth/realms/zeva'
+            - name: KEYCLOAK_AUDIENCE
+              value: 'zeva-app'
+            - name: KEYCLOAK_CLIENT_ID
+              value: 'zeva-app'
+            - name: KEYCLOAK_SA_BASEURL
+              value: 'http://keycloak:8080'
+            - name: KEYCLOAK_SA_REALM
+              value: 'zeva'
+            - name: KEYCLOAK_SA_CLIENT_ID
+              value: 'zeva-app-sa'
+            - name: KEYCLOAK_SA_CLIENT_SECRET
+              value: '06dc71d6-1800-4f5d-b7b3-4c4fda226599'
+            - name: DJANGO_DEBUG
+              value: 'False' # this impacts celery logging too
+            - name: RABBITMQ_VHOST
+              value: '/zeva'
+            - name: RABBITMQ_USER
+              value: 'rabbitmq'
+            - name: RABBITMQ_PASSWORD
+              value: 'rabbitmq'
+            - name: RABBITMQ_HOST
+              value: 'rabbit'
+            - name: RABBITMQ_PORT
+              value: '5672'
+      initContainers:
+        - name: init-psql
+          image: busybox:1.28
+          command: ['sh', '-c', 'until nslookup postgres; do echo waiting for postgres; sleep 5; done;']
+  selector:
+    matchLabels:
+      app: celery-worker
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-beat
+spec:
+  replicas: 1
+  minReadySeconds: 20
+  template:
+    metadata:
+      name: celery-beat-pod
+      labels:
+        app: celery-beat
+    spec:
+      containers:
+        - name: celery-beat
+          image: django-backend
+          command: ['celery','beat','-A','zeva','-l', 'info']
+          env:
+            - name: DATABASE_NAME
+              value: 'zeva'
+            - name: DATABASE_USER
+              value: 'zeva'
+            - name: DATABASE_PASSWORD
+              value: 'zevadev'
+            - name: DATABASE_ENGINE
+              value: 'postgresql'
+            - name: DATABASE_SERVICE_NAME
+              value: 'postgresql'
+            - name: POSTGRESQL_SERVICE_HOST
+              value: 'postgres'
+            - name: POSTGRESQL_SERVICE_PORT
+              value: '5432'
+            - name: KEYCLOAK_CERTS_URL
+              value: 'http://keycloak:8080/auth/realms/zeva/protocol/openid-connect/certs'
+            - name: KEYCLOAK_REALM
+              value: 'http://localhost:8888/auth/realms/zeva'
+            - name: KEYCLOAK_AUTHORITY
+              value: 'http://localhost:8888/auth/realms/zeva'
+            - name: KEYCLOAK_ISSUER
+              value: 'http://localhost:8888/auth/realms/zeva'
+            - name: KEYCLOAK_AUDIENCE
+              value: 'zeva-app'
+            - name: KEYCLOAK_CLIENT_ID
+              value: 'zeva-app'
+            - name: KEYCLOAK_SA_BASEURL
+              value: 'http://keycloak:8080'
+            - name: KEYCLOAK_SA_REALM
+              value: 'zeva'
+            - name: KEYCLOAK_SA_CLIENT_ID
+              value: 'zeva-app-sa'
+            - name: KEYCLOAK_SA_CLIENT_SECRET
+              value: '06dc71d6-1800-4f5d-b7b3-4c4fda226599'
+            - name: DJANGO_DEBUG
+              value: 'False' # this impacts celery logging too
+            - name: RABBITMQ_VHOST
+              value: '/zeva'
+            - name: RABBITMQ_USER
+              value: 'rabbitmq'
+            - name: RABBITMQ_PASSWORD
+              value: 'rabbitmq'
+            - name: RABBITMQ_HOST
+              value: 'rabbit'
+            - name: RABBITMQ_PORT
+              value: '5672'
+      initContainers:
+        - name: init-psql
+          image: busybox:1.28
+          command: ['sh', '-c', 'until nslookup postgres; do echo waiting for postgres; sleep 5; done;']
+  selector:
+    matchLabels:
+      app: celery-beat

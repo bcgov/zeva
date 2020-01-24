@@ -36,6 +36,8 @@ class BaseTestCase(TestCase):
     extra_fixtures = None
     extra_usernames = None
 
+    logger = logging.getLogger('zeva.test')
+
     @classmethod
     def setUpClass(cls):
         """Load any extra fixtures that child classes have declared"""
@@ -109,7 +111,3 @@ class BaseTestCase(TestCase):
                         ).decode('utf-8')
                     )
                 )), self.users.values()))
-
-        logging.getLogger('django.request').setLevel(logging.ERROR)
-        logging.getLogger('api.tests').setLevel(logging.DEBUG)
-        logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)

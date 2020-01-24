@@ -1,12 +1,21 @@
 import inspect
+import logging
 import pkgutil
+import smtplib
 import sys
 from collections import namedtuple
 
+import pika
+from amqp import AMQPError
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
+
+from api.services.keycloak_api import list_users, get_token
 from db_comments.db_actions import create_db_comments, \
     create_db_comments_from_models
+from zeva.settings import RUNSERVER, AMQP_CONNECTION_PARAMETERS, KEYCLOAK, EMAIL, DEBUG
+
+logger = logging.getLogger('zeva.apps')
 
 
 class ApiConfig(AppConfig):
@@ -19,6 +28,50 @@ class ApiConfig(AppConfig):
 
         # register our interest in the post_migrate signal
         post_migrate.connect(post_migration_callback, sender=self)
+
+        if RUNSERVER:
+            try:
+                check_external_services()
+            except RuntimeError as error:
+                logger.critical('Startup checks failed.', error)
+                if not DEBUG:
+                    logger.critical('Aborting startup due to failed startup check.', error)
+                    exit(-1)
+
+
+def check_external_services():
+    """Called after initialization. Use it to validate settings"""
+
+    logger.info('Checking AMQP connection')
+
+    try:
+        parameters = AMQP_CONNECTION_PARAMETERS
+        connection = pika.BlockingConnection(parameters)
+        connection.channel()
+        connection.close()
+    except AMQPError as _error:
+        logger.error(_error)
+        raise RuntimeError('AMQP connection failed')
+
+    if KEYCLOAK['ENABLED']:
+        logger.info('Keycloak enabled. Checking connection')
+
+        try:
+            list_users(get_token())
+        except Exception as _error:
+            logger.error(_error)
+            raise RuntimeError('Keycloak connection failed')
+
+    if EMAIL['ENABLED']:
+        print('Email sending enabled. Checking connection')
+
+        try:
+            with smtplib.SMTP(host=EMAIL['SMTP_SERVER_HOST'],
+                              port=EMAIL['SMTP_SERVER_PORT']) as server:
+                server.noop()
+        except Exception as error:
+            logger.error(error)
+            raise RuntimeError('SMTP Connection failed')
 
 
 def post_migration_callback(sender, **kwargs):

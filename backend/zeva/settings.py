@@ -11,7 +11,11 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-from . import database
+import sys
+
+from pika import ConnectionParameters, PlainCredentials
+
+from . import database, amqp, email
 from . import keycloak
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -31,6 +35,8 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 DEVELOPMENT = os.getenv('DEVELOPMENT', 'False') == 'True'
+TESTING = 'test' in sys.argv
+RUNSERVER = 'runserver' in sys.argv
 
 ALLOWED_HOSTS = []
 
@@ -38,12 +44,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django_celery_beat',
     'rest_framework',
     'zeva',
     'api.apps.ApiConfig',
@@ -51,11 +54,10 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
+    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -90,20 +92,6 @@ REST_FRAMEWORK = {
 
 ROOT_URLCONF = 'zeva.urls'
 
-TEMPLATES = [{
-    'BACKEND': 'django.template.backends.django.DjangoTemplates',
-    'DIRS': [],
-    'APP_DIRS': True,
-    'OPTIONS': {
-        'context_processors': [
-            'django.template.context_processors.debug',
-            'django.template.context_processors.request',
-            'django.contrib.auth.context_processors.auth',
-            'django.contrib.messages.context_processors.messages',
-        ],
-    },
-}]
-
 WSGI_APPLICATION = 'zeva.wsgi.application'
 
 # Database
@@ -115,35 +103,136 @@ DATABASES = {
 
 KEYCLOAK = keycloak.config()
 
-# Password validation
-# https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [{
-    'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-}, {
-    'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-}, {
-    'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-}, {
-    'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-}]
+AMQP = amqp.config()
+
+AMQP_CONNECTION_PARAMETERS = ConnectionParameters(
+    host=AMQP['HOST'],
+    port=AMQP['PORT'],
+    virtual_host=AMQP['VHOST'],
+    credentials=PlainCredentials(AMQP['USER'], AMQP['PASSWORD'])
+)
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+TIME_ZONE = 'America/Vancouver'
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
+EMAIL = email.config()
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.0/howto/static-files/
-
-STATIC_URL = '/static/'
+if TESTING:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'filters': {
+        },
+        'formatters': {
+            'custom': {
+                'format': '%(levelname)s  %(name)s %(asctime)s : %(message)s'
+            }
+        },
+        'handlers': {
+            'console': {
+                'level': 'DEBUG',
+                'class': 'logging.StreamHandler',
+                'formatter': 'custom'
+            },
+        },
+        'loggers': {
+            'django': {
+                'level': 'DEBUG',
+                'handlers': ['console'],
+            },
+            'celery': {
+                'level': 'DEBUG',
+                'handlers': ['console'],
+            },
+            'zeva': {
+                'level': 'DEBUG',
+                'handlers': ['console'],
+            },
+        }
+    }
+if RUNSERVER:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'filters': {
+        },
+        'formatters': {
+            'custom': {
+                'format': '%(levelname)s  %(name)s %(asctime)s : %(message)s'
+            }
+        },
+        'handlers': {
+            'console': {
+                'level': 'INFO',
+                'class': 'logging.StreamHandler',
+                'formatter': 'custom'
+            },
+        },
+        'loggers': {
+            'django': {
+                'level': 'WARNING',
+                'handlers': ['console'],
+            },
+            'django.request': {
+                'level': 'INFO',
+                'handlers': ['console'],
+            },
+            'celery': {
+                'level': 'WARNING',
+                'handlers': ['console'],
+            },
+            'zeva': {
+                'level': 'INFO',
+                'handlers': ['console'],
+            },
+        }
+    }
+if DEBUG:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'filters': {
+        },
+        'formatters': {
+            'custom': {
+                'format': '%(levelname)s  %(name)s %(asctime)s : %(message)s'
+            }
+        },
+        'handlers': {
+            'console': {
+                'level': 'DEBUG',
+                'class': 'logging.StreamHandler',
+                'formatter': 'custom'
+            },
+        },
+        'loggers': {
+            'django': {
+                'level': 'DEBUG',
+                'handlers': ['console'],
+            },
+            'django.utils.autoreload': {
+                'level': 'INFO',
+                'handlers': ['console'],
+            },
+            'celery': {
+                'level': 'DEBUG',
+                'handlers': ['console'],
+            },
+            'celery.utils': {
+                'level': 'INFO',
+                'handlers': ['console'],
+            },
+            'zeva': {
+                'level': 'DEBUG',
+                'handlers': ['console'],
+            },
+        }
+    }

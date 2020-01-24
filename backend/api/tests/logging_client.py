@@ -3,6 +3,8 @@ import inspect
 
 from django.test import Client
 
+logger = logging.getLogger('zeva.test.network')
+
 
 class ClientLoggingMetaclass(type):
     """
@@ -51,7 +53,7 @@ class ClientLoggingMetaclass(type):
                     else:
                         data = kw[data_param[1].name] if data_param[1].name in kw else 'N/A'
 
-                logging.debug(
+                logger.debug(
                     '\n--------\n'
                     'network exchange details:\n'
                     '--------\n'
@@ -67,11 +69,11 @@ class ClientLoggingMetaclass(type):
                         results.content.decode('utf-8')
                         ))
             except UnicodeError:
-                logging.error(
+                logger.error(
                     'Error when trying to decode.'
                     'If this is related to xls, this can be ignored')
             except (KeyError, AttributeError):
-                logging.error(
+                logger.error(
                     'unexpected error while wrapping network request call')
 
             return results

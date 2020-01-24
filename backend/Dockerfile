@@ -5,4 +5,4 @@ WORKDIR /app
 ADD requirements.txt .
 RUN pip install -r requirements.txt
 ADD . .
-CMD python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:10102
+CMD python3 manage.py migrate && python3 manage.py createcachetable && python3 manage.py runserver 0.0.0.0:10102
