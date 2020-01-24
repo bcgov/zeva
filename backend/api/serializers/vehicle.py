@@ -112,9 +112,8 @@ class VehicleSerializer(serializers.ModelSerializer, EnumSupportSerializerMixin)
     class Meta:
         model = Vehicle
         fields = (
-            'id', 'type', 'make', 'model', 'trim', 'is_validated',
-            'range', 'credit_value', 'model_year', 'state', 'changelog',
-            'actions'
+            'id', 'type', 'make', 'model', 'trim', 'range', 'credit_value',
+            'model_year', 'state', 'changelog', 'actions'
         )
         read_only_fields = ('state',)
 
@@ -123,7 +122,7 @@ class VehicleSaveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vehicle
         fields = (
-            'id', 'type', 'make', 'model', 'trim', 'is_validated',
-            'range', 'credit_value', 'model_year', 'state'
+            'id', 'type', 'make', 'model', 'trim', 'range', 'credit_value',
+            'model_year', 'state'
         )
         read_only_fields = ('state', 'id')

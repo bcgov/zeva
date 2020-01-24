@@ -54,11 +54,6 @@ class Vehicle(Auditable):
         null=False
     )
 
-    is_validated = models.BooleanField(
-        default=False,
-        db_comment="Whether this vehicle has been an accepted ZEV "
-                   "by the regulator."
-    )
     state = EnumField(VehicleDefinitionStates,
                       max_length=20,
                       null=False,
