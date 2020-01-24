@@ -51,11 +51,11 @@ class ModelYearSerializer(serializers.ModelSerializer):
         )
 
 
-class VehicleTypeSerializer(serializers.ModelSerializer):
+class VehicleFuelTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = FuelType
         fields = (
-            'name',
+            'id', 'description'
         )
 
 
@@ -84,13 +84,11 @@ class VehicleHistorySerializer(serializers.ModelSerializer, EnumSupportSerialize
 
 
 class VehicleSerializer(serializers.ModelSerializer, EnumSupportSerializerMixin):
-    credit_value = CreditValueSerializer()
     make = VehicleMakeSerializer()
     model = VehicleModelSerializer()
     model_year = ModelYearSerializer()
-    trim = VehicleTrimSerializer()
-    type = VehicleTypeSerializer()
     state = EnumField(VehicleDefinitionStates, read_only=True)
+    fuel_type = VehicleFuelTypeSerializer()
     changelog = VehicleHistorySerializer(read_only=True, many=True)
     actions = serializers.SerializerMethodField()
 
@@ -112,8 +110,8 @@ class VehicleSerializer(serializers.ModelSerializer, EnumSupportSerializerMixin)
     class Meta:
         model = Vehicle
         fields = (
-            'id', 'type', 'make', 'model', 'trim', 'state',
-            'range', 'credit_value', 'model_year', 'changelog',
+            'id', 'make', 'model', 'state', 'fuel_type',
+            'range', 'model_year', 'changelog',
             'actions'
         )
         read_only_fields = ('state',)
@@ -123,7 +121,7 @@ class VehicleSaveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vehicle
         fields = (
-            'id', 'type', 'make', 'model', 'trim',
+            'id', 'fuel_type', 'make', 'model', 'trim',
             'range', 'credit_value', 'model_year',
             'state'
         )
