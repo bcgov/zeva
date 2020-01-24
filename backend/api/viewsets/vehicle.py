@@ -5,10 +5,10 @@ from rest_framework.response import Response
 
 from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle
+from api.models.vehicle_fuel_type import FuelType
 from api.models.vehicle_make import Make
 from api.models.vehicle_model import Model
 from api.models.vehicle_trim import Trim
-from api.models.vehicle_type import FuelType
 from api.serializers.vehicle import VehicleSerializer, VehicleStateChangeSerializer, VehicleSaveSerializer, \
     VehicleModelSerializer, VehicleTrimSerializer, VehicleMakeSerializer, VehicleTypeSerializer, ModelYearSerializer
 from auditable.views import AuditableMixin

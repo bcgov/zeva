@@ -1,7 +1,7 @@
 from django.db import transaction
 
 from api.management.data_script import OperationalDataScript
-from api.models.vehicle_type import FuelType
+from api.models.vehicle_fuel_type import FuelType
 
 
 class AddFuelTypes(OperationalDataScript):

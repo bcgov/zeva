@@ -4,10 +4,10 @@ from rest_framework import serializers
 from api.models.credit_value import CreditValue
 from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle, VehicleDefinitionStates, VehicleChangeHistory
+from api.models.vehicle_fuel_type import FuelType
 from api.models.vehicle_make import Make
 from api.models.vehicle_model import Model
 from api.models.vehicle_trim import Trim
-from api.models.vehicle_type import FuelType
 from api.services.vehicle import change_state
 
 

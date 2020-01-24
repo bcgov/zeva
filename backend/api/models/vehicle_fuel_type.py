@@ -2,11 +2,11 @@ from django.db import models
 
 from api.models.mixins.effective_dates import EffectiveDates
 from auditable.models import Auditable
-from .mixins.named import Named
+from .mixins.named import Description
 
 
-class FuelType(Auditable, Named, EffectiveDates):
-    fuel_type = models.CharField(
+class FuelType(Auditable, Description, EffectiveDates):
+    code = models.CharField(
         blank=False,
         db_comment="Fuel type (e.g. B, BX, BZ)",
         max_length=3,
