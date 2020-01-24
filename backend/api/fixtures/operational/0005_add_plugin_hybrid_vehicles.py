@@ -71,7 +71,7 @@ class AddPluginHybridVehicles(OperationalDataScript):
         )
         Vehicle.objects.create(
             fuel_type_id="BZ",
-            make=bmw,
+            make=make,
             model=model,
             model_year=model_year,
             range="203",
