@@ -6,11 +6,11 @@ import ActionBarGov from './ActionBarGov';
 import ActionBarNonGov from './ActionBarNonGov';
 
 const VehicleList = (props) => {
-  const { loading, vehicles, user } = props;
+  const { loading, vehicles, user, handleCheckboxClick, handleSubmit } = props;
   if (loading) {
     return <Loading />;
   }
-  const actionBar = user.isGovernment? <ActionBarGov /> : <ActionBarNonGov />;
+  const actionBar = user.isGovernment? <ActionBarGov handleSubmit={handleSubmit} /> : <ActionBarNonGov />;
   return (
     <div id="organization-list" className="page">
       <div className="row">
@@ -21,7 +21,7 @@ const VehicleList = (props) => {
       <div className="row">
         <div className="col-sm-12">
           {actionBar}
-          <VehicleListTable items={vehicles} />
+          <VehicleListTable items={vehicles} user={user} handleCheckboxClick={handleCheckboxClick} />
           {actionBar}
         </div>
       </div>

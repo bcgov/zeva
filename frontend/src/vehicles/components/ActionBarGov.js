@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import history from '../../app/History';
 
 const ActionBarGov = (props) => {
+  const { handleSubmit } = props;
   return (
     <div className="action-bar">
       <span className="left-content">
@@ -25,9 +26,7 @@ const ActionBarGov = (props) => {
         </select>
         <button
           className="button primary"
-          onClick={() => {
-            history.push('/vehicles/add');
-          }}
+          onClick={handleSubmit}
           type="button"
         >
           Save
