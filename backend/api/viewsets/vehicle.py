@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from api.models.credit_value import CreditValue
 from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle
 from api.models.vehicle_make import Make
@@ -34,6 +35,23 @@ class VehicleViewSet(
 
         return self.serializer_classes['default']
 
+    def list(self, request):
+        """
+        Get all the organizations
+        """
+        is_government = request.user.is_government
+        organization_id = request.user.organization.id
+
+        if not is_government:
+            vehicles = Vehicle.objects.filter(
+                make__vehicle_make_organizations__organization_id=organization_id
+            )
+        else:
+            vehicles = self.get_queryset()
+
+        serializer = self.get_serializer(vehicles, many=True)
+        return Response(serializer.data)
+
     @action(detail=False)
     def makes(self, _request):
         """
@@ -62,7 +80,7 @@ class VehicleViewSet(
         return Response(serializer.data)
 
     @action(detail=False)
-    def types(self,_request):
+    def types(self, _request):
         """
         Get the types
         """

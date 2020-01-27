@@ -19,6 +19,14 @@ class CreditValueSerializer(serializers.ModelSerializer):
         )
 
 
+class ModelYearSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ModelYear
+        fields = (
+            'name', 'effective_date', 'expiration_date', 'id'
+        )
+
+
 class VehicleMakeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Make
@@ -43,19 +51,11 @@ class VehicleTrimSerializer(serializers.ModelSerializer):
         )
 
 
-class ModelYearSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ModelYear
-        fields = (
-            'name', 'effective_date', 'expiration_date', 'id'
-        )
-
-
 class VehicleTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Type
         fields = (
-            'name',
+            'name', 'id'
         )
 
 
@@ -112,9 +112,8 @@ class VehicleSerializer(serializers.ModelSerializer, EnumSupportSerializerMixin)
     class Meta:
         model = Vehicle
         fields = (
-            'id', 'type', 'make', 'model', 'trim', 'state',
-            'range', 'credit_value', 'model_year', 'changelog',
-            'actions'
+            'id', 'type', 'make', 'model', 'trim', 'range', 'credit_value',
+            'model_year', 'state', 'changelog', 'actions'
         )
         read_only_fields = ('state',)
 
@@ -123,8 +122,7 @@ class VehicleSaveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vehicle
         fields = (
-            'id', 'type', 'make', 'model', 'trim',
-            'range', 'credit_value', 'model_year',
-            'state'
+            'id', 'type', 'make', 'model', 'trim', 'range', 'credit_value',
+            'model_year', 'state'
         )
         read_only_fields = ('state', 'id')

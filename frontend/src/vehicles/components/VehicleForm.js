@@ -13,6 +13,7 @@ const VehicleForm = (props) => {
     vehicleTypes,
     vehicleTrims,
     handleInputChange,
+    handleSubmit,
   } = props;
   if (loading) {
     return <Loading />;
@@ -26,7 +27,7 @@ const VehicleForm = (props) => {
         </div>
       </div>
 
-      <form>
+      <form onSubmit={(event) => handleSubmit(event)}>
         <div className="row align-items-center">
           <div className="col-md-6">
             <fieldset>
@@ -117,6 +118,7 @@ VehicleForm.propTypes = {
   vehicleTypes: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.object).isRequired,
   handleInputChange: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
 };
 
 export default VehicleForm;
