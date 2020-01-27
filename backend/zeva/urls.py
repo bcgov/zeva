@@ -15,6 +15,9 @@ Including another URLconf
 """
 from django.urls import include, path
 
+from zeva import views
+
 urlpatterns = [
     path('api/', include('api.urls')),
+    path('health', views.health),
 ]

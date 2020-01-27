@@ -54,8 +54,26 @@ spec:
               value: 'zeva-app'
             - name: KEYCLOAK_CLIENT_ID
               value: 'zeva-app'
+            - name: KEYCLOAK_SA_BASEURL
+              value: 'http://keycloak:8080'
+            - name: KEYCLOAK_SA_REALM
+              value: 'zeva'
+            - name: KEYCLOAK_SA_CLIENT_ID
+              value: 'zeva-app-sa'
+            - name: KEYCLOAK_SA_CLIENT_SECRET
+              value: '06dc71d6-1800-4f5d-b7b3-4c4fda226599'
             - name: DJANGO_DEBUG
               value: 'True'
+            - name: RABBITMQ_VHOST
+              value: '/zeva'
+            - name: RABBITMQ_USER
+              value: 'rabbitmq'
+            - name: RABBITMQ_PASSWORD
+              value: 'rabbitmq'
+            - name: RABBITMQ_HOST
+              value: 'rabbit'
+            - name: RABBITMQ_PORT
+              value: '5672'
       initContainers:
         - name: init-psql
           image: busybox:1.28

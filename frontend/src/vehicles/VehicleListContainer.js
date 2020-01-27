@@ -12,11 +12,20 @@ import VehicleList from './components/VehicleList';
 const VehicleListContainer = (props) => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [validatedList, setValidatedList] = useState([]);
+  const { keycloak, user } = props;
 
-  const { keycloak } = props;
+  const handleCheckboxClick = (event) => {
+    const vehicleId = event.target.value;
+    if (validatedList.includes(vehicleId)) {
+      setValidatedList(validatedList.filter((item) => item !== vehicleId));
+    } else {
+      setValidatedList(() => [...validatedList, vehicleId]);
+    }
+  };
 
-  const refreshList = () => {
-    setLoading(true);
+  const refreshList = (showLoading) => {
+    setLoading(showLoading);
 
     axios.get(ROUTES_VEHICLES.LIST).then((response) => {
       setVehicles(response.data);
@@ -25,10 +34,29 @@ const VehicleListContainer = (props) => {
   };
 
   useEffect(() => {
-    refreshList();
+    refreshList(true);
   }, [keycloak.authenticated]);
 
-  return (<VehicleList loading={loading} vehicles={vehicles} />);
+  const handleSubmit = () => {
+    validatedList.forEach((vehicleId) => {
+      axios.patch(`/vehicles/${vehicleId}/state_change`, {
+        state: 'VALIDATED',
+      }).then(() => {
+        setValidatedList([]);
+        refreshList(false);
+      });
+    });
+  };
+
+  return (
+    <VehicleList
+      loading={loading}
+      vehicles={vehicles}
+      user={user}
+      handleCheckboxClick={handleCheckboxClick}
+      handleSubmit={handleSubmit}
+    />
+  );
 };
 
 VehicleListContainer.propTypes = {

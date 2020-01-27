@@ -16,8 +16,6 @@ def change_state(user, vehicle, new_state):
                 new_state is VehicleDefinitionStates.SUBMITTED:
             state_change_permitted = True
 
-    print('scp: {}'.format(state_change_permitted))
-
     if not state_change_permitted:
         raise RuntimeError
 
