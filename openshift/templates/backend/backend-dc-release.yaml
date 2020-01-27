@@ -201,17 +201,14 @@ objects:
                 valueFrom:
                   configMapKeyRef:
                     name: zeva-config
-                    key: kecloak_sa_client_secret
+                    key: keycloak_sa_client_secret
               - name: RABBITMQ_DEFAULT_USER
-                valueFrom:
-                  secretKeyRef:
-                    name: zeva-rabbitmq
-                    key: RABBITMQ_DEFAULT_USER
+                value: zeva
               - name: RABBITMQ_DEFAULT_PASS
                 valueFrom:
                   secretKeyRef:
                     name: zeva-rabbitmq
-                    key: RABBITMQ_DEFAULT_PASS
+                    key: ZEVA_PASSWORD
               - name: RABBITMQ_DEFAULT_VHOST
                 valueFrom:
                   configMapKeyRef:

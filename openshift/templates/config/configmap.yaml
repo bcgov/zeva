@@ -42,7 +42,7 @@ objects:
       django_debug: 'true'
       rabbitmq_enabled: 'false'
       apibase: http://envoy.tbiwaq-${ENV_NAME}.svc.cluster.local:10000/api
-      kecloak_sa_client_secret: 04dcb145-aa9a-4d9c-807e-859f3e3477eb
+      keycloak_sa_client_secret: 04dcb145-aa9a-4d9c-807e-859f3e3477eb
       rabbitmq_default_vhost: unknown
       rabbitmq_host: unknown
       rabbitmq_port: unknown
