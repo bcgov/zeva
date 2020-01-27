@@ -38,7 +38,7 @@ DEVELOPMENT = os.getenv('DEVELOPMENT', 'False') == 'True'
 TESTING = 'test' in sys.argv
 RUNSERVER = 'runserver' in sys.argv
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
