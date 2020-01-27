@@ -8,6 +8,7 @@ import ReactTable from 'react-table';
 import history from '../../app/History';
 
 const VehicleListTable = (props) => {
+  const { items, user, handleCheckboxClick } = props;
   const columns = [{
     accessor: (row) => (row.make ? row.make.name : ''),
     Header: 'Make',
@@ -34,15 +35,20 @@ const VehicleListTable = (props) => {
     id: 'ranger',
   }, {
     accessor: (v) => ((v.creditValue && v.creditValue.a) ? v.creditValue.a : ''),
-    Header: 'Class A Credits',
-    id: 'col-class-a',
+    Header: 'Credit',
+    id: 'col-credit',
   }, {
     accessor: (v) => ((v.creditValue && v.creditValue.b) ? v.creditValue.b : ''),
-    Header: 'Class B Credits',
-    id: 'col-class-b',
+    Header: 'Class',
+    id: 'col-class',
   }, {
     accessor: (v) => v.state,
     Header: 'State',
+    id: 'col-state',
+  }, {
+    accessor: (v) => (v.state === 'VALIDATED' ? <input type="checkbox" defaultChecked disabled /> : <input type="checkbox" value={v.id} onChange={(event) => { handleCheckboxClick(event); }} />),
+    className: 'text-center',
+    Header: 'Validate',
     id: 'col-validated',
   }];
 
@@ -52,11 +58,8 @@ const VehicleListTable = (props) => {
       .toLowerCase()
       .includes(filter.value.toLowerCase()) : true;
   };
-
   const filterable = true;
-
-  const { items } = props;
-
+ 
   return (
     <ReactTable
       className="searchable"
@@ -69,11 +72,10 @@ const VehicleListTable = (props) => {
       }]}
       filterable={filterable}
       getTrProps={(state, row) => {
-        if (row && row.original) {
+        if (row && row.original && !user.isGovernment) {
           return {
             onClick: () => {
               const { id } = row.original;
-
               history.push(`/vehicles/${id}`);
             },
             className: 'clickable',

@@ -28,11 +28,11 @@ const VehicleDetailsPage = (props) => {
           <DetailField label="Range" value={details.range} />
           <DetailField label="Model Year" value={details.modelYear.name} />
           <DetailField
-            label="Class A Credits"
+            label="Credit"
             value={(details.creditValue && details.creditValue.a) ? details.creditValue.a : ''}
           />
           <DetailField
-            label="Class B Credits"
+            label="Class"
             value={(details.creditValue && details.creditValue.b) ? details.creditValue.b : ''}
           />
           <DetailField label="State" value={details.state} />
