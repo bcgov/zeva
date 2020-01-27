@@ -19,6 +19,14 @@ class CreditValueSerializer(serializers.ModelSerializer):
         )
 
 
+class ModelYearSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ModelYear
+        fields = (
+            'name', 'effective_date', 'expiration_date', 'id'
+        )
+
+
 class VehicleMakeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Make

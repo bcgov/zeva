@@ -8,7 +8,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0014_setup_auditing'),
+        ('api', '0015_vehiclemakeorganization'),
     ]
 
     operations = [

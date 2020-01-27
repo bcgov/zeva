@@ -2,6 +2,7 @@ import django
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
+from auditable.models import Auditable
 from enum import Enum, unique
 from enumfields import EnumField
 
