@@ -30,16 +30,14 @@ class Vehicle(Auditable):
         on_delete=models.PROTECT
     )
 
-    vehicle_class = models.ForeignKey(
+    vehicle_class_code = models.ForeignKey(
         'VehicleClass',
-        db_column='vehicle_class_code',
         related_name=None,
         on_delete=models.PROTECT
     )
 
-    fuel_type = models.ForeignKey(
+    vehicle_fuel_type = models.ForeignKey(
         'FuelType',
-        db_column='fuel_type_code',
         related_name=None,
         on_delete=models.PROTECT
     )
@@ -67,7 +65,7 @@ class Vehicle(Auditable):
     class Meta:
         db_table = 'vehicle'
         unique_together = [[
-            'make', 'model', 'vehicle_class', 'fuel_type', 'model_year'
+            'make', 'model', 'vehicle_class_code', 'vehicle_fuel_type', 'model_year'
         ]]
 
     db_table_comment = "List of credit-generating vehicle definitions"

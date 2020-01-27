@@ -18,82 +18,82 @@ class AddVehicleClasses(OperationalDataScript):
     @transaction.atomic
     def run(self):
         VehicleClass.objects.create(
-            id="T",
+            vehicle_class_code="T",
             description="Two-seater",
             effective_date="2019-01-01"
         )
         VehicleClass.objects.create(
-            id="I",
+            vehicle_class_code="I",
             description="Minicompact",
             effective_date="2019-01-01"
         )
         VehicleClass.objects.create(
-            id="S",
+            vehicle_class_code="S",
             description="Subcompact",
             effective_date="2019-01-01"
         )
         VehicleClass.objects.create(
-            id="C",
+            vehicle_class_code="C",
             description="Compact",
             effective_date="2019-01-01"
         )
         VehicleClass.objects.create(
-            id="M",
+            vehicle_class_code="M",
             description="Mid-size",
             effective_date="2019-01-01"
         )
         VehicleClass.objects.create(
-            id="L",
+            vehicle_class_code="L",
             description="Full-size",
             effective_date="2019-01-01"
         )
         VehicleClass.objects.create(
-            id="WS",
+            vehicle_class_code="WS",
             description="Station wagon (Small)",
             effective_date="2019-01-01"
         )
         VehicleClass.objects.create(
-            id="WM",
+            vehicle_class_code="WM",
             description="Station wagon (Mid-size)",
             effective_date="2019-01-01"
         )
         VehicleClass.objects.create(
-            id="PS",
+            vehicle_class_code="PS",
             description="Pickup truck (Small)",
             effective_date="2019-01-01"
         )
         VehicleClass.objects.create(
-            id="PL",
+            vehicle_class_code="PL",
             description="Pickup truck (Standard)",
             effective_date="2019-01-01"
         )
         VehicleClass.objects.create(
-            id="US",
+            vehicle_class_code="US",
             description="Sport utility vehicle (Small)",
             effective_date="2019-01-01"
         )
         VehicleClass.objects.create(
-            id="UL",
+            vehicle_class_code="UL",
             description="Sport utility vehicle (Standard)",
             effective_date="2019-01-01"
         )
         VehicleClass.objects.create(
-            id="V",
+            vehicle_class_code="V",
             description="Minivan",
             effective_date="2019-01-01"
         )
         VehicleClass.objects.create(
-            id="VC",
+            vehicle_class_code="VC",
             description="Van (Cargo)",
             effective_date="2019-01-01"
         )
         VehicleClass.objects.create(
-            id="VP",
+            vehicle_class_code="VP",
             description="Van (Passenger)",
             effective_date="2019-01-01"
         )
         VehicleClass.objects.create(
-            id="SP",
+            vehicle_class_code="SP",
             description="Special purpose vehicle",
             effective_date="2019-01-01"
         )

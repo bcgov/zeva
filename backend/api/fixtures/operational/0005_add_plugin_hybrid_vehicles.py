@@ -3,6 +3,8 @@ from django.db import transaction
 from api.management.data_script import OperationalDataScript
 from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle
+from api.models.vehicle_class import VehicleClass
+from api.models.vehicle_fuel_type import FuelType
 from api.models.vehicle_make import Make
 from api.models.vehicle_model import Model
 
@@ -28,13 +30,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BZ",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
             model=model,
             model_year=model_year,
             range="26",
             state="VALIDATED",
-            vehicle_class_id="C"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="C")
         )
 
         model = Model.objects.create(
@@ -42,13 +44,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BZ",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
             model=model,
             model_year=model_year,
             range="24",
             state="VALIDATED",
-            vehicle_class_id="C"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="C")
         )
 
         model = Model.objects.create(
@@ -56,13 +58,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BZ",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
             model=model,
             model_year=model_year,
             range="203",
             state="VALIDATED",
-            vehicle_class_id="S"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="S")
         )
 
         model = Model.objects.create(
@@ -70,13 +72,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BZ",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
             model=model,
             model_year=model_year,
             range="203",
             state="VALIDATED",
-            vehicle_class_id="S"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="S")
         )
 
         model = Model.objects.create(
@@ -84,13 +86,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BZ",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
             model=model,
             model_year=model_year,
             range="29",
             state="VALIDATED",
-            vehicle_class_id="S"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="S")
         )
 
         model = Model.objects.create(
@@ -98,13 +100,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BZ",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
             model=model,
             model_year=model_year,
             range="29",
             state="VALIDATED",
-            vehicle_class_id="S"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="S")
         )
 
         make = Make.objects.get(name="Chevrolet")
@@ -113,13 +115,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="B",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="B"),
             make=make,
             model=model,
             model_year=model_year,
             range="85",
             state="VALIDATED",
-            vehicle_class_id="C"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="C")
         )
 
         make = Make.objects.get(name="Ford")
@@ -128,13 +130,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BX",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BX"),
             make=make,
             model=model,
             model_year=model_year,
             range="42",
             state="VALIDATED",
-            vehicle_class_id="M"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="M")
         )
 
         make = Make.objects.get(name="Honda")
@@ -143,13 +145,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BX",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BX"),
             make=make,
             model=model,
             model_year=model_year,
             range="77",
             state="VALIDATED",
-            vehicle_class_id="M"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="M")
         )
 
         make = Make.objects.get(name="Hyundai")
@@ -158,13 +160,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BX",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BX"),
             make=make,
             model=model,
             model_year=model_year,
             range="47",
             state="VALIDATED",
-            vehicle_class_id="M"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="M")
         )
 
         model = Model.objects.create(
@@ -172,13 +174,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BX",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BX"),
             make=make,
             model=model,
             model_year=model_year,
             range="45",
             state="VALIDATED",
-            vehicle_class_id="M"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="M")
         )
 
         make = Make.objects.get(name="Karma")
@@ -187,13 +189,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="B",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="B"),
             make=make,
             model=model,
             model_year=model_year,
             range="60",
             state="VALIDATED",
-            vehicle_class_id="S"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="S")
         )
 
         make = Make.objects.get(name="Kia")
@@ -202,13 +204,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BX",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BX"),
             make=make,
             model=model,
             model_year=model_year,
             range="42",
             state="VALIDATED",
-            vehicle_class_id="WS"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="WS")
         )
 
         model = Model.objects.create(
@@ -216,13 +218,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BX",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BX"),
             make=make,
             model=model,
             model_year=model_year,
             range="47",
             state="VALIDATED",
-            vehicle_class_id="M"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="M")
         )
 
         make = Make.objects.get(name="Mercedes-Benz")
@@ -231,13 +233,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BZ",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
             model=model,
             model_year=model_year,
             range="21",
             state="VALIDATED",
-            vehicle_class_id="US"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="US")
         )
 
         make = Make.objects.get(name="Mini")
@@ -246,13 +248,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BZ",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
             model=model,
             model_year=model_year,
             range="19",
             state="VALIDATED",
-            vehicle_class_id="M"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="M")
         )
 
         make = Make.objects.get(name="Mitsubishi")
@@ -261,13 +263,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BX",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BX"),
             make=make,
             model=model,
             model_year=model_year,
             range="35",
             state="VALIDATED",
-            vehicle_class_id="US"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="US")
         )
 
         make = Make.objects.get(name="Porsche")
@@ -276,13 +278,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BZ",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
             model=model,
             model_year=model_year,
             range="21",
             state="VALIDATED",
-            vehicle_class_id="UL"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="UL")
         )
 
         model = Model.objects.create(
@@ -290,13 +292,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="B",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="B"),
             make=make,
             model=model,
             model_year=model_year,
             range="23",
             state="VALIDATED",
-            vehicle_class_id="L"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="L")
         )
 
         model = Model.objects.create(
@@ -304,13 +306,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="B",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="B"),
             make=make,
             model=model,
             model_year=model_year,
             range="23",
             state="VALIDATED",
-            vehicle_class_id="L"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="L")
         )
 
         make = Make.objects.get(name="Toyota")
@@ -319,13 +321,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BX",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BX"),
             make=make,
             model=model,
             model_year=model_year,
             range="40",
             state="VALIDATED",
-            vehicle_class_id="M"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="M")
         )
 
         make = Make.objects.get(name="Volvo")
@@ -334,13 +336,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BZ",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
             model=model,
             model_year=model_year,
             range="34",
             state="VALIDATED",
-            vehicle_class_id="M"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="M")
         )
 
         model = Model.objects.create(
@@ -348,13 +350,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BZ",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
             model=model,
             model_year=model_year,
             range="27",
             state="VALIDATED",
-            vehicle_class_id="US"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="US")
         )
 
         model = Model.objects.create(
@@ -362,13 +364,13 @@ class AddPluginHybridVehicles(OperationalDataScript):
             make=make
         )
         Vehicle.objects.create(
-            fuel_type_id="BZ",
+            vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
             model=model,
             model_year=model_year,
             range="27",
             state="VALIDATED",
-            vehicle_class_id="UL"
+            vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="UL")
         )
 
 script_class = AddPluginHybridVehicles

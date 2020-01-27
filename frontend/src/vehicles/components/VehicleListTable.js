@@ -22,7 +22,7 @@ const VehicleListTable = (props) => {
     Header: 'Model Year',
     id: 'col-my',
   }, {
-    accessor: (row) => (row.fuelType ? row.fuelType.description : ''),
+    accessor: (row) => (row.vehicleFuelType ? row.vehicleFuelType.description : ''),
     Header: 'Fuel Type',
     id: 'type',
   }, {

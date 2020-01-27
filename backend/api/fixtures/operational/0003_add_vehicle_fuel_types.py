@@ -18,17 +18,17 @@ class AddFuelTypes(OperationalDataScript):
     @transaction.atomic
     def run(self):
         FuelType.objects.create(
-            id="B",
+            vehicle_fuel_code="B",
             description="Electricity",
             effective_date="2019-01-01"
         )
         FuelType.objects.create(
-            id="BX",
+            vehicle_fuel_code="BX",
             description="Electricity/Regular Gasoline",
             effective_date="2019-01-01"
         )
         FuelType.objects.create(
-            id="BZ",
+            vehicle_fuel_code="BZ",
             description="Electricity/Premium Gasoline",
             effective_date="2019-01-01"
         )
