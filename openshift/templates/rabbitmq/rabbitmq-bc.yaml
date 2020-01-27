@@ -1,48 +1,68 @@
-apiVersion: template.openshift.io/v1
+---
 kind: Template
+apiVersion: v1
 metadata:
-  creationTimestamp: null
   name: rabbitmq-bc
+  creationTimestamp:
+parameters:
+  - name: ENV_NAME
+    required: true
+  - name: ADMIN_PASSWORD
+    description: rabbitmq admin password according to ENV_NAME
+    required: true
+  - name: ZEVA_PASSWORD
+    description: rabbitmq zeva password according to ENV_NAME
+    required: true
 objects:
-- apiVersion: build.openshift.io/v1
-  kind: BuildConfig
-  metadata:
-    creationTimestamp: null
-    name: rabbitmq-tfrs
-  spec:
-    nodeSelector: null
-    output:
-      to:
-        kind: ImageStreamTag
-        name: rabbitmq-tfrs:latest
-    postCommit: {}
-    resources: {}
-    runPolicy: Serial
-    source:
-      dockerfile: |-
-        FROM rabbitmq:3.7.7-management
-        RUN apt-get update
-        RUN apt-get install -y gettext-base
-        RUN chgrp -R root /var/log/rabbitmq
-        RUN chmod -R g+w /var/log/rabbitmq
-        ARG ADMIN_PASSWORD
-        ARG TFRS_PASSWORD
-        RUN echo "H4sICHQioFsCA2RlZmluaXRpb25zLnN0cmlwcGVkLmpzb24AtVLLasMwELz7K4zpqQQXWtpAb4FQ6KEP4kIPpZiNLUsCWzLSKmkx/vdKwrYgNukpF4FmdjWzs+qiOE4U7Pcc8wNRmkuRPMbJXbpO18nKkUZb2GJf9hLHnT8tLKAhrhLKhgtf6eEWtD5KVTrqarN9eX7N3zdZ9vm224YiBppxQXOoqVQcWeOqBxPjA/lYpBnc3j+EZgSqJ2GuUQFKlXi2Xy17xMpOsGzx42mXXcrhYMqe3z7JA5Maz0R5432eNLVENVy7vSx0ut3MB/Q64cEJL6SoODXKi6XXgTjaEWegIlAO2GK4o/bJB7iQ+JQH+SkYCErO5Cgk8ooXgD60f53hb+vbKhDSYMBLYxdeOwqVIRMMBmVekpp41xXUOnBcIFEC6hkBipqGCL/9rg8jRX30B3tV1p2CAwAA" | base64 -d | gunzip - | envsubst > /etc/rabbitmq/definitions.json
-      type: Dockerfile
-    strategy:
-      dockerStrategy:
-        env:
-        - name: ADMIN_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              key: ADMIN_PASSWORD
-              name: rabbitmq
-        - name: TFRS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              key: TFRS_PASSWORD
-              name: rabbitmq
-      type: Docker
-    triggers: []
-  status:
-    lastVersion: 0
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: rabbitmq
+      creationTimestamp:
+    spec:
+      triggers: []
+      runPolicy: Serial
+      source:
+        type: Dockerfile
+        dockerfile: |-
+          FROM rabbitmq:3.7.7-management
+          RUN apt-get update
+          RUN apt-get install -y gettext-base
+          ARG ADMIN_PASSWORD
+          ARG ZEVA_PASSWORD
+          RUN echo "H4sICMw/K14AA2RlZmluaXRpb25zLmpzb24AtVJNS8QwEL33V5TiSZYKii54K6wHD37ggoIiZbZN00CblGTSVUv/u0loG9jW9bSXQN6byXvzJl0QhpGE3Y5h2hKpmODRbRhdxet4Ha0sqZWBDfZhLmHYudPAHGpiKyGvGXeVDm5Aqb2QuaXOks3D/WP6nGy3b08vG19UgioZpylUVEiGZW2rBxPjA+lYpEq4vL7xzQhUTcJMoQQUMnJsv1r2+ENa+MPi+91rciqHgylzfrok21IoPBLlhfN50NQQWTNl97LQaXczH9Dp+AcnPBO8YFRLJxafe2JvRpyBkkA+YIvhjtoHH+BE4lMe5CsrgVNyJEcukBUsA3Sh/esMvxvXVgAXGj2ea7PwylIoNZlg0CjSnFTEuS6gUp5jHInkUM0IkFTXhLvtd70fKeiDX/VBJnKCAwAA" | base64 -d | gunzip - | envsubst > /etc/rabbitmq/definitions.json
+      strategy:
+        type: Docker
+        dockerStrategy:
+          env:
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: zeva-rabbitmq-${ENV_NAME}
+                  key: ADMIN_PASSWORD
+            - name: ZEVA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: zeva-rabbitmq-${ENV_NAME}
+                  key: ZEVA_PASSWORD
+      output:
+        to:
+          kind: ImageStreamTag
+          name: rabbitmq:latest
+      resources: {}
+      postCommit: {}
+      nodeSelector:
+    status:
+      lastVersion: 0
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      annotations:
+        description: Keeps track of changes in the rabbitmq image
+      creationTimestamp: null
+      name: rabbitmq
+    spec:
+      lookupPolicy:
+        local: false
+    status:
+      dockerImageRepository: ""

@@ -11,16 +11,6 @@ parameters:
     displayName: Environment Name
     description: Environment Name
     required: true
-  - description: Username for PostgreSQL user that will be used for accessing the database.
-    from: zeva[A-Z0-9]{3}
-    generate: expression
-    name: ZEVA_DB_USER
-    required: true
-  - description: Password for the PostgreSQL connection user.
-    from: "[a-zA-Z0-9]{16}"
-    generate: expression
-    name: ZEVA_DB_PASSWORD
-    required: true
   - name: CPU_REQUEST
     displayName: Requested CPU
     description: Requested CPU
@@ -38,28 +28,15 @@ parameters:
     description: Memory upper limit
     required: true
   - name: DB_PVC_SIZE
-    value: 5Gi
+    value: 5G
     displayName: PVC Size
     description: PVC Size
     required: true
-  - name: DB_BACKUP_NFS_SIZE
-    value: 5Gi
-    displayName: DB PVC Size
-    description: DB BACKUP NFS Size
+  - name: NFS_DB_BACKUP_NAME
+    displayName: NFS databse backup_name
+    description: NFS databse backup_name
     required: true
 objects:
-  - apiVersion: v1
-    kind: Secret
-    metadata:
-      annotations:
-        template.openshift.io/expose-database_name: "{.data['database-name']}"
-        template.openshift.io/expose-password: "{.data['database-password']}"
-        template.openshift.io/expose-username: "{.data['database-user']}"
-      name: postgresql
-      labels: {}
-    stringData:
-      DATABASE_USER: "${ZEVA_DB_USER}"
-      DATABASE_PASSWORD: "${ZEVA_DB_PASSWORD}"
   - kind: Service
     apiVersion: v1
     metadata:
@@ -96,19 +73,6 @@ objects:
       resources:
         requests:
           storage: "${DB_PVC_SIZE}"
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      name: postgresql-backup
-      annotations:
-        volume.beta.kubernetes.io/storage-class: netapp-file-standard
-        template.openshift.io.bcgov/create: 'true'
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: "${DB_BACKUP_NFS_SIZE}"
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
@@ -150,7 +114,7 @@ objects:
                 claimName: postgresql
             - name: postgresql-backup
               persistentVolumeClaim:
-                claimName: postgresql-backup
+                claimName: ${NFS_DB_BACKUP_NAME}
           containers:
             - name: postgresql
               image: " "
@@ -163,12 +127,12 @@ objects:
                 - name: POSTGRESQL_USER
                   valueFrom:
                     secretKeyRef:
-                      name: postgresql
+                      name: zeva-postgresql
                       key: DATABASE_USER
                 - name: POSTGRESQL_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: postgresql
+                      name: zeva-postgresql
                       key: DATABASE_PASSWORD
               resources:
                 request:
@@ -180,8 +144,9 @@ objects:
               volumeMounts:
                 - name: postgresql-data
                   mountPath: "/var/lib/pgsql/data"
-                - name: postgresql-backup
-                  mountPath: "/postgresql-backup"
+                - mountPath: /postgresql-backup
+                  name: postgresql-backup
+                  subPath: postgresql-backup
               readinessProbe:
                 tcpSocket:
                   port: 5432

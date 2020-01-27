@@ -1,6 +1,6 @@
 result = 0
 runParallel = true
-zevaRelease="release-pipeline"
+zevaRelease="pipeline-release2"
 
 podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${env.BUILD_NUMBER}", serviceAccount: 'jenkins-prod', cloud: 'openshift',
         containers: [
@@ -40,7 +40,7 @@ podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${e
                 }
             }
         }
-
+/**
         //load deployment scripts
         def prepareDeployments = load "openshift/pipelines/scripts/prepareDeployments.groovy"
 
@@ -51,6 +51,7 @@ podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${e
         openshift.withProject("tbiwaq-dev") {
             openshift.tag("tbiwaq-tools/frontend:${zevaRelease}", 'tbiwaq-dev/frontend:dev')
         }
+**/
 
     }
 }

@@ -2,7 +2,15 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: envoy
+parameters:
+  - name: ENV_NAME
+    displayName: zeva env anme
+    description: zeva env name, sample values dev, test and prod
+    required: true
+  - name: ZEVA_RELEASE
+    displayName: zeva release name
+    description: zeva release name
+    required: true
 objects:
 - apiVersion: image.openshift.io/v1
   kind: ImageStream
@@ -27,22 +35,21 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: envoy:latest
+        name: envoy:${ZEVA_RELEASE}
     postCommit: {}
     resources: {}
-    runPolicy: Serial
+    runPolicy: SerialLatestOnly
     source:
-      dockerfile: |-
-        FROM envoyproxy/envoy:v1.12.1
-        RUN apt-get update
-        RUN apt-get install -y git wget curl telnet tzdata dnsutils
-        RUN ln -fs /usr/share/zoneinfo/Canada/Pacific /etc/localtime \
-            && dpkg-reconfigure --frontend noninteractive tzdata
-        RUN git clone https://github.com/bcgov/zeva.git /tmp/zeva
-        RUN cp /tmp/zeva/openshift/templates/envoy/envoy.yaml /etc/envoy/envoy.yaml
-      type: Dockerfile
+      git:
+        ref: ${ZEVA_RELEASE}
+        uri: https://github.com/bcgov/zeva.git
+      type: Git
+      contextDir: openshift/templates/envoy
     strategy:
       dockerStrategy:
+        buildArgs:
+          - name: env_name
+            value: ${ENV_NAME}
         forcePull: false
         noCache: true
       type: Docker
