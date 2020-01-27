@@ -48,7 +48,7 @@ class VehicleViewSet(
         """
         Get the models
         """
-        models = Model.objects.all()
+        models = Model.objects.all().order_by('name')
         serializer = VehicleModelSerializer(models, many=True)
         return Response(serializer.data)
 
@@ -62,12 +62,12 @@ class VehicleViewSet(
         return Response(serializer.data)
 
     @action(detail=False)
-    def types(self, _request):
+    def fuel_types(self, _request):
         """
         Get the types
         """
-        types = FuelType.objects.all()
-        serializer = VehicleFuelTypeSerializer(types, many=True)
+        fuel_types = FuelType.objects.all().order_by('description')
+        serializer = VehicleFuelTypeSerializer(fuel_types, many=True)
         return Response(serializer.data)
 
     @action(detail=False)
