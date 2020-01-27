@@ -3,7 +3,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import history from '../../app/History';
 
 const ActionBarGov = (props) => {
-  const { handleSubmit } = props;
+  const { handleSubmit, vehicles } = props;
+  const getOptions = (inputObj, displayField) => {
+    const uniqueArr = [...new Set(inputObj.map((eachVehicle) => (
+      eachVehicle[displayField].name
+    )))];
+    return uniqueArr.map((each) => (
+      <option key={each}>{each}</option>
+    ));
+  };
+
   return (
     <div className="action-bar">
       <span className="left-content">
@@ -14,15 +23,11 @@ const ActionBarGov = (props) => {
       <span className="right-content">
         <label htmlFor="supplier">Select a different model year/supplier</label>
         <select className="form-control" id="year">
-          <option value="Optimus Autoworks">2017</option>
-          <option value="Optimus Autoworks">2018</option>
-          <option value="Optimus Autoworks">2019</option>
+          {getOptions(vehicles, "modelYear")}
         </select>
 
         <select className="form-control" id="supplier">
-          <option value="Optimus Autoworks">Optimus Autoworks</option>
-          <option value="Optimus Autoworks">Nintendo</option>
-          <option value="Optimus Autoworks">DK Racing</option>
+          {getOptions(vehicles, "make")}
         </select>
         <button
           className="button primary"

@@ -6,11 +6,18 @@ import ActionBarGov from './ActionBarGov';
 import ActionBarNonGov from './ActionBarNonGov';
 
 const VehicleList = (props) => {
-  const { loading, vehicles, user, handleCheckboxClick, handleSubmit } = props;
+  const {
+    loading,
+    vehicles,
+    user,
+    handleCheckboxClick,
+    handleSubmit
+  } = props;
+
   if (loading) {
     return <Loading />;
   }
-  const actionBar = user.isGovernment? <ActionBarGov handleSubmit={handleSubmit} /> : <ActionBarNonGov />;
+  const actionBar = user.isGovernment? <ActionBarGov handleSubmit={handleSubmit} vehicles={vehicles} /> : <ActionBarNonGov />;
   return (
     <div id="organization-list" className="page">
       <div className="row">
