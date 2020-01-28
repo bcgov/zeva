@@ -1,8 +1,9 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import VehicleFormDropdown from './VehicleFormDropdown';
+
 import Loading from '../../app/components/Loading';
+import VehicleFormDropdown from './VehicleFormDropdown';
 
 const VehicleForm = (props) => {
   const {
@@ -11,7 +12,6 @@ const VehicleForm = (props) => {
     vehicleModels,
     vehicleYears,
     vehicleTypes,
-    vehicleTrims,
     handleInputChange,
     handleSubmit,
   } = props;
@@ -48,10 +48,6 @@ const VehicleForm = (props) => {
                 dropdownName="Type"
                 dropdownData={vehicleTypes}
               />
-              <VehicleFormDropdown
-                dropdownName="Trim (Optional)"
-                dropdownData={vehicleTrims}
-              />
               <div className="form-group row">
                 <label
                   className="col-sm-2 col-form-label"
@@ -63,7 +59,6 @@ const VehicleForm = (props) => {
                   <input
                     className="form-control"
                     id="range"
-                    placeholder="505"
                     type="text"
                   />
                 </div>
@@ -111,14 +106,12 @@ VehicleForm.defaultProps = {
 };
 
 VehicleForm.propTypes = {
+  handleInputChange: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   vehicleMakes: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleModels: PropTypes.arrayOf(PropTypes.object).isRequired,
-  vehicleTrims: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleTypes: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.object).isRequired,
-  handleInputChange: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
 };
 
 export default VehicleForm;

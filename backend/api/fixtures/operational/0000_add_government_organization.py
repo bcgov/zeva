@@ -19,6 +19,7 @@ class AddGovernmentOrganization(OperationalDataScript):
     def run(self):
         Organization.objects.create(
             name="Government of British Columbia",
+            is_active=True,
             is_government=True
         )
 

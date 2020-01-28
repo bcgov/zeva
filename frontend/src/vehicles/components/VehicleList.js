@@ -17,7 +17,9 @@ const VehicleList = (props) => {
   if (loading) {
     return <Loading />;
   }
+
   const actionBar = user.isGovernment? <ActionBarGov handleSubmit={handleSubmit} vehicles={vehicles} /> : <ActionBarNonGov />;
+
   return (
     <div id="organization-list" className="page">
       <div className="row">

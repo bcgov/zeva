@@ -18,16 +18,12 @@ const VehicleListTable = (props) => {
     Header: 'Model',
     id: 'model',
   }, {
-    accessor: (row) => (row.trim ? row.trim.name : ''),
-    Header: 'Trim',
-    id: 'trim',
-  }, {
     accessor: (row) => (row.modelYear ? row.modelYear.name : ''),
     Header: 'Model Year',
     id: 'col-my',
   }, {
-    accessor: (row) => (row.type ? row.type.name : ''),
-    Header: 'Type',
+    accessor: (row) => (row.vehicleFuelType ? row.vehicleFuelType.description : ''),
+    Header: 'Fuel Type',
     id: 'type',
   }, {
     accessor: 'range',
@@ -68,7 +64,7 @@ const VehicleListTable = (props) => {
       defaultFilterMethod={filterMethod}
       defaultPageSize={10}
       defaultSorted={[{
-        id: 'displayName',
+        id: 'make',
       }]}
       filterable={filterable}
       getTrProps={(state, row) => {

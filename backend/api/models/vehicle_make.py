@@ -1,8 +1,8 @@
 from auditable.models import Auditable
-from .mixins.named import Named
+from .mixins.named import UniquelyNamed
 
 
-class Make(Auditable, Named):
+class Make(Auditable, UniquelyNamed):
     class Meta:
         db_table = 'vehicle_make'
 

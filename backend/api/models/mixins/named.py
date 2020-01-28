@@ -3,6 +3,19 @@ from django.db import models
 from api.managers.uniquely_named import UniquelyNamedManager
 
 
+class Description(models.Model):
+    description = models.CharField(
+        blank=False,
+        db_column="description",
+        db_comment="Displayed name for the lookup value",
+        max_length=250,
+        null=False
+    )
+
+    class Meta:
+        abstract = True
+
+
 class Named(models.Model):
     name = models.CharField(
         blank=False,

@@ -23,18 +23,9 @@ const VehicleDetailsPage = (props) => {
         <div className="col-sm-12">
           <DetailField label="Make" value={details.make.name} />
           <DetailField label="Model" value={details.model.name} />
-          <DetailField label="Trim" value={details.trim.name} />
-          <DetailField label="Type" value={details.type.name} />
+          <DetailField label="Type" value={details.vehicleFuelType.description} />
           <DetailField label="Range" value={details.range} />
           <DetailField label="Model Year" value={details.modelYear.name} />
-          <DetailField
-            label="Credit"
-            value={(details.creditValue && details.creditValue.a) ? details.creditValue.a : ''}
-          />
-          <DetailField
-            label="Class"
-            value={(details.creditValue && details.creditValue.b) ? details.creditValue.b : ''}
-          />
           <DetailField label="State" value={details.state} />
         </div>
       </div>
@@ -83,8 +74,8 @@ VehicleDetailsPage.propTypes = {
     trim: PropTypes.shape({
       name: PropTypes.string,
     }),
-    type: PropTypes.shape({
-      name: PropTypes.string,
+    vehicleFuelType: PropTypes.shape({
+      description: PropTypes.string,
     }),
     range: PropTypes.oneOfType([
       PropTypes.number,

@@ -10,7 +10,7 @@ from api.models.vehicle import Vehicle
 from api.models.vehicle_make import Make
 from api.models.vehicle_model import Model
 from api.models.vehicle_trim import Trim
-from api.models.vehicle_type import Type
+from api.models.vehicle_fuel_type import FuelType
 
 
 class AddSampleVehicles(OperationalDataScript):
@@ -48,7 +48,7 @@ class AddSampleVehicles(OperationalDataScript):
         created_types = []
 
         for type in types:
-            created_types.append(Type.objects.create(name=type))
+            created_types.append(FuelType.objects.create(name=type))
 
         random.shuffle(created_tuples)
 
