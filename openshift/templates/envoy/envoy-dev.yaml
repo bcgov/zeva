@@ -27,6 +27,9 @@ static_resources:
                         - match: { prefix: "/api/" }
                           route:
                             cluster: django
+                        - match: { prefix: "/health" }
+                          route:
+                            cluster: django
                         - match: { prefix: "/sockjs-node/" }
                           route:
                             cluster: frontend
@@ -64,39 +67,39 @@ static_resources:
                 http_filters:
                   - name: envoy.cors
                   - name: envoy.router
-  clusters:
-    - name: keycloak
-      connect_timeout: 0.25s
-      type: LOGICAL_DNS
-      lb_policy: ROUND_ROBIN
-      hosts:
-        - socket_address:
-            address: keycloak
-            port_value: 8080
-    - name: frontend
-      connect_timeout: 0.25s
-      type: LOGICAL_DNS
-      lb_policy: ROUND_ROBIN
-      hosts:
-        - socket_address:
-            address: frontend.tbiwaq-dev.svc.cluster.local
-            port_value: 5001
-    - name: frontend-notifications
-      connect_timeout: 0.25s
-      type: LOGICAL_DNS
-      lb_policy: ROUND_ROBIN
-      hosts:
-        - socket_address:
-            address: frontend.tbiwaq-dev.svc.cluster.local
-            port_value: 5002
-    - name: django
-      connect_timeout: 0.25s
-      type: LOGICAL_DNS
-      lb_policy: ROUND_ROBIN
-      upstream_connection_options:
-        tcp_keepalive:
-          keepalive_time: 300
-      hosts:
-        - socket_address:
-            address: backend.tbiwaq-dev.svc.cluster.local
-            port_value: 8080
+clusters:
+  - name: keycloak
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    lb_policy: ROUND_ROBIN
+    hosts:
+      - socket_address:
+          address: sso-dev.pathfinder.gov.bc.ca
+          port_value: 443
+  - name: frontend
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    lb_policy: ROUND_ROBIN
+    hosts:
+      - socket_address:
+          address: frontend.tbiwaq-dev.svc.cluster.local
+          port_value: 5001
+  - name: frontend-notifications
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    lb_policy: ROUND_ROBIN
+    hosts:
+      - socket_address:
+          address: frontend.tbiwaq-dev.svc.cluster.local
+          port_value: 5002
+  - name: django
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    lb_policy: ROUND_ROBIN
+    upstream_connection_options:
+      tcp_keepalive:
+        keepalive_time: 300
+    hosts:
+      - socket_address:
+          address: backend.tbiwaq-dev.svc.cluster.local
+          port_value: 8080

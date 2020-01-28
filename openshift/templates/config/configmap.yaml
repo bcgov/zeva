@@ -26,7 +26,6 @@ objects:
       database_name: zeva
       database_engine: postgresql
       database_service_name: postgresql
-      databse_service_host: postgresql.tbiwaq-${ENV_NAME}.svc.cluster.local
       postgresql_service_host: postgresql.tbiwaq-${ENV_NAME}.svc.cluster.local
       postgresql_service_port: '5432'
       keycloak_certs_url: https://${SSO_NAME}.pathfinder.gov.bc.ca/auth/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs
@@ -39,15 +38,14 @@ objects:
       keycloak_sa_baseurl: https://${SSO_NAME}.pathfinder.gov.bc.ca
       keycloak_sa_client_id: zeva-app-sa
       keycloak_sa_realm: ${KEYCLOAK_REALM}
-      django_debug: 'true'
-      rabbitmq_enabled: 'false'
+      django_debug: 'True'
       apibase: http://envoy.tbiwaq-${ENV_NAME}.svc.cluster.local:10000/api
-      keycloak_sa_client_secret: 04dcb145-aa9a-4d9c-807e-859f3e3477eb
-      rabbitmq_default_vhost: unknown
-      rabbitmq_host: unknown
-      rabbitmq_port: unknown
-      smtp_server_host: unknown
-      smtp_server_port: unknown
-      email_sending_enabled: unknown
-      email_from_address: unknown
-
+      rabbitmq_enabled: 'false'
+      rabbitmq_vhost: /zeva
+      rabbitmq_user: zeva
+      rabbitmq_host: rabbitmq.tbiwaq-${ENV_NAME}.svc.cluster.local
+      rabbitmq_port: '5672'
+      smtp_server_host: apps.smtp.gov.bc.ca
+      smtp_server_port: '25'
+      email_sending_enabled: 'false'
+      email_from_address: donotreply@gov.bc.ca
