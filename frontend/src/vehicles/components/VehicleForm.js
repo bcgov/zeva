@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import Loading from '../../app/components/Loading';
+import history from '../../app/History';
 import VehicleFormDropdown from './VehicleFormDropdown';
 
 const VehicleForm = (props) => {
@@ -101,7 +102,13 @@ const VehicleForm = (props) => {
 
               <div className="action-bar form-group row">
                 <span className="left-content">
-                  <button className="button" type="button">
+                  <button
+                    className="button"
+                    onClick={() => {
+                      history.goBack();
+                    }}
+                    type="button"
+                  >
                     <FontAwesomeIcon icon="arrow-left" /> Back
                   </button>
                 </span>

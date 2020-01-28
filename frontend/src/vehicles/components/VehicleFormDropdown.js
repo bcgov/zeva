@@ -27,7 +27,7 @@ const VehicleFormDropdown = (props) => {
           name={fieldName}
           onChange={handleInputChange}
         >
-          <option selected value>--</option>
+          <option>--</option>
           {selectionList}
         </select>
       </div>

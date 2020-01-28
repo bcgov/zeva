@@ -16,7 +16,13 @@ const ActionBarGov = (props) => {
   return (
     <div className="action-bar">
       <span className="left-content">
-        <button className="button" type="button">
+        <button
+          className="button"
+          onClick={() => {
+            history.goBack();
+          }}
+          type="button"
+        >
           <FontAwesomeIcon icon="arrow-left" /> Back
         </button>
       </span>
