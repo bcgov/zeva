@@ -32,6 +32,7 @@ class AuditTable(Operation):
     def describe(self):
         return 'Enables Postgres auditing for table {}'.format(self.table)
 
+
 class UnAuditTable(Operation):
     """Drop auditing for a given table (eg if no longer required)"""
 
@@ -56,4 +57,3 @@ class UnAuditTable(Operation):
 
     def describe(self):
         return 'Disables Postgres auditing for table {}'.format(self.table)
-

@@ -22,7 +22,12 @@ def get_token():
         data={'grant_type': 'client_credentials'}
     )
 
-    token = response.json()['access_token']
+    token = response.json().get('access_token', None)
+
+    if token is None:
+        raise RuntimeError(
+            'No access token found. Check your environment variables.'
+        )
 
     return token
 
