@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 
 import VehicleForm from './components/VehicleForm';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
+import History from '../app/History';
 
 const VehicleAddContainer = (props) => {
   const [fields, setFields] = useState({});
@@ -24,12 +25,10 @@ const VehicleAddContainer = (props) => {
     const { value, name } = event.target;
 
     fields[name] = value;
-    setFields(
-      {
-        name: value,
-        ...fields,
-      },
-    );
+    setFields({
+      name: value,
+      ...fields,
+    });
   };
 
   const handleSubmit = (event) => {
@@ -37,8 +36,8 @@ const VehicleAddContainer = (props) => {
 
     const data = fields;
 
-    axios.post(ROUTES_VEHICLES.LIST, data).then((response) => {
-      console.error(response);
+    axios.post(ROUTES_VEHICLES.LIST, data).then(() => {
+      History.push(ROUTES_VEHICLES.LIST);
     });
 
     return false;
