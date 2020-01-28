@@ -1,20 +1,62 @@
 [
-  {"fields":  { "name":  "test make 1"}, "model": "api.make", "pk":  1},
-  {"fields":  { "name":  "test model 1", "make":  1}, "model": "api.model", "pk":  1},
-  {"fields":  { "name":  "test trim 1", "model":  1}, "model": "api.trim", "pk":  1},
-  {"fields":  { "name":  "bev"}, "model": "api.type", "pk":  1},
-  {"fields":  { "name":  "test modelyear"}, "model": "api.modelYear", "pk":  1},
   {
     "fields": {
-      "type": 1,
+      "name": "test make 1"
+    },
+    "model": "api.make",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "name": "test model 1",
+      "make": 1
+    },
+    "model": "api.model",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "name": "test trim 1",
+      "model": 1
+    },
+    "model": "api.trim",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "vehicle_fuel_code": "bev",
+      "description": "Battery-Electric",
+      "effective_date": "2019-01-01"
+    },
+    "model": "api.fueltype",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "vehicle_class_code": "J",
+      "description": "Jet Aircraft",
+      "effective_date": "2019-01-01"
+    },
+    "model": "api.vehicleclass",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "name": "test modelyear"
+    },
+    "model": "api.modelYear",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "vehicle_fuel_type": 1,
+      "vehicle_class_code": 1,
       "make": 1,
       "model": 1,
-      "trim": 1,
       "model_year": 1,
       "range": 100.2,
       "state": "DRAFT"
     },
-
     "model": "api.vehicle",
     "pk": 1
   }

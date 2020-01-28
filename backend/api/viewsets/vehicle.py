@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from api.models.credit_value import CreditValue
 from api.models.model_year import ModelYear
-from api.models.vehicle import Vehicle
+from api.models.vehicle import Vehicle, VehicleDefinitionStates
 from api.models.vehicle_fuel_type import FuelType
 from api.models.vehicle_make import Make
 from api.models.vehicle_model import Model
@@ -45,6 +45,10 @@ class VehicleViewSet(
         if not is_government:
             vehicles = Vehicle.objects.filter(
                 make__vehicle_make_organizations__organization_id=organization_id
+            ).filter(
+                state=VehicleDefinitionStates.NEW
+            ).filter(
+                state=VehicleDefinitionStates.DRAFT
             )
         else:
             vehicles = self.get_queryset()
@@ -93,7 +97,7 @@ class VehicleViewSet(
         """
         Get the years
         """
-        years = ModelYear.objects.all()
+        years = ModelYear.objects.all().order_by('-effective_date')
         serializer = ModelYearSerializer(years, many=True)
         return Response(serializer.data)
 
