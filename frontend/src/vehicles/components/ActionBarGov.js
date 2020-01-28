@@ -23,11 +23,11 @@ const ActionBarGov = (props) => {
       <span className="right-content">
         <label htmlFor="supplier">Select a different model year/supplier</label>
         <select className="form-control" id="year">
-          {getOptions(vehicles, "modelYear")}
+          {getOptions(vehicles, 'modelYear')}
         </select>
 
         <select className="form-control" id="supplier">
-          {getOptions(vehicles, "make")}
+          {getOptions(vehicles, 'make')}
         </select>
         <button
           className="button primary"

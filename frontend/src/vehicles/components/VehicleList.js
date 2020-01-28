@@ -11,20 +11,20 @@ const VehicleList = (props) => {
     vehicles,
     user,
     handleCheckboxClick,
-    handleSubmit
+    handleSubmit,
   } = props;
 
   if (loading) {
     return <Loading />;
   }
 
-  const actionBar = user.isGovernment? <ActionBarGov handleSubmit={handleSubmit} vehicles={vehicles} /> : <ActionBarNonGov />;
+  const actionBar = user.isGovernment ? <ActionBarGov handleSubmit={handleSubmit} vehicles={vehicles} /> : <ActionBarNonGov />;
 
   return (
     <div id="organization-list" className="page">
       <div className="row">
         <div className="col-sm-12">
-          <h1>Vehicle Suppliers</h1>
+          <h1>ZEV Models</h1>
         </div>
       </div>
       <div className="row">

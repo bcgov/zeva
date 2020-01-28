@@ -2,9 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const VehicleFormDropdown = (props) => {
-  const { dropdownData, dropdownName } = props;
+  const {
+    dropdownData,
+    dropdownName,
+    handleInputChange,
+    fieldName,
+    accessor,
+  } = props;
   const selectionList = dropdownData.map((obj) => (
-    <option key={obj.id}>{obj.name || obj.description}</option>
+    <option key={accessor(obj)} value={accessor(obj)}>{obj.name || obj.description}</option>
   ));
   return (
     <div className="form-group row">
@@ -15,7 +21,13 @@ const VehicleFormDropdown = (props) => {
         {dropdownName}
       </label>
       <div className="col-sm-10">
-        <select className="form-control" id={dropdownName}>
+        <select
+          className="form-control"
+          id={dropdownName}
+          name={fieldName}
+          onChange={handleInputChange}
+        >
+          <option selected value>--</option>
           {selectionList}
         </select>
       </div>
@@ -24,6 +36,7 @@ const VehicleFormDropdown = (props) => {
 };
 
 VehicleFormDropdown.defaultProps = {
+  accessor: (obj) => obj.id,
 };
 
 VehicleFormDropdown.propTypes = {
@@ -33,5 +46,8 @@ VehicleFormDropdown.propTypes = {
     name: PropTypes.string,
   })).isRequired,
   dropdownName: PropTypes.string.isRequired,
+  fieldName: PropTypes.string.isRequired,
+  handleInputChange: PropTypes.func.isRequired,
+  accessor: PropTypes.func,
 };
 export default VehicleFormDropdown;
