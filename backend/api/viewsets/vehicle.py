@@ -5,13 +5,15 @@ from rest_framework.response import Response
 
 from api.models.credit_value import CreditValue
 from api.models.model_year import ModelYear
-from api.models.vehicle import Vehicle
+from api.models.vehicle import Vehicle, VehicleDefinitionStates
+from api.models.vehicle_class import VehicleClass
 from api.models.vehicle_fuel_type import FuelType
 from api.models.vehicle_make import Make
 from api.models.vehicle_model import Model
 from api.models.vehicle_trim import Trim
 from api.serializers.vehicle import VehicleSerializer, VehicleStateChangeSerializer, VehicleSaveSerializer, \
-    VehicleModelSerializer, VehicleTrimSerializer, VehicleMakeSerializer, VehicleFuelTypeSerializer, ModelYearSerializer
+    VehicleModelSerializer, VehicleTrimSerializer, VehicleMakeSerializer, VehicleFuelTypeSerializer, \
+    ModelYearSerializer, VehicleClassSerializer
 from auditable.views import AuditableMixin
 
 
@@ -47,7 +49,11 @@ class VehicleViewSet(
                 make__vehicle_make_organizations__organization_id=organization_id
             )
         else:
-            vehicles = self.get_queryset()
+            vehicles = self.get_queryset().filter(
+                state=VehicleDefinitionStates.NEW
+            ).filter(
+                state=VehicleDefinitionStates.DRAFT
+            )
 
         serializer = self.get_serializer(vehicles, many=True)
         return Response(serializer.data)
@@ -89,11 +95,20 @@ class VehicleViewSet(
         return Response(serializer.data)
 
     @action(detail=False)
+    def classes(self, _request):
+        """
+        Get the fuel classes
+        """
+        classes = VehicleClass.objects.all().order_by('description')
+        serializer = VehicleClassSerializer(classes, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False)
     def years(self, _request):
         """
         Get the years
         """
-        years = ModelYear.objects.all()
+        years = ModelYear.objects.all().order_by('-effective_date')
         serializer = ModelYearSerializer(years, many=True)
         return Response(serializer.data)
 

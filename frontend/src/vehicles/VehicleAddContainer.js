@@ -16,13 +16,20 @@ const VehicleAddContainer = (props) => {
   const [models, setModels] = useState([]);
   const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
+  const [classes, setClasses] = useState([]);
+
   const { keycloak } = props;
 
   const handleInputChange = (event) => {
     const { value, name } = event.target;
 
     fields[name] = value;
-    setFields(fields);
+    setFields(
+      {
+        name: value,
+        ...fields,
+      },
+    );
   };
 
   const handleSubmit = (event) => {
@@ -44,11 +51,13 @@ const VehicleAddContainer = (props) => {
       axios.get(ROUTES_VEHICLES.MODELS),
       axios.get(ROUTES_VEHICLES.YEARS),
       axios.get(ROUTES_VEHICLES.FUEL_TYPES),
-    ]).then(axios.spread((makesRes, modelsRes, yearsRes, typesRes) => (
+      axios.get(ROUTES_VEHICLES.CLASSES),
+    ]).then(axios.spread((makesRes, modelsRes, yearsRes, typesRes, classesRes) => (
       [setMakes(makesRes.data),
         setModels(modelsRes.data),
         setYears(yearsRes.data),
         setTypes(typesRes.data),
+        setClasses(classesRes.data),
         setLoading(false)]
     )));
   };
@@ -66,6 +75,8 @@ const VehicleAddContainer = (props) => {
       vehicleModels={models}
       vehicleYears={years}
       vehicleTypes={types}
+      vehicleClasses={classes}
+      fields={fields}
     />
   );
 };

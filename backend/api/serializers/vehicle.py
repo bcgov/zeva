@@ -1,9 +1,11 @@
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from rest_framework import serializers
+from rest_framework.relations import SlugRelatedField
 
 from api.models.credit_value import CreditValue
 from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle, VehicleDefinitionStates, VehicleChangeHistory
+from api.models.vehicle_class import VehicleClass
 from api.models.vehicle_fuel_type import FuelType
 from api.models.vehicle_make import Make
 from api.models.vehicle_model import Model
@@ -19,27 +21,21 @@ class CreditValueSerializer(serializers.ModelSerializer):
         )
 
 
-class ModelYearSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ModelYear
-        fields = (
-            'name', 'effective_date', 'expiration_date', 'id'
-        )
-
-
 class VehicleMakeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Make
         fields = (
-            'name', 'id'
+            'name',
         )
 
 
 class VehicleModelSerializer(serializers.ModelSerializer):
+    make = serializers.SlugRelatedField(slug_field='name', read_only=True)
+
     class Meta:
         model = Model
         fields = (
-            'name', 'id'
+            'name', 'id', 'make'
         )
 
 
@@ -63,7 +59,15 @@ class VehicleFuelTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = FuelType
         fields = (
-            'id', 'description'
+            'vehicle_fuel_code', 'description'
+        )
+
+
+class VehicleClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VehicleClass
+        fields = (
+            'vehicle_class_code', 'description'
         )
 
 
@@ -125,12 +129,18 @@ class VehicleSerializer(serializers.ModelSerializer, EnumSupportSerializerMixin)
         read_only_fields = ('state',)
 
 
-class VehicleSaveSerializer(serializers.ModelSerializer):
+class VehicleSaveSerializer(serializers.ModelSerializer, EnumSupportSerializerMixin):
+    model_year = SlugRelatedField(slug_field='name', queryset=ModelYear.objects.all())
+    make = SlugRelatedField(slug_field='name', queryset=Make.objects.all())
+    vehicle_class_code = SlugRelatedField(slug_field='vehicle_class_code', queryset=VehicleClass.objects.all())
+    vehicle_fuel_type = SlugRelatedField(slug_field='vehicle_fuel_code', queryset=FuelType.objects.all())
+    state = EnumField(VehicleDefinitionStates, read_only=True)
+
     class Meta:
         model = Vehicle
         fields = (
-            'id', 'vehicle_fuel_type', 'make', 'model', 'trim',
-            'range', 'credit_value', 'model_year',
+            'id', 'vehicle_fuel_type', 'make', 'model', 'vehicle_class_code',
+            'range', 'model_year',
             'state'
         )
-        read_only_fields = ('state', 'id')
+        read_only_fields = ('state', 'id', )

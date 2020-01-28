@@ -55,7 +55,7 @@ const VehicleListTable = (props) => {
       .includes(filter.value.toLowerCase()) : true;
   };
   const filterable = true;
- 
+
   return (
     <ReactTable
       className="searchable"
