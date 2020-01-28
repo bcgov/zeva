@@ -122,11 +122,6 @@ objects:
                   configMapKeyRef:
                     name: zeva-config
                     key: database_service_name
-              - name: DATABASE_SERVICE_HOST
-                valueFrom:
-                  configMapKeyRef:
-                    name: zeva-config
-                    key: databse_service_host
               - name: POSTGRESQL_SERVICE_HOST
                 valueFrom:
                   configMapKeyRef:
@@ -167,6 +162,26 @@ objects:
                   configMapKeyRef:
                     name: zeva-config
                     key: keycloak_client_id
+              - name: KEYCLOAK_SA_BASEURL
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_sa_baseurl
+              - name: KEYCLOAK_SA_REALM
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_sa_realm
+              - name: KEYCLOAK_SA_CLIENT_ID
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_sa_client_id
+              - name: KEYCLOAK_SA_CLIENT_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: zeva-keycloak
+                    key: KEYCLOAK_SA_CLIENT_SECRET
               - name: DJANGO_DEBUG
                 valueFrom:
                   configMapKeyRef:
@@ -177,53 +192,31 @@ objects:
                   secretKeyRef:
                     name: zeva-django-secret-key
                     key: DJANGO_SECRET_KEY
-              - name: KEYCLOAK_REALM_URL
+              - name: RABBITMQ_VHOST
                 valueFrom:
                   configMapKeyRef:
                     name: zeva-config
-                    key: keycloak_realm
-              - name: KEYCLOAK_SA_BASEURL
+                    key: rabbitmq_vhost
+              - name: RABBITMQ_USER
                 valueFrom:
                   configMapKeyRef:
                     name: zeva-config
-                    key: keycloak_sa_baseurl
-              - name: KEYCLOAK_SA_CLIENT_ID
-                valueFrom:
-                  configMapKeyRef:
-                    name: zeva-config
-                    key: keycloak_sa_client_id
-              - name: KEYCLOAK_SA_REALM
-                valueFrom:
-                  configMapKeyRef:
-                    name: zeva-config
-                    key: keycloak_sa_realm
-              - name: KEYCLOAK_SA_CLIENT_SECRET
-                valueFrom:
-                  configMapKeyRef:
-                    name: zeva-config
-                    key: keycloak_sa_client_secret
-              - name: RABBITMQ_DEFAULT_USER
-                value: zeva
-              - name: RABBITMQ_DEFAULT_PASS
+                    key: rabbitmq_user
+              - name: RABBITMQ_PASSWORD
                 valueFrom:
                   secretKeyRef:
                     name: zeva-rabbitmq
                     key: ZEVA_PASSWORD
-              - name: RABBITMQ_DEFAULT_VHOST
-                valueFrom:
-                  configMapKeyRef:
-                    name: zeva-config
-                    key: rabbitmq_default_vhost
-              - name: RABBITMQ_PORT
-                valueFrom:
-                  configMapKeyRef:
-                    name: zeva-config
-                    key: rabbitmq_port
               - name: RABBITMQ_HOST
                 valueFrom:
                   configMapKeyRef:
                     name: zeva-config
                     key: rabbitmq_host
+              - name: RABBITMQ_PORT
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: rabbitmq_port
               - name: SMTP_SERVER_HOST
                 valueFrom:
                   configMapKeyRef:
