@@ -60,7 +60,7 @@ class Organization(Auditable):
 
     objects = OrganizationManager()
 
-    db_table_comment = "Contains a list of all of the recognized Vehicle " \
-                       "suppliers, both past and present, as well as " \
-                       "an entry for the government which is also " \
-                       "considered an organization."
+    db_table_comment = \
+        "Contains a list of all of the recognized Vehicle suppliers, both " \
+        "past and present, as well as an entry for the government which is " \
+        "also considered an organization."

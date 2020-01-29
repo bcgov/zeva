@@ -1,11 +1,11 @@
 import inspect
 import logging
+import pika
 import pkgutil
 import smtplib
 import sys
-from collections import namedtuple
 
-import pika
+from collections import namedtuple
 from amqp import AMQPError
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
@@ -13,7 +13,8 @@ from django.db.models.signals import post_migrate
 from api.services.keycloak_api import list_users, get_token
 from db_comments.db_actions import create_db_comments, \
     create_db_comments_from_models
-from zeva.settings import RUNSERVER, AMQP_CONNECTION_PARAMETERS, KEYCLOAK, EMAIL, DEBUG
+from zeva.settings import RUNSERVER, AMQP_CONNECTION_PARAMETERS, KEYCLOAK, \
+    EMAIL, DEBUG
 
 logger = logging.getLogger('zeva.apps')
 
@@ -35,7 +36,9 @@ class ApiConfig(AppConfig):
             except RuntimeError as error:
                 logger.critical('Startup checks failed.', error)
                 if not DEBUG:
-                    logger.critical('Aborting startup due to failed startup check.', error)
+                    logger.critical(
+                        'Aborting startup due to failed startup check.', error
+                    )
                     exit(-1)
 
 
@@ -63,7 +66,7 @@ def check_external_services():
             raise RuntimeError('Keycloak connection failed')
 
     if EMAIL['ENABLED']:
-        print('Email sending enabled. Checking connection')
+        logger.info('Email sending enabled. Checking connection')
 
         try:
             with smtplib.SMTP(host=EMAIL['SMTP_SERVER_HOST'],
@@ -94,7 +97,8 @@ def post_migration_callback(sender, **kwargs):
 
     create_db_comments(
         table_name='auth_group',
-        table_comment='Django Authentication groups (used by admin application)',
+        table_comment='Django Authentication groups'
+                      '(used by admin application)',
         column_comments={
             'id': 'Primary key'
         }
@@ -108,7 +112,8 @@ def post_migration_callback(sender, **kwargs):
 
     create_db_comments(
         table_name='auth_permission',
-        table_comment='Django Authentication permissions (used by admin application)'
+        table_comment='Django Authentication permissions '
+                      '(used by admin application)'
     )
 
     create_db_comments(
@@ -150,8 +155,8 @@ def get_all_model_classes():
             ).load_module()
 
         for name, obj in inspect.getmembers(mod):
-            if inspect.getmodule(obj) is not None \
-                    and inspect.getmodule(obj).__name__.startswith('api.models'):
+            if inspect.getmodule(obj) is not None and \
+                    inspect.getmodule(obj).__name__.startswith('api.models'):
                 # Assume anything with a 'Meta' attribute is a model
                 if inspect.isclass(obj) and hasattr(obj, 'Meta'):
                     classes.add(obj)

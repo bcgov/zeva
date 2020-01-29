@@ -12,8 +12,7 @@ class DataLoader(OperationalDataScript):
         super().__init__(args, kwargs)
         self.add_objects()
 
-    data = {
-    }
+    data = {}
 
     comment = 'Data load script'
 
@@ -24,11 +23,17 @@ class DataLoader(OperationalDataScript):
 
         for (key, value) in self.data.items():
             if value.__class__.objects.filter(**{key[0]: key[1]}).exists():
-                print('{} with {} = {} already exists.'.format(value, key[0], key[1]))
+                print('{} with {} = {} already exists.'.format(
+                    value, key[0], key[1])
+                )
                 exceptions += 1
 
         if exceptions > 0:
-            print('Encountered {} unexpected entries. Preconditions not met.'.format(exceptions))
+            print(
+                'Encountered {} unexpected entries. '
+                'Preconditions not met.'.format(exceptions)
+            )
+
             return False
 
         return True
@@ -44,11 +49,16 @@ class DataLoader(OperationalDataScript):
 
         for (key, value) in self.data.items():
             if not value.__class__.objects.filter(**{key[0]: key[1]}).exists():
-                print('{} with {} = {} doesn\'t exist.'.format(value, key[0], key[1]))
+                print('{} with {} = {} doesn\'t exist.'.format(
+                    value, key[0], key[1])
+                )
                 exceptions += 1
 
         if exceptions > 0:
-            print('Encountered {} unexpected entries. Preconditions not met.'.format(exceptions))
+            print(
+                'Encountered {} unexpected entries. '
+                'Preconditions not met.'.format(exceptions)
+            )
             return False
 
         return True

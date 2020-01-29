@@ -4,7 +4,8 @@ from rest_framework.relations import SlugRelatedField
 
 from api.models.credit_value import CreditValue
 from api.models.model_year import ModelYear
-from api.models.vehicle import Vehicle, VehicleDefinitionStates, VehicleChangeHistory
+from api.models.vehicle import Vehicle, VehicleDefinitionStates, \
+    VehicleChangeHistory
 from api.models.vehicle_class import VehicleClass
 from api.models.vehicle_fuel_type import FuelType
 from api.models.vehicle_make import Make
@@ -25,12 +26,12 @@ class VehicleMakeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Make
         fields = (
-            'name',
+            'name', 'id'
         )
 
 
 class VehicleModelSerializer(serializers.ModelSerializer):
-    make = serializers.SlugRelatedField(slug_field='name', read_only=True)
+    make = VehicleMakeSerializer()
 
     class Meta:
         model = Model
@@ -51,7 +52,7 @@ class ModelYearSerializer(serializers.ModelSerializer):
     class Meta:
         model = ModelYear
         fields = (
-            'name', 'effective_date', 'expiration_date'
+            'name', 'id', 'effective_date', 'expiration_date'
         )
 
 
@@ -59,7 +60,7 @@ class VehicleFuelTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = FuelType
         fields = (
-            'vehicle_fuel_code', 'description'
+            'vehicle_fuel_code', 'id', 'description'
         )
 
 
@@ -67,7 +68,7 @@ class VehicleClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = VehicleClass
         fields = (
-            'vehicle_class_code', 'description'
+            'vehicle_class_code', 'id', 'description'
         )
 
 
@@ -83,7 +84,9 @@ class VehicleStateChangeSerializer(serializers.ModelSerializer):
         fields = ('state',)
 
 
-class VehicleHistorySerializer(serializers.ModelSerializer, EnumSupportSerializerMixin):
+class VehicleHistorySerializer(
+        serializers.ModelSerializer, EnumSupportSerializerMixin
+):
     actor = serializers.SlugRelatedField(slug_field='username', read_only=True)
     current_state = EnumField(VehicleDefinitionStates, read_only=True)
     previous_state = EnumField(VehicleDefinitionStates, read_only=True)
@@ -95,7 +98,9 @@ class VehicleHistorySerializer(serializers.ModelSerializer, EnumSupportSerialize
         )
 
 
-class VehicleSerializer(serializers.ModelSerializer, EnumSupportSerializerMixin):
+class VehicleSerializer(
+        serializers.ModelSerializer, EnumSupportSerializerMixin
+):
     make = VehicleMakeSerializer()
     model = VehicleModelSerializer()
     model_year = ModelYearSerializer()
@@ -114,7 +119,9 @@ class VehicleSerializer(serializers.ModelSerializer, EnumSupportSerializerMixin)
             actions.append('VALIDATED')
             actions.append('REJECTED')
 
-        if (not gov and instance.state in [VehicleDefinitionStates.DRAFT, VehicleDefinitionStates.NEW]):
+        if (not gov and instance.state in [
+                VehicleDefinitionStates.DRAFT, VehicleDefinitionStates.NEW
+        ]):
             actions.append('SUBMITTED')
 
         return actions
@@ -129,11 +136,21 @@ class VehicleSerializer(serializers.ModelSerializer, EnumSupportSerializerMixin)
         read_only_fields = ('state',)
 
 
-class VehicleSaveSerializer(serializers.ModelSerializer, EnumSupportSerializerMixin):
-    model_year = SlugRelatedField(slug_field='name', queryset=ModelYear.objects.all())
-    make = SlugRelatedField(slug_field='name', queryset=Make.objects.all())
-    vehicle_class_code = SlugRelatedField(slug_field='vehicle_class_code', queryset=VehicleClass.objects.all())
-    vehicle_fuel_type = SlugRelatedField(slug_field='vehicle_fuel_code', queryset=FuelType.objects.all())
+class VehicleSaveSerializer(
+        serializers.ModelSerializer, EnumSupportSerializerMixin
+):
+    model_year = serializers.PrimaryKeyRelatedField(
+        queryset=ModelYear.objects.all()
+    )
+    make = serializers.PrimaryKeyRelatedField(
+        queryset=Make.objects.all()
+    )
+    vehicle_class_code = serializers.PrimaryKeyRelatedField(
+        queryset=VehicleClass.objects.all()
+    )
+    vehicle_fuel_type = serializers.PrimaryKeyRelatedField(
+        queryset=FuelType.objects.all()
+    )
     state = EnumField(VehicleDefinitionStates, read_only=True)
 
     class Meta:

@@ -28,9 +28,12 @@ const VehicleForm = (props) => {
 
   useEffect(() => {
     if ('make' in props.fields) {
-      if (props.fields.make !== null && props.fields.make !== '') {
+      if (props.fields.make && props.fields.make !== '') {
         const { make } = props.fields;
-        setFilteredModels(vehicleModels.filter((vm) => vm.make === make));
+
+        setFilteredModels(vehicleModels.filter(
+          (vehicleModel) => vehicleModel.make.id === Number(make),
+        ));
       }
     }
   },
@@ -72,14 +75,12 @@ const VehicleForm = (props) => {
                 dropdownName="Type"
                 dropdownData={vehicleTypes}
                 fieldName="vehicleFuelType"
-                accessor={(o) => o.vehicleFuelCode}
                 handleInputChange={handleInputChange}
               />
               <VehicleFormDropdown
-                dropdownName="Class"
+                dropdownName="Size"
                 dropdownData={vehicleClasses}
                 fieldName="vehicleClassCode"
-                accessor={(o) => o.vehicleClassCode}
                 handleInputChange={handleInputChange}
               />
               <div className="form-group row">
@@ -149,7 +150,7 @@ VehicleForm.defaultProps = {};
 VehicleForm.propTypes = {
   handleInputChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-  fields: PropTypes.object.isRequired,
+  fields: PropTypes.shape().isRequired,
   loading: PropTypes.bool.isRequired,
   vehicleMakes: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleModels: PropTypes.arrayOf(PropTypes.object).isRequired,

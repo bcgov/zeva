@@ -17,7 +17,8 @@ class FuelType(Auditable, Description, EffectiveDates):
     class Meta:
         db_table = 'vehicle_fuel_type'
 
-    db_table_comment = "Fuel type of the vehicle as defined in NRCAN" \
-                       "e.g. B - Electricity" \
-                       "BX - Electricity/Regular Gasoline" \
-                       "BZ - Electricity/Premium Gasoline"
+    db_table_comment = \
+        "Fuel type of the vehicle as defined in NRCAN" \
+        "e.g. B - Electricity" \
+        "BX - Electricity/Regular Gasoline" \
+        "BZ - Electricity/Premium Gasoline"

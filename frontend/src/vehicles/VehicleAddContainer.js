@@ -26,7 +26,6 @@ const VehicleAddContainer = (props) => {
 
     fields[name] = value;
     setFields({
-      name: value,
       ...fields,
     });
   };

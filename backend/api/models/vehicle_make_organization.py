@@ -22,6 +22,6 @@ class VehicleMakeOrganization(Auditable):
     class Meta:
         db_table = 'vehicle_make_organization'
 
-    db_table_comment = "Contains the relationship between the make and " \
-                       "organizations table." \
-                       "(ie which makes do suppliers sell)"
+    db_table_comment = \
+        "Contains the relationship between the make and organizations table." \
+        "(ie which makes do suppliers sell)"
