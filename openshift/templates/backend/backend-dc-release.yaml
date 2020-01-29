@@ -142,6 +142,11 @@ objects:
                   configMapKeyRef:
                     name: zeva-config
                     key: keycloak_realm
+              - name: KEYCLOAK_REALM_URL
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_realm_url
               - name: KEYCLOAK_AUTHORITY
                 valueFrom:
                   configMapKeyRef:
