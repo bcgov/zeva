@@ -160,4 +160,4 @@ class VehicleSaveSerializer(
             'range', 'model_year',
             'state'
         )
-        read_only_fields = ('state', 'id', )
+        read_only_fields = ('state', 'id',)
