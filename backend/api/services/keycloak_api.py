@@ -9,11 +9,10 @@ def get_token():
     for the logged-in user (not to be confused with the service account)
     such as auto-mapping the user upon first login.
     """
-    print("---- in get_token()\n")
     token_url = '{keycloak}/auth/realms/{realm}/protocol/openid-connect/token'.format(
         keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
         realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'])
-    print("---- token_url=", token_url, "\n")
+
     response = requests.post(
         token_url,
         auth=(
@@ -23,9 +22,7 @@ def get_token():
         data={'grant_type': 'client_credentials'}
     )
 
-    print("---- response=", response, "\n")
     token = response.json()['access_token']
-    print("---- token=", token, "\n")
 
     return token
 
@@ -36,18 +33,16 @@ def list_users(token):
     Not to be confused with the list of users found in the actual
     database.
     """
-    print("++++ in list_users()\n")
     users_url = '{keycloak}/auth/admin/realms/{realm}/users'.format(
         keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
         realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'])
-    print("++++ users_url=", users_url, "\n")
+
     headers = {'Authorization': 'Bearer {}'.format(token)}
 
     response = requests.get(users_url,
                             headers=headers)
-    print("++++ response=", response, "\n")
+
     all_users = response.json()
-    print("++++ all_users=", all_users, "\n")
     for user in all_users:
         users_detail_url = '{keycloak}/auth/admin/realms/{realm}/users/{user_id}/federated-identity'.format(
             keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
