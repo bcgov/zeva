@@ -97,7 +97,6 @@ class VehicleHistorySerializer(serializers.ModelSerializer, EnumSupportSerialize
 
 class VehicleSerializer(serializers.ModelSerializer, EnumSupportSerializerMixin):
     make = VehicleMakeSerializer()
-    model = VehicleModelSerializer()
     model_year = ModelYearSerializer()
     state = EnumField(VehicleDefinitionStates, read_only=True)
     vehicle_fuel_type = VehicleFuelTypeSerializer()
@@ -122,7 +121,7 @@ class VehicleSerializer(serializers.ModelSerializer, EnumSupportSerializerMixin)
     class Meta:
         model = Vehicle
         fields = (
-            'id', 'make', 'model', 'state', 'vehicle_fuel_type',
+            'id', 'make', 'model_name', 'state', 'vehicle_fuel_type',
             'range', 'model_year', 'changelog',
             'actions'
         )
@@ -139,7 +138,7 @@ class VehicleSaveSerializer(serializers.ModelSerializer, EnumSupportSerializerMi
     class Meta:
         model = Vehicle
         fields = (
-            'id', 'vehicle_fuel_type', 'make', 'model', 'vehicle_class_code',
+            'id', 'vehicle_fuel_type', 'make', 'model_name', 'vehicle_class_code',
             'range', 'model_year',
             'state'
         )
