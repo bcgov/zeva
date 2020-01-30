@@ -32,7 +32,7 @@ const VehicleForm = (props) => {
         const { make } = props.fields;
 
         setFilteredModels(vehicleModels.filter(
-          (vehicleModel) => vehicleModel.make.id === Number(make),
+          (vehicleModel) => vehicleModel.make.name === make,
         ));
       }
     }
@@ -54,12 +54,14 @@ const VehicleForm = (props) => {
             <fieldset>
               <legend>Model Details</legend>
               <VehicleFormDropdown
+                accessor={(model) => model.name}
                 dropdownName="Model Year"
                 dropdownData={vehicleYears}
                 fieldName="modelYear"
                 handleInputChange={handleInputChange}
               />
               <VehicleFormDropdown
+                accessor={(make) => make.name}
                 dropdownName="Make"
                 dropdownData={vehicleMakes}
                 fieldName="make"
@@ -72,12 +74,14 @@ const VehicleForm = (props) => {
                 handleInputChange={handleInputChange}
               />
               <VehicleFormDropdown
+                accessor={(fuelType) => fuelType.vehicleFuelCode}
                 dropdownName="Type"
                 dropdownData={vehicleTypes}
                 fieldName="vehicleFuelType"
                 handleInputChange={handleInputChange}
               />
               <VehicleFormDropdown
+                accessor={(classCode) => classCode.vehicleClassCode}
                 dropdownName="Size"
                 dropdownData={vehicleClasses}
                 fieldName="vehicleClassCode"
