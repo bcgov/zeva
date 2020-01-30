@@ -49,7 +49,11 @@ class VehicleViewSet(
                 make__vehicle_make_organizations__organization_id=organization_id
             )
         else:
-            vehicles = self.get_queryset()
+            vehicles = self.get_queryset().filter(
+                state=VehicleDefinitionStates.NEW
+            ).filter(
+                state=VehicleDefinitionStates.DRAFT
+            )
 
         serializer = self.get_serializer(vehicles, many=True)
         return Response(serializer.data)

@@ -4,8 +4,12 @@ from rest_framework.relations import SlugRelatedField
 
 from api.models.credit_value import CreditValue
 from api.models.model_year import ModelYear
+<<<<<<< HEAD
 from api.models.vehicle import Vehicle, VehicleDefinitionStates, \
     VehicleChangeHistory
+=======
+from api.models.vehicle import Vehicle, VehicleDefinitionStates, VehicleChangeHistory
+>>>>>>> master
 from api.models.vehicle_class import VehicleClass
 from api.models.vehicle_fuel_type import FuelType
 from api.models.vehicle_make import Make
@@ -26,12 +30,16 @@ class VehicleMakeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Make
         fields = (
-            'name', 'id'
+            'name',
         )
 
 
 class VehicleModelSerializer(serializers.ModelSerializer):
+<<<<<<< HEAD
     make = VehicleMakeSerializer()
+=======
+    make = serializers.SlugRelatedField(slug_field='name', read_only=True)
+>>>>>>> master
 
     class Meta:
         model = Model
@@ -60,7 +68,11 @@ class VehicleFuelTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = FuelType
         fields = (
+<<<<<<< HEAD
             'vehicle_fuel_code', 'id', 'description'
+=======
+            'vehicle_fuel_code', 'description'
+>>>>>>> master
         )
 
 
@@ -68,7 +80,11 @@ class VehicleClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = VehicleClass
         fields = (
+<<<<<<< HEAD
             'vehicle_class_code', 'id', 'description'
+=======
+            'vehicle_class_code', 'description'
+>>>>>>> master
         )
 
 
