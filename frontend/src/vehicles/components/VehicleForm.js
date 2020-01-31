@@ -61,12 +61,23 @@ const VehicleForm = (props) => {
                 fieldName="make"
                 handleInputChange={handleInputChange}
               />
-              <VehicleFormDropdown
-                dropdownName="Model"
-                dropdownData={filteredModels}
-                fieldName="model"
-                handleInputChange={handleInputChange}
-              />
+              <div className="form-group row">
+                <label
+                  className="col-sm-2 col-form-label"
+                  htmlFor="modelName"
+                >
+                  Model
+                </label>
+                <div className="col-sm-10">
+                  <input
+                    className="form-control"
+                    id="modelName"
+                    name="modelName"
+                    type="text"
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
               <VehicleFormDropdown
                 dropdownName="Type"
                 dropdownData={vehicleTypes}
