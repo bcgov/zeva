@@ -25,12 +25,6 @@ class Vehicle(Auditable):
         on_delete=models.PROTECT
     )
 
-    model = models.ForeignKey(
-        'Model',
-        related_name=None,
-        on_delete=models.PROTECT
-    )
-
     vehicle_class_code = models.ForeignKey(
         'VehicleClass',
         related_name=None,
@@ -45,6 +39,13 @@ class Vehicle(Auditable):
 
     range = models.IntegerField(
         db_comment='Vehicle Range in km'
+    )
+
+    model_name = models.CharField(
+        blank=False,
+        db_comment="Model and trim of vehicle",
+        max_length=250,
+        null=False
     )
 
     model_year = models.ForeignKey(
@@ -66,7 +67,7 @@ class Vehicle(Auditable):
     class Meta:
         db_table = 'vehicle'
         unique_together = [[
-            'make', 'model', 'vehicle_class_code', 'vehicle_fuel_type', 'model_year'
+            'make', 'model_name', 'vehicle_class_code', 'vehicle_fuel_type', 'model_year'
         ]]
 
     db_table_comment = "List of credit-generating vehicle definitions"
