@@ -30,6 +30,7 @@ pylint==2.4.4
 pylint-plugin-utils==0.2.6
 python-crontab==2.4.0
 python-dateutil==2.8.1
+python-dotenv>=0.9.1
 pytz==2019.3
 requests==2.22.0
 six==1.13.0
