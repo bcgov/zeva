@@ -93,7 +93,7 @@ def envoyDeployStage (String envName) {
                         MEMORY_LIMIT='512Mi'
                     }
                     openshift.withProject("${projectName}") {
-                        def envoyDCYaml = openshift.process(readFile(file:'openshift/templates/frontend/envoy-dc-release.yaml'),
+                        def envoyDCYaml = openshift.process(readFile(file:'openshift/templates/envoy/envoy-dc-release.yaml'),
                                 "-p",
                                 "ENV_NAME=${ENV_NAME}",
                                 "CPU_REQUEST=${CPU_REQUEST}",
