@@ -51,7 +51,7 @@ class ModelYearSerializer(serializers.ModelSerializer):
     class Meta:
         model = ModelYear
         fields = (
-            'name', 'effective_date', 'expiration_date', 'id'
+            'name', 'effective_date', 'expiration_date'
         )
 
 
