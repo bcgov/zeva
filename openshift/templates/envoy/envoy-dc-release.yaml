@@ -140,7 +140,7 @@ objects:
         from:
           kind: ImageStreamTag
           name: envoy:${ENV_NAME}
-          namespace: tbiwaq-tools
+          namespace: tbiwaq-${ENV_NAME}
         lastTriggeredImage:
       type: ImageChange
     - type: ConfigChange
