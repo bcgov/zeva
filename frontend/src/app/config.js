@@ -2,7 +2,7 @@
 const CONFIG = {
   APIBASE: __APIBASE__, // injected by webpack
   KEYCLOAK: {
-    CLIENT_ID: 'zeva-django-sa',
+    CLIENT_ID: 'zeva',
     REALM: 'rzh2zkjq',
     URL: __KEYCLOAK_URL__,
   },
