@@ -88,6 +88,8 @@ class UserAuthentication(authentication.BaseAuthentication):
                 'Authorization header invalid'
             )
 
+        print(token)
+
         if not token:
             raise exceptions.AuthenticationFailed(
                 'No token found'
@@ -97,6 +99,8 @@ class UserAuthentication(authentication.BaseAuthentication):
         token_validation_errors = []
 
         keys = self._get_keys().items()
+
+        print(keys)
 
         if len(keys) == 0:
             raise exceptions.AuthenticationFailed(
@@ -115,6 +119,8 @@ class UserAuthentication(authentication.BaseAuthentication):
                 token_validation_errors.append(error)
 
         if not user_token:
+            print(settings.KEYCLOAK['AUDIENCE'])
+            print(settings.KEYCLOAK['ISSUER'])
             raise exceptions.AuthenticationFailed(
                 'No successful decode of user token. Exceptions occurred: {}',
                 '\n'.join([str(error) for error in token_validation_errors])
