@@ -47,6 +47,8 @@ spec:
               value: 'zeva-app'
             - name: KEYCLOAK_CLIENT_ID
               value: 'zeva-app'
+            - name: KEYCLOAK_REALM_NAME
+              value: 'zeva'
             - name: RABBITMQ_ENABLED
               value: 'False'
             - name: APIBASE
