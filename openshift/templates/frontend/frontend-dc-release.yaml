@@ -143,6 +143,11 @@ objects:
                     configMapKeyRef:
                       name: zeva-config
                       key: keycloak_client_id
+                - name: KEYCLOAK_REALM_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_realm_name
                 - name: RABBITMQ_ENABLED
                   valueFrom:
                     configMapKeyRef:
