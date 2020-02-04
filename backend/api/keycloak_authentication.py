@@ -88,7 +88,7 @@ class UserAuthentication(authentication.BaseAuthentication):
                 'Authorization header invalid'
             )
 
-        print(token)
+
 
         if not token:
             raise exceptions.AuthenticationFailed(
@@ -108,19 +108,21 @@ class UserAuthentication(authentication.BaseAuthentication):
 
         for _kid, key in keys:
             try:
+                print("key=", key)
+                print("token=", token)
                 user_token = jwt.decode(
                     token,
                     key=str(key),
                     audience=settings.KEYCLOAK['AUDIENCE'],
                     issuer=settings.KEYCLOAK['ISSUER']
                 )
+                print("user_token=", user_token)
                 break
             except InvalidTokenError as error:
+                print("error=", error)
                 token_validation_errors.append(error)
 
         if not user_token:
-            print(settings.KEYCLOAK['AUDIENCE'])
-            print(settings.KEYCLOAK['ISSUER'])
             raise exceptions.AuthenticationFailed(
                 'No successful decode of user token. Exceptions occurred: {}',
                 '\n'.join([str(error) for error in token_validation_errors])
