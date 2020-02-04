@@ -3,6 +3,7 @@ import { Switch } from 'react-router';
 import { Router as BrowserRouter, Route } from 'react-router-dom';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import RoleListContainer from '../roles/RoleListContainer';
 
 import Loading from './components/Loading';
 import CONFIG from './config';
@@ -12,6 +13,7 @@ import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
 import OrganizationListContainer from '../organizations/OrganizationListContainer';
 import ROUTES_ORGANIZATIONS from './routes/Organizations';
+import ROUTES_ROLES from './routes/Roles';
 import ROUTES_USERS from './routes/Users';
 import ROUTES_VEHICLES from './routes/Vehicles';
 import VehicleAddContainer from '../vehicles/VehicleAddContainer';
@@ -106,6 +108,11 @@ class Router extends Component {
               exact
               path={ROUTES_VEHICLES.DETAILS}
               render={() => <VehicleDetailContainer keycloak={keycloak} user={user} />}
+            />
+            <Route
+              exact
+              path={ROUTES_ROLES.LIST}
+              render={() => <RoleListContainer keycloak={keycloak} user={user} />}
             />
             <Route
               exact

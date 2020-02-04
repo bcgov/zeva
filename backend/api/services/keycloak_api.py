@@ -1,5 +1,12 @@
+import logging
+
 import requests
 from django.conf import settings
+
+logger = logging.getLogger('zeva.keycloak')
+
+# hide these ones from the client response (they're in the token anyway, but there's no need to display them in the UI)
+FILTERED_ROLES = ['offline_access', 'uma_authorization']
 
 
 def get_token():
@@ -142,3 +149,142 @@ def create_user(token, user_name, maps_to_id):
     )
 
     return created_user_response.json()['id']
+
+
+def list_roles_for_username(token, username):
+    """
+    Retrieves the list of roles found in Keycloak.
+    """
+    url = '{keycloak}/auth/admin/realms/{realm}/users?search={username}'.format(
+        keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
+        realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'],
+        username=username)
+
+    headers = {'Authorization': 'Bearer {}'.format(token)}
+
+    response = requests.get(url,
+                            headers=headers)
+
+    if response.status_code != 200:
+        raise RuntimeError(
+            'bad response code: {}'.format(response.status_code))
+
+    all_users = response.json()
+
+    logger.info(all_users)
+
+    id = None
+
+    for user in all_users:
+        if username in user['attributes']['user_id']:
+            id = user['id']
+            break
+
+    if id is None:
+        logger.warning('User not found in Keycloak')
+        return []
+
+    url = '{keycloak}/auth/admin/realms/{realm}/users/{id}/role-mappings'.format(
+        keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
+        realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'],
+        id=id)
+
+    response = requests.get(url,
+                            headers=headers)
+    if response.status_code != 200:
+        raise RuntimeError(
+            'bad response code: {}'.format(response.status_code))
+
+    user_details = response.json()
+    logger.info(user_details)
+
+    filtered_roles = filter(lambda r: r['name'] not in FILTERED_ROLES, user_details['realmMappings'])
+
+    return [
+        {
+            'name': r['name'],
+            'id': r['id'],
+            'description': r['description']
+        } for r in filtered_roles
+    ]
+
+
+def list_roles(token):
+    """
+    Retrieves the list of all roles found in Keycloak.
+    """
+    url = '{keycloak}/auth/admin/realms/{realm}/roles'.format(
+        keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
+        realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'])
+
+    headers = {'Authorization': 'Bearer {}'.format(token)}
+
+    response = requests.get(url,
+                            headers=headers)
+
+    all_roles = response.json()
+
+    logger.info(all_roles)
+
+    if response.status_code != 200:
+        raise RuntimeError(
+            'bad response code: {}'.format(response.status_code))
+
+    filtered_roles = filter(lambda r: r['name'] not in FILTERED_ROLES, all_roles)
+
+    return [
+        {
+            'name': r['name'],
+            'id': r['id'],
+            'description': r['description']
+        } for r in filtered_roles
+    ]
+
+
+# create role, update_role_description, map_user_to_role
+
+def create_role(token, name, description):
+    """
+    Create a Keycloak role.
+    """
+    url = '{keycloak}/auth/admin/realms/{realm}/roles'.format(
+        keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
+        realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'])
+
+    headers = {'Authorization': 'Bearer {}'.format(token)}
+
+    payload = {
+        'name': name,
+        'description': description
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+
+    if response.status_code != 200:
+        raise RuntimeError(
+            'bad response code: {}'.format(response.status_code))
+
+
+def update_role_description(token, name, description):
+    """
+    Update a Keycloak role description.
+    """
+    url = '{keycloak}/auth/admin/realms/{realm}/roles/{name}'.format(
+        keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
+        realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'],
+        name=name)
+
+    logger.info('url: {}'.format(url))
+
+    headers = {'Authorization': 'Bearer {}'.format(token)}
+
+    payload = {
+        'description': description
+    }
+
+    response = requests.put(url, json=payload, headers=headers)
+
+    if response.status_code != 200:
+        logger.warning(response.content)
+        raise RuntimeError(
+            'bad response code: {}'.format(response.status_code))

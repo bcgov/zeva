@@ -1,26 +1,19 @@
 /*
  * Presentational component
  */
-import React from 'react';
 import PropTypes from 'prop-types';
-
+import React from 'react';
 import ReactTable from 'react-table';
 
-const UsersTable = (props) => {
+const RoleListTable = (props) => {
+  const { roles } = props;
+
   const columns = [{
-    accessor: 'displayName',
-    className: 'text-left',
-    Header: 'Name',
+    accessor: 'name',
+    Header: 'Role',
   }, {
-    accessor: (item) => (item.roles.map((r) => r.name).join(', ')),
-    id: 'roles',
-    className: 'text-left',
-    Header: 'Roles',
-  }, {
-    accessor: (item) => (item.isActive ? 'Active' : 'Inactive'),
-    className: 'text-center',
-    Header: 'Status',
-    id: 'status',
+    accessor: 'description',
+    Header: 'Description',
   }];
 
   const filterMethod = (filter, row) => {
@@ -29,20 +22,17 @@ const UsersTable = (props) => {
       .toLowerCase()
       .includes(filter.value.toLowerCase()) : true;
   };
-
   const filterable = true;
-
-  const { items } = props;
 
   return (
     <ReactTable
       className="searchable"
       columns={columns}
-      data={items}
+      data={roles}
       defaultFilterMethod={filterMethod}
       defaultPageSize={10}
       defaultSorted={[{
-        id: 'displayName',
+        id: 'name',
       }]}
       filterable={filterable}
       pageSizeOptions={[5, 10, 15, 20, 25, 50, 100]}
@@ -50,11 +40,14 @@ const UsersTable = (props) => {
   );
 };
 
-UsersTable.defaultProps = {
+RoleListTable.defaultProps = {};
+
+RoleListTable.propTypes = {
+  roles: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string,
+    description: PropTypes.string,
+  })).isRequired,
 };
 
-UsersTable.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-};
-
-export default UsersTable;
+export default RoleListTable;

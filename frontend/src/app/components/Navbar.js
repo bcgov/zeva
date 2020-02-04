@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import ROUTES_ORGANIZATIONS from '../routes/Organizations';
+import ROUTES_ROLES from '../routes/Roles';
 import ROUTES_VEHICLES from '../routes/Vehicles';
 
 class Navbar extends Component {
@@ -28,14 +29,14 @@ class Navbar extends Component {
   }
 
   render() {
-    const { user } = this.props;
+    const { user, keycloak } = this.props;
     const { collapsed } = this.state;
 
     return (
       <div id="navbar">
         <div className="row header">
           <div className="col-lg-9">
-            <div className="brand-logo" />
+            <div className="brand-logo"/>
 
             <h1>Zero Emission Vehicle Reporting System</h1>
           </div>
@@ -63,7 +64,7 @@ class Navbar extends Component {
             onClick={this.collapseNavBar}
             type="button"
           >
-            <FontAwesomeIcon icon="bars" />
+            <FontAwesomeIcon icon="bars"/>
           </button>
 
           <ul className="user-control-panel">
@@ -78,7 +79,7 @@ class Navbar extends Component {
                 className="notifications"
                 to="/notifications"
               >
-                <span><FontAwesomeIcon icon="bell" /></span>
+                <span><FontAwesomeIcon icon="bell"/></span>
               </NavLink>
             </li>
             <li>
@@ -87,7 +88,7 @@ class Navbar extends Component {
                 className="help"
                 to="/help"
               >
-                <span><FontAwesomeIcon icon={['far', 'question-circle']} /></span>
+                <span><FontAwesomeIcon icon={['far', 'question-circle']}/></span>
               </NavLink>
             </li>
           </ul>
@@ -149,6 +150,17 @@ class Navbar extends Component {
                 </NavLink>
               </li>
 
+              {keycloak.hasRealmRole('view_roles') &&
+              <li className="nav-item">
+                <NavLink
+                  activeClassName="active"
+                  to={ROUTES_ROLES.LIST}
+                >
+                  <span>Roles</span>
+                </NavLink>
+              </li>
+              }
+
               {!user.isGovernment && (
                 <li className="nav-item">
                   <NavLink
@@ -178,8 +190,7 @@ class Navbar extends Component {
   }
 }
 
-Navbar.defaultProps = {
-};
+Navbar.defaultProps = {};
 
 Navbar.propTypes = {
   user: PropTypes.shape({
@@ -189,6 +200,8 @@ Navbar.propTypes = {
       name: PropTypes.string,
     }),
   }).isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  keycloak: PropTypes.any.isRequired,
 };
 
 export default Navbar;

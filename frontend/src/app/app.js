@@ -29,6 +29,7 @@ class App extends Component {
     });
 
     keycloak.init({ onLoad: 'check-sso', checkLoginIframe: false, promiseType: 'native' }).then((authenticated) => {
+      console.dir(keycloak);
       this.setState({
         keycloak,
         authenticated,
