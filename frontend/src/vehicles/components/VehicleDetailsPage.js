@@ -22,11 +22,11 @@ const VehicleDetailsPage = (props) => {
       <div className="row align-items-center">
         <div className="col-sm-12">
           <DetailField label="Make" value={details.make.name} />
-          <DetailField label="Model" value={details.model.name} />
+          <DetailField label="Model" value={details.modelName} />
           <DetailField label="Type" value={details.vehicleFuelType.description} />
           <DetailField label="Range" value={details.range} />
           <DetailField label="Model Year" value={details.modelYear.name} />
-          <DetailField label="State" value={details.state} />
+          <DetailField label="Status" value={details.validationStatus} />
         </div>
       </div>
 
@@ -35,7 +35,7 @@ const VehicleDetailsPage = (props) => {
           <h1>Vehicle State History</h1>
         </div>
         <div className="col-sm-12">
-          <VehicleHistoryTable items={details.changelog} />
+          <VehicleHistoryTable items={details.history} />
         </div>
       </div>
 
@@ -63,17 +63,12 @@ VehicleDetailsPage.defaultProps = {};
 VehicleDetailsPage.propTypes = {
   details: PropTypes.shape({
     id: PropTypes.any,
-    actions: PropTypes.arrayOf(PropTypes.string).isRequired,
-    changelog: PropTypes.arrayOf(PropTypes.object).isRequired,
+    actions: PropTypes.arrayOf(PropTypes.string),
+    history: PropTypes.arrayOf(PropTypes.object),
     make: PropTypes.shape({
       name: PropTypes.string,
     }),
-    model: PropTypes.shape({
-      name: PropTypes.string,
-    }),
-    trim: PropTypes.shape({
-      name: PropTypes.string,
-    }),
+    modelName: PropTypes.string,
     vehicleFuelType: PropTypes.shape({
       description: PropTypes.string,
     }),
@@ -84,13 +79,8 @@ VehicleDetailsPage.propTypes = {
     modelYear: PropTypes.shape({
       name: PropTypes.string,
     }),
-    creditValue: PropTypes.shape({
-      a: PropTypes.string,
-      b: PropTypes.string,
-    }),
-    state: PropTypes.string,
+    validationStatus: PropTypes.string,
   }).isRequired,
-  actions: PropTypes.arrayOf(PropTypes.string).isRequired,
   loading: PropTypes.bool.isRequired,
   requestStateChange: PropTypes.func.isRequired,
 };

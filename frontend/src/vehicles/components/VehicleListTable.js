@@ -14,7 +14,7 @@ const VehicleListTable = (props) => {
     Header: 'Make',
     id: 'make',
   }, {
-    accessor: (row) => (row.model ? row.model.name : ''),
+    accessor: 'modelName',
     Header: 'Model',
     id: 'model',
   }, {
@@ -52,9 +52,9 @@ const VehicleListTable = (props) => {
     Header: 'Class',
     id: 'col-class',
   }, {
-    accessor: (row) => row.state,
-    Header: 'State',
-    id: 'col-state',
+    accessor: 'validationStatus',
+    Header: 'Status',
+    id: 'col-status',
   }, {
     accessor: (row) => (row.state === 'VALIDATED' ? <input type="checkbox" defaultChecked disabled /> : <input type="checkbox" value={row.id} onChange={(event) => { handleCheckboxClick(event); }} />),
     className: 'text-center',

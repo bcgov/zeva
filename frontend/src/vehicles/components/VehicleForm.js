@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import Loading from '../../app/components/Loading';
@@ -10,34 +10,17 @@ const VehicleForm = (props) => {
   const {
     loading,
     vehicleMakes,
-    vehicleModels,
     vehicleYears,
     vehicleTypes,
     vehicleClasses,
     handleInputChange,
     handleSubmit,
-    fields,
   } = props;
 
 
   if (loading) {
     return (<Loading />);
   }
-
-  const [filteredModels, setFilteredModels] = useState([]);
-
-  useEffect(() => {
-    if ('make' in props.fields) {
-      if (props.fields.make && props.fields.make !== '') {
-        const { make } = props.fields;
-
-        setFilteredModels(vehicleModels.filter(
-          (vehicleModel) => vehicleModel.make.name === make,
-        ));
-      }
-    }
-  },
-  [fields]);
 
   return (
     <div id="vehicle-form" className="page">
@@ -67,12 +50,23 @@ const VehicleForm = (props) => {
                 fieldName="make"
                 handleInputChange={handleInputChange}
               />
-              <VehicleFormDropdown
-                dropdownName="Model"
-                dropdownData={filteredModels}
-                fieldName="model"
-                handleInputChange={handleInputChange}
-              />
+              <div className="form-group row">
+                <label
+                  className="col-sm-2 col-form-label"
+                  htmlFor="model-name"
+                >
+                  Model
+                </label>
+                <div className="col-sm-10">
+                  <input
+                    className="form-control"
+                    id="model-name"
+                    name="modelName"
+                    type="text"
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
               <VehicleFormDropdown
                 accessor={(fuelType) => fuelType.vehicleFuelCode}
                 dropdownName="Type"
@@ -154,10 +148,8 @@ VehicleForm.defaultProps = {};
 VehicleForm.propTypes = {
   handleInputChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-  fields: PropTypes.shape().isRequired,
   loading: PropTypes.bool.isRequired,
   vehicleMakes: PropTypes.arrayOf(PropTypes.object).isRequired,
-  vehicleModels: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleTypes: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleClasses: PropTypes.arrayOf(PropTypes.object).isRequired,

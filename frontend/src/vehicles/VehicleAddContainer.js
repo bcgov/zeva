@@ -14,7 +14,6 @@ const VehicleAddContainer = (props) => {
   const [fields, setFields] = useState({});
   const [loading, setLoading] = useState(true);
   const [makes, setMakes] = useState([]);
-  const [models, setModels] = useState([]);
   const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
   const [classes, setClasses] = useState([]);
@@ -46,13 +45,11 @@ const VehicleAddContainer = (props) => {
     setLoading(true);
     axios.all([
       axios.get(ROUTES_VEHICLES.MAKES),
-      axios.get(ROUTES_VEHICLES.MODELS),
       axios.get(ROUTES_VEHICLES.YEARS),
       axios.get(ROUTES_VEHICLES.FUEL_TYPES),
       axios.get(ROUTES_VEHICLES.CLASSES),
-    ]).then(axios.spread((makesRes, modelsRes, yearsRes, typesRes, classesRes) => (
+    ]).then(axios.spread((makesRes, yearsRes, typesRes, classesRes) => (
       [setMakes(makesRes.data),
-        setModels(modelsRes.data),
         setYears(yearsRes.data),
         setTypes(typesRes.data),
         setClasses(classesRes.data),
@@ -70,7 +67,6 @@ const VehicleAddContainer = (props) => {
       handleSubmit={handleSubmit}
       loading={loading}
       vehicleMakes={makes}
-      vehicleModels={models}
       vehicleYears={years}
       vehicleTypes={types}
       vehicleClasses={classes}

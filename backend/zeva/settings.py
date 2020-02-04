@@ -92,7 +92,7 @@ REST_FRAMEWORK = {
 
 ROOT_URLCONF = 'zeva.urls'
 
-WSGI_APPLICATION = 'zeva.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases

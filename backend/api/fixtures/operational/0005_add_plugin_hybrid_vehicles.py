@@ -6,7 +6,6 @@ from api.models.vehicle import Vehicle
 from api.models.vehicle_class import VehicleClass
 from api.models.vehicle_fuel_type import FuelType
 from api.models.vehicle_make import Make
-from api.models.vehicle_model import Model
 
 
 class AddPluginHybridVehicles(OperationalDataScript):
@@ -25,351 +24,279 @@ class AddPluginHybridVehicles(OperationalDataScript):
     def run(self):
         model_year = ModelYear.objects.get(name="2019")
         make = Make.objects.get(name="BMW")
-        model = Model.objects.create(
-            name="530e",
-            make=make
-        )
+        model = "530e"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="26",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="C")
         )
 
-        model = Model.objects.create(
-            name="530e xDRIVE",
-            make=make
-        )
+        model = "530e xDRIVE"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="24",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="C")
         )
 
-        model = Model.objects.create(
-            name="i3 REx (120 Ah)",
-            make=make
-        )
+        model = "i3 REx (120 Ah)"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="203",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="S")
         )
 
-        model = Model.objects.create(
-            name="i3s REx (120 Ah)",
-            make=make
-        )
+        model = "i3s REx (120 Ah)"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="203",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="S")
         )
 
-        model = Model.objects.create(
-            name="i8 COUPE",
-            make=make
-        )
+        model = "i8 COUPE"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="29",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="S")
         )
 
-        model = Model.objects.create(
-            name="i8 ROADSTER",
-            make=make
-        )
+        model = "i8 ROADSTER"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="29",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="S")
         )
 
         make = Make.objects.get(name="Chevrolet")
-        model = Model.objects.create(
-            name="VOLT",
-            make=make
-        )
+        model = "VOLT"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="B"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="85",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="C")
         )
 
         make = Make.objects.get(name="Ford")
-        model = Model.objects.create(
-            name="FUSION ENERGI",
-            make=make
-        )
+        model = "FUSION ENERGI"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BX"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="42",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="M")
         )
 
         make = Make.objects.get(name="Honda")
-        model = Model.objects.create(
-            name="CLARITY PLUG-IN",
-            make=make
-        )
+        model = "CLARITY PLUG-IN"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BX"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="77",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="M")
         )
 
         make = Make.objects.get(name="Hyundai")
-        model = Model.objects.create(
-            name="IONIQ ELECTRIC PLUS",
-            make=make
-        )
+        model = "IONIQ ELECTRIC PLUS"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BX"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="47",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="M")
         )
 
-        model = Model.objects.create(
-            name="SONATA PLUG-IN",
-            make=make
-        )
+        model = "SONATA PLUG-IN"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BX"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="45",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="M")
         )
 
         make = Make.objects.get(name="Karma")
-        model = Model.objects.create(
-            name="REVERO",
-            make=make
-        )
+        model = "REVERO"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="B"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="60",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="S")
         )
 
         make = Make.objects.get(name="Kia")
-        model = Model.objects.create(
-            name="NIRO PLUG-IN",
-            make=make
-        )
+        model = "NIRO PLUG-IN"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BX"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="42",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="WS")
         )
 
-        model = Model.objects.create(
-            name="OPTIMA PLUG-IN",
-            make=make
-        )
+        model = "OPTIMA PLUG-IN"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BX"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="47",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="M")
         )
 
         make = Make.objects.get(name="Mercedes-Benz")
-        model = Model.objects.create(
-            name="GLC 350e 4MATIC",
-            make=make
-        )
+        model = "GLC 350e 4MATIC"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="21",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="US")
         )
 
         make = Make.objects.get(name="Mini")
-        model = Model.objects.create(
-            name="COOPER S E COUNTRYMAN ALL4",
-            make=make
-        )
+        model = "COOPER S E COUNTRYMAN ALL4"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="19",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="M")
         )
 
         make = Make.objects.get(name="Mitsubishi")
-        model = Model.objects.create(
-            name="OUTLANDER PHEV AWD",
-            make=make
-        )
+        model = "OUTLANDER PHEV AWD"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BX"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="35",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="US")
         )
 
         make = Make.objects.get(name="Porsche")
-        model = Model.objects.create(
-            name="CAYENNE E-HYBRID",
-            make=make
-        )
+        model = "CAYENNE E-HYBRID"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="21",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="UL")
         )
 
-        model = Model.objects.create(
-            name="PANAMERA 4 E-HYBRID",
-            make=make
-        )
+        model = "PANAMERA 4 E-HYBRID"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="B"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="23",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="L")
         )
 
-        model = Model.objects.create(
-            name="PANAMERA TURBO S E-HYBRID",
-            make=make
-        )
+        model = "PANAMERA TURBO S E-HYBRID"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="B"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="23",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="L")
         )
 
         make = Make.objects.get(name="Toyota")
-        model = Model.objects.create(
-            name="PRIUS PRIME",
-            make=make
-        )
+        model = "PRIUS PRIME"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BX"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="40",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="M")
         )
 
         make = Make.objects.get(name="Volvo")
-        model = Model.objects.create(
-            name="S90 T8 AWD",
-            make=make
-        )
+        model = "S90 T8 AWD"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="34",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="M")
         )
 
-        model = Model.objects.create(
-            name="XC60 T8 AWD",
-            make=make
-        )
+        model = "XC60 T8 AWD"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="27",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="US")
         )
 
-        model = Model.objects.create(
-            name="XC90 T8 AWD",
-            make=make
-        )
+        model = "XC90 T8 AWD"
         Vehicle.objects.create(
             vehicle_fuel_type=FuelType.objects.get(vehicle_fuel_code="BZ"),
             make=make,
-            model=model,
+            model_name=model,
             model_year=model_year,
             range="27",
-            state="VALIDATED",
+            validation_status="VALIDATED",
             vehicle_class_code=VehicleClass.objects.get(vehicle_class_code="UL")
         )
 
