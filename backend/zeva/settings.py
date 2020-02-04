@@ -49,10 +49,12 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'rest_framework',
     'zeva',
+    'corsheaders',
     'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -112,6 +114,14 @@ AMQP_CONNECTION_PARAMETERS = ConnectionParameters(
     virtual_host=AMQP['VHOST'],
     credentials=PlainCredentials(AMQP['USER'], AMQP['PASSWORD'])
 )
+
+# CORS Settings
+
+# If True, the whitelist below is ignored and all origins will be accepted
+CORS_ORIGIN_ALLOW_ALL = True
+
+# List of origin hostnames that are authorized to make cross-site HTTP requests
+CORS_ORIGIN_WHITELIST = ()
 
 
 # Internationalization
