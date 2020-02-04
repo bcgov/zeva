@@ -9,20 +9,16 @@ from .vehicle_statuses import VehicleDefinitionStatuses
 
 class VehicleChangeHistory(Commentable):
     make_id = models.IntegerField(
-        db_comment="ID referencing the vehicle_make table",
-        null=True
+        db_comment="ID referencing the vehicle_make table"
     )
     vehicle_class_code_id = models.IntegerField(
-        db_comment="ID referencing the vehicle_class_code table",
-        null=True
+        db_comment="ID referencing the vehicle_class_code table"
     )
     vehicle_fuel_type_id = models.IntegerField(
-        db_comment="ID referencing the vehicle_class_code table",
-        null=True
+        db_comment="ID referencing the vehicle_class_code table"
     )
     range = models.IntegerField(
-        db_comment="Vehicle Range in km",
-        null=True
+        db_comment="Vehicle Range in km"
     )
     model_name = models.CharField(
         blank=True,
@@ -31,8 +27,7 @@ class VehicleChangeHistory(Commentable):
         null=True
     )
     model_year_id = models.IntegerField(
-        db_comment="ID referencing the model_year table",
-        null=True
+        db_comment="ID referencing the model_year table"
     )
     validation_status = EnumField(
         VehicleDefinitionStatuses,
@@ -46,7 +41,6 @@ class VehicleChangeHistory(Commentable):
     )
     vehicle = models.ForeignKey(
         'Vehicle',
-        null=True,
         on_delete=models.CASCADE,
         related_name='history'
     )
