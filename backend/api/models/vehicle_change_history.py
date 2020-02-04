@@ -8,26 +8,20 @@ from .vehicle_statuses import VehicleDefinitionStatuses
 
 
 class VehicleChangeHistory(Commentable):
-    make = models.ForeignKey(
-        'Make',
-        null=True,
-        related_name=None,
-        on_delete=models.PROTECT
+    make_id = models.IntegerField(
+        db_comment="ID referencing the vehicle_make table",
+        null=True
     )
-    vehicle_class_code = models.ForeignKey(
-        'VehicleClass',
-        null=True,
-        related_name=None,
-        on_delete=models.PROTECT
+    vehicle_class_code_id = models.IntegerField(
+        db_comment="ID referencing the vehicle_class_code table",
+        null=True
     )
-    vehicle_fuel_type = models.ForeignKey(
-        'FuelType',
-        null=True,
-        related_name=None,
-        on_delete=models.PROTECT
+    vehicle_fuel_type_id = models.IntegerField(
+        db_comment="ID referencing the vehicle_class_code table",
+        null=True
     )
     range = models.IntegerField(
-        db_comment='Vehicle Range in km',
+        db_comment="Vehicle Range in km",
         null=True
     )
     model_name = models.CharField(
@@ -36,10 +30,8 @@ class VehicleChangeHistory(Commentable):
         max_length=250,
         null=True
     )
-    model_year = models.ForeignKey(
-        'ModelYear',
-        related_name=None,
-        on_delete=models.PROTECT,
+    model_year_id = models.IntegerField(
+        db_comment="ID referencing the model_year table",
         null=True
     )
     validation_status = EnumField(
@@ -58,13 +50,17 @@ class VehicleChangeHistory(Commentable):
         on_delete=models.CASCADE,
         related_name='history'
     )
-    in_roles = ArrayField(
+    user_role = ArrayField(
         models.CharField(
             max_length=50,
             blank=False,
             null=True
         ),
-        db_comment='The roles the actor had at the moment the status changed'
+        null=True,
+        db_comment="The role (or roles) assigned to the user at the time they "
+                   "made a change to a vehicle record. Role values are "
+                   "generated from Keycloak and are stored in a "
+                   "comma-delimited string."
     )
 
     class Meta:
