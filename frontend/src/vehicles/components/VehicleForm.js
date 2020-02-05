@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import History from '../../app/History';
 import Loading from '../../app/components/Loading';
 import VehicleFormDropdown from './VehicleFormDropdown';
 import { parseSync } from '@babel/core';
@@ -117,7 +117,13 @@ const VehicleForm = (props) => {
 
               <div className="action-bar form-group row">
                 <span className="left-content">
-                  <button className="button" type="button">
+                  <button
+                    className="button"
+                    type="button"
+                    onClick={() => {
+                      History.goBack();
+                    }}
+                  >
                     <FontAwesomeIcon icon="arrow-left" /> Back
                   </button>
                 </span>
