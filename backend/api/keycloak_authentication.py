@@ -64,13 +64,16 @@ class UserAuthentication(authentication.BaseAuthentication):
         return decoded_keys
 
     def authenticate(self, request):
+
+        print ('1111 in authenticate()')
+
         """
         Verify the JWT token and find the correct user in the DB
         """
         if not settings.KEYCLOAK['ENABLED']:
             # fall through
             return None
-
+        print ('2222')
         auth = request.META.get('HTTP_AUTHORIZATION', None)
 
         if not auth:
@@ -88,7 +91,7 @@ class UserAuthentication(authentication.BaseAuthentication):
                 'Authorization header invalid'
             )
 
-
+        print ('3333')
 
         if not token:
             raise exceptions.AuthenticationFailed(
@@ -99,6 +102,8 @@ class UserAuthentication(authentication.BaseAuthentication):
         token_validation_errors = []
 
         keys = self._get_keys().items()
+
+        print ('4444')
 
         print(keys)
 
