@@ -116,7 +116,7 @@ class UserAuthentication(authentication.BaseAuthentication):
                 user_token = jwt.decode(
                     token,
                     key=str(key),
-                    audience=settings.KEYCLOAK['AUDIENCE'],
+                    audience='rzh2zkjq',
                     issuer=settings.KEYCLOAK['ISSUER']
                 )
                 print("user_token=", user_token)
