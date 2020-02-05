@@ -2,23 +2,9 @@
 # pylint: disable=no-member,invalid-name,duplicate-code
 import importlib
 import logging
-import sys
 from collections import namedtuple
-from unittest import mock
 
-import jwt
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
 from django.test import TestCase
-
-from api.management.commands._loader import ScriptLoader
-from api.management.dataloader import DataLoader
-from api.models.user_profile import UserProfile
-from api.tests.logging_client import LoggingClient
-
-from zeva import settings
-
 
 class TestLoadOpsData(TestCase):
     """
@@ -41,15 +27,11 @@ class TestLoadOpsData(TestCase):
     logger = logging.getLogger('zeva.test')
 
     def testOperationalScripts(self):
-        loader = ScriptLoader()
-
         for script in self.scripts:
             if not script.skip:
                 with self.subTest('testing operational script {file}'.format(file=script.file)):
-                    logging.debug('loading script: {file}'.format(file=script.file))
+                    logging.info('loading script: {file}'.format(file=script.file))
                     loaded = importlib.import_module(script.file)
                     instance = loaded.script_class(script.file, script.args)
-                    # (cls, source_code) = loader.load_from_file(script.file)
-                    # instance = cls(script.file, script.args)
                     instance.check_run_preconditions()
                     instance.run()
