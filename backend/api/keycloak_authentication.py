@@ -111,14 +111,14 @@ class UserAuthentication(authentication.BaseAuthentication):
                 print("key=", key)
                 print("token=", token)
                 options = {'verify_aud': False}
+                print("audience=", settings.KEYCLOAK['AUDIENCE'])
+                print("issuer=", settings.KEYCLOAK['ISSUER'])
                 user_token = jwt.decode(
                     token,
                     key=str(key),
                     audience=settings.KEYCLOAK['AUDIENCE'],
                     issuer=settings.KEYCLOAK['ISSUER']
                 )
-                print("audience=", settings.KEYCLOAK['AUDIENCE'])
-                print("issuer=", settings.KEYCLOAK['ISSUER'])
                 print("user_token=", user_token)
                 break
             except InvalidTokenError as error:
