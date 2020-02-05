@@ -49,7 +49,8 @@ class VehicleStatusChangeSerializer(ModelSerializer):
 
     def update(self, instance, validated_data):
         change_status(
-            self.context['request'].user, instance,
+            self.context['request'].user,
+            instance,
             validated_data.get('validation_status')
         )
         return instance

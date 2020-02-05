@@ -16,8 +16,9 @@ const VehicleListContainer = (props) => {
   const { keycloak, user } = props;
 
   const handleCheckboxClick = (event) => {
-    const vehicleId = event.target.value;
-    if (validatedList.includes(vehicleId)) {
+    const { value: vehicleId, checked } = event.target;
+
+    if (!checked) {
       setValidatedList(validatedList.filter((item) => item !== vehicleId));
     } else {
       setValidatedList(() => [...validatedList, vehicleId]);
@@ -40,7 +41,7 @@ const VehicleListContainer = (props) => {
   const handleSubmit = () => {
     validatedList.forEach((vehicleId) => {
       axios.patch(`/vehicles/${vehicleId}/state_change`, {
-        state: 'VALIDATED',
+        validationStatus: 'VALIDATED',
       }).then(() => {
         setValidatedList([]);
         refreshList(false);
@@ -63,6 +64,7 @@ VehicleListContainer.propTypes = {
   keycloak: PropTypes.shape({
     authenticated: PropTypes.bool,
   }).isRequired,
+  user: PropTypes.shape().isRequired,
 };
 
 export default VehicleListContainer;

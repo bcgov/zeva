@@ -56,7 +56,7 @@ const VehicleListTable = (props) => {
     Header: 'Status',
     id: 'col-status',
   }, {
-    accessor: (row) => (row.state === 'VALIDATED' ? <input type="checkbox" defaultChecked disabled /> : <input type="checkbox" value={row.id} onChange={(event) => { handleCheckboxClick(event); }} />),
+    accessor: (row) => (row.validationStatus === 'VALIDATED' ? <input type="checkbox" defaultChecked disabled /> : <input type="checkbox" value={row.id} onChange={(event) => { handleCheckboxClick(event); }} />),
     className: 'text-center',
     Header: 'Validate',
     id: 'col-validated',

@@ -48,9 +48,10 @@ class VehicleViewSet(
             )
         else:
             vehicles = self.get_queryset().filter(
-                validation_status=VehicleDefinitionStatuses.NEW
-            ).filter(
-                validation_status=VehicleDefinitionStatuses.DRAFT
+                validation_status__in=[
+                    VehicleDefinitionStatuses.SUBMITTED,
+                    VehicleDefinitionStatuses.VALIDATED
+                ]
             )
 
         serializer = self.get_serializer(vehicles, many=True)
