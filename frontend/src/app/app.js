@@ -50,7 +50,7 @@ class App extends Component {
     }
 
     if (keycloak && !authenticated) {
-      return <Login />;
+      return <Login keycloak={keycloak} />;
     }
 
     return (
