@@ -115,8 +115,7 @@ class UserAuthentication(authentication.BaseAuthentication):
                     token,
                     key=str(key),
                     audience=settings.KEYCLOAK['AUDIENCE'],
-                    issuer=settings.KEYCLOAK['ISSUER'],
-                    options=options
+                    issuer=settings.KEYCLOAK['ISSUER']
                 )
                 print("audience=", settings.KEYCLOAK['AUDIENCE'])
                 print("issuer=", settings.KEYCLOAK['ISSUER'])
