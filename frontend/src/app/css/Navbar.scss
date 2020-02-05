@@ -70,6 +70,14 @@
       position: absolute;
       width: 1px;
     }
+    span.logout {
+      color: $white;
+      font-size: 1.0rem;
+      height: 100%;
+      padding: 0.5rem 1rem;
+      text-align: center;
+      cursor: pointer;
+    }
   }
 
   .navbar-nav a {
