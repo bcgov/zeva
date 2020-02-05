@@ -108,7 +108,8 @@ class UserAuthentication(authentication.BaseAuthentication):
                     token,
                     key=str(key),
                     audience=settings.KEYCLOAK['AUDIENCE'],
-                    issuer=settings.KEYCLOAK['ISSUER']
+                    issuer=settings.KEYCLOAK['ISSUER'],
+                    options={'verify_aud': False}
                 )
                 break
             except InvalidTokenError as error:
