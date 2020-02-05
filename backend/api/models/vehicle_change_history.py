@@ -8,6 +8,19 @@ from .vehicle_statuses import VehicleDefinitionStatuses
 
 
 class VehicleChangeHistory(Commentable):
+    create_timestamp = models.DateTimeField(
+        auto_now_add=True,
+        blank=True,
+        null=True,
+        db_comment='When the change was made'
+    )
+    create_user = models.ForeignKey(
+        'UserProfile',
+        related_name='history',
+        blank=True, null=True,
+        on_delete=models.CASCADE,
+        db_comment='User who made the change to the record'
+    )
     make_id = models.IntegerField(
         db_comment="ID referencing the vehicle_make table"
     )

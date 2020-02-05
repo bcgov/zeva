@@ -67,9 +67,7 @@ class VehicleHistorySerializer(
 
     class Meta:
         model = VehicleChangeHistory
-        fields = (
-            'validation_status'
-        )
+        fields = ('validation_status',)
 
 
 class VehicleSerializer(
