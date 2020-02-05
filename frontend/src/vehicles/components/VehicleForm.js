@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import Loading from '../../app/components/Loading';
 import VehicleFormDropdown from './VehicleFormDropdown';
+import { parseSync } from '@babel/core';
 
 const VehicleForm = (props) => {
   const {
@@ -16,13 +17,11 @@ const VehicleForm = (props) => {
     handleInputChange,
     handleSubmit,
     fields,
+    formTitle,
   } = props;
-
-
   if (loading) {
     return (<Loading />);
   }
-
   const [filteredModels, setFilteredModels] = useState([]);
 
   useEffect(() => {
@@ -40,7 +39,7 @@ const VehicleForm = (props) => {
 
       <div className="row">
         <div className="col-md-12">
-          <h1>Enter ZEV</h1>
+          <h1>{formTitle}</h1>
         </div>
       </div>
 
@@ -54,12 +53,14 @@ const VehicleForm = (props) => {
                 dropdownData={vehicleYears}
                 fieldName="modelYear"
                 handleInputChange={handleInputChange}
+                selectedOption={fields.modelYear.name}
               />
               <VehicleFormDropdown
                 dropdownName="Make"
                 dropdownData={vehicleMakes}
                 fieldName="make"
                 handleInputChange={handleInputChange}
+                selectedOption={fields.make.name}
               />
               <div className="form-group row">
                 <label
@@ -74,6 +75,7 @@ const VehicleForm = (props) => {
                     id="modelName"
                     name="modelName"
                     type="text"
+                    defaultValue={fields.modelName}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -84,6 +86,7 @@ const VehicleForm = (props) => {
                 fieldName="vehicleFuelType"
                 accessor={(o) => o.vehicleFuelCode}
                 handleInputChange={handleInputChange}
+                selectedOption={fields.vehicleFuelType.vehicleFuelCode}
               />
               <VehicleFormDropdown
                 dropdownName="Class"
@@ -91,6 +94,7 @@ const VehicleForm = (props) => {
                 fieldName="vehicleClassCode"
                 accessor={(o) => o.vehicleClassCode}
                 handleInputChange={handleInputChange}
+                selectedOption={fields.vehicleClassCode.vehicleClassCode}
               />
               <div className="form-group row">
                 <label
@@ -105,6 +109,7 @@ const VehicleForm = (props) => {
                     id="range"
                     name="range"
                     type="text"
+                    defaultValue={fields.range}
                     onChange={handleInputChange}
                   />
                 </div>
