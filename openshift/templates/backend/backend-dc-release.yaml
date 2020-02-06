@@ -60,6 +60,50 @@ objects:
     type: ClusterIP
   status:
     loadBalancer: {}
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      name: backend
+      app: zeva
+      role: backend
+      env: ${ENV_NAME}
+    name: ${ENV_NAME}-zeroemissionvehicles-backend
+  spec:
+    host: ${ENV_NAME}-zeroemissionvehicles.pathfinder.gov.bc.ca
+    path: /api
+    port:
+      targetPort: backend
+    tls:
+      termination: edge
+    to:
+      kind: Service
+      name: backend
+      weight: 100
+    wildcardPolicy: None
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      name: backend
+      app: zeva
+      role: backend
+      env: ${ENV_NAME}
+    name: ${ENV_NAME}-zeroemissionvehicles-health
+  spec:
+    host: ${ENV_NAME}-zeroemissionvehicles.pathfinder.gov.bc.ca
+    path: /health
+    port:
+      targetPort: backend
+    tls:
+      termination: edge
+    to:
+      kind: Service
+      name: backend
+      weight: 100
+    wildcardPolicy: None
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
   metadata:
@@ -142,6 +186,11 @@ objects:
                   configMapKeyRef:
                     name: zeva-config
                     key: keycloak_realm
+              - name: KEYCLOAK_REALM_URL
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_realm_url
               - name: KEYCLOAK_AUTHORITY
                 valueFrom:
                   configMapKeyRef:
