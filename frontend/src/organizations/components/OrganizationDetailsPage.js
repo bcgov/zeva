@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Loading from '../../app/components/Loading';
+import CustomPropTypes from '../../app/utilities/props';
 import UsersTable from './UsersTable';
 
 const OrganizationDetailsPage = (props) => {
@@ -65,18 +66,7 @@ OrganizationDetailsPage.defaultProps = {
 };
 
 OrganizationDetailsPage.propTypes = {
-  details: PropTypes.shape({
-    id: PropTypes.number,
-    name: PropTypes.string,
-    organizationAddress: PropTypes.shape({
-      addressLine1: PropTypes.string,
-      addressLine2: PropTypes.string,
-      addressLine3: PropTypes.string,
-      city: PropTypes.string,
-      postalCode: PropTypes.string,
-      state: PropTypes.string,
-    }),
-  }).isRequired,
+  details: CustomPropTypes.organizationDetails.isRequired,
   loading: PropTypes.bool.isRequired,
   members: PropTypes.arrayOf(PropTypes.shape()),
 };

@@ -10,6 +10,7 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
+import CustomPropTypes from './utilities/props';
 
 library.add(fab, far, fas);
 
@@ -37,13 +38,7 @@ PageLayout.propTypes = {
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
   ]),
-  keycloak: PropTypes.shape({
-    authenticated: PropTypes.bool,
-    login: PropTypes.func,
-    realmAccess: PropTypes.shape({
-      roles: PropTypes.arrayOf(PropTypes.string),
-    }),
-  }).isRequired,
+  keycloak: CustomPropTypes.keycloak.isRequired,
 };
 
 export default hot(withRouter(PageLayout));

@@ -1,5 +1,5 @@
 import React from 'react';
-import CONFIG from './config';
+import CustomPropTypes from './utilities/props';
 
 const Login = (props) => {
   const { keycloak } = props;
@@ -17,11 +17,10 @@ const Login = (props) => {
             <div className="section">
               Vehicle Suppliers
 
-              {/* eslint-disable-next-line react/prop-types */}
-              <a href="#" onClick={() => keycloak.login({ idpHint: 'bceid' })} id="link-bceid" className="button">
+              <button type="button" onClick={() => keycloak.login({ idpHint: 'bceid' })} id="link-bceid" className="button">
                 <span className="text"> Login with </span>
                 <span className="display-name"> BCeID </span>
-              </a>
+              </button>
             </div>
 
             <hr className="divider" />
@@ -29,17 +28,20 @@ const Login = (props) => {
             <div className="section">
               Government
 
-              {/* eslint-disable-next-line react/prop-types */}
-              <a href="#" onClick={() => keycloak.login({ idpHint: 'idir' })} id="link-idir" className="button">
+              <button type="button" onClick={() => keycloak.login({ idpHint: 'idir' })} id="link-idir" className="button">
                 <span className="text">Login with</span>
                 <span className="display-name"> IDIR </span>
-              </a>
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
   );
+};
+
+Login.propTypes = {
+  keycloak: CustomPropTypes.keycloak.isRequired,
 };
 
 export default Login;

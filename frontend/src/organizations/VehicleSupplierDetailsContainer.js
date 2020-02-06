@@ -10,6 +10,7 @@ import axios from 'axios';
 
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
+import CustomPropTypes from '../app/utilities/props';
 import VehicleSupplierDetailsPage from './components/VehicleSupplierDetailsPage';
 
 const VehicleSupplierDetailsContainer = (props) => {
@@ -49,10 +50,7 @@ const VehicleSupplierDetailsContainer = (props) => {
 };
 
 VehicleSupplierDetailsContainer.propTypes = {
-  keycloak: PropTypes.shape().isRequired,
-  user: PropTypes.shape({
-    organization: PropTypes.shape({}),
-  }).isRequired,
+  keycloak: CustomPropTypes.keycloak.isRequired,
 };
 
 export default VehicleSupplierDetailsContainer;
