@@ -51,7 +51,7 @@ class ModelYearSerializer(serializers.ModelSerializer):
     class Meta:
         model = ModelYear
         fields = (
-            'name', 'effective_date', 'expiration_date', 'id'
+            'name', 'effective_date', 'expiration_date'
         )
 
 
@@ -102,6 +102,7 @@ class VehicleSerializer(serializers.ModelSerializer, EnumSupportSerializerMixin)
     vehicle_fuel_type = VehicleFuelTypeSerializer()
     changelog = VehicleHistorySerializer(read_only=True, many=True)
     actions = serializers.SerializerMethodField()
+    vehicle_class_code = VehicleClassSerializer()
 
     def get_actions(self, instance):
         user = self.context['request'].user
@@ -122,7 +123,7 @@ class VehicleSerializer(serializers.ModelSerializer, EnumSupportSerializerMixin)
         model = Vehicle
         fields = (
             'id', 'make', 'model_name', 'state', 'vehicle_fuel_type',
-            'range', 'model_year', 'changelog',
+            'range', 'model_year', 'changelog', 'vehicle_class_code',
             'actions'
         )
         read_only_fields = ('state',)

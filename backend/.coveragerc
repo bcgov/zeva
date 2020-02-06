@@ -1,0 +1,19 @@
+[run]
+branch = True
+command_line = manage.py test -v 2
+source =
+    api/
+    zeva/
+    db_comments/
+    auditable/
+
+[report]
+exclude_lines =
+    pragma: no cover
+    raise AssertionError
+    raise NotImplementedError
+omit =
+    zeva/wsgi.py
+    api/management/*
+
+fail_under = 80
