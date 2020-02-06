@@ -14,11 +14,11 @@ import Navbar from './components/Navbar';
 library.add(fab, far, fas);
 
 const PageLayout = (props) => {
-  const { children, user } = props;
+  const { children, user, keycloak } = props;
 
   return ([
     <div id="main" key="main">
-      <Navbar user={user} />
+      <Navbar user={user} keycloak={keycloak} />
 
       <div id="content">
         {children}
