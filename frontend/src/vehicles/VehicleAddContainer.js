@@ -16,7 +16,7 @@ const VehicleAddContainer = (props) => {
     vehicleFuelType: { vehicleFuelCode: '--' },
     range: '',
     modelYear: { name: '--' },
-    vehicleClassCode: { vehicleClassCode: '--' } 
+    vehicleClassCode: { vehicleClassCode: '--' },
   });
   const [loading, setLoading] = useState(true);
   const [makes, setMakes] = useState([]);
