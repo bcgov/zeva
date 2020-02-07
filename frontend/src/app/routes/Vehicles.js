@@ -2,6 +2,7 @@ const API_BASE_PATH = '/vehicles';
 
 const VEHICLES = {
   ADD: `${API_BASE_PATH}/add`,
+  EDIT: `${API_BASE_PATH}/:id/edit`,
   DETAILS: `${API_BASE_PATH}/:id`,
   FUEL_TYPES: `${API_BASE_PATH}/fuel_types`,
   LIST: `${API_BASE_PATH}`,

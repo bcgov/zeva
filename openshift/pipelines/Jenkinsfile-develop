@@ -1,6 +1,6 @@
 result = 0
 runParallel = true
-zevaRelease="pipeline-release2"
+zevaRelease="v0.0.6"
 
 podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${env.BUILD_NUMBER}", serviceAccount: 'jenkins-prod', cloud: 'openshift',
         containers: [
@@ -22,6 +22,7 @@ podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${e
 ) {
 
     node("develop-maven-${env.BUILD_NUMBER}") {
+
         //checkout code
         checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: "${zevaRelease}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-account', url: 'https://github.com/bcgov/zeva.git']]]
 
@@ -40,18 +41,20 @@ podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${e
                 }
             }
         }
-/**
+
         //load deployment scripts
         def prepareDeployments = load "openshift/pipelines/scripts/prepareDeployments.groovy"
 
         //apply deployment config
+        prepareDeployments.backendDeployStage("dev").call()
         prepareDeployments.frontendDeployStage("dev").call()
 
         //refresh the dev tag to deploy on dev
         openshift.withProject("tbiwaq-dev") {
+            openshift.tag("tbiwaq-tools/backend:${zevaRelease}", 'tbiwaq-dev/backend:dev')
             openshift.tag("tbiwaq-tools/frontend:${zevaRelease}", 'tbiwaq-dev/frontend:dev')
         }
-**/
+
 
     }
 }
