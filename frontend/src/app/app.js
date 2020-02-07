@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { Component } from 'react';
 import Keycloak from 'keycloak-js';
 
@@ -28,7 +27,12 @@ class App extends Component {
       url: CONFIG.KEYCLOAK.URL,
     });
 
-    keycloak.init({ onLoad: 'check-sso', checkLoginIframe: false, promiseType: 'native' }).then((authenticated) => {
+    keycloak.init({
+      onLoad: 'check-sso',
+      checkLoginIframe: false,
+      promiseType: 'native',
+      flow: 'implicit',
+    }).then((authenticated) => {
       this.setState({
         keycloak,
         authenticated,

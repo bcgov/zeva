@@ -5,6 +5,7 @@
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
+import CustomPropTypes from '../app/utilities/props';
 
 import VehicleForm from './components/VehicleForm';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
@@ -88,7 +89,7 @@ const VehicleAddContainer = (props) => {
 };
 
 VehicleAddContainer.propTypes = {
-  keycloak: PropTypes.shape().isRequired,
+  keycloak: CustomPropTypes.keycloak.isRequired,
 };
 
 export default VehicleAddContainer;

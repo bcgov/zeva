@@ -91,9 +91,9 @@ class Navbar extends Component {
               </NavLink>
             </li>
             <li>
-                <span className='logout' onClick={() => keycloak.logout()}>
-                  < FontAwesomeIcon icon='sign-out-alt'/>
-                </span>
+              <span className="logout" onClick={() => keycloak.logout()}>
+                <FontAwesomeIcon icon="sign-out-alt" />
+              </span>
             </li>
           </ul>
 
