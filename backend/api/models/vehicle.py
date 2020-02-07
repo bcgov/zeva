@@ -59,7 +59,7 @@ class Vehicle(Auditable):
         VehicleDefinitionStates,
         max_length=20,
         null=False,
-        default=VehicleDefinitionStates.NEW,
+        default=VehicleDefinitionStates.DRAFT,
         db_comment="The review state of this vehicle. Valid states: {states}"
         .format(states=[c.name for c in VehicleDefinitionStates])
     )

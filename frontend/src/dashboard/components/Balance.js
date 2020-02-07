@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from 'prop-types';
 import React from 'react';
+import CustomPropTypes from '../../app/utilities/props';
 
 const Balance = (props) => {
   const { organization } = props;
@@ -28,9 +28,7 @@ Balance.defaultProps = {
 };
 
 Balance.propTypes = {
-  organization: PropTypes.shape({
-    name: PropTypes.string,
-  }).isRequired,
+  organization: CustomPropTypes.organizationDetails.isRequired,
 };
 
 export default Balance;

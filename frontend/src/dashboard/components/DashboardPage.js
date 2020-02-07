@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import CustomPropTypes from '../../app/utilities/props';
 
 import Actions from './Actions';
 import Balance from './Balance';
@@ -34,9 +34,7 @@ const DashboardPage = (props) => {
 };
 
 DashboardPage.propTypes = {
-  user: PropTypes.shape({
-    organization: PropTypes.shape(),
-  }).isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default DashboardPage;

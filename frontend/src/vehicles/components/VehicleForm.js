@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import History from '../../app/History';
 import Loading from '../../app/components/Loading';
 import VehicleFormDropdown from './VehicleFormDropdown';
+import { parseSync } from '@babel/core';
 
 const VehicleForm = (props) => {
   const {
@@ -16,13 +17,11 @@ const VehicleForm = (props) => {
     handleInputChange,
     handleSubmit,
     fields,
+    formTitle,
   } = props;
-
-
   if (loading) {
     return (<Loading />);
   }
-
   const [filteredModels, setFilteredModels] = useState([]);
 
   useEffect(() => {
@@ -40,7 +39,7 @@ const VehicleForm = (props) => {
 
       <div className="row">
         <div className="col-md-12">
-          <h1>Enter ZEV</h1>
+          <h1>{formTitle}</h1>
         </div>
       </div>
 
@@ -54,25 +53,40 @@ const VehicleForm = (props) => {
                 dropdownData={vehicleYears}
                 fieldName="modelYear"
                 handleInputChange={handleInputChange}
+                selectedOption={fields.modelYear.name}
               />
               <VehicleFormDropdown
                 dropdownName="Make"
                 dropdownData={vehicleMakes}
                 fieldName="make"
                 handleInputChange={handleInputChange}
+                selectedOption={fields.make.name}
               />
-              <VehicleFormDropdown
-                dropdownName="Model"
-                dropdownData={filteredModels}
-                fieldName="model"
-                handleInputChange={handleInputChange}
-              />
+              <div className="form-group row">
+                <label
+                  className="col-sm-2 col-form-label"
+                  htmlFor="modelName"
+                >
+                  Model
+                </label>
+                <div className="col-sm-10">
+                  <input
+                    className="form-control"
+                    id="modelName"
+                    name="modelName"
+                    type="text"
+                    defaultValue={fields.modelName}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
               <VehicleFormDropdown
                 dropdownName="Type"
                 dropdownData={vehicleTypes}
                 fieldName="vehicleFuelType"
                 accessor={(o) => o.vehicleFuelCode}
                 handleInputChange={handleInputChange}
+                selectedOption={fields.vehicleFuelType.vehicleFuelCode}
               />
               <VehicleFormDropdown
                 dropdownName="Class"
@@ -80,6 +94,7 @@ const VehicleForm = (props) => {
                 fieldName="vehicleClassCode"
                 accessor={(o) => o.vehicleClassCode}
                 handleInputChange={handleInputChange}
+                selectedOption={fields.vehicleClassCode.vehicleClassCode}
               />
               <div className="form-group row">
                 <label
@@ -94,6 +109,7 @@ const VehicleForm = (props) => {
                     id="range"
                     name="range"
                     type="text"
+                    defaultValue={fields.range}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -101,7 +117,13 @@ const VehicleForm = (props) => {
 
               <div className="action-bar form-group row">
                 <span className="left-content">
-                  <button className="button" type="button">
+                  <button
+                    className="button"
+                    type="button"
+                    onClick={() => {
+                      History.goBack();
+                    }}
+                  >
                     <FontAwesomeIcon icon="arrow-left" /> Back
                   </button>
                 </span>

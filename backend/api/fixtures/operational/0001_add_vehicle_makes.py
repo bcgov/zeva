@@ -17,66 +17,25 @@ class AddVehicleMakes(OperationalDataScript):
 
     @transaction.atomic
     def run(self):
-        Make.objects.create(
-            name="Audi"
-        )
-        Make.objects.create(
-            name="BMW"
-        )
-        Make.objects.create(
-            name="Chevrolet"
-        )
-        Make.objects.create(
-            name="Chrysler"
-        )
-        Make.objects.create(
-            name="Ford"
-        )
-        Make.objects.create(
-            name="Honda"
-        )
-        Make.objects.create(
-            name="Hyundai"
-        )
-        Make.objects.create(
-            name="Jaguar"
-        )
-        Make.objects.create(
-            name="Karma"
-        )
-        Make.objects.create(
-            name="Kia"
-        )
-        Make.objects.create(
-            name="Mercedes-Benz"
-        )
-        Make.objects.create(
-            name="Mini"
-        )
-        Make.objects.create(
-            name="Mitsubishi"
-        )
-        Make.objects.create(
-            name="Nissan"
-        )
-        Make.objects.create(
-            name="Porsche"
-        )
-        Make.objects.create(
-            name="Smart EQ"
-        )
-        Make.objects.create(
-            name="Tesla"
-        )
-        Make.objects.create(
-            name="Toyota"
-        )
-        Make.objects.create(
-            name="Volkswagen"
-        )
-        Make.objects.create(
-            name="Volvo"
-        )
+        list_of_makes = [
+            "Aston Martin", "Audi", "BMW", "Chevrolet", "Chrysler",
+            "Ferrari", "Fiat", "Ford", "GMC", "Honda", "Hyundai", "Isuzu",
+            "Jaguar", "Karma", "Kia", "Mazda", "Mercedes-Benz", "Mini",
+            "Mitsubishi", "Nissan", "Porsche", "Smart EQ", "Subaru", "Suzuki",
+            "Tesla", "Toyota", "Volkswagen", "Volvo"
+        ]
+
+        makes_added = 0
+
+        for make_name in list_of_makes:
+            (_, created) = Make.objects.get_or_create(
+                name=make_name
+            )
+
+            if created:
+                makes_added += 1
+
+        print("Added {} Vehicles Makes.".format(makes_added))
 
 
 script_class = AddVehicleMakes

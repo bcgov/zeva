@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
+import CustomPropTypes from '../app/utilities/props';
 import OrganizationDetailsPage from './components/OrganizationDetailsPage';
 
 const OrganizationDetailsContainer = (props) => {
@@ -40,10 +41,8 @@ const OrganizationDetailsContainer = (props) => {
 };
 
 OrganizationDetailsContainer.propTypes = {
-  keycloak: PropTypes.shape().isRequired,
-  user: PropTypes.shape({
-    organization: PropTypes.shape({}),
-  }).isRequired,
+  keycloak: CustomPropTypes.keycloak.isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default OrganizationDetailsContainer;

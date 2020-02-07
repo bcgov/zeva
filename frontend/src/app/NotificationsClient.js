@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { hot } from 'react-hot-loader/root';
 import io from 'socket.io-client';
 import PropTypes from 'prop-types';
+import CustomPropTypes from './utilities/props';
 
 
 const NotificationsClient = (props) => {
@@ -73,10 +74,7 @@ const NotificationsClient = (props) => {
 };
 
 NotificationsClient.propTypes = {
-  keycloak: PropTypes.shape({
-    authenticated: PropTypes.bool,
-    idToken: PropTypes.string,
-  }).isRequired,
+  keycloak: CustomPropTypes.keycloak.isRequired,
 };
 
 export default hot(NotificationsClient);

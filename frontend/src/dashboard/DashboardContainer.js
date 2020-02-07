@@ -2,8 +2,8 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-import PropTypes from 'prop-types';
 import React from 'react';
+import CustomPropTypes from '../app/utilities/props';
 
 import DashboardPage from './components/DashboardPage';
 
@@ -19,9 +19,7 @@ DashboardContainer.defaultProps = {
 };
 
 DashboardContainer.propTypes = {
-  user: PropTypes.shape({
-    organization: PropTypes.shape({}),
-  }).isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default DashboardContainer;
