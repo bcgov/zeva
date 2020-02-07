@@ -14,7 +14,6 @@ const VehicleEditContainer = (props) => {
   const [fields, setFields] = useState({});
   const [loading, setLoading] = useState(true);
   const [makes, setMakes] = useState([]);
-  const [models, setModels] = useState([]);
   const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
   const [classes, setClasses] = useState([]);
@@ -34,25 +33,21 @@ const VehicleEditContainer = (props) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = edits;
-    axios.patch(ROUTES_VEHICLES.LIST + `/${id}`, data)
-      .then((response) => {
-        console.error(response);
-        return history.push(`/vehicles/${id}`);
-      });
+    axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), data).then(() => {
+      history.push(`/vehicles/${id}`);
+    });
   };
 
   const refreshList = () => {
     setLoading(true);
     axios.all([
       axios.get(ROUTES_VEHICLES.MAKES),
-      axios.get(ROUTES_VEHICLES.MODELS),
       axios.get(ROUTES_VEHICLES.YEARS),
       axios.get(ROUTES_VEHICLES.FUEL_TYPES),
       axios.get(ROUTES_VEHICLES.CLASSES),
       axios.get(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id)),
-    ]).then(axios.spread((makesRes, modelsRes, yearsRes, typesRes, classesRes, vehicleRes) => (
+    ]).then(axios.spread((makesRes, yearsRes, typesRes, classesRes, vehicleRes) => (
       [setMakes(makesRes.data),
-        setModels(modelsRes.data),
         setYears(yearsRes.data),
         setTypes(typesRes.data),
         setClasses(classesRes.data),
@@ -71,7 +66,6 @@ const VehicleEditContainer = (props) => {
       handleSubmit={handleSubmit}
       loading={loading}
       vehicleMakes={makes}
-      vehicleModels={models}
       vehicleYears={years}
       vehicleTypes={types}
       vehicleClasses={classes}

@@ -42,7 +42,7 @@ class Vehicle(Auditable):
         VehicleDefinitionStatuses,
         max_length=20,
         null=False,
-        default=VehicleDefinitionStates.DRAFT,
+        default=VehicleDefinitionStatuses.DRAFT,
         db_comment="The validation status of the vehicle. Valid statuses: "
                    "{statuses}".format(
                         statuses=[c.name for c in VehicleDefinitionStatuses]

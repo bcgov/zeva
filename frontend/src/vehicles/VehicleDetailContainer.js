@@ -19,7 +19,7 @@ const VehicleDetailContainer = (props) => {
 
   const stateChange = (newState) => {
     setLoading(true);
-    axios.patch(`vehicles/${id}/state_change`, { state: newState }).then(() => {
+    axios.patch(`vehicles/${id}/state_change`, { validationStatus: newState }).then(() => {
       axios.get(`vehicles/${id}`).then((response) => {
         setVehicle(response.data);
         setLoading(false);

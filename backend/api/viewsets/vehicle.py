@@ -25,14 +25,9 @@ class VehicleViewSet(
 
     serializer_classes = {
         'default': VehicleSerializer,
-<<<<<<< HEAD
         'state_change': VehicleStatusChangeSerializer,
-        'create': VehicleSaveSerializer
-=======
-        'state_change': VehicleStateChangeSerializer,
         'create': VehicleSaveSerializer,
         'partial_update': VehicleSaveSerializer
->>>>>>> master
     }
 
     def get_serializer_class(self):

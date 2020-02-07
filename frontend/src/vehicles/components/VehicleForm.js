@@ -3,9 +3,7 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import History from '../../app/History';
 import Loading from '../../app/components/Loading';
-import history from '../../app/History';
 import VehicleFormDropdown from './VehicleFormDropdown';
-import { parseSync } from '@babel/core';
 
 const VehicleForm = (props) => {
   const {
@@ -22,17 +20,6 @@ const VehicleForm = (props) => {
   if (loading) {
     return (<Loading />);
   }
-  const [filteredModels, setFilteredModels] = useState([]);
-
-  useEffect(() => {
-    if ('make' in props.fields) {
-      if (props.fields.make !== null && props.fields.make !== '') {
-        const { make } = props.fields;
-        setFilteredModels(vehicleModels.filter((vm) => vm.make === make));
-      }
-    }
-  },
-  [fields]);
 
   return (
     <div id="vehicle-form" className="page">
@@ -83,6 +70,7 @@ const VehicleForm = (props) => {
                 </div>
               </div>
               <VehicleFormDropdown
+                accessor={(fuelType) => fuelType.vehicleFuelCode}
                 dropdownName="Type"
                 dropdownData={vehicleTypes}
                 fieldName="vehicleFuelType"
@@ -163,6 +151,8 @@ const VehicleForm = (props) => {
 VehicleForm.defaultProps = {};
 
 VehicleForm.propTypes = {
+  fields: PropTypes.shape().isRequired,
+  formTitle: PropTypes.string.isRequired,
   handleInputChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
