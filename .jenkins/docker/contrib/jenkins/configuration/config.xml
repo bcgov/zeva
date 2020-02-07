@@ -70,23 +70,6 @@
             <skipTlsVerify>false</skipTlsVerify>
             <addMasterProxyEnvVars>false</addMasterProxyEnvVars>
             <capOnlyOnAlivePods>false</capOnlyOnAlivePods>
-            <containerCap>10</containerCap>
-            <retentionTimeout>5</retentionTimeout>
-            <connectTimeout>5</connectTimeout>
-            <readTimeout>15</readTimeout>
-            <usageRestricted>false</usageRestricted>
-            <maxRequestsPerHost>32</maxRequestsPerHost>
-            <waitForPodSec>600</waitForPodSec>
-            <podRetention class="org.csanchez.jenkins.plugins.kubernetes.pod.retention.Never"/>
-        </org.csanchez.jenkins.plugins.kubernetes.KubernetesCloud>
-        <org.csanchez.jenkins.plugins.kubernetes.KubernetesCloud plugin="kubernetes@1.17.1">
-            <name>openshift</name>
-            <defaultsProviderTemplate></defaultsProviderTemplate>
-            <templates/>
-            <serverUrl></serverUrl>
-            <skipTlsVerify>false</skipTlsVerify>
-            <addMasterProxyEnvVars>false</addMasterProxyEnvVars>
-            <capOnlyOnAlivePods>false</capOnlyOnAlivePods>
             <jenkinsUrl>http://jenkins-prod.tbiwaq-tools.svc:8080</jenkinsUrl>
             <jenkinsTunnel>jenkins-prod.tbiwaq-tools.svc:50000</jenkinsTunnel>
             <containerCap>10</containerCap>
