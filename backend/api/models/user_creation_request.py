@@ -36,8 +36,7 @@ class UserCreationRequest(Auditable):
         db_table = 'user_creation_request'
         unique_together = (('keycloak_email', 'external_username'),)
 
-    db_table_comment = "Contains a list of users that were created by the " \
-                       "system. " \
-                       "This is used to map out the relationship between " \
-                       "the email used via keycloak and the actual user in " \
-                       "the system."
+    db_table_comment = \
+        "Contains a list of users that were created by the system. " \
+        "This is used to map out the relationship between the email used " \
+        "via keycloak and the actual user in the system."

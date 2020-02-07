@@ -17,7 +17,7 @@ class VehicleClass(Auditable, Description, EffectiveDates):
     class Meta:
         db_table = 'vehicle_class_code'
 
-    db_table_comment = "Vehicle Class (Body/Weight class) as defined in " \
-                       "NRCAN" \
-                       "e.g. T - Two-seater" \
-                       "I - Minicompact"
+    db_table_comment = \
+        "Vehicle Class (Body/Weight class) as defined in NRCAN" \
+        "e.g. T - Two-seater" \
+        "I - Minicompact"

@@ -6,7 +6,13 @@ const ActionBarNonGov = () => (
   <div className="action-bar">
     <span className="left-content" />
     <span className="right-content">
-      <button className="button" type="button">
+      <button
+        className="button"
+        onClick={() => {
+          history.goBack();
+        }}
+        type="button"
+      >
         <FontAwesomeIcon icon="download" /> Download as Excel
       </button>
 

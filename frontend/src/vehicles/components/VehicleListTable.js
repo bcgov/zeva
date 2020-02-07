@@ -30,22 +30,37 @@ const VehicleListTable = (props) => {
     Header: 'Range (km)',
     id: 'ranger',
   }, {
-    accessor: (v) => ((v.creditValue && v.creditValue.a) ? v.creditValue.a : ''),
+    accessor: (row) => {
+      let variable = 0.3;
+
+      if (row.vehicleFuelType.vehicleFuelCode === 'B') {
+        variable = 0.5;
+      }
+
+      let credit = ((row.range * 0.006214) + variable).toFixed(2);
+
+      if (credit > 4) {
+        credit = 4;
+      }
+
+      return credit;
+    },
     Header: 'Credit',
     id: 'col-credit',
   }, {
-    accessor: (v) => ((v.creditValue && v.creditValue.b) ? v.creditValue.b : ''),
+    accessor: (row) => (row.vehicleFuelType.vehicleFuelCode === 'B' ? 'A' : 'B'),
     Header: 'Class',
     id: 'col-class',
   }, {
-    accessor: (v) => v.state,
-    Header: 'State',
-    id: 'col-state',
+    accessor: 'validationStatus',
+    Header: 'Status',
+    id: 'col-status',
   }, {
-    accessor: (v) => (v.state === 'VALIDATED' ? <input type="checkbox" defaultChecked disabled /> : <input type="checkbox" value={v.id} onChange={(event) => { handleCheckboxClick(event); }} />),
+    accessor: (row) => (row.validationStatus === 'VALIDATED' ? <input type="checkbox" defaultChecked disabled /> : <input type="checkbox" value={row.id} onChange={(event) => { handleCheckboxClick(event); }} />),
     className: 'text-center',
     Header: 'Validate',
     id: 'col-validated',
+    show: user.isGovernment,
   }];
 
   const filterMethod = (filter, row) => {
@@ -88,9 +103,13 @@ const VehicleListTable = (props) => {
 VehicleListTable.defaultProps = {};
 
 VehicleListTable.propTypes = {
+  handleCheckboxClick: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.number,
   })).isRequired,
+  user: PropTypes.shape({
+    isGovernment: PropTypes.bool,
+  }).isRequired,
 };
 
 export default VehicleListTable;
