@@ -17,7 +17,7 @@ from auditable.views import AuditableMixin
 
 class VehicleViewSet(
     AuditableMixin, viewsets.GenericViewSet,
-    mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin
+    mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin
 ):
     permission_classes = (AllowAny,)
     http_method_names = ['get', 'post', 'put', 'patch']
@@ -25,8 +25,14 @@ class VehicleViewSet(
 
     serializer_classes = {
         'default': VehicleSerializer,
+<<<<<<< HEAD
         'state_change': VehicleStatusChangeSerializer,
         'create': VehicleSaveSerializer
+=======
+        'state_change': VehicleStateChangeSerializer,
+        'create': VehicleSaveSerializer,
+        'partial_update': VehicleSaveSerializer
+>>>>>>> master
     }
 
     def get_serializer_class(self):

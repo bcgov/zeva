@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import Loading from '../../app/components/Loading';
 import DetailField from '../../app/components/DetailField';
 import VehicleHistoryTable from './VehicleHistoryTable';
+import history from '../../app/History';
 
 const VehicleDetailsPage = (props) => {
   const { details, loading, requestStateChange } = props;
@@ -11,7 +12,19 @@ const VehicleDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
+  const id = details.id
 
+  const editButton = (
+    <button
+      className="button primary"
+      onClick={() => {
+        history.push(`/vehicles/${id}/edit`);
+      }}
+      type="button"
+    >
+        Edit
+    </button>
+  );
   return (
     <div id="vehicle-details" className="page">
       <div className="row">
@@ -43,6 +56,7 @@ const VehicleDetailsPage = (props) => {
         <div className="col-sm-12">
           <div className="action-bar">
             <span className="left-content">
+              {details.state === 'DRAFT' ? editButton : '' }
               {details.actions.map((action) => (
                 <button type="button" key={action} onClick={() => requestStateChange(action)}>
                   Set state to {action}

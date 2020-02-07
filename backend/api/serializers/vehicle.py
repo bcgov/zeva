@@ -79,6 +79,7 @@ class VehicleSerializer(
     vehicle_fuel_type = VehicleFuelTypeSerializer()
     history = VehicleHistorySerializer(read_only=True, many=True)
     actions = SerializerMethodField()
+    vehicle_class_code = VehicleClassSerializer()
 
     def get_actions(self, instance):
         user = self.context['request'].user
@@ -102,7 +103,8 @@ class VehicleSerializer(
         model = Vehicle
         fields = (
             'id', 'actions', 'history', 'make', 'model_name', 'model_year',
-            'range', 'validation_status', 'vehicle_fuel_type'
+            'range', 'validation_status', 'vehicle_class_code',
+            'vehicle_fuel_type'
         )
         read_only_fields = ('validation_status',)
 

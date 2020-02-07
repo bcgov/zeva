@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import History from '../../app/History';
 import Loading from '../../app/components/Loading';
 import history from '../../app/History';
 import VehicleFormDropdown from './VehicleFormDropdown';
+import { parseSync } from '@babel/core';
 
 const VehicleForm = (props) => {
   const {
@@ -15,19 +16,30 @@ const VehicleForm = (props) => {
     vehicleClasses,
     handleInputChange,
     handleSubmit,
+    fields,
+    formTitle,
   } = props;
-
-
   if (loading) {
     return (<Loading />);
   }
+  const [filteredModels, setFilteredModels] = useState([]);
+
+  useEffect(() => {
+    if ('make' in props.fields) {
+      if (props.fields.make !== null && props.fields.make !== '') {
+        const { make } = props.fields;
+        setFilteredModels(vehicleModels.filter((vm) => vm.make === make));
+      }
+    }
+  },
+  [fields]);
 
   return (
     <div id="vehicle-form" className="page">
 
       <div className="row">
         <div className="col-md-12">
-          <h1>Enter ZEV</h1>
+          <h1>{formTitle}</h1>
         </div>
       </div>
 
@@ -42,6 +54,7 @@ const VehicleForm = (props) => {
                 dropdownData={vehicleYears}
                 fieldName="modelYear"
                 handleInputChange={handleInputChange}
+                selectedOption={fields.modelYear.name}
               />
               <VehicleFormDropdown
                 accessor={(make) => make.name}
@@ -49,30 +62,32 @@ const VehicleForm = (props) => {
                 dropdownData={vehicleMakes}
                 fieldName="make"
                 handleInputChange={handleInputChange}
+                selectedOption={fields.make.name}
               />
               <div className="form-group row">
                 <label
                   className="col-sm-2 col-form-label"
-                  htmlFor="model-name"
+                  htmlFor="modelName"
                 >
                   Model
                 </label>
                 <div className="col-sm-10">
                   <input
                     className="form-control"
-                    id="model-name"
+                    id="modelName"
                     name="modelName"
                     type="text"
+                    defaultValue={fields.modelName}
                     onChange={handleInputChange}
                   />
                 </div>
               </div>
               <VehicleFormDropdown
-                accessor={(fuelType) => fuelType.vehicleFuelCode}
                 dropdownName="Type"
                 dropdownData={vehicleTypes}
                 fieldName="vehicleFuelType"
                 handleInputChange={handleInputChange}
+                selectedOption={fields.vehicleFuelType.vehicleFuelCode}
               />
               <VehicleFormDropdown
                 accessor={(classCode) => classCode.vehicleClassCode}
@@ -80,6 +95,7 @@ const VehicleForm = (props) => {
                 dropdownData={vehicleClasses}
                 fieldName="vehicleClassCode"
                 handleInputChange={handleInputChange}
+                selectedOption={fields.vehicleClassCode.vehicleClassCode}
               />
               <div className="form-group row">
                 <label
@@ -94,6 +110,7 @@ const VehicleForm = (props) => {
                     id="range"
                     name="range"
                     type="text"
+                    defaultValue={fields.range}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -103,10 +120,10 @@ const VehicleForm = (props) => {
                 <span className="left-content">
                   <button
                     className="button"
-                    onClick={() => {
-                      history.goBack();
-                    }}
                     type="button"
+                    onClick={() => {
+                      History.goBack();
+                    }}
                   >
                     <FontAwesomeIcon icon="arrow-left" /> Back
                   </button>

@@ -12,3 +12,4 @@ venv/
 
 db.sqlite3
 package-lock.json
+.coverage

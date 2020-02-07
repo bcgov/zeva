@@ -14,7 +14,7 @@ const VehicleListTable = (props) => {
     Header: 'Make',
     id: 'make',
   }, {
-    accessor: 'modelName',
+    accessor: (row) => (row.modelName ? row.modelName : ''),
     Header: 'Model',
     id: 'model',
   }, {

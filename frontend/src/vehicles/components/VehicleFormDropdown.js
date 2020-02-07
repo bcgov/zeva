@@ -8,7 +8,9 @@ const VehicleFormDropdown = (props) => {
     handleInputChange,
     fieldName,
     accessor,
+    selectedOption,
   } = props;
+
   const selectionList = dropdownData.map((obj) => (
     <option key={accessor(obj)} value={accessor(obj)}>{obj.name || obj.description}</option>
   ));
@@ -26,8 +28,9 @@ const VehicleFormDropdown = (props) => {
           id={dropdownName}
           name={fieldName}
           onChange={handleInputChange}
+          defaultValue={selectedOption}
         >
-          <option>--</option>
+          {selectedOption === '--' && <option disabled>--</option>}
           {selectionList}
         </select>
       </div>

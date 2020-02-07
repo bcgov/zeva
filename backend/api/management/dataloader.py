@@ -3,8 +3,6 @@ import abc
 from django.db import transaction
 
 from api.management.data_script import OperationalDataScript
-from api.models.CompliancePeriod import CompliancePeriod
-
 
 class DataLoader(OperationalDataScript):
 
