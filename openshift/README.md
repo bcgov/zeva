@@ -249,6 +249,51 @@ Commit all changes and push to GitHub
 ~/Projects/zeva/.jenkins/.pipeline$ npm run deploy -- --pr=0 --env=dev
 ```
 
+## Section 3 Update Jenkins on Openshift
+A sample task to do is adding openshift cloud settings. The following settings are added to .jenkins/docker/contrib/jenkins/configuration/config.xml
+The change is done through branch jenkins-add-oepnshift
+```
+<org.csanchez.jenkins.plugins.kubernetes.KubernetesCloud plugin="kubernetes@1.17.1">
+    <name>openshift</name>
+    <defaultsProviderTemplate></defaultsProviderTemplate>
+    <templates/>
+    <serverUrl></serverUrl>
+    <skipTlsVerify>false</skipTlsVerify>
+    <addMasterProxyEnvVars>false</addMasterProxyEnvVars>
+    <capOnlyOnAlivePods>false</capOnlyOnAlivePods>
+    <jenkinsUrl>http://jenkins-prod.tbiwaq-tools.svc:8080</jenkinsUrl>
+    <jenkinsTunnel>jenkins-prod.tbiwaq-tools.svc:50000</jenkinsTunnel>
+    <containerCap>10</containerCap>
+    <retentionTimeout>5</retentionTimeout>
+    <connectTimeout>5</connectTimeout>
+    <readTimeout>15</readTimeout>
+    <usageRestricted>false</usageRestricted>
+    <maxRequestsPerHost>32</maxRequestsPerHost>
+    <waitForPodSec>600</waitForPodSec>
+    <podRetention class="org.csanchez.jenkins.plugins.kubernetes.pod.retention.Never"/>
+</org.csanchez.jenkins.plugins.kubernetes.KubernetesCloud>
+```
+### 3.1 steps updating Jenkins
+* Git commit the change to branch jenkins-add-oepnshift
+* Create pull request 58
+* Login to jenkins admin console. Jenkins -> _jenkins -> Pull Requests(37) -> PR-58, the pipeline zeva/jenkins/Jenkinsfile is triggered  
+* Openshift Console  
+    * build configs jenkins-build-58 and jenkins-slave-main-build-58 are created and triggered  
+    * jenkins:dev-1.0.0-58 and jenkins-slave-main:build-1.0.0-58 are tagged  
+    * deployment config jenkins-dev-58 and jenkins-slave-dev-58 are created and triggered 
+    * route jenkins-dev-58 is created 
+* Open browser and go to url specified by route jenkins-dev-58 
+	* verify Jenkins -> manage Jenkins -> Configure System,  there should be only one cloud openshift created
+* Open jenkins admin console
+	* go to Jenkins -> _jenlins -> Pull Requests(37) -> PR-58 Console Output, it is asking "Should we continue with deployment to PROD?"
+	* choose Yes, 
+		* image jenkins / build-1.0.0-58, dev-1.0.0-58 and prod-1.0.0 are same
+		* image jenkins-slave-main / build-1.0.0-58, dev-1.0.0-58 and prod-1.0.0 are same
+		* deployment configs jenkins-prod and jenkins-slave-prod are triggered by image change
+* Open browser and go to url specified by route jenkins-prod
+    * verify Jenkins -> manage Jenkins -> Configure System,  there should be only one cloud openshift created
+* Openshift console, bring down jenkins-slave-dev-58 and jenkins-dev-58
+		
 ## Tips
 * Project team should be responsible to build jenkins slave, such as add npm modules into it, then no need to use npmw anymore
 * After the Jenkins create successfully, two webhooks should have been created in zeva repo (if the webhooks show failed, it is ok as Jenkins may not be fully up yet)

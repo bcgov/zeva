@@ -65,13 +65,35 @@ objects:
     spec:
       host: ${ENV_NAME}-zeroemissionvehicles.pathfinder.gov.bc.ca
       port:
-        targetPort: http-in
+        targetPort: web
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
       to:
         kind: Service
-        name: envoy
+        name: frontend
+        weight: 100
+      wildcardPolicy: None
+  - apiVersion: route.openshift.io/v1
+    kind: Route
+    metadata:
+      creationTimestamp: null
+      labels:
+        name: frontend
+        app: zeva
+        role: frontend
+        env: ${ENV_NAME}
+      name: ${ENV_NAME}-zeroemissionvehicles-sockjs-node
+    spec:
+      host: ${ENV_NAME}-zeroemissionvehicles.pathfinder.gov.bc.ca
+      path: /sockjs-node
+      port:
+        targetPort: web
+      tls:
+        termination: edge
+      to:
+        kind: Service
+        name: frontend
         weight: 100
       wildcardPolicy: None
   - apiVersion: apps.openshift.io/v1
@@ -143,6 +165,11 @@ objects:
                     configMapKeyRef:
                       name: zeva-config
                       key: keycloak_client_id
+                - name: KEYCLOAK_REALM_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_realm_name
                 - name: RABBITMQ_ENABLED
                   valueFrom:
                     configMapKeyRef:

@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
+import CustomPropTypes from '../app/utilities/props';
 import VehicleDetailsPage from './components/VehicleDetailsPage';
 
 
@@ -50,9 +51,7 @@ const VehicleDetailContainer = (props) => {
 };
 
 VehicleDetailContainer.propTypes = {
-  keycloak: PropTypes.shape({
-    authenticated: PropTypes.bool,
-  }).isRequired,
+  keycloak: CustomPropTypes.keycloak.isRequired,
 };
 
 export default VehicleDetailContainer;

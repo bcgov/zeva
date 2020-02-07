@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
+import CustomPropTypes from '../app/utilities/props';
 import VehicleList from './components/VehicleList';
 
 const VehicleListContainer = (props) => {
@@ -61,10 +62,8 @@ const VehicleListContainer = (props) => {
 };
 
 VehicleListContainer.propTypes = {
-  keycloak: PropTypes.shape({
-    authenticated: PropTypes.bool,
-  }).isRequired,
-  user: PropTypes.shape().isRequired,
+  keycloak: CustomPropTypes.keycloak.isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default VehicleListContainer;

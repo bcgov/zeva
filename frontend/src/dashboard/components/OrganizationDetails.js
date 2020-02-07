@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from 'prop-types';
 import React from 'react';
+import CustomPropTypes from '../../app/utilities/props';
 
 const OrganizationDetails = (props) => {
   const { details } = props;
@@ -79,16 +79,7 @@ OrganizationDetails.defaultProps = {
 };
 
 OrganizationDetails.propTypes = {
-  details: PropTypes.shape({
-    name: PropTypes.string,
-    organizationAddress: PropTypes.shape({
-      addressLine1: PropTypes.string,
-      city: PropTypes.string,
-      country: PropTypes.string,
-      postalCode: PropTypes.string,
-      state: PropTypes.string,
-    }),
-  }).isRequired,
+  details: CustomPropTypes.organizationDetails.isRequired,
 };
 
 export default OrganizationDetails;
