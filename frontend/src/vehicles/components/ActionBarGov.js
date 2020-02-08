@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import history from '../../app/History';
@@ -45,6 +46,11 @@ const ActionBarGov = (props) => {
       </span>
     </div>
   );
+};
+
+ActionBarGov.propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
+  vehicles: PropTypes.arrayOf(PropTypes.shape).isRequired,
 };
 
 export default ActionBarGov;

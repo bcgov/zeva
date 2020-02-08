@@ -18,11 +18,11 @@ const VehicleList = (props) => {
     return <Loading />;
   }
 
-  const actionBar = user.isGovernment 
+  const actionBar = user.isGovernment
     ? <ActionBarGov handleSubmit={handleSubmit} vehicles={vehicles} /> : <ActionBarNonGov />;
 
   return (
-    <div id="organization-list" className="page">
+    <div id="vehicle-list" className="page">
       <div className="row">
         <div className="col-sm-12">
           <h1>ZEV Models</h1>
@@ -31,7 +31,11 @@ const VehicleList = (props) => {
       <div className="row">
         <div className="col-sm-12">
           {actionBar}
-          <VehicleListTable items={vehicles} user={user} handleCheckboxClick={handleCheckboxClick} />
+          <VehicleListTable
+            handleCheckboxClick={handleCheckboxClick}
+            items={vehicles}
+            user={user}
+          />
           {actionBar}
         </div>
       </div>
@@ -42,7 +46,12 @@ const VehicleList = (props) => {
 VehicleList.defaultProps = {};
 
 VehicleList.propTypes = {
+  handleCheckboxClick: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
+  user: PropTypes.shape({
+    isGovernment: PropTypes.bool,
+  }).isRequired,
   vehicles: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 

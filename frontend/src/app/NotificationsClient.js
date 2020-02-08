@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { hot } from 'react-hot-loader/root';
 import io from 'socket.io-client';
-import PropTypes from 'prop-types';
 import CustomPropTypes from './utilities/props';
 
 
