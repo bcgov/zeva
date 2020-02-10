@@ -1,11 +1,8 @@
 import React from 'react';
-import CONFIG from './config';
+import CustomPropTypes from './utilities/props';
 
-const Login = () => {
-  let url = `${CONFIG.KEYCLOAK.URL}/realms/${CONFIG.KEYCLOAK.REALM}`;
-  url += '/protocol/openid-connect/auth?response_type=token';
-  url += `&client_id=${CONFIG.KEYCLOAK.CLIENT_ID}`;
-  url += `&redirect_uri=${window.location.href}`;
+const Login = (props) => {
+  const { keycloak } = props;
 
   return (
     <div id="login-page">
@@ -20,10 +17,10 @@ const Login = () => {
             <div className="section">
               Vehicle Suppliers
 
-              <a href={`${url}&kc_idp_hint=bceid`} id="link-bceid" className="button">
+              <button type="button" onClick={() => keycloak.login({ idpHint: 'bceid' })} id="link-bceid" className="button">
                 <span className="text"> Login with </span>
                 <span className="display-name"> BCeID </span>
-              </a>
+              </button>
             </div>
 
             <hr className="divider" />
@@ -31,16 +28,20 @@ const Login = () => {
             <div className="section">
               Government
 
-              <a href={`${url}&kc_idp_hint=idir`} id="link-idir" className="button">
+              <button type="button" onClick={() => keycloak.login({ idpHint: 'idir' })} id="link-idir" className="button">
                 <span className="text">Login with</span>
                 <span className="display-name"> IDIR </span>
-              </a>
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
   );
+};
+
+Login.propTypes = {
+  keycloak: CustomPropTypes.keycloak.isRequired,
 };
 
 export default Login;

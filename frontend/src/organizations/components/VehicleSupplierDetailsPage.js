@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import History from '../../app/History';
 import Loading from '../../app/components/Loading';
+import CustomPropTypes from '../../app/utilities/props';
 import VehicleListTable from '../../vehicles/components/VehicleListTable';
 
 const VehicleSupplierDetailsPage = (props) => {
@@ -112,18 +113,7 @@ VehicleSupplierDetailsPage.defaultProps = {
 };
 
 VehicleSupplierDetailsPage.propTypes = {
-  details: PropTypes.shape({
-    id: PropTypes.number,
-    name: PropTypes.string,
-    organizationAddress: PropTypes.shape({
-      addressLine1: PropTypes.string,
-      addressLine2: PropTypes.string,
-      addressLine3: PropTypes.string,
-      city: PropTypes.string,
-      postalCode: PropTypes.string,
-      state: PropTypes.string,
-    }),
-  }).isRequired,
+  details: CustomPropTypes.organizationDetails.isRequired,
   loading: PropTypes.bool.isRequired,
   vehicles: PropTypes.arrayOf(PropTypes.shape({})),
 };

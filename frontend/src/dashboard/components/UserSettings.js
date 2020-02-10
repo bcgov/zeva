@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from 'prop-types';
 import React from 'react';
+import CustomPropTypes from '../../app/utilities/props';
 
 const UserSettings = (props) => {
   const { details } = props;
@@ -65,9 +65,7 @@ UserSettings.defaultProps = {
 };
 
 UserSettings.propTypes = {
-  details: PropTypes.shape({
-    displayName: PropTypes.string,
-  }).isRequired,
+  details: CustomPropTypes.user.isRequired,
 };
 
 export default UserSettings;

@@ -91,6 +91,11 @@ class Navbar extends Component {
                 <span><FontAwesomeIcon icon={['far', 'question-circle']}/></span>
               </NavLink>
             </li>
+            <li>
+              <span className="logout" onClick={() => keycloak.logout()}>
+                <FontAwesomeIcon icon="sign-out-alt" />
+              </span>
+            </li>
           </ul>
 
           <div className={`collapse navbar-collapse ${collapsed === false ? 'show' : ''}`}>
