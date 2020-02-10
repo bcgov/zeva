@@ -2,7 +2,6 @@ from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from django.db.models import F, Q
 
 from api.models.organization import Organization
 from api.serializers.organization import \

@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from api.decorators.authorization import authorization_required
 from api.models.credit_value import CreditValue
 from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle, VehicleDefinitionStates
@@ -114,6 +115,7 @@ class VehicleViewSet(
         return Response(serializer.data)
 
     @action(detail=True, methods=['patch'])
+    @authorization_required('Validate ZEV')
     def state_change(self, request, pk=None):
         """
         Update the state of a vehicle

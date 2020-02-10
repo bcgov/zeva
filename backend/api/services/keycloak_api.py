@@ -33,7 +33,7 @@ def get_token():
     cached_token = cache.get('sa-token')
     cached_token_expiry = cache.get('sa-token-expiry')
     if cached_token and cached_token_expiry and cached_token_expiry > datetime.utcnow():
-        logger.info('returning cached token (within expiry)')
+        logger.debug('returning cached token (within expiry)')
         return cached_token
 
     token_url = '{keycloak}/auth/realms/{realm}/protocol/openid-connect/token'.format(
@@ -188,7 +188,7 @@ def get_role_id(token, rolename):
     cached_role_id = cache.get('role.id.by_rolename.{}'.format(rolename))
 
     if cached_role_id:
-        logger.info('returning cached role id')
+        logger.debug('returning cached role id')
         return cached_role_id
 
     url = '{keycloak}/auth/admin/realms/{realm}/roles/{role}'.format(
@@ -216,7 +216,7 @@ def get_user_id(token, username):
     cached_user_id = cache.get('user.id.by_username.{}'.format(username))
 
     if cached_user_id:
-        logger.info('returning cached user id')
+        logger.debug('returning cached user id')
         return cached_user_id
 
     url = '{keycloak}/auth/admin/realms/{realm}/users?search={username}'.format(
@@ -234,8 +234,6 @@ def get_user_id(token, username):
             'bad response code: {}'.format(response.status_code))
 
     all_users = response.json()
-
-    logger.info(all_users)
 
     id = None
 
@@ -257,7 +255,7 @@ def get_group_id(token, groupname):
     cached_group_id = cache.get('group.id.by_groupname.{}'.format(groupname))
 
     if cached_group_id:
-        logger.info('returning cached group id')
+        logger.debug('returning cached group id')
         return cached_group_id
 
     url = '{keycloak}/auth/admin/realms/{realm}/groups'.format(
@@ -274,8 +272,6 @@ def get_group_id(token, groupname):
             'bad response code: {}'.format(response.status_code))
 
     all_groups = response.json()
-
-    logger.warning(all_groups)
 
     search = all_groups
 
@@ -332,13 +328,11 @@ def list_roles(token):
 
     all_roles = response.json()
 
-    logger.info(all_roles)
-
     if not response.ok:
         raise RuntimeError(
             'bad response code: {}'.format(response.status_code))
 
-    filtered_roles = filter(lambda r: 'name' in r and r['name'] not in FILTERED_ROLES, all_roles)
+    filtered_roles = list(filter(lambda r: 'name' in r and r['name'] not in FILTERED_ROLES, all_roles))
 
     return [
         {
@@ -398,6 +392,10 @@ def get_group_details(token, group_id):
     """
     Retrieves the group details found in Keycloak.
     """
+    cached_details = cache.get('group_details.by_id.{}'.format(group_id))
+    if cached_details:
+        return cached_details
+
     url = '{keycloak}/auth/admin/realms/{realm}/groups/{group_id}'.format(
         keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
         realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'],
@@ -409,7 +407,6 @@ def get_group_details(token, group_id):
                             headers=headers)
 
     group = response.json()
-    logger.warning(group)
 
     if not response.ok:
         raise RuntimeError(
@@ -417,11 +414,14 @@ def get_group_details(token, group_id):
 
     role_details = list_roles(token)
 
-    return {
+    result = {
         'name': group['name'],
         'id': group['id'],
         'roles': list(filter(lambda r: r['name'] in group['realmRoles'], role_details))
     }
+
+    cache.set('group_details.by_id.{}'.format(group_id), cached_details, 30)
+    return result
 
 
 def create_role(token, name, description):
@@ -439,8 +439,6 @@ def create_role(token, name, description):
         'description': description
     }
 
-    logger.info(payload)
-
     response = requests.post(url, json=payload, headers=headers)
 
     if not response.ok:
@@ -457,8 +455,6 @@ def update_role_description(token, name, description):
         realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'],
         name=name)
 
-    logger.info('url: {}'.format(url))
-
     headers = {'Authorization': 'Bearer {}'.format(token)}
 
     payload = {
@@ -468,7 +464,6 @@ def update_role_description(token, name, description):
     response = requests.put(url, json=payload, headers=headers)
 
     if not response.ok:
-        logger.warning(response.content)
         raise RuntimeError(
             'bad response code: {}'.format(response.status_code))
 
@@ -493,8 +488,6 @@ def create_group(token, name, parent=None):
     payload = {
         'name': name,
     }
-
-    logger.info(payload)
 
     response = requests.post(url, json=payload, headers=headers)
 

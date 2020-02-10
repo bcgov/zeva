@@ -6,42 +6,31 @@ import React from 'react';
 import ReactTable from 'react-table';
 
 const RoleListTable = (props) => {
-  const { roles } = props;
+  const { roles, title } = props;
+
+  const permissionTableColumns = [
+    {
+      accessor: 'name',
+      Header: 'Permission',
+    }, {
+      accessor: 'description',
+      Header: 'Authority',
+    },
+  ];
 
   return (
-    <ul>
-      {roles.map((r) => (
-        <li key={r.name}>
-          {r.name}
-          <table>
-            <tbody>
-            {r.roles.map(role => (<tr key={role.id}>
-              <td>{role.name}</td>
-              <td>{role.description}</td>
-            </tr>))}
-            </tbody>
-          </table>
-          {(r.subGroups.length > 0) && (
-            <ul>
-              {r.subGroups.map((sg) => (
-                <li key={sg.name}>
-                  {sg.name}
-                  <table>
-                    <tbody>
-                    {sg.roles.map(role => (<tr key={role.id}>
-                      <td>{role.name}</td>
-                      <td>{role.description}</td>
-                    </tr>))}
-                    </tbody>
-                  </table>
-                </li>
-              ))}
-            </ul>
-          )}
-
-        </li>
-      ))}
-    </ul>
+    <div className="panel">
+      <h2>{title}</h2>
+      <ReactTable
+        columns={permissionTableColumns}
+        data={roles}
+        defaultSorted={[{
+          id: 'name',
+        }]}
+        showPagination={false}
+        pageSize={roles.length}
+      />
+    </div>
   );
 };
 
@@ -53,6 +42,7 @@ RoleListTable.propTypes = {
     name: PropTypes.string,
     description: PropTypes.string,
   })).isRequired,
+  title: PropTypes.string.isRequired,
 };
 
 export default RoleListTable;
