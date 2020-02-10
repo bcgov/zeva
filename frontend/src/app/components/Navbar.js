@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import CustomPropTypes from '../utilities/props';
 import ROUTES_ORGANIZATIONS from '../routes/Organizations';
 import ROUTES_ROLES from '../routes/Roles';
 import ROUTES_VEHICLES from '../routes/Vehicles';
@@ -207,15 +207,8 @@ class Navbar extends Component {
 Navbar.defaultProps = {};
 
 Navbar.propTypes = {
-  user: PropTypes.shape({
-    displayName: PropTypes.string,
-    isGovernment: PropTypes.bool,
-    organization: PropTypes.shape({
-      name: PropTypes.string,
-    }),
-  }).isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  keycloak: PropTypes.any.isRequired,
+  keycloak: CustomPropTypes.keycloak.isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default Navbar;

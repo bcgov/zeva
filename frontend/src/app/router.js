@@ -12,14 +12,17 @@ import PageLayout from './PageLayout';
 import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
 import OrganizationListContainer from '../organizations/OrganizationListContainer';
+import SalesDetailsContainer from '../sales/SalesDetailsContainer';
+import SalesListContainer from '../sales/SalesListContainer';
 import ROUTES_ORGANIZATIONS from './routes/Organizations';
 import ROUTES_ROLES from './routes/Roles';
+import ROUTES_SALES from './routes/Sales';
 import ROUTES_USERS from './routes/Users';
 import ROUTES_VEHICLES from './routes/Vehicles';
 import VehicleAddContainer from '../vehicles/VehicleAddContainer';
 import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
 import VehicleListContainer from '../vehicles/VehicleListContainer';
-import VehicleDetailContainer from '../vehicles/VehicleDetailContainer';
+import VehicleDetailsContainer from '../vehicles/VehicleDetailsContainer';
 import VehicleEditContainer from '../vehicles/VehicleEditContainer';
 
 class Router extends Component {
@@ -101,6 +104,14 @@ class Router extends Component {
               render={() => <OrganizationListContainer keycloak={keycloak} user={user} />}
             />
             <Route
+              path={ROUTES_SALES.DETAILS}
+              render={() => <SalesDetailsContainer keycloak={keycloak} user={user} />}
+            />
+            <Route
+              path={ROUTES_SALES.LIST}
+              render={() => <SalesListContainer keycloak={keycloak} user={user} />}
+            />
+            <Route
               exact
               path={ROUTES_VEHICLES.ADD}
               render={() => <VehicleAddContainer keycloak={keycloak} user={user} />}
@@ -113,7 +124,7 @@ class Router extends Component {
             <Route
               exact
               path={ROUTES_VEHICLES.DETAILS}
-              render={() => <VehicleDetailContainer keycloak={keycloak} user={user} />}
+              render={() => <VehicleDetailsContainer keycloak={keycloak} user={user} />}
             />
             <Route
               exact
