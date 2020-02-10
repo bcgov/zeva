@@ -12,7 +12,7 @@ const UsersTable = (props) => {
     className: 'text-left',
     Header: 'Name',
   }, {
-    accessor: (item) => (item.roles.map((r) => r.name).join(', ')),
+    accessor: (item) => (item.groups.join(', ')),
     id: 'roles',
     className: 'text-left',
     Header: 'Roles',

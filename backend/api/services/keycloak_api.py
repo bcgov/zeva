@@ -275,17 +275,23 @@ def get_group_id(token, groupname):
 
     all_groups = response.json()
 
-    for group in all_groups:
+    logger.warning(all_groups)
+
+    search = all_groups
+
+    for group in search:
         if group['name'] == groupname:
             cache.set('group.id.by_groupname.{}'.format(groupname), group['id'], 3600)
             return group['id']
 
+        search.extend(group['subGroups'])
+
     raise GroupNotFoundError()
 
 
-def list_roles_for_username(token, username):
+def list_groups_for_username(token, username):
     """
-    Retrieves the list of roles found in Keycloak.
+    Retrieves the list of groups found in Keycloak for a user.
     """
 
     id = get_user_id(token, username)
@@ -293,7 +299,7 @@ def list_roles_for_username(token, username):
     if id is None:
         return []
 
-    url = '{keycloak}/auth/admin/realms/{realm}/users/{id}/role-mappings'.format(
+    url = '{keycloak}/auth/admin/realms/{realm}/users/{id}/groups'.format(
         keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
         realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'],
         id=id)
@@ -307,17 +313,8 @@ def list_roles_for_username(token, username):
             'bad response code: {}'.format(response.status_code))
 
     user_details = response.json()
-    logger.info(user_details)
 
-    filtered_roles = filter(lambda r: r['name'] not in FILTERED_ROLES, user_details['realmMappings'])
-
-    return [
-        {
-            'name': r['name'],
-            'id': r['id'],
-            'description': r['description']
-        } for r in filtered_roles
-    ]
+    return [g['name'] for g in user_details]
 
 
 def list_roles(token):
@@ -356,6 +353,10 @@ def list_groups(token):
     """
     Retrieves the list of all groups found in Keycloak.
     """
+    cached_group_list = cache.get('group_list')
+    if cached_group_list:
+        return cached_group_list
+
     url = '{keycloak}/auth/admin/realms/{realm}/groups'.format(
         keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
         realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'])
@@ -367,18 +368,30 @@ def list_groups(token):
 
     all_groups = response.json()
 
-    logger.info(all_groups)
-
     if not response.ok:
         raise RuntimeError(
             'bad response code: {}'.format(response.status_code))
 
-    return [
+    result = [
         {
             'name': g['name'],
             'id': g['id'],
+            'roles': get_group_details(token, g['id'])['roles'],
+            'subGroups': [
+                {
+                    'name': sg['name'],
+                    'roles': get_group_details(token, sg['id'])['roles'],
+                    'id': sg['id'],
+                } for sg in g['subGroups']
+            ]
         } for g in all_groups
     ]
+    for r in result:
+        logger.info(r)
+
+    cache.set('group_list', result, 3600)
+
+    return result
 
 
 def get_group_details(token, group_id):
@@ -395,8 +408,6 @@ def get_group_details(token, group_id):
     response = requests.get(url,
                             headers=headers)
 
-
-
     group = response.json()
     logger.warning(group)
 
@@ -404,10 +415,12 @@ def get_group_details(token, group_id):
         raise RuntimeError(
             'bad response code: {}'.format(response.status_code))
 
+    role_details = list_roles(token)
+
     return {
         'name': group['name'],
         'id': group['id'],
-        'roles': group['realmRoles']
+        'roles': list(filter(lambda r: r['name'] in group['realmRoles'], role_details))
     }
 
 
@@ -460,13 +473,20 @@ def update_role_description(token, name, description):
             'bad response code: {}'.format(response.status_code))
 
 
-def create_group(token, name):
+def create_group(token, name, parent=None):
     """
     Create a Keycloak group.
     """
-    url = '{keycloak}/auth/admin/realms/{realm}/groups'.format(
-        keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
-        realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'])
+    if parent is None:
+        url = '{keycloak}/auth/admin/realms/{realm}/groups'.format(
+            keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
+            realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'])
+    else:
+        url = '{keycloak}/auth/admin/realms/{realm}/groups/{parent_id}/children'.format(
+            keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
+            realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'],
+            parent_id=get_group_id(token, parent)
+        )
 
     headers = {'Authorization': 'Bearer {}'.format(token)}
 
@@ -475,35 +495,6 @@ def create_group(token, name):
     }
 
     logger.info(payload)
-
-    response = requests.post(url, json=payload, headers=headers)
-
-    if not response.ok:
-        raise RuntimeError(
-            'bad response code: {}'.format(response.status_code))
-
-
-def map_user_into_role(token, username, role):
-    """
-    Map a Keycloak user into a role
-    """
-    id = get_user_id(token, username)
-
-    if id is None:
-        raise UserNotFoundError('User id for user {username} not found in Keycloak'
-                                .format(username=username))
-
-    url = '{keycloak}/auth/admin/realms/{realm}/users/{id}/role-mappings/realm'.format(
-        keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
-        realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'],
-        id=id
-    )
-
-    headers = {'Authorization': 'Bearer {}'.format(token)}
-
-    payload = [
-        {'id': get_role_id(token, role)}
-    ]
 
     response = requests.post(url, json=payload, headers=headers)
 
@@ -531,7 +522,10 @@ def map_group_into_role(token, groupname, role):
     headers = {'Authorization': 'Bearer {}'.format(token)}
 
     payload = [
-        {'id': get_role_id(token, role)}
+        {
+            'id': get_role_id(token, role),
+            'name': role
+        }
     ]
 
     response = requests.post(url, json=payload, headers=headers)
@@ -541,5 +535,39 @@ def map_group_into_role(token, groupname, role):
             'bad response code: {}'.format(response.status_code))
 
 
-def map_user_into_group(token, username, group):
-    raise NotImplemented()
+def delete_role(token, name):
+    """
+    Remove a Keycloak role.
+    """
+    url = '{keycloak}/auth/admin/realms/{realm}/roles/{name}'.format(
+        keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
+        realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'],
+        name=name
+    )
+
+    headers = {'Authorization': 'Bearer {}'.format(token)}
+
+    response = requests.delete(url, headers=headers)
+
+    if not response.ok:
+        raise RuntimeError(
+            'bad response code: {}'.format(response.status_code))
+
+
+def delete_group_by_id(token, id):
+    """
+    Remove a Keycloak group.
+    """
+    url = '{keycloak}/auth/admin/realms/{realm}/groups/{id}'.format(
+        keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
+        realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'],
+        id=id
+    )
+
+    headers = {'Authorization': 'Bearer {}'.format(token)}
+
+    response = requests.delete(url, headers=headers)
+
+    if not response.ok:
+        raise RuntimeError(
+            'bad response code: {}'.format(response.status_code))

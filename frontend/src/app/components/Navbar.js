@@ -36,7 +36,7 @@ class Navbar extends Component {
       <div id="navbar">
         <div className="row header">
           <div className="col-lg-9">
-            <div className="brand-logo"/>
+            <div className="brand-logo" />
 
             <h1>Zero Emission Vehicle Reporting System</h1>
           </div>
@@ -64,7 +64,7 @@ class Navbar extends Component {
             onClick={this.collapseNavBar}
             type="button"
           >
-            <FontAwesomeIcon icon="bars"/>
+            <FontAwesomeIcon icon="bars" />
           </button>
 
           <ul className="user-control-panel">
@@ -79,7 +79,7 @@ class Navbar extends Component {
                 className="notifications"
                 to="/notifications"
               >
-                <span><FontAwesomeIcon icon="bell"/></span>
+                <span><FontAwesomeIcon icon="bell" /></span>
               </NavLink>
             </li>
             <li>
@@ -88,7 +88,7 @@ class Navbar extends Component {
                 className="help"
                 to="/help"
               >
-                <span><FontAwesomeIcon icon={['far', 'question-circle']}/></span>
+                <span><FontAwesomeIcon icon={['far', 'question-circle']} /></span>
               </NavLink>
             </li>
             <li>
@@ -146,27 +146,33 @@ class Navbar extends Component {
                 </NavLink>
               </li>
 
-              <li className="nav-item">
-                <NavLink
-                  activeClassName="active"
-                  to={ROUTES_VEHICLES.LIST}
-                >
-                  <span>ZEV Models</span>
-                </NavLink>
-              </li>
+              {keycloak.hasRealmRole('View ZEV')
+              && (
+                <li className="nav-item">
+                  <NavLink
+                    activeClassName="active"
+                    to={ROUTES_VEHICLES.LIST}
+                  >
+                    <span>ZEV Models</span>
+                  </NavLink>
+                </li>
+              )}
 
-              {keycloak.hasRealmRole('view_roles') &&
-              <li className="nav-item">
-                <NavLink
-                  activeClassName="active"
-                  to={ROUTES_ROLES.LIST}
-                >
-                  <span>Roles</span>
-                </NavLink>
-              </li>
-              }
+              {keycloak.hasRealmRole('View Roles and Permissions')
+              && (
+                <li className="nav-item">
+                  <NavLink
+                    activeClassName="active"
+                    to={ROUTES_ROLES.LIST}
+                  >
+                    <span>Roles</span>
+                  </NavLink>
+                </li>
+              )}
 
-              {!user.isGovernment && (
+              {keycloak.hasRealmRole('View Organization Information')
+              && keycloak.hasRealmRole('Vehicle Supplier')
+              && (
                 <li className="nav-item">
                   <NavLink
                     activeClassName="active"
@@ -177,7 +183,9 @@ class Navbar extends Component {
                 </li>
               )}
 
-              {user.isGovernment && (
+              {keycloak.hasRealmRole('View Organization Information')
+              && keycloak.hasRealmRole('Government')
+              && (
                 <li className="nav-item">
                   <NavLink
                     activeClassName="active"
@@ -187,6 +195,7 @@ class Navbar extends Component {
                   </NavLink>
                 </li>
               )}
+
             </ul>
           </div>
         </div>
