@@ -1,16 +1,14 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import History from '../../app/History';
 import Loading from '../../app/components/Loading';
 import VehicleFormDropdown from './VehicleFormDropdown';
-import { parseSync } from '@babel/core';
 
 const VehicleForm = (props) => {
   const {
     loading,
     vehicleMakes,
-    vehicleModels,
     vehicleYears,
     vehicleTypes,
     vehicleClasses,
@@ -22,17 +20,6 @@ const VehicleForm = (props) => {
   if (loading) {
     return (<Loading />);
   }
-  const [filteredModels, setFilteredModels] = useState([]);
-
-  useEffect(() => {
-    if ('make' in props.fields) {
-      if (props.fields.make !== null && props.fields.make !== '') {
-        const { make } = props.fields;
-        setFilteredModels(vehicleModels.filter((vm) => vm.make === make));
-      }
-    }
-  },
-  [fields]);
 
   return (
     <div id="vehicle-form" className="page">
@@ -49,6 +36,7 @@ const VehicleForm = (props) => {
             <fieldset>
               <legend>Model Details</legend>
               <VehicleFormDropdown
+                accessor={(model) => model.name}
                 dropdownName="Model Year"
                 dropdownData={vehicleYears}
                 fieldName="modelYear"
@@ -56,6 +44,7 @@ const VehicleForm = (props) => {
                 selectedOption={fields.modelYear.name}
               />
               <VehicleFormDropdown
+                accessor={(make) => make.name}
                 dropdownName="Make"
                 dropdownData={vehicleMakes}
                 fieldName="make"
@@ -81,18 +70,18 @@ const VehicleForm = (props) => {
                 </div>
               </div>
               <VehicleFormDropdown
+                accessor={(fuelType) => fuelType.vehicleFuelCode}
                 dropdownName="Type"
                 dropdownData={vehicleTypes}
                 fieldName="vehicleFuelType"
-                accessor={(o) => o.vehicleFuelCode}
                 handleInputChange={handleInputChange}
                 selectedOption={fields.vehicleFuelType.vehicleFuelCode}
               />
               <VehicleFormDropdown
-                dropdownName="Class"
+                accessor={(classCode) => classCode.vehicleClassCode}
+                dropdownName="Size"
                 dropdownData={vehicleClasses}
                 fieldName="vehicleClassCode"
-                accessor={(o) => o.vehicleClassCode}
                 handleInputChange={handleInputChange}
                 selectedOption={fields.vehicleClassCode.vehicleClassCode}
               />
@@ -162,12 +151,12 @@ const VehicleForm = (props) => {
 VehicleForm.defaultProps = {};
 
 VehicleForm.propTypes = {
+  fields: PropTypes.shape().isRequired,
+  formTitle: PropTypes.string.isRequired,
   handleInputChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-  fields: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   vehicleMakes: PropTypes.arrayOf(PropTypes.object).isRequired,
-  vehicleModels: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleTypes: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleClasses: PropTypes.arrayOf(PropTypes.object).isRequired,

@@ -39,7 +39,7 @@
       "model_name": "test model",
       "model_year": 1,
       "range": 100.2,
-      "state": "DRAFT"
+      "validation_status": "DRAFT"
     },
     "model": "api.vehicle",
     "pk": 1

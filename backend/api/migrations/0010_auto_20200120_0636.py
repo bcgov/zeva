@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='vehicle',
             name='state',
-            field=enumfields.fields.EnumField(default=api.models.vehicle.VehicleDefinitionStates.NEW, enum=api.models.vehicle.VehicleDefinitionStates, max_length=20),
+            field=enumfields.fields.EnumField(default=api.models.vehicle_statuses.VehicleDefinitionStatuses.NEW, enum=api.models.vehicle_statuses.VehicleDefinitionStatuses, max_length=20),
         ),
     ]

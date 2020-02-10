@@ -1,10 +1,12 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 
 import Loading from '../../app/components/Loading';
 import DetailField from '../../app/components/DetailField';
 import VehicleHistoryTable from './VehicleHistoryTable';
 import history from '../../app/History';
+import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 
 const VehicleDetailsPage = (props) => {
   const { details, loading, requestStateChange } = props;
@@ -12,17 +14,17 @@ const VehicleDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
-  const id = details.id
+  const { id } = details;
 
   const editButton = (
     <button
       className="button primary"
       onClick={() => {
-        history.push(`/vehicles/${id}/edit`);
+        history.push(ROUTES_VEHICLES.EDIT.replace(/:id/gi, id));
       }}
       type="button"
     >
-        Edit
+      <FontAwesomeIcon icon="edit" /> Edit
     </button>
   );
   return (
@@ -39,16 +41,16 @@ const VehicleDetailsPage = (props) => {
           <DetailField label="Type" value={details.vehicleFuelType.description} />
           <DetailField label="Range" value={details.range} />
           <DetailField label="Model Year" value={details.modelYear.name} />
-          <DetailField label="State" value={details.state} />
+          <DetailField label="Status" value={details.validationStatus} />
         </div>
       </div>
 
       <div className="row">
         <div className="col-sm-12">
-          <h1>Vehicle State History</h1>
+          <h1>Vehicle Status History</h1>
         </div>
         <div className="col-sm-12">
-          <VehicleHistoryTable items={details.changelog} />
+          <VehicleHistoryTable items={details.history} />
         </div>
       </div>
 
@@ -56,10 +58,21 @@ const VehicleDetailsPage = (props) => {
         <div className="col-sm-12">
           <div className="action-bar">
             <span className="left-content">
-              {details.state === 'DRAFT' ? editButton : '' }
+              <button
+                className="button"
+                onClick={() => {
+                  history.goBack();
+                }}
+                type="button"
+              >
+                <FontAwesomeIcon icon="arrow-left" /> Back
+              </button>
+            </span>
+            <span className="right-content">
+              {details.validationStatus === 'DRAFT' ? editButton : '' }
               {details.actions.map((action) => (
-                <button type="button" key={action} onClick={() => requestStateChange(action)}>
-                  Set state to {action}
+                <button className="button primary" type="button" key={action} onClick={() => requestStateChange(action)}>
+                  Set status to {action}
                 </button>
               ))}
             </span>
@@ -77,17 +90,12 @@ VehicleDetailsPage.defaultProps = {};
 VehicleDetailsPage.propTypes = {
   details: PropTypes.shape({
     id: PropTypes.any,
-    actions: PropTypes.arrayOf(PropTypes.string).isRequired,
-    changelog: PropTypes.arrayOf(PropTypes.object).isRequired,
+    actions: PropTypes.arrayOf(PropTypes.string),
+    history: PropTypes.arrayOf(PropTypes.object),
     make: PropTypes.shape({
       name: PropTypes.string,
     }),
-    model: PropTypes.shape({
-      name: PropTypes.string,
-    }),
-    trim: PropTypes.shape({
-      name: PropTypes.string,
-    }),
+    modelName: PropTypes.string,
     vehicleFuelType: PropTypes.shape({
       description: PropTypes.string,
     }),
@@ -98,13 +106,8 @@ VehicleDetailsPage.propTypes = {
     modelYear: PropTypes.shape({
       name: PropTypes.string,
     }),
-    creditValue: PropTypes.shape({
-      a: PropTypes.string,
-      b: PropTypes.string,
-    }),
-    state: PropTypes.string,
+    validationStatus: PropTypes.string,
   }).isRequired,
-  actions: PropTypes.arrayOf(PropTypes.string).isRequired,
   loading: PropTypes.bool.isRequired,
   requestStateChange: PropTypes.func.isRequired,
 };

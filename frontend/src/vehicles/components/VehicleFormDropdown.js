@@ -43,6 +43,7 @@ VehicleFormDropdown.defaultProps = {
 };
 
 VehicleFormDropdown.propTypes = {
+  accessor: PropTypes.func,
   dropdownData: PropTypes.arrayOf(PropTypes.shape({
     description: PropTypes.string,
     id: PropTypes.any,
@@ -51,6 +52,9 @@ VehicleFormDropdown.propTypes = {
   dropdownName: PropTypes.string.isRequired,
   fieldName: PropTypes.string.isRequired,
   handleInputChange: PropTypes.func.isRequired,
-  accessor: PropTypes.func,
+  selectedOption: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]).isRequired,
 };
 export default VehicleFormDropdown;

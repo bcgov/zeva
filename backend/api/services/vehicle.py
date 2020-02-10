@@ -1,33 +1,42 @@
 import logging
 
-from api.models.vehicle import VehicleChangeHistory, VehicleDefinitionStates
+from api.models.vehicle_change_history import VehicleChangeHistory
+from api.models.vehicle_statuses import VehicleDefinitionStatuses
 
 
-def change_state(user, vehicle, new_state):
+def change_status(user, vehicle, new_status):
     # @todo tech debt - incorporate this check into permissions
-    state_change_permitted = False
+    status_change_permitted = False
 
     if user.is_government:
-        if vehicle.state in [VehicleDefinitionStates.SUBMITTED] and \
-                new_state in [VehicleDefinitionStates.REJECTED, VehicleDefinitionStates.VALIDATED]:
-            state_change_permitted = True
+        if vehicle.validation_status in [
+            VehicleDefinitionStatuses.SUBMITTED
+        ] and new_status in [
+            VehicleDefinitionStatuses.REJECTED,
+            VehicleDefinitionStatuses.VALIDATED
+        ]:
+            status_change_permitted = True
     else:
-        if vehicle.state in [VehicleDefinitionStates.NEW, VehicleDefinitionStates.DRAFT] and \
-                new_state is VehicleDefinitionStates.SUBMITTED:
-            state_change_permitted = True
+        if vehicle.validation_status in [
+            VehicleDefinitionStatuses.NEW,
+            VehicleDefinitionStatuses.DRAFT
+        ] and new_status is VehicleDefinitionStatuses.SUBMITTED:
+            status_change_permitted = True
 
-    if not state_change_permitted:
+    if not status_change_permitted:
         raise RuntimeError
 
-    if new_state is not vehicle.state:
+    if new_status is not vehicle.validation_status:
         history = VehicleChangeHistory.objects.create(
-            vehicle=vehicle,
-            actor=user,
-            in_roles=user.roles,
-            previous_state=vehicle.state,
-            current_state=new_state
+            create_user=user,
+            make_id=vehicle.make_id,
+            model_year_id=vehicle.model_year_id,
+            range=vehicle.range,
+            user_role=user.roles,
+            validation_status=new_status,
+            vehicle_class_code_id=vehicle.vehicle_class_code_id,
+            vehicle_fuel_type_id=vehicle.vehicle_fuel_type_id,
+            vehicle=vehicle
         )
-        logging.debug('creating history record for state change {old}:{new}'.
-                      format(old=history.previous_state, new=history.current_state))
-        vehicle.state = new_state
+        vehicle.validation_status = new_status
         vehicle.save()

@@ -10,13 +10,17 @@ class ScriptLoader:
         exec(str, globals)
 
         if 'script_class' not in globals:
-            raise RuntimeError('This script does not contain a script_class reference')
+            raise RuntimeError(
+                'This script does not contain a script_class reference'
+            )
 
         cls = globals['script_class']
 
         if not issubclass(cls, OperationalDataScript):
-            raise RuntimeError('The class referenced within the script is not a subclass of'
-                               ' OperationalDataScript')
+            raise RuntimeError(
+                'The class referenced within the script is not a subclass of'
+                ' OperationalDataScript'
+            )
 
         return globals
 
