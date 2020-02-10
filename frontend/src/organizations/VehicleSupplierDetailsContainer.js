@@ -5,7 +5,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';

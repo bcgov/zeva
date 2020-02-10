@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
 const ActionBarGov = (props) => {
@@ -33,6 +34,11 @@ const ActionBarGov = (props) => {
       </span>
     </div>
   );
+};
+
+ActionBarGov.propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
+  vehicles: PropTypes.arrayOf(PropTypes.shape).isRequired,
 };
 
 export default ActionBarGov;
