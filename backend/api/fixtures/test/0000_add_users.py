@@ -26,12 +26,12 @@ class AddUsers(OperationalDataScript):
             "first_name": "Emily",
             "last_name": "Hillier",
             "display_name": "Emily Hillier",
-            "username": "EHILLIER"
+            "username": "EMHILLIE"
         }, {
             "first_name": "James",
             "last_name": "Donald",
             "display_name": "James Donald",
-            "username": "JDONALD"
+            "username": "JADONALD"
         }, {
             "first_name": "Katie",
             "last_name": "Menke",
@@ -52,6 +52,11 @@ class AddUsers(OperationalDataScript):
             "last_name": "Tan",
             "display_name": "Richard Tan",
             "username": "RTAN"
+        }, {
+            "first_name": "Robert ",
+            "last_name": "Johnstone",
+            "display_name": "Robert Johnstone",
+            "username": "RJOHNSTONE"
         }]
 
         organization = Organization.objects.get(
