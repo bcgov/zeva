@@ -100,11 +100,22 @@ const config = {
     }),
     new Webpack.HotModuleReplacementPlugin(),
     new Webpack.DefinePlugin({
-      __APIBASE__: 'APIBASE' in process.env ? JSON.stringify(process.env.APIBASE) : "'http://localhost/api/'",
-      __KEYCLOAK_URL__: 'KEYCLOAK_URL' in process.env ? JSON.stringify(process.env.KEYCLOAK_URL) : "'http://localhost:8888/auth'",
+      __APIBASE__: 'APIBASE' in process.env
+        ? JSON.stringify(process.env.APIBASE)
+        : "'http://localhost/api/'",
+      __KEYCLOAK_CLIENT_ID__: 'KEYCLOAK_CLIENT_ID' in process.env
+        ? JSON.stringify(process.env.KEYCLOAK_CLIENT_ID)
+        : "'zeva-app'",
+      __KEYCLOAK_LOGOUT_REDIRECT_URL__: 'KEYCLOAK_LOGOUT_REDIRECT_URL' in process.env
+        ? JSON.stringify(process.env.KEYCLOAK_LOGOUT_REDIRECT_URL)
+        : "'http://localhost/'",
+      __KEYCLOAK_REALM_NAME__: 'KEYCLOAK_REALM_NAME' in process.env
+        ? JSON.stringify(process.env.KEYCLOAK_REALM_NAME)
+        : "'zeva'",
+      __KEYCLOAK_URL__: 'KEYCLOAK_URL' in process.env
+        ? JSON.stringify(process.env.KEYCLOAK_URL)
+        : "'http://localhost:8888/auth'",
       __VERSION__: JSON.stringify(packageJson.version),
-      __KEYCLOAK_REALM_NAME__: 'KEYCLOAK_REALM_NAME' in process.env ? JSON.stringify(process.env.KEYCLOAK_REALM_NAME) : "'zeva'",
-      __KEYCLOAK_CLIENT_ID__: 'KEYCLOAK_CLIENT_ID' in process.env ? JSON.stringify(process.env.KEYCLOAK_CLIENT_ID) : "'zeva-app'",
     }),
     new HtmlWebpackPlugin({
       title: 'ZEVA',

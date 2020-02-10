@@ -1,6 +1,7 @@
 /*
  * Presentational component
  */
+import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTable from 'react-table';
@@ -8,21 +9,18 @@ import ReactTable from 'react-table';
 const VehicleHistoryTable = (props) => {
   const columns = [
     {
-      accessor: 'actor',
-      Header: 'Actor',
-    },
-    {
-      accessor: 'previousState',
-      Header: 'Previous State',
-    },
-    {
-      accessor: 'currentState',
-      Header: 'Next State',
-    },
-    {
-      id: 'at',
-      accessor: 'at',
-      Header: 'Date',
+      accessor: (row) => (row.createUser && row.createUser.displayName),
+      Header: 'User',
+      id: 'user',
+    }, {
+      accessor: 'validationStatus',
+      className: 'text-center',
+      Header: 'Status',
+    }, {
+      accessor: (row) => moment(row.createTimestamp).format('YYYY-MM-DD h[:]mm a'),
+      className: 'text-center',
+      Header: 'Timestamp',
+      id: 'timestamp',
     },
   ];
 
