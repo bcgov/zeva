@@ -22,6 +22,10 @@ const CustomPropTypes = {
       state: PropTypes.string,
     }),
   }),
+  roles: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string,
+    description: PropTypes.string,
+  })),
 };
 
 export default CustomPropTypes;

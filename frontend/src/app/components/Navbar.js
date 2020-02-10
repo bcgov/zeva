@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import CustomPropTypes from '../utilities/props';
 import ROUTES_ORGANIZATIONS from '../routes/Organizations';
+import ROUTES_ROLES from '../routes/Roles';
 import ROUTES_VEHICLES from '../routes/Vehicles';
 
 class Navbar extends Component {
@@ -145,16 +146,33 @@ class Navbar extends Component {
                 </NavLink>
               </li>
 
-              <li className="nav-item">
-                <NavLink
-                  activeClassName="active"
-                  to={ROUTES_VEHICLES.LIST}
-                >
-                  <span>ZEV Models</span>
-                </NavLink>
-              </li>
+              {keycloak.hasRealmRole('View ZEV')
+              && (
+                <li className="nav-item">
+                  <NavLink
+                    activeClassName="active"
+                    to={ROUTES_VEHICLES.LIST}
+                  >
+                    <span>ZEV Models</span>
+                  </NavLink>
+                </li>
+              )}
 
-              {!user.isGovernment && (
+              {keycloak.hasRealmRole('View Roles and Permissions')
+              && (
+                <li className="nav-item">
+                  <NavLink
+                    activeClassName="active"
+                    to={ROUTES_ROLES.LIST}
+                  >
+                    <span>Roles</span>
+                  </NavLink>
+                </li>
+              )}
+
+              {keycloak.hasRealmRole('View Organization Information')
+              && keycloak.hasRealmRole('Vehicle Supplier')
+              && (
                 <li className="nav-item">
                   <NavLink
                     activeClassName="active"
@@ -165,7 +183,9 @@ class Navbar extends Component {
                 </li>
               )}
 
-              {user.isGovernment && (
+              {keycloak.hasRealmRole('View Organization Information')
+              && keycloak.hasRealmRole('Government')
+              && (
                 <li className="nav-item">
                   <NavLink
                     activeClassName="active"
@@ -175,6 +195,7 @@ class Navbar extends Component {
                   </NavLink>
                 </li>
               )}
+
             </ul>
           </div>
         </div>
