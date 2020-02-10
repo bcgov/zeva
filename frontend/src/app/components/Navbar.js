@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import CONFIG from '../config';
 import CustomPropTypes from '../utilities/props';
 import ROUTES_ORGANIZATIONS from '../routes/Organizations';
 import ROUTES_ROLES from '../routes/Roles';
@@ -13,9 +14,11 @@ class Navbar extends Component {
 
     this.state = {
       collapsed: true,
+      userMenuCollapsed: true,
     };
 
     this.collapseNavBar = this.collapseNavBar.bind(this);
+    this.collapseUserMenu = this.collapseUserMenu.bind(this);
   }
 
   collapseNavBar() {
@@ -28,9 +31,19 @@ class Navbar extends Component {
     });
   }
 
+  collapseUserMenu() {
+    let { userMenuCollapsed } = this.state;
+
+    userMenuCollapsed = !userMenuCollapsed;
+
+    this.setState({
+      userMenuCollapsed,
+    });
+  }
+
   render() {
     const { user, keycloak } = this.props;
-    const { collapsed } = this.state;
+    const { collapsed, userMenuCollapsed } = this.state;
 
     return (
       <div id="navbar">
@@ -69,8 +82,43 @@ class Navbar extends Component {
 
           <ul className="user-control-panel">
             <li>
-              <div className="display-name">
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                className="display-name dropdown-toggle"
+                data-toggle="dropdown"
+                id="navbarDropdown"
+                onClick={this.collapseUserMenu}
+                type="button"
+              >
                 <span>{user.displayName}</span>
+              </button>
+              <div
+                aria-labelledby="navbarDropdown"
+                className={`dropdown-menu ${userMenuCollapsed ? 'd-none' : ''}`}
+              >
+                <div className="dropdown-item">
+                  <button type="button">
+                    <span className="icon">
+                      <FontAwesomeIcon icon="user-cog" />
+                    </span>
+                    <span>Settings</span>
+                  </button>
+                </div>
+                <div className="dropdown-item">
+                  <button
+                    onClick={() => keycloak.logout({
+                      redirectUri: CONFIG.KEYCLOAK.LOGOUT_URL,
+                    })}
+                    type="button"
+                  >
+                    <span className="icon">
+                      <FontAwesomeIcon icon="sign-out-alt" />
+                    </span>
+
+                    <span>Logout</span>
+                  </button>
+                </div>
               </div>
             </li>
             <li>
@@ -90,11 +138,6 @@ class Navbar extends Component {
               >
                 <span><FontAwesomeIcon icon={['far', 'question-circle']} /></span>
               </NavLink>
-            </li>
-            <li>
-              <span className="logout" onClick={() => keycloak.logout()}>
-                <FontAwesomeIcon icon="sign-out-alt" />
-              </span>
             </li>
           </ul>
 

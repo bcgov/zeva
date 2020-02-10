@@ -9,6 +9,7 @@ from api.models.vehicle_change_history import VehicleChangeHistory
 from api.models.vehicle_class import VehicleClass
 from api.models.vehicle_fuel_type import FuelType
 from api.models.vehicle_make import Make
+from api.serializers.user import UserSerializer
 from api.services.vehicle import change_status
 
 
@@ -63,11 +64,12 @@ class VehicleStatusChangeSerializer(ModelSerializer):
 class VehicleHistorySerializer(
         ModelSerializer, EnumSupportSerializerMixin
 ):
+    create_user = UserSerializer(read_only=True)
     validation_status = EnumField(VehicleDefinitionStatuses, read_only=True)
 
     class Meta:
         model = VehicleChangeHistory
-        fields = ('validation_status',)
+        fields = ('create_timestamp', 'create_user', 'validation_status')
 
 
 class VehicleSerializer(

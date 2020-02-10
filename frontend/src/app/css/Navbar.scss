@@ -18,7 +18,7 @@
   .header {
     border-bottom: 2px solid $primary-yellow;
     margin: 0;
-    padding: 0.5rem 0;
+    padding: 0.5rem 1rem;
   }
 
   .logged-in-info {
@@ -40,7 +40,7 @@
     background-color: $default-background-blue;
     display: flex;
     margin: 0;
-    padding: 0 15rem 0 0;
+    padding: 0 16rem 0 1rem;
     position: relative;
   }
 
@@ -101,19 +101,44 @@
     display: flex;
     flex-direction: row;
     list-style-type: none;
-    margin: 0;
+    margin: 0 1rem 0 0;
     padding: 0;
     position: absolute;
     right: 0;
     text-align: right;
     top: 0;
 
-    li * {
+    li > * {
       align-items: center;
       display: flex;
+
+      &.dropdown-menu {
+        display: block;
+
+        button {
+          background-color: transparent;
+          border: none;
+          text-align: left;
+          width: 100%;
+
+          .icon {
+            display: inline-block;
+            text-align: center;
+            width: 3rem;
+          }
+        }
+
+        .dropdown-item {
+          padding-left: 0;
+          padding-right: 0;
+        }
+      }
     }
 
     .display-name {
+      background-color: transparent;
+      border: none;
+      color: $white;
       height: 100%;
       padding: 0.5rem 1rem;
     }
