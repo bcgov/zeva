@@ -1,6 +1,6 @@
 result = 0
 runParallel = true
-zevaRelease="v0.0.7"
+zevaRelease="pipeline-release5"
 
 podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${env.BUILD_NUMBER}", serviceAccount: 'jenkins-prod', cloud: 'openshift',
         containers: [
@@ -55,6 +55,7 @@ podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${e
             openshift.tag("tbiwaq-tools/frontend:${zevaRelease}", 'tbiwaq-dev/frontend:dev')
         }
 
+        prepareDeployments.refreshSchemaspyStage("dev", zevaRelease).call()
 
     }
 }
