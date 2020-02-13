@@ -55,6 +55,7 @@ podTemplate(label: "develop-maven-${env.BUILD_NUMBER}", name: "develop-maven-${e
             openshift.tag("tbiwaq-tools/frontend:${zevaRelease}", 'tbiwaq-dev/frontend:dev')
         }
 ***/
+        def prepareDeployments = load "openshift/pipelines/scripts/prepareDeployments.groovy"
         prepareDeployments.refreshSchemaspyStage("dev", zevaRelease).call()
 
     }
