@@ -9,6 +9,10 @@ parameters:
     displayName: Environment name
     description: 'Valid values: dev, test and prod'
     required: true
+  - name: RELEASE_NUMBER
+    displayName: Database Release Number
+    description: This is same as application release number specified for pipeline.
+    required: true
 objects:
   - kind: DeploymentConfig
     apiVersion: apps.openshift.io/v1
@@ -68,6 +72,8 @@ objects:
                     secretKeyRef:
                       name: zeva-postgresql
                       key: DATABASE_PASSWORD
+                - name: SCHEMASPY_ARGUMENTS
+                  value: -desc zeva-${RELEASE_NUMBER}
               resources:
                 limits:
                   cpu: 1000m
@@ -80,9 +86,9 @@ objects:
                   path: "/"
                   port: 8080
                   scheme: HTTP
-                initialDelaySeconds: 300
+                initialDelaySeconds: 60
                 timeoutSeconds: 5
-                periodSeconds: 20
+                periodSeconds: 10
                 successThreshold: 1
                 failureThreshold: 10
               readinessProbe:
@@ -90,9 +96,9 @@ objects:
                   path: "/"
                   port: 8080
                   scheme: HTTP
-                initialDelaySeconds: 300
+                initialDelaySeconds: 60
                 timeoutSeconds: 5
-                periodSeconds: 20
+                periodSeconds: 10
                 successThreshold: 1
                 failureThreshold: 10
               terminationMessagePath: "/dev/termination-log"
@@ -170,6 +176,8 @@ objects:
                       key: DATABASE_PASSWORD
                 - name: DATABASE_SCHEMA
                   value: zeva_audit
+                - name: SCHEMASPY_ARGUMENTS
+                  value: -desc zeva-${RELEASE_NUMBER}
               resources:
                 requests:
                   cpu: 50m
