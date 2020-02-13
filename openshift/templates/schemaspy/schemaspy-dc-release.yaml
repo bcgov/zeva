@@ -86,9 +86,9 @@ objects:
                   path: "/"
                   port: 8080
                   scheme: HTTP
-                initialDelaySeconds: 300
+                initialDelaySeconds: 60
                 timeoutSeconds: 5
-                periodSeconds: 20
+                periodSeconds: 10
                 successThreshold: 1
                 failureThreshold: 10
               readinessProbe:
@@ -96,9 +96,9 @@ objects:
                   path: "/"
                   port: 8080
                   scheme: HTTP
-                initialDelaySeconds: 300
+                initialDelaySeconds: 60
                 timeoutSeconds: 5
-                periodSeconds: 20
+                periodSeconds: 10
                 successThreshold: 1
                 failureThreshold: 10
               terminationMessagePath: "/dev/termination-log"
@@ -190,9 +190,9 @@ objects:
                   path: "/"
                   port: 8080
                   scheme: HTTP
-                initialDelaySeconds: 90
+                initialDelaySeconds: 60
                 timeoutSeconds: 3
-                periodSeconds: 20
+                periodSeconds: 10
                 successThreshold: 1
                 failureThreshold: 10
               readinessProbe:
@@ -200,9 +200,9 @@ objects:
                   path: "/"
                   port: 8080
                   scheme: HTTP
-                initialDelaySeconds: 90
+                initialDelaySeconds: 60
                 timeoutSeconds: 3
-                periodSeconds: 20
+                periodSeconds: 10
                 successThreshold: 1
                 failureThreshold: 10
               terminationMessagePath: "/dev/termination-log"
@@ -220,3 +220,41 @@ objects:
       updatedReplicas: 0
       availableReplicas: 0
       unavailableReplicas: 0
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: schemaspy-public
+      creationTimestamp:
+      annotations:
+        description: Exposes and load balances the application pods
+    spec:
+      ports:
+        - name: 8080-tcp
+          protocol: TCP
+          port: 8080
+          targetPort: 8080
+      selector:
+        name: schemaspy-public
+      type: ClusterIP
+      sessionAffinity: None
+    status:
+      loadBalancer: {}
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: schemaspy-audit
+      creationTimestamp:
+      annotations:
+        description: Exposes and load balances the application pods
+    spec:
+      ports:
+        - name: 8080-tcp
+          protocol: TCP
+          port: 8080
+          targetPort: 8080
+      selector:
+        name: schemaspy-audit
+      type: ClusterIP
+      sessionAffinity: None
+    status:
+      loadBalancer: {}
