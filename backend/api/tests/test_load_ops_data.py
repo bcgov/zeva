@@ -3,8 +3,8 @@
 import importlib
 import logging
 from collections import namedtuple
-
 from django.test import TestCase
+
 
 class TestLoadOpsData(TestCase):
     """
@@ -40,7 +40,6 @@ class TestLoadOpsData(TestCase):
         ScriptDefinition(
             'api.fixtures.test.0002_add_battery_electric_vehicles'
         ),
-        
     ]
 
     logger = logging.getLogger('zeva.test')
@@ -48,8 +47,12 @@ class TestLoadOpsData(TestCase):
     def testOperationalScripts(self):
         for script in self.scripts:
             if not script.skip:
-                with self.subTest('testing operational script {file}'.format(file=script.file)):
-                    logging.info('loading script: {file}'.format(file=script.file))
+                with self.subTest('testing operational script {file}'.format(
+                        file=script.file
+                )):
+                    logging.info('loading script: {file}'.format(
+                        file=script.file
+                    ))
                     loaded = importlib.import_module(script.file)
                     instance = loaded.script_class(script.file, script.args)
                     instance.check_run_preconditions()
