@@ -43,9 +43,6 @@ class AddOrganizations(OperationalDataScript):
             "name": "Kia Canada Inc.",
             "makes": ["Kia"]
         }, {
-            "name": "Maserati North America Inc.",
-            "makes": ["Maserati"]
-        }, {
             "name": "Mazda Canada Inc.",
             "makes": ["Mazda"]
         }, {
