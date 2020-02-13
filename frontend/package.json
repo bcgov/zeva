@@ -1,6 +1,6 @@
 {
   "name": "zeva-grpc-frontend",
-  "version": "pipeline-release5",
+  "version": "pr5",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.12.0",
