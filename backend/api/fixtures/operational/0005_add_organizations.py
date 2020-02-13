@@ -19,17 +19,11 @@ class AddOrganizations(OperationalDataScript):
     @transaction.atomic
     def run(self):
         list_of_organizations = [{
-            "name": "Aston Martin",
-            "makes": ["Aston Martin"]
-        }, {
             "name": "BMW Canada Inc.",
             "makes": ["BMW"]
         }, {
             "name": "FCA Canada Inc.",
             "makes": ["Chrysler", "Fiat"]
-        }, {
-            "name": "Ferrari",
-            "makes": ["Ferrari"]
         }, {
             "name": "Ford Motor Company of Canada Ltd.",
             "makes": ["Ford"]
@@ -40,35 +34,32 @@ class AddOrganizations(OperationalDataScript):
             "name": "Honda Canada Inc.",
             "makes": ["Honda"]
         }, {
-            "name": "Hyundai Canada Inc.",
+            "name": "Hyundai Auto Canada Corp.",
             "makes": ["Hyundai"]
-        }, {
-            "name": "Isuzu Commercial Truck of Canada Inc.",
-            "makes": ["Isuzu"]
         }, {
             "name": "Jaguar Land Rover Canada ULC",
             "makes": ["Jaguar"]
         }, {
+            "name": "Kia Canada Inc.",
+            "makes": ["Kia"]
+        }, {
+            "name": "Maserati North America Inc.",
+            "makes": ["Maserati"]
+        }, {
             "name": "Mazda Canada Inc.",
             "makes": ["Mazda"]
-        }, {
-            "name": "McLaren Automotive Inc.",
-            "makes": []
         }, {
             "name": "Mercedes-Benz Canada Inc.",
             "makes": ["Mercedes-Benz"]
         }, {
-            "name": "Renault-Nissan-Mitsubishi Alliance",
-            "makes": ["Mitsubishi", "Nissan"]
+            "name": "Mitsubishi Motor Sales of Canada Inc.",
+            "makes": ["Mitsubishi"]
         }, {
-            "name": "Renault-Nissan-Mitsubishi Alliance",
-            "makes": ["Mitsubishi", "Nissan"]
+            "name": "Nissan Canada Inc.",
+            "makes": ["Nissan"]
         }, {
-            "name": "Pagani",
-            "makes": []
-        }, {
-            "name": "PSA",
-            "makes": []
+            "name": "Porsche Cars Canada, Ltd.",
+            "makes": ["Porsche"]
         }, {
             "name": "Subaru Canada Inc.",
             "makes": ["Subaru"]
@@ -76,14 +67,14 @@ class AddOrganizations(OperationalDataScript):
             "name": "Suzuki",
             "makes": ["Suzuki"]
         }, {
-            "name": "Tesla Canada GP Inc.",
+            "name": "Tesla Motors Canada ULC",
             "makes": ["Tesla"]
         }, {
             "name": "Toyota Canada Inc.",
             "makes": ["Toyota"]
         }, {
             "name": "Volkswagen Group Canada Inc.",
-            "makes": ["Porsche", "Volkswageen"]
+            "makes": ["Volkswagen"]
         }, {
             "name": "Volvo Car Canada Ltd.",
             "makes": ["Volvo"]
