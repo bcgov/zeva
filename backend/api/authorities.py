@@ -110,3 +110,14 @@ REQUIRED_AUTHORITIES = [
     Authority('BCeID', 'Manage ZEV', 'Edit ZEV', 'can edit ZEV model information'),
     Authority('BCeID', 'Manage ZEV', 'Delete ZEV', 'can hide/disable ZEV models'),
 ]
+
+
+def roles_in_group(group_names: []):
+    matched_roles = []
+
+    for group in group_names:
+        for authority in REQUIRED_AUTHORITIES:
+            if authority.group == group:
+                matched_roles.append(authority.role)
+
+    return list(set(matched_roles))

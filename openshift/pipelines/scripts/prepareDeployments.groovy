@@ -109,4 +109,29 @@ def envoyDeployStage (String envName) {
     }
 }
 
+def refreshSchemaspyStage(String envName, String releaseNumber) {
+    return {
+        stage('Refresh SchemaSpy') {
+            timeout(30) {
+                script {
+                    def projectName
+                    def ENV_NAME
+                    if (envName == 'dev') {
+                        ENV_NAME = 'dev'
+                        projectName = 'tbiwaq-dev'
+                    }
+                    openshift.withProject("${projectName}") {
+                        def schemaspyDCYaml = openshift.process(readFile(file: 'openshift/templates/schemaspy/schemaspy-dc-release.yaml'),
+                                "-p",
+                                "ENV_NAME=${ENV_NAME}",
+                                "RELEASE_NUMBER=${releaseNumber}"
+                        )
+                        openshift.apply(schemaspyDCYaml)
+                    }
+                }
+            }
+        }
+    }
+}
+
 return this
