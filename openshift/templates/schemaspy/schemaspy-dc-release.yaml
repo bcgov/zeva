@@ -264,10 +264,28 @@ objects:
       name: schemaspy-public
       creationTimestamp:
     spec:
-      host: "${ENV_NAME}-zeva-schemaspy-public.pathfinder.gov.bc.ca"
+      host: ${ENV_NAME}-zeva-schemaspy-public.pathfinder.gov.bc.ca
       to:
         kind: Service
         name: schemaspy-public
+        weight: 100
+      port:
+        targetPort: 8080-tcp
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Allow
+      wildcardPolicy: None
+    status:
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: schemaspy-audit
+      creationTimestamp:
+    spec:
+      host: ${ENV_NAME}-zeva-schemaspy-audit.pathfinder.gov.bc.ca
+      to:
+        kind: Service
+        name: schemaspy-audit
         weight: 100
       port:
         targetPort: 8080-tcp

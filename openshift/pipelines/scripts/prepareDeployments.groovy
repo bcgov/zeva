@@ -117,6 +117,7 @@ def refreshSchemaspyStage(String envName, String releaseNumber) {
                     def projectName
                     def ENV_NAME
                     if (envName == 'dev') {
+                        ENV_NAME = 'dev'
                         projectName = 'tbiwaq-dev'
                     }
                     openshift.withProject("${projectName}") {
