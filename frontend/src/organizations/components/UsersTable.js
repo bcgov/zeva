@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-
+import history from '../../app/History';
 import ReactTable from 'react-table';
 
 const UsersTable = (props) => {
@@ -45,6 +45,19 @@ const UsersTable = (props) => {
         id: 'displayName',
       }]}
       filterable={filterable}
+      getTrProps={(state, row) => {
+        if (row && row.original) {
+          return {
+            onClick: () => {
+              const { id } = row.original;
+              history.push(`/users/${id}`);
+            },
+            className: 'clickable',
+          };
+        }
+
+        return {};
+      }}
       pageSizeOptions={[5, 10, 15, 20, 25, 50, 100]}
     />
   );
