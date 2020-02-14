@@ -264,7 +264,7 @@ objects:
       name: schemaspy-public
       creationTimestamp:
     spec:
-      host: ${ENV_NAME}-zeva-schemaspy-public.pathfinder.gov.bc.ca
+      host: "${ENV_NAME}-zeva-schemaspy-public.pathfinder.gov.bc.ca"
       to:
         kind: Service
         name: schemaspy-public
