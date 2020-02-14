@@ -14,6 +14,7 @@ import OrganizationDetailsContainer from '../organizations/OrganizationDetailsCo
 import OrganizationListContainer from '../organizations/OrganizationListContainer';
 import SalesDetailsContainer from '../sales/SalesDetailsContainer';
 import SalesListContainer from '../sales/SalesListContainer';
+import StatusInterceptor from './components/StatusInterceptor';
 import ROUTES_ORGANIZATIONS from './routes/Organizations';
 import ROUTES_ROLES from './routes/Roles';
 import ROUTES_SALES from './routes/Sales';
@@ -30,6 +31,7 @@ class Router extends Component {
     super(props);
 
     this.state = {
+      errors: false,
       loading: true,
       user: {},
     };
@@ -70,15 +72,26 @@ class Router extends Component {
           ...response.data,
         },
       });
+    }).catch((error) => {
+      this.setState({
+        loading: false,
+        errors: {
+          statusCode: error.response.status,
+        },
+      });
     });
   }
 
   render() {
     const { keycloak } = this.props;
-    const { loading, user } = this.state;
+    const { errors, loading, user } = this.state;
 
     if (loading) {
       return <Loading />;
+    }
+
+    if (errors) {
+      return <StatusInterceptor statusCode={errors.statusCode} />;
     }
 
     return (
@@ -135,6 +148,12 @@ class Router extends Component {
               exact
               path="/"
               render={() => <DashboardContainer user={user} />}
+            />
+            <Route
+              path="/"
+              render={() => (
+                <StatusInterceptor statusCode={404} />
+              )}
             />
           </Switch>
         </PageLayout>

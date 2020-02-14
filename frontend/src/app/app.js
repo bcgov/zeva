@@ -5,6 +5,7 @@ import Loading from './components/Loading';
 import CONFIG from './config';
 import Login from './Login';
 import Router from './router';
+import StatusInterceptor from './components/StatusInterceptor';
 
 import 'react-table/react-table.css';
 
@@ -14,6 +15,7 @@ class App extends Component {
 
     this.state = {
       authenticated: false,
+      errorsOccurred: false,
       keycloak: null,
     };
 
@@ -40,6 +42,10 @@ class App extends Component {
     });
   }
 
+  componentDidCatch() {
+    this.setState({ errorsOccurred: true });
+  }
+
   logout() {
     this.setState({
       authenticated: false,
@@ -47,7 +53,11 @@ class App extends Component {
   }
 
   render() {
-    const { authenticated, keycloak } = this.state;
+    const { authenticated, errorsOccurred, keycloak } = this.state;
+
+    if (errorsOccurred) {
+      return <StatusInterceptor />;
+    }
 
     if (!keycloak) {
       return <Loading />;
