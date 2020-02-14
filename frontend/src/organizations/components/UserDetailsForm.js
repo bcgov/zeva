@@ -6,7 +6,12 @@ import Loading from '../../app/components/Loading';
 import history from '../../app/History';
 
 const UserDetailsForm = (props) => {
-  const { details, loading, user, keycloak } = props;
+  const {
+    details,
+    loading,
+    user,
+    keycloak
+  } = props;
   const handleSubmit = () => {
     console.log('Submit!');
   };
@@ -16,8 +21,8 @@ const UserDetailsForm = (props) => {
   if (loading) {
     return <Loading />;
   }
-  const keycloakRoles = keycloak.realmAccess.roles 
-  console.log(keycloakRoles)
+  const keycloakRoles = keycloak.realmAccess.roles;
+  console.log(keycloakRoles);
 
   return (
     <div id="user-form" className="page">
@@ -85,9 +90,9 @@ const UserDetailsForm = (props) => {
                       Status
                     </label>
                     <div className="col-sm-10">
-                      <input type="radio" id="active" name="active-bool-idir" value="active" defaultChecked={details.isActive? true : false} />
+                      <input type="radio" id="active" name="active-bool-idir" value="active" defaultChecked={details.isActive} />
                       Active, user can log in to ZERO<br />
-                      <input type="radio" id="inactive" name="active-bool-idir" value="inactive" defaultChecked={details.isActive? false : true} />
+                      <input type="radio" id="inactive" name="active-bool-idir" value="inactive" defaultChecked={!details.isActive} />
                       Inactive, user cannot log in to ZERO
                     </div>
 
