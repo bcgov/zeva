@@ -79,7 +79,7 @@ parameters:
   value: tbiwaq-tools
 - name: SOURCE_IMAGE_STREAM_TAG
   required: true
-  value: "tbiwaq-tools:jenkins-slave-main:jenkins-slave-python3nodejs-20200218"
+  value: "jenkins-slave-main:jenkins-slave-python3nodejs-20200218"
 - name: SOURCE_GIT_URL
   required: true
   value: https://github.com/bcgov/zeva.git
