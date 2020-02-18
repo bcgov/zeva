@@ -32,7 +32,7 @@ class Router extends Component {
     super(props);
 
     this.state = {
-      errors: false,
+      getUserError: false,
       loading: true,
       user: {},
     };
@@ -76,7 +76,7 @@ class Router extends Component {
     }).catch((error) => {
       this.setState({
         loading: false,
-        errors: {
+        getUserError: {
           statusCode: error.response.status,
         },
       });
@@ -85,14 +85,14 @@ class Router extends Component {
 
   render() {
     const { keycloak } = this.props;
-    const { errors, loading, user } = this.state;
+    const { getUserError, loading, user } = this.state;
 
     if (loading) {
       return <Loading />;
     }
 
-    if (errors) {
-      return <StatusInterceptor statusCode={errors.statusCode} />;
+    if (getUserError) {
+      return <StatusInterceptor statusCode={getUserError.statusCode} />;
     }
 
     return (
