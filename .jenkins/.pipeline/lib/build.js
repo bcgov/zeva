@@ -11,16 +11,6 @@ module.exports = (settings)=>{
 
   const templatesLocalBaseUrl =oc.toFileUrl(path.resolve(__dirname, '../../openshift'))
 
-  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/build-master.yaml`, {
-    'param':{
-      'NAME': phases[phase].name,
-      'SUFFIX': phases[phase].suffix,
-      'VERSION': phases[phase].tag,
-      'SOURCE_REPOSITORY_URL': oc.git.http_url,
-      'SOURCE_REPOSITORY_REF': oc.git.ref
-    }
-  }));
-
   objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/build-slave.yaml`, {
     'param':{
       'NAME': phases[phase].name,
@@ -29,6 +19,16 @@ module.exports = (settings)=>{
       'SOURCE_IMAGE_STREAM_NAMESPACE': 'tbiwaq-tools',
       'SOURCE_IMAGE_STREAM_TAG': `jenkins-slave-main:jenkins-slave-python3nodejs-20200218`,
       'SLAVE_NAME':'main'
+    }
+  }));
+
+  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/build-master.yaml`, {
+    'param':{
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix,
+      'VERSION': phases[phase].tag,
+      'SOURCE_REPOSITORY_URL': oc.git.http_url,
+      'SOURCE_REPOSITORY_REF': oc.git.ref
     }
   }));
 
