@@ -17,7 +17,7 @@ module.exports = (settings)=>{
       'SUFFIX': phases[phase].suffix,
       'VERSION': phases[phase].tag,
       'SOURCE_IMAGE_STREAM_NAMESPACE': 'tbiwaq-tools',
-      'SOURCE_IMAGE_STREAM_TAG': `jenkins-slave-main:jenkins-slave-python3nodejs-20200218`,
+      'SOURCE_IMAGE_STREAM_TAG': 'jenkins-slave-main:jenkins-slave-python3nodejs-20200218',
       'SLAVE_NAME':'main'
     }
   }));
