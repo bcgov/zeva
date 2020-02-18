@@ -57,17 +57,17 @@ class ClientLoggingMetaclass(type):
                     '\n--------\n'
                     'network exchange details:\n'
                     '--------\n'
-                    '{} request for {}\n'
-                    'response status {}\n'
-                    '--request payload--\n{}\n'
-                    '--response body--\n{}\n'
-                    '--------\n'.format(
-                        str(name).upper(),
-                        args[path_param[0]] if path_param is not None else 'N/A',
-                        results.status_code,
-                        data,
-                        results.content.decode('utf-8')
-                        ))
+                    '{method} request for {url}\n'
+                    'response status {status}\n'
+                    '--request payload--\n{req}\n'
+                    '--response body--\n{res}\n'
+                    '---------\n'.format(
+                        method=str(name).upper(),
+                        url=args[path_param[0]] if path_param is not None else 'N/A',
+                        status=results.status_code,
+                        req=data,
+                        res=results.content.decode('utf-8'),
+                    ))
             except UnicodeError:
                 logger.error(
                     'Error when trying to decode.'

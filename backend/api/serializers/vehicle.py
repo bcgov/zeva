@@ -1,3 +1,4 @@
+from django.core.exceptions import PermissionDenied
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from rest_framework.serializers import ModelSerializer, \
     SerializerMethodField, SlugRelatedField
@@ -47,6 +48,23 @@ class VehicleClassSerializer(ModelSerializer):
 
 class VehicleStatusChangeSerializer(ModelSerializer):
     validation_status = EnumField(VehicleDefinitionStatuses)
+
+    def validate_validation_status(self, value):
+        request = self.context.get('request')
+
+        if value == VehicleDefinitionStatuses.SUBMITTED and \
+                not request.user.has_role('Submit ZEV'):
+            raise PermissionDenied(
+                "You do not have the permission to submit this vehicle."
+            )
+
+        if value == VehicleDefinitionStatuses.VALIDATED and \
+                not request.user.has_role('Validate ZEV'):
+            raise PermissionDenied(
+                "You do not have the permission to validate this vehicle."
+            )
+
+        return value
 
     def update(self, instance, validated_data):
         change_status(
