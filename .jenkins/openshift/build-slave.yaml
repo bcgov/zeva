@@ -46,6 +46,7 @@ objects:
           kind: ImageStreamTag
           name: ${SOURCE_IMAGE_STREAM_TAG}
           namespace: ${SOURCE_IMAGE_STREAM_NAMESPACE}
+        dockerfilePath: Dockerfile-slave
       type: Docker
     successfulBuildsHistoryLimit: 2
     triggers:
