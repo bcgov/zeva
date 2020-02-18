@@ -85,7 +85,7 @@ parameters:
   value: https://github.com/bcgov/zeva.git
 - name: SOURCE_GIT_REF
   required: true
-  value: master
+  value: pipeline-jenkins
 - name: SOURCE_CONTEXT_DIR
   required: true
   value: .jenkins/docker-slave
