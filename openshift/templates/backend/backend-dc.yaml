@@ -10,7 +10,7 @@ parameters:
     required: true
   - name: SUFFIX
     displayName: null
-    description: sample is -pr-0
+    description: sample is -dev-97
     required: true
   - name: VERSION
     displayName: null
@@ -38,6 +38,13 @@ parameters:
     description: Memory upper limit
     required: true
 objects:
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: ${NAME}-django-${SUFFIX}
+      labels: {}
+    stringData:
+       DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY}"
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
@@ -163,82 +170,82 @@ objects:
                 - name: DATABASE_USER
                   valueFrom:
                     secretKeyRef:
-                      name: zeva-postgresql
+                      name: ${NAME}-postgresql${SUFFIX}
                       key: DATABASE_USER
                 - name: DATABASE_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: zeva-postgresql
+                      name: ${NAME}-postgresql${SUFFIX}
                       key: DATABASE_PASSWORD
                 - name: DATABASE_ENGINE
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: database_engine
                 - name: DATABASE_SERVICE_NAME
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: database_service_name
                 - name: POSTGRESQL_SERVICE_HOST
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: postgresql_service_host
                 - name: POSTGRESQL_SERVICE_PORT
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: postgresql_service_port
                 - name: KEYCLOAK_CERTS_URL
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_certs_url
                 - name: KEYCLOAK_REALM
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_realm
                 - name: KEYCLOAK_REALM_URL
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_realm_url
                 - name: KEYCLOAK_AUTHORITY
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_authority
                 - name: KEYCLOAK_ISSUER
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_issuer
                 - name: KEYCLOAK_AUDIENCE
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_audience
                 - name: KEYCLOAK_CLIENT_ID
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_client_id
                 - name: KEYCLOAK_SA_BASEURL
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_sa_baseurl
                 - name: KEYCLOAK_SA_REALM
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_sa_realm
                 - name: KEYCLOAK_SA_CLIENT_ID
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_sa_client_id
                 - name: KEYCLOAK_SA_CLIENT_SECRET
                   valueFrom:
@@ -248,22 +255,22 @@ objects:
                 - name: DJANGO_DEBUG
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: django_debug
                 - name: DJANGO_SECRET_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: zeva-django-secret-key
+                      name: ${NAME}-django-${SUFFIX}
                       key: DJANGO_SECRET_KEY
                 - name: RABBITMQ_VHOST
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: rabbitmq_vhost
                 - name: RABBITMQ_USER
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: rabbitmq_user
                 - name: RABBITMQ_PASSWORD
                   valueFrom:
@@ -273,32 +280,32 @@ objects:
                 - name: RABBITMQ_HOST
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: rabbitmq_host
                 - name: RABBITMQ_PORT
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: rabbitmq_port
                 - name: SMTP_SERVER_HOST
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: smtp_server_host
                 - name: SMTP_SERVER_PORT
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: smtp_server_port
                 - name: EMAIL_SENDING_ENABLED
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: email_sending_enabled
                 - name: EMAIL_FROM_ADDRESS
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: email_from_address
                 - name: APP_CONFIG
                   value: /opt/app-root/src/gunicorn.cfg

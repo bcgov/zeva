@@ -13,7 +13,7 @@ parameters:
     required: true
   - name: SUFFIX
     displayName:
-    description: sample is -pr-0
+    description: sample is -dev-97
     required: true
   - name: VERSION
     displayName:
@@ -58,10 +58,6 @@ objects:
   - apiVersion: v1
     kind: Secret
     metadata:
-      annotations:
-        template.openshift.io/expose-database_name: "{.data['database-name']}"
-        template.openshift.io/expose-password: "{.data['database-password']}"
-        template.openshift.io/expose-username: "{.data['database-user']}"
       name: ${NAME}-postgresql${SUFFIX}
       labels: {}
     stringData:
