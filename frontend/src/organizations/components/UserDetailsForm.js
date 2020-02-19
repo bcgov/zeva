@@ -91,7 +91,7 @@ const UserDetailsForm = (props) => {
                 />
               </span>
               <span className="col-xs-4">
-                {!user.isGovernment && (
+                {user.isGovernment && (
                   <div className="form-group">
                     <label
                       className="col-sm-4 col-form-label"
