@@ -92,7 +92,7 @@ objects:
       app: zeva
       role: frontend
       env: ${ENV_NAME}
-    name: ${NAME}-sockjs-node{SUFFIX}
+    name: ${NAME}-sockjs-node${SUFFIX}
   spec:
     host: ${NAME}${SUFFIX}.pathfinder.gov.bc.ca
     path: /sockjs-node
