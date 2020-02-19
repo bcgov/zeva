@@ -29,7 +29,6 @@ module.exports = settings => {
     }
   }))
 
-/*
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/backend/backend-dc.yaml`, {
     'param':{
       'NAME': phases[phase].name,
@@ -55,7 +54,7 @@ module.exports = settings => {
       'MEMORY_LIMIT': '500M'
     }
   }))
-*/
+
   oc.applyRecommendedLabels(
     objects,
     phases[phase].name,
