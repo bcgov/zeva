@@ -21,11 +21,6 @@ parameters:
     displayName: Environment name
     description: Environment name, dev, test and prod
     required: true
-  - name: DASH_ENV_NAME
-    value: -dev
-    displayName: Environment name
-    description: Environment name, -dev, -test and empty for prod
-    required: true
   - name: CPU_REQUEST
     displayName: Requested CPU
     description: Requested CPU
@@ -41,14 +36,6 @@ parameters:
   - name: MEMORY_LIMIT
     displayName: Memory upper limit
     description: Memory upper limit
-    required: true
-  - name: POSTGRESQL_USER
-    displayName: Postgresql database user
-    description: Postgresql database user
-    required: true
-  - name: POSTGRESQL_PASSWORD
-    displayName: Postgresql database password
-    description: Postgresql database password
     required: true
 objects:
 - apiVersion: image.openshift.io/v1
@@ -67,7 +54,7 @@ objects:
   kind: Service
   metadata:
     creationTimestamp: null
-    name: backend
+    name: ${NAME}-backend{SUFFIX}
     labels:
       name: backend
       app: zeva
@@ -85,6 +72,50 @@ objects:
     type: ClusterIP
   status:
     loadBalancer: {}
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      name: backend
+      app: zeva
+      role: backend
+      env: ${ENV_NAME}
+    name: ${NAME}-backend-api${SUFFIX}
+  spec:
+    host: ${ENV_NAME}{SUFFIX}.pathfinder.gov.bc.ca
+    path: /api
+    port:
+      targetPort: backend
+    tls:
+      termination: edge
+    to:
+      kind: Service
+      name: ${NAME}-backend{SUFFIX}
+      weight: 100
+    wildcardPolicy: None
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      name: backend
+      app: zeva
+      role: backend
+      env: ${ENV_NAME}
+    name: ${NAME}-backend-health${SUFFIX}
+  spec:
+    host: ${ENV_NAME}${SUFFIX}.pathfinder.gov.bc.ca
+    path: /health
+    port:
+      targetPort: backend
+    tls:
+      termination: edge
+    to:
+      kind: Service
+      name: ${NAME}-backend{SUFFIX}
+      weight: 100
+    wildcardPolicy: None
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
   metadata:
@@ -123,56 +154,186 @@ objects:
           name: ${NAME}-backend${SUFFIX}
       spec:
         containers:
-        - env:
-            - name: DATABASE_URL
-              value: "postgresql://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgresql.tbiwaq-${ENV_NAME}.svc.cluster.local/zeva"
-            - name: KEYCLOAK_CERTS_URL
-              value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq/protocol/openid-connect/certs"
-            - name: KEYCLOAK_REALM
-              value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
-            - name: KEYCLOAK_AUTHORITY
-              value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
-            - name: KEYCLOAK_ISSUER
-              value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
-            - name: KEYCLOAK_AUDIENCE
-              value: 'rzh2zkjq'
-            - name: KEYCLOAK_CLIENT_ID
-              value: 'rzh2zkjq'
-          image:
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /health
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 3
-          name: backend
-          ports:
-          - containerPort: 8080
-            protocol: TCP
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /health
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 3
-          resources:
-            limits:
-              cpu: ${CPU_LIMIT}
-              memory: ${MEMORY_LIMIT}
-            requests:
-              cpu: ${CPU_REQUEST}
-              memory: ${MEMORY_REQUEST}
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
+          - name: backend
+            image:
+            imagePullPolicy: IfNotPresent
+            env:
+              - name: DATABASE_NAME
+                value: zeva
+              - name: DATABASE_USER
+                valueFrom:
+                  secretKeyRef:
+                    name: zeva-postgresql
+                    key: DATABASE_USER
+              - name: DATABASE_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: zeva-postgresql
+                    key: DATABASE_PASSWORD
+              - name: DATABASE_ENGINE
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: database_engine
+              - name: DATABASE_SERVICE_NAME
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: database_service_name
+              - name: POSTGRESQL_SERVICE_HOST
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: postgresql_service_host
+              - name: POSTGRESQL_SERVICE_PORT
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: postgresql_service_port
+              - name: KEYCLOAK_CERTS_URL
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_certs_url
+              - name: KEYCLOAK_REALM
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_realm
+              - name: KEYCLOAK_REALM_URL
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_realm_url
+              - name: KEYCLOAK_AUTHORITY
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_authority
+              - name: KEYCLOAK_ISSUER
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_issuer
+              - name: KEYCLOAK_AUDIENCE
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_audience
+              - name: KEYCLOAK_CLIENT_ID
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_client_id
+              - name: KEYCLOAK_SA_BASEURL
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_sa_baseurl
+              - name: KEYCLOAK_SA_REALM
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_sa_realm
+              - name: KEYCLOAK_SA_CLIENT_ID
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_sa_client_id
+              - name: KEYCLOAK_SA_CLIENT_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: zeva-keycloak
+                    key: KEYCLOAK_SA_CLIENT_SECRET
+              - name: DJANGO_DEBUG
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: django_debug
+              - name: DJANGO_SECRET_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: zeva-django-secret-key
+                    key: DJANGO_SECRET_KEY
+              - name: RABBITMQ_VHOST
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: rabbitmq_vhost
+              - name: RABBITMQ_USER
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: rabbitmq_user
+              - name: RABBITMQ_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: zeva-rabbitmq
+                    key: ZEVA_PASSWORD
+              - name: RABBITMQ_HOST
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: rabbitmq_host
+              - name: RABBITMQ_PORT
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: rabbitmq_port
+              - name: SMTP_SERVER_HOST
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: smtp_server_host
+              - name: SMTP_SERVER_PORT
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: smtp_server_port
+              - name: EMAIL_SENDING_ENABLED
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: email_sending_enabled
+              - name: EMAIL_FROM_ADDRESS
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: email_from_address
+              - name: APP_CONFIG
+                value: /opt/app-root/src/gunicorn.cfg
+            livenessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /health
+                port: 8080
+                scheme: HTTP
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 3
+            ports:
+            - containerPort: 8080
+              protocol: TCP
+            readinessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /health
+                port: 8080
+                scheme: HTTP
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 3
+            resources:
+              limits:
+                cpu: ${CPU_LIMIT}
+                memory: ${MEMORY_LIMIT}
+              requests:
+                cpu: ${CPU_REQUEST}
+                memory: ${MEMORY_REQUEST}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         schedulerName: default-scheduler
