@@ -57,32 +57,6 @@ objects:
       local: false
   status:
     dockerImageRepository: ""
-- apiVersion: v1
-  kind: Service
-  metadata:
-    creationTimestamp: null
-    name: ${NAME}-frontend${SUFFIX}
-    labels:
-      name: frontend
-      app: zeva
-      role: frontend
-      env: ${ENV_NAME}
-  spec:
-    ports:
-    - name: web
-      port: 5001
-      protocol: TCP
-      targetPort: 5001
-    - name: websocket-notifications
-      port: 5002
-      protocol: TCP
-      targetPort: 5002
-    selector:
-      name: ${NAME}-frontend${SUFFIX}
-    sessionAffinity: None
-    type: ClusterIP
-  status:
-    loadBalancer: {}
 - apiVersion: route.openshift.io/v1
   kind: Route
   metadata:
