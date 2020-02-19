@@ -41,7 +41,7 @@ objects:
       apibase: https://${NAME}-backend${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local:8080/api/
       database_engine: postgresql
       database_name: zeva
-      database_service_name: ${NAME}postgresql${SUFFIX}
+      database_service_name: ${NAME}-postgresql${SUFFIX}
       django_debug: 'False'
       email_from_address: donotreply@gov.bc.ca
       email_sending_enabled: 'False'
@@ -57,10 +57,10 @@ objects:
       keycloak_sa_client_id: zeva-django-sa
       keycloak_sa_realm: ${KEYCLOAK_REALM}
       keycloak_url: https://${SSO_NAME}.pathfinder.gov.bc.ca/auth
-      postgresql_service_host: ${NAME}postgresql${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local
+      postgresql_service_host: ${NAME}-postgresql${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local
       postgresql_service_port: '5432'
       rabbitmq_enabled: 'False'
-      rabbitmq_host: ${NAME}rabbitmq${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local
+      rabbitmq_host: ${NAME}-rabbitmq${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local
       rabbitmq_port: '5672'
       rabbitmq_user: zeva
       rabbitmq_vhost: /zeva
