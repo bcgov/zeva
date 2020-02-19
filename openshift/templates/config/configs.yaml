@@ -60,7 +60,7 @@ objects:
       postgresql_service_host: ${NAME}-postgresql${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local
       postgresql_service_port: '5432'
       rabbitmq_enabled: 'False'
-      rabbitmq_host: ${NAME}-rabbitmq${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local
+      rabbitmq_host: rabbitmq.tbiwaq-${ENV_NAME}.svc.cluster.local
       rabbitmq_port: '5672'
       rabbitmq_user: zeva
       rabbitmq_vhost: /zeva
