@@ -12,9 +12,23 @@ import UserDetailsForm from './components/UserDetailsForm';
 const UserDetailsContainer = (props) => {
   const [userToView, setUserView] = useState({});
   const [loading, setLoading] = useState(true);
+
   const { id } = useParams();
 
   const { keycloak, user } = props;
+
+  const handleInputChange = (event) => {
+    const { value, name } = event.target;
+    setUserView({
+      ...userToView,
+      [name]: value,
+    });
+  };
+
+
+  const handleSubmit = () => {
+    console.log('Submit!');
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -32,6 +46,8 @@ const UserDetailsContainer = (props) => {
         details={userToView}
         user={user}
         keycloak={keycloak}
+        handleInputChange={handleInputChange}
+        handleSubmit={handleSubmit}
       />
       )}
     </div>

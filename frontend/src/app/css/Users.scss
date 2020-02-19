@@ -1,20 +1,12 @@
 #user-form {
+    .row {
+      padding: 1rem;
+    }
+
     fieldset {
         border: 1px solid $default-text-black;
         padding-top: 1rem;
-        .form-layout {
-            display: flex;
-            flex-direction: row;
-           
-        
-            }
-            .right-form {
-               width: 40%;
-            }
-            .left-form {
-                width:60%;
-                align-self: flex-start;
-            }
+
       legend {
         color: $default-text-blue;
         font-size: 1.25rem;
@@ -27,9 +19,8 @@
   
       .form-group {
         border: 1px solid $default-background-grey;
-        margin: 1rem;
+        margin: .5rem;
         padding: 1rem;
-        white-space: nowrap;
   
         &:first-child {
           margin-top: 0;
@@ -38,21 +29,32 @@
         &.action-bar {
           margin-top: 2rem;
         }
+        &.row {
+          &.error{
+            background-color: #fff2f2;
+        }
+      }
+
+      }
+      .form-text {
+        white-space: normal;
       }
     }
 
     input[type=text], select {
       border: 2px solid $default-text-black;
-      margin-left:5rem;
-      width: 80%;
+      margin-left:2rem;
+      width: 90%;
+      &.error {
+        border: 2px solid red
+      }
     }
     input[type=radio], input[type=checkbox] {
-        margin-right: 1rem;
-      }
+        margin-right: 1rem;        
+    }
     label {
       color: $default-text-blue;
       font-weight: bold;
-      white-space: nowrap;
     }
 
     .delete-button {
@@ -61,4 +63,6 @@
         color: red;
         padding: 0 1rem 0 1rem;
     }
+
+    
   }

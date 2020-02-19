@@ -6,37 +6,34 @@ import Loading from '../../app/components/Loading';
 import history from '../../app/History';
 
 const UserDetailsForm = (props) => {
+
   const {
     details,
     loading,
     user,
-    keycloak
+    keycloak,
+    handleInputChange,
+    handleSubmit,
   } = props;
-  const handleSubmit = () => {
-    console.log('Submit!');
-  };
-  const handleInputChange = () => {
-    console.log('change input');
-  };
+
   if (loading) {
     return <Loading />;
   }
   const keycloakRoles = keycloak.realmAccess.roles;
-  console.log(keycloakRoles);
 
   return (
     <div id="user-form" className="page">
       <div className="row">
         <div className="col-md-12">
           <h1>{details.organization.name} User Management</h1>
-          <h4>New/Edit User</h4>
+          <h5>New/Edit User</h5>
         </div>
       </div>
       <form onSubmit={(event) => handleSubmit(event)}>
         <div className="row align-items-center">
           <fieldset>
-            <div className="form-layout">
-              <span className="left-form">
+            <div className="form-layout row">
+              <span className="col-xs-8">
                 <UserDetailsTextInput
                   label="First Name"
                   id="firstName"
@@ -62,12 +59,14 @@ const UserDetailsForm = (props) => {
                   handleInputChange={handleInputChange}
                 />
                 <UserDetailsTextInput
+                  details="the email associated with the BCeID account"
                   label="BCeID Email"
                   id="BCeIDEmail"
                   defaultValue={details.email}
                   handleInputChange={handleInputChange}
                 />
                 <UserDetailsTextInput
+                  details="the email used to receive notifications, if different from above"
                   label="Notifications Email"
                   id="notificationsEmail"
                   defaultValue=""
@@ -80,16 +79,16 @@ const UserDetailsForm = (props) => {
                   handleInputChange={handleInputChange}
                 />
               </span>
-              <span className="right-form">
+              <span className="col-xs-4">
                 {!user.isGovernment && (
                   <div className="form-group">
                     <label
-                      className="col-sm-2 col-form-label"
+                      className="col-sm-4 col-form-label"
                       htmlFor="statusRadio"
                     >
                       Status
                     </label>
-                    <div className="col-sm-10">
+                    <div className="col-sm-8">
                       <input type="radio" id="active" name="active-bool-idir" value="active" defaultChecked={details.isActive} />
                       Active, user can log in to ZERO<br />
                       <input type="radio" id="inactive" name="active-bool-idir" value="inactive" defaultChecked={!details.isActive} />
@@ -100,15 +99,15 @@ const UserDetailsForm = (props) => {
                 )}
                 <div className="form-group">
                   <label
-                    className="col-sm-2 col-form-label"
+                    className="col-sm-4 col-form-label"
                     htmlFor="rolesRadio"
                   >
                       Roles
                   </label>
-                  <div className="col-sm-10">
+                  <div className="col-sm-8">
                     <input type="checkbox" id="guest" name="roles-manager" value="guest" />Guest <FontAwesomeIcon icon="info-circle" /><br />
                     <input type="checkbox" id="creditTransfer" name="roles-manager" value="creditTransfer" />Credit Transfer <FontAwesomeIcon icon="info-circle" /><br />
-                    <input type="checkbox" id="initiativeAgreements" name="roles-manager" value="initiativeAgreements" />Initiative Agreements <FontAwesomeIcon icon="info-circle" /><br />
+                    <input type="checkbox" id="initiative Agreements" name="roles-manager" value="initiativeAgreements" />Initiative Agreements <FontAwesomeIcon icon="info-circle" /><br />
                     <input type="checkbox" id="complianceReporting" name="roles-manager" value="complianceReporting" />Compliance Reporting <FontAwesomeIcon icon="info-circle" /><br />
                     <input type="checkbox" id="signingAuthority" name="roles-manager" value="signingAuthority" />Signing Authority <FontAwesomeIcon icon="info-circle" /><br />
                     <input type="checkbox" id="managingUser" name="roles-manager" value="managingUser" />Managing User <FontAwesomeIcon icon="info-circle" /><br />
@@ -132,7 +131,7 @@ const UserDetailsForm = (props) => {
               </span>
 
               <span className="right-content">
-                <button className="button primary" type="submit">
+                <button className="button primary" type="button" onClick={handleSubmit}>
                   <FontAwesomeIcon icon="save" /> Save
                 </button>
               </span>
