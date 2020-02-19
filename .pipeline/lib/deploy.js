@@ -14,6 +14,18 @@ module.exports = settings => {
 
   // The deployment of your cool app goes here ▼▼▼
 
+  // create configs
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/configs/configs.yaml`, {
+    'param':{
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix,
+      'VERSION': phases[phase].tag,
+      'ENV_NAME': phases[phase].phase,
+      'SSO_NAME': 'sso-dev',
+      'KEYCLOAK_REALM': 'rzh2zkjq'
+    }
+  }))
+
   // deploy frontend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-dc.yaml`, {
     'param':{
