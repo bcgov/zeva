@@ -92,6 +92,29 @@ objects:
         app: zeva
         role: frontend
         env: ${ENV_NAME}
+      name: ${NAME}-sockjs-node${SUFFIX}
+    spec:
+      host: ${NAME}${SUFFIX}.pathfinder.gov.bc.ca
+      path: /sockjs-node
+      port:
+        targetPort: web
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      to:
+        kind: Service
+        name: ${NAME}-frontend${SUFFIX}
+        weight: 100
+      wildcardPolicy: None
+  - apiVersion: route.openshift.io/v1
+    kind: Route
+    metadata:
+      creationTimestamp: null
+      labels:
+        name: frontend
+        app: zeva
+        role: frontend
+        env: ${ENV_NAME}
       name: ${NAME}-frontend${SUFFIX}
     spec:
       host: ${NAME}${SUFFIX}.pathfinder.gov.bc.ca
