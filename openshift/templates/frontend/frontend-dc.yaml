@@ -158,57 +158,91 @@ objects:
             name: ${NAME}-frontend${SUFFIX}
         spec:
           containers:
-            - env:
-                - name: KEYCLOAK_CERTS_URL
-                  value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq/protocol/openid-connect/certs"
-                - name: KEYCLOAK_REALM
-                  value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
-                - name: KEYCLOAK_AUTHORITY
-                  value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
-                - name: KEYCLOAK_ISSUER
-                  value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
-                - name: KEYCLOAK_URL
-                  value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth"
-                - name: KEYCLOAK_AUDIENCE
-                  value: 'rzh2zkjq'
-                - name: KEYCLOAK_CLIENT_ID
-                  value: 'rzh2zkjq'
-                - name: RABBITMQ_ENABLED
-                  value: 'False'
-              image:
-              imagePullPolicy: IfNotPresent
-              livenessProbe:
-                failureThreshold: 3
-                initialDelaySeconds: 40
-                periodSeconds: 10
-                successThreshold: 1
-                tcpSocket:
-                  port: 5001
-                timeoutSeconds: 3
-              name: frontend
-              ports:
-                - containerPort: 5001
-                  protocol: TCP
-                - containerPort: 5002
-                  protocol: TCP
-              readinessProbe:
-                failureThreshold: 3
-                initialDelaySeconds: 30
-                periodSeconds: 10
-                successThreshold: 1
-                tcpSocket:
-                  port: 5001
-                timeoutSeconds: 3
-              resources:
-                limits:
-                  cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}
-                requests:
-                  cpu: ${CPU_REQUEST}
-                  memory: ${MEMORY_REQUEST}
-              terminationMessagePath: /dev/termination-log
-              terminationMessagePolicy: File
-              volumeMounts:
+            env:
+              - name: KEYCLOAK_CERTS_URL
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_certs_url
+              - name: KEYCLOAK_REALM
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_realm
+              - name: KEYCLOAK_AUTHORITY
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_authority
+              - name: KEYCLOAK_ISSUER
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_issuer
+              - name: KEYCLOAK_URL
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_url
+              - name: KEYCLOAK_AUDIENCE
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_audience
+              - name: KEYCLOAK_CLIENT_ID
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_client_id
+              - name: KEYCLOAK_REALM_NAME
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: keycloak_realm_name
+              - name: RABBITMQ_ENABLED
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: rabbitmq_enabled
+              - name: APIBASE
+                valueFrom:
+                  configMapKeyRef:
+                    name: zeva-config
+                    key: apibase
+            image:
+            imagePullPolicy: IfNotPresent
+            livenessProbe:
+              failureThreshold: 3
+              initialDelaySeconds: 40
+              periodSeconds: 10
+              successThreshold: 1
+              tcpSocket:
+                port: 5001
+              timeoutSeconds: 3
+            name: frontend
+            ports:
+              - containerPort: 5001
+                protocol: TCP
+              - containerPort: 5002
+                protocol: TCP
+            readinessProbe:
+              failureThreshold: 3
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              successThreshold: 1
+              tcpSocket:
+                port: 5001
+              timeoutSeconds: 3
+            resources:
+              limits:
+                cpu: ${CPU_LIMIT}
+                memory: ${MEMORY_LIMIT}
+              requests:
+                cpu: ${CPU_REQUEST}
+                memory: ${MEMORY_REQUEST}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
