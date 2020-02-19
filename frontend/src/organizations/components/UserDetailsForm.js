@@ -1,25 +1,30 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from 'prop-types';
+import CustomPropTypes from '../../app/utilities/props';
 import UserDetailsTextInput from './UserDetailsTextInput';
 import Loading from '../../app/components/Loading';
-import history from '../../app/History';
+import History from '../../app/History';
 
 const UserDetailsForm = (props) => {
   const {
     details,
     loading,
     user,
-    keycloak,
     handleInputChange,
     handleSubmit,
+    rolesList,
+    roles,
   } = props;
 
   if (loading) {
     return <Loading />;
   }
-  const keycloakRoles = keycloak.realmAccess.roles;
-
+  const checked = (role) => !!roles.includes(role);
+  const rolesCheckboxes = rolesList.map((role) => (
+    <ul key={role}>
+      <input type="checkbox" id={role} onChange={handleInputChange} name="roles-manager" defaultChecked={checked(role)} />{role}<FontAwesomeIcon icon="info-circle" />
+    </ul>
+  ));
   return (
     <div id="user-form" className="page">
       <div className="row">
@@ -95,9 +100,9 @@ const UserDetailsForm = (props) => {
                       Status
                     </label>
                     <div className="col-sm-8">
-                      <input type="radio" id="active" name="active-bool-idir" value="active" defaultChecked={details.isActive} />
+                      <input type="radio" id="active" onChange={handleInputChange} name="active-bool-idir" value="active" defaultChecked={details.isActive} />
                       Active, user can log in to ZERO<br />
-                      <input type="radio" id="inactive" name="active-bool-idir" value="inactive" defaultChecked={!details.isActive} />
+                      <input type="radio" id="inactive"  onChange={handleInputChange} name="active-bool-idir" value="inactive" defaultChecked={!details.isActive} />
                       Inactive, user cannot log in to ZERO
                     </div>
 
@@ -111,12 +116,7 @@ const UserDetailsForm = (props) => {
                       Roles
                   </label>
                   <div className="col-sm-8">
-                    <input type="checkbox" id="guest" name="roles-manager" value="guest" />Guest <FontAwesomeIcon icon="info-circle" /><br />
-                    <input type="checkbox" id="creditTransfer" name="roles-manager" value="creditTransfer" />Credit Transfer <FontAwesomeIcon icon="info-circle" /><br />
-                    <input type="checkbox" id="initiative Agreements" name="roles-manager" value="initiativeAgreements" />Initiative Agreements <FontAwesomeIcon icon="info-circle" /><br />
-                    <input type="checkbox" id="complianceReporting" name="roles-manager" value="complianceReporting" />Compliance Reporting <FontAwesomeIcon icon="info-circle" /><br />
-                    <input type="checkbox" id="signingAuthority" name="roles-manager" value="signingAuthority" />Signing Authority <FontAwesomeIcon icon="info-circle" /><br />
-                    <input type="checkbox" id="managingUser" name="roles-manager" value="managingUser" />Managing User <FontAwesomeIcon icon="info-circle" /><br />
+                    {rolesCheckboxes}
                   </div>
                 </div>
               </span>
@@ -147,6 +147,9 @@ const UserDetailsForm = (props) => {
       </form>
     </div>
   );
+};
+UserDetailsForm.propTypes = {
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default UserDetailsForm;
