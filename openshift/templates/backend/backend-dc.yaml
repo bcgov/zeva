@@ -41,7 +41,7 @@ objects:
   - apiVersion: v1
     kind: Secret
     metadata:
-      name: ${NAME}-django-${SUFFIX}
+      name: ${NAME}-django${SUFFIX}
       labels: {}
     stringData:
        DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY}"
