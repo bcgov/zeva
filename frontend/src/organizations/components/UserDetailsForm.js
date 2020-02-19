@@ -16,6 +16,8 @@ const UserDetailsForm = (props) => {
     roles,
   } = props;
 
+  console.log(props)
+
   if (loading) {
     return <Loading />;
   }
@@ -29,7 +31,7 @@ const UserDetailsForm = (props) => {
     <div id="user-form" className="page">
       <div className="row">
         <div className="col-md-12">
-          <h1>{details.organization.name} User Management</h1>
+          <h1>{details.organization.name}User Management</h1>
           <h5>New/Edit User</h5>
         </div>
       </div>
@@ -149,7 +151,7 @@ const UserDetailsForm = (props) => {
   );
 };
 UserDetailsForm.propTypes = {
-  user: CustomPropTypes.user.isRequired,
+ 
 };
 
 export default UserDetailsForm;
