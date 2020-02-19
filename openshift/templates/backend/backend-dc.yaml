@@ -54,7 +54,7 @@ objects:
   kind: Service
   metadata:
     creationTimestamp: null
-    name: ${NAME}-backend{SUFFIX}
+    name: ${NAME}-backend${SUFFIX}
     labels:
       name: backend
       app: zeva
@@ -83,7 +83,7 @@ objects:
       env: ${ENV_NAME}
     name: ${NAME}-backend-api${SUFFIX}
   spec:
-    host: ${ENV_NAME}{SUFFIX}.pathfinder.gov.bc.ca
+    host: ${ENV_NAME}${SUFFIX}.pathfinder.gov.bc.ca
     path: /api
     port:
       targetPort: backend
@@ -91,7 +91,7 @@ objects:
       termination: edge
     to:
       kind: Service
-      name: ${NAME}-backend{SUFFIX}
+      name: ${NAME}-backend${SUFFIX}
       weight: 100
     wildcardPolicy: None
 - apiVersion: route.openshift.io/v1
@@ -113,7 +113,7 @@ objects:
       termination: edge
     to:
       kind: Service
-      name: ${NAME}-backend{SUFFIX}
+      name: ${NAME}-backend${SUFFIX}
       weight: 100
     wildcardPolicy: None
 - apiVersion: apps.openshift.io/v1
