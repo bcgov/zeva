@@ -260,7 +260,7 @@ objects:
                 - name: DJANGO_SECRET_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-django-${SUFFIX}
+                      name: ${NAME}-django${SUFFIX}
                       key: DJANGO_SECRET_KEY
                 - name: RABBITMQ_VHOST
                   valueFrom:
