@@ -1,2 +1,0 @@
-FROM BuildConfig
-USER 1001

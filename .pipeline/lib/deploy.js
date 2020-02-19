@@ -14,6 +14,7 @@ module.exports = settings => {
 
   // The deployment of your cool app goes here ▼▼▼
   //deploy envoy
+  /*
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/envoy/envoy-dc.yaml`, {
     'param':{
       'NAME': phases[phase].name,
@@ -26,6 +27,8 @@ module.exports = settings => {
       'MEMORY_LIMIT': '500M'
     }
   }))
+
+   */
   // deploy frontend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-dc.yaml`, {
     'param':{
