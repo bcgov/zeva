@@ -29,14 +29,14 @@ const UserDetailsContainer = (props) => {
     'Initiative Agreements',
     'Guest'];
   const handleInputChange = (event) => {
-    const { value, name, id } = event.target;
+    const { value, name } = event.target;
     if (name === 'roles-manager') {
       if (!event.target.checked) {
-        const newRoles = roles.filter((each) => each !== id);
+        const newRoles = roles.filter((each) => each !== event.target.id);
         setRoles([newRoles]);
       }
       if (event.target.checked) {
-        const newRoles = roles.concat(id);
+        const newRoles = roles.concat(event.target.id);
         setRoles(newRoles);
       }
     }
