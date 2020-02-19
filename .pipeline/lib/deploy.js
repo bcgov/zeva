@@ -15,7 +15,7 @@ module.exports = settings => {
   // The deployment of your cool app goes here ▼▼▼
 
   // create configs
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/configs/configs.yaml`, {
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/config/configs.yaml`, {
     'param':{
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
