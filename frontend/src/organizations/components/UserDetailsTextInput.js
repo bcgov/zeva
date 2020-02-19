@@ -8,13 +8,15 @@ const UserDetailsTextInput = (props) => {
     defaultValue,
     handleInputChange,
     label,
+    name,
     id,
     details,
   } = props;
+
   const handleOnBlur = (event) => {
-    const { value } = event.target;
+    const { value, name } = event.target;
     if (value === '') {
-      setValidationErrors(`${label} cannot be left blank`);
+      setValidationErrors(`${name} cannot be left blank`);
       setRowClass('form-group row error');
     }
     if (value !== '') {
@@ -38,7 +40,7 @@ const UserDetailsTextInput = (props) => {
         <input
           className="form-control"
           id={id}
-          name={id}
+          name={name}
           type="text"
           defaultValue={defaultValue}
           onChange={handleInputChange}

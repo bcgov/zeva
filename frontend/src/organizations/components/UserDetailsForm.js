@@ -6,7 +6,6 @@ import Loading from '../../app/components/Loading';
 import history from '../../app/History';
 
 const UserDetailsForm = (props) => {
-
   const {
     details,
     loading,
@@ -37,24 +36,28 @@ const UserDetailsForm = (props) => {
                 <UserDetailsTextInput
                   label="First Name"
                   id="firstName"
+                  name="First name"
                   defaultValue={details.firstName}
                   handleInputChange={handleInputChange}
                 />
                 <UserDetailsTextInput
                   label="Last Name"
                   id="lastName"
+                  name="Last name"
                   defaultValue={details.lastName}
                   handleInputChange={handleInputChange}
                 />
                 <UserDetailsTextInput
                   label="Job Title"
                   id="jobTitle"
+                  name="Job title"
                   defaultValue={details.jobTitle}
                   handleInputChange={handleInputChange}
                 />
                 <UserDetailsTextInput
                   label="BCeID User Name"
                   id="BCeIDUserName"
+                  name="BCeID user name"
                   defaultValue={details.username}
                   handleInputChange={handleInputChange}
                 />
@@ -62,6 +65,7 @@ const UserDetailsForm = (props) => {
                   details="the email associated with the BCeID account"
                   label="BCeID Email"
                   id="BCeIDEmail"
+                  name="BCeID email"
                   defaultValue={details.email}
                   handleInputChange={handleInputChange}
                 />
@@ -69,12 +73,14 @@ const UserDetailsForm = (props) => {
                   details="the email used to receive notifications, if different from above"
                   label="Notifications Email"
                   id="notificationsEmail"
+                  name="Notifications email"
                   defaultValue=""
                   handleInputChange={handleInputChange}
                 />
                 <UserDetailsTextInput
                   label="Phone"
                   id="phone"
+                  name="Phone"
                   defaultValue={details.phone}
                   handleInputChange={handleInputChange}
                 />
