@@ -160,21 +160,55 @@ objects:
           containers:
             - env:
                 - name: KEYCLOAK_CERTS_URL
-                  value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq/protocol/openid-connect/certs"
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_certs_url
                 - name: KEYCLOAK_REALM
-                  value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_realm
                 - name: KEYCLOAK_AUTHORITY
-                  value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_authority
                 - name: KEYCLOAK_ISSUER
-                  value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_issuer
                 - name: KEYCLOAK_URL
-                  value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth"
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_url
                 - name: KEYCLOAK_AUDIENCE
-                  value: 'rzh2zkjq'
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_audience
                 - name: KEYCLOAK_CLIENT_ID
-                  value: 'rzh2zkjq'
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_client_id
+                - name: KEYCLOAK_REALM_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_realm_name
                 - name: RABBITMQ_ENABLED
-                  value: 'False'
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: rabbitmq_enabled
+                - name: APIBASE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: apibase
               image:
               imagePullPolicy: IfNotPresent
               livenessProbe:
