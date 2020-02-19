@@ -96,13 +96,13 @@ objects:
     spec:
       host: ${NAME}${SUFFIX}.pathfinder.gov.bc.ca
       port:
-        targetPort: http-in
+        targetPort: web
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
       to:
         kind: Service
-        name: ${NAME}-envoy${SUFFIX}
+        name: ${NAME}-frontend${SUFFIX}
         weight: 100
       wildcardPolicy: None
   - apiVersion: apps.openshift.io/v1
