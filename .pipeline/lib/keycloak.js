@@ -11,7 +11,13 @@ module.exports = class KeyCloakClient {
     }
 
     async init() {
+
         this.getSecrets();
+        console.log(this.clientId);
+        console.log(this.clientSecret);
+        console.log(this.zevaClientId);
+        console.log(this.realmId);
+        console.log(this.ssoHost);
 
         this.apiTokenPath = `/auth/realms/${this.realmId}/protocol/openid-connect/token`;
         this.zevaPublicClientPath = `auth/admin/realms/${this.realmId}/clients/${this.zevaClientId}`;
@@ -48,6 +54,10 @@ module.exports = class KeyCloakClient {
     }
 
     getAccessToken() {
+        console.log("this.ssoHost=[", this.ssoHost, "]");
+        console.log("this.apiTokenPath=", this.apiTokenPath);
+        console.log("this.clientId=", this.clientId);
+        console.log("this.clientSecret=", this.clientSecret);
         return this.api
             .post(this.apiTokenPath, "grant_type=client_credentials", {
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
