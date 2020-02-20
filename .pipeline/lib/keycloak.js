@@ -16,8 +16,8 @@ module.exports = class KeyCloakClient {
 
 
         this.apiTokenPath = `/auth/realms/${this.realmId}/protocol/openid-connect/token`;
-        this.zevaPublicClientPath = `/auth/admin/realms/${this.realmId}/clients/${this.zevaClientId}`;
-        //this.zevaPublicClientPath = `/auth/${this.realmId}/clients/${this.zevaClientId}`;
+        //this.zevaPublicClientPath = `/auth/admin/realms/${this.realmId}/clients/${this.zevaClientId}`;
+        this.zevaPublicClientPath = `/auth/${this.realmId}/clients/&clientId=${this.zevaClientId}`;
         this.api = axios.create({
             baseURL: `https://${this.ssoHost}`
         });
