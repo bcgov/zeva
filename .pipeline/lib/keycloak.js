@@ -14,17 +14,14 @@ module.exports = class KeyCloakClient {
 
         this.getSecrets();
 
-
         this.apiTokenPath = `/auth/realms/${this.realmId}/protocol/openid-connect/token`;
         this.zevaPublicClientPath = `auth/admin/realms/${this.realmId}/clients/${this.zevaClientId}`;
 
         this.api = axios.create({
             baseURL: `https://${this.ssoHost}`
         });
-        console.log("this.api=", this.api);
 
         const token = await this.getAccessToken();
-        console.log("token=", token);
 
         this.api.defaults.headers.common = {
             Authorization: `Bearer ${token}`
@@ -39,19 +36,12 @@ module.exports = class KeyCloakClient {
             "json"
         ]);
         const secret = JSON.parse(keycloakSecret.stdout).data;
-        console.log(secret);
 
         this.clientId = Buffer.from(secret.clientId, "base64").toString();
         this.clientSecret = Buffer.from(secret.clientSecret, "base64").toString();
         this.zevaClientId = Buffer.from(secret.zevaPublic, "base64").toString();
         this.realmId = Buffer.from(secret.realmId, "base64").toString();
-        console.log(this.clientId);
-        console.log(this.clientSecret);
-        console.log(this.zevaClientId);
-        console.log(this.realmId);
-
         this.ssoHost = Buffer.from(secret.host, "base64").toString();
-        console.log(this.ssoHost);
 
         if (!this.clientId || !this.clientSecret || !this.zevaClientId)
             throw new Error(
@@ -97,7 +87,6 @@ module.exports = class KeyCloakClient {
         const { data, redirectUris} = await this.getUris();
 
         const putData = { id: data.id, clientId: data.clientId };
-        console.log ("putData=", putData)
 
         const hasRedirectUris = redirectUris.find(item =>
             item.includes(this.zevaHost)
@@ -107,8 +96,6 @@ module.exports = class KeyCloakClient {
             redirectUris.push(`https://${this.zevaHost}/*`);
             putData.redirectUris = redirectUris;
         }
-
-        console.log ("putData2=", putData)
 
         if (!(hasRedirectUris)) {
             this.api
@@ -125,10 +112,6 @@ module.exports = class KeyCloakClient {
         console.log("Attempting to remove RedirectUri and WebOrigins");
 
         const { data, redirectUris } = await this.getUris();
-
-        console.log(data);
-        console.log(redirectUris);
-        /*
 
         const putData = { id: data.id, clientId: data.clientId };
 
@@ -150,6 +133,5 @@ module.exports = class KeyCloakClient {
             console.log("RedirectUri and WebOrigins remove skipped.");
         }
 
-         */
     }
 };
