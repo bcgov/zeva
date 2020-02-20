@@ -114,6 +114,17 @@ objects:
       replicas: 1
       strategy:
         type: Recreate
+        recreateParams:
+          post:
+            execNewPod:
+              command:
+                - /bin/bash
+                - -i
+                - -c
+                - psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d zeva -c 'create extension hstore'
+              containerName: postgresql
+            failurePolicy: Abort
+          timeoutSeconds: 600
       triggers:
       - imageChangeParams:
           automatic: true
