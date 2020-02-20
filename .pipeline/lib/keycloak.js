@@ -23,6 +23,7 @@ module.exports = class KeyCloakClient {
         console.log("this.api=", this.api);
 
         const token = await this.getAccessToken();
+        console.log("token=", token);
 
         this.api.defaults.headers.common = {
             Authorization: `Bearer ${token}`
