@@ -20,6 +20,7 @@ module.exports = class KeyCloakClient {
         this.api = axios.create({
             baseURL: `https://${this.ssoHost}`
         });
+        console.log("this.api=", this.api);
 
         const token = await this.getAccessToken();
 
