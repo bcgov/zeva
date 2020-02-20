@@ -13,11 +13,7 @@ module.exports = class KeyCloakClient {
     async init() {
 
         this.getSecrets();
-        console.log(this.clientId);
-        console.log(this.clientSecret);
-        console.log(this.zevaClientId);
-        console.log(this.realmId);
-        console.log(this.ssoHost);
+
 
         this.apiTokenPath = `/auth/realms/${this.realmId}/protocol/openid-connect/token`;
         this.zevaPublicClientPath = `auth/admin/realms/${this.realmId}/clients/${this.zevaClientId}`;
@@ -40,12 +36,19 @@ module.exports = class KeyCloakClient {
             "json"
         ]);
         const secret = JSON.parse(keycloakSecret.stdout).data;
+        console.log(secret);
 
         this.clientId = Buffer.from(secret.clientId, "base64").toString();
         this.clientSecret = Buffer.from(secret.clientSecret, "base64").toString();
         this.zevaClientId = Buffer.from(secret.zevaPublic, "base64").toString();
         this.realmId = Buffer.from(secret.realmId, "base64").toString();
+        console.log(this.clientId);
+        console.log(this.clientSecret);
+        console.log(this.zevaClientId);
+        console.log(this.realmId);
+
         this.ssoHost = Buffer.from(secret.host, "base64").toString();
+        console.log(this.ssoHost);
 
         if (!this.clientId || !this.clientSecret || !this.zevaClientId)
             throw new Error(
@@ -54,10 +57,7 @@ module.exports = class KeyCloakClient {
     }
 
     getAccessToken() {
-        console.log("this.ssoHost=[", this.ssoHost, "]");
-        console.log("this.apiTokenPath=", this.apiTokenPath);
-        console.log("this.clientId=", this.clientId);
-        console.log("this.clientSecret=", this.clientSecret);
+
         return this.api
             .post(this.apiTokenPath, "grant_type=client_credentials", {
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
