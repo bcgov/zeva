@@ -107,6 +107,11 @@ module.exports = class KeyCloakClient {
         console.log("Attempting to remove RedirectUri and WebOrigins");
 
         const { data, redirectUris } = await this.getUris();
+
+        console.log(data);
+        console.log(redirectUris);
+        /*
+
         const putData = { id: data.id, clientId: data.clientId };
 
         const hasRedirectUris = redirectUris.find(item =>
@@ -126,5 +131,7 @@ module.exports = class KeyCloakClient {
         } else {
             console.log("RedirectUri and WebOrigins remove skipped.");
         }
+
+         */
     }
 };
