@@ -80,9 +80,8 @@ module.exports = class KeyCloakClient {
     }
 
     async getUris() {
-        console.log("this.zevaPublicClientPath", this.zevaPublicClientPath );
+
         const response = await this.api.get(this.zevaPublicClientPath);
-        console.log("---------response", response );
 
         const data = { ...response.data };
         const redirectUris = data.redirectUris;
@@ -96,7 +95,9 @@ module.exports = class KeyCloakClient {
         console.log("Attempting to add RedirectUri and WebOrigins");
 
         const { data, redirectUris} = await this.getUris();
+
         const putData = { id: data.id, clientId: data.clientId };
+        console.log ("putData=", putData)
 
         const hasRedirectUris = redirectUris.find(item =>
             item.includes(this.zevaHost)
@@ -106,6 +107,8 @@ module.exports = class KeyCloakClient {
             redirectUris.push(`https://${this.zevaHost}/*`);
             putData.redirectUris = redirectUris;
         }
+
+        console.log ("putData2=", putData)
 
         if (!(hasRedirectUris)) {
             this.api
