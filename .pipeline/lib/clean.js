@@ -7,6 +7,7 @@ module.exports = settings => {
   const options = settings.options;
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases.build.namespace }, options));
   const target_phase = options.env;
+  const kc = new KeyCloakClient(settings, oc);
 
   if(target_phase ==='dev')
     kc.removeUris();
