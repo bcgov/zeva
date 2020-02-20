@@ -79,7 +79,9 @@ module.exports = class KeyCloakClient {
     }
 
     async getUris() {
+        console.log("this.zevaPublicClientPath", this.zevaPublicClientPath );
         const response = await this.api.get(this.zevaPublicClientPath);
+        console.log("---------response", response );
 
         const data = { ...response.data };
         const redirectUris = data.redirectUris;
