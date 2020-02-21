@@ -53,6 +53,13 @@ const Footer = () => (
       >
         Contact Us
       </NavLink>
+      |
+      <NavLink
+          activeClassName="active"
+          to="/"
+      >
+        Test-Sprint5-1
+      </NavLink>
     </div>
   </div>
 );
