@@ -5,8 +5,8 @@ const version = '1.0.0'
 const name = 'zeva'
 
 const phases = {
-  build: {namespace:'tbiwaq-tools'   , name: `${name}`, phase: 'build'  , changeId:changeId, suffix: `-build-${changeId}`  , instance: `${name}-build-${changeId}`  , version:`${version}-${changeId}`, tag:`build-${version}-${changeId}`},
-  dev: {namespace:'tbiwaq-dev'       , name: `${name}`, ssoSuffix:'-dev', phase: 'dev'  , changeId:changeId, suffix: `-dev-${changeId}`  , instance: `${name}-dev-${changeId}`  , version:`${version}-${changeId}`, tag:`dev-${version}-${changeId}`, host: `zeva-dev-${changeId}.pathfinder.gov.bc.ca`},
+  build: {namespace:'tbiwaq-tools'   , transient:true, name: `${name}`, phase: 'build'  , changeId:changeId, suffix: `-build-${changeId}`  , instance: `${name}-build-${changeId}`  , version:`${version}-${changeId}`, tag:`build-${version}-${changeId}`},
+  dev: {namespace:'tbiwaq-dev'       , transient:true, name: `${name}`, ssoSuffix:'-dev', phase: 'dev'  , changeId:changeId, suffix: `-dev-${changeId}`  , instance: `${name}-dev-${changeId}`  , version:`${version}-${changeId}`, tag:`dev-${version}-${changeId}`, host: `zeva-dev-${changeId}.pathfinder.gov.bc.ca`},
   test: {namespace:'tbiwaq-test'     , name: `${name}`, ssoSuffix:'-test', phase: 'test'  , changeId:changeId, suffix: `-test`  , instance: `${name}-test`  , version:`${version}`, tag:`test-${version}`, host: 'zeva-test.pathfinder.gov.bc.ca'},
   prod: {namespace:'tbiwaq-prod'     , name: `${name}`, ssoSuffix:'', phase: 'prod'  , changeId:changeId, suffix: `-prod`  , instance: `${name}-prod`  , version:`${version}`, tag:`prod-${version}`, host: 'zeva-prod.pathfinder.gov.bc.ca'},
 };
