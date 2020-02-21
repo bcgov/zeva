@@ -59,6 +59,8 @@ objects:
     kind: Secret
     metadata:
       name: ${NAME}-postgresql${SUFFIX}
+      annotation:
+        as-copy-of: "template.${NAME}-postgresql"
       labels: {}
     stringData:
       DATABASE_USER: "${ZEVA_DB_USER}"
