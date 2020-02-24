@@ -123,8 +123,8 @@ objects:
             - postgresql
           from:
             kind: ImageStreamTag
-            namespace: openshift
-            name: postgresql:10
+            namespace: tbiwaq-tools
+            name: postgresql:10-1-47
           lastTriggeredImage:
         type: ImageChange
       - type: ConfigChange
