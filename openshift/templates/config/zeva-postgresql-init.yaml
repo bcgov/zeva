@@ -20,4 +20,4 @@ objects:
   kind: ConfigMap
   metadata:
     creationTimestamp: null
-    name: zeca-postgresql-init
+    name: zeva-postgresql-init
