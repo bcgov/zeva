@@ -58,7 +58,7 @@ const Footer = () => (
           activeClassName="active"
           to="/"
       >
-        Test-Sprint5-1
+        Test-Sprint5-2
       </NavLink>
     </div>
   </div>
