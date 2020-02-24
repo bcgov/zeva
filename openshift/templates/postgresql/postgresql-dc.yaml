@@ -141,6 +141,10 @@ objects:
             - name: postgresql-data
               persistentVolumeClaim:
                 claimName: ${NAME}-postgresql${SUFFIX}
+            - name: postgresql-init
+              configmap:
+                defaultMode: 420
+                name: zeva-postgresql-init
           containers:
             - name: postgresql
               image: " "
@@ -169,7 +173,9 @@ objects:
                   memory: "${MEMORY_LIMIT}"
               volumeMounts:
                 - name: postgresql-data
-                  mountPath: "/var/lib/pgsql/data"
+                  mountPath: /var/lib/pgsql/data
+                - name: postgresql-init
+                  mountPath: /opt/app-root/src/postgresql-start
               readinessProbe:
                 tcpSocket:
                   port: 5432
