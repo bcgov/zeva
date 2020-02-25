@@ -162,52 +162,52 @@ objects:
                 - name: KEYCLOAK_CERTS_URL
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_certs_url
                 - name: KEYCLOAK_REALM
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_realm
                 - name: KEYCLOAK_AUTHORITY
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_authority
                 - name: KEYCLOAK_ISSUER
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_issuer
                 - name: KEYCLOAK_URL
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_url
                 - name: KEYCLOAK_AUDIENCE
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_audience
                 - name: KEYCLOAK_CLIENT_ID
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_client_id
                 - name: KEYCLOAK_REALM_NAME
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: keycloak_realm_name
                 - name: RABBITMQ_ENABLED
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: rabbitmq_enabled
                 - name: APIBASE
                   valueFrom:
                     configMapKeyRef:
-                      name: zeva-config
+                      name: ${NAME}-config${SUFFIX}
                       key: apibase
               image:
               imagePullPolicy: IfNotPresent
