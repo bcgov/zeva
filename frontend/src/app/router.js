@@ -11,6 +11,7 @@ import ErrorHandler from './components/ErrorHandler';
 import History from './History';
 import Loading from './components/Loading';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
+import UserDetailsContainer from '../organizations/UserDetailsContainer';
 import OrganizationListContainer from '../organizations/OrganizationListContainer';
 import PageLayout from './PageLayout';
 import ROUTES_ORGANIZATIONS from './routes/Organizations';
@@ -145,6 +146,10 @@ class Router extends Component {
                 exact
                 path={ROUTES_ROLES.LIST}
                 render={() => <RoleListContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_USERS.DETAILS}
+                render={() => <UserDetailsContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact
