@@ -100,69 +100,69 @@ class Router extends Component {
       <BrowserRouter history={History}>
         <PageLayout keycloak={keycloak} user={user}>
           <ErrorHandler>
-          <Switch>
-            <Route
-              exact
-              path={ROUTES_ORGANIZATIONS.MINE}
-              render={() => <OrganizationDetailsContainer keycloak={keycloak} user={user} />}
-            />
-            <Route
-              path={ROUTES_ORGANIZATIONS.DETAILS}
-              render={() => <VehicleSupplierDetailsContainer keycloak={keycloak} user={user} />}
-            />
-            <Route
-              exact
-              path={ROUTES_VEHICLES.EDIT}
-              render={() => <VehicleEditContainer keycloak={keycloak} user={user} />}
-            />
-            <Route
-              path={ROUTES_ORGANIZATIONS.LIST}
-              render={() => <OrganizationListContainer keycloak={keycloak} user={user} />}
-            />
-            <Route
-              path={ROUTES_SALES.DETAILS}
-              render={() => <SalesDetailsContainer keycloak={keycloak} user={user} />}
-            />
-            <Route
-              path={ROUTES_SALES.LIST}
-              render={() => <SalesListContainer keycloak={keycloak} user={user} />}
-            />
-            <Route
-              exact
-              path={ROUTES_VEHICLES.ADD}
-              render={() => <VehicleAddContainer keycloak={keycloak} user={user} />}
-            />
-            <Route
-              exact
-              path={ROUTES_VEHICLES.LIST}
-              render={() => <VehicleListContainer keycloak={keycloak} user={user} />}
-            />
-            <Route
-              exact
-              path={ROUTES_VEHICLES.DETAILS}
-              render={() => <VehicleDetailsContainer keycloak={keycloak} user={user} />}
-            />
-            <Route
-              exact
-              path={ROUTES_ROLES.LIST}
-              render={() => <RoleListContainer keycloak={keycloak} user={user} />}
-            />
-            <Route
-              path={ROUTES_USERS.DETAILS}
-              render={() => <UserDetailsContainer keycloak={keycloak} user={user} />}
-            />
-            <Route
-              exact
-              path="/"
-              render={() => <DashboardContainer user={user} />}
-            />
-            <Route
-              path="/"
-              render={() => (
-                <StatusInterceptor statusCode={404} />
-              )}
-            />
-          </Switch>
+            <Switch>
+              <Route
+                exact
+                path={ROUTES_ORGANIZATIONS.MINE}
+                render={() => <OrganizationDetailsContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_ORGANIZATIONS.DETAILS}
+                render={() => <VehicleSupplierDetailsContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_VEHICLES.EDIT}
+                render={() => <VehicleEditContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_ORGANIZATIONS.LIST}
+                render={() => <OrganizationListContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_SALES.DETAILS}
+                render={() => <SalesDetailsContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_SALES.LIST}
+                render={() => <SalesListContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_VEHICLES.ADD}
+                render={() => <VehicleAddContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_VEHICLES.LIST}
+                render={() => <VehicleListContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_VEHICLES.DETAILS}
+                render={() => <VehicleDetailsContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_ROLES.LIST}
+                render={() => <RoleListContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_USERS.DETAILS}
+                render={() => <UserDetailsContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path="/"
+                render={() => <DashboardContainer user={user} />}
+              />
+              <Route
+                path="/"
+                render={() => (
+                  <StatusInterceptor statusCode={404} />
+                )}
+              />
+            </Switch>
           </ErrorHandler>
         </PageLayout>
       </BrowserRouter>
