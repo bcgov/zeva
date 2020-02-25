@@ -10,6 +10,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from django.test import TestCase
 
+from api.authorities import roles_in_group
 from api.models.user_profile import UserProfile
 from api.tests.logging_client import LoggingClient
 
@@ -31,6 +32,13 @@ class BaseTestCase(TestCase):
         'vs_user_3',
         'engineer'
     ]
+
+    roles = {
+        'vs_user_1': roles_in_group(['Signing Authority', 'Manage ZEV', 'Vehicle Supplier']),
+        'vs_user_2': roles_in_group(['Signing Authority', 'Manage ZEV', 'Vehicle Supplier']),
+        'vs_user_3': roles_in_group(['Signing Authority', 'Manage ZEV', 'Vehicle Supplier']),
+        'engineer': roles_in_group(['Government', 'Engineer/Analyst']),
+    }
 
     # For use in child classes
     extra_fixtures = None
@@ -104,7 +112,10 @@ class BaseTestCase(TestCase):
                             payload={
                                 'user_id': str(user.username),
                                 'iss': 'zeva-test',
-                                'aud': 'zeva-app'
+                                'aud': 'zeva-app',
+                                'realm_access': {
+                                    'roles': self.roles[str(user.username)]
+                                }
                             },
                             key=self.private_key,
                             algorithm='RS256'

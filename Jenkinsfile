@@ -31,7 +31,7 @@ pipeline {
                 sh "cd .pipeline && ./npmw ci && ./npmw run deploy -- --pr=${CHANGE_ID} --env=dev"
             }
         }
-        /**** commented test abd prod deployment
+
         stage('Deploy (TEST)') {
             agent { label 'deploy' }
             when {
@@ -54,7 +54,7 @@ pipeline {
                 beforeInput true
             }
             input {
-                message "Should we continue with deployment to TEST?"
+                message "Should we continue with deployment to PROD?"
                 ok "Yes!"
             }
             steps {
@@ -62,6 +62,6 @@ pipeline {
                 sh "cd .pipeline && ./npmw ci && ./npmw run deploy -- --pr=${CHANGE_ID} --env=prod"
             }
         }
-        ****/
+
     }
 }

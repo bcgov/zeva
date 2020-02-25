@@ -3,7 +3,6 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from api.decorators.authorization import authorization_required
 from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle, VehicleDefinitionStatuses
 from api.models.vehicle_class import VehicleClass
@@ -60,11 +59,21 @@ class VehicleViewSet(
         return Response(serializer.data)
 
     @action(detail=False)
-    def makes(self, _request):
+    def makes(self, request):
         """
         Get the makes
         """
-        makes = Make.objects.all()
+        is_government = request.user.is_government
+
+        organization_id = request.user.organization.id
+
+        if not is_government:
+            makes = Make.objects.filter(
+                vehicle_make_organizations__organization_id=organization_id
+            )
+        else:
+            makes = Make.objects.all()
+
         serializer = VehicleMakeSerializer(makes, many=True)
         return Response(serializer.data)
 
@@ -74,6 +83,7 @@ class VehicleViewSet(
         Get the types
         """
         fuel_types = FuelType.objects.all().order_by('description')
+
         serializer = VehicleFuelTypeSerializer(fuel_types, many=True)
         return Response(serializer.data)
 
@@ -96,7 +106,6 @@ class VehicleViewSet(
         return Response(serializer.data)
 
     @action(detail=True, methods=['patch'])
-    @authorization_required('Validate ZEV')
     def state_change(self, request, pk=None):
         """
         Update the state of a vehicle
