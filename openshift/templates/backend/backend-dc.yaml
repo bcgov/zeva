@@ -90,7 +90,7 @@ objects:
         env: '${ENV_NAME}'
       name: '${NAME}-backend-api${SUFFIX}'
     spec:
-      host: '${ENV_NAME}${SUFFIX}.pathfinder.gov.bc.ca'
+      host: '${NAME}${SUFFIX}.pathfinder.gov.bc.ca'
       path: /api
       port:
         targetPort: backend
