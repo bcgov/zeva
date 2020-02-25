@@ -141,7 +141,7 @@ objects:
             - name: postgresql-data
               persistentVolumeClaim:
                 claimName: ${NAME}-postgresql${SUFFIX}
-            - name: postgresql-init
+            - name: volume-yxd1v
               configmap:
                 defaultMode: 420
                 name: zeva-postgresql-init
@@ -174,7 +174,7 @@ objects:
               volumeMounts:
                 - name: postgresql-data
                   mountPath: /var/lib/pgsql/data
-                - name: postgresql-init
+                - name: volume-yxd1v
                   mountPath: /opt/app-root/src/postgresql-start
               readinessProbe:
                 tcpSocket:
