@@ -51,7 +51,7 @@ const Footer = () => (
         activeClassName="active"
         to="/"
       >
-        Contact Us pr-pipeline-1
+        Contact Us
       </NavLink>
     </div>
   </div>
