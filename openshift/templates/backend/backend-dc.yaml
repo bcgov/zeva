@@ -112,7 +112,7 @@ objects:
         env: '${ENV_NAME}'
       name: '${NAME}-backend-health${SUFFIX}'
     spec:
-      host: '${ENV_NAME}${SUFFIX}.pathfinder.gov.bc.ca'
+      host: '${NAME}${SUFFIX}.pathfinder.gov.bc.ca'
       path: /health
       port:
         targetPort: backend

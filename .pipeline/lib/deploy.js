@@ -3,12 +3,12 @@ const { OpenShiftClientX } = require("@bcgov/pipeline-cli");
 const path = require("path");
 const KeyCloakClient = require('./keycloak');
 
-module.exports = settings => {
+module.exports = async settings => {
   const phases = settings.phases;
   const options = settings.options;
   const phase = options.env;
   const changeId = phases[phase].changeId;
-  const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
+  const oc = new OpenShiftClientX(Object.assign({namespace: phases[phase].namespace}, options));
 
   //add Valid Redirect URIs for the pull request to keycloak
   //for example: 	https://zeva-dev-79.pathfinder.gov.bc.ca/*
@@ -22,7 +22,7 @@ module.exports = settings => {
 
   // create configs
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/config/configs.yaml`, {
-    'param':{
+    'param': {
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
       'VERSION': phases[phase].tag,
@@ -33,7 +33,7 @@ module.exports = settings => {
   }))
 
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/postgresql/postgresql-dc.yaml`, {
-    'param':{
+    'param': {
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
       'VERSION': phases[phase].tag,
@@ -49,7 +49,7 @@ module.exports = settings => {
 
   // deploy frontend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-dc.yaml`, {
-    'param':{
+    'param': {
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
       'VERSION': phases[phase].tag,
@@ -62,8 +62,10 @@ module.exports = settings => {
     }
   }))
 
+  await new Promise(resolve => setTimeout(resolve, 5000));
+
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/backend/backend-dc.yaml`, {
-    'param':{
+    'param': {
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
       'VERSION': phases[phase].tag,
@@ -76,11 +78,11 @@ module.exports = settings => {
   }))
 
   oc.applyRecommendedLabels(
-    objects,
-    phases[phase].name,
-    phase,
-    `${changeId}`,
-    phases[phase].instance,
+      objects,
+      phases[phase].name,
+      phase,
+      `${changeId}`,
+      phases[phase].instance,
   );
   oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
   oc.applyAndDeploy(objects, phases[phase].instance);
