@@ -3,7 +3,7 @@ const { OpenShiftClientX } = require("@bcgov/pipeline-cli");
 const path = require("path");
 const KeyCloakClient = require('./keycloak');
 
-module.exports = async settings => {
+module.exports = settings => {
   const phases = settings.phases;
   const options = settings.options;
   const phase = options.env;
@@ -61,8 +61,6 @@ module.exports = async settings => {
       'MEMORY_LIMIT': '2G'
     }
   }))
-
-  await new Promise(resolve => setTimeout(resolve, 15000));
 
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/backend/backend-dc.yaml`, {
     'param': {

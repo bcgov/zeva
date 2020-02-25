@@ -150,7 +150,7 @@ objects:
                 - '-c'
                 - python manage.py migrate;
               containerName: backend
-            failurePolicy: Abort
+            failurePolicy: Retry
           timeoutSeconds: 600
         resources: {}
         type: Recreate
