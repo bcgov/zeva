@@ -38,7 +38,7 @@ objects:
       creationTimestamp: null
       name: ${NAME}-config${SUFFIX}
     data:
-      apibase: https://${NAME}-backend${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local:8080/api/
+      apibase: https://${NAME}${SUFFIX}.pathfinder.gov.bc.ca/api/
       database_engine: postgresql
       database_name: zeva
       database_service_name: ${NAME}-postgresql${SUFFIX}

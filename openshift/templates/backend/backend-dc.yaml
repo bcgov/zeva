@@ -90,7 +90,7 @@ objects:
         env: '${ENV_NAME}'
       name: '${NAME}-backend-api${SUFFIX}'
     spec:
-      host: '${ENV_NAME}${SUFFIX}.pathfinder.gov.bc.ca'
+      host: '${NAME}${SUFFIX}.pathfinder.gov.bc.ca'
       path: /api
       port:
         targetPort: backend
@@ -112,7 +112,7 @@ objects:
         env: '${ENV_NAME}'
       name: '${NAME}-backend-health${SUFFIX}'
     spec:
-      host: '${ENV_NAME}${SUFFIX}.pathfinder.gov.bc.ca'
+      host: '${NAME}${SUFFIX}.pathfinder.gov.bc.ca'
       path: /health
       port:
         targetPort: backend
@@ -150,7 +150,7 @@ objects:
                 - '-c'
                 - python manage.py migrate;
               containerName: backend
-            failurePolicy: Abort
+            failurePolicy: Retry
           timeoutSeconds: 600
         resources: {}
         type: Recreate
