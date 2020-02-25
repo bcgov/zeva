@@ -25,8 +25,10 @@ class RecordOfSale(Auditable):
 
     vin = models.CharField(blank=True,
                            null=True,
-                           max_length=255,
-                           db_comment="An (optional) vehicle-supplier-provided correlation ID")
+                           max_length=20,
+                           db_comment="A Vehicle Identification Number, a standard 17-character identifier "
+                                      " used in the automative industry to identify origin, colour, style, serial"
+                                      " number, and other attributes (encoding is manufacturer-specific)")
 
     vin_validation_status = EnumField(
         VINStatuses,
