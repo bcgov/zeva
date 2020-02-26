@@ -1,5 +1,5 @@
 #!/bin/sh
-if [ $ENV_NAME != "dev" ]; then
+if [ "${ENV_NAME}" != "dev" ]; then
   exit 0
 fi
 for entry in api/fixtures/operational/*
