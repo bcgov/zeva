@@ -1,7 +1,4 @@
 #!/bin/sh
-if [ "${ENV_NAME}" != "dev" ]; then
-  exit 0
-fi
 for entry in api/fixtures/operational/*
 do
   if [[ $entry == api/fixtures/operational/0* ]]; then
