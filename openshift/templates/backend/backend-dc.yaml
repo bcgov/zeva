@@ -321,7 +321,7 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-config${SUFFIX}
-                      key: ENV_NAME
+                      key: env_name
               livenessProbe:
                 failureThreshold: 3
                 httpGet:
