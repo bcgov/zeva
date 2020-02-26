@@ -317,6 +317,11 @@ objects:
                       key: email_from_address
                 - name: APP_CONFIG
                   value: /opt/app-root/src/gunicorn.cfg
+                - name: ENV_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-config${SUFFIX}
+                      key: ENV_NAME
               livenessProbe:
                 failureThreshold: 3
                 httpGet:
