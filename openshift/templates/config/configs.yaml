@@ -45,6 +45,7 @@ objects:
       django_debug: 'False'
       email_from_address: donotreply@gov.bc.ca
       email_sending_enabled: 'False'
+      env_name: ${ENV_NAME}
       keycloak_audience: zeva
       keycloak_authority: https://${SSO_NAME}.pathfinder.gov.bc.ca/auth/realms/${KEYCLOAK_REALM}
       keycloak_certs_url: https://${SSO_NAME}.pathfinder.gov.bc.ca/auth/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs
