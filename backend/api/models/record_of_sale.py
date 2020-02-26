@@ -18,7 +18,7 @@ class RecordOfSale(Auditable):
         on_delete=models.CASCADE
     )
 
-    sale_id = models.CharField(blank=True,
+    reference_number = models.CharField(blank=True,
                                null=True,
                                max_length=255,
                                db_comment="An (optional) vehicle-supplier-provided correlation ID")
@@ -73,7 +73,6 @@ class RecordOfSale(Auditable):
 
     class Meta:
         db_table = "record_of_sale"
-        unique_together = [['organization', 'sale_id']]
 
     db_table_comment = 'Hold individual records of sale submitted by ZEV suppliers, including their VIN, ' \
                        'sales dates, and the workflow state information for this sale (VIN and record validation ' \
