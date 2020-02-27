@@ -72,7 +72,8 @@ class Command(BaseCommand):
                 if isfile(fullpath):
                     match = re.match('(\d+).*py', item, re.IGNORECASE)
                     if match:
-                        ordered_scripts[match.group(0)] = fullpath
+                        seq = str(int(match.group(1)))
+                        ordered_scripts[seq] = fullpath
 
             for k in sorted(ordered_scripts.keys()):
                 script_files.append(ordered_scripts[k])
