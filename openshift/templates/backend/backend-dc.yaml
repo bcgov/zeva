@@ -151,6 +151,14 @@ objects:
                 - python manage.py migrate;
               containerName: backend
             failurePolicy: Retry
+          post:
+            execNewPod:
+              command:
+                - /bin/sh
+                - '-c'
+                - python ./manage.py load_ops_data --directory ./api/fixtures/operational; if [ ${ENV_NAME} == 'dev' ]; then python ./manage.py load_ops_data --directory ./api/fixtures/test; fi
+              containerName: backend
+            failurePolicy: abort
           timeoutSeconds: 600
         resources: {}
         type: Recreate
