@@ -31,6 +31,18 @@ objects:
       annotations:
         description: Keeps track of changes in the backend image
       creationTimestamp: null
+      name: ${NAME}-python
+    spec:
+      lookupPolicy:
+        local: false
+    status:
+      dockerImageRepository: ""
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      annotations:
+        description: Keeps track of changes in the backend image
+      creationTimestamp: null
       name: ${NAME}-backend
     spec:
       lookupPolicy:
@@ -59,7 +71,7 @@ objects:
       output:
         to:
           kind: ImageStreamTag
-          name: python:3.8-buster
+          name: ${NAME}-python:3.8-buster
       resources:
         limits:
           cpu: 1000m
@@ -105,7 +117,7 @@ objects:
           - name: PIP_INDEX_URL
           from:
             kind: ImageStreamTag
-            name: python:3.8-buster
+            name: ${NAME}-python:3.8-buster
             namespace: tbiwaq-tools
         type: Source
       triggers:
