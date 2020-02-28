@@ -148,15 +148,15 @@ objects:
               command:
                 - /bin/sh
                 - '-c'
-                - >-
-                  python manage.py load_ops_data --directory
-                  api/fixtures/operational
+                - python manage.py migration
               containerName: backend
             failurePolicy: Retry
           post:
             execNewPod:
               command:
-                - ./load_data.sh ${ENV_NAME}
+                - /bin/sh
+                - '-c'
+                - ./load_data ${ENV_NAME}
               containerName: backend
             failurePolicy: abort
           timeoutSeconds: 600

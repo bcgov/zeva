@@ -40,6 +40,40 @@ objects:
   - apiVersion: build.openshift.io/v1
     kind: BuildConfig
     metadata:
+      name: nagios-base
+      creationTimestamp:
+    spec:
+      triggers: []
+      runPolicy: Serial
+      source:
+        type: Git
+        git:
+          ref: ${GIT_REF}
+          uri: ${GIT_URL}
+        contextDir: openshift/templates/python
+      strategy:
+        type: Docker
+        dockerStrategy:
+          forcePull: true
+          noCache: true
+      output:
+        to:
+          kind: ImageStreamTag
+          name: python:3.8-buster
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 2Gi
+        requests:
+          cpu: 250m
+          memory: 256Mi
+      postCommit: {}
+      nodeSelector:
+    status:
+      lastVersion: 0
+  - apiVersion: build.openshift.io/v1
+    kind: BuildConfig
+    metadata:
       annotations:
         description: Defines how to build the application
       creationTimestamp: null
@@ -71,8 +105,8 @@ objects:
           - name: PIP_INDEX_URL
           from:
             kind: ImageStreamTag
-            name: python:3.6
-            namespace: openshift
+            name: python:3.8-buster
+            namespace: tbiwaq-tools
         type: Source
       triggers:
       - imageChange: {}
