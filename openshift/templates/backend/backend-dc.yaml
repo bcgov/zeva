@@ -148,7 +148,7 @@ objects:
               command:
                 - /bin/sh
                 - '-c'
-                - python manage.py migration
+                - python manage.py migrate
               containerName: backend
             failurePolicy: Retry
           post:
@@ -156,9 +156,9 @@ objects:
               command:
                 - /bin/sh
                 - '-c'
-                - ./load_data ${ENV_NAME}
+                - ./load_data.sh ${ENV_NAME}
               containerName: backend
-            failurePolicy: abort
+            failurePolicy: Ignore
           timeoutSeconds: 600
         resources: {}
         type: Recreate
