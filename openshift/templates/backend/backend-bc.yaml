@@ -52,7 +52,7 @@ objects:
   - apiVersion: build.openshift.io/v1
     kind: BuildConfig
     metadata:
-      name: nagios-base
+      name: ${NAME}-python${SUFFIX}
       creationTimestamp:
     spec:
       triggers: []
