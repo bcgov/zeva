@@ -62,7 +62,7 @@ objects:
         git:
           ref: ${GIT_REF}
           uri: ${GIT_URL}
-        contextDir: openshift/templates/python
+        contextDir: backend/openshift/templates/python
       strategy:
         type: Docker
         dockerStrategy:
