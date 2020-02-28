@@ -65,8 +65,7 @@ class Command(BaseCommand):
                 )
                 exit(-1)
             items = listdir(options['script'])
-            self.stdout.write(self.style.ERROR(
-                items))
+
             for item in items:
                 fullpath = join(options['script'], item)
                 if isfile(fullpath):
