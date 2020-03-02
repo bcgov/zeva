@@ -19,19 +19,19 @@ class AddSampleUsers(OperationalDataScript):
     @transaction.atomic	
     def run(self):	
 
-        ferrari = Organization.objects.get(	
-            name="Ferrari"	
+        suzuki = Organization.objects.get(	
+            name="Suzuki"	
         )	
 
         tesla = Organization.objects.get(	
-            name="Tesla Canada GP Inc."	
+            name="Tesla Motors Canada ULC"	
         )	
 
         gov = Organization.objects.get(	
             name="Government of British Columbia"	
         )	
 
-        vs1 = UserProfile.objects.create(username='fs1', is_active=True, organization=ferrari)	
+        vs1 = UserProfile.objects.create(username='fs1', is_active=True, organization=suzuki)	
         vs2 = UserProfile.objects.create(username='fs2', is_active=True, organization=tesla)	
         analyst = UserProfile.objects.create(username='analyst', is_active=True, organization=gov)	
 

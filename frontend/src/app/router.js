@@ -1,32 +1,33 @@
-import React, { Component } from 'react';
-import { Switch } from 'react-router';
-import { Router as BrowserRouter, Route } from 'react-router-dom';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { Switch } from 'react-router';
+import { Route, Router as BrowserRouter } from 'react-router-dom';
+import DashboardContainer from '../dashboard/DashboardContainer';
+import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
+import OrganizationListContainer from '../organizations/OrganizationListContainer';
+import UserDetailsContainer from '../organizations/UserDetailsContainer';
+import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
 import RoleListContainer from '../roles/RoleListContainer';
+import SalesDetailsContainer from '../sales/SalesDetailsContainer';
+import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
+import SalesListContainer from '../sales/SalesListContainer';
+import VehicleAddContainer from '../vehicles/VehicleAddContainer';
+import VehicleDetailsContainer from '../vehicles/VehicleDetailsContainer';
+import VehicleEditContainer from '../vehicles/VehicleEditContainer';
+import VehicleListContainer from '../vehicles/VehicleListContainer';
+import ErrorHandler from './components/ErrorHandler';
+import Loading from './components/Loading';
+import StatusInterceptor from './components/StatusInterceptor';
 
 import CONFIG from './config';
-import DashboardContainer from '../dashboard/DashboardContainer';
-import ErrorHandler from './components/ErrorHandler';
 import History from './History';
-import Loading from './components/Loading';
-import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
-import UserDetailsContainer from '../organizations/UserDetailsContainer';
-import OrganizationListContainer from '../organizations/OrganizationListContainer';
 import PageLayout from './PageLayout';
 import ROUTES_ORGANIZATIONS from './routes/Organizations';
 import ROUTES_ROLES from './routes/Roles';
 import ROUTES_SALES from './routes/Sales';
 import ROUTES_USERS from './routes/Users';
 import ROUTES_VEHICLES from './routes/Vehicles';
-import SalesDetailsContainer from '../sales/SalesDetailsContainer';
-import SalesListContainer from '../sales/SalesListContainer';
-import StatusInterceptor from './components/StatusInterceptor';
-import VehicleAddContainer from '../vehicles/VehicleAddContainer';
-import VehicleDetailsContainer from '../vehicles/VehicleDetailsContainer';
-import VehicleEditContainer from '../vehicles/VehicleEditContainer';
-import VehicleListContainer from '../vehicles/VehicleListContainer';
-import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
 
 class Router extends Component {
   constructor(props) {
@@ -120,13 +121,21 @@ class Router extends Component {
                 render={() => <OrganizationListContainer keycloak={keycloak} user={user} />}
               />
               <Route
+                exact
+                path={ROUTES_SALES.ADD}
+                render={() => <SalesSubmissionContainer mode="add" keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
                 path={ROUTES_SALES.DETAILS}
                 render={() => <SalesDetailsContainer keycloak={keycloak} user={user} />}
               />
               <Route
+                exact
                 path={ROUTES_SALES.LIST}
                 render={() => <SalesListContainer keycloak={keycloak} user={user} />}
               />
+
               <Route
                 exact
                 path={ROUTES_VEHICLES.ADD}
