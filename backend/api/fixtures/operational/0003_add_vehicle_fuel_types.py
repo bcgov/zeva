@@ -13,7 +13,7 @@ class AddFuelTypes(OperationalDataScript):
               'Guide'
 
     def check_run_preconditions(self):
-        return True
+        return not FuelType.objects.filter(vehicle_fuel_code="B").exists()
 
     @transaction.atomic
     def run(self):
