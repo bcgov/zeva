@@ -134,35 +134,31 @@ class Command(BaseCommand):
                     ).format(script_file)
                 )
             else:
-                if not script_instance.check_run_preconditions():
+                if script_instance.check_run_preconditions():
+                    try:
+                        script_instance.run()
+
+                        self.stdout.write(
+                            self.style.SUCCESS(
+                                'Successfully loaded ops data script {}'
+                            ).format(script_file)
+                        )
+                    except Exception as e:
+                        self.stdout.write(
+                            self.style.ERROR(
+                                'Script {} reported an error. Continuing execution.'
+                            ).format(script_file)
+                        )
+                        self.stdout.write(
+                            self.style.ERROR(str(e))
+                        )
+                        errorcount = errorcount + 1
+                else:
                     self.stdout.write(
                         self.style.ERROR(
-                            'Script preconditions not met. Not executing'
+                            'Script {} preconditions not met. Not executing'.format(script_file)
                         )
                     )
-
-                    self._create_persistent_record(
-                        **script_metadata, successful=False
-                    )
-
-            try:
-                script_instance.run()
-
-                self.stdout.write(
-                    self.style.SUCCESS(
-                        'Successfully loaded ops data script {}'
-                    ).format(script_file)
-                )
-            except Exception as e:
-                self.stdout.write(
-                    self.style.ERROR(
-                        'Script {} reported an error. Continuing'
-                    ).format(script_file)
-                )
-                self.stdout.write(
-                    self.style.ERROR(e)
-                )
-                errorcount = errorcount + 1
 
         if errorcount != 0:
             self.stdout.write(
