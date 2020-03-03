@@ -56,7 +56,7 @@ class RecordOfSale(Auditable):
         RecordOfSaleStatuses,
         max_length=20,
         null=False,
-        default=VINStatuses.UNCHECKED,
+        default=RecordOfSaleStatuses.NEW,
         db_comment="The validation status of this record of sale. Valid statuses: "
                    "{statuses}".format(
             statuses=[c.name for c in RecordOfSaleStatuses]

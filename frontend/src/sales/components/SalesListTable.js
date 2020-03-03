@@ -8,29 +8,44 @@ import ReactTable from 'react-table';
 import history from '../../app/History';
 
 const SalesListTable = (props) => {
-  const columns = [{
-    accessor: 'submissionDate',
-    className: 'text-center',
-    Header: 'Submission Date',
-  }, {
-    accessor: 'totalSales',
-    className: 'text-right',
-    Header: 'Total Sales',
-  }, {
-    accessor: (row) => (row.credits.a),
-    className: 'text-right',
-    Header: 'A-Credits',
-    id: 'credits-a',
-  }, {
-    accessor: (row) => (row.credits.b),
-    className: 'text-right',
-    Header: 'B-Credits',
-    id: 'credits-b',
-  }, {
-    accessor: 'status',
-    className: 'text-center',
-    Header: 'Status',
-  }];
+  const columns = [
+    {
+      Header: 'VIN',
+      accessor: 'vin',
+    },
+    {
+      Header: 'VIN Status',
+      accessor: 'vinValidationStatus',
+    },
+    {
+      Header: 'Make',
+      accessor: 'vehicle.make',
+    },
+    {
+      Header: 'Model',
+      accessor: 'vehicle.modelName',
+    },
+    {
+      Header: 'Sale Date',
+      accessor: 'saleDate',
+    },
+    {
+      Header: 'Range',
+      accessor: 'vehicle.range',
+    },
+    {
+      Header: 'Class Code',
+      accessor: 'vehicle.vehicleClassCode',
+    },
+    {
+      Header: 'Fuel Type',
+      accessor: 'vehicle.vehicleFuelType',
+    },
+    {
+      Header: 'Range',
+      accessor: 'vehicle.range',
+    },
+  ];
 
   const filterMethod = (filter, row) => {
     const id = filter.pivotId || filter.id;
@@ -54,19 +69,6 @@ const SalesListTable = (props) => {
         id: 'submissionDate',
       }]}
       filterable={filterable}
-      getTrProps={(state, row) => {
-        if (row && row.original) {
-          return {
-            onClick: () => {
-              const { id } = row.original;
-              history.push(`/sales/${id}`);
-            },
-            className: 'clickable',
-          };
-        }
-
-        return {};
-      }}
       pageSizeOptions={[5, 10, 15, 20, 25, 50, 100]}
     />
   );
@@ -75,8 +77,7 @@ const SalesListTable = (props) => {
 SalesListTable.defaultProps = {};
 
 SalesListTable.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.shape({
-  })).isRequired,
+  items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
 
 export default SalesListTable;

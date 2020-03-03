@@ -2,56 +2,43 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import Loading from '../app/components/Loading';
+import ROUTES_SALES from '../app/routes/Sales';
 
 import CustomPropTypes from '../app/utilities/props';
 import SalesListPage from './components/SalesListPage';
 
 const SalesListContainer = (props) => {
   const { user } = props;
+  const [sales, setSales] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  return (
-    <SalesListPage
-      sales={[{
-        credits: {
-          a: 487.96,
-          b: 82.26,
-        },
-        id: 1,
-        status: 'PENDING',
-        submissionDate: '2020-01-15',
-        totalSales: 345,
-      }, {
-        credits: {
-          a: 595.84,
-          b: 146.25,
-        },
-        id: 2,
-        status: 'APPROVED',
-        submissionDate: '2019-10-21',
-        totalSales: 412,
-      }, {
-        credits: {
-          a: 344.32,
-          b: 92.37,
-        },
-        id: 3,
-        status: 'APPROVED',
-        submissionDate: '2019-08-24',
-        totalSales: 326,
-      }, {
-        credits: {
-          a: 288.01,
-          b: 72.84,
-        },
-        id: 4,
-        status: 'APPROVED',
-        submissionDate: '2019-06-18',
-        totalSales: 298,
-      }]}
-      user={user}
-    />
-  );
+  const refreshList = (showLoading) => {
+    setLoading(showLoading);
+
+    axios.get(ROUTES_SALES.LIST).then((response) => {
+      setSales(response.data);
+      setLoading(false);
+    });
+  };
+
+  useEffect(() => {
+    refreshList(true);
+  }, []);
+
+
+  if (loading) {
+    return (<Loading />);
+  } else {
+    return (
+      <SalesListPage
+        sales={sales}
+        user={user}
+      />
+    );
+  }
 };
 
 SalesListContainer.propTypes = {
