@@ -30,9 +30,7 @@ class Command(BaseCommand):
         if org_name is None:
             for o in Organization.objects.filter(is_government=False):
                 print(o.name)
-                return
-
-        model_year = ModelYear.objects.get(name='2019')
+            return
 
         org = Organization.objects.get(name=org_name)
 
