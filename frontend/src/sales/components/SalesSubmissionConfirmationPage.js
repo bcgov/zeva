@@ -1,27 +1,24 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
 import PropTypes from 'prop-types';
-import Dropzone from 'react-dropzone';
+import React from 'react';
 
 import CustomPropTypes from '../../app/utilities/props';
-import history from '../../app/History';
-import ExcelFileDrop from './ExcelFileDrop';
 
 const SalesSubmissionConfirmationPage = (props) => {
   const {
     user,
-    submissionID,
+    details,
   } = props;
 
   const actionbar = (
     <div className="row">
       <div className="col-sm-12">
         <div className="action-bar">
+          <span className="left-content">
             <span className="left-content">
-                        <span className="left-content">
-            <FontAwesomeIcon icon="check" />Submission Complete!
-          </span>
+              <FontAwesomeIcon icon="check" />Submission Complete!
             </span>
+          </span>
           <span className="right-content">
             <button
               className="button"
@@ -31,7 +28,7 @@ const SalesSubmissionConfirmationPage = (props) => {
             >
               <FontAwesomeIcon icon="link" /> View Submission
             </button>
-            </span>
+          </span>
         </div>
       </div>
     </div>
@@ -42,7 +39,7 @@ const SalesSubmissionConfirmationPage = (props) => {
 
       <div className="row">
         <div className="col-sm-12">
-          <h1>{user.organization.name} Sales Submission {submissionID}</h1>
+          <h1>{user.organization.name} Sales Submission {details.submissionID}</h1>
         </div>
       </div>
 
@@ -54,8 +51,8 @@ const SalesSubmissionConfirmationPage = (props) => {
             by The Province of British Columbia.
           </p>
           <p>
-            You can view the status of your submission from the <a href={'#'}>Sales</a> table at any time, or
-            <a href={'#'}> here.</a>
+            You can view the status of your submission from the <a href="#">Sales</a> table at any time, or
+            <a href="#"> here.</a>
           </p>
         </div>
       </div>
@@ -65,12 +62,15 @@ const SalesSubmissionConfirmationPage = (props) => {
   );
 };
 
-SalesSubmissionConfirmationPage.defaultProps = {
-  mode: 'edit',
-};
+SalesSubmissionConfirmationPage.defaultProps = {};
 
 SalesSubmissionConfirmationPage.propTypes = {
   user: CustomPropTypes.user.isRequired,
+  details: PropTypes.shape({
+    submissionID: PropTypes.string.isRequired,
+    entries: PropTypes.arrayOf(PropTypes.object),
+    validation_problems: PropTypes.arrayOf(PropTypes.any),
+  }).isRequired,
 };
 
 export default SalesSubmissionConfirmationPage;

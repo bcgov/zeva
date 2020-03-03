@@ -28,4 +28,6 @@ class Command(BaseCommand):
 
         file_name = options['file_name']
 
-        ingest_sales_spreadsheet(file_name)
+        with open(file_name, 'rb') as instream:
+            data = instream.read()
+            ingest_sales_spreadsheet(data)

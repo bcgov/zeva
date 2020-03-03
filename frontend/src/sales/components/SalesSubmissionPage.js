@@ -1,17 +1,18 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import PropTypes from 'prop-types';
-import Dropzone from 'react-dropzone';
+import ROUTES_SALES from '../../app/routes/Sales';
+import download from '../../app/utilities/download';
 
 import CustomPropTypes from '../../app/utilities/props';
-import history from '../../app/History';
 import ExcelFileDrop from './ExcelFileDrop';
 
 const SalesSubmissionPage = (props) => {
   const {
-    mode,
     user,
     upload,
+    setUploadFile,
+    uploadReady
   } = props;
 
   const actionbar = (
@@ -23,6 +24,7 @@ const SalesSubmissionPage = (props) => {
           </span>
           <span className="right-content">
             <button
+              disabled={!uploadReady}
               className="button primary"
               onClick={() => upload()}
               type="button"
@@ -59,7 +61,15 @@ const SalesSubmissionPage = (props) => {
           <div className="well">
             <button
               className="button"
-              onClick={() => {
+              onClick={(e) => {
+                const element = e.target;
+                const original = element.innerHTML;
+
+                element.firstChild.textContent = ' Downloading...';
+
+                return download(ROUTES_SALES.TEMPLATE, {}).then(() => {
+                  element.innerHTML = original;
+                });
               }}
               type="button"
             >
@@ -69,15 +79,23 @@ const SalesSubmissionPage = (props) => {
         </div>
       </div>
 
-      <div className="row">
-        <div className="col-sm-12">
-          <h2>Upload ZEV Sales Information</h2>
+      <div
+        className="row"
+      >
+        <div
+          className="col-sm-12"
+        >
+          <h2> Upload
+            ZEV
+            Sales
+            Information
+          </h2>
           <p>
             One file per submission; all active ZEV models may be submitted in one file.
           </p>
 
           <div className="panel panel-default">
-            <ExcelFileDrop />
+            <ExcelFileDrop setFiles={setUploadFile} />
           </div>
         </div>
       </div>
@@ -87,13 +105,12 @@ const SalesSubmissionPage = (props) => {
   );
 };
 
-SalesSubmissionPage.defaultProps = {
-  mode: 'edit',
-};
+SalesSubmissionPage.defaultProps = {};
 
 SalesSubmissionPage.propTypes = {
-  mode: PropTypes.oneOf(['add', 'edit']),
   upload: PropTypes.func.isRequired,
+  setUploadFile: PropTypes.func.isRequired,
+  uploadReady: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 

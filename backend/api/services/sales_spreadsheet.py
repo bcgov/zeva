@@ -17,9 +17,11 @@ from api.models.vehicle_make_organization import VehicleMakeOrganization
 logger = logging.getLogger('zeva.sales_spreadsheet')
 
 MAGIC = [0x00, 0xd3, 0xc0, 0xde]
+OUTPUT_ROWS = 50
+MAX_READ_ROWS = 50000
 
 
-def create_sales_spreadsheet(organization):
+def create_sales_spreadsheet(organization, stream):
     logger.info('Starting to build spreadsheet for {org}'.format(org=organization.name))
     sheet_count = 0
 
@@ -77,14 +79,15 @@ def create_sales_spreadsheet(organization):
 
             row += 1
 
-            ROW_MAX = 65535
-
-            while row < ROW_MAX:
+            while row < OUTPUT_ROWS:
                 ref = 'Assigned'
                 ws.write(row, 0, '{ref}'.format(ref=ref), style=locked)
                 ws.write(row, 1, '', style=editable)
                 ws.write(row, 2, None, style=editable_date)
                 row += 1
+
+            ws.write(row, 0, 'A maximum of {} entries per sheet will be read. If you need more entries,'
+                             ' use multiple submissions'.format(MAX_READ_ROWS))
 
     descriptor_bytes = [0x00, 0xd3, 0xc0, 0xde]
     descriptor_bytes.extend(pickle.dumps(descriptor))
@@ -97,15 +100,16 @@ def create_sales_spreadsheet(organization):
     logger.info('Descriptor {}'.format(descriptor))
     logger.info('Encoded {}'.format(encoded_descriptor.decode('ascii')))
 
-    wb.save('test.xls')
+    wb.save(stream)
 
 
-def ingest_sales_spreadsheet(file_name):
-    logger.info('Opening file {}'.format(file_name))
+def ingest_sales_spreadsheet(data):
+    logger.info('Opening spreadsheet')
 
-    wb = xlrd.open_workbook(file_name)
+    wb = xlrd.open_workbook(file_contents=data)
 
     validation_problems = []
+    entries = []
 
     try:
         metadata_sheet = wb.sheet_by_name('ZEVA Internal Use')
@@ -117,7 +121,7 @@ def ingest_sales_spreadsheet(file_name):
         if bytes(magic_verification) == bytes(MAGIC):
             logger.info('Good Magic')
         else:
-            validation_problems.append('Bad Magic')
+            validation_problems.append({'row': None, 'message': 'Bad Magic'})
             logger.critical('Unable to parse. Validation problems: {}'.format(validation_problems))
             return
 
@@ -125,19 +129,19 @@ def ingest_sales_spreadsheet(file_name):
         logger.info('Read descriptor: {}'.format(descriptor))
 
     except XLRDError:
-        validation_problems.append('No metadata sheet')
+        validation_problems.append({'row': None, 'message': 'No metadata sheet'})
         logger.critical('Unable to parse. Validation problems: {}'.format(validation_problems))
         return
     except IndexError:
-        validation_problems.append('Expected values not in metadata sheet')
+        validation_problems.append({'row': None, 'message': 'Expected values not in metadata sheet'})
         logger.critical('Unable to parse. Validation problems: {}'.format(validation_problems))
         return
     except binascii.Error:
-        validation_problems.append('Base64 decode failed')
+        validation_problems.append({'row': None, 'message': 'Base64 decode failed'})
         logger.critical('Unable to parse. Validation problems: {}'.format(validation_problems))
         return
     except PickleError:
-        validation_problems.append('Descriptor unpickling error')
+        validation_problems.append({'row': None, 'message': 'Descriptor unpickling error'})
         logger.critical('Unable to parse. Validation problems: {}'.format(validation_problems))
         return
 
@@ -148,42 +152,64 @@ def ingest_sales_spreadsheet(file_name):
             sheet = wb.sheet_by_name(input_sheet['name'])
         except XLRDError:
             logger.info('Sheet {} missing'.format(input_sheet))
-            validation_problems.append('Expected to find a sheet called {}, and it is not present. Skipping it.')
+            validation_problems.append(
+                {'row': None, 'message': 'Expected to find a sheet called {}, and it is not present. Skipping it.'})
             continue
 
         logger.info('Reading sheet {}'.format(input_sheet['name']))
 
         START_ROW = 4
-        ROW_MAX = 65535
         row = START_ROW
 
-        while row < ROW_MAX:
+        while row < min((MAX_READ_ROWS + START_ROW), sheet.nrows):
             row_contents = sheet.row(row)
             vin = row_contents[1].value
             date = row_contents[2].value
             if len(vin) > 0:
                 logger.info('Found VIN {}'.format(vin))
                 if date == '':
-                    validation_problems.append('VIN {} has no corresponding sale date'.format(vin))
+                    validation_problems.append({
+                        'row': row + 1,
+                        'message': 'VIN {} has no corresponding sale date'.format(vin)
+                    })
                 else:
                     try:
                         parsed_date = xlrd.xldate.xldate_as_datetime(date, wb.datemode)
                         logger.debug('I interpret the Excel date string {} as {}'.format(date, parsed_date))
                     except XLDateError:
-                        validation_problems.append('date {} insensible'.format(date))
+                        validation_problems.append({
+                            'row': row + 1,
+                            'message': 'date {} insensible'.format(date)
+                        })
 
                     if RecordOfSale.objects.filter(vin=vin, organization=org).exists():
-                        validation_problems.append(
-                            'VIN {} has previously been recorded (but will be entered anyway)'.format(vin))
+                        validation_problems.append({
+                            'row': row + 1,
+                            'message': 'VIN {} has previously been recorded (but will be entered anyway)'.format(vin)
+                        })
 
                     ros = RecordOfSale.objects.create(
                         organization=org,
                         vehicle=Vehicle.objects.get(id=input_sheet['vehicle_id']),
                         vin=vin,
                         sale_date=parsed_date,
-                        reference_number=None
+                        reference_number=None  # @todo assign from sequence
                     )
                     ros.save()
+                    entries.append(
+                        {'vin': vin,
+                         'vin_validation_status': ros.vin_validation_status.value,
+                         'sale_date': parsed_date,
+                         'id': ros.id,
+                         'credits': '??',
+                         'model': ros.vehicle.model_name,
+                         'model_year': ros.vehicle.model_year.name,
+                         'make': ros.vehicle.make.name,
+                         'class': ros.vehicle.vehicle_class_code.vehicle_class_code,
+                         'range': ros.vehicle.range,
+                         'type': ros.vehicle.vehicle_fuel_type.vehicle_fuel_code,
+                         }
+                    )
                     logger.info('Recorded sale {}'.format(vin))
 
             row += 1
@@ -191,4 +217,10 @@ def ingest_sales_spreadsheet(file_name):
     if len(validation_problems) > 0:
         logger.info('Noncritical validation errors encountered: {}'.format(validation_problems))
 
-    logger.info('Done processing file {}'.format(file_name))
+    logger.info('Done processing spreadsheet')
+
+    return {
+        'submissionID': datetime.now().strftime("%Y-%m-%d"),
+        'validation_problems': validation_problems,
+        'entries': entries,
+    }

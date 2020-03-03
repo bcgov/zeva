@@ -1,14 +1,17 @@
+import json
+from datetime import datetime
+
+from django.core.serializers.json import DjangoJSONEncoder
+from django.http import HttpResponse
+from requests import Response
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
-from django.db.models import F, Q
 
 from api.models.record_of_sale import RecordOfSale
 from api.models.record_of_sale_statuses import RecordOfSaleStatuses
-from api.models.user_profile import UserProfile
 from api.serializers.record_of_sale import RecordOfSaleSerializer
-from api.serializers.user import UserSerializer
+from api.services.sales_spreadsheet import create_sales_spreadsheet, ingest_sales_spreadsheet
 from auditable.views import AuditableMixin
 
 
@@ -17,7 +20,7 @@ class RecordOfSaleViewset(
     mixins.ListModelMixin, mixins.RetrieveModelMixin
 ):
     permission_classes = (AllowAny,)
-    http_method_names = ['get', ]
+    http_method_names = ['get', 'post']
 
     def get_queryset(self):
         user = self.request.user
@@ -39,3 +42,27 @@ class RecordOfSaleViewset(
             return self.serializer_classes[self.action]
 
         return self.serializer_classes['default']
+
+    @action(detail=False)
+    def template(self, request):
+        user = request.user
+        response = HttpResponse(content_type='application/ms-excel')
+        create_sales_spreadsheet(user.organization, response)
+        response['Content-Disposition'] = (
+            'attachment; filename="BC-ZEVA_Sales_Template_{org}_{date}.xls"'.format(
+                org=user.organization.name,
+                date=datetime.now().strftime(
+                    "_%Y-%m-%d")
+            ))
+        return response
+
+    @action(detail=False, methods=['post'])
+    def upload(self, request):
+        # user = request.user
+        data = request.FILES['files'].read()
+        result = ingest_sales_spreadsheet(data)
+        jsondata = json.dumps(result,
+                              sort_keys=True,
+                              indent=1,
+                              cls=DjangoJSONEncoder)
+        return HttpResponse(status=201, content=jsondata, content_type='application/json')

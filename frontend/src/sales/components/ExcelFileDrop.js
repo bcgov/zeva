@@ -1,13 +1,15 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useDropzone } from 'react-dropzone';
+import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
 
-function ExcelFileDrop() {
+const ExcelFileDrop = (props) => {
+  const { setFiles } = props;
   const onDrop = useCallback((acceptedFiles) => {
-    console.log(acceptedFiles);
+    setFiles(acceptedFiles);
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
   return (
     <div {...getRootProps()}>
@@ -17,12 +19,16 @@ function ExcelFileDrop() {
           <div className="file-upload">
             <FontAwesomeIcon icon="upload" />
             <br />
-            Drop files here, or click to open file selection dialog
+            Drop file here, or click to open file selection dialog
           </div>
         </div>
       }
     </div>
   );
-}
+};
+
+ExcelFileDrop.propTypes = {
+  setFiles: PropTypes.func.isRequired,
+};
 
 export default ExcelFileDrop;
