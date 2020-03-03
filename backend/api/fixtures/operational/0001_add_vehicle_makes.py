@@ -21,10 +21,6 @@ class AddVehicleMakes(OperationalDataScript):
     ]
 
     def check_run_preconditions(self):
-        for make_name in self.list_of_makes:
-            if Make.objects.filter(name=make_name).exists():
-                return False
-
         return True
 
     @transaction.atomic
