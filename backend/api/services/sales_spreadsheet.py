@@ -13,7 +13,6 @@ from api.models.organization import Organization
 from api.models.record_of_sale import RecordOfSale
 from api.models.vehicle import Vehicle
 from api.models.vehicle_make_organization import VehicleMakeOrganization
-from api.models.vin_statuses import VINStatuses
 
 logger = logging.getLogger('zeva.sales_spreadsheet')
 
