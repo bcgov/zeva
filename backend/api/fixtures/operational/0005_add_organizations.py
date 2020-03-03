@@ -13,73 +13,75 @@ class AddOrganizations(OperationalDataScript):
     is_revertable = False
     comment = 'Adds the known suppliers from the consumer reports'
 
+    list_of_organizations = [{
+        "name": "BMW Canada Inc.",
+        "makes": ["BMW"]
+    }, {
+        "name": "FCA Canada Inc.",
+        "makes": ["Chrysler", "Fiat"]
+    }, {
+        "name": "Ford Motor Company of Canada Ltd.",
+        "makes": ["Ford"]
+    }, {
+        "name": "General Motors of Canada Company",
+        "makes": ["GMC"]
+    }, {
+        "name": "Honda Canada Inc.",
+        "makes": ["Honda"]
+    }, {
+        "name": "Hyundai Auto Canada Corp.",
+        "makes": ["Hyundai"]
+    }, {
+        "name": "Jaguar Land Rover Canada ULC",
+        "makes": ["Jaguar"]
+    }, {
+        "name": "Kia Canada Inc.",
+        "makes": ["Kia"]
+    }, {
+        "name": "Mazda Canada Inc.",
+        "makes": ["Mazda"]
+    }, {
+        "name": "Mercedes-Benz Canada Inc.",
+        "makes": ["Mercedes-Benz"]
+    }, {
+        "name": "Mitsubishi Motor Sales of Canada Inc.",
+        "makes": ["Mitsubishi"]
+    }, {
+        "name": "Nissan Canada Inc.",
+        "makes": ["Nissan"]
+    }, {
+        "name": "Porsche Cars Canada, Ltd.",
+        "makes": ["Porsche"]
+    }, {
+        "name": "Subaru Canada Inc.",
+        "makes": ["Subaru"]
+    }, {
+        "name": "Suzuki",
+        "makes": ["Suzuki"]
+    }, {
+        "name": "Tesla Motors Canada ULC",
+        "makes": ["Tesla"]
+    }, {
+        "name": "Toyota Canada Inc.",
+        "makes": ["Toyota"]
+    }, {
+        "name": "Volkswagen Group Canada Inc.",
+        "makes": ["Volkswagen"]
+    }, {
+        "name": "Volvo Car Canada Ltd.",
+        "makes": ["Volvo"]
+    }]
+
+
     def check_run_preconditions(self):
         return True
 
     @transaction.atomic
     def run(self):
-        list_of_organizations = [{
-            "name": "BMW Canada Inc.",
-            "makes": ["BMW"]
-        }, {
-            "name": "FCA Canada Inc.",
-            "makes": ["Chrysler", "Fiat"]
-        }, {
-            "name": "Ford Motor Company of Canada Ltd.",
-            "makes": ["Ford"]
-        }, {
-            "name": "General Motors of Canada Company",
-            "makes": ["GMC"]
-        }, {
-            "name": "Honda Canada Inc.",
-            "makes": ["Honda"]
-        }, {
-            "name": "Hyundai Auto Canada Corp.",
-            "makes": ["Hyundai"]
-        }, {
-            "name": "Jaguar Land Rover Canada ULC",
-            "makes": ["Jaguar"]
-        }, {
-            "name": "Kia Canada Inc.",
-            "makes": ["Kia"]
-        }, {
-            "name": "Mazda Canada Inc.",
-            "makes": ["Mazda"]
-        }, {
-            "name": "Mercedes-Benz Canada Inc.",
-            "makes": ["Mercedes-Benz"]
-        }, {
-            "name": "Mitsubishi Motor Sales of Canada Inc.",
-            "makes": ["Mitsubishi"]
-        }, {
-            "name": "Nissan Canada Inc.",
-            "makes": ["Nissan"]
-        }, {
-            "name": "Porsche Cars Canada, Ltd.",
-            "makes": ["Porsche"]
-        }, {
-            "name": "Subaru Canada Inc.",
-            "makes": ["Subaru"]
-        }, {
-            "name": "Suzuki",
-            "makes": ["Suzuki"]
-        }, {
-            "name": "Tesla Motors Canada ULC",
-            "makes": ["Tesla"]
-        }, {
-            "name": "Toyota Canada Inc.",
-            "makes": ["Toyota"]
-        }, {
-            "name": "Volkswagen Group Canada Inc.",
-            "makes": ["Volkswagen"]
-        }, {
-            "name": "Volvo Car Canada Ltd.",
-            "makes": ["Volvo"]
-        }]
 
         organizations_added = 0
 
-        for organization in list_of_organizations:
+        for organization in self.list_of_organizations:
             organization_name = organization.get("name")
             (organization_model, created) = Organization.objects.get_or_create(
                 name=organization_name,
