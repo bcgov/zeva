@@ -51,7 +51,7 @@ const Footer = () => (
         activeClassName="active"
         to="/"
       >
-        Contact Us TTTAABB
+        Contact Us
       </NavLink>
     </div>
   </div>
