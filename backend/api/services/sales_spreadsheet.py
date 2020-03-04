@@ -21,11 +21,9 @@ OUTPUT_ROWS = 50
 MAX_READ_ROWS = 50000
 
 
-def create_sales_spreadsheet(organization, stream):
+def create_sales_spreadsheet(organization, model_year, stream):
     logger.info('Starting to build spreadsheet for {org}'.format(org=organization.name))
     sheet_count = 0
-
-    make_assoc = VehicleMakeOrganization.objects.filter(organization=organization)
 
     bold = xlwt.easyxf('font: name Times New Roman, bold on;')
     locked = xlwt.easyxf("protection: cell_locked true;")
@@ -36,23 +34,35 @@ def create_sales_spreadsheet(organization, stream):
     wb.protect = True
 
     descriptor = {
-        'version': 1,
+        'version': 2,
+        'model_year': model_year.name,
         'create_time': datetime.utcnow().timestamp(),
         'organization_id': organization.id,
         'sheets': []
     }
+
+    sheet_names = {}
+    make_assoc = VehicleMakeOrganization.objects.filter(organization=organization)
 
     for ma in make_assoc:
         make = ma.vehicle_make
         logger.info('{org} supplies {name}'.format(org=organization.name,
                                                    name=make.name))
 
-        vehicles = Vehicle.objects.filter(make=make)
+        vehicles = Vehicle.objects.filter(make=make, model_year=model_year)
         for veh in vehicles:
             logger.info('{make} has model {model}'.format(make=make.name,
                                                           model=veh.model_name))
 
             sheet_name = '{} - {}'.format(make.name, veh.model_name)
+            if sheet_name not in sheet_names.keys():
+                sheet_names[sheet_name] = 0
+
+            sheet_names[sheet_name] += 1
+
+            if sheet_names[sheet_name] > 1:
+                sheet_name = '{} - {} - Alternate {}'.format(make.name, veh.model_name, sheet_names[sheet_name]-1)
+
             ws = wb.add_sheet(sheet_name)
             ws.protect = True
             descriptor['sheets'].append({
@@ -103,8 +113,11 @@ def create_sales_spreadsheet(organization, stream):
     wb.save(stream)
 
 
-def ingest_sales_spreadsheet(data):
+def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=False):
     logger.info('Opening spreadsheet')
+
+    if requesting_user is None and skip_authorization is False:
+        raise Exception('requesting_user is None and skip_authorization is disabled')
 
     wb = xlrd.open_workbook(file_contents=data)
 
@@ -147,6 +160,14 @@ def ingest_sales_spreadsheet(data):
 
     org = Organization.objects.get(id=descriptor['organization_id'])
 
+    if not skip_authorization and org != requesting_user.organization:
+        validation_problems.append({'row': None, 'message': 'Organization mismatch!'})
+        logger.critical('Organization mismatch!')
+        return
+
+    make_assoc = VehicleMakeOrganization.objects.filter(organization=org)
+    permitted_makes = [ma.vehicle_make for ma in make_assoc]
+
     for input_sheet in descriptor['sheets']:
         try:
             sheet = wb.sheet_by_name(input_sheet['name'])
@@ -173,6 +194,7 @@ def ingest_sales_spreadsheet(data):
                         'message': 'VIN {} has no corresponding sale date'.format(vin)
                     })
                 else:
+                    parsed_date = None
                     try:
                         parsed_date = xlrd.xldate.xldate_as_datetime(date, wb.datemode)
                         logger.debug('I interpret the Excel date string {} as {}'.format(date, parsed_date))
@@ -188,29 +210,36 @@ def ingest_sales_spreadsheet(data):
                             'message': 'VIN {} has previously been recorded (but will be entered anyway)'.format(vin)
                         })
 
-                    ros = RecordOfSale.objects.create(
-                        organization=org,
-                        vehicle=Vehicle.objects.get(id=input_sheet['vehicle_id']),
-                        vin=vin,
-                        sale_date=parsed_date,
-                        reference_number=None  # @todo assign from sequence
-                    )
-                    ros.save()
-                    entries.append(
-                        {'vin': vin,
-                         'vin_validation_status': ros.vin_validation_status.value,
-                         'sale_date': parsed_date,
-                         'id': ros.id,
-                         'credits': '??',
-                         'model': ros.vehicle.model_name,
-                         'model_year': ros.vehicle.model_year.name,
-                         'make': ros.vehicle.make.name,
-                         'class': ros.vehicle.vehicle_class_code.vehicle_class_code,
-                         'range': ros.vehicle.range,
-                         'type': ros.vehicle.vehicle_fuel_type.vehicle_fuel_code,
-                         }
-                    )
-                    logger.info('Recorded sale {}'.format(vin))
+                    vehicle = Vehicle.objects.get(id=input_sheet['vehicle_id'])
+                    if vehicle is None or vehicle.make not in permitted_makes:
+                        validation_problems.append({'row': None, 'message': 'Vehicle not found or has incorrect make'})
+                        logger.critical('Vehicle not found or has incorrect make')
+                        return
+
+                    if parsed_date:
+                        ros = RecordOfSale.objects.create(
+                            organization=org,
+                            vehicle=vehicle,
+                            vin=vin,
+                            sale_date=parsed_date,
+                            reference_number=None  # @todo assign from sequence
+                        )
+                        ros.save()
+                        entries.append(
+                            {'vin': vin,
+                             'vin_validation_status': ros.vin_validation_status.value,
+                             'sale_date': parsed_date,
+                             'id': ros.id,
+                             'credits': '??',
+                             'model': ros.vehicle.model_name,
+                             'model_year': ros.vehicle.model_year.name,
+                             'make': ros.vehicle.make.name,
+                             'class': ros.vehicle.vehicle_class_code.vehicle_class_code,
+                             'range': ros.vehicle.range,
+                             'type': ros.vehicle.vehicle_fuel_type.vehicle_fuel_code,
+                             }
+                        )
+                        logger.info('Recorded sale {}'.format(vin))
 
             row += 1
 

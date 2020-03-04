@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import ROUTES_SALES from '../../app/routes/Sales';
 import download from '../../app/utilities/download';
@@ -12,8 +12,11 @@ const SalesSubmissionPage = (props) => {
     user,
     upload,
     setUploadFile,
-    uploadReady
+    uploadReady,
+    years,
   } = props;
+
+  const [selectedYear, setSelectedYear] = useState(null);
 
   const actionbar = (
     <div className="row">
@@ -59,15 +62,25 @@ const SalesSubmissionPage = (props) => {
           </p>
 
           <div className="well">
+            <select
+              onChange={(e) => {
+                setSelectedYear(e.target.value);
+              }}
+              defaultValue="Select a model year"
+            >
+              <option>Select a model year</option>
+              {years.map((y) => (<option key={y.name} value={y.name}>{y.name}</option>))}
+            </select>
             <button
               className="button"
+              disabled={selectedYear === null || selectedYear === 'Select a model year'}
               onClick={(e) => {
                 const element = e.target;
                 const original = element.innerHTML;
 
                 element.firstChild.textContent = ' Downloading...';
 
-                return download(ROUTES_SALES.TEMPLATE, {}).then(() => {
+                return download(ROUTES_SALES.TEMPLATE.replace(':yearName', selectedYear), {}).then(() => {
                   element.innerHTML = original;
                 });
               }}
@@ -112,6 +125,7 @@ SalesSubmissionPage.propTypes = {
   setUploadFile: PropTypes.func.isRequired,
   uploadReady: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired,
+  years: CustomPropTypes.years.isRequired,
 };
 
 export default SalesSubmissionPage;

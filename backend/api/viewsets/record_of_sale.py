@@ -8,6 +8,7 @@ from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 
+from api.models.model_year import ModelYear
 from api.models.record_of_sale import RecordOfSale
 from api.models.record_of_sale_statuses import RecordOfSaleStatuses
 from api.serializers.record_of_sale import RecordOfSaleSerializer
@@ -47,9 +48,11 @@ class RecordOfSaleViewset(
     def template(self, request):
         user = request.user
         response = HttpResponse(content_type='application/ms-excel')
-        create_sales_spreadsheet(user.organization, response)
+        my = ModelYear.objects.get(name=request.GET['year'])
+        create_sales_spreadsheet(user.organization, my, response)
         response['Content-Disposition'] = (
-            'attachment; filename="BC-ZEVA_Sales_Template_{org}_{date}.xls"'.format(
+            'attachment; filename="BC-ZEVA_Sales_Template_MY{my}_{org}_{date}.xls"'.format(
+                my=my.name,
                 org=user.organization.name,
                 date=datetime.now().strftime(
                     "_%Y-%m-%d")
@@ -58,9 +61,9 @@ class RecordOfSaleViewset(
 
     @action(detail=False, methods=['post'])
     def upload(self, request):
-        # user = request.user
+        user = request.user
         data = request.FILES['files'].read()
-        result = ingest_sales_spreadsheet(data)
+        result = ingest_sales_spreadsheet(data, requesting_user=user)
         jsondata = json.dumps(result,
                               sort_keys=True,
                               indent=1,

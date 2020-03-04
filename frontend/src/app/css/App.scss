@@ -121,8 +121,17 @@ p {
   color: $primary-blue;
   padding: 0.5rem 1rem;
 
+  &:disabled {
+    background-color: $default-background-grey;
+    color: desaturate($primary-blue, 50%);
+  }
+
   &.primary {
     background-color: $default-background-blue;
+    color: $white;
+  }
+  &.primary:disabled {
+    background-color: desaturate($default-background-blue, 50%);
     color: $white;
   }
 }
@@ -150,7 +159,6 @@ p {
 .well {
   background-color: $default-background-grey;
   display: flex;
-  justify-content: space-between;
   margin: 1rem 0;
   padding: 1rem;
   text-align: left;
@@ -160,6 +168,8 @@ p {
   }
 
   > * {
+    margin-left: 1rem;
+    margin-right: 1rem;
     align-self: center;
     display: flex;
   }

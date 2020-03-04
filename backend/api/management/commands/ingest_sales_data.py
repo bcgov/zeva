@@ -30,4 +30,4 @@ class Command(BaseCommand):
 
         with open(file_name, 'rb') as instream:
             data = instream.read()
-            ingest_sales_spreadsheet(data)
+            ingest_sales_spreadsheet(data, skip_authorization=True)

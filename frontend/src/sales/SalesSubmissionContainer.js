@@ -8,13 +8,14 @@ import ROUTES_SALES from '../app/routes/Sales';
 
 import CustomPropTypes from '../app/utilities/props';
 import upload from '../app/utilities/upload';
+import withReferenceData from '../app/utilities/with_reference_data';
 import SalesSubmissionConfirmationPage from './components/SalesSubmissionConfirmationPage';
 import SalesSubmissionPage from './components/SalesSubmissionPage';
 import SalesSubmissionSignaturesPage from './components/SalesSubmissionSignaturesPage';
 import SalesSubmissionValidationPage from './components/SalesSubmissionValidationPage';
 
 const SalesSubmissionContainer = (props) => {
-  const { user } = props;
+  const { user, referenceData } = props;
 
   const [workflowState, setWorkflowState] = useState('new');
 
@@ -90,6 +91,7 @@ const SalesSubmissionContainer = (props) => {
         <SalesSubmissionPage
           user={user}
           upload={doUpload}
+          years={referenceData.years}
           uploadReady={files.length > 0}
           setUploadFile={setFiles}
         />
@@ -98,13 +100,9 @@ const SalesSubmissionContainer = (props) => {
 
 };
 
-SalesSubmissionContainer.defaultProps = {
-  mode: 'edit',
-};
-
 SalesSubmissionContainer.propTypes = {
   user: CustomPropTypes.user.isRequired,
-  mode: PropTypes.oneOf(['add', 'edit']),
+  referenceData: CustomPropTypes.referenceData.isRequired,
 };
 
-export default SalesSubmissionContainer;
+export default withReferenceData(SalesSubmissionContainer)();
