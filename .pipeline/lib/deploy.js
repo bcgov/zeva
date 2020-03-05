@@ -26,7 +26,7 @@ module.exports = settings => {
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
       'ENV_NAME': phases[phase].phase,
-      'BACKEND_HOST': phases[phase].host,
+      'BACKEND_HOST': `sso${phases[phase].ssoSuffix}`,
       'SSO_NAME': 'sso-dev',
       'KEYCLOAK_REALM': 'rzh2zkjq'
     }
