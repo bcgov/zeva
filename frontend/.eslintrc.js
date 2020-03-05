@@ -24,12 +24,19 @@ module.exports = {
     '@typescript-eslint',
   ],
   rules: {
-    "react/jsx-props-no-spreading": [0],
-    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
-    "react/jsx-one-expression-per-line": "off",
-    "jsx-a11y/label-has-associated-control": [2, {
-      "labelAttributes": ["label"],
+    'react/jsx-props-no-spreading': [0],
+    'react/jsx-filename-extension': [1, { 'extensions': ['.js', '.jsx'] }],
+    'import/no-extraneous-dependencies': ['error', { 'devDependencies': true }],
+    'react/jsx-one-expression-per-line': 'off',
+    'jsx-a11y/label-has-associated-control': [2, {
+      'labelAttributes': ['label'],
     }],
-  },
+    'no-plusplus':
+      [2,
+        {
+          'allowForLoopAfterthoughts':
+            true
+        }
+      ]
+  }
 };

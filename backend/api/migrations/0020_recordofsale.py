@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 ('vin_validation_status', enumfields.fields.EnumField(default=('UNCHECKED',), enum=api.models.vin_statuses.VINStatuses, max_length=30)),
                 ('sale_date', models.DateField(blank=True, null=True)),
                 ('submission_date', models.DateField(auto_now=True, null=True)),
-                ('validation_status', enumfields.fields.EnumField(default=('UNCHECKED',), enum=api.models.record_of_sale_statuses.RecordOfSaleStatuses, max_length=20)),
+                ('validation_status', enumfields.fields.EnumField(default=('NEW',), enum=api.models.record_of_sale_statuses.RecordOfSaleStatuses, max_length=20)),
                 ('create_user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='api_recordofsale_CREATE_USER', to='api.UserProfile')),
                 ('organization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sales', to='api.Organization')),
                 ('update_user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='api_recordofsale_UPDATE_USER', to='api.UserProfile')),

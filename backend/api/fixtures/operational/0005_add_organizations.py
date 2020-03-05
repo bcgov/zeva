@@ -74,6 +74,10 @@ class AddOrganizations(OperationalDataScript):
 
 
     def check_run_preconditions(self):
+        for org in self.list_of_organizations:
+            if Organization.objects.filter(name=org['name']).exists():
+                return False
+
         return True
 
     @transaction.atomic
