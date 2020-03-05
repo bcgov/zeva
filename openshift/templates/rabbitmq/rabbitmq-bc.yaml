@@ -8,10 +8,10 @@ parameters:
   - name: ENV_NAME
     required: true
   - name: ADMIN_PASSWORD
-    description: rabbitmq admin password according to ENV_NAME
+    description: rabbitmq admin password according to env
     required: true
   - name: ZEVA_PASSWORD
-    description: rabbitmq zeva password according to ENV_NAME
+    description: rabbitmq zeva password according to env
     required: true
 objects:
   - kind: BuildConfig
@@ -40,17 +40,17 @@ objects:
             - name: ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: zeva-rabbitmq-${ENV_NAME}
+                  name: zeva-rabbitmq
                   key: ADMIN_PASSWORD
             - name: ZEVA_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: zeva-rabbitmq-${ENV_NAME}
+                  name: zeva-rabbitmq
                   key: ZEVA_PASSWORD
       output:
         to:
           kind: ImageStreamTag
-          name: rabbitmq:latest
+          name: rabbitmq:${ENV_NAME}
       resources: {}
       postCommit: {}
       nodeSelector:
