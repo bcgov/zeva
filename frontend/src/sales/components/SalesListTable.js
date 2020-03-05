@@ -41,10 +41,6 @@ const SalesListTable = (props) => {
       Header: 'Fuel Type',
       accessor: 'vehicle.vehicleFuelType',
     },
-    {
-      Header: 'Range',
-      accessor: 'vehicle.range',
-    },
   ];
 
   const filterMethod = (filter, row) => {

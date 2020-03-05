@@ -19,8 +19,6 @@ const SalesSubmissionContainer = (props) => {
 
   const [workflowState, setWorkflowState] = useState('new');
 
-  const submissionID = '2020-02-28';
-
   const [details, setDetails] = useState({
     entries: [],
     validationMessages: [],
@@ -60,7 +58,6 @@ const SalesSubmissionContainer = (props) => {
         <SalesSubmissionSignaturesPage
           user={user}
           sign={sign}
-          submissionID={submissionID}
           backToValidationPage={backToValidationPage}
           details={details}
         />
@@ -70,7 +67,6 @@ const SalesSubmissionContainer = (props) => {
         <SalesSubmissionValidationPage
           user={user}
           readyToSign={readyToSign}
-          submissionID={submissionID}
           details={details}
           backToStart={backToStart}
         />
@@ -79,7 +75,6 @@ const SalesSubmissionContainer = (props) => {
       return (
         <SalesSubmissionConfirmationPage
           user={user}
-          submissionID={submissionID}
           details={details}
         />
       );

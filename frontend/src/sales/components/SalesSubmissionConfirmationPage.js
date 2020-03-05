@@ -39,7 +39,7 @@ const SalesSubmissionConfirmationPage = (props) => {
 
       <div className="row">
         <div className="col-sm-12">
-          <h1>{user.organization.name} Sales Submission {details.submissionID}</h1>
+          <h1>{user.organization.name} ZEV Sales Submission {details.submissionID}</h1>
         </div>
       </div>
 
