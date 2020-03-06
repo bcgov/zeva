@@ -140,6 +140,10 @@
       "apiVersion": "v1",
       "metadata": {
         "name": "${NAME}-pv-claim",
+        "annotations": {
+          "volume.beta.kubernetes.io/storage-class": "netapp-file-standard",
+          "template.openshift.io.bcgov/create": "true"
+        },
         "labels": {
           "app": "${NAME}"
         }
