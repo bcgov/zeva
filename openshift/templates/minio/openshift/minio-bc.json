@@ -121,7 +121,7 @@
       "displayName": "Git Reference",
       "description": "The git reference or branch.",
       "required": true,
-      "value": "release-sprint-6"
+      "value": "pipeline-6-7"
     },
     {
       "name": "SOURCE_CONTEXT_DIR",
