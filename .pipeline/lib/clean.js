@@ -27,8 +27,10 @@ module.exports = settings => {
       const phase = phases[k];
       oc.namespace(phase.namespace);
 
-      const kc = new KeyCloakClient(settings, oc);
-      kc.removeUris();
+      if(k === 'dev') {
+        const kc = new KeyCloakClient(settings, oc);
+        kc.removeUris();
+      }
 
       let buildConfigs = oc.get("bc", {
         selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,

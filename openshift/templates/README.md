@@ -35,28 +35,28 @@ oc process -f config/zeva-postgresql-init.yaml | oc create -f - -n tbiwaq-prod -
 #### Create 3 Rabbitmq Secrets on tools
 In tools project, create one rabbitmq-secret for each env, dev, test and prod. use oc create, don't override them.
 * under config folder:  
-oc process -f rabbitmq-secret.yaml ENV_NAME=dev | oc create -f - -n tbiwaq-tools --dry-run=true  
-oc process -f rabbitmq-secret.yaml ENV_NAME=test | oc create -f - -n tbiwaq-tools --dry-run=true  
-oc process -f rabbitmq-secret.yaml ENV_NAME=prod | oc create -f - -n tbiwaq-tools --dry-run=true  
+oc process -f config/rabbitmq-secret.yaml ENV_NAME=dev | oc create -f - -n tbiwaq-tools --dry-run=true  
+oc process -f config/rabbitmq-secret.yaml ENV_NAME=test | oc create -f - -n tbiwaq-tools --dry-run=true  
+oc process -f config/rabbitmq-secret.yaml ENV_NAME=prod | oc create -f - -n tbiwaq-tools --dry-run=true  
 
 #### Run Rabbitmq build on tools
 Build one Rabbitmq image for each environment
 * under rabbitmq folder:  
-oc process -f ./rabbitmq-bc.yaml ENV_NAME=dev ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc apply -f - -n tbiwaq-dev --dry-run=true  
-oc process -f ./rabbitmq-bc.yaml ENV_NAME=test ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc apply -f - -n tbiwaq-test --dry-run=true  
-oc process -f ./rabbitmq-bc.yaml ENV_NAME=prod ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc apply -f - -n tbiwaq-prod --dry-run=true  
+oc process -f rabbitmq/rabbitmq-bc.yaml ENV_NAME=dev ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc apply -f - -n tbiwaq-dev --dry-run=true  
+oc process -f rabbitmq/rabbitmq-bc.yaml ENV_NAME=test ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc apply -f - -n tbiwaq-test --dry-run=true  
+oc process -f rabbitmq/rabbitmq-bc.yaml ENV_NAME=prod ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc apply -f - -n tbiwaq-prod --dry-run=true  
 
 #### Create Rabbitmq Secret on dev, test and prod
 * under config folder: make sure the secret is same as the one under tools project
-oc process -f rabbitmq-secret-env.yaml ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc create -f - -n tbiwaq-dev --dry-run=true
-oc process -f rabbitmq-secret-env.yaml ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc create -f - -n tbiwaq-test --dry-run=true
-oc process -f rabbitmq-secret-env.yaml ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc create -f - -n tbiwaq-prod --dry-run=true
+oc process -f config/rabbitmq-secret-env.yaml ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc create -f - -n tbiwaq-dev --dry-run=true
+oc process -f config/rabbitmq-secret-env.yaml ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc create -f - -n tbiwaq-test --dry-run=true
+oc process -f config/rabbitmq-secret-env.yaml ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc create -f - -n tbiwaq-prod --dry-run=true
 
 #### Deploy Rabbitmq on dev, test and prod
 * under rabbitmq folder:
-oc process -f ./rabbitmq-dc.yaml ENV_NAME=dev | oc apply -f - -n tbiwaq-dev --dry-run=true
-oc process -f ./rabbitmq-dc.yaml ENV_NAME=test | oc apply -f - -n tbiwaq-test --dry-run=true
-oc process -f ./rabbitmq-dc.yaml ENV_NAME=prod | oc apply -f - -n tbiwaq-prod --dry-run=true
+oc process -f rabbitmq/rabbitmq-dc.yaml ENV_NAME=dev | oc apply -f - -n tbiwaq-dev --dry-run=true
+oc process -f rabbitmq/rabbitmq-dc.yaml ENV_NAME=test | oc apply -f - -n tbiwaq-test --dry-run=true
+oc process -f rabbitmq/rabbitmq-dc.yaml ENV_NAME=prod | oc apply -f - -n tbiwaq-prod --dry-run=true
 
 
 
