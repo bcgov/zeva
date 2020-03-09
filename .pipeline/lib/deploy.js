@@ -34,6 +34,17 @@ module.exports = settings => {
     }
   }))
 
+  // deploy minio
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/minio/minio-dc.yaml`, {
+    'param': {
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix,
+      'ENV_NAME': phases[phase].phase,
+      'PVC_SIZE': phases[phase].minioPvcSize
+    }
+  }))
+
+
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/postgresql/postgresql-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,

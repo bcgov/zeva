@@ -23,6 +23,7 @@ module.exports = settings => {
     }
   }))
    */
+
   // build frontend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-bc.yaml`, {
     'param':{
