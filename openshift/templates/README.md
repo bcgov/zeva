@@ -13,8 +13,17 @@ oc tag registry.access.redhat.com/rhscl/python-36-rhel7:1-63 tbiwaq-tools/python
 #### Tag rhel7-atomic:77.371 from RedHat image repo to tools project
 oc tag registry.access.redhat.com/rhel7-atomic:7.7-371 tbiwaq-tools/rhel7-atomic:7.7-371
 
+### Tag Minio base image 7.7-481 from RedHat image repo to tools project
+## Build minio image for zeva and tag it to environment
+oc tag registry.access.redhat.com/rhel7/rhel:7.7-481 tbiwaq-tools/rhel7:7.7-481
+oc process -f minio/minio-bc.yaml GIT_URL=https://github.com/bcgov/zeva.git GIT_REF=pipeline-6-7 | oc apply -f - -n tbiwaq-tools --dry-run=true
+oc tag tbiwaq-tools/minio:latest tbiwaq-dev/minio:dev
+oc tag tbiwaq-tools/minio:latest tbiwaq-dev/minio:test
+oc tag tbiwaq-tools/minio:latest tbiwaq-dev/minio:prod
+
 ### Update Jenkins build-master.yaml SOURCE_IMAGE_STREAM_NAMESPACE and SOURCE_IMAGE_STREAM_TAG
 Trigger the .jenkins pipeline
+
 
 ### Create Secrets for dev, test and prod
 oc process -f config/secrets.yaml | oc create -f - -n tbiwaq-dev --dry-run=true
@@ -60,4 +69,3 @@ oc process -f rabbitmq/rabbitmq-dc.yaml ENV_NAME=prod | oc apply -f - -n tbiwaq-
 
 
 
-### Minio
