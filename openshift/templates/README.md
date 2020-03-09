@@ -18,8 +18,8 @@ oc tag registry.access.redhat.com/rhel7-atomic:7.7-371 tbiwaq-tools/rhel7-atomic
 oc tag registry.access.redhat.com/rhel7/rhel:7.7-481 tbiwaq-tools/rhel7:7.7-481
 oc process -f minio/minio-bc.yaml GIT_URL=https://github.com/bcgov/zeva.git GIT_REF=pipeline-6-7 | oc apply -f - -n tbiwaq-tools --dry-run=true
 oc tag tbiwaq-tools/minio:latest tbiwaq-dev/minio:dev
-oc tag tbiwaq-tools/minio:latest tbiwaq-dev/minio:test
-oc tag tbiwaq-tools/minio:latest tbiwaq-dev/minio:prod
+oc tag tbiwaq-tools/minio:latest tbiwaq-test/minio:test
+oc tag tbiwaq-tools/minio:latest tbiwaq-prod/minio:prod
 
 ### Update Jenkins build-master.yaml SOURCE_IMAGE_STREAM_NAMESPACE and SOURCE_IMAGE_STREAM_TAG
 Trigger the .jenkins pipeline
