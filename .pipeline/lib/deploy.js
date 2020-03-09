@@ -35,7 +35,7 @@ module.exports = settings => {
   }))
 
   // deploy minio
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/mini/minio-dc.yaml`, {
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/minio/minio-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
