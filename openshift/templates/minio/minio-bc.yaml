@@ -14,7 +14,7 @@ parameters:
     displayName: Git Reference
     description: The git reference or branch.
     required: true
-    value: pipeline-6-7
+    value: master
 objects:
   - kind: ImageStream
     apiVersion: v1
