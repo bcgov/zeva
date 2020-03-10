@@ -83,7 +83,6 @@ objects:
             from:
               kind: ImageStreamTag
               name: minio:${ENV_NAME}
-              namespace: tbiwaq-${ENV_NAME}
       replicas: 1
       test: false
       selector:
