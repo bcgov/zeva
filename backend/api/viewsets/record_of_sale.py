@@ -30,7 +30,7 @@ class RecordOfSaleViewset(
             qs = RecordOfSale.objects.exclude(validation_status__in=(RecordOfSaleStatuses.DRAFT,
                                                                      RecordOfSaleStatuses.NEW))
         else:
-            qs = RecordOfSale.objects.filter(organization=user.organization)
+            qs = RecordOfSale.objects.filter(submission__organization=user.organization)
 
         return qs
 

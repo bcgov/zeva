@@ -2,113 +2,42 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-import React from 'react';
-import SalesDetailsPage from './components/SalesDetailsPage';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { withRouter } from 'react-router';
+import Loading from '../app/components/Loading';
+import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
 
 import CustomPropTypes from '../app/utilities/props';
+import SalesSubmissionDetailsPage from './components/SalesSubmissionDetailsPage';
 
 const SalesDetailsContainer = (props) => {
   const { user } = props;
+  const { match } = props;
+  const id = match.params.id;
+
+  const [submission, setSubmission] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const refreshDetails = () => {
+    axios.get(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id)).then((response) => {
+      setSubmission(response.data);
+      setLoading(false);
+    });
+  };
+
+  useEffect(() => {
+    refreshDetails();
+  }, [id]);
+
+
+  if (loading) {
+    return (<Loading />);
+  }
 
   return (
-    <SalesDetailsPage
-      details={[{
-        class: 'A',
-        credits: 1.74,
-        fuelType: 'B',
-        make: 'Hyundai',
-        modelName: 'IONIQ ELECTRIC',
-        modelYear: 2020,
-        range: 200,
-        sales: 53,
-        submissionDate: '2020-01-15',
-        total: 92.22,
-        zevType: 'BEV',
-      }, {
-        class: 'A',
-        credits: 3.08,
-        fuelType: 'B',
-        make: 'Hyundai',
-        modelName: 'KONA ELECTRIC',
-        modelYear: 2020,
-        range: 415,
-        sales: 64,
-        submissionDate: '2019-10-21',
-        total: 197.12,
-        zevType: 'BEV',
-      }, {
-        class: 'B',
-        credits: 0.59,
-        fuelType: 'B/X',
-        make: 'Hyundai',
-        modelName: 'IONIQ ELECTRIC PLUS',
-        modelYear: 2020,
-        range: 47,
-        sales: 32,
-        submissionDate: '2019-10-21',
-        total: 18.88,
-        zevType: 'PHEV',
-      }, {
-        class: 'B',
-        credits: 0.58,
-        fuelType: 'B/X',
-        make: 'Hyundai',
-        modelName: 'SONATA PLUG-IN',
-        modelYear: 2019,
-        range: 45,
-        sales: 29,
-        submissionDate: '2019-10-21',
-        total: 16.82,
-        zevType: 'PHEV',
-      }, {
-        class: 'A',
-        credits: 2.89,
-        fuelType: 'B',
-        make: 'Kia',
-        modelName: 'NIRO EV',
-        modelYear: 2019,
-        range: 385,
-        sales: 47,
-        submissionDate: '2019-10-21',
-        total: 135.83,
-        zevType: 'BEV',
-      }, {
-        class: 'A',
-        credits: 1.61,
-        fuelType: 'B',
-        make: 'Kia',
-        modelName: 'SOUL EV',
-        modelYear: 2019,
-        range: 179,
-        sales: 39,
-        submissionDate: '2019-10-21',
-        total: 62.79,
-        zevType: 'BEV',
-      }, {
-        class: 'B',
-        credits: 0.56,
-        fuelType: 'B/X',
-        make: 'Kia',
-        modelName: 'NIRO PLUG-IN',
-        modelYear: 2019,
-        range: 42,
-        sales: 41,
-        submissionDate: '2019-10-21',
-        total: 22.96,
-        zevType: 'PHEV',
-      }, {
-        class: 'B',
-        credits: 0.59,
-        fuelType: 'B/X',
-        make: 'Kia',
-        modelName: 'OPTIMA PLUG-IN',
-        modelYear: 2019,
-        range: 47,
-        sales: 40,
-        submissionDate: '2019-10-21',
-        total: 23.60,
-        zevType: 'PHEV',
-      }]}
+    <SalesSubmissionDetailsPage
+      submission={submission}
       user={user}
     />
   );
@@ -116,6 +45,7 @@ const SalesDetailsContainer = (props) => {
 
 SalesDetailsContainer.propTypes = {
   user: CustomPropTypes.user.isRequired,
+  match: CustomPropTypes.routeMatch.isRequired,
 };
 
-export default SalesDetailsContainer;
+export default withRouter(SalesDetailsContainer);

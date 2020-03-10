@@ -6,9 +6,9 @@ import CustomPropTypes from '../../app/utilities/props';
 import history from '../../app/History';
 import SalesDetailsTable from './SalesDetailsTable';
 
-const SalesDetailsPage = (props) => {
+const SalesSubmissionDetailsPage = (props) => {
   const {
-    details,
+    submission,
     user,
   } = props;
 
@@ -16,7 +16,7 @@ const SalesDetailsPage = (props) => {
     <div id="sales-details" className="page">
       <div className="row">
         <div className="col-sm-12">
-          <h1>{user.organization.name}</h1>
+          <h1>ZEV Sales Submission {submission.submissionId}</h1>
         </div>
       </div>
 
@@ -47,31 +47,45 @@ const SalesDetailsPage = (props) => {
       </div>
 
       <div className="row">
+        <div className="col-sm-8" />
+        <div className="col-sm-4">
+          <table className="table table-bordered table-striped">
+            <tbody>
+            <tr>
+              <td className="text-center">Status</td>
+              <td className="text-right">{submission.validationStatus}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="row">
         <div className="col-sm-12">
           <SalesDetailsTable
-            items={details}
+            items={submission.records}
             user={user}
           />
         </div>
       </div>
 
-      <div className="row">
-        <div className="col-sm-8" />
-        <div className="col-sm-4">
-          <table className="table table-bordered table-striped">
-            <tbody>
-              <tr>
-                <td className="text-center">Total A</td>
-                <td className="text-right">487.96</td>
-              </tr>
-              <tr>
-                <td className="text-center">Total B</td>
-                <td className="text-right">82.26</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/*<div className="row">*/}
+      {/*  <div className="col-sm-8" />*/}
+      {/*  <div className="col-sm-4">*/}
+      {/*    <table className="table table-bordered table-striped">*/}
+      {/*      <tbody>*/}
+      {/*        <tr>*/}
+      {/*          <td className="text-center">Total A</td>*/}
+      {/*          <td className="text-right">487.96</td>*/}
+      {/*        </tr>*/}
+      {/*        <tr>*/}
+      {/*          <td className="text-center">Total B</td>*/}
+      {/*          <td className="text-right">82.26</td>*/}
+      {/*        </tr>*/}
+      {/*      </tbody>*/}
+      {/*    </table>*/}
+      {/*  </div>*/}
+      {/*</div>*/}
 
       <div className="row">
         <div className="col-sm-12">
@@ -102,11 +116,11 @@ const SalesDetailsPage = (props) => {
   );
 };
 
-SalesDetailsPage.defaultProps = {};
+SalesSubmissionDetailsPage.defaultProps = {};
 
-SalesDetailsPage.propTypes = {
-  details: PropTypes.arrayOf(PropTypes.object).isRequired,
+SalesSubmissionDetailsPage.propTypes = {
+  submission: PropTypes.object.isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 
-export default SalesDetailsPage;
+export default SalesSubmissionDetailsPage;

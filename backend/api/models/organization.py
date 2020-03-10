@@ -16,6 +16,15 @@ class Organization(Auditable):
         null=False,
         unique=True
     )
+
+    short_name = models.CharField(
+        db_column='short_name',
+        db_comment='Short version of the organization name, used in generating some reports',
+        unique=True,
+        null=True,
+        max_length=64
+    )
+
     is_active = models.BooleanField(
         default=False,
         db_comment="Boolean Field to see if the organization is disabled "
