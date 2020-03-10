@@ -1,7 +1,10 @@
-## create database image in tools project
-## the image fixt defect used to initialize database properly
-## zeva uses this image to create extension hstore and others
+## Tag postgresql-10-rhel7:1-47 from RedHad image repo to tools project
+## The image fix defect used to initialize database properly
+## Zeva uses this image to create extension hstore and others
 oc tag registry.access.redhat.com/rhscl/postgresql-10-rhel7:1-47 tbiwaq-tools/postgresql:10-1-47
+
+## use up-to-date python image as 20200228
+oc tag registry.access.redhat.com/rhscl/python-36-rhel7:1-63 tbiwaq-tools/python:3.6-1-63
 
 ## create configmap to initialize database properly
 oc process -f zeva-postgresql-init.yaml | oc apply -f - -n tbiwaq-dev --dry-run=true

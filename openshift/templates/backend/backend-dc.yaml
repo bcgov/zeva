@@ -148,9 +148,17 @@ objects:
               command:
                 - /bin/sh
                 - '-c'
-                - python manage.py migrate;
+                - python manage.py migrate
               containerName: backend
             failurePolicy: Retry
+          post:
+            execNewPod:
+              command:
+                - /bin/sh
+                - '-c'
+                - ./load_data.sh ${ENV_NAME}
+              containerName: backend
+            failurePolicy: Ignore
           timeoutSeconds: 600
         resources: {}
         type: Recreate
@@ -309,6 +317,11 @@ objects:
                       key: email_from_address
                 - name: APP_CONFIG
                   value: /opt/app-root/src/gunicorn.cfg
+                - name: ENV_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-config${SUFFIX}
+                      key: env_name
               livenessProbe:
                 failureThreshold: 3
                 httpGet:

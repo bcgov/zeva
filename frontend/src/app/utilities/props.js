@@ -1,5 +1,10 @@
 import PropTypes from 'prop-types';
 
+// to avoid duplication below. not exported.
+const yearArrayType = PropTypes.arrayOf(PropTypes.shape({
+  name: PropTypes.string,
+}));
+
 const CustomPropTypes = {
   keycloak: PropTypes.shape({
     authenticated: PropTypes.bool,
@@ -26,6 +31,10 @@ const CustomPropTypes = {
     name: PropTypes.string,
     description: PropTypes.string,
   })),
+  years: yearArrayType,
+  referenceData: PropTypes.shape({
+    years: yearArrayType,
+  }),
 };
 
 export default CustomPropTypes;

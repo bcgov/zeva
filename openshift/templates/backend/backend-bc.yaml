@@ -71,8 +71,7 @@ objects:
           - name: PIP_INDEX_URL
           from:
             kind: ImageStreamTag
-            name: python:3.6
-            namespace: openshift
+            name: python:3.6-1-63
         type: Source
       triggers:
       - imageChange: {}

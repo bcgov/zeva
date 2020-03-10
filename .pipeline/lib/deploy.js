@@ -12,8 +12,10 @@ module.exports = settings => {
 
   //add Valid Redirect URIs for the pull request to keycloak
   //for example: 	https://zeva-dev-79.pathfinder.gov.bc.ca/*
-  const kc = new KeyCloakClient(settings, oc);
-  kc.addUris();
+  if(phase === 'dev') {
+    const kc = new KeyCloakClient(settings, oc);
+    kc.addUris();
+  }
 
   const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, "../../openshift"));
   var objects = [];
@@ -21,16 +23,27 @@ module.exports = settings => {
   // The deployment of your cool app goes here ▼▼▼
 
   // create configs
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/config/configs.yaml`, {
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/config/configmap.yaml`, {
     'param': {
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
-      'VERSION': phases[phase].tag,
       'ENV_NAME': phases[phase].phase,
-      'SSO_NAME': 'sso-dev',
+      'BACKEND_HOST': phases[phase].host,
+      'SSO_NAME': phases[phase].ssoName,
       'KEYCLOAK_REALM': 'rzh2zkjq'
     }
   }))
+
+  // deploy minio
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/minio/minio-dc.yaml`, {
+    'param': {
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix,
+      'ENV_NAME': phases[phase].phase,
+      'PVC_SIZE': phases[phase].minioPvcSize
+    }
+  }))
+
 
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/postgresql/postgresql-dc.yaml`, {
     'param': {

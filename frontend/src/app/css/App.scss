@@ -1,29 +1,29 @@
 /* BC Sans Regular */
 @font-face {
-	font-family: "BCSans";
-	src: url('./fonts/BCSans-Regular.woff') format('woff');
+  font-family: "BCSans";
+  src: url('./fonts/BCSans-Regular.woff') format('woff');
 }
 
 /* BC Sans Bold */
 @font-face {
-	font-family: "BCSans";
-	font-weight: bold;
-	src: url('./fonts/BCSans-Bold.woff') format('woff');
+  font-family: "BCSans";
+  font-weight: bold;
+  src: url('./fonts/BCSans-Bold.woff') format('woff');
 }
 
 /* BC Sans Bold + Italic */
 @font-face {
-	font-family: "BCSans";
-	font-style: italic;
-	font-weight: bold;
-	src: url('./fonts/BCSans-BoldItalic.woff') format('woff');
+  font-family: "BCSans";
+  font-style: italic;
+  font-weight: bold;
+  src: url('./fonts/BCSans-BoldItalic.woff') format('woff');
 }
 
 /* BC Sans Italic */
 @font-face {
-	font-family: "BCSans";
-	font-style: italic;
-	src: url('./fonts/BCSans-Italic.woff') format('woff');
+  font-family: "BCSans";
+  font-style: italic;
+  src: url('./fonts/BCSans-Italic.woff') format('woff');
 }
 
 @mixin shadow {
@@ -34,7 +34,7 @@
 }
 
 @mixin text-shadow {
-	text-shadow: 2px 2px rgba(51, 51, 51, 0.5);
+  text-shadow: 2px 2px rgba(51, 51, 51, 0.5);
 }
 
 /* variables for colours */
@@ -52,88 +52,137 @@ $yellow: #E3AB2B;
 $md: 991px;
 
 body, html, #root {
-	height: 100%;
+  height: 100%;
 }
 
 body {
-	color: $default-text-black;
+  color: $default-text-black;
   font-family: "BCSans", sans-serif;
   margin: 0;
   padding: 0;
 }
 
 p {
-	margin: 0;
-	padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 #main {
-	min-height: 100%;
-	padding-bottom: 3rem;
+  min-height: 100%;
+  padding-bottom: 3rem;
 }
 
 #content {
-	padding: 1rem;
+  padding: 1rem;
 }
 
 .action-bar {
-	background-color: $default-background-grey;
-	display: flex;
-	justify-content: space-between;
-	margin: 1rem 0;
-	padding: 1rem;
-	text-align: right;
+  background-color: $default-background-grey;
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem 0;
+  padding: 1rem;
+  text-align: right;
 
-	> * {
-		align-self: center;
-		display: flex;
-	}
+  > * {
+    align-self: center;
+    display: flex;
+  }
 
-	.left-content > * {
-		margin-right: 1rem;
-	}
+  .left-content > * {
+    margin-right: 1rem;
+  }
 
-	.right-content > * {
-		margin-left: 1rem;
-		white-space: nowrap;
-		align-self: center;
+  .right-content > * {
+    margin-left: 1rem;
+    white-space: nowrap;
+    align-self: center;
 
-	}
+  }
 
-	#supplier {
-		width:auto;
-	}
-	.button svg {
-		margin-right: 0.25rem;
-	}
-	label {
-		margin-top: 1rem;
-		margin-bottom: 1rem;
-	}
+  #supplier {
+    width: auto;
+  }
+
+  .button svg {
+    margin-right: 0.25rem;
+  }
+
+  label {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
 }
 
 .button {
-	background-color: $white;
-	border: 1px solid $default-background-blue;
-	border-radius: 0.2rem;
-	color: $primary-blue;
-	padding: 0.5rem 1rem;
+  background-color: $white;
+  border: 1px solid $default-background-blue;
+  border-radius: 0.2rem;
+  color: $primary-blue;
+  padding: 0.5rem 1rem;
 
-	&.primary {
-		background-color: $default-background-blue;
-		color: $white;
-	}
+  &:disabled {
+    background-color: $default-background-grey;
+    color: desaturate($primary-blue, 50%);
+  }
+
+  &.primary {
+    background-color: $default-background-blue;
+    color: $white;
+  }
+  &.primary:disabled {
+    background-color: desaturate($default-background-blue, 50%);
+    color: $white;
+  }
 }
 
 .page {
-	padding: 1rem;
+  padding: 1rem;
 
-	h1 {
-		color: $default-text-blue;
-		font-size: 2rem;
-	}
+  h1 {
+    color: $default-text-blue;
+    font-size: 2rem;
+  }
 
-	h2 {
-		font-size: 1.5rem;
-	}
+  h2 {
+    color: $default-text-blue;
+    font-size: 1.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  h3,h4,h5,h6 {
+    color: $default-text-blue;
+  }
+}
+
+.well {
+  background-color: $default-background-grey;
+  display: flex;
+  margin: 1rem 0;
+  padding: 1rem;
+  text-align: left;
+
+  .button svg {
+    margin-right: 0.5rem;
+  }
+
+  > * {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    align-self: center;
+    display: flex;
+  }
+}
+
+.file-upload {
+  border: 2px dashed $default-link-blue;
+  background: $white;
+  padding: 1rem;
+  text-align: center;
+  flex-direction: column;
+  svg {
+    margin-left: auto;
+    margin-right: auto;
+  }
 }

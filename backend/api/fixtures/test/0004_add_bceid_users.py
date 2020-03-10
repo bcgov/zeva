@@ -13,52 +13,57 @@ class AddBCEIDUsers(OperationalDataScript):
     is_revertable = False
     comment = 'Adds the vehicle makes found in the NRCAN document'
 
+    list_of_users = [{
+        "first_name": "Alasdair",
+        "last_name": "Ring",
+        "display_name": "Alasdair Ring",
+        "username": "ARING_BCEID"
+    }, {
+        "first_name": "Emily",
+        "last_name": "Hillier",
+        "display_name": "Emily Hillier",
+        "username": "EMHILLIE_BCEID"
+    }, {
+        "first_name": "James",
+        "last_name": "Donald",
+        "display_name": "James Donald",
+        "username": "JADONALD_BCEID"
+    }, {
+        "first_name": "Katie",
+        "last_name": "Menke",
+        "display_name": "Katie Menke",
+        "username": "KMENKE_BCEID"
+    }, {
+        "first_name": "Kristin",
+        "last_name": "Lefler",
+        "display_name": "Kristin Lefler",
+        "username": "KLEFLER_BCEID"
+    }, {
+        "first_name": "Kuan",
+        "last_name": "Fan",
+        "display_name": "Kuan Fan",
+        "username": "KFAN_BCEID"
+    }, {
+        "first_name": "Richard",
+        "last_name": "Tan",
+        "display_name": "Richard Tan",
+        "username": "RTAN_BCEID"
+    }, {
+        "first_name": "Robert ",
+        "last_name": "Johnstone",
+        "display_name": "Robert Johnstone",
+        "username": "RJOHNSTONE_BCEID"
+    }]
+
     def check_run_preconditions(self):
+        for user in self.list_of_users:
+            if UserProfile.objects.filter(username=user['username']):
+                return False
+
         return True
 
     @transaction.atomic
     def run(self):
-        list_of_users = [{
-            "first_name": "Alasdair",
-            "last_name": "Ring",
-            "display_name": "Alasdair Ring",
-            "username": "ARING_BCEID"
-        }, {
-            "first_name": "Emily",
-            "last_name": "Hillier",
-            "display_name": "Emily Hillier",
-            "username": "EMHILLIE_BCEID"
-        }, {
-            "first_name": "James",
-            "last_name": "Donald",
-            "display_name": "James Donald",
-            "username": "JADONALD_BCEID"
-        }, {
-            "first_name": "Katie",
-            "last_name": "Menke",
-            "display_name": "Katie Menke",
-            "username": "KMENKE_BCEID"
-        }, {
-            "first_name": "Kristin",
-            "last_name": "Lefler",
-            "display_name": "Kristin Lefler",
-            "username": "KLEFLER_BCEID"
-        }, {
-            "first_name": "Kuan",
-            "last_name": "Fan",
-            "display_name": "Kuan Fan",
-            "username": "KFAN_BCEID"
-        }, {
-            "first_name": "Richard",
-            "last_name": "Tan",
-            "display_name": "Richard Tan",
-            "username": "RTAN_BCEID"
-        }, {
-            "first_name": "Robert ",
-            "last_name": "Johnstone",
-            "display_name": "Robert Johnstone",
-            "username": "RJOHNSTONE_BCEID"
-        }]
 
         organizations = Organization.objects.filter(
             is_government=False,
@@ -67,7 +72,7 @@ class AddBCEIDUsers(OperationalDataScript):
 
         users_added = 0
 
-        for user in list_of_users:
+        for user in self.list_of_users:
             organization = random.choice(organizations)
 
             (_, created) = UserProfile.objects.get_or_create(

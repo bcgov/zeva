@@ -80,7 +80,7 @@ class VehicleStatusChangeSerializer(ModelSerializer):
 
 
 class VehicleHistorySerializer(
-        ModelSerializer, EnumSupportSerializerMixin
+    ModelSerializer, EnumSupportSerializerMixin
 ):
     create_user = UserSerializer(read_only=True)
     validation_status = EnumField(VehicleDefinitionStatuses, read_only=True)
@@ -91,7 +91,7 @@ class VehicleHistorySerializer(
 
 
 class VehicleSerializer(
-        ModelSerializer, EnumSupportSerializerMixin
+    ModelSerializer, EnumSupportSerializerMixin
 ):
     make = VehicleMakeSerializer()
     model_year = ModelYearSerializer()
@@ -113,7 +113,7 @@ class VehicleSerializer(
             actions.append('REJECTED')
 
         if (not gov and instance.validation_status in [
-                VehicleDefinitionStatuses.DRAFT, VehicleDefinitionStatuses.NEW
+            VehicleDefinitionStatuses.DRAFT, VehicleDefinitionStatuses.NEW
         ]):
             actions.append('SUBMITTED')
 
@@ -130,7 +130,7 @@ class VehicleSerializer(
 
 
 class VehicleSaveSerializer(
-        ModelSerializer, EnumSupportSerializerMixin
+    ModelSerializer, EnumSupportSerializerMixin
 ):
     model_year = SlugRelatedField(
         slug_field='name',
@@ -160,3 +160,32 @@ class VehicleSaveSerializer(
             'validation_status', 'vehicle_class_code', 'vehicle_fuel_type'
         )
         read_only_fields = ('validation_status', 'id',)
+
+
+class VehicleMinSerializer(
+    ModelSerializer, EnumSupportSerializerMixin
+):
+    model_year = SlugRelatedField(
+        slug_field='name',
+        queryset=ModelYear.objects.all()
+    )
+    make = SlugRelatedField(
+        slug_field='name',
+        queryset=Make.objects.all()
+    )
+    vehicle_class_code = SlugRelatedField(
+        slug_field='vehicle_class_code',
+        queryset=VehicleClass.objects.all()
+    )
+    vehicle_fuel_type = SlugRelatedField(
+        slug_field='vehicle_fuel_code',
+        queryset=FuelType.objects.all()
+    )
+
+    class Meta:
+        model = Vehicle
+        fields = (
+            'id', 'make', 'model_name', 'model_year',
+            'range', 'vehicle_class_code',
+            'vehicle_fuel_type'
+        )

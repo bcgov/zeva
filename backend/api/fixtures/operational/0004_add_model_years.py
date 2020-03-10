@@ -13,6 +13,10 @@ class AddModelYears(OperationalDataScript):
     comment = 'Adds the vehicle makes found in the NRCAN document'
 
     def check_run_preconditions(self):
+        to_check = ["2019", "2020"]
+        for year in to_check:
+            if ModelYear.objects.filter(name=year).exists():
+                return False
         return True
 
     @transaction.atomic

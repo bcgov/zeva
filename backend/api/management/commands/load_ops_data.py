@@ -1,3 +1,8 @@
+import glob
+import re
+from os import listdir
+from os.path import isdir, join, isfile
+
 from django.core.management import BaseCommand
 from django.db import transaction, connection
 
@@ -9,7 +14,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            'script', help='script file or minio object name'
+            'script', help='script file, local directory, or minio object name'
         )
         parser.add_argument(
             '--script-arg', nargs='+', help='argument for script'
@@ -18,70 +23,148 @@ class Command(BaseCommand):
             '--revert', action='store_true', help='revert this script'
         )
 
+        parser.add_argument(
+            '--directory', action='store_true', help='script argument is a directory, and scripts '
+                                                     'should be loaded sequentially from it'
+        )
+
         helptext = ('Load operational data.')
 
         parser.description = helptext
 
     def handle(self, *args, **options):
-        (script, source_code) = ScriptLoader().load_from_file(
-            options['script']
+
+        directory_mode = 'directory' in options and options['directory'] is True
+
+        script_files = []
+
+        if directory_mode:
+            ordered_scripts = {}
+            if not isdir(options['script']):
+                self.stdout.write(
+                    self.style.ERROR(
+                        '{} is not a directory'.format(
+                            options['script']
+                        )
+                    )
+                )
+                exit(-1)
+            if 'revert' in options and options['revert'] is True:
+                self.stdout.write(
+                    self.style.ERROR(
+                        'revert not supported with --directory'
+                    )
+                )
+                exit(-1)
+
+            if 'script_arg' in options and options['script_arg'] is not None:
+                self.stdout.write(
+                    self.style.ERROR(
+                        'script_args  not supported with --directory'
+                    )
+                )
+                exit(-1)
+            items = listdir(options['script'])
+
+            for item in items:
+                fullpath = join(options['script'], item)
+                if isfile(fullpath):
+                    match = re.match('(\d+).*py', item, re.IGNORECASE)
+                    if match:
+                        seq = str(int(match.group(1)))
+                        ordered_scripts[seq] = fullpath
+
+            for k in sorted(ordered_scripts.keys()):
+                script_files.append(ordered_scripts[k])
+
+        else:
+            script_files.append(options['script'])
+
+        self.stdout.write(
+            self.style.SUCCESS(
+                'We have {count} script(s) to run:\n\t{names}'.format(
+                    count=len(script_files),
+                    names='\n\t'.join(script_files)
+                )
+            )
         )
 
-        script_instance = script(options['script'], options['script_arg'])
+        errorcount = 0
 
-        script_metadata = {}
-        script_metadata['comment'] = script_instance.comment
-        script_metadata['source_code'] = source_code
-        script_metadata['script_name'] = options['script']
-
-        if 'revert' in options and options['revert'] is True:
-            if not script_instance.is_revertable:
-                self.stdout.write(
-                    self.style.ERROR(
-                        'This script does not claim to be revertable'
-                    )
-                )
-
-                return
-
-            self.stdout.write(
-                'Reverting ops data script {}'.format(options['script'])
+        for script_file in script_files:
+            (script, source_code) = ScriptLoader().load_from_file(
+                script_file
             )
 
-            if not script_instance.check_revert_preconditions():
-                self.stdout.write(
-                    self.style.ERROR(
-                        'Script preconditions not met. Not executing'
+            script_instance = script(script_file, options['script_arg'])
+
+            script_metadata = {}
+            script_metadata['comment'] = script_instance.comment
+            script_metadata['source_code'] = source_code
+            script_metadata['script_name'] = script_file
+
+            if 'revert' in options and options['revert'] is True:
+                if not script_instance.is_revertable:
+                    self.stdout.write(
+                        self.style.ERROR(
+                            'This script does not claim to be revertable'
+                        )
                     )
-                )
 
-                return
+                    return
 
-            script_instance.revert()
-
-            self.stdout.write(
-                self.style.SUCCESS(
-                    'Successfully reverted ops data script {}'
-                ).format(options['script'])
-            )
-        else:
-            if not script_instance.check_run_preconditions():
                 self.stdout.write(
-                    self.style.ERROR(
-                        'Script preconditions not met. Not executing'
+                    'Reverting ops data script {}'.format(script_file)
+                )
+
+                if not script_instance.check_revert_preconditions():
+                    self.stdout.write(
+                        self.style.ERROR(
+                            'Script preconditions not met. Not executing'
+                        )
                     )
+
+                    return
+
+                script_instance.revert()
+
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        'Successfully reverted ops data script {}'
+                    ).format(script_file)
                 )
+            else:
+                if script_instance.check_run_preconditions():
+                    try:
+                        script_instance.run()
 
-                self._create_persistent_record(
-                    **script_metadata, successful=False
-                )
+                        self.stdout.write(
+                            self.style.SUCCESS(
+                                'Successfully loaded ops data script {}'
+                            ).format(script_file)
+                        )
+                    except Exception as e:
+                        self.stdout.write(
+                            self.style.ERROR(
+                                'Script {} reported an error. Continuing execution.'
+                            ).format(script_file)
+                        )
+                        self.stdout.write(
+                            self.style.ERROR(str(e))
+                        )
+                        errorcount = errorcount + 1
+                else:
+                    self.stdout.write(
+                        self.style.ERROR(
+                            'Script {} preconditions not met. Not executing'.format(script_file)
+                        )
+                    )
 
-                return
-
-            script_instance.run()
-
+        if errorcount != 0:
             self.stdout.write(
-                self.style.SUCCESS(
-                    'Successfully loaded ops data script {}'
-                ).format(options['script'])
+                self.style.ERROR(
+                    '{errorcount} errors were reported during execution'
+                ).format(errorcount=errorcount)
             )
+
+        exit(-errorcount)

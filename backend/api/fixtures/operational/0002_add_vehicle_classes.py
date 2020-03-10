@@ -13,7 +13,7 @@ class AddVehicleClasses(OperationalDataScript):
               'Consumption Guide'
 
     def check_run_preconditions(self):
-        return True
+        return not VehicleClass.objects.filter(vehicle_class_code="T").exists()
 
     @transaction.atomic
     def run(self):

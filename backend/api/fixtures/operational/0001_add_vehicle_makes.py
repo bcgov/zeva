@@ -12,22 +12,28 @@ class AddVehicleMakes(OperationalDataScript):
     is_revertable = False
     comment = 'Adds the vehicle makes found in the NRCAN document'
 
+    list_of_makes = [
+        "Aston Martin", "Audi", "BMW", "Chevrolet", "Chrysler",
+        "Ferrari", "Fiat", "Ford", "GMC", "Honda", "Hyundai", "Isuzu",
+        "Jaguar", "Karma", "Kia", "Mazda", "Mercedes-Benz", "Mini",
+        "Mitsubishi", "Nissan", "Porsche", "Smart EQ", "Subaru", "Suzuki",
+        "Tesla", "Toyota", "Volkswagen", "Volvo"
+    ]
+
     def check_run_preconditions(self):
+        for make_name in self.list_of_makes:
+            if Make.objects.filter(name=make_name).exists():
+                return False
+
         return True
 
     @transaction.atomic
     def run(self):
-        list_of_makes = [
-            "Aston Martin", "Audi", "BMW", "Chevrolet", "Chrysler",
-            "Ferrari", "Fiat", "Ford", "GMC", "Honda", "Hyundai", "Isuzu",
-            "Jaguar", "Karma", "Kia", "Mazda", "Mercedes-Benz", "Mini",
-            "Mitsubishi", "Nissan", "Porsche", "Smart EQ", "Subaru", "Suzuki",
-            "Tesla", "Toyota", "Volkswagen", "Volvo"
-        ]
+
 
         makes_added = 0
 
-        for make_name in list_of_makes:
+        for make_name in self.list_of_makes:
             (_, created) = Make.objects.get_or_create(
                 name=make_name
             )
