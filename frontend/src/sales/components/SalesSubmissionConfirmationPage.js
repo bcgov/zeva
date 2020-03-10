@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React from 'react';
+import history from '../../app/History';
 
 import CustomPropTypes from '../../app/utilities/props';
 
@@ -51,8 +52,13 @@ const SalesSubmissionConfirmationPage = (props) => {
             by The Province of British Columbia.
           </p>
           <p>
-            You can view the status of your submission from the <a href="#">Sales</a> table at any time, or
-            <a href="#"> here.</a>
+            You can view the status of your submission from the <a
+              href="#"
+              onClick={() => {
+                history.push('/sales/');
+              }}
+            >Sales
+            </a> table at any time.
           </p>
         </div>
       </div>
