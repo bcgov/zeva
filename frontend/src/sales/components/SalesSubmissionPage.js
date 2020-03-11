@@ -9,7 +9,6 @@ import ExcelFileDrop from './ExcelFileDrop';
 
 const SalesSubmissionPage = (props) => {
   const {
-    user,
     upload,
     setUploadFile,
     uploadReady,
@@ -42,23 +41,11 @@ const SalesSubmissionPage = (props) => {
 
   return (
     <div id="sales-edit" className="page">
-
-      <div className="row">
-        <div className="col-sm-12">
-          <h1>{user.organization.name} Sales Submissions</h1>
+      <div>
+        <div>
+          <h2>Submit ZEV Sales for Credit Request</h2>
           <p>
-            Submit ZEV sales data to request early credits. Sales information submitted here
-            will become part of your compliance report data.
-          </p>
-        </div>
-      </div>
-
-      <div className="row">
-        <div className="col-sm-12">
-          <h2>ZEV Sales Excel Template</h2>
-          <p>
-            Download an Excel template to enter sales data: model year, vehicle,
-            VIN, and sales date.
+            Download an Excel template containing all active ZEV models to submit sales.
           </p>
 
           <div className="well">
@@ -98,14 +85,7 @@ const SalesSubmissionPage = (props) => {
         <div
           className="col-sm-12"
         >
-          <h2> Upload
-            ZEV
-            Sales
-            Information
-          </h2>
-          <p>
-            One file per submission; all active ZEV models may be submitted in one file.
-          </p>
+          <h2>Upload ZEV Sales Information</h2>
 
           <div className="panel panel-default">
             <ExcelFileDrop setFiles={setUploadFile} />
@@ -124,7 +104,6 @@ SalesSubmissionPage.propTypes = {
   upload: PropTypes.func.isRequired,
   setUploadFile: PropTypes.func.isRequired,
   uploadReady: PropTypes.bool.isRequired,
-  user: CustomPropTypes.user.isRequired,
   years: CustomPropTypes.years.isRequired,
 };
 

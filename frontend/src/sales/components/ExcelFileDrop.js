@@ -14,15 +14,13 @@ const ExcelFileDrop = (props) => {
   return (
     <div {...getRootProps()}>
       <input {...getInputProps()} />
-      {
-        <div className="well">
-          <div className="file-upload">
-            <FontAwesomeIcon icon="upload" />
-            <br />
-            Drop file here, or click to open file selection dialog
-          </div>
+      <div className="well">
+        <div className="file-upload">
+          <FontAwesomeIcon icon="upload" />
+          <br />
+          Drop file here, or click to open file selection dialog
         </div>
-      }
+      </div>
     </div>
   );
 };

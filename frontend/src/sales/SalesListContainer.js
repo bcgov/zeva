@@ -4,7 +4,9 @@
  */
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+
 import Loading from '../app/components/Loading';
+import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import ROUTES_SALES from '../app/routes/Sales';
 
 import CustomPropTypes from '../app/utilities/props';
@@ -31,14 +33,16 @@ const SalesListContainer = (props) => {
 
   if (loading) {
     return (<Loading />);
-  } else {
-    return (
-      <SalesListPage
-        sales={sales}
-        user={user}
-      />
-    );
   }
+
+  return ([
+    <CreditTransactionTabs active="credit-transactions" key="tabs" />,
+    <SalesListPage
+      key="page"
+      sales={sales}
+      user={user}
+    />,
+  ]);
 };
 
 SalesListContainer.propTypes = {

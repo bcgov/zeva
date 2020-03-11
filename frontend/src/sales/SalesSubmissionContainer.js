@@ -2,10 +2,10 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import ROUTES_SALES from '../app/routes/Sales';
 
+import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import CustomPropTypes from '../app/utilities/props';
 import upload from '../app/utilities/upload';
 import withReferenceData from '../app/utilities/with_reference_data';
@@ -51,48 +51,61 @@ const SalesSubmissionContainer = (props) => {
     // @todo clear any details, maybe issue delete request
   };
 
+  let content;
 
   switch (workflowState) {
     case 'readyToSign':
-      return (
+      content = (
         <SalesSubmissionSignaturesPage
-          user={user}
-          sign={sign}
           backToValidationPage={backToValidationPage}
           details={details}
+          key="page"
+          sign={sign}
+          user={user}
         />
       );
+      break;
     case 'validating':
-      return (
+      content = (
         <SalesSubmissionValidationPage
-          user={user}
-          readyToSign={readyToSign}
-          details={details}
           backToStart={backToStart}
-        />
-      );
-    case 'complete':
-      return (
-        <SalesSubmissionConfirmationPage
-          user={user}
           details={details}
+          key="page"
+          readyToSign={readyToSign}
+          user={user}
         />
       );
+      break;
+    case 'complete':
+      content = (
+        <SalesSubmissionConfirmationPage
+          details={details}
+          key="page"
+          user={user}
+        />
+      );
+      break;
     case 'error':
-      return (<p>An error occurred in validation. Please restart the submission</p>);
+      content = (<p>An error occurred in validation. Please restart the submission</p>);
+      break;
     case 'new':
     default:
-      return (
+      content = (
         <SalesSubmissionPage
-          user={user}
-          upload={doUpload}
-          years={referenceData.years}
-          uploadReady={files.length > 0}
+          key="page"
           setUploadFile={setFiles}
+          upload={doUpload}
+          uploadReady={files.length > 0}
+          user={user}
+          years={referenceData.years}
         />
       );
   }
 
+  return ([
+    <CreditTransactionTabs active="credit-requests" key="tabs" />,
+    content,
+  ]);
 };
 
 SalesSubmissionContainer.propTypes = {
