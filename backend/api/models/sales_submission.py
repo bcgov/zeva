@@ -19,11 +19,12 @@ class SalesSubmission(Auditable):
         db_comment="The calendar date the submission was created in ZEVA"
     )
 
-    submission_sequence = models.CharField(
+    submission_sequence = models.IntegerField(
         blank=False,
         null=True,
-        max_length=3,
-        db_comment=''
+        default=0,
+        db_comment='A sequential integer for each (organization, submission_date) tuple'
+                   ', to create a unique reference number for the submission'
     )
 
     validation_status = EnumField(
@@ -43,7 +44,7 @@ class SalesSubmission(Auditable):
         formatted_date = self.submission_date.strftime("%y%m%d")
         best_name = self.organization.short_name if self.organization.short_name else self.organization.name
 
-        if self.submission_sequence is None:
+        if self.submission_sequence is None or self.submission_sequence == 0:
             return '{org}{date}'.format(org=best_name,
                                         date=formatted_date)
 
@@ -54,27 +55,10 @@ class SalesSubmission(Auditable):
 
     @staticmethod
     def next_sequence(org, date):
-        count = SalesSubmission.objects.filter(organization=org,
+        return SalesSubmission.objects.filter(organization=org,
                                                submission_date=date).count()
-        chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
-        if count == 0:
-            return None
 
-        x = count
-
-        seq = ''
-
-        while True:
-            x = x - 1
-            seq = chars[x % len(chars)] + seq
-
-            if x < len(chars):
-                break
-
-            x = x // len(chars)
-
-        return seq
 
     class Meta:
         db_table = "sales_submission"
