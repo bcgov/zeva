@@ -1,0 +1,70 @@
+---
+kind: Template
+apiVersion: v1
+metadata:
+  name: rabbitmq-bc
+  creationTimestamp:
+parameters:
+  - name: ENV_NAME
+    required: true
+  - name: ADMIN_PASSWORD
+    description: rabbitmq admin password according to ENV_NAME
+    required: true
+  - name: ZEVA_PASSWORD
+    description: rabbitmq zeva password according to ENV_NAME
+    required: true
+objects:
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: rabbitmq
+      creationTimestamp:
+    spec:
+      triggers: []
+      runPolicy: Serial
+      source:
+        type: Dockerfile
+        dockerfile: |-
+          FROM rabbitmq:3.7.7-management
+          RUN apt-get update
+          RUN apt-get install -y gettext-base
+          RUN chgrp -R root /var/log/rabbitmq
+          RUN chmod -R g+w /var/log/rabbitmq
+          ARG ADMIN_PASSWORD
+          ARG ZEVA_PASSWORD
+          RUN echo "H4sICMw/K14AA2RlZmluaXRpb25zLmpzb24AtVJNS8QwEL33V5TiSZYKii54K6wHD37ggoIiZbZN00CblGTSVUv/u0loG9jW9bSXQN6byXvzJl0QhpGE3Y5h2hKpmODRbRhdxet4Ha0sqZWBDfZhLmHYudPAHGpiKyGvGXeVDm5Aqb2QuaXOks3D/WP6nGy3b08vG19UgioZpylUVEiGZW2rBxPjA+lYpEq4vL7xzQhUTcJMoQQUMnJsv1r2+ENa+MPi+91rciqHgylzfrok21IoPBLlhfN50NQQWTNl97LQaXczH9Dp+AcnPBO8YFRLJxafe2JvRpyBkkA+YIvhjtoHH+BE4lMe5CsrgVNyJEcukBUsA3Sh/esMvxvXVgAXGj2ea7PwylIoNZlg0CjSnFTEuS6gUp5jHInkUM0IkFTXhLvtd70fKeiDX/VBJnKCAwAA" | base64 -d | gunzip - | envsubst > /etc/rabbitmq/definitions.json
+      strategy:
+        type: Docker
+        dockerStrategy:
+          env:
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: zeva-rabbitmq-${ENV_NAME}
+                  key: ADMIN_PASSWORD
+            - name: ZEVA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: zeva-rabbitmq-${ENV_NAME}
+                  key: ZEVA_PASSWORD
+      output:
+        to:
+          kind: ImageStreamTag
+          name: rabbitmq:latest
+      resources: {}
+      postCommit: {}
+      nodeSelector:
+    status:
+      lastVersion: 0
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      annotations:
+        description: Keeps track of changes in the rabbitmq image
+      creationTimestamp: null
+      name: rabbitmq
+    spec:
+      lookupPolicy:
+        local: false
+    status:
+      dockerImageRepository: ""

@@ -9,4 +9,4 @@ fi
 source "$NVM_DIR/nvm.sh" &>/dev/null
 METHOD=script nvm install --no-progress &>/dev/null
 nvm use &>/dev/null
-exec npm "$@"
+exec npm "$@" --max-old-space-size=8192

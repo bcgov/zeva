@@ -1,0 +1,41 @@
+.accordion {
+  margin: 0;
+  padding: 0;
+  border-radius: 4px;
+  border: 1px solid darkgray;
+}
+
+.accordion-panel {
+  margin: 0;
+  padding: 0;
+
+  .accordion-title {
+    background: $default-background-grey;
+    position: relative;
+    border-top: 1px solid darkgray;
+    line-height: 2rem;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+
+    .accordion-button {
+      position: absolute;
+      bottom: 0;
+      top: 0;
+      right: 0.25rem;
+
+      border: none;
+      background: inherit;
+      color: $default-link-blue;
+    }
+  }
+
+  .collapsed {
+  }
+
+  .expanded {
+  }
+
+  .accordion-content {
+  }
+
+}

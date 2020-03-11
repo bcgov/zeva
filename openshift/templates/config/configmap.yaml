@@ -2,17 +2,34 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: zeva-configmap
+  name: zeva-configs
 parameters:
+  - name: NAME
+    displayName: null
+    description: 'the module name entered when run yo bcdk:pipeline, which is zeva'
+    required: true
+  - name: SUFFIX
+    displayName: null
+    description: sample is -dev-97
+    value: ''
+    required: true
   - name: ENV_NAME
-    displayName: SSO Name
-    description: values include dev, test and prod
+    value: dev
+    displayName: Environment name
+    description: 'Environment name, dev, test and prod'
+    required: true
+  - name: BACKEND_HOST
+    value: dev
+    displayName: The backend host name
+    description: 'The backend host name'
     required: true
   - name: SSO_NAME
+    value: sso-dev
     displayName: SSO Name
     description: values include sso-dev, sso-test and sso
     required: true
   - name: KEYCLOAK_REALM
+    value: rzh2zkjq
     displayName: keycload realm name
     description: keycload realm name, value is rzh2zkjq
     required: true
@@ -21,15 +38,16 @@ objects:
     kind: ConfigMap
     metadata:
       creationTimestamp: null
-      name: zeva-config
+      name: ${NAME}-config${SUFFIX}
     data:
-      apibase: https://backend.tbiwaq-${ENV_NAME}.svc.cluster.local:8080/api/
+      apibase: https://${BACKEND_HOST}/api/
       database_engine: postgresql
       database_name: zeva
-      database_service_name: postgresql
+      database_service_name: ${NAME}-postgresql${SUFFIX}
       django_debug: 'False'
       email_from_address: donotreply@gov.bc.ca
       email_sending_enabled: 'False'
+      env_name: ${ENV_NAME}
       keycloak_audience: zeva
       keycloak_authority: https://${SSO_NAME}.pathfinder.gov.bc.ca/auth/realms/${KEYCLOAK_REALM}
       keycloak_certs_url: https://${SSO_NAME}.pathfinder.gov.bc.ca/auth/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs
@@ -42,7 +60,7 @@ objects:
       keycloak_sa_client_id: zeva-django-sa
       keycloak_sa_realm: ${KEYCLOAK_REALM}
       keycloak_url: https://${SSO_NAME}.pathfinder.gov.bc.ca/auth
-      postgresql_service_host: postgresql.tbiwaq-${ENV_NAME}.svc.cluster.local
+      postgresql_service_host: ${NAME}-postgresql${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local
       postgresql_service_port: '5432'
       rabbitmq_enabled: 'False'
       rabbitmq_host: rabbitmq.tbiwaq-${ENV_NAME}.svc.cluster.local

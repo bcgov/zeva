@@ -21,7 +21,6 @@ from . import keycloak
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
@@ -39,7 +38,6 @@ TESTING = 'test' in sys.argv
 RUNSERVER = 'runserver' in sys.argv
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -87,6 +85,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PARSER_CLASSES': (
         'djangorestframework_camel_case.parser.CamelCaseJSONParser',
+        'rest_framework.parsers.MultiPartParser',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',)
@@ -105,7 +104,6 @@ DATABASES = {
 
 KEYCLOAK = keycloak.config()
 
-
 AMQP = amqp.config()
 
 AMQP_CONNECTION_PARAMETERS = ConnectionParameters(
@@ -123,6 +121,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 # List of origin hostnames that are authorized to make cross-site HTTP requests
 CORS_ORIGIN_WHITELIST = ()
 
+CORS_EXPOSE_HEADERS = ('Content-Disposition',)
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/

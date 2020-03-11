@@ -1,0 +1,23 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: zeva-postgresql-init
+objects:
+- apiVersion: v1
+  data:
+    create-extension.sh: |-
+      echo 'Creating extension: hstore'
+      psql -U postgres -q -d "$POSTGRESQL_DATABASE" -c 'create extension if not exists hstore'
+    prepare-init-scripts: |-
+      #!/bin/bash
+      DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+      set -x
+      mkdir -p "${APP_DATA}/src/postgresql-init"
+      find -L "$DIR" -maxdepth 1 -type f -name "*.sh" -exec cp {} "${APP_DATA}/src/postgresql-init/" \;
+      set +x
+      exec "$@"
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: null
+    name: zeva-postgresql-init

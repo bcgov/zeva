@@ -38,7 +38,7 @@ const SalesListPage = (props) => {
                 }}
                 type="button"
               >
-                <FontAwesomeIcon icon="dollar-sign" /> Enter Sales
+                <FontAwesomeIcon icon="dollar-sign" /> Enter ZEV Sales
               </button>
             </span>
           </div>
@@ -65,7 +65,7 @@ const SalesListPage = (props) => {
                 }}
                 type="button"
               >
-                <FontAwesomeIcon icon="dollar-sign" /> Enter Sales
+                <FontAwesomeIcon icon="dollar-sign" /> Enter ZEV Sales
               </button>
             </span>
           </div>

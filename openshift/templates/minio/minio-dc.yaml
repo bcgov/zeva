@@ -1,0 +1,140 @@
+---
+kind: Template
+apiVersion: v1
+metadata:
+  name: minio
+  annotations:
+    description: Minio with persistent storage. By BC Gov.
+    openshift.io/display-name: BC Gov Minio
+parameters:
+  - name: NAME
+    value: zeva
+    required: true
+  - name: SUFFIX
+    displayName:
+    description: sample is -pr-0
+    required: true
+  - name: ENV_NAME
+    value: dev
+    required: true
+  - name: PVC_SIZE
+    displayName: Volume Capacity
+    description: Volume space available to Minio server for files, e.g. 512Mi, 2Gi.
+    value: 5Gi
+    required: true
+objects:
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-minio${SUFFIX}
+      annotations:
+        volume.beta.kubernetes.io/storage-class: netapp-file-standard
+        template.openshift.io.bcgov/create: 'true'
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: ${PVC_SIZE}
+    status: {}
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-minio${SUFFIX}
+      creationTimestamp:
+      labels:
+        name: minio
+        app: zeva
+        role: minio
+        env: ${ENV_NAME}
+    spec:
+      ports:
+        - name: 9000-tcp
+          protocol: TCP
+          port: 9000
+          targetPort: 9000
+      selector:
+        deploymentconfig: ${NAME}-minio${SUFFIX}
+      type: ClusterIP
+      sessionAffinity: None
+    status:
+      loadBalancer: {}
+  - kind: DeploymentConfig
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-minio${SUFFIX}
+      labels:
+        name: minio
+        app: zeva
+        role: minio
+        env: ${ENV_NAME}
+    spec:
+      strategy:
+        type: Recreate
+        resources: {}
+        activeDeadlineSeconds: 21600
+      triggers:
+        - type: ConfigChange
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - minio
+            from:
+              kind: ImageStreamTag
+              name: minio:${ENV_NAME}
+              namespace: tbiwaq-${ENV_NAME}
+      replicas: 1
+      test: false
+      selector:
+        app: ${NAME}-minio${SUFFIX}
+      template:
+        metadata:
+          creationTimestamp:
+          labels:
+            name: ${NAME}-minio${SUFFIX}
+        spec:
+          volumes:
+            - name: minio-data
+              persistentVolumeClaim:
+                claimName: ${NAME}-minio${SUFFIX}
+          containers:
+            - name: minio
+              image:
+              ports:
+                - containerPort: 9000
+                  protocol: TCP
+              env:
+                - name: MINIO_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: zeva-minio
+                      key: MINIO_ACCESS_KEY
+                - name: MINIO_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: zeva-minio
+                      key: MINIO_SECRET_KEY
+                - name: MINIO_CONFIG_DIR
+                  value: "/tmp"
+                - name: MINIO_DATA_DIR
+                  value: "/data"
+              resources: {}
+              volumeMounts:
+                - name: minio-data
+                  mountPath: "/data"
+              terminationMessagePath: "/dev/termination-log"
+              terminationMessagePolicy: File
+              imagePullPolicy: Always
+          restartPolicy: Always
+          terminationGracePeriodSeconds: 30
+          dnsPolicy: ClusterFirst
+          securityContext: {}
+          schedulerName: default-scheduler
+    status:
+      latestVersion: 0
+      observedGeneration: 0
+      replicas: 0
+      updatedReplicas: 0
+      availableReplicas: 0
+      unavailableReplicas: 0
