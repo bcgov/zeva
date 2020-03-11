@@ -51,9 +51,9 @@ oc process -f config/rabbitmq-secret.yaml ENV_NAME=prod | oc create -f - -n tbiw
 #### Run Rabbitmq build on tools
 Build one Rabbitmq image for each environment
 * under rabbitmq folder:  
-oc process -f rabbitmq/rabbitmq-bc.yaml ENV_NAME=dev ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc apply -f - -n tbiwaq-dev --dry-run=true  
-oc process -f rabbitmq/rabbitmq-bc.yaml ENV_NAME=test ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc apply -f - -n tbiwaq-test --dry-run=true  
-oc process -f rabbitmq/rabbitmq-bc.yaml ENV_NAME=prod ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc apply -f - -n tbiwaq-prod --dry-run=true  
+oc process -f rabbitmq/rabbitmq-bc.yaml ENV_NAME=dev GIT_REF=pipeline-7-1 | oc apply -f - -n tbiwaq-tools --dry-run=true  
+oc process -f rabbitmq/rabbitmq-bc.yaml ENV_NAME=test GIT_REF=pipeline-7-1 | oc apply -f - -n tbiwaq-tools --dry-run=true  
+oc process -f rabbitmq/rabbitmq-bc.yaml ENV_NAME=prod GIT_REF=pipeline-7-1 | oc apply -f - -n tbiwaq-tools --dry-run=true  
 
 #### Create Rabbitmq Secret on dev, test and prod
 * under config folder: make sure the secret is same as the one under tools project
