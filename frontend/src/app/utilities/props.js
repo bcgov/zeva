@@ -40,6 +40,10 @@ const CustomPropTypes = {
       id: PropTypes.string,
     }),
   }),
+  years: yearArrayType,
+  referenceData: PropTypes.shape({
+    years: yearArrayType,
+  }),
 };
 
 export default CustomPropTypes;

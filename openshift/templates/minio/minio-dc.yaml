@@ -5,48 +5,69 @@ metadata:
   name: minio
   annotations:
     description: Minio with persistent storage. By BC Gov.
-    iconClass: icon-hdd
     openshift.io/display-name: BC Gov Minio
-    tags: bcgov,pathfinder,minio,s3,objectstore
-    template.openshift.io/documentation-url: https://github.com/BCDevOps/openshift-tools/tree/master/templates/minio
-    template.openshift.io/long-description: This template deploys a minio server within
-      OpenShift, backed by persistent volume storage.
-    template.openshift.io/provider-display-name: Province of BC, Office of the Chief
-      Information Officer, BC DevExchange and DevOps Branch
 parameters:
-  - name: ENV_NAME
-    displayName: Environment Name
-    description: Environment Name dev, test and prod
+  - name: NAME
+    value: zeva
     required: true
-  - name: VOLUME_CAPACITY
+  - name: SUFFIX
+    displayName:
+    description: sample is -pr-0
+    required: true
+  - name: ENV_NAME
+    value: dev
+    required: true
+  - name: PVC_SIZE
     displayName: Volume Capacity
     description: Volume space available to Minio server for files, e.g. 512Mi, 2Gi.
-    value: 2Gi
-    required: true
-  - name: CPU_REQUEST
-    displayName: Requested CPU
-    description: Requested CPU
-    required: true
-  - name: CPU_LIMIT
-    displayName: CPU upper limit
-    description: CPU upper limit
-    required: true
-  - name: MEMORY_REQUEST
-    displayName: Requested memory
-    description: Requested memory
-    required: true
-  - name: MEMORY_LIMIT
-    displayName: Memory upper limit
-    description: Memory upper limit
+    value: 5Gi
     required: true
 objects:
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-minio${SUFFIX}
+      annotations:
+        volume.beta.kubernetes.io/storage-class: netapp-file-standard
+        template.openshift.io.bcgov/create: 'true'
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: ${PVC_SIZE}
+    status: {}
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-minio${SUFFIX}
+      creationTimestamp:
+      labels:
+        name: minio
+        app: zeva
+        role: minio
+        env: ${ENV_NAME}
+    spec:
+      ports:
+        - name: 9000-tcp
+          protocol: TCP
+          port: 9000
+          targetPort: 9000
+      selector:
+        deploymentconfig: ${NAME}-minio${SUFFIX}
+      type: ClusterIP
+      sessionAffinity: None
+    status:
+      loadBalancer: {}
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
-      name: minio
-      generation: 1
+      name: ${NAME}-minio${SUFFIX}
       labels:
-        app: minio
+        name: minio
+        app: zeva
+        role: minio
+        env: ${ENV_NAME}
     spec:
       strategy:
         type: Recreate
@@ -61,27 +82,25 @@ objects:
               - minio
             from:
               kind: ImageStreamTag
-              name: minio:${ENV_NAME}
-              namespace: "tbiwaq-${ENV_NAME}"
+              namespace: tbiwaq-tools
+              name: minio:20200309
       replicas: 1
       test: false
       selector:
-        app: minio
-        deploymentconfig: minio
+        app: ${NAME}-minio${SUFFIX}
       template:
         metadata:
           creationTimestamp:
           labels:
-            app: minio
-            deploymentconfig: minio
+            name: ${NAME}-minio${SUFFIX}
         spec:
           volumes:
-            - name: "minio-vol"
+            - name: minio-data
               persistentVolumeClaim:
-                claimName: "minio"
+                claimName: ${NAME}-minio${SUFFIX}
           containers:
             - name: minio
-              image: ''
+              image:
               ports:
                 - containerPort: 9000
                   protocol: TCP
@@ -100,15 +119,9 @@ objects:
                   value: "/tmp"
                 - name: MINIO_DATA_DIR
                   value: "/data"
-              resources:
-                limits:
-                  cpu: "${CPU_LIMIT}"
-                  memory: "${MEMORY_LIMIT}"
-                requests:
-                  cpu: "${CPU_REQUEST}"
-                  memory: "${MEMORY_REQUEST}"
+              resources: {}
               volumeMounts:
-                - name: "minio-vol"
+                - name: minio-data
                   mountPath: "/data"
               terminationMessagePath: "/dev/termination-log"
               terminationMessagePolicy: File
@@ -125,36 +138,3 @@ objects:
       updatedReplicas: 0
       availableReplicas: 0
       unavailableReplicas: 0
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      name: minio
-      annotations:
-        volume.beta.kubernetes.io/storage-class: netapp-file-standard
-        template.openshift.io.bcgov/create: 'true'
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: "${VOLUME_CAPACITY}"
-  - kind: Service
-    apiVersion: v1
-    metadata:
-      name: minio
-      creationTimestamp:
-      labels:
-        app: minio
-    spec:
-      ports:
-        - name: 9000-tcp
-          protocol: TCP
-          port: 9000
-          targetPort: 9000
-      selector:
-        deploymentconfig: minio
-      type: ClusterIP
-      sessionAffinity: None
-    status:
-      loadBalancer: {}
-

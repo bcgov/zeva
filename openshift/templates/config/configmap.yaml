@@ -40,7 +40,7 @@ objects:
       creationTimestamp: null
       name: ${NAME}-config${SUFFIX}
     data:
-      apibase: https://${BACKEND_HOST}.pathfinder.gov.bc.ca/api/
+      apibase: https://${BACKEND_HOST}/api/
       database_engine: postgresql
       database_name: zeva
       database_service_name: ${NAME}-postgresql${SUFFIX}
