@@ -236,7 +236,7 @@ def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=Fals
                              'make': ros.vehicle.make.name,
                              'class': ros.vehicle.vehicle_class_code.vehicle_class_code,
                              'range': ros.vehicle.range,
-                             'type': ros.vehicle.vehicle_fuel_type.vehicle_fuel_code,
+                             'type': ros.vehicle.vehicle_zev_type.vehicle_zev_code,
                              }
                         )
                         logger.info('Recorded sale {}'.format(vin))

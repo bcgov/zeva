@@ -6,10 +6,10 @@ from rest_framework.response import Response
 from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle, VehicleDefinitionStatuses
 from api.models.vehicle_class import VehicleClass
-from api.models.vehicle_fuel_type import FuelType
+from api.models.vehicle_zev_type import ZevType
 from api.models.vehicle_make import Make
 from api.serializers.vehicle import ModelYearSerializer, \
-    VehicleClassSerializer, VehicleFuelTypeSerializer, \
+    VehicleClassSerializer, VehicleZevTypeSerializer, \
     VehicleMakeSerializer, VehicleSaveSerializer, VehicleSerializer, \
     VehicleStatusChangeSerializer
 from auditable.views import AuditableMixin
@@ -78,19 +78,19 @@ class VehicleViewSet(
         return Response(serializer.data)
 
     @action(detail=False)
-    def fuel_types(self, _request):
+    def zev_types(self, _request):
         """
         Get the types
         """
-        fuel_types = FuelType.objects.all().order_by('description')
+        zev_types = ZevType.objects.all().order_by('description')
 
-        serializer = VehicleFuelTypeSerializer(fuel_types, many=True)
+        serializer = VehicleZevTypeSerializer(zev_types, many=True)
         return Response(serializer.data)
 
     @action(detail=False)
     def classes(self, _request):
         """
-        Get the fuel classes
+        Get the zev classes
         """
         classes = VehicleClass.objects.all().order_by('description')
         serializer = VehicleClassSerializer(classes, many=True)

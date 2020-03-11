@@ -15,7 +15,7 @@ const SalesDetailsContainer = (props) => {
       details={[{
         class: 'A',
         credits: 1.74,
-        fuelType: 'B',
+        zevType: 'B',
         make: 'Hyundai',
         modelName: 'IONIQ ELECTRIC',
         modelYear: 2020,
@@ -27,7 +27,7 @@ const SalesDetailsContainer = (props) => {
       }, {
         class: 'A',
         credits: 3.08,
-        fuelType: 'B',
+        zevType: 'B',
         make: 'Hyundai',
         modelName: 'KONA ELECTRIC',
         modelYear: 2020,
@@ -39,7 +39,7 @@ const SalesDetailsContainer = (props) => {
       }, {
         class: 'B',
         credits: 0.59,
-        fuelType: 'B/X',
+        zevType: 'B/X',
         make: 'Hyundai',
         modelName: 'IONIQ ELECTRIC PLUS',
         modelYear: 2020,
@@ -51,7 +51,7 @@ const SalesDetailsContainer = (props) => {
       }, {
         class: 'B',
         credits: 0.58,
-        fuelType: 'B/X',
+        zevType: 'B/X',
         make: 'Hyundai',
         modelName: 'SONATA PLUG-IN',
         modelYear: 2019,
@@ -63,7 +63,7 @@ const SalesDetailsContainer = (props) => {
       }, {
         class: 'A',
         credits: 2.89,
-        fuelType: 'B',
+        zevType: 'B',
         make: 'Kia',
         modelName: 'NIRO EV',
         modelYear: 2019,
@@ -75,7 +75,7 @@ const SalesDetailsContainer = (props) => {
       }, {
         class: 'A',
         credits: 1.61,
-        fuelType: 'B',
+        zevType: 'B',
         make: 'Kia',
         modelName: 'SOUL EV',
         modelYear: 2019,
@@ -87,7 +87,7 @@ const SalesDetailsContainer = (props) => {
       }, {
         class: 'B',
         credits: 0.56,
-        fuelType: 'B/X',
+        zevType: 'B/X',
         make: 'Kia',
         modelName: 'NIRO PLUG-IN',
         modelYear: 2019,
@@ -99,7 +99,7 @@ const SalesDetailsContainer = (props) => {
       }, {
         class: 'B',
         credits: 0.59,
-        fuelType: 'B/X',
+        zevType: 'B/X',
         make: 'Kia',
         modelName: 'OPTIMA PLUG-IN',
         modelYear: 2019,

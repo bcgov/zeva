@@ -20,9 +20,9 @@ const SalesDetailsTable = (props) => {
     accessor: 'modelName',
     Header: 'Model',
   }, {
-    accessor: 'fuelType',
+    accessor: 'zevType',
     className: 'text-center',
-    Header: 'Fuel Type',
+    Header: 'Zev Type',
     width: 100,
   }, {
     accessor: 'range',

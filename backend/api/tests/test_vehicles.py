@@ -3,6 +3,7 @@ import json
 from .base_test_case import BaseTestCase
 
 
+
 class TestVehicles(BaseTestCase):
     extra_fixtures = ['api/fixtures/test/test_vehicles.json']
 

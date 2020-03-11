@@ -152,20 +152,7 @@ if TESTING:
                 'formatter': 'custom'
             },
         },
-        'loggers': {
-            'django': {
-                'level': 'DEBUG',
-                'handlers': ['console'],
-            },
-            'celery': {
-                'level': 'DEBUG',
-                'handlers': ['console'],
-            },
-            'zeva': {
-                'level': 'DEBUG',
-                'handlers': ['console'],
-            },
-        }
+        'loggers': {}
     }
 if RUNSERVER:
     LOGGING = {
@@ -222,26 +209,5 @@ if DEBUG:
                 'formatter': 'custom'
             },
         },
-        'loggers': {
-            'django': {
-                'level': 'DEBUG',
-                'handlers': ['console'],
-            },
-            'django.utils.autoreload': {
-                'level': 'INFO',
-                'handlers': ['console'],
-            },
-            'celery': {
-                'level': 'DEBUG',
-                'handlers': ['console'],
-            },
-            'celery.utils': {
-                'level': 'INFO',
-                'handlers': ['console'],
-            },
-            'zeva': {
-                'level': 'DEBUG',
-                'handlers': ['console'],
-            },
-        }
+        'loggers': {}
     }
