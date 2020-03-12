@@ -21,7 +21,7 @@ module.exports = settings => {
   var objects = [];
 
   // The deployment of your cool app goes here ▼▼▼
-
+/*
   // create configs
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/config/configmap.yaml`, {
     'param': {
@@ -57,7 +57,7 @@ module.exports = settings => {
       'MEMORY_LIMIT': '500M'
     }
   }))
-
+*/
   //deploy rabbitmq
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-dc.yaml`, {
     'param': {
@@ -72,7 +72,7 @@ module.exports = settings => {
       'RABBITMQ_PVC_SIZE': '1Gi'
     }
   }))
-
+/*
   // deploy frontend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-dc.yaml`, {
     'param': {
@@ -101,7 +101,7 @@ module.exports = settings => {
       'MEMORY_LIMIT': '2G'
     }
   }))
-
+*/
   oc.applyRecommendedLabels(
       objects,
       phases[phase].name,
