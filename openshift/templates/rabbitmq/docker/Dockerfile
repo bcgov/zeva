@@ -1,4 +1,4 @@
-FROM rabbitmq:3.8.3-management
+FROM rabbitmq:3.7.7-management
 RUN apt-get update
 RUN apt-get install -y gettext-base
 RUN chgrp -R root /var/log/rabbitmq
