@@ -35,6 +35,15 @@ const CustomPropTypes = {
   referenceData: PropTypes.shape({
     years: yearArrayType,
   }),
+  routeMatch: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string,
+    }),
+  }),
+  years: yearArrayType,
+  referenceData: PropTypes.shape({
+    years: yearArrayType,
+  }),
 };
 
 export default CustomPropTypes;

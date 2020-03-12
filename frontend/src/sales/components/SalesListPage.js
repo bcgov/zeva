@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import history from '../../app/History';
 
 import CustomPropTypes from '../../app/utilities/props';
-import history from '../../app/History';
-import SalesListTable from './SalesListTable';
+import SalesSubmissionsListTable from './SalesSubmissionsListTable';
 
 const SalesListPage = (props) => {
   const {
-    sales,
+    submissions,
     user,
   } = props;
 
@@ -43,8 +43,8 @@ const SalesListPage = (props) => {
             </span>
           </div>
 
-          <SalesListTable
-            items={sales}
+          <SalesSubmissionsListTable
+            items={submissions}
             user={user}
           />
 
@@ -78,7 +78,7 @@ const SalesListPage = (props) => {
 SalesListPage.defaultProps = {};
 
 SalesListPage.propTypes = {
-  sales: PropTypes.arrayOf(PropTypes.object).isRequired,
+  submissions: PropTypes.arrayOf(PropTypes.object).isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 
