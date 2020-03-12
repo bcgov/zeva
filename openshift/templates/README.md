@@ -63,6 +63,10 @@ oc process -f config/rabbitmq-secret-env.yaml ADMIN_PASSWORD=*** ZEVA_PASSWORD=*
 
 #### Deploy Rabbitmq on dev, test and prod
 * under rabbitmq folder:
+
+oc process -f rabbitmq/rabbitmq-dc.yaml NAME=zeva ENV_NAME=dev SUFFIX=-pr-900 CPU_REQUEST=100m CPU_LIMIT=1000m MEMORY_REQUEST=256Mi MEMORY_LIMIT=2Gi REPLICA_COUNT=2 RABBITMQ_PVC_SIZE=1Gi | \
+oc apply -f - -n tbiwaq-dev --dry-run=true
+
 oc process -f rabbitmq/rabbitmq-dc.yaml ENV_NAME=dev | oc apply -f - -n tbiwaq-dev --dry-run=true
 oc process -f rabbitmq/rabbitmq-dc.yaml ENV_NAME=test | oc apply -f - -n tbiwaq-test --dry-run=true
 oc process -f rabbitmq/rabbitmq-dc.yaml ENV_NAME=prod | oc apply -f - -n tbiwaq-prod --dry-run=true
