@@ -66,6 +66,25 @@ objects:
           targetPort: 15672
       selector:
         app: ${NAME}-rabbitmq${SUFFIX}
+  - kind: Route
+    apiVersion: v1
+    metadata:
+      name: rabbitmq-web
+      creationTimestamp: 
+      annotations:
+        openshift.io/host.generated: 'true'
+    spec:
+      host: ${NAME}-rabbitmq${SUFFIX}.pathfinder.gov.bc.ca
+      to:
+        kind: Service
+        name: rabbit
+        weight: 100
+      port:
+        targetPort: management-web
+      tls:
+        termination: edge
+      wildcardPolicy: None
+    status: {}
   - kind: StatefulSet
     apiVersion: apps/v1
     metadata:
@@ -102,7 +121,7 @@ objects:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
               volumeMounts:
-                - name: qqqq
+                - name: rabbitmq
                   mountPath: "/var/lib/rabbitmq"
               readinessProbe:
                 tcpSocket:
@@ -120,15 +139,9 @@ objects:
                 periodSeconds: 10
                 successThreshold: 1
                 failureThreshold: 3
-              terminationMessagePath: "/dev/termination-log"
-              imagePullPolicy: Always
-          restartPolicy: Always
-          terminationGracePeriodSeconds: 30
-          dnsPolicy: ClusterFirst
-          securityContext: {}
       volumeClaimTemplates:
         - metadata:
-            name: qqqq
+            name: rabbitmq
           spec:
             accessModes: [ ReadWriteOnce ]
             storageClassName: netapp-file-standard

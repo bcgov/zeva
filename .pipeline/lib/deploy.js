@@ -44,7 +44,7 @@ module.exports = settings => {
     }
   }))
 
-
+  //deploy database
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/postgresql/postgresql-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
@@ -58,7 +58,20 @@ module.exports = settings => {
     }
   }))
 
-  //TODO sleep 60 seconds or somehow wait till postgresql is ready
+  //deploy rabbitmq
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-dc.yaml`, {
+    'param': {
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix,
+      'ENV_NAME': phases[phase].phase,
+      'CPU_REQUEST': '100m',
+      'CPU_LIMIT': '500m',
+      'MEMORY_REQUEST': '256Mi',
+      'MEMORY_LIMIT': '1Gi',
+      'REPLICA_COUNT': '2',
+      'RABBITMQ_PVC_SIZE': '1Gi'
+    }
+  }))
 
   // deploy frontend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-dc.yaml`, {
@@ -75,6 +88,7 @@ module.exports = settings => {
     }
   }))
 
+  //deploy backend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/backend/backend-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
