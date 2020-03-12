@@ -92,10 +92,10 @@ const SalesSubmissionContainer = (props) => {
     default:
       content = (
         <SalesSubmissionPage
+          files={files}
           key="page"
           setUploadFile={setFiles}
           upload={doUpload}
-          uploadReady={files.length > 0}
           user={user}
           years={referenceData.years}
         />
