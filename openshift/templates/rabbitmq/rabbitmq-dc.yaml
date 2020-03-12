@@ -40,7 +40,7 @@ parameters:
     description: The number of replica to run
     required: true
   - name: RABBITMQ_PVC_SIZE
-    value: 1Gi
+    value: '1Gi'
     displayName: PVC size
     description: PVC size
     required: true
