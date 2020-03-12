@@ -7,7 +7,6 @@ import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
 import UserDetailsContainer from '../organizations/UserDetailsContainer';
 import OrganizationListContainer from '../organizations/OrganizationListContainer';
-import UserDetailsContainer from '../organizations/UserDetailsContainer';
 import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
 import RoleListContainer from '../roles/RoleListContainer';
 import SalesDetailsContainer from '../sales/SalesDetailsContainer';
