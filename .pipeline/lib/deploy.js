@@ -68,7 +68,7 @@ module.exports = settings => {
       'CPU_LIMIT': '500m',
       'MEMORY_REQUEST': '256Mi',
       'MEMORY_LIMIT': '1Gi',
-      'REPLICA_COUNT': 2,
+      'REPLICA_COUNT': '2',
       'RABBITMQ_PVC_SIZE': '1Gi'
     }
   }))
