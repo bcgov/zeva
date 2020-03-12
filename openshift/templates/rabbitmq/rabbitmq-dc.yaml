@@ -34,11 +34,6 @@ parameters:
     displayName: Memory upper limit
     description: Memory upper limit
     required: true
-  - name: REPLICA_COUNT
-    value: '1'
-    displayName: Replica count
-    description: The number of replica to run
-    required: true
   - name: RABBITMQ_PVC_SIZE
     value: '1Gi'
     displayName: PVC size
@@ -70,9 +65,6 @@ objects:
     apiVersion: v1
     metadata:
       name: ${NAME}-rabbitmq${SUFFIX}
-      creationTimestamp: 
-      annotations:
-        openshift.io/host.generated: 'true'
     spec:
       host: ${NAME}-rabbitmq${SUFFIX}.pathfinder.gov.bc.ca
       to:
@@ -94,7 +86,7 @@ objects:
         matchLabels:
           app: ${NAME}-rabbitmq${SUFFIX}
       serviceName: ${NAME}-rabbitmq${SUFFIX}
-      replicas: ${REPLICA_COUNT}
+      replicas: 2
       template:
         metadata:
           labels:
