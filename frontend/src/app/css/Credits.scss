@@ -1,0 +1,33 @@
+#credit-box {
+    border: 2px solid $default-background-grey;
+    width: 80vw;
+    height:60vh;
+    #credits-navbar {
+        align-items: center;
+        display: flex;
+        margin: 10;
+        padding:3rem 3rem 0 3rem;
+        position: relative;
+        width: 100%;
+        border-bottom: 2px solid $default-background-grey;
+
+      }
+      .navbar-nav {
+            flex-direction: row;
+
+
+    }
+    li {
+        a {
+            color: $default-text-blue;
+            font-size: 0.9rem;
+            height: 100%;
+            padding: .2rem .7rem;
+            margin: 0 .2rem;
+            text-align: center;
+            
+
+          }
+      }
+
+}
