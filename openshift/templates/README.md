@@ -1,15 +1,15 @@
 ## Tag Base Images
 
-### Tag rhel7-atomic:77.371 from RedHat image repo to tools project
-This is image is used when build Jenkins.
+### Tag rhel7-atomic:77.371 from RedHat and build a new Jenkins image on top of it
 oc tag registry.access.redhat.com/rhel7-atomic:7.7-371 tbiwaq-tools/rhel7-atomic:7.7-371
+oc process -f jenkins/jenkins-bc.yaml | oc apply -f - -n tbiwaq-tools --dry-run=true
 Update Jenkins build-master.yaml SOURCE_IMAGE_STREAM_NAMESPACE and SOURCE_IMAGE_STREAM_TAG and trigger .jenkins pipeline to build and deploy Jenkins
 
-### Tag postgresql-10-rhel7:1-47 from RedHat image repo to tools project
+### Tag postgresql-10-rhel7:1-47 from RedHat
 The image fixed database initialization issue. Zeva uses this image to create extension hstore and others.  
-Command: oc tag registry.access.redhat.com/rhscl/postgresql-10-rhel7:1-47 tbiwaq-tools/postgresql:10-1-47
+oc tag registry.access.redhat.com/rhscl/postgresql-10-rhel7:1-47 tbiwaq-tools/postgresql:10-1-47
 
-### Tag python-36-rhel7:1-63 from RedHat image repo to tools project
+### Tag python-36-rhel7:1-63 from RedHat 
 It fixed issues when reload operational and test data. This image will be used by backend build
 oc tag registry.access.redhat.com/rhscl/python-36-rhel7:1-63 tbiwaq-tools/python:3.6-1-63
 

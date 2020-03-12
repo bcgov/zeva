@@ -69,7 +69,7 @@ objects:
   - kind: Route
     apiVersion: v1
     metadata:
-      name: rabbitmq-web
+      name: ${NAME}-rabbitmq${SUFFIX}
       creationTimestamp: 
       annotations:
         openshift.io/host.generated: 'true'
@@ -77,7 +77,7 @@ objects:
       host: ${NAME}-rabbitmq${SUFFIX}.pathfinder.gov.bc.ca
       to:
         kind: Service
-        name: rabbit
+        name: ${NAME}-rabbitmq${SUFFIX}
         weight: 100
       port:
         targetPort: management-web
