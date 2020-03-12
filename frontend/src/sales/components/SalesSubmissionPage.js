@@ -1,17 +1,20 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+
 import ROUTES_SALES from '../../app/routes/Sales';
 import download from '../../app/utilities/download';
-
 import CustomPropTypes from '../../app/utilities/props';
 import ExcelFileDrop from './ExcelFileDrop';
+import SalesSubmissionsListTable from './SalesSubmissionsListTable';
 
 const SalesSubmissionPage = (props) => {
   const {
     files,
     setUploadFile,
+    submissions,
     upload,
+    user,
     years,
   } = props;
 
@@ -121,6 +124,13 @@ const SalesSubmissionPage = (props) => {
       </div>
 
       <div className="clearfix" />
+
+      <h2>Previous ZEV Sales Submissions</h2>
+
+      <SalesSubmissionsListTable
+        items={submissions}
+        user={user}
+      />
     </div>
   );
 };
@@ -129,8 +139,10 @@ SalesSubmissionPage.defaultProps = {};
 
 SalesSubmissionPage.propTypes = {
   files: PropTypes.arrayOf(PropTypes.shape).isRequired,
-  upload: PropTypes.func.isRequired,
   setUploadFile: PropTypes.func.isRequired,
+  submissions: PropTypes.arrayOf(PropTypes.shape).isRequired,
+  upload: PropTypes.func.isRequired,
+  user: CustomPropTypes.user.isRequired,
   years: CustomPropTypes.years.isRequired,
 };
 
