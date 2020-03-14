@@ -1,6 +1,6 @@
 FROM rabbitmq:3.7.7-management
 RUN apt-get update
-RUN apt-get install -y gettext-base, vim
+RUN apt-get install -y gettext-base vim
 RUN chgrp -R root /var/log/rabbitmq && \
     chmod -R g+w /var/log/rabbitmq
 COPY rabbitmq.conf /etc/rabbitmq/
