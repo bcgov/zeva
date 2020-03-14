@@ -64,7 +64,7 @@ objects:
       output:
         to:
           kind: ImageStreamTag
-          name: rabbitmq:3.7.7-management-${ENV_NAME}
+          name: rabbitmq:3.8.3-management-${ENV_NAME}
       resources: {}
       postCommit: {}
       nodeSelector:
