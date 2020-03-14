@@ -31,6 +31,9 @@ oc process -f config/zeva-postgresql-init.yaml | oc create -f - -n tbiwaq-test -
 oc process -f config/zeva-postgresql-init.yaml | oc create -f - -n tbiwaq-prod --dry-run=true  
 
 ## Rabbitmq 
+Docker command to try rabbitMQ  
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+
 
 ### In tools project, create secrets rabbitmq-secret-dev, rabbitmq-secret-test and rabbitmq-secret-prod
 oc process -f config/rabbitmq-secret.yaml ENV_NAME=dev | oc create -f - -n tbiwaq-tools --dry-run=true  

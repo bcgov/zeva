@@ -1,0 +1,49 @@
+{
+    "rabbit_version": "3.7.7",
+    "users": [
+      {
+        "name": "admin",
+        "password": "$ADMIN_PASSWORD",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "administrator"
+      },
+      {
+        "name": "zeva",
+        "password": "$ZEVA_PASSWORD",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": ""
+      }
+    ],
+    "vhosts": [
+      {
+        "name": "/zeva"
+      }
+    ],
+    "permissions": [
+      {
+        "user": "zeva",
+        "vhost": "/zeva",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      },
+      {
+        "user": "admin",
+        "vhost": "/zeva",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      }
+    ],
+    "exchanges": [
+      {
+        "name": "notifications",
+        "vhost": "/zeva",
+        "type": "fanout",
+        "durable": true,
+        "auto_delete": false,
+        "internal": false,
+        "arguments": {}
+      }
+    ]
+  }
