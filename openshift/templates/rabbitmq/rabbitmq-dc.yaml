@@ -95,7 +95,7 @@ objects:
           terminationGracePeriodSeconds: 10
           containers:
             - name: rabbitmq
-              image: docker-registry.default.svc:5000/tbiwaq-tools/rabbitmq:3.7.7-management-${ENV_NAME}
+              image: docker-registry.default.svc:5000/tbiwaq-tools/rabbitmq:3.8.3-management-${ENV_NAME}
               command:
                 - rabbitmq-server
               envFrom:
