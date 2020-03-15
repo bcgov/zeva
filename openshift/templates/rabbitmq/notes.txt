@@ -1,0 +1,55 @@
+$ cat rabbitmq.conf
+loopback_users.guest = false
+
+## Clustering
+cluster_formation.peer_discovery_backend = rabbit_peer_discovery_k8s
+cluster_formation.k8s.host = kubernetes.default.svc.cluster.local
+cluster_formation.k8s.address_type = hostname
+cluster_formation.k8s.hostname_suffix = .rabbitmq-cluster.tbiwaq-dev.svc.cluster.local
+cluster_formation.node_cleanup.interval = 10
+cluster_formation.node_cleanup.only_log_warning = true
+cluster_partition_handling = autoheal
+## queue master locator
+queue_master_locator=min-masters
+
+
+$ cat enabled_plugins
+[rabbitmq_management,rabbitmq_peer_discovery_k8s].
+
+
+
+$ env | grep RAB 
+RABBITMQ_CLUSTER_BALANCER_PORT_5672_TCP_ADDR=172.50.69.49
+RABBITMQ_USE_LONGNAME=true
+RABBITMQ_CLUSTER_BALANCER_PORT_5672_TCP_PORT=5672
+RABBITMQ_CLUSTER_BALANCER_PORT=tcp://172.50.69.49:15672
+RABBITMQ_CLUSTER_BALANCER_SERVICE_PORT=15672
+RABBITMQ_CLUSTER_BALANCER_PORT_5672_TCP_PROTO=tcp
+RABBITMQ_DEFAULT_USER=rabbitmq
+RABBITMQ_LOGS=-
+RABBITMQ_NODENAME=rabbit@rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local
+RABBITMQ_CLUSTER_BALANCER_PORT_15672_TCP_ADDR=172.50.69.49
+RABBITMQ_CLUSTER_BALANCER_SERVICE_PORT_AMQP=5672
+RABBITMQ_CLUSTER_BALANCER_PORT_5672_TCP=tcp://172.50.69.49:5672
+RABBITMQ_CLUSTER_BALANCER_PORT_15672_TCP_PORT=15672
+RABBITMQ_CONFIG_FILE=/var/lib/rabbitmq/rabbitmq
+RABBITMQ_CLUSTER_BALANCER_PORT_15672_TCP_PROTO=tcp
+RABBITMQ_ERLANG_COOKIE=kOXy1R7btTVrme00
+RABBITMQ_VERSION=3.7.23
+RABBITMQ_SASL_LOGS=-
+RABBITMQ_CLUSTER_BALANCER_PORT_15672_TCP=tcp://172.50.69.49:15672
+RABBITMQ_DATA_DIR=/var/lib/rabbitmq
+RABBITMQ_PGP_KEY_ID=0x0A9AF2115F4687BD29803A206B73A36E6026DFCA
+RABBITMQ_CLUSTER_BALANCER_SERVICE_PORT_HTTP=15672
+RABBITMQ_CLUSTER_BALANCER_SERVICE_HOST=172.50.69.49
+RABBITMQ_HOME=/opt/rabbitmq
+RABBITMQ_DEFAULT_PASS=QuFiRIgc2PUgasGU
+
+Liveness probe failed: 
+Error: unable to perform an operation on node 'rabbit@rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local'. 
+Please see diagnostics information and suggestions below. 
+Most common reasons for this are: 
+    * Target node is unreachable (e.g. due to hostname resolution, TCP connection or firewall issues) 
+    * CLI tool fails to authenticate with the server (e.g. due to CLI tool's Erlang cookie not matching that of the server) 
+    
+    * Target node is not running In addition to the diagnostics info below: * See the CLI, clustering and networking guides on https://rabbitmq.com/documentation.html to learn more * Consult server logs on node rabbit@rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local * If target node is configured to use long node names, don't forget to use --longnames with CLI tools DIAGNOSTICS =========== attempted to contact: ['rabbit@rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local'] rabbit@rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local: * connected to epmd (port 4369) on rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local * epmd reports: node 'rabbit' not running at all no other nodes on rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local * suggestion: start the node Current node details: * node name: 'rabbitmqcli-629-rabbit@rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local' * effective user's home directory: /var/lib/rabbitmq * Erlang cookie hash: FnQDqENmrMGFKADCZRoYag==
