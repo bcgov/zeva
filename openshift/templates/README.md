@@ -51,9 +51,11 @@ oc process -f rabbitmq/rabbitmq-bc.yaml ENV_NAME=test GIT_REF=pipeline-7-1 | oc 
 oc process -f rabbitmq/rabbitmq-bc.yaml ENV_NAME=prod GIT_REF=pipeline-7-1 | oc apply -f - -n tbiwaq-tools --dry-run=true  
 
 ### Command to deploy Rabbitmq on dev, this can be done throught pipeline aws well
-oc process -f rabbitmq/rabbitmq-dc.yaml NAME=zeva ENV_NAME=dev SUFFIX=-pr-900 CPU_REQUEST=100m CPU_LIMIT=1000m MEMORY_REQUEST=256Mi MEMORY_LIMIT=2Gi REPLICA_COUNT=2 RABBITMQ_PVC_SIZE=1Gi | \
-oc apply -f - -n tbiwaq-dev --dry-run=true
+oc process -f rabbitmq/rabbitmq-dc.yaml NAME=zeva ENV_NAME=dev SUFFIX=-pr-900 CPU_REQUEST=100m CPU_LIMIT=1000m MEMORY_REQUEST=256Mi \
+MEMORY_LIMIT=2Gi REPLICA_COUNT=2 RABBITMQ_PVC_SIZE=1Gi | oc apply -f - -n tbiwaq-dev --dry-run=true
 
-## Pipeline
+oc process -f rabbitmq/rabbitmq-cluster.yaml | oc apply -f - -n tbiwaq-dev --dry-run=true
 
-The rest will be build and deployed on pipeline.
+## Patroni
+
+oc process -f patroni/build.yaml -p GIT_URI=https://github.com/bcgov/zeva.git -p GIT_REF=pipeline-7-1 -p SUFFIX=-001 -p VERSION=v10-latest | oc apply -f -

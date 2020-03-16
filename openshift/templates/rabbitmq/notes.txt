@@ -51,5 +51,15 @@ Please see diagnostics information and suggestions below.
 Most common reasons for this are: 
     * Target node is unreachable (e.g. due to hostname resolution, TCP connection or firewall issues) 
     * CLI tool fails to authenticate with the server (e.g. due to CLI tool's Erlang cookie not matching that of the server) 
-    
-    * Target node is not running In addition to the diagnostics info below: * See the CLI, clustering and networking guides on https://rabbitmq.com/documentation.html to learn more * Consult server logs on node rabbit@rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local * If target node is configured to use long node names, don't forget to use --longnames with CLI tools DIAGNOSTICS =========== attempted to contact: ['rabbit@rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local'] rabbit@rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local: * connected to epmd (port 4369) on rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local * epmd reports: node 'rabbit' not running at all no other nodes on rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local * suggestion: start the node Current node details: * node name: 'rabbitmqcli-629-rabbit@rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local' * effective user's home directory: /var/lib/rabbitmq * Erlang cookie hash: FnQDqENmrMGFKADCZRoYag==
+    * Target node is not running In addition to the diagnostics info below: 
+        * See the CLI, clustering and networking guides on https://rabbitmq.com/documentation.html to learn more 
+        * Consult server logs on node rabbit@rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local 
+        * If target node is configured to use long node names, don't forget to use --longnames with CLI tools 
+        DIAGNOSTICS =========== attempted to contact: ['rabbit@rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local'] 
+        rabbit@rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local: 
+        * connected to epmd (port 4369) on rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local 
+        * epmd reports: node 'rabbit' not running at all no other nodes on rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local 
+        * suggestion: start the node Current node details: 
+            * node name: 'rabbitmqcli-629-rabbit@rabbitmq-cluster-0.rabbitmq-cluster.tbiwaq-dev.svc.cluster.local' 
+            * effective user's home directory: /var/lib/rabbitmq 
+            * Erlang cookie hash: FnQDqENmrMGFKADCZRoYag==
