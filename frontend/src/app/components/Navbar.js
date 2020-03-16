@@ -177,7 +177,7 @@ class Navbar extends Component {
               <li className="nav-item">
                 <NavLink
                   activeClassName="active"
-                  to="/credit-transactions"
+                  to="/sales"
                 >
                   <span>Credit Transactions</span>
                 </NavLink>

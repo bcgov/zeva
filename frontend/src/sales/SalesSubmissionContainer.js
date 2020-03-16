@@ -115,7 +115,7 @@ const SalesSubmissionContainer = (props) => {
         <SalesSubmissionPage
           files={files}
           key="page"
-          setUploadFile={setFiles}
+          setUploadFiles={setFiles}
           submissions={submissions}
           upload={doUpload}
           user={user}

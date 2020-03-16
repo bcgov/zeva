@@ -11,7 +11,7 @@ import SalesSubmissionsListTable from './SalesSubmissionsListTable';
 const SalesSubmissionPage = (props) => {
   const {
     files,
-    setUploadFile,
+    setUploadFiles,
     submissions,
     upload,
     user,
@@ -36,6 +36,13 @@ const SalesSubmissionPage = (props) => {
     const filesize = parseFloat((bytes / k ** i).toFixed(1));
 
     return `${filesize} ${sizes[i]}`;
+  };
+
+  const removeFile = (removedFile) => {
+    const found = files.findIndex((file) => (file === removedFile));
+    files.splice(found, 1);
+
+    setUploadFiles([...files]);
   };
 
   return (
@@ -83,7 +90,7 @@ const SalesSubmissionPage = (props) => {
         <div className="bordered">
           <div className="content">
             <div className="panel panel-default">
-              <ExcelFileDrop setFiles={setUploadFile} />
+              <ExcelFileDrop setFiles={setUploadFiles} />
 
               <div className="files">
                 <div className="row">
@@ -96,7 +103,13 @@ const SalesSubmissionPage = (props) => {
                     <div className="col-8">{file.name}</div>
                     <div className="col-3 size">{getFileSize(file.size)}</div>
                     <div className="col-1 actions">
-                      <button className="delete" type="button">
+                      <button
+                        className="delete"
+                        onClick={() => {
+                          removeFile(file);
+                        }}
+                        type="button"
+                      >
                         <FontAwesomeIcon icon="trash" />
                       </button>
                     </div>
@@ -139,7 +152,7 @@ SalesSubmissionPage.defaultProps = {};
 
 SalesSubmissionPage.propTypes = {
   files: PropTypes.arrayOf(PropTypes.shape).isRequired,
-  setUploadFile: PropTypes.func.isRequired,
+  setUploadFiles: PropTypes.func.isRequired,
   submissions: PropTypes.arrayOf(PropTypes.shape).isRequired,
   upload: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired,

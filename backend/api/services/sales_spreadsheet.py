@@ -170,6 +170,8 @@ def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=Fals
     permitted_makes = [ma.vehicle_make for ma in make_assoc]
 
     submission = SalesSubmission.objects.create(
+        create_user=requesting_user,
+        update_user=requesting_user,
         organization=org,
         submission_sequence=SalesSubmission.next_sequence(org, datetime.now())
     )
