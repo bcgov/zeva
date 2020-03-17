@@ -7,14 +7,6 @@ metadata:
     iconClass: icon-rabbitmq
     tags: rabbitmq,mq,messaging
 parameters:
-- name: NAME
-  displayName:
-  description: the module name entered when run yo bcdk:pipeline, which is zeva
-  required: true
-- name: SUFFIX
-  displayName:
-  description: sample is -pr-0
-  required: true
 - name: NAMESPACE
   description: "OpenShift project (current namespace)"
   value: tbiwaq-dev
@@ -36,26 +28,17 @@ parameters:
   value: "qqwweerrttyyuuii"
 - name: SERVICE_ACCOUNT
   description: "Name of the service account used by RabbitMQ k8s plugin"
-  value: rabbitmq-discovery  
+  value: rabbitmq-discovery
 - name: VOLUME_SIZE
   description: "Size of the RabbitMQ data volume"
   value: 1Gi
-- name: CPU_REQUEST
-  displayName: Requested CPU
-  description: Requested CPU
-  required: true
-- name: CPU_LIMIT
-  displayName: CPU upper limit
-  description: CPU upper limit
-  required: true
-- name: MEMORY_REQUEST
-  displayName: Requested memory
-  description: Requested memory
-  required: true
-- name: MEMORY_LIMIT
-  displayName: Memory upper limit
-  description: Memory upper limit
-  required: true
+- name: MQ_USER
+  description: "vhost default user name"
+  value: guest
+- name: MQ_PASSWORD
+  description: "vhost default password"
+  value:
+
 objects:
 
 # This service account is needed for rabbit_peer_discovery_k8s plugin to be able to discover
@@ -63,35 +46,38 @@ objects:
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
-    name: ${NAME}${SUFFIX}-${SERVICE_ACCOUNT}
+    name: ${SERVICE_ACCOUNT}
+    labels:
+      app: rabbitmq-cluster
 
 - apiVersion: v1
   kind: RoleBinding
   metadata:
-    name: ${NAME}${SUFFIX}-${SERVICE_ACCOUNT}-view
+    name: ${SERVICE_ACCOUNT}-view
+    app: rabbitmq-cluster
   roleRef:
     kind: Role
     name: view
   subjects:
   - kind: ServiceAccount
-    name: ${NAME}${SUFFIX}-${SERVICE_ACCOUNT}
+    name: ${SERVICE_ACCOUNT}
 
 - apiVersion: v1
   kind: Secret
   stringData:
     username: ${RABBITMQ_USER}
     password: ${RABBITMQ_PASS}
-    url: "amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@${NAME}${SUFFIX}-${CLUSTER_NAME}-balancer"
+    url: "amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@${CLUSTER_NAME}-balancer"
     cookie: ${ERLANG_COOKIE}
   metadata:
-    name: ${NAME}${SUFFIX}-${CLUSTER_NAME}-secret
+    name: ${CLUSTER_NAME}-secret
     app: rabbitmq-cluster
   type: Opaque
 
 - apiVersion: v1
   kind: ConfigMap
   metadata:
-    name: ${NAME}${SUFFIX}-${CLUSTER_NAME}-config
+    name: ${CLUSTER_NAME}-config
     app: rabbitmq-cluster
   data:
     rabbitmq.conf: |
@@ -101,7 +87,7 @@ objects:
         cluster_formation.peer_discovery_backend = rabbit_peer_discovery_k8s
         cluster_formation.k8s.host = kubernetes.default.svc.cluster.local
         cluster_formation.k8s.address_type = hostname
-        cluster_formation.k8s.hostname_suffix = .${NAME}${SUFFIX}-${CLUSTER_NAME}.${NAMESPACE}.svc.cluster.local
+        cluster_formation.k8s.hostname_suffix = .${CLUSTER_NAME}.${NAMESPACE}.svc.cluster.local
         cluster_formation.node_cleanup.interval = 10
         cluster_formation.node_cleanup.only_log_warning = true
         cluster_partition_handling = autoheal
@@ -115,11 +101,14 @@ objects:
 - kind: Service
   apiVersion: v1
   metadata:
-    name: ${NAME}${SUFFIX}-${CLUSTER_NAME}-balancer
+    name: ${CLUSTER_NAME}-balancer
+    labels:
+      app: rabbitmq-cluster
+      type: LoadBalancer
   spec:
     type: ClusterIP
     ports:
-      - name: web
+      - name: http
         protocol: TCP
         port: 15672
         targetPort: 15672
@@ -128,16 +117,18 @@ objects:
         port: 5672
         targetPort: 5672
     selector:
-      app: ${NAME}${SUFFIX}-${CLUSTER_NAME}
+      app: ${CLUSTER_NAME}
 
 # Headless service that makes it possible to lookup individual rabbitmq nodes
 - apiVersion: v1
   kind: Service
   metadata:
-    name: ${NAME}${SUFFIX}-${CLUSTER_NAME}
+    name: ${CLUSTER_NAME}
+    labels:
+      app: rabbitmq-cluster
   spec:
     selector:
-      app: ${NAME}${SUFFIX}-${CLUSTER_NAME}
+      app: ${CLUSTER_NAME}
     clusterIP: None
     ports:
       - name: amqp
@@ -147,19 +138,21 @@ objects:
 - apiVersion: apps/v1beta1
   kind: StatefulSet
   metadata:
-    name: ${NAME}${SUFFIX}-${CLUSTER_NAME}
+    name: ${CLUSTER_NAME}
+    labels:
+      app: rabbitmq-cluster
   spec:
-    serviceName: ${NAME}${SUFFIX}-${CLUSTER_NAME}
+    serviceName: ${CLUSTER_NAME}
     replicas: 2
     selector:
       matchLabels:
-        app: ${NAME}${SUFFIX}-${CLUSTER_NAME}
+        app: ${CLUSTER_NAME}
     template:
       metadata:
         labels:
-          app: ${NAME}${SUFFIX}-${CLUSTER_NAME}
+          app: ${CLUSTER_NAME}
       spec:
-        serviceAccountName: ${NAME}${SUFFIX}-${SERVICE_ACCOUNT}
+        serviceAccountName: ${SERVICE_ACCOUNT}
         terminationGracePeriodSeconds: 30
         containers:
         - name: rabbitmq
@@ -175,8 +168,9 @@ objects:
               mountPath: /etc/rabbitmq
             - name: rabbitmq-storage
               mountPath: /var/lib/rabbitmq
+
           ports:
-            - name: web
+            - name: http
               protocol: TCP
               containerPort: 15672
             - name: amqp
@@ -184,11 +178,11 @@ objects:
               containerPort: 5672       
           resources:
             limits:
-              cpu: ${CPU_LIMIT}
-              memory: ${MEMORY_LIMIT}
+              cpu: "1"
+              memory: 1Gi
             requests:
-              cpu: ${CPU_REQUEST}
-              memory: ${MEMORY_REQUEST}
+              cpu: "1"
+              memory: 400Mi              
           livenessProbe:
             exec:
               command: ["rabbitmqctl", "status"]
@@ -203,20 +197,20 @@ objects:
           - name: RABBITMQ_DEFAULT_USER
             valueFrom:
               secretKeyRef:
-                name: ${NAME}${SUFFIX}-${CLUSTER_NAME}-secret
+                name: ${CLUSTER_NAME}-secret
                 key: username
           - name: RABBITMQ_DEFAULT_PASS
             valueFrom:
               secretKeyRef:
-                name: ${NAME}${SUFFIX}-${CLUSTER_NAME}-secret
+                name: ${CLUSTER_NAME}-secret
                 key: password
           - name: RABBITMQ_ERLANG_COOKIE
             valueFrom:
               secretKeyRef:
-                name: ${NAME}${SUFFIX}-${CLUSTER_NAME}-secret
+                name: ${CLUSTER_NAME}-secret
                 key: cookie
           - name: K8S_SERVICE_NAME
-            value: ${NAME}${SUFFIX}-${CLUSTER_NAME}
+            value: ${CLUSTER_NAME}
           - name: POD_IP
             valueFrom:
               fieldRef:
@@ -232,13 +226,17 @@ objects:
           - name: RABBITMQ_USE_LONGNAME
             value: "true"
           - name: RABBITMQ_NODENAME
-            value: "rabbit@$(POD_NAME).${NAME}${SUFFIX}-${CLUSTER_NAME}.$(POD_NAMESPACE).svc.cluster.local"
+            value: "rabbit@$(POD_NAME).${CLUSTER_NAME}.$(POD_NAMESPACE).svc.cluster.local"
           - name: RABBITMQ_CONFIG_FILE
             value: /var/lib/rabbitmq/rabbitmq
+          - name: MQ_USER
+            value: ${MQ_USER}
+          - name: MQ_PASSWORD
+            value: ${MQ_PASSWORD}            
         volumes:
         - name: config-volume
           configMap:
-            name: ${NAME}${SUFFIX}-${CLUSTER_NAME}-config
+            name: ${CLUSTER_NAME}-config
             items:
             - key: rabbitmq.conf
               path: rabbitmq.conf

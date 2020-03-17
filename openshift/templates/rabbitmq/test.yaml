@@ -1,0 +1,16 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: test-copy-of
+objects:
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations:
+      as-copy-of: template.jenkins-slave-user
+    name: test-result
+  stringData:
+    metadata.name: jenkins-slave-user
+    username: jenkins-slave
+  type: kubernetes.io/basic-auth

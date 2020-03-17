@@ -58,4 +58,5 @@ oc process -f rabbitmq/rabbitmq-cluster.yaml | oc apply -f - -n tbiwaq-dev --dry
 
 ## Patroni
 
-oc process -f patroni/build.yaml -p GIT_URI=https://github.com/bcgov/zeva.git -p GIT_REF=pipeline-7-1 -p SUFFIX=-001 -p VERSION=v10-latest | oc apply -f -
+oc process -f build.yaml -p GIT_URI=https://github.com/bcgov/zeva.git -p GIT_REF=pipeline-7-1 -p SUFFIX=-001 -p VERSION=v10-latest \
+ | oc apply -f - -n tbiwaq-tools --dry-run=true

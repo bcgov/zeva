@@ -89,7 +89,7 @@ objects:
     postCommit: {}
     resources: {}
     source:
-      contextDir: apps/pgsql/patroni/docker
+      contextDir: openshift/templates/patroni/docker
       git:
         ref: ${GIT_REF}
         uri: ${GIT_URI}
