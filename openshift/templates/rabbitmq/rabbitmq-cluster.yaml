@@ -25,16 +25,6 @@ parameters:
 - name: ISTAG
   description: "Image to deploy"
   value: rabbitmq:3.8.3-management
-- name: RABBITMQ_USER
-  description: "Username for the RabbitMQ instance"
-  value: rabbitmq
-- name: RABBITMQ_PASS
-  description: "Password securing the RabbitMQ instance"
-  generate: expression
-  from: "[a-zA-Z0-9]{16}"
-- name: ERLANG_COOKIE
-  description: "Cookie used for authentication of cluster nodes"
-  value: "qqwweerrttyyuuii"
 - name: SERVICE_ACCOUNT
   description: "Name of the service account used by RabbitMQ k8s plugin"
   value: rabbitmq-discovery  
@@ -89,15 +79,13 @@ objects:
 
 - apiVersion: v1
   kind: Secret
-  stringData:
-    username: ${RABBITMQ_USER}
-    password: ${RABBITMQ_PASS}
-    url: "amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@${NAME}${SUFFIX}-${CLUSTER_NAME}-balancer"
-    cookie: ${ERLANG_COOKIE}
   metadata:
+    annotations:
+      as-copy-of: template-rabbitmq-secret
     name: ${NAME}${SUFFIX}-${CLUSTER_NAME}-secret
-    app: rabbitmq-cluster
-  type: Opaque
+  stringData:
+    metadata.name: template-rabbitmq-secret
+  type: kubernetes.io/basic-auth
 
 - apiVersion: v1
   kind: ConfigMap

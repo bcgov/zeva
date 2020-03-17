@@ -4,10 +4,10 @@ metadata:
   creationTimestamp: null
   name: template-rabbitmq-secret
 parameters:
-- name: RABBITMQ_PASS
+- name: RABBITMQ_PASSWORD
   description: "Password securing the RabbitMQ instance"
   generate: expression
-  from: "[a-zA-Z0-9]{16}"
+  from: "[a-zA-Z0-9]{8}"
 - name: ERLANG_COOKIE
   description: "Cookie used for authentication of cluster nodes"
   generate: expression
@@ -19,5 +19,7 @@ objects:
       name: template-rabbitmq-secret
       labels: {}
     stringData:
-      RABBITMQ_PASS: "${RABBITMQ_PASS}"
-      ERLANG_COOKIE: "${ERLANG_COOKIE}"
+      metadata.name: template-rabbitmq-secret
+      username: rabbitmq
+      password: ${RABBITMQ_PASSWORD}
+      cookie: ${ERLANG_COOKIE}
