@@ -1,10 +1,12 @@
 from django.db import models
 
 from api.models.mixins.effective_dates import EffectiveDates
+from auditable.models import Auditable
 
-class CreditClass(EffectiveDates):
+
+class CreditClass(EffectiveDates, Auditable):
     class Meta:
-        db_table = "credit_class"
+        db_table = "credit_class_code"
 
     credit_class = models.CharField(
         blank=False,

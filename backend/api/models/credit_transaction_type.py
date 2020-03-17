@@ -1,6 +1,9 @@
 from django.db import models
 
-class CreditTransactionType(models.Model):
+from auditable.models import Auditable
+
+
+class CreditTransactionType(Auditable):
 
     transaction_type = models.CharField(
         blank=False,
