@@ -2,7 +2,7 @@ import logging
 
 from api.models.vehicle_change_history import VehicleChangeHistory
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
-
+from django.core.exceptions import PermissionDenied
 
 def change_status(user, vehicle, new_status):
     # @todo tech debt - incorporate this check into permissions
@@ -24,7 +24,7 @@ def change_status(user, vehicle, new_status):
             status_change_permitted = True
 
     if not status_change_permitted:
-        raise RuntimeError
+        raise PermissionDenied()
 
     if new_status is not vehicle.validation_status:
         history = VehicleChangeHistory.objects.create(
@@ -35,7 +35,7 @@ def change_status(user, vehicle, new_status):
             user_role=user.roles,
             validation_status=new_status,
             vehicle_class_code_id=vehicle.vehicle_class_code_id,
-            vehicle_fuel_type_id=vehicle.vehicle_fuel_type_id,
+            vehicle_zev_type_id=vehicle.vehicle_zev_type_id,
             vehicle=vehicle
         )
         vehicle.validation_status = new_status

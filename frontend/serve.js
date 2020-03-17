@@ -19,4 +19,4 @@ app.use(morgan('combined'));
 const root = `${__dirname}/public/build`;
 app.use(express.static(root));
 app.use(fallback('generated_index.html', { root }));
-app.listen(5001);
+app.listen(3000);

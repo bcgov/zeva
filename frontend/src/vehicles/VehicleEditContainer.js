@@ -43,7 +43,7 @@ const VehicleEditContainer = (props) => {
     axios.all([
       axios.get(ROUTES_VEHICLES.MAKES),
       axios.get(ROUTES_VEHICLES.YEARS),
-      axios.get(ROUTES_VEHICLES.FUEL_TYPES),
+      axios.get(ROUTES_VEHICLES.ZEV_TYPES),
       axios.get(ROUTES_VEHICLES.CLASSES),
       axios.get(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id)),
     ]).then(axios.spread((makesRes, yearsRes, typesRes, classesRes, vehicleRes) => (

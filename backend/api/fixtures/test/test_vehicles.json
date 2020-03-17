@@ -8,11 +8,11 @@
   },
   {
     "fields": {
-      "vehicle_fuel_code": "bev",
+      "vehicle_zev_code": "bev",
       "description": "Battery-Electric",
       "effective_date": "2019-01-01"
     },
-    "model": "api.fueltype",
+    "model": "api.zevtype",
     "pk": 1
   },
   {
@@ -33,7 +33,7 @@
   },
   {
     "fields": {
-      "vehicle_fuel_type": 1,
+      "vehicle_zev_type": 1,
       "vehicle_class_code": 1,
       "make": 1,
       "model_name": "test model",

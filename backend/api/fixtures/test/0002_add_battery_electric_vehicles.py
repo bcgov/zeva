@@ -4,18 +4,16 @@ from api.management.data_script import OperationalDataScript
 from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle
 from api.models.vehicle_class import VehicleClass
-from api.models.vehicle_fuel_type import FuelType
+from api.models.vehicle_zev_type import ZevType
 from api.models.vehicle_make import Make
 
 
 class AddBatteryElectricVehicles(OperationalDataScript):
     """
-    Adds the Battery electric vehicles found in the NRCAN 2019
-    Fuel Consumption Guide
+    Adds the Battery electric vehicles
     """
     is_revertable = False
-    comment = 'Adds the Battery electric vehicles found in the NRCAN 2019 ' \
-              'Fuel Consumption Guide'
+    comment = 'Adds the Battery electric vehicles'
 
     list_of_vehicles = [{
         "make": "Audi",
@@ -199,7 +197,7 @@ class AddBatteryElectricVehicles(OperationalDataScript):
     @transaction.atomic
     def run(self):
         model_year = ModelYear.objects.get(name="2019")
-        vehicle_fuel_type = FuelType.objects.get(vehicle_fuel_code="B")
+        vehicle_zev_type = ZevType.objects.get(vehicle_zev_code="BEV")
 
         vehicles_added = 0
 
@@ -213,7 +211,7 @@ class AddBatteryElectricVehicles(OperationalDataScript):
                 vehicle_class_code=VehicleClass.objects.get(
                     vehicle_class_code=vehicle.get("class_code")
                 ),
-                vehicle_fuel_type=vehicle_fuel_type
+                vehicle_zev_type=vehicle_zev_type
             )
 
             vehicles_added += 1
