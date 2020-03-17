@@ -36,7 +36,7 @@ const SalesListContainer = (props) => {
   }
 
   return ([
-    <CreditTransactionTabs active="credit-transactions" key="tabs" />,
+    <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
     <SalesListPage
       key="page"
       submissions={submissions}

@@ -4,6 +4,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTable from 'react-table';
+
+import CustomPropTypes from '../../app/utilities/props';
 import history from '../../app/History';
 
 const SalesSubmissionListTable = (props) => {
@@ -47,7 +49,7 @@ const SalesSubmissionListTable = (props) => {
 
   const filterable = true;
 
-  const { items } = props;
+  const { items, user } = props;
 
   return (
     <ReactTable
@@ -65,7 +67,11 @@ const SalesSubmissionListTable = (props) => {
             onClick: () => {
               const { id } = row.original;
 
-              history.push(`/sales/${id}`);
+              if (user.isGovernment) {
+                history.push(`/sales/${id}/approval`);
+              } else {
+                history.push(`/sales/${id}`);
+              }
             },
             className: 'clickable',
           };
@@ -83,6 +89,7 @@ SalesSubmissionListTable.defaultProps = {};
 
 SalesSubmissionListTable.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default SalesSubmissionListTable;
