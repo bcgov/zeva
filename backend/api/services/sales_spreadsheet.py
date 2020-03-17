@@ -11,6 +11,7 @@ from xlrd import XLRDError, XLDateError
 
 from api.models.organization import Organization
 from api.models.record_of_sale import RecordOfSale
+from api.models.sales_submission import SalesSubmission
 from api.models.vehicle import Vehicle
 from api.models.vehicle_make_organization import VehicleMakeOrganization
 
@@ -61,7 +62,7 @@ def create_sales_spreadsheet(organization, model_year, stream):
             sheet_names[sheet_name] += 1
 
             if sheet_names[sheet_name] > 1:
-                sheet_name = '{} - {} - Alternate {}'.format(make.name, veh.model_name, sheet_names[sheet_name]-1)
+                sheet_name = '{} - {} - Alternate {}'.format(make.name, veh.model_name, sheet_names[sheet_name] - 1)
 
             ws = wb.add_sheet(sheet_name)
             ws.protect = True
@@ -168,6 +169,12 @@ def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=Fals
     make_assoc = VehicleMakeOrganization.objects.filter(organization=org)
     permitted_makes = [ma.vehicle_make for ma in make_assoc]
 
+    submission = SalesSubmission.objects.create(
+        organization=org,
+        submission_sequence=SalesSubmission.next_sequence(org, datetime.now())
+    )
+    submission.save()
+
     for input_sheet in descriptor['sheets']:
         try:
             sheet = wb.sheet_by_name(input_sheet['name'])
@@ -184,7 +191,7 @@ def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=Fals
 
         while row < min((MAX_READ_ROWS + START_ROW), sheet.nrows):
             row_contents = sheet.row(row)
-            vin = row_contents[1].value
+            vin = str(row_contents[1].value)
             date = row_contents[2].value
             if len(vin) > 0:
                 logger.info('Found VIN {}'.format(vin))
@@ -204,7 +211,7 @@ def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=Fals
                             'message': 'date {} insensible'.format(date)
                         })
 
-                    if RecordOfSale.objects.filter(vin=vin, organization=org).exists():
+                    if RecordOfSale.objects.filter(vin=vin, submission__organization=org).exists():
                         validation_problems.append({
                             'row': row + 1,
                             'message': 'VIN {} has previously been recorded (but will be entered anyway)'.format(vin)
@@ -218,7 +225,7 @@ def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=Fals
 
                     if parsed_date:
                         ros = RecordOfSale.objects.create(
-                            organization=org,
+                            submission=submission,
                             vehicle=vehicle,
                             vin=vin,
                             sale_date=parsed_date,

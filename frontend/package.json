@@ -20,6 +20,7 @@
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^1.6.0",
     "keycloak-js": "^8.0.1",
+    "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.27",
     "morgan": "^1.9.1",
@@ -43,6 +44,7 @@
     "@babel/polyfill": "^7.7.0",
     "@babel/preset-env": "^7.7.6",
     "@babel/preset-react": "^7.7.4",
+    "@testing-library/react": "^9.4.0",
     "@typescript-eslint/eslint-plugin": "^2.11.0",
     "@typescript-eslint/parser": "^2.11.0",
     "babel-eslint": "^10.0.2",
@@ -77,6 +79,7 @@
   "scripts": {
     "start": "node start",
     "dist": "webpack --production",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "lint": "eslint src"
   }
 }

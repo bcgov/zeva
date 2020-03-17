@@ -6,9 +6,11 @@ from enumfields import EnumField
 
 
 class RecordOfSale(Auditable):
-    organization = models.ForeignKey(
-        'Organization',
-        related_name='sales',
+
+    submission = models.ForeignKey(
+        'SalesSubmission',
+        related_name='records',
+        null=False,
         on_delete=models.CASCADE
     )
 
@@ -44,13 +46,6 @@ class RecordOfSale(Auditable):
     sale_date = models.DateField(blank=True,
                                  null=True,
                                  db_comment="The calendar date the vehicle was placed with an end customer")
-
-    submission_date = models.DateField(
-        blank=True,
-        null=True,
-        auto_now=True,
-        db_comment="The calendar date the submission was entered in ZEVA"
-    )
 
     validation_status = EnumField(
         RecordOfSaleStatuses,
