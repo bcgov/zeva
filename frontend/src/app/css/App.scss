@@ -38,13 +38,16 @@
 }
 
 /* variables for colours */
+$border-grey: #E0E0E0;
 $default-background-blue: #38598A;
 $default-background-grey: #F2F2F2;
 $default-link-blue: #1A5A96;
 $default-text-black: #494949;
 $default-text-blue: #1A5A96;
+$nav-border: #DEE2E6;
 $primary-blue: #003366;
 $primary-yellow: #FCBA19;
+$red: #EB0022;
 $white: #FFFFFF;
 $yellow: #E3AB2B;
 
@@ -52,6 +55,7 @@ $yellow: #E3AB2B;
 $md: 991px;
 
 body, html, #root {
+  background-color: $default-background-grey;
   height: 100%;
 }
 
@@ -73,7 +77,14 @@ p {
 }
 
 #content {
+  background-color: $white;
+  border: 2px solid $border-grey;
+  margin: 2rem;
   padding: 1rem;
+
+  .alert:first-child:last-child {
+    margin: -1.5rem;
+  }
 }
 
 .action-bar {
@@ -136,6 +147,31 @@ p {
   }
 }
 
+.nav-tabs {
+  margin: 0 1rem;
+
+  li {
+    border: 1px solid transparent;
+    border-radius: 4px 4px 0 0;
+    padding: 1rem 0;
+
+    &.active {
+      background-color: $white;
+      border: 1px solid $nav-border;
+      border-bottom: none;
+
+      a {
+        color: $default-text-black;
+      }
+    }
+
+    a {
+      color: $default-link-blue;
+      padding: 1rem 1.5rem;
+    }
+  }
+}
+
 .page {
   padding: 1rem;
 
@@ -151,7 +187,7 @@ p {
     padding-bottom: 1rem;
   }
 
-  h3,h4,h5,h6 {
+  h3, h4, h5, h6 {
     color: $default-text-blue;
   }
 }

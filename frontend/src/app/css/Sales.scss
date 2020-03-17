@@ -3,3 +3,60 @@
     margin: 1rem 0 0;
   }
 }
+
+#sales-edit {
+  h2 {
+    clear: both;
+  }
+
+  .compact {
+    border-radius: 4px;
+    clear: both;
+    float: left;
+
+    select {
+      display: block;
+      width: 100%;
+    }
+
+    .bordered {
+      border: 1px solid $border-grey;
+      padding: 0.5rem;
+    }
+
+    .content {
+      background-color: $default-background-grey;
+      padding: 1rem;
+    }
+  }
+
+  .files {
+    margin: 1rem -1px 0;
+
+    .row:nth-child(odd) {
+      background-color: $white;
+    }
+
+    .actions {
+      padding: 0;
+
+      button {
+        background-color: transparent;
+        border: none;
+
+        &.delete {
+          color: $red;
+        }
+      }
+    }
+  }
+
+  .panel {
+    background-color: $default-background-grey;
+
+    .action-bar {
+      margin: 1rem 0 0;
+      padding: 0;
+    }
+  }
+}

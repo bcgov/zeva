@@ -5,7 +5,6 @@ import { Switch } from 'react-router';
 import { Route, Router as BrowserRouter } from 'react-router-dom';
 import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
-import UserDetailsContainer from '../organizations/UserDetailsContainer';
 import OrganizationListContainer from '../organizations/OrganizationListContainer';
 import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
 import RoleListContainer from '../roles/RoleListContainer';
