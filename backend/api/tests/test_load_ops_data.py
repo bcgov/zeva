@@ -26,7 +26,7 @@ class TestLoadOpsData(TestCase):
             'api.fixtures.operational.0002_add_vehicle_classes'
         ),
         ScriptDefinition(
-            'api.fixtures.operational.0003_add_vehicle_fuel_types'
+            'api.fixtures.operational.0003_add_vehicle_zev_types'
         ),
         ScriptDefinition(
             'api.fixtures.operational.0004_add_model_years'

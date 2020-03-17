@@ -70,12 +70,12 @@ const VehicleForm = (props) => {
                 </div>
               </div>
               <VehicleFormDropdown
-                accessor={(fuelType) => fuelType.vehicleFuelCode}
+                accessor={(zevType) => zevType.vehicleZevCode}
                 dropdownName="Type"
                 dropdownData={vehicleTypes}
-                fieldName="vehicleFuelType"
+                fieldName="vehicleZevType"
                 handleInputChange={handleInputChange}
-                selectedOption={fields.vehicleFuelType.vehicleFuelCode}
+                selectedOption={fields.vehicleZevType.vehicleZevCode}
               />
               <VehicleFormDropdown
                 accessor={(classCode) => classCode.vehicleClassCode}
