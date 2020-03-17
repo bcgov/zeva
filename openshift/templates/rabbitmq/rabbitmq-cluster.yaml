@@ -30,7 +30,8 @@ parameters:
   value: rabbitmq
 - name: RABBITMQ_PASS
   description: "Password securing the RabbitMQ instance"
-  value: "aassddffgghhjjkk"
+  generate: expression
+  from: "[a-zA-Z0-9]{16}"
 - name: ERLANG_COOKIE
   description: "Cookie used for authentication of cluster nodes"
   value: "qqwweerrttyyuuii"
@@ -40,6 +41,12 @@ parameters:
 - name: VOLUME_SIZE
   description: "Size of the RabbitMQ data volume"
   value: '1Gi'
+- name: MQ_USER
+  description: "vhost default user name"
+  value: guest
+- name: MQ_PASSWORD
+  description: "vhost default password"
+  value:  
 - name: CPU_REQUEST
   displayName: Requested CPU
   description: Requested CPU
@@ -114,6 +121,7 @@ objects:
         management.load_definitions = /etc/rabbitmq/policy.json
     enabled_plugins: |
       [rabbitmq_management,rabbitmq_peer_discovery_k8s].
+    policy.json: "{\r\n  \"vhosts\":[\r\n    {\r\n      \"name\": \"/\"\r\n    }\r\n  ],\r\n  \"users\": [\r\n      {\r\n        \"name\": \"guest\",\r\n        \"password\": \"guest\",\r\n        \"hashing_algorithm\": \"rabbit_password_hashing_sha256\",\r\n        \"tags\": \"administrator\"\r\n      }\r\n  ],\r\n  \"permissions\": [\r\n    {\r\n      \"user\": \"guest\",\r\n      \"vhost\": \"\\/\",\r\n      \"configure\": \".*\",\r\n      \"write\": \".*\",\r\n      \"read\": \".*\"\r\n    }\r\n  ],\r\n  \"policies\":[\r\n    {\r\n      \"vhost\": \"/\",\r\n      \"name\": \"ha-all\",\r\n      \"pattern\": \"\", \r\n      \"definition\": {\r\n        \"ha-mode\": \"all\",\r\n        \"ha-sync-mode\": \"automatic\",\r\n        \"ha-sync-batch-size\": 5\r\n      }\r\n    }\r\n  ]\r\n}"
 
 # Load balancer
 - kind: Service
@@ -195,15 +203,31 @@ objects:
               memory: ${MEMORY_REQUEST}
           livenessProbe:
             exec:
-              command: ["rabbitmqctl", "status"]
-            initialDelaySeconds: 30
+              command: ["rabbitmqctl", "node_health_check", "--timeout", "9"]
+            failureThreshold: 3
+            initialDelaySeconds: 75
+            periodSeconds: 10
+            successThreshold: 1
             timeoutSeconds: 10
           readinessProbe:
             exec:
-              command: ["rabbitmqctl", "status"]
-            initialDelaySeconds: 10
+              command: ["rabbitmqctl", "node_health_check", "--timeout", "9"]
+            failureThreshold: 3
+            initialDelaySeconds: 70
+            periodSeconds: 10
+            successThreshold: 1
             timeoutSeconds: 10
           env:
+          - name: RABBITMQ_DEFAULT_USER
+            valueFrom:
+              secretKeyRef:
+                name: ${NAME}${SUFFIX}-${CLUSTER_NAME}-secret
+                key: username
+          - name: RABBITMQ_DEFAULT_PASS
+            valueFrom:
+              secretKeyRef:
+                name: ${NAME}${SUFFIX}-${CLUSTER_NAME}-secret
+                key: password          
           - name: RABBITMQ_ERLANG_COOKIE
             valueFrom:
               secretKeyRef:
@@ -229,6 +253,10 @@ objects:
             value: "rabbit@$(POD_NAME).${NAME}${SUFFIX}-${CLUSTER_NAME}.$(POD_NAMESPACE).svc.cluster.local"
           - name: RABBITMQ_CONFIG_FILE
             value: /var/lib/rabbitmq/rabbitmq
+          - name: MQ_USER
+            value: ${MQ_USER}
+          - name: MQ_PASSWORD
+            value: ${MQ_PASSWORD}                   
         volumes:
         - name: config-volume
           configMap:
@@ -238,6 +266,8 @@ objects:
               path: rabbitmq.conf
             - key: enabled_plugins
               path: enabled_plugins
+            - key: policy.json
+              path: policy.json                  
     volumeClaimTemplates:
     - metadata:
         name: rabbitmq-storage
