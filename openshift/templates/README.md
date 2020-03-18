@@ -57,6 +57,8 @@ MEMORY_LIMIT=2Gi REPLICA_COUNT=2 RABBITMQ_PVC_SIZE=1Gi | oc apply -f - -n tbiwaq
 oc process -f ./rabbitmq/rabbitmq-prereq.yaml | oc create -f - -n tbiwaq-dev --dry-run=true
 oc process -f rabbitmq/rabbitmq-cluster.yaml NAME=zeva SUFFIX=-pr-001 | oc apply -f - -n tbiwaq-dev --dry-run=true
 
+oc process -f ./rabbitmq-prereq.yaml | oc create -f - -n tbiwaq-dev --dry-run=true
+
 oc process -f rabbitmq/rabbitmq-cluster.yaml | oc apply -f - -n tbiwaq-dev --dry-run=true
 
 ## Patroni
