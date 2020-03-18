@@ -63,7 +63,7 @@ module.exports = settings => {
     'param': {
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
-      'ENV_NAME': phases[phase].namespace,
+      'NAMESPACE': phases[phase].namespace,
       'CLUSTER_NAME': 'rabbitmq-cluster',
       'ISTAG': 'rabbitmq:3.8.3-management',
       'SERVICE_ACCOUNT': 'rabbitmq-discovery',
