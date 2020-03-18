@@ -19,7 +19,7 @@ objects:
   kind: Secret
   metadata:
     annotations: null
-    name: ${NAME}${SUFFIX}-${CLUSTER_NAME}-secret
+    name: template.rabbitmq-secret
   stringData:
     username: ${RABBITMQ_USER}
     password: ${RABBITMQ_PASS}
