@@ -18,8 +18,8 @@ class Vehicle(Auditable):
         related_name=None,
         on_delete=models.PROTECT
     )
-    vehicle_fuel_type = models.ForeignKey(
-        'FuelType',
+    vehicle_zev_type = models.ForeignKey(
+        'ZevType',
         related_name=None,
         on_delete=models.PROTECT
     )
@@ -45,14 +45,27 @@ class Vehicle(Auditable):
         default=VehicleDefinitionStatuses.DRAFT,
         db_comment="The validation status of the vehicle. Valid statuses: "
                    "{statuses}".format(
-                        statuses=[c.name for c in VehicleDefinitionStatuses]
-                   )
+            statuses=[c.name for c in VehicleDefinitionStatuses]
+        )
     )
+
+    credit_class = models.ForeignKey(
+        'CreditClass',
+        related_name='+',
+        on_delete=models.PROTECT,
+        null=True
+    )
+
+    credit_value = models.DecimalField(null=True,
+                                       decimal_places=2,
+                                       max_digits=20,
+                                       db_comment='The number of credits (of credit_class) '
+                                                  'a sale of this vehicle can generate')
 
     class Meta:
         db_table = 'vehicle'
         unique_together = [[
-            'make', 'model_name', 'vehicle_class_code', 'vehicle_fuel_type',
+            'make', 'model_name', 'vehicle_class_code', 'vehicle_zev_type',
             'model_year'
         ]]
 

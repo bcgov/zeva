@@ -4,7 +4,7 @@ const VEHICLES = {
   ADD: `${API_BASE_PATH}/add`,
   EDIT: `${API_BASE_PATH}/:id/edit`,
   DETAILS: `${API_BASE_PATH}/:id`,
-  FUEL_TYPES: `${API_BASE_PATH}/fuel_types`,
+  ZEV_TYPES: `${API_BASE_PATH}/zev_types`,
   LIST: `${API_BASE_PATH}`,
   MAKES: `${API_BASE_PATH}/makes`,
   MODELS: `${API_BASE_PATH}/models`,

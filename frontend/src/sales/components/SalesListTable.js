@@ -38,8 +38,8 @@ const SalesListTable = (props) => {
       accessor: 'vehicle.vehicleClassCode',
     },
     {
-      Header: 'Fuel Type',
-      accessor: 'vehicle.vehicleFuelType',
+      Header: 'Zev Type',
+      accessor: 'vehicle.vehicleZevType',
     },
   ];
 

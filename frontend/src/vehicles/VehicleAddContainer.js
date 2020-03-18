@@ -14,7 +14,7 @@ const VehicleAddContainer = (props) => {
   const [fields, setFields] = useState({
     make: { name: '--' },
     modelName: '',
-    vehicleFuelType: { vehicleFuelCode: '--' },
+    vehicleZevType: { vehicleZevCode: '--' },
     range: '',
     modelYear: { name: '--' },
     vehicleClassCode: { vehicleClassCode: '--' },
@@ -52,7 +52,7 @@ const VehicleAddContainer = (props) => {
     axios.all([
       axios.get(ROUTES_VEHICLES.MAKES),
       axios.get(ROUTES_VEHICLES.YEARS),
-      axios.get(ROUTES_VEHICLES.FUEL_TYPES),
+      axios.get(ROUTES_VEHICLES.ZEV_TYPES),
       axios.get(ROUTES_VEHICLES.CLASSES),
     ]).then(axios.spread((makesRes, yearsRes, typesRes, classesRes) => (
       [setMakes(makesRes.data),

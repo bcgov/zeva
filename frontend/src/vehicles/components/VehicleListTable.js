@@ -25,10 +25,7 @@ const VehicleListTable = (props) => {
     id: 'col-my',
     width: 125,
   }, {
-    accessor: (row) => (row.vehicleFuelType.vehicleFuelCode === 'B'
-      ? 'Battery Electric Vehicle (BEV)'
-      : 'Plug-in Hybrid Electric Vehicle (PHEV)'
-    ),
+    accessor: (row) => (row.vehicleZevType.vehicleZevCode),
     Header: 'ZEV Type',
     id: 'zev-type',
     width: 325,
@@ -42,7 +39,7 @@ const VehicleListTable = (props) => {
     accessor: (row) => {
       let variable = 0.3;
 
-      if (row.vehicleFuelType.vehicleFuelCode === 'B') {
+      if (row.vehicleZevType.vehicleZevCode === 'BEV') {
         variable = 0.5;
       }
 
@@ -60,7 +57,7 @@ const VehicleListTable = (props) => {
     width: 125,
   }, {
     accessor: (row) => {
-      if (row.vehicleFuelType.vehicleFuelCode === 'B') {
+      if (row.vehicleZevType.vehicleZevCode === 'BEV') {
         if (row.range < 80.47) {
           return 'C';
         }

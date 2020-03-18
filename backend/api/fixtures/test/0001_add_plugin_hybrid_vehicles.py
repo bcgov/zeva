@@ -4,161 +4,159 @@ from api.management.data_script import OperationalDataScript
 from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle
 from api.models.vehicle_class import VehicleClass
-from api.models.vehicle_fuel_type import FuelType
+from api.models.vehicle_zev_type import ZevType
 from api.models.vehicle_make import Make
 
 
 class AddPluginHybridVehicles(OperationalDataScript):
     """
-    Adds the Plug-in hybrid electric vehicles found in the NRCAN 2019
-    Fuel Consumption Guide
+    Adds the Plug-in hybrid electric vehicles
     """
     is_revertable = False
-    comment = 'Adds the Plug-in hybrid electric vehicles found in the ' \
-              'NRCAN 2019 Fuel Consumption Guide'
+    comment = 'Adds the Plug-in hybrid electric vehicles'
 
     list_of_vehicles = [{
         "make": "BMW",
         "model": "530e",
-        "fuel_type": "BZ",
+        "zev_type": "PHEV",
         "range": "26",
         "class_code": "C"
     }, {
         "make": "BMW",
         "model": "530e xDRIVE",
-        "fuel_type": "BZ",
+        "zev_type": "PHEV",
         "range": "24",
         "class_code": "C"
     }, {
         "make": "BMW",
         "model": "i3 REx (120 Ah)",
-        "fuel_type": "BZ",
+        "zev_type": "PHEV",
         "range": "203",
         "class_code": "S"
     }, {
         "make": "BMW",
         "model": "i3s REx (120 Ah)",
-        "fuel_type": "BZ",
+        "zev_type": "PHEV",
         "range": "203",
         "class_code": "S"
     }, {
         "make": "BMW",
         "model": "i8 COUPE",
-        "fuel_type": "BZ",
+        "zev_type": "PHEV",
         "range": "29",
         "class_code": "S"
     }, {
         "make": "BMW",
         "model": "i8 ROADSTER",
-        "fuel_type": "BZ",
+        "zev_type": "PHEV",
         "range": "29",
         "class_code": "S"
     }, {
         "make": "Chevrolet",
         "model": "VOLT",
-        "fuel_type": "B",
+        "zev_type": "PHEV",
         "range": "85",
         "class_code": "C"
     }, {
         "make": "Ford",
         "model": "FUSION ENERGI",
-        "fuel_type": "BX",
+        "zev_type": "PHEV",
         "range": "42",
         "class_code": "M"
     }, {
         "make": "Honda",
         "model": "CLARITY PLUG-IN",
-        "fuel_type": "BX",
+        "zev_type": "PHEV",
         "range": "77",
         "class_code": "M"
     }, {
         "make": "Hyundai",
         "model": "IONIQ ELECTRIC PLUS",
-        "fuel_type": "BX",
+        "zev_type": "PHEV",
         "range": "47",
         "class_code": "M"
     }, {
         "make": "Hyundai",
         "model": "SONATA PLUG-IN",
-        "fuel_type": "BX",
+        "zev_type": "PHEV",
         "range": "45",
         "class_code": "M"
     }, {
         "make": "Karma",
         "model": "REVERO",
-        "fuel_type": "B",
+        "zev_type": "PHEV",
         "range": "60",
         "class_code": "S"
     }, {
         "make": "Kia",
         "model": "NIRO PLUG-IN",
-        "fuel_type": "BX",
+        "zev_type": "PHEV",
         "range": "42",
         "class_code": "WS"
     }, {
         "make": "Kia",
         "model": "OPTIMA PLUG-IN",
-        "fuel_type": "BX",
+        "zev_type": "PHEV",
         "range": "47",
         "class_code": "M"
     }, {
         "make": "Mercedes-Benz",
         "model": "GLC 350e 4MATIC",
-        "fuel_type": "BZ",
+        "zev_type": "PHEV",
         "range": "21",
         "class_code": "US"
     }, {
         "make": "Mini",
         "model": "COOPER S E COUNTRYMAN ALL4",
-        "fuel_type": "BZ",
+        "zev_type": "PHEV",
         "range": "19",
         "class_code": "M"
     }, {
         "make": "Mitsubishi",
         "model": "OUTLANDER PHEV AWD",
-        "fuel_type": "BX",
+        "zev_type": "PHEV",
         "range": "35",
         "class_code": "US"
     }, {
         "make": "Porsche",
         "model": "CAYENNE E-HYBRID",
-        "fuel_type": "BZ",
+        "zev_type": "PHEV",
         "range": "21",
         "class_code": "UL"
     }, {
         "make": "Porsche",
         "model": "PANAMERA 4 E-HYBRID",
-        "fuel_type": "B",
+        "zev_type": "PHEV",
         "range": "23",
         "class_code": "L"
     }, {
         "make": "Porsche",
         "model": "PANAMERA TURBO S E-HYBRID",
-        "fuel_type": "B",
+        "zev_type": "PHEV",
         "range": "23",
         "class_code": "L"
     }, {
         "make": "Toyota",
         "model": "PRIUS PRIME",
-        "fuel_type": "BX",
+        "zev_type": "PHEV",
         "range": "40",
         "class_code": "M"
     }, {
         "make": "Volvo",
         "model": "S90 T8 AWD",
-        "fuel_type": "BZ",
+        "zev_type": "PHEV",
         "range": "34",
         "class_code": "M"
     }, {
         "make": "Volvo",
         "model": "XC60 T8 AWD",
-        "fuel_type": "BZ",
+        "zev_type": "PHEV",
         "range": "27",
         "class_code": "US"
     }, {
         "make": "Volvo",
         "model": "XC90 T8 AWD",
-        "fuel_type": "BZ",
+        "zev_type": "PHEV",
         "range": "27",
         "class_code": "UL"
     }]
@@ -186,8 +184,8 @@ class AddPluginHybridVehicles(OperationalDataScript):
                 vehicle_class_code=VehicleClass.objects.get(
                     vehicle_class_code=vehicle.get("class_code")
                 ),
-                vehicle_fuel_type=FuelType.objects.get(
-                    vehicle_fuel_code=vehicle.get("fuel_type")
+                vehicle_zev_type=ZevType.objects.get(
+                    vehicle_zev_code=vehicle.get("zev_type")
                 )
             )
 

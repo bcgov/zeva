@@ -27,8 +27,8 @@ class VehicleChangeHistory(Commentable):
     vehicle_class_code_id = models.IntegerField(
         db_comment="ID referencing the vehicle_class_code table"
     )
-    vehicle_fuel_type_id = models.IntegerField(
-        db_comment="ID referencing the vehicle_class_code table"
+    vehicle_zev_type_id = models.IntegerField(
+        db_comment="ID referencing the vehicle_zev_type table"
     )
     range = models.IntegerField(
         db_comment="Vehicle Range in km"
