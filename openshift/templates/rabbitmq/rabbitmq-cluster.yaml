@@ -84,7 +84,9 @@ objects:
       as-copy-of: template.rabbitmq-secret
     name: ${NAME}${SUFFIX}-${CLUSTER_NAME}-secret
   stringData:
-    metadata.name: template-rabbitmq-secret
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASS}
+    cookie: ${ERLANG_COOKIE}
   type: kubernetes.io/basic-auth
 
 - apiVersion: v1
