@@ -10,9 +10,9 @@ import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import Loading from '../app/components/Loading';
 import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
 import CustomPropTypes from '../app/utilities/props';
-import SalesSubmissionApprovalPage from './components/SalesSubmissionApprovalPage';
+import SalesSubmissionApprovalDetailsPage from './components/SalesSubmissionApprovalDetailsPage';
 
-const SalesSubmissionApprovalContainer = (props) => {
+const SalesSubmissionApprovalDetailsContainer = (props) => {
   const { match, user } = props;
   const { id } = match.params;
 
@@ -37,17 +37,18 @@ const SalesSubmissionApprovalContainer = (props) => {
 
   return ([
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
-    <SalesSubmissionApprovalPage
+    <SalesSubmissionApprovalDetailsPage
       key="page"
+      routeParams={match.params}
       submission={submission}
       user={user}
     />,
   ]);
 };
 
-SalesSubmissionApprovalContainer.propTypes = {
+SalesSubmissionApprovalDetailsContainer.propTypes = {
   user: CustomPropTypes.user.isRequired,
   match: CustomPropTypes.routeMatch.isRequired,
 };
 
-export default withRouter(SalesSubmissionApprovalContainer);
+export default withRouter(SalesSubmissionApprovalDetailsContainer);

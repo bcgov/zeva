@@ -4,10 +4,11 @@ import PropTypes from 'prop-types';
 
 import CustomPropTypes from '../../app/utilities/props';
 import history from '../../app/History';
-import SalesSubmissionModelsTable from './SalesSubmissionModelsTable';
+import SalesSubmissionVehiclesTable from './SalesSubmissionVehiclesTable';
 
-const SalesSubmissionApprovalPage = (props) => {
+const SalesSubmissionApprovalDetailsPage = (props) => {
   const {
+    routeParams,
     submission,
     user,
   } = props;
@@ -22,8 +23,8 @@ const SalesSubmissionApprovalPage = (props) => {
 
       <div className="row">
         <div className="col-sm-12">
-          <SalesSubmissionModelsTable
-            items={submission.records}
+          <SalesSubmissionVehiclesTable
+            routeParams={routeParams}
             submission={submission}
             user={user}
           />
@@ -49,14 +50,7 @@ const SalesSubmissionApprovalPage = (props) => {
                 className="button primary"
                 type="button"
               >
-                Validate
-              </button>
-
-              <button
-                className="button primary"
-                type="button"
-              >
-                <FontAwesomeIcon icon="share-square" /> Approve
+                <FontAwesomeIcon icon="save" /> Save
               </button>
             </span>
           </div>
@@ -66,11 +60,12 @@ const SalesSubmissionApprovalPage = (props) => {
   );
 };
 
-SalesSubmissionApprovalPage.defaultProps = {};
+SalesSubmissionApprovalDetailsPage.defaultProps = {};
 
-SalesSubmissionApprovalPage.propTypes = {
+SalesSubmissionApprovalDetailsPage.propTypes = {
+  routeParams: PropTypes.shape().isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 
-export default SalesSubmissionApprovalPage;
+export default SalesSubmissionApprovalDetailsPage;
