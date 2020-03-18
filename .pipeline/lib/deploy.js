@@ -59,16 +59,21 @@ module.exports = settings => {
   }))
 
   //deploy rabbitmq
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-dc.yaml`, {
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
-      'ENV_NAME': phases[phase].phase,
-      'CPU_REQUEST': '100m',
-      'CPU_LIMIT': '500m',
+      'ENV_NAME': phases[phase].namespace,
+      'CLUSTER_NAME': 'rabbitmq-cluster',
+      'ISTAG': 'rabbitmq:3.8.3-management',
+      'SERVICE_ACCOUNT': 'rabbitmq-discovery',
+      'VOLUME_SIZE': phases[phase].rabbitmqPvcSize,
+      'MQ_USER': 'guest',
+      'MQ_PASSWORD': '',
+      'CPU_REQUEST': '200m',
+      'CPU_LIMIT': '1000m',
       'MEMORY_REQUEST': '256Mi',
-      'MEMORY_LIMIT': '1Gi',
-      'RABBITMQ_PVC_SIZE': '1Gi'
+      'MEMORY_LIMIT': '2Gi'
     }
   }))
 
