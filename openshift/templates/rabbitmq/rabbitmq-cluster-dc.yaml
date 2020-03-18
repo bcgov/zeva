@@ -108,7 +108,8 @@ objects:
         cluster_partition_handling = autoheal
         ## queue master locator
         queue_master_locator=min-masters
-        ##management.load_definitions = /etc/rabbitmq/policy.json
+        ## policy.json is from image customized
+        management.load_definitions = /etc/rabbitmq/policy.json
     enabled_plugins: |
       [rabbitmq_management,rabbitmq_peer_discovery_k8s].
 

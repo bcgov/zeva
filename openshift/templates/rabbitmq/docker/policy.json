@@ -45,5 +45,17 @@
         "internal": false,
         "arguments": {}
       }
+    ],
+    "policies":[
+      {
+        "vhost": "/zeva",
+        "name": "ha-all",
+        "pattern": "", 
+        "definition": {
+          "ha-mode": "all",
+          "ha-sync-mode": "automatic",
+          "ha-sync-batch-size": 5
+        }
+      }
     ]
   }
