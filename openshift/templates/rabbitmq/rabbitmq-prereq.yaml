@@ -6,12 +6,12 @@ parameters:
   value: rabbitmq
 - name: RABBITMQ_PASS
   description: "Password securing the RabbitMQ instance"
-  from: zeva[A-Z0-9]{3}
+  from: '[a-zA-Z0-9]{16}'
   generate: expression
   required: true
 - name: ERLANG_COOKIE
   description: "Cookie used for authentication of cluster nodes"
-  from: zeva[A-Z0-9]{3}
+  from: '[a-zA-Z0-9]{16}'
   generate: expression
   required: true
 objects:
