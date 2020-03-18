@@ -255,8 +255,6 @@ objects:
               path: rabbitmq.conf
             - key: enabled_plugins
               path: enabled_plugins
-            - key: policy.json
-              path: policy.json                  
     volumeClaimTemplates:
     - metadata:
         name: rabbitmq-storage
