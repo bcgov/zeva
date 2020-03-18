@@ -70,9 +70,9 @@ objects:
     spec:
       ports:
         - name: web
-          port: 5001
+          port: 3000
           protocol: TCP
-          targetPort: 5001
+          targetPort: 3000
         - name: websocket-notifications
           port: 5002
           protocol: TCP
@@ -217,11 +217,11 @@ objects:
                 periodSeconds: 10
                 successThreshold: 1
                 tcpSocket:
-                  port: 5001
+                  port: 3000
                 timeoutSeconds: 3
               name: frontend
               ports:
-                - containerPort: 5001
+                - containerPort: 3000
                   protocol: TCP
                 - containerPort: 5002
                   protocol: TCP
@@ -231,7 +231,7 @@ objects:
                 periodSeconds: 10
                 successThreshold: 1
                 tcpSocket:
-                  port: 5001
+                  port: 3000
                 timeoutSeconds: 3
               resources:
                 limits:
