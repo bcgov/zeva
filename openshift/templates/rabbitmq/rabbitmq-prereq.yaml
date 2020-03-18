@@ -1,25 +1,23 @@
 apiVersion: template.openshift.io/v1
 kind: Template
-metadata:
-  creationTimestamp: null
-  name: template-rabbitmq-secret
-parameters:
-- name: RABBITMQ_PASSWORD
-  description: "Password securing the RabbitMQ instance"
-  generate: expression
-  from: "[a-zA-Z0-9]{8}"
-- name: ERLANG_COOKIE
-  description: "Cookie used for authentication of cluster nodes"
-  generate: expression
-  from: "[a-zA-Z0-9]{16}"
 objects:
-  - apiVersion: v1
-    kind: Secret
-    metadata:
-      name: template-rabbitmq-secret
-      labels: {}
-    stringData:
-      metadata.name: template-rabbitmq-secret
-      username: rabbitmq
-      password: ${RABBITMQ_PASSWORD}
-      cookie: ${ERLANG_COOKIE}
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations: null
+    name: template.${NAME}-github
+  stringData:
+    metadata.name: template.${NAME}-github
+    username: ${GH_USERNAME}
+    password: ${GH_ACCESS_TOKEN}
+parameters:
+- description: A name used for all objects
+  displayName: Name
+  name: NAME
+  required: true
+  value: jenkins
+- name: GH_USERNAME
+  required: true
+- description: GitHub Personal Access Token
+  name: GH_ACCESS_TOKEN
+  required: true

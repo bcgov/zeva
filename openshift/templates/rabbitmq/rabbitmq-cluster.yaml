@@ -81,7 +81,7 @@ objects:
   kind: Secret
   metadata:
     annotations:
-      as-copy-of: template-rabbitmq-secret
+      as-copy-of: template.rabbitmq-secret
     name: ${NAME}${SUFFIX}-${CLUSTER_NAME}-secret
   stringData:
     metadata.name: template-rabbitmq-secret
