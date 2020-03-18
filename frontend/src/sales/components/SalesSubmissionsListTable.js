@@ -7,6 +7,7 @@ import ReactTable from 'react-table';
 
 import CustomPropTypes from '../../app/utilities/props';
 import history from '../../app/History';
+import ROUTES_SALES from '../../app/routes/Sales';
 
 const SalesSubmissionListTable = (props) => {
   const columns = [{
@@ -68,9 +69,9 @@ const SalesSubmissionListTable = (props) => {
               const { id } = row.original;
 
               if (user.isGovernment) {
-                history.push(`/sales/${id}/approval`);
+                history.push(ROUTES_SALES.APPROVAL.replace(/:id/g, id));
               } else {
-                history.push(`/sales/${id}`);
+                history.push(ROUTES_SALES.DETAILS.replace(/:id/g, id));
               }
             },
             className: 'clickable',

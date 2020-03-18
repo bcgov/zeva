@@ -11,6 +11,7 @@ import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDet
 import RoleListContainer from '../roles/RoleListContainer';
 import SalesDetailsContainer from '../sales/SalesDetailsContainer';
 import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
+import SalesSubmissionApprovalContainer from '../sales/SalesSubmissionApprovalContainer';
 import SalesListContainer from '../sales/SalesListContainer';
 import VehicleAddContainer from '../vehicles/VehicleAddContainer';
 import VehicleDetailsContainer from '../vehicles/VehicleDetailsContainer';
@@ -124,6 +125,11 @@ class Router extends Component {
                 exact
                 path={ROUTES_SALES.ADD}
                 render={() => <SalesSubmissionContainer mode="add" keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_SALES.APPROVAL}
+                render={() => <SalesSubmissionApprovalContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact
