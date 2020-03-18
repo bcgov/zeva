@@ -1,6 +1,4 @@
 import React from 'react';
-
-
 const CreditTransactions = (props) => {
   const { title } = props;
   return (

@@ -6,7 +6,6 @@ import { Route, Router as BrowserRouter } from 'react-router-dom';
 import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
 import OrganizationListContainer from '../organizations/OrganizationListContainer';
-import UserDetailsContainer from '../organizations/UserDetailsContainer';
 import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
 import RoleListContainer from '../roles/RoleListContainer';
 import SalesDetailsContainer from '../sales/SalesDetailsContainer';
@@ -163,8 +162,9 @@ class Router extends Component {
                 render={() => <UserDetailsContainer keycloak={keycloak} user={user} />}
               />
               <Route
-                path={ROUTES_CREDITS.TRANSACTIONS}
-                render={() => <CreditsContainer keycloak={keycloak} user={user} />}
+                exact
+                path={ROUTES_CREDITS.LIST}
+                render={() => <CreditsContainer keycloak={keycloak} user={user} activeTab="transactions" />}
               />
               <Route
                 exact

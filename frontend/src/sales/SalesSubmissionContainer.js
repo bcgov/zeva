@@ -2,10 +2,13 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import ROUTES_SALES from '../app/routes/Sales';
+import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
 
+import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
+import Loading from '../app/components/Loading';
 import CustomPropTypes from '../app/utilities/props';
 import upload from '../app/utilities/upload';
 import withReferenceData from '../app/utilities/with_reference_data';
@@ -16,7 +19,8 @@ import SalesSubmissionValidationPage from './components/SalesSubmissionValidatio
 
 const SalesSubmissionContainer = (props) => {
   const { user, referenceData } = props;
-
+  const [loading, setLoading] = useState(true);
+  const [submissions, setSubmissions] = useState([]);
   const [workflowState, setWorkflowState] = useState('new');
 
   const [details, setDetails] = useState({
@@ -26,6 +30,15 @@ const SalesSubmissionContainer = (props) => {
   });
 
   const [files, setFiles] = useState([]);
+
+  const refreshList = (showLoading) => {
+    setLoading(showLoading);
+
+    axios.get(ROUTES_SALES_SUBMISSIONS.LIST).then((response) => {
+      setSubmissions(response.data);
+      setLoading(false);
+    });
+  };
 
   const doUpload = () => {
     upload(ROUTES_SALES.UPLOAD, files).then((response) => {
@@ -51,48 +64,70 @@ const SalesSubmissionContainer = (props) => {
     // @todo clear any details, maybe issue delete request
   };
 
+  useEffect(() => {
+    refreshList(true);
+  }, []);
+
+  if (loading) {
+    return (<Loading />);
+  }
+
+  let content;
 
   switch (workflowState) {
     case 'readyToSign':
-      return (
+      content = (
         <SalesSubmissionSignaturesPage
-          user={user}
-          sign={sign}
           backToValidationPage={backToValidationPage}
           details={details}
+          key="page"
+          sign={sign}
+          user={user}
         />
       );
+      break;
     case 'validating':
-      return (
+      content = (
         <SalesSubmissionValidationPage
-          user={user}
-          readyToSign={readyToSign}
-          details={details}
           backToStart={backToStart}
-        />
-      );
-    case 'complete':
-      return (
-        <SalesSubmissionConfirmationPage
-          user={user}
           details={details}
+          key="page"
+          readyToSign={readyToSign}
+          user={user}
         />
       );
+      break;
+    case 'complete':
+      content = (
+        <SalesSubmissionConfirmationPage
+          details={details}
+          key="page"
+          user={user}
+        />
+      );
+      break;
     case 'error':
-      return (<p>An error occurred in validation. Please restart the submission</p>);
+      content = (<p>An error occurred in validation. Please restart the submission</p>);
+      break;
     case 'new':
     default:
-      return (
+      content = (
         <SalesSubmissionPage
-          user={user}
+          files={files}
+          key="page"
+          setUploadFiles={setFiles}
+          submissions={submissions}
           upload={doUpload}
+          user={user}
           years={referenceData.years}
-          uploadReady={files.length > 0}
-          setUploadFile={setFiles}
         />
       );
   }
 
+  return ([
+    <CreditTransactionTabs active="credit-requests" key="tabs" />,
+    content,
+  ]);
 };
 
 SalesSubmissionContainer.propTypes = {

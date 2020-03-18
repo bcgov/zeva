@@ -4,22 +4,24 @@
  */
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+
 import Loading from '../app/components/Loading';
-import ROUTES_SALES from '../app/routes/Sales';
+import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
+import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
 
 import CustomPropTypes from '../app/utilities/props';
 import SalesListPage from './components/SalesListPage';
 
 const SalesListContainer = (props) => {
   const { user } = props;
-  const [sales, setSales] = useState([]);
+  const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const refreshList = (showLoading) => {
     setLoading(showLoading);
 
-    axios.get(ROUTES_SALES.LIST).then((response) => {
-      setSales(response.data);
+    axios.get(ROUTES_SALES_SUBMISSIONS.LIST).then((response) => {
+      setSubmissions(response.data);
       setLoading(false);
     });
   };
@@ -31,14 +33,16 @@ const SalesListContainer = (props) => {
 
   if (loading) {
     return (<Loading />);
-  } else {
-    return (
-      <SalesListPage
-        sales={sales}
-        user={user}
-      />
-    );
   }
+
+  return ([
+    <CreditTransactionTabs active="credit-transactions" key="tabs" />,
+    <SalesListPage
+      key="page"
+      submissions={submissions}
+      user={user}
+    />,
+  ]);
 };
 
 SalesListContainer.propTypes = {

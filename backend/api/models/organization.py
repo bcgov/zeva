@@ -1,8 +1,10 @@
+import decimal
 from datetime import date
 from django.db import models
-from django.db.models import F
+from django.db.models import F, Sum
 
 from auditable.models import Auditable
+from .credit_transaction import CreditTransaction
 from .organization_address import OrganizationAddress
 from .user_profile import UserProfile
 from ..managers.organization import OrganizationManager
@@ -16,6 +18,15 @@ class Organization(Auditable):
         null=False,
         unique=True
     )
+
+    short_name = models.CharField(
+        db_column='short_name',
+        db_comment='Short version of the organization name, used in generating some reports',
+        unique=True,
+        null=True,
+        max_length=64
+    )
+
     is_active = models.BooleanField(
         default=False,
         db_comment="Boolean Field to see if the organization is disabled "
@@ -25,6 +36,30 @@ class Organization(Auditable):
         default=False,
         db_comment="Flag to check whether this is the Government organization"
     )
+
+    @property
+    def balance(self):
+        """
+        Gets the class A and B balance for the current
+        organization
+        """
+        classes = ['A', 'B']
+        balance = {}
+
+        for c in classes:
+            credits = CreditTransaction.objects.filter(credit_to=self,
+                                                       credit_class__credit_class=c).aggregate(val=Sum('value'))
+            debits = CreditTransaction.objects.filter(debit_from=self,
+                                                      credit_class__credit_class=c).aggregate(val=Sum('value'))
+
+            if credits['val'] is None:
+                credits['val'] = decimal.Decimal(0)
+            if debits['val'] is None:
+                debits['val'] = decimal.Decimal(0)
+
+            balance[c] = credits['val'] - debits['val']
+
+        return balance
 
     @property
     def members(self):
