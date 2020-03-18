@@ -65,7 +65,7 @@ module.exports = settings => {
       'SUFFIX': phases[phase].suffix,
       'NAMESPACE': phases[phase].namespace,
       'CLUSTER_NAME': 'rabbitmq-cluster',
-      'ISTAG': 'tbiwaq-tools/rabbitmq:3.8.3-management-dev',
+      'ISTAG': 'docker-registry.default.svc:5000/tbiwaq-dev/rabbitmq:3.8.3-management-dev',
       'SERVICE_ACCOUNT': 'rabbitmq-discovery',
       'VOLUME_SIZE': phases[phase].rabbitmqPvcSize,
       'MQ_USER': 'guest',
