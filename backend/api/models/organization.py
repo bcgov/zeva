@@ -48,9 +48,9 @@ class Organization(Auditable):
 
         for c in classes:
             credits = CreditTransaction.objects.filter(credit_to=self,
-                                                       credit_class__credit_class=c).aggregate(val=Sum('value'))
+                                                       credit_class__credit_class=c).aggregate(val=Sum('credit_value'))
             debits = CreditTransaction.objects.filter(debit_from=self,
-                                                      credit_class__credit_class=c).aggregate(val=Sum('value'))
+                                                      credit_class__credit_class=c).aggregate(val=Sum('credit_value'))
 
             if credits['val'] is None:
                 credits['val'] = decimal.Decimal(0)
