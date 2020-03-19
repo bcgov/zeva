@@ -90,7 +90,7 @@ objects:
     app: rabbitmq-cluster
   data:
     rabbitmq.conf: |
-        loopback_users.guest = false
+        loopback_users.rabbitmq = false
 
         ## Clustering
         cluster_formation.peer_discovery_backend = rabbit_peer_discovery_k8s
