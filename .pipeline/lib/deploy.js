@@ -68,7 +68,7 @@ module.exports = settings => {
       'SUFFIX': phases[phase].suffix,
       'NAMESPACE': phases[phase].namespace,
       'CLUSTER_NAME': 'rabbitmq-cluster',
-      'ISTAG': 'rabbitmq:3.7.24-management',
+      'ISTAG': 'rabbitmq:3.8.3-management',
       'SERVICE_ACCOUNT': 'rabbitmq-discovery',
       'VOLUME_SIZE': phases[phase].rabbitmqPvcSize,
       'CPU_REQUEST': '200m',
