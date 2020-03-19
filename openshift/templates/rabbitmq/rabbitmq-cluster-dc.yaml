@@ -157,6 +157,10 @@ objects:
         terminationGracePeriodSeconds: 30
         containers:
         - name: rabbitmq
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "rabbitmqctl add_user guest guest"]
           command:
           - sh
           args:
