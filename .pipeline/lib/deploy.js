@@ -59,13 +59,14 @@ module.exports = settings => {
   }))
 
   //deploy rabbitmq
+  //'ISTAG': 'docker-registry.default.svc:5000/tbiwaq-dev/rabbitmq:3.8.3-management-dev',
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
       'NAMESPACE': phases[phase].namespace,
       'CLUSTER_NAME': 'rabbitmq-cluster',
-      'ISTAG': 'docker-registry.default.svc:5000/tbiwaq-dev/rabbitmq:3.8.3-management-dev',
+      'ISTAG': 'rabbitmq:3.8.3-management',
       'SERVICE_ACCOUNT': 'rabbitmq-discovery',
       'VOLUME_SIZE': phases[phase].rabbitmqPvcSize,
       'MQ_USER': 'guest',

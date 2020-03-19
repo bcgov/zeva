@@ -31,12 +31,6 @@ parameters:
 - name: VOLUME_SIZE
   description: "Size of the RabbitMQ data volume"
   value: '1Gi'
-- name: MQ_USER
-  description: "vhost default user name"
-  value: guest
-- name: MQ_PASSWORD
-  description: "vhost default password"
-  value:  
 - name: CPU_REQUEST
   displayName: Requested CPU
   description: Requested CPU
@@ -96,7 +90,7 @@ objects:
     app: rabbitmq-cluster
   data:
     rabbitmq.conf: |
-        loopback_users.guest = false
+        ## loopback_users.guest = false
 
         ## Clustering
         cluster_formation.peer_discovery_backend = rabbit_peer_discovery_k8s
@@ -109,7 +103,7 @@ objects:
         ## queue master locator
         queue_master_locator=min-masters
         ## policy.json is from image customized
-        management.load_definitions = /etc/rabbitmq/policy.json
+        ## management.load_definitions = /tmp/policy.json
     enabled_plugins: |
       [rabbitmq_management,rabbitmq_peer_discovery_k8s].
 
@@ -169,7 +163,7 @@ objects:
           - sh
           args:
           - -c
-          - mv /tmp/policy.json /etc/rabbitmq; cp -v /etc/rabbitmq/rabbitmq.conf ${RABBITMQ_CONFIG_FILE}.conf; exec docker-entrypoint.sh rabbitmq-server
+          - cp -v /etc/rabbitmq/rabbitmq.conf ${RABBITMQ_CONFIG_FILE}.conf; exec docker-entrypoint.sh rabbitmq-server
           image: ${ISTAG} 
           imagePullPolicy: IfNotPresent
           volumeMounts:
@@ -243,10 +237,6 @@ objects:
             value: "rabbit@$(POD_NAME).${NAME}${SUFFIX}-${CLUSTER_NAME}.$(POD_NAMESPACE).svc.cluster.local"
           - name: RABBITMQ_CONFIG_FILE
             value: /var/lib/rabbitmq/rabbitmq
-          - name: MQ_USER
-            value: ${MQ_USER}
-          - name: MQ_PASSWORD
-            value: ${MQ_PASSWORD}                   
         volumes:
         - name: config-volume
           configMap:
