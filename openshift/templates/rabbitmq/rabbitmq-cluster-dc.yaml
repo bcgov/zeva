@@ -90,6 +90,7 @@ objects:
     app: rabbitmq-cluster
   data:
     rabbitmq.conf: |
+        default_user = rabbitmq
         loopback_users = none
 
         ## Clustering
