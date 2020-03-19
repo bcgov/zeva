@@ -160,7 +160,17 @@ objects:
           lifecycle:
             postStart:
               exec:
-                command: ["/bin/sh", "-c", "rabbitmqctl add_user guest guest"]
+                command:
+                  - /bin/sh
+                  - '-c'
+                  - |-
+                    sleep 50
+                    rabbitmqctl list_users | grep guest  2> /dev/null
+                    if [ $? -ne 0 ];
+                    then
+                      rabbitmqctl add_user guest guest
+                      rabbitmqctl set_user_tags guest administrator
+                    fi
           command:
           - sh
           args:
@@ -191,7 +201,7 @@ objects:
             exec:
               command: ["rabbitmqctl", "node_health_check", "--timeout", "9"]
             failureThreshold: 3
-            initialDelaySeconds: 75
+            initialDelaySeconds: 45
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 10
@@ -199,7 +209,7 @@ objects:
             exec:
               command: ["rabbitmqctl", "node_health_check", "--timeout", "9"]
             failureThreshold: 3
-            initialDelaySeconds: 70
+            initialDelaySeconds: 45
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 10
@@ -241,8 +251,6 @@ objects:
             value: /var/lib/rabbitmq/rabbitmq
           - name: RABBITMQ_DEFAULT_VHOST
             value: /zeva
-          - name: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
-            value: "-rabbit log_levels [{connection,error}]"
         volumes:
         - name: config-volume
           configMap:
