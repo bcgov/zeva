@@ -90,7 +90,7 @@ objects:
     app: rabbitmq-cluster
   data:
     rabbitmq.conf: |
-        loopback_users.rabbitmq = false
+        loopback_users.guest = false
 
         ## Clustering
         cluster_formation.peer_discovery_backend = rabbit_peer_discovery_k8s
@@ -103,7 +103,7 @@ objects:
         ## queue master locator
         queue_master_locator=min-masters
         ## policy.json is from image customized
-        ## management.load_definitions = /tmp/policy.json
+        management.load_definitions = /etc/rabbitmq/policy.json
     enabled_plugins: |
       [rabbitmq_management,rabbitmq_peer_discovery_k8s].
     policy.json: "{\r\n  \"vhosts\":[\r\n    {\r\n      \"name\": \"/\"\r\n    }\r\n  ],\r\n  \"users\": [\r\n      {\r\n        \"name\": \"guest\",\r\n        \"password\": \"guest\",\r\n        \"hashing_algorithm\": \"rabbit_password_hashing_sha256\",\r\n        \"tags\": \"administrator\"\r\n      }\r\n  ],\r\n  \"permissions\": [\r\n    {\r\n      \"user\": \"guest\",\r\n      \"vhost\": \"\\/\",\r\n      \"configure\": \".*\",\r\n      \"write\": \".*\",\r\n      \"read\": \".*\"\r\n    }\r\n  ],\r\n  \"policies\":[\r\n    {\r\n      \"vhost\": \"/\",\r\n      \"name\": \"ha-all\",\r\n      \"pattern\": \"\", \r\n      \"definition\": {\r\n        \"ha-mode\": \"all\",\r\n        \"ha-sync-mode\": \"automatic\",\r\n        \"ha-sync-batch-size\": 5\r\n      }\r\n    }\r\n  ]\r\n}"
