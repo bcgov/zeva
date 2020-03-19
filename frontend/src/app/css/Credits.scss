@@ -2,8 +2,13 @@
     border: 2px solid $default-background-grey;
     width: 80vw;
     height:60vh;
-
-    #credits-navbar {
-
-    }
 }
+.transaction-table {
+    width: 70vw;
+    thead {
+      background-color:$default-background-grey;
+    }
+    tr:nth-child(even) {
+        background-color: $default-background-grey;
+    }
+  }
