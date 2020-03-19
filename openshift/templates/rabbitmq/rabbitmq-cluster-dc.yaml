@@ -246,6 +246,8 @@ objects:
             items:
             - key: rabbitmq.conf
               path: rabbitmq.conf
+            - key: enabled_plugins
+              path: enabled_plugins           
     volumeClaimTemplates:
     - metadata:
         name: rabbitmq-storage
