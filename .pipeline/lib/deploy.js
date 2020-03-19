@@ -60,6 +60,8 @@ module.exports = settings => {
 
   //deploy rabbitmq
   //'ISTAG': 'docker-registry.default.svc:5000/tbiwaq-dev/rabbitmq:3.8.3-management-dev',
+  //      'MQ_USER': 'guest',
+  //'MQ_PASSWORD': '',
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
@@ -69,8 +71,6 @@ module.exports = settings => {
       'ISTAG': 'rabbitmq:3.8.3-management',
       'SERVICE_ACCOUNT': 'rabbitmq-discovery',
       'VOLUME_SIZE': phases[phase].rabbitmqPvcSize,
-      'MQ_USER': 'guest',
-      'MQ_PASSWORD': '',
       'CPU_REQUEST': '200m',
       'CPU_LIMIT': '1000m',
       'MEMORY_REQUEST': '256Mi',
