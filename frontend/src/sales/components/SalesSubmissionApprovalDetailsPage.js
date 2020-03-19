@@ -8,6 +8,8 @@ import SalesSubmissionVehiclesTable from './SalesSubmissionVehiclesTable';
 
 const SalesSubmissionApprovalDetailsPage = (props) => {
   const {
+    handleCheckboxClick,
+    handleSubmit,
     routeParams,
     submission,
     user,
@@ -24,6 +26,7 @@ const SalesSubmissionApprovalDetailsPage = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <SalesSubmissionVehiclesTable
+            handleCheckboxClick={handleCheckboxClick}
             routeParams={routeParams}
             submission={submission}
             user={user}
@@ -48,6 +51,9 @@ const SalesSubmissionApprovalDetailsPage = (props) => {
             <span className="right-content">
               <button
                 className="button primary"
+                onClick={() => {
+                  handleSubmit();
+                }}
                 type="button"
               >
                 <FontAwesomeIcon icon="save" /> Save
@@ -63,6 +69,8 @@ const SalesSubmissionApprovalDetailsPage = (props) => {
 SalesSubmissionApprovalDetailsPage.defaultProps = {};
 
 SalesSubmissionApprovalDetailsPage.propTypes = {
+  handleCheckboxClick: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
   routeParams: PropTypes.shape().isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,

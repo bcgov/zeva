@@ -18,6 +18,7 @@ const SalesSubmissionApprovalDetailsContainer = (props) => {
 
   const [submission, setSubmission] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [validatedList, setValidatedList] = useState([]);
 
   const refreshDetails = () => {
     axios.get(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id)).then((response) => {
@@ -30,6 +31,24 @@ const SalesSubmissionApprovalDetailsContainer = (props) => {
     refreshDetails();
   }, [id]);
 
+  const handleCheckboxClick = (event) => {
+    const { value: submissionId, checked } = event.target;
+
+    if (!checked) {
+      setValidatedList(validatedList.filter((item) => item !== submissionId));
+    } else {
+      setValidatedList(() => [...validatedList, submissionId]);
+    }
+  };
+
+  const handleSubmit = () => {
+    axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id), {
+      ids: validatedList,
+      validationStatus: 'VALIDATED',
+    }).then(() => {
+      refreshDetails();
+    });
+  };
 
   if (loading) {
     return (<Loading />);
@@ -38,6 +57,8 @@ const SalesSubmissionApprovalDetailsContainer = (props) => {
   return ([
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
     <SalesSubmissionApprovalDetailsPage
+      handleCheckboxClick={handleCheckboxClick}
+      handleSubmit={handleSubmit}
       key="page"
       routeParams={match.params}
       submission={submission}

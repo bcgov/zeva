@@ -6,7 +6,7 @@ import React from 'react';
 import ReactTable from 'react-table';
 
 const SalesSubmissionVehiclesTable = (props) => {
-  const { submission } = props;
+  const { handleCheckboxClick, routeParams, submission } = props;
 
   const columns = [{
     accessor: 'id',
@@ -52,13 +52,13 @@ const SalesSubmissionVehiclesTable = (props) => {
     Header: 'Credits',
     width: 120,
   }, {
-    accessor: () => (<input type="checkbox" />),
+    accessor: (row) => (<input type="checkbox" value={row.id} onChange={(event) => { handleCheckboxClick(event); }} />),
     className: 'text-center',
     Header: 'Validate',
     id: 'validated',
     width: 100,
   }, {
-    accessor: 'vinValidationStatus',
+    accessor: 'validationStatus',
     className: 'text-center',
     Header: 'Satus',
     id: 'status',
@@ -78,7 +78,9 @@ const SalesSubmissionVehiclesTable = (props) => {
     <ReactTable
       className="searchable"
       columns={columns}
-      data={submission.records}
+      data={submission.records.filter(
+        (record) => (record.vehicle.id === parseInt(routeParams.vehicle_id, 10)),
+      )}
       defaultFilterMethod={filterMethod}
       defaultPageSize={submission.records.length}
       defaultSorted={[{
@@ -93,8 +95,11 @@ const SalesSubmissionVehiclesTable = (props) => {
 SalesSubmissionVehiclesTable.defaultProps = {};
 
 SalesSubmissionVehiclesTable.propTypes = {
+  handleCheckboxClick: PropTypes.func.isRequired,
+  routeParams: PropTypes.shape().isRequired,
   submission: PropTypes.shape({
     records: PropTypes.arrayOf(PropTypes.shape({})),
+    submissionDate: PropTypes.string,
   }).isRequired,
 };
 

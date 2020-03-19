@@ -30,6 +30,13 @@ const SalesSubmissionApprovalContainer = (props) => {
     refreshDetails();
   }, [id]);
 
+  const handleSubmit = () => {
+    axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id), {
+      validationStatus: 'VALIDATED',
+    }).then(() => {
+      refreshDetails();
+    });
+  };
 
   if (loading) {
     return (<Loading />);
@@ -38,6 +45,7 @@ const SalesSubmissionApprovalContainer = (props) => {
   return ([
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
     <SalesSubmissionApprovalPage
+      handleSubmit={handleSubmit}
       key="page"
       submission={submission}
       user={user}

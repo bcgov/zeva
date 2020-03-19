@@ -8,6 +8,7 @@ import SalesSubmissionModelsTable from './SalesSubmissionModelsTable';
 
 const SalesSubmissionApprovalPage = (props) => {
   const {
+    handleSubmit,
     submission,
     user,
   } = props;
@@ -54,6 +55,7 @@ const SalesSubmissionApprovalPage = (props) => {
 
               <button
                 className="button primary"
+                onClick={handleSubmit}
                 type="button"
               >
                 <FontAwesomeIcon icon="share-square" /> Approve
@@ -69,6 +71,7 @@ const SalesSubmissionApprovalPage = (props) => {
 SalesSubmissionApprovalPage.defaultProps = {};
 
 SalesSubmissionApprovalPage.propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
 };
