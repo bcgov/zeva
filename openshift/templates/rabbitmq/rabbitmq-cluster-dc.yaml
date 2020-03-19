@@ -90,9 +90,6 @@ objects:
     app: rabbitmq-cluster
   data:
     rabbitmq.conf: |
-        default_user = rabbitmq
-        loopback_users = none
-
         ## Clustering
         cluster_formation.peer_discovery_backend = rabbit_peer_discovery_k8s
         cluster_formation.k8s.host = kubernetes.default.svc.cluster.local
