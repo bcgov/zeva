@@ -161,7 +161,7 @@ objects:
           - sh
           args:
           - -c
-          - cp -v /etc/rabbitmq/rabbitmq.conf ${RABBITMQ_CONFIG_FILE}.conf; exec docker-entrypoint.sh rabbitmq-server; rabbitmqctl add_user guest guest; rabbitmqctl set_user_tags guest administrator
+          - cp -v /etc/rabbitmq/rabbitmq.conf ${RABBITMQ_CONFIG_FILE}.conf; exec docker-entrypoint.sh rabbitmq-server
           image: ${ISTAG} 
           imagePullPolicy: IfNotPresent
           volumeMounts:
@@ -237,6 +237,8 @@ objects:
             value: /var/lib/rabbitmq/rabbitmq
           - name: RABBITMQ_DEFAULT_VHOST
             value: /zeva
+          - name: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
+            value: "-rabbit log_levels [{connection,error}]"
         volumes:
         - name: config-volume
           configMap:
