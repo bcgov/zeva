@@ -90,7 +90,7 @@ objects:
     app: rabbitmq-cluster
   data:
     rabbitmq.conf: |
-        ## loopback_users.guest = false
+        loopback_users.guest = false
 
         ## Clustering
         cluster_formation.peer_discovery_backend = rabbit_peer_discovery_k8s
@@ -237,6 +237,8 @@ objects:
             value: "rabbit@$(POD_NAME).${NAME}${SUFFIX}-${CLUSTER_NAME}.$(POD_NAMESPACE).svc.cluster.local"
           - name: RABBITMQ_CONFIG_FILE
             value: /var/lib/rabbitmq/rabbitmq
+          - name: RABBITMQ_DEFAULT_VHOST
+            value: /zeva
         volumes:
         - name: config-volume
           configMap:
