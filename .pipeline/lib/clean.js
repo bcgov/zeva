@@ -70,7 +70,7 @@ module.exports = settings => {
         namespace: phase.namespace
       });
       rabbitmqPVCs.forEach(pvc => {
-        echo `+++++pvc metadata.name=${metadata.name}`;
+        console.log( `+++++pvc metadata.name=${metadata.name}`);
         oc.delete([`pvc/${metadata.name}`], {
           "ignore-not-found": "true",
           wait: "true",
