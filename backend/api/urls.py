@@ -15,6 +15,6 @@ router.register(r'vehicles', VehicleViewSet)
 router.register(r'roles', RoleViewSet, basename='role')
 router.register(r'sales', RecordOfSaleViewset, basename='sale')
 router.register(r'submissions', SalesSubmissionsViewset, basename='submission')
-router.register(r'credits', CreditTransactionViewSet, basename='credit')
+router.register(r'credit-transactions', CreditTransactionViewSet, basename='credit')
 
 urlpatterns = router.urls

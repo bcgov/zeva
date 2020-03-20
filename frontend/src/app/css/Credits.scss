@@ -1,0 +1,28 @@
+#credit-box {
+    border: 2px solid $default-background-grey;
+    width: 80vw;
+    height:60vh;
+}
+.transaction-table {
+    width: 80vw;
+    thead {
+      background-color:$default-background-grey;
+      th {
+          text-align: center;      
+      }
+    }
+    tr:nth-child(even) {
+        background-color: $default-background-grey;
+    }
+    .balance-a {
+        border-left: 3px solid white;
+        text-align: center;
+      }
+    .balance-b {
+        padding-right:10px;
+    }
+    .date-column {
+        width:10vw;
+        padding-left:10px;
+    }
+  }

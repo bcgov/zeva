@@ -9,6 +9,7 @@ import OrganizationListContainer from '../organizations/OrganizationListContaine
 import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
 import RoleListContainer from '../roles/RoleListContainer';
 import SalesDetailsContainer from '../sales/SalesDetailsContainer';
+import CreditsContainer from '../credits/CreditsContainer';
 import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
 import SalesListContainer from '../sales/SalesListContainer';
 import VehicleAddContainer from '../vehicles/VehicleAddContainer';
@@ -27,6 +28,7 @@ import ROUTES_ROLES from './routes/Roles';
 import ROUTES_SALES from './routes/Sales';
 import ROUTES_USERS from './routes/Users';
 import ROUTES_VEHICLES from './routes/Vehicles';
+import ROUTES_CREDITS from './routes/Credits';
 
 class Router extends Component {
   constructor(props) {
@@ -158,6 +160,11 @@ class Router extends Component {
               <Route
                 path={ROUTES_USERS.DETAILS}
                 render={() => <UserDetailsContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_CREDITS.LIST}
+                render={() => <CreditsContainer keycloak={keycloak} user={user} activeTab="transactions" />}
               />
               <Route
                 exact
