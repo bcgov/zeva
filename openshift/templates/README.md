@@ -31,35 +31,9 @@ oc process -f config/zeva-postgresql-init.yaml | oc create -f - -n tbiwaq-test -
 oc process -f config/zeva-postgresql-init.yaml | oc create -f - -n tbiwaq-prod --dry-run=true  
 
 ## Rabbitmq 
-Docker command to try rabbitMQ  
-docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
-
-
-### In tools project, create secrets rabbitmq-secret-dev, rabbitmq-secret-test and rabbitmq-secret-prod
-oc process -f config/rabbitmq-secret.yaml ENV_NAME=dev | oc create -f - -n tbiwaq-tools --dry-run=true  
-oc process -f config/rabbitmq-secret.yaml ENV_NAME=test | oc create -f - -n tbiwaq-tools --dry-run=true  
-oc process -f config/rabbitmq-secret.yaml ENV_NAME=prod | oc create -f - -n tbiwaq-tools --dry-run=true  
-
-### In dev, test and prod project, make sure the password passed in are same as above
-oc process -f config/rabbitmq-secret-env.yaml ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc create -f - -n tbiwaq-dev --dry-run=true
-oc process -f config/rabbitmq-secret-env.yaml ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc create -f - -n tbiwaq-test --dry-run=true
-oc process -f config/rabbitmq-secret-env.yaml ADMIN_PASSWORD=*** ZEVA_PASSWORD=*** | oc create -f - -n tbiwaq-prod --dry-run=true
-
-### In tools project, create build config rabbitmq-bc-dev, rabbitmq-bc-test and rabbitmq-bc-prod 
-oc process -f rabbitmq/rabbitmq-bc.yaml ENV_NAME=dev GIT_REF=pipeline-7-1 | oc apply -f - -n tbiwaq-tools --dry-run=true  
-oc process -f rabbitmq/rabbitmq-bc.yaml ENV_NAME=test GIT_REF=pipeline-7-1 | oc apply -f - -n tbiwaq-tools --dry-run=true  
-oc process -f rabbitmq/rabbitmq-bc.yaml ENV_NAME=prod GIT_REF=pipeline-7-1 | oc apply -f - -n tbiwaq-tools --dry-run=true  
-
-### Command to deploy Rabbitmq on dev, this can be done throught pipeline aws well
-oc process -f rabbitmq/rabbitmq-dc.yaml NAME=zeva ENV_NAME=dev SUFFIX=-pr-900 CPU_REQUEST=100m CPU_LIMIT=1000m MEMORY_REQUEST=256Mi \
-MEMORY_LIMIT=2Gi REPLICA_COUNT=2 RABBITMQ_PVC_SIZE=1Gi | oc apply -f - -n tbiwaq-dev --dry-run=true
-
 oc process -f ./rabbitmq/rabbitmq-prereq.yaml | oc create -f - -n tbiwaq-dev --dry-run=true
-oc process -f rabbitmq/rabbitmq-cluster.yaml NAME=zeva SUFFIX=-pr-001 | oc apply -f - -n tbiwaq-dev --dry-run=true
-
-oc process -f ./rabbitmq-prereq.yaml | oc create -f - -n tbiwaq-dev --dry-run=true
-
-oc process -f rabbitmq/rabbitmq-cluster.yaml | oc apply -f - -n tbiwaq-dev --dry-run=true
+oc process -f ./rabbitmq/rabbitmq-prereq.yaml | oc create -f - -n tbiwaq-test --dry-run=true
+oc process -f ./rabbitmq/rabbitmq-prereq.yaml | oc create -f - -n tbiwaq-prod --dry-run=true
 
 ## Patroni
 
