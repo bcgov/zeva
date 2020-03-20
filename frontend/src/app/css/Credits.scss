@@ -14,11 +14,14 @@
     tr:nth-child(even) {
         background-color: $default-background-grey;
     }
-    .balance-column {
+    .balance-a {
         border-left: 3px solid white;
         text-align: center;
       }
-      .date-column {
+    .balance-b {
+        padding-right:10px;
+    }
+    .date-column {
         width:10vw;
         padding-left:10px;
     }
