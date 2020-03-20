@@ -5,7 +5,6 @@ const CreditTransactions = (props) => {
   const { title, items } = props;
   console.log(items);
 
-
   return (
     <div id="credit-transaction-details" className="page">
       <div className="row">
@@ -34,10 +33,10 @@ const CreditTransactions = (props) => {
             <tr>
               <td className="date-column">{each.transactionTimestamp.slice(0,10)}</td>
               <td className="text-left">{each.transactionType.transactionType}</td>
-              <td className="text-center"></td>
-              <td className="text-center"></td>
-          <td className="balance-a">{each.creditClass === "A"? }</td>
-              <td className="balance-b"></td>
+              <td className="text-center">1</td>
+              <td className="text-center">1</td>
+              <td className="balance-a">1</td>
+              <td className="balance-b">1</td>
             </tr>
           ))}
         </tbody>
