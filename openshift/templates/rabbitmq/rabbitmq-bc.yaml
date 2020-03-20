@@ -1,4 +1,5 @@
 ---
+## This build config is not being used.
 kind: Template
 apiVersion: v1
 metadata:
