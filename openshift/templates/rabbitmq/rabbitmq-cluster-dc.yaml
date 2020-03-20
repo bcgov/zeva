@@ -269,3 +269,31 @@ objects:
         resources:
           requests:
             storage: ${VOLUME_SIZE}
+
+## faster http test
+#         livenessProbe:
+#           failureThreshold: 3
+#           httpGet:
+#             httpHeaders:
+#               - name: Authorization
+#                 value: Basic <hash of password>
+#             path: /api/healthchecks/node
+#             port: 15672
+#             scheme: HTTP
+#           initialDelaySeconds: 35
+#           periodSeconds: 10
+#           successThreshold: 1
+#           timeoutSeconds: 20
+#         readinessProbe:
+#           failureThreshold: 3
+#           httpGet:
+#             httpHeaders:
+#               - name: Authorization
+#                 value: Basic <hash of passord>
+#             path: /api/healthchecks/node
+#             port: 15672
+#             scheme: HTTP
+#           initialDelaySeconds: 35
+#           periodSeconds: 10
+#           successThreshold: 1
+#           timeoutSeconds: 20            
