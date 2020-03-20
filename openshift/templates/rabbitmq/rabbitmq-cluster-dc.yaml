@@ -106,23 +106,23 @@ objects:
       [rabbitmq_management,rabbitmq_peer_discovery_k8s].
 
 # Load balancer
-- kind: Service
-  apiVersion: v1
-  metadata:
-    name: ${NAME}${SUFFIX}-${CLUSTER_NAME}-balancer
-  spec:
-    type: ClusterIP
-    ports:
-      - name: web
-        protocol: TCP
-        port: 15672
-        targetPort: 15672
-      - name: amqp
-        protocol: TCP
-        port: 5672
-        targetPort: 5672
-    selector:
-      app: ${NAME}${SUFFIX}-${CLUSTER_NAME}
+#- kind: Service
+#  apiVersion: v1
+#  metadata:
+#    name: ${NAME}${SUFFIX}-${CLUSTER_NAME}-balancer
+#  spec:
+#    type: ClusterIP
+#    ports:
+#      - name: web
+#        protocol: TCP
+#        port: 15672
+#        targetPort: 15672
+#      - name: amqp
+#        protocol: TCP
+#        port: 5672
+#        targetPort: 5672
+#    selector:
+#      app: ${NAME}${SUFFIX}-${CLUSTER_NAME}
 
 # Headless service that makes it possible to lookup individual rabbitmq nodes
 - apiVersion: v1
@@ -170,6 +170,7 @@ objects:
                     then
                       rabbitmqctl add_user guest guest
                       rabbitmqctl set_user_tags guest administrator
+                      rabbitmqctl set_policy --vhost /zeva ha-all ".*" '{"ha-mode":"all"}'
                     fi
           command:
           - sh
