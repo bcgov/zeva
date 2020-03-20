@@ -16,24 +16,28 @@ const CreditTransactions = (props) => {
       </div>
       <table className="transaction-table">
         <thead>
+          <th colSpan="1" className="date-column"> </th>
+          <th colSpan="1"> </th>
+          <th colSpan="2">Credits</th>
+          <th colSpan="2" className="balance-column">Balance</th>
           <tr>
             <th>Date</th>
             <th>Transaction</th>
-            <th>Credits A</th>
-            <th>Credits B</th>
-            <th>Balance</th>
-            <th>Balance</th>
+            <th>A</th>
+            <th>B</th>
+            <th className="balance-column">A</th>
+            <th>B</th>
           </tr>
         </thead>
         <tbody>
           {items.map((each) => (
             <tr>
-              <td>{each.transactionTimestamp}</td>
-              <td>{each.transactionType.transactionType}</td>
-              <td>100</td>
-              <td>200</td>
-              <td>100</td>
-              <td>200</td>
+              <td className="date-column">{each.transactionTimestamp.slice(0,10)}</td>
+              <td className="text-left">{each.transactionType.transactionType}</td>
+              <td className="text-center">100</td>
+              <td className="text-center">200</td>
+              <td className="balance-column">100</td>
+              <td className="text-center">200</td>
             </tr>
           ))}
         </tbody>
