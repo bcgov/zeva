@@ -11,7 +11,7 @@ const CreditTransactions = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <h2>{title}</h2>
-          <p>Credit Balance:</p>
+          <p id="balance">Credit Balance:</p>
         </div>
       </div>
       <table className="transaction-table">
