@@ -65,6 +65,19 @@ module.exports = settings => {
         });
       });
 
+      let rabbitmqPVCs = oc.get("pvc", {
+        selector: `statefulset=${phase.instance}-rabbitmq-cluster`,
+        namespace: phase.namespace
+      });
+      rabbitmqPVCs.forEach(pvc => {
+        echo `+++++pvc metadata.name=${metadata.name}`;
+        oc.delete([`pvc/${metadata.name}`], {
+          "ignore-not-found": "true",
+          wait: "true",
+          namespace: phase.namespace,
+        });
+      })
+
       oc.raw("delete", ["all"], {
         selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
         wait: "true",
