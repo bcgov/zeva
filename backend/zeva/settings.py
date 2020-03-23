@@ -113,6 +113,10 @@ AMQP_CONNECTION_PARAMETERS = ConnectionParameters(
     credentials=PlainCredentials(AMQP['USER'], AMQP['PASSWORD'])
 )
 
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler'
+]
+
 # CORS Settings
 
 # If True, the whitelist below is ignored and all origins will be accepted

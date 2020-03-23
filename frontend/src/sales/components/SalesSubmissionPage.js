@@ -10,6 +10,7 @@ import SalesSubmissionsListTable from './SalesSubmissionsListTable';
 
 const SalesSubmissionPage = (props) => {
   const {
+    errorMessage,
     files,
     setUploadFiles,
     submissions,
@@ -89,6 +90,13 @@ const SalesSubmissionPage = (props) => {
       <div className="compact">
         <div className="bordered">
           <div className="content">
+            {errorMessage && (
+              <div className="alert alert-danger" role="alert">
+                <h4 className="alert-heading mb-4">We&apos;re sorry.</h4>
+                {errorMessage}
+              </div>
+            )}
+
             <div className="panel panel-default">
               <ExcelFileDrop setFiles={setUploadFiles} />
 
@@ -148,9 +156,12 @@ const SalesSubmissionPage = (props) => {
   );
 };
 
-SalesSubmissionPage.defaultProps = {};
+SalesSubmissionPage.defaultProps = {
+  errorMessage: null,
+};
 
 SalesSubmissionPage.propTypes = {
+  errorMessage: PropTypes.string,
   files: PropTypes.arrayOf(PropTypes.shape).isRequired,
   setUploadFiles: PropTypes.func.isRequired,
   submissions: PropTypes.arrayOf(PropTypes.shape).isRequired,

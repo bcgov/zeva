@@ -19,6 +19,7 @@ import SalesSubmissionValidationPage from './components/SalesSubmissionValidatio
 
 const SalesSubmissionContainer = (props) => {
   const { user, referenceData } = props;
+  const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submissions, setSubmissions] = useState([]);
   const [workflowState, setWorkflowState] = useState('new');
@@ -44,6 +45,14 @@ const SalesSubmissionContainer = (props) => {
     upload(ROUTES_SALES.UPLOAD, files).then((response) => {
       setDetails(response.data);
       setWorkflowState('validating');
+    }).catch((error) => {
+      const { response } = error;
+
+      if (response.status === 400) {
+        setErrorMessage(error.response.data);
+      } else {
+        setErrorMessage('An error has occurred while uploading. Please try again later.');
+      }
     });
   };
 
@@ -113,6 +122,7 @@ const SalesSubmissionContainer = (props) => {
     default:
       content = (
         <SalesSubmissionPage
+          errorMessage={errorMessage}
           files={files}
           key="page"
           setUploadFiles={setFiles}
