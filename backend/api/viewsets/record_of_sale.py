@@ -20,7 +20,7 @@ from auditable.views import AuditableMixin
 
 class RecordOfSaleViewset(
     AuditableMixin, viewsets.GenericViewSet,
-    mixins.ListModelMixin, mixins.RetrieveModelMixin
+    mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin
 ):
     permission_classes = (AllowAny,)
     http_method_names = ['get', 'post']
@@ -29,10 +29,14 @@ class RecordOfSaleViewset(
         user = self.request.user
 
         if user.organization.is_government:
-            qs = RecordOfSale.objects.exclude(validation_status__in=(RecordOfSaleStatuses.DRAFT,
-                                                                     RecordOfSaleStatuses.NEW))
+            qs = RecordOfSale.objects.exclude(validation_status__in=(
+                RecordOfSaleStatuses.DRAFT,
+                RecordOfSaleStatuses.NEW
+            ))
         else:
-            qs = RecordOfSale.objects.filter(submission__organization=user.organization)
+            qs = RecordOfSale.objects.filter(
+                submission__organization=user.organization
+            )
 
         return qs
 

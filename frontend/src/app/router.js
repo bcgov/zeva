@@ -6,11 +6,14 @@ import { Route, Router as BrowserRouter } from 'react-router-dom';
 import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
 import OrganizationListContainer from '../organizations/OrganizationListContainer';
+import UserDetailsContainer from '../organizations/UserDetailsContainer';
 import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
 import RoleListContainer from '../roles/RoleListContainer';
 import SalesDetailsContainer from '../sales/SalesDetailsContainer';
 import CreditsContainer from '../credits/CreditsContainer';
 import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
+import SalesSubmissionApprovalContainer from '../sales/SalesSubmissionApprovalContainer';
+import SalesSubmissionApprovalDetailsContainer from '../sales/SalesSubmissionApprovalDetailsContainer';
 import SalesListContainer from '../sales/SalesListContainer';
 import VehicleAddContainer from '../vehicles/VehicleAddContainer';
 import VehicleDetailsContainer from '../vehicles/VehicleDetailsContainer';
@@ -125,6 +128,16 @@ class Router extends Component {
                 exact
                 path={ROUTES_SALES.ADD}
                 render={() => <SalesSubmissionContainer mode="add" keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_SALES.APPROVAL_DETAILS}
+                render={() => <SalesSubmissionApprovalDetailsContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_SALES.APPROVAL}
+                render={() => <SalesSubmissionApprovalContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact

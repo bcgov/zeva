@@ -5,17 +5,22 @@ const CreditTransactions = (props) => {
   const { title, items } = props;
   console.log(items);
 
-
   return (
     <div id="credit-transaction-details" className="page">
       <div className="row">
         <div className="col-sm-12">
           <h2>{title}</h2>
-          <p>Credit Balance: add later</p>
+          <p id="balance">Credit Balance:</p>
         </div>
       </div>
       <table className="transaction-table">
         <thead>
+          <tr>
+            <th colSpan="1" className="date-column"> </th>
+            <th colSpan="1"> </th>
+            <th colSpan="2">Credits</th>
+            <th colSpan="2" className="balance-a">Balance</th>
+          </tr>
           <th colSpan="1" className="date-column"> </th>
           <th colSpan="1"> </th>
           <th colSpan="2">Credits</th>
@@ -31,13 +36,13 @@ const CreditTransactions = (props) => {
         </thead>
         <tbody>
           {items.map((each) => (
-            <tr>
-              <td className="date-column">{each.transactionTimestamp.slice(0,10)}</td>
+            <tr key={each.id}>
+              <td className="date-column">{each.transactionTimestamp.slice(0, 10)}</td>
               <td className="text-left">{each.transactionType.transactionType}</td>
-              <td className="text-center"></td>
-              <td className="text-center"></td>
-              <td className="balance-a"></td>
-              <td className="balance-b"></td>
+              <td className="text-center">1</td>
+              <td className="text-center">1</td>
+              <td className="balance-a">1</td>
+              <td className="balance-b">1</td>
             </tr>
           ))}
         </tbody>

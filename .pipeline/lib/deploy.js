@@ -44,7 +44,7 @@ module.exports = settings => {
     }
   }))
 
-
+  //deploy database
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/postgresql/postgresql-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
@@ -58,7 +58,25 @@ module.exports = settings => {
     }
   }))
 
-  //TODO sleep 60 seconds or somehow wait till postgresql is ready
+  //deploy rabbitmq
+  //'ISTAG': 'docker-registry.default.svc:5000/tbiwaq-dev/rabbitmq:3.8.3-management-dev',
+  //      'MQ_USER': 'guest',
+  //'MQ_PASSWORD': '',
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
+    'param': {
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix,
+      'NAMESPACE': phases[phase].namespace,
+      'CLUSTER_NAME': 'rabbitmq-cluster',
+      'ISTAG': 'rabbitmq:3.8.3-management',
+      'SERVICE_ACCOUNT': 'rabbitmq-discovery',
+      'VOLUME_SIZE': phases[phase].rabbitmqPvcSize,
+      'CPU_REQUEST': '200m',
+      'CPU_LIMIT': '1000m',
+      'MEMORY_REQUEST': '256Mi',
+      'MEMORY_LIMIT': '2Gi'
+    }
+  }))
 
   // deploy frontend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-dc.yaml`, {
@@ -75,6 +93,7 @@ module.exports = settings => {
     }
   }))
 
+  //deploy backend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/backend/backend-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,

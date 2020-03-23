@@ -135,7 +135,7 @@ const SalesSubmissionContainer = (props) => {
   }
 
   return ([
-    <CreditTransactionTabs active="credit-requests" key="tabs" />,
+    <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
     content,
   ]);
 };
