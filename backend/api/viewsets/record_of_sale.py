@@ -12,13 +12,14 @@ from api.models.model_year import ModelYear
 from api.models.record_of_sale import RecordOfSale
 from api.models.record_of_sale_statuses import RecordOfSaleStatuses
 from api.serializers.record_of_sale import RecordOfSaleSerializer
-from api.services.sales_spreadsheet import create_sales_spreadsheet, ingest_sales_spreadsheet
+from api.services.sales_spreadsheet import create_sales_spreadsheet, \
+    ingest_sales_spreadsheet
 from auditable.views import AuditableMixin
 
 
 class RecordOfSaleViewset(
     AuditableMixin, viewsets.GenericViewSet,
-    mixins.ListModelMixin, mixins.RetrieveModelMixin
+    mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin
 ):
     permission_classes = (AllowAny,)
     http_method_names = ['get', 'post']
@@ -27,10 +28,14 @@ class RecordOfSaleViewset(
         user = self.request.user
 
         if user.organization.is_government:
-            qs = RecordOfSale.objects.exclude(validation_status__in=(RecordOfSaleStatuses.DRAFT,
-                                                                     RecordOfSaleStatuses.NEW))
+            qs = RecordOfSale.objects.exclude(validation_status__in=(
+                RecordOfSaleStatuses.DRAFT,
+                RecordOfSaleStatuses.NEW
+            ))
         else:
-            qs = RecordOfSale.objects.filter(submission__organization=user.organization)
+            qs = RecordOfSale.objects.filter(
+                submission__organization=user.organization
+            )
 
         return qs
 
@@ -64,8 +69,13 @@ class RecordOfSaleViewset(
         user = request.user
         data = request.FILES['files'].read()
         result = ingest_sales_spreadsheet(data, requesting_user=user)
-        jsondata = json.dumps(result,
-                              sort_keys=True,
-                              indent=1,
-                              cls=DjangoJSONEncoder)
-        return HttpResponse(status=201, content=jsondata, content_type='application/json')
+        jsondata = json.dumps(
+            result,
+            sort_keys=True,
+            indent=1,
+            cls=DjangoJSONEncoder
+        )
+
+        return HttpResponse(
+            status=201, content=jsondata, content_type='application/json'
+        )

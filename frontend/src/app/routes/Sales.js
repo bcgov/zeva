@@ -2,10 +2,12 @@ const API_BASE_PATH = '/sales';
 
 const SALES = {
   ADD: `${API_BASE_PATH}/add`,
+  APPROVAL: `${API_BASE_PATH}/:id/approval`,
+  APPROVAL_DETAILS: `${API_BASE_PATH}/:id/approval/:vehicle_id`,
   DETAILS: `${API_BASE_PATH}/:id`,
+  LIST: `${API_BASE_PATH}`,
   TEMPLATE: `${API_BASE_PATH}/template?year=:yearName`,
   UPLOAD: `${API_BASE_PATH}/upload`,
-  LIST: `${API_BASE_PATH}`,
 };
 
 export default SALES;
