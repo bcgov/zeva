@@ -38,6 +38,7 @@
 }
 
 /* variables for colours */
+$alert-danger: #721c24;
 $border-grey: #E0E0E0;
 $default-background-blue: #38598A;
 $default-background-grey: #F2F2F2;
@@ -122,6 +123,12 @@ p {
   label {
     margin-top: 1rem;
     margin-bottom: 1rem;
+  }
+}
+
+.alert-danger {
+  .alert-heading {
+    color: $alert-danger;
   }
 }
 

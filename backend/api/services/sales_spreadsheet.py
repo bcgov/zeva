@@ -1,9 +1,12 @@
 import base64
 import binascii
 import logging
+import magic
 import pickle
 from datetime import datetime
 from pickle import PickleError
+
+from django.core.exceptions import ValidationError
 
 import xlrd
 import xlwt
@@ -262,3 +265,18 @@ def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=Fals
         'validation_problems': validation_problems,
         'entries': entries,
     }
+
+
+def validate_spreadsheet(request):
+    files = request.FILES.getlist('files')
+
+    for file in files:
+        mime = magic.Magic(mime=True)
+        mimetype = mime.from_file(file.temporary_file_path())
+
+        if mimetype != "application/vnd.ms-excel":
+            raise ValidationError(
+                'File must be an excel spreadsheet'
+            )
+
+    return True

@@ -36,7 +36,7 @@ const CreditTransactions = (props) => {
               <td className="text-left">{each.transactionType.transactionType}</td>
               <td className="text-center"></td>
               <td className="text-center"></td>
-          <td className="balance-a">{each.creditClass === "A"? }</td>
+              <td className="balance-a"></td>
               <td className="balance-b"></td>
             </tr>
           ))}
