@@ -27,7 +27,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = (
-            'id', 'name', 'organization_address', 'create_timestamp'
+            'id', 'name', 'organization_address', 'create_timestamp',
+            'balance'
         )
 
 
@@ -47,5 +48,6 @@ class OrganizationWithMembersSerializer(OrganizationSerializer):
     class Meta:
         model = Organization
         fields = (
-            'id', 'name', 'organization_address', 'users', 'create_timestamp'
+            'id', 'name', 'organization_address', 'users', 'create_timestamp',
+            'balance'
         )

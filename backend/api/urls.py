@@ -1,5 +1,6 @@
 from rest_framework import routers
 
+from .viewsets.credit_transaction import CreditTransactionViewSet
 from .viewsets.organization import OrganizationViewSet
 from .viewsets.record_of_sale import RecordOfSaleViewset
 from .viewsets.role import RoleViewSet
@@ -14,5 +15,6 @@ router.register(r'vehicles', VehicleViewSet)
 router.register(r'roles', RoleViewSet, basename='role')
 router.register(r'sales', RecordOfSaleViewset, basename='sale')
 router.register(r'submissions', SalesSubmissionsViewset, basename='submission')
+router.register(r'credit-transactions', CreditTransactionViewSet, basename='credit')
 
 urlpatterns = router.urls

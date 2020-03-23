@@ -79,6 +79,20 @@ module.exports = settings => {
             namespace: phase.namespace,
           },
       );
+
+      let rabbitmqPVCs = oc.get("pvc", {
+        selector: `statefulset=${phase.instance}-rabbitmq-cluster`,
+        namespace: phase.namespace
+      });
+      rabbitmqPVCs.forEach(pvc => {
+        console.log(pvc.metadata.name);
+        oc.delete([`pvc/${pvc.metadata.name}`], {
+          "ignore-not-found": "true",
+          wait: "true",
+          namespace: phase.namespace,
+        });
+      })
+
     }
   });
 };

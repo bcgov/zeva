@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 import ROUTES_SALES from '../routes/Sales';
 import CustomPropTypes from '../utilities/props';
+import ROUTES_CREDITS from '../routes/Credits';
 
 const CreditTransactionTabs = (props) => {
   const { active, user } = props;
@@ -18,7 +19,7 @@ const CreditTransactionTabs = (props) => {
         className={`nav-item ${(active === 'credit-transactions') ? 'active' : ''}`}
         role="presentation"
       >
-        <Link to={ROUTES_SALES.LIST}>Credit Transactions</Link>
+        <Link to={ROUTES_CREDITS.LIST}>Credit Transactions</Link>
       </li>
       <li
         className={`nav-item ${(active === 'credit-requests') ? 'active' : ''}`}
