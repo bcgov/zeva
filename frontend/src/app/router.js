@@ -10,7 +10,10 @@ import UserDetailsContainer from '../organizations/UserDetailsContainer';
 import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
 import RoleListContainer from '../roles/RoleListContainer';
 import SalesDetailsContainer from '../sales/SalesDetailsContainer';
+import CreditsContainer from '../credits/CreditsContainer';
 import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
+import SalesSubmissionApprovalContainer from '../sales/SalesSubmissionApprovalContainer';
+import SalesSubmissionApprovalDetailsContainer from '../sales/SalesSubmissionApprovalDetailsContainer';
 import SalesListContainer from '../sales/SalesListContainer';
 import VehicleAddContainer from '../vehicles/VehicleAddContainer';
 import VehicleDetailsContainer from '../vehicles/VehicleDetailsContainer';
@@ -28,6 +31,7 @@ import ROUTES_ROLES from './routes/Roles';
 import ROUTES_SALES from './routes/Sales';
 import ROUTES_USERS from './routes/Users';
 import ROUTES_VEHICLES from './routes/Vehicles';
+import ROUTES_CREDITS from './routes/Credits';
 
 class Router extends Component {
   constructor(props) {
@@ -127,6 +131,16 @@ class Router extends Component {
               />
               <Route
                 exact
+                path={ROUTES_SALES.APPROVAL_DETAILS}
+                render={() => <SalesSubmissionApprovalDetailsContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_SALES.APPROVAL}
+                render={() => <SalesSubmissionApprovalContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
                 path={ROUTES_SALES.DETAILS}
                 render={() => <SalesDetailsContainer keycloak={keycloak} user={user} />}
               />
@@ -159,6 +173,11 @@ class Router extends Component {
               <Route
                 path={ROUTES_USERS.DETAILS}
                 render={() => <UserDetailsContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_CREDITS.LIST}
+                render={() => <CreditsContainer keycloak={keycloak} user={user} activeTab="transactions" />}
               />
               <Route
                 exact

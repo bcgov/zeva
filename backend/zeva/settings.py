@@ -113,6 +113,10 @@ AMQP_CONNECTION_PARAMETERS = ConnectionParameters(
     credentials=PlainCredentials(AMQP['USER'], AMQP['PASSWORD'])
 )
 
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler'
+]
+
 # CORS Settings
 
 # If True, the whitelist below is ignored and all origins will be accepted
@@ -152,20 +156,7 @@ if TESTING:
                 'formatter': 'custom'
             },
         },
-        'loggers': {
-            'django': {
-                'level': 'DEBUG',
-                'handlers': ['console'],
-            },
-            'celery': {
-                'level': 'DEBUG',
-                'handlers': ['console'],
-            },
-            'zeva': {
-                'level': 'DEBUG',
-                'handlers': ['console'],
-            },
-        }
+        'loggers': {}
     }
 if RUNSERVER:
     LOGGING = {
@@ -222,26 +213,5 @@ if DEBUG:
                 'formatter': 'custom'
             },
         },
-        'loggers': {
-            'django': {
-                'level': 'DEBUG',
-                'handlers': ['console'],
-            },
-            'django.utils.autoreload': {
-                'level': 'INFO',
-                'handlers': ['console'],
-            },
-            'celery': {
-                'level': 'DEBUG',
-                'handlers': ['console'],
-            },
-            'celery.utils': {
-                'level': 'INFO',
-                'handlers': ['console'],
-            },
-            'zeva': {
-                'level': 'DEBUG',
-                'handlers': ['console'],
-            },
-        }
+        'loggers': {}
     }

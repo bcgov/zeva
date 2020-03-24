@@ -15,7 +15,7 @@ const devServerOptions = {
     verbose: true,
     index: '/generated_index.html',
   },
-  port: 5001,
+  port: 3000,
   compress: true,
   public: 'localhost',
   hot: true,
@@ -41,5 +41,5 @@ notifications.setup(io);
 websocketServer.listen(5002, '0.0.0.0');
 
 
-devServer.listen(5001, '0.0.0.0', () => {
+devServer.listen(3000, '0.0.0.0', () => {
 });

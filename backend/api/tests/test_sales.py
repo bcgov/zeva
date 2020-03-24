@@ -3,6 +3,7 @@ from django.utils.datetime_safe import datetime
 from .base_test_case import BaseTestCase
 from ..models.record_of_sale import RecordOfSale
 from ..models.record_of_sale_statuses import RecordOfSaleStatuses
+from ..models.sales_submission import SalesSubmission
 from ..models.vehicle import Vehicle
 from ..models.vin_statuses import VINStatuses
 
@@ -16,8 +17,12 @@ class TestSales(BaseTestCase):
 
         org1 = self.users['vs_user_1'].organization
 
-        ros = RecordOfSale(
+        sub = SalesSubmission.objects.create(
             organization=org1,
+        )
+
+        ros = RecordOfSale(
+            submission=sub,
             vin_validation_status=VINStatuses.UNCHECKED,
             vin='ABC123',
             validation_status=RecordOfSaleStatuses.DRAFT,

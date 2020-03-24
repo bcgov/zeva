@@ -38,7 +38,7 @@ const VehicleDetailsPage = (props) => {
         <div className="col-sm-12">
           <DetailField label="Make" value={details.make.name} />
           <DetailField label="Model" value={details.modelName} />
-          <DetailField label="Type" value={details.vehicleFuelType.description} />
+          <DetailField label="Type" value={details.vehicleZevType.description} />
           <DetailField label="Range" value={details.range} />
           <DetailField label="Model Year" value={details.modelYear.name} />
           <DetailField label="Status" value={details.validationStatus} />
@@ -96,7 +96,7 @@ VehicleDetailsPage.propTypes = {
       name: PropTypes.string,
     }),
     modelName: PropTypes.string,
-    vehicleFuelType: PropTypes.shape({
+    vehicleZevType: PropTypes.shape({
       description: PropTypes.string,
     }),
     range: PropTypes.oneOfType([

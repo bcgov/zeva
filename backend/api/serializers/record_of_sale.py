@@ -15,7 +15,12 @@ class RecordOfSaleSerializer(
     vin_validation_status = EnumField(VINStatuses, read_only=True)
     vehicle = VehicleMinSerializer(read_only=True)
 
+    credits = SerializerMethodField()
+
+    def get_credits(self, obj):
+        return 1.05
+
     class Meta:
         model = RecordOfSale
         fields = ('id', 'vin', 'reference_number', 'vehicle', 'sale_date',
-                  'validation_status', 'vin_validation_status')
+                  'validation_status', 'vin_validation_status', 'credits')

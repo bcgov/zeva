@@ -8,7 +8,7 @@ from api.models.vehicle import Vehicle
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.models.vehicle_change_history import VehicleChangeHistory
 from api.models.vehicle_class import VehicleClass
-from api.models.vehicle_fuel_type import FuelType
+from api.models.vehicle_zev_type import ZevType
 from api.models.vehicle_make import Make
 from api.serializers.user import UserSerializer
 from api.services.vehicle import change_status
@@ -30,11 +30,11 @@ class ModelYearSerializer(ModelSerializer):
         )
 
 
-class VehicleFuelTypeSerializer(ModelSerializer):
+class VehicleZevTypeSerializer(ModelSerializer):
     class Meta:
-        model = FuelType
+        model = ZevType
         fields = (
-            'vehicle_fuel_code', 'description'
+            'vehicle_zev_code', 'description'
         )
 
 
@@ -96,7 +96,7 @@ class VehicleSerializer(
     make = VehicleMakeSerializer()
     model_year = ModelYearSerializer()
     validation_status = EnumField(VehicleDefinitionStatuses, read_only=True)
-    vehicle_fuel_type = VehicleFuelTypeSerializer()
+    vehicle_zev_type = VehicleZevTypeSerializer()
     history = VehicleHistorySerializer(read_only=True, many=True)
     actions = SerializerMethodField()
     vehicle_class_code = VehicleClassSerializer()
@@ -124,7 +124,7 @@ class VehicleSerializer(
         fields = (
             'id', 'actions', 'history', 'make', 'model_name', 'model_year',
             'range', 'validation_status', 'vehicle_class_code',
-            'vehicle_fuel_type'
+            'vehicle_zev_type'
         )
         read_only_fields = ('validation_status',)
 
@@ -144,9 +144,9 @@ class VehicleSaveSerializer(
         slug_field='vehicle_class_code',
         queryset=VehicleClass.objects.all()
     )
-    vehicle_fuel_type = SlugRelatedField(
-        slug_field='vehicle_fuel_code',
-        queryset=FuelType.objects.all()
+    vehicle_zev_type = SlugRelatedField(
+        slug_field='vehicle_zev_code',
+        queryset=ZevType.objects.all()
     )
     validation_status = EnumField(
         VehicleDefinitionStatuses,
@@ -157,7 +157,7 @@ class VehicleSaveSerializer(
         model = Vehicle
         fields = (
             'id', 'make', 'model_name', 'model_year', 'range',
-            'validation_status', 'vehicle_class_code', 'vehicle_fuel_type'
+            'validation_status', 'vehicle_class_code', 'vehicle_zev_type'
         )
         read_only_fields = ('validation_status', 'id',)
 
@@ -177,9 +177,9 @@ class VehicleMinSerializer(
         slug_field='vehicle_class_code',
         queryset=VehicleClass.objects.all()
     )
-    vehicle_fuel_type = SlugRelatedField(
-        slug_field='vehicle_fuel_code',
-        queryset=FuelType.objects.all()
+    vehicle_zev_type = SlugRelatedField(
+        slug_field='vehicle_zev_code',
+        queryset=ZevType.objects.all()
     )
 
     class Meta:
@@ -187,5 +187,5 @@ class VehicleMinSerializer(
         fields = (
             'id', 'make', 'model_name', 'model_year',
             'range', 'vehicle_class_code',
-            'vehicle_fuel_type'
+            'vehicle_zev_type'
         )
