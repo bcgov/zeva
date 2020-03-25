@@ -22,6 +22,7 @@ module.exports = settings => {
 
   // The deployment of your cool app goes here ▼▼▼
 
+/**********************************
   // create configs
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/config/configmap.yaml`, {
     'param': {
@@ -43,7 +44,7 @@ module.exports = settings => {
       'PVC_SIZE': phases[phase].minioPvcSize
     }
   }))
-
+**********************************/
   //deploy database
   /**
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/postgresql/postgresql-dc.yaml`, {
@@ -79,6 +80,7 @@ module.exports = settings => {
     }
   }))
 
+/**********************************
   //deploy rabbitmq
   //'ISTAG': 'docker-registry.default.svc:5000/tbiwaq-dev/rabbitmq:3.8.3-management-dev',
   //      'MQ_USER': 'guest',
@@ -127,6 +129,7 @@ module.exports = settings => {
       'MEMORY_LIMIT': '2G'
     }
   }))
+*********************************************/
 
   oc.applyRecommendedLabels(
       objects,
