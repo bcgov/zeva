@@ -4,7 +4,7 @@ from django.db import models
 from enumfields import EnumField
 
 
-class IcbcData(Auditable):
+class IcbcRegistrationData(Auditable):
 
     vehicle = models.ForeignKey(
         'Vehicle',
@@ -21,6 +21,8 @@ class IcbcData(Auditable):
 
 
     class Meta:
-        db_table = "icbc_data"
+        db_table = "icbc_registration_data"
 
-    db_table_comment = 'Hold all relevant data from what is provided by ICBC'
+    db_table_comment = "Contains records of BC vehicle registrations, as "
+    "provided by ICBC. This data is typically provided/loaded quarterly and"
+    " is used to verify a supplier’s submission for ZEV sales credits."
