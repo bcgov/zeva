@@ -14,19 +14,19 @@ const phases = {
         ssoName:'sso-dev', phase: 'dev'  , changeId:changeId, suffix: `-dev-${changeId}`  , 
         instance: `${name}-dev-${changeId}`  , version:`${version}-${changeId}`, tag:`dev-${version}-${changeId}`, 
         host: `zeva-dev-${changeId}.pathfinder.gov.bc.ca`, minioPvcSize: '1Gi', rabbitmqPvcSize: '1Gi',
-        patroniCpuRequest: '250m', patroniCpuLimit: '300m', patroniMemoryRequest: '512Mi', patroniMemoryLimit: '1Gi'},
+        patroniCpuRequest: '250m', patroniCpuLimit: '300m', patroniMemoryRequest: '512Mi', patroniMemoryLimit: '1Gi', patroniReplica: 1},
 
   test: {namespace:'tbiwaq-test'     , name: `${name}`, ssoSuffix:'-test', 
         ssoName:'sso-test', phase: 'test'  ,  changeId:changeId, suffix: `-test`  , 
         instance: `${name}-test`  , version:`${version}`, tag:`test-${version}`, 
         host: 'zeva-test.pathfinder.gov.bc.ca', minioPvcSize: '5Gi', rabbitmqPvcSize: '5Gi',
-        patroniCpuRequest: '250m', patroniCpuLimit: '500m', patroniMemoryRequest: '1Gi', patroniMemoryLimit: '2Gi'},
+        patroniCpuRequest: '250m', patroniCpuLimit: '500m', patroniMemoryRequest: '1Gi', patroniMemoryLimit: '2Gi', patroniReplica: 3},
 
   prod: {namespace:'tbiwaq-prod'     , name: `${name}`, ssoSuffix:'', 
         ssoName:'sso', phase: 'prod'  , changeId:changeId, suffix: `-prod`  , 
         instance: `${name}-prod`  , version:`${version}`, tag:`prod-${version}`, 
         host: 'zeva-prod.pathfinder.gov.bc.ca', minioPvcSize: '10Gi', rabbitmqPvcSize: '5Gi',
-        patroniCpuRequest: '250m', patroniCpuLimit: '1000m', patroniMemoryRequest: '1Gi', patroniMemoryLimit: '2Gi'},
+        patroniCpuRequest: '250m', patroniCpuLimit: '1000m', patroniMemoryRequest: '1Gi', patroniMemoryLimit: '2Gi', patroniReplica: 3},
 
 };
 
