@@ -78,7 +78,8 @@ module.exports = settings => {
       'MEMORY_LIMIT': phases[phase].patroniMemoryRequest,
       'IMAGE_REGISTRY': 'docker-registry.default.svc:5000',
       'IMAGE_STREAM_NAMESPACE':  phases[phase].namespace,
-      'IMAGE_STREAM_TAG': 'patroni:v10-stable'
+      'IMAGE_STREAM_TAG': 'patroni:v10-stable',
+      'REPLICA': phases[phase].patroniReplica
     }
   }))
 
@@ -127,8 +128,7 @@ module.exports = settings => {
       'CPU_REQUEST': '100m',
       'CPU_LIMIT': '500m',
       'MEMORY_REQUEST': '1100M',
-      'MEMORY_LIMIT': '2G',
-      'REPLICA': phases[phase].patroniReplica
+      'MEMORY_LIMIT': '2G'
     }
   }))
 
