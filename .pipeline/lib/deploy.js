@@ -128,7 +128,7 @@ module.exports = settings => {
       'CPU_LIMIT': '500m',
       'MEMORY_REQUEST': '1100M',
       'MEMORY_LIMIT': '2G',
-      'replica': phases[phase].patroniReplica
+      'REPLICA': phases[phase].patroniReplica
     }
   }))
 
