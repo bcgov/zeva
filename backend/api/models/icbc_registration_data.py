@@ -12,8 +12,9 @@ class IcbcRegistrationData(Auditable):
         on_delete=models.CASCADE
     )
 
-    vin = models.CharField(blank=True,
-                           null=True,
+    vin = models.CharField(blank=False,
+                           null=False,
+                           unique=True,
                            max_length=20,
                            db_comment="A Vehicle Identification Number, a standard 17-character identifier "
                                       " used in the automative industry to identify origin, colour, style, serial"
