@@ -46,20 +46,23 @@ const SalesSubmissionApprovalPage = (props) => {
               </button>
             </span>
             <span className="right-content">
-              <button
-                className="button primary"
-                type="button"
-              >
-                Validate
-              </button>
-
-              <button
-                className="button primary"
-                onClick={handleSubmit}
-                type="button"
-              >
-                <FontAwesomeIcon icon="share-square" /> Approve
-              </button>
+              {submission.validationStatus === 'SUBMITTED' && [
+                <button
+                  className="button primary"
+                  key="btn-validate"
+                  type="button"
+                >
+                  Validate
+                </button>,
+                <button
+                  className="button primary"
+                  key="btn-approve"
+                  onClick={handleSubmit}
+                  type="button"
+                >
+                  <FontAwesomeIcon icon="share-square" /> Approve
+                </button>,
+              ]}
             </span>
           </div>
         </div>

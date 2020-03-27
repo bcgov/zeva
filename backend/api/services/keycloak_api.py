@@ -248,6 +248,7 @@ def get_user_id(token, username):
             'bad response code: {}'.format(response.status_code))
 
     all_users = response.json()
+    print(all_users)
 
     id = None
 

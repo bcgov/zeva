@@ -31,15 +31,17 @@ const SalesListPage = (props) => {
                 <FontAwesomeIcon icon="download" /> Download as Excel
               </button>
 
-              <button
-                className="button primary"
-                onClick={() => {
-                  history.push('/sales/add');
-                }}
-                type="button"
-              >
-                <FontAwesomeIcon icon="dollar-sign" /> Enter ZEV Sales
-              </button>
+              {!user.isGovernment && (
+                <button
+                  className="button primary"
+                  onClick={() => {
+                    history.push('/sales/add');
+                  }}
+                  type="button"
+                >
+                  <FontAwesomeIcon icon="dollar-sign" /> Enter ZEV Sales
+                </button>
+              )}
             </span>
           </div>
 
@@ -58,15 +60,17 @@ const SalesListPage = (props) => {
                 <FontAwesomeIcon icon="download" /> Download as Excel
               </button>
 
-              <button
-                className="button primary"
-                onClick={() => {
-                  history.push('/sales/add');
-                }}
-                type="button"
-              >
-                <FontAwesomeIcon icon="dollar-sign" /> Enter ZEV Sales
-              </button>
+              {!user.isGovernment && (
+                <button
+                  className="button primary"
+                  onClick={() => {
+                    history.push('/sales/add');
+                  }}
+                  type="button"
+                >
+                  <FontAwesomeIcon icon="dollar-sign" /> Enter ZEV Sales
+                </button>
+              )}
             </span>
           </div>
         </div>

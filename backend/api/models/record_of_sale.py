@@ -68,6 +68,7 @@ class RecordOfSale(Auditable):
 
     class Meta:
         db_table = "record_of_sale"
+        ordering = ['id']
 
     db_table_comment = 'Hold individual records of sale submitted by ZEV suppliers, including their VIN, ' \
                        'sales dates, and the workflow state information for this sale (VIN and record validation ' \

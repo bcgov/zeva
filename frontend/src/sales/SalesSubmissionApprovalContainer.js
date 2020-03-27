@@ -8,6 +8,8 @@ import { withRouter } from 'react-router';
 
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import Loading from '../app/components/Loading';
+import history from '../app/History';
+import ROUTE_SALES from '../app/routes/Sales';
 import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
 import CustomPropTypes from '../app/utilities/props';
 import SalesSubmissionApprovalPage from './components/SalesSubmissionApprovalPage';
@@ -34,7 +36,7 @@ const SalesSubmissionApprovalContainer = (props) => {
     axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id), {
       validationStatus: 'VALIDATED',
     }).then(() => {
-      refreshDetails();
+      history.push(ROUTE_SALES.LIST);
     });
   };
 
