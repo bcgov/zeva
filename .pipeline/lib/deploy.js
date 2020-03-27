@@ -132,6 +132,17 @@ module.exports = settings => {
     }
   }))
 
+  //deploy schemaspy
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/schemaspy/schemaspy-dc.yaml`, {
+    'param': {
+      'SUFFIX': phases[phase].suffix,
+      'CPU_REQUEST': phases[phase].schemaspyCpuRequest,
+      'CPU_LIMIT': phases[phase].schemaspyCpuLimit,
+      'MEMORY_REQUEST': phases[phase].schemaspyMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].schemaspyMemoryLimit
+    }
+  }))
+
   oc.applyRecommendedLabels(
       objects,
       phases[phase].name,
