@@ -105,8 +105,8 @@ objects:
                   path: "/"
                   port: 8080
                   scheme: HTTP
-                initialDelaySeconds: 300
-                timeoutSeconds: 5
+                initialDelaySeconds: 120
+                timeoutSeconds: 3
                 periodSeconds: 10
                 successThreshold: 1
                 failureThreshold: 10
@@ -115,8 +115,8 @@ objects:
                   path: "/"
                   port: 8080
                   scheme: HTTP
-                initialDelaySeconds: 250
-                timeoutSeconds: 5
+                initialDelaySeconds: 115
+                timeoutSeconds: 3
                 periodSeconds: 10
                 successThreshold: 1
                 failureThreshold: 10
