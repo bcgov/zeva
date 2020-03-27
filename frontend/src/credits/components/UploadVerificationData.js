@@ -1,0 +1,134 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+
+import CustomPropTypes from '../../app/utilities/props';
+import ExcelFileDrop from '../../sales/components/ExcelFileDrop';
+
+const UploadVerificationData = (props) => {
+  const {
+    errorMessage,
+    files,
+    setUploadFiles,
+    upload,
+    title,
+  } = props;
+  const [dateCurrentTo, setDateCurrentTo] = useState('today');
+
+  const getFileSize = (bytes) => {
+    if (bytes === 0) {
+      return '0 bytes';
+    }
+
+    const k = 1000;
+    const sizes = ['bytes', 'KB', 'MB', 'GB', 'TB'];
+    let i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    if (i > 4) { // nothing bigger than a terrabyte
+      i = 4;
+    }
+
+    const filesize = parseFloat((bytes / k ** i).toFixed(1));
+
+    return `${filesize} ${sizes[i]}`;
+  };
+
+  const removeFile = (removedFile) => {
+    const found = files.findIndex((file) => (file === removedFile));
+    files.splice(found, 1);
+
+    setUploadFiles([...files]);
+  };
+
+  return (
+    <div id="sales-edit" className="page">
+      <h2>{title}</h2>
+      <p>ICBC data current to: {dateCurrentTo}</p>
+      <div className="compact">
+        <div className="bordered">
+          <div className="content">
+            <div className="panel panel-default">
+              <ExcelFileDrop setFiles={setUploadFiles} />
+              <div className="files">
+                <div className="row">
+                  <div className="col-5 header"><label htmlFor="filename">Filename</label></div>
+                  <div className="col-3 size header"><label htmlFor="filesize">Size</label></div>
+                  <div className="col-2 size header"><label htmlFor="securityscan">Security<br />Scan</label></div>
+                  <div className="col-2 actions header" />
+                </div>
+                {files.map((file) => (
+                  <div className="row" key={file.name}>
+                    <div className="col-5">{file.name}</div>
+                    <div className="col-3 size">{getFileSize(file.size)}</div>
+                    <div className="col-2 size">
+                      <div className="check" type="button">
+                        <FontAwesomeIcon icon="check" />
+                      </div>
+                    </div>
+                    <div className="col-2 actions">
+                      <button
+                        className="delete"
+                        onClick={() => {
+                          removeFile(file);
+                        }}
+                        type="button"
+                      >
+                        <FontAwesomeIcon icon="trash" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                <div>
+                  <div className="row">
+                    <label id="date-label" htmlFor="current-to">Date current to:</label><br />
+                  </div>
+                  <div>
+                    <input
+                      type="date"
+                      id="date-current-to"
+                      name="date-current-to"
+                    />
+                    <FontAwesomeIcon icon="calendar-alt" className="calendar-icon" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="action-bar">
+                <span className="left-content" />
+
+                <span className="right-content">
+                  <button
+                    disabled={files.length === 0}
+                    className="button primary"
+                    onClick={() => upload()}
+                    type="button"
+                  >
+                    <FontAwesomeIcon icon="upload" /> Upload
+                  </button>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="clearfix" />
+    </div>
+  );
+};
+
+// UploadVerificationData.defaultProps = {
+//   errorMessage: null,
+// };
+
+// UploadVerificationData.propTypes = {
+//   errorMessage: PropTypes.string,
+//   files: PropTypes.arrayOf(PropTypes.shape).isRequired,
+//   setUploadFiles: PropTypes.func.isRequired,
+//   title: PropTypes.string.isRequired,
+//   upload: PropTypes.func.isRequired,
+//   user: CustomPropTypes.user.isRequired,
+// };
+
+export default UploadVerificationData;

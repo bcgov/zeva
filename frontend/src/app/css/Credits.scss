@@ -29,3 +29,34 @@ h2 {
         padding-left:10px;
     }
   }
+
+  label {
+      margin-top: 2vh;
+      font-weight: bold;
+      color:$default-text-blue;
+      text-align: center;
+  }
+
+  #date-label {
+      padding-left: 15px;
+  }  
+  
+  div.check {
+      color:green;
+      text-align: center;
+  }
+ 
+
+  input[type="date"] {
+    position: relative;
+    padding: 10px;
+    margin-top: 10px;
+    border: 2px solid #616161;
+    border-radius: 5px;
+  }
+
+  .calendar-icon {
+      font-size:large;
+      margin-left: 10px;
+      margin-bottom:auto;
+  }
