@@ -56,11 +56,33 @@ class Vehicle(Auditable):
         null=True
     )
 
-    credit_value = models.DecimalField(null=True,
-                                       decimal_places=2,
-                                       max_digits=20,
-                                       db_comment='The number of credits (of credit_class) '
-                                                  'a sale of this vehicle can generate')
+    credit_value = models.DecimalField(
+        null=True,
+        decimal_places=2,
+        max_digits=20,
+        db_comment="The number of credits (of credit_class) a sale of this "
+                   "vehicle can generate"
+    )
+
+    def get_credit_value(self):
+        """
+        Gets the credit value of the vehicle
+        """
+        if (self.vehicle_zev_type.vehicle_zev_code == 'BEV' and
+                self.range < 80.47) or self.range < 16:
+            return 0
+
+        variable = 0.3
+
+        if self.vehicle_zev_type.vehicle_zev_code == 'BEV':
+            variable = 0.5
+
+        credit = (self.range * 0.006214) + variable
+
+        if credit > 4:
+            credit = 4
+
+        return credit
 
     class Meta:
         db_table = 'vehicle'
