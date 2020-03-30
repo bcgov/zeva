@@ -46,28 +46,6 @@ module.exports = settings => {
         }
       });
 
-      //get all statefulsets
-      let statefulsets = oc.get("statefulset", {
-        selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
-        namespace: phase.namespace,
-      });
-      //remove all the PVCs associated with each statefulset
-      console.log("========statefulsets ${statefulsets}")
-      statefulsets.forEach(statefulset => {
-        let statefulsetPVCs = oc.get("pvc", {
-          selector: `statefulset=${statefulset.metadata.name}`,
-          namespace: phase.namespace,
-        });
-        statefulsetPVCs.forEach(statefulsetPVC => {
-          console.log(statefulsetPVC.metadata.name);
-          oc.delete([`pvc/${statefulsetPVC.metadata.name}`], {
-            "ignore-not-found": "true",
-            wait: "true",
-            namespace: phase.namespace,
-          });
-        })
-      });
-
       let deploymentConfigs = oc.get("dc", {
         selector: `app=${phase.instance},env-id=${phase.changeId},env-name=${k},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
         namespace: phase.namespace,
@@ -101,6 +79,28 @@ module.exports = settings => {
             namespace: phase.namespace,
           },
       );
+
+      //get all statefulsets
+      let statefulsets = oc.get("statefulset", {
+        selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
+        namespace: phase.namespace,
+      });
+      //remove all the PVCs associated with each statefulset
+      console.log("========statefulsets ${statefulsets}")
+      statefulsets.forEach(statefulset => {
+        let statefulsetPVCs = oc.get("pvc", {
+          selector: `statefulset=${statefulset.metadata.name}`,
+          namespace: phase.namespace,
+        });
+        statefulsetPVCs.forEach(statefulsetPVC => {
+          console.log(statefulsetPVC.metadata.name);
+          oc.delete([`pvc/${statefulsetPVC.metadata.name}`], {
+            "ignore-not-found": "true",
+            wait: "true",
+            namespace: phase.namespace,
+          });
+        })
+      });
       
       /****
       let rabbitmqPVCs = oc.get("pvc", {
