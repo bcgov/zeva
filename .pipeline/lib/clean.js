@@ -65,6 +65,12 @@ module.exports = settings => {
         });
       });
 
+      //get all statefulsets before thay are deleted
+      const statefulsets = oc.get("statefulset", {
+        selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
+        namespace: phase.namespace,
+      });      
+
       oc.raw("delete", ["all"], {
         selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
         wait: "true",
@@ -80,13 +86,7 @@ module.exports = settings => {
           },
       );
 
-      //get all statefulsets
-      let statefulsets = oc.get("statefulset", {
-        selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
-        namespace: phase.namespace,
-      });
-      //remove all the PVCs associated with each statefulset
-      console.log("========statefulsets ${statefulsets}")
+      //after statefulsets get deleted by the above delete all, remove all the PVCs associated with each statefulset
       statefulsets.forEach(statefulset => {
         let statefulsetPVCs = oc.get("pvc", {
           selector: `statefulset=${statefulset.metadata.name}`,
@@ -102,21 +102,6 @@ module.exports = settings => {
         })
       });
       
-      /****
-      let rabbitmqPVCs = oc.get("pvc", {
-        selector: `statefulset=${phase.instance}-rabbitmq-cluster`,
-        namespace: phase.namespace
-      });
-      rabbitmqPVCs.forEach(pvc => {
-        console.log(pvc.metadata.name);
-        oc.delete([`pvc/${pvc.metadata.name}`], {
-          "ignore-not-found": "true",
-          wait: "true",
-          namespace: phase.namespace,
-        });
-      })
-      ****/
-
     }
   });
 };
