@@ -44,3 +44,4 @@ oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-test --dr
 oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-prod --dry-run=true
 oc process -f ./patroni/deployment-prereq.yaml | oc apply -f - -n tbiwaq-dev --dry-run=true
 
+
