@@ -32,7 +32,7 @@ module.exports = settings => {
         kc.removeUris();
       }
 
-      let statefulsetsbuildConfigs = oc.get("bc", {
+      let buildConfigs = oc.get("bc", {
         selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
         namespace: phase.namespace,
       });
