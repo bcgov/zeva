@@ -3,7 +3,6 @@ import ReactTable from 'react-table';
 
 const CreditTransactions = (props) => {
   const { title, items } = props;
-  console.log(items);
 
   return (
     <div id="credit-transaction-details" className="page">

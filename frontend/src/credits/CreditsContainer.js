@@ -16,11 +16,20 @@ const CreditsContainer = (props) => {
 
   const refreshList = (showLoading) => {
     setLoading(showLoading);
+<<<<<<< HEAD
 
     axios.get(ROUTES_CREDITS.LIST).then((response) => {
       setCreditTransactions(response.data);
       setLoading(false);
     });
+=======
+    if (activeTab === 'transactions') {
+      axios.get(ROUTES_CREDITS.LIST).then((response) => {
+        setCreditTransactions(response.data);
+        setLoading(false);
+      });
+    }
+>>>>>>> upstream/release-sprint-8
   };
   useEffect(() => {
     refreshList(true);

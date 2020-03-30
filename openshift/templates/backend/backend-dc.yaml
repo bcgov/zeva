@@ -178,13 +178,13 @@ objects:
                 - name: DATABASE_USER
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-postgresql${SUFFIX}
-                      key: DATABASE_USER
+                      name: patroni${SUFFIX}
+                      key: app-db-username
                 - name: DATABASE_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-postgresql${SUFFIX}
-                      key: DATABASE_PASSWORD
+                      name: patroni${SUFFIX}
+                      key: app-db-password
                 - name: DATABASE_ENGINE
                   valueFrom:
                     configMapKeyRef:
