@@ -43,8 +43,3 @@ oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-dev --dry
 oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-test --dry-run=true
 oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-prod --dry-run=true
 oc process -f ./patroni/deployment-prereq.yaml | oc apply -f - -n tbiwaq-dev --dry-run=true
-
-## Patroni
-
-oc process -f build.yaml -p GIT_URI=https://github.com/bcgov/zeva.git -p GIT_REF=pipeline-7-1 -p SUFFIX=-001 -p VERSION=v10-latest \
- | oc apply -f - -n tbiwaq-tools --dry-run=true
