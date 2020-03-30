@@ -57,6 +57,7 @@ class SalesSubmissionSaveSerializer(
     validation_status = EnumField(SalesSubmissionStatuses)
 
     def update(self, instance, validated_data):
+        request = self.context.get('request')
         records = validated_data.get('records')
 
         if records:
@@ -66,6 +67,10 @@ class SalesSubmissionSaveSerializer(
                     'validation_status'
                 )
                 record_of_sale.save()
+
+        instance.validation_status = validated_data.get('validation_status')
+        instance.update_user = request.user
+        instance.save()
 
         return instance
 
