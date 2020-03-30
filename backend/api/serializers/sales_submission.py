@@ -68,9 +68,12 @@ class SalesSubmissionSaveSerializer(
                 )
                 record_of_sale.save()
 
-        instance.validation_status = validated_data.get('validation_status')
-        instance.update_user = request.user
-        instance.save()
+        validation_status = validated_data.get('validation_status')
+
+        if validation_status:
+            instance.validation_status = validation_status
+            instance.update_user = request.user
+            instance.save()
 
         return instance
 
