@@ -45,6 +45,7 @@ module.exports = settings => {
   }))
 
   //deploy database
+  /**
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/postgresql/postgresql-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
@@ -55,6 +56,30 @@ module.exports = settings => {
       'CPU_LIMIT': '500m',
       'MEMORY_REQUEST': '200M',
       'MEMORY_LIMIT': '500M'
+    }
+  }))
+  **/
+
+  //deploy Patroni required secrets
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment-prereq.yaml`, {
+    'param': {
+      'NAME': 'patroni',
+      'SUFFIX': phases[phase].suffix
+    }
+  }))
+  //deploy Patroni
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment.yaml`, {
+    'param': {
+      'NAME': 'patroni',
+      'SUFFIX': phases[phase].suffix,
+      'CPU_REQUEST': phases[phase].patroniCpuRequest,
+      'CPU_LIMIT': phases[phase].patroniCpuLimit,
+      'MEMORY_REQUEST': phases[phase].patroniMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].patroniMemoryRequest,
+      'IMAGE_REGISTRY': 'docker-registry.default.svc:5000',
+      'IMAGE_STREAM_NAMESPACE':  phases[phase].namespace,
+      'IMAGE_STREAM_TAG': 'patroni:v10-stable',
+      'REPLICA': phases[phase].patroniReplica
     }
   }))
 
@@ -104,6 +129,17 @@ module.exports = settings => {
       'CPU_LIMIT': '500m',
       'MEMORY_REQUEST': '1100M',
       'MEMORY_LIMIT': '2G'
+    }
+  }))
+
+  //deploy schemaspy
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/schemaspy/schemaspy-dc.yaml`, {
+    'param': {
+      'SUFFIX': phases[phase].suffix,
+      'CPU_REQUEST': phases[phase].schemaspyCpuRequest,
+      'CPU_LIMIT': phases[phase].schemaspyCpuLimit,
+      'MEMORY_REQUEST': phases[phase].schemaspyMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].schemaspyMemoryLimit
     }
   }))
 

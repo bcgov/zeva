@@ -97,7 +97,7 @@ objects:
     name: ${NAME}${SUFFIX}
   spec:
     podManagementPolicy: OrderedReady
-    replicas: 3
+    replicas: ${REPLICA}
     revisionHistoryLimit: 10
     selector:
       matchLabels:
@@ -197,6 +197,14 @@ objects:
             value: 0.0.0.0:5432
           - name: PATRONI_RESTAPI_LISTEN
             value: 0.0.0.0:8008
+          - name: PATRONI_LOG_LEVEL
+            value: DEBUG
+          - name: PATRONI_LOG_DIR
+            value: /tmp
+          - name: PATRONI_LOG_FILE_SIZE
+            value: '50000000'
+          - name: PATRONI_LOG_FILE_NUM
+            value: '4'
           image: ${IMAGE_REGISTRY}/${IMAGE_STREAM_NAMESPACE}/${IMAGE_STREAM_TAG}
           # Because we are using image reference to a tag, we need to always pull the image otherwise
           #   we end up with outdated/out-of-sync image depending on the node where it is running
@@ -343,7 +351,7 @@ parameters:
 - description: Maximum amount of CPU the container can use.
   displayName: CPU Limit
   name: CPU_LIMIT
-  value: '1'
+  value: '1000m'
 - description: Starting amount of memory the container can use.
   displayName: Memory Request
   name: MEMORY_REQUEST
@@ -365,7 +373,10 @@ parameters:
   name: PVC_SIZE
   value: 1Gi
 - name: STORAGE_CLASS
-  value: gluster-block
+  value: netapp-file-standard
 - name: IMAGE_REGISTRY
   #docker-registry.default.svc:5000
   value: docker-registry.default.svc:5000
+- name: REPLICA
+  #docker-registry.default.svc:5000
+  value: '1'
