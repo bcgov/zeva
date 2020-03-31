@@ -106,8 +106,7 @@ module.exports = settings => {
           selector: `app.kubernetes.io/name=patroni,cluster-name=${statefulset.metadata.name}`,
           namespace: phase.namespace,
         });
-        if(patroniConfigmaps) {
-          console.log("======= delete patroniConfigmaps ${statefulset.metadata.name}")
+        if(Object.entries(patroniConfigmaps).length > 0) {
           oc.raw(
             "delete",
             ["configmap"],
