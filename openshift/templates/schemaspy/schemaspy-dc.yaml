@@ -29,6 +29,10 @@ parameters:
     description: Memory upper limit
     required: true
     value: '1500M'    
+  - name: HEALTH_CHECK_DELAY
+    displayName: 
+    description: readyness and liveness initial delay seconds
+    required: true     
 objects:
   - kind: DeploymentConfig
     apiVersion: apps.openshift.io/v1
@@ -105,7 +109,7 @@ objects:
                   path: "/"
                   port: 8080
                   scheme: HTTP
-                initialDelaySeconds: 120
+                initialDelaySeconds: ${HEALTH_CHECK_DELAY}
                 timeoutSeconds: 3
                 periodSeconds: 10
                 successThreshold: 1
@@ -115,7 +119,7 @@ objects:
                   path: "/"
                   port: 8080
                   scheme: HTTP
-                initialDelaySeconds: 115
+                initialDelaySeconds: ${HEALTH_CHECK_DELAY}
                 timeoutSeconds: 3
                 periodSeconds: 10
                 successThreshold: 1

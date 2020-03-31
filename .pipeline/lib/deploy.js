@@ -129,7 +129,8 @@ module.exports = settings => {
       'CPU_REQUEST': phases[phase].backendCpuRequest,
       'CPU_LIMIT': phases[phase].backendCpuLimit,
       'MEMORY_REQUEST': phases[phase].backendMemoryRequest,
-      'MEMORY_LIMIT': phases[phase].backendMemoryLimit
+      'MEMORY_LIMIT': phases[phase].backendMemoryLimit,
+      'HEALTH_CHECK_DELAY': phases[phase].backendHealthCheckDelay,
     }
   }))
 
@@ -140,7 +141,8 @@ module.exports = settings => {
       'CPU_REQUEST': phases[phase].schemaspyCpuRequest,
       'CPU_LIMIT': phases[phase].schemaspyCpuLimit,
       'MEMORY_REQUEST': phases[phase].schemaspyMemoryRequest,
-      'MEMORY_LIMIT': phases[phase].schemaspyMemoryLimit
+      'MEMORY_LIMIT': phases[phase].schemaspyMemoryLimit,
+      'HEALTH_CHECK_DELAY': phases[phase].schemaspyHealthCheckDelay
     }
   }))
 

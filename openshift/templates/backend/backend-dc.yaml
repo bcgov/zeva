@@ -37,6 +37,10 @@ parameters:
     displayName: Memory upper limit
     description: Memory upper limit
     required: true
+  - name: HEALTH_CHECK_DELAY
+    displayName:
+    description: readyness and liveness initial delay seconds
+    required: true    
 objects:
   - apiVersion: v1
     kind: Secret
@@ -328,7 +332,7 @@ objects:
                   path: /health
                   port: 8080
                   scheme: HTTP
-                initialDelaySeconds: 30
+                initialDelaySeconds: ${HEALTH_CHECK_DELAY}
                 periodSeconds: 10
                 successThreshold: 1
                 timeoutSeconds: 3
@@ -341,7 +345,7 @@ objects:
                   path: /health
                   port: 8080
                   scheme: HTTP
-                initialDelaySeconds: 30
+                initialDelaySeconds: ${HEALTH_CHECK_DELAY}
                 periodSeconds: 10
                 successThreshold: 1
                 timeoutSeconds: 3
