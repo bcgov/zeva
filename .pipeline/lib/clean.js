@@ -102,16 +102,23 @@ module.exports = settings => {
           });
         })
         //delete configmaps create by patroni
-        oc.raw(
-          "delete",
-          ["configmap"],
-          {
-            selector: `app.kubernetes.io/name=patroni,cluster-name=${statefulset.metadata.name}`,
-            wait: "true",
-            "ignore-not-found": "true",
-            namespace: phase.namespace,
-          },
-        );        
+        let patroniConfigmaps = oc.get("configmap", {
+          selector: `app.kubernetes.io/name=patroni,cluster-name=${statefulset.metadata.name}`,
+          namespace: phase.namespace,
+        });
+        if(patroniConfigmaps) {
+          console.log("======= delete patroniConfigmaps ${statefulset.metadata.name}")
+          oc.raw(
+            "delete",
+            ["configmap"],
+            {
+              selector: `app.kubernetes.io/name=patroni,cluster-name=${statefulset.metadata.name}`,
+              wait: "true",
+              "ignore-not-found": "true",
+              namespace: phase.namespace,
+            },
+          );        
+        }
       });
 
     }
