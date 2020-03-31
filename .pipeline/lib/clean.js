@@ -24,6 +24,7 @@ module.exports = settings => {
 
   target_phases.forEach(k => {
     if (phases.hasOwnProperty(k)) {
+
       const phase = phases[k];
       oc.namespace(phase.namespace);
 
@@ -65,11 +66,11 @@ module.exports = settings => {
         });
       });
 
-      //get all statefulsets before thay are deleted
+      //get all statefulsets before they are deleted
       const statefulsets = oc.get("statefulset", {
         selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
         namespace: phase.namespace,
-      });      
+      });   
 
       oc.raw("delete", ["all"], {
         selector: `app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`,
@@ -86,22 +87,33 @@ module.exports = settings => {
           },
       );
 
-      //after statefulsets get deleted by the above delete all, remove all the PVCs associated with each statefulset
+      //remove all the PVCs associated with each statefulset, after they get deleted by above delete all operation
       statefulsets.forEach(statefulset => {
+        //delete PVCs mounted in statfulset
         let statefulsetPVCs = oc.get("pvc", {
           selector: `statefulset=${statefulset.metadata.name}`,
           namespace: phase.namespace,
         });
         statefulsetPVCs.forEach(statefulsetPVC => {
-          console.log(statefulsetPVC.metadata.name);
           oc.delete([`pvc/${statefulsetPVC.metadata.name}`], {
             "ignore-not-found": "true",
             wait: "true",
             namespace: phase.namespace,
           });
         })
+        //delete configmaps create by patroni
+        oc.raw(
+          "delete",
+          ["configmap"],
+          {
+            selector: `app.kubernetes.io/name=patroni,cluster-name=${statefulset.metadata.name}`,
+            wait: "true",
+            "ignore-not-found": "true",
+            namespace: phase.namespace,
+          },
+        );        
       });
-      
+
     }
   });
 };
