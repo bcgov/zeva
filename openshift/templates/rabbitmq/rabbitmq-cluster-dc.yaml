@@ -51,6 +51,8 @@ parameters:
   description: Memory upper limit
   required: true
   value: '2Gi'
+- name: REPLICA
+  value: '1'  
 objects:
 
 # This service account is needed for rabbit_peer_discovery_k8s plugin to be able to discover
@@ -144,7 +146,7 @@ objects:
     name: ${NAME}${SUFFIX}-${CLUSTER_NAME}
   spec:
     serviceName: ${NAME}${SUFFIX}-${CLUSTER_NAME}
-    replicas: 2
+    replicas: ${REPLICA}
     selector:
       matchLabels:
         app: ${NAME}${SUFFIX}-${CLUSTER_NAME}

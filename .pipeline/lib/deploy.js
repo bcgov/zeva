@@ -96,10 +96,11 @@ module.exports = settings => {
       'ISTAG': 'rabbitmq:3.8.3-management',
       'SERVICE_ACCOUNT': 'rabbitmq-discovery',
       'VOLUME_SIZE': phases[phase].rabbitmqPvcSize,
-      'CPU_REQUEST': '200m',
-      'CPU_LIMIT': '1000m',
-      'MEMORY_REQUEST': '256Mi',
-      'MEMORY_LIMIT': '2Gi'
+      'CPU_REQUEST': phases[phase].rabbitmqCpuRequest,
+      'CPU_LIMIT': phases[phase].rabbitmqCpuLimit,
+      'MEMORY_REQUEST': phases[phase].rabbitmqMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].rabbitmqMemoryLimit,
+      'REPLICA': phases[phase].rabbitmqReplica
     }
   }))
 
@@ -111,10 +112,10 @@ module.exports = settings => {
       'VERSION': phases[phase].tag,
       'ENV_NAME': phases[phase].phase,
       'DASH_ENV_NAME': phases[phase].ssoSuffix,
-      'CPU_REQUEST': '100m',
-      'CPU_LIMIT': '500m',
-      'MEMORY_REQUEST': '1100M',
-      'MEMORY_LIMIT': '2G'
+      'CPU_REQUEST': phases[phase].frontendCpuRequest,
+      'CPU_LIMIT': phases[phase].frontendCpuLimit,
+      'MEMORY_REQUEST': phases[phase].frontendMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].frontendMemoryLimit
     }
   }))
 
@@ -125,10 +126,10 @@ module.exports = settings => {
       'SUFFIX': phases[phase].suffix,
       'VERSION': phases[phase].tag,
       'ENV_NAME': phases[phase].phase,
-      'CPU_REQUEST': '100m',
-      'CPU_LIMIT': '500m',
-      'MEMORY_REQUEST': '1100M',
-      'MEMORY_LIMIT': '2G'
+      'CPU_REQUEST': phases[phase].backendCpuRequest,
+      'CPU_LIMIT': phases[phase].backendCpuLimit,
+      'MEMORY_REQUEST': phases[phase].backendMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].backendMemoryLimit
     }
   }))
 
