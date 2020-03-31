@@ -40,7 +40,11 @@ module.exports = settings => {
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
       'ENV_NAME': phases[phase].phase,
-      'PVC_SIZE': phases[phase].minioPvcSize
+      'PVC_SIZE': phases[phase].minioPvcSize,
+      'CPU_REQUEST': phases[phase].minioCpuRequest,
+      'CPU_LIMIT': phases[phase].minioCpuLimit,
+      'MEMORY_REQUEST': phases[phase].minioMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].minioMemoryRequest,      
     }
   }))
 
