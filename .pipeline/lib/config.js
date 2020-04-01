@@ -19,7 +19,7 @@ const phases = {
         minioCpuRequest: '20m', minioCpuLimit: '50m', minioMemoryRequest: '500M', minioMemoryLimit: '700M',
         schemaspyCpuRequest: '20m', schemaspyCpuLimit: '150m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 150,
         rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '400m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '700M', rabbitmqPvcSize: '1G', rabbitmqReplica: 2, rabbitmqPostStartSleep: 120,
-        patroniCpuRequest: '100m', patroniCpuLimit: '200m', patroniMemoryRequest: '150M', patroniMemoryLimit: '200M', patroniPvcSize: '1G', patroniReplica: 2},
+        patroniCpuRequest: '200m', patroniCpuLimit: '400m', patroniMemoryRequest: '200M', patroniMemoryLimit: '400M', patroniPvcSize: '1G', patroniReplica: 2},
 
   test: {namespace:'tbiwaq-test'     , name: `${name}`, ssoSuffix:'-test', 
         ssoName:'sso-test', phase: 'test'  ,  changeId:changeId, suffix: `-test`  , 
