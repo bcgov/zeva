@@ -371,7 +371,7 @@ objects:
               - backend
             from:
               kind: ImageStreamTag
-              name: ${NAME}-backend:${VERSION}
+              name: '${NAME}-backend:${VERSION}'
             lastTriggeredImage: null
           type: ImageChange
         - type: ConfigChange
