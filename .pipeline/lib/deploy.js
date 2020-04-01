@@ -71,17 +71,15 @@ module.exports = settings => {
     }
   }))
 
-  //deploy rabbitmq
-  //'ISTAG': 'docker-registry.default.svc:5000/tbiwaq-dev/rabbitmq:3.8.3-management-dev',
-  //      'MQ_USER': 'guest',
-  //'MQ_PASSWORD': '',
+  //deploy rabbitmq, use docker image directly
+  //TODO: tage docker image to local
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
       'NAMESPACE': phases[phase].namespace,
       'CLUSTER_NAME': 'rabbitmq-cluster',
-      'ISTAG': 'tbiwaq-tools/rabbitmq:3.8.3-management',
+      'ISTAG': 'rabbitmq:3.8.3-management',
       'SERVICE_ACCOUNT': 'rabbitmq-discovery',
       'VOLUME_SIZE': phases[phase].rabbitmqPvcSize,
       'CPU_REQUEST': phases[phase].rabbitmqCpuRequest,
@@ -89,10 +87,7 @@ module.exports = settings => {
       'MEMORY_REQUEST': phases[phase].rabbitmqMemoryRequest,
       'MEMORY_LIMIT': phases[phase].rabbitmqMemoryLimit,
       'REPLICA': phases[phase].rabbitmqReplica,
-      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep,
-      'IMAGE_REGISTRY': 'docker-registry.default.svc:5000',
-      'IMAGE_STREAM_NAMESPACE': 'tbiwaq-tools',
-      'IMAGE_STREAM_TAG': '	3.8.3-management',      
+      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep 
     }
   }))
 
