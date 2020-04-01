@@ -89,6 +89,14 @@ module.exports = settings => {
 
       //remove all the PVCs associated with each statefulset, after they get deleted by above delete all operation
       statefulsets.forEach(statefulset => {
+        //delete PVCs mounted for statfulset
+        oc.raw("delete", ["pvc"], {
+          selector: `statefulset=${statefulset.metadata.name}`,
+          "ignore-not-found": "true",
+          wait: "true",
+          namespace: phase.namespace,
+        });
+        /***
         //delete PVCs mounted in statfulset
         let statefulsetPVCs = oc.get("pvc", {
           selector: `statefulset=${statefulset.metadata.name}`,
@@ -101,6 +109,7 @@ module.exports = settings => {
             namespace: phase.namespace,
           });
         })
+        ****/
         //delete configmaps create by patroni
         let patroniConfigmaps = oc.get("configmap", {
           selector: `app.kubernetes.io/name=patroni,cluster-name=${statefulset.metadata.name}`,
