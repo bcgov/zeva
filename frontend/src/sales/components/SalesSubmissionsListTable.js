@@ -23,12 +23,12 @@ const SalesSubmissionListTable = (props) => {
     id: 'user',
   }, {
     Header: 'A-Credits',
-    accessor: () => '-',
+    accessor: 'totalACredits',
     className: 'text-right',
     id: 'credits-a',
   }, {
     Header: 'B-Credits',
-    accessor: () => '-',
+    accessor: 'totalBCredits',
     className: 'text-right',
     id: 'credits-b',
   }, {

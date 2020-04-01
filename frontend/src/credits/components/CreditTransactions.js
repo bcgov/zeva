@@ -1,8 +1,25 @@
+import PropTypes from 'prop-types';
 import React from 'react';
-import ReactTable from 'react-table';
 
 const CreditTransactions = (props) => {
   const { title, items } = props;
+  let totalA = 0;
+  let totalB = 0;
+
+  items.forEach((item) => {
+    const { debitFrom, creditClass } = item;
+    let { creditValue } = item;
+
+    if (debitFrom) {
+      creditValue *= -1; // if it's a debit we should be subtracting from the total
+    }
+
+    if (creditClass && creditClass.creditClass === 'A') {
+      totalA += parseFloat(creditValue);
+    } else if (creditClass && creditClass.creditClass === 'B') {
+      totalB += parseFloat(creditValue);
+    }
+  });
 
   return (
     <div id="credit-transaction-details" className="page">
@@ -15,15 +32,11 @@ const CreditTransactions = (props) => {
       <table className="transaction-table">
         <thead>
           <tr>
-            <th colSpan="1" className="date-column"> </th>
-            <th colSpan="1"> </th>
+            <th className="date-column"> </th>
+            <th> </th>
             <th colSpan="2">Credits</th>
             <th colSpan="2" className="balance-a">Balance</th>
           </tr>
-          <th colSpan="1" className="date-column"> </th>
-          <th colSpan="1"> </th>
-          <th colSpan="2">Credits</th>
-          <th colSpan="2" className="balance-a">Balance</th>
           <tr>
             <th>Date</th>
             <th>Transaction</th>
@@ -34,19 +47,38 @@ const CreditTransactions = (props) => {
           </tr>
         </thead>
         <tbody>
-          {items.map((each) => (
-            <tr key={each.id}>
-              <td className="date-column">{each.transactionTimestamp.slice(0, 10)}</td>
-              <td className="text-left">{each.transactionType.transactionType}</td>
-              <td className="text-center">{each.creditClass.creditClass === 'A' ? each.creditValue : '-'}</td>
-              <td className="text-center">{each.creditClass.creditClass === 'B' ? each.creditValue : '-'}</td>
-              <td className="balance-a">-</td>
-              <td className="balance-b">-</td>
-            </tr>
-          ))}
+          {items.map((item) => {
+            const displayTotalA = totalA;
+            const displayTotalB = totalB;
+
+            if (item.creditClass.creditClass === 'A') {
+              totalA -= item.creditValue;
+            }
+
+            if (item.creditClass.creditClass === 'B') {
+              totalB -= item.creditValue;
+            }
+
+            return (
+              <tr key={item.id}>
+                <td className="date-column">{item.transactionTimestamp.slice(0, 10)}</td>
+                <td className="text-left">{item.transactionType.transactionType}</td>
+                <td className="text-center">{item.creditClass.creditClass === 'A' ? item.creditValue : '-'}</td>
+                <td className="text-center">{item.creditClass.creditClass === 'B' ? item.creditValue : '-'}</td>
+                <td className="balance-a">{displayTotalA}</td>
+                <td className="balance-b">{displayTotalB}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
   );
 };
+
+CreditTransactions.propTypes = {
+  items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  title: PropTypes.string.isRequired,
+};
+
 export default CreditTransactions;
