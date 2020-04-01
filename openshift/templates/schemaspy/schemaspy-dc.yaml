@@ -146,7 +146,7 @@ objects:
       labels:
         shared: "true"
       creationTimestamp: null
-      name: ${NAME}-schemaspy
+      name: schemaspy
     spec:
       lookupPolicy:
         local: false
