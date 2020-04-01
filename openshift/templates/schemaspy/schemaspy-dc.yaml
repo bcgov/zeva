@@ -5,6 +5,10 @@ metadata:
   name: schemaspy-dc
   creationTimestamp:
 parameters:
+  - name: NAME
+    displayName:
+    description: the module name entered when run yo bcdk:pipeline, which is zeva
+    required: true
   - name: SUFFIX
     displayName: suffic
     description: env name plus pr number, sample is -dev-120
@@ -56,7 +60,7 @@ objects:
               - schemaspy-public
             from:
               kind: ImageStreamTag
-              name: schemaspy:prod
+              name: ${NAME}-schemaspy:prod
             lastTriggeredImage:
         - type: ConfigChange
       replicas: 1
@@ -138,6 +142,20 @@ objects:
       updatedReplicas: 0
       availableReplicas: 0
       unavailableReplicas: 0
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      annotations:
+        description: Keeps track of changes in the schemaspy image
+      labels:
+        shared: "true"
+      creationTimestamp: null
+      name: ${NAME}-schemaspy
+    spec:
+      lookupPolicy:
+        local: false
+    status:
+      dockerImageRepository: ""
   - kind: Service
     apiVersion: v1
     metadata:
