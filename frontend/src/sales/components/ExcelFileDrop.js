@@ -1,16 +1,20 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 const ExcelFileDrop = (props) => {
-  const { setFiles } = props;
+  const { setFiles, maxFiles } = props;
+  const [dropMessage, setDropMessage] = useState('Drop file here, or click to open file selection dialog');
   const onDrop = useCallback((acceptedFiles) => {
-    setFiles(acceptedFiles);
+    if (acceptedFiles.length > maxFiles) {
+      setDropMessage(`File upload is limited to ${maxFiles}. Please select again`);
+    } else {
+      setFiles(acceptedFiles);
+    }
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
-
   return (
     <div {...getRootProps()}>
       <input {...getInputProps()} />
@@ -18,7 +22,7 @@ const ExcelFileDrop = (props) => {
       <div className="file-upload">
         <FontAwesomeIcon icon="upload" />
         <br />
-        Drop file here, or click to open file selection dialog
+        {dropMessage}
       </div>
     </div>
   );
@@ -26,6 +30,7 @@ const ExcelFileDrop = (props) => {
 
 ExcelFileDrop.propTypes = {
   setFiles: PropTypes.func.isRequired,
+  maxFiles: PropTypes.number.isRequired,
 };
 
 export default ExcelFileDrop;

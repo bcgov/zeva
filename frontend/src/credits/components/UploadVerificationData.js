@@ -1,19 +1,20 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-
+import history from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
 import ExcelFileDrop from '../../sales/components/ExcelFileDrop';
 
 const UploadVerificationData = (props) => {
   const {
+    title,
     errorMessage,
     files,
     setUploadFiles,
     upload,
-    title,
+    setDateCurrentTo,
+    dateCurrentTo,
   } = props;
-  const [dateCurrentTo, setDateCurrentTo] = useState('today');
 
   const getFileSize = (bytes) => {
     if (bytes === 0) {
@@ -36,8 +37,12 @@ const UploadVerificationData = (props) => {
   const removeFile = (removedFile) => {
     const found = files.findIndex((file) => (file === removedFile));
     files.splice(found, 1);
-
     setUploadFiles([...files]);
+  };
+
+  const handleCalendarChange = (event) => {
+    const { value } = event.target;
+    setDateCurrentTo(value);
   };
 
   return (
@@ -48,23 +53,23 @@ const UploadVerificationData = (props) => {
         <div className="bordered">
           <div className="content">
             <div className="panel panel-default">
-              <ExcelFileDrop setFiles={setUploadFiles} />
+              <ExcelFileDrop setFiles={setUploadFiles} maxFiles={1} />
               <div className="files">
                 <div className="row">
-                  <div className="col-5 header"><label htmlFor="filename">Filename</label></div>
+                  <div className="col-7 header"><label htmlFor="filename">Filename</label></div>
                   <div className="col-3 size header"><label htmlFor="filesize">Size</label></div>
-                  <div className="col-2 size header"><label htmlFor="securityscan">Security<br />Scan</label></div>
+                  {/* <div className="col-2 size header"><label htmlFor="securityscan">Security<br />Scan</label></div> */}
                   <div className="col-2 actions header" />
                 </div>
                 {files.map((file) => (
                   <div className="row" key={file.name}>
-                    <div className="col-5">{file.name}</div>
+                    <div className="col-7">{file.name}</div>
                     <div className="col-3 size">{getFileSize(file.size)}</div>
-                    <div className="col-2 size">
+                    {/* <div className="col-2 size">
                       <div className="check" type="button">
                         <FontAwesomeIcon icon="check" />
                       </div>
-                    </div>
+                    </div> */}
                     <div className="col-2 actions">
                       <button
                         className="delete"
@@ -81,21 +86,32 @@ const UploadVerificationData = (props) => {
 
                 <div>
                   <div className="row">
-                    <label id="date-label" htmlFor="current-to">Date current to:</label><br />
-                  </div>
-                  <div>
-                    <input
-                      type="date"
-                      id="date-current-to"
-                      name="date-current-to"
-                    />
-                    <FontAwesomeIcon icon="calendar-alt" className="calendar-icon" />
+                    <label id="date-label" htmlFor="current-to">Date current to:</label>
+                    <div>
+                      <input
+                        type="date"
+                        id="date-current-to"
+                        name="date-current-to"
+                        onChange={handleCalendarChange}
+                      />
+                      <FontAwesomeIcon icon="calendar-alt" className="calendar-icon" />
+                    </div>
                   </div>
                 </div>
               </div>
 
               <div className="action-bar">
-                <span className="left-content" />
+                <span className="left-content">
+                  <button
+                    className="button"
+                    onClick={() => {
+                      history.goBack();
+                    }}
+                    type="button"
+                  >
+                    <FontAwesomeIcon icon="arrow-left" /> Back
+                  </button>
+                </span>
 
                 <span className="right-content">
                   <button
@@ -118,17 +134,13 @@ const UploadVerificationData = (props) => {
   );
 };
 
-// UploadVerificationData.defaultProps = {
-//   errorMessage: null,
-// };
-
-// UploadVerificationData.propTypes = {
-//   errorMessage: PropTypes.string,
-//   files: PropTypes.arrayOf(PropTypes.shape).isRequired,
-//   setUploadFiles: PropTypes.func.isRequired,
-//   title: PropTypes.string.isRequired,
-//   upload: PropTypes.func.isRequired,
-//   user: CustomPropTypes.user.isRequired,
-// };
+UploadVerificationData.propTypes = {
+  files: PropTypes.arrayOf(PropTypes.shape).isRequired,
+  setUploadFiles: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
+  upload: PropTypes.func.isRequired,
+  setDateCurrentTo: PropTypes.func.isRequired,
+  dateCurrentTo: PropTypes.string.isRequired,
+};
 
 export default UploadVerificationData;

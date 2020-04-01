@@ -7,14 +7,27 @@ import Loading from '../app/components/Loading';
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import UploadVerificationData from './components/UploadVerificationData';
 import ROUTES_CREDITS from '../app/routes/Credits';
+import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification';
 import CustomPropTypes from '../app/utilities/props';
-
+import upload from '../app/utilities/upload';
 
 const CreditsContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [creditTransactions, setCreditTransactions] = useState([]);
   const { activeTab, user } = props;
+  const [dateCurrentTo, setDateCurrentTo] = useState('');
   const [files, setFiles] = useState([]);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [details, setDetails] = useState({
+    entries: [],
+    validationMessages: [],
+    submissionID: '',
+  });
+
+
+  const today = new Date();
+  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+
   const refreshList = (showLoading) => {
     setLoading(showLoading);
     if (activeTab === 'transactions') {
@@ -24,7 +37,21 @@ const CreditsContainer = (props) => {
       });
     } else if (activeTab === 'upload-verification-data') {
       setLoading(false);
+      setDateCurrentTo(date);
     }
+  };
+
+  const doUpload = () => {
+    upload(ROUTES_ICBCVERIFICATION.UPLOAD, files).then((response) => {
+      setDetails(response.data);
+    }).catch((error) => {
+      const { response } = error;
+      if (response.status === 400) {
+        setErrorMessage(error.response.data);
+      } else {
+        setErrorMessage('An error has occurred while uploading. Please try again later.');
+      }
+    });
   };
 
   useEffect(() => {
@@ -47,10 +74,12 @@ const CreditsContainer = (props) => {
       <div>
         <UploadVerificationData
           title="Upload ICBC Registration Data"
-          errorMessage="test"
+          errorMessage={errorMessage}
           files={files}
           setUploadFiles={setFiles}
-          upload="asd"
+          upload={doUpload}
+          dateCurrentTo={dateCurrentTo}
+          setDateCurrentTo={setDateCurrentTo}
         />
       </div>
       )}
