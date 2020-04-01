@@ -56,7 +56,6 @@ objects:
               - schemaspy-public
             from:
               kind: ImageStreamTag
-              namespace: tbiwaq-tools
               name: schemaspy:prod
             lastTriggeredImage:
         - type: ConfigChange
