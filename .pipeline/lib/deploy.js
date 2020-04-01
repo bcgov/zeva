@@ -104,7 +104,8 @@ module.exports = settings => {
       'CPU_LIMIT': phases[phase].rabbitmqCpuLimit,
       'MEMORY_REQUEST': phases[phase].rabbitmqMemoryRequest,
       'MEMORY_LIMIT': phases[phase].rabbitmqMemoryLimit,
-      'REPLICA': phases[phase].rabbitmqReplica
+      'REPLICA': phases[phase].rabbitmqReplica,
+      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep
     }
   }))
 

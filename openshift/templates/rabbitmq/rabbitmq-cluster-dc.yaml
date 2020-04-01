@@ -53,6 +53,9 @@ parameters:
   value: '2Gi'
 - name: REPLICA
   value: '1'  
+- name: POST_START_SLEEP
+  value: '120'  
+  
 objects:
 
 # This service account is needed for rabbit_peer_discovery_k8s plugin to be able to discover
@@ -166,7 +169,7 @@ objects:
                   - /bin/sh
                   - '-c'
                   - |-
-                    sleep 50
+                    sleep ${POST_START_SLEEP}
                     rabbitmqctl list_users | grep guest  2> /dev/null
                     if [ $? -ne 0 ];
                     then
