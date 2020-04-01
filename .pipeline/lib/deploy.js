@@ -22,7 +22,6 @@ module.exports = settings => {
 
   // The deployment of your cool app goes here ▼▼▼
 
-/*****
   // create configs
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/config/configmap.yaml`, {
     'param': {
@@ -123,7 +122,7 @@ module.exports = settings => {
       'HEALTH_CHECK_DELAY': phases[phase].backendHealthCheckDelay,
     }
   }))
-*********/
+
   //deploy schemaspy
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/schemaspy/schemaspy-dc.yaml`, {
     'param': {
