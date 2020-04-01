@@ -5,10 +5,6 @@ metadata:
   name: schemaspy-dc
   creationTimestamp:
 parameters:
-  - name: NAME
-    displayName:
-    description: the module name entered when run yo bcdk:pipeline, which is zeva
-    required: true
   - name: SUFFIX
     displayName: suffic
     description: env name plus pr number, sample is -dev-120
@@ -60,7 +56,7 @@ objects:
               - schemaspy-public
             from:
               kind: ImageStreamTag
-              name: ${NAME}-schemaspy:prod
+              name: schemaspy:prod
             lastTriggeredImage:
         - type: ConfigChange
       replicas: 1
