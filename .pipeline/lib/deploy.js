@@ -65,7 +65,7 @@ module.exports = settings => {
       'MEMORY_REQUEST': phases[phase].patroniMemoryRequest,
       'MEMORY_LIMIT': phases[phase].patroniMemoryRequest,
       'IMAGE_REGISTRY': 'docker-registry.default.svc:5000',
-      'IMAGE_STREAM_NAMESPACE':  phases[phase].namespace,
+      'IMAGE_STREAM_NAMESPACE': 'tbiwaq-tools',
       'IMAGE_STREAM_TAG': 'patroni:v10-stable',
       'REPLICA': phases[phase].patroniReplica
     }
@@ -81,7 +81,7 @@ module.exports = settings => {
       'SUFFIX': phases[phase].suffix,
       'NAMESPACE': phases[phase].namespace,
       'CLUSTER_NAME': 'rabbitmq-cluster',
-      'ISTAG': 'rabbitmq:3.8.3-management',
+      'ISTAG': 'tbiwaq-tools/rabbitmq:3.8.3-management',
       'SERVICE_ACCOUNT': 'rabbitmq-discovery',
       'VOLUME_SIZE': phases[phase].rabbitmqPvcSize,
       'CPU_REQUEST': phases[phase].rabbitmqCpuRequest,
@@ -89,7 +89,10 @@ module.exports = settings => {
       'MEMORY_REQUEST': phases[phase].rabbitmqMemoryRequest,
       'MEMORY_LIMIT': phases[phase].rabbitmqMemoryLimit,
       'REPLICA': phases[phase].rabbitmqReplica,
-      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep
+      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep,
+      'IMAGE_REGISTRY': 'docker-registry.default.svc:5000',
+      'IMAGE_STREAM_NAMESPACE': 'tbiwaq-tools',
+      'IMAGE_STREAM_TAG': '	3.8.3-management',      
     }
   }))
 
