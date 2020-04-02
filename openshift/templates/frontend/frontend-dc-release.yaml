@@ -180,6 +180,11 @@ objects:
                     configMapKeyRef:
                       name: zeva-config
                       key: apibase
+                - name: KEYCLOAK_LOGOUT_REDIRECT_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: zeva-config
+                      key: keycloak_logout_redirect_url
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 3
