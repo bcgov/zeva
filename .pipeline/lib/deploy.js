@@ -65,16 +65,14 @@ module.exports = settings => {
       'MEMORY_REQUEST': phases[phase].patroniMemoryRequest,
       'MEMORY_LIMIT': phases[phase].patroniMemoryRequest,
       'IMAGE_REGISTRY': 'docker-registry.default.svc:5000',
-      'IMAGE_STREAM_NAMESPACE':  phases[phase].namespace,
+      'IMAGE_STREAM_NAMESPACE': 'tbiwaq-dev',
       'IMAGE_STREAM_TAG': 'patroni:v10-stable',
       'REPLICA': phases[phase].patroniReplica
     }
   }))
 
-  //deploy rabbitmq
-  //'ISTAG': 'docker-registry.default.svc:5000/tbiwaq-dev/rabbitmq:3.8.3-management-dev',
-  //      'MQ_USER': 'guest',
-  //'MQ_PASSWORD': '',
+  //deploy rabbitmq, use docker image directly
+  //TODO: tage docker image to local
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
@@ -89,7 +87,7 @@ module.exports = settings => {
       'MEMORY_REQUEST': phases[phase].rabbitmqMemoryRequest,
       'MEMORY_LIMIT': phases[phase].rabbitmqMemoryLimit,
       'REPLICA': phases[phase].rabbitmqReplica,
-      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep
+      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep 
     }
   }))
 

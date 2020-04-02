@@ -55,7 +55,7 @@ parameters:
   value: '1'  
 - name: POST_START_SLEEP
   value: '120'  
-  
+
 objects:
 
 # This service account is needed for rabbit_peer_discovery_k8s plugin to be able to discover
@@ -182,7 +182,7 @@ objects:
           args:
           - -c
           - cp -v /etc/rabbitmq/rabbitmq.conf ${RABBITMQ_CONFIG_FILE}.conf; exec docker-entrypoint.sh rabbitmq-server
-          image: ${ISTAG} 
+          image: ${ISTAG}
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: config-volume
