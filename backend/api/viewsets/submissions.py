@@ -2,6 +2,8 @@ from rest_framework import mixins, status, viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from api.services.credit_transaction import award_credits
+from api.models.credit_transaction import CreditTransaction
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
@@ -43,3 +45,9 @@ class SalesSubmissionsViewset(
             return self.serializer_classes[self.action]
 
         return self.serializer_classes['default']
+
+    def perform_update(self, serializer):
+        submission = serializer.save()
+
+        if submission.validation_status == SalesSubmissionStatuses.VALIDATED:
+            award_credits(submission)

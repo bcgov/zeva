@@ -1,3 +1,4 @@
+from decimal import Decimal
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer, \
@@ -18,17 +19,42 @@ class SalesSubmissionListSerializer(
     totals = SerializerMethodField()
     update_user = MemberSerializer(read_only=True)
     validation_status = EnumField(SalesSubmissionStatuses, read_only=True)
+    total_a_credits = SerializerMethodField()
+    total_b_credits = SerializerMethodField()
 
     def get_totals(self, obj):
         return {
             'vins': obj.records.count()
         }
 
+    def get_total_a_credits(self, obj):
+        total = 0
+
+        for record in obj.records.all():
+            credit_class = record.vehicle.get_credit_class()
+
+            if credit_class == 'A':
+                total += record.vehicle.get_credit_value()
+
+        return round(total, 2)
+
+    def get_total_b_credits(self, obj):
+        total = 0
+
+        for record in obj.records.all():
+            credit_class = record.vehicle.get_credit_class()
+
+            if credit_class == 'B':
+                total += record.vehicle.get_credit_value()
+
+        return round(total, 2)
+
     class Meta:
         model = SalesSubmission
         fields = (
             'id', 'validation_status', 'organization', 'submission_date',
-            'submission_sequence', 'totals', 'submission_id', 'update_user'
+            'submission_sequence', 'totals', 'submission_id', 'update_user',
+            'total_a_credits', 'total_b_credits'
         )
 
 

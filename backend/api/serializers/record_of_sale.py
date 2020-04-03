@@ -18,7 +18,7 @@ class RecordOfSaleSerializer(
     credits = SerializerMethodField()
 
     def get_credits(self, obj):
-        return 1.05
+        return obj.vehicle.get_credit_value()
 
     class Meta:
         model = RecordOfSale

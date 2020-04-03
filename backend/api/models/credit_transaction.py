@@ -19,9 +19,11 @@ class CreditTransaction(Auditable):
         null=True  # could be NULL if this is not a trade
     )
 
-    credit_value = models.DecimalField(max_digits=20,
-                                decimal_places=2,
-                                db_comment='The number of credits transferred')
+    credit_value = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        db_comment='The number of credits transferred'
+    )
 
     credit_class = models.ForeignKey(
         'CreditClass',

@@ -37,6 +37,11 @@ const VehicleListTable = (props) => {
     width: 125,
   }, {
     accessor: (row) => {
+      if ((row.vehicleZevType.vehicleZevCode === 'BEV' && row.range < 80.47)
+          || row.range < 16) {
+        return 0;
+      }
+
       let variable = 0.3;
 
       if (row.vehicleZevType.vehicleZevCode === 'BEV') {
@@ -57,16 +62,13 @@ const VehicleListTable = (props) => {
     width: 125,
   }, {
     accessor: (row) => {
-      if (row.vehicleZevType.vehicleZevCode === 'BEV') {
-        if (row.range < 80.47) {
-          return 'C';
-        }
-
-        return 'A';
+      if ((row.vehicleZevType.vehicleZevCode === 'BEV' && row.range < 80.47)
+          || row.range < 16) {
+        return 'C';
       }
 
-      if (row.range < 16) {
-        return 'C';
+      if (row.vehicleZevType.vehicleZevCode === 'BEV') {
+        return 'A';
       }
 
       return 'B';
