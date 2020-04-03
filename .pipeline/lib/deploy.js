@@ -67,7 +67,8 @@ module.exports = settings => {
       'IMAGE_REGISTRY': 'docker-registry.default.svc:5000',
       'IMAGE_STREAM_NAMESPACE': 'tbiwaq-dev',
       'IMAGE_STREAM_TAG': 'patroni:v10-stable',
-      'REPLICA': phases[phase].patroniReplica
+      'REPLICA': phases[phase].patroniReplica,
+      'POD_MANAGEMENT_POLICY': phases[phase].patroniPodManagementPolicy
     }
   }))
 
@@ -88,7 +89,8 @@ module.exports = settings => {
       'MEMORY_REQUEST': phases[phase].rabbitmqMemoryRequest,
       'MEMORY_LIMIT': phases[phase].rabbitmqMemoryLimit,
       'REPLICA': phases[phase].rabbitmqReplica,
-      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep 
+      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep,
+      'POD_MANAGEMENT_POLICY': phases[phase].rabbitmqPodManagementPolicy
     }
   }))
 

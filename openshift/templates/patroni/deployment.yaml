@@ -96,8 +96,8 @@ objects:
       cluster-name: ${NAME}${SUFFIX}
     name: ${NAME}${SUFFIX}
   spec:
-    podManagementPolicy: OrderedReady
     replicas: ${{REPLICA}}
+    podManagementPolicy: ${POD_MANAGEMENT_POLICY}
     revisionHistoryLimit: 10
     selector:
       matchLabels:
@@ -379,3 +379,5 @@ parameters:
   value: docker-registry.default.svc:5000
 - name: REPLICA
   value: '2'
+- name: POD_MANAGEMENT_POLICY
+  value: OrderedReady  
