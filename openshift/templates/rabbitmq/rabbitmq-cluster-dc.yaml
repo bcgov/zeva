@@ -149,7 +149,7 @@ objects:
     name: ${NAME}${SUFFIX}-${CLUSTER_NAME}
   spec:
     serviceName: ${NAME}${SUFFIX}-${CLUSTER_NAME}
-    replicas: 2
+    replicas: "${{REPLICA}}"
     selector:
       matchLabels:
         app: ${NAME}${SUFFIX}-${CLUSTER_NAME}
@@ -169,7 +169,7 @@ objects:
                   - /bin/sh
                   - '-c'
                   - |-
-                    sleep ${POST_START_SLEEP}
+                    sleep 150
                     rabbitmqctl list_users | grep guest  2> /dev/null
                     if [ $? -ne 0 ];
                     then
