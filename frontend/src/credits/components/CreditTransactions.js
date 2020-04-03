@@ -65,8 +65,8 @@ const CreditTransactions = (props) => {
                 <td className="text-left">{item.transactionType.transactionType}</td>
                 <td className="text-center">{item.creditClass.creditClass === 'A' ? item.creditValue : '-'}</td>
                 <td className="text-center">{item.creditClass.creditClass === 'B' ? item.creditValue : '-'}</td>
-                <td className="balance-a">{displayTotalA}</td>
-                <td className="balance-b">{displayTotalB}</td>
+                <td className="balance-a">{displayTotalA.toFixed(2)}</td>
+                <td className="balance-b">{displayTotalB.toFixed(2)}</td>
               </tr>
             );
           })}
