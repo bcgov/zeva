@@ -54,6 +54,8 @@ objects:
     metadata:
       annotations:
         description: Keeps track of changes in the backend image
+      labels:
+        shared: "true"        
       creationTimestamp: null
       name: '${NAME}-backend'
     spec:
