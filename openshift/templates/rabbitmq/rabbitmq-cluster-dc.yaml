@@ -149,7 +149,7 @@ objects:
     name: ${NAME}${SUFFIX}-${CLUSTER_NAME}
   spec:
     serviceName: ${NAME}${SUFFIX}-${CLUSTER_NAME}
-    replicas: "${{REPLICA}}"
+    replicas: ${{REPLICA}}
     selector:
       matchLabels:
         app: ${NAME}${SUFFIX}-${CLUSTER_NAME}

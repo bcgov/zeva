@@ -30,6 +30,7 @@ parameters:
     required: true
     value: '1500M'    
   - name: HEALTH_CHECK_DELAY
+    value: '150'
     displayName: 
     description: readyness and liveness initial delay seconds
     required: true     
@@ -109,7 +110,7 @@ objects:
                   path: "/"
                   port: 8080
                   scheme: HTTP
-                initialDelaySeconds: ${HEALTH_CHECK_DELAY}
+                initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
                 timeoutSeconds: 3
                 periodSeconds: 10
                 successThreshold: 1
@@ -119,7 +120,7 @@ objects:
                   path: "/"
                   port: 8080
                   scheme: HTTP
-                initialDelaySeconds: ${HEALTH_CHECK_DELAY}
+                initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
                 timeoutSeconds: 3
                 periodSeconds: 10
                 successThreshold: 1

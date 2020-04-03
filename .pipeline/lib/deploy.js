@@ -47,7 +47,7 @@ module.exports = settings => {
       'MEMORY_LIMIT': phases[phase].minioMemoryRequest,      
     }
   }))
-
+ 
   //deploy Patroni required secrets
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment-prereq.yaml`, {
     'param': {
@@ -56,7 +56,6 @@ module.exports = settings => {
     }
   }))
   //deploy Patroni
-  //REPLICA is harded coded in the patroni template as pipeline lib throws error, unrecognized type: int32
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment.yaml`, {
     'param': {
       'NAME': 'patroni',
@@ -73,8 +72,8 @@ module.exports = settings => {
   }))
 
   //deploy rabbitmq, use docker image directly
-  //TODO: tage docker image to local
-  //REPLICA is harded coded in the rabbitmq template as pipeline lib throws error, unrecognized type: int32
+  //TODO: tag docker image to local
+  //POST_START_SLEEP is harded coded in the rabbitmq template, replacement was not successful
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
@@ -121,7 +120,7 @@ module.exports = settings => {
       'MEMORY_LIMIT': phases[phase].backendMemoryLimit,
       'HEALTH_CHECK_DELAY': phases[phase].backendHealthCheckDelay,
     }
-  }))
+  })) 
 
   //deploy schemaspy
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/schemaspy/schemaspy-dc.yaml`, {
@@ -134,7 +133,7 @@ module.exports = settings => {
       'HEALTH_CHECK_DELAY': phases[phase].schemaspyHealthCheckDelay
     }
   }))
-
+ 
   oc.applyRecommendedLabels(
       objects,
       phases[phase].name,
