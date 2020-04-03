@@ -30,15 +30,9 @@ oc process -f config/zeva-postgresql-init.yaml | oc create -f - -n tbiwaq-dev --
 oc process -f config/zeva-postgresql-init.yaml | oc create -f - -n tbiwaq-test --dry-run=true  
 oc process -f config/zeva-postgresql-init.yaml | oc create -f - -n tbiwaq-prod --dry-run=true  
 
-## Rabbitmq 
-oc process -f ./rabbitmq/rabbitmq-prereq.yaml | oc create -f - -n tbiwaq-dev --dry-run=true
-oc process -f ./rabbitmq/rabbitmq-prereq.yaml | oc create -f - -n tbiwaq-test --dry-run=true
-oc process -f ./rabbitmq/rabbitmq-prereq.yaml | oc create -f - -n tbiwaq-prod --dry-run=true
-
 ## Patroni
 oc process -f ./patroni/build.yaml -p GIT_URI=https://github.com/bcgov/zeva.git -p GIT_REF=patroni-2  | oc apply -f - -n tbiwaq-tools --dry-run=true
 oc tag tbiwaq-tools/patroni:v10-latest tbiwaq-tools/patroni:v10-stable
-oc tag tbiwaq-tools/patroni:v10-stable tbiwaq-dev/patroni:v10-stable
 oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-dev --dry-run=true
 oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-test --dry-run=true
 oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-prod --dry-run=true

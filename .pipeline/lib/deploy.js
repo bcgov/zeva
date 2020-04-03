@@ -40,25 +40,13 @@ module.exports = settings => {
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
       'ENV_NAME': phases[phase].phase,
-      'PVC_SIZE': phases[phase].minioPvcSize
+      'PVC_SIZE': phases[phase].minioPvcSize,
+      'CPU_REQUEST': phases[phase].minioCpuRequest,
+      'CPU_LIMIT': phases[phase].minioCpuLimit,
+      'MEMORY_REQUEST': phases[phase].minioMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].minioMemoryRequest,      
     }
   }))
-
-  //deploy database
-  /**
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/postgresql/postgresql-dc.yaml`, {
-    'param': {
-      'NAME': phases[phase].name,
-      'SUFFIX': phases[phase].suffix,
-      'VERSION': phases[phase].tag,
-      'ENV_NAME': phases[phase].phase,
-      'CPU_REQUEST': '100m',
-      'CPU_LIMIT': '500m',
-      'MEMORY_REQUEST': '200M',
-      'MEMORY_LIMIT': '500M'
-    }
-  }))
-  **/
 
   //deploy Patroni required secrets
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment-prereq.yaml`, {
@@ -77,16 +65,14 @@ module.exports = settings => {
       'MEMORY_REQUEST': phases[phase].patroniMemoryRequest,
       'MEMORY_LIMIT': phases[phase].patroniMemoryRequest,
       'IMAGE_REGISTRY': 'docker-registry.default.svc:5000',
-      'IMAGE_STREAM_NAMESPACE':  phases[phase].namespace,
+      'IMAGE_STREAM_NAMESPACE': 'tbiwaq-dev',
       'IMAGE_STREAM_TAG': 'patroni:v10-stable',
       'REPLICA': phases[phase].patroniReplica
     }
   }))
 
-  //deploy rabbitmq
-  //'ISTAG': 'docker-registry.default.svc:5000/tbiwaq-dev/rabbitmq:3.8.3-management-dev',
-  //      'MQ_USER': 'guest',
-  //'MQ_PASSWORD': '',
+  //deploy rabbitmq, use docker image directly
+  //TODO: tage docker image to local
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
@@ -96,10 +82,12 @@ module.exports = settings => {
       'ISTAG': 'rabbitmq:3.8.3-management',
       'SERVICE_ACCOUNT': 'rabbitmq-discovery',
       'VOLUME_SIZE': phases[phase].rabbitmqPvcSize,
-      'CPU_REQUEST': '200m',
-      'CPU_LIMIT': '1000m',
-      'MEMORY_REQUEST': '256Mi',
-      'MEMORY_LIMIT': '2Gi'
+      'CPU_REQUEST': phases[phase].rabbitmqCpuRequest,
+      'CPU_LIMIT': phases[phase].rabbitmqCpuLimit,
+      'MEMORY_REQUEST': phases[phase].rabbitmqMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].rabbitmqMemoryLimit,
+      'REPLICA': phases[phase].rabbitmqReplica,
+      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep 
     }
   }))
 
@@ -111,10 +99,10 @@ module.exports = settings => {
       'VERSION': phases[phase].tag,
       'ENV_NAME': phases[phase].phase,
       'DASH_ENV_NAME': phases[phase].ssoSuffix,
-      'CPU_REQUEST': '100m',
-      'CPU_LIMIT': '500m',
-      'MEMORY_REQUEST': '1100M',
-      'MEMORY_LIMIT': '2G'
+      'CPU_REQUEST': phases[phase].frontendCpuRequest,
+      'CPU_LIMIT': phases[phase].frontendCpuLimit,
+      'MEMORY_REQUEST': phases[phase].frontendMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].frontendMemoryLimit
     }
   }))
 
@@ -125,10 +113,11 @@ module.exports = settings => {
       'SUFFIX': phases[phase].suffix,
       'VERSION': phases[phase].tag,
       'ENV_NAME': phases[phase].phase,
-      'CPU_REQUEST': '100m',
-      'CPU_LIMIT': '500m',
-      'MEMORY_REQUEST': '1100M',
-      'MEMORY_LIMIT': '2G'
+      'CPU_REQUEST': phases[phase].backendCpuRequest,
+      'CPU_LIMIT': phases[phase].backendCpuLimit,
+      'MEMORY_REQUEST': phases[phase].backendMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].backendMemoryLimit,
+      'HEALTH_CHECK_DELAY': phases[phase].backendHealthCheckDelay,
     }
   }))
 
@@ -139,7 +128,8 @@ module.exports = settings => {
       'CPU_REQUEST': phases[phase].schemaspyCpuRequest,
       'CPU_LIMIT': phases[phase].schemaspyCpuLimit,
       'MEMORY_REQUEST': phases[phase].schemaspyMemoryRequest,
-      'MEMORY_LIMIT': phases[phase].schemaspyMemoryLimit
+      'MEMORY_LIMIT': phases[phase].schemaspyMemoryLimit,
+      'HEALTH_CHECK_DELAY': phases[phase].schemaspyHealthCheckDelay
     }
   }))
 

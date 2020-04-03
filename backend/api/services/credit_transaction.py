@@ -17,7 +17,6 @@ def award_credits(submission):
             credit_value_a += record_of_sale.vehicle.get_credit_value()
         else:
             credit_value_b += record_of_sale.vehicle.get_credit_value()
-        print(record_of_sale.vehicle.get_credit_value())
 
     if credit_value_a > 0:
         CreditTransaction.objects.create(

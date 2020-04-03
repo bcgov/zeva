@@ -98,8 +98,7 @@ const SalesSubmissionPage = (props) => {
             )}
 
             <div className="panel panel-default">
-              <ExcelFileDrop setFiles={setUploadFiles} />
-
+              <ExcelFileDrop setFiles={setUploadFiles} maxFiles={100000} />
               <div className="files">
                 <div className="row">
                   <div className="col-8 header">Filename</div>
