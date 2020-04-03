@@ -181,6 +181,11 @@ class Router extends Component {
               />
               <Route
                 exact
+                path={ROUTES_CREDITS.UPLOADVERIFICATION}
+                render={() => <CreditsContainer keycloak={keycloak} user={user} activeTab="upload-verification-data" />}
+              />
+              <Route
+                exact
                 path="/"
                 render={() => <DashboardContainer user={user} />}
               />
