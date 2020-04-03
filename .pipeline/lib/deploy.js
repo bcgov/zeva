@@ -47,7 +47,7 @@ module.exports = settings => {
       'MEMORY_LIMIT': phases[phase].minioMemoryRequest,      
     }
   }))
-
+ 
   //deploy Patroni required secrets
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment-prereq.yaml`, {
     'param': {
@@ -67,12 +67,14 @@ module.exports = settings => {
       'IMAGE_REGISTRY': 'docker-registry.default.svc:5000',
       'IMAGE_STREAM_NAMESPACE': 'tbiwaq-dev',
       'IMAGE_STREAM_TAG': 'patroni:v10-stable',
-      'REPLICA': phases[phase].patroniReplica
+      'REPLICA': phases[phase].patroniReplica,
+      'POD_MANAGEMENT_POLICY': phases[phase].patroniPodManagementPolicy
     }
   }))
 
   //deploy rabbitmq, use docker image directly
-  //TODO: tage docker image to local
+  //TODO: tag docker image to local
+  //POST_START_SLEEP is harded coded in the rabbitmq template, replacement was not successful
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
@@ -87,7 +89,8 @@ module.exports = settings => {
       'MEMORY_REQUEST': phases[phase].rabbitmqMemoryRequest,
       'MEMORY_LIMIT': phases[phase].rabbitmqMemoryLimit,
       'REPLICA': phases[phase].rabbitmqReplica,
-      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep 
+      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep,
+      'POD_MANAGEMENT_POLICY': phases[phase].rabbitmqPodManagementPolicy
     }
   }))
 
@@ -119,7 +122,7 @@ module.exports = settings => {
       'MEMORY_LIMIT': phases[phase].backendMemoryLimit,
       'HEALTH_CHECK_DELAY': phases[phase].backendHealthCheckDelay,
     }
-  }))
+  })) 
 
   //deploy schemaspy
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/schemaspy/schemaspy-dc.yaml`, {
@@ -132,7 +135,7 @@ module.exports = settings => {
       'HEALTH_CHECK_DELAY': phases[phase].schemaspyHealthCheckDelay
     }
   }))
-
+ 
   oc.applyRecommendedLabels(
       objects,
       phases[phase].name,

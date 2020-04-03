@@ -38,8 +38,9 @@ parameters:
     description: Memory upper limit
     required: true
   - name: HEALTH_CHECK_DELAY
-    displayName:
-    description: readyness and liveness initial delay seconds
+    value: '150'
+    displayName: Memory upper limit
+    description: Memory upper limit
     required: true    
 objects:
   - apiVersion: v1
@@ -54,6 +55,8 @@ objects:
     metadata:
       annotations:
         description: Keeps track of changes in the backend image
+      labels:
+        shared: "true"        
       creationTimestamp: null
       name: '${NAME}-backend'
     spec:
@@ -137,13 +140,13 @@ objects:
         name: backend
         app: zeva
         role: backend
-        env: '${ENV_NAME}'
-      name: '${NAME}-backend${SUFFIX}'
+        env: ${ENV_NAME}
+      name: ${NAME}-backend${SUFFIX}
     spec:
       replicas: 1
       revisionHistoryLimit: 10
       selector:
-        name: '${NAME}-backend${SUFFIX}'
+        name: ${NAME}-backend${SUFFIX}
       strategy:
         activeDeadlineSeconds: 21600
         recreateParams:
@@ -170,7 +173,7 @@ objects:
         metadata:
           creationTimestamp: null
           labels:
-            name: '${NAME}-backend${SUFFIX}'
+            name: ${NAME}-backend${SUFFIX}
         spec:
           containers:
             - name: backend
@@ -327,35 +330,35 @@ objects:
                       name: ${NAME}-config${SUFFIX}
                       key: env_name
               livenessProbe:
-                failureThreshold: 3
+                failureThreshold: 10
                 httpGet:
                   path: /health
                   port: 8080
                   scheme: HTTP
-                initialDelaySeconds: ${HEALTH_CHECK_DELAY}
-                periodSeconds: 10
+                initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
+                periodSeconds: 15
                 successThreshold: 1
                 timeoutSeconds: 3
               ports:
                 - containerPort: 8080
                   protocol: TCP
               readinessProbe:
-                failureThreshold: 3
+                failureThreshold: 10
                 httpGet:
                   path: /health
                   port: 8080
                   scheme: HTTP
-                initialDelaySeconds: ${HEALTH_CHECK_DELAY}
-                periodSeconds: 10
+                initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
+                periodSeconds: 15
                 successThreshold: 1
                 timeoutSeconds: 3
               resources:
                 limits:
-                  cpu: '${CPU_LIMIT}'
-                  memory: '${MEMORY_LIMIT}'
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
                 requests:
-                  cpu: '${CPU_REQUEST}'
-                  memory: '${MEMORY_REQUEST}'
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
           dnsPolicy: ClusterFirst

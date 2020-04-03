@@ -52,9 +52,12 @@ parameters:
   required: true
   value: '2Gi'
 - name: REPLICA
-  value: '1'  
+  value: '2'  
 - name: POST_START_SLEEP
   value: '120'  
+- name: POD_MANAGEMENT_POLICY
+  value: OrderedReady
+  required: true
 
 objects:
 
@@ -149,7 +152,8 @@ objects:
     name: ${NAME}${SUFFIX}-${CLUSTER_NAME}
   spec:
     serviceName: ${NAME}${SUFFIX}-${CLUSTER_NAME}
-    replicas: ${REPLICA}
+    replicas: ${{REPLICA}}
+    podManagementPolicy: ${POD_MANAGEMENT_POLICY}
     selector:
       matchLabels:
         app: ${NAME}${SUFFIX}-${CLUSTER_NAME}
@@ -169,7 +173,7 @@ objects:
                   - /bin/sh
                   - '-c'
                   - |-
-                    sleep ${POST_START_SLEEP}
+                    sleep 120
                     rabbitmqctl list_users | grep guest  2> /dev/null
                     if [ $? -ne 0 ];
                     then
