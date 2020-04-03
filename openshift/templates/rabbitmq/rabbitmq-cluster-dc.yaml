@@ -52,7 +52,7 @@ parameters:
   required: true
   value: '2Gi'
 - name: REPLICA
-  value: '1'  
+  value: '2'  
 - name: POST_START_SLEEP
   value: '120'  
 
@@ -149,7 +149,7 @@ objects:
     name: ${NAME}${SUFFIX}-${CLUSTER_NAME}
   spec:
     serviceName: ${NAME}${SUFFIX}-${CLUSTER_NAME}
-    replicas: ${REPLICA}
+    replicas: 2
     selector:
       matchLabels:
         app: ${NAME}${SUFFIX}-${CLUSTER_NAME}

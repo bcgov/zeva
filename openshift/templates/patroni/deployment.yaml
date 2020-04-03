@@ -97,7 +97,7 @@ objects:
     name: ${NAME}${SUFFIX}
   spec:
     podManagementPolicy: OrderedReady
-    replicas: ${REPLICA}
+    replicas: 2
     revisionHistoryLimit: 10
     selector:
       matchLabels:
@@ -378,4 +378,4 @@ parameters:
   #docker-registry.default.svc:5000
   value: docker-registry.default.svc:5000
 - name: REPLICA
-  value: '1'
+  value: '2'

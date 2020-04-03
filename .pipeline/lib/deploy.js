@@ -56,6 +56,7 @@ module.exports = settings => {
     }
   }))
   //deploy Patroni
+  //REPLICA is harded coded in the patroni template as pipeline lib throws error, unrecognized type: int32
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment.yaml`, {
     'param': {
       'NAME': 'patroni',
@@ -73,6 +74,7 @@ module.exports = settings => {
 
   //deploy rabbitmq, use docker image directly
   //TODO: tage docker image to local
+  //REPLICA is harded coded in the rabbitmq template as pipeline lib throws error, unrecognized type: int32
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
     'param': {
       'NAME': phases[phase].name,
