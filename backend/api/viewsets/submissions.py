@@ -6,7 +6,7 @@ from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.serializers.sales_submission import SalesSubmissionSerializer, \
-    SalesSubmissionListSerializer
+    SalesSubmissionListSerializer, SalesSubmissionSaveSerializer
 from auditable.views import AuditableMixin
 
 
@@ -34,6 +34,8 @@ class SalesSubmissionsViewset(
     serializer_classes = {
         'default': SalesSubmissionListSerializer,
         'retrieve': SalesSubmissionSerializer,
+        'partial_update': SalesSubmissionSaveSerializer,
+        'update': SalesSubmissionSaveSerializer,
     }
 
     def get_serializer_class(self):
@@ -41,19 +43,3 @@ class SalesSubmissionsViewset(
             return self.serializer_classes[self.action]
 
         return self.serializer_classes['default']
-
-    def update(self, request, pk=None, *args, **kwargs):
-        # TODO - Move this to a serializer
-        ids = request.data.get('ids')
-        validation_status = request.data.get('validation_status')
-
-        if ids is not None:
-            RecordOfSale.objects.filter(id__in=ids).update(
-                validation_status=validation_status
-            )
-        else:
-            SalesSubmission.objects.filter(id=pk).update(
-                validation_status=validation_status
-            )
-
-        return Response(None, status=status.HTTP_200_OK)

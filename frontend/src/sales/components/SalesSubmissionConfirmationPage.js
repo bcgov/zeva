@@ -1,9 +1,12 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Link } from 'react-router-dom';
+
 import history from '../../app/History';
 
 import CustomPropTypes from '../../app/utilities/props';
+import ROUTES_SALES from '../../app/routes/Sales';
 
 const SalesSubmissionConfirmationPage = (props) => {
   const {
@@ -24,6 +27,7 @@ const SalesSubmissionConfirmationPage = (props) => {
             <button
               className="button"
               onClick={() => {
+                history.push(ROUTES_SALES.DETAILS.replace(/:id/g, details.id));
               }}
               type="button"
             >
@@ -52,13 +56,11 @@ const SalesSubmissionConfirmationPage = (props) => {
             by The Province of British Columbia.
           </p>
           <p>
-            You can view the status of your submission from the <a
-              href="#"
-              onClick={() => {
-                history.push('/sales/');
-              }}
-            >Sales
-            </a> table at any time.
+            {'You can view the status of your submission from the '}
+            <Link to={ROUTES_SALES.LIST}>
+              Sales
+            </Link>
+             table at any time.
           </p>
         </div>
       </div>
@@ -73,6 +75,7 @@ SalesSubmissionConfirmationPage.defaultProps = {};
 SalesSubmissionConfirmationPage.propTypes = {
   user: CustomPropTypes.user.isRequired,
   details: PropTypes.shape({
+    id: PropTypes.number,
     submissionID: PropTypes.string.isRequired,
     entries: PropTypes.arrayOf(PropTypes.object),
     validation_problems: PropTypes.arrayOf(PropTypes.any),

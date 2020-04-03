@@ -3,7 +3,6 @@ import ReactTable from 'react-table';
 
 const CreditTransactions = (props) => {
   const { title, items } = props;
-  console.log(items);
 
   return (
     <div id="credit-transaction-details" className="page">
@@ -39,10 +38,10 @@ const CreditTransactions = (props) => {
             <tr key={each.id}>
               <td className="date-column">{each.transactionTimestamp.slice(0, 10)}</td>
               <td className="text-left">{each.transactionType.transactionType}</td>
-              <td className="text-center">1</td>
-              <td className="text-center">1</td>
-              <td className="balance-a">1</td>
-              <td className="balance-b">1</td>
+              <td className="text-center">{each.creditClass.creditClass === 'A' ? each.creditValue : '-'}</td>
+              <td className="text-center">{each.creditClass.creditClass === 'B' ? each.creditValue : '-'}</td>
+              <td className="balance-a">-</td>
+              <td className="balance-b">-</td>
             </tr>
           ))}
         </tbody>

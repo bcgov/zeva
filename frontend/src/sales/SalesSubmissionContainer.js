@@ -64,8 +64,12 @@ const SalesSubmissionContainer = (props) => {
     setWorkflowState('validating');
   };
 
-  const sign = () => {
-    setWorkflowState('complete');
+  const sign = (id) => {
+    axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id), {
+      validationStatus: 'SUBMITTED',
+    }).then(() => {
+      setWorkflowState('complete');
+    });
   };
 
   const backToStart = () => {

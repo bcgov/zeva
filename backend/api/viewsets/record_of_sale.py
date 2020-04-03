@@ -32,11 +32,11 @@ class RecordOfSaleViewset(
             qs = RecordOfSale.objects.exclude(validation_status__in=(
                 RecordOfSaleStatuses.DRAFT,
                 RecordOfSaleStatuses.NEW
-            ))
+            )).order_by('id')
         else:
             qs = RecordOfSale.objects.filter(
                 submission__organization=user.organization
-            )
+            ).order_by('id')
 
         return qs
 

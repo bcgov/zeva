@@ -28,7 +28,7 @@ const SalesSubmissionSignaturesPage = (props) => {
             </button>
             <button
               className="button primary"
-              onClick={() => sign()}
+              onClick={() => sign(details.id)}
               type="button"
             >
               <FontAwesomeIcon icon="signature" /> Sign and Submit
