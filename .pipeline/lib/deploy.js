@@ -128,6 +128,7 @@ module.exports = settings => {
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/schemaspy/schemaspy-dc.yaml`, {
     'param': {
       'SUFFIX': phases[phase].suffix,
+      'ENV_NAME': phases[phase].phase,
       'CPU_REQUEST': phases[phase].schemaspyCpuRequest,
       'CPU_LIMIT': phases[phase].schemaspyCpuLimit,
       'MEMORY_REQUEST': phases[phase].schemaspyMemoryRequest,

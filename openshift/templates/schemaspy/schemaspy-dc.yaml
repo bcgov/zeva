@@ -8,7 +8,12 @@ parameters:
   - name: SUFFIX
     displayName: suffic
     description: env name plus pr number, sample is -dev-120
-    required: true    
+    required: true   
+  - name: ENV_NAME
+    value: dev
+    displayName: Environment name
+    description: 'Environment name, dev, test and prod'
+    required: true     
   - name: CPU_REQUEST
     displayName: Requested CPU
     description: Requested CPU
@@ -72,6 +77,10 @@ objects:
           labels:
             name: schemaspy-public${SUFFIX}
         spec:
+          initContainers:
+            - name: wait-for-database
+              image: toschneck/wait-for-it:latest
+              command: ['sh', '-c', './wait-for-it.sh -t 0 patroni-master${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local:5432']
           containers:
             - name: schemaspy-public
               image:
