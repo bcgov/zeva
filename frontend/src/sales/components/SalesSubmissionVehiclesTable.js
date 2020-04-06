@@ -12,7 +12,7 @@ const SalesSubmissionVehiclesTable = (props) => {
     handleCheckboxClick,
     routeParams,
     submission,
-    user
+    user,
   } = props;
 
   const columns = [{
