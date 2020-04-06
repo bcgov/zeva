@@ -7,6 +7,7 @@ parameters:
   - name: NAME
     displayName: null
     description: 'the module name entered when run yo bcdk:pipeline, which is zeva'
+    value: zeva
     required: true
   - name: SUFFIX
     displayName: null
@@ -33,6 +34,11 @@ parameters:
     displayName: keycload realm name
     description: keycload realm name, value is rzh2zkjq
     required: true
+  - name: DJANGO_DEBUG
+    value: 'False'
+    displayName: django debug value
+    description: django debug value
+    required: true    
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -44,7 +50,7 @@ objects:
       database_engine: postgresql
       database_name: zeva
       database_service_name: patroni-master${SUFFIX}
-      django_debug: 'False'
+      django_debug: ${DJANGO_DEBUG}
       email_from_address: donotreply@gov.bc.ca
       email_sending_enabled: 'False'
       env_name: ${ENV_NAME}
