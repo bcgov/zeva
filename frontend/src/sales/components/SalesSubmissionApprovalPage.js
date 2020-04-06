@@ -46,7 +46,7 @@ const SalesSubmissionApprovalPage = (props) => {
               </button>
             </span>
             <span className="right-content">
-              {submission.validationStatus === 'SUBMITTED' && [
+              {user.isGovernment && submission.validationStatus === 'SUBMITTED' && [
                 <button
                   className="button primary"
                   key="btn-validate"

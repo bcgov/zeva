@@ -49,15 +49,17 @@ const SalesSubmissionApprovalDetailsPage = (props) => {
               </button>
             </span>
             <span className="right-content">
-              <button
-                className="button primary"
-                onClick={() => {
-                  handleSubmit();
-                }}
-                type="button"
-              >
-                <FontAwesomeIcon icon="save" /> Save
-              </button>
+              {user.isGovernment && (
+                <button
+                  className="button primary"
+                  onClick={() => {
+                    handleSubmit();
+                  }}
+                  type="button"
+                >
+                  <FontAwesomeIcon icon="save" /> Save
+                </button>
+              )}
             </span>
           </div>
         </div>
