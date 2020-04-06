@@ -3,9 +3,18 @@ import React from 'react';
 import { render, cleanup } from '@testing-library/react';
 
 import VehicleForm from '../VehicleForm';
-
+import VehicleAddContainer from '../../VehicleAddContainer';
 
 afterEach(cleanup);
+
+const handleInputChange = (event) => {
+  const { value, name } = event.target;
+  console.log('test function');
+};
+
+const handleSubmit = (event) => {
+  console.log('submt function');
+};
 
 describe('Vehicle Form', () => {
   it('renders without crashing', () => {
@@ -15,9 +24,9 @@ describe('Vehicle Form', () => {
       vehicleYears={[2020]}
       vehicleTypes={[1]}
       vehicleClasses={[1]}
-      handleInputChange={VehicleForm.handleInputChange()}
-      handleSubmit={VehicleForm.handleSubmit()}
-      fields={{ test }}
+      handleInputChange={handleSubmit()}
+      handleSubmit={handleSubmit()}
+      fields={{ make: 'testcar' }}
       formTitle="test"
     />);
   });

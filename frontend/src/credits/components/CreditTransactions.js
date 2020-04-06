@@ -21,10 +21,6 @@ const CreditTransactions = (props) => {
             <th colSpan="2">Credits</th>
             <th colSpan="2" className="balance-a">Balance</th>
           </tr>
-          <th colSpan="1" className="date-column"> </th>
-          <th colSpan="1"> </th>
-          <th colSpan="2">Credits</th>
-          <th colSpan="2" className="balance-a">Balance</th>
           <tr>
             <th>Date</th>
             <th>Transaction</th>
