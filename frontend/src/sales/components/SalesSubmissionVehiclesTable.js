@@ -5,8 +5,15 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTable from 'react-table';
 
+import CustomPropTypes from '../../app/utilities/props';
+
 const SalesSubmissionVehiclesTable = (props) => {
-  const { handleCheckboxClick, routeParams, submission } = props;
+  const {
+    handleCheckboxClick,
+    routeParams,
+    submission,
+    user
+  } = props;
 
   const columns = [{
     accessor: 'id',
@@ -56,6 +63,7 @@ const SalesSubmissionVehiclesTable = (props) => {
     className: 'text-center',
     Header: 'Validate',
     id: 'validated',
+    show: user.isGovernment,
     width: 100,
   }, {
     accessor: 'validationStatus',
@@ -101,6 +109,7 @@ SalesSubmissionVehiclesTable.propTypes = {
     records: PropTypes.arrayOf(PropTypes.shape({})),
     submissionDate: PropTypes.string,
   }).isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default SalesSubmissionVehiclesTable;
