@@ -44,7 +44,7 @@ objects:
       database_engine: postgresql
       database_name: zeva
       database_service_name: patroni-master${SUFFIX}
-      django_debug: 'False'
+      django_debug: 'True'
       email_from_address: donotreply@gov.bc.ca
       email_sending_enabled: 'False'
       env_name: ${ENV_NAME}
