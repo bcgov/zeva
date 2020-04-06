@@ -30,7 +30,8 @@ module.exports = settings => {
       'ENV_NAME': phases[phase].phase,
       'BACKEND_HOST': phases[phase].host,
       'SSO_NAME': phases[phase].ssoName,
-      'KEYCLOAK_REALM': 'rzh2zkjq'
+      'KEYCLOAK_REALM': 'rzh2zkjq',
+      'DJANGO_DEBUG': phases[phase].djangoDebug
     }
   }))
 
