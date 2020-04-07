@@ -248,14 +248,14 @@ def get_user_id(token, username):
             'bad response code: {}'.format(response.status_code))
 
     all_users = response.json()
-    print(all_users)
 
     id = None
 
     for user in all_users:
-        if username in user['attributes']['user_id']:
-            id = user['id']
-            break
+        if 'attributes' in user and 'user_id' in user['attributes']:
+            if username in user['attributes']['user_id']:
+                id = user['id']
+                break
 
     if id is None:
         logger.warning('User not found in Keycloak')

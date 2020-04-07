@@ -42,9 +42,17 @@ const SalesSubmissionApprovalDetailsContainer = (props) => {
   };
 
   const handleSubmit = () => {
+    const records = [];
+
+    validatedList.forEach((recordId) => {
+      records.push({
+        id: recordId,
+        validationStatus: 'VALIDATED',
+      });
+    });
+
     axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id), {
-      ids: validatedList,
-      validationStatus: 'VALIDATED',
+      records,
     }).then(() => {
       refreshDetails();
     });

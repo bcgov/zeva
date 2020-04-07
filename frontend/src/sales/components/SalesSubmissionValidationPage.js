@@ -261,6 +261,7 @@ SalesSubmissionValidationPage.propTypes = {
   backToStart: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired,
   details: PropTypes.shape({
+    id: PropTypes.number,
     submissionID: PropTypes.string.isRequired,
     entries: PropTypes.arrayOf(PropTypes.object),
     validation_problems: PropTypes.arrayOf(PropTypes.any),

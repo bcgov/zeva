@@ -51,6 +51,14 @@ parameters:
   description: Memory upper limit
   required: true
   value: '2Gi'
+- name: REPLICA
+  value: '2'  
+- name: POST_START_SLEEP
+  value: '120'  
+- name: POD_MANAGEMENT_POLICY
+  value: OrderedReady
+  required: true
+
 objects:
 
 # This service account is needed for rabbit_peer_discovery_k8s plugin to be able to discover
@@ -144,7 +152,8 @@ objects:
     name: ${NAME}${SUFFIX}-${CLUSTER_NAME}
   spec:
     serviceName: ${NAME}${SUFFIX}-${CLUSTER_NAME}
-    replicas: 2
+    replicas: ${{REPLICA}}
+    podManagementPolicy: ${POD_MANAGEMENT_POLICY}
     selector:
       matchLabels:
         app: ${NAME}${SUFFIX}-${CLUSTER_NAME}
@@ -164,7 +173,7 @@ objects:
                   - /bin/sh
                   - '-c'
                   - |-
-                    sleep 50
+                    sleep 120
                     rabbitmqctl list_users | grep guest  2> /dev/null
                     if [ $? -ne 0 ];
                     then
@@ -177,7 +186,7 @@ objects:
           args:
           - -c
           - cp -v /etc/rabbitmq/rabbitmq.conf ${RABBITMQ_CONFIG_FILE}.conf; exec docker-entrypoint.sh rabbitmq-server
-          image: ${ISTAG} 
+          image: ${ISTAG}
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: config-volume

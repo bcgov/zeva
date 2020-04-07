@@ -2,11 +2,13 @@ from rest_framework import mixins, status, viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from api.services.credit_transaction import award_credits
+from api.models.credit_transaction import CreditTransaction
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.serializers.sales_submission import SalesSubmissionSerializer, \
-    SalesSubmissionListSerializer
+    SalesSubmissionListSerializer, SalesSubmissionSaveSerializer
 from auditable.views import AuditableMixin
 
 
@@ -34,6 +36,8 @@ class SalesSubmissionsViewset(
     serializer_classes = {
         'default': SalesSubmissionListSerializer,
         'retrieve': SalesSubmissionSerializer,
+        'partial_update': SalesSubmissionSaveSerializer,
+        'update': SalesSubmissionSaveSerializer,
     }
 
     def get_serializer_class(self):
@@ -42,18 +46,8 @@ class SalesSubmissionsViewset(
 
         return self.serializer_classes['default']
 
-    def update(self, request, pk=None, *args, **kwargs):
-        # TODO - Move this to a serializer
-        ids = request.data.get('ids')
-        validation_status = request.data.get('validation_status')
+    def perform_update(self, serializer):
+        submission = serializer.save()
 
-        if ids is not None:
-            RecordOfSale.objects.filter(id__in=ids).update(
-                validation_status=validation_status
-            )
-        else:
-            SalesSubmission.objects.filter(id=pk).update(
-                validation_status=validation_status
-            )
-
-        return Response(None, status=status.HTTP_200_OK)
+        if submission.validation_status == SalesSubmissionStatuses.VALIDATED:
+            award_credits(submission)

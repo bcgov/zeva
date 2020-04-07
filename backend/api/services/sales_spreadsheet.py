@@ -261,6 +261,7 @@ def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=Fals
     logger.info('Done processing spreadsheet')
 
     return {
+        'id': submission.id,
         'submissionID': datetime.now().strftime("%Y-%m-%d"),
         'validation_problems': validation_problems,
         'entries': entries,
