@@ -155,7 +155,13 @@ objects:
               command:
                 - /bin/sh
                 - '-c'
-                - python manage.py migrate
+                - |-
+                  python manage.py migrate
+                  if [ $? -eq 0 ]; then 
+                    ./load_data.sh 
+                  else
+                    exit 1
+                  fi
               containerName: backend
             failurePolicy: Retry
           timeoutSeconds: 600
@@ -168,9 +174,6 @@ objects:
             name: ${NAME}-backend${SUFFIX}
         spec:
           containers:
-            - name: wait-for-database
-              image: toschneck/wait-for-it:latest
-              command: ['sh', '-c', './load_data.sh ${ENV_NAME}']
             - name: backend
               image: null
               imagePullPolicy: IfNotPresent
