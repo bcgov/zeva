@@ -66,7 +66,7 @@ module.exports = settings => {
       'MEMORY_REQUEST': phases[phase].patroniMemoryRequest,
       'MEMORY_LIMIT': phases[phase].patroniMemoryRequest,
       'IMAGE_REGISTRY': 'docker-registry.default.svc:5000',
-      'IMAGE_STREAM_NAMESPACE': 'tbiwaq-dev',
+      'IMAGE_STREAM_NAMESPACE': phases[phase].namespace,
       'IMAGE_STREAM_TAG': 'patroni:v10-stable',
       'REPLICA': phases[phase].patroniReplica,
       'POD_MANAGEMENT_POLICY': phases[phase].patroniPodManagementPolicy

@@ -148,7 +148,7 @@ objects:
       selector:
         name: ${NAME}-backend${SUFFIX}
       strategy:
-        activeDeadlineSeconds: 21600
+        activeDeadlineSeconds: 800
         recreateParams:
           mid:
             execNewPod:
@@ -158,14 +158,6 @@ objects:
                 - python manage.py migrate
               containerName: backend
             failurePolicy: Retry
-          post:
-            execNewPod:
-              command:
-                - /bin/sh
-                - '-c'
-                - ./load_data.sh ${ENV_NAME}
-              containerName: backend
-            failurePolicy: Ignore
           timeoutSeconds: 600
         resources: {}
         type: Recreate
@@ -176,6 +168,9 @@ objects:
             name: ${NAME}-backend${SUFFIX}
         spec:
           containers:
+            - name: wait-for-database
+              image: toschneck/wait-for-it:latest
+              command: ['sh', '-c', './load_data.sh ${ENV_NAME}']
             - name: backend
               image: null
               imagePullPolicy: IfNotPresent
