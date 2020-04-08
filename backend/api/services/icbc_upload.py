@@ -1,18 +1,21 @@
 import xlrd
 import xlwt
 from xlrd import XLRDError, XLDateError
+import pandas as pd
 
-def ingest_icbc_spreadsheet(data):
+
+def ingest_icbc_spreadsheet(excelfile):
     print('Opening spreadsheet')
-    wb = xlrd.open_workbook(file_contents=data)
-    print('wb open!')
+    raw_data = pd.read_excel(excelfile)
     validation_problems = []
     entries = []
     try:
         print('wb open')
-        # get the first worksheet
-        first_sheet = wb.sheet_by_index(0)
-        # read a row
-        print(first_sheet.row_values(0))
+        # raw_df = pd.DataFrame(raw_data)
+        df = raw_data.iloc[:, 0].str.split('|', expand=True)
+        df.columns = [n.replace('"', '') for n in raw_data.columns.str.split('|')[0]]
+        df.drop(df.columns.difference(['VIN','MODEL', 'MODEL_YEAR', 'MAKE']), 1, inplace=True)
+        print(df)
+        
     except:
         print("AAAHHHHHH~~~!!!!!!")
