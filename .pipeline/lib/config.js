@@ -15,9 +15,9 @@ const phases = {
         instance: `${name}-dev-${changeId}`  , version:`${version}-${changeId}`, tag:`dev-${version}-${changeId}`, 
         host: `zeva-dev-${changeId}.pathfinder.gov.bc.ca`, minioPvcSize: '1Gi', djangoDebug: 'True',
         frontendCpuRequest: '50m', frontendCpuLimit: '300m', frontendMemoryRequest: '300M', frontendMemoryLimit: '500M',
-        backendCpuRequest: '100m', backendCpuLimit: '400m', backendMemoryRequest: '500M', backendMemoryLimit: '700M', backendHealthCheckDelay: 10,
-        minioCpuRequest: '20m', minioCpuLimit: '50m', minioMemoryRequest: '500M', minioMemoryLimit: '700M',
-        schemaspyCpuRequest: '20m', schemaspyCpuLimit: '200m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 30,
+        backendCpuRequest: '100m', backendCpuLimit: '600m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 10,
+        minioCpuRequest: '50m', minioCpuLimit: '200m', minioMemoryRequest: '500M', minioMemoryLimit: '700M',
+        schemaspyCpuRequest: '50m', schemaspyCpuLimit: '200m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 30,
         rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '400m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '700M', rabbitmqPvcSize: '1G', rabbitmqPodManagementPolicy: 'Parallel', rabbitmqReplica: 2, rabbitmqPostStartSleep: 120,
         patroniCpuRequest: '200m', patroniCpuLimit: '400m', patroniMemoryRequest: '200M', patroniMemoryLimit: '400M', patroniPvcSize: '1G', patroniPodManagementPolicy: 'OrderedReady', patroniReplica: 2},
 
