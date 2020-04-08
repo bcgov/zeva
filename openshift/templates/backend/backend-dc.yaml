@@ -329,10 +329,8 @@ objects:
                       key: env_name
               livenessProbe:
                 failureThreshold: 30
-                httpGet:
-                  path: /health
+                tcpSocket:
                   port: 8080
-                  scheme: HTTP
                 initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
                 periodSeconds: 15
                 successThreshold: 1
@@ -342,10 +340,8 @@ objects:
                   protocol: TCP
               readinessProbe:
                 failureThreshold: 30
-                httpGet:
-                  path: /health
+                tcpSocket:
                   port: 8080
-                  scheme: HTTP
                 initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
                 periodSeconds: 15
                 successThreshold: 1
