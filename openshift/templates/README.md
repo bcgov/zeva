@@ -40,5 +40,5 @@ oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-dev --dry
 oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-test --dry-run=true
 oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-prod --dry-run=true
 
-
-
+## Frontend
+oc tag registry.access.redhat.com/rhscl/rhscl/nodejs-10-rhel7:1-28 tbiwaq-tools/nodejs:10-1-28
