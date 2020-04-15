@@ -1,5 +1,5 @@
 FROM node:8-jessie
-RUN apt-get update && apt-get install vim
+RUN apt-get update && apt-get install -y vim
 RUN mkdir /app
 WORKDIR /app
 COPY package.json .
@@ -10,4 +10,4 @@ RUN curl -sSL -o /usr/local/bin/caddy2 -f https://github.com/caddyserver/caddy/r
     chmod +x /usr/local/bin/caddy2 
 COPY ./Caddyfile /etc/caddy/Caddyfile
 RUN chmod +x ./Dockerfile-Openshift-entrypoint.sh
-ENTRYPOINT ["./Dockerfile-Openshift-entrypoint.sh"]
+CMD ["./Dockerfile-Openshift-entrypoint.sh"]

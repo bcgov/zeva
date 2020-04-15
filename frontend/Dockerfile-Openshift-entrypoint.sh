@@ -1,2 +1,2 @@
-exec caddy2 run  --config ./Caddyfile
+nohup caddy2 run  --config ./Caddyfile &
 npm run start
