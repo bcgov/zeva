@@ -12,7 +12,6 @@ class IcbcVerificationViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['post'])
     def upload(self, request):
-        print("********************************************")
         user = request.user
         try:
             data = request.FILES['files'].read()
