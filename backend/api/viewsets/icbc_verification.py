@@ -16,7 +16,7 @@ class IcbcVerificationViewSet(viewsets.ViewSet):
         user = request.user
         try:
             data = request.FILES['files'].read()
-            result = ingest_icbc_spreadsheet(data)
+            result = ingest_icbc_spreadsheet(data, user)
         except:
             return HttpResponse(status=400, content=error)
 
