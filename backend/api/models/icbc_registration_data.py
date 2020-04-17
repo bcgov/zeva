@@ -1,4 +1,4 @@
-from api.models.vehicle import Vehicle
+from api.models.icbc_vehicle import IcbcVehicle
 from auditable.models import Auditable
 from django.db import models
 from enumfields import EnumField
@@ -6,8 +6,8 @@ from enumfields import EnumField
 
 class IcbcRegistrationData(Auditable):
 
-    vehicle = models.ForeignKey(
-        'Vehicle',
+    icbc_vehicle = models.ForeignKey(
+        'IcbcVehicle',
         related_name=None,
         on_delete=models.CASCADE
     )
