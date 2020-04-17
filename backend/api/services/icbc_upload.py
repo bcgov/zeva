@@ -6,11 +6,11 @@ from api.models.icbc_vehicle import IcbcVehicle
 from api.models.model_year import ModelYear
 
 
-def insert_to_database(df, listName, table, columnName, requesting_user):
-    for each in listName:
+def insert_to_database(data_frame, list_name, table, column_name, requesting_user):
+    for each in list_name:
         try:
             #get the id of that value from the table
-            theId = table.objects.get(name=each).id
+            the_id = table.objects.get(name=each).id
         except ObjectDoesNotExist:
             new_addition = table.objects.create(
                 create_user=requesting_user,
@@ -18,10 +18,10 @@ def insert_to_database(df, listName, table, columnName, requesting_user):
                 name=each
             )
             new_addition.save()
-            theId = table.objects.get(name=each).id
+            the_id = table.objects.get(name=each).id
         finally:
             #replace the value in the df with the id
-            df[columnName] = df[columnName].replace(each, theId)
+            data_frame[column_name] = data_frame[column_name].replace(each, the_id)
 
 
 def ingest_icbc_spreadsheet(excelfile, requesting_user):
