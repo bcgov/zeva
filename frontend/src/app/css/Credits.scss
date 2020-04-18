@@ -1,65 +1,175 @@
 h2 {
-    margin-bottom:0
+  margin-bottom:0
 }
 #balance {
-   font-weight: bold;
-    margin-bottom: 1rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
 }
 .transaction-table {
-    width: 80vw;
-    thead {
-      background-color:$default-background-grey;
-      th {
-          text-align: center;      
-      }
+  width: 80vw;
+
+  thead {
+    background-color:$default-background-grey;
+
+    th {
+      text-align: center;      
     }
-    tr:nth-child(even) {
+  }
+
+  tr:nth-child(even) {
+    background-color: $default-background-grey;
+  }
+
+  .balance-a {
+    border-left: 3px solid white;
+    text-align: center;
+  }
+  .balance-b {
+    padding-right:10px;
+    text-align: center;
+  }
+  .date-column {
+    width:10vw;
+    padding-left:10px;
+  }
+}
+
+label {
+  margin-top: 2vh;
+  font-weight: bold;
+  color:$default-text-blue;
+  text-align: center;
+}
+
+#date-label {
+  padding-left: 15px;
+  width:100%;
+  text-align: left;
+  margin-bottom: 0;
+}  
+
+div.check {
+  color:green;
+  text-align: center;
+}
+
+
+input[type="date"] {
+  position: relative;
+  padding: 10px;
+  margin: 5px 0 0 10px;
+  border: 2px solid #616161;
+  border-radius: 5px
+}
+
+.calendar-icon {
+  font-size:large;
+  margin-left: 10px;
+  margin-bottom:auto;
+}
+
+#credit-request-details {
+  .table {
+    border: 1px solid $border-grey;
+    padding: 0.5rem;
+  }
+
+  .totals {
+    padding-top: 0.5rem;
+
+    table {
+      border: 1px solid $border-grey;
+      border-collapse: collapse;
+      margin-left: auto;
+
+      td {
+        border-collapse: collapse;
+        border: 1px solid $border-grey;
+        font-weight: bold;
+        min-width: 10rem;
+      }
+
+      tr:nth-child(odd) td {
         background-color: $default-background-grey;
-    }
-    .balance-a {
-        border-left: 3px solid white;
-        text-align: center;
       }
-    .balance-b {
-        padding-right:10px;
-        text-align: center;
-    }
-    .date-column {
-        width:10vw;
-        padding-left:10px;
     }
   }
+}
 
-  label {
-      margin-top: 2vh;
-      font-weight: bold;
-      color:$default-text-blue;
-      text-align: center;
-  }
-
-  #date-label {
-      padding-left: 15px;
-      width:100%;
-      text-align: left;
-      margin-bottom: 0;
-  }  
+#sales-details {
+  .ReactTable {  
+    .-header {
+      box-shadow: none;
   
-  div.check {
-      color:green;
-      text-align: center;
-  }
- 
+      .rt-th {
+        border-bottom: 1px solid $react-border;
+        border-top: 1px solid $react-border;
+      }
+    }
+  
+    .-headerGroups {
+      border-bottom: none;
+  
+      .header-group {
+        background-color: $white;
+        border-color: $white;
+      }
+    }
 
-  input[type="date"] {
-    position: relative;
-    padding: 10px;
-    margin: 5px 0 0 10px;
-    border: 2px solid #616161;
-    border-radius: 5px
-  }
+    .-filters, .rt-tr-group {
+      border-bottom: none;
 
-  .calendar-icon {
-      font-size:large;
-      margin-left: 10px;
-      margin-bottom:auto;
-  } 
+      .-odd {
+        background-color: transparent;
+  
+        .rt-td {
+          background-color: $default-background-grey;
+        }
+      }
+    }
+
+    .-header, .-filters, .rt-tr-group { /* inner "padding" */
+      .rt-td, .rt-th {
+        border-bottom: 1px solid $react-border;
+
+        &:first-child {
+          border-left: 1px solid $react-border;
+          margin-left: 0.5rem;
+        }
+
+        &:last-child {
+          border-right: 1px solid $react-border;
+          margin-right: 0.5rem;
+        }
+
+        &:not(:last-child) {
+          border-right: 1px solid $react-border;
+        }
+      }
+    }
+
+    .-pagination {
+      border-top-width: 1px;
+      box-shadow: none;
+    }
+
+    .rt-table {
+      padding-bottom: 0.5rem;
+    }
+
+    .icbc-model-year {
+      border-left: 1px solid $react-border;
+    }
+
+    .vin {
+      border-left: 1px solid $react-border;
+      margin-left: 1rem;
+      margin-right: 1rem;
+    }
+
+    .warning {
+      border-left: 1px solid $react-border;
+      margin-left: 1rem;
+    }
+  }
+}

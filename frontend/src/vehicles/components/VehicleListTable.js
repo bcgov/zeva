@@ -9,6 +9,7 @@ import history from '../../app/History';
 
 const VehicleListTable = (props) => {
   const { items, user, handleCheckboxClick } = props;
+
   const columns = [{
     accessor: (row) => (row.make ? row.make.name : ''),
     Header: 'Make',
@@ -88,7 +89,7 @@ const VehicleListTable = (props) => {
     className: 'text-center',
     Header: 'Validate',
     id: 'col-validated',
-    show: user.isGovernment,
+    show: user && user.isGovernment,
     width: 125,
   }];
 
@@ -112,7 +113,7 @@ const VehicleListTable = (props) => {
       }]}
       filterable={filterable}
       getTrProps={(state, row) => {
-        if (row && row.original && !user.isGovernment) {
+        if (row && row.original && user && !user.isGovernment) {
           return {
             onClick: () => {
               const { id } = row.original;

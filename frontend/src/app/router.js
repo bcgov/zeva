@@ -9,8 +9,10 @@ import OrganizationListContainer from '../organizations/OrganizationListContaine
 import UserDetailsContainer from '../organizations/UserDetailsContainer';
 import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
 import RoleListContainer from '../roles/RoleListContainer';
-import SalesDetailsContainer from '../sales/SalesDetailsContainer';
 import CreditsContainer from '../credits/CreditsContainer';
+import CreditRequestsContainer from '../credits/CreditRequestsContainer';
+import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContainer';
+import SalesSubmissionDetailsContainer from '../credits/SalesSubmissionDetailsContainer';
 import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
 import SalesSubmissionApprovalContainer from '../sales/SalesSubmissionApprovalContainer';
 import SalesSubmissionApprovalDetailsContainer from '../sales/SalesSubmissionApprovalDetailsContainer';
@@ -142,7 +144,7 @@ class Router extends Component {
               <Route
                 exact
                 path={ROUTES_SALES.DETAILS}
-                render={() => <SalesDetailsContainer keycloak={keycloak} user={user} />}
+                render={() => <SalesSubmissionApprovalContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact
@@ -183,6 +185,19 @@ class Router extends Component {
                 exact
                 path={ROUTES_CREDITS.UPLOADVERIFICATION}
                 render={() => <CreditsContainer keycloak={keycloak} user={user} activeTab="upload-verification-data" />}
+              />
+              <Route
+                exact
+                path={ROUTES_CREDITS.CREDIT_REQUESTS}
+                render={() => <CreditRequestsContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_CREDITS.SALES_SUBMISSION_DETAILS}
+                render={() => <SalesSubmissionDetailsContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_CREDITS.CREDIT_REQUEST_DETAILS}
+                render={() => <CreditRequestDetailsContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact
