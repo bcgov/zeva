@@ -6,7 +6,9 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
 
+import history from '../app/History';
 import Loading from '../app/components/Loading';
+import ROUTES_CREDITS from '../app/routes/Credits';
 import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
 import CustomPropTypes from '../app/utilities/props';
 import SalesSubmissionDetailsPage from './components/SalesSubmissionDetailsPage';
@@ -53,7 +55,9 @@ const SalesSubmissionDetailsContainer = (props) => {
     axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id), {
       records,
     }).then(() => {
-      refreshDetails();
+      const url = ROUTES_CREDITS.VALIDATED_CREDIT_REQUEST_DETAILS.replace(/:id/g, submission.id);
+
+      history.push(url);
     });
   };
 
@@ -68,6 +72,7 @@ const SalesSubmissionDetailsContainer = (props) => {
       routeParams={match.params}
       submission={submission}
       user={user}
+      validatedList={validatedList}
     />
   );
 };

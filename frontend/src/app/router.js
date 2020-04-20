@@ -134,7 +134,9 @@ class Router extends Component {
               <Route
                 exact
                 path={ROUTES_SALES.APPROVAL_DETAILS}
-                render={() => <SalesSubmissionApprovalDetailsContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <SalesSubmissionApprovalDetailsContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 exact
@@ -190,6 +192,12 @@ class Router extends Component {
                 exact
                 path={ROUTES_CREDITS.CREDIT_REQUESTS}
                 render={() => <CreditRequestsContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_CREDITS.VALIDATED_CREDIT_REQUEST_DETAILS}
+                render={() => (
+                  <CreditRequestDetailsContainer keycloak={keycloak} user={user} validatedOnly />
+                )}
               />
               <Route
                 path={ROUTES_CREDITS.SALES_SUBMISSION_DETAILS}

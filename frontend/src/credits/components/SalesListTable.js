@@ -8,7 +8,12 @@ import ReactTable from 'react-table';
 import CustomPropTypes from '../../app/utilities/props';
 
 const SalesListTable = (props) => {
-  const { handleCheckboxClick, items, user } = props;
+  const {
+    handleCheckboxClick,
+    items,
+    user,
+    validatedList,
+  } = props;
 
   const columns = [{
     Header: 'Supplier Information',
@@ -71,7 +76,17 @@ const SalesListTable = (props) => {
       headerClassName: 'warning',
       id: 'warning',
     }, {
-      accessor: (row) => (<input type="checkbox" value={row.id} onChange={(event) => { handleCheckboxClick(event); }} />),
+      accessor: (row) => (
+        <input
+          checked={
+            row.validationStatus === 'VALIDATED'
+            || validatedList.findIndex((item) => Number(item) === Number(row.id)) >= 0
+          }
+          onChange={(event) => { handleCheckboxClick(event); }}
+          type="checkbox"
+          value={row.id}
+        />
+      ),
       className: 'text-center',
       Header: 'Validated',
       id: 'validated',
@@ -114,6 +129,7 @@ SalesListTable.propTypes = {
     submissionDate: PropTypes.string,
   }).isRequired,
   user: CustomPropTypes.user.isRequired,
+  validatedList: PropTypes.arrayOf().isRequired,
 };
 
 export default SalesListTable;

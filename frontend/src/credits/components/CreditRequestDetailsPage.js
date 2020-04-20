@@ -10,8 +10,10 @@ import ModelListTable from './ModelListTable';
 
 const CreditRequestDetailsPage = (props) => {
   const {
+    handleSubmit,
     submission,
     user,
+    validatedOnly,
   } = props;
 
   return (
@@ -48,17 +50,41 @@ const CreditRequestDetailsPage = (props) => {
             </span>
             <span className="right-content">
               {user.isGovernment && submission.validationStatus === 'SUBMITTED' && (
-                <button
-                  className="button primary"
-                  onClick={() => {
-                    const url = ROUTES_CREDITS.SALES_SUBMISSION_DETAILS.replace(/:id/g, submission.id);
+                <>
+                  {validatedOnly && [
+                    <button
+                      className="button text-danger"
+                      key="recommend-rejection"
+                      onClick={() => {
+                        handleSubmit('RECOMMEND_REJECTION');
+                      }}
+                      type="button"
+                    >
+                      Recommend Rejection
+                    </button>,
+                    <button
+                      className="button"
+                      key="recommend-approval"
+                      onClick={() => {
+                        handleSubmit('RECOMMEND_APPROVAL');
+                      }}
+                      type="button"
+                    >
+                      Recommend Approval
+                    </button>,
+                  ]}
+                  <button
+                    className="button primary"
+                    onClick={() => {
+                      const url = ROUTES_CREDITS.SALES_SUBMISSION_DETAILS.replace(/:id/g, submission.id);
 
-                    history.push(url);
-                  }}
-                  type="button"
-                >
-                  Validate
-                </button>
+                      history.push(url);
+                    }}
+                    type="button"
+                  >
+                    Validate
+                  </button>
+                </>
               )}
             </span>
           </div>
@@ -72,6 +98,7 @@ const CreditRequestDetailsPage = (props) => {
               items={submission.records}
               submission={submission}
               user={user}
+              validatedOnly={validatedOnly}
             />
           </div>
         </div>
@@ -93,17 +120,41 @@ const CreditRequestDetailsPage = (props) => {
             </span>
             <span className="right-content">
               {user.isGovernment && submission.validationStatus === 'SUBMITTED' && (
-                <button
-                  className="button primary"
-                  onClick={() => {
-                    const url = ROUTES_CREDITS.SALES_SUBMISSION_DETAILS.replace(/:id/g, submission.id);
+                <>
+                  {validatedOnly && [
+                    <button
+                      className="button text-danger"
+                      key="recommend-rejection"
+                      onClick={() => {
+                        handleSubmit('RECOMMEND_REJECTION');
+                      }}
+                      type="button"
+                    >
+                      Recommend Rejection
+                    </button>,
+                    <button
+                      className="button"
+                      key="recommend-approval"
+                      onClick={() => {
+                        handleSubmit('RECOMMEND_APPROVAL');
+                      }}
+                      type="button"
+                    >
+                      Recommend Approval
+                    </button>,
+                  ]}
+                  <button
+                    className="button primary"
+                    onClick={() => {
+                      const url = ROUTES_CREDITS.SALES_SUBMISSION_DETAILS.replace(/:id/g, submission.id);
 
-                    history.push(url);
-                  }}
-                  type="button"
-                >
-                  Validate
-                </button>
+                      history.push(url);
+                    }}
+                    type="button"
+                  >
+                    Validate
+                  </button>
+                </>
               )}
             </span>
           </div>
@@ -113,11 +164,15 @@ const CreditRequestDetailsPage = (props) => {
   );
 };
 
-CreditRequestDetailsPage.defaultProps = {};
+CreditRequestDetailsPage.defaultProps = {
+  validatedOnly: false,
+};
 
 CreditRequestDetailsPage.propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
+  validatedOnly: PropTypes.bool,
 };
 
 export default CreditRequestDetailsPage;

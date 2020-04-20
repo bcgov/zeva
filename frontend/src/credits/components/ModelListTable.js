@@ -107,13 +107,13 @@ const ModelListTable = (props) => {
       data[found] = {
         ...data[found],
         sales: data[found].sales + addSale,
-        total: data[found].total + item.credits,
+        total: data[found].total + (item.credits * addSale),
       };
     } else {
       data.push({
         credits: item.credits,
         sales: addSale,
-        total: item.credits,
+        total: (item.credits * addSale),
         vehicle: item.vehicle,
       });
     }

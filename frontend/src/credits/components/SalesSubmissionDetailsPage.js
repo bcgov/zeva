@@ -9,8 +9,10 @@ import SalesListTable from './SalesListTable';
 const SalesSubmissionDetailsPage = (props) => {
   const {
     handleCheckboxClick,
+    handleSubmit,
     submission,
     user,
+    validatedList,
   } = props;
 
   return (
@@ -56,6 +58,9 @@ const SalesSubmissionDetailsPage = (props) => {
               </button>
               <button
                 className="button primary"
+                onClick={() => {
+                  handleSubmit();
+                }}
                 type="button"
               >
                 <FontAwesomeIcon icon="save" /> Save
@@ -70,7 +75,9 @@ const SalesSubmissionDetailsPage = (props) => {
           <SalesListTable
             handleCheckboxClick={handleCheckboxClick}
             items={submission.records}
+            submission={submission}
             user={user}
+            validatedList={validatedList}
           />
         </div>
       </div>
@@ -98,6 +105,9 @@ const SalesSubmissionDetailsPage = (props) => {
               </button>
               <button
                 className="button primary"
+                onClick={() => {
+                  handleSubmit();
+                }}
                 type="button"
               >
                 <FontAwesomeIcon icon="save" /> Save
@@ -114,8 +124,10 @@ SalesSubmissionDetailsPage.defaultProps = {};
 
 SalesSubmissionDetailsPage.propTypes = {
   handleCheckboxClick: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
+  validatedList: PropTypes.arrayOf().isRequired,
 };
 
 export default SalesSubmissionDetailsPage;

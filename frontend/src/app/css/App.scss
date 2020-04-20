@@ -149,9 +149,14 @@ p {
     background-color: $default-background-blue;
     color: $white;
   }
+
   &.primary:disabled {
     background-color: desaturate($default-background-blue, 50%);
     color: $white;
+  }
+
+  &.text-danger {
+    border-color: $red;
   }
 }
 
