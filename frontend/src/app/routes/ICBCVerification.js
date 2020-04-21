@@ -1,7 +1,7 @@
 const API_BASE_PATH = '/icbc-verification';
 
-const ICBCVERIFICATION = {
+const ICBC_VERIFICATION = {
   UPLOAD: `${API_BASE_PATH}/upload`,
 };
 
-export default ICBCVERIFICATION;
+export default ICBC_VERIFICATION;
