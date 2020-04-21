@@ -29,9 +29,9 @@ const SalesSubmissionDetailsPage = (props) => {
       <div className="row">
         <div className="col-sm-12 mt-3">
           <strong>3 warnings found </strong>
-          &mdash; warning codes:
-          {' 11 = no matching ICBC data; 21 = unmatched data; '}
-          {' 31 = retail sales date and registration date greater than 3 months apart '}
+          &mdash; warning codes:{' '}
+          11 = no matching ICBC data; 21 = unmatched data;{' '}
+          31 = retail sales date and registration date greater than 3 months apart
         </div>
       </div>
 
