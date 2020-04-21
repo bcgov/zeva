@@ -69,6 +69,7 @@ objects:
       contextDir: frontend
     strategy:
       dockerStrategy:
+        dockerfilePath: Dockerfile-Openshift
         forcePull: false
         noCache: true
         imageOptimizationPolicy: SkipLayers
