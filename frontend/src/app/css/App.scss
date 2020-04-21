@@ -48,6 +48,7 @@ $default-text-blue: #1A5A96;
 $nav-border: #DEE2E6;
 $primary-blue: #003366;
 $primary-yellow: #FCBA19;
+$react-border: rgba(0, 0, 0, 0.1);
 $red: #EB0022;
 $white: #FFFFFF;
 $yellow: #E3AB2B;
@@ -148,9 +149,14 @@ p {
     background-color: $default-background-blue;
     color: $white;
   }
+
   &.primary:disabled {
     background-color: desaturate($default-background-blue, 50%);
     color: $white;
+  }
+
+  &.text-danger {
+    border-color: $red;
   }
 }
 

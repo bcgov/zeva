@@ -148,24 +148,22 @@ objects:
       selector:
         name: ${NAME}-backend${SUFFIX}
       strategy:
-        activeDeadlineSeconds: 21600
+        activeDeadlineSeconds: 800
         recreateParams:
           mid:
             execNewPod:
               command:
                 - /bin/sh
                 - '-c'
-                - python manage.py migrate
+                - |-
+                  python manage.py migrate
+                  if [ $? -eq 0 ]; then 
+                    ./load_data.sh 
+                  else
+                    exit 1
+                  fi
               containerName: backend
             failurePolicy: Retry
-          post:
-            execNewPod:
-              command:
-                - /bin/sh
-                - '-c'
-                - ./load_data.sh ${ENV_NAME}
-              containerName: backend
-            failurePolicy: Ignore
           timeoutSeconds: 600
         resources: {}
         type: Recreate
@@ -331,10 +329,8 @@ objects:
                       key: env_name
               livenessProbe:
                 failureThreshold: 30
-                httpGet:
-                  path: /health
+                tcpSocket:
                   port: 8080
-                  scheme: HTTP
                 initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
                 periodSeconds: 15
                 successThreshold: 1
@@ -344,10 +340,8 @@ objects:
                   protocol: TCP
               readinessProbe:
                 failureThreshold: 30
-                httpGet:
-                  path: /health
+                tcpSocket:
                   port: 8080
-                  scheme: HTTP
                 initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
                 periodSeconds: 15
                 successThreshold: 1
