@@ -11,6 +11,7 @@ import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import CustomPropTypes from '../app/utilities/props';
 import VehicleSupplierDetailsPage from './components/VehicleSupplierDetailsPage';
+import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs';
 
 const VehicleSupplierDetailsContainer = (props) => {
   const { id } = useParams();
@@ -40,11 +41,14 @@ const VehicleSupplierDetailsContainer = (props) => {
   }, [keycloak.authenticated]);
 
   return (
-    <VehicleSupplierDetailsPage
-      details={details}
-      loading={loading}
-      vehicles={vehicles}
-    />
+    <div>
+      <VehicleSupplierTabs />
+      <VehicleSupplierDetailsPage
+        details={details}
+        loading={loading}
+        vehicles={vehicles}
+      />
+    </div>
   );
 };
 
