@@ -21,7 +21,7 @@ const OrganizationsTable = (props) => {
     accessor: () => '-',
     className: 'col-credit-balance',
     Header: 'A-Credits',
-    id: 'b-credits',
+    id: 'a-credits',
 
   }, {
     accessor: () => '-',
