@@ -11,13 +11,14 @@ import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import CustomPropTypes from '../app/utilities/props';
 import VehicleSupplierDetailsPage from './components/VehicleSupplierDetailsPage';
+import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs';
 
 const VehicleSupplierDetailsContainer = (props) => {
   const { id } = useParams();
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [vehicles, setVehicles] = useState([]);
-  const { keycloak } = props;
+  const { keycloak, activeTab } = props;
 
   const refreshDetails = () => {
     setLoading(true);
@@ -40,14 +41,23 @@ const VehicleSupplierDetailsContainer = (props) => {
   }, [keycloak.authenticated]);
 
   return (
-    <VehicleSupplierDetailsPage
-      details={details}
-      loading={loading}
-      vehicles={vehicles}
-    />
+    <div>
+      <VehicleSupplierTabs />
+      {activeTab === 'supplier-info'
+      && (
+        <VehicleSupplierDetailsPage
+          details={details}
+          loading={loading}
+          vehicles={vehicles}
+        />
+      )}
+      {activeTab === 'transactions'
+        && (
+          <CreditTransactions title="Credit Transactions" items={creditTransactions} />
+        )}
+    </div>
   );
 };
-
 VehicleSupplierDetailsContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
 };

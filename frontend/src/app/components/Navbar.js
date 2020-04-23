@@ -152,19 +152,6 @@ class Navbar extends Component {
                   <span>Home</span>
                 </NavLink>
               </li>
-
-              {keycloak.hasRealmRole('View ZEV')
-              && (
-                <li className="nav-item">
-                  <NavLink
-                    activeClassName="active"
-                    to={ROUTES_VEHICLES.LIST}
-                  >
-                    <span>ZEV Models</span>
-                  </NavLink>
-                </li>
-              )}
-
               <li className="nav-item">
                 <NavLink
                   activeClassName="active"
@@ -182,6 +169,32 @@ class Navbar extends Component {
                   <span>Credit Transactions</span>
                 </NavLink>
               </li>
+
+              {keycloak.hasRealmRole('View ZEV')
+              && (
+                <li className="nav-item">
+                  <NavLink
+                    activeClassName="active"
+                    to={ROUTES_VEHICLES.LIST}
+                  >
+                    <span>ZEV Models</span>
+                  </NavLink>
+                </li>
+              )}
+
+              {keycloak.hasRealmRole('View Organizations')
+              && keycloak.hasRealmRole('Government')
+              && (
+                <li className="nav-item">
+                  <NavLink
+                    activeClassName="active"
+                    to={ROUTES_ORGANIZATIONS.LIST}
+                  >
+                    <span>Vehicle Suppliers</span>
+                  </NavLink>
+                </li>
+              )}
+
 
               {keycloak.hasRealmRole('View Organization Information')
               && keycloak.hasRealmRole('Vehicle Supplier')
@@ -204,19 +217,6 @@ class Navbar extends Component {
                     to={ROUTES_ROLES.LIST}
                   >
                     <span>Roles</span>
-                  </NavLink>
-                </li>
-              )}
-
-              {keycloak.hasRealmRole('View Organization Information')
-              && keycloak.hasRealmRole('Government')
-              && (
-                <li className="nav-item">
-                  <NavLink
-                    activeClassName="active"
-                    to={ROUTES_ORGANIZATIONS.LIST}
-                  >
-                    <span>Organizations</span>
                   </NavLink>
                 </li>
               )}
