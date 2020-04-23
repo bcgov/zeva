@@ -144,13 +144,16 @@ class UserAuthentication(authentication.BaseAuthentication):
                 user_creation_request = creation_request.first()
 
                 if not user_creation_request.is_mapped:
-                    map_user(user_token['sub'],
-                             user_creation_request.user.username)
+                    map_user(
+                        user_token['sub'],
+                        user_creation_request.user_profile.username
+                    )
 
                     user_creation_request.is_mapped = True
                     user_creation_request.save()
 
-                user_found_via_email = user_creation_request.user.username
+                user_found_via_email = \
+                    user_creation_request.user_profile.username
             else:
                 raise exceptions.AuthenticationFailed(
                     'user_id or email is required in jwt payload')

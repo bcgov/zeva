@@ -127,7 +127,10 @@ SalesSubmissionDetailsPage.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
-  validatedList: PropTypes.arrayOf().isRequired,
+  validatedList: PropTypes.arrayOf(PropTypes.oneOf([
+    PropTypes.number,
+    PropTypes.string,
+  ])).isRequired,
 };
 
 export default SalesSubmissionDetailsPage;
