@@ -2,10 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import History from '../../app/History';
 import Loading from '../../app/components/Loading';
 import CustomPropTypes from '../../app/utilities/props';
-import VehicleListTable from '../../vehicles/components/VehicleListTable';
 
 const VehicleSupplierDetailsPage = (props) => {
   const { details, loading, vehicles } = props;
@@ -17,34 +15,30 @@ const VehicleSupplierDetailsPage = (props) => {
   return (
     <div id="vehicle-supplier-details" className="page">
       <div className="row">
-        <div className="col-sm-12">
-          <h1>{details.name}</h1>
-        </div>
+        <h5>Status</h5>
       </div>
 
       <div className="row">
-        <div className="col-sm-6">
-          {details.organizationAddress && (
-            <div className="organization-address">
-              {details.organizationAddress.addressLine1}
-              <br />
-              {details.organizationAddress.city} {details.organizationAddress.state}
-              <br />
-              {details.organizationAddress.postalCode}
-            </div>
-          )}
-          <a href="#">Edit address</a>
-        </div>
-
-        <div className="col-sm-6">
-          <div className="organization-info">
-            Organization Class: {(details.id % 2) ? 'Medium' : 'Large'}
+        <h5>Address</h5>
+        {details.organizationAddress && (
+          <div className="organization-address">
+            {details.organizationAddress.addressLine1}
             <br />
-            2019 Compliance target: 55,000
+            {details.organizationAddress.city} {details.organizationAddress.state}
             <br />
-            Credit balance: 23,000-A / 28,000-B
+            {details.organizationAddress.postalCode}
           </div>
-        </div>
+        )}
+      </div>
+      <div className="row">
+        <h5>Supplier Class</h5>
+        Organization Class: {(details.id % 2) ? 'Medium' : 'Large'}
+        <br />
+        2019 Compliance target: 55,000
+      </div>
+      <div className="row">
+        <h5>Credit Balance</h5>
+        Credit balance: 23,000-A / 28,000-B
       </div>
     </div>
   );
