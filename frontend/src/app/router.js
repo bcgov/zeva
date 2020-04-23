@@ -116,7 +116,7 @@ class Router extends Component {
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.DETAILS}
-                render={() => <VehicleSupplierDetailsContainer keycloak={keycloak} user={user} />}
+                render={() => <VehicleSupplierDetailsContainer keycloak={keycloak} user={user} activeTab="supplier-info" />}
               />
               <Route
                 exact

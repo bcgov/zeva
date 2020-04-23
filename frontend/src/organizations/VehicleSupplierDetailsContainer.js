@@ -18,7 +18,7 @@ const VehicleSupplierDetailsContainer = (props) => {
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [vehicles, setVehicles] = useState([]);
-  const { keycloak } = props;
+  const { keycloak, activeTab } = props;
 
   const refreshDetails = () => {
     setLoading(true);
@@ -43,15 +43,21 @@ const VehicleSupplierDetailsContainer = (props) => {
   return (
     <div>
       <VehicleSupplierTabs />
-      <VehicleSupplierDetailsPage
-        details={details}
-        loading={loading}
-        vehicles={vehicles}
-      />
+      {activeTab === 'supplier-info'
+      && (
+        <VehicleSupplierDetailsPage
+          details={details}
+          loading={loading}
+          vehicles={vehicles}
+        />
+      )}
+      {activeTab === 'transactions'
+        && (
+          <CreditTransactions title="Credit Transactions" items={creditTransactions} />
+        )}
     </div>
   );
 };
-
 VehicleSupplierDetailsContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
 };

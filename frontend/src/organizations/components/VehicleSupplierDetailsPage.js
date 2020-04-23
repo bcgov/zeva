@@ -46,64 +46,6 @@ const VehicleSupplierDetailsPage = (props) => {
           </div>
         </div>
       </div>
-
-      <div className="row mt-5">
-        <div className="col-sm-12">
-          <h2>ZEV Lineup Model Year 2019</h2>
-        </div>
-      </div>
-
-      <div className="row">
-        <div className="col-sm-12">
-          <div className="action-bar">
-            <span className="left-content">
-              <button
-                className="button"
-                onClick={() => {
-                  History.goBack();
-                }}
-                type="button"
-              >
-                <FontAwesomeIcon icon="arrow-left" /> <span>Back</span>
-              </button>
-            </span>
-
-            <span className="right-content">
-              Select a different model year
-
-              <select>
-                <option>2019</option>
-              </select>
-            </span>
-          </div>
-
-          <VehicleListTable
-            items={vehicles}
-          />
-
-          <div className="action-bar">
-            <span className="left-content">
-              <button
-                className="button"
-                onClick={() => {
-                  History.goBack();
-                }}
-                type="button"
-              >
-                <FontAwesomeIcon icon="arrow-left" /> <span>Back</span>
-              </button>
-            </span>
-
-            <span className="right-content">
-              Select a different model year
-
-              <select>
-                <option>2019</option>
-              </select>
-            </span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
