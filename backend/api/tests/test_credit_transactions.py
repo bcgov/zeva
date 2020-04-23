@@ -51,7 +51,7 @@ class TestOrganizations(BaseTestCase):
             )
 
     def test_org1_credits(self):
-        response = self.clients['vs_user_1'].get("/api/credits")
+        response = self.clients['vs_user_1'].get("/api/credit-transactions")
         self.assertEqual(response.status_code, 200)
         result = response.data
         self.assertEqual(len(result), self.ORG1_TRANSACTION_COUNT)
@@ -63,7 +63,7 @@ class TestOrganizations(BaseTestCase):
         self.assertEqual(result['balance']['B'], self.ORG1_BALANCE_B)
 
     def test_org2_credits(self):
-        response = self.clients['vs_user_2'].get("/api/credits")
+        response = self.clients['vs_user_2'].get("/api/credit-transactions")
         self.assertEqual(response.status_code, 200)
         result = response.data
         self.assertEqual(len(result), self.ORG2_TRANSACTION_COUNT)
@@ -75,9 +75,8 @@ class TestOrganizations(BaseTestCase):
         self.assertEqual(result['balance']['B'], self.ORG2_BALANCE_B)
 
     def test_gov_credits(self):
-        response = self.clients['engineer'].get("/api/credits")
+        response = self.clients['engineer'].get("/api/credit-transactions")
         self.assertEqual(response.status_code, 200)
 
         result = response.data
         self.assertEqual(len(result), self.GOV_TRANSACTION_COUNT)
-
