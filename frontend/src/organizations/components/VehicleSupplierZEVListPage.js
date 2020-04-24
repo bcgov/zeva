@@ -9,7 +9,6 @@ import VehicleListTable from '../../vehicles/components/VehicleListTable';
 
 const VehicleSupplierZEVListPage = (props) => {
   const { loading, vehicles } = props;
-  console.log(vehicles)
   if (loading) {
     return <Loading />;
   }

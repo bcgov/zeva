@@ -6,6 +6,7 @@ const ORGANIZATIONS = {
   VEHICLES: `${API_BASE_PATH}/:id/vehicles`,
   TRANSACTIONS:  `${API_BASE_PATH}/:id/credit-transactions`,
   USERS: `${API_BASE_PATH}/:id/users`,
+  EDIT: `${API_BASE_PATH}/:id/edit`,
   DETAILS: `${API_BASE_PATH}/:id`,
 
 };
