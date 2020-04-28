@@ -11,15 +11,16 @@ const UserDetailsTextInput = (props) => {
     name,
     id,
     details,
+    mandatory,
   } = props;
 
   const handleOnBlur = (event) => {
     const { value, name } = event.target;
-    if (value === '') {
+    if (value === '' && mandatory === true) {
       setValidationErrors(`${name} cannot be left blank`);
       setRowClass('form-group row error');
     }
-    if (value !== '') {
+    if (value !== '' || !mandatory) {
       setValidationErrors('');
       setRowClass('form-group row');
     }
