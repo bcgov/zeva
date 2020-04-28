@@ -28,7 +28,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
         model = Organization
         fields = (
             'id', 'name', 'organization_address', 'create_timestamp',
-            'balance', 'is_active'
+            'balance', 'is_active', 'short_name'
         )
 
 

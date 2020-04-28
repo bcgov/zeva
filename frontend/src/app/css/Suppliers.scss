@@ -14,3 +14,83 @@ h1 {
     font-size: 2rem;
   }
 
+  #supplier-detail-form {
+    .row {
+      padding: 1rem;
+    }
+
+    fieldset {
+        border: 1px solid $default-background-grey;
+        padding-top: 1rem;
+
+      legend {
+        color: $default-text-blue;
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 0;
+        margin-left: 1rem;
+        padding: 0 1rem 0;
+        width: auto;
+      }
+  
+      .form-group {
+        border: 1px solid $default-background-grey;
+        margin: .5rem;
+        padding: 1rem;
+        width:50vw;   
+        &:first-child {
+          margin-top: 0;
+        }
+  
+        &.action-bar {
+          margin-top: 2rem;
+        }
+        &.row {
+            padding: 10px;
+            background-color: $default-background-grey;
+            label {
+                margin-top: 0;
+            }
+            div {
+                display:flex;
+                align-items: center;
+            }
+          &.error{
+            background-color: #fff2f2;
+        }
+      }
+
+      }
+      .form-text {
+        white-space: normal;
+      }
+    }
+
+    input[type=text], select {
+      border: 2px solid $default-text-black;
+      margin-left:2rem;
+      width: 90%;
+      &.error {
+        border: 2px solid red
+      }
+    }
+    input[type=radio], input[type=checkbox] {
+        margin-right: 1rem;        
+    }
+    label {
+      color: $default-text-blue;
+      font-weight: bold;
+    }
+
+    .delete-button {
+        border: 1px solid red;
+        border-radius: 5%;
+        color: red;
+        padding: 0 1rem 0 1rem;
+    }
+  ul {
+      padding: 0;
+      white-space: nowrap;
+  }
+    
+  }

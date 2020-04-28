@@ -14,6 +14,7 @@ const UserDetailsTextInput = (props) => {
     mandatory,
   } = props;
 
+
   const handleOnBlur = (event) => {
     const { value, name } = event.target;
     if (value === '' && mandatory === true) {
