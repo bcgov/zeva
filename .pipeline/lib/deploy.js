@@ -139,6 +139,26 @@ module.exports = settings => {
     }
   }))
 
+  //add autoacaler
+  if(phase === 'test' || phase === 'prod') {
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-autoscaler.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'SUFFIX': phases[phase].suffix,
+        'MIN_REPLICAS': phases[phase].frontendMinReplicas,
+        'MAX_REPLICAS': phases[phase].frontendMaxReplicas
+      }
+    }))
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/backend/backend-autoscaler.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'SUFFIX': phases[phase].suffix,
+        'MIN_REPLICAS': phases[phase].backendMinReplicas,
+        'MAX_REPLICAS': phases[phase].backendMaxReplicas
+      }
+    }))
+  }
+
   oc.applyRecommendedLabels(
       objects,
       phases[phase].name,
