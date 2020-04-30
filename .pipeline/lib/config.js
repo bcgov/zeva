@@ -36,12 +36,12 @@ const phases = {
         ssoName:'sso', phase: 'prod'  , changeId:changeId, suffix: `-prod`  , 
         instance: `${name}-prod`  , version:`${version}`, tag:`prod-${version}`, 
         host: 'zeva-prod.pathfinder.gov.bc.ca', minioPvcSize: '10Gi', djangoDebug: 'False',
-        frontendCpuRequest: '50m', frontendCpuLimit: '100m', frontendMemoryRequest: '500M', frontendMemoryLimit: '700M', 
-        backendCpuRequest: '100m', backendCpuLimit: '500m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 90,
+        frontendCpuRequest: '100m', frontendCpuLimit: '300m', frontendMemoryRequest: '500M', frontendMemoryLimit: '1G', 
+        backendCpuRequest: '200m', backendCpuLimit: '500m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 10,
         minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M',
-        schemaspyCpuRequest: '50m', schemaspyCpuLimit: '500m', schemaspyMemoryRequest: '250M', schemaspyMemoryLimit: '1500M', schemaspyHealthCheckDelay: 90,
-        rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '600m', rabbitmqMemoryRequest: '512M', rabbitmqMemoryLimit: '1G', rabbitmqPvcSize: '2G', rabbitmqPodManagementPolicy: 'OrderedReady', rabbitmqReplica: 3, rabbitmqPostStartSleep: 120,
-        patroniCpuRequest: '250m', patroniCpuLimit: '600m', patroniMemoryRequest: '1G', patroniMemoryLimit: '2G', patroniPvcSize: '5G', patroniPodManagementPolicy: 'OrderedReady', patroniReplica: 3},
+        schemaspyCpuRequest: '50m', schemaspyCpuLimit: '400m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 30,
+        rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '600m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '1G', rabbitmqPvcSize: '2G', rabbitmqPodManagementPolicy: 'OrderedReady', rabbitmqReplica: 3, rabbitmqPostStartSleep: 120,
+        patroniCpuRequest: '250m', patroniCpuLimit: '600m', patroniMemoryRequest: '1G', patroniMemoryLimit: '2G', patroniPvcSize: '10G', patroniPodManagementPolicy: 'OrderedReady', patroniReplica: 3},
 
 };
 

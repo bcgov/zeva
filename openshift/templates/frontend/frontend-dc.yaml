@@ -21,11 +21,6 @@ parameters:
     displayName: Environment name
     description: Environment name, dev, test and prod
     required: true
-  - name: DASH_ENV_NAME
-    value: dev
-    displayName: Environment name
-    description: Environment name, -dev, -test and empty for prod
-    required: true
   - name: CPU_REQUEST
     displayName: Requested CPU
     description: Requested CPU

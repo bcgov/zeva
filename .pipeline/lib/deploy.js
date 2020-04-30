@@ -102,7 +102,6 @@ module.exports = settings => {
       'SUFFIX': phases[phase].suffix,
       'VERSION': phases[phase].tag,
       'ENV_NAME': phases[phase].phase,
-      'DASH_ENV_NAME': phases[phase].ssoSuffix,
       'CPU_REQUEST': phases[phase].frontendCpuRequest,
       'CPU_LIMIT': phases[phase].frontendCpuLimit,
       'MEMORY_REQUEST': phases[phase].frontendMemoryRequest,

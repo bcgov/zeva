@@ -42,3 +42,19 @@ oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-prod --dr
 
 ## Frontend
 oc tag registry.access.redhat.com/rhscl/rhscl/nodejs-10-rhel7:1-28 tbiwaq-tools/nodejs:10-1-28
+
+## Production Deployment
+* create template.patroni-patroni
+oc process -f ./patroni/secret-template.yaml | oc create -f - -n tbiwaq-prod
+* create template.rabbitmq-secret
+oc process -f ./rabbitmq/secret-template.yaml | oc create -f - -n tbiwaq-prod
+* create zeva-keycloak
+oc process -f ./keycloak/keycloak-secret.yaml \
+    KEYCLOAK_SA_CLIENT_SECRET=****** \
+    clientId=******** \
+    clientSecret=******** \
+    zevaPublic=******** \
+    realmId=******** \
+    host=sso.pathfinder.gov.bc.ca | oc create -f - -n tbiwaq-prod --dry-run=true
+* grant admin role to tbiwaq-tools/jenkins-prod
+oc policy add-role-to-user admin system:serviceaccount:tbiwaq-tools:jenkins-prod --namespace=tbiwaq-prod
