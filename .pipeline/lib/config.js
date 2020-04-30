@@ -40,8 +40,8 @@ const phases = {
         backendCpuRequest: '200m', backendCpuLimit: '500m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 10,
         minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M',
         schemaspyCpuRequest: '50m', schemaspyCpuLimit: '400m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 30,
-        rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '600m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '1G', rabbitmqPvcSize: '2G', rabbitmqPodManagementPolicy: 'OrderedReady', rabbitmqReplica: 3, rabbitmqPostStartSleep: 120,
-        patroniCpuRequest: '250m', patroniCpuLimit: '600m', patroniMemoryRequest: '1G', patroniMemoryLimit: '2G', patroniPvcSize: '10G', patroniPodManagementPolicy: 'OrderedReady', patroniReplica: 3},
+        rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '600m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '1G', rabbitmqPvcSize: '5G', rabbitmqPodManagementPolicy: 'OrderedReady', rabbitmqReplica: 3, rabbitmqPostStartSleep: 120,
+        patroniCpuRequest: '250m', patroniCpuLimit: '600m', patroniMemoryRequest: '1G', patroniMemoryLimit: '2G', patroniPvcSize: '5G', patroniPodManagementPolicy: 'OrderedReady', patroniReplica: 3},
 
 };
 
