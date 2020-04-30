@@ -56,5 +56,12 @@ oc process -f ./keycloak/keycloak-secret.yaml \
     zevaPublic=******** \
     realmId=******** \
     host=sso.pathfinder.gov.bc.ca | oc create -f - -n tbiwaq-prod --dry-run=true
+* create zeva-minio secret
+oc process -f ./minio/minio-secret.yaml | oc create -f - -n tbiwaq-prod
+* create zeva-rabbitmq secret
+oc process -f ./rabbitmq/zeva-rabbitmq-secret.yaml | oc create -f - -n tbiwaq-prod
+* tag patroni image to prod
+oc tag tbiwaq-tools/patroni:v10-latest tbiwaq-prod/patroni:v10-stable
 * grant admin role to tbiwaq-tools/jenkins-prod
 oc policy add-role-to-user admin system:serviceaccount:tbiwaq-tools:jenkins-prod --namespace=tbiwaq-prod
+oc policy add-role-to-user system:image-puller system:serviceaccount:tbiwaq-prod:default --namespace=tbiwaq-tools

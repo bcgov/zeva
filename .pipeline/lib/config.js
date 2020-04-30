@@ -10,6 +10,7 @@ const phases = {
           changeId:changeId, suffix: `-build-${changeId}`  , instance: `${name}-build-${changeId}`  , 
           version:`${version}-${changeId}`, tag:`build-${version}-${changeId}`},
 
+//host: `zeva-dev-${changeId}.pathfinder.gov.bc.ca`
   dev: {namespace:'tbiwaq-dev'       , transient:true, name: `${name}`, ssoSuffix:'-dev', 
         ssoName:'sso-dev', phase: 'dev'  , changeId:changeId, suffix: `-dev-${changeId}`  , 
         instance: `${name}-dev-${changeId}`  , version:`${version}-${changeId}`, tag:`dev-${version}-${changeId}`, 
@@ -35,7 +36,7 @@ const phases = {
   prod: {namespace:'tbiwaq-prod'     , name: `${name}`, ssoSuffix:'', 
         ssoName:'sso', phase: 'prod'  , changeId:changeId, suffix: `-prod`  , 
         instance: `${name}-prod`  , version:`${version}`, tag:`prod-${version}`, 
-        host: 'zeva-prod.pathfinder.gov.bc.ca', minioPvcSize: '10Gi', djangoDebug: 'False',
+        host: 'zeroemissionvehicles.pathfinder.gov.bc.ca', minioPvcSize: '10Gi', djangoDebug: 'False',
         frontendCpuRequest: '100m', frontendCpuLimit: '300m', frontendMemoryRequest: '500M', frontendMemoryLimit: '1G', 
         backendCpuRequest: '200m', backendCpuLimit: '500m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 10,
         minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M',
