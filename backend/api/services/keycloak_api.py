@@ -595,3 +595,27 @@ def delete_group_by_id(token, id):
     if not response.ok:
         raise RuntimeError(
             'bad response code: {}'.format(response.status_code))
+
+
+def update_user_groups(username, group_names=[]):
+    token = get_token()
+
+    id = get_user_id(token, username)
+
+    for group_name in group_names:
+        group_id = get_group_id(token, group_name)
+        print(group_id)
+        url = '{keycloak}/auth/admin/realms/{realm}/users/{id}/groups/{group_id}'.format(
+            keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
+            realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'],
+            id=id,
+            group_id=group_id
+        )
+
+        headers = {'Authorization': 'Bearer {}'.format(token)}
+
+        response = requests.put(url, headers=headers)
+
+        if not response.ok:
+            raise RuntimeError(
+                'bad response code: {}'.format(response.status_code))

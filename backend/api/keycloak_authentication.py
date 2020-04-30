@@ -121,61 +121,55 @@ class UserAuthentication(authentication.BaseAuthentication):
             )
 
         user_found_via_email = None
+        user = None
 
         if 'user_id' not in user_token:
             # try email
             if 'email' in user_token:
-                creation_request = UserCreationRequest.objects.filter(
+                user_profile = UserProfile.objects.filter(
                     keycloak_email__iexact=user_token['email']
                 )
 
-                if not creation_request.exists():
+                if not user_profile.exists():
                     raise exceptions.AuthenticationFailed(
                         "User does not exist.")
 
-                if creation_request.count() > 1:
+                if user_profile.count() > 1:
                     _, preferred_username = user_token[
                         'preferred_username'].split('\\')
 
-                    creation_request = creation_request.filter(
-                        external_username__iexact=preferred_username
+                    user_profile = user_profile.filter(
+                        username__iexact=preferred_username
                     )
 
-                user_creation_request = creation_request.first()
+                user = user_profile.first()
 
-                if not user_creation_request.is_mapped:
-                    map_user(
-                        user_token['sub'],
-                        user_creation_request.user_profile.username
-                    )
-
-                    user_creation_request.is_mapped = True
-                    user_creation_request.save()
-
-                user_found_via_email = \
-                    user_creation_request.user_profile.username
+                map_user(
+                    user_token.get('sub'),
+                    user.username
+                )
             else:
                 raise exceptions.AuthenticationFailed(
                     'user_id or email is required in jwt payload')
-
-        username = user_token['user_id'] \
-            if 'user_id' in user_token else user_found_via_email
-
-        try:
-            user = UserProfile.objects.get_by_natural_key(username)
-
-            if not user.is_active:
+        else:
+            try:
+                user = UserProfile.objects.get_by_natural_key(
+                    user_token.get('user_id')
+                )
+            except UserProfile.DoesNotExist:
                 raise exceptions.AuthenticationFailed(
                     'user_id "{}" does not exist'.format(username))
 
-            if 'realm_access' in user_token:
-                if 'roles' in user_token['realm_access']:
-                    for role in user_token['realm_access']['roles']:
-                        if role not in FILTERED_ROLES:
-                            user.roles.append(role)
+        if not user.is_active:
+            raise exceptions.PermissionDenied(
+                'Your account is currently inactive. Please contact your '
+                'administrator to re-activate your account.'
+            )
 
-        except UserProfile.DoesNotExist:
-            raise exceptions.AuthenticationFailed(
-                'user_id "{}" does not exist'.format(username))
+        if 'realm_access' in user_token:
+            if 'roles' in user_token['realm_access']:
+                for role in user_token['realm_access']['roles']:
+                    if role not in FILTERED_ROLES:
+                        user.roles.append(role)
 
         return user, None
