@@ -37,7 +37,6 @@ const UserDetailsTextInput = (props) => {
         {label}
       </label>
       <div className="col-sm-8">
-        <small className="form-text text-danger">{ validationErrors }</small>
         {details && (<small className="form-text text-muted">{details}</small>) }
         <input
           className="form-control"
@@ -48,6 +47,7 @@ const UserDetailsTextInput = (props) => {
           onChange={handleInputChange}
           onBlur={handleOnBlur}
         />
+        <small className="form-text text-danger">{ validationErrors }</small>
       </div>
     </div>
   );

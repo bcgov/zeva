@@ -5,7 +5,8 @@ from rest_framework.response import Response
 
 from api.models.organization import Organization
 from api.serializers.organization import \
-    OrganizationSerializer, OrganizationWithMembersSerializer
+    OrganizationSerializer, OrganizationWithMembersSerializer\
+    , OrganizationSaveSerializer
 from auditable.views import AuditableMixin
 
 
@@ -25,6 +26,8 @@ class OrganizationViewSet(
     serializer_classes = {
         'default': OrganizationSerializer,
         'mine': OrganizationWithMembersSerializer,
+        'update': OrganizationSaveSerializer,
+        'partial_update': OrganizationSaveSerializer
     }
 
     def get_serializer_class(self):

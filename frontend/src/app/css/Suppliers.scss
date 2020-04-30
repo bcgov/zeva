@@ -52,8 +52,9 @@ h1 {
                 margin-top: 0;
             }
             div {
-                display:flex;
-                align-items: center;
+                &#radio {
+                    padding-left: 2rem;
+                }
             }
           &.error{
             background-color: #fff2f2;

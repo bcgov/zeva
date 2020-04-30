@@ -23,15 +23,16 @@ const VehicleSupplierDetailsContainer = (props) => {
   const [vehicles, setVehicles] = useState([]);
   const [activeTab, setActiveTab] = useState('supplier-info');
   const [editForm, setEditForm] = useState(false);
+  const [display, setDisplay] = useState({});
   const { keycloak } = props;
+
 
   const refreshDetails = () => {
     setLoading(true);
-
     const detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
       setDetails(response.data);
+      setDisplay(response.data);
     });
-
     const vehiclesPromise = axios.get(ROUTES_VEHICLES.LIST).then((response) => {
       setVehicles(response.data);
     });
@@ -39,7 +40,6 @@ const VehicleSupplierDetailsContainer = (props) => {
     Promise.all([detailsPromise, vehiclesPromise]).then(() => {
       setLoading(false);
     });
-    console.log(editForm)
   };
 
   useEffect(() => {
@@ -58,18 +58,37 @@ const VehicleSupplierDetailsContainer = (props) => {
       <FontAwesomeIcon icon="edit" /> Edit
     </button>
   );
+
   const handleInputChange = (event) => {
     const { value, name } = event.target;
-    console.log(value);
+    setDetails({
+      ...details,
+      [name]: value,
+    });
+  };
+
+  const handleAddressChange = (event) => {
+    const { value, name } = event.target;
+    setDetails({
+      ...details,
+      organizationAddress: {
+        ...details.organizationAddress,
+        [name]: value,
+      },
+    });
   };
   const handleSubmit = () => {
-    console.log('submit!');
+    axios.patch(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id),
+      details).then((response) => {
+      console.log(details);
+      console.log(response);
+    });
   };
   return (
     <div>
       <div className="row">
         <div className="col-sm-12">
-          <h1>{details.name}</h1>
+          <h1>{display.name}</h1>
         </div>
       </div>
       <VehicleSupplierTabs supplierId={details.id} active={activeTab} setActiveTab={setActiveTab} />
@@ -82,9 +101,9 @@ const VehicleSupplierDetailsContainer = (props) => {
           editButton={editButton}
         />
       )}
-      {activeTab === 'supplier-info' && editForm === true
+      {activeTab === 'supplier-info' && editForm === true && loading === false
       && (
-        <VehicleSupplierEditForm setEditForm={setEditForm} details={details} handleInputChange={handleInputChange} loading={loading} handleSubmit={handleSubmit} />
+        <VehicleSupplierEditForm display={display} setEditForm={setEditForm} details={details} handleAddressChange={handleAddressChange} handleInputChange={handleInputChange} loading={loading} handleSubmit={handleSubmit} />
       )}
       {activeTab === 'supplier-zev-models'
       && (

@@ -8,14 +8,29 @@ import History from '../../app/History';
 const VehicleSupplierEditForm = (props) => {
   const {
     details,
+    display,
     loading,
     user,
     handleInputChange,
     handleSubmit,
     setEditForm,
-
+    handleAddressChange,
   } = props;
-  console.log(details);
+
+
+  let addressDetails = {};
+  if (details.organizationAddress) {
+    addressDetails = {
+      ...details.organizationAddress,
+    };
+  }
+
+  let addressDisplay = {};
+  if (display.organizationAddress) {
+    addressDisplay = {
+      ...display.organizationAddress,
+    };
+  }
 
   if (loading) {
     return <Loading />;
@@ -24,8 +39,13 @@ const VehicleSupplierEditForm = (props) => {
     <div id="supplier-detail-form" className="page">
       <div className="row">
         <div className="col-md-12">
-          <h5>Edit Supplier</h5>
-          <h6>{details.name} {details.shortName && '(' + details.shortName + ')'}</h6>
+          <h4>Edit Supplier</h4>
+          <h5>{display.name} {display.shortName && `(${display.shortName})`}</h5>
+          {display.organizationAddress && (
+          <p>
+            {addressDisplay.addressLine1}{ addressDisplay.addressLine2}, {addressDisplay.city} {addressDisplay.state} {addressDisplay.postalCode}
+          </p>
+          )}
         </div>
       </div>
       <form onSubmit={(event) => handleSubmit(event)}>
@@ -33,10 +53,43 @@ const VehicleSupplierEditForm = (props) => {
           <fieldset>
             <div className="form-layout row">
               <span>
+                <div className="form-group row">
+                  <label
+                    className="col-sm-4 col-form-label"
+                    htmlFor="active"
+                  >
+                        Supplier Status
+                  </label>
+                  <div className="col-sm-8" id="radio">
+                    <div>
+
+                      <input
+                        type="radio"
+                        id="active"
+                        onChange={handleInputChange}
+                        name="isActive"
+                        value="true"
+                        defaultChecked={details.isActive}
+                      />
+                    Actively supplying vehicles in B.C.
+                    </div>
+                    <div>
+                      <input
+                        type="radio"
+                        id="inactive"
+                        onChange={handleInputChange}
+                        name="isActive"
+                        value="false"
+                        defaultChecked={!details.isActive}
+                      />
+                    Inactive
+                    </div>
+                  </div>
+                </div>
                 <UserDetailsTextInput
                   label="Legal Organization Name"
                   id="LegalOrganizationName"
-                  name="Legal Organization Name"
+                  name="name"
                   defaultValue={details.name}
                   handleInputChange={handleInputChange}
                   mandatory
@@ -44,51 +97,56 @@ const VehicleSupplierEditForm = (props) => {
                 <UserDetailsTextInput
                   label="Common Name"
                   id="CommonName"
-                  name="Common Name"
+                  name="shortName"
                   defaultValue={details.shortName}
                   handleInputChange={handleInputChange}
                 />
                 <UserDetailsTextInput
                   label="Street Address/PO Box"
                   id="StreetAddress"
-                  name="Street Address"
-                  defaultValue={details.organizationAddress? details.organizationAddress.addressLine1 : ''}
-                  handleInputChange={handleInputChange}
+                  name="addressLine_1"
+                  defaultValue={addressDetails.addressLine1}
+                  handleInputChange={handleAddressChange}
+                  mandatory
                 />
                 <UserDetailsTextInput
                   label="Address Other (optional)"
                   id="AddressOther"
-                  name="Address Other"
-                  defaultValue={details.organizationAddress? details.organizationAddress.addressLine2: ''}
-                  handleInputChange={handleInputChange}
+                  name="addressLine_2"
+                  defaultValue={addressDetails.addressLine2}
+                  handleInputChange={handleAddressChange}
                 />
                 <UserDetailsTextInput
                   label="City"
                   id="City"
-                  name="City"
-                  defaultValue={details.organizationAddress? details.organizationAddress.city: ''}
-                  handleInputChange={handleInputChange}
+                  name="city"
+                  defaultValue={addressDetails.city}
+                  handleInputChange={handleAddressChange}
+                  mandatory
                 />
                 <UserDetailsTextInput
                   label="Province/State/Region"
                   id="Province"
-                  name="Province"
-                  defaultValue={details.organizationAddress? details.organizationAddress.state: ''}
-                  handleInputChange={handleInputChange}
+                  name="state"
+                  defaultValue={addressDetails.state}
+                  handleInputChange={handleAddressChange}
+                  mandatory
                 />
                 <UserDetailsTextInput
                   label="Country"
                   id="Country"
-                  name="Country"
-                  defaultValue={details.organizationAddress? details.organizationAddress.country: ''}
-                  handleInputChange={handleInputChange}
+                  name="country"
+                  defaultValue={addressDetails.country}
+                  handleInputChange={handleAddressChange}
+                  mandatory
                 />
                 <UserDetailsTextInput
                   label="Postal/ZIP Code"
                   id="PostalCode"
-                  name="Postal Code"
-                  defaultValue={details.organizationAddress? details.organizationAddress.postalCode: ''}
-                  handleInputChange={handleInputChange}
+                  name="postalCode"
+                  defaultValue={addressDetails.postalCode}
+                  handleInputChange={handleAddressChange}
+                  mandatory
                 />
 
               </span>
@@ -104,8 +162,6 @@ const VehicleSupplierEditForm = (props) => {
                   }}
                 >
                   <FontAwesomeIcon icon="arrow-left" /> Back
-                </button>
-                <button type="button" className="delete-button"> Delete
                 </button>
               </span>
 
