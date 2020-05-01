@@ -16,9 +16,9 @@ const UserDetailsTextInput = (props) => {
 
 
   const handleOnBlur = (event) => {
-    const { value, name } = event.target;
+    const { value } = event.target;
     if (value === '' && mandatory === true) {
-      setValidationErrors(`${name} cannot be left blank`);
+      setValidationErrors(`${label} cannot be left blank`);
       setRowClass('form-group row error');
     }
     if (value !== '' || !mandatory) {

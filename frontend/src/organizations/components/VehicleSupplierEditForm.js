@@ -43,7 +43,7 @@ const VehicleSupplierEditForm = (props) => {
           <h5>{display.name} {display.shortName && `(${display.shortName})`}</h5>
           {display.organizationAddress && (
           <p>
-            {addressDisplay.addressLine1}{ addressDisplay.addressLine2}, {addressDisplay.city} {addressDisplay.state} {addressDisplay.postalCode}
+            {addressDisplay.addressLine1} {addressDisplay.addressLine2} {addressDisplay.city} {addressDisplay.state} {addressDisplay.postalCode}
           </p>
           )}
         </div>
@@ -86,6 +86,7 @@ const VehicleSupplierEditForm = (props) => {
                     </div>
                   </div>
                 </div>
+                
                 <UserDetailsTextInput
                   label="Legal Organization Name"
                   id="LegalOrganizationName"
@@ -111,7 +112,7 @@ const VehicleSupplierEditForm = (props) => {
                 />
                 <UserDetailsTextInput
                   label="Address Other (optional)"
-                  id="AddressOther"
+                  id="addressLine2"
                   name="addressLine_2"
                   defaultValue={addressDetails.addressLine2}
                   handleInputChange={handleAddressChange}

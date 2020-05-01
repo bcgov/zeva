@@ -61,18 +61,29 @@ const VehicleSupplierDetailsContainer = (props) => {
 
   const handleInputChange = (event) => {
     const { value, name } = event.target;
+    const address1 = details.organizationAddress ? details.organizationAddress.addressLine1 : '';
+    const address2 = details.organizationAddress ? details.organizationAddress.addressLine2 : '';
     setDetails({
       ...details,
       [name]: value,
+      organizationAddress: {
+        ...details.organizationAddress,
+        addressLine_1: address1,
+        addressLine_2: address2,
+      },
     });
   };
 
   const handleAddressChange = (event) => {
     const { value, name } = event.target;
+    const address1 = details.organizationAddress ? details.organizationAddress.addressLine1 : '';
+    const address2 = details.organizationAddress ? details.organizationAddress.addressLine2 : '';
     setDetails({
       ...details,
       organizationAddress: {
         ...details.organizationAddress,
+        addressLine_1: address1,
+        addressLine_2: address2,
         [name]: value,
       },
     });
@@ -80,8 +91,10 @@ const VehicleSupplierDetailsContainer = (props) => {
   const handleSubmit = () => {
     axios.patch(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id),
       details).then((response) => {
-      console.log(details);
-      console.log(response);
+      setDetails(response.data);
+      setDisplay(response.data);
+      setEditForm(false);
+      History.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));
     });
   };
   return (
