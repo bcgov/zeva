@@ -160,6 +160,7 @@ objects:
                 - /bin/sh
                 - '-c'
                 - |-
+                  sleep 120
                   python manage.py migrate
                   if [ $? -eq 0 ]; then 
                     ./load_data.sh 
@@ -335,7 +336,8 @@ objects:
                 failureThreshold: 30
                 tcpSocket:
                   port: 8080
-                initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
+#                initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
+                initialDelaySeconds: 130
                 periodSeconds: 15
                 successThreshold: 1
                 timeoutSeconds: 3
@@ -346,7 +348,8 @@ objects:
                 failureThreshold: 30
                 tcpSocket:
                   port: 8080
-                initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
+#                initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
+                initialDelaySeconds: 130
                 periodSeconds: 15
                 successThreshold: 1
                 timeoutSeconds: 3
