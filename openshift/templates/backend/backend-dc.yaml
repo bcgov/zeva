@@ -336,8 +336,7 @@ objects:
                 failureThreshold: 30
                 tcpSocket:
                   port: 8080
-#                initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
-                initialDelaySeconds: 130
+                initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
                 periodSeconds: 15
                 successThreshold: 1
                 timeoutSeconds: 3
@@ -348,8 +347,7 @@ objects:
                 failureThreshold: 30
                 tcpSocket:
                   port: 8080
-#                initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
-                initialDelaySeconds: 130
+                initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
                 periodSeconds: 15
                 successThreshold: 1
                 timeoutSeconds: 3
