@@ -44,6 +44,9 @@ oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-prod --dr
 oc tag registry.access.redhat.com/rhscl/rhscl/nodejs-10-rhel7:1-28 tbiwaq-tools/nodejs:10-1-28
 
 ## Production Deployment
+* tag docker-registry.default.svc:5000/bcgov/patroni to zeva namespace
+oc create imagestream patroni -n tbiwaq-prod
+oc tag docker-registry.default.svc:5000/bcgov/patroni:v10-stable tbiwaq/patrobi:v10-stable
 * create template.patroni-patroni
 oc process -f ./patroni/secret-template.yaml | oc create -f - -n tbiwaq-prod
 * create template.rabbitmq-secret

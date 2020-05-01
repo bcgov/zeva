@@ -96,8 +96,8 @@ objects:
       cluster-name: ${NAME}${SUFFIX}
     name: ${NAME}${SUFFIX}
   spec:
+    podManagementPolicy: OrderedReady
     replicas: ${{REPLICA}}
-    podManagementPolicy: ${POD_MANAGEMENT_POLICY}
     revisionHistoryLimit: 10
     selector:
       matchLabels:
@@ -351,7 +351,7 @@ parameters:
 - description: Maximum amount of CPU the container can use.
   displayName: CPU Limit
   name: CPU_LIMIT
-  value: '1000m'
+  value: '1'
 - description: Starting amount of memory the container can use.
   displayName: Memory Request
   name: MEMORY_REQUEST
@@ -373,11 +373,8 @@ parameters:
   name: PVC_SIZE
   value: 1Gi
 - name: STORAGE_CLASS
-  value: netapp-file-standard
+  value: netapp-block-standard
 - name: IMAGE_REGISTRY
-  #docker-registry.default.svc:5000
   value: docker-registry.default.svc:5000
 - name: REPLICA
   value: '2'
-- name: POD_MANAGEMENT_POLICY
-  value: OrderedReady  
