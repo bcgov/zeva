@@ -21,6 +21,10 @@ parameters:
     displayName: Environment name
     description: 'Environment name, dev, test and prod'
     required: true
+  - name: HOST_NAME
+    displayName: Host name for route
+    description: Host name for route
+    required: true    
   - name: CPU_REQUEST
     displayName: Requested CPU
     description: Requested CPU
@@ -97,7 +101,7 @@ objects:
         env: '${ENV_NAME}'
       name: '${NAME}-backend-api${SUFFIX}'
     spec:
-      host: '${NAME}${SUFFIX}.pathfinder.gov.bc.ca'
+      host: ${HOST_NAME}
       path: /api
       port:
         targetPort: backend
@@ -119,7 +123,7 @@ objects:
         env: '${ENV_NAME}'
       name: '${NAME}-backend-health${SUFFIX}'
     spec:
-      host: '${NAME}${SUFFIX}.pathfinder.gov.bc.ca'
+      host: ${HOST_NAME}
       path: /health
       port:
         targetPort: backend
@@ -156,6 +160,7 @@ objects:
                 - /bin/sh
                 - '-c'
                 - |-
+                  sleep 120
                   python manage.py migrate
                   if [ $? -eq 0 ]; then 
                     ./load_data.sh 

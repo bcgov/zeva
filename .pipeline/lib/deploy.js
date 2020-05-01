@@ -68,8 +68,7 @@ module.exports = settings => {
       'IMAGE_REGISTRY': 'docker-registry.default.svc:5000',
       'IMAGE_STREAM_NAMESPACE': phases[phase].namespace,
       'IMAGE_STREAM_TAG': 'patroni:v10-stable',
-      'REPLICA': phases[phase].patroniReplica,
-      'POD_MANAGEMENT_POLICY': phases[phase].patroniPodManagementPolicy
+      'REPLICA': phases[phase].patroniReplica
     }
   }))
 
@@ -102,7 +101,7 @@ module.exports = settings => {
       'SUFFIX': phases[phase].suffix,
       'VERSION': phases[phase].tag,
       'ENV_NAME': phases[phase].phase,
-      'DASH_ENV_NAME': phases[phase].ssoSuffix,
+      'HOST_NAME': phases[phase].host,
       'CPU_REQUEST': phases[phase].frontendCpuRequest,
       'CPU_LIMIT': phases[phase].frontendCpuLimit,
       'MEMORY_REQUEST': phases[phase].frontendMemoryRequest,
@@ -117,6 +116,7 @@ module.exports = settings => {
       'SUFFIX': phases[phase].suffix,
       'VERSION': phases[phase].tag,
       'ENV_NAME': phases[phase].phase,
+      'HOST_NAME': phases[phase].host,
       'CPU_REQUEST': phases[phase].backendCpuRequest,
       'CPU_LIMIT': phases[phase].backendCpuLimit,
       'MEMORY_REQUEST': phases[phase].backendMemoryRequest,
@@ -137,7 +137,27 @@ module.exports = settings => {
       'HEALTH_CHECK_DELAY': phases[phase].schemaspyHealthCheckDelay
     }
   }))
- 
+
+  //add autoacaler
+  if(phase === 'test' || phase === 'prod') {
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-autoscaler.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'SUFFIX': phases[phase].suffix,
+        'MIN_REPLICAS': phases[phase].frontendMinReplicas,
+        'MAX_REPLICAS': phases[phase].frontendMaxReplicas
+      }
+    }))
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/backend/backend-autoscaler.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'SUFFIX': phases[phase].suffix,
+        'MIN_REPLICAS': phases[phase].backendMinReplicas,
+        'MAX_REPLICAS': phases[phase].backendMaxReplicas
+      }
+    }))
+  }
+
   oc.applyRecommendedLabels(
       objects,
       phases[phase].name,

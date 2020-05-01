@@ -31,7 +31,8 @@ oc process -f config/zeva-postgresql-init.yaml | oc create -f - -n tbiwaq-test -
 oc process -f config/zeva-postgresql-init.yaml | oc create -f - -n tbiwaq-prod --dry-run=true  
 
 ## Patroni
-oc process -f ./patroni/build.yaml -p GIT_URI=https://github.com/bcgov/zeva.git -p GIT_REF=patroni-2  | oc apply -f - -n tbiwaq-tools --dry-run=true
+Zeva uses bcgov patroni:v10-stable as base, updates post_init.sh to create postgresql extensions as they can be only created by super user.
+oc process -f ./patroni/build.yaml -p GIT_URI=https://github.com/bcgov/zeva.git -p GIT_REF=******  | oc apply -f - -n tbiwaq-tools --dry-run=true
 oc tag tbiwaq-tools/patroni:v10-latest tbiwaq-tools/patroni:v10-stable
 oc tag tbiwaq-tools/patroni:v10-latest tbiwaq-dev/patroni:v10-stable
 oc tag tbiwaq-tools/patroni:v10-latest tbiwaq-test/patroni:v10-stable
@@ -42,3 +43,29 @@ oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-prod --dr
 
 ## Frontend
 oc tag registry.access.redhat.com/rhscl/rhscl/nodejs-10-rhel7:1-28 tbiwaq-tools/nodejs:10-1-28
+
+## Production Deployment
+* tag docker-registry.default.svc:5000/bcgov/patroni to zeva namespace
+oc create imagestream patroni -n tbiwaq-prod
+oc tag docker-registry.default.svc:5000/bcgov/patroni:v10-stable tbiwaq/patrobi:v10-stable
+* create template.patroni-patroni
+oc process -f ./patroni/secret-template.yaml | oc create -f - -n tbiwaq-prod
+* create template.rabbitmq-secret
+oc process -f ./rabbitmq/secret-template.yaml | oc create -f - -n tbiwaq-prod
+* create zeva-keycloak
+oc process -f ./keycloak/keycloak-secret.yaml \
+    KEYCLOAK_SA_CLIENT_SECRET=****** \
+    clientId=******** \
+    clientSecret=******** \
+    zevaPublic=******** \
+    realmId=******** \
+    host=sso.pathfinder.gov.bc.ca | oc create -f - -n tbiwaq-prod --dry-run=true
+* create zeva-minio secret
+oc process -f ./minio/minio-secret.yaml | oc create -f - -n tbiwaq-prod
+* create zeva-rabbitmq secret
+oc process -f ./rabbitmq/zeva-rabbitmq-secret.yaml | oc create -f - -n tbiwaq-prod
+* tag patroni image to prod
+oc tag tbiwaq-tools/patroni:v10-latest tbiwaq-prod/patroni:v10-stable
+* grant admin role to tbiwaq-tools/jenkins-prod
+oc policy add-role-to-user admin system:serviceaccount:tbiwaq-tools:jenkins-prod --namespace=tbiwaq-prod
+oc policy add-role-to-user system:image-puller system:serviceaccount:tbiwaq-prod:default --namespace=tbiwaq-tools
