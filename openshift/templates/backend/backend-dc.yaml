@@ -292,12 +292,12 @@ objects:
                 - name: RABBITMQ_USER
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}${SUFFIX}-${CLUSTER_NAME}-secret
+                      name: ${NAME}${SUFFIX}-${RABBITMQ_CLUSTER_NAME}-secret
                       key: username
                 - name: RABBITMQ_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}${SUFFIX}-${CLUSTER_NAME}-secret
+                      name: ${NAME}${SUFFIX}-${RABBITMQ_CLUSTER_NAME}-secret
                       key: password
                 - name: RABBITMQ_HOST
                   valueFrom:
