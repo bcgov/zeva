@@ -63,8 +63,9 @@ oc tag tbiwaq-tools/patroni:v10-latest tbiwaq-prod/patroni:v10-stable
 oc process -f ./patroni/secret-template.yaml | oc create -f - -n tbiwaq-prod
 * rabbitmq
 oc create imagestream rabbitmq -n tbiwaq-prod
-oc tag docker.io//rabbitmq:3.8.3-management tbiwaq-prod/rabbitmq:3.8.3-management
+oc tag docker.io/rabbitmq:3.8.3-management tbiwaq-prod/rabbitmq:3.8.3-management
 oc process -f ./rabbitmq/secret-template.yaml | oc create -f - -n tbiwaq-prod
+rabbitmq/rabbitmq-web-route.yaml can be used to create rabbitmq web management route when needed
 * create zeva-keycloak
 oc process -f ./keycloak/keycloak-secret.yaml \
     KEYCLOAK_SA_CLIENT_SECRET=****** \
