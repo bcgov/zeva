@@ -25,6 +25,10 @@ parameters:
     displayName: Host name for route
     description: Host name for route
     required: true    
+  - name: RABBITMQ_CLUSTER_NAME
+    displayName: rabbitmq cluser name
+    description: rabbitmq cluser name
+    required: true        
   - name: CPU_REQUEST
     displayName: Requested CPU
     description: Requested CPU
@@ -287,14 +291,14 @@ objects:
                       key: rabbitmq_vhost
                 - name: RABBITMQ_USER
                   valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: rabbitmq_user
+                    secretKeyRef:
+                      name: ${NAME}${SUFFIX}-${RABBITMQ_CLUSTER_NAME}-secret
+                      key: username
                 - name: RABBITMQ_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: zeva-rabbitmq
-                      key: ZEVA_PASSWORD
+                      name: ${NAME}${SUFFIX}-${RABBITMQ_CLUSTER_NAME}-secret
+                      key: password
                 - name: RABBITMQ_HOST
                   valueFrom:
                     configMapKeyRef:

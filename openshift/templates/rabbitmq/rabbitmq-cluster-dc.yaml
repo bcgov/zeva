@@ -11,9 +11,13 @@ parameters:
   displayName:
   description: the module name entered when run yo bcdk:pipeline, which is zeva
   required: true
+- name: ENV_NAME
+  displayName:
+  description: sample is dev, test and prod
+  required: true  
 - name: SUFFIX
   displayName:
-  description: sample is -pr-0
+  description: sample is -dev-161
   required: true
 - name: NAMESPACE
   description: "OpenShift project (current namespace)"
@@ -143,8 +147,13 @@ objects:
     clusterIP: None
     ports:
       - name: amqp
+        protocol: TCP
         port: 5672
         targetPort: 5672
+      - name: web
+        protocol: TCP
+        port: 15672
+        targetPort: 15672
 
 - apiVersion: apps/v1beta1
   kind: StatefulSet
