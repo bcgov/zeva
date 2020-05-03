@@ -89,8 +89,7 @@ module.exports = settings => {
       'MEMORY_REQUEST': phases[phase].rabbitmqMemoryRequest,
       'MEMORY_LIMIT': phases[phase].rabbitmqMemoryLimit,
       'REPLICA': phases[phase].rabbitmqReplica,
-      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep,
-      'POD_MANAGEMENT_POLICY': phases[phase].rabbitmqPodManagementPolicy
+      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep
     }
   }))
 
