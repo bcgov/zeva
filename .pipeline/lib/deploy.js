@@ -73,7 +73,6 @@ module.exports = settings => {
   }))
 
   //deploy rabbitmq, use docker image directly
-  //TODO: tag docker image to local
   //POST_START_SLEEP is harded coded in the rabbitmq template, replacement was not successful
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
     'param': {
@@ -81,7 +80,7 @@ module.exports = settings => {
       'SUFFIX': phases[phase].suffix,
       'NAMESPACE': phases[phase].namespace,
       'CLUSTER_NAME': 'rabbitmq-cluster',
-      'ISTAG': 'rabbitmq:3.8.3-management',
+      'ISTAG': `docker-registry.default.svc:5000/${phases[phase].namespace}/rabbitmq:3.8.3-management`,
       'SERVICE_ACCOUNT': 'rabbitmq-discovery',
       'VOLUME_SIZE': phases[phase].rabbitmqPvcSize,
       'CPU_REQUEST': phases[phase].rabbitmqCpuRequest,

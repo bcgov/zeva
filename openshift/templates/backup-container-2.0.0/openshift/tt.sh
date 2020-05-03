@@ -1,0 +1,25 @@
+oc -n tbiwaq-prod process -f ./templates/backup/backup-deploy.json \
+  -p NAME=patroni-backup \
+  -p SOURCE_IMAGE_NAME=patroni-backup \
+  -p IMAGE_NAMESPACE=tbiwaq-tools \
+  -p TAG_NAME=2.0.0 \
+  -p DATABASE_SERVICE_NAME=patroni-master-prod \
+  -p DATABASE_NAME=zeva \
+  -p DATABASE_DEPLOYMENT_NAME=patroni-prod \
+  -p DATABASE_USER_KEY_NAME=app-db-username \
+  -p DATABASE_PASSWORD_KEY_NAME=app-db-password \  
+  -p TABLE_SCHEMA=public \
+  -p BACKUP_STRATEGY=rolling \
+  -p DAILY_BACKUPS=31 \
+  -p WEEKLY_BACKUPS=12 \
+  -p MONTHLY_BACKUPS=3 \
+  -p BACKUP_PERIOD=1d \
+  -p BACKUP_VOLUME_NAME=tmp-db-backup \
+  -p BACKUP_VOLUME_SIZE=2G \
+  -p BACKUP_VOLUME_CLASS=netapp-file-standard \
+  -p VERIFICATION_VOLUME_NAME=backup-verification \
+  -p VERIFICATION_VOLUME_SIZE=2G \
+  -p VERIFICATION_VOLUME_CLASS=netapp-file-standard \
+  -p ENVIRONMENT_FRIENDLY_NAME='ZEVA Database Backip' \
+  -p ENVIRONMENT_NAME=zeva-prod | \
+  oc create -f - -n tbiwaq-prod
