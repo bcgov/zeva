@@ -55,6 +55,8 @@ zeva-minio includes minio connection info
  zeva-prod-rabbitmq-cluster-secret for rabbitmq cluster
 
 ## Production Deployment
+* run nsp
+oc process -f nsp/quickstart-nsp.yaml ENV_NAME=prod | oc create -f - -n tbiwaq-prod
 * patroni
 oc create imagestream patroni -n tbiwaq-prod
 oc tag tbiwaq-tools/patroni:v10-latest tbiwaq-prod/patroni:v10-stable
