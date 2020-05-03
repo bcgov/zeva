@@ -59,9 +59,6 @@ parameters:
   value: '2'  
 - name: POST_START_SLEEP
   value: '120'  
-- name: POD_MANAGEMENT_POLICY
-  value: OrderedReady
-  required: true
 
 objects:
 
@@ -162,7 +159,7 @@ objects:
   spec:
     serviceName: ${NAME}${SUFFIX}-${CLUSTER_NAME}
     replicas: ${{REPLICA}}
-    podManagementPolicy: ${POD_MANAGEMENT_POLICY}
+    podManagementPolicy: OrderedReady
     selector:
       matchLabels:
         app: ${NAME}${SUFFIX}-${CLUSTER_NAME}
