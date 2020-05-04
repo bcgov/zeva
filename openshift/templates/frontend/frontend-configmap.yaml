@@ -14,11 +14,6 @@ parameters:
     description: sample is -dev-97
     value: ''
     required: true
-  - name: ENV_NAME
-    value: dev
-    displayName: Environment name
-    description: 'Environment name, dev, test and prod'
-    required: true
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -28,21 +23,11 @@ objects:
     data:
       features.js: |
         window.zeva_config = {
-          "keycloak.enabled": true,
-          "keycloak.authority": "https://sso-dev.pathfinder.gov.bc.ca/auth/realms/tfrs-dev" ,
-          "keycloak.client_id": "tfrs-dev",
-          "keycloak.callback_url": "https://dev-lowcarbonfuels.pathfinder.gov.bc.ca/authCallback",
-          "keycloak.post_logout_url": "https://logontest.gov.bc.ca/clp-cgi/logoff.cgi?returl=https%3A%2F%2Fdev-lowcarbonfuels.pathfinder.gov.bc.ca%2F",
-          "debug.enabled": false,
-          "secure_document_upload.enabled": true,
-          "secure_document_upload.max_file_size": 50000000,
-          "fuel_codes.enabled": true,
-          "keycloak.custom_login": true,
-          "credit_transfer.enabled": true,
-          "compliance_reporting.enabled": true,
-          "credit_calculation_api.enabled": true,
-          "compliance_reporting.starting_year": 2017,
-          "compliance_reporting.create_effective_date": "2019-01-01",
-          "exclusion_reports.create_effective_date": "2019-01-01",
-          "exclusion_reports.enabled": true
+          'credit_transfers.enabled': false,
+          'credit_transactions.enabled': true,
+          'initiative_agreements.enabled': false,
+          'model_year_report.enabled': false,
+          'purchase_requests.enabled': false,
+          'roles.enabled': false
+          'test-override': yes
         };

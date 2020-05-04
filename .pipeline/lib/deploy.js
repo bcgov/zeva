@@ -97,8 +97,7 @@ module.exports = settings => {
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-configmap.yaml`, {
     'param': {
       'NAME': phases[phase].name,
-      'SUFFIX': phases[phase].suffix,
-      'ENV_NAME': phases[phase].phase
+      'SUFFIX': phases[phase].suffix
     }
   }))
 
