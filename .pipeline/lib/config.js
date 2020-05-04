@@ -22,7 +22,7 @@ const phases = {
         patroniCpuRequest: '200m', patroniCpuLimit: '400m', patroniMemoryRequest: '200M', patroniMemoryLimit: '400M', patroniPvcSize: '1G', patroniReplica: 1},
 
   test: {namespace:'tbiwaq-test', name: `${name}`, ssoSuffix:'-test', 
-        ssoName:'sso-test', phase: 'test'  ,  changeId:changeId, suffix: `-test`  , 
+        ssoName:'sso-test', phase: 'test'  ,  changeId:changeId, suffix: `-test`, 
         instance: `${name}-test`, version:`${version}`, tag:`test-${version}`, 
         host: 'zeva-test.pathfinder.gov.bc.ca', minioPvcSize: '5Gi', djangoDebug: 'False',
         frontendCpuRequest: '50m', frontendCpuLimit: '300m', frontendMemoryRequest: '300M', frontendMemoryLimit: '500M', frontendMinReplicas: 2, frontendMaxReplicas: 5,

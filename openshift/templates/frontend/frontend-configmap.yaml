@@ -19,26 +19,6 @@ parameters:
     displayName: Environment name
     description: 'Environment name, dev, test and prod'
     required: true
-  - name: BACKEND_HOST
-    value: dev
-    displayName: The backend host name
-    description: 'The backend host name'
-    required: true
-  - name: SSO_NAME
-    value: sso-dev
-    displayName: SSO Name
-    description: values include sso-dev, sso-test and sso
-    required: true
-  - name: KEYCLOAK_REALM
-    value: rzh2zkjq
-    displayName: keycload realm name
-    description: keycload realm name, value is rzh2zkjq
-    required: true
-  - name: DJANGO_DEBUG
-    value: 'False'
-    displayName: django debug value
-    description: django debug value
-    required: true    
 objects:
   - apiVersion: v1
     kind: ConfigMap
