@@ -63,7 +63,6 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
 
     def update(self, obj, validated_data):
         addr = validated_data.pop('organization_address')
-        print(addr)
         short_name = validated_data.pop('short_name')
         is_active = validated_data.pop('is_active')
         name = validated_data.pop('name')
@@ -74,8 +73,6 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
         organization_address = obj.organization_address
         if addr:
             if organization_address:
-                print("*********")
-                print(organization_address)
                 organization_address.expiration_date = date.today()
                 organization_address.save()
 

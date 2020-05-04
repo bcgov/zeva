@@ -24,31 +24,45 @@ const VehicleSupplierDetailsContainer = (props) => {
   const [activeTab, setActiveTab] = useState('supplier-info');
   const [editForm, setEditForm] = useState(false);
   const [display, setDisplay] = useState({});
-  const { keycloak } = props;
+  const { keycloak, newSupplier } = props;
 
 
   const refreshDetails = () => {
-    setLoading(true);
-    const detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
+    if (newSupplier) {
+      setEditForm(true);
+      setLoading(false);
+      setActiveTab('supplier-info');
       setDetails({
-        ...response.data,
         organizationAddress: {
-          ...response.data.organizationAddress,
-          addressLine_1: response.data.organizationAddress ? response.data.organizationAddress.addressLine1 : '',
-          addressLine_2: response.data.organizationAddress ? response.data.organizationAddress.addressLine2 : '',
-          addressLine_3: response.data.organizationAddress ? response.data.organizationAddress.addressLine3 : '',
+          addressLine_1: '',
+          addressLine_2: '',
+          addressLine_3: '',
         },
       });
+    }
+    if (!newSupplier) {
+      setLoading(true);
+      const detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
+        setDetails({
+          ...response.data,
+          organizationAddress: {
+            ...response.data.organizationAddress,
+            addressLine_1: response.data.organizationAddress ? response.data.organizationAddress.addressLine1 : '',
+            addressLine_2: response.data.organizationAddress ? response.data.organizationAddress.addressLine2 : '',
+            addressLine_3: response.data.organizationAddress ? response.data.organizationAddress.addressLine3 : '',
+          },
+        });
 
-      setDisplay(response.data);
-    });
-    const vehiclesPromise = axios.get(ROUTES_VEHICLES.LIST).then((response) => {
-      setVehicles(response.data);
-    });
+        setDisplay(response.data);
+      });
+      const vehiclesPromise = axios.get(ROUTES_VEHICLES.LIST).then((response) => {
+        setVehicles(response.data);
+      });
 
-    Promise.all([detailsPromise, vehiclesPromise]).then(() => {
-      setLoading(false);
-    });
+      Promise.all([detailsPromise, vehiclesPromise]).then(() => {
+        setLoading(false);
+      });
+    }
   };
 
   useEffect(() => {

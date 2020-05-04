@@ -35,6 +35,8 @@ import ROUTES_SALES from './routes/Sales';
 import ROUTES_USERS from './routes/Users';
 import ROUTES_VEHICLES from './routes/Vehicles';
 import ROUTES_CREDITS from './routes/Credits';
+import VehicleSupplierEditForm from '../organizations/components/VehicleSupplierEditForm';
+import VehicleSupplierDetailsPage from '../organizations/components/VehicleSupplierDetailsPage';
 
 class Router extends Component {
   constructor(props) {
@@ -115,6 +117,10 @@ class Router extends Component {
                 render={() => <OrganizationDetailsContainer keycloak={keycloak} user={user} />}
               />
               <Route
+                path={ROUTES_ORGANIZATIONS.NEW}
+                render={() => <VehicleSupplierDetailsContainer keycloak={keycloak} user={user} newSupplier={'yes'} />}
+              />
+              <Route
                 path={ROUTES_ORGANIZATIONS.DETAILS}
                 render={() => <VehicleSupplierDetailsContainer keycloak={keycloak} user={user} />}
               />
@@ -127,6 +133,7 @@ class Router extends Component {
                 path={ROUTES_ORGANIZATIONS.LIST}
                 render={() => <OrganizationListContainer keycloak={keycloak} user={user} />}
               />
+
               <Route
                 exact
                 path={ROUTES_SALES.ADD}
