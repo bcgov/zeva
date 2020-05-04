@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CustomPropTypes from '../../app/utilities/props';
 import UserDetailsTextInput from './UserDetailsTextInput';
@@ -11,7 +12,6 @@ const VehicleSupplierEditForm = (props) => {
     details,
     display,
     loading,
-    user,
     handleInputChange,
     handleSubmit,
     setEditForm,
@@ -239,8 +239,15 @@ const VehicleSupplierEditForm = (props) => {
     </div>
   );
 };
-// VehicleSupplierEditForm.propTypes = {
-//   user: CustomPropTypes.user.isRequired,
-// };
+VehicleSupplierEditForm.propTypes = {
+  setDetails: PropTypes.func.isRequired,
+  details: CustomPropTypes.organizationDetails.isRequired,
+  display: CustomPropTypes.organizationDetails.isRequired,
+  loading: PropTypes.bool.isRequired,
+  handleInputChange: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  setEditForm: PropTypes.func.isRequired,
+  handleAddressChange: PropTypes.func.isRequired,
+};
 
 export default VehicleSupplierEditForm;

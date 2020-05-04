@@ -7,6 +7,7 @@ import CustomPropTypes from '../../app/utilities/props';
 
 const VehicleSupplierDetailsPage = (props) => {
   const { details, loading, editButton } = props;
+  const { organizationAddress } = details;
   if (loading) {
     return <Loading />;
   }
@@ -30,13 +31,13 @@ const VehicleSupplierDetailsPage = (props) => {
           <h4>Address</h4>
           <div className="organization-address">
             {details.organizationAddress && (
-            <p className="supplier-text">
-              {details.organizationAddress.addressLine1}
-              <br />
-              {details.organizationAddress.city} {details.organizationAddress.state}
-              <br />
-              {details.organizationAddress.postalCode}
-            </p>
+            <div className="supplier-text">
+              {organizationAddress.addressLine1 && <div>{organizationAddress.addressLine1}</div>}
+              {organizationAddress.addressLine2 && <div>{organizationAddress.addressLine2}</div>}
+              {organizationAddress.addressLine3 && <div>{organizationAddress.addressLine3}</div>}
+              <div>{organizationAddress.city} {organizationAddress.state} {organizationAddress.country}</div>
+              {organizationAddress.postalCode && <div>{organizationAddress.postalCode}</div>}
+            </div>
             )}
           </div>
           <h4>Supplier Class</h4>

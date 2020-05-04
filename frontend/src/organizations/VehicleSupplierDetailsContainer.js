@@ -30,7 +30,16 @@ const VehicleSupplierDetailsContainer = (props) => {
   const refreshDetails = () => {
     setLoading(true);
     const detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
-      setDetails(response.data);
+      setDetails({
+        ...response.data,
+        organizationAddress: {
+          ...response.data.organizationAddress,
+          addressLine_1: response.data.organizationAddress ? response.data.organizationAddress.addressLine1 : '',
+          addressLine_2: response.data.organizationAddress ? response.data.organizationAddress.addressLine2 : '',
+          addressLine_3: response.data.organizationAddress ? response.data.organizationAddress.addressLine3 : '',
+        },
+      });
+
       setDisplay(response.data);
     });
     const vehiclesPromise = axios.get(ROUTES_VEHICLES.LIST).then((response) => {
@@ -90,9 +99,8 @@ const VehicleSupplierDetailsContainer = (props) => {
   };
   const handleSubmit = () => {
     axios.patch(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id),
-      details).then((response) => {
-      setDetails(response.data);
-      setDisplay(response.data);
+      details).then(() => {
+      refreshDetails();
       setEditForm(false);
       History.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));
     });
@@ -116,7 +124,16 @@ const VehicleSupplierDetailsContainer = (props) => {
       )}
       {activeTab === 'supplier-info' && editForm === true && loading === false
       && (
-        <VehicleSupplierEditForm display={display} setEditForm={setEditForm} setDetails={setDetails} details={details} handleAddressChange={handleAddressChange} handleInputChange={handleInputChange} loading={loading} handleSubmit={handleSubmit} />
+        <VehicleSupplierEditForm
+          display={display}
+          setEditForm={setEditForm}
+          setDetails={setDetails}
+          details={details}
+          handleAddressChange={handleAddressChange}
+          handleInputChange={handleInputChange}
+          loading={loading}
+          handleSubmit={handleSubmit}
+        />
       )}
       {activeTab === 'supplier-zev-models'
       && (
