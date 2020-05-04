@@ -57,10 +57,16 @@ class UserProfile(Auditable):
         max_length=100,
         null=True,
         db_comment="Professional Title"
-    ),
+    )
     username = models.CharField(
         max_length=130,
+        unique=True,
         db_comment="Username that we can connect the user to Keycloak."
+    )
+    keycloak_email = models.EmailField(
+        blank=True,
+        null=True,
+        db_comment="BCEID/IDIR Email Address"
     )
 
     # Unpersisted (supplied by Keycloak authentication filter)

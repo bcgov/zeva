@@ -46,7 +46,7 @@ const UploadVerificationData = (props) => {
   };
 
   return (
-    <div id="sales-edit" className="page">
+    <div id="upload-verification-data" className="page">
       <h2>{title}</h2>
       <p>ICBC data current to: {dateCurrentTo}</p>
       <div className="compact">
