@@ -152,6 +152,7 @@ class Navbar extends Component {
                   <span>Home</span>
                 </NavLink>
               </li>
+              {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED && (
               <li className="nav-item">
                 <NavLink
                   activeClassName="active"
@@ -160,7 +161,9 @@ class Navbar extends Component {
                   <span>Model Year Report</span>
                 </NavLink>
               </li>
+              )}
 
+              {CONFIG.FEATURES.CREDIT_TRANSACTIONS.ENABLED && (
               <li className="nav-item">
                 <NavLink
                   activeClassName="active"
@@ -169,6 +172,7 @@ class Navbar extends Component {
                   <span>Credit Transactions</span>
                 </NavLink>
               </li>
+              )}
 
               {keycloak.hasRealmRole('View ZEV')
               && (
@@ -209,7 +213,8 @@ class Navbar extends Component {
                 </li>
               )}
 
-              {keycloak.hasRealmRole('View Roles and Permissions')
+              {CONFIG.FEATURES.ROLES.ENABLED
+              && keycloak.hasRealmRole('View Roles and Permissions')
               && (
                 <li className="nav-item">
                   <NavLink
@@ -220,7 +225,6 @@ class Navbar extends Component {
                   </NavLink>
                 </li>
               )}
-
             </ul>
           </div>
         </div>
