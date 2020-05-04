@@ -60,6 +60,7 @@ const VehicleSupplierDetailsContainer = (props) => {
   );
 
   const handleInputChange = (event) => {
+    console.log(event)
     const { value, name } = event.target;
     const address1 = details.organizationAddress ? details.organizationAddress.addressLine1 : '';
     const address2 = details.organizationAddress ? details.organizationAddress.addressLine2 : '';
@@ -116,7 +117,7 @@ const VehicleSupplierDetailsContainer = (props) => {
       )}
       {activeTab === 'supplier-info' && editForm === true && loading === false
       && (
-        <VehicleSupplierEditForm display={display} setEditForm={setEditForm} details={details} handleAddressChange={handleAddressChange} handleInputChange={handleInputChange} loading={loading} handleSubmit={handleSubmit} />
+        <VehicleSupplierEditForm display={display} setEditForm={setEditForm} setDetails={setDetails} details={details} handleAddressChange={handleAddressChange} handleInputChange={handleInputChange} loading={loading} handleSubmit={handleSubmit} />
       )}
       {activeTab === 'supplier-zev-models'
       && (

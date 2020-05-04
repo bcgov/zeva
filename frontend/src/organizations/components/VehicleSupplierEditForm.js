@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CustomPropTypes from '../../app/utilities/props';
 import UserDetailsTextInput from './UserDetailsTextInput';
@@ -7,6 +7,7 @@ import History from '../../app/History';
 
 const VehicleSupplierEditForm = (props) => {
   const {
+    setDetails,
     details,
     display,
     loading,
@@ -16,8 +17,60 @@ const VehicleSupplierEditForm = (props) => {
     setEditForm,
     handleAddressChange,
   } = props;
-
-
+  const [showModal, setShowModal] = useState(false);
+  const [active, setActive] = useState(details.isActive);
+  const modal = (
+    <div className="modal" tabIndex="-1" role="dialog" style={showModal ? { display: 'block' } : { display: 'none' }}>
+      <div className="modal-dialog" role="document">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title">Make Supplier Inactive</h5>
+            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div className="modal-body">
+            <p>You have selected to make this vehicle supplier Inactive. <br /><br />
+            They will no longer have the ability to make any further changes
+            within their account and all their users will have read only access
+            </p><br />
+            <p>Do you want to make this supplier Inactive?</p>
+          </div>
+          <div className="modal-footer">
+            <button
+              type="button"
+              id="cancel"
+              className="btn btn-outline-secondary"
+              data-dismiss="modal"
+              onClick={() => {
+                setActive(true);
+                setShowModal(false);
+                setDetails({
+                  ...details,
+                  isActive: true,
+                });
+              }}
+            >Cancel
+            </button>
+            <button
+              type="button"
+              id="set-inactive"
+              className="btn btn-outline-danger"
+              onClick={() => {
+                setActive(false);
+                setShowModal(false);
+                setDetails({
+                  ...details,
+                  isActive: false,
+                });
+              }}
+            >Make Inactive
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
   let addressDetails = {};
   if (details.organizationAddress) {
     addressDetails = {
@@ -37,6 +90,7 @@ const VehicleSupplierEditForm = (props) => {
   }
   return (
     <div id="supplier-detail-form" className="page">
+
       <div className="row">
         <div className="col-md-12">
           <h4>Edit Supplier</h4>
@@ -66,10 +120,16 @@ const VehicleSupplierEditForm = (props) => {
                       <input
                         type="radio"
                         id="active"
-                        onChange={handleInputChange}
+                        onChange={() => {
+                          setActive(true);
+                          setDetails({
+                            ...details,
+                            isActive: true,
+                          });
+                        }}
                         name="isActive"
                         value="true"
-                        defaultChecked={details.isActive}
+                        checked={active === true}
                       />
                     Actively supplying vehicles in B.C.
                     </div>
@@ -77,16 +137,17 @@ const VehicleSupplierEditForm = (props) => {
                       <input
                         type="radio"
                         id="inactive"
-                        onChange={handleInputChange}
+                        onChange={() => setShowModal(true)}
                         name="isActive"
                         value="false"
-                        defaultChecked={!details.isActive}
+                        checked={active === false}
                       />
                     Inactive
                     </div>
                   </div>
+                  {setShowModal && modal}
                 </div>
-                
+
                 <UserDetailsTextInput
                   label="Legal Organization Name"
                   id="LegalOrganizationName"
