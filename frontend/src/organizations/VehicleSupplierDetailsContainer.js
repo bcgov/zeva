@@ -60,7 +60,6 @@ const VehicleSupplierDetailsContainer = (props) => {
   );
 
   const handleInputChange = (event) => {
-    console.log(event)
     const { value, name } = event.target;
     const address1 = details.organizationAddress ? details.organizationAddress.addressLine1 : '';
     const address2 = details.organizationAddress ? details.organizationAddress.addressLine2 : '';
