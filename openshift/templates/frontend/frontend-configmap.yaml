@@ -1,0 +1,68 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: zeva-frontend-configs
+parameters:
+  - name: NAME
+    displayName: null
+    description: 'the module name entered when run yo bcdk:pipeline, which is zeva'
+    value: zeva
+    required: true
+  - name: SUFFIX
+    displayName: null
+    description: sample is -dev-97
+    value: ''
+    required: true
+  - name: ENV_NAME
+    value: dev
+    displayName: Environment name
+    description: 'Environment name, dev, test and prod'
+    required: true
+  - name: BACKEND_HOST
+    value: dev
+    displayName: The backend host name
+    description: 'The backend host name'
+    required: true
+  - name: SSO_NAME
+    value: sso-dev
+    displayName: SSO Name
+    description: values include sso-dev, sso-test and sso
+    required: true
+  - name: KEYCLOAK_REALM
+    value: rzh2zkjq
+    displayName: keycload realm name
+    description: keycload realm name, value is rzh2zkjq
+    required: true
+  - name: DJANGO_DEBUG
+    value: 'False'
+    displayName: django debug value
+    description: django debug value
+    required: true    
+objects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      creationTimestamp: null
+      name: ${NAME}-frontend-config${SUFFIX}
+    data:
+      features.js: |
+        window.zeva_config = {
+          "keycloak.enabled": true,
+          "keycloak.authority": "https://sso-dev.pathfinder.gov.bc.ca/auth/realms/tfrs-dev" ,
+          "keycloak.client_id": "tfrs-dev",
+          "keycloak.callback_url": "https://dev-lowcarbonfuels.pathfinder.gov.bc.ca/authCallback",
+          "keycloak.post_logout_url": "https://logontest.gov.bc.ca/clp-cgi/logoff.cgi?returl=https%3A%2F%2Fdev-lowcarbonfuels.pathfinder.gov.bc.ca%2F",
+          "debug.enabled": false,
+          "secure_document_upload.enabled": true,
+          "secure_document_upload.max_file_size": 50000000,
+          "fuel_codes.enabled": true,
+          "keycloak.custom_login": true,
+          "credit_transfer.enabled": true,
+          "compliance_reporting.enabled": true,
+          "credit_calculation_api.enabled": true,
+          "compliance_reporting.starting_year": 2017,
+          "compliance_reporting.create_effective_date": "2019-01-01",
+          "exclusion_reports.create_effective_date": "2019-01-01",
+          "exclusion_reports.enabled": true
+        };
