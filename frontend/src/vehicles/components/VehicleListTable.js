@@ -113,10 +113,11 @@ const VehicleListTable = (props) => {
       }]}
       filterable={filterable}
       getTrProps={(state, row) => {
-        if (row && row.original && user && !user.isGovernment) {
+        if (row && row.original && user) {
           return {
             onClick: () => {
               const { id } = row.original;
+
               history.push(`/vehicles/${id}`);
             },
             className: 'clickable',
