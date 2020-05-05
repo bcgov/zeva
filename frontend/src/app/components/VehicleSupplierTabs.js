@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 import ROUTES_ORGANIZATIONS from '../routes/Organizations';
 
+
 const VehicleSupplierTabs = (props) => {
   const {
     active,
@@ -48,6 +49,7 @@ const VehicleSupplierTabs = (props) => {
 VehicleSupplierTabs.propTypes = {
   active: PropTypes.string.isRequired,
   setActiveTab: PropTypes.func.isRequired,
+  supplierId: PropTypes.number.isRequired,
 };
 
 export default VehicleSupplierTabs;

@@ -8,7 +8,8 @@ from django.utils.datetime_safe import datetime, time
 
 logger = logging.getLogger('zeva.keycloak')
 
-# hide these ones from the client response (they're in the token anyway, but there's no need to display them in the UI)
+# hide these ones from the client response (they're in the token anyway,
+# but there's no need to display them in the UI)
 FILTERED_ROLES = ['offline_access', 'uma_authorization']
 
 cache = caches['keycloak']
@@ -32,7 +33,8 @@ def get_token():
     """
     cached_token = cache.get('sa-token')
     cached_token_expiry = cache.get('sa-token-expiry')
-    if cached_token and cached_token_expiry and cached_token_expiry > datetime.utcnow():
+    if cached_token and cached_token_expiry and \
+            cached_token_expiry > datetime.utcnow():
         logger.debug('returning cached token (within expiry)')
         return cached_token
 
@@ -61,9 +63,13 @@ def get_token():
     ttl = expiry_time - now
 
     cache.set('sa-token', token, int(ttl.total_seconds() - slack_time))
-    cache.set('sa-token-expiry', expiry_time, int(ttl.total_seconds() - slack_time))
+    cache.set(
+        'sa-token-expiry', expiry_time, int(ttl.total_seconds() - slack_time)
+    )
 
-    logger.info('our token is good for {} seconds'.format(int(ttl.total_seconds() - slack_time)))
+    logger.info('our token is good for {} seconds'.format(
+        int(ttl.total_seconds() - slack_time))
+    )
 
     return token
 
@@ -91,8 +97,7 @@ def list_users(token):
             user_id=user['id']
         )
 
-        response = requests.get(users_detail_url,
-                                headers=headers)
+        response = requests.get(users_detail_url, headers=headers)
 
     if not response.ok:
         raise RuntimeError(
@@ -157,6 +162,7 @@ def map_user(keycloak_user_id, zeva_user_id):
             'proper permissions.'
             'Response code: {}'.format(response.status_code)
         )
+
 
 def create_user(token, user_name, maps_to_id):
     """
@@ -236,7 +242,8 @@ def get_user_id(token, username):
     url = '{keycloak}/auth/admin/realms/{realm}/users?search={username}'.format(
         keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
         realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'],
-        username=username)
+        username=username
+    )
 
     headers = {'Authorization': 'Bearer {}'.format(token)}
 
@@ -292,7 +299,9 @@ def get_group_id(token, groupname):
 
     for group in search:
         if group['name'] == groupname:
-            cache.set('group.id.by_groupname.{}'.format(groupname), group['id'], 3600)
+            cache.set(
+                'group.id.by_groupname.{}'.format(groupname), group['id'], 3600
+            )
             return group['id']
 
         search.extend(group['subGroups'])
@@ -347,7 +356,9 @@ def list_roles(token):
         raise RuntimeError(
             'bad response code: {}'.format(response.status_code))
 
-    filtered_roles = list(filter(lambda r: 'name' in r and r['name'] not in FILTERED_ROLES, all_roles))
+    filtered_roles = list(filter(
+        lambda r: 'name' in r and r['name'] not in FILTERED_ROLES, all_roles
+    ))
 
     return [
         {
@@ -432,7 +443,9 @@ def get_group_details(token, group_id):
     result = {
         'name': group['name'],
         'id': group['id'],
-        'roles': list(filter(lambda r: r['name'] in group['realmRoles'], role_details))
+        'roles': list(filter(
+            lambda r: r['name'] in group['realmRoles'], role_details
+        ))
     }
 
     cache.set('group_details.by_id.{}'.format(group_id), cached_details, 30)
@@ -518,8 +531,11 @@ def map_group_into_role(token, groupname, role):
     id = get_group_id(token, groupname)
 
     if id is None:
-        raise GroupNotFoundError('Group id for group {groupname} not found in Keycloak'
-                                 .format(groupname=groupname))
+        raise GroupNotFoundError(
+            'Group id for group {groupname} not found in Keycloak'.format(
+                groupname=groupname
+            )
+        )
 
     url = '{keycloak}/auth/admin/realms/{realm}/groups/{id}/role-mappings/realm'.format(
         keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
@@ -579,3 +595,27 @@ def delete_group_by_id(token, id):
     if not response.ok:
         raise RuntimeError(
             'bad response code: {}'.format(response.status_code))
+
+
+def update_user_groups(username, group_names=[]):
+    token = get_token()
+
+    id = get_user_id(token, username)
+
+    for group_name in group_names:
+        group_id = get_group_id(token, group_name)
+        print(group_id)
+        url = '{keycloak}/auth/admin/realms/{realm}/users/{id}/groups/{group_id}'.format(
+            keycloak=settings.KEYCLOAK['SERVICE_ACCOUNT_KEYCLOAK_API_BASE'],
+            realm=settings.KEYCLOAK['SERVICE_ACCOUNT_REALM'],
+            id=id,
+            group_id=group_id
+        )
+
+        headers = {'Authorization': 'Bearer {}'.format(token)}
+
+        response = requests.put(url, headers=headers)
+
+        if not response.ok:
+            raise RuntimeError(
+                'bad response code: {}'.format(response.status_code))

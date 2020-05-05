@@ -36,3 +36,14 @@
     font-weight: bold;
   }
 }
+
+#vehicle-validation {
+  .form {
+    background-color: $default-background-grey;
+    border: 1px solid $border-grey;
+
+    .label {
+      color: $default-text-blue;
+    }
+  }
+}

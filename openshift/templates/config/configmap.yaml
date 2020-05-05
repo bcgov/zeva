@@ -70,9 +70,8 @@ objects:
       postgresql_service_host: patroni-master${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local
       postgresql_service_port: '5432'
       rabbitmq_enabled: 'False'
-      rabbitmq_host: rabbitmq.tbiwaq-${ENV_NAME}.svc.cluster.local
+      rabbitmq_host: ${NAME}${SUFFIX}-rabbitmq-cluster.tbiwaq-${ENV_NAME}.svc.cluster.local
       rabbitmq_port: '5672'
-      rabbitmq_user: zeva
       rabbitmq_vhost: /zeva
       smtp_server_host: apps.smtp.gov.bc.ca
       smtp_server_port: '25'
