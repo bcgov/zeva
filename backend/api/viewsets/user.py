@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from django.db.models import F, Q
 
 from api.models.user_profile import UserProfile
-from api.serializers.user import UserSerializer
+from api.serializers.user import UserSerializer, UserSaveSerializer
 from auditable.views import AuditableMixin
 
 
@@ -23,7 +23,10 @@ class UserViewSet(
     queryset = UserProfile.objects.all()
 
     serializer_classes = {
-        'default': UserSerializer
+        'default': UserSerializer,
+        'create': UserSaveSerializer,
+        'partial_update': UserSaveSerializer,
+        'update': UserSaveSerializer,
     }
 
     def get_serializer_class(self):

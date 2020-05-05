@@ -6,6 +6,8 @@ import ROUTES_CREDITS from '../routes/Credits';
 import ROUTES_SALES from '../routes/Sales';
 import CustomPropTypes from '../utilities/props';
 
+import CONFIG from '../config';
+
 const CreditTransactionTabs = (props) => {
   const { active, user } = props;
 
@@ -27,24 +29,30 @@ const CreditTransactionTabs = (props) => {
       >
         <Link to={user.isGovernment ? ROUTES_CREDITS.CREDIT_REQUESTS : ROUTES_SALES.ADD}>Credit Requests</Link>
       </li>
+      {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED && (
       <li
         className={`nav-item ${(active === 'credit-transfers') ? 'active' : ''}`}
         role="presentation"
       >
         <Link to="/">Credit Transfers</Link>
       </li>
+      )}
+      {CONFIG.FEATURES.INITIATIVE_AGREEMENTS.ENABLED && (
       <li
         className={`nav-item ${(active === 'initiative-agreements') ? 'active' : ''}`}
         role="presentation"
       >
         <Link to="/">Initiative Agreements</Link>
       </li>
+      )}
+      {CONFIG.FEATURES.PURCHASE_REQUESTS.ENABLED && (
       <li
         className={`nav-item ${(active === 'purchase-requests') ? 'active' : ''}`}
         role="presentation"
       >
         <Link to="/">Purchase Requests</Link>
       </li>
+      )}
     </ul>
   );
 };

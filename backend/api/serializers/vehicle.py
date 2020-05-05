@@ -100,10 +100,12 @@ class VehicleSerializer(
     history = VehicleHistorySerializer(read_only=True, many=True)
     actions = SerializerMethodField()
     vehicle_class_code = VehicleClassSerializer()
+    credit_class = SerializerMethodField()
+    credit_value = SerializerMethodField()
 
     def get_actions(self, instance):
-        user = self.context['request'].user
-        gov = self.context['request'].user.is_government
+        request = self.context.get('request')
+        gov = request.user.is_government
 
         actions = []
 
@@ -119,12 +121,32 @@ class VehicleSerializer(
 
         return actions
 
+    def get_credit_class(self, instance):
+        request = self.context.get('request')
+
+        if instance.validation_status == \
+                VehicleDefinitionStatuses.VALIDATED or \
+                request.user.is_government:
+            return instance.get_credit_class()
+
+        return None
+
+    def get_credit_value(self, instance):
+        request = self.context.get('request')
+
+        if instance.validation_status == \
+                VehicleDefinitionStatuses.VALIDATED or \
+                request.user.is_government:
+            return instance.get_credit_value()
+
+        return None
+
     class Meta:
         model = Vehicle
         fields = (
             'id', 'actions', 'history', 'make', 'model_name', 'model_year',
             'range', 'validation_status', 'vehicle_class_code',
-            'vehicle_zev_type'
+            'vehicle_zev_type', 'credit_class', 'credit_value'
         )
         read_only_fields = ('validation_status',)
 

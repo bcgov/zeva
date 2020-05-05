@@ -21,10 +21,9 @@ parameters:
     displayName: Environment name
     description: Environment name, dev, test and prod
     required: true
-  - name: DASH_ENV_NAME
-    value: dev
-    displayName: Environment name
-    description: Environment name, -dev, -test and empty for prod
+  - name: HOST_NAME
+    displayName: Host name for route
+    description: Host name for route
     required: true
   - name: CPU_REQUEST
     displayName: Requested CPU
@@ -94,7 +93,7 @@ objects:
         env: ${ENV_NAME}
       name: ${NAME}-sockjs-node${SUFFIX}
     spec:
-      host: ${NAME}${SUFFIX}.pathfinder.gov.bc.ca
+      host: ${HOST_NAME}
       path: /sockjs-node
       port:
         targetPort: web
@@ -117,7 +116,7 @@ objects:
         env: ${ENV_NAME}
       name: ${NAME}-frontend${SUFFIX}
     spec:
-      host: ${NAME}${SUFFIX}.pathfinder.gov.bc.ca
+      host: ${HOST_NAME}
       port:
         targetPort: web
       tls:
@@ -248,12 +247,18 @@ objects:
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               volumeMounts:
+                - mountPath: /app/src/app/config
+                  name: ${NAME}-frontend-config${SUFFIX}              
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
           securityContext: {}
           terminationGracePeriodSeconds: 30
           volumes:
+            - configMap:
+                defaultMode: 444
+                name: ${NAME}-frontend-config${SUFFIX}
+              name: ${NAME}-frontend-config${SUFFIX}
       test: false
       triggers:
         - imageChangeParams:

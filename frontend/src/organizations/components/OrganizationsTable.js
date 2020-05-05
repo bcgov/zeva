@@ -18,11 +18,16 @@ const OrganizationsTable = (props) => {
     Header: 'Class',
     id: 'class',
   }, {
-    className: 'col-compliance-requirement',
-    Header: 'Compliance Requirement',
-  }, {
+    accessor: () => '-',
     className: 'col-credit-balance',
-    Header: 'Credit Balance',
+    Header: 'A-Credits',
+    id: 'a-credits',
+
+  }, {
+    accessor: () => '-',
+    className: 'col-credit-balance',
+    Header: 'B-Credits',
+    id: 'b-credits',
   }, {
     accessor: (item) => {
       const { organizationAddress } = item;

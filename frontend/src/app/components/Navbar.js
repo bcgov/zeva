@@ -152,6 +152,27 @@ class Navbar extends Component {
                   <span>Home</span>
                 </NavLink>
               </li>
+              {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED && (
+              <li className="nav-item">
+                <NavLink
+                  activeClassName="active"
+                  to="/model-year-report"
+                >
+                  <span>Model Year Report</span>
+                </NavLink>
+              </li>
+              )}
+
+              {CONFIG.FEATURES.CREDIT_TRANSACTIONS.ENABLED && (
+              <li className="nav-item">
+                <NavLink
+                  activeClassName="active"
+                  to="/credit-transactions"
+                >
+                  <span>Credit Transactions</span>
+                </NavLink>
+              </li>
+              )}
 
               {keycloak.hasRealmRole('View ZEV')
               && (
@@ -165,23 +186,19 @@ class Navbar extends Component {
                 </li>
               )}
 
-              <li className="nav-item">
-                <NavLink
-                  activeClassName="active"
-                  to="/model-year-report"
-                >
-                  <span>Model Year Report</span>
-                </NavLink>
-              </li>
+              {keycloak.hasRealmRole('View Organizations')
+              && keycloak.hasRealmRole('Government')
+              && (
+                <li className="nav-item">
+                  <NavLink
+                    activeClassName="active"
+                    to={ROUTES_ORGANIZATIONS.LIST}
+                  >
+                    <span>Vehicle Suppliers</span>
+                  </NavLink>
+                </li>
+              )}
 
-              <li className="nav-item">
-                <NavLink
-                  activeClassName="active"
-                  to="/credit-transactions"
-                >
-                  <span>Credit Transactions</span>
-                </NavLink>
-              </li>
 
               {keycloak.hasRealmRole('View Organization Information')
               && keycloak.hasRealmRole('Vehicle Supplier')
@@ -196,7 +213,8 @@ class Navbar extends Component {
                 </li>
               )}
 
-              {keycloak.hasRealmRole('View Roles and Permissions')
+              {CONFIG.FEATURES.ROLES.ENABLED
+              && keycloak.hasRealmRole('View Roles and Permissions')
               && (
                 <li className="nav-item">
                   <NavLink
@@ -207,20 +225,6 @@ class Navbar extends Component {
                   </NavLink>
                 </li>
               )}
-
-              {keycloak.hasRealmRole('View Organization Information')
-              && keycloak.hasRealmRole('Government')
-              && (
-                <li className="nav-item">
-                  <NavLink
-                    activeClassName="active"
-                    to={ROUTES_ORGANIZATIONS.LIST}
-                  >
-                    <span>Organizations</span>
-                  </NavLink>
-                </li>
-              )}
-
             </ul>
           </div>
         </div>

@@ -101,9 +101,6 @@ objects:
         from:
           kind: ImageStreamTag
           name: postgres:${POSTGRES_VERSION}
-        forcePull: false
-        noCache: true
-        imageOptimizationPolicy: SkipLayers
       type: Docker
     triggers:
     - type: ConfigChange

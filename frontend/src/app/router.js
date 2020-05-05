@@ -18,6 +18,8 @@ import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
 import SalesSubmissionApprovalContainer from '../sales/SalesSubmissionApprovalContainer';
 import SalesSubmissionApprovalDetailsContainer from '../sales/SalesSubmissionApprovalDetailsContainer';
 import SalesListContainer from '../sales/SalesListContainer';
+import UserAddContainer from '../users/UserAddContainer';
+import UserEditContainer from '../users/UserEditContainer';
 import VehicleAddContainer from '../vehicles/VehicleAddContainer';
 import VehicleDetailsContainer from '../vehicles/VehicleDetailsContainer';
 import VehicleEditContainer from '../vehicles/VehicleEditContainer';
@@ -115,8 +117,16 @@ class Router extends Component {
                 render={() => <OrganizationDetailsContainer keycloak={keycloak} user={user} />}
               />
               <Route
+                path={ROUTES_ORGANIZATIONS.NEW}
+                render={() => <VehicleSupplierDetailsContainer keycloak={keycloak} user={user} newSupplier="yes" />}
+              />
+              <Route
+                path={ROUTES_ORGANIZATIONS.ADD_USER}
+                render={() => <UserAddContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
                 path={ROUTES_ORGANIZATIONS.DETAILS}
-                render={() => <VehicleSupplierDetailsContainer keycloak={keycloak} user={user} />}
+                render={() => <VehicleSupplierDetailsContainer keycloak={keycloak} user={user} activeTab="supplier-info" />}
               />
               <Route
                 exact
@@ -127,6 +137,7 @@ class Router extends Component {
                 path={ROUTES_ORGANIZATIONS.LIST}
                 render={() => <OrganizationListContainer keycloak={keycloak} user={user} />}
               />
+
               <Route
                 exact
                 path={ROUTES_SALES.ADD}
@@ -174,6 +185,10 @@ class Router extends Component {
                 exact
                 path={ROUTES_ROLES.LIST}
                 render={() => <RoleListContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_USERS.EDIT}
+                render={() => <UserEditContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 path={ROUTES_USERS.DETAILS}

@@ -4,8 +4,12 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from api.models.organization import Organization
+from api.models.sales_submission import SalesSubmission
+from api.models.sales_submission_statuses import SalesSubmissionStatuses
+from api.serializers.sales_submission import SalesSubmissionListSerializer
 from api.serializers.organization import \
-    OrganizationSerializer, OrganizationWithMembersSerializer
+    OrganizationSerializer, OrganizationWithMembersSerializer, \
+    OrganizationSaveSerializer
 from auditable.views import AuditableMixin
 
 
@@ -25,6 +29,10 @@ class OrganizationViewSet(
     serializer_classes = {
         'default': OrganizationSerializer,
         'mine': OrganizationWithMembersSerializer,
+        'update': OrganizationSaveSerializer,
+        'partial_update': OrganizationSaveSerializer,
+        'sales': SalesSubmissionListSerializer,
+        'users': OrganizationWithMembersSerializer,
     }
 
     def get_serializer_class(self):
@@ -51,5 +59,37 @@ class OrganizationViewSet(
         """
         organization = request.user.organization
         serializer = self.get_serializer(organization)
+
+        return Response(serializer.data)
+
+    @action(detail=True)
+    def users(self, request, pk=None):
+        """
+        Get the organization with its users
+        """
+        if not request.user.is_government:
+            return Response(None)
+
+        organization = self.get_object()
+        serializer = self.get_serializer(organization)
+
+        return Response(serializer.data)
+
+    @action(detail=True)
+    def sales(self, request, pk=None):
+        """
+        Get the sales submissions of a specific organization
+        """
+        if not request.user.is_government:
+            return Response(None)
+
+        sales = SalesSubmission.objects.filter(
+            organization_id=pk
+        ).exclude(validation_status__in=(
+            SalesSubmissionStatuses.DRAFT,
+            SalesSubmissionStatuses.NEW
+        ))
+
+        serializer = SalesSubmissionListSerializer(sales, many=True)
 
         return Response(serializer.data)

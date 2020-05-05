@@ -1,10 +1,10 @@
 /*
  * Presentational component
  */
+import ReactTable from 'react-table';
 import React from 'react';
 import PropTypes from 'prop-types';
 import history from '../../app/History';
-import ReactTable from 'react-table';
 
 const UsersTable = (props) => {
   const columns = [{
