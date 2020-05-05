@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import history from '../../app/History';
 import Loading from '../../app/components/Loading';
 import OrganizationsTable from './OrganizationsTable';
+import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
 
 const OrganizationListPage = (props) => {
   const { loading, organizations } = props;
@@ -30,7 +31,13 @@ const OrganizationListPage = (props) => {
                 <FontAwesomeIcon icon="download" /> Download as Excel
               </button>
 
-              <button className="button primary" type="button">
+              <button
+                className="button primary"
+                type="button"
+                onClick={() => {
+                  history.push(ROUTES_ORGANIZATIONS.NEW);
+                }}
+              >
                 <FontAwesomeIcon icon="plus" /> New Supplier
               </button>
             </span>
@@ -48,7 +55,13 @@ const OrganizationListPage = (props) => {
                 <FontAwesomeIcon icon="download" /> Download as Excel
               </button>
 
-              <button className="button primary" type="button">
+              <button
+                className="button primary"
+                type="button"
+                onClick={() => {
+                  history.push(ROUTES_ORGANIZATIONS.NEW);
+                }}
+              >
                 <FontAwesomeIcon icon="plus" /> New Supplier
               </button>
             </span>
