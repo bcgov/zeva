@@ -1,6 +1,6 @@
 {
   "name": "zeva-grpc-frontend",
-  "version": "0.10.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.12.0",
