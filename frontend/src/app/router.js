@@ -117,6 +117,10 @@ class Router extends Component {
                 render={() => <OrganizationDetailsContainer keycloak={keycloak} user={user} />}
               />
               <Route
+                path={ROUTES_ORGANIZATIONS.NEW}
+                render={() => <VehicleSupplierDetailsContainer keycloak={keycloak} user={user} newSupplier="yes" />}
+              />
+              <Route
                 path={ROUTES_ORGANIZATIONS.ADD_USER}
                 render={() => <UserAddContainer keycloak={keycloak} user={user} />}
               />
@@ -133,6 +137,7 @@ class Router extends Component {
                 path={ROUTES_ORGANIZATIONS.LIST}
                 render={() => <OrganizationListContainer keycloak={keycloak} user={user} />}
               />
+
               <Route
                 exact
                 path={ROUTES_SALES.ADD}

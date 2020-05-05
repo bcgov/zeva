@@ -11,15 +11,17 @@ const UserDetailsTextInput = (props) => {
     name,
     id,
     details,
+    mandatory,
   } = props;
 
+
   const handleOnBlur = (event) => {
-    const { value, name } = event.target;
-    if (value === '') {
-      setValidationErrors(`${name} cannot be left blank`);
+    const { value } = event.target;
+    if (value === '' && mandatory === true) {
+      setValidationErrors(`${label} cannot be left blank`);
       setRowClass('form-group row error');
     }
-    if (value !== '') {
+    if (value !== '' || !mandatory) {
       setValidationErrors('');
       setRowClass('form-group row');
     }
@@ -35,7 +37,6 @@ const UserDetailsTextInput = (props) => {
         {label}
       </label>
       <div className="col-sm-8">
-        <small className="form-text text-danger">{ validationErrors }</small>
         {details && (<small className="form-text text-muted">{details}</small>) }
         <input
           className="form-control"
@@ -46,6 +47,7 @@ const UserDetailsTextInput = (props) => {
           onChange={handleInputChange}
           onBlur={handleOnBlur}
         />
+        <small className="form-text text-danger">{ validationErrors }</small>
       </div>
     </div>
   );
