@@ -247,12 +247,18 @@ objects:
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               volumeMounts:
+                - mountPath: /app/src/app/config
+                  name: ${NAME}-frontend-config${SUFFIX}              
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
           securityContext: {}
           terminationGracePeriodSeconds: 30
           volumes:
+            - configMap:
+                defaultMode: 444
+                name: ${NAME}-frontend-config${SUFFIX}
+              name: ${NAME}-frontend-config${SUFFIX}
       test: false
       triggers:
         - imageChangeParams:

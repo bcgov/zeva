@@ -2,12 +2,13 @@ FROM node:8-jessie
 RUN apt-get update && apt-get install -y vim
 RUN mkdir /app
 WORKDIR /app
-COPY package.json .
-RUN npm install
-RUN npm rebuild node-sass
 COPY . .
-RUN curl -sSL -o /usr/local/bin/caddy2 -f https://github.com/caddyserver/caddy/releases/download/v2.0.0-beta.20/caddy2_beta20_linux_amd64 && \
+RUN rm package-lock.json && \
+    npm install && \
+    npm rebuild node-sass
+CMD npm run start
+#RUN curl -sSL -o /usr/local/bin/caddy2 -f https://github.com/caddyserver/caddy/releases/download/v2.0.0-beta.20/caddy2_beta20_linux_amd64 && \
     chmod +x /usr/local/bin/caddy2 
-COPY ./Caddyfile /etc/caddy/Caddyfile
-RUN chmod +x ./Dockerfile-Openshift-entrypoint.sh
-CMD ["./Dockerfile-Openshift-entrypoint.sh"]
+# COPY ./Caddyfile /etc/caddy/Caddyfile
+# RUN chmod +x ./Dockerfile-Openshift-entrypoint.sh
+# CMD ["./Dockerfile-Openshift-entrypoint.sh"]

@@ -215,7 +215,7 @@ objects:
               memory: ${MEMORY_REQUEST}
           livenessProbe:
             exec:
-              command: ["rabbitmqctl", "node_health_check", "--timeout", "9"]
+              command: ["rabbitmqctl", "node_health_check", "--timeout", "30"]
             failureThreshold: 3
             initialDelaySeconds: 45
             periodSeconds: 10
