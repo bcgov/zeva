@@ -15,7 +15,6 @@ import VehicleSupplierEditForm from './components/VehicleSupplierEditForm';
 import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs';
 import VehicleSupplierZEVListPage from './components/VehicleSupplierZEVListPage';
 import History from '../app/History';
-import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs';
 
 const VehicleSupplierDetailsContainer = (props) => {
   const { id } = useParams();
