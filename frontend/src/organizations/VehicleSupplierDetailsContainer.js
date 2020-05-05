@@ -13,6 +13,8 @@ import CustomPropTypes from '../app/utilities/props';
 import VehicleSupplierDetailsPage from './components/VehicleSupplierDetailsPage';
 import VehicleSupplierEditForm from './components/VehicleSupplierEditForm';
 import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs';
+import VehicleSupplierSalesListPage from './components/VehicleSupplierSalesListPage';
+import VehicleSupplierUserListPage from './components/VehicleSupplierUserListPage';
 import VehicleSupplierZEVListPage from './components/VehicleSupplierZEVListPage';
 import History from '../app/History';
 
@@ -20,11 +22,13 @@ const VehicleSupplierDetailsContainer = (props) => {
   const { id } = useParams();
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
+  const [sales, setSales] = useState(true);
+  const [users, setUsers] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [activeTab, setActiveTab] = useState('supplier-info');
   const [editForm, setEditForm] = useState(false);
   const [display, setDisplay] = useState({});
-  const { keycloak, newSupplier } = props;
+  const { keycloak, newSupplier, user } = props;
 
 
   const refreshDetails = () => {
@@ -55,11 +59,21 @@ const VehicleSupplierDetailsContainer = (props) => {
 
         setDisplay(response.data);
       });
+
+      const salesPromise = axios.get(ROUTES_ORGANIZATIONS.SALES.replace(/:id/gi, id)).then((response) => {
+        setSales(response.data);
+      });
+
+      const usersPromise = axios.get(ROUTES_ORGANIZATIONS.USERS.replace(/:id/gi, id)).then((response) => {
+        const { users: organizationUsers } = response.data;
+        setUsers(organizationUsers);
+      });
+
       const vehiclesPromise = axios.get(ROUTES_VEHICLES.LIST).then((response) => {
         setVehicles(response.data);
       });
 
-      Promise.all([detailsPromise, vehiclesPromise]).then(() => {
+      Promise.all([detailsPromise, salesPromise, usersPromise, vehiclesPromise]).then(() => {
         setLoading(false);
       });
     }
@@ -149,11 +163,26 @@ const VehicleSupplierDetailsContainer = (props) => {
           handleSubmit={handleSubmit}
         />
       )}
+      {activeTab === 'supplier-users'
+      && (
+        <VehicleSupplierUserListPage
+          loading={loading}
+          members={users}
+        />
+      )}
       {activeTab === 'supplier-zev-models'
       && (
         <VehicleSupplierZEVListPage
           loading={loading}
+          user={user}
           vehicles={vehicles}
+        />
+      )}
+      {activeTab === 'supplier-credit-transactions'
+      && (
+        <VehicleSupplierSalesListPage
+          loading={loading}
+          sales={sales}
         />
       )}
     </div>
@@ -161,6 +190,7 @@ const VehicleSupplierDetailsContainer = (props) => {
 };
 VehicleSupplierDetailsContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default VehicleSupplierDetailsContainer;

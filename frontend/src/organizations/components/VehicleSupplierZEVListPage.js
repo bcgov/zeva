@@ -8,7 +8,8 @@ import CustomPropTypes from '../../app/utilities/props';
 import VehicleListTable from '../../vehicles/components/VehicleListTable';
 
 const VehicleSupplierZEVListPage = (props) => {
-  const { loading, vehicles } = props;
+  const { loading, user, vehicles } = props;
+
   if (loading) {
     return <Loading />;
   }
@@ -47,6 +48,7 @@ const VehicleSupplierZEVListPage = (props) => {
 
           <VehicleListTable
             items={vehicles}
+            user={user}
           />
 
           <div className="action-bar">
@@ -82,6 +84,7 @@ VehicleSupplierZEVListPage.defaultProps = {
 
 VehicleSupplierZEVListPage.propTypes = {
   loading: PropTypes.bool.isRequired,
+  user: CustomPropTypes.user.isRequired,
   vehicles: PropTypes.arrayOf(PropTypes.shape({})),
 };
 
