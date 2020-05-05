@@ -29,5 +29,4 @@ objects:
           'model_year_report.enabled': false,
           'purchase_requests.enabled': false,
           'roles.enabled': false
-          'test-override': yes
         };
