@@ -49,7 +49,7 @@ const VehicleSupplierTabs = (props) => {
 VehicleSupplierTabs.propTypes = {
   active: PropTypes.string.isRequired,
   setActiveTab: PropTypes.func.isRequired,
-  supplierId: PropTypes.number.isRequired,
+  // supplierId: PropTypes.number.isRequired,
 };
 
 export default VehicleSupplierTabs;

@@ -19,7 +19,7 @@ import VehicleSupplierZEVListPage from './components/VehicleSupplierZEVListPage'
 import History from '../app/History';
 
 const VehicleSupplierDetailsContainer = (props) => {
-  const { id } = useParams();
+  let { id } = useParams();
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [sales, setSales] = useState(true);
@@ -28,23 +28,22 @@ const VehicleSupplierDetailsContainer = (props) => {
   const [activeTab, setActiveTab] = useState('supplier-info');
   const [editForm, setEditForm] = useState(false);
   const [display, setDisplay] = useState({});
-  const { keycloak, newSupplier, user } = props;
-
+  const {
+    keycloak, user,
+  } = props;
 
   const refreshDetails = () => {
-    if (newSupplier) {
+    if (!id) {
       setEditForm(true);
       setLoading(false);
       setActiveTab('supplier-info');
       setDetails({
+        isActive: true,
         organizationAddress: {
-          addressLine_1: '',
-          addressLine_2: '',
-          addressLine_3: '',
         },
       });
     }
-    if (!newSupplier) {
+    if (id) {
       setLoading(true);
       const detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
         setDetails({
@@ -56,7 +55,6 @@ const VehicleSupplierDetailsContainer = (props) => {
             addressLine_3: response.data.organizationAddress ? response.data.organizationAddress.addressLine3 : '',
           },
         });
-
         setDisplay(response.data);
       });
 
@@ -113,8 +111,12 @@ const VehicleSupplierDetailsContainer = (props) => {
 
   const handleAddressChange = (event) => {
     const { value, name } = event.target;
-    const address1 = details.organizationAddress ? details.organizationAddress.addressLine1 : '';
-    const address2 = details.organizationAddress ? details.organizationAddress.addressLine2 : '';
+    let address1;
+    let address2;
+    if (id) {
+      address1 = details.organizationAddress ? details.organizationAddress.addressLine1 : '';
+      address2 = details.organizationAddress ? details.organizationAddress.addressLine2 : '';
+    }
     setDetails({
       ...details,
       organizationAddress: {
@@ -126,8 +128,10 @@ const VehicleSupplierDetailsContainer = (props) => {
     });
   };
   const handleSubmit = () => {
-    axios.patch(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id),
-      details).then(() => {
+    const submitPromise = id ? axios.patch(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id),
+      details) : axios.post(ROUTES_ORGANIZATIONS.LIST, details);
+    submitPromise.then((response) => {
+      id = response.data.id;
       refreshDetails();
       setEditForm(false);
       History.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));

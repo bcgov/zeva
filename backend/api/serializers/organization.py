@@ -4,6 +4,7 @@ from api.models.organization import Organization
 from api.serializers.organization_address import OrganizationAddressSerializer
 from api.models.organization_address import OrganizationAddress
 from datetime import date
+from symtable import Class
 
 class OrganizationSerializer(serializers.ModelSerializer):
     """
@@ -51,6 +52,29 @@ class OrganizationWithMembersSerializer(OrganizationSerializer):
         fields = (
             'id', 'name', 'organization_address', 'users', 'create_timestamp',
             'balance'
+        )
+
+
+class OrganizationCreateSerializer(serializers.ModelSerializer):
+    organization_address = OrganizationAddressSerializer(allow_null=True)
+
+    def create(self, validated_data):
+        print(validated_data)
+        addr = validated_data.pop('organization_address')
+        print(addr)
+        obj = Organization.objects.create(**validated_data)
+        OrganizationAddress.objects.create(
+                effective_date=date.today(),
+                organization=obj,
+                **addr
+            )
+        return obj
+
+    class Meta:
+        model = Organization
+        fields = (
+            'id', 'name', 'organization_address', 'create_timestamp',
+            'balance', 'is_active', 'short_name'
         )
 
 
