@@ -34,7 +34,8 @@ const VehicleSupplierEditContainer = (props) => {
     }
     if (!newSupplier) {
       setLoading(true);
-      const detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
+
+      axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
         setDetails({
           ...response.data,
           organizationAddress: {
@@ -46,9 +47,7 @@ const VehicleSupplierEditContainer = (props) => {
         });
 
         setDisplay(response.data);
-      });
 
-      Promise.all([detailsPromise]).then(() => {
         setLoading(false);
       });
     }

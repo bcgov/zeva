@@ -18,14 +18,14 @@ const VehicleSupplierDetailsContainer = (props) => {
   const { id } = useParams();
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
-  const [vehicles, setVehicles] = useState([]);
   const [display, setDisplay] = useState({});
   const { keycloak } = props;
 
 
   const refreshDetails = () => {
     setLoading(true);
-    const detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
+
+    axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
       setDetails({
         ...response.data,
         organizationAddress: {
@@ -37,13 +37,7 @@ const VehicleSupplierDetailsContainer = (props) => {
       });
 
       setDisplay(response.data);
-    });
 
-    const vehiclesPromise = axios.get(ROUTES_VEHICLES.LIST).then((response) => {
-      setVehicles(response.data);
-    });
-
-    Promise.all([detailsPromise, vehiclesPromise]).then(() => {
       setLoading(false);
     });
   };
@@ -75,7 +69,6 @@ const VehicleSupplierDetailsContainer = (props) => {
       <VehicleSupplierDetailsPage
         details={details}
         loading={loading}
-        vehicles={vehicles}
         editButton={editButton}
       />
     </div>
