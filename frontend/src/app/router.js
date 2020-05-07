@@ -118,7 +118,7 @@ class Router extends Component {
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.NEW}
-                render={() => <VehicleSupplierDetailsContainer keycloak={keycloak} user={user} newSupplier="yes" />}
+                render={() => <VehicleSupplierDetailsContainer keycloak={keycloak} user={user} newSupplier />}
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.ADD_USER}
