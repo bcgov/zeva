@@ -59,7 +59,7 @@ class Navbar extends Component {
               <div>
                 <h5 className="organization-name">{user.organization.name}</h5>
                 {!user.isGovernment && (
-                  <span className="credit-balance">Credit Balance: 23,456-A / 12,345-B</span>
+                  <span className="credit-balance">Credit Balance: 0-A/ 0-B</span>
                 )}
               </div>
             </div>
