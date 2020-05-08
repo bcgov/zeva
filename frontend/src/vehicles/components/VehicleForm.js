@@ -11,7 +11,6 @@ const VehicleForm = (props) => {
     vehicleMakes,
     vehicleYears,
     vehicleTypes,
-    vehicleClasses,
     handleInputChange,
     handleSubmit,
     fields,
@@ -77,14 +76,7 @@ const VehicleForm = (props) => {
                 handleInputChange={handleInputChange}
                 selectedOption={fields.vehicleZevType.vehicleZevCode}
               />
-              <VehicleFormDropdown
-                accessor={(classCode) => classCode.vehicleClassCode}
-                dropdownName="Size"
-                dropdownData={vehicleClasses}
-                fieldName="vehicleClassCode"
-                handleInputChange={handleInputChange}
-                selectedOption={fields.vehicleClassCode.vehicleClassCode}
-              />
+
               <div className="form-group row">
                 <label
                   className="col-sm-2 col-form-label"

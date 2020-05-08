@@ -13,11 +13,6 @@ class Vehicle(Auditable):
         related_name=None,
         on_delete=models.PROTECT
     )
-    vehicle_class_code = models.ForeignKey(
-        'VehicleClass',
-        related_name=None,
-        on_delete=models.PROTECT
-    )
     vehicle_zev_type = models.ForeignKey(
         'ZevType',
         related_name=None,
@@ -100,7 +95,7 @@ class Vehicle(Auditable):
     class Meta:
         db_table = 'vehicle'
         unique_together = [[
-            'make', 'model_name', 'vehicle_class_code', 'vehicle_zev_type',
+            'make', 'model_name', 'vehicle_zev_type',
             'model_year'
         ]]
 
