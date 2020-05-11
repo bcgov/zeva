@@ -68,16 +68,19 @@ class VehicleStatusChangeSerializer(ModelSerializer):
         return value
 
     def update(self, instance, validated_data):
+        status = validated_data.get('validation_status')
         change_status(
             self.context['request'].user,
             instance,
-            validated_data.get('validation_status')
+            status
         )
-        instance.credit_class = CreditClass.objects.get(
-            credit_class=instance.get_credit_class()
-        )
-        instance.credit_value = instance.get_credit_value()
-        instance.save()
+
+        if status == VehicleDefinitionStatuses.VALIDATED:
+            instance.credit_class = CreditClass.objects.get(
+                credit_class=instance.get_credit_class()
+            )
+            instance.credit_value = instance.get_credit_value()
+            instance.save()
 
         return instance
 
