@@ -61,8 +61,6 @@ class UserSaveSerializer(serializers.ModelSerializer):
         )
         user_profile.save()
 
-        update_user_groups(user_profile.username, ['Signing Authority', 'Manage ZEV'])
-
         return user_profile
 
     class Meta:
