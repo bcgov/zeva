@@ -4,7 +4,7 @@ from api.models.organization import Organization
 from api.serializers.organization_address import OrganizationAddressSerializer
 from api.models.organization_address import OrganizationAddress
 from datetime import date
-from symtable import Class
+
 
 class OrganizationSerializer(serializers.ModelSerializer):
     """
