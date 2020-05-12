@@ -15,7 +15,7 @@ import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs';
 import History from '../app/History';
 
 const VehicleSupplierDetailsContainer = (props) => {
-  const { id } = useParams();
+  let { id } = useParams();
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [display, setDisplay] = useState({});
