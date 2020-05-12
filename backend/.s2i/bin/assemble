@@ -87,9 +87,6 @@ if should_collectstatic; then
   )
 fi
 
-echo "---> current folder is "
-pwd
-
 # Run unit tests in build stage with the code below
 # echo "--> running Django unit tests"
 
@@ -97,6 +94,4 @@ pwd
 
 # set permissions for any installed artifacts
 fix-permissions /opt/app-root
-echo "---> current folder2 is "
-pwd
-ls -lrt
+
