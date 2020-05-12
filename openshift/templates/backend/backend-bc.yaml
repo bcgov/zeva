@@ -81,7 +81,7 @@ objects:
         sourceStrategy:
           env:
           - name: DISABLE_COLLECTSTATIC
-            value: true
+            value: 'true'
           from:
             kind: ImageStreamTag
             name: python:3.6-1-63
