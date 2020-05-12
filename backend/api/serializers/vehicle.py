@@ -4,6 +4,7 @@ from rest_framework.serializers import ModelSerializer, \
     SerializerMethodField, SlugRelatedField
 
 from api.models.model_year import ModelYear
+from api.models.credit_class import CreditClass
 from api.models.vehicle import Vehicle
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.models.vehicle_change_history import VehicleChangeHistory
@@ -58,16 +59,27 @@ class VehicleStatusChangeSerializer(ModelSerializer):
         return value
 
     def update(self, instance, validated_data):
+        status = validated_data.get('validation_status')
         change_status(
             self.context['request'].user,
             instance,
-            validated_data.get('validation_status')
+            status
         )
+
+        if status == VehicleDefinitionStatuses.VALIDATED:
+            instance.credit_class = CreditClass.objects.get(
+                credit_class=instance.get_credit_class()
+            )
+            instance.credit_value = instance.get_credit_value()
+            instance.save()
+
         return instance
 
     class Meta:
         model = Vehicle
-        fields = ('validation_status',)
+        fields = (
+            'validation_status',
+        )
 
 
 class VehicleHistorySerializer(

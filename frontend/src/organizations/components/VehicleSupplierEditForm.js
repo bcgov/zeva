@@ -14,7 +14,6 @@ const VehicleSupplierEditForm = (props) => {
     loading,
     handleInputChange,
     handleSubmit,
-    setEditForm,
     handleAddressChange,
   } = props;
   const [showModal, setShowModal] = useState(false);
@@ -219,7 +218,6 @@ const VehicleSupplierEditForm = (props) => {
                   className="button"
                   type="button"
                   onClick={() => {
-                    setEditForm(false);
                     History.goBack();
                   }}
                 >
@@ -246,7 +244,6 @@ VehicleSupplierEditForm.propTypes = {
   loading: PropTypes.bool.isRequired,
   handleInputChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-  setEditForm: PropTypes.func.isRequired,
   handleAddressChange: PropTypes.func.isRequired,
 };
 
