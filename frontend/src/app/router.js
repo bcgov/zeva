@@ -8,7 +8,11 @@ import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
 import OrganizationListContainer from '../organizations/OrganizationListContainer';
 import UserDetailsContainer from '../organizations/UserDetailsContainer';
+import VehicleSupplierCreditTransactionListContainer from '../organizations/VehicleSupplierCreditTransactionListContainer';
 import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
+import VehicleSupplierEditContainer from '../organizations/VehicleSupplierEditContainer';
+import VehicleSupplierModelListContainer from '../organizations/VehicleSupplierModelListContainer';
+import VehicleSupplierUserListContainer from '../organizations/VehicleSupplierUserListContainer';
 import RoleListContainer from '../roles/RoleListContainer';
 import CreditsContainer from '../credits/CreditsContainer';
 import CreditRequestsContainer from '../credits/CreditRequestsContainer';
@@ -125,8 +129,24 @@ class Router extends Component {
                 render={() => <UserAddContainer keycloak={keycloak} user={user} />}
               />
               <Route
+                path={ROUTES_ORGANIZATIONS.USERS}
+                render={() => <VehicleSupplierUserListContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_ORGANIZATIONS.VEHICLES}
+                render={() => <VehicleSupplierModelListContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_ORGANIZATIONS.TRANSACTIONS}
+                render={() => <VehicleSupplierCreditTransactionListContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_ORGANIZATIONS.EDIT}
+                render={() => <VehicleSupplierEditContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
                 path={ROUTES_ORGANIZATIONS.DETAILS}
-                render={() => <VehicleSupplierDetailsContainer keycloak={keycloak} user={user} activeTab="supplier-info" />}
+                render={() => <VehicleSupplierDetailsContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact
