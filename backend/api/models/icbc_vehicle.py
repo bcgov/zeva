@@ -6,7 +6,6 @@ from auditable.models import Auditable
 from enumfields import EnumField
 
 
-
 class IcbcVehicle(Auditable):
     make = models.ForeignKey(
         'Make',
