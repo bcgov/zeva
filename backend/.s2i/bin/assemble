@@ -22,17 +22,26 @@ function install_pipenv() {
   ln -s $VENV_DIR/bin/pipenv $HOME/.local/bin/pipenv
 }
 
+# from "help set", it says "-e  Exit immediately if a command exits with a non-zero status."
 set -e
 
+# there are options which modify the behavior of bash, they can be set or unset using shopt
+# -s means If optnames are specified, set those options. If no optnames are specified, list all options that are currently set.
+# -u can Unset optnames.
 shopt -s dotglob
+
+# backend/* are copied to /tmp/src/*, move them to /opt/app-root/src in backend pod
 echo "---> Installing application source ..."
 mv /tmp/src/* ./
 
+# -z String, retuyrn if the string is null
+# if $UPGRADE_PIP_TO_LATEST or $ENABLE_PIPENV is not null, run the then clause
 if [[ ! -z "$UPGRADE_PIP_TO_LATEST" || ! -z "$ENABLE_PIPENV" ]]; then
   echo "---> Upgrading pip to latest version ..."
   pip install -U pip setuptools wheel
 fi
 
+# if $ENABLE_PIPENV is not null
 if [[ ! -z "$ENABLE_PIPENV" ]]; then
   install_pipenv
   echo "---> Installing dependencies via pipenv ..."
