@@ -13,4 +13,4 @@ venv/
 db.sqlite3
 package-lock.json
 .coverage
-frontend/coverage/
+frontend/coverage/lcov-report
