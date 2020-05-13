@@ -166,10 +166,10 @@ class UserAuthentication(authentication.BaseAuthentication):
                 'administrator to re-activate your account.'
             )
 
-        if 'realm_access' in user_token:
-            if 'roles' in user_token['realm_access']:
-                for role in user_token['realm_access']['roles']:
-                    if role not in FILTERED_ROLES:
-                        user.roles.append(role)
+        # if 'realm_access' in user_token:
+        #     if 'roles' in user_token['realm_access']:
+        #         for role in user_token['realm_access']['roles']:
+        #             if role not in FILTERED_ROLES:
+        #                 user.roles.append(role)
 
         return user, None

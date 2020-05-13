@@ -6,41 +6,33 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
+import ROUTES_ROLES from '../app/routes/Roles';
 import ROUTES_USERS from '../app/routes/Users';
 import CustomPropTypes from '../app/utilities/props';
 import UserDetailsForm from './components/UserDetailsForm';
 
 const UserAddContainer = (props) => {
-  const [loading, setLoading] = useState(true);
-  const [roles, setRoles] = useState([]);
   const { id } = useParams();
   const [details, setDetails] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [roles, setRoles] = useState([]);
+  const [userRoles, setUserRoles] = useState([]);
 
   const { keycloak, user } = props;
-
-  const rolesList = [
-    'Organization Administrator',
-    'Signing Authority',
-    'Manage ZEV',
-    'Request Credits',
-    'Compliance Reporting',
-    'Credit Transfers',
-    'Purchase Agreements',
-    'Initiative Agreements',
-    'Guest'];
 
   const handleInputChange = (event) => {
     const { value, name } = event.target;
     if (name === 'roles-manager') {
       if (!event.target.checked) {
-        const newRoles = roles.filter((each) => each !== event.target.id);
-        setRoles([newRoles]);
+        const newRoles = userRoles.filter((each) => each !== event.target.id);
+        setUserRoles(newRoles);
       }
       if (event.target.checked) {
-        const newRoles = roles.concat(event.target.id);
-        setRoles(newRoles);
+        const newRoles = userRoles.concat(event.target.id);
+        setUserRoles(newRoles);
       }
     }
+
     setDetails({
       ...details,
       [name]: value,
@@ -50,7 +42,7 @@ const UserAddContainer = (props) => {
   const handleSubmit = () => {
     axios.post(ROUTES_USERS.LIST, {
       ...details,
-      roles,
+      roles: userRoles,
     }).then(() => {
     });
   };
@@ -58,12 +50,19 @@ const UserAddContainer = (props) => {
   const refreshDetails = () => {
     setLoading(true);
 
-    axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
+    const rolesPromise = axios.get(ROUTES_ROLES.LIST).then((response) => {
+      setRoles(response.data);
+    });
+
+
+    const detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
       setDetails({
         ...details,
         organization: response.data,
       });
+    });
 
+    Promise.all([detailsPromise, rolesPromise]).then(() => {
       setLoading(false);
     });
   };
@@ -80,8 +79,8 @@ const UserAddContainer = (props) => {
         user={user}
         handleInputChange={handleInputChange}
         handleSubmit={handleSubmit}
-        rolesList={rolesList}
         roles={roles}
+        userRoles={userRoles}
       />
     </div>
   );
