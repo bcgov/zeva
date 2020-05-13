@@ -2,7 +2,6 @@ from api.models.credit_transaction import CreditTransaction
 from api.models.credit_transaction_type import CreditTransactionType
 from api.models.record_of_sale import RecordOfSale
 
-
 def award_credits(submission):
     credit_value_a = 0
     credit_value_b = 0
