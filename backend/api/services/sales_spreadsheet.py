@@ -16,7 +16,7 @@ from api.models.organization import Organization
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission import SalesSubmission
 from api.models.vehicle import Vehicle
-from api.models.vehicle_make_organization import VehicleMakeOrganization
+# from api.models.vehicle_make_organization import VehicleMakeOrganization
 
 logger = logging.getLogger('zeva.sales_spreadsheet')
 
@@ -46,62 +46,64 @@ def create_sales_spreadsheet(organization, model_year, stream):
     }
 
     sheet_names = {}
-    make_assoc = VehicleMakeOrganization.objects.filter(organization=organization)
+    #create list of make-org objects where organization is equal to organization arguemment
+    # make_assoc = VehicleMakeOrganization.objects.filter(organization=organization)
 
-    for ma in make_assoc:
-        make = ma.vehicle_make
-        logger.info('{org} supplies {name}'.format(org=organization.name,
-                                                   name=make.name))
+    # for ma in make_assoc:
+    #     make = ma.vehicle_make
+    #     logger.info('{org} supplies {name}'.format(org=organization.name,
+    #                                                name=make.name))
 
-        vehicles = Vehicle.objects.filter(make=make, model_year=model_year)
-        for veh in vehicles:
-            logger.info('{make} has model {model}'.format(make=make.name,
-                                                          model=veh.model_name))
+        #iterate through array of objects and find vehicles that match each make
+    vehicles = Vehicle.objects.filter(model_year=model_year)
+    for veh in vehicles:
+        # logger.info('{make} has model {model}'.format(make=make.name,
+        #                                               model=veh.model_name))
 
-            sheet_name = '{} - {}'.format(make.name, veh.model_name)
-            if sheet_name not in sheet_names.keys():
-                sheet_names[sheet_name] = 0
+        sheet_name = '{} - {}'.format(veh.make, veh.model_name)
+        if sheet_name not in sheet_names.keys():
+            sheet_names[sheet_name] = 0
 
-            sheet_names[sheet_name] += 1
+        sheet_names[sheet_name] += 1
 
-            if sheet_names[sheet_name] > 1:
-                sheet_name = '{} - {} - Alternate {}'.format(make.name, veh.model_name, sheet_names[sheet_name] - 1)
+        if sheet_names[sheet_name] > 1:
+            sheet_name = '{} - {} - Alternate {}'.format(veh.make, veh.model_name, sheet_names[sheet_name] - 1)
 
-            ws = wb.add_sheet(sheet_name)
-            ws.protect = True
-            descriptor['sheets'].append({
-                'index': sheet_count,
-                'name': sheet_name,
-                'vehicle_id': veh.id,
-            })
+        ws = wb.add_sheet(sheet_name)
+        ws.protect = True
+        descriptor['sheets'].append({
+            'index': sheet_count,
+            'name': sheet_name,
+            'vehicle_id': veh.id,
+        })
 
-            sheet_count += 1
-            row = 0
-            ws.write(row, 0, 'Recording sales for {year} {make} {model}'.format(year=veh.model_year.name,
-                                                                                make=veh.make.name,
-                                                                                model=veh.model_name), style=bold)
+        sheet_count += 1
+        row = 0
+        ws.write(row, 0, 'Recording sales for {year} {make} {model}'.format(year=veh.model_year.name,
+                                                                            make=veh.make,
+                                                                            model=veh.model_name), style=bold)
+        row += 1
+
+        ws.write(row, 0, 'Record each individual sale for this model in the spaces below. VIN and Sales Date '
+                            'fields are required.')
+
+        row += 2
+
+        ws.write(row, 0, 'Reference Number', style=bold)
+        ws.write(row, 1, 'VIN', style=bold)
+        ws.write(row, 2, 'Sales Date', style=bold)
+
+        row += 1
+
+        while row < OUTPUT_ROWS:
+            ref = 'Assigned'
+            ws.write(row, 0, '{ref}'.format(ref=ref), style=locked)
+            ws.write(row, 1, '', style=editable)
+            ws.write(row, 2, None, style=editable_date)
             row += 1
 
-            ws.write(row, 0, 'Record each individual sale for this model in the spaces below. VIN and Sales Date '
-                             'fields are required.')
-
-            row += 2
-
-            ws.write(row, 0, 'Reference Number', style=bold)
-            ws.write(row, 1, 'VIN', style=bold)
-            ws.write(row, 2, 'Sales Date', style=bold)
-
-            row += 1
-
-            while row < OUTPUT_ROWS:
-                ref = 'Assigned'
-                ws.write(row, 0, '{ref}'.format(ref=ref), style=locked)
-                ws.write(row, 1, '', style=editable)
-                ws.write(row, 2, None, style=editable_date)
-                row += 1
-
-            ws.write(row, 0, 'A maximum of {} entries per sheet will be read. If you need more entries,'
-                             ' use multiple submissions'.format(MAX_READ_ROWS))
+        ws.write(row, 0, 'A maximum of {} entries per sheet will be read. If you need more entries,'
+                            ' use multiple submissions'.format(MAX_READ_ROWS))
 
     descriptor_bytes = [0x00, 0xd3, 0xc0, 0xde]
     descriptor_bytes.extend(pickle.dumps(descriptor))
@@ -169,8 +171,8 @@ def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=Fals
         logger.critical('Organization mismatch!')
         return
 
-    make_assoc = VehicleMakeOrganization.objects.filter(organization=org)
-    permitted_makes = [ma.vehicle_make for ma in make_assoc]
+    # make_assoc = VehicleMakeOrganization.objects.filter(organization=org)
+    # permitted_makes = [ma.vehicle_make for ma in make_assoc]
 
     submission = SalesSubmission.objects.create(
         create_user=requesting_user,
@@ -223,10 +225,10 @@ def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=Fals
                         })
 
                     vehicle = Vehicle.objects.get(id=input_sheet['vehicle_id'])
-                    if vehicle is None or vehicle.make not in permitted_makes:
-                        validation_problems.append({'row': None, 'message': 'Vehicle not found or has incorrect make'})
-                        logger.critical('Vehicle not found or has incorrect make')
-                        return
+                    # if vehicle is None or vehicle.make not in permitted_makes:
+                    #     validation_problems.append({'row': None, 'message': 'Vehicle not found or has incorrect make'})
+                    #     logger.critical('Vehicle not found or has incorrect make')
+                    #     return
 
                     if parsed_date:
                         ros = RecordOfSale.objects.create(
@@ -245,8 +247,8 @@ def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=Fals
                              'credits': '??',
                              'model': ros.vehicle.model_name,
                              'model_year': ros.vehicle.model_year.name,
-                             'make': ros.vehicle.make.name,
-                             'class': ros.vehicle.vehicle_class_code.vehicle_class_code,
+                             'make': ros.vehicle.make,
+                            #  'class': ros.vehicle.vehicle_class_code.vehicle_class_code,
                              'range': ros.vehicle.range,
                              'type': ros.vehicle.vehicle_zev_type.vehicle_zev_code,
                              }

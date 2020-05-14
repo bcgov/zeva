@@ -12,14 +12,13 @@ import History from '../app/History';
 
 const VehicleAddContainer = (props) => {
   const [fields, setFields] = useState({
-    make: { name: '--' },
+    make: '',
     modelName: '',
     vehicleZevType: { vehicleZevCode: '--' },
     range: '',
     modelYear: { name: '--' },
   });
   const [loading, setLoading] = useState(true);
-  const [makes, setMakes] = useState([]);
   const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
 
@@ -48,12 +47,10 @@ const VehicleAddContainer = (props) => {
   const refreshList = () => {
     setLoading(true);
     axios.all([
-      axios.get(ROUTES_VEHICLES.MAKES),
       axios.get(ROUTES_VEHICLES.YEARS),
       axios.get(ROUTES_VEHICLES.ZEV_TYPES),
-    ]).then(axios.spread((makesRes, yearsRes, typesRes) => (
-      [setMakes(makesRes.data),
-        setYears(yearsRes.data),
+    ]).then(axios.spread((yearsRes, typesRes) => (
+      [setYears(yearsRes.data),
         setTypes(typesRes.data),
         setLoading(false)]
     )));
@@ -68,7 +65,6 @@ const VehicleAddContainer = (props) => {
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
       loading={loading}
-      vehicleMakes={makes}
       vehicleYears={years}
       vehicleTypes={types}
       fields={fields}

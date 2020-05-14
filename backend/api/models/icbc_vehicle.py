@@ -6,12 +6,14 @@ from auditable.models import Auditable
 from enumfields import EnumField
 
 
-
 class IcbcVehicle(Auditable):
-    make = models.ForeignKey(
-        'Make',
-        related_name=None,
-        on_delete=models.PROTECT
+    make = models.CharField(
+        blank=False,
+        db_comment="The make of vehicle"
+                   "eg Toyota, Honda, Mitsubishi",
+        unique=True,
+        null=False,
+        max_length=250
     )
     model_name = models.CharField(
         blank=False,
@@ -25,6 +27,7 @@ class IcbcVehicle(Auditable):
         on_delete=models.PROTECT,
         null=False
     )
+
     class Meta:
         db_table = 'icbc_vehicle'
         unique_together = [[

@@ -6,10 +6,8 @@ const VEHICLES = {
   DETAILS: `${API_BASE_PATH}/:id`,
   ZEV_TYPES: `${API_BASE_PATH}/zev_types`,
   LIST: `${API_BASE_PATH}`,
-  MAKES: `${API_BASE_PATH}/makes`,
   MODELS: `${API_BASE_PATH}/models`,
   YEARS: `${API_BASE_PATH}/years`,
-  CLASSES: `${API_BASE_PATH}/classes`,
 };
 
 export default VEHICLES;

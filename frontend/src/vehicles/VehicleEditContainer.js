@@ -41,13 +41,11 @@ const VehicleEditContainer = (props) => {
   const refreshList = () => {
     setLoading(true);
     axios.all([
-      axios.get(ROUTES_VEHICLES.MAKES),
       axios.get(ROUTES_VEHICLES.YEARS),
       axios.get(ROUTES_VEHICLES.ZEV_TYPES),
       axios.get(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id)),
-    ]).then(axios.spread((makesRes, yearsRes, typesRes, vehicleRes) => (
-      [setMakes(makesRes.data),
-        setYears(yearsRes.data),
+    ]).then(axios.spread((yearsRes, typesRes, vehicleRes) => (
+      [setYears(yearsRes.data),
         setTypes(typesRes.data),
         setFields(vehicleRes.data),
         setLoading(false)]
@@ -63,7 +61,6 @@ const VehicleEditContainer = (props) => {
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
       loading={loading}
-      vehicleMakes={makes}
       vehicleYears={years}
       vehicleTypes={types}
       fields={fields}

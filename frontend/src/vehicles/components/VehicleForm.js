@@ -8,7 +8,6 @@ import VehicleFormDropdown from './VehicleFormDropdown';
 const VehicleForm = (props) => {
   const {
     loading,
-    vehicleMakes,
     vehicleYears,
     vehicleTypes,
     handleInputChange,
@@ -42,14 +41,34 @@ const VehicleForm = (props) => {
                 handleInputChange={handleInputChange}
                 selectedOption={fields.modelYear.name}
               />
-              <VehicleFormDropdown
+
+              {/* <VehicleFormDropdown
                 accessor={(make) => make.name}
                 dropdownName="Make"
                 dropdownData={vehicleMakes}
                 fieldName="make"
                 handleInputChange={handleInputChange}
                 selectedOption={fields.make.name}
-              />
+              /> */}
+              <div className="form-group row">
+                <label
+                  className="col-sm-2 col-form-label"
+                  htmlFor="make"
+                >
+                  Make
+                </label>
+                <div className="col-sm-10">
+                  <input
+                    className="form-control"
+                    id="make"
+                    name="make"
+                    type="text"
+                    defaultValue={fields.make}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+
               <div className="form-group row">
                 <label
                   className="col-sm-2 col-form-label"

@@ -6,10 +6,9 @@ from rest_framework.response import Response
 from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle, VehicleDefinitionStatuses
 from api.models.vehicle_zev_type import ZevType
-from api.models.vehicle_make import Make
 from api.serializers.vehicle import ModelYearSerializer, \
     VehicleZevTypeSerializer, \
-    VehicleMakeSerializer, VehicleSaveSerializer, VehicleSerializer, \
+    VehicleSaveSerializer, VehicleSerializer, \
     VehicleStatusChangeSerializer
 from auditable.views import AuditableMixin
 
@@ -43,9 +42,10 @@ class VehicleViewSet(
         organization_id = request.user.organization.id
 
         if not is_government:
-            vehicles = Vehicle.objects.filter(
-                make__vehicle_make_organizations__organization_id=organization_id
-            )
+            vehicles = Vehicle.objects.all()
+            # filter(
+            #     make__vehicle_make_organizations__organization_id=organization_id
+            # )
         else:
             vehicles = self.get_queryset().filter(
                 validation_status__in=[
@@ -57,24 +57,24 @@ class VehicleViewSet(
         serializer = self.get_serializer(vehicles, many=True)
         return Response(serializer.data)
 
-    @action(detail=False)
-    def makes(self, request):
-        """
-        Get the makes
-        """
-        is_government = request.user.is_government
+    # @action(detail=False)
+    # def makes(self, request):
+    #     """
+    #     Get the makes
+    #     """
+    #     is_government = request.user.is_government
 
-        organization_id = request.user.organization.id
+    #     organization_id = request.user.organization.id
 
-        if not is_government:
-            makes = Make.objects.filter(
-                vehicle_make_organizations__organization_id=organization_id
-            )
-        else:
-            makes = Make.objects.all()
+    #     if not is_government:
+    #         makes = Make.objects.filter(
+    #             vehicle_make_organizations__organization_id=organization_id
+    #         )
+    #     else:
+    #         makes = Make.objects.all()
 
-        serializer = VehicleMakeSerializer(makes, many=True)
-        return Response(serializer.data)
+    #     serializer = VehicleMakeSerializer(makes, many=True)
+    #     return Response(serializer.data)
 
     @action(detail=False)
     def zev_types(self, _request):
