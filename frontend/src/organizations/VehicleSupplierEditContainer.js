@@ -102,6 +102,7 @@ const VehicleSupplierEditContainer = (props) => {
       <VehicleSupplierTabs supplierId={details.id} active="supplier-info" />
       <VehicleSupplierEditForm
         display={display}
+        newSupplier={newSupplier}
         setDetails={setDetails}
         details={details}
         handleAddressChange={handleAddressChange}
