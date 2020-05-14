@@ -5,6 +5,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+
+import history from '../app/History';
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import ROUTES_ROLES from '../app/routes/Roles';
 import ROUTES_USERS from '../app/routes/Users';
@@ -44,6 +46,7 @@ const UserAddContainer = (props) => {
       ...details,
       roles: userRoles,
     }).then(() => {
+      history.push(ROUTES_ORGANIZATIONS.USERS.replace(/:id/gi, id));
     });
   };
 

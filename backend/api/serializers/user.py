@@ -7,6 +7,7 @@ from api.models.role import Role
 from api.models.user_profile import UserProfile
 from api.models.user_role import UserRole
 from .organization import OrganizationSerializer
+from .role import RoleSerializer
 from ..services.keycloak_api import get_token, \
     list_groups_for_username, update_user_groups
 
@@ -17,6 +18,7 @@ class MemberSerializer(serializers.ModelSerializer):
     organization of the user so it doesn't do an infinite loop.
     """
     groups = SerializerMethodField()
+    roles = RoleSerializer(read_only=True, many=True)
 
     def get_groups(self, object):
         return list_groups_for_username(get_token(), object.username)
@@ -26,7 +28,7 @@ class MemberSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'first_name', 'last_name', 'email',
             'username', 'display_name', 'is_active', 'phone',
-            'groups'
+            'groups', 'roles'
         )
 
 
