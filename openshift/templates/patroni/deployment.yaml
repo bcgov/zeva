@@ -210,6 +210,24 @@ objects:
           #   we end up with outdated/out-of-sync image depending on the node where it is running
           imagePullPolicy: Always
           name: postgresql
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - '-c'
+                  - |-
+                    sleep 120
+                    psql zeva -c 'ALTER system SET log_autovacuum_min_duration=250' \
+                              -c 'ALTER system SET log_checkpoints='on'' \
+                              -c 'ALTER system SET log_lock_waits='on'' \
+                              -c 'ALTER system SET log_min_duration_statement = 1000' \
+                              -c 'ALTER system SET log_temp_files=1000' \
+                              -c 'ALTER system SET min_wal_size = '500MB'' \
+                              -c 'ALTER system SET max_wal_size = '1GB'' \
+                              -c 'ALTER system SET track_io_timing='on'' \
+                              -c 'alter system set idle_in_transaction_session_timeout = '20s''
+                    psql zeva -c 'SELECT pg_reload_conf()'
           ports:
           - containerPort: 8008
             protocol: TCP
