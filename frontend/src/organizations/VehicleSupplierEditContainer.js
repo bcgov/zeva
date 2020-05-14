@@ -79,10 +79,17 @@ const VehicleSupplierEditContainer = (props) => {
   };
 
   const handleSubmit = () => {
-    axios.patch(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id), details).then(() => {
-      refreshDetails();
-      History.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));
-    });
+    if (newSupplier) {
+      axios.post(ROUTES_ORGANIZATIONS.LIST, details).then((response) => {
+        refreshDetails();
+        History.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, response.data.id));
+      });
+    } else {
+      axios.patch(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id), details).then(() => {
+        refreshDetails();
+        History.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));
+      });
+    }
   };
 
   return (

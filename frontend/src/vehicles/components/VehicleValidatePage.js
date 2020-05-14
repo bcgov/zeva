@@ -38,7 +38,7 @@ const VehicleValidatePage = (props) => {
         <div className="col-md-6">
           <div className="form p-4">
             <DetailField label="Model Year" value={details.modelYear.name} />
-            <DetailField label="Make" value={details.make.name} />
+            <DetailField label="Make" value={details.make} />
             <DetailField label="Model" value={details.modelName} />
             <DetailField label="ZEV Type" value={details.vehicleZevType.description} />
             <DetailField label="Electric Range (km)" value={details.range} />
@@ -95,9 +95,7 @@ VehicleValidatePage.propTypes = {
     creditClass: PropTypes.string,
     creditValue: PropTypes.number,
     history: PropTypes.arrayOf(PropTypes.object),
-    make: PropTypes.shape({
-      name: PropTypes.string,
-    }),
+    make: PropTypes.string,
     modelName: PropTypes.string,
     vehicleZevType: PropTypes.shape({
       description: PropTypes.string,

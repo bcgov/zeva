@@ -11,7 +11,6 @@ class IcbcVehicle(Auditable):
         blank=False,
         db_comment="The make of vehicle"
                    "eg Toyota, Honda, Mitsubishi",
-        unique=True,
         null=False,
         max_length=250
     )

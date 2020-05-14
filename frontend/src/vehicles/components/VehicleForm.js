@@ -18,10 +18,8 @@ const VehicleForm = (props) => {
   if (loading) {
     return (<Loading />);
   }
-
   return (
     <div id="vehicle-form" className="page">
-
       <div className="row">
         <div className="col-md-12">
           <h1>{formTitle}</h1>
@@ -41,15 +39,6 @@ const VehicleForm = (props) => {
                 handleInputChange={handleInputChange}
                 selectedOption={fields.modelYear.name}
               />
-
-              {/* <VehicleFormDropdown
-                accessor={(make) => make.name}
-                dropdownName="Make"
-                dropdownData={vehicleMakes}
-                fieldName="make"
-                handleInputChange={handleInputChange}
-                selectedOption={fields.make.name}
-              /> */}
               <div className="form-group row">
                 <label
                   className="col-sm-2 col-form-label"
@@ -167,10 +156,8 @@ VehicleForm.propTypes = {
   handleInputChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  vehicleMakes: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleTypes: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.object).isRequired,
-  vehicleClasses: PropTypes.arrayOf(PropTypes.object).isRequired,
 
 };
 
