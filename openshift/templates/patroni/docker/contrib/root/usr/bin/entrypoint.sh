@@ -21,6 +21,15 @@ bootstrap:
         max_connections: ${POSTGRESQL_MAX_CONNECTIONS:-100}
         max_prepared_transactions: ${POSTGRESQL_MAX_PREPARED_TRANSACTIONS:-0}
         max_locks_per_transaction: ${POSTGRESQL_MAX_LOCKS_PER_TRANSACTION:-64}
+        log_autovacuum_min_duration: 250
+        log_checkpoints: on
+        log_lock_waits: on
+        log_min_duration_statement: 1000
+        log_temp_files: 1000
+        min_wal_size: 500MB
+        max_wal_size: 1GB
+        track_io_timing: on
+        idle_in_transaction_session_timeout: 20s
   initdb:
   - auth-host: md5
   - auth-local: trust
