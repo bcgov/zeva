@@ -21,13 +21,15 @@ const VehicleAddContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
-
   const { keycloak } = props;
 
   const handleInputChange = (event) => {
     const { value, name } = event.target;
-
-    fields[name] = value;
+    let input = value.trim();
+    if (name === 'make') {
+      input = input.toUpperCase();
+    }
+    fields[name] = input;
     setFields({
       ...fields,
     });
@@ -36,7 +38,6 @@ const VehicleAddContainer = (props) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = fields;
-
     axios.post(ROUTES_VEHICLES.LIST, data).then(() => {
       History.push(ROUTES_VEHICLES.LIST);
     });
