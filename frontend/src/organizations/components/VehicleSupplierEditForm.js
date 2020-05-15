@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CustomPropTypes from '../../app/utilities/props';
-import UserDetailsTextInput from './UserDetailsTextInput';
+import TextInput from '../../app/components/TextInput';
 import Loading from '../../app/components/Loading';
 import History from '../../app/History';
 
@@ -89,8 +89,7 @@ const VehicleSupplierEditForm = (props) => {
     return <Loading />;
   }
   return (
-    <div id="supplier-detail-form" className="page">
-
+    <div id="form" className="page">
       <div className="row">
         <div className="col-md-12">
           <h4>{newSupplier ? 'Add' : 'Edit'} Supplier</h4>
@@ -148,7 +147,7 @@ const VehicleSupplierEditForm = (props) => {
                   {setShowModal && modal}
                 </div>
 
-                <UserDetailsTextInput
+                <TextInput
                   label="Legal Organization Name"
                   id="LegalOrganizationName"
                   name="name"
@@ -156,14 +155,14 @@ const VehicleSupplierEditForm = (props) => {
                   handleInputChange={handleInputChange}
                   mandatory
                 />
-                <UserDetailsTextInput
+                <TextInput
                   label="Common Name"
                   id="CommonName"
                   name="shortName"
                   defaultValue={details.shortName}
                   handleInputChange={handleInputChange}
                 />
-                <UserDetailsTextInput
+                <TextInput
                   label="Street Address/PO Box"
                   id="StreetAddress"
                   name="addressLine_1"
@@ -171,14 +170,14 @@ const VehicleSupplierEditForm = (props) => {
                   handleInputChange={handleAddressChange}
                   mandatory
                 />
-                <UserDetailsTextInput
+                <TextInput
                   label="Address Other (optional)"
                   id="addressLine2"
                   name="addressLine_2"
                   defaultValue={addressDetails.addressLine2}
                   handleInputChange={handleAddressChange}
                 />
-                <UserDetailsTextInput
+                <TextInput
                   label="City"
                   id="City"
                   name="city"
@@ -186,7 +185,7 @@ const VehicleSupplierEditForm = (props) => {
                   handleInputChange={handleAddressChange}
                   mandatory
                 />
-                <UserDetailsTextInput
+                <TextInput
                   label="Province/State/Region"
                   id="Province"
                   name="state"
@@ -194,7 +193,7 @@ const VehicleSupplierEditForm = (props) => {
                   handleInputChange={handleAddressChange}
                   mandatory
                 />
-                <UserDetailsTextInput
+                <TextInput
                   label="Country"
                   id="Country"
                   name="country"
@@ -202,7 +201,7 @@ const VehicleSupplierEditForm = (props) => {
                   handleInputChange={handleAddressChange}
                   mandatory
                 />
-                <UserDetailsTextInput
+                <TextInput
                   label="Postal/ZIP Code"
                   id="PostalCode"
                   name="postalCode"

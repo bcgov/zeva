@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import History from '../../app/History';
 import Loading from '../../app/components/Loading';
 import VehicleFormDropdown from './VehicleFormDropdown';
+import TextInput from '../../app/components/TextInput';
 
 const VehicleForm = (props) => {
   const {
@@ -19,7 +20,7 @@ const VehicleForm = (props) => {
     return (<Loading />);
   }
   return (
-    <div id="vehicle-form" className="page">
+    <div id="form" className="page">
       <div className="row">
         <div className="col-md-12">
           <h1>{formTitle}</h1>
@@ -39,43 +40,22 @@ const VehicleForm = (props) => {
                 handleInputChange={handleInputChange}
                 selectedOption={fields.modelYear.name}
               />
-              <div className="form-group row">
-                <label
-                  className="col-sm-2 col-form-label"
-                  htmlFor="make"
-                >
-                  Make
-                </label>
-                <div className="col-sm-10">
-                  <input
-                    className="form-control"
-                    id="make"
-                    name="make"
-                    type="text"
-                    defaultValue={fields.make}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-
-              <div className="form-group row">
-                <label
-                  className="col-sm-2 col-form-label"
-                  htmlFor="modelName"
-                >
-                  Model
-                </label>
-                <div className="col-sm-10">
-                  <input
-                    className="form-control"
-                    id="modelName"
-                    name="modelName"
-                    type="text"
-                    defaultValue={fields.modelName}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
+              <TextInput
+                label="Make"
+                id="make"
+                name="make"
+                defaultValue={fields.make}
+                handleInputChange={handleInputChange}
+                mandatory
+              />
+              <TextInput
+                label="Model"
+                id="modelName"
+                name="modelName"
+                defaultValue={fields.modelName}
+                handleInputChange={handleInputChange}
+                mandatory
+              />
               <VehicleFormDropdown
                 accessor={(zevType) => zevType.vehicleZevCode}
                 dropdownName="Type"
@@ -84,26 +64,14 @@ const VehicleForm = (props) => {
                 handleInputChange={handleInputChange}
                 selectedOption={fields.vehicleZevType.vehicleZevCode}
               />
-
-              <div className="form-group row">
-                <label
-                  className="col-sm-2 col-form-label"
-                  htmlFor="range"
-                >
-                  Range (km)
-                </label>
-                <div className="col-sm-10">
-                  <input
-                    className="form-control"
-                    id="range"
-                    name="range"
-                    type="text"
-                    defaultValue={fields.range}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-
+              <TextInput
+                label="Range (km)"
+                id="range"
+                name="range"
+                defaultValue={fields.range}
+                handleInputChange={handleInputChange}
+                mandatory
+              />
               <div className="action-bar form-group row">
                 <span className="left-content">
                   <button
