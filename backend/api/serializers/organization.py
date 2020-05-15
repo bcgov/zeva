@@ -59,9 +59,7 @@ class OrganizationCreateSerializer(serializers.ModelSerializer):
     organization_address = OrganizationAddressSerializer(allow_null=True)
 
     def create(self, validated_data):
-        print(validated_data)
         addr = validated_data.pop('organization_address')
-        print(addr)
         obj = Organization.objects.create(**validated_data)
         OrganizationAddress.objects.create(
                 effective_date=date.today(),

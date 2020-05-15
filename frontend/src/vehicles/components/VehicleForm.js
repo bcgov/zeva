@@ -8,10 +8,8 @@ import VehicleFormDropdown from './VehicleFormDropdown';
 const VehicleForm = (props) => {
   const {
     loading,
-    vehicleMakes,
     vehicleYears,
     vehicleTypes,
-    vehicleClasses,
     handleInputChange,
     handleSubmit,
     fields,
@@ -20,10 +18,8 @@ const VehicleForm = (props) => {
   if (loading) {
     return (<Loading />);
   }
-
   return (
     <div id="vehicle-form" className="page">
-
       <div className="row">
         <div className="col-md-12">
           <h1>{formTitle}</h1>
@@ -43,14 +39,25 @@ const VehicleForm = (props) => {
                 handleInputChange={handleInputChange}
                 selectedOption={fields.modelYear.name}
               />
-              <VehicleFormDropdown
-                accessor={(make) => make.name}
-                dropdownName="Make"
-                dropdownData={vehicleMakes}
-                fieldName="make"
-                handleInputChange={handleInputChange}
-                selectedOption={fields.make.name}
-              />
+              <div className="form-group row">
+                <label
+                  className="col-sm-2 col-form-label"
+                  htmlFor="make"
+                >
+                  Make
+                </label>
+                <div className="col-sm-10">
+                  <input
+                    className="form-control"
+                    id="make"
+                    name="make"
+                    type="text"
+                    defaultValue={fields.make}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+
               <div className="form-group row">
                 <label
                   className="col-sm-2 col-form-label"
@@ -77,14 +84,7 @@ const VehicleForm = (props) => {
                 handleInputChange={handleInputChange}
                 selectedOption={fields.vehicleZevType.vehicleZevCode}
               />
-              <VehicleFormDropdown
-                accessor={(classCode) => classCode.vehicleClassCode}
-                dropdownName="Size"
-                dropdownData={vehicleClasses}
-                fieldName="vehicleClassCode"
-                handleInputChange={handleInputChange}
-                selectedOption={fields.vehicleClassCode.vehicleClassCode}
-              />
+
               <div className="form-group row">
                 <label
                   className="col-sm-2 col-form-label"
@@ -156,10 +156,8 @@ VehicleForm.propTypes = {
   handleInputChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  vehicleMakes: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleTypes: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.object).isRequired,
-  vehicleClasses: PropTypes.arrayOf(PropTypes.object).isRequired,
 
 };
 

@@ -11,7 +11,7 @@ const VehicleListTable = (props) => {
   const { items, user, handleCheckboxClick } = props;
 
   const columns = [{
-    accessor: (row) => (row.make ? row.make.name : ''),
+    accessor: (row) => (row.make ? row.make : ''),
     Header: 'Make',
     id: 'make',
     width: 150,

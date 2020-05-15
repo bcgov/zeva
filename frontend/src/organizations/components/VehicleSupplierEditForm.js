@@ -15,6 +15,7 @@ const VehicleSupplierEditForm = (props) => {
     handleInputChange,
     handleSubmit,
     handleAddressChange,
+    newSupplier,
   } = props;
   const [showModal, setShowModal] = useState(false);
   const [active, setActive] = useState(details.isActive);
@@ -92,7 +93,7 @@ const VehicleSupplierEditForm = (props) => {
 
       <div className="row">
         <div className="col-md-12">
-          <h4>Edit Supplier</h4>
+          <h4>{newSupplier ? 'Add' : 'Edit'} Supplier</h4>
           <h5>{display.name} {display.shortName && `(${display.shortName})`}</h5>
           {display.organizationAddress && (
           <p>
