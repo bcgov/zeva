@@ -64,7 +64,7 @@ module.exports = settings => {
       'CPU_REQUEST': phases[phase].patroniCpuRequest,
       'CPU_LIMIT': phases[phase].patroniCpuLimit,
       'MEMORY_REQUEST': phases[phase].patroniMemoryRequest,
-      'MEMORY_LIMIT': phases[phase].patroniMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].patroniMemoryLimit,
       'IMAGE_REGISTRY': 'docker-registry.default.svc:5000',
       'IMAGE_STREAM_NAMESPACE': phases[phase].namespace,
       'IMAGE_STREAM_TAG': 'patroni:v10-stable',
