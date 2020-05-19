@@ -158,7 +158,9 @@ class UserAuthentication(authentication.BaseAuthentication):
                 )
             except UserProfile.DoesNotExist:
                 raise exceptions.AuthenticationFailed(
-                    'user_id "{}" does not exist'.format(username))
+                    'user_id "{}" does not exist'.format(
+                        user_token.get('user_id')
+                    ))
 
         if not user.is_active:
             raise exceptions.PermissionDenied(
