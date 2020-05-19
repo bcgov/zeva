@@ -8,7 +8,7 @@ class Permission(Auditable):
     Contains the list of permissions to grant access to certain actions of
     areas for the system.
     """
-    code = models.CharField(
+    permission_code = models.CharField(
         max_length=100,
         unique=True,
         db_comment="Permission code. Natural key."

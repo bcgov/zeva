@@ -10,7 +10,7 @@ class Role(Auditable):
     """
     Table that will hold all the available Roles and descriptions
     """
-    name = models.CharField(
+    role_code = models.CharField(
         max_length=200,
         unique=True,
         db_comment="Role code. Natural key. Used internally."

@@ -28,7 +28,7 @@ class AddRolesPermissions(OperationalDataScript):
                 continue
 
             (role, role_created) = Role.objects.get_or_create(
-                name=authority.group,
+                role_code=authority.group,
                 defaults={
                     'description': authority.group,
                     'is_government_role':
@@ -38,7 +38,7 @@ class AddRolesPermissions(OperationalDataScript):
             )
 
             (permission, perm_created) = Permission.objects.get_or_create(
-                code=authority.role.replace(' ', '_').upper(),
+                permission_code=authority.role.replace(' ', '_').upper(),
                 defaults={
                     'name': authority.role,
                     'description': authority.description
