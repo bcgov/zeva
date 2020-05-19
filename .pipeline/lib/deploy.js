@@ -68,7 +68,8 @@ module.exports = settings => {
       'IMAGE_REGISTRY': 'docker-registry.default.svc:5000',
       'IMAGE_STREAM_NAMESPACE': phases[phase].namespace,
       'IMAGE_STREAM_TAG': 'patroni:v10-stable',
-      'REPLICA': phases[phase].patroniReplica
+      'REPLICA': phases[phase].patroniReplica,
+      'PVC_SIZE': phases[phase].patroniPvcSize
     }
   }))
 

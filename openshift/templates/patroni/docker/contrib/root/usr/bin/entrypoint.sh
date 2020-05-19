@@ -26,7 +26,7 @@ bootstrap:
         log_lock_waits: on
         log_min_duration_statement: 1000
         log_temp_files: 1000
-        min_wal_size: 500MB
+        min_wal_size: 300MB
         max_wal_size: 1GB
         track_io_timing: on
         idle_in_transaction_session_timeout: 20s
