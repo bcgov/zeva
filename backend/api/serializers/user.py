@@ -37,13 +37,14 @@ class UserSerializer(serializers.ModelSerializer):
     Serializer for the full details of the User
     """
     organization = OrganizationSerializer(read_only=True)
+    roles = RoleSerializer(read_only=True, many=True)
 
     class Meta:
         model = UserProfile
         fields = (
             'id', 'first_name', 'last_name', 'email', 'username',
             'display_name', 'is_active', 'organization', 'phone',
-            'is_government', 'keycloak_email', 'title'
+            'is_government', 'keycloak_email', 'roles', 'title'
         )
 
 
@@ -76,6 +77,28 @@ class UserSaveSerializer(serializers.ModelSerializer):
                 )
 
         return user_profile
+
+    def update(self, instance, validated_data):
+        request = self.context.get('request')
+        roles = validated_data.pop('roles')
+
+        UserRole.objects.filter(
+            user_profile=instance
+        ).exclude(
+            role__in=roles
+        ).delete()
+
+        for role in roles:
+            if not role.is_government_role:
+                UserRole.objects.get_or_create(
+                    user_profile=instance,
+                    role=role,
+                    defaults={
+                        'create_user': request.user
+                    }
+                )
+
+        return instance
 
     class Meta:
         model = UserProfile

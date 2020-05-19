@@ -45,8 +45,10 @@ const UserAddContainer = (props) => {
     axios.post(ROUTES_USERS.LIST, {
       ...details,
       roles: userRoles,
-    }).then(() => {
-      history.push(ROUTES_ORGANIZATIONS.USERS.replace(/:id/gi, id));
+    }).then((response) => {
+      const { organization } = response.data;
+
+      history.push(ROUTES_ORGANIZATIONS.USERS.replace(/:id/gi, organization.id));
     });
   };
 
@@ -56,7 +58,6 @@ const UserAddContainer = (props) => {
     const rolesPromise = axios.get(ROUTES_ROLES.LIST).then((response) => {
       setRoles(response.data);
     });
-
 
     const detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
       setDetails({
@@ -83,7 +84,6 @@ const UserAddContainer = (props) => {
         handleInputChange={handleInputChange}
         handleSubmit={handleSubmit}
         roles={roles}
-        userRoles={userRoles}
       />
     </div>
   );

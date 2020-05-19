@@ -50,7 +50,7 @@ const UsersTable = (props) => {
           return {
             onClick: () => {
               const { id } = row.original;
-              history.push(`/users/${id}`);
+              history.push(`/users/${id}/edit`);
             },
             className: 'clickable',
           };
