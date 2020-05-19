@@ -3,9 +3,7 @@ from django.db import transaction
 from api.management.data_script import OperationalDataScript
 from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle
-from api.models.vehicle_class import VehicleClass
 from api.models.vehicle_zev_type import ZevType
-from api.models.vehicle_make import Make
 
 
 class AddBatteryElectricVehicles(OperationalDataScript):
@@ -189,7 +187,7 @@ class AddBatteryElectricVehicles(OperationalDataScript):
 
     def check_run_preconditions(self):
         for veh in self.list_of_vehicles:
-            if Vehicle.objects.filter(make__name=veh['make'], model_year__name='2019', model_name=veh['model']).exists():
+            if Vehicle.objects.filter(model_year__name='2019', model_name=veh['model']).exists():
                 return False
 
         return True
@@ -203,14 +201,11 @@ class AddBatteryElectricVehicles(OperationalDataScript):
 
         for vehicle in self.list_of_vehicles:
             Vehicle.objects.create(
-                make=Make.objects.get(name=vehicle.get("make")),
+                make=vehicle.get("make"),
                 model_name=vehicle.get("model"),
                 model_year=model_year,
                 range=vehicle.get("range"),
                 validation_status="VALIDATED",
-                vehicle_class_code=VehicleClass.objects.get(
-                    vehicle_class_code=vehicle.get("class_code")
-                ),
                 vehicle_zev_type=vehicle_zev_type
             )
 
