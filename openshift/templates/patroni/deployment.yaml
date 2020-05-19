@@ -205,7 +205,7 @@ objects:
             value: '50000000'
           - name: PATRONI_LOG_FILE_NUM
             value: '4'
-          image: ${IMAGE_REGISTRY}/${IMAGE_STREAM_NAMESPACE}/v10-tmp
+          image: ${IMAGE_REGISTRY}/${IMAGE_STREAM_NAMESPACE}/${IMAGE_STREAM_TAG}
           # Because we are using image reference to a tag, we need to always pull the image otherwise
           #   we end up with outdated/out-of-sync image depending on the node where it is running
           imagePullPolicy: Always
