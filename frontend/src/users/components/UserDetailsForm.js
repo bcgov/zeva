@@ -21,11 +21,14 @@ const UserDetailsForm = (props) => {
     return <Loading />;
   }
 
-  const checked = (role) => (details.roles.filter(
-    (detailRole) => detailRole.id === role.id,
-  ).length > 0);
+  const checked = (role) => {
+    if (!details || !details.roles) {
+      return false;
+    }
 
-  // !!roles.includes(role);
+    return details.roles.filter((detailRole) => detailRole.id === role.id).length > 0;
+  };
+
   const rolesCheckboxes = roles.filter((role) => role.isGovernmentRole === false).map((role) => (
     <ul key={role.id}>
       <input type="checkbox" id={role.id} onChange={handleInputChange} name="roles-manager" defaultChecked={checked(role)} /> {role.description} <FontAwesomeIcon icon="info-circle" />
