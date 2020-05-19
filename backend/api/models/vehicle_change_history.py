@@ -21,17 +21,17 @@ class VehicleChangeHistory(Commentable):
         on_delete=models.CASCADE,
         db_comment='User who made the change to the record'
     )
-    make_id = models.IntegerField(
-        db_comment="ID referencing the vehicle_make table"
-    )
-    vehicle_class_code_id = models.IntegerField(
-        db_comment="ID referencing the vehicle_class_code table"
-    )
     vehicle_zev_type_id = models.IntegerField(
         db_comment="ID referencing the vehicle_zev_type table"
     )
     range = models.IntegerField(
         db_comment="Vehicle Range in km"
+    )
+    make = models.CharField(
+        blank=True,
+        db_comment="Make of vehicle",
+        max_length=250,
+        null=True
     )
     model_name = models.CharField(
         blank=True,

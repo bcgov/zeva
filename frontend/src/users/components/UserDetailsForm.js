@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import CustomPropTypes from '../../app/utilities/props';
-import UserDetailsTextInput from './UserDetailsTextInput';
+import TextInput from '../../app/components/TextInput';
 import Loading from '../../app/components/Loading';
 import History from '../../app/History';
 
@@ -14,7 +14,6 @@ const UserDetailsForm = (props) => {
     user,
     handleInputChange,
     handleSubmit,
-    rolesList,
     roles,
   } = props;
 
@@ -22,14 +21,21 @@ const UserDetailsForm = (props) => {
     return <Loading />;
   }
 
-  const checked = (role) => !!roles.includes(role);
-  const rolesCheckboxes = rolesList.map((role) => (
-    <ul key={role}>
-      <input type="checkbox" id={role} onChange={handleInputChange} name="roles-manager" defaultChecked={checked(role)} />{role}<FontAwesomeIcon icon="info-circle" />
+  const checked = (role) => {
+    if (!details || !details.roles) {
+      return false;
+    }
+
+    return details.roles.filter((detailRole) => detailRole.id === role.id).length > 0;
+  };
+
+  const rolesCheckboxes = roles.filter((role) => role.isGovernmentRole === false).map((role) => (
+    <ul key={role.id}>
+      <input type="checkbox" id={role.id} onChange={handleInputChange} name="roles-manager" defaultChecked={checked(role)} /> {role.description} <FontAwesomeIcon icon="info-circle" />
     </ul>
   ));
   return (
-    <div id="user-form" className="page">
+    <div id="form" className="page">
       <div className="row">
         <div className="col-md-12">
           <h1>{details.organization.name} User Management</h1>
@@ -41,43 +47,48 @@ const UserDetailsForm = (props) => {
           <fieldset>
             <div className="form-layout row">
               <span className="col-xs-8">
-                <UserDetailsTextInput
+                <TextInput
                   label="First Name"
                   id="firstName"
                   name="firstName"
                   defaultValue={details.firstName}
                   handleInputChange={handleInputChange}
+                  mandatory
                 />
-                <UserDetailsTextInput
+                <TextInput
                   label="Last Name"
                   id="lastName"
                   name="lastName"
                   defaultValue={details.lastName}
                   handleInputChange={handleInputChange}
+                  mandatory
                 />
-                <UserDetailsTextInput
+                <TextInput
                   label="Job Title"
                   id="jobTitle"
                   name="title"
                   defaultValue={details.title}
                   handleInputChange={handleInputChange}
+                  mandatory
                 />
-                <UserDetailsTextInput
+                <TextInput
                   label="BCeID User Name"
                   id="username"
                   name="username"
                   defaultValue={details.username}
                   handleInputChange={handleInputChange}
+                  mandatory
                 />
-                <UserDetailsTextInput
+                <TextInput
                   details="the email associated with the BCeID account"
                   label="BCeID Email"
                   id="email"
                   name="keycloakEmail"
                   defaultValue={details.keycloakEmail}
                   handleInputChange={handleInputChange}
+                  mandatory
                 />
-                <UserDetailsTextInput
+                <TextInput
                   details="the email used to receive notifications, if different from above"
                   label="Notifications Email"
                   id="notificationsEmail"
@@ -85,24 +96,27 @@ const UserDetailsForm = (props) => {
                   defaultValue={details.email}
                   handleInputChange={handleInputChange}
                 />
-                <UserDetailsTextInput
+                <TextInput
                   label="Phone"
                   id="phone"
                   name="phone"
                   defaultValue={details.phone}
                   handleInputChange={handleInputChange}
+                  mandatory
                 />
               </span>
               <span className="col-xs-4">
                 {user.isGovernment && (
                   <div className="form-group">
-                    <label
-                      className="col-sm-4 col-form-label"
-                      htmlFor="statusRadio"
-                    >
-                      Status
-                    </label>
-                    <div className="col-sm-8">
+                    <div className="col-sm-4">
+                      <label
+                        className="col-form-label"
+                        htmlFor="statusRadio"
+                      >
+                        Status
+                      </label>
+                    </div>
+                    <div className="col-sm-12">
                       <input type="radio" id="active" onChange={handleInputChange} name="isActive" value="true" defaultChecked={details.isActive} />
                       Active, user can log in to ZERO<br />
                       <input type="radio" id="inactive" onChange={handleInputChange} name="isActive" value="false" defaultChecked={!details.isActive} />
@@ -161,17 +175,19 @@ UserDetailsForm.propTypes = {
       name: PropTypes.string,
     }),
     phone: PropTypes.string,
+    roles: PropTypes.arrayOf(PropTypes.shape()),
     title: PropTypes.string,
     username: PropTypes.string,
   }).isRequired,
   handleInputChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  rolesList: PropTypes.arrayOf(PropTypes.string).isRequired,
-  roles: PropTypes.arrayOf(PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ])).isRequired,
+  roles: PropTypes.arrayOf(
+    PropTypes.shape({
+      description: PropTypes.string,
+      id: PropTypes.number,
+    }),
+  ).isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 

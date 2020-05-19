@@ -17,12 +17,12 @@ const VehicleFormDropdown = (props) => {
   return (
     <div className="form-group row">
       <label
-        className="col-sm-2 col-form-label"
+        className="col-sm-4 col-form-label"
         htmlFor={dropdownName}
       >
         {dropdownName}
       </label>
-      <div className="col-sm-10">
+      <div className="col-sm-8">
         <select
           className="form-control"
           id={dropdownName}

@@ -1,41 +1,4 @@
-#vehicle-form {
-  fieldset {
-    border: 1px solid $default-text-black;
 
-    legend {
-      color: $default-text-blue;
-      font-size: 1.25rem;
-      font-weight: bold;
-      margin-bottom: 0;
-      margin-left: 1rem;
-      padding: 0 1rem 0;
-      width: auto;
-    }
-
-    .form-group {
-      background-color: $default-background-grey;
-      margin: 1rem;
-      padding: 1rem;
-
-      &:first-child {
-        margin-top: 0;
-      }
-
-      &.action-bar {
-        margin-top: 2rem;
-      }
-    }
-  }
-
-  input[type=text], select {
-    border: 2px solid $default-text-black;
-  }
-
-  label {
-    color: $default-text-blue;
-    font-weight: bold;
-  }
-}
 
 #vehicle-validation {
   .form {

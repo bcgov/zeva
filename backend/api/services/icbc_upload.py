@@ -1,12 +1,11 @@
 import pandas as pd
 from django.core.exceptions import ObjectDoesNotExist
 from api.models.icbc_registration_data import IcbcRegistrationData
-from api.models.vehicle_make import Make
 from api.models.icbc_vehicle import IcbcVehicle
 from api.models.model_year import ModelYear
 
 
-def insert_to_database(data_frame, list_name, table, column_name, requesting_user):
+def insert_to_db(data_frame, list_name, table, col_name, requesting_user):
     for each in list_name:
         try:
             #get the id of that value from the table
@@ -21,7 +20,7 @@ def insert_to_database(data_frame, list_name, table, column_name, requesting_use
             the_id = table.objects.get(name=each).id
         finally:
             #replace the value in the df with the id
-            data_frame[column_name] = data_frame[column_name].replace(each, the_id)
+            data_frame[col_name] = data_frame[col_name].replace(each, the_id)
 
 
 def ingest_icbc_spreadsheet(excelfile, requesting_user):
@@ -29,7 +28,7 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user):
     df = raw_data.iloc[:, 0].str.split('|', expand=True)
     df.columns = [n.replace('"', '') for n in raw_data.columns.str.split('|')[0]]
     df.drop(df[(df.HYBRID_VEHICLE_FLAG == 'N') &
-        (df.ELECTRIC_VEHICLE_FLAG == 'N')].index, inplace=True)
+            (df.ELECTRIC_VEHICLE_FLAG == 'N')].index, inplace=True)
     df.drop(df[(df.MODEL_YEAR < '2019')].index, inplace=True)
     df.drop(df.columns.difference([
       'VIN',
@@ -40,20 +39,13 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user):
         #make list of all years, makes, models in df
         icbc_years = list(df.MODEL_YEAR.unique())
         icbc_makes = list(df.MAKE.unique())
-
-        insert_to_database(
+        insert_to_db(
             df,
             icbc_years,
             ModelYear,
             'MODEL_YEAR',
             requesting_user)
-        insert_to_database(
-            df,
-            icbc_makes,
-            Make,
-            'MAKE',
-            requesting_user)
-        #iterate through df and check if vehicle exists, if it doesn't, add it! 
+        #iterate through df and check if vehicle exists, if it doesn't, add it!
         for index, row in df.iterrows():
             icbc_vehicle_model = row['MODEL']
             icbc_vehicle_year = row['MODEL_YEAR']
@@ -64,20 +56,20 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user):
                 vehicle_id = IcbcVehicle.objects.get(
                     model_name=icbc_vehicle_model,
                     model_year_id=icbc_vehicle_year,
-                    make_id=icbc_vehicle_make).id
+                    make=icbc_vehicle_make).id
             except ObjectDoesNotExist:
                 new_vehicle = IcbcVehicle.objects.create(
                     create_user=requesting_user,
                     update_user=requesting_user,
                     model_name=icbc_vehicle_model,
                     model_year_id=icbc_vehicle_year,
-                    make_id=icbc_vehicle_make
+                    make=icbc_vehicle_make
                     )
                 new_vehicle.save()
                 vehicle_id = IcbcVehicle.objects.get(
                   model_name=icbc_vehicle_model,
                   model_year_id=icbc_vehicle_year,
-                  make_id=icbc_vehicle_make).id
+                  make=icbc_vehicle_make).id
 
             if vehicle_id:
                 try:

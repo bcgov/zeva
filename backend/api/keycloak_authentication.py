@@ -158,18 +158,14 @@ class UserAuthentication(authentication.BaseAuthentication):
                 )
             except UserProfile.DoesNotExist:
                 raise exceptions.AuthenticationFailed(
-                    'user_id "{}" does not exist'.format(username))
+                    'user_id "{}" does not exist'.format(
+                        user_token.get('user_id')
+                    ))
 
         if not user.is_active:
             raise exceptions.PermissionDenied(
                 'Your account is currently inactive. Please contact your '
                 'administrator to re-activate your account.'
             )
-
-        if 'realm_access' in user_token:
-            if 'roles' in user_token['realm_access']:
-                for role in user_token['realm_access']['roles']:
-                    if role not in FILTERED_ROLES:
-                        user.roles.append(role)
 
         return user, None

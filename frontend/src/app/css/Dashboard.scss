@@ -32,6 +32,7 @@
       padding: 0;
     }
 
+
     .content {
       margin-bottom: 1rem;
 
@@ -66,9 +67,11 @@
   }
 
   .dashboard-fieldset {
-    border: 1px solid #000;
-    font-size: 1.2rem;
+    border: 1.5px solid #000;
+    font-size: 1.1rem;
     position: relative;
+    padding:1rem;
+
   
     a {
       color: $default-link-blue;
@@ -79,11 +82,12 @@
       background-color: transparent;
       border: none;
       color: $default-link-blue;
-      margin: 0;
+      margin: .3rem 0 .5rem 0;
       outline: none;
       padding: 0;
       text-align: left;
       text-decoration: underline;
+      font-size: 1.1rem;
   
       &:hover, &:focus {
         text-decoration: underline;
@@ -92,11 +96,26 @@
 
     h1 {
       background-color: $white; 
-      font-size: 1.5rem;
-      padding: 0 0.5rem;
+      color: $primary-blue;
+      font-size: 1.75rem;
+      padding: 0 0.7rem;
       position: absolute;
       top: -1rem;
       left: 1.5rem;
+    }
+    #action-org-name {
+      padding-left: 1.5rem;
+    }
+    h5 {
+      font-size: 1.35rem;
+      color: $primary-blue;
+      margin: 0;
+      padding: 1rem 0 0 0;
+    }
+    dd {
+      font-size: 1.1rem;
+      margin-bottom: 0;
+      color: $primary-blue;
     }
 
     .content {
@@ -123,8 +142,6 @@
 
     .text {
       margin-left: 5rem;
-      padding: 1.5rem 1rem 0;
-  
       > a, > button {
         display: inline-block;
         vertical-align: middle;
@@ -134,19 +151,17 @@
         color: $primary-yellow;
         display: inline-block;
         font-size: 1rem;
-        margin: 0 1rem 0 2rem;
+        margin: 0 1.5rem 0 .3rem;
         vertical-align: middle;
       }
     }
 
     .value {
       color: $primary-yellow;
-      display: inline-block;
       font-size: 3rem;
-      position: absolute;
-      text-align: right;
-      vertical-align: top;
-      width: 4rem;
+      text-decoration: none;
+      vertical-align: middle;
+      padding-right: 1rem;
     }
   }
 
@@ -165,6 +180,7 @@
 }
 
 #actions {
+
   .icon-secure {
     display: inline-block;
     font-size: 1rem;
@@ -173,10 +189,11 @@
 }
 
 #organization-details, #user-settings {
+
   .content {
     .text {
-      margin-left: 2rem;
-      padding: 1.5rem 1rem 0;
+      margin-left: 0rem;
+      padding-left: 1.5rem;
     }
 
     .value {
