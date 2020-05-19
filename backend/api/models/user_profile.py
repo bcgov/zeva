@@ -70,10 +70,17 @@ class UserProfile(Auditable):
         db_comment="BCEID/IDIR Email Address"
     )
 
-    def has_role(self, role: string):
-        return role in self.roles
-
     objects = UserProfileManager()
+
+    def has_perm(self, permission):
+        """
+        Helper function to check if the user has the appropriate permission
+        """
+        if not self.roles.filter(
+                Q(role_permissions__permission__permission_code=permission)):
+            return False
+
+        return True
 
     @property
     def is_government(self):

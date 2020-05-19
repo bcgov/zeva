@@ -7,5 +7,5 @@ class RoleSerializer(ModelSerializer):
     class Meta:
         model = Role
         fields = (
-            'id', 'name', 'description', 'is_government_role',
+            'id', 'role_code', 'description', 'is_government_role',
         )
