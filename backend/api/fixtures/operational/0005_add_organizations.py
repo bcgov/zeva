@@ -2,8 +2,6 @@ from django.db import transaction
 
 from api.management.data_script import OperationalDataScript
 from api.models.organization import Organization
-from api.models.vehicle_make import Make
-from api.models.vehicle_make_organization import VehicleMakeOrganization
 
 
 class AddOrganizations(OperationalDataScript):
@@ -14,64 +12,44 @@ class AddOrganizations(OperationalDataScript):
     comment = 'Adds the known suppliers from the consumer reports'
 
     list_of_organizations = [{
-        "name": "BMW Canada Inc.",
-        "makes": ["BMW"]
+        "name": "BMW Canada Inc."
     }, {
-        "name": "FCA Canada Inc.",
-        "makes": ["Chrysler", "Fiat"]
+        "name": "FCA Canada Inc."
     }, {
-        "name": "Ford Motor Company of Canada Ltd.",
-        "makes": ["Ford"]
+        "name": "Ford Motor Company of Canada Ltd."
     }, {
-        "name": "General Motors of Canada Company",
-        "makes": ["GMC"]
+        "name": "General Motors of Canada Company"
     }, {
-        "name": "Honda Canada Inc.",
-        "makes": ["Honda"]
+        "name": "Honda Canada Inc."
     }, {
-        "name": "Hyundai Auto Canada Corp.",
-        "makes": ["Hyundai"]
+        "name": "Hyundai Auto Canada Corp."
     }, {
-        "name": "Jaguar Land Rover Canada ULC",
-        "makes": ["Jaguar"]
+        "name": "Jaguar Land Rover Canada ULC"
     }, {
-        "name": "Kia Canada Inc.",
-        "makes": ["Kia"]
+        "name": "Kia Canada Inc."
     }, {
-        "name": "Mazda Canada Inc.",
-        "makes": ["Mazda"]
+        "name": "Mazda Canada Inc."
     }, {
-        "name": "Mercedes-Benz Canada Inc.",
-        "makes": ["Mercedes-Benz"]
+        "name": "Mercedes-Benz Canada Inc."
     }, {
-        "name": "Mitsubishi Motor Sales of Canada Inc.",
-        "makes": ["Mitsubishi"]
+        "name": "Mitsubishi Motor Sales of Canada Inc."
     }, {
-        "name": "Nissan Canada Inc.",
-        "makes": ["Nissan"]
+        "name": "Nissan Canada Inc."
     }, {
-        "name": "Porsche Cars Canada, Ltd.",
-        "makes": ["Porsche"]
+        "name": "Porsche Cars Canada, Ltd."
     }, {
-        "name": "Subaru Canada Inc.",
-        "makes": ["Subaru"]
+        "name": "Subaru Canada Inc."
     }, {
-        "name": "Suzuki",
-        "makes": ["Suzuki"]
+        "name": "Suzuki"
     }, {
-        "name": "Tesla Motors Canada ULC",
-        "makes": ["Tesla"]
+        "name": "Tesla Motors Canada ULC"
     }, {
-        "name": "Toyota Canada Inc.",
-        "makes": ["Toyota"]
+        "name": "Toyota Canada Inc."
     }, {
-        "name": "Volkswagen Group Canada Inc.",
-        "makes": ["Volkswagen"]
+        "name": "Volkswagen Group Canada Inc."
     }, {
-        "name": "Volvo Car Canada Ltd.",
-        "makes": ["Volvo"]
+        "name": "Volvo Car Canada Ltd."
     }]
-
 
     def check_run_preconditions(self):
         for org in self.list_of_organizations:
@@ -97,16 +75,6 @@ class AddOrganizations(OperationalDataScript):
 
             if created:
                 organizations_added += 1
-
-            list_of_makes = organization.get("makes")
-
-            for make_name in list_of_makes:
-                (make, _) = Make.objects.get_or_create(name=make_name)
-
-                VehicleMakeOrganization.objects.get_or_create(
-                    organization=organization_model,
-                    vehicle_make=make
-                )
 
         print("Added {} organizations.".format(organizations_added))
 
