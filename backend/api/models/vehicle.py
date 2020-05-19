@@ -8,15 +8,12 @@ from .vehicle_statuses import VehicleDefinitionStatuses
 
 
 class Vehicle(Auditable):
-    make = models.ForeignKey(
-        'Make',
-        related_name=None,
-        on_delete=models.PROTECT
-    )
-    vehicle_class_code = models.ForeignKey(
-        'VehicleClass',
-        related_name=None,
-        on_delete=models.PROTECT
+    make = models.CharField(
+        blank=False,
+        db_comment="The make of vehicle"
+                   "eg Toyota, Honda, Mitsubishi",
+        null=False,
+        max_length=250
     )
     vehicle_zev_type = models.ForeignKey(
         'ZevType',
@@ -28,7 +25,7 @@ class Vehicle(Auditable):
     )
     model_name = models.CharField(
         blank=False,
-        db_comment="Model and trim of vehicle",
+        db_comment="Model seof vehicle",
         max_length=250,
         null=False
     )
@@ -100,7 +97,7 @@ class Vehicle(Auditable):
     class Meta:
         db_table = 'vehicle'
         unique_together = [[
-            'make', 'model_name', 'vehicle_class_code', 'vehicle_zev_type',
+            'make', 'model_name', 'vehicle_zev_type',
             'model_year'
         ]]
 

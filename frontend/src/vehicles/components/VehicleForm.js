@@ -4,14 +4,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import History from '../../app/History';
 import Loading from '../../app/components/Loading';
 import VehicleFormDropdown from './VehicleFormDropdown';
+import TextInput from '../../app/components/TextInput';
 
 const VehicleForm = (props) => {
   const {
     loading,
-    vehicleMakes,
     vehicleYears,
     vehicleTypes,
-    vehicleClasses,
     handleInputChange,
     handleSubmit,
     fields,
@@ -20,10 +19,8 @@ const VehicleForm = (props) => {
   if (loading) {
     return (<Loading />);
   }
-
   return (
-    <div id="vehicle-form" className="page">
-
+    <div id="form" className="page">
       <div className="row">
         <div className="col-md-12">
           <h1>{formTitle}</h1>
@@ -43,32 +40,22 @@ const VehicleForm = (props) => {
                 handleInputChange={handleInputChange}
                 selectedOption={fields.modelYear.name}
               />
-              <VehicleFormDropdown
-                accessor={(make) => make.name}
-                dropdownName="Make"
-                dropdownData={vehicleMakes}
-                fieldName="make"
+              <TextInput
+                label="Make"
+                id="make"
+                name="make"
+                defaultValue={fields.make}
                 handleInputChange={handleInputChange}
-                selectedOption={fields.make.name}
+                mandatory
               />
-              <div className="form-group row">
-                <label
-                  className="col-sm-2 col-form-label"
-                  htmlFor="modelName"
-                >
-                  Model
-                </label>
-                <div className="col-sm-10">
-                  <input
-                    className="form-control"
-                    id="modelName"
-                    name="modelName"
-                    type="text"
-                    defaultValue={fields.modelName}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
+              <TextInput
+                label="Model"
+                id="modelName"
+                name="modelName"
+                defaultValue={fields.modelName}
+                handleInputChange={handleInputChange}
+                mandatory
+              />
               <VehicleFormDropdown
                 accessor={(zevType) => zevType.vehicleZevCode}
                 dropdownName="Type"
@@ -77,33 +64,14 @@ const VehicleForm = (props) => {
                 handleInputChange={handleInputChange}
                 selectedOption={fields.vehicleZevType.vehicleZevCode}
               />
-              <VehicleFormDropdown
-                accessor={(classCode) => classCode.vehicleClassCode}
-                dropdownName="Size"
-                dropdownData={vehicleClasses}
-                fieldName="vehicleClassCode"
+              <TextInput
+                label="Range (km)"
+                id="range"
+                name="range"
+                defaultValue={fields.range}
                 handleInputChange={handleInputChange}
-                selectedOption={fields.vehicleClassCode.vehicleClassCode}
+                mandatory
               />
-              <div className="form-group row">
-                <label
-                  className="col-sm-2 col-form-label"
-                  htmlFor="range"
-                >
-                  Range (km)
-                </label>
-                <div className="col-sm-10">
-                  <input
-                    className="form-control"
-                    id="range"
-                    name="range"
-                    type="text"
-                    defaultValue={fields.range}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-
               <div className="action-bar form-group row">
                 <span className="left-content">
                   <button
@@ -156,10 +124,8 @@ VehicleForm.propTypes = {
   handleInputChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  vehicleMakes: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleTypes: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.object).isRequired,
-  vehicleClasses: PropTypes.arrayOf(PropTypes.object).isRequired,
 
 };
 

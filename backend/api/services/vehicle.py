@@ -29,12 +29,11 @@ def change_status(user, vehicle, new_status):
     if new_status is not vehicle.validation_status:
         history = VehicleChangeHistory.objects.create(
             create_user=user,
-            make_id=vehicle.make_id,
             model_year_id=vehicle.model_year_id,
             range=vehicle.range,
             user_role=user.roles,
             validation_status=new_status,
-            vehicle_class_code_id=vehicle.vehicle_class_code_id,
+            # vehicle_class_code_id=vehicle.vehicle_class_code_id,
             vehicle_zev_type_id=vehicle.vehicle_zev_type_id,
             vehicle=vehicle
         )

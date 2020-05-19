@@ -36,7 +36,7 @@ const VehicleDetailsPage = (props) => {
       </div>
       <div className="row align-items-center">
         <div className="col-sm-12">
-          <DetailField label="Make" value={details.make.name} />
+          <DetailField label="Make" value={details.make} />
           <DetailField label="Model" value={details.modelName} />
           <DetailField label="Type" value={details.vehicleZevType.description} />
           <DetailField label="Range" value={details.range} />
@@ -92,9 +92,7 @@ VehicleDetailsPage.propTypes = {
     id: PropTypes.any,
     actions: PropTypes.arrayOf(PropTypes.string),
     history: PropTypes.arrayOf(PropTypes.object),
-    make: PropTypes.shape({
-      name: PropTypes.string,
-    }),
+    make: PropTypes.string,
     modelName: PropTypes.string,
     vehicleZevType: PropTypes.shape({
       description: PropTypes.string,

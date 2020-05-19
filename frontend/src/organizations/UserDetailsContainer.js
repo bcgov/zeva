@@ -8,7 +8,7 @@ import { useParams } from 'react-router-dom';
 import ROUTES_USERS from '../app/routes/Users';
 import ROUTES_ROLES from '../app/routes/Roles';
 import CustomPropTypes from '../app/utilities/props';
-import UserDetailsForm from './components/UserDetailsForm';
+import UserDetailsForm from '../users/components/UserDetailsForm';
 
 const UserDetailsContainer = (props) => {
   const [userToView, setUserView] = useState({});
