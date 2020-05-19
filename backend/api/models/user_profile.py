@@ -7,6 +7,7 @@ import django.contrib.auth.validators
 from auditable.models import Auditable
 
 from api.managers.user_profile import UserProfileManager
+from api.models.role import Role
 
 
 class UserProfile(Auditable):
@@ -69,13 +70,17 @@ class UserProfile(Auditable):
         db_comment="BCEID/IDIR Email Address"
     )
 
-    # Unpersisted (supplied by Keycloak authentication filter)
-    roles = []
-
-    def has_role(self, role: string):
-        return role in self.roles
-
     objects = UserProfileManager()
+
+    def has_perm(self, permission):
+        """
+        Helper function to check if the user has the appropriate permission
+        """
+        if not self.roles.filter(
+                Q(role_permissions__permission__permission_code=permission)):
+            return False
+
+        return True
 
     @property
     def is_government(self):
@@ -84,6 +89,13 @@ class UserProfile(Auditable):
         (User is a BCEID user if false)
         """
         return self.organization.is_government
+
+    @property
+    def roles(self):
+        """
+        Roles applied to the User
+        """
+        return Role.objects.filter(user_roles__user_profile_id=self.id)
 
     class Meta:
         db_table = 'user_profile'

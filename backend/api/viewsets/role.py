@@ -3,18 +3,24 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from api.decorators.authorization import authorization_required
 from api.services.keycloak_api import list_roles, get_token, list_groups
 
+from api.models.role import Role
+from api.serializers.role import RoleSerializer
 
-class RoleViewSet(viewsets.ViewSet):
+
+class RoleViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     permission_classes = (AllowAny,)
-    http_method_names = ['get', 'post', 'put', 'patch']
+    http_method_names = ['get']
+    queryset = Role.objects.all()
 
-    @authorization_required('View Roles and Permissions')
-    def list(self, request):
-        """
-        Get all the roles
-        """
-        return Response(list_groups(get_token()))
+    serializer_classes = {
+        'default': RoleSerializer
+    }
+
+    def get_serializer_class(self):
+        if self.action in list(self.serializer_classes.keys()):
+            return self.serializer_classes[self.action]
+
+        return self.serializer_classes['default']

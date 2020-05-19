@@ -5,6 +5,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+
+import history from '../app/History';
+import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import ROUTES_ROLES from '../app/routes/Roles';
 import ROUTES_USERS from '../app/routes/Users';
 import CustomPropTypes from '../app/utilities/props';
@@ -15,30 +18,20 @@ const UserEditContainer = (props) => {
   const [roles, setRoles] = useState([]);
   const { id } = useParams();
   const [details, setDetails] = useState({});
+  const [userRoles, setUserRoles] = useState([]);
 
   const { keycloak, user } = props;
-
-  const rolesList = [
-    'Organization Administrator',
-    'Signing Authority',
-    'Manage ZEV',
-    'Request Credits',
-    'Compliance Reporting',
-    'Credit Transfers',
-    'Purchase Agreements',
-    'Initiative Agreements',
-    'Guest'];
 
   const handleInputChange = (event) => {
     const { value, name } = event.target;
     if (name === 'roles-manager') {
       if (!event.target.checked) {
-        const newRoles = roles.filter((each) => each !== event.target.id);
-        setRoles([newRoles]);
+        const newRoles = userRoles.filter((each) => Number(each) !== Number(event.target.id));
+        setUserRoles(newRoles);
       }
       if (event.target.checked) {
-        const newRoles = roles.concat(event.target.id);
-        setRoles(newRoles);
+        const newRoles = userRoles.concat(event.target.id);
+        setUserRoles(newRoles);
       }
     }
     setDetails({
@@ -50,21 +43,31 @@ const UserEditContainer = (props) => {
   const handleSubmit = () => {
     axios.put(ROUTES_USERS.DETAILS.replace(/:id/gi, id), {
       ...details,
-    }).then(() => {
+      roles: userRoles,
+    }).then((response) => {
+      const { organization } = response.data;
+
+      history.push(ROUTES_ORGANIZATIONS.USERS.replace(/:id/gi, organization.id));
     });
   };
 
   useEffect(() => {
     setLoading(true);
 
-    axios.get(ROUTES_USERS.DETAILS.replace(/:id/gi, id)).then((response) => {
-      axios.get(ROUTES_ROLES.LIST).then((rolesResponse) => {
-        setDetails(response.data);
-        const roleGroup = rolesResponse.data.map((role) => role.subGroups);
-        const subGroupNames = roleGroup[0].map((subGroup) => subGroup.name);
-        setRoles(subGroupNames);
-        setLoading(false);
-      });
+    const rolesPromise = axios.get(ROUTES_ROLES.LIST).then((response) => {
+      setRoles(response.data);
+    });
+
+    const detailsPromise = axios.get(ROUTES_USERS.DETAILS.replace(/:id/gi, id)).then((response) => {
+      setDetails(response.data);
+
+      const { roles: uRoles } = response.data;
+      const roleIds = uRoles.map((role) => role.id);
+      setUserRoles(roleIds);
+    });
+
+    Promise.all([detailsPromise, rolesPromise]).then(() => {
+      setLoading(false);
     });
   }, [keycloak.authenticated]);
 
@@ -76,7 +79,6 @@ const UserEditContainer = (props) => {
         user={user}
         handleInputChange={handleInputChange}
         handleSubmit={handleSubmit}
-        rolesList={rolesList}
         roles={roles}
       />
     </div>

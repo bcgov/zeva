@@ -36,13 +36,13 @@ class VehicleStatusChangeSerializer(ModelSerializer):
         request = self.context.get('request')
 
         if value == VehicleDefinitionStatuses.SUBMITTED and \
-                not request.user.has_role('Submit ZEV'):
+                not request.user.has_perm('SUBMIT_ZEV'):
             raise PermissionDenied(
                 "You do not have the permission to submit this vehicle."
             )
 
         if value == VehicleDefinitionStatuses.VALIDATED and \
-                not request.user.has_role('Validate ZEV'):
+                not request.user.has_perm('VALIDATE_ZEV'):
             raise PermissionDenied(
                 "You do not have the permission to validate this vehicle."
             )

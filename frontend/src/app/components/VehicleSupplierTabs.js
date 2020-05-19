@@ -45,9 +45,13 @@ const VehicleSupplierTabs = (props) => {
   );
 };
 
+VehicleSupplierTabs.defaultProps = {
+  supplierId: null,
+};
+
 VehicleSupplierTabs.propTypes = {
   active: PropTypes.string.isRequired,
-  supplierId: PropTypes.number.isRequired,
+  supplierId: PropTypes.number,
 };
 
 export default VehicleSupplierTabs;

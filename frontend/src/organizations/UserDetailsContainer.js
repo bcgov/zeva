@@ -54,13 +54,8 @@ const UserDetailsContainer = (props) => {
   useEffect(() => {
     setLoading(true);
     axios.get(ROUTES_USERS.DETAILS.replace(/:id/gi, id)).then((response) => {
-      axios.get(ROUTES_ROLES.LIST).then((rolesResponse) => {
-        setUserView(response.data);
-        const roleGroup = rolesResponse.data.map((role) => role.subGroups);
-        const subGroupNames = roleGroup[0].map((subGroup) => subGroup.name);
-        setRoles(subGroupNames);
-        setLoading(false);
-      });
+      setUserView(response.data);
+      setLoading(false);
     });
   }, []);
 
