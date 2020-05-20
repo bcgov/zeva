@@ -9,7 +9,7 @@ import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 
 const VehicleValidatePage = (props) => {
   const { details, loading, requestStateChange } = props;
-
+  console.log(details)
   if (loading) {
     return <Loading />;
   }
@@ -42,7 +42,8 @@ const VehicleValidatePage = (props) => {
             <DetailField label="Model" value={details.modelName} />
             <DetailField label="ZEV Type" value={details.vehicleZevType.description} />
             <DetailField label="Electric Range (km)" value={details.range} />
-            <DetailField label="Class" value={` ${details.creditClass} (calculated)`} />
+            <DetailField label="Vehicle Class" value={details.vehicleClassCode.description} />
+            <DetailField label="ZEV Class" value={` ${details.creditClass} (calculated)`} />
             <DetailField label="Credits" value={` ${details.creditValue} (calculated)`} />
           </div>
         </div>
@@ -97,6 +98,9 @@ VehicleValidatePage.propTypes = {
     history: PropTypes.arrayOf(PropTypes.object),
     make: PropTypes.string,
     modelName: PropTypes.string,
+    vehicleClassCide: PropTypes.shape({
+      description: PropTypes.string
+    }),
     vehicleZevType: PropTypes.shape({
       description: PropTypes.string,
     }),
