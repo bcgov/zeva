@@ -38,7 +38,7 @@ def change_status(user, vehicle, new_status):
             range=vehicle.range,
             user_role=user_roles,
             validation_status=new_status,
-            # vehicle_class_code_id=vehicle.vehicle_class_code_id,
+            vehicle_class_code_id=vehicle.vehicle_class_code_id,
             vehicle_zev_type_id=vehicle.vehicle_zev_type_id,
             vehicle=vehicle
         )

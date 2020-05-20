@@ -20,6 +20,11 @@ class Vehicle(Auditable):
         related_name=None,
         on_delete=models.PROTECT
     )
+    vehicle_class_code = models.ForeignKey(
+        'VehicleClass',
+        related_name=None,
+        on_delete=models.PROTECT
+    )
     range = models.IntegerField(
         db_comment='Vehicle Range in km'
     )

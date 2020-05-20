@@ -2,12 +2,12 @@ from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-
+from api.models.vehicle_class import VehicleClass
 from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle, VehicleDefinitionStatuses
 from api.models.vehicle_zev_type import ZevType
 from api.serializers.vehicle import ModelYearSerializer, \
-    VehicleZevTypeSerializer, \
+    VehicleZevTypeSerializer, VehicleClassSerializer, \
     VehicleSaveSerializer, VehicleSerializer, \
     VehicleStatusChangeSerializer
 from auditable.views import AuditableMixin
@@ -84,6 +84,15 @@ class VehicleViewSet(
         zev_types = ZevType.objects.all().order_by('description')
 
         serializer = VehicleZevTypeSerializer(zev_types, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False)	
+    def classes(self, _request):
+        """
+        Get the zev classes
+        """
+        classes = VehicleClass.objects.all().order_by('description')
+        serializer = VehicleClassSerializer(classes, many=True)
         return Response(serializer.data)
 
     @action(detail=False)

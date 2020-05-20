@@ -14,6 +14,9 @@ class VehicleChangeHistory(Commentable):
         null=True,
         db_comment='When the change was made'
     )
+    vehicle_class_code_id = models.IntegerField(	
+        db_comment="ID referencing the vehicle_class_code table"	
+    )
     create_user = models.ForeignKey(
         'UserProfile',
         related_name='history',
@@ -35,7 +38,7 @@ class VehicleChangeHistory(Commentable):
     )
     model_name = models.CharField(
         blank=True,
-        db_comment="Model and trim of vehicle",
+        db_comment="Model of vehicle",
         max_length=250,
         null=True
     )
