@@ -1,8 +1,10 @@
+from django.utils.decorators import method_decorator
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from api.decorators.permission import permission_required
 from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle, VehicleDefinitionStatuses
 from api.models.vehicle_zev_type import ZevType
@@ -28,53 +30,43 @@ class VehicleViewSet(
         'partial_update': VehicleSaveSerializer
     }
 
-    def get_serializer_class(self):
-        if self.action in list(self.serializer_classes.keys()):
-            return self.serializer_classes[self.action]
+    def get_queryset(self):
+        request = self.request
 
-        return self.serializer_classes['default']
+        queryset = Vehicle.objects.filter(
+            organization_id=request.user.organization.id
+        )
 
-    def list(self, request):
-        """
-        Get all the organizations
-        """
-        is_government = request.user.is_government
-        organization_id = request.user.organization.id
-
-        if not is_government:
-            vehicles = Vehicle.objects.all()
-            # filter(
-            #     make__vehicle_make_organizations__organization_id=organization_id
-            # )
-        else:
-            vehicles = self.get_queryset().filter(
+        if request.user.is_government:
+            queryset = Vehicle.objects.filter(
                 validation_status__in=[
                     VehicleDefinitionStatuses.SUBMITTED,
                     VehicleDefinitionStatuses.VALIDATED
                 ]
             )
 
+            organization_id = request.query_params.get('organization_id', None)
+
+            if organization_id:
+                queryset = queryset.filter(organization_id=organization_id)
+
+        return queryset
+
+    def get_serializer_class(self):
+        if self.action in list(self.serializer_classes.keys()):
+            return self.serializer_classes[self.action]
+
+        return self.serializer_classes['default']
+
+    @method_decorator(permission_required('VIEW_ZEV'))
+    def list(self, request):
+        """
+        Get all the organizations
+        """
+        vehicles = self.get_queryset()
+
         serializer = self.get_serializer(vehicles, many=True)
         return Response(serializer.data)
-
-    # @action(detail=False)
-    # def makes(self, request):
-    #     """
-    #     Get the makes
-    #     """
-    #     is_government = request.user.is_government
-
-    #     organization_id = request.user.organization.id
-
-    #     if not is_government:
-    #         makes = Make.objects.filter(
-    #             vehicle_make_organizations__organization_id=organization_id
-    #         )
-    #     else:
-    #         makes = Make.objects.all()
-
-    #     serializer = VehicleMakeSerializer(makes, many=True)
-    #     return Response(serializer.data)
 
     @action(detail=False)
     def zev_types(self, _request):

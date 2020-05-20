@@ -25,7 +25,7 @@ class Vehicle(Auditable):
     )
     model_name = models.CharField(
         blank=False,
-        db_comment="Model seof vehicle",
+        db_comment="Model information of the vehicle",
         max_length=250,
         null=False
     )
@@ -45,14 +45,18 @@ class Vehicle(Auditable):
                         statuses=[c.name for c in VehicleDefinitionStatuses]
                    )
     )
-
+    organization = models.ForeignKey(
+        'Organization',
+        related_name=None,
+        on_delete=models.PROTECT,
+        null=False
+    )
     credit_class = models.ForeignKey(
         'CreditClass',
         related_name='+',
         on_delete=models.PROTECT,
         null=True
     )
-
     credit_value = models.DecimalField(
         null=True,
         decimal_places=2,

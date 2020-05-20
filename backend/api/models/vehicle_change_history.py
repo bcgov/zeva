@@ -42,6 +42,9 @@ class VehicleChangeHistory(Commentable):
     model_year_id = models.IntegerField(
         db_comment="ID referencing the model_year table"
     )
+    organization_id = models.IntegerField(
+        db_comment="ID referencing the organization table"
+    )
     validation_status = EnumField(
         VehicleDefinitionStatuses,
         max_length=20,
