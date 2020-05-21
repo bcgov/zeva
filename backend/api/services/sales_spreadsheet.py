@@ -217,8 +217,8 @@ def ingest_sales_spreadsheet(
     # permitted_makes = [ma.vehicle_make for ma in make_assoc]
 
     submission = SalesSubmission.objects.create(
-        create_user=requesting_user,
-        update_user=requesting_user,
+        create_user=requesting_user.username,
+        update_user=requesting_user.username,
         organization=org,
         submission_sequence=SalesSubmission.next_sequence(org, datetime.now())
     )

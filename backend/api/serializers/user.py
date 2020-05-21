@@ -73,7 +73,8 @@ class UserSaveSerializer(serializers.ModelSerializer):
                 UserRole.objects.create(
                     user_profile=user_profile,
                     role=role,
-                    create_user=request.user
+                    create_user=request.user.username,
+                    update_user=request.user.username
                 )
 
         return user_profile
@@ -94,7 +95,8 @@ class UserSaveSerializer(serializers.ModelSerializer):
                     user_profile=instance,
                     role=role,
                     defaults={
-                        'create_user': request.user
+                        'create_user': request.user.username,
+                        'update_user': request.user.username
                     }
                 )
 
@@ -105,5 +107,5 @@ class UserSaveSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'first_name', 'last_name', 'email', 'username', 'title',
             'organization', 'organization_id', 'display_name', 'is_active',
-            'phone', 'keycloak_email', 'roles'
+            'phone', 'keycloak_email', 'roles', 'create_user', 'update_user',
         )

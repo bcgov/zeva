@@ -50,7 +50,9 @@ class VehicleStatusChangeSerializer(ModelSerializer):
         return value
 
     def update(self, instance, validated_data):
+        request = self.context.get('request')
         status = validated_data.get('validation_status')
+
         change_status(
             self.context['request'].user,
             instance,
@@ -62,6 +64,7 @@ class VehicleStatusChangeSerializer(ModelSerializer):
                 credit_class=instance.get_credit_class()
             )
             instance.credit_value = instance.get_credit_value()
+            instance.update_user = request.user.username
             instance.save()
 
         return instance
@@ -69,14 +72,13 @@ class VehicleStatusChangeSerializer(ModelSerializer):
     class Meta:
         model = Vehicle
         fields = (
-            'validation_status',
+            'validation_status', 'create_user', 'update_user',
         )
 
 
 class VehicleHistorySerializer(
     ModelSerializer, EnumSupportSerializerMixin
 ):
-    create_user = UserSerializer(read_only=True)
     validation_status = EnumField(VehicleDefinitionStatuses, read_only=True)
 
     class Meta:
@@ -192,7 +194,8 @@ class VehicleSaveSerializer(
         model = Vehicle
         fields = (
             'id', 'make', 'model_name', 'model_year', 'range',
-            'validation_status', 'vehicle_zev_type'
+            'validation_status', 'vehicle_zev_type', 'create_user',
+            'update_user',
         )
         read_only_fields = ('validation_status', 'id',)
 

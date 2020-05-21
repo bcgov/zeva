@@ -4,9 +4,18 @@ import React from 'react';
 const ActionBarGov = (props) => {
   const { handleSubmit, vehicles } = props;
   const getOptions = (inputObj, displayField) => {
-    const uniqueArr = [...new Set(inputObj.map((eachVehicle) => (
-      eachVehicle[displayField].name
-    )))];
+    let uniqueArr = [...new Set(inputObj.map((eachVehicle) => {
+      if (typeof eachVehicle[displayField] === 'string') {
+        return eachVehicle[displayField];
+      }
+
+      return eachVehicle[displayField].name;
+    }))];
+
+    if (displayField === 'make') {
+      uniqueArr = uniqueArr.sort();
+    }
+
     return uniqueArr.map((each) => (
       <option key={each}>{each}</option>
     ));
