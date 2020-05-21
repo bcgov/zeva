@@ -13,10 +13,8 @@ import history from '../app/History';
 const VehicleEditContainer = (props) => {
   const [fields, setFields] = useState({});
   const [loading, setLoading] = useState(true);
-  const [makes, setMakes] = useState([]);
   const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
-  const [classes, setClasses] = useState([]);
   const { keycloak } = props;
   const { id } = useParams();
   const [edits, setEdits] = useState({});

@@ -35,6 +35,7 @@ def change_status(user, vehicle, new_status):
         history = VehicleChangeHistory.objects.create(
             create_user=user,
             model_year_id=vehicle.model_year_id,
+            organization_id=vehicle.organization_id,
             range=vehicle.range,
             user_role=user_roles,
             validation_status=new_status,

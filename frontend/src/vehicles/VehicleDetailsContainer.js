@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
+import history from '../app/History';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import CustomPropTypes from '../app/utilities/props';
 import VehicleDetailsPage from './components/VehicleDetailsPage';
@@ -21,10 +22,7 @@ const VehicleDetailsContainer = (props) => {
   const stateChange = (newState) => {
     setLoading(true);
     axios.patch(`vehicles/${id}/state_change`, { validationStatus: newState }).then(() => {
-      axios.get(`vehicles/${id}`).then((response) => {
-        setVehicle(response.data);
-        setLoading(false);
-      });
+      history.push(ROUTES_VEHICLES.LIST);
     });
   };
 
