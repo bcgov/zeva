@@ -14,12 +14,11 @@ class VehicleChangeHistory(Commentable):
         null=True,
         db_comment='When the change was made'
     )
-    create_user = models.ForeignKey(
-        'UserProfile',
-        related_name='history',
-        blank=True, null=True,
-        on_delete=models.CASCADE,
-        db_comment='User who made the change to the record'
+    create_user = models.CharField(
+        default="SYSTEM",
+        max_length=130,
+        db_comment="User ID associated to the person who's making the changes "
+                   "to the vehicle record"
     )
     vehicle_zev_type_id = models.IntegerField(
         db_comment="ID referencing the vehicle_zev_type table"
