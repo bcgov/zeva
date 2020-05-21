@@ -13,6 +13,7 @@ from api.serializers.user import UserSerializer
 from api.services.vehicle import change_status
 from api.models.vehicle_class import VehicleClass
 
+
 class ModelYearSerializer(ModelSerializer):
     class Meta:
         model = ModelYear
@@ -21,11 +22,11 @@ class ModelYearSerializer(ModelSerializer):
         )
 
 
-class VehicleClassSerializer(ModelSerializer):	
-    class Meta:	
-        model = VehicleClass	
+class VehicleClassSerializer(ModelSerializer):
+    class Meta:
+        model = VehicleClass
         fields = (	
-            'vehicle_class_code', 'description'	
+            'vehicle_class_code', 'description'
         )
 
 
@@ -146,7 +147,7 @@ class VehicleSerializer(
         model = Vehicle
         fields = (
             'id', 'actions', 'history', 'make', 'model_name', 'model_year',
-            'range', 'validation_status', 'vehicle_class_code',
+            'range', 'validation_status', 'vehicle_class_code', 'weight_kg',
             'vehicle_zev_type', 'credit_class', 'credit_value'
         )
         read_only_fields = ('validation_status',)
@@ -159,9 +160,9 @@ class VehicleSaveSerializer(
         slug_field='name',
         queryset=ModelYear.objects.all()
     )
-    vehicle_class_code = SlugRelatedField(	
-        slug_field='vehicle_class_code',	
-        queryset=VehicleClass.objects.all()	
+    vehicle_class_code = SlugRelatedField(
+        slug_field='vehicle_class_code',
+        queryset=VehicleClass.objects.all()
     )
     vehicle_zev_type = SlugRelatedField(
         slug_field='vehicle_zev_code',
@@ -175,7 +176,7 @@ class VehicleSaveSerializer(
     class Meta:
         model = Vehicle
         fields = (
-            'id', 'make', 'model_name', 'model_year', 'range',
+            'id', 'make', 'model_name', 'model_year', 'range', 'weight_kg',
             'validation_status', 'vehicle_zev_type', 'vehicle_class_code'
         )
         read_only_fields = ('validation_status', 'id',)
@@ -202,5 +203,5 @@ class VehicleMinSerializer(
         fields = (
             'id', 'make', 'model_name', 'model_year',
             'range', 'vehicle_class_code',
-            'vehicle_zev_type'
+            'vehicle_zev_type', 'weight_kg'
         )

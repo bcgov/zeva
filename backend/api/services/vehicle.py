@@ -36,6 +36,7 @@ def change_status(user, vehicle, new_status):
             create_user=user,
             model_year_id=vehicle.model_year_id,
             range=vehicle.range,
+            weight_kg=vehicle.weight_kg,
             user_role=user_roles,
             validation_status=new_status,
             vehicle_class_code_id=vehicle.vehicle_class_code_id,

@@ -81,6 +81,15 @@ const VehicleForm = (props) => {
                 handleInputChange={handleInputChange}
                 selectedOption={fields.vehicleClassCode.vehicleClassCode}
               />
+              <TextInput
+                num
+                label="GVWR (kg)"
+                id="weightKg"
+                name="weightKg"
+                defaultValue={fields.weightKg}
+                handleInputChange={handleInputChange}
+                mandatory
+              />
               <div className="action-bar form-group row">
                 <span className="left-content">
                   <button

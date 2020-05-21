@@ -9,7 +9,6 @@ import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 
 const VehicleValidatePage = (props) => {
   const { details, loading, requestStateChange } = props;
-  console.log(details)
   if (loading) {
     return <Loading />;
   }
@@ -43,6 +42,7 @@ const VehicleValidatePage = (props) => {
             <DetailField label="ZEV Type" value={details.vehicleZevType.description} />
             <DetailField label="Electric Range (km)" value={details.range} />
             <DetailField label="Vehicle Class" value={details.vehicleClassCode.description} />
+            <DetailField label="Weight (kg)" value={details.weightKg} />
             <DetailField label="ZEV Class" value={` ${details.creditClass} (calculated)`} />
             <DetailField label="Credits" value={` ${details.creditValue} (calculated)`} />
           </div>

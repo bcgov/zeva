@@ -18,6 +18,7 @@ const VehicleAddContainer = (props) => {
     range: '',
     modelYear: { name: '--' },
     vehicleClassCode: { vehicleClassCode: '--' },
+    weightKg: '',
   });
   const [loading, setLoading] = useState(true);
   const [types, setTypes] = useState([]);

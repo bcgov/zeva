@@ -36,6 +36,12 @@ class VehicleChangeHistory(Commentable):
         max_length=250,
         null=True
     )
+    weight_kg = models.DecimalField(
+        blank=False,
+        db_comment="Weight of vehicle",
+        max_digits=6,
+        decimal_places=0
+    )
     model_name = models.CharField(
         blank=True,
         db_comment="Model of vehicle",
