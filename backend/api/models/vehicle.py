@@ -20,12 +20,17 @@ class Vehicle(Auditable):
         related_name=None,
         on_delete=models.PROTECT
     )
+    vehicle_class_code = models.ForeignKey(
+        'VehicleClass',
+        related_name=None,
+        on_delete=models.PROTECT
+    )
     range = models.IntegerField(
         db_comment='Vehicle Range in km'
     )
     model_name = models.CharField(
         blank=False,
-        db_comment="Model seof vehicle",
+        db_comment="Model of vehicle",
         max_length=250,
         null=False
     )
@@ -44,6 +49,12 @@ class Vehicle(Auditable):
                    "{statuses}".format(
                         statuses=[c.name for c in VehicleDefinitionStatuses]
                    )
+    )
+    weight_kg = models.DecimalField(
+        blank=False,
+        db_comment="Weight of vehicle",
+        max_digits=6,
+        decimal_places=0
     )
 
     credit_class = models.ForeignKey(

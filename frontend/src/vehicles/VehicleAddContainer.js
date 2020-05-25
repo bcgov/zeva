@@ -17,10 +17,13 @@ const VehicleAddContainer = (props) => {
     vehicleZevType: { vehicleZevCode: '--' },
     range: '',
     modelYear: { name: '--' },
+    vehicleClassCode: { vehicleClassCode: '--' },
+    weightKg: '',
   });
   const [loading, setLoading] = useState(true);
   const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
+  const [classes, setClasses] = useState([]);
   const { keycloak } = props;
 
   const handleInputChange = (event) => {
@@ -50,9 +53,11 @@ const VehicleAddContainer = (props) => {
     axios.all([
       axios.get(ROUTES_VEHICLES.YEARS),
       axios.get(ROUTES_VEHICLES.ZEV_TYPES),
-    ]).then(axios.spread((yearsRes, typesRes) => (
+      axios.get(ROUTES_VEHICLES.CLASSES),
+    ]).then(axios.spread((yearsRes, typesRes, classesRes) => (
       [setYears(yearsRes.data),
         setTypes(typesRes.data),
+        setClasses(classesRes.data),
         setLoading(false)]
     )));
   };
@@ -69,6 +74,7 @@ const VehicleAddContainer = (props) => {
       vehicleYears={years}
       vehicleTypes={types}
       fields={fields}
+      vehicleClasses={classes}
       formTitle="Enter ZEV"
     />
   );

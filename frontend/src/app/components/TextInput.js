@@ -12,9 +12,15 @@ const TextInput = (props) => {
     id,
     details,
     mandatory,
+    num,
   } = props;
 
-
+  let type;
+  if (!num) {
+    type = 'text';
+  } else {
+    type = 'number';
+  }
   const handleOnBlur = (event) => {
     const { value } = event.target;
     if (value === '' && mandatory === true) {
@@ -42,7 +48,7 @@ const TextInput = (props) => {
           className="form-control"
           id={id}
           name={name}
-          type="text"
+          type={type}
           defaultValue={defaultValue}
           onChange={handleInputChange}
           onBlur={handleOnBlur}
