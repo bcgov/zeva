@@ -8,6 +8,8 @@ from django.db import transaction, connection
 
 from api.management.commands._loader import ScriptLoader
 
+from api.models.fixture_migration import FixtureMigration
+
 
 class Command(BaseCommand):
     help = 'Loads operational data'
@@ -22,10 +24,10 @@ class Command(BaseCommand):
         parser.add_argument(
             '--revert', action='store_true', help='revert this script'
         )
-
         parser.add_argument(
-            '--directory', action='store_true', help='script argument is a directory, and scripts '
-                                                     'should be loaded sequentially from it'
+            '--directory', action='store_true',
+            help='script argument is a directory, and scripts should be '
+                 'loaded sequentially from it'
         )
 
         helptext = ('Load operational data.')
@@ -33,7 +35,6 @@ class Command(BaseCommand):
         parser.description = helptext
 
     def handle(self, *args, **options):
-
         directory_mode = 'directory' in options and options['directory'] is True
 
         script_files = []
@@ -134,7 +135,23 @@ class Command(BaseCommand):
                     ).format(script_file)
                 )
             else:
-                if script_instance.check_run_preconditions():
+                migrated = FixtureMigration.objects.filter(
+                    fixture_filename=script_file.lower()
+                ).exists()
+
+                if migrated:
+                    self.stdout.write(
+                        self.style.ERROR(
+                            'Script {} has already been migrated. Not executing'.format(script_file)
+                        )
+                    )
+                elif not script_instance.check_run_preconditions():
+                    self.stdout.write(
+                        self.style.ERROR(
+                            'Script {} preconditions not met. Not executing'.format(script_file)
+                        )
+                    )
+                else:
                     try:
                         script_instance.run()
 
@@ -142,6 +159,10 @@ class Command(BaseCommand):
                             self.style.SUCCESS(
                                 'Successfully loaded ops data script {}'
                             ).format(script_file)
+                        )
+
+                        FixtureMigration.objects.create(
+                            fixture_filename=script_file.lower()
                         )
                     except Exception as e:
                         self.stdout.write(
@@ -153,12 +174,6 @@ class Command(BaseCommand):
                             self.style.ERROR(str(e))
                         )
                         errorcount = errorcount + 1
-                else:
-                    self.stdout.write(
-                        self.style.ERROR(
-                            'Script {} preconditions not met. Not executing'.format(script_file)
-                        )
-                    )
 
         if errorcount != 0:
             self.stdout.write(

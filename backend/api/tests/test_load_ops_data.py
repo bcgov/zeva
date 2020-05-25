@@ -20,6 +20,9 @@ class TestLoadOpsData(TestCase):
             'api.fixtures.operational.0000_add_government_organization'
         ),
         ScriptDefinition(
+            'api.fixtures.operational.0002_add_vehicle_classes'
+        ),
+        ScriptDefinition(
             'api.fixtures.operational.0003_add_vehicle_zev_types'
         ),
         ScriptDefinition(
