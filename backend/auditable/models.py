@@ -12,23 +12,20 @@ class Auditable(models.Model, DBComments):
         auto_now_add=True, blank=True, null=True,
         db_comment='Creation timestamp'
     )
-    create_user = models.ForeignKey(
-        'UserProfile',
-        related_name='%(app_label)s_%(class)s_CREATE_USER',
-        blank=True, null=True,
-        on_delete=models.CASCADE,
-        db_comment='creating user'
+    create_user = models.CharField(
+        default="SYSTEM",
+        max_length=130,
+        db_comment="User ID associated to the person who's creating the record"
     )
     update_timestamp = models.DateTimeField(
         auto_now=True, blank=True, null=True,
         db_comment='Last updated/saved timestamp'
     )
-    update_user = models.ForeignKey(
-        'UserProfile',
-        related_name='%(app_label)s_%(class)s_UPDATE_USER',
-        blank=True, null=True,
-        on_delete=models.CASCADE,
-        db_comment='last updating user'
+    update_user = models.CharField(
+        max_length=130,
+        null=True,
+        db_comment="User ID associated to the person who's making changes to "
+                   "the record"
     )
 
     # Supplemental mapping for base class

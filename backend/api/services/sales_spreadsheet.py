@@ -16,7 +16,6 @@ from api.models.organization import Organization
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission import SalesSubmission
 from api.models.vehicle import Vehicle
-# from api.models.vehicle_make_organization import VehicleMakeOrganization
 
 logger = logging.getLogger('zeva.sales_spreadsheet')
 
@@ -217,8 +216,8 @@ def ingest_sales_spreadsheet(
     # permitted_makes = [ma.vehicle_make for ma in make_assoc]
 
     submission = SalesSubmission.objects.create(
-        create_user=requesting_user,
-        update_user=requesting_user,
+        create_user=requesting_user.username,
+        update_user=requesting_user.username,
         organization=org,
         submission_sequence=SalesSubmission.next_sequence(org, datetime.now())
     )
@@ -302,22 +301,22 @@ def ingest_sales_spreadsheet(
                             reference_number=None  # @todo assign from sequence
                         )
                         ros.save()
-                        entries.append(
-                            {'vin': vin,
-                             'vin_validation_status':
-                                ros.vin_validation_status.value,
-                             'sale_date': parsed_date,
-                             'id': ros.id,
-                             'credits': '??',
-                             'model': ros.vehicle.model_name,
-                             'model_year': ros.vehicle.model_year.name,
-                             'make': ros.vehicle.make,
-                             'class': ros.vehicle.vehicle_class_code.vehicle_class_code,
-                             'range': ros.vehicle.range,
-                             'type':
-                                ros.vehicle.vehicle_zev_type.vehicle_zev_code,
-                             }
-                        )
+                        entries.append({
+                            'vin': vin,
+                            'vin_validation_status':
+                            ros.vin_validation_status.value,
+                            'sale_date': parsed_date,
+                            'id': ros.id,
+                            'credits': '??',
+                            'model': ros.vehicle.model_name,
+                            'model_year': ros.vehicle.model_year.name,
+                            'make': ros.vehicle.make,
+                            'class':
+                            ros.vehicle.vehicle_class_code.vehicle_class_code,
+                            'range': ros.vehicle.range,
+                            'type':
+                            ros.vehicle.vehicle_zev_type.vehicle_zev_code,
+                        })
                         logger.info('Recorded sale {}'.format(vin))
 
             row += 1

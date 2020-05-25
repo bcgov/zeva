@@ -33,7 +33,7 @@ def change_status(user, vehicle, new_status):
             user_roles.append(role.role_code)
 
         history = VehicleChangeHistory.objects.create(
-            create_user=user,
+            create_user=user.username,
             model_year_id=vehicle.model_year_id,
             organization_id=vehicle.organization_id,
             range=vehicle.range,

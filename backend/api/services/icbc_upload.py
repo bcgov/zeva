@@ -12,8 +12,8 @@ def insert_to_db(data_frame, list_name, table, col_name, requesting_user):
             the_id = table.objects.get(name=each).id
         except ObjectDoesNotExist:
             new_addition = table.objects.create(
-                create_user=requesting_user,
-                update_user=requesting_user,
+                create_user=requesting_user.username,
+                update_user=requesting_user.username,
                 name=each
             )
             new_addition.save()
@@ -59,8 +59,8 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user):
                     make=icbc_vehicle_make).id
             except ObjectDoesNotExist:
                 new_vehicle = IcbcVehicle.objects.create(
-                    create_user=requesting_user,
-                    update_user=requesting_user,
+                    create_user=requesting_user.username,
+                    update_user=requesting_user.username,
                     model_name=icbc_vehicle_model,
                     model_year_id=icbc_vehicle_year,
                     make=icbc_vehicle_make
@@ -82,8 +82,8 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user):
                     pass
                 except ObjectDoesNotExist:
                     new_registration = IcbcRegistrationData.objects.create(
-                      create_user=requesting_user,
-                      update_user=requesting_user,
+                      create_user=requesting_user.username,
+                      update_user=requesting_user.username,
                       icbc_vehicle_id=vehicle_id,
                       vin=icbc_vehicle_vin
                     )

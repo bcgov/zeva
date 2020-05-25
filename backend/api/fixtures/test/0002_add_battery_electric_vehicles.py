@@ -4,6 +4,7 @@ from api.management.data_script import OperationalDataScript
 from api.models.model_year import ModelYear
 from api.models.organization import Organization
 from api.models.vehicle import Vehicle
+from api.models.vehicle_class import VehicleClass
 from api.models.vehicle_zev_type import ZevType
 
 
@@ -246,7 +247,11 @@ class AddBatteryElectricVehicles(OperationalDataScript):
                 ),
                 range=vehicle.get("range"),
                 validation_status="VALIDATED",
-                vehicle_zev_type=vehicle_zev_type
+                vehicle_class_code=VehicleClass.objects.get(
+                    vehicle_class_code=vehicle.get("class_code")
+                ),
+                vehicle_zev_type=vehicle_zev_type,
+                weight_kg=0
             )
 
             vehicles_added += 1
