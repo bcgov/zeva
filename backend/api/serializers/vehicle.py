@@ -173,6 +173,34 @@ class VehicleSaveSerializer(
         read_only=True
     )
 
+    def create(self, validated_data):
+        request = self.context.get('request')
+        organization = request.user.organization
+        make = validated_data.pop('make')
+        make = " ".join(make.upper().split())
+
+        vehicle = Vehicle.objects.create(
+            make=make,
+            organization_id=organization.id,
+            **validated_data
+        )
+
+        return vehicle
+
+    def update(self, instance, validated_data):
+        for data in validated_data:
+            setattr(instance, data, validated_data[data])
+
+            if data == 'make':
+                make = validated_data[data]
+                make = " ".join(make.upper().split())
+
+                setattr(instance, data, make)
+
+        instance.save()
+
+        return instance
+
     class Meta:
         model = Vehicle
         fields = (

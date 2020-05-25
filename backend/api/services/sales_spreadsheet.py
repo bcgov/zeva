@@ -26,13 +26,17 @@ MAX_READ_ROWS = 50000
 
 
 def create_sales_spreadsheet(organization, model_year, stream):
-    logger.info('Starting to build spreadsheet for {org}'.format(org=organization.name))
+    logger.info('Starting to build spreadsheet for {org}'.format(
+        org=organization.name
+    ))
     sheet_count = 0
 
     bold = xlwt.easyxf('font: name Times New Roman, bold on;')
     locked = xlwt.easyxf("protection: cell_locked true;")
     editable = xlwt.easyxf("protection: cell_locked false;")
-    editable_date = xlwt.easyxf("protection: cell_locked false;", num_format_str='yyyy/mm/dd')
+    editable_date = xlwt.easyxf(
+        "protection: cell_locked false;", num_format_str='yyyy/mm/dd'
+    )
 
     wb = xlwt.Workbook('{} Sales Recording'.format(organization.name))
     wb.protect = True
@@ -46,28 +50,21 @@ def create_sales_spreadsheet(organization, model_year, stream):
     }
 
     sheet_names = {}
-    #create list of make-org objects where organization is equal to organization arguemment
-    # make_assoc = VehicleMakeOrganization.objects.filter(organization=organization)
 
-    # for ma in make_assoc:
-    #     make = ma.vehicle_make
-    #     logger.info('{org} supplies {name}'.format(org=organization.name,
-    #                                                name=make.name))
-
-        #iterate through array of objects and find vehicles that match each make
-    vehicles = Vehicle.objects.filter(model_year=model_year)
+    vehicles = Vehicle.objects.filter(
+        model_year=model_year,
+        organization_id=organization.id
+    )
     for veh in vehicles:
-        # logger.info('{make} has model {model}'.format(make=make.name,
-        #                                               model=veh.model_name))
 
-        sheet_name = '{} - {}'.format(veh.make, veh.model_name)
+        sheet_name = '{}'.format(veh.id)
         if sheet_name not in sheet_names.keys():
             sheet_names[sheet_name] = 0
 
         sheet_names[sheet_name] += 1
 
         if sheet_names[sheet_name] > 1:
-            sheet_name = '{} - {} - Alternate {}'.format(veh.make, veh.model_name, sheet_names[sheet_name] - 1)
+            sheet_name = '{} - {}'.format(veh.id, sheet_names[sheet_name] - 1)
 
         ws = wb.add_sheet(sheet_name)
         ws.protect = True
@@ -79,13 +76,18 @@ def create_sales_spreadsheet(organization, model_year, stream):
 
         sheet_count += 1
         row = 0
-        ws.write(row, 0, 'Recording sales for {year} {make} {model}'.format(year=veh.model_year.name,
-                                                                            make=veh.make,
-                                                                            model=veh.model_name), style=bold)
+        ws.write(row, 0, 'Recording sales for {year} {make} {model}'.format(
+            year=veh.model_year.name,
+            make=veh.make,
+            model=veh.model_name
+        ), style=bold)
         row += 1
 
-        ws.write(row, 0, 'Record each individual sale for this model in the spaces below. VIN and Sales Date '
-                            'fields are required.')
+        ws.write(
+            row, 0,
+            'Record each individual sale for this model in the spaces below. '
+            'VIN and Sales Date fields are required.'
+        )
 
         row += 2
 
@@ -102,8 +104,11 @@ def create_sales_spreadsheet(organization, model_year, stream):
             ws.write(row, 2, None, style=editable_date)
             row += 1
 
-        ws.write(row, 0, 'A maximum of {} entries per sheet will be read. If you need more entries,'
-                            ' use multiple submissions'.format(MAX_READ_ROWS))
+        ws.write(
+            row, 0,
+            'A maximum of {} entries per sheet will be read. If you need '
+            'more entries, use multiple submissions'.format(MAX_READ_ROWS)
+        )
 
     descriptor_bytes = [0x00, 0xd3, 0xc0, 0xde]
     descriptor_bytes.extend(pickle.dumps(descriptor))
@@ -112,18 +117,24 @@ def create_sales_spreadsheet(organization, model_year, stream):
     ws = wb.add_sheet('ZEVA Internal Use')
     ws.write(0, 0, encoded_descriptor.decode('ascii'), style=locked)
 
-    logger.info('Done building spreadsheet. {} sheets created'.format(sheet_count))
+    logger.info(
+        'Done building spreadsheet. {} sheets created'.format(sheet_count)
+    )
     logger.info('Descriptor {}'.format(descriptor))
     logger.info('Encoded {}'.format(encoded_descriptor.decode('ascii')))
 
     wb.save(stream)
 
 
-def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=False):
+def ingest_sales_spreadsheet(
+    data, requesting_user=None, skip_authorization=False
+):
     logger.info('Opening spreadsheet')
 
     if requesting_user is None and skip_authorization is False:
-        raise Exception('requesting_user is None and skip_authorization is disabled')
+        raise Exception(
+            'requesting_user is None and skip_authorization is disabled'
+        )
 
     wb = xlrd.open_workbook(file_contents=data)
 
@@ -141,33 +152,64 @@ def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=Fals
             logger.info('Good Magic')
         else:
             validation_problems.append({'row': None, 'message': 'Bad Magic'})
-            logger.critical('Unable to parse. Validation problems: {}'.format(validation_problems))
+            logger.critical(
+                'Unable to parse. Validation problems: {}'.format(
+                    validation_problems
+                )
+            )
             return
 
         descriptor = pickle.loads(descriptor_bytes[4:])
         logger.info('Read descriptor: {}'.format(descriptor))
 
     except XLRDError:
-        validation_problems.append({'row': None, 'message': 'No metadata sheet'})
-        logger.critical('Unable to parse. Validation problems: {}'.format(validation_problems))
+        validation_problems.append({
+            'row': None, 'message': 'No metadata sheet'
+        })
+        logger.critical(
+            'Unable to parse. Validation problems: {}'.format(
+                validation_problems
+            )
+        )
         return
     except IndexError:
-        validation_problems.append({'row': None, 'message': 'Expected values not in metadata sheet'})
-        logger.critical('Unable to parse. Validation problems: {}'.format(validation_problems))
+        validation_problems.append({
+            'row': None, 'message': 'Expected values not in metadata sheet'
+        })
+        logger.critical(
+            'Unable to parse. Validation problems: {}'.format(
+                validation_problems
+            )
+        )
         return
     except binascii.Error:
-        validation_problems.append({'row': None, 'message': 'Base64 decode failed'})
-        logger.critical('Unable to parse. Validation problems: {}'.format(validation_problems))
+        validation_problems.append({
+            'row': None, 'message': 'Base64 decode failed'
+        })
+        logger.critical(
+            'Unable to parse. Validation problems: {}'.format(
+                validation_problems
+            )
+        )
         return
     except PickleError:
-        validation_problems.append({'row': None, 'message': 'Descriptor unpickling error'})
-        logger.critical('Unable to parse. Validation problems: {}'.format(validation_problems))
+        validation_problems.append({
+            'row': None, 'message': 'Descriptor unpickling error'
+        })
+        logger.critical(
+            'Unable to parse. Validation problems: {}'.format(
+                validation_problems
+            )
+        )
         return
 
     org = Organization.objects.get(id=descriptor['organization_id'])
 
     if not skip_authorization and org != requesting_user.organization:
-        validation_problems.append({'row': None, 'message': 'Organization mismatch!'})
+        validation_problems.append({
+            'row': None,
+            'message': 'Organization mismatch!'
+        })
         logger.critical('Organization mismatch!')
         return
 
@@ -187,8 +229,11 @@ def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=Fals
             sheet = wb.sheet_by_name(input_sheet['name'])
         except XLRDError:
             logger.info('Sheet {} missing'.format(input_sheet))
-            validation_problems.append(
-                {'row': None, 'message': 'Expected to find a sheet called {}, and it is not present. Skipping it.'})
+            validation_problems.append({
+                'row': None,
+                'message': 'Expected to find a sheet called {}, and it is '
+                           'not present. Skipping it.'
+            })
             continue
 
         logger.info('Reading sheet {}'.format(input_sheet['name']))
@@ -205,29 +250,47 @@ def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=Fals
                 if date == '':
                     validation_problems.append({
                         'row': row + 1,
-                        'message': 'VIN {} has no corresponding sale date'.format(vin)
+                        'message': 'VIN {} has no corresponding sale '
+                                   'date'.format(vin)
                     })
                 else:
                     parsed_date = None
                     try:
-                        parsed_date = xlrd.xldate.xldate_as_datetime(date, wb.datemode)
-                        logger.debug('I interpret the Excel date string {} as {}'.format(date, parsed_date))
+                        parsed_date = xlrd.xldate.xldate_as_datetime(
+                            date, wb.datemode
+                        )
+                        logger.debug(
+                            'I interpret the Excel date string {} as '
+                            '{}'.format(date, parsed_date)
+                        )
                     except XLDateError:
                         validation_problems.append({
                             'row': row + 1,
                             'message': 'date {} insensible'.format(date)
                         })
 
-                    if RecordOfSale.objects.filter(vin=vin, submission__organization=org).exists():
+                    if RecordOfSale.objects.filter(
+                        vin=vin, submission__organization=org
+                    ).exists():
                         validation_problems.append({
                             'row': row + 1,
-                            'message': 'VIN {} has previously been recorded (but will be entered anyway)'.format(vin)
+                            'message': 'VIN {} has previously been recorded '
+                                       '(but will be entered anyway)'.format(
+                                           vin
+                                       )
                         })
 
                     vehicle = Vehicle.objects.get(id=input_sheet['vehicle_id'])
-                    # if vehicle is None or vehicle.make not in permitted_makes:
-                    #     validation_problems.append({'row': None, 'message': 'Vehicle not found or has incorrect make'})
-                    #     logger.critical('Vehicle not found or has incorrect make')
+                    # if vehicle is None or vehicle.make not in
+                    # permitted_makes:
+                    #     validation_problems.append({
+                    #       'row': None,
+                    #       'message': 'Vehicle not found or has incorrect '
+                    #                  'make'
+                    #     })
+                    #     logger.critical(
+                    #       'Vehicle not found or has incorrect make'
+                    #     )
                     #     return
 
                     if parsed_date:
@@ -241,7 +304,8 @@ def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=Fals
                         ros.save()
                         entries.append(
                             {'vin': vin,
-                             'vin_validation_status': ros.vin_validation_status.value,
+                             'vin_validation_status':
+                                ros.vin_validation_status.value,
                              'sale_date': parsed_date,
                              'id': ros.id,
                              'credits': '??',
@@ -250,7 +314,8 @@ def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=Fals
                              'make': ros.vehicle.make,
                              'class': ros.vehicle.vehicle_class_code.vehicle_class_code,
                              'range': ros.vehicle.range,
-                             'type': ros.vehicle.vehicle_zev_type.vehicle_zev_code,
+                             'type':
+                                ros.vehicle.vehicle_zev_type.vehicle_zev_code,
                              }
                         )
                         logger.info('Recorded sale {}'.format(vin))
@@ -258,7 +323,11 @@ def ingest_sales_spreadsheet(data, requesting_user=None, skip_authorization=Fals
             row += 1
 
     if len(validation_problems) > 0:
-        logger.info('Noncritical validation errors encountered: {}'.format(validation_problems))
+        logger.info(
+            'Noncritical validation errors encountered: {}'.format(
+                validation_problems
+            )
+        )
 
     logger.info('Done processing spreadsheet')
 

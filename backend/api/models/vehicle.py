@@ -30,7 +30,7 @@ class Vehicle(Auditable):
     )
     model_name = models.CharField(
         blank=False,
-        db_comment="Model of vehicle",
+        db_comment="Model information of the vehicle",
         max_length=250,
         null=False
     )
@@ -50,20 +50,24 @@ class Vehicle(Auditable):
                         statuses=[c.name for c in VehicleDefinitionStatuses]
                    )
     )
+    organization = models.ForeignKey(
+        'Organization',
+        related_name=None,
+        on_delete=models.PROTECT,
+        null=False
+    )
     weight_kg = models.DecimalField(
         blank=False,
         db_comment="Weight of vehicle",
         max_digits=6,
         decimal_places=0
     )
-
     credit_class = models.ForeignKey(
         'CreditClass',
         related_name='+',
         on_delete=models.PROTECT,
         null=True
     )
-
     credit_value = models.DecimalField(
         null=True,
         decimal_places=2,

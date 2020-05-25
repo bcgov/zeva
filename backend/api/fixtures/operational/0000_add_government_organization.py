@@ -13,7 +13,9 @@ class AddGovernmentOrganization(OperationalDataScript):
     comment = 'Adds Government Organization'
 
     def check_run_preconditions(self):
-        return not Organization.objects.filter(name="Government of British Columbia").exists()
+        return not Organization.objects.filter(
+            name="Government of British Columbia"
+        ).exists()
 
     @transaction.atomic
     def run(self):

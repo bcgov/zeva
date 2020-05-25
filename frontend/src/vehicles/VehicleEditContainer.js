@@ -15,7 +15,6 @@ const VehicleEditContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
-  const [classes, setClasses] = useState([]);
   const { keycloak } = props;
   const { id } = useParams();
   const [edits, setEdits] = useState({});

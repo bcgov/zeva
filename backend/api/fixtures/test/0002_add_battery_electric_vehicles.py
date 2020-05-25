@@ -2,6 +2,7 @@ from django.db import transaction
 
 from api.management.data_script import OperationalDataScript
 from api.models.model_year import ModelYear
+from api.models.organization import Organization
 from api.models.vehicle import Vehicle
 from api.models.vehicle_zev_type import ZevType
 
@@ -14,180 +15,216 @@ class AddBatteryElectricVehicles(OperationalDataScript):
     comment = 'Adds the Battery electric vehicles'
 
     list_of_vehicles = [{
+        "class_code": "UL",
         "make": "Audi",
         "model": "e-tron 55 QUATTRO",
-        "range": "329",
-        "class_code": "UL"
+        "organization": "Volkswagen Group Canada Inc.",
+        "range": "329"
     }, {
+        "class_code": "S",
         "make": "BMW",
         "model": "i3 (120 Ah)",
-        "range": "246",
-        "class_code": "S"
+        "organization": "BMW Canada Inc.",
+        "range": "246"
     }, {
+        "class_code": "S",
         "make": "BMW",
         "model": "i3s (120 Ah)",
-        "range": "246",
-        "class_code": "S"
+        "organization": "BMW Canada Inc.",
+        "range": "246"
     }, {
+        "class_code": "WS",
         "make": "Chevrolet",
         "model": "BOLT EV",
-        "range": "383",
-        "class_code": "WS"
+        "organization": "FCA Canada Inc.",
+        "range": "383"
     }, {
+        "class_code": "M",
         "make": "Hyundai",
         "model": "IONIQ ELECTRIC",
-        "range": "200",
-        "class_code": "M"
+        "organization": "Hyundai Auto Canada Corp.",
+        "range": "200"
     }, {
+        "class_code": "US",
         "make": "Hyundai",
         "model": "KONA ELECTRIC",
-        "range": "415",
-        "class_code": "US"
+        "organization": "Hyundai Auto Canada Corp.",
+        "range": "415"
     }, {
+        "class_code": "WS",
         "make": "Kia",
         "model": "NIRO EV",
-        "range": "385",
-        "class_code": "WS"
+        "organization": "Kia Canada Inc.",
+        "range": "385"
     }, {
+        "class_code": "WS",
         "make": "Kia",
         "model": "SOUL EV",
-        "range": "179",
-        "class_code": "WS"
+        "organization": "Kia Canada Inc.",
+        "range": "179"
     }, {
+        "class_code": "M",
         "make": "Nissan",
         "model": "LEAF (40 kWh)",
-        "range": "243",
-        "class_code": "M"
+        "organization": "Nissan Canada Inc.",
+        "range": "243"
     }, {
+        "class_code": "M",
         "make": "Nissan",
         "model": "LEAF S PLUS",
-        "range": "363",
-        "class_code": "M"
+        "organization": "Nissan Canada Inc.",
+        "range": "363"
     }, {
+        "class_code": "M",
         "make": "Nissan",
         "model": "LEAF SV/SL PLUS",
-        "range": "349",
-        "class_code": "M"
+        "organization": "Nissan Canada Inc.",
+        "range": "349"
     }, {
+        "class_code": "T",
         "make": "Smart EQ",
         "model": "FORTWO CABRIOLET",
+        "organization": "Mercedes-Benz Canada Inc.",
         "range": "92",
-        "class_code": "T"
     }, {
+        "class_code": "T",
         "make": "Smart EQ",
         "model": "FORTWO COUPE",
-        "range": "93",
-        "class_code": "T"
+        "organization": "Mercedes-Benz Canada Inc.",
+        "range": "93"
     }, {
+        "class_code": "M",
         "make": "Tesla",
         "model": "MODEL 3 Standard Range",
-        "range": "151",
-        "class_code": "M"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "151"
     }, {
+        "class_code": "M",
         "make": "Tesla",
         "model": "MODEL 3 Standard Range Plus",
-        "range": "386",
-        "class_code": "M"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "386"
     }, {
+        "class_code": "M",
         "make": "Tesla",
         "model": "MODEL 3 Mid Range",
-        "range": "425",
-        "class_code": "M"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "425"
     }, {
+        "class_code": "M",
         "make": "Tesla",
         "model": "MODEL 3 Long Range",
-        "range": "499",
-        "class_code": "M"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "499"
     }, {
+        "class_code": "M",
         "make": "Tesla",
         "model": "MODEL 3 Long Range AWD",
-        "range": "499",
-        "class_code": "M"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "499"
     }, {
+        "class_code": "M",
         "make": "Tesla",
         "model": "MODEL 3 Long Range AWD Performance",
-        "range": "499",
-        "class_code": "M"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "499"
     }, {
+        "class_code": "L",
         "make": "Tesla",
         "model": "MODEL S 75D",
-        "range": "417",
-        "class_code": "L"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "417"
     }, {
+        "class_code": "L",
         "make": "Tesla",
         "model": "MODEL S 100D",
-        "range": "539",
-        "class_code": "L"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "539"
     }, {
+        "class_code": "L",
         "make": "Tesla",
         "model": "MODEL S P100D",
-        "range": "507",
-        "class_code": "L"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "507"
     }, {
+        "class_code": "L",
         "make": "Tesla",
         "model": "MODEL S Standard Range",
-        "range": "459",
-        "class_code": "L"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "459"
     }, {
+        "class_code": "L",
         "make": "Tesla",
         "model": "MODEL S Long Range",
-        "range": "595",
-        "class_code": "L"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "595"
     }, {
+        "class_code": "L",
         "make": "Tesla",
         "model": 'MODEL S Performance (19" Wheels)',
-        "range": "555",
-        "class_code": "L"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "555"
     }, {
+        "class_code": "L",
         "make": "Tesla",
         "model": 'MODEL S Performance (21" Wheels)',
-        "range": "523",
-        "class_code": "L"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "523"
     }, {
+        "class_code": "UL",
         "make": "Tesla",
         "model": "MODEL X 75D",
-        "range": "383",
-        "class_code": "UL"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "383"
     }, {
+        "class_code": "UL",
         "make": "Tesla",
         "model": "MODEL X 100D",
-        "range": "475",
-        "class_code": "UL"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "475"
     }, {
+        "class_code": "UL",
         "make": "Tesla",
         "model": "MODEL X P100D",
-        "range": "465",
-        "class_code": "UL"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "465"
     }, {
+        "class_code": "UL",
         "make": "Tesla",
         "model": "MODEL X Standard Range",
-        "range": "410",
-        "class_code": "UL"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "410"
     }, {
+        "class_code": "UL",
         "make": "Tesla",
         "model": "MODEL X Long Range",
-        "range": "523",
-        "class_code": "UL"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "523"
     }, {
+        "class_code": "UL",
         "make": "Tesla",
         "model": 'MODEL X Performance (20" Wheels)',
-        "range": "491",
-        "class_code": "UL"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "491"
     }, {
+        "class_code": "UL",
         "make": "Tesla",
         "model": 'MODEL X Performance (22" Wheels)',
-        "range": "435",
-        "class_code": "UL"
+        "organization": "Tesla Motors Canada ULC",
+        "range": "435"
     }, {
+        "class_code": "C",
         "make": "Volkswagen",
         "model": "e-GOLF",
-        "range": "201",
-        "class_code": "C"
+        "organization": "Volkswagen Group Canada Inc.",
+        "range": "201"
     }]
 
     def check_run_preconditions(self):
         for veh in self.list_of_vehicles:
-            if Vehicle.objects.filter(model_year__name='2019', model_name=veh['model']).exists():
+            if Vehicle.objects.filter(
+                model_year__name='2019', model_name=veh['model']
+            ).exists():
                 return False
 
         return True
@@ -204,6 +241,9 @@ class AddBatteryElectricVehicles(OperationalDataScript):
                 make=vehicle.get("make"),
                 model_name=vehicle.get("model"),
                 model_year=model_year,
+                organization=Organization.objects.get(
+                    name=vehicle.get("organization"),
+                ),
                 range=vehicle.get("range"),
                 validation_status="VALIDATED",
                 vehicle_zev_type=vehicle_zev_type

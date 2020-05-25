@@ -1,8 +1,10 @@
+from django.utils.decorators import method_decorator
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from api.decorators.permission import permission_required
 from api.models.organization import Organization
 from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
@@ -64,19 +66,23 @@ class OrganizationViewSet(
         return Response(serializer.data)
 
     @action(detail=True)
+    @method_decorator(permission_required('VIEW_USERS'))
     def users(self, request, pk=None):
         """
         Get the organization with its users
         """
-        if not request.user.is_government:
-            return Response(None)
-
         organization = self.get_object()
+        if not request.user.is_government:
+            organization = Organization.objects.get(
+                id=request.user.organization.id
+            )
+
         serializer = self.get_serializer(organization)
 
         return Response(serializer.data)
 
     @action(detail=True)
+    @method_decorator(permission_required('VIEW_SALES'))
     def sales(self, request, pk=None):
         """
         Get the sales submissions of a specific organization
