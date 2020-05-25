@@ -13,6 +13,7 @@ const VehicleForm = (props) => {
     vehicleTypes,
     handleInputChange,
     handleSubmit,
+    vehicleClasses,
     fields,
     formTitle,
   } = props;
@@ -58,17 +59,34 @@ const VehicleForm = (props) => {
               />
               <VehicleFormDropdown
                 accessor={(zevType) => zevType.vehicleZevCode}
-                dropdownName="Type"
+                dropdownName="ZEV Type"
                 dropdownData={vehicleTypes}
                 fieldName="vehicleZevType"
                 handleInputChange={handleInputChange}
                 selectedOption={fields.vehicleZevType.vehicleZevCode}
               />
               <TextInput
-                label="Range (km)"
+                label="Electric Range (km)"
                 id="range"
                 name="range"
                 defaultValue={fields.range}
+                handleInputChange={handleInputChange}
+                mandatory
+              />
+              <VehicleFormDropdown
+                accessor={(classCode) => classCode.vehicleClassCode}
+                dropdownName="Vehicle Class"
+                dropdownData={vehicleClasses}
+                fieldName="vehicleClassCode"
+                handleInputChange={handleInputChange}
+                selectedOption={fields.vehicleClassCode.vehicleClassCode}
+              />
+              <TextInput
+                num
+                label="GVWR (kg)"
+                id="weightKg"
+                name="weightKg"
+                defaultValue={fields.weightKg}
                 handleInputChange={handleInputChange}
                 mandatory
               />
@@ -126,7 +144,7 @@ VehicleForm.propTypes = {
   loading: PropTypes.bool.isRequired,
   vehicleTypes: PropTypes.arrayOf(PropTypes.object).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.object).isRequired,
-
+  vehicleClasses: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default VehicleForm;

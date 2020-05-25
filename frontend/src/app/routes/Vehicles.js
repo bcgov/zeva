@@ -8,6 +8,7 @@ const VEHICLES = {
   LIST: `${API_BASE_PATH}`,
   MODELS: `${API_BASE_PATH}/models`,
   YEARS: `${API_BASE_PATH}/years`,
+  CLASSES: `${API_BASE_PATH}/classes`,
 };
 
 export default VEHICLES;

@@ -312,8 +312,7 @@ def ingest_sales_spreadsheet(
                              'model': ros.vehicle.model_name,
                              'model_year': ros.vehicle.model_year.name,
                              'make': ros.vehicle.make,
-                             #  'class':
-                             #  ros.vehicle.vehicle_class_code.vehicle_class_code,
+                             'class': ros.vehicle.vehicle_class_code.vehicle_class_code,
                              'range': ros.vehicle.range,
                              'type':
                                 ros.vehicle.vehicle_zev_type.vehicle_zev_code,

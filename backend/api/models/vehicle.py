@@ -20,6 +20,11 @@ class Vehicle(Auditable):
         related_name=None,
         on_delete=models.PROTECT
     )
+    vehicle_class_code = models.ForeignKey(
+        'VehicleClass',
+        related_name=None,
+        on_delete=models.PROTECT
+    )
     range = models.IntegerField(
         db_comment='Vehicle Range in km'
     )
@@ -50,6 +55,12 @@ class Vehicle(Auditable):
         related_name=None,
         on_delete=models.PROTECT,
         null=False
+    )
+    weight_kg = models.DecimalField(
+        blank=False,
+        db_comment="Weight of vehicle",
+        max_digits=6,
+        decimal_places=0
     )
     credit_class = models.ForeignKey(
         'CreditClass',
