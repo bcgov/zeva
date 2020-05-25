@@ -42,10 +42,12 @@ const VehicleEditContainer = (props) => {
       axios.get(ROUTES_VEHICLES.YEARS),
       axios.get(ROUTES_VEHICLES.ZEV_TYPES),
       axios.get(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id)),
-    ]).then(axios.spread((yearsRes, typesRes, vehicleRes) => (
+      axios.get(ROUTES_VEHICLES.CLASSES),
+    ]).then(axios.spread((yearsRes, typesRes, vehicleRes, classesRes) => (
       [setYears(yearsRes.data),
         setTypes(typesRes.data),
         setFields(vehicleRes.data),
+        setClasses(classesRes.data),
         setLoading(false)]
     )));
   };
@@ -62,6 +64,7 @@ const VehicleEditContainer = (props) => {
       vehicleYears={years}
       vehicleTypes={types}
       fields={fields}
+      vehicleClasses={classes}
       formTitle="Edit ZEV"
     />
   );

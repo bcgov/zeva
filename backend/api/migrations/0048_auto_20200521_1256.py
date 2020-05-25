@@ -76,7 +76,7 @@ def convert_user_to_id(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0044_auto_20200521_1206'),
+        ('api', '0047_auto_20200521_1206'),
     ]
 
     operations = [

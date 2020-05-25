@@ -14,6 +14,9 @@ class VehicleChangeHistory(Commentable):
         null=True,
         db_comment='When the change was made'
     )
+    vehicle_class_code_id = models.IntegerField(	
+        db_comment="ID referencing the vehicle_class_code table"	
+    )
     create_user = models.CharField(
         default="SYSTEM",
         max_length=130,
@@ -32,9 +35,15 @@ class VehicleChangeHistory(Commentable):
         max_length=250,
         null=True
     )
+    weight_kg = models.DecimalField(
+        blank=False,
+        db_comment="Weight of vehicle",
+        max_digits=6,
+        decimal_places=0
+    )
     model_name = models.CharField(
         blank=True,
-        db_comment="Model and trim of vehicle",
+        db_comment="Model of vehicle",
         max_length=250,
         null=True
     )

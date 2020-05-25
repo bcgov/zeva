@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0041_permission_role_rolepermission_userrole'),
+        ('api', '0044_auto_20200521_0844'),
     ]
 
     operations = [
