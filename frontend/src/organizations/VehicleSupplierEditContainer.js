@@ -12,26 +12,24 @@ import CustomPropTypes from '../app/utilities/props';
 import VehicleSupplierEditForm from './components/VehicleSupplierEditForm';
 import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs';
 import History from '../app/History';
+import parseErrorResponse from '../app/utilities/parseErrorResponse';
 
 const VehicleSupplierEditContainer = (props) => {
   const { id } = useParams();
   const [details, setDetails] = useState({});
-  const [loading, setLoading] = useState(true);
   const [display, setDisplay] = useState({});
+  const [errorFields, setErrorFields] = useState({});
+  const [loading, setLoading] = useState(true);
   const { keycloak, newSupplier } = props;
-
 
   const refreshDetails = () => {
     if (newSupplier) {
       setLoading(false);
       setDetails({
-        organizationAddress: {
-          addressLine_1: '',
-          addressLine_2: '',
-          addressLine_3: '',
-        },
+        organizationAddress: {},
       });
     }
+
     if (!newSupplier) {
       setLoading(true);
 
@@ -83,11 +81,31 @@ const VehicleSupplierEditContainer = (props) => {
       axios.post(ROUTES_ORGANIZATIONS.LIST, details).then((response) => {
         refreshDetails();
         History.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, response.data.id));
+      }).catch((errors) => {
+        if (!errors.response) {
+          return;
+        }
+
+        const { data } = errors.response;
+        const err = {};
+
+        parseErrorResponse(err, data);
+        setErrorFields(err);
       });
     } else {
       axios.patch(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id), details).then(() => {
         refreshDetails();
         History.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));
+      }).catch((errors) => {
+        if (!errors.response) {
+          return;
+        }
+
+        const { data } = errors.response;
+        const err = {};
+
+        parseErrorResponse(err, data);
+        setErrorFields(err);
       });
     }
   };
@@ -101,14 +119,15 @@ const VehicleSupplierEditContainer = (props) => {
       </div>
       <VehicleSupplierTabs supplierId={details.id} active="supplier-info" />
       <VehicleSupplierEditForm
-        display={display}
-        newSupplier={newSupplier}
-        setDetails={setDetails}
         details={details}
+        display={display}
+        errorFields={errorFields}
         handleAddressChange={handleAddressChange}
         handleInputChange={handleInputChange}
-        loading={loading}
         handleSubmit={handleSubmit}
+        loading={loading}
+        newSupplier={newSupplier}
+        setDetails={setDetails}
       />
     </div>
   );

@@ -14,10 +14,11 @@ import CustomPropTypes from '../app/utilities/props';
 import UserDetailsForm from './components/UserDetailsForm';
 
 const UserEditContainer = (props) => {
-  const [loading, setLoading] = useState(true);
-  const [roles, setRoles] = useState([]);
   const { id } = useParams();
   const [details, setDetails] = useState({});
+  const [errorFields, setErrorFields] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [roles, setRoles] = useState([]);
   const [userRoles, setUserRoles] = useState([]);
 
   const { keycloak, user } = props;
@@ -34,6 +35,7 @@ const UserEditContainer = (props) => {
         setUserRoles(newRoles);
       }
     }
+
     setDetails({
       ...details,
       [name]: value,
@@ -48,6 +50,20 @@ const UserEditContainer = (props) => {
       const { organization } = response.data;
 
       history.push(ROUTES_ORGANIZATIONS.USERS.replace(/:id/gi, organization.id));
+    }).catch((errors) => {
+      if (!errors.response) {
+        return;
+      }
+
+      const { data } = errors.response;
+
+      const err = {};
+
+      Object.entries(data).forEach(([key, value]) => {
+        [err[key]] = value;
+      });
+
+      setErrorFields(err);
     });
   };
 
@@ -74,12 +90,13 @@ const UserEditContainer = (props) => {
   return (
     <div>
       <UserDetailsForm
-        loading={loading}
         details={details}
-        user={user}
+        errorFields={errorFields}
         handleInputChange={handleInputChange}
         handleSubmit={handleSubmit}
+        loading={loading}
         roles={roles}
+        user={user}
       />
     </div>
   );
