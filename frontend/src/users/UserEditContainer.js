@@ -10,6 +10,7 @@ import history from '../app/History';
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import ROUTES_ROLES from '../app/routes/Roles';
 import ROUTES_USERS from '../app/routes/Users';
+import parseErrorResponse from '../app/utilities/parseErrorResponse';
 import CustomPropTypes from '../app/utilities/props';
 import UserDetailsForm from './components/UserDetailsForm';
 
@@ -56,13 +57,9 @@ const UserEditContainer = (props) => {
       }
 
       const { data } = errors.response;
-
       const err = {};
 
-      Object.entries(data).forEach(([key, value]) => {
-        [err[key]] = value;
-      });
-
+      parseErrorResponse(err, data);
       setErrorFields(err);
     });
   };

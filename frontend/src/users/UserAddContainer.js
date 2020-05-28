@@ -64,7 +64,7 @@ const UserAddContainer = (props) => {
     });
   };
 
-  const refreshDetails = () => {
+  useEffect(() => {
     setLoading(true);
 
     const rolesPromise = axios.get(ROUTES_ROLES.LIST).then((response) => {
@@ -81,10 +81,6 @@ const UserAddContainer = (props) => {
     Promise.all([detailsPromise, rolesPromise]).then(() => {
       setLoading(false);
     });
-  };
-
-  useEffect(() => {
-    refreshDetails();
   }, [keycloak.authenticated]);
 
   return (
