@@ -65,6 +65,8 @@ class Router extends Component {
 
           axios.defaults.headers.common.Authorization = `Bearer ${newToken}`;
         }
+      }).catch(() => {
+        props.logout();
       });
     };
   }
@@ -263,6 +265,7 @@ class Router extends Component {
 
 Router.propTypes = {
   keycloak: PropTypes.shape().isRequired,
+  logout: PropTypes.func.isRequired,
 };
 
 export default Router;

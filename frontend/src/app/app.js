@@ -16,6 +16,8 @@ class App extends Component {
       authenticated: false,
       keycloak: null,
     };
+
+    this.logout = this.logout.bind(this);
   }
 
   componentDidMount() {
@@ -38,6 +40,18 @@ class App extends Component {
     });
   }
 
+  logout() {
+    this.setState({
+      authenticated: false,
+    });
+
+    const { keycloak } = this.state;
+
+    keycloak.logout({
+      redirectUri: CONFIG.KEYCLOAK.LOGOUT_URL,
+    });
+  }
+
   render() {
     const { authenticated, keycloak } = this.state;
 
@@ -50,7 +64,7 @@ class App extends Component {
     }
 
     return (
-      <Router keycloak={keycloak} />
+      <Router keycloak={keycloak} logout={this.logout} />
     );
   }
 }
