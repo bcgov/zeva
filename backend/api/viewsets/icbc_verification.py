@@ -14,8 +14,8 @@ class IcbcVerificationViewSet(viewsets.ViewSet):
     def upload(self, request):
         user = request.user
         try:
-            data = request.FILES['files'].read()
-            result = ingest_icbc_spreadsheet(data, user)
+            data = request.FILES['files']
+            result = ingest_icbc_spreadsheet(data.temporary_file_path(), user)
         except:
             return HttpResponse(status=400, content=error)
 
