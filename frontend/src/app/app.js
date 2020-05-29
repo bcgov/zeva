@@ -16,8 +16,6 @@ class App extends Component {
       authenticated: false,
       keycloak: null,
     };
-
-    this.logout = this.logout.bind(this);
   }
 
   componentDidMount() {
@@ -31,18 +29,12 @@ class App extends Component {
       onLoad: 'check-sso',
       checkLoginIframe: false,
       promiseType: 'native',
-      flow: 'implicit',
+      flow: 'hybrid',
     }).then((authenticated) => {
       this.setState({
         keycloak,
         authenticated,
       });
-    });
-  }
-
-  logout() {
-    this.setState({
-      authenticated: false,
     });
   }
 
@@ -58,7 +50,7 @@ class App extends Component {
     }
 
     return (
-      <Router keycloak={keycloak} logout={this.logout} />
+      <Router keycloak={keycloak} />
     );
   }
 }
