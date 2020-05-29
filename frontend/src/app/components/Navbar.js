@@ -57,7 +57,7 @@ class Navbar extends Component {
           <div className="col-lg-3">
             <div className="logged-in-info">
               <div>
-                <h5 className="organization-name">{user.organization.name}</h5>
+                <h5 className="organization-name">{user.organization ? user.organization.name : ''}</h5>
                 {!user.isGovernment && (
                   <span className="credit-balance">Credit Balance: 0-A/ 0-B</span>
                 )}
@@ -174,7 +174,8 @@ class Navbar extends Component {
               </li>
               )}
 
-              {user.hasPermission('VIEW_ZEV')
+              {typeof user.hasPermission === 'function'
+              && user.hasPermission('VIEW_ZEV')
               && (
                 <li className="nav-item">
                   <NavLink
@@ -186,7 +187,8 @@ class Navbar extends Component {
                 </li>
               )}
 
-              {user.hasPermission('VIEW_ORGANIZATIONS')
+              {typeof user.hasPermission === 'function'
+              && user.hasPermission('VIEW_ORGANIZATIONS')
               && user.isGovernment
               && (
                 <li className="nav-item">
@@ -199,7 +201,8 @@ class Navbar extends Component {
                 </li>
               )}
 
-              {user.hasPermission('VIEW_ORGANIZATION_INFORMATION')
+              {typeof user.hasPermission === 'function'
+              && user.hasPermission('VIEW_ORGANIZATION_INFORMATION')
               && !user.isGovernment
               && (
                 <li className="nav-item">
@@ -213,6 +216,7 @@ class Navbar extends Component {
               )}
 
               {CONFIG.FEATURES.ROLES.ENABLED
+              && typeof user.hasPermission === 'function'
               && user.hasPermission('VIEW_ROLES_AND_PERMISSIONS')
               && (
                 <li className="nav-item">

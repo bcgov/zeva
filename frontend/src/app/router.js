@@ -47,8 +47,8 @@ class Router extends Component {
     super(props);
 
     this.state = {
-      getUserError: false,
       loading: true,
+      statusCode: null,
       user: {},
     };
 
@@ -57,6 +57,19 @@ class Router extends Component {
 
     axios.defaults.baseURL = CONFIG.APIBASE;
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    axios.interceptors.response.use(
+      (response) => (response),
+      (error) => {
+        if (error.response.status > 400) {
+          this.setState({
+            loading: false,
+            statusCode: error.response.status,
+          });
+        }
+
+        return error;
+      },
+    );
 
     keycloak.onTokenExpired = () => {
       keycloak.updateToken(5).then((refreshed) => {
@@ -78,23 +91,18 @@ class Router extends Component {
         user: {
           ...response.data,
           hasPermission: (permissionCode) => {
-            const { permissions } = response.data;
+            if (response.data) {
+              const { permissions } = response.data;
 
-            if (permissions) {
-              return permissions.findIndex((permission) => (
-                permission.permissionCode === permissionCode
-              )) >= 0;
+              if (permissions) {
+                return permissions.findIndex((permission) => (
+                  permission.permissionCode === permissionCode
+                )) >= 0;
+              }
             }
 
             return false;
           },
-        },
-      });
-    }).catch((error) => {
-      this.setState({
-        loading: false,
-        getUserError: {
-          statusCode: error.response.status,
         },
       });
     });
@@ -102,20 +110,16 @@ class Router extends Component {
 
   render() {
     const { keycloak } = this.props;
-    const { getUserError, loading, user } = this.state;
+    const { loading, statusCode, user } = this.state;
 
     if (loading) {
       return <Loading />;
     }
 
-    if (getUserError) {
-      return <StatusInterceptor statusCode={getUserError.statusCode} />;
-    }
-
     return (
       <BrowserRouter history={History}>
         <PageLayout keycloak={keycloak} user={user}>
-          <ErrorHandler>
+          <ErrorHandler statusCode={statusCode}>
             <Switch>
               <Route
                 exact
