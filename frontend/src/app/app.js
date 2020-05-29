@@ -31,7 +31,7 @@ class App extends Component {
       onLoad: 'check-sso',
       checkLoginIframe: false,
       promiseType: 'native',
-      flow: 'implicit',
+      flow: 'hybrid',
     }).then((authenticated) => {
       this.setState({
         keycloak,
@@ -43,6 +43,12 @@ class App extends Component {
   logout() {
     this.setState({
       authenticated: false,
+    });
+
+    const { keycloak } = this.state;
+
+    keycloak.logout({
+      redirectUri: CONFIG.KEYCLOAK.LOGOUT_URL,
     });
   }
 
