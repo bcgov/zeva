@@ -7,6 +7,7 @@ import django.contrib.auth.validators
 from auditable.models import Auditable
 
 from api.managers.user_profile import UserProfileManager
+from api.models.permission import Permission
 from api.models.role import Role
 
 
@@ -89,6 +90,15 @@ class UserProfile(Auditable):
         (User is a BCEID user if false)
         """
         return self.organization.is_government
+
+    @property
+    def permissions(self):
+        """
+        Permissions that the user has based on the roles applied
+        """
+        return Permission.objects.distinct().filter(
+            Q(role_permissions__role__in=self.roles)
+        ).order_by('id')
 
     @property
     def roles(self):

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-
+import PropTypes from 'prop-types';
 
 const TextInput = (props) => {
-  const [validationErrors, setValidationErrors] = useState('');
-  const [rowClass, setRowClass] = useState('form-group row');
   const {
     defaultValue,
+    errorMessage,
     handleInputChange,
     label,
     name,
@@ -21,6 +20,10 @@ const TextInput = (props) => {
   } else {
     type = 'number';
   }
+
+  const [validationErrors, setValidationErrors] = useState('');
+  const [rowClass, setRowClass] = useState('form-group row');
+
   const handleOnBlur = (event) => {
     const { value } = event.target;
     if (value === '' && mandatory === true) {
@@ -32,7 +35,6 @@ const TextInput = (props) => {
       setRowClass('form-group row');
     }
   };
-
 
   return (
     <div className={rowClass}>
@@ -53,9 +55,36 @@ const TextInput = (props) => {
           onChange={handleInputChange}
           onBlur={handleOnBlur}
         />
-        <small className="form-text text-danger">{ validationErrors }</small>
+        <small className="form-text text-danger">{errorMessage || validationErrors}</small>
       </div>
     </div>
   );
 };
+
+TextInput.defaultProps = {
+  defaultValue: '',
+  details: '',
+  errorMessage: '',
+  mandatory: false,
+  num: false,
+};
+
+TextInput.propTypes = {
+  defaultValue: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]),
+  details: PropTypes.string,
+  errorMessage: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.string,
+  ]),
+  handleInputChange: PropTypes.func.isRequired,
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  mandatory: PropTypes.bool,
+  name: PropTypes.string.isRequired,
+  num: PropTypes.bool,
+};
+
 export default TextInput;

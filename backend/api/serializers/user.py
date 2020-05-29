@@ -7,6 +7,7 @@ from api.models.role import Role
 from api.models.user_profile import UserProfile
 from api.models.user_role import UserRole
 from .organization import OrganizationSerializer
+from .permission import PermissionSerializer
 from .role import RoleSerializer
 from ..services.keycloak_api import get_token, \
     list_groups_for_username, update_user_groups
@@ -37,6 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
     Serializer for the full details of the User
     """
     organization = OrganizationSerializer(read_only=True)
+    permissions = PermissionSerializer(read_only=True, many=True)
     roles = RoleSerializer(read_only=True, many=True)
 
     class Meta:
@@ -44,7 +46,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'first_name', 'last_name', 'email', 'username',
             'display_name', 'is_active', 'organization', 'phone',
-            'is_government', 'keycloak_email', 'roles', 'title'
+            'is_government', 'keycloak_email', 'roles', 'title',
+            'permissions',
         )
 
 
@@ -83,6 +86,14 @@ class UserSaveSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         roles = validated_data.pop('roles')
 
+        for data in validated_data:
+            setattr(instance, data, validated_data[data])
+        instance.display_name = '{first_name} {last_name}'.format(
+            first_name=validated_data.get('first_name'),
+            last_name=validated_data.get('last_name')
+        )
+        instance.save()
+
         UserRole.objects.filter(
             user_profile=instance
         ).exclude(
@@ -109,3 +120,23 @@ class UserSaveSerializer(serializers.ModelSerializer):
             'organization', 'organization_id', 'display_name', 'is_active',
             'phone', 'keycloak_email', 'roles', 'create_user', 'update_user',
         )
+        extra_kwargs = {
+            'email': {
+                'allow_null': False, 'allow_blank': False, 'required': True
+            },
+            'first_name': {
+                'allow_null': False, 'allow_blank': False, 'required': True
+            },
+            'keycloak_email': {
+                'allow_null': False, 'allow_blank': False, 'required': True
+            },
+            'last_name': {
+                'allow_null': False, 'allow_blank': False, 'required': True
+            },
+            'phone': {
+                'allow_null': False, 'allow_blank': False, 'required': True
+            },
+            'title': {
+                'allow_null': False, 'allow_blank': False, 'required': True
+            },
+        }

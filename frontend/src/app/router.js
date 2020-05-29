@@ -86,6 +86,17 @@ class Router extends Component {
         loading: false,
         user: {
           ...response.data,
+          hasPermission: (permissionCode) => {
+            const { permissions } = response.data;
+
+            if (permissions) {
+              return permissions.findIndex((permission) => (
+                permission.permissionCode === permissionCode
+              )) >= 0;
+            }
+
+            return false;
+          },
         },
       });
     }).catch((error) => {

@@ -55,7 +55,11 @@ class OrganizationWithMembersSerializer(OrganizationSerializer):
         )
 
 
-class OrganizationCreateSerializer(serializers.ModelSerializer):
+class OrganizationSaveSerializer(serializers.ModelSerializer):
+    """
+    Serializer for saving/editing the Supplier
+    Loads most of the fields and the balance for the Supplier
+    """
     organization_address = OrganizationAddressSerializer(allow_null=True)
 
     def create(self, validated_data):
@@ -69,21 +73,6 @@ class OrganizationCreateSerializer(serializers.ModelSerializer):
             **addr
         )
         return obj
-
-    class Meta:
-        model = Organization
-        fields = (
-            'id', 'name', 'organization_address', 'create_timestamp',
-            'balance', 'is_active', 'short_name', 'create_user',
-        )
-
-
-class OrganizationSaveSerializer(serializers.ModelSerializer):
-    """
-    Serializer for saving/editing the Supplier
-    Loads most of the fields and the balance for the Supplier
-    """
-    organization_address = OrganizationAddressSerializer(allow_null=True)
 
     def update(self, obj, validated_data):
         request = self.context.get('request')
@@ -117,5 +106,13 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
         model = Organization
         fields = (
             'id', 'name', 'organization_address', 'create_timestamp',
-            'balance', 'is_active', 'short_name', 'update_user',
+            'balance', 'is_active', 'short_name', 'create_user', 'update_user',
         )
+        extra_kwargs = {
+            'name': {
+                'allow_null': False, 'allow_blank': False, 'required': True
+            },
+            'short_name': {
+                'allow_null': False, 'allow_blank': False, 'required': True
+            },
+        }

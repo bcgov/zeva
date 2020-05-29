@@ -11,7 +11,7 @@ from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.serializers.sales_submission import SalesSubmissionListSerializer
 from api.serializers.organization import \
     OrganizationSerializer, OrganizationWithMembersSerializer, \
-    OrganizationSaveSerializer, OrganizationCreateSerializer
+    OrganizationSaveSerializer
 from auditable.views import AuditableMixin
 
 
@@ -32,7 +32,7 @@ class OrganizationViewSet(
         'default': OrganizationSerializer,
         'mine': OrganizationWithMembersSerializer,
         'update': OrganizationSaveSerializer,
-        'create': OrganizationCreateSerializer,
+        'create': OrganizationSaveSerializer,
         'partial_update': OrganizationSaveSerializer,
         'sales': SalesSubmissionListSerializer,
         'users': OrganizationWithMembersSerializer,
