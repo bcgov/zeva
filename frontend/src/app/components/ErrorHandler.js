@@ -17,21 +17,28 @@ class ErrorHandler extends Component {
   }
 
   render() {
-    const { children } = this.props;
+    const { children, statusCode } = this.props;
     const { errorOccurred } = this.state;
 
     if (errorOccurred) {
       return <StatusInterceptor />;
     }
 
+    if (statusCode && statusCode > 400) {
+      return <StatusInterceptor statusCode={statusCode} />;
+    }
+
     return children;
   }
 }
 
-ErrorHandler.defaultProps = {};
+ErrorHandler.defaultProps = {
+  statusCode: null,
+};
 
 ErrorHandler.propTypes = {
   children: PropTypes.node.isRequired,
+  statusCode: PropTypes.number,
 };
 
 export default ErrorHandler;
