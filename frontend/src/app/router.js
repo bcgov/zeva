@@ -67,7 +67,7 @@ class Router extends Component {
           });
         }
 
-        return error;
+        throw error;
       },
     );
 
