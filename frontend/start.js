@@ -14,6 +14,10 @@ const devServerOptions = {
   historyApiFallback: {
     verbose: true,
     index: '/generated_index.html',
+    rewrites: [{
+      from: /\/api/,
+      to: '/api',
+    }],
   },
   port: 3000,
   compress: true,
