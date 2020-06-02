@@ -1,5 +1,5 @@
 {
-  "name": "zeva-grpc-frontend",
+  "name": "zeva-frontend",
   "version": "1.2.0",
   "private": true,
   "dependencies": {
