@@ -18,18 +18,14 @@ class MemberSerializer(serializers.ModelSerializer):
     Serializer for getting the details of the user WITHOUT getting the
     organization of the user so it doesn't do an infinite loop.
     """
-    groups = SerializerMethodField()
     roles = RoleSerializer(read_only=True, many=True)
-
-    def get_groups(self, object):
-        return list_groups_for_username(get_token(), object.username)
 
     class Meta:
         model = UserProfile
         fields = (
             'id', 'first_name', 'last_name', 'email',
-            'username', 'display_name', 'is_active', 'phone',
-            'groups', 'roles'
+            'display_name', 'is_active', 'phone',
+            'roles',
         )
 
 
