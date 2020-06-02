@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import CustomPropTypes from '../../app/utilities/props';
-import TextInput from '../../app/components/TextInput';
 import Loading from '../../app/components/Loading';
+import TextInput from '../../app/components/TextInput';
 import History from '../../app/History';
 
 const UserDetailsForm = (props) => {
   const {
     details,
+    errorFields,
     loading,
     user,
     handleInputChange,
@@ -48,61 +49,68 @@ const UserDetailsForm = (props) => {
             <div className="form-layout row">
               <span className="col-xs-8">
                 <TextInput
-                  label="First Name"
-                  id="firstName"
-                  name="firstName"
                   defaultValue={details.firstName}
+                  errorMessage={'firstName' in errorFields && errorFields.firstName}
                   handleInputChange={handleInputChange}
+                  id="firstName"
+                  label="First Name"
                   mandatory
+                  name="firstName"
                 />
                 <TextInput
-                  label="Last Name"
-                  id="lastName"
-                  name="lastName"
                   defaultValue={details.lastName}
+                  errorMessage={'lastName' in errorFields && errorFields.lastName}
                   handleInputChange={handleInputChange}
+                  id="lastName"
+                  label="Last Name"
                   mandatory
+                  name="lastName"
                 />
                 <TextInput
-                  label="Job Title"
-                  id="jobTitle"
-                  name="title"
                   defaultValue={details.title}
+                  errorMessage={'title' in errorFields && errorFields.title}
                   handleInputChange={handleInputChange}
+                  id="jobTitle"
+                  label="Job Title"
                   mandatory
+                  name="title"
                 />
                 <TextInput
-                  label="BCeID User Name"
-                  id="username"
-                  name="username"
                   defaultValue={details.username}
+                  errorMessage={'username' in errorFields && errorFields.username}
                   handleInputChange={handleInputChange}
+                  id="username"
+                  label="BCeID User Name"
                   mandatory
+                  name="username"
                 />
                 <TextInput
-                  details="the email associated with the BCeID account"
-                  label="BCeID Email"
-                  id="email"
-                  name="keycloakEmail"
                   defaultValue={details.keycloakEmail}
+                  details="the email associated with the BCeID account"
+                  errorMessage={'keycloakEmail' in errorFields && errorFields.keycloakEmail}
                   handleInputChange={handleInputChange}
+                  id="email"
+                  label="BCeID Email"
                   mandatory
+                  name="keycloakEmail"
                 />
                 <TextInput
-                  details="the email used to receive notifications, if different from above"
-                  label="Notifications Email"
-                  id="notificationsEmail"
-                  name="email"
                   defaultValue={details.email}
+                  details="the email used to receive notifications, if different from above"
+                  errorMessage={'email' in errorFields && errorFields.email}
                   handleInputChange={handleInputChange}
+                  id="notificationsEmail"
+                  label="Notifications Email"
+                  name="email"
                 />
                 <TextInput
-                  label="Phone"
-                  id="phone"
-                  name="phone"
                   defaultValue={details.phone}
+                  errorMessage={'phone' in errorFields && errorFields.phone}
                   handleInputChange={handleInputChange}
+                  id="phone"
+                  label="Phone"
                   mandatory
+                  name="phone"
                 />
               </span>
               <span className="col-xs-4">
@@ -165,10 +173,19 @@ const UserDetailsForm = (props) => {
     </div>
   );
 };
+
+UserDetailsForm.defaultProps = {
+  errorFields: {},
+};
+
 UserDetailsForm.propTypes = {
   details: PropTypes.shape({
     email: PropTypes.string,
     firstName: PropTypes.string,
+    isActive: PropTypes.oneOfType([
+      PropTypes.bool,
+      PropTypes.string,
+    ]),
     keycloakEmail: PropTypes.string,
     lastName: PropTypes.string,
     organization: PropTypes.shape({
@@ -179,6 +196,7 @@ UserDetailsForm.propTypes = {
     title: PropTypes.string,
     username: PropTypes.string,
   }).isRequired,
+  errorFields: PropTypes.shape(),
   handleInputChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,

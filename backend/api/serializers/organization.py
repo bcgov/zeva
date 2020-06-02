@@ -1,9 +1,9 @@
+from datetime import date
 from rest_framework import serializers
 
 from api.models.organization import Organization
 from api.serializers.organization_address import OrganizationAddressSerializer
 from api.models.organization_address import OrganizationAddress
-from datetime import date
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -55,27 +55,6 @@ class OrganizationWithMembersSerializer(OrganizationSerializer):
         )
 
 
-class OrganizationCreateSerializer(serializers.ModelSerializer):
-    organization_address = OrganizationAddressSerializer(allow_null=True)
-
-    def create(self, validated_data):
-        addr = validated_data.pop('organization_address')
-        obj = Organization.objects.create(**validated_data)
-        OrganizationAddress.objects.create(
-                effective_date=date.today(),
-                organization=obj,
-                **addr
-            )
-        return obj
-
-    class Meta:
-        model = Organization
-        fields = (
-            'id', 'name', 'organization_address', 'create_timestamp',
-            'balance', 'is_active', 'short_name'
-        )
-
-
 class OrganizationSaveSerializer(serializers.ModelSerializer):
     """
     Serializer for saving/editing the Supplier
@@ -83,16 +62,34 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
     """
     organization_address = OrganizationAddressSerializer(allow_null=True)
 
+    def create(self, validated_data):
+        addr = validated_data.pop('organization_address')
+        obj = Organization.objects.create(
+            **validated_data
+        )
+        OrganizationAddress.objects.create(
+            effective_date=date.today(),
+            organization=obj,
+            **addr
+        )
+        return obj
+
     def update(self, obj, validated_data):
+        request = self.context.get('request')
+
         addr = validated_data.pop('organization_address')
         short_name = validated_data.pop('short_name')
         is_active = validated_data.pop('is_active')
         name = validated_data.pop('name')
+
         obj.short_name = short_name
         obj.is_active = is_active
         obj.name = name
+        obj.update_user = request.user.username
         obj.save()
+
         organization_address = obj.organization_address
+
         if addr:
             if organization_address:
                 organization_address.expiration_date = date.today()
@@ -109,5 +106,13 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
         model = Organization
         fields = (
             'id', 'name', 'organization_address', 'create_timestamp',
-            'balance', 'is_active', 'short_name'
+            'balance', 'is_active', 'short_name', 'create_user', 'update_user',
         )
+        extra_kwargs = {
+            'name': {
+                'allow_null': False, 'allow_blank': False, 'required': True
+            },
+            'short_name': {
+                'allow_null': False, 'allow_blank': False, 'required': True
+            },
+        }

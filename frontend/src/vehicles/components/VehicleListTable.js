@@ -131,10 +131,12 @@ const VehicleListTable = (props) => {
   );
 };
 
-VehicleListTable.defaultProps = {};
+VehicleListTable.defaultProps = {
+  handleCheckboxClick: null,
+};
 
 VehicleListTable.propTypes = {
-  handleCheckboxClick: PropTypes.func.isRequired,
+  handleCheckboxClick: PropTypes.func,
   items: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.number,
   })).isRequired,

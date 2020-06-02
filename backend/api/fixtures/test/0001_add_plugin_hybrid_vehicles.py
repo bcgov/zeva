@@ -2,7 +2,9 @@ from django.db import transaction
 
 from api.management.data_script import OperationalDataScript
 from api.models.model_year import ModelYear
+from api.models.organization import Organization
 from api.models.vehicle import Vehicle
+from api.models.vehicle_class import VehicleClass
 from api.models.vehicle_zev_type import ZevType
 
 
@@ -14,154 +16,173 @@ class AddPluginHybridVehicles(OperationalDataScript):
     comment = 'Adds the Plug-in hybrid electric vehicles'
 
     list_of_vehicles = [{
+        "class_code": "C",
         "make": "BMW",
         "model": "530e",
-        "zev_type": "PHEV",
+        "organization": "BMW Canada Inc.",
         "range": "26",
-        "class_code": "C"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "C",
         "make": "BMW",
         "model": "530e xDRIVE",
-        "zev_type": "PHEV",
+        "organization": "BMW Canada Inc.",
         "range": "24",
-        "class_code": "C"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "S",
         "make": "BMW",
         "model": "i3 REx (120 Ah)",
-        "zev_type": "PHEV",
+        "organization": "BMW Canada Inc.",
         "range": "203",
-        "class_code": "S"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "S",
         "make": "BMW",
         "model": "i3s REx (120 Ah)",
-        "zev_type": "PHEV",
+        "organization": "BMW Canada Inc.",
         "range": "203",
-        "class_code": "S"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "S",
         "make": "BMW",
         "model": "i8 COUPE",
-        "zev_type": "PHEV",
+        "organization": "BMW Canada Inc.",
         "range": "29",
-        "class_code": "S"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "S",
         "make": "BMW",
         "model": "i8 ROADSTER",
-        "zev_type": "PHEV",
+        "organization": "BMW Canada Inc.",
         "range": "29",
-        "class_code": "S"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "C",
         "make": "Chevrolet",
         "model": "VOLT",
-        "zev_type": "PHEV",
+        "organization": "FCA Canada Inc.",
         "range": "85",
-        "class_code": "C"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "M",
         "make": "Ford",
         "model": "FUSION ENERGI",
-        "zev_type": "PHEV",
+        "organization": "Ford Motor Company of Canada Ltd.",
         "range": "42",
-        "class_code": "M"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "M",
         "make": "Honda",
         "model": "CLARITY PLUG-IN",
-        "zev_type": "PHEV",
+        "organization": "Honda Canada Inc.",
         "range": "77",
-        "class_code": "M"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "M",
         "make": "Hyundai",
         "model": "IONIQ ELECTRIC PLUS",
-        "zev_type": "PHEV",
+        "organization": "Hyundai Auto Canada Corp.",
         "range": "47",
-        "class_code": "M"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "M",
         "make": "Hyundai",
         "model": "SONATA PLUG-IN",
-        "zev_type": "PHEV",
+        "organization": "Hyundai Auto Canada Corp.",
         "range": "45",
-        "class_code": "M"
+        "zev_type": "PHEV"
     }, {
-        "make": "Karma",
-        "model": "REVERO",
-        "zev_type": "PHEV",
-        "range": "60",
-        "class_code": "S"
-    }, {
+        "class_code": "WS",
         "make": "Kia",
         "model": "NIRO PLUG-IN",
-        "zev_type": "PHEV",
+        "organization": "Kia Canada Inc.",
         "range": "42",
-        "class_code": "WS"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "M",
         "make": "Kia",
         "model": "OPTIMA PLUG-IN",
-        "zev_type": "PHEV",
+        "organization": "Kia Canada Inc.",
         "range": "47",
-        "class_code": "M"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "US",
         "make": "Mercedes-Benz",
         "model": "GLC 350e 4MATIC",
-        "zev_type": "PHEV",
+        "organization": "Mercedes-Benz Canada Inc.",
         "range": "21",
-        "class_code": "US"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "M",
         "make": "Mini",
         "model": "COOPER S E COUNTRYMAN ALL4",
-        "zev_type": "PHEV",
+        "organization": "BMW Canada Inc.",
         "range": "19",
-        "class_code": "M"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "US",
         "make": "Mitsubishi",
         "model": "OUTLANDER PHEV AWD",
-        "zev_type": "PHEV",
+        "organization": "Mitsubishi Motor Sales of Canada Inc.",
         "range": "35",
-        "class_code": "US"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "UL",
         "make": "Porsche",
         "model": "CAYENNE E-HYBRID",
-        "zev_type": "PHEV",
+        "organization": "Porsche Cars Canada, Ltd.",
         "range": "21",
-        "class_code": "UL"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "L",
         "make": "Porsche",
         "model": "PANAMERA 4 E-HYBRID",
-        "zev_type": "PHEV",
+        "organization": "Porsche Cars Canada, Ltd.",
         "range": "23",
-        "class_code": "L"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "L",
         "make": "Porsche",
         "model": "PANAMERA TURBO S E-HYBRID",
-        "zev_type": "PHEV",
+        "organization": "Porsche Cars Canada, Ltd.",
         "range": "23",
-        "class_code": "L"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "M",
         "make": "Toyota",
         "model": "PRIUS PRIME",
-        "zev_type": "PHEV",
+        "organization": "Toyota Canada Inc.",
         "range": "40",
-        "class_code": "M"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "M",
         "make": "Volvo",
         "model": "S90 T8 AWD",
-        "zev_type": "PHEV",
+        "organization": "Volvo Car Canada Ltd.",
         "range": "34",
-        "class_code": "M"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "US",
         "make": "Volvo",
         "model": "XC60 T8 AWD",
-        "zev_type": "PHEV",
+        "organization": "Volvo Car Canada Ltd.",
         "range": "27",
-        "class_code": "US"
+        "zev_type": "PHEV"
     }, {
+        "class_code": "UL",
         "make": "Volvo",
         "model": "XC90 T8 AWD",
-        "zev_type": "PHEV",
+        "organization": "Volvo Car Canada Ltd.",
         "range": "27",
-        "class_code": "UL"
+        "zev_type": "PHEV"
     }]
 
     def check_run_preconditions(self):
-        for veh in self.list_of_vehicles:
-            if Vehicle.objects.filter(model_year__name='2019', model_name=veh['model']).exists():
+        for vehicle in self.list_of_vehicles:
+            if Vehicle.objects.filter(
+                model_year__name='2019', model_name=vehicle['model']
+            ).exists():
                 return False
 
         return True
@@ -177,11 +198,18 @@ class AddPluginHybridVehicles(OperationalDataScript):
                 make=vehicle.get("make"),
                 model_name=vehicle.get("model"),
                 model_year=model_year,
+                organization=Organization.objects.get(
+                    name=vehicle.get("organization"),
+                ),
                 range=vehicle.get("range"),
                 validation_status="VALIDATED",
+                vehicle_class_code=VehicleClass.objects.get(
+                    vehicle_class_code=vehicle.get("class_code")
+                ),
                 vehicle_zev_type=ZevType.objects.get(
                     vehicle_zev_code=vehicle.get("zev_type")
-                )
+                ),
+                weight_kg=0
             )
 
             vehicles_added += 1

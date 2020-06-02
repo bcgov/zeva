@@ -27,7 +27,11 @@ const VehicleSupplierModelListContainer = (props) => {
       setDetails(response.data);
     });
 
-    const vehiclesPromise = axios.get(ROUTES_VEHICLES.LIST).then((response) => {
+    const vehiclesPromise = axios.get(ROUTES_VEHICLES.LIST, {
+      params: {
+        organization_id: id,
+      },
+    }).then((response) => {
       setVehicles(response.data);
     });
 

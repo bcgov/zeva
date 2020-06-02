@@ -4,6 +4,7 @@ from django.db import transaction
 
 from api.management.data_script import OperationalDataScript
 
+
 class DataLoader(OperationalDataScript):
 
     def __init__(self, *args, **kwargs):

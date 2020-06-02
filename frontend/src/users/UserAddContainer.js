@@ -10,12 +10,14 @@ import history from '../app/History';
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import ROUTES_ROLES from '../app/routes/Roles';
 import ROUTES_USERS from '../app/routes/Users';
+import parseErrorResponse from '../app/utilities/parseErrorResponse';
 import CustomPropTypes from '../app/utilities/props';
 import UserDetailsForm from './components/UserDetailsForm';
 
 const UserAddContainer = (props) => {
   const { id } = useParams();
   const [details, setDetails] = useState({});
+  const [errorFields, setErrorFields] = useState({});
   const [loading, setLoading] = useState(true);
   const [roles, setRoles] = useState([]);
   const [userRoles, setUserRoles] = useState([]);
@@ -49,10 +51,20 @@ const UserAddContainer = (props) => {
       const { organization } = response.data;
 
       history.push(ROUTES_ORGANIZATIONS.USERS.replace(/:id/gi, organization.id));
+    }).catch((errors) => {
+      if (!errors.response) {
+        return;
+      }
+
+      const { data } = errors.response;
+      const err = {};
+
+      parseErrorResponse(err, data);
+      setErrorFields(err);
     });
   };
 
-  const refreshDetails = () => {
+  useEffect(() => {
     setLoading(true);
 
     const rolesPromise = axios.get(ROUTES_ROLES.LIST).then((response) => {
@@ -69,21 +81,18 @@ const UserAddContainer = (props) => {
     Promise.all([detailsPromise, rolesPromise]).then(() => {
       setLoading(false);
     });
-  };
-
-  useEffect(() => {
-    refreshDetails();
   }, [keycloak.authenticated]);
 
   return (
     <div>
       <UserDetailsForm
-        loading={loading}
         details={details}
-        user={user}
+        errorFields={errorFields}
         handleInputChange={handleInputChange}
         handleSubmit={handleSubmit}
+        loading={loading}
         roles={roles}
+        user={user}
       />
     </div>
   );

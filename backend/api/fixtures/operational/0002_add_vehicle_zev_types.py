@@ -10,7 +10,6 @@ class AddZevTypes(OperationalDataScript):
     """
     is_revertable = False
     comment = 'Adds the ZEV types'
-              
 
     def check_run_preconditions(self):
         return not ZevType.objects.filter(vehicle_zev_code="BEV").exists()
@@ -31,13 +30,12 @@ class AddZevTypes(OperationalDataScript):
             vehicle_zev_code="EREV",
             description="Extended Range Electric Vehicle",
             effective_date="2019-01-01"
-        )       
+        )
         ZevType.objects.create(
             vehicle_zev_code="FCEV",
             description="Hydrogen Fuel Cell Electric Vehicle",
             effective_date="2019-01-01"
         )
-
 
 
 script_class = AddZevTypes

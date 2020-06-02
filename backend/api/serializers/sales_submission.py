@@ -7,6 +7,7 @@ from rest_framework.serializers import ModelSerializer, \
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
+from api.models.user_profile import UserProfile
 from api.serializers.user import MemberSerializer
 from api.serializers.organization import OrganizationSerializer
 from api.serializers.record_of_sale import RecordOfSaleSerializer
@@ -17,7 +18,7 @@ class SalesSubmissionListSerializer(
 ):
     organization = OrganizationSerializer(read_only=True)
     totals = SerializerMethodField()
-    update_user = MemberSerializer(read_only=True)
+    update_user = SerializerMethodField()
     validation_status = EnumField(SalesSubmissionStatuses, read_only=True)
     total_a_credits = SerializerMethodField()
     total_b_credits = SerializerMethodField()
@@ -48,6 +49,15 @@ class SalesSubmissionListSerializer(
                 total += record.vehicle.get_credit_value()
 
         return round(total, 2)
+
+    def get_update_user(self, obj):
+        user_profile = UserProfile.objects.filter(username=obj.update_user)
+
+        if user_profile.exists():
+            serializer = MemberSerializer(user_profile.first(), read_only=True)
+            return serializer.data
+
+        return obj.update_user
 
     class Meta:
         model = SalesSubmission
@@ -98,7 +108,7 @@ class SalesSubmissionSaveSerializer(
 
         if validation_status:
             instance.validation_status = validation_status
-            instance.update_user = request.user
+            instance.update_user = request.user.username
             instance.save()
 
         return instance

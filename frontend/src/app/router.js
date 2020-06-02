@@ -47,8 +47,8 @@ class Router extends Component {
     super(props);
 
     this.state = {
-      getUserError: false,
       loading: true,
+      statusCode: null,
       user: {},
     };
 
@@ -57,27 +57,31 @@ class Router extends Component {
 
     axios.defaults.baseURL = CONFIG.APIBASE;
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    axios.interceptors.request.use(async (_config) => {
-      const config = _config;
+    axios.interceptors.response.use(
+      (response) => (response),
+      (error) => {
+        if (error.response.status > 400) {
+          this.setState({
+            loading: false,
+            statusCode: error.response.status,
+          });
+        }
 
-      // only refresh the token, when it's expired
-      if (!keycloak.isTokenExpired()) {
-        return config;
-      }
+        throw error;
+      },
+    );
 
-      await keycloak.updateToken().then((refreshed) => {
+    keycloak.onTokenExpired = () => {
+      keycloak.updateToken(5).then((refreshed) => {
         if (refreshed) {
           const { token: newToken } = keycloak;
 
-          config.headers.Authorization = `Bearer ${newToken}`; // update the token for the current request
-          axios.defaults.headers.common.Authorization = `Bearer ${newToken}`; // update the token for the succeeding requests
+          axios.defaults.headers.common.Authorization = `Bearer ${newToken}`;
         }
       }).catch(() => {
-        props.logout(); // show sign in page if we can't refresh the token
+        props.logout();
       });
-
-      return config;
-    });
+    };
   }
 
   componentDidMount() {
@@ -86,13 +90,19 @@ class Router extends Component {
         loading: false,
         user: {
           ...response.data,
-        },
-      });
-    }).catch((error) => {
-      this.setState({
-        loading: false,
-        getUserError: {
-          statusCode: error.response.status,
+          hasPermission: (permissionCode) => {
+            if (response.data) {
+              const { permissions } = response.data;
+
+              if (permissions) {
+                return permissions.findIndex((permission) => (
+                  permission.permissionCode === permissionCode
+                )) >= 0;
+              }
+            }
+
+            return false;
+          },
         },
       });
     });
@@ -100,20 +110,16 @@ class Router extends Component {
 
   render() {
     const { keycloak } = this.props;
-    const { getUserError, loading, user } = this.state;
+    const { loading, statusCode, user } = this.state;
 
     if (loading) {
       return <Loading />;
     }
 
-    if (getUserError) {
-      return <StatusInterceptor statusCode={getUserError.statusCode} />;
-    }
-
     return (
       <BrowserRouter history={History}>
         <PageLayout keycloak={keycloak} user={user}>
-          <ErrorHandler>
+          <ErrorHandler statusCode={statusCode}>
             <Switch>
               <Route
                 exact
@@ -157,7 +163,6 @@ class Router extends Component {
                 path={ROUTES_ORGANIZATIONS.LIST}
                 render={() => <OrganizationListContainer keycloak={keycloak} user={user} />}
               />
-
               <Route
                 exact
                 path={ROUTES_SALES.ADD}

@@ -11,6 +11,7 @@ from api.models.vehicle_change_history import VehicleChangeHistory
 from api.models.vehicle_zev_type import ZevType
 from api.serializers.user import UserSerializer
 from api.services.vehicle import change_status
+from api.models.vehicle_class import VehicleClass
 
 
 class ModelYearSerializer(ModelSerializer):
@@ -21,13 +22,21 @@ class ModelYearSerializer(ModelSerializer):
         )
 
 
+class VehicleClassSerializer(ModelSerializer):
+    class Meta:
+        model = VehicleClass
+        fields = (	
+            'vehicle_class_code', 'description'
+        )
+
+
 class VehicleZevTypeSerializer(ModelSerializer):
     class Meta:
         model = ZevType
         fields = (
             'vehicle_zev_code', 'description'
         )
-        
+
 
 class VehicleStatusChangeSerializer(ModelSerializer):
     validation_status = EnumField(VehicleDefinitionStatuses)
@@ -50,7 +59,9 @@ class VehicleStatusChangeSerializer(ModelSerializer):
         return value
 
     def update(self, instance, validated_data):
+        request = self.context.get('request')
         status = validated_data.get('validation_status')
+
         change_status(
             self.context['request'].user,
             instance,
@@ -62,6 +73,7 @@ class VehicleStatusChangeSerializer(ModelSerializer):
                 credit_class=instance.get_credit_class()
             )
             instance.credit_value = instance.get_credit_value()
+            instance.update_user = request.user.username
             instance.save()
 
         return instance
@@ -69,14 +81,13 @@ class VehicleStatusChangeSerializer(ModelSerializer):
     class Meta:
         model = Vehicle
         fields = (
-            'validation_status',
+            'validation_status', 'create_user', 'update_user',
         )
 
 
 class VehicleHistorySerializer(
     ModelSerializer, EnumSupportSerializerMixin
 ):
-    create_user = UserSerializer(read_only=True)
     validation_status = EnumField(VehicleDefinitionStatuses, read_only=True)
 
     class Meta:
@@ -94,6 +105,7 @@ class VehicleSerializer(
     actions = SerializerMethodField()
     credit_class = SerializerMethodField()
     credit_value = SerializerMethodField()
+    vehicle_class_code = VehicleClassSerializer()
 
     def get_actions(self, instance):
         request = self.context.get('request')
@@ -137,7 +149,7 @@ class VehicleSerializer(
         model = Vehicle
         fields = (
             'id', 'actions', 'history', 'make', 'model_name', 'model_year',
-            'range', 'validation_status', 
+            'range', 'validation_status', 'vehicle_class_code', 'weight_kg',
             'vehicle_zev_type', 'credit_class', 'credit_value'
         )
         read_only_fields = ('validation_status',)
@@ -150,7 +162,10 @@ class VehicleSaveSerializer(
         slug_field='name',
         queryset=ModelYear.objects.all()
     )
-
+    vehicle_class_code = SlugRelatedField(
+        slug_field='vehicle_class_code',
+        queryset=VehicleClass.objects.all()
+    )
     vehicle_zev_type = SlugRelatedField(
         slug_field='vehicle_zev_code',
         queryset=ZevType.objects.all()
@@ -160,11 +175,40 @@ class VehicleSaveSerializer(
         read_only=True
     )
 
+    def create(self, validated_data):
+        request = self.context.get('request')
+        organization = request.user.organization
+        make = validated_data.pop('make')
+        make = " ".join(make.upper().split())
+
+        vehicle = Vehicle.objects.create(
+            make=make,
+            organization_id=organization.id,
+            **validated_data
+        )
+
+        return vehicle
+
+    def update(self, instance, validated_data):
+        for data in validated_data:
+            setattr(instance, data, validated_data[data])
+
+            if data == 'make':
+                make = validated_data[data]
+                make = " ".join(make.upper().split())
+
+                setattr(instance, data, make)
+
+        instance.save()
+
+        return instance
+
     class Meta:
         model = Vehicle
         fields = (
-            'id', 'make', 'model_name', 'model_year', 'range',
-            'validation_status', 'vehicle_zev_type'
+            'id', 'make', 'model_name', 'model_year', 'range', 'weight_kg',
+            'validation_status', 'vehicle_zev_type', 'vehicle_class_code',
+            'create_user', 'update_user',
         )
         read_only_fields = ('validation_status', 'id',)
 
@@ -176,6 +220,10 @@ class VehicleMinSerializer(
         slug_field='name',
         queryset=ModelYear.objects.all()
     )
+    vehicle_class_code = SlugRelatedField(	
+        slug_field='vehicle_class_code',	
+        queryset=VehicleClass.objects.all()	
+    )
     vehicle_zev_type = SlugRelatedField(
         slug_field='vehicle_zev_code',
         queryset=ZevType.objects.all()
@@ -185,6 +233,6 @@ class VehicleMinSerializer(
         model = Vehicle
         fields = (
             'id', 'make', 'model_name', 'model_year',
-            'range',
-            'vehicle_zev_type'
+            'range', 'vehicle_class_code',
+            'vehicle_zev_type', 'weight_kg'
         )

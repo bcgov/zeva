@@ -9,7 +9,7 @@ from api.models.user_profile import UserProfile
 class AuditableMixin(object,):
     def serialize_object(self, request, data):
         user = request.user
-        data.update({'create_user': user.id, 'update_user': user.id})
+        data.update({'create_user': user.username, 'update_user': user.username})
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)

@@ -9,3 +9,5 @@ from . import credit_transaction
 from . import credit_transaction_type
 from . import icbc_registration_data
 from . import role, permission, role_permission, user_role
+from . import vehicle_class
+from . import fixture_migration

@@ -14,12 +14,14 @@ class VehicleChangeHistory(Commentable):
         null=True,
         db_comment='When the change was made'
     )
-    create_user = models.ForeignKey(
-        'UserProfile',
-        related_name='history',
-        blank=True, null=True,
-        on_delete=models.CASCADE,
-        db_comment='User who made the change to the record'
+    vehicle_class_code_id = models.IntegerField(	
+        db_comment="ID referencing the vehicle_class_code table"	
+    )
+    create_user = models.CharField(
+        default="SYSTEM",
+        max_length=130,
+        db_comment="User ID associated to the person who's making the changes "
+                   "to the vehicle record"
     )
     vehicle_zev_type_id = models.IntegerField(
         db_comment="ID referencing the vehicle_zev_type table"
@@ -33,14 +35,23 @@ class VehicleChangeHistory(Commentable):
         max_length=250,
         null=True
     )
+    weight_kg = models.DecimalField(
+        blank=False,
+        db_comment="Weight of vehicle",
+        max_digits=6,
+        decimal_places=0
+    )
     model_name = models.CharField(
         blank=True,
-        db_comment="Model and trim of vehicle",
+        db_comment="Model of vehicle",
         max_length=250,
         null=True
     )
     model_year_id = models.IntegerField(
         db_comment="ID referencing the model_year table"
+    )
+    organization_id = models.IntegerField(
+        db_comment="ID referencing the organization table"
     )
     validation_status = EnumField(
         VehicleDefinitionStatuses,
