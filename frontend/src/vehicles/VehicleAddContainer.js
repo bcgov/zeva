@@ -55,7 +55,7 @@ const VehicleAddContainer = (props) => {
       axios.get(ROUTES_VEHICLES.YEARS),
       axios.get(ROUTES_VEHICLES.ZEV_TYPES),
       axios.get(ROUTES_VEHICLES.CLASSES),
-      axios.get(ROUTES_ORGANIZATIONS.VEHICLES)
+      // axios.get(ROUTES_ORGANIZATIONS.VEHICLES.replace(/:id/g, supplierId)),
     ]).then(axios.spread((yearsRes, typesRes, classesRes) => (
       [setYears(yearsRes.data),
         setTypes(typesRes.data),
