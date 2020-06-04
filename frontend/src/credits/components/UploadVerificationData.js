@@ -1,38 +1,19 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import history from '../../app/History';
-import CustomPropTypes from '../../app/utilities/props';
-import ExcelFileDrop from '../../sales/components/ExcelFileDrop';
+import ExcelFileDrop from '../../app/components/FileDrop';
+import getFileSize from '../../app/utilities/getFileSize';
 
 const UploadVerificationData = (props) => {
   const {
     title,
-    errorMessage,
     files,
     setUploadFiles,
     upload,
     setDateCurrentTo,
     dateCurrentTo,
   } = props;
-
-  const getFileSize = (bytes) => {
-    if (bytes === 0) {
-      return '0 bytes';
-    }
-
-    const k = 1000;
-    const sizes = ['bytes', 'KB', 'MB', 'GB', 'TB'];
-    let i = Math.floor(Math.log(bytes) / Math.log(k));
-
-    if (i > 4) { // nothing bigger than a terrabyte
-      i = 4;
-    }
-
-    const filesize = parseFloat((bytes / k ** i).toFixed(1));
-
-    return `${filesize} ${sizes[i]}`;
-  };
 
   const removeFile = (removedFile) => {
     const found = files.findIndex((file) => (file === removedFile));

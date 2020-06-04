@@ -60,11 +60,14 @@ class Router extends Component {
     axios.interceptors.response.use(
       (response) => (response),
       (error) => {
-        if (error.response.status > 400) {
+        if (error.response && error.response.status > 400) {
           this.setState({
             loading: false,
             statusCode: error.response.status,
           });
+        } else {
+          console.error(error);
+          console.error(error.response);
         }
 
         throw error;

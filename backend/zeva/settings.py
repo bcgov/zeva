@@ -15,8 +15,7 @@ import sys
 
 from pika import ConnectionParameters, PlainCredentials
 
-from . import database, amqp, email
-from . import keycloak
+from . import database, amqp, email, keycloak, minio
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -137,6 +136,8 @@ USE_L10N = True
 USE_TZ = True
 
 EMAIL = email.config()
+
+MINIO = minio.config()
 
 if TESTING:
     LOGGING = {

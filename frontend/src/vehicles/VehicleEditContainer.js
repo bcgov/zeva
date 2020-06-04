@@ -11,21 +11,25 @@ import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import history from '../app/History';
 
 const VehicleEditContainer = (props) => {
+  const [classes, setClasses] = useState([]);
   const [fields, setFields] = useState({});
+  const [files, setFiles] = useState([]);
+  const [progressBars, setProgressBars] = useState({});
   const [loading, setLoading] = useState(true);
   const [types, setTypes] = useState([]);
+  const [showProgressBars, setShowProgressBars] = useState(false);
   const [years, setYears] = useState([]);
+
   const { keycloak } = props;
   const { id } = useParams();
   const [edits, setEdits] = useState({});
+
   const handleInputChange = (event) => {
     const { value, name } = event.target;
-    setEdits(
-      {
-        ...edits,
-        [name]: value,
-      },
-    );
+    setEdits({
+      ...edits,
+      [name]: value,
+    });
   };
 
   const handleSubmit = (event) => {
@@ -33,6 +37,41 @@ const VehicleEditContainer = (props) => {
     const data = edits;
     axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), data).then(() => {
       history.push(`/vehicles/${id}`);
+    });
+  };
+
+  const updateProgressBars = (progressEvent, index) => {
+    const percentage = Math.round((100 * progressEvent.loaded) / progressEvent.total);
+    setProgressBars({
+      ...progressBars,
+      [index]: percentage,
+    });
+
+    progressBars[index] = percentage;
+  };
+
+  const handleUpload = () => {
+    setShowProgressBars(true);
+    files.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const blob = reader.result;
+
+        axios.get(ROUTES_VEHICLES.MINIO_URL.replace(/:id/gi, id)).then((response) => {
+          const { put: uploadUrl } = response.data;
+
+          axios.put(uploadUrl, blob, {
+            headers: {
+              Authorization: null,
+            },
+            onUploadProgress: (progressEvent) => {
+              updateProgressBars(progressEvent, index);
+            },
+          });
+        });
+      };
+
+      reader.readAsArrayBuffer(file);
     });
   };
 
@@ -58,14 +97,19 @@ const VehicleEditContainer = (props) => {
 
   return (
     <VehicleForm
+      fields={fields}
+      files={files}
+      formTitle="Enter ZEV Model"
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
+      handleUpload={handleUpload}
       loading={loading}
-      vehicleYears={years}
-      vehicleTypes={types}
-      fields={fields}
+      progressBars={progressBars}
+      setUploadFiles={setFiles}
+      showProgressBars={showProgressBars}
       vehicleClasses={classes}
-      formTitle="Edit ZEV"
+      vehicleTypes={types}
+      vehicleYears={years}
     />
   );
 };

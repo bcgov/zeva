@@ -51,10 +51,10 @@ const SalesSubmissionDetailsPage = (props) => {
         <div className="col-sm-4">
           <table className="table table-bordered table-striped">
             <tbody>
-            <tr>
-              <td className="text-center">Status</td>
-              <td className="text-right">{submission.validationStatus}</td>
-            </tr>
+              <tr>
+                <td className="text-center">Status</td>
+                <td className="text-right">{submission.validationStatus}</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -119,7 +119,7 @@ const SalesSubmissionDetailsPage = (props) => {
 SalesSubmissionDetailsPage.defaultProps = {};
 
 SalesSubmissionDetailsPage.propTypes = {
-  submission: PropTypes.object.isRequired,
+  submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 

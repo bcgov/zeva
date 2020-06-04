@@ -1,58 +1,65 @@
 #form {
-    fieldset {
-      border: 1px solid $default-background-grey;
+  fieldset {
+    border: 1px solid $default-background-grey;
+    padding: 0.5rem;
+
+    legend {
+      color: $default-text-blue;
+      font-size: 1.25rem;
+      font-weight: bold;
+      margin-bottom: 0;
+      margin-left: 1rem;
+      padding: 0 1rem 0;
+      width: auto;
+    }
+
+    .form-group {
+      background-color: $default-background-grey;
+      margin: 0.5rem 0;
       padding: 1rem;
-      legend {
-        color: $default-text-blue;
-        font-size: 1.25rem;
-        font-weight: bold;
-        margin-bottom: 0;
-        margin-left: 1rem;
-        padding: 0 1rem 0;
-        width: auto;
+
+      &:first-child {
+        margin-top: 0;
       }
-  
-      .form-group {
-        background-color: $default-background-grey;
-        margin: .5rem;
-        padding: 1rem;
-        width:35vw;   
-        &:first-child {
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      &.action-bar {
+        margin-top: 2rem;
+      }
+
+      &.row {
+        &.error {
+          background-color: #fff2f2;
+        }
+        label {
           margin-top: 0;
         }
-  
-        &.action-bar {
-          margin-top: 2rem;
-        }
-        &.row {
-          &.error {
-            background-color: #fff2f2;
-          }
-          label {
-            margin-top: 0;
-          }
-        } 
-      }
+      } 
     }
-    input[type=radio], input[type=checkbox] {
-        margin-right: 1rem;        
-    }
-    input[type=text], select {
-      border: 2px solid $default-text-black;
-    }
-  
-    label {
-      color: $default-text-blue;
-      font-weight: bold;
-    }
-    .delete-button {
-        border: 1px solid red;
-        border-radius: 5%;
-        color: red;
-        padding: 0 1rem 0 1rem;
-    }
+  }
+
+  input[type=radio], input[type=checkbox] {
+      margin-right: 1rem;        
+  }
+  input[type=text], select {
+    border: 2px solid $default-text-black;
+  }
+
+  label {
+    color: $default-text-blue;
+    font-weight: bold;
+  }
+  .delete-button {
+      border: 1px solid red;
+      border-radius: 5%;
+      color: red;
+      padding: 0 1rem 0 1rem;
+  }
   ul {
       padding: 0;
       white-space: nowrap;
   }
-  }
+}

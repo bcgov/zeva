@@ -1,4 +1,9 @@
+import uuid
+
 from django.utils.decorators import method_decorator
+
+from minio import Minio
+
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -14,11 +19,12 @@ from api.serializers.vehicle import ModelYearSerializer, \
     VehicleSaveSerializer, VehicleSerializer, \
     VehicleStatusChangeSerializer
 from auditable.views import AuditableMixin
+from zeva.settings import MINIO
 
 
 class VehicleViewSet(
-    AuditableMixin, viewsets.GenericViewSet,
-    mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin
+    AuditableMixin, viewsets.GenericViewSet, mixins.CreateModelMixin,
+    mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin
 ):
     permission_classes = (AllowAny,)
     http_method_names = ['get', 'post', 'put', 'patch']
@@ -79,7 +85,7 @@ class VehicleViewSet(
         serializer = VehicleZevTypeSerializer(zev_types, many=True)
         return Response(serializer.data)
 
-    @action(detail=False)	
+    @action(detail=False)
     def classes(self, _request):
         """
         Get the zev classes
@@ -113,3 +119,29 @@ class VehicleViewSet(
         serializer.save()
 
         return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def minio_url(self, request, pk=None):
+        minio = Minio(
+            MINIO['ENDPOINT'],
+            access_key=MINIO['ACCESS_KEY'],
+            secret_key=MINIO['SECRET_KEY'],
+            secure=MINIO['USE_SSL']
+        )
+
+        object_name = uuid.uuid4().hex
+        put_url = minio.presigned_put_object(
+            bucket_name=MINIO['BUCKET_NAME'],
+            object_name=object_name,
+            expires=MINIO['EXPIRY']
+        )
+        get_url = minio.presigned_get_object(
+            bucket_name=MINIO['BUCKET_NAME'],
+            object_name=object_name,
+            expires=MINIO['EXPIRY']
+        )
+
+        return Response({
+            'put': put_url,
+            'get': get_url
+        })
