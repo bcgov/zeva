@@ -8,7 +8,6 @@ import CustomPropTypes from '../app/utilities/props';
 
 import VehicleForm from './components/VehicleForm';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
-import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import History from '../app/History';
 
 const VehicleAddContainer = (props) => {
@@ -25,9 +24,10 @@ const VehicleAddContainer = (props) => {
   const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
   const [classes, setClasses] = useState([]);
-  const { keycloak, user } = props;
+  const [vehicles, setVehicles] = useState([]);
+  const { keycloak } = props;
 
-  const supplierId = user.organization.id
+
   const handleInputChange = (event) => {
     const { value, name } = event.target;
     let input = value.trim();
@@ -50,7 +50,7 @@ const VehicleAddContainer = (props) => {
     return false;
   };
 
-
+  const orgMakes = vehicles.map((vehicle) => vehicle.make);
   const refreshList = () => {
     setLoading(true);
     axios.all([
@@ -62,7 +62,7 @@ const VehicleAddContainer = (props) => {
       [setYears(yearsRes.data),
         setTypes(typesRes.data),
         setClasses(classesRes.data),
-        console.log(orgVehiclesRes),
+        setVehicles(orgVehiclesRes.data),
         setLoading(false)]
     )));
   };
@@ -73,6 +73,7 @@ const VehicleAddContainer = (props) => {
 
   return (
     <VehicleForm
+      makes={orgMakes}
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
       loading={loading}
@@ -81,6 +82,7 @@ const VehicleAddContainer = (props) => {
       fields={fields}
       vehicleClasses={classes}
       formTitle="Enter ZEV"
+      setFields={setFields}
     />
   );
 };
