@@ -1,4 +1,4 @@
-FROM docker-registry.default.svc:5000/tbiwaq-dev/nagios-base:latest
+FROM docker-registry.default.svc:5000/tbiwaq-test/nagios-base:latest
 EXPOSE 8080
 RUN mkdir /var/run/apache2-supervisord \
     && chown -R nagios.nagios /var/run/apache2-supervisord \
