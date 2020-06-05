@@ -1,0 +1,47 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: nagios-bc
+objects:
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    name: nagios
+  spec:
+    failedBuildsHistoryLimit: 5
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: nagios:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      contextDir: openshift/templates/nagios
+      git:
+        ref: nagios
+        uri: https://github.com/bcgov/tfrs.git
+      type: Git
+    strategy:
+      dockerStrategy:
+        env:
+        - name: NAGIOS_USER
+          valueFrom:
+            secretKeyRef:
+              key: NAGIOS_USER
+              name: nagios-secret
+        - name: NAGIOS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: NAGIOS_PASSWORD
+              name: nagios-secret
+        forcePull: true
+        noCache: true
+      type: Docker
+    successfulBuildsHistoryLimit: 5
+    triggers: []
+  status:
+    lastVersion: 0

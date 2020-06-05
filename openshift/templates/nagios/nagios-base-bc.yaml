@@ -1,0 +1,37 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: nagios-base-bc
+objects:
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    name: nagios-base
+  spec:
+    failedBuildsHistoryLimit: 5
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: nagios-base:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      contextDir: openshift/templates/nagios
+      git:
+        ref: nagios
+        uri: https://github.com/bcgov/zeva.git
+      type: Git
+    strategy:
+      dockerStrategy:
+        dockerfilePath: Dockerfile-base
+        forcePull: true
+        noCache: true
+      type: Docker
+    successfulBuildsHistoryLimit: 5
+    triggers: []
+  status:
+    lastVersion: 0
