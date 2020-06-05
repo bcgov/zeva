@@ -47,7 +47,7 @@ objects:
     kind: Secret
     metadata:
       annotations:
-        as-copy-of: template.minio-secrets
+        as-copy-of: template.minio-secret
       name: ${NAME}-minio${SUFFIX}
       stringData:
         MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
