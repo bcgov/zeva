@@ -25,8 +25,9 @@ const VehicleAddContainer = (props) => {
   const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
   const [classes, setClasses] = useState([]);
-  const { keycloak } = props;
+  const { keycloak, user } = props;
 
+  const supplierId = user.organization.id
   const handleInputChange = (event) => {
     const { value, name } = event.target;
     let input = value.trim();
@@ -49,17 +50,19 @@ const VehicleAddContainer = (props) => {
     return false;
   };
 
+
   const refreshList = () => {
     setLoading(true);
     axios.all([
       axios.get(ROUTES_VEHICLES.YEARS),
       axios.get(ROUTES_VEHICLES.ZEV_TYPES),
       axios.get(ROUTES_VEHICLES.CLASSES),
-      axios.get(ROUTES_ORGANIZATIONS.VEHICLES)
-    ]).then(axios.spread((yearsRes, typesRes, classesRes) => (
+      axios.get(ROUTES_VEHICLES.LIST),
+    ]).then(axios.spread((yearsRes, typesRes, classesRes, orgVehiclesRes) => (
       [setYears(yearsRes.data),
         setTypes(typesRes.data),
         setClasses(classesRes.data),
+        console.log(orgVehiclesRes),
         setLoading(false)]
     )));
   };
