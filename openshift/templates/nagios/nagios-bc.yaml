@@ -23,7 +23,7 @@ objects:
       contextDir: openshift/templates/nagios
       git:
         ref: nagios
-        uri: https://github.com/bcgov/tfrs.git
+        uri: https://github.com/bcgov/zeva.git
       type: Git
     strategy:
       dockerStrategy:
