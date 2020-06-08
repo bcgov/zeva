@@ -16,7 +16,6 @@ const VehicleForm = (props) => {
     formTitle,
     handleInputChange,
     handleSubmit,
-    handleUpload,
     loading,
     progressBars,
     setUploadFiles,
@@ -26,6 +25,13 @@ const VehicleForm = (props) => {
     vehicleYears,
   } = props;
 
+  const removeFile = (removedFile) => {
+    const found = files.findIndex((file) => (file === removedFile));
+    files.splice(found, 1);
+
+    setUploadFiles([...files]);
+  };
+
   if (loading) {
     return (<Loading />);
   }
@@ -33,14 +39,14 @@ const VehicleForm = (props) => {
   return (
     <div id="form" className="page">
       <div className="row">
-        <div className="col-md-12">
+        <div className="col-12">
           <h1>{formTitle}</h1>
         </div>
       </div>
 
       <form onSubmit={(event) => handleSubmit(event)}>
         <div className="row">
-          <div className="col-md-6">
+          <div className="col-lg-6">
             <fieldset>
               <VehicleFormDropdown
                 accessor={(model) => model.name}
@@ -102,24 +108,70 @@ const VehicleForm = (props) => {
             </fieldset>
           </div>
 
-          <div className="col-md-6">
-            <h3 className="font-weight-bold">Upload range test results</h3>
+          <div className="col-lg-6">
+            <h3 className="font-weight-bold mt-2">Upload range test results</h3>
             <fieldset>
-              <div className="form-group">
-                <ExcelFileDrop setFiles={setUploadFiles} maxFiles={100000} />
+              <div className="form-group row">
+                <label className="col-sm-3 col-form-label" htmlFor="file-upload">
+                  File Upload
+                </label>
+                <div className="col-sm-9">
+                  <ExcelFileDrop setFiles={setUploadFiles} maxFiles={100000} />
+                </div>
               </div>
 
-              <div className="form-group mt-3 text-blue">
-                <strong>Files</strong> (doc, docx, xls, xlsx, pdf, jpg, png)
+              <div className="form-group mt-3 row">
+                <div className="col-12 text-blue">
+                  <strong>Files</strong> (doc, docx, xls, xlsx, pdf, jpg, png)
+                </div>
               </div>
 
-              {files.length > 0 && (
+              {(files.length > 0 || fields.attachments.length > 0) && (
                 <div className="form-group uploader-files mt-3">
                   <div className="row">
                     <div className="col-8 filename header">Filename</div>
                     <div className="col-3 size header">Size</div>
                     <div className="col-1 actions header" />
                   </div>
+                  {fields.attachments.map((attachment, index) => (
+                    <div className="row" key={attachment.filename}>
+                      <div className="col-8 filename">
+                        <a href={attachment.url} rel="noopener noreferrer" target="_blank">{attachment.filename}</a>
+                      </div>
+                      {!showProgressBars && [
+                        <div className="col-3 size" key="size">{getFileSize(attachment.size)}</div>,
+                        <div className="col-1 actions" key="actions">
+                          <button
+                            className="delete"
+                            onClick={() => {
+                              // removeFile(attachment);
+                            }}
+                            type="button"
+                          >
+                            <FontAwesomeIcon icon="trash" />
+                          </button>
+                        </div>,
+                      ]}
+                      {showProgressBars && index in progressBars && (
+                        <div className="col-4">
+                          <div className="progress">
+                            <div
+                              aria-valuemax="100"
+                              aria-valuemin="0"
+                              aria-valuenow={progressBars[index]}
+                              className="progress-bar"
+                              role="progressbar"
+                              style={{
+                                width: `${progressBars[index]}%`,
+                              }}
+                            >
+                              {progressBars[index]}%
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
                   {files.map((file, index) => (
                     <div className="row" key={file.name}>
                       <div className="col-8 filename">{file.name}</div>
@@ -129,7 +181,7 @@ const VehicleForm = (props) => {
                           <button
                             className="delete"
                             onClick={() => {
-                              // removeFile(file);
+                              removeFile(file);
                             }}
                             type="button"
                           >
@@ -179,15 +231,6 @@ const VehicleForm = (props) => {
               </span>
 
               <span className="right-content">
-                <button
-                  className="button primary"
-                  onClick={() => {
-                    handleUpload();
-                  }}
-                  type="button"
-                >
-                  <FontAwesomeIcon icon="save" /> Upload
-                </button>
                 <button className="button primary" type="submit">
                   <FontAwesomeIcon icon="save" /> Save
                 </button>
@@ -202,7 +245,6 @@ const VehicleForm = (props) => {
 
 VehicleForm.defaultProps = {
   files: [],
-  handleUpload: () => {},
   progressBars: {},
   setUploadFiles: () => {},
 };
@@ -212,7 +254,6 @@ VehicleForm.propTypes = {
   files: PropTypes.arrayOf(PropTypes.shape()),
   formTitle: PropTypes.string.isRequired,
   handleInputChange: PropTypes.func.isRequired,
-  handleUpload: PropTypes.func,
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   progressBars: PropTypes.shape(),

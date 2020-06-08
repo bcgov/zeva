@@ -135,13 +135,8 @@ class VehicleViewSet(
             object_name=object_name,
             expires=MINIO['EXPIRY']
         )
-        get_url = minio.presigned_get_object(
-            bucket_name=MINIO['BUCKET_NAME'],
-            object_name=object_name,
-            expires=MINIO['EXPIRY']
-        )
 
         return Response({
-            'put': put_url,
-            'get': get_url
+            'url': put_url,
+            'minio_object_name': object_name
         })

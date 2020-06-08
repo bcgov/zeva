@@ -32,14 +32,6 @@ const VehicleEditContainer = (props) => {
     });
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = edits;
-    axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), data).then(() => {
-      history.push(`/vehicles/${id}`);
-    });
-  };
-
   const updateProgressBars = (progressEvent, index) => {
     const percentage = Math.round((100 * progressEvent.loaded) / progressEvent.total);
     setProgressBars({
@@ -51,27 +43,61 @@ const VehicleEditContainer = (props) => {
   };
 
   const handleUpload = () => {
+    const promises = [];
     setShowProgressBars(true);
+
     files.forEach((file, index) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const blob = reader.result;
+      promises.push(new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const blob = reader.result;
 
-        axios.get(ROUTES_VEHICLES.MINIO_URL.replace(/:id/gi, id)).then((response) => {
-          const { put: uploadUrl } = response.data;
+          axios.get(ROUTES_VEHICLES.MINIO_URL.replace(/:id/gi, id)).then((response) => {
+            const { url: uploadUrl, minioObjectName } = response.data;
 
-          axios.put(uploadUrl, blob, {
-            headers: {
-              Authorization: null,
-            },
-            onUploadProgress: (progressEvent) => {
-              updateProgressBars(progressEvent, index);
-            },
+            axios.put(uploadUrl, blob, {
+              headers: {
+                Authorization: null,
+              },
+              onUploadProgress: (progressEvent) => {
+                updateProgressBars(progressEvent, index);
+
+                if (progressEvent.loaded >= progressEvent.total) {
+                  resolve({
+                    filename: file.name,
+                    mimeType: file.type,
+                    minioObjectName,
+                    size: file.size,
+                  });
+                }
+              },
+            }).catch(() => {
+              reject();
+            });
           });
-        });
-      };
+        };
 
-      reader.readAsArrayBuffer(file);
+        reader.readAsArrayBuffer(file);
+      }));
+    });
+
+    return promises;
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = edits;
+
+    const promises = handleUpload();
+
+    Promise.all(promises).then((attachments) => {
+      if (attachments.length > 0) {
+        data.vehicleAttachments = attachments;
+      }
+
+      axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), data).then(() => {
+        history.push(`/vehicles/${id}`);
+      });
     });
   };
 
@@ -102,7 +128,6 @@ const VehicleEditContainer = (props) => {
       formTitle="Enter ZEV Model"
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
-      handleUpload={handleUpload}
       loading={loading}
       progressBars={progressBars}
       setUploadFiles={setFiles}

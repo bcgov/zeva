@@ -1,5 +1,4 @@
 .uploader-files {
-  margin: 1rem -1px 0;
   padding: 0 0.9rem !important;
 
   .actions {
@@ -18,12 +17,17 @@
 
   .filename {
     overflow: hidden;
+    padding-left: 2rem;
     text-overflow: ellipsis;
   }
 
   .header {
-    color: $primary-blue;
+    color: $default-text-blue;
     font-weight: bold;
+  }
+
+  .progress-bar {
+    background-color: $default-text-blue;
   }
 
   .row {
