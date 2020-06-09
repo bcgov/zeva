@@ -101,15 +101,6 @@ objects:
       name: nagios
       weight: 100
     wildcardPolicy: None
-  status:
-    ingress:
-    - conditions:
-      - lastTransitionTime: 2019-08-26T23:50:27Z
-        status: "True"
-        type: Admitted
-      host: nagios-mem-tfrs-test.pathfinder.gov.bc.ca
-      routerName: router
-      wildcardPolicy: None
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
   metadata:
