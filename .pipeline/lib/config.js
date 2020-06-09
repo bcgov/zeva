@@ -29,7 +29,7 @@ const phases = {
         backendCpuRequest: '100m', backendCpuLimit: '400m', backendMemoryRequest: '500M', backendMemoryLimit: '700M', backendHealthCheckDelay: 140, backendMinReplicas: 2, backendMaxReplicas: 5,
         minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M', minioPvcSize: '5G',
         schemaspyCpuRequest: '20m', schemaspyCpuLimit: '200m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 160,
-        rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '700', rabbitmqPvcSize: '1G', rabbitmqReplica: 2, rabbitmqPostStartSleep: 120,
+        rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '700M', rabbitmqPvcSize: '1G', rabbitmqReplica: 2, rabbitmqPostStartSleep: 120,
         patroniCpuRequest: '500m', patroniCpuLimit: '1000m', patroniMemoryRequest: '500M', patroniMemoryLimit: '1G', patroniPvcSize: '5G', patroniReplica: 2, storageClass: 'netapp-block-standard'},
 
   prod: {namespace:'tbiwaq-prod', name: `${name}`, ssoSuffix:'', 
