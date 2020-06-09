@@ -58,6 +58,58 @@ objects:
       app: nagios
     annotations:
       serviceaccounts.openshift.io/oauth-redirectreference.nagios: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"nagios"}}'
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: nagios
+    name: nagios
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deploymentconfig: nagios
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    labels:
+      app: nagios
+    name: nagios
+  spec:
+    host: nagios-${NAME}-${ENV_NAME}.pathfinder.gov.bc.ca
+    path: /nagios3
+    port:
+      targetPort: 8080-tcp
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: edge
+    to:
+      kind: Service
+      name: nagios
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: 2019-08-26T23:50:27Z
+        status: "True"
+        type: Admitted
+      host: nagios-mem-tfrs-test.pathfinder.gov.bc.ca
+      routerName: router
+      wildcardPolicy: None
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
   metadata:
