@@ -39,7 +39,7 @@ objects:
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
-    name: ${NAME}-nagios
+    name: nagios
     annotations:
       volume.beta.kubernetes.io/storage-class: netapp-file-standard
       template.openshift.io.bcgov/create: 'true'
@@ -49,6 +49,15 @@ objects:
     resources:
       requests:
         storage: ${NAGIOS_PVC_SIZE}
+- kind: ServiceAccount
+  apiVersion: v1
+  metadata:
+    name: nagios
+    creationTimestamp: 
+    labels:
+      app: nagios
+    annotations:
+      serviceaccounts.openshift.io/oauth-redirectreference.nagios: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"nagios"}}'
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
   metadata:
@@ -132,34 +141,34 @@ objects:
           - name: KEYCLOAK_CLIENT_ID
             valueFrom:
               configMapKeyRef:
-                name: ${NAME}-config
+                name: ${NAME}-config-${ENV_NAME}
                 key: keycloak_client_id
           - name: KEYCLOAK_SA_REALM
             valueFrom:
               configMapKeyRef:
-                name: ${NAME}-config
+                name: ${NAME}-config-${ENV_NAME}
                 key: keycloak_sa_realm
           - name: KEYCLOAK_SA_CLIENT_ID
             valueFrom:
               configMapKeyRef:
-                name: ${NAME}-config
+                name: ${NAME}-config-${ENV_NAME}
                 key: keycloak_sa_client_id
           - name: KEYCLOAK_SA_BASEURL
             valueFrom:
               configMapKeyRef:
-                name: ${NAME}-config
+                name: ${NAME}-config-${ENV_NAME}
                 key: keycloak_sa_baseurl
           - name: KEYCLOAK_REALM
             valueFrom:
               configMapKeyRef:
-                name: ${NAME}-config
+                name: ${NAME}-config-${ENV_NAME}
                 key: keycloak_realm
           - name: SMTP_SERVER_HOST
             value: apps.smtp.gov.bc.ca
           - name: DATABASE_SERVICE_NAME
             valueFrom:
               configMapKeyRef:
-                name: ${NAME}-config
+                name: ${NAME}-config-${ENV_NAME}
                 key: database_service_name
           - name: DATABASE_USER
             valueFrom:
