@@ -96,7 +96,7 @@ objects:
           - name: AMQP_PORT
             valueFrom:
               configMapKeyRef:
-                name: ${NAME}-config-{ENV_NAME}
+                name: ${NAME}-config-${ENV_NAME}
                 key: rabbitmq_port
           - name: AMQP_USER
             valueFrom:
@@ -111,7 +111,7 @@ objects:
                 name: ${NAME}-${ENV_NAME}-rabbitmq-cluster-secret
                 key: password 
           - name: MINIO_ENDPOINT
-            value: docs-mem-tfrs-${ENV_NAME}.pathfinder.gov.bc.ca:443
+            value: docs-mem-${NAME}-${ENV_NAME}.pathfinder.gov.bc.ca:443
           - name: MINIO_USE_SSL
             value: "true"
           - name: MINIO_ACCESS_KEY
@@ -130,7 +130,10 @@ objects:
                 name: zeva-keycloak
                 key: KEYCLOAK_SA_CLIENT_SECRET
           - name: KEYCLOAK_CLIENT_ID
-            value: tfrs-dev
+            valueFrom:
+              configMapKeyRef:
+                name: ${NAME}-config
+                key: keycloak_client_id
           - name: KEYCLOAK_SA_REALM
             valueFrom:
               configMapKeyRef:

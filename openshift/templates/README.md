@@ -130,3 +130,8 @@ oc -n tbiwaq-prod process -f ./templates/backup/backup-deploy.json \
 5.1 If need to remove, only keeps configmap/backup-conf and the the nfs storage
 oc -n tbiwaq-prod delete secret/patroni-backup secret/ftp-secret dc/patroni-backup pvc/backup-verification 
 
+## Setup Nagios
+nagios-base image is located in tbiwaq-tools project
+nagios inage is located in tbiwaq-test and tbiwaq-prod project
+oc policy add-role-to-user system:image-puller system:serviceaccount:tbiwaq-test:builder --namespace=tbiwaq-tools
+oc policy add-role-to-user system:image-puller system:serviceaccount:tbiwaq-prod:builder --namespace=tbiwaq-tools
