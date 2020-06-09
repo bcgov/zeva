@@ -8,6 +8,7 @@ import CustomPropTypes from '../app/utilities/props';
 
 import VehicleForm from './components/VehicleForm';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
+import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import History from '../app/History';
 
 const VehicleAddContainer = (props) => {
@@ -54,6 +55,7 @@ const VehicleAddContainer = (props) => {
       axios.get(ROUTES_VEHICLES.YEARS),
       axios.get(ROUTES_VEHICLES.ZEV_TYPES),
       axios.get(ROUTES_VEHICLES.CLASSES),
+      // axios.get(ROUTES_ORGANIZATIONS.VEHICLES.replace(/:id/g, supplierId)),
     ]).then(axios.spread((yearsRes, typesRes, classesRes) => (
       [setYears(yearsRes.data),
         setTypes(typesRes.data),

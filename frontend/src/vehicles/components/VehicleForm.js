@@ -5,6 +5,7 @@ import History from '../../app/History';
 import Loading from '../../app/components/Loading';
 import VehicleFormDropdown from './VehicleFormDropdown';
 import TextInput from '../../app/components/TextInput';
+import AutocompleteInput from '../../app/components/AutocompleteInput';
 
 const VehicleForm = (props) => {
   const {
@@ -41,12 +42,10 @@ const VehicleForm = (props) => {
                 handleInputChange={handleInputChange}
                 selectedOption={fields.modelYear.name}
               />
-              <TextInput
+              <AutocompleteInput
+                handleInputChange={handleInputChange}
                 label="Make"
                 id="make"
-                name="make"
-                defaultValue={fields.make}
-                handleInputChange={handleInputChange}
                 mandatory
               />
               <TextInput
