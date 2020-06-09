@@ -69,7 +69,8 @@ module.exports = settings => {
       'IMAGE_STREAM_NAMESPACE': phases[phase].namespace,
       'IMAGE_STREAM_TAG': 'patroni:v10-stable',
       'REPLICA': phases[phase].patroniReplica,
-      'PVC_SIZE': phases[phase].patroniPvcSize
+      'PVC_SIZE': phases[phase].patroniPvcSize,
+      'STORAGE_CLASS': phases[phase].storageClass
     }
   }))
 

@@ -10,16 +10,16 @@ const AutocompleteInput = (props) => {
     mandatory,
     possibleChoicesList,
     errorMessage,
-    setFields,
-    fields,
+    handleInputChange,
+    name,
   } = props;
   const [rowClass, setRowClass] = useState('form-group row');
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(defaultValue);
   const [suggestions, setSuggestions] = useState([]);
   const [validationErrors, setValidationErrors] = useState('');
 
   const handleOnBlur = (event) => {
-    const { targetValue } = event.target;
+    const { value: targetValue } = event.target;
     if (targetValue === '' && mandatory === true) {
       setValidationErrors(`${label} cannot be left blank`);
       setRowClass('form-group row error');
@@ -50,8 +50,8 @@ const AutocompleteInput = (props) => {
 
 
   const onChange = (event, { newValue }) => {
+    handleInputChange(event);
     setValue(newValue);
-    setFields({ ...fields, make: newValue.toUpperCase() });
   };
 
   const onSuggestionsFetchRequested = ({ value }) => {
@@ -64,9 +64,13 @@ const AutocompleteInput = (props) => {
 
   // Autosuggest will pass through all these props to the input.
   const inputProps = {
-    placeholder: '',
+    // placeholder: defaultValue,
     value,
     onChange,
+    name,
+    onBlur: (event) => {
+      handleOnBlur(event);
+    },
   };
 
   return (
@@ -86,7 +90,6 @@ const AutocompleteInput = (props) => {
           getSuggestionValue={getSuggestionValue}
           renderSuggestion={renderSuggestion}
           inputProps={inputProps}
-          onBlur={handleOnBlur}
         />
         <small className="form-text text-danger">{errorMessage || validationErrors}</small>
       </div>
@@ -97,19 +100,25 @@ export default AutocompleteInput;
 
 
 AutocompleteInput.defaultProps = {
-  details: '',
+  defaultValue: '',
   errorMessage: '',
   mandatory: false,
+  possibleChoicesList: [],
 };
 
 AutocompleteInput.propTypes = {
-  details: PropTypes.string,
   errorMessage: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.string,
   ]),
-  possibleChoicesList: PropTypes.arrayOf.isRequired,
+  defaultValue: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]),
+  handleInputChange: PropTypes.func.isRequired,
+  possibleChoicesList: PropTypes.arrayOf(PropTypes.string),
   id: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   mandatory: PropTypes.bool,
+  name: PropTypes.string.isRequired,
 };

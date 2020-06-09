@@ -5,7 +5,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import CustomPropTypes from '../app/utilities/props';
-
 import VehicleForm from './components/VehicleForm';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import History from '../app/History';
@@ -26,7 +25,6 @@ const VehicleAddContainer = (props) => {
   const [classes, setClasses] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const { keycloak } = props;
-
 
   const handleInputChange = (event) => {
     const { value, name } = event.target;

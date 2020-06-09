@@ -47,6 +47,7 @@ const VehicleForm = (props) => {
               <AutocompleteInput
                 label="Make"
                 id="make"
+                name="make"
                 defaultValue={fields.make}
                 handleInputChange={handleInputChange}
                 mandatory
