@@ -9,6 +9,7 @@ import AutocompleteInput from '../../app/components/AutocompleteInput';
 
 const VehicleForm = (props) => {
   const {
+    makes,
     loading,
     vehicleYears,
     vehicleTypes,
@@ -17,6 +18,7 @@ const VehicleForm = (props) => {
     vehicleClasses,
     fields,
     formTitle,
+    setFields,
   } = props;
   if (loading) {
     return (<Loading />);
@@ -43,10 +45,15 @@ const VehicleForm = (props) => {
                 selectedOption={fields.modelYear.name}
               />
               <AutocompleteInput
-                handleInputChange={handleInputChange}
                 label="Make"
                 id="make"
+                name="make"
+                defaultValue={fields.make}
+                handleInputChange={handleInputChange}
                 mandatory
+                possibleChoicesList={makes}
+                setFields={setFields}
+                fields={fields}
               />
               <TextInput
                 label="Model"
