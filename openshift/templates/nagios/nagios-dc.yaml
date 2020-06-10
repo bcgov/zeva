@@ -90,7 +90,7 @@ objects:
     name: nagios
   spec:
     host: nagios-${NAME}-${ENV_NAME}.pathfinder.gov.bc.ca
-    path: /nagios3
+    path: /
     port:
       targetPort: 8080-tcp
     tls:

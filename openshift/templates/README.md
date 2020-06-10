@@ -136,4 +136,7 @@ nagios image is located in tbiwaq-test and tbiwaq-prod project
 oc create imagestream nagios -n tbiwaq-prod
 oc process -f ./nagios-secret.yaml | oc create -f - -n tbiwaq-prod
 oc policy add-role-to-user system:image-puller system:serviceaccount:tbiwaq-prod:builder --namespace=tbiwaq-tools
+oc policy add-role-to-user edit system:serviceaccount:tbiwaq-prod:nagios --namespace=tbiwaq-prod
 oc process -f ./nagios-bc.yaml ENV_NAME=prod | oc create -f - -n tbiwaq-prod
+oc tag tbiwaq-prod/nagios:latest tabiwaq-prod/nagios:prod
+oc process -f ./nagios-dc.yaml ENV_NAME=prod NAGIOS_PVC_SIZE=2G | oc create -f - -n tbiwaq-prod
