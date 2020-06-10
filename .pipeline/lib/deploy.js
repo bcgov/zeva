@@ -45,7 +45,7 @@ module.exports = settings => {
       'CPU_REQUEST': phases[phase].minioCpuRequest,
       'CPU_LIMIT': phases[phase].minioCpuLimit,
       'MEMORY_REQUEST': phases[phase].minioMemoryRequest,
-      'MEMORY_LIMIT': phases[phase].minioMemoryRequest,      
+      'MEMORY_LIMIT': phases[phase].minioMemoryRequest      
     }
   }))
  

@@ -280,6 +280,7 @@ objects:
     - metadata:
         name: rabbitmq-storage
       spec:
+        storageClassName: netapp-block-standard
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
