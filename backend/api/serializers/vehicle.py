@@ -150,7 +150,8 @@ class VehicleSerializer(
         fields = (
             'id', 'actions', 'history', 'make', 'model_name', 'model_year',
             'range', 'validation_status', 'vehicle_class_code', 'weight_kg',
-            'vehicle_zev_type', 'credit_class', 'credit_value'
+            'vehicle_zev_type', 'credit_class', 'credit_value',
+            'vehicle_comment'
         )
         read_only_fields = ('validation_status',)
 
@@ -220,9 +221,9 @@ class VehicleMinSerializer(
         slug_field='name',
         queryset=ModelYear.objects.all()
     )
-    vehicle_class_code = SlugRelatedField(	
-        slug_field='vehicle_class_code',	
-        queryset=VehicleClass.objects.all()	
+    vehicle_class_code = SlugRelatedField(
+        slug_field='vehicle_class_code',
+        queryset=VehicleClass.objects.all()
     )
     vehicle_zev_type = SlugRelatedField(
         slug_field='vehicle_zev_code',

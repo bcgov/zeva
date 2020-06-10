@@ -48,14 +48,18 @@ const VehicleValidatePage = (props) => {
           </div>
         </div>
       </div>
-
       <div className="row">
         <div className="col-md-6 pt-4 pb-2">
-          <div>Add a comment to the vehicle supplier (for Rejections only)</div>
-          <textarea className="form-control" rows="3" />
+          <div className="form">
+            <div className="request-changes-check">
+              <input type="checkbox" onChange={console.log('check')} />
+                Request range results and/or a change to the range value from the vehicle supplier, specify below.
+            </div>
+            <div>Add a comment to the vehicle supplier for request or rejection.</div>
+            <textarea className="form-control" rows="3" />
+          </div>
         </div>
       </div>
-
       <div className="row">
         <div className="col-md-6">
           <div className="action-bar">
@@ -99,7 +103,7 @@ VehicleValidatePage.propTypes = {
     make: PropTypes.string,
     modelName: PropTypes.string,
     vehicleClassCide: PropTypes.shape({
-      description: PropTypes.string
+      description: PropTypes.string,
     }),
     vehicleZevType: PropTypes.shape({
       description: PropTypes.string,

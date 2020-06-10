@@ -235,3 +235,12 @@ p {
     margin-right: auto;
   }
 }
+#vehicle-validation .form {
+  padding: 1rem;
+  .request-changes-check {
+    margin: 0 0 1rem 0;
+    input[type=checkbox] {
+      margin-right: .5rem;
+    }
+  }
+}
