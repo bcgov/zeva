@@ -4,8 +4,8 @@ PROJECT_NAME=$1
 DEPLOYMENT=$2
 MIN_REPLICAS=$3
 
-if [ ${DEPLOYMENT} == "zeva-test-rabbitmq-cluster" ]; then
-    availableReplicas=$(oc get -o json StatefulSet ${DEPLOYMENT} -n $PROJECT_NAME | jq '.status.replicas')
+if [ ${DEPLOYMENT} == "zeva-test-rabbitmq-cluster" ] || [ ${DEPLOYMENT} == "zeva-prod-rabbitmq-cluster" ]; then
+    availableReplicas=$(oc get -o json StatefulSet ${DEPLOYMENT} -n $PROJECT_NAME | jq '.status.readyReplicas')
 elif [ ${DEPLOYMENT} == "patroni-dev" ] || [ ${DEPLOYMENT} == "patroni-test" ] || [ ${DEPLOYMENT} == "patroni-prod" ]; then
     availableReplicas=$(oc get -o json StatefulSet ${DEPLOYMENT} -n $PROJECT_NAME | jq '.status.currentReplicas')
 else availableReplicas=$(oc get -o json dc $DEPLOYMENT -n $PROJECT_NAME | jq '.status.availableReplicas')
