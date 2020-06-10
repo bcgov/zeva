@@ -19,7 +19,7 @@ const phases = {
         minioCpuRequest: '100m', minioCpuLimit: '200m', minioMemoryRequest: '200M', minioMemoryLimit: '500M', minioPvcSize: '1G',
         schemaspyCpuRequest: '50m', schemaspyCpuLimit: '200m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 160,
         rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '1G', rabbitmqPvcSize: '1G', rabbitmqReplica: 1, rabbitmqPostStartSleep: 120,
-        patroniCpuRequest: '200m', patroniCpuLimit: '400m', patroniMemoryRequest: '250M', patroniMemoryLimit: '500M', patroniPvcSize: '2G', patroniReplica: 1, storageClass: 'netapp-block-standard'},
+        patroniCpuRequest: '200m', patroniCpuLimit: '400m', patroniMemoryRequest: '250M', patroniMemoryLimit: '500M', patroniPvcSize: '2G', patroniReplica: 1, storageClass: 'gluster-block'},
 
   test: {namespace:'tbiwaq-test', name: `${name}`, ssoSuffix:'-test', 
         ssoName:'sso-test', phase: 'test'  ,  changeId:changeId, suffix: `-test`, 
@@ -41,7 +41,7 @@ const phases = {
         minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M', minioPvcSize: '10G',
         schemaspyCpuRequest: '50m', schemaspyCpuLimit: '400m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 160,
         rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '1G', rabbitmqPvcSize: '5G', rabbitmqReplica: 3, rabbitmqPostStartSleep: 120,
-        patroniCpuRequest: '500m', patroniCpuLimit: '1000m', patroniMemoryRequest: '1G', patroniMemoryLimit: '2G', patroniPvcSize: '10G', patroniReplica: 3, storageClass: 'netapp-block-standard'},
+        patroniCpuRequest: '500m', patroniCpuLimit: '1000m', patroniMemoryRequest: '1G', patroniMemoryLimit: '2G', patroniPvcSize: '60G', patroniReplica: 3, storageClass: 'netapp-block-standard'},
 
 };
 
