@@ -83,6 +83,15 @@ class VehicleViewSet(
         serializer = VehicleZevTypeSerializer(zev_types, many=True)
         return Response(serializer.data)
 
+    @action(detail=False)	
+    def classes(self, _request):
+        """
+        Get the zev classes
+        """
+        classes = VehicleClass.objects.all().order_by('description')
+        serializer = VehicleClassSerializer(classes, many=True)
+        return Response(serializer.data)
+
     @action(detail=False)
     def classes(self, _request):
         """

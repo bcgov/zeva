@@ -65,9 +65,6 @@ class Router extends Component {
             loading: false,
             statusCode: error.response.status,
           });
-        } else {
-          console.error(error);
-          console.error(error.response);
         }
 
         throw error;

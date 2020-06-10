@@ -5,6 +5,7 @@ from api.models.icbc_vehicle import IcbcVehicle
 from api.models.model_year import ModelYear
 from api.models.icbc_upload_date import IcbcUploadDate
 
+
 def trim_all_columns(df):
     """
     Trim whitespace from ends of each value across all series in dataframe
@@ -27,11 +28,12 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user):
       'MODEL_YEAR',
       'MAKE']), 1, inplace=True)
     df = trim_all_columns(df)
-    icbc_years = list(df.MODEL_YEAR.unique())
+    df["MODEL"] = df["MODEL"].str.upper()
+    df["MAKE"]= df["MAKE"].str.upper()
     df["MODEL_YEAR"] = df["MODEL_YEAR"].astype(int)
     # pd.options.display.float_format = '{:.0f}'.format
     try:
-        #insert entry into the icbc upload date table
+        # insert entry into the icbc upload date table
         today_date = IcbcUploadDate.objects.create(
             create_user=requesting_user.username,
             update_user=requesting_user.username,
@@ -47,8 +49,8 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user):
             (model_year, _) = ModelYear.objects.get_or_create(
                 name=icbc_vehicle_year,
                 defaults={
-                    'create_user':requesting_user.username,
-                    'update_user':requesting_user.username
+                    'create_user': requesting_user.username,
+                    'update_user': requesting_user.username
                 })
             icbc_vehicle_year_id = model_year.id
 
@@ -57,18 +59,18 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user):
                     model_year_id=icbc_vehicle_year_id,
                     make=icbc_vehicle_make,
                     defaults={
-                        'create_user':requesting_user.username,
-                        'update_user':requesting_user.username
+                        'create_user': requesting_user.username,
+                        'update_user': requesting_user.username
                     })
             vehicle_id = vehicle.id
 
             (icbc_registration, _) = IcbcRegistrationData.objects.get_or_create(
                 vin=icbc_vehicle_vin,
                 defaults={
-                    'create_user':requesting_user.username,
-                    'update_user':requesting_user.username,
-                    'icbc_vehicle_id':vehicle_id,
-                    'icbc_upload_date_id':today_date.id
+                    'create_user': requesting_user.username,
+                    'update_user': requesting_user.username,
+                    'icbc_vehicle_id': vehicle_id,
+                    'icbc_upload_date_id': today_date.id
                 })
-    except Exception as e: 
+    except Exception as e:
         print(e)

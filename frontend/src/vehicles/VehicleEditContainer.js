@@ -20,13 +20,14 @@ const VehicleEditContainer = (props) => {
   const [types, setTypes] = useState([]);
   const [showProgressBars, setShowProgressBars] = useState(false);
   const [years, setYears] = useState([]);
-
+  const [vehicles, setVehicles] = useState([]);
   const { keycloak } = props;
   const { id } = useParams();
   const [edits, setEdits] = useState({});
 
   const handleInputChange = (event) => {
     const { value, name } = event.target;
+
     setEdits({
       ...edits,
       [name]: value,
@@ -104,7 +105,7 @@ const VehicleEditContainer = (props) => {
       });
     });
   };
-
+  const orgMakes = vehicles.map((vehicle) => vehicle.make);
   const refreshList = () => {
     setLoading(true);
     axios.all([
@@ -112,11 +113,13 @@ const VehicleEditContainer = (props) => {
       axios.get(ROUTES_VEHICLES.ZEV_TYPES),
       axios.get(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id)),
       axios.get(ROUTES_VEHICLES.CLASSES),
-    ]).then(axios.spread((yearsRes, typesRes, vehicleRes, classesRes) => (
+      axios.get(ROUTES_VEHICLES.LIST),
+    ]).then(axios.spread((yearsRes, typesRes, vehicleRes, classesRes, orgVehiclesRes) => (
       [setYears(yearsRes.data),
         setTypes(typesRes.data),
         setFields(vehicleRes.data),
         setClasses(classesRes.data),
+        setVehicles(orgVehiclesRes.data),
         setLoading(false)]
     )));
   };
@@ -128,14 +131,16 @@ const VehicleEditContainer = (props) => {
   return (
     <VehicleForm
       deleteFiles={deleteFiles}
-      setDeleteFiles={setDeleteFiles}
       fields={fields}
       files={files}
       formTitle="Enter ZEV Model"
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
       loading={loading}
+      makes={orgMakes}
       progressBars={progressBars}
+      setDeleteFiles={setDeleteFiles}
+      setFields={setFields}
       setUploadFiles={setFiles}
       showProgressBars={showProgressBars}
       vehicleClasses={classes}

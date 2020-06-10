@@ -4,11 +4,12 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import History from '../../app/History';
-import Loading from '../../app/components/Loading';
-import VehicleFormDropdown from './VehicleFormDropdown';
-import TextInput from '../../app/components/TextInput';
+import AutocompleteInput from '../../app/components/AutocompleteInput';
 import ExcelFileDrop from '../../app/components/FileDrop';
+import Loading from '../../app/components/Loading';
+import TextInput from '../../app/components/TextInput';
 import getFileSize from '../../app/utilities/getFileSize';
+import VehicleFormDropdown from './VehicleFormDropdown';
 
 const VehicleForm = (props) => {
   const {
@@ -19,8 +20,10 @@ const VehicleForm = (props) => {
     handleInputChange,
     handleSubmit,
     loading,
+    makes,
     progressBars,
     setDeleteFiles,
+    setFields,
     setUploadFiles,
     showProgressBars,
     vehicleClasses,
@@ -63,13 +66,16 @@ const VehicleForm = (props) => {
                 handleInputChange={handleInputChange}
                 selectedOption={fields.modelYear.name}
               />
-              <TextInput
+              <AutocompleteInput
                 label="Make"
                 id="make"
                 name="make"
                 defaultValue={fields.make}
                 handleInputChange={handleInputChange}
                 mandatory
+                possibleChoicesList={makes}
+                setFields={setFields}
+                fields={fields}
               />
               <TextInput
                 label="Model"
@@ -269,8 +275,10 @@ VehicleForm.propTypes = {
   handleInputChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
+  makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   progressBars: PropTypes.shape(),
   setDeleteFiles: PropTypes.func,
+  setFields: PropTypes.func.isRequired,
   setUploadFiles: PropTypes.func,
   showProgressBars: PropTypes.bool.isRequired,
   vehicleTypes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
