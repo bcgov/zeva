@@ -132,6 +132,8 @@ oc -n tbiwaq-prod delete secret/patroni-backup secret/ftp-secret dc/patroni-back
 
 ## Setup Nagios
 nagios-base image is located in tbiwaq-tools project
-nagios inage is located in tbiwaq-test and tbiwaq-prod project
-oc policy add-role-to-user system:image-puller system:serviceaccount:tbiwaq-test:builder --namespace=tbiwaq-tools
+nagios image is located in tbiwaq-test and tbiwaq-prod project
+oc create imagestream nagios -n tbiwaq-prod
+oc process -f ./nagios-secret.yaml | oc create -f - -n tbiwaq-prod
 oc policy add-role-to-user system:image-puller system:serviceaccount:tbiwaq-prod:builder --namespace=tbiwaq-tools
+oc process -f ./nagios-bc.yaml ENV_NAME=prod | oc create -f - -n tbiwaq-prod
