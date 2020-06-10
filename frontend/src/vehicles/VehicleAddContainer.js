@@ -71,16 +71,16 @@ const VehicleAddContainer = (props) => {
 
   return (
     <VehicleForm
-      makes={orgMakes}
+      fields={fields}
+      formTitle="Enter ZEV"
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
       loading={loading}
-      vehicleYears={years}
-      vehicleTypes={types}
-      fields={fields}
-      vehicleClasses={classes}
-      formTitle="Enter ZEV"
+      makes={orgMakes}
       setFields={setFields}
+      vehicleClasses={classes}
+      vehicleTypes={types}
+      vehicleYears={years}
     />
   );
 };

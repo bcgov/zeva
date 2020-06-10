@@ -5,8 +5,9 @@ import PropTypes from 'prop-types';
 import ROUTES_SALES from '../../app/routes/Sales';
 import download from '../../app/utilities/download';
 import CustomPropTypes from '../../app/utilities/props';
-import ExcelFileDrop from './ExcelFileDrop';
+import ExcelFileDrop from '../../app/components/FileDrop';
 import SalesSubmissionsListTable from './SalesSubmissionsListTable';
+import getFileSize from '../../app/utilities/getFileSize';
 
 const SalesSubmissionPage = (props) => {
   const {
@@ -20,24 +21,6 @@ const SalesSubmissionPage = (props) => {
   } = props;
 
   const [selectedYear, setSelectedYear] = useState(null);
-
-  const getFileSize = (bytes) => {
-    if (bytes === 0) {
-      return '0 bytes';
-    }
-
-    const k = 1000;
-    const sizes = ['bytes', 'KB', 'MB', 'GB', 'TB'];
-    let i = Math.floor(Math.log(bytes) / Math.log(k));
-
-    if (i > 4) { // nothing bigger than a terrabyte
-      i = 4;
-    }
-
-    const filesize = parseFloat((bytes / k ** i).toFixed(1));
-
-    return `${filesize} ${sizes[i]}`;
-  };
 
   const removeFile = (removedFile) => {
     const found = files.findIndex((file) => (file === removedFile));

@@ -1,0 +1,43 @@
+.uploader-files {
+  padding: 0 0.9rem !important;
+
+  .actions {
+    padding: 0;
+
+    button {
+      background-color: transparent;
+      border: none;
+
+      &.delete {
+        color: $red;
+        text-align: center;
+      }
+    }
+  }
+
+  .filename {
+    overflow: hidden;
+    padding-left: 2rem;
+    text-overflow: ellipsis;
+  }
+
+  .header {
+    color: $default-text-blue;
+    font-weight: bold;
+  }
+
+  .progress-bar {
+    background-color: $default-text-blue;
+  }
+
+  .row {
+    &:nth-child(odd) {
+      background-color: $white;
+    }
+
+    > div {
+      padding-bottom: 0.5rem;
+      padding-top: 0.5rem;
+    }
+  }
+}

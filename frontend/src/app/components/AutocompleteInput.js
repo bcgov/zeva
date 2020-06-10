@@ -39,7 +39,16 @@ const AutocompleteInput = (props) => {
   // When suggestion is clicked, Autosuggest needs to populate the input
   // based on the clicked suggestion. Teach Autosuggest how to calculate the
   // input value for every given suggestion.
-  const getSuggestionValue = (suggestion) => suggestion;
+  const getSuggestionValue = (suggestion) => {
+    handleInputChange({
+      target: {
+        name,
+        value: suggestion,
+      },
+    });
+
+    return suggestion;
+  };
 
   // Use your imagination to render suggestions.
   const renderSuggestion = (suggestion) => (
@@ -50,7 +59,10 @@ const AutocompleteInput = (props) => {
 
 
   const onChange = (event, { newValue }) => {
-    handleInputChange(event);
+    if (event.target.name) {
+      handleInputChange(event);
+    }
+
     setValue(newValue);
   };
 
