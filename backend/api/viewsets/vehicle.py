@@ -2,8 +2,6 @@ import uuid
 
 from django.utils.decorators import method_decorator
 
-from minio import Minio
-
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -18,8 +16,8 @@ from api.serializers.vehicle import ModelYearSerializer, \
     VehicleZevTypeSerializer, VehicleClassSerializer, \
     VehicleSaveSerializer, VehicleSerializer, \
     VehicleStatusChangeSerializer
+from api.services.minio import minio_put_object
 from auditable.views import AuditableMixin
-from zeva.settings import MINIO
 
 
 class VehicleViewSet(
@@ -122,21 +120,10 @@ class VehicleViewSet(
 
     @action(detail=True, methods=['get'])
     def minio_url(self, request, pk=None):
-        minio = Minio(
-            MINIO['ENDPOINT'],
-            access_key=MINIO['ACCESS_KEY'],
-            secret_key=MINIO['SECRET_KEY'],
-            secure=MINIO['USE_SSL']
-        )
-
         object_name = uuid.uuid4().hex
-        put_url = minio.presigned_put_object(
-            bucket_name=MINIO['BUCKET_NAME'],
-            object_name=object_name,
-            expires=MINIO['EXPIRY']
-        )
+        url = minio_put_object(object_name)
 
         return Response({
-            'url': put_url,
+            'url': url,
             'minio_object_name': object_name
         })

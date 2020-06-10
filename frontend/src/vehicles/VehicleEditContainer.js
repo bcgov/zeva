@@ -12,6 +12,7 @@ import history from '../app/History';
 
 const VehicleEditContainer = (props) => {
   const [classes, setClasses] = useState([]);
+  const [deleteFiles, setDeleteFiles] = useState([]);
   const [fields, setFields] = useState({});
   const [files, setFiles] = useState([]);
   const [progressBars, setProgressBars] = useState({});
@@ -95,7 +96,10 @@ const VehicleEditContainer = (props) => {
         data.vehicleAttachments = attachments;
       }
 
-      axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), data).then(() => {
+      axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), {
+        ...data,
+        deleteFiles,
+      }).then(() => {
         history.push(`/vehicles/${id}`);
       });
     });
@@ -123,6 +127,8 @@ const VehicleEditContainer = (props) => {
 
   return (
     <VehicleForm
+      deleteFiles={deleteFiles}
+      setDeleteFiles={setDeleteFiles}
       fields={fields}
       files={files}
       formTitle="Enter ZEV Model"

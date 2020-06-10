@@ -12,6 +12,7 @@ from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.models.vehicle_zev_type import ZevType
 from api.serializers.user import UserSerializer
 from api.serializers.vehicle_attachment import VehicleAttachmentSerializer
+from api.services.minio import minio_remove_object
 from api.services.vehicle import change_status
 from api.models.vehicle_class import VehicleClass
 
@@ -209,8 +210,8 @@ class VehicleSaveSerializer(
 
     def update(self, instance, validated_data):
         request = self.context.get('request')
-
         attachments = validated_data.pop('vehicle_attachments', [])
+        files_to_be_removed = request.data.get('delete_files', [])
 
         for attachment in attachments:
             VehicleAttachment.objects.create(
@@ -218,6 +219,19 @@ class VehicleSaveSerializer(
                 vehicle=instance,
                 **attachment
             )
+
+        for file_id in files_to_be_removed:
+            attachment = VehicleAttachment.objects.filter(
+                id=file_id,
+                vehicle=instance
+            ).first()
+
+            if attachment:
+                minio_remove_object(attachment.minio_object_name)
+
+                attachment.is_removed = True
+                attachment.update_user = request.user.username
+                attachment.save()
 
         for data in validated_data:
             setattr(instance, data, validated_data[data])
@@ -238,7 +252,7 @@ class VehicleSaveSerializer(
         fields = (
             'id', 'make', 'model_name', 'model_year', 'range', 'weight_kg',
             'validation_status', 'vehicle_zev_type', 'vehicle_class_code',
-            'create_user', 'update_user', 'vehicle_attachments',
+            'create_user', 'update_user', 'vehicle_attachments'
         )
         read_only_fields = ('validation_status', 'id',)
 
