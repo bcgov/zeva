@@ -1,5 +1,8 @@
+from collections import defaultdict
+from django.core.exceptions import PermissionDenied
 from django.db import models
 from enumfields import EnumField
+from rest_framework.serializers import ValidationError
 
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from auditable.models import Auditable
@@ -60,6 +63,40 @@ class SalesSubmission(Auditable):
             organization=org,
             submission_date=date
         ).count()
+
+    def validate_validation_status(self, status, request):
+        if status in [
+            SalesSubmissionStatuses.VALIDATED,
+            SalesSubmissionStatuses.REJECTED
+        ]:
+            if self.validation_status not in [
+                SalesSubmissionStatuses.RECOMMEND_APPROVAL,
+                SalesSubmissionStatuses.RECOMMEND_REJECTION
+            ]:
+                raise ValidationError(
+                    "Submission needs a recommendation from an analyst first."
+                )
+
+            if not request.user.has_perm('SIGN_SALES'):
+                raise PermissionDenied(
+                    "You do not have the permission to finalize this "
+                    "submission."
+                )
+
+        if status in [
+            SalesSubmissionStatuses.RECOMMEND_APPROVAL,
+            SalesSubmissionStatuses.RECOMMEND_REJECTION
+        ]:
+            if self.validation_status != SalesSubmissionStatuses.SUBMITTED:
+                raise ValidationError(
+                    "Submission needs to submitted first."
+                )
+
+            if not request.user.has_perm('RECOMMEND_CREDIT_TRANSFER'):
+                raise PermissionDenied(
+                    "You do not have the permission to make recommendations "
+                    "for this submission."
+                )
 
     class Meta:
         db_table = "sales_submission"
