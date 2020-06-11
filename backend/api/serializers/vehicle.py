@@ -178,7 +178,8 @@ class VehicleSaveSerializer(
     )
     vehicle_attachments = VehicleAttachmentSerializer(
         allow_null=True,
-        many=True
+        many=True,
+        required=False
     )
     vehicle_class_code = SlugRelatedField(
         slug_field='vehicle_class_code',
@@ -200,7 +201,6 @@ class VehicleSaveSerializer(
         make = " ".join(make.upper().split())
 
         vehicle = Vehicle.objects.create(
-            create_user=request.user.username,
             make=make,
             organization_id=organization.id,
             **validated_data

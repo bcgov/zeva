@@ -63,6 +63,7 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
     organization_address = OrganizationAddressSerializer(allow_null=True)
 
     def create(self, validated_data):
+        request = self.context.get('request')
         addr = validated_data.pop('organization_address')
         obj = Organization.objects.create(
             **validated_data
