@@ -1,5 +1,4 @@
 from decimal import Decimal
-from django.core.exceptions import PermissionDenied
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from rest_framework.serializers import ModelSerializer, \
     SerializerMethodField, Serializer, IntegerField, CharField

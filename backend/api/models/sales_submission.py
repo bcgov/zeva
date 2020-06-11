@@ -1,4 +1,3 @@
-from collections import defaultdict
 from django.core.exceptions import PermissionDenied
 from django.db import models
 from enumfields import EnumField
