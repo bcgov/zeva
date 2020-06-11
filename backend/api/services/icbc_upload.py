@@ -33,7 +33,7 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user):
     df["MODEL_YEAR"] = df["MODEL_YEAR"].astype(int)
     # pd.options.display.float_format = '{:.0f}'.format
     try:
-        #insert entry into the icbc upload date table
+        # insert entry into the icbc upload date table
         today_date = IcbcUploadDate.objects.create(
             create_user=requesting_user.username,
             update_user=requesting_user.username,
@@ -72,5 +72,5 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user):
                     'icbc_vehicle_id': vehicle_id,
                     'icbc_upload_date_id': today_date.id
                 })
-    except Exception as e: 
+    except Exception as e:
         print(e)

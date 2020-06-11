@@ -32,11 +32,8 @@ module.exports = {
       'labelAttributes': ['label'],
     }],
     'no-plusplus':
-      [2,
-        {
-          'allowForLoopAfterthoughts':
-            true
-        }
-      ]
+      [2, {
+        'allowForLoopAfterthoughts': true,
+      }]
   }
 };

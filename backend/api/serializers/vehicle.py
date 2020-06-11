@@ -6,10 +6,13 @@ from rest_framework.serializers import ModelSerializer, \
 from api.models.model_year import ModelYear
 from api.models.credit_class import CreditClass
 from api.models.vehicle import Vehicle
-from api.models.vehicle_statuses import VehicleDefinitionStatuses
+from api.models.vehicle_attachment import VehicleAttachment
 from api.models.vehicle_change_history import VehicleChangeHistory
+from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.models.vehicle_zev_type import ZevType
 from api.serializers.user import UserSerializer
+from api.serializers.vehicle_attachment import VehicleAttachmentSerializer
+from api.services.minio import minio_remove_object
 from api.services.vehicle import change_status
 from api.models.vehicle_class import VehicleClass
 
@@ -98,14 +101,15 @@ class VehicleHistorySerializer(
 class VehicleSerializer(
     ModelSerializer, EnumSupportSerializerMixin
 ):
-    model_year = ModelYearSerializer()
-    validation_status = EnumField(VehicleDefinitionStatuses, read_only=True)
-    vehicle_zev_type = VehicleZevTypeSerializer()
-    history = VehicleHistorySerializer(read_only=True, many=True)
     actions = SerializerMethodField()
+    attachments = SerializerMethodField()
     credit_class = SerializerMethodField()
     credit_value = SerializerMethodField()
+    history = VehicleHistorySerializer(read_only=True, many=True)
+    model_year = ModelYearSerializer()
+    validation_status = EnumField(VehicleDefinitionStatuses, read_only=True)
     vehicle_class_code = VehicleClassSerializer()
+    vehicle_zev_type = VehicleZevTypeSerializer()
 
     def get_actions(self, instance):
         request = self.context.get('request')
@@ -124,6 +128,15 @@ class VehicleSerializer(
             actions.append('SUBMITTED')
 
         return actions
+
+    def get_attachments(self, instance):
+        attachments = VehicleAttachment.objects.filter(
+            vehicle_id=instance.id,
+            is_removed=False)
+
+        serializer = VehicleAttachmentSerializer(attachments, many=True)
+
+        return serializer.data
 
     def get_credit_class(self, instance):
         request = self.context.get('request')
@@ -151,7 +164,7 @@ class VehicleSerializer(
             'id', 'actions', 'history', 'make', 'model_name', 'model_year',
             'range', 'validation_status', 'vehicle_class_code', 'weight_kg',
             'vehicle_zev_type', 'credit_class', 'credit_value',
-            'vehicle_comment'
+            'vehicle_comment','attachments'
         )
         read_only_fields = ('validation_status',)
 
@@ -162,6 +175,10 @@ class VehicleSaveSerializer(
     model_year = SlugRelatedField(
         slug_field='name',
         queryset=ModelYear.objects.all()
+    )
+    vehicle_attachments = VehicleAttachmentSerializer(
+        allow_null=True,
+        many=True
     )
     vehicle_class_code = SlugRelatedField(
         slug_field='vehicle_class_code',
@@ -183,6 +200,7 @@ class VehicleSaveSerializer(
         make = " ".join(make.upper().split())
 
         vehicle = Vehicle.objects.create(
+            create_user=request.user.username,
             make=make,
             organization_id=organization.id,
             **validated_data
@@ -191,6 +209,30 @@ class VehicleSaveSerializer(
         return vehicle
 
     def update(self, instance, validated_data):
+        request = self.context.get('request')
+        attachments = validated_data.pop('vehicle_attachments', [])
+        files_to_be_removed = request.data.get('delete_files', [])
+
+        for attachment in attachments:
+            VehicleAttachment.objects.create(
+                create_user=request.user.username,
+                vehicle=instance,
+                **attachment
+            )
+
+        for file_id in files_to_be_removed:
+            attachment = VehicleAttachment.objects.filter(
+                id=file_id,
+                vehicle=instance
+            ).first()
+
+            if attachment:
+                minio_remove_object(attachment.minio_object_name)
+
+                attachment.is_removed = True
+                attachment.update_user = request.user.username
+                attachment.save()
+
         for data in validated_data:
             setattr(instance, data, validated_data[data])
 
@@ -200,6 +242,7 @@ class VehicleSaveSerializer(
 
                 setattr(instance, data, make)
 
+        instance.update_user = request.user.username
         instance.save()
 
         return instance
@@ -209,7 +252,7 @@ class VehicleSaveSerializer(
         fields = (
             'id', 'make', 'model_name', 'model_year', 'range', 'weight_kg',
             'validation_status', 'vehicle_zev_type', 'vehicle_class_code',
-            'create_user', 'update_user',
+            'create_user', 'update_user', 'vehicle_attachments'
         )
         read_only_fields = ('validation_status', 'id',)
 

@@ -3,9 +3,11 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
-const ExcelFileDrop = (props) => {
+const FileDrop = (props) => {
   const { setFiles, maxFiles } = props;
-  const [dropMessage, setDropMessage] = useState('Drop file here, or click to open file selection dialog');
+  const [dropMessage, setDropMessage] = useState(
+    'Drag and Drop files here',
+  );
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > maxFiles) {
       setDropMessage(`File upload is limited to ${maxFiles}. Please select again`);
@@ -23,14 +25,20 @@ const ExcelFileDrop = (props) => {
         <FontAwesomeIcon icon="upload" />
         <br />
         {dropMessage}
+        {dropMessage === 'Drag and Drop files here' && (
+          <>
+            {' or '}
+            <br /> <button className="link" type="button">browse to select a file from your machine to upload</button>.
+          </>
+        )}
       </div>
     </div>
   );
 };
 
-ExcelFileDrop.propTypes = {
+FileDrop.propTypes = {
   setFiles: PropTypes.func.isRequired,
   maxFiles: PropTypes.number.isRequired,
 };
 
-export default ExcelFileDrop;
+export default FileDrop;

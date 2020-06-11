@@ -26,7 +26,6 @@
     "morgan": "^1.9.1",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
-    "react-autocomplete": "^1.8.1",
     "react-autosuggest": "^10.0.2",
     "react-dom": "^16.12.0",
     "react-draggable": "^4.2.0",

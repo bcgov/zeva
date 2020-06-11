@@ -2,13 +2,14 @@ const API_BASE_PATH = '/vehicles';
 
 const VEHICLES = {
   ADD: `${API_BASE_PATH}/add`,
-  EDIT: `${API_BASE_PATH}/:id/edit`,
+  CLASSES: `${API_BASE_PATH}/classes`,
   DETAILS: `${API_BASE_PATH}/:id`,
-  ZEV_TYPES: `${API_BASE_PATH}/zev_types`,
+  EDIT: `${API_BASE_PATH}/:id/edit`,
   LIST: `${API_BASE_PATH}`,
+  MINIO_URL: `${API_BASE_PATH}/:id/minio_url`,
   MODELS: `${API_BASE_PATH}/models`,
   YEARS: `${API_BASE_PATH}/years`,
-  CLASSES: `${API_BASE_PATH}/classes`,
+  ZEV_TYPES: `${API_BASE_PATH}/zev_types`,
 };
 
 export default VEHICLES;

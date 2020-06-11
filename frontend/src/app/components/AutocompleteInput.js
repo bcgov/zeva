@@ -1,54 +1,68 @@
 import Autosuggest from 'react-autosuggest';
 import React, { useState } from 'react';
-
-// Imagine you have a list of languages that you'd like to autosuggest.
-const languages = [
-  {
-    name: 'C',
-    year: 1972,
-  },
-  {
-    name: 'Elm',
-    year: 2012,
-  },
-];
-
-// Teach Autosuggest how to calculate suggestions for any given input value.
-const getSuggestions = (value) => {
-  const inputValue = value.trim().toLowerCase();
-  const inputLength = inputValue.length;
-
-  return inputLength === 0 ? [] : languages.filter((lang) => lang.name.toLowerCase().slice(0, inputLength) === inputValue);
-};
-
-// When suggestion is clicked, Autosuggest needs to populate the input
-// based on the clicked suggestion. Teach Autosuggest how to calculate the
-// input value for every given suggestion.
-const getSuggestionValue = (suggestion) => suggestion.name;
-
-// Use your imagination to render suggestions.
-const renderSuggestion = (suggestion) => (
-  <div>
-    {suggestion.name}
-  </div>
-);
+import PropTypes from 'prop-types';
 
 const AutocompleteInput = (props) => {
   const {
-    makes,
-    errorMessage,
-    handleInputChange,
     label,
     id,
-    details,
+    defaultValue,
     mandatory,
+    possibleChoicesList,
+    errorMessage,
+    handleInputChange,
+    name,
   } = props;
   const [rowClass, setRowClass] = useState('form-group row');
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(defaultValue);
   const [suggestions, setSuggestions] = useState([]);
   const [validationErrors, setValidationErrors] = useState('');
 
+  const handleOnBlur = (event) => {
+    const { value: targetValue } = event.target;
+    if (targetValue === '' && mandatory === true) {
+      setValidationErrors(`${label} cannot be left blank`);
+      setRowClass('form-group row error');
+    }
+    if (targetValue !== '' || !mandatory) {
+      setValidationErrors('');
+      setRowClass('form-group row');
+    }
+  };
+  // Teach Autosuggest how to calculate suggestions for any given input value.
+  const getSuggestions = (value) => {
+    const inputValue = value.trim().toLowerCase();
+    const inputLength = inputValue.length;
+    return inputLength === 0 ? [] : possibleChoicesList.filter((item) => item.toLowerCase().slice(0, inputLength) === inputValue);
+  };
+
+  // When suggestion is clicked, Autosuggest needs to populate the input
+  // based on the clicked suggestion. Teach Autosuggest how to calculate the
+  // input value for every given suggestion.
+  const getSuggestionValue = (suggestion) => {
+    handleInputChange({
+      target: {
+        name,
+        value: suggestion,
+      },
+    });
+
+    return suggestion;
+  };
+
+  // Use your imagination to render suggestions.
+  const renderSuggestion = (suggestion) => (
+    <div>
+      {suggestion}
+    </div>
+  );
+
+
   const onChange = (event, { newValue }) => {
+    if (event.target.name) {
+      handleInputChange(event);
+    }
+
     setValue(newValue);
   };
 
@@ -62,13 +76,17 @@ const AutocompleteInput = (props) => {
 
   // Autosuggest will pass through all these props to the input.
   const inputProps = {
-    placeholder: '',
+    // placeholder: defaultValue,
     value,
     onChange,
+    name,
+    onBlur: (event) => {
+      handleOnBlur(event);
+    },
   };
 
   return (
-    <div className={rowClass}>
+    <div id="autocomplete-container" className={rowClass}>
       <label
         className="col-sm-4 col-form-label"
         htmlFor={id}
@@ -93,71 +111,26 @@ const AutocompleteInput = (props) => {
 export default AutocompleteInput;
 
 
-// import PropTypes from 'prop-types';
+AutocompleteInput.defaultProps = {
+  defaultValue: '',
+  errorMessage: '',
+  mandatory: false,
+  possibleChoicesList: [],
+};
 
-
-
-//   const { suggestions } = useState('');
-
-//   const handleOnBlur = (event) => {
-//     const { value } = event.target;
-//     if (value === '' && mandatory === true) {
-//       setValidationErrors(`${label} cannot be left blank`);
-//       setRowClass('form-group row error');
-//     }
-//     if (value !== '' || !mandatory) {
-//       setValidationErrors('');
-//       setRowClass('form-group row');
-//     }
-//   };
-
-
-//   const inputProps = {
-//     placeholder: 'Type a programming language',
-//     value,
-//     onChange: this.onChange,
-//   };
-//   return (
-//     <div className={rowClass}>
-//       <label
-//         className="col-sm-4 col-form-label"
-//         htmlFor={id}
-//       >
-//         {label}
-//       </label>
-//       <div className="col-sm-8">
-//         {details && (<small className="form-text text-muted">{details}</small>) }
-//         <Autosuggest
-//           suggestions={suggestions}
-//           onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-//           onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-//           getSuggestionValue={getSuggestionValue}
-//           renderSuggestion={renderSuggestion}
-//           inputProps={inputProps}
-//         />
-//         <small className="form-text text-danger">{errorMessage || validationErrors}</small>
-//       </div>
-//     </div>
-
-
-//   );
-// };
-
-// AutocompleteInput.defaultProps = {
-//   details: '',
-//   errorMessage: '',
-//   mandatory: false,
-// };
-
-// AutocompleteInput.propTypes = {
-//   details: PropTypes.string,
-//   errorMessage: PropTypes.oneOfType([
-//     PropTypes.bool,
-//     PropTypes.string,
-//   ]),
-//   handleInputChange: PropTypes.func.isRequired,
-//   id: PropTypes.string.isRequired,
-//   label: PropTypes.string.isRequired,
-//   mandatory: PropTypes.bool,
-// };
-// export default AutocompleteInput;
+AutocompleteInput.propTypes = {
+  errorMessage: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.string,
+  ]),
+  defaultValue: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]),
+  handleInputChange: PropTypes.func.isRequired,
+  possibleChoicesList: PropTypes.arrayOf(PropTypes.string),
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  mandatory: PropTypes.bool,
+  name: PropTypes.string.isRequired,
+};

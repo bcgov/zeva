@@ -2,7 +2,7 @@
 kind: Template
 apiVersion: v1
 labels:
-  template: tfrs-postgresql-persistent-template
+  template: zeva-postgresql-persistent-template
 metadata:
   name: postgresql-dc
   creationTimestamp:
