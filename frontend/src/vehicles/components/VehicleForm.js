@@ -121,114 +121,116 @@ const VehicleForm = (props) => {
             </fieldset>
           </div>
 
-          <div className="col-lg-6">
-            <h3 className="font-weight-bold mt-2">Upload range test results</h3>
-            <fieldset>
-              <div className="form-group row">
-                <label className="col-sm-3 col-form-label" htmlFor="file-upload">
-                  File Upload
-                </label>
-                <div className="col-sm-9">
-                  <ExcelFileDrop setFiles={setUploadFiles} maxFiles={100000} />
-                </div>
-              </div>
-
-              <div className="form-group mt-4 row">
-                <div className="col-12 text-blue">
-                  <strong>Files</strong> (doc, docx, xls, xlsx, pdf, jpg, png)
-                </div>
-              </div>
-              {(files.length > 0 || fields.attachments.length > 0) && (
-                <div className="form-group uploader-files mt-3">
-                  <div className="row">
-                    <div className="col-8 filename header">Filename</div>
-                    <div className="col-3 size header">Size</div>
-                    <div className="col-1 actions header" />
+          {setUploadFiles && (
+            <div className="col-lg-6">
+              <h3 className="font-weight-bold mt-2">Upload range test results</h3>
+              <fieldset>
+                <div className="form-group row">
+                  <label className="col-sm-3 col-form-label" htmlFor="file-upload">
+                    File Upload
+                  </label>
+                  <div className="col-sm-9">
+                    <ExcelFileDrop setFiles={setUploadFiles} maxFiles={100000} />
                   </div>
-                  {fields.attachments.filter((attachment) => (
-                    deleteFiles.indexOf(attachment.id) < 0
-                  )).map((attachment) => (
-                    <div className="row" key={attachment.id}>
-                      <div className="col-8 filename">
-                        <button
-                          className="link"
-                          onClick={() => {
-                            axios.get(attachment.url, {
-                              responseType: 'blob',
-                              headers: {
-                                Authorization: null,
-                              },
-                            }).then((response) => {
-                              const objectURL = window.URL.createObjectURL(
-                                new Blob([response.data]),
-                              );
-                              const link = document.createElement('a');
-                              link.href = objectURL;
-                              link.setAttribute('download', attachment.filename);
-                              document.body.appendChild(link);
-                              link.click();
-                            });
-                          }}
-                          type="button"
-                        >
-                          {attachment.filename}
-                        </button>
-                      </div>
-                      <div className="col-3 size">{getFileSize(attachment.size)}</div>
-                      <div className="col-1 actions">
-                        <button
-                          className="delete"
-                          onClick={() => {
-                            deleteFile(attachment.id);
-                          }}
-                          type="button"
-                        >
-                          <FontAwesomeIcon icon="trash" />
-                        </button>
-                      </div>
+                </div>
+
+                <div className="form-group mt-4 row">
+                  <div className="col-12 text-blue">
+                    <strong>Files</strong> (doc, docx, xls, xlsx, pdf, jpg, png)
+                  </div>
+                </div>
+                {(files.length > 0 || (fields.attachments && fields.attachments.length > 0)) && (
+                  <div className="form-group uploader-files mt-3">
+                    <div className="row">
+                      <div className="col-8 filename header">Filename</div>
+                      <div className="col-3 size header">Size</div>
+                      <div className="col-1 actions header" />
                     </div>
-                  ))}
-                  {files.map((file, index) => (
-                    <div className="row" key={file.name}>
-                      <div className="col-8 filename">{file.name}</div>
-                      {!showProgressBars && [
-                        <div className="col-3 size" key="size">{getFileSize(file.size)}</div>,
-                        <div className="col-1 actions" key="actions">
+                    {fields.attachments.filter((attachment) => (
+                      deleteFiles.indexOf(attachment.id) < 0
+                    )).map((attachment) => (
+                      <div className="row" key={attachment.id}>
+                        <div className="col-8 filename">
+                          <button
+                            className="link"
+                            onClick={() => {
+                              axios.get(attachment.url, {
+                                responseType: 'blob',
+                                headers: {
+                                  Authorization: null,
+                                },
+                              }).then((response) => {
+                                const objectURL = window.URL.createObjectURL(
+                                  new Blob([response.data]),
+                                );
+                                const link = document.createElement('a');
+                                link.href = objectURL;
+                                link.setAttribute('download', attachment.filename);
+                                document.body.appendChild(link);
+                                link.click();
+                              });
+                            }}
+                            type="button"
+                          >
+                            {attachment.filename}
+                          </button>
+                        </div>
+                        <div className="col-3 size">{getFileSize(attachment.size)}</div>
+                        <div className="col-1 actions">
                           <button
                             className="delete"
                             onClick={() => {
-                              removeFile(file);
+                              deleteFile(attachment.id);
                             }}
                             type="button"
                           >
                             <FontAwesomeIcon icon="trash" />
                           </button>
-                        </div>,
-                      ]}
-                      {showProgressBars && index in progressBars && (
-                        <div className="col-4">
-                          <div className="progress">
-                            <div
-                              aria-valuemax="100"
-                              aria-valuemin="0"
-                              aria-valuenow={progressBars[index]}
-                              className="progress-bar"
-                              role="progressbar"
-                              style={{
-                                width: `${progressBars[index]}%`,
+                        </div>
+                      </div>
+                    ))}
+                    {files.map((file, index) => (
+                      <div className="row" key={file.name}>
+                        <div className="col-8 filename">{file.name}</div>
+                        {!showProgressBars && [
+                          <div className="col-3 size" key="size">{getFileSize(file.size)}</div>,
+                          <div className="col-1 actions" key="actions">
+                            <button
+                              className="delete"
+                              onClick={() => {
+                                removeFile(file);
                               }}
+                              type="button"
                             >
-                              {progressBars[index]}%
+                              <FontAwesomeIcon icon="trash" />
+                            </button>
+                          </div>,
+                        ]}
+                        {showProgressBars && index in progressBars && (
+                          <div className="col-4">
+                            <div className="progress">
+                              <div
+                                aria-valuemax="100"
+                                aria-valuemin="0"
+                                aria-valuenow={progressBars[index]}
+                                className="progress-bar"
+                                role="progressbar"
+                                style={{
+                                  width: `${progressBars[index]}%`,
+                                }}
+                              >
+                                {progressBars[index]}%
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </fieldset>
-          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </fieldset>
+            </div>
+          )}
         </div>
 
         <div className="row">
@@ -263,8 +265,9 @@ VehicleForm.defaultProps = {
   deleteFiles: [],
   files: [],
   progressBars: {},
-  setDeleteFiles: () => {},
-  setUploadFiles: () => {},
+  setDeleteFiles: null,
+  setUploadFiles: null,
+  showProgressBars: false,
 };
 
 VehicleForm.propTypes = {
@@ -280,7 +283,7 @@ VehicleForm.propTypes = {
   setDeleteFiles: PropTypes.func,
   setFields: PropTypes.func.isRequired,
   setUploadFiles: PropTypes.func,
-  showProgressBars: PropTypes.bool.isRequired,
+  showProgressBars: PropTypes.bool,
   vehicleTypes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleClasses: PropTypes.arrayOf(PropTypes.shape()).isRequired,
