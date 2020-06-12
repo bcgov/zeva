@@ -75,6 +75,12 @@ class Vehicle(Auditable):
         db_comment="The number of credits (of credit_class) a sale of this "
                    "vehicle can generate"
     )
+    vehicle_comment = models.CharField(
+        blank=True,
+        null=True,
+        max_length=250,
+        db_comment="Comment left by idir user about vehicle"
+    )
 
     def get_credit_class(self):
         """

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 
@@ -8,12 +8,25 @@ import history from '../../app/History';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 
 const VehicleValidatePage = (props) => {
-  const { details, loading, requestStateChange } = props;
+  const {
+    details, loading, requestStateChange, setComments, postComment, comments,
+  } = props;
+  const [requestChangeCheck, setRequestChangeCheck] = useState(false);
   if (loading) {
     return <Loading />;
   }
   const { id } = details;
-
+  const handleChange = (event) => {
+    setComments({ ...comments, vehicleComment: event.target.value });
+  };
+  const handleCheckboxClick = (event) => {
+    const { checked } = event.target;
+    if (checked) {
+      setRequestChangeCheck(true);
+    } else {
+      setRequestChangeCheck(false);
+    }
+  };
   const editButton = (
     <button
       className="button primary"
@@ -48,14 +61,21 @@ const VehicleValidatePage = (props) => {
           </div>
         </div>
       </div>
-
       <div className="row">
         <div className="col-md-6 pt-4 pb-2">
-          <div>Add a comment to the vehicle supplier (for Rejections only)</div>
-          <textarea className="form-control" rows="3" />
+          <div className="form">
+            <div className="request-changes-check">
+              <input type="checkbox" onChange={handleCheckboxClick} />
+                Request range results and/or a change to the range value from the vehicle supplier, specify below.
+            </div>
+            <div>Add a comment to the vehicle supplier for request or rejection.</div>
+            <textarea className="form-control" rows="3" onChange={handleChange} />
+            <div className="text-right">
+              <button className="button primary" disabled={!requestChangeCheck || !comments.vehicleComment} type="button" key="REQUEST" onClick={() => postComment('CHANGES_REQUESTED')}>Request Range Change/Test Results</button>
+            </div>
+          </div>
         </div>
       </div>
-
       <div className="row">
         <div className="col-md-6">
           <div className="action-bar">
@@ -72,11 +92,14 @@ const VehicleValidatePage = (props) => {
             </span>
             <span className="right-content">
               {details.validationStatus === 'DRAFT' ? editButton : '' }
-              {details.actions.map((action) => (
+              {/* {details.actions.map((action) => (
                 <button className="button primary" type="button" key={action} onClick={() => requestStateChange(action)}>
                   Set status to {action}
                 </button>
-              ))}
+              ))} */}
+
+              <button className="btn btn-outline-danger" disabled={!comments.vehicleComment || requestChangeCheck} type="button" key="REJECTED" onClick={() => postComment('REJECTED')}>Reject</button>
+              <button className="button primary" disabled={comments.vehicleComment || requestChangeCheck} type="button" key="VALIDATED" onClick={() => requestStateChange('VALIDATED')}>Validate</button>
             </span>
           </div>
         </div>
@@ -98,8 +121,9 @@ VehicleValidatePage.propTypes = {
     history: PropTypes.arrayOf(PropTypes.object),
     make: PropTypes.string,
     modelName: PropTypes.string,
-    vehicleClassCide: PropTypes.shape({
-      description: PropTypes.string
+    weightKg: PropTypes.string,
+    vehicleClassCode: PropTypes.shape({
+      description: PropTypes.string,
     }),
     vehicleZevType: PropTypes.shape({
       description: PropTypes.string,
@@ -115,6 +139,11 @@ VehicleValidatePage.propTypes = {
   }).isRequired,
   loading: PropTypes.bool.isRequired,
   requestStateChange: PropTypes.func.isRequired,
+  setComments: PropTypes.func.isRequired,
+  postComment: PropTypes.func.isRequired,
+  comments: PropTypes.shape({
+    vehicleComment: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default VehicleValidatePage;

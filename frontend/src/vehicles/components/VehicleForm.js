@@ -2,7 +2,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import moment from 'moment-timezone';
 import History from '../../app/History';
 import AutocompleteInput from '../../app/components/AutocompleteInput';
 import ExcelFileDrop from '../../app/components/FileDrop';
@@ -30,7 +30,6 @@ const VehicleForm = (props) => {
     vehicleTypes,
     vehicleYears,
   } = props;
-
   const deleteFile = (attachmentId) => {
     setDeleteFiles([...deleteFiles, attachmentId]);
   };
@@ -51,6 +50,16 @@ const VehicleForm = (props) => {
       <div className="row">
         <div className="col-12">
           <h1>{formTitle}</h1>
+          {fields.validationStatus === 'CHANGES_REQUESTED'
+          && (
+          <div>
+            <h6 className="request-changes-vehicle">Range test results have been requested by government</h6>
+            <h6>
+              <b>Comment from {fields.updateUser.displayName}, {moment(fields.updateTimestamp).format('MMM d, YYYY')}: </b>
+              {fields.vehicleComment}
+            </h6>
+          </div>
+          )}
         </div>
       </div>
 
