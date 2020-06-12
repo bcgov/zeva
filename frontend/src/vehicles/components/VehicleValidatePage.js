@@ -8,8 +8,10 @@ import history from '../../app/History';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 
 const VehicleValidatePage = (props) => {
-  const { details, loading, requestStateChange, setComments, postComment, comments } = props;
-  const [requestChangeCheck, setRequestChangeCheck] = useState(false)
+  const {
+    details, loading, requestStateChange, setComments, postComment, comments,
+  } = props;
+  const [requestChangeCheck, setRequestChangeCheck] = useState(false);
   if (loading) {
     return <Loading />;
   }
@@ -25,7 +27,6 @@ const VehicleValidatePage = (props) => {
       setRequestChangeCheck(false);
     }
   };
-
   const editButton = (
     <button
       className="button primary"
@@ -70,7 +71,7 @@ const VehicleValidatePage = (props) => {
             <div>Add a comment to the vehicle supplier for request or rejection.</div>
             <textarea className="form-control" rows="3" onChange={handleChange} />
             <div className="text-right">
-              <button className="button primary" disabled={!requestChangeCheck || !comments} type="button" key="REQUEST" onClick={() => postComment('CHANGES_REQUESTED')}>Request Range Change/Test Results</button>
+              <button className="button primary" disabled={!requestChangeCheck || !comments.vehicleComment} type="button" key="REQUEST" onClick={() => postComment('CHANGES_REQUESTED')}>Request Range Change/Test Results</button>
             </div>
           </div>
         </div>
@@ -97,8 +98,8 @@ const VehicleValidatePage = (props) => {
                 </button>
               ))} */}
 
-              <button className="btn btn-outline-danger" disabled={!comments || requestChangeCheck} type="button" key="REJECTED" onClick={() => postComment('REJECTED')}>Reject</button>
-              <button className="button primary" disabled={comments || requestChangeCheck} type="button" key="VALIDATED" onClick={() => requestStateChange('VALIDATED')}>Validate</button>
+              <button className="btn btn-outline-danger" disabled={!comments.vehicleComment || requestChangeCheck} type="button" key="REJECTED" onClick={() => postComment('REJECTED')}>Reject</button>
+              <button className="button primary" disabled={comments.vehicleComment || requestChangeCheck} type="button" key="VALIDATED" onClick={() => requestStateChange('VALIDATED')}>Validate</button>
             </span>
           </div>
         </div>
@@ -120,7 +121,8 @@ VehicleValidatePage.propTypes = {
     history: PropTypes.arrayOf(PropTypes.object),
     make: PropTypes.string,
     modelName: PropTypes.string,
-    vehicleClassCide: PropTypes.shape({
+    weightKg: PropTypes.string,
+    vehicleClassCode: PropTypes.shape({
       description: PropTypes.string,
     }),
     vehicleZevType: PropTypes.shape({
@@ -137,6 +139,11 @@ VehicleValidatePage.propTypes = {
   }).isRequired,
   loading: PropTypes.bool.isRequired,
   requestStateChange: PropTypes.func.isRequired,
+  setComments: PropTypes.func.isRequired,
+  postComment: PropTypes.func.isRequired,
+  comments: PropTypes.shape({
+    vehicleComment: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default VehicleValidatePage;
