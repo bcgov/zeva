@@ -1,8 +1,7 @@
 from decimal import Decimal
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
-from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer, \
-    SerializerMethodField
+    SerializerMethodField, Serializer, IntegerField, CharField
 
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission import SalesSubmission
@@ -81,9 +80,9 @@ class SalesSubmissionSerializer(ModelSerializer, EnumSupportSerializerMixin):
         )
 
 
-class RecordOfSaleSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-    validation_status = serializers.CharField()
+class RecordOfSaleSerializer(Serializer):
+    id = IntegerField()
+    validation_status = CharField()
 
 
 class SalesSubmissionSaveSerializer(
@@ -91,6 +90,14 @@ class SalesSubmissionSaveSerializer(
 ):
     records = RecordOfSaleSerializer(many=True)
     validation_status = EnumField(SalesSubmissionStatuses)
+
+    def validate_validation_status(self, value):
+        request = self.context.get('request')
+        instance = self.instance
+
+        instance.validate_validation_status(value, request)
+
+        return value
 
     def update(self, instance, validated_data):
         request = self.context.get('request')

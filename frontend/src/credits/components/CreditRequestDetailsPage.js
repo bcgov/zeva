@@ -119,7 +119,7 @@ const CreditRequestDetailsPage = (props) => {
               </button>
             </span>
             <span className="right-content">
-              {user.isGovernment && submission.validationStatus === 'SUBMITTED' && (
+              {user.isGovernment && submission.validationStatus === 'SUBMITTED' && user.hasPermission('RECOMMEND_SALES') && (
                 <>
                   {validatedOnly && [
                     <button
@@ -155,6 +155,20 @@ const CreditRequestDetailsPage = (props) => {
                     Validate
                   </button>
                 </>
+              )}
+              {user.isGovernment
+              && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
+              && user.hasPermission('SIGN_SALES')
+              && (
+                <button
+                  className="button primary"
+                  onClick={() => {
+                    handleSubmit('VALIDATED');
+                  }}
+                  type="button"
+                >
+                  Issue Credits
+                </button>
               )}
             </span>
           </div>
