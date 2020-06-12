@@ -6,6 +6,7 @@ import React from 'react';
 import ReactTable from 'react-table';
 
 import history from '../../app/History';
+import formatStatus from '../../app/utilities/formatStatus';
 
 const VehicleListTable = (props) => {
   const { items, user, handleCheckboxClick } = props;
@@ -79,8 +80,8 @@ const VehicleListTable = (props) => {
     id: 'col-class',
     width: 125,
   }, {
-    accessor: 'validationStatus',
-    className: 'text-center',
+    accessor: (row) => (formatStatus(row.validationStatus)),
+    className: 'text-center text-capitalize',
     Header: 'Status',
     id: 'col-status',
     width: 175,

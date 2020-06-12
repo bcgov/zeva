@@ -45,9 +45,9 @@ const UserDetailsForm = (props) => {
       </div>
       <form onSubmit={(event) => handleSubmit(event)}>
         <div className="row align-items-center">
-          <fieldset>
+          <fieldset className="col-lg-12 col-xl-8">
             <div className="form-layout row">
-              <span className="col-xs-8">
+              <span className="col-md-8">
                 <TextInput
                   defaultValue={details.firstName}
                   errorMessage={'firstName' in errorFields && errorFields.firstName}
@@ -113,7 +113,7 @@ const UserDetailsForm = (props) => {
                   name="phone"
                 />
               </span>
-              <span className="col-xs-4">
+              <span className="col-md-4">
                 {user.isGovernment && (
                   <div className="form-group">
                     <div className="col-sm-4">
