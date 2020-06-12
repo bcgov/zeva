@@ -46,7 +46,9 @@ class VehicleViewSet(
             queryset = Vehicle.objects.filter(
                 validation_status__in=[
                     VehicleDefinitionStatuses.SUBMITTED,
-                    VehicleDefinitionStatuses.VALIDATED
+                    VehicleDefinitionStatuses.VALIDATED,
+                    VehicleDefinitionStatuses.REJECTED,
+                    VehicleDefinitionStatuses.CHANGES_REQUESTED
                 ]
             )
 
