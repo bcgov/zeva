@@ -1,4 +1,8 @@
 #form {
+  .request-changes-vehicle {
+    font-weight:bold;
+    color: $red;
+  }
   fieldset {
     border: 1px solid $default-background-grey;
     padding: 0.5rem;

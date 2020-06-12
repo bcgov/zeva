@@ -11,6 +11,8 @@ from api.models.vehicle_change_history import VehicleChangeHistory
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.models.vehicle_zev_type import ZevType
 from api.serializers.user import UserSerializer
+from api.serializers.user import MemberSerializer
+from api.models.user_profile import UserProfile
 from api.serializers.vehicle_attachment import VehicleAttachmentSerializer
 from api.services.minio import minio_remove_object
 from api.services.vehicle import change_status
@@ -110,6 +112,7 @@ class VehicleSerializer(
     validation_status = EnumField(VehicleDefinitionStatuses, read_only=True)
     vehicle_class_code = VehicleClassSerializer()
     vehicle_zev_type = VehicleZevTypeSerializer()
+    update_user = SerializerMethodField()
 
     def get_actions(self, instance):
         request = self.context.get('request')
@@ -157,6 +160,15 @@ class VehicleSerializer(
             return instance.get_credit_value()
 
         return None
+    
+    def get_update_user(self, obj):
+        user_profile = UserProfile.objects.filter(username=obj.update_user)
+
+        if user_profile.exists():
+            serializer = MemberSerializer(user_profile.first(), read_only=True)
+            return serializer.data
+
+        return obj.update_user
 
     class Meta:
         model = Vehicle
@@ -164,7 +176,7 @@ class VehicleSerializer(
             'id', 'actions', 'history', 'make', 'model_name', 'model_year',
             'range', 'validation_status', 'vehicle_class_code', 'weight_kg',
             'vehicle_zev_type', 'credit_class', 'credit_value',
-            'vehicle_comment', 'attachments'
+            'vehicle_comment', 'attachments', 'update_user', 'update_timestamp'
         )
         read_only_fields = ('validation_status',)
 
