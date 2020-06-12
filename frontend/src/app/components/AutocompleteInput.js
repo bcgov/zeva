@@ -1,6 +1,7 @@
 import Autosuggest from 'react-autosuggest';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { KEY_RETURN } from 'keycode-js';
 
 const AutocompleteInput = (props) => {
   const {
@@ -13,10 +14,11 @@ const AutocompleteInput = (props) => {
     handleInputChange,
     name,
   } = props;
+  const [isHighlighting, setIsHighlighting] = useState(false);
   const [rowClass, setRowClass] = useState('form-group row');
-  const [value, setValue] = useState(defaultValue);
   const [suggestions, setSuggestions] = useState([]);
   const [validationErrors, setValidationErrors] = useState('');
+  const [value, setValue] = useState(defaultValue);
 
   const handleOnBlur = (event) => {
     const { value: targetValue } = event.target;
@@ -24,10 +26,13 @@ const AutocompleteInput = (props) => {
       setValidationErrors(`${label} cannot be left blank`);
       setRowClass('form-group row error');
     }
+
     if (targetValue !== '' || !mandatory) {
       setValidationErrors('');
       setRowClass('form-group row');
     }
+
+    setIsHighlighting(false);
   };
   // Teach Autosuggest how to calculate suggestions for any given input value.
   const getSuggestions = (value) => {
@@ -63,7 +68,18 @@ const AutocompleteInput = (props) => {
       handleInputChange(event);
     }
 
+    setIsHighlighting(false);
     setValue(newValue);
+  };
+
+  const onSuggestionHighlighted = (suggestion) => {
+    if (suggestion.suggestion) {
+      setIsHighlighting(true);
+    }
+  };
+
+  const onSuggestionSelected = () => {
+    setIsHighlighting(false);
   };
 
   const onSuggestionsFetchRequested = ({ value }) => {
@@ -83,6 +99,17 @@ const AutocompleteInput = (props) => {
     onBlur: (event) => {
       handleOnBlur(event);
     },
+    onKeyDown: (event) => {
+      if (!isHighlighting) {
+        return;
+      }
+
+      const key = event.key || event.keyCode;
+
+      if (key === 'Enter' || key === KEY_RETURN) {
+        event.preventDefault();
+      }
+    },
   };
 
   return (
@@ -97,6 +124,8 @@ const AutocompleteInput = (props) => {
         <Autosuggest
           className="form-control"
           suggestions={suggestions}
+          onSuggestionHighlighted={onSuggestionHighlighted}
+          onSuggestionSelected={onSuggestionSelected}
           onSuggestionsFetchRequested={onSuggestionsFetchRequested}
           onSuggestionsClearRequested={onSuggestionsClearRequested}
           getSuggestionValue={getSuggestionValue}
