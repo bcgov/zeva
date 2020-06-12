@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 
@@ -8,11 +8,23 @@ import history from '../../app/History';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 
 const VehicleValidatePage = (props) => {
-  const { details, loading, requestStateChange } = props;
+  const { details, loading, requestStateChange, setComments, postComment, comments } = props;
+  const [requestChangeCheck, setRequestChangeCheck] = useState(false)
   if (loading) {
     return <Loading />;
   }
   const { id } = details;
+  const handleChange = (event) => {
+    setComments({ ...comments, vehicleComment: event.target.value });
+  };
+  const handleCheckboxClick = (event) => {
+    const { checked } = event.target;
+    if (checked) {
+      setRequestChangeCheck(true);
+    } else {
+      setRequestChangeCheck(false);
+    }
+  };
 
   const editButton = (
     <button
@@ -52,11 +64,14 @@ const VehicleValidatePage = (props) => {
         <div className="col-md-6 pt-4 pb-2">
           <div className="form">
             <div className="request-changes-check">
-              <input type="checkbox" onChange={console.log('check')} />
+              <input type="checkbox" onChange={handleCheckboxClick} />
                 Request range results and/or a change to the range value from the vehicle supplier, specify below.
             </div>
             <div>Add a comment to the vehicle supplier for request or rejection.</div>
-            <textarea className="form-control" rows="3" />
+            <textarea className="form-control" rows="3" onChange={handleChange} />
+            <div className="text-right">
+              <button className="button primary" disabled={!requestChangeCheck || !comments} type="button" key="REQUEST" onClick={() => postComment('REQEUST')}>Request Range Change/Test Results</button>
+            </div>
           </div>
         </div>
       </div>
@@ -76,11 +91,14 @@ const VehicleValidatePage = (props) => {
             </span>
             <span className="right-content">
               {details.validationStatus === 'DRAFT' ? editButton : '' }
-              {details.actions.map((action) => (
+              {/* {details.actions.map((action) => (
                 <button className="button primary" type="button" key={action} onClick={() => requestStateChange(action)}>
                   Set status to {action}
                 </button>
-              ))}
+              ))} */}
+
+              <button className="btn btn-outline-danger" disabled={!details.vehicleComment || requestChangeCheck} type="button" key="REJECTED" onClick={() => requestStateChange('REJECTED')}>Reject</button>
+              <button className="button primary" disabled={details.vehicleComment || requestChangeCheck} type="button" key="VALIDATED" onClick={() => requestStateChange('VALIDATED')}>Validate</button>
             </span>
           </div>
         </div>

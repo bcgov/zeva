@@ -15,6 +15,7 @@ import VehicleValidatePage from './components/VehicleValidatePage';
 const VehicleDetailsContainer = (props) => {
   const [vehicle, setVehicle] = useState({});
   const [loading, setLoading] = useState(true);
+  const [comments, setComments] = useState({});
   const { id } = useParams();
 
   const { keycloak, user } = props;
@@ -26,10 +27,18 @@ const VehicleDetailsContainer = (props) => {
     });
   };
 
+  const postComment = (newState) => {
+    setLoading(true);
+    axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), comments).then(() => {
+      stateChange(newState);
+    });
+  };
+
   const refreshList = () => {
     setLoading(true);
 
     axios.get(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id)).then((response) => {
+      console.log(response.data);
       setVehicle(response.data);
       setLoading(false);
     });
@@ -43,8 +52,11 @@ const VehicleDetailsContainer = (props) => {
     return (
       <VehicleValidatePage
         loading={loading}
+        comments={comments}
         details={vehicle}
+        setComments={setComments}
         requestStateChange={stateChange}
+        postComment={postComment}
       />
     );
   }
