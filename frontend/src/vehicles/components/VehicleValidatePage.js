@@ -70,7 +70,7 @@ const VehicleValidatePage = (props) => {
             <div>Add a comment to the vehicle supplier for request or rejection.</div>
             <textarea className="form-control" rows="3" onChange={handleChange} />
             <div className="text-right">
-              <button className="button primary" disabled={!requestChangeCheck || !comments} type="button" key="REQUEST" onClick={() => postComment('REQEUST')}>Request Range Change/Test Results</button>
+              <button className="button primary" disabled={!requestChangeCheck || !comments} type="button" key="REQUEST" onClick={() => postComment('CHANGES_REQUESTED')}>Request Range Change/Test Results</button>
             </div>
           </div>
         </div>
@@ -97,8 +97,8 @@ const VehicleValidatePage = (props) => {
                 </button>
               ))} */}
 
-              <button className="btn btn-outline-danger" disabled={!details.vehicleComment || requestChangeCheck} type="button" key="REJECTED" onClick={() => requestStateChange('REJECTED')}>Reject</button>
-              <button className="button primary" disabled={details.vehicleComment || requestChangeCheck} type="button" key="VALIDATED" onClick={() => requestStateChange('VALIDATED')}>Validate</button>
+              <button className="btn btn-outline-danger" disabled={!comments || requestChangeCheck} type="button" key="REJECTED" onClick={() => postComment('REJECTED')}>Reject</button>
+              <button className="button primary" disabled={comments || requestChangeCheck} type="button" key="VALIDATED" onClick={() => requestStateChange('VALIDATED')}>Validate</button>
             </span>
           </div>
         </div>
