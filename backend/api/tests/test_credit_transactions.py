@@ -1,4 +1,5 @@
 from collections import namedtuple
+from django.db.models import Q
 
 from .base_test_case import BaseTestCase
 from ..models.credit_class import CreditClass
@@ -11,35 +12,46 @@ class TestOrganizations(BaseTestCase):
     def setUp(self):
         super().setUp()
 
-        org1 = self.users['vs_user_1'].organization
-        org2 = self.users['vs_user_2'].organization
-        gov = self.users['engineer'].organization
+        self.org1 = self.users['RTAN_BCEID'].organization
+        self.org2 = self.users['EMHILLIE_BCEID'].organization
+        self.gov = self.users['RTAN'].organization
 
-        validation = CreditTransactionType.objects.get(transaction_type='Validation')
-        reduction = CreditTransactionType.objects.get(transaction_type='Reduction')
+        validation = CreditTransactionType.objects.get(
+            transaction_type='Validation'
+        )
+        reduction = CreditTransactionType.objects.get(
+            transaction_type='Reduction'
+        )
 
         class_a = CreditClass.objects.get(credit_class='A')
         class_b = CreditClass.objects.get(credit_class='B')
 
-        CreatedTransaction = namedtuple('CreatedTransaction', ('credit', 'debit', 'creditclass', 'type', 'value'))
+        CreatedTransaction = namedtuple(
+            'CreatedTransaction', (
+                'credit', 'debit', 'creditclass', 'type', 'value'
+            )
+        )
 
         to_create = [
-            CreatedTransaction(org1, gov, class_a, validation, 100.0),
-            CreatedTransaction(org1, gov, class_b, validation, 50.0),
-            CreatedTransaction(gov, org1, class_a, reduction, 93.0),
-            CreatedTransaction(org1, gov, class_b, validation, 50.0),
-            CreatedTransaction(org1, gov, class_b, validation, 45.0),
-            CreatedTransaction(org2, gov, class_a, validation, 99.0),
+            CreatedTransaction(
+                self.org1, self.gov, class_a, validation, 100.0
+            ),
+            CreatedTransaction(
+                self.org1, self.gov, class_b, validation, 50.0
+            ),
+            CreatedTransaction(
+                self.gov, self.org1, class_a, reduction, 93.0
+            ),
+            CreatedTransaction(
+                self.org1, self.gov, class_b, validation, 50.0
+            ),
+            CreatedTransaction(
+                self.org1, self.gov, class_b, validation, 45.0
+            ),
+            CreatedTransaction(
+                self.org2, self.gov, class_a, validation, 99.0
+            ),
         ]
-
-        # assertions based on test data
-        self.GOV_TRANSACTION_COUNT = 6
-        self.ORG1_TRANSACTION_COUNT = 5
-        self.ORG2_TRANSACTION_COUNT = 1
-        self.ORG1_BALANCE_A = 7
-        self.ORG1_BALANCE_B = 145
-        self.ORG2_BALANCE_A = 99
-        self.ORG2_BALANCE_B = 0
 
         for t in to_create:
             CreditTransaction.objects.create(
@@ -51,32 +63,52 @@ class TestOrganizations(BaseTestCase):
             )
 
     def test_org1_credits(self):
-        response = self.clients['vs_user_1'].get("/api/credit-transactions")
+        response = self.clients['RTAN_BCEID'].get("/api/credit-transactions")
         self.assertEqual(response.status_code, 200)
         result = response.data
-        self.assertEqual(len(result), self.ORG1_TRANSACTION_COUNT)
 
-        response = self.clients['vs_user_1'].get("/api/organizations/mine")
+        count = CreditTransaction.objects.filter(
+            Q(debit_from_id=self.org1.id) |
+            Q(credit_to_id=self.org1.id)
+        ).count()
+
+        self.assertEqual(len(result), count)
+
+        response = self.clients['RTAN_BCEID'].get(
+            "/api/organizations/mine"
+        )
         self.assertEqual(response.status_code, 200)
         result = response.data
-        self.assertEqual(result['balance']['A'], self.ORG1_BALANCE_A)
-        self.assertEqual(result['balance']['B'], self.ORG1_BALANCE_B)
 
     def test_org2_credits(self):
-        response = self.clients['vs_user_2'].get("/api/credit-transactions")
+        response = self.clients['EMHILLIE_BCEID'].get(
+            "/api/credit-transactions"
+        )
         self.assertEqual(response.status_code, 200)
         result = response.data
-        self.assertEqual(len(result), self.ORG2_TRANSACTION_COUNT)
 
-        response = self.clients['vs_user_2'].get("/api/organizations/mine")
+        count = CreditTransaction.objects.filter(
+            Q(debit_from_id=self.org2.id) |
+            Q(credit_to_id=self.org2.id)
+        ).count()
+
+        self.assertEqual(len(result), count)
+
+        response = self.clients['EMHILLIE_BCEID'].get(
+            "/api/organizations/mine"
+        )
         self.assertEqual(response.status_code, 200)
         result = response.data
-        self.assertEqual(result['balance']['A'], self.ORG2_BALANCE_A)
-        self.assertEqual(result['balance']['B'], self.ORG2_BALANCE_B)
 
     def test_gov_credits(self):
-        response = self.clients['engineer'].get("/api/credit-transactions")
+        response = self.clients['RTAN'].get("/api/credit-transactions")
         self.assertEqual(response.status_code, 200)
 
         result = response.data
-        self.assertEqual(len(result), self.GOV_TRANSACTION_COUNT)
+
+        count = CreditTransaction.objects.filter(
+            Q(debit_from_id=self.gov.id) |
+            Q(credit_to_id=self.gov.id)
+        ).count()
+
+        self.assertEqual(len(result), count)

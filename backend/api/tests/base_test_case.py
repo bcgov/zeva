@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=no-member,invalid-name,duplicate-code
+import contextlib
+import io
+import jwt
 import logging
 import sys
-from unittest import mock
 
-import jwt
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
+from django.core.management import call_command
 from django.test import TestCase
+from unittest import mock
 
 from api.authorities import roles_in_group
 from api.models.user_profile import UserProfile
@@ -22,23 +25,14 @@ class BaseTestCase(TestCase):
     Base Test class that we can use to setup the initial data
     """
 
-    fixtures = [
-        'api/fixtures/test/test_users.json'
-    ]
+    fixtures = []
 
     usernames = [
-        'vs_user_1',
-        'vs_user_2',
-        'vs_user_3',
-        'engineer'
+        'RTAN',
+        'RTAN_BCEID',
+        'EMHILLIE_BCEID',
+        'KMENKE_BCEID'
     ]
-
-    roles = {
-        'vs_user_1': roles_in_group(['Signing Authority', 'Manage ZEV', 'Vehicle Supplier']),
-        'vs_user_2': roles_in_group(['Signing Authority', 'Manage ZEV', 'Vehicle Supplier']),
-        'vs_user_3': roles_in_group(['Signing Authority', 'Manage ZEV', 'Vehicle Supplier']),
-        'engineer': roles_in_group(['Government', 'Engineer/Analyst']),
-    }
 
     # For use in child classes
     extra_fixtures = None
@@ -72,6 +66,18 @@ class BaseTestCase(TestCase):
         """Configure test clients"""
 
         super().setUp()
+
+        with contextlib.redirect_stdout(io.StringIO()):
+            call_command(
+                'load_ops_data',
+                'api/fixtures/operational',
+                '--directory', '--no-exit'
+            )
+            call_command(
+                'load_ops_data',
+                'api/fixtures/test',
+                '--directory', '--no-exit'
+            )
 
         # generate a new RSA key
         private_key = rsa.generate_private_key(
@@ -112,10 +118,7 @@ class BaseTestCase(TestCase):
                             payload={
                                 'user_id': str(user.username),
                                 'iss': 'zeva-test',
-                                'aud': 'zeva-app',
-                                'realm_access': {
-                                    'roles': self.roles[str(user.username)]
-                                }
+                                'aud': 'zeva-app'
                             },
                             key=self.private_key,
                             algorithm='RS256'
