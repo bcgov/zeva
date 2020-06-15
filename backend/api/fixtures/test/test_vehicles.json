@@ -1,47 +1,39 @@
-[
-  {
-    "fields": {
-      "name": "test make 1"
-    },
-    "model": "api.make",
-    "pk": 1
+[{
+  "fields": {
+    "vehicle_zev_code": "BEV",
+    "description": "Battery Electric Vehicle",
+    "effective_date": "2019-01-01"
   },
-  {
-    "fields": {
-      "vehicle_zev_code": "bev",
-      "description": "Battery-Electric",
-      "effective_date": "2019-01-01"
-    },
-    "model": "api.zevtype",
-    "pk": 1
+  "model": "api.zevtype",
+  "pk": 1
+}, {
+  "fields": {
+    "vehicle_class_code": "T",
+    "description": "Two-seater",
+    "effective_date": "2019-01-01"
   },
-  {
-    "fields": {
-      "vehicle_class_code": "J",
-      "description": "Jet Aircraft",
-      "effective_date": "2019-01-01"
-    },
-    "model": "api.vehicleclass",
-    "pk": 1
+  "model": "api.vehicleclass",
+  "pk": 1
+}, {
+  "fields": {
+    "name": "2019",
+    "effective_date": "2019-01-01",
+    "expiration_date": "2020-01-01"
   },
-  {
-    "fields": {
-      "name": "test modelyear"
-    },
-    "model": "api.modelYear",
-    "pk": 1
+  "model": "api.modelYear",
+  "pk": 1
+}, {
+  "fields": {
+    "vehicle_zev_type": 1,
+    "vehicle_class_code": 1,
+    "make": "BMW",
+    "model_name": "530e",
+    "model_year": 1,
+    "organization": ["Test Org 1"],
+    "range": 26,
+    "validation_status": "DRAFT",
+    "weight_kg": 1000
   },
-  {
-    "fields": {
-      "vehicle_zev_type": 1,
-      "vehicle_class_code": 1,
-      "make": 1,
-      "model_name": "test model",
-      "model_year": 1,
-      "range": 100.2,
-      "validation_status": "DRAFT"
-    },
-    "model": "api.vehicle",
-    "pk": 1
-  }
-]
+  "model": "api.vehicle",
+  "pk": 1
+}]
