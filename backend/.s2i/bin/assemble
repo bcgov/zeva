@@ -44,6 +44,7 @@ if [[ ! -z "$ENABLE_PIPENV" ]]; then
   pipenv check
 elif [[ -f requirements.txt ]]; then
   echo "---> Installing dependencies ..."
+  pip install --upgrade pip
   pip install -r requirements.txt
 elif [[ -f setup.py ]]; then
   echo "---> Installing application ..."
