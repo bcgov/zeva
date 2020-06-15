@@ -93,7 +93,17 @@ class VehicleStatusChangeSerializer(ModelSerializer):
 class VehicleHistorySerializer(
     ModelSerializer, EnumSupportSerializerMixin
 ):
+    create_user = SerializerMethodField()
     validation_status = EnumField(VehicleDefinitionStatuses, read_only=True)
+
+    def get_create_user(self, obj):
+        user_profile = UserProfile.objects.filter(username=obj.create_user)
+
+        if user_profile.exists():
+            serializer = MemberSerializer(user_profile.first(), read_only=True)
+            return serializer.data
+
+        return obj.create_user
 
     class Meta:
         model = VehicleChangeHistory

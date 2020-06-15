@@ -73,7 +73,8 @@ const VehicleDetailsPage = (props) => {
               {details.validationStatus === 'DRAFT' || details.validationStatus === 'CHANGES_REQUESTED' ? editButton : '' }
               {details.actions.map((action) => (
                 <button className="button primary" type="button" key={action} onClick={() => requestStateChange(action)}>
-                  Set status to {action}
+                  {action === 'SUBMITTED' && 'Submit'}
+                  {action !== 'SUBMITTED' && `Set status to ${action}`}
                 </button>
               ))}
             </span>
