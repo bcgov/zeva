@@ -130,7 +130,7 @@ const VehicleForm = (props) => {
             </fieldset>
           </div>
 
-          {setUploadFiles && (
+          {fields.validationStatus === 'CHANGES_REQUESTED' && setUploadFiles && (
             <div className="col-lg-6">
               <h3 className="font-weight-bold mt-2">Upload range test results</h3>
               <fieldset>

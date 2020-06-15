@@ -6,6 +6,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTable from 'react-table';
 
+import formatStatus from '../../app/utilities/formatStatus';
+
 const VehicleHistoryTable = (props) => {
   const columns = [
     {
@@ -13,9 +15,10 @@ const VehicleHistoryTable = (props) => {
       Header: 'User',
       id: 'user',
     }, {
-      accessor: 'validationStatus',
-      className: 'text-center',
+      accessor: (row) => formatStatus(row.validationStatus),
+      className: 'text-center text-capitalize',
       Header: 'Status',
+      id: 'status',
     }, {
       accessor: (row) => moment(row.createTimestamp).format('YYYY-MM-DD h[:]mm a'),
       className: 'text-center',

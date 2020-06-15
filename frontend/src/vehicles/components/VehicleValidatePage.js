@@ -92,11 +92,6 @@ const VehicleValidatePage = (props) => {
             </span>
             <span className="right-content">
               {details.validationStatus === 'DRAFT' ? editButton : '' }
-              {/* {details.actions.map((action) => (
-                <button className="button primary" type="button" key={action} onClick={() => requestStateChange(action)}>
-                  Set status to {action}
-                </button>
-              ))} */}
 
               <button className="btn btn-outline-danger" disabled={!comments.vehicleComment || requestChangeCheck} type="button" key="REJECTED" onClick={() => postComment('REJECTED')}>Reject</button>
               <button className="button primary" disabled={comments.vehicleComment || requestChangeCheck} type="button" key="VALIDATED" onClick={() => requestStateChange('VALIDATED')}>Validate</button>
