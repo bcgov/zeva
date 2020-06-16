@@ -336,6 +336,23 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-config${SUFFIX}
                       key: env_name
+                - name: MINIO_USE_SSL
+                  value: 'true'
+                - name: MINIO_ACCESS_KEY
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-minio${SUFFIX}
+                      key: MINIO_ACCESS_KEY
+                - name: MINIO_SECRET_KEY
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-minio${SUFFIX}
+                      key: MINIO_SECRET_KEY
+                - name: MINIO_ENDPOINT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-config${SUFFIX}
+                      key: 
               livenessProbe:
                 failureThreshold: 30
                 tcpSocket:
