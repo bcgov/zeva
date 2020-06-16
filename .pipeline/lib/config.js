@@ -15,7 +15,7 @@ const phases = {
         instance: `${name}-dev-${changeId}`  , version:`${version}-${changeId}`, tag:`dev-${version}-${changeId}`, 
         host: `zeva-dev-${changeId}.pathfinder.gov.bc.ca`, djangoDebug: 'True',
         frontendCpuRequest: '50m', frontendCpuLimit: '300m', frontendMemoryRequest: '300M', frontendMemoryLimit: '500M',
-        backendCpuRequest: '300m', backendCpuLimit: '600m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 140,
+        backendCpuRequest: '300m', backendCpuLimit: '600m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 140, backendHost: `zeva-backend-dev-${changeId}.pathfinder.gov.bc.ca`
         minioCpuRequest: '100m', minioCpuLimit: '200m', minioMemoryRequest: '200M', minioMemoryLimit: '500M', minioPvcSize: '1G',
         schemaspyCpuRequest: '50m', schemaspyCpuLimit: '200m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 160,
         rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '1G', rabbitmqPvcSize: '1G', rabbitmqReplica: 1, rabbitmqPostStartSleep: 120,
@@ -26,7 +26,7 @@ const phases = {
         instance: `${name}-test`, version:`${version}`, tag:`test-${version}`, 
         host: 'zeva-test.pathfinder.gov.bc.ca', djangoDebug: 'False',
         frontendCpuRequest: '50m', frontendCpuLimit: '300m', frontendMemoryRequest: '300M', frontendMemoryLimit: '500M', frontendMinReplicas: 2, frontendMaxReplicas: 5,
-        backendCpuRequest: '100m', backendCpuLimit: '400m', backendMemoryRequest: '500M', backendMemoryLimit: '700M', backendHealthCheckDelay: 140, backendMinReplicas: 2, backendMaxReplicas: 5,
+        backendCpuRequest: '100m', backendCpuLimit: '400m', backendMemoryRequest: '500M', backendMemoryLimit: '700M', backendHealthCheckDelay: 140, backendMinReplicas: 2, backendMaxReplicas: 5, backendHost: `zeva-backend-test-${changeId}.pathfinder.gov.bc.ca`
         minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M', minioPvcSize: '5G',
         schemaspyCpuRequest: '20m', schemaspyCpuLimit: '200m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 160,
         rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '700M', rabbitmqPvcSize: '1G', rabbitmqReplica: 2, rabbitmqPostStartSleep: 120,
@@ -37,7 +37,7 @@ const phases = {
         instance: `${name}-prod`, version:`${version}`, tag:`prod-${version}`, 
         host: 'zeroemissionvehicles.pathfinder.gov.bc.ca', djangoDebug: 'False',
         frontendCpuRequest: '100m', frontendCpuLimit: '300m', frontendMemoryRequest: '500M', frontendMemoryLimit: '1G', frontendMinReplicas: 2, frontendMaxReplicas: 5,
-        backendCpuRequest: '200m', backendCpuLimit: '500m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 140, backendMinReplicas: 2, backendMaxReplicas: 5,
+        backendCpuRequest: '200m', backendCpuLimit: '500m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 140, backendMinReplicas: 2, backendMaxReplicas: 5, backendHost: `zeva-backend-prod-${changeId}.pathfinder.gov.bc.ca`
         minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M', minioPvcSize: '10G',
         schemaspyCpuRequest: '50m', schemaspyCpuLimit: '400m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 160,
         rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '1G', rabbitmqPvcSize: '5G', rabbitmqReplica: 3, rabbitmqPostStartSleep: 120,
