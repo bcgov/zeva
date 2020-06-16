@@ -106,6 +106,7 @@ objects:
       name: ${BACKEND_HOST_NAME}
     spec:
       host: ${BACKEND_HOST_NAME}
+      path: /api
       port:
         targetPort: backend
       tls:
