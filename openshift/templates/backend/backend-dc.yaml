@@ -110,6 +110,7 @@ objects:
       port:
         targetPort: backend
       tls:
+        insecureEdgeTerminationPolicy: Redirect
         termination: edge
       to:
         kind: Service
