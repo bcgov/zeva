@@ -41,7 +41,7 @@ class TestAuthentication(BaseTestCase):
         request = self.factory.get('/')
 
         payload = {
-            'user_id': 'vs_user_1',
+            'user_id': 'RTAN',
             'iss': 'zeva-test',
             'aud': 'zeva-app'
         }
@@ -49,10 +49,9 @@ class TestAuthentication(BaseTestCase):
 
         request.META = {
             'HTTP_AUTHORIZATION': 'Bearer {}'.format(
-                jwt.encode(payload,
-                           key,
-                           algorithm='RS256'
-                           ).decode('utf-8')
+                jwt.encode(
+                    payload, key, algorithm='RS256'
+                ).decode('utf-8')
             )
         }
 

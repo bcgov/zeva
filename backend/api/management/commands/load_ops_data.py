@@ -7,7 +7,6 @@ from django.core.management import BaseCommand
 from django.db import transaction, connection
 
 from api.management.commands._loader import ScriptLoader
-
 from api.models.fixture_migration import FixtureMigration
 
 
@@ -28,6 +27,10 @@ class Command(BaseCommand):
             '--directory', action='store_true',
             help='script argument is a directory, and scripts should be '
                  'loaded sequentially from it'
+        )
+        parser.add_argument(
+            '--no-exit', action='store_true',
+            help='skips the exit command at the end (for unit tests)'
         )
 
         helptext = ('Load operational data.')
@@ -182,4 +185,5 @@ class Command(BaseCommand):
                 ).format(errorcount=errorcount)
             )
 
-        exit(-errorcount)
+        if 'no_exit' not in options:
+            exit(-errorcount)

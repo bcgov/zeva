@@ -42,7 +42,7 @@ $alert-danger: #721c24;
 $border-grey: #E0E0E0;
 $default-background-blue: #38598A;
 $default-background-grey: #F2F2F2;
-$default-link-blue: #1A5A96;
+$default-link-blue: #568DBA;
 $default-text-black: #494949;
 $default-text-blue: #1A5A96;
 $nav-border: #DEE2E6;
@@ -160,6 +160,16 @@ p {
   }
 }
 
+.link {
+  background-color: transparent;
+  border: none;
+  color: $default-link-blue;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  text-decoration: underline;
+}
+
 .nav-tabs {
   margin: 0 1rem;
 
@@ -196,13 +206,23 @@ p {
   h2 {
     color: $default-text-blue;
     font-size: 1.5rem;
-    padding-top: 1rem;
     padding-bottom: 1rem;
+    padding-top: 1rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
   }
 
   h3, h4, h5, h6 {
     color: $default-text-blue;
   }
+}
+
+.text-blue {
+  color: $default-text-blue;
 }
 
 .well {
@@ -230,8 +250,36 @@ p {
   padding: 1rem;
   text-align: center;
   flex-direction: column;
+
   svg {
+    font-size: 2rem;
     margin-left: auto;
     margin-right: auto;
+  }
+}
+#vehicle-validation {
+  .btn-outline-danger {
+    background-color: white;
+  }
+    .btn-outline-danger.disabled, .btn-outline-danger:disabled  {
+      opacity: .3;
+  }
+  .button.primary:disabled {
+    background-color: #38598A;
+    opacity: .3;
+  }
+
+  .form {
+    padding: 1rem;
+    
+    textarea {
+      margin-bottom: 1rem;
+    }
+    .request-changes-check {
+      margin: 0 0 1rem 0;
+      input[type=checkbox] {
+        margin-right: .5rem;
+      }
+    }
   }
 }

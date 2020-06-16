@@ -45,7 +45,7 @@ module.exports = settings => {
       'CPU_REQUEST': phases[phase].minioCpuRequest,
       'CPU_LIMIT': phases[phase].minioCpuLimit,
       'MEMORY_REQUEST': phases[phase].minioMemoryRequest,
-      'MEMORY_LIMIT': phases[phase].minioMemoryRequest,      
+      'MEMORY_LIMIT': phases[phase].minioMemoryRequest      
     }
   }))
  
@@ -69,7 +69,8 @@ module.exports = settings => {
       'IMAGE_STREAM_NAMESPACE': phases[phase].namespace,
       'IMAGE_STREAM_TAG': 'patroni:v10-stable',
       'REPLICA': phases[phase].patroniReplica,
-      'PVC_SIZE': phases[phase].patroniPvcSize
+      'PVC_SIZE': phases[phase].patroniPvcSize,
+      'STORAGE_CLASS': phases[phase].storageClass
     }
   }))
 

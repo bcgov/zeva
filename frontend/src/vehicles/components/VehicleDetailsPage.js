@@ -7,6 +7,7 @@ import DetailField from '../../app/components/DetailField';
 import VehicleHistoryTable from './VehicleHistoryTable';
 import history from '../../app/History';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
+import formatStatus from '../../app/utilities/formatStatus';
 
 const VehicleDetailsPage = (props) => {
   const { details, loading, requestStateChange } = props;
@@ -41,7 +42,7 @@ const VehicleDetailsPage = (props) => {
           <DetailField label="Type" value={details.vehicleZevType.description} />
           <DetailField label="Range" value={details.range} />
           <DetailField label="Model Year" value={details.modelYear.name} />
-          <DetailField label="Status" value={details.validationStatus} />
+          <DetailField className="text-capitalize" label="Status" value={formatStatus(details.validationStatus)} />
         </div>
       </div>
 
@@ -69,10 +70,11 @@ const VehicleDetailsPage = (props) => {
               </button>
             </span>
             <span className="right-content">
-              {details.validationStatus === 'DRAFT' ? editButton : '' }
+              {details.validationStatus === 'DRAFT' || details.validationStatus === 'CHANGES_REQUESTED' ? editButton : '' }
               {details.actions.map((action) => (
                 <button className="button primary" type="button" key={action} onClick={() => requestStateChange(action)}>
-                  Set status to {action}
+                  {action === 'SUBMITTED' && 'Submit'}
+                  {action !== 'SUBMITTED' && `Set status to ${action}`}
                 </button>
               ))}
             </span>

@@ -63,11 +63,13 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
     organization_address = OrganizationAddressSerializer(allow_null=True)
 
     def create(self, validated_data):
+        request = self.context.get('request')
         addr = validated_data.pop('organization_address')
         obj = Organization.objects.create(
             **validated_data
         )
         OrganizationAddress.objects.create(
+            create_user=request.user.username,
             effective_date=date.today(),
             organization=obj,
             **addr
@@ -93,9 +95,11 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
         if addr:
             if organization_address:
                 organization_address.expiration_date = date.today()
+                organization_address.update_user = request.user.username
                 organization_address.save()
 
             OrganizationAddress.objects.create(
+                create_user=request.user.username,
                 effective_date=date.today(),
                 organization=obj,
                 **addr

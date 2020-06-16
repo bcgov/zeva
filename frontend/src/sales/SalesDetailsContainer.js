@@ -14,7 +14,7 @@ import SalesSubmissionDetailsPage from './components/SalesSubmissionDetailsPage'
 const SalesDetailsContainer = (props) => {
   const { user } = props;
   const { match } = props;
-  const id = match.params.id;
+  const { id } = match.params;
 
   const [submission, setSubmission] = useState([]);
   const [loading, setLoading] = useState(true);

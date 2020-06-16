@@ -8,3 +8,4 @@ class VehicleDefinitionStatuses(Enum):
     SUBMITTED = 'SUBMITTED'
     VALIDATED = 'VALIDATED'
     REJECTED = 'REJECTED'
+    CHANGES_REQUESTED = 'CHANGES_REQUESTED'

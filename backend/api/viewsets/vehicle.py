@@ -1,4 +1,7 @@
+import uuid
+
 from django.utils.decorators import method_decorator
+
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -13,12 +16,13 @@ from api.serializers.vehicle import ModelYearSerializer, \
     VehicleZevTypeSerializer, VehicleClassSerializer, \
     VehicleSaveSerializer, VehicleSerializer, \
     VehicleStatusChangeSerializer
+from api.services.minio import minio_put_object
 from auditable.views import AuditableMixin
 
 
 class VehicleViewSet(
-    AuditableMixin, viewsets.GenericViewSet,
-    mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin
+    AuditableMixin, viewsets.GenericViewSet, mixins.CreateModelMixin,
+    mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin
 ):
     permission_classes = (AllowAny,)
     http_method_names = ['get', 'post', 'put', 'patch']
@@ -42,7 +46,9 @@ class VehicleViewSet(
             queryset = Vehicle.objects.filter(
                 validation_status__in=[
                     VehicleDefinitionStatuses.SUBMITTED,
-                    VehicleDefinitionStatuses.VALIDATED
+                    VehicleDefinitionStatuses.VALIDATED,
+                    VehicleDefinitionStatuses.REJECTED,
+                    VehicleDefinitionStatuses.CHANGES_REQUESTED
                 ]
             )
 
@@ -89,6 +95,15 @@ class VehicleViewSet(
         return Response(serializer.data)
 
     @action(detail=False)
+    def classes(self, _request):
+        """
+        Get the zev classes
+        """
+        classes = VehicleClass.objects.all().order_by('description')
+        serializer = VehicleClassSerializer(classes, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False)
     def years(self, _request):
         """
         Get the years
@@ -113,3 +128,13 @@ class VehicleViewSet(
         serializer.save()
 
         return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def minio_url(self, request, pk=None):
+        object_name = uuid.uuid4().hex
+        url = minio_put_object(object_name)
+
+        return Response({
+            'url': url,
+            'minio_object_name': object_name
+        })
