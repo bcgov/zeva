@@ -67,7 +67,7 @@ objects:
       keycloak_sa_client_id: zeva-django-sa
       keycloak_sa_realm: ${KEYCLOAK_REALM}
       keycloak_url: https://${SSO_NAME}.pathfinder.gov.bc.ca/auth
-      minio_endpoint: docs-tbiwaq-${ENV_NAME}.pathfinder.gov.bc.ca:443
+      minio_endpoint: zeva-minio${SUFFIX}.pathfinder.gov.bc.ca
       postgresql_service_host: patroni-master${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local
       postgresql_service_port: '5432'
       rabbitmq_enabled: 'False'

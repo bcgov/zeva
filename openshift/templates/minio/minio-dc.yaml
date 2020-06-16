@@ -89,6 +89,28 @@ objects:
       sessionAffinity: None
     status:
       loadBalancer: {}
+  - apiVersion: route.openshift.io/v1
+    kind: Route
+    metadata:
+      creationTimestamp: null
+      labels:
+        name: minio
+        app: zeva
+        role: minio
+        env: ${ENV_NAME}
+      name: ${NAME}-minio${SUFFIX}
+    spec:
+      host: ${NAME}-minio${SUFFIX}.pathfinder.gov.bc.ca
+      port:
+        targetPort: 9000-tcp
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      to:
+        kind: Service
+        name: ${NAME}-minio${SUFFIX}
+        weight: 100
+      wildcardPolicy: None
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
