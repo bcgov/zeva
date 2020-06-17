@@ -1,8 +1,30 @@
 
 
 #vehicle-validation {
+  .attachments {
+    .header {
+      color: $default-text-blue;
+      font-weight: bold;
+    }
+
+    .label {
+      font-size: 1.1rem;
+    }
+
+    .row {
+      &:nth-child(odd) {
+        background-color: $default-background-grey;
+      }
+
+      > div {
+        padding-bottom: 0.5rem;
+        padding-top: 0.5rem;
+      }
+    }
+  }
+
   .form {
-    background-color: $default-background-grey;
+    background-color: $form-background-grey;
     border: 1px solid $border-grey;
 
     .label {
