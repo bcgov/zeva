@@ -150,6 +150,7 @@ module.exports = settings => {
   }))
 
   //add autoacaler
+  /*****
   if(phase === 'test' || phase === 'prod') {
     objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-autoscaler.yaml`, {
       'param': {
@@ -168,6 +169,7 @@ module.exports = settings => {
       }
     }))
   }
+  ********/
 
   oc.applyRecommendedLabels(
       objects,
