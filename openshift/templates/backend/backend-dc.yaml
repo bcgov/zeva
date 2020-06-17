@@ -103,7 +103,7 @@ objects:
         app: zeva
         role: backend
         env: '${ENV_NAME}'
-      name: ${BACKEND_HOST_NAME}
+      name: ${NAME}-backend${SUFFIX}
     spec:
       host: ${BACKEND_HOST_NAME}
       path: /api
