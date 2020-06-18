@@ -155,7 +155,7 @@ objects:
         env: ${ENV_NAME}
       name: ${NAME}-backend${SUFFIX}
     spec:
-      replicas: 1
+      replicas: 2
       revisionHistoryLimit: 10
       selector:
         name: ${NAME}-backend${SUFFIX}
