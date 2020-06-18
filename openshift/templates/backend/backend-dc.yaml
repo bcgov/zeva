@@ -54,10 +54,13 @@ objects:
   - apiVersion: v1
     kind: Secret
     metadata:
+      labels:
+        app: ${NAME}${SUFFIX}
+      annotations:
+        as-copy-of: "template.django-secret"
       name: ${NAME}-django${SUFFIX}
-      labels: {}
     stringData:
-       DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY}"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
