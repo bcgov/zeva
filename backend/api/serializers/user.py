@@ -1,3 +1,4 @@
+from django.core.exceptions import PermissionDenied
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
@@ -6,6 +7,7 @@ from api.models.organization import Organization
 from api.models.role import Role
 from api.models.user_profile import UserProfile
 from api.models.user_role import UserRole
+from api.services.user import update_roles
 from .organization import OrganizationSerializer
 from .permission import PermissionSerializer
 from .role import RoleSerializer
@@ -54,6 +56,24 @@ class UserSaveSerializer(serializers.ModelSerializer):
     organization = OrganizationSerializer(read_only=True)
     roles = PrimaryKeyRelatedField(queryset=Role.objects.all(), many=True)
 
+    def validate_roles(self, roles):
+        request = self.context.get('request')
+
+        for role in roles:
+            if (
+                (not role.is_government_role and
+                    not request.user.has_perm('ASSIGN_BCEID_ROLES')) or
+                (role.is_government_role and
+                    not request.user.has_perm('ASSIGN_IDIR_ROLES'))
+            ):
+                raise PermissionDenied(
+                    "You do not have the permission to add {}.".format(
+                        role.code
+                    )
+                )
+
+        return roles
+
     def create(self, validated_data):
         request = self.context.get('request')
         organization = request.data.get('organization')
@@ -67,14 +87,7 @@ class UserSaveSerializer(serializers.ModelSerializer):
         )
         user_profile.save()
 
-        for role in roles:
-            if not role.is_government_role:
-                UserRole.objects.create(
-                    user_profile=user_profile,
-                    role=role,
-                    create_user=request.user.username,
-                    update_user=request.user.username
-                )
+        update_roles(request, user_profile, roles)
 
         return user_profile
 
@@ -90,22 +103,7 @@ class UserSaveSerializer(serializers.ModelSerializer):
         )
         instance.save()
 
-        UserRole.objects.filter(
-            user_profile=instance
-        ).exclude(
-            role__in=roles
-        ).delete()
-
-        for role in roles:
-            if not role.is_government_role:
-                UserRole.objects.get_or_create(
-                    user_profile=instance,
-                    role=role,
-                    defaults={
-                        'create_user': request.user.username,
-                        'update_user': request.user.username
-                    }
-                )
+        update_roles(request, instance, roles)
 
         return instance
 
