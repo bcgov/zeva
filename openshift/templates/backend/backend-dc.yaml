@@ -54,10 +54,13 @@ objects:
   - apiVersion: v1
     kind: Secret
     metadata:
+      labels:
+        app: ${NAME}${SUFFIX}
+      annotations:
+        as-copy-of: "template.django-secret"
       name: ${NAME}-django${SUFFIX}
-      labels: {}
     stringData:
-       DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY}"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
@@ -103,7 +106,7 @@ objects:
         app: zeva
         role: backend
         env: '${ENV_NAME}'
-      name: ${BACKEND_HOST_NAME}
+      name: ${NAME}-backend${SUFFIX}
     spec:
       host: ${BACKEND_HOST_NAME}
       path: /api
@@ -152,7 +155,7 @@ objects:
         env: ${ENV_NAME}
       name: ${NAME}-backend${SUFFIX}
     spec:
-      replicas: 1
+      replicas: 2
       revisionHistoryLimit: 10
       selector:
         name: ${NAME}-backend${SUFFIX}

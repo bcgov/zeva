@@ -140,7 +140,7 @@ objects:
         description: Defines how to deploy the frontend application
       creationTimestamp: null
     spec:
-      replicas: 1
+      replicas: 2
       revisionHistoryLimit: 10
       selector:
         name: ${NAME}-frontend${SUFFIX}
