@@ -12,6 +12,7 @@ const TextInput = (props) => {
     details,
     mandatory,
     num,
+    maxnum,
   } = props;
 
   let type;
@@ -30,9 +31,14 @@ const TextInput = (props) => {
       setValidationErrors(`${label} cannot be left blank`);
       setRowClass('form-group row error');
     }
+
     if (value !== '' || !mandatory) {
       setValidationErrors('');
       setRowClass('form-group row');
+    }
+    if (num && maxnum && value > maxnum) {
+      setValidationErrors(`Cannot be greater than ${maxnum} kg`);
+      setRowClass('form-group row error');
     }
   };
 
@@ -67,6 +73,7 @@ TextInput.defaultProps = {
   errorMessage: '',
   mandatory: false,
   num: false,
+  maxnum: 0,
 };
 
 TextInput.propTypes = {
@@ -85,6 +92,7 @@ TextInput.propTypes = {
   mandatory: PropTypes.bool,
   name: PropTypes.string.isRequired,
   num: PropTypes.bool,
+  maxnum: PropTypes.number,
 };
 
 export default TextInput;

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import Loading from '../../app/components/Loading';
 import DetailField from '../../app/components/DetailField';
-import VehicleHistoryTable from './VehicleHistoryTable';
+// import VehicleHistoryTable from './VehicleHistoryTable';
 import history from '../../app/History';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 import formatStatus from '../../app/utilities/formatStatus';
@@ -46,14 +46,14 @@ const VehicleDetailsPage = (props) => {
         </div>
       </div>
 
-      <div className="row">
+      {/* <div className="row">
         <div className="col-sm-12">
           <h1>Vehicle Status History</h1>
         </div>
         <div className="col-sm-12">
           <VehicleHistoryTable items={details.history} />
         </div>
-      </div>
+      </div> */}
 
       <div className="row">
         <div className="col-sm-12">
