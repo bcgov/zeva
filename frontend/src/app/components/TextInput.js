@@ -53,6 +53,7 @@ const TextInput = (props) => {
       <div className="col-sm-8">
         {details && (<small className="form-text text-muted">{details}</small>) }
         <input
+          data-testid="input-test"
           className="form-control"
           id={id}
           name={name}
