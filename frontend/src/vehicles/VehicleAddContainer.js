@@ -50,6 +50,7 @@ const VehicleAddContainer = (props) => {
     return false;
   };
 
+<<<<<<< HEAD
   const handleSubmit = () => {
     setLoading(true);
     const data = fields;
@@ -62,6 +63,9 @@ const VehicleAddContainer = (props) => {
   };
 
   const orgMakes = [...new Set(vehicles.map((vehicle) => vehicle.make))];
+=======
+  const orgMakes = vehicles.map((vehicle) => vehicle.make);
+>>>>>>> test
   const refreshList = () => {
     setLoading(true);
     axios.all([
