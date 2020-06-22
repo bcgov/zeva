@@ -122,7 +122,7 @@ class VehicleViewSet(
             data=request.data
         )
 
-        if not serializer.is_valid():
+        if not serializer.is_valid(raise_exception=True):
             return Response(serializer.errors)
 
         serializer.save()
