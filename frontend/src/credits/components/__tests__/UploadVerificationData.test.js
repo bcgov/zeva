@@ -7,6 +7,8 @@ const doUpload = () => {
   console.log('test upload!');
 };
 
+
+
 it('renders without crashing', () => {
   render(<UploadVerificationData
     title="test"

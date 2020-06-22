@@ -19,6 +19,7 @@ const VehicleForm = (props) => {
     formTitle,
     handleInputChange,
     handleSubmit,
+    handleSaveDraft,
     loading,
     makes,
     progressBars,
@@ -44,6 +45,7 @@ const VehicleForm = (props) => {
   if (loading) {
     return (<Loading />);
   }
+  
 
   return (
     <div id="form" className="page">
@@ -63,7 +65,7 @@ const VehicleForm = (props) => {
         </div>
       </div>
 
-      <form onSubmit={(event) => handleSubmit(event)}>
+      <form onSubmit={(event) => handleSaveDraft(event)}>
         <div className="row">
           <div className="col-lg-6">
             <fieldset>
@@ -112,7 +114,7 @@ const VehicleForm = (props) => {
               />
               <VehicleFormDropdown
                 accessor={(classCode) => classCode.vehicleClassCode}
-                dropdownName="Vehicle Class"
+                dropdownName="Body Type"
                 dropdownData={vehicleClasses}
                 fieldName="vehicleClassCode"
                 handleInputChange={handleInputChange}
@@ -120,6 +122,7 @@ const VehicleForm = (props) => {
               />
               <TextInput
                 num
+                maxnum={3855}
                 label="GVWR (kg)"
                 id="weightKg"
                 name="weightKg"
@@ -258,8 +261,15 @@ const VehicleForm = (props) => {
               </span>
 
               <span className="right-content">
-                <button className="button primary" type="submit">
-                  <FontAwesomeIcon icon="save" /> Save
+                <button className="button" type="submit">
+                  <FontAwesomeIcon icon="save" /> Save Draft
+                </button>
+                <button
+                  type="button"
+                  className="button primary"
+                  onClick={() => { handleSubmit(); }}
+                >
+                  <FontAwesomeIcon icon="save" /> Submit
                 </button>
               </span>
             </div>

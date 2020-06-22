@@ -10,7 +10,7 @@ import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import History from '../app/History';
 
 const VehicleAddContainer = (props) => {
-  const [fields, setFields] = useState({
+  const emptyForm = {
     make: '',
     modelName: '',
     vehicleZevType: { vehicleZevCode: '--' },
@@ -18,13 +18,15 @@ const VehicleAddContainer = (props) => {
     modelYear: { name: '--' },
     vehicleClassCode: { vehicleClassCode: '--' },
     weightKg: '',
-  });
+  };
+  const [fields, setFields] = useState(emptyForm);
   const [loading, setLoading] = useState(true);
   const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
   const [classes, setClasses] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const { keycloak } = props;
+
 
   const handleInputChange = (event) => {
     const { value, name } = event.target;
@@ -38,7 +40,7 @@ const VehicleAddContainer = (props) => {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSaveDraft = (event) => {
     event.preventDefault();
     const data = fields;
     axios.post(ROUTES_VEHICLES.LIST, data).then(() => {
@@ -48,7 +50,18 @@ const VehicleAddContainer = (props) => {
     return false;
   };
 
-  const orgMakes = vehicles.map((vehicle) => vehicle.make);
+  const handleSubmit = () => {
+    setLoading(true);
+    const data = fields;
+    axios.post(ROUTES_VEHICLES.LIST, data).then((response) => {
+      const { id } = response.data;
+      axios.patch(`vehicles/${id}/state_change`, { validationStatus: 'SUBMITTED' });
+      setFields(emptyForm);
+      setLoading(false);
+    });
+  };
+
+  const orgMakes = [...new Set(vehicles.map((vehicle) => vehicle.make))];
   const refreshList = () => {
     setLoading(true);
     axios.all([
@@ -75,6 +88,7 @@ const VehicleAddContainer = (props) => {
       formTitle="Enter ZEV"
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
+      handleSaveDraft={handleSaveDraft}
       loading={loading}
       makes={orgMakes}
       setFields={setFields}

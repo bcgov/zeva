@@ -54,9 +54,10 @@ const VehicleValidatePage = (props) => {
             <DetailField label="Model" value={details.modelName} />
             <DetailField label="ZEV Type" value={details.vehicleZevType.description} />
             <DetailField label="Electric Range (km)" value={details.range} />
-            <DetailField label="Vehicle Class" value={details.vehicleClassCode.description} />
+            <DetailField label="Body Type" value={details.vehicleClassCode.description} />
             <DetailField label="Weight (kg)" value={details.weightKg} />
-            <DetailField label="ZEV Class" value={` ${details.creditClass} (calculated)`} />
+            <DetailField label="Vehicle Class" id={details.weightKg < 3856 ? '' : 'danger-text'} value={details.weightKg < 3856 ? 'LDV (calculated)' : 'Not within LDV range (calculated)'} />
+            <DetailField label="Credit Class" value={` ${details.creditClass} (calculated)`} />
             <DetailField label="Credits" value={` ${details.creditValue} (calculated)`} />
           </div>
         </div>
@@ -92,7 +93,6 @@ const VehicleValidatePage = (props) => {
             </span>
             <span className="right-content">
               {details.validationStatus === 'DRAFT' ? editButton : '' }
-
               <button className="btn btn-outline-danger" disabled={!comments.vehicleComment || requestChangeCheck} type="button" key="REJECTED" onClick={() => postComment('REJECTED')}>Reject</button>
               <button className="button primary" disabled={comments.vehicleComment || requestChangeCheck} type="button" key="VALIDATED" onClick={() => requestStateChange('VALIDATED')}>Validate</button>
             </span>
