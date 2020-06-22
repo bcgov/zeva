@@ -13,7 +13,7 @@ const UserSettings = (props) => {
 
       <div className="content">
         <div className="text">
-          <h5>{details.displayName}{details.title ? ', ' : ''}</h5>
+          <h5>{details.displayName}</h5>
           <dd>{details.title}</dd>
         </div>
       </div>
@@ -31,6 +31,7 @@ const UserSettings = (props) => {
           </button>
         </div>
       </div>
+
       <div className="content">
         <div className="text">
           <h5>{details.organization.name}</h5>
