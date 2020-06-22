@@ -45,6 +45,7 @@ oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-prod --dr
 oc tag registry.access.redhat.com/rhscl/rhscl/nodejs-10-rhel7:1-28 tbiwaq-tools/nodejs:10-1-28
 
 ## Secrets
+zeva-django-prod as-copy-of template.django-secret
 patroni-prod as-copy-of template.patroni-patroni
 zeva-rabbitmq as-copy-of template.rabbitmq-secret
 patroni-backup for database backup 
@@ -52,7 +53,7 @@ ftp-secret for database backup
 zeva-django-prod for backend django framework
 zeva-keycloak includes keycloak connection info
 zeva-minio includes minio connection info
- zeva-prod-rabbitmq-cluster-secret for rabbitmq cluster
+zeva-prod-rabbitmq-cluster-secret for rabbitmq cluster
 
 ## Production Deployment
 * run nsp

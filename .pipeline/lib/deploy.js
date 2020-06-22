@@ -28,7 +28,8 @@ module.exports = settings => {
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
       'ENV_NAME': phases[phase].phase,
-      'BACKEND_HOST': phases[phase].host,
+      'HOST_NAME': phases[phase].host,
+      'BACKEND_HOST_NAME': phases[phase].backendHost,
       'SSO_NAME': phases[phase].ssoName,
       'KEYCLOAK_REALM': 'rzh2zkjq',
       'DJANGO_DEBUG': phases[phase].djangoDebug
@@ -125,7 +126,7 @@ module.exports = settings => {
       'SUFFIX': phases[phase].suffix,
       'VERSION': phases[phase].tag,
       'ENV_NAME': phases[phase].phase,
-      'HOST_NAME': phases[phase].host,
+      'BACKEND_HOST_NAME': phases[phase].backendHost,
       'RABBITMQ_CLUSTER_NAME': 'rabbitmq-cluster',
       'CPU_REQUEST': phases[phase].backendCpuRequest,
       'CPU_LIMIT': phases[phase].backendCpuLimit,
@@ -149,6 +150,7 @@ module.exports = settings => {
   }))
 
   //add autoacaler
+  /*****
   if(phase === 'test' || phase === 'prod') {
     objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-autoscaler.yaml`, {
       'param': {
@@ -167,6 +169,7 @@ module.exports = settings => {
       }
     }))
   }
+  ********/
 
   oc.applyRecommendedLabels(
       objects,

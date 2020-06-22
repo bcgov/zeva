@@ -6,9 +6,7 @@ import {
 
 import UserDetailsForm from '../UserDetailsForm';
 
-
 afterEach(cleanup);
-
 
 const handleInputChange = (event) => {
   const { value, name } = event.target;
@@ -36,6 +34,9 @@ const details = {
   username: 'fs2',
   displayName: null,
   isActive: true,
+  organization: {
+    name: 'test organization',
+  },
 };
 const user = {
   id: 2,
@@ -55,7 +56,7 @@ describe('User Form', () => {
   it('renders without crashing', () => {
     render(<UserDetailsForm
       details={details}
-      loading="false"
+      loading={false}
       user={user}
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
