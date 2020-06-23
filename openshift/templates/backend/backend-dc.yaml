@@ -50,6 +50,9 @@ parameters:
     displayName: Memory upper limit
     description: Memory upper limit
     required: true    
+  - name: REPLICAS
+    value: '1'
+    required: true
 objects:
   - apiVersion: v1
     kind: Secret
@@ -155,7 +158,7 @@ objects:
         env: ${ENV_NAME}
       name: ${NAME}-backend${SUFFIX}
     spec:
-      replicas: 2
+      replicas: ${{REPLICAS}}
       revisionHistoryLimit: 10
       selector:
         name: ${NAME}-backend${SUFFIX}
