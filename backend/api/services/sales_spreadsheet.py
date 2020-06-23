@@ -322,9 +322,9 @@ def ingest_sales_spreadsheet(
                     validation_problems.append({
                         'row': row + 1,
                         'message': 'VIN {} has previously been recorded '
-                                    '(but will be entered anyway)'.format(
+                                   '(but will be entered anyway)'.format(
                                         vin
-                                    )
+                                   )
                     })
 
                 vehicle = Vehicle.objects.filter(
