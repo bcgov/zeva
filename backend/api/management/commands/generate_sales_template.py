@@ -50,4 +50,4 @@ class Command(BaseCommand):
         org = Organization.objects.get(name=org_name)
 
         with open(file_name, 'wb') as stream:
-            create_sales_spreadsheet(org, model_year, stream)
+            create_sales_spreadsheet(org, stream)

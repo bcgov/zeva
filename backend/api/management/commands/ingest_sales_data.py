@@ -9,7 +9,7 @@ from django.db import transaction, connection
 from api.management.commands._loader import ScriptLoader
 from api.models.model_year import ModelYear
 from api.models.organization import Organization
-from api.services.sales_spreadsheet import create_sales_spreadsheet, ingest_sales_spreadsheet
+from api.services.sales_spreadsheet import ingest_sales_spreadsheet
 
 
 class Command(BaseCommand):
