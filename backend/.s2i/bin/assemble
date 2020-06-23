@@ -86,12 +86,12 @@ pwd
 ## remove api/fixtures/development and api/fixtures/test folder
 ## This is to avoid loading test data to prod.
 ## Test data is only loaded for dev abd test environment
-if [[ -z $ENV_NAME || ( $ENV_NAME != "DEV" && $ENV_NAME != "TEST" ) ]]; then
-  ls -l api/fixtures
+ls -l api/fixtures
+if [[ -z $ENV_NAME || ( $ENV_NAME != "dev" && $ENV_NAME != "test" ) ]]; then
   rm -rf api/fixtures/development
   rm -rf api/fixtures/test
-  ls -l api/fixtures
 fi
+ls -l api/fixtures
 
 # Run unit tests in build stage with the code below
 # echo "--> running Django unit tests"
