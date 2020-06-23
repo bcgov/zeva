@@ -172,6 +172,12 @@ objects:
                 - '-c'
                 - |-
                   sleep 120
+                  ls -l api/fixtures
+                  if [[ -z $ENV_NAME || ( $ENV_NAME != "dev" && $ENV_NAME != "test" ) ]]; then
+                    rm -rf api/fixtures/development
+                    rm -rf api/fixtures/test
+                  fi
+                  ls -l api/fixtures
                   python manage.py migrate
                   if [ $? -eq 0 ]; then 
                     ./load_data.sh 
