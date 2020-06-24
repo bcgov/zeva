@@ -12,6 +12,7 @@ from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.models.vehicle_zev_type import ZevType
 from api.serializers.user import UserSerializer
 from api.serializers.user import MemberSerializer
+from api.serializers.organization import OrganizationSerializer
 from api.models.user_profile import UserProfile
 from api.serializers.vehicle_attachment import VehicleAttachmentSerializer
 from api.services.minio import minio_remove_object
@@ -140,6 +141,7 @@ class VehicleSerializer(
     vehicle_class_code = VehicleClassSerializer()
     vehicle_zev_type = VehicleZevTypeSerializer()
     update_user = SerializerMethodField()
+    organization = OrganizationSerializer()
 
     def get_actions(self, instance):
         request = self.context.get('request')
@@ -203,7 +205,8 @@ class VehicleSerializer(
             'id', 'actions', 'history', 'make', 'model_name', 'model_year',
             'range', 'validation_status', 'vehicle_class_code', 'weight_kg',
             'vehicle_zev_type', 'credit_class', 'credit_value',
-            'vehicle_comment', 'attachments', 'update_user', 'update_timestamp'
+            'vehicle_comment', 'attachments', 'update_user', 'update_timestamp',
+            'organization',
         )
         read_only_fields = ('validation_status',)
 
