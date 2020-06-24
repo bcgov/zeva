@@ -194,6 +194,17 @@ class Navbar extends Component {
                 <li className="nav-item">
                   <NavLink
                     activeClassName="active"
+                    isActive={(match, location) => {
+                      if (!match) {
+                        return false;
+                      }
+
+                      if (location.pathname === '/organizations/mine') {
+                        return false;
+                      }
+
+                      return true;
+                    }}
                     to={ROUTES_ORGANIZATIONS.LIST}
                   >
                     <span>Vehicle Suppliers</span>
@@ -211,6 +222,20 @@ class Navbar extends Component {
                     to={ROUTES_ORGANIZATIONS.MINE}
                   >
                     <span>Organization Details</span>
+                  </NavLink>
+                </li>
+              )}
+
+              {typeof user.hasPermission === 'function'
+              && user.hasPermission('EDIT_USERS')
+              && user.isGovernment
+              && (
+                <li className="nav-item">
+                  <NavLink
+                    activeClassName="active"
+                    to={ROUTES_ORGANIZATIONS.MINE}
+                  >
+                    <span>Administration</span>
                   </NavLink>
                 </li>
               )}

@@ -16,7 +16,7 @@ class AddUsers(OperationalDataScript):
         "first_name": "Alasdair",
         "last_name": "Ring",
         "display_name": "Alasdair Ring",
-        "username": "ARING"
+        "username": "AIRING"
     }, {
         "first_name": "Emily",
         "last_name": "Hillier",

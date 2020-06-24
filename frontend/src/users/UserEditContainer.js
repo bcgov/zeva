@@ -50,7 +50,11 @@ const UserEditContainer = (props) => {
     }).then((response) => {
       const { organization } = response.data;
 
-      history.push(ROUTES_ORGANIZATIONS.USERS.replace(/:id/gi, organization.id));
+      if (organization.id === user.organization.id) {
+        history.push(ROUTES_ORGANIZATIONS.MINE);
+      } else {
+        history.push(ROUTES_ORGANIZATIONS.USERS.replace(/:id/gi, organization.id));
+      }
     }).catch((errors) => {
       if (!errors.response) {
         return;

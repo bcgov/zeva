@@ -2,6 +2,7 @@ import React from 'react';
 import CustomPropTypes from '../../app/utilities/props';
 
 import Actions from './Actions';
+import Administration from './Administration';
 import Feedback from './Feedback';
 import UserSettings from './UserSettings';
 
@@ -12,7 +13,12 @@ const DashboardPage = (props) => {
       <div className="row">
         <div className="col-lg-3">
           <UserSettings details={user} />
-          <Feedback />
+          {user && !user.isGovernment && (
+            <Feedback />
+          )}
+          {user && user.isGovernment && (
+            <Administration user={user} />
+          )}
         </div>
 
         <div className="col-lg-9">
