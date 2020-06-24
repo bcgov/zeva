@@ -55,11 +55,10 @@ class RecordOfSaleViewset(
     def template(self, request):
         user = request.user
         response = HttpResponse(content_type='application/ms-excel')
-        my = ModelYear.objects.get(name=request.GET['year'])
-        create_sales_spreadsheet(user.organization, my, response)
+        create_sales_spreadsheet(user.organization, response)
+
         response['Content-Disposition'] = (
-            'attachment; filename="BC-ZEVA_Sales_Template_MY{my}_{org}_{date}.xls"'.format(
-                my=my.name,
+            'attachment; filename="BC-ZEVA_Sales_Template_MY_{org}_{date}.xls"'.format(
                 org=user.organization.name,
                 date=datetime.now().strftime(
                     "_%Y-%m-%d")

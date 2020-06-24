@@ -1,10 +1,10 @@
 import base64
 import binascii
 import logging
-import magic
-import pickle
 from datetime import datetime
+import pickle
 from pickle import PickleError
+import magic
 
 from django.core.exceptions import ValidationError
 
@@ -12,6 +12,7 @@ import xlrd
 import xlwt
 from xlrd import XLRDError, XLDateError
 
+from api.models.model_year import ModelYear
 from api.models.organization import Organization
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission import SalesSubmission
@@ -23,98 +24,150 @@ MAGIC = [0x00, 0xd3, 0xc0, 0xde]
 OUTPUT_ROWS = 50
 MAX_READ_ROWS = 50000
 
+BOLD = xlwt.easyxf('font: name Times New Roman, bold on;')
+LOCKED = xlwt.easyxf('protection: cell_locked true;')
+EDITABLE = xlwt.easyxf('protection: cell_locked false;')
+EDITABLE_DATE = xlwt.easyxf(
+    'protection: cell_locked false;', num_format_str='yyyy/mm/dd'
+)
 
-def create_sales_spreadsheet(organization, model_year, stream):
+
+def add_vehicle_rows(worksheet, row, vehicles, style):
+    current_vehicle_col_width = 13
+
+    for vehicle in vehicles:
+        row += 1
+        worksheet.write(row, 0, int(vehicle.model_year.name), style=style)
+        worksheet.write(row, 1, vehicle.make, style=style)
+        worksheet.write(row, 2, vehicle.model_name, style=style)
+
+        if len(vehicle.model_name) > current_vehicle_col_width:
+            current_vehicle_col_width = len(vehicle.model_name)
+
+    vehicle_model_col = worksheet.col(2)
+    vehicle_model_col.width = 256 * current_vehicle_col_width
+
+
+def add_instructions_sheet(**kwargs):
+    sheet_name = 'Instructions'
+
+    workbook = kwargs.pop('workbook')
+    descriptor = kwargs.pop('descriptor')
+    organization = kwargs.pop('organization')
+    vehicles = kwargs.pop('vehicles')
+
+    worksheet = workbook.add_sheet(sheet_name)
+    worksheet.protect = True
+    descriptor['sheets'].append({
+        'index': 0,
+        'name': sheet_name
+    })
+
+    row = 0
+    worksheet.write(row, 0, 'Recording sales for {organization}'.format(
+        organization=organization.name
+    ), style=BOLD)
+
+    row += 1
+    worksheet.write(
+        row, 0,
+        'Record each individual sale in the next sheet (ZEV Sales).'
+        'Vehicle Model, VIN and Sales Date fields are required.'
+    )
+
+    row += 2
+    worksheet.write(
+        row, 0,
+        'A maximum of {} entries per sheet will be read. If you need '
+        'more entries, use multiple submissions'.format(MAX_READ_ROWS)
+    )
+
+    row += 2
+    worksheet.write(
+        row, 0,
+        'Only the following models are currently valid:'
+    )
+
+    row += 1
+    worksheet.write(row, 0, 'Model Year', style=BOLD)
+    worksheet.write(row, 1, 'Make', style=BOLD)
+    worksheet.write(row, 2, 'Vehicle Model', style=BOLD)
+    add_vehicle_rows(worksheet, row, vehicles, LOCKED)
+
+
+def add_sales_sheet(**kwargs):
+    sheet_name = 'ZEV Sales'
+
+    workbook = kwargs.pop('workbook')
+    descriptor = kwargs.pop('descriptor')
+    organization = kwargs.pop('organization')
+    vehicles = kwargs.pop('vehicles')
+
+    worksheet = workbook.add_sheet(sheet_name)
+    worksheet.protect = False
+    descriptor['sheets'].append({
+        'index': 1,
+        'name': sheet_name
+    })
+
+    row = 0
+
+    worksheet.write(row, 0, 'Model Year', style=BOLD)
+    worksheet.write(row, 1, 'Make', style=BOLD)
+    worksheet.write(row, 2, 'Vehicle Model', style=BOLD)
+    worksheet.write(row, 3, 'VIN', style=BOLD)
+    worksheet.write(row, 4, 'Sales Date', style=BOLD)
+
+    add_vehicle_rows(worksheet, row, vehicles, EDITABLE)
+
+
+def create_sales_spreadsheet(organization, stream):
     logger.info('Starting to build spreadsheet for {org}'.format(
         org=organization.name
     ))
     sheet_count = 0
 
-    bold = xlwt.easyxf('font: name Times New Roman, bold on;')
-    locked = xlwt.easyxf("protection: cell_locked true;")
-    editable = xlwt.easyxf("protection: cell_locked false;")
-    editable_date = xlwt.easyxf(
-        "protection: cell_locked false;", num_format_str='yyyy/mm/dd'
-    )
-
-    wb = xlwt.Workbook('{} Sales Recording'.format(organization.name))
-    wb.protect = True
+    workbook = xlwt.Workbook('{} Sales Recording'.format(organization.name))
+    workbook.protect = True
 
     descriptor = {
         'version': 2,
-        'model_year': model_year.name,
         'create_time': datetime.utcnow().timestamp(),
         'organization_id': organization.id,
         'sheets': []
     }
 
-    sheet_names = {}
+    date_today = datetime.today()
+    start_year = datetime(year=date_today.year-2, month=1, day=1)
+
+    model_years = ModelYear.objects.filter(effective_date__gte=start_year)
 
     vehicles = Vehicle.objects.filter(
-        model_year=model_year,
-        organization_id=organization.id
+        model_year__in=model_years,
+        organization_id=organization.id,
+        validation_status='VALIDATED'
     )
-    for veh in vehicles:
 
-        sheet_name = '{}'.format(veh.id)
-        if sheet_name not in sheet_names.keys():
-            sheet_names[sheet_name] = 0
+    add_instructions_sheet(
+        workbook=workbook,
+        descriptor=descriptor,
+        organization=organization,
+        vehicles=vehicles
+    )
 
-        sheet_names[sheet_name] += 1
-
-        if sheet_names[sheet_name] > 1:
-            sheet_name = '{} - {}'.format(veh.id, sheet_names[sheet_name] - 1)
-
-        ws = wb.add_sheet(sheet_name)
-        ws.protect = True
-        descriptor['sheets'].append({
-            'index': sheet_count,
-            'name': sheet_name,
-            'vehicle_id': veh.id,
-        })
-
-        sheet_count += 1
-        row = 0
-        ws.write(row, 0, 'Recording sales for {year} {make} {model}'.format(
-            year=veh.model_year.name,
-            make=veh.make,
-            model=veh.model_name
-        ), style=bold)
-        row += 1
-
-        ws.write(
-            row, 0,
-            'Record each individual sale for this model in the spaces below. '
-            'VIN and Sales Date fields are required.'
-        )
-
-        row += 2
-
-        ws.write(row, 0, 'Reference Number', style=bold)
-        ws.write(row, 1, 'VIN', style=bold)
-        ws.write(row, 2, 'Sales Date', style=bold)
-
-        row += 1
-
-        while row < OUTPUT_ROWS:
-            ref = 'Assigned'
-            ws.write(row, 0, '{ref}'.format(ref=ref), style=locked)
-            ws.write(row, 1, '', style=editable)
-            ws.write(row, 2, None, style=editable_date)
-            row += 1
-
-        ws.write(
-            row, 0,
-            'A maximum of {} entries per sheet will be read. If you need '
-            'more entries, use multiple submissions'.format(MAX_READ_ROWS)
-        )
+    add_sales_sheet(
+        workbook=workbook,
+        descriptor=descriptor,
+        organization=organization,
+        vehicles=vehicles
+    )
 
     descriptor_bytes = [0x00, 0xd3, 0xc0, 0xde]
     descriptor_bytes.extend(pickle.dumps(descriptor))
     encoded_descriptor = base64.standard_b64encode(bytes(descriptor_bytes))
 
-    ws = wb.add_sheet('ZEVA Internal Use')
-    ws.write(0, 0, encoded_descriptor.decode('ascii'), style=locked)
+    worksheet = workbook.add_sheet('ZEVA Internal Use')
+    worksheet.write(0, 0, encoded_descriptor.decode('ascii'), style=LOCKED)
 
     logger.info(
         'Done building spreadsheet. {} sheets created'.format(sheet_count)
@@ -122,7 +175,7 @@ def create_sales_spreadsheet(organization, model_year, stream):
     logger.info('Descriptor {}'.format(descriptor))
     logger.info('Encoded {}'.format(encoded_descriptor.decode('ascii')))
 
-    wb.save(stream)
+    workbook.save(stream)
 
 
 def ingest_sales_spreadsheet(
@@ -135,13 +188,13 @@ def ingest_sales_spreadsheet(
             'requesting_user is None and skip_authorization is disabled'
         )
 
-    wb = xlrd.open_workbook(file_contents=data)
+    workbook = xlrd.open_workbook(file_contents=data)
 
     validation_problems = []
     entries = []
 
     try:
-        metadata_sheet = wb.sheet_by_name('ZEVA Internal Use')
+        metadata_sheet = workbook.sheet_by_name('ZEVA Internal Use')
         row = metadata_sheet.row(0)
         encoded_descriptor = row[0].value
         descriptor_bytes = base64.standard_b64decode(encoded_descriptor)
@@ -160,7 +213,6 @@ def ingest_sales_spreadsheet(
 
         descriptor = pickle.loads(descriptor_bytes[4:])
         logger.info('Read descriptor: {}'.format(descriptor))
-
     except XLRDError:
         validation_problems.append({
             'row': None, 'message': 'No metadata sheet'
@@ -212,114 +264,113 @@ def ingest_sales_spreadsheet(
         logger.critical('Organization mismatch!')
         return
 
-    # make_assoc = VehicleMakeOrganization.objects.filter(organization=org)
-    # permitted_makes = [ma.vehicle_make for ma in make_assoc]
-
     submission = SalesSubmission.objects.create(
         create_user=requesting_user.username,
         update_user=requesting_user.username,
         organization=org,
         submission_sequence=SalesSubmission.next_sequence(org, datetime.now())
     )
-    submission.save()
 
-    for input_sheet in descriptor['sheets']:
-        try:
-            sheet = wb.sheet_by_name(input_sheet['name'])
-        except XLRDError:
-            logger.info('Sheet {} missing'.format(input_sheet))
-            validation_problems.append({
-                'row': None,
-                'message': 'Expected to find a sheet called {}, and it is '
-                           'not present. Skipping it.'
-            })
-            continue
+    try:
+        sheet = workbook.sheet_by_name('ZEV Sales')
+    except XLRDError:
+        logger.info('ZEV Sales Sheet missing')
+        validation_problems.append({
+            'row': None,
+            'message': 'Expected to find a sheet called ZEV Sales.'
+        })
 
-        logger.info('Reading sheet {}'.format(input_sheet['name']))
+    logger.info('Reading ZEV Sales')
 
-        START_ROW = 4
-        row = START_ROW
+    start_row = 1
+    row = start_row
 
-        while row < min((MAX_READ_ROWS + START_ROW), sheet.nrows):
-            row_contents = sheet.row(row)
-            vin = str(row_contents[1].value)
-            date = row_contents[2].value
-            if len(vin) > 0:
-                logger.info('Found VIN {}'.format(vin))
-                if date == '':
+    while row < min((MAX_READ_ROWS + start_row), sheet.nrows):
+        row_contents = sheet.row(row)
+        model_year = int(row_contents[0].value)
+        make = str(row_contents[1].value)
+        model_name = str(row_contents[2].value) 
+        vin = str(row_contents[3].value)
+        date = row_contents[4].value
+        if len(vin) > 0:
+            logger.info('Found VIN {}'.format(vin))
+            if date == '':
+                validation_problems.append({
+                    'row': row + 1,
+                    'message': 'VIN {} has no corresponding sale '
+                               'date'.format(vin)
+                })
+            else:
+                parsed_date = None
+                try:
+                    parsed_date = xlrd.xldate.xldate_as_datetime(
+                        date, workbook.datemode
+                    )
+                    logger.debug(
+                        'I interpret the Excel date string {} as '
+                        '{}'.format(date, parsed_date)
+                    )
+                except XLDateError:
                     validation_problems.append({
                         'row': row + 1,
-                        'message': 'VIN {} has no corresponding sale '
-                                   'date'.format(vin)
+                        'message': 'date {} insensible'.format(date)
                     })
-                else:
-                    parsed_date = None
-                    try:
-                        parsed_date = xlrd.xldate.xldate_as_datetime(
-                            date, wb.datemode
+
+                if RecordOfSale.objects.filter(
+                    vin=vin, submission__organization=org
+                ).exists():
+                    validation_problems.append({
+                        'row': row + 1,
+                        'message': 'VIN {} has previously been recorded '
+                                   '(but will be entered anyway)'.format(
+                                        vin
+                                   )
+                    })
+
+                vehicle = Vehicle.objects.filter(
+                    model_year__name=model_year,
+                    make=make,
+                    model_name=model_name
+                ).first()
+
+                if vehicle is None:
+                    validation_problems.append({
+                        'row': row + 1,
+                        'message': "{} doesn't match an approved vehicle model.".format(
+                            model_name
                         )
-                        logger.debug(
-                            'I interpret the Excel date string {} as '
-                            '{}'.format(date, parsed_date)
-                        )
-                    except XLDateError:
-                        validation_problems.append({
-                            'row': row + 1,
-                            'message': 'date {} insensible'.format(date)
-                        })
+                    })
+                    row += 1
+                    continue
 
-                    if RecordOfSale.objects.filter(
-                        vin=vin, submission__organization=org
-                    ).exists():
-                        validation_problems.append({
-                            'row': row + 1,
-                            'message': 'VIN {} has previously been recorded '
-                                       '(but will be entered anyway)'.format(
-                                           vin
-                                       )
-                        })
+                if parsed_date:
+                    record_of_sale = RecordOfSale.objects.create(
+                        submission=submission,
+                        vehicle=vehicle,
+                        vin=vin,
+                        sale_date=parsed_date,
+                        reference_number=None
+                    )
 
-                    vehicle = Vehicle.objects.get(id=input_sheet['vehicle_id'])
-                    # if vehicle is None or vehicle.make not in
-                    # permitted_makes:
-                    #     validation_problems.append({
-                    #       'row': None,
-                    #       'message': 'Vehicle not found or has incorrect '
-                    #                  'make'
-                    #     })
-                    #     logger.critical(
-                    #       'Vehicle not found or has incorrect make'
-                    #     )
-                    #     return
+                    entries.append({
+                        'vin': vin,
+                        'vin_validation_status':
+                        record_of_sale.vin_validation_status.value,
+                        'sale_date': parsed_date,
+                        'id': record_of_sale.id,
+                        'credits': vehicle.get_credit_value(),
+                        'model': vehicle.model_name,
+                        'model_year': record_of_sale.vehicle.model_year.name,
+                        'make': vehicle.make,
+                        'class':
+                        vehicle.vehicle_class_code.vehicle_class_code,
+                        'range': vehicle.range,
+                        'type':
+                        vehicle.vehicle_zev_type.vehicle_zev_code,
+                    })
+                    logger.info('Recorded sale {}'.format(vin))
 
-                    if parsed_date:
-                        ros = RecordOfSale.objects.create(
-                            submission=submission,
-                            vehicle=vehicle,
-                            vin=vin,
-                            sale_date=parsed_date,
-                            reference_number=None  # @todo assign from sequence
-                        )
-                        ros.save()
-                        entries.append({
-                            'vin': vin,
-                            'vin_validation_status':
-                            ros.vin_validation_status.value,
-                            'sale_date': parsed_date,
-                            'id': ros.id,
-                            'credits': '??',
-                            'model': ros.vehicle.model_name,
-                            'model_year': ros.vehicle.model_year.name,
-                            'make': ros.vehicle.make,
-                            'class':
-                            ros.vehicle.vehicle_class_code.vehicle_class_code,
-                            'range': ros.vehicle.range,
-                            'type':
-                            ros.vehicle.vehicle_zev_type.vehicle_zev_code,
-                        })
-                        logger.info('Recorded sale {}'.format(vin))
-
-            row += 1
+        row += 1
 
     if len(validation_problems) > 0:
         logger.info(
