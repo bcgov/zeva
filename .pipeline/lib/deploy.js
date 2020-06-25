@@ -155,7 +155,16 @@ module.exports = settings => {
   }))
 */
 
-  //deploy backend
+  //deploy postgresql unit test
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/postgresql-dc-unittest.yaml`, {
+    'param': {
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix,
+      'ENV_NAME': phases[phase].phase
+    }
+  })) 
+
+  //deploy backend unit test
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/backend-dc-unittest.yaml`, {
     'param': {
       'NAME': phases[phase].name,
