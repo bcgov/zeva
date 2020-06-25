@@ -141,3 +141,8 @@ oc policy add-role-to-user edit system:serviceaccount:tbiwaq-prod:nagios --names
 oc process -f ./nagios-bc.yaml ENV_NAME=prod | oc create -f - -n tbiwaq-prod
 oc tag tbiwaq-prod/nagios:latest tabiwaq-prod/nagios:prod
 oc process -f ./nagios-dc.yaml ENV_NAME=prod NAGIOS_PVC_SIZE=2G | oc create -f - -n tbiwaq-prod
+
+
+## unit test
+oc process -f config/zeva-postgresql-init.yaml | oc create -f - -n tbiwaq-dev
+oc process -f postgresql-dc-unittest.yaml NAME=zeva SUFFIX=-dev-999 ENV_NAME=dev | oc create -f - -n tbiwaq-dev

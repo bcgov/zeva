@@ -50,6 +50,8 @@ module.exports = settings => {
     }
   }))
  
+
+  /** 
   //deploy Patroni required secrets
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment-prereq.yaml`, {
     'param': {
@@ -74,7 +76,7 @@ module.exports = settings => {
       'STORAGE_CLASS': phases[phase].storageClass
     }
   }))
-
+**/
   //deploy rabbitmq, use docker image directly
   //POST_START_SLEEP is harded coded in the rabbitmq template, replacement was not successful
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
@@ -95,7 +97,7 @@ module.exports = settings => {
       'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep
     }
   }))
-
+/**
   // deploy frontend configmap
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-configmap.yaml`, {
     'param': {
@@ -137,6 +139,7 @@ module.exports = settings => {
       'REPLICAS':  phases[phase].backendReplicas
     }
   })) 
+  
 
   //deploy schemaspy
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/schemaspy/schemaspy-dc.yaml`, {
@@ -150,6 +153,25 @@ module.exports = settings => {
       'HEALTH_CHECK_DELAY': phases[phase].schemaspyHealthCheckDelay
     }
   }))
+*/
+
+  //deploy backend
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/backend/backend-dc-unittest.yaml`, {
+    'param': {
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix,
+      'VERSION': phases[phase].tag,
+      'ENV_NAME': phases[phase].phase,
+      'BACKEND_HOST_NAME': phases[phase].backendHost,
+      'RABBITMQ_CLUSTER_NAME': 'rabbitmq-cluster',
+      'CPU_REQUEST': phases[phase].backendCpuRequest,
+      'CPU_LIMIT': phases[phase].backendCpuLimit,
+      'MEMORY_REQUEST': phases[phase].backendMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].backendMemoryLimit,
+      'HEALTH_CHECK_DELAY': phases[phase].backendHealthCheckDelay,
+      'REPLICAS':  phases[phase].backendReplicas
+    }
+  })) 
 
   //add autoacaler
   /*****
