@@ -85,7 +85,7 @@ pwd
 # Run unit tests in build stage with the code below
 # echo "--> running Django unit tests"
 
-python $manage_file test
+# python $manage_file test
 
 # set permissions for any installed artifacts
 fix-permissions /opt/app-root
