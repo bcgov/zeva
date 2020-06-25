@@ -60,7 +60,7 @@ objects:
     metadata:
       name: ${NAME}-postgresql-unittest${SUFFIX}
       annotations:
-        as-copy-of: "${NAME}-template-postgresql"
+        as-copy-of: "template.${NAME}-patroni"
       labels: {}
     stringData:
       DATABASE_USER: "${ZEVA_DB_USER}"
