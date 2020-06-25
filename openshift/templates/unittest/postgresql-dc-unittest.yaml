@@ -59,9 +59,6 @@ objects:
     kind: Secret
     metadata:
       name: ${NAME}-postgresql-unittest${SUFFIX}
-      annotations:
-        as-copy-of: "template.patroni-patroni"
-      labels: {}
     stringData:
       DATABASE_USER: "${ZEVA_DB_USER}"
       DATABASE_PASSWORD: "${ZEVA_DB_PASSWORD}"
