@@ -65,7 +65,7 @@ objects:
         app: zeva
         role: backend-unittest
         env: ${ENV_NAME}
-      name: ${NAME}-backend${SUFFIX}
+      name: ${NAME}-backend-unittest${SUFFIX}
     spec:
       replicas: ${{REPLICAS}}
       revisionHistoryLimit: 10
