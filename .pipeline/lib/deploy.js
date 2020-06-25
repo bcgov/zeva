@@ -156,7 +156,7 @@ module.exports = settings => {
 */
 
   //deploy backend
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/backend/backend-dc-unittest.yaml`, {
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/backend-dc-unittest.yaml`, {
     'param': {
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
