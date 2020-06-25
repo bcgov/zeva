@@ -1,37 +1,35 @@
+"""
+Helper Functions for Credit Transactions
+"""
+from django.db.models import Count
 from api.models.credit_transaction import CreditTransaction
-from api.models.credit_transaction_type import CreditTransactionType
 from api.models.record_of_sale import RecordOfSale
+from api.models.vehicle import Vehicle
 
 
 def award_credits(submission):
-    credit_value_a = 0
-    credit_value_b = 0
-
-    record_of_sales = RecordOfSale.objects.filter(
+    """
+    Adds credits to the vehicle supplier based on their sales submission
+    Only validated records will be used for the calculation of credits
+    """
+    records = RecordOfSale.objects.filter(
         submission_id=submission.id,
         validation_status="VALIDATED",
-    )
+    ).values('vehicle_id').annotate(total=Count('id')).order_by('vehicle_id')
 
-    for record_of_sale in record_of_sales:
-        if record_of_sale.vehicle.vehicle_zev_type.vehicle_zev_code == 'BEV':
-            credit_value_a += record_of_sale.vehicle.get_credit_value()
-        else:
-            credit_value_b += record_of_sale.vehicle.get_credit_value()
+    for record in records:
+        vehicle = Vehicle.objects.get(id=record.get('vehicle_id'))
+        credit_value = record.get('total') * vehicle.get_credit_value()
+        credit_class = vehicle.get_credit_class()
 
-    if credit_value_a > 0:
-        CreditTransaction.objects.create(
-            create_user=submission.update_user,
-            credit_class_id="A",
-            credit_to=submission.organization,
-            credit_value=credit_value_a,
-            transaction_type_id="Validation"
-        )
+        if credit_class in ['A', 'B']:
+            CreditTransaction.objects.create(
+                create_user=submission.update_user,
+                credit_class_id=credit_class,
+                credit_to=submission.organization,
+                credit_value=credit_value,
+                update_user=submission.update_user,
+                transaction_type_id="Validation",
+                vehicle_id=vehicle.id
 
-    if credit_value_b > 0:
-        CreditTransaction.objects.create(
-            create_user=submission.update_user,
-            credit_class_id="B",
-            credit_to=submission.organization,
-            credit_value=credit_value_b,
-            transaction_type_id="Validation"
-        )
+            )

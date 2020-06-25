@@ -80,11 +80,6 @@ class SalesSubmissionSerializer(ModelSerializer, EnumSupportSerializerMixin):
         )
 
 
-class RecordOfSaleSerializer(Serializer):
-    id = IntegerField()
-    validation_status = CharField()
-
-
 class SalesSubmissionSaveSerializer(
     ModelSerializer
 ):
@@ -101,7 +96,7 @@ class SalesSubmissionSaveSerializer(
 
     def update(self, instance, validated_data):
         request = self.context.get('request')
-        records = validated_data.get('records')
+        records = request.data.get('records')
 
         if records:
             for record in records:
