@@ -87,7 +87,7 @@ objects:
                   else
                     exit 1
                   fi
-              containerName: backend
+              containerName: backend-unittest
             failurePolicy: Retry
           timeoutSeconds: 600
         resources: {}
@@ -307,7 +307,7 @@ objects:
         - imageChangeParams:
             automatic: true
             containerNames:
-              - backend
+              - backend-unittest
             from:
               kind: ImageStreamTag
               name: ${NAME}-backend:${VERSION}
