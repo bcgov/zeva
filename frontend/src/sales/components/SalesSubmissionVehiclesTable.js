@@ -5,31 +5,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTable from 'react-table';
 
-import CustomPropTypes from '../../app/utilities/props';
-
 const SalesSubmissionVehiclesTable = (props) => {
   const {
-    handleCheckboxClick,
     routeParams,
     submission,
-    user,
   } = props;
 
   const columns = [{
-    accessor: 'id',
-    className: 'text-right',
-    Header: 'Sales ID',
-    id: 'id',
-    width: 100,
-    filterable: false,
-  }, {
-    accessor: () => (submission.submissionDate),
-    className: 'text-center',
-    Header: 'Submission Date',
-    id: 'submission-date',
-    width: 100,
-    filterable: false,
-  }, {
     accessor: 'vehicle.modelYear',
     className: 'text-center',
     Header: 'MY',
@@ -44,33 +26,15 @@ const SalesSubmissionVehiclesTable = (props) => {
     Header: 'Model',
     id: 'model',
   }, {
+    accessor: 'saleDate',
+    className: 'text-center',
+    Header: 'Retail Sales Date',
+    width: 150,
+  }, {
     accessor: 'vin',
     className: 'text-center',
     Header: 'VIN',
     width: 200,
-  }, {
-    accessor: 'saleDate',
-    className: 'text-center',
-    Header: 'Sales Date',
-    width: 150,
-  }, {
-    accessor: 'credits',
-    className: 'text-right',
-    Header: 'Credits',
-    width: 120,
-  }, {
-    accessor: (row) => (<input type="checkbox" value={row.id} onChange={(event) => { handleCheckboxClick(event); }} />),
-    className: 'text-center',
-    Header: 'Validate',
-    id: 'validated',
-    show: user.isGovernment,
-    width: 100,
-  }, {
-    accessor: 'validationStatus',
-    className: 'text-center',
-    Header: 'Satus',
-    id: 'status',
-    width: 150,
   }];
 
   const filterMethod = (filter, row) => {
@@ -103,13 +67,11 @@ const SalesSubmissionVehiclesTable = (props) => {
 SalesSubmissionVehiclesTable.defaultProps = {};
 
 SalesSubmissionVehiclesTable.propTypes = {
-  handleCheckboxClick: PropTypes.func.isRequired,
   routeParams: PropTypes.shape().isRequired,
   submission: PropTypes.shape({
     records: PropTypes.arrayOf(PropTypes.shape({})),
     submissionDate: PropTypes.string,
   }).isRequired,
-  user: CustomPropTypes.user.isRequired,
 };
 
 export default SalesSubmissionVehiclesTable;
