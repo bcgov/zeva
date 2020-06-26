@@ -149,20 +149,11 @@ objects:
                       name: ${NAME}-config${SUFFIX}
                       key: database_engine
                 - name: DATABASE_SERVICE_NAME
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: database_service_name
+                  value: ${NAME}-postgresql-unittest${SUFFIX}
                 - name: POSTGRESQL_SERVICE_HOST
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: postgresql_service_host
+                  value: ${NAME}-postgresql-unittest${SUFFIX}.tbiwaq-${SUFFIX}.svc.cluster.local
                 - name: POSTGRESQL_SERVICE_PORT
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: postgresql_service_port
+                  value: 5432
                 - name: KEYCLOAK_CERTS_URL
                   valueFrom:
                     configMapKeyRef:
