@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import CustomPropTypes from '../../app/utilities/props';
+
 import TextInput from '../../app/components/TextInput';
 import Loading from '../../app/components/Loading';
+import Modal from '../../app/components/Modal';
 import History from '../../app/History';
+import CustomPropTypes from '../../app/utilities/props';
 
 const VehicleSupplierEditForm = (props) => {
   const {
@@ -19,58 +21,33 @@ const VehicleSupplierEditForm = (props) => {
     setDetails,
   } = props;
   const [showModal, setShowModal] = useState(false);
-  const [active, setActive] = useState(details.isActive);
   const modal = (
-    <div className="modal" tabIndex="-1" role="dialog" style={showModal ? { display: 'block' } : { display: 'none' }}>
-      <div className="modal-dialog" role="document">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">Make Supplier Inactive</h5>
-            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div className="modal-body">
-            <p>You have selected to make this vehicle supplier Inactive. <br /><br />
-            They will no longer have the ability to make any further changes
-            within their account and all their users will have read only access
-            </p><br />
-            <p>Do you want to make this supplier Inactive?</p>
-          </div>
-          <div className="modal-footer">
-            <button
-              type="button"
-              id="cancel"
-              className="btn btn-outline-secondary"
-              data-dismiss="modal"
-              onClick={() => {
-                setActive(true);
-                setShowModal(false);
-                setDetails({
-                  ...details,
-                  isActive: true,
-                });
-              }}
-            >Cancel
-            </button>
-            <button
-              type="button"
-              id="set-inactive"
-              className="btn btn-outline-danger"
-              onClick={() => {
-                setActive(false);
-                setShowModal(false);
-                setDetails({
-                  ...details,
-                  isActive: false,
-                });
-              }}
-            >Make Inactive
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Modal
+      confirmClass="btn-outline-danger"
+      confirmLabel="Make Inactive"
+      handleCancel={() => {
+        setShowModal(false);
+        setDetails({
+          ...details,
+          isActive: true,
+        });
+      }}
+      handleSubmit={() => {
+        setShowModal(false);
+        setDetails({
+          ...details,
+          isActive: false,
+        });
+      }}
+      showModal={showModal}
+      title="Make Supplier Inactive"
+    >
+      <p>You have selected to make this vehicle supplier Inactive. <br /><br />
+      They will no longer have the ability to make any further changes
+      within their account and all their users will have read only access
+      </p><br />
+      <p>Do you want to make this supplier Inactive?</p>
+    </Modal>
   );
   let addressDetails = {};
   if (details.organizationAddress) {
@@ -104,9 +81,9 @@ const VehicleSupplierEditForm = (props) => {
       </div>
       <form onSubmit={(event) => handleSubmit(event)}>
         <div className="row align-items-center">
-          <fieldset>
+          <fieldset className="col-lg-6">
             <div className="form-layout row">
-              <span>
+              <div className="col-lg-12">
                 <div className="form-group row">
                   <label
                     className="col-sm-4 col-form-label"
@@ -120,7 +97,6 @@ const VehicleSupplierEditForm = (props) => {
                         type="radio"
                         id="active"
                         onChange={() => {
-                          setActive(true);
                           setDetails({
                             ...details,
                             isActive: true,
@@ -217,7 +193,7 @@ const VehicleSupplierEditForm = (props) => {
                   name="postalCode"
                 />
 
-              </span>
+              </div>
             </div>
             <div className="action-bar form-group row">
               <span className="left-content">

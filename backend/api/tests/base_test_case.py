@@ -11,9 +11,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from django.core.management import call_command
 from django.test import TestCase
-from unittest import mock
 
-from api.authorities import roles_in_group
 from api.models.user_profile import UserProfile
 from api.tests.logging_client import LoggingClient
 

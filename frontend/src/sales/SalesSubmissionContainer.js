@@ -14,13 +14,13 @@ import upload from '../app/utilities/upload';
 import withReferenceData from '../app/utilities/with_reference_data';
 import SalesSubmissionConfirmationPage from './components/SalesSubmissionConfirmationPage';
 import SalesSubmissionPage from './components/SalesSubmissionPage';
-import SalesSubmissionSignaturesPage from './components/SalesSubmissionSignaturesPage';
 import SalesSubmissionValidationPage from './components/SalesSubmissionValidationPage';
 
 const SalesSubmissionContainer = (props) => {
   const { user, referenceData } = props;
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const [submissions, setSubmissions] = useState([]);
   const [workflowState, setWorkflowState] = useState('new');
 
@@ -56,14 +56,6 @@ const SalesSubmissionContainer = (props) => {
     });
   };
 
-  const readyToSign = () => {
-    setWorkflowState('readyToSign');
-  };
-
-  const backToValidationPage = () => {
-    setWorkflowState('validating');
-  };
-
   const sign = (id) => {
     axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id), {
       validationStatus: 'SUBMITTED',
@@ -88,24 +80,15 @@ const SalesSubmissionContainer = (props) => {
   let content;
 
   switch (workflowState) {
-    case 'readyToSign':
-      content = (
-        <SalesSubmissionSignaturesPage
-          backToValidationPage={backToValidationPage}
-          details={details}
-          key="page"
-          sign={sign}
-          user={user}
-        />
-      );
-      break;
     case 'validating':
       content = (
         <SalesSubmissionValidationPage
           backToStart={backToStart}
           details={details}
           key="page"
-          readyToSign={readyToSign}
+          setShowModal={setShowModal}
+          showModal={showModal}
+          sign={sign}
           user={user}
         />
       );

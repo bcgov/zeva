@@ -79,8 +79,7 @@ const SalesListTable = (props) => {
       accessor: (row) => (
         <input
           checked={
-            row.validationStatus === 'VALIDATED'
-            || validatedList.findIndex((item) => Number(item) === Number(row.id)) >= 0
+            validatedList.findIndex((item) => Number(item) === Number(row.id)) >= 0
           }
           onChange={(event) => { handleCheckboxClick(event); }}
           type="checkbox"
@@ -129,7 +128,10 @@ SalesListTable.propTypes = {
     submissionDate: PropTypes.string,
   }).isRequired,
   user: CustomPropTypes.user.isRequired,
-  validatedList: PropTypes.arrayOf().isRequired,
+  validatedList: PropTypes.arrayOf(PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ])).isRequired,
 };
 
 export default SalesListTable;
