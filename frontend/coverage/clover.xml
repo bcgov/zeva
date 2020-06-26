@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1592608717912" clover="3.2.0">
-  <project timestamp="1592608717913" name="All files">
-    <metrics statements="1730" coveredstatements="81" conditionals="644" coveredconditionals="27" methods="549" coveredmethods="13" elements="2923" coveredelements="121" complexity="0" loc="1730" ncloc="1730" packages="20" files="114" classes="114"/>
+<coverage generated="1593211327329" clover="3.2.0">
+  <project timestamp="1593211327330" name="All files">
+    <metrics statements="1756" coveredstatements="96" conditionals="671" coveredconditionals="39" methods="551" coveredmethods="17" elements="2978" coveredelements="152" complexity="0" loc="1756" ncloc="1756" packages="20" files="118" classes="118"/>
     <package name="src">
       <metrics statements="1" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <file name="index.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/index.js">
@@ -171,7 +171,7 @@
       </file>
     </package>
     <package name="src.app.components">
-      <metrics statements="163" coveredstatements="17" conditionals="120" coveredconditionals="5" methods="40" coveredmethods="2"/>
+      <metrics statements="183" coveredstatements="28" conditionals="128" coveredconditionals="13" methods="44" coveredmethods="4"/>
       <file name="Accordion.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/app/components/Accordion.js">
         <metrics statements="4" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
         <line num="4" count="0" type="stmt"/>
@@ -241,6 +241,30 @@
         <line num="143" count="2" type="stmt"/>
         <line num="150" count="2" type="stmt"/>
       </file>
+      <file name="ButtonDelete.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/app/components/ButtonDelete.js">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+      </file>
+      <file name="ButtonDownload.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/app/components/ButtonDownload.js">
+        <metrics statements="5" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="5" count="0" type="stmt"/>
+        <line num="6" count="0" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+      </file>
+      <file name="ButtonSave.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/app/components/ButtonSave.js">
+        <metrics statements="5" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="5" count="0" type="stmt"/>
+        <line num="6" count="0" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+      </file>
       <file name="CreditTransactionTabs.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/app/components/CreditTransactionTabs.js">
         <metrics statements="4" coveredstatements="0" conditionals="18" coveredconditionals="0" methods="1" coveredmethods="0"/>
         <line num="11" count="0" type="stmt"/>
@@ -299,7 +323,7 @@
         <line num="4" count="1" type="stmt"/>
       </file>
       <file name="Navbar.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/app/components/Navbar.js">
-        <metrics statements="16" coveredstatements="0" conditionals="27" coveredconditionals="0" methods="5" coveredmethods="0"/>
+        <metrics statements="21" coveredstatements="0" conditionals="35" coveredconditionals="0" methods="6" coveredmethods="0"/>
         <line num="13" count="0" type="stmt"/>
         <line num="15" count="0" type="stmt"/>
         <line num="20" count="0" type="stmt"/>
@@ -314,8 +338,13 @@
         <line num="46" count="0" type="stmt"/>
         <line num="48" count="0" type="stmt"/>
         <line num="110" count="0" type="stmt"/>
-        <line num="239" count="0" type="stmt"/>
-        <line num="241" count="0" type="stmt"/>
+        <line num="198" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="199" count="0" type="stmt"/>
+        <line num="202" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="203" count="0" type="stmt"/>
+        <line num="206" count="0" type="stmt"/>
+        <line num="264" count="0" type="stmt"/>
+        <line num="266" count="0" type="stmt"/>
       </file>
       <file name="StatusInterceptor.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/app/components/StatusInterceptor.js">
         <metrics statements="22" coveredstatements="0" conditionals="6" coveredconditionals="0" methods="7" coveredmethods="0"/>
@@ -343,26 +372,26 @@
         <line num="99" count="0" type="stmt"/>
       </file>
       <file name="TextInput.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/app/components/TextInput.js">
-        <metrics statements="21" coveredstatements="10" conditionals="19" coveredconditionals="5" methods="2" coveredmethods="1"/>
+        <metrics statements="21" coveredstatements="16" conditionals="19" coveredconditionals="13" methods="2" coveredmethods="2"/>
         <line num="4" count="4" type="stmt"/>
-        <line num="16" count="10" type="stmt"/>
-        <line num="19" count="10" type="cond" truecount="1" falsecount="1"/>
-        <line num="20" count="10" type="stmt"/>
+        <line num="16" count="11" type="stmt"/>
+        <line num="19" count="11" type="cond" truecount="1" falsecount="1"/>
+        <line num="20" count="11" type="stmt"/>
         <line num="22" count="0" type="stmt"/>
-        <line num="25" count="10" type="stmt"/>
-        <line num="26" count="10" type="stmt"/>
-        <line num="28" count="10" type="stmt"/>
-        <line num="29" count="0" type="stmt"/>
-        <line num="30" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="31" count="0" type="stmt"/>
-        <line num="32" count="0" type="stmt"/>
-        <line num="35" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="25" count="11" type="stmt"/>
+        <line num="26" count="11" type="stmt"/>
+        <line num="28" count="11" type="stmt"/>
+        <line num="29" count="1" type="stmt"/>
+        <line num="30" count="1" type="cond" truecount="3" falsecount="1"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="32" count="1" type="stmt"/>
+        <line num="35" count="1" type="cond" truecount="3" falsecount="1"/>
         <line num="36" count="0" type="stmt"/>
         <line num="37" count="0" type="stmt"/>
-        <line num="39" count="0" type="cond" truecount="0" falsecount="5"/>
+        <line num="39" count="1" type="cond" truecount="2" falsecount="3"/>
         <line num="40" count="0" type="stmt"/>
         <line num="41" count="0" type="stmt"/>
-        <line num="45" count="10" type="stmt"/>
+        <line num="45" count="11" type="stmt"/>
         <line num="71" count="4" type="stmt"/>
         <line num="80" count="4" type="stmt"/>
       </file>
@@ -787,7 +816,7 @@
       </file>
     </package>
     <package name="src.dashboard.components">
-      <metrics statements="42" coveredstatements="0" conditionals="8" coveredconditionals="0" methods="14" coveredmethods="0"/>
+      <metrics statements="48" coveredstatements="0" conditionals="20" coveredconditionals="0" methods="17" coveredmethods="0"/>
       <file name="Actions.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/dashboard/components/Actions.js">
         <metrics statements="19" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="7" coveredmethods="0"/>
         <line num="9" count="0" type="stmt"/>
@@ -810,6 +839,15 @@
         <line num="53" count="0" type="stmt"/>
         <line num="56" count="0" type="stmt"/>
       </file>
+      <file name="Administration.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/dashboard/components/Administration.js">
+        <metrics statements="6" coveredstatements="0" conditionals="8" coveredconditionals="0" methods="3" coveredmethods="0"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="54" count="0" type="stmt"/>
+      </file>
       <file name="Balance.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/dashboard/components/Balance.js">
         <metrics statements="5" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
         <line num="5" count="0" type="stmt"/>
@@ -819,11 +857,11 @@
         <line num="30" count="0" type="stmt"/>
       </file>
       <file name="DashboardPage.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/dashboard/components/DashboardPage.js">
-        <metrics statements="4" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
-        <line num="8" count="0" type="stmt"/>
+        <metrics statements="4" coveredstatements="0" conditionals="6" coveredconditionals="0" methods="1" coveredmethods="0"/>
         <line num="9" count="0" type="stmt"/>
         <line num="10" count="0" type="stmt"/>
-        <line num="26" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
       </file>
       <file name="Feedback.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/dashboard/components/Feedback.js">
         <metrics statements="2" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
@@ -839,14 +877,14 @@
         <line num="81" count="0" type="stmt"/>
       </file>
       <file name="UserSettings.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/dashboard/components/UserSettings.js">
-        <metrics statements="7" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="3" coveredmethods="0"/>
+        <metrics statements="7" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="3" coveredmethods="0"/>
         <line num="8" count="0" type="stmt"/>
         <line num="9" count="0" type="stmt"/>
         <line num="10" count="0" type="stmt"/>
         <line num="27" count="0" type="stmt"/>
-        <line num="59" count="0" type="stmt"/>
-        <line num="69" count="0" type="stmt"/>
-        <line num="72" count="0" type="stmt"/>
+        <line num="60" count="0" type="stmt"/>
+        <line num="70" count="0" type="stmt"/>
+        <line num="73" count="0" type="stmt"/>
       </file>
     </package>
     <package name="src.organizations">
@@ -1300,7 +1338,7 @@
       </file>
     </package>
     <package name="src.sales">
-      <metrics statements="122" coveredstatements="0" conditionals="20" coveredconditionals="0" methods="36" coveredmethods="0"/>
+      <metrics statements="117" coveredstatements="0" conditionals="20" coveredconditionals="0" methods="34" coveredmethods="0"/>
       <file name="SalesDetailsContainer.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/sales/SalesDetailsContainer.js">
         <metrics statements="16" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="4" coveredmethods="0"/>
         <line num="14" count="0" type="stmt"/>
@@ -1360,37 +1398,30 @@
         <line num="58" count="0" type="stmt"/>
       </file>
       <file name="SalesSubmissionApprovalDetailsContainer.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/sales/SalesSubmissionApprovalDetailsContainer.js">
-        <metrics statements="27" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="10" coveredmethods="0"/>
+        <metrics statements="20" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="7" coveredmethods="0"/>
         <line num="15" count="0" type="stmt"/>
         <line num="16" count="0" type="stmt"/>
         <line num="17" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
         <line num="19" count="0" type="stmt"/>
-        <line num="20" count="0" type="stmt"/>
         <line num="21" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
         <line num="23" count="0" type="stmt"/>
         <line num="24" count="0" type="stmt"/>
-        <line num="25" count="0" type="stmt"/>
-        <line num="26" count="0" type="stmt"/>
-        <line num="30" count="0" type="stmt"/>
-        <line num="31" count="0" type="stmt"/>
-        <line num="34" count="0" type="stmt"/>
-        <line num="35" count="0" type="stmt"/>
-        <line num="37" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="38" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="29" count="0" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
         <line num="40" count="0" type="stmt"/>
+        <line num="43" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="44" count="0" type="stmt"/>
-        <line num="45" count="0" type="stmt"/>
         <line num="47" count="0" type="stmt"/>
-        <line num="48" count="0" type="stmt"/>
-        <line num="54" count="0" type="stmt"/>
-        <line num="57" count="0" type="stmt"/>
-        <line num="61" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="62" count="0" type="stmt"/>
-        <line num="65" count="0" type="stmt"/>
-        <line num="78" count="0" type="stmt"/>
+        <line num="60" count="0" type="stmt"/>
       </file>
       <file name="SalesSubmissionContainer.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/sales/SalesSubmissionContainer.js">
-        <metrics statements="46" coveredstatements="0" conditionals="10" coveredconditionals="0" methods="12" coveredmethods="0"/>
+        <metrics statements="48" coveredstatements="0" conditionals="12" coveredconditionals="0" methods="13" coveredmethods="0"/>
         <line num="20" count="0" type="stmt"/>
         <line num="21" count="0" type="stmt"/>
         <line num="22" count="0" type="stmt"/>
@@ -1403,44 +1434,46 @@
         <line num="36" count="0" type="stmt"/>
         <line num="38" count="0" type="stmt"/>
         <line num="39" count="0" type="stmt"/>
-        <line num="40" count="0" type="stmt"/>
-        <line num="44" count="0" type="stmt"/>
-        <line num="45" count="0" type="stmt"/>
+        <line num="40" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="41" count="0" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
         <line num="46" count="0" type="stmt"/>
         <line num="47" count="0" type="stmt"/>
+        <line num="48" count="0" type="stmt"/>
         <line num="49" count="0" type="stmt"/>
-        <line num="51" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="52" count="0" type="stmt"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="53" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="54" count="0" type="stmt"/>
-        <line num="59" count="0" type="stmt"/>
-        <line num="60" count="0" type="stmt"/>
-        <line num="63" count="0" type="stmt"/>
-        <line num="64" count="0" type="stmt"/>
-        <line num="67" count="0" type="stmt"/>
-        <line num="68" count="0" type="stmt"/>
-        <line num="71" count="0" type="stmt"/>
-        <line num="75" count="0" type="stmt"/>
-        <line num="76" count="0" type="stmt"/>
-        <line num="80" count="0" type="stmt"/>
-        <line num="81" count="0" type="stmt"/>
-        <line num="84" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="85" count="0" type="stmt"/>
-        <line num="90" count="0" type="cond" truecount="0" falsecount="6"/>
-        <line num="92" count="0" type="stmt"/>
-        <line num="101" count="0" type="stmt"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="61" count="0" type="stmt"/>
+        <line num="62" count="0" type="stmt"/>
+        <line num="65" count="0" type="stmt"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="69" count="0" type="stmt"/>
+        <line num="70" count="0" type="stmt"/>
+        <line num="73" count="0" type="stmt"/>
+        <line num="77" count="0" type="stmt"/>
+        <line num="78" count="0" type="stmt"/>
+        <line num="82" count="0" type="stmt"/>
+        <line num="83" count="0" type="stmt"/>
+        <line num="86" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="87" count="0" type="stmt"/>
+        <line num="92" count="0" type="cond" truecount="0" falsecount="6"/>
+        <line num="94" count="0" type="stmt"/>
         <line num="103" count="0" type="stmt"/>
-        <line num="112" count="0" type="stmt"/>
+        <line num="105" count="0" type="stmt"/>
         <line num="114" count="0" type="stmt"/>
-        <line num="121" count="0" type="stmt"/>
+        <line num="116" count="0" type="stmt"/>
         <line num="123" count="0" type="stmt"/>
-        <line num="124" count="0" type="stmt"/>
-        <line num="127" count="0" type="stmt"/>
-        <line num="141" count="0" type="stmt"/>
-        <line num="147" count="0" type="stmt"/>
+        <line num="125" count="0" type="stmt"/>
+        <line num="126" count="0" type="stmt"/>
+        <line num="129" count="0" type="stmt"/>
+        <line num="143" count="0" type="stmt"/>
+        <line num="149" count="0" type="stmt"/>
       </file>
     </package>
     <package name="src.sales.components">
-      <metrics statements="199" coveredstatements="0" conditionals="66" coveredconditionals="0" methods="68" coveredmethods="0"/>
+      <metrics statements="192" coveredstatements="0" conditionals="60" coveredconditionals="0" methods="61" coveredmethods="0"/>
       <file name="SalesDetailsTable.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/sales/components/SalesDetailsTable.js">
         <metrics statements="21" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="12" coveredmethods="0"/>
         <line num="9" count="0" type="stmt"/>
@@ -1489,14 +1522,12 @@
         <line num="75" count="0" type="stmt"/>
       </file>
       <file name="SalesSubmissionApprovalDetailsPage.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/sales/components/SalesSubmissionApprovalDetailsPage.js">
-        <metrics statements="7" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="3" coveredmethods="0"/>
-        <line num="9" count="0" type="stmt"/>
+        <metrics statements="5" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
         <line num="16" count="0" type="stmt"/>
-        <line num="18" count="0" type="stmt"/>
-        <line num="44" count="0" type="stmt"/>
-        <line num="56" count="0" type="stmt"/>
-        <line num="71" count="0" type="stmt"/>
-        <line num="73" count="0" type="stmt"/>
+        <line num="52" count="0" type="stmt"/>
+        <line num="54" count="0" type="stmt"/>
       </file>
       <file name="SalesSubmissionApprovalPage.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/sales/components/SalesSubmissionApprovalPage.js">
         <metrics statements="6" coveredstatements="0" conditionals="5" coveredconditionals="0" methods="2" coveredmethods="0"/>
@@ -1555,27 +1586,24 @@
         <line num="121" count="0" type="stmt"/>
       </file>
       <file name="SalesSubmissionPage.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/sales/components/SalesSubmissionPage.js">
-        <metrics statements="20" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="10" coveredmethods="0"/>
+        <metrics statements="17" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="8" coveredmethods="0"/>
         <line num="12" count="0" type="stmt"/>
-        <line num="21" count="0" type="stmt"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
         <line num="23" count="0" type="stmt"/>
-        <line num="25" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
         <line num="26" count="0" type="stmt"/>
-        <line num="27" count="0" type="stmt"/>
         <line num="29" count="0" type="stmt"/>
-        <line num="32" count="0" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
         <line num="44" count="0" type="stmt"/>
-        <line num="48" count="0" type="stmt"/>
-        <line num="55" count="0" type="stmt"/>
-        <line num="56" count="0" type="stmt"/>
-        <line num="58" count="0" type="stmt"/>
-        <line num="60" count="0" type="stmt"/>
-        <line num="61" count="0" type="stmt"/>
-        <line num="92" count="0" type="stmt"/>
-        <line num="99" count="0" type="stmt"/>
-        <line num="117" count="0" type="stmt"/>
-        <line num="141" count="0" type="stmt"/>
-        <line num="145" count="0" type="stmt"/>
+        <line num="46" count="0" type="stmt"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="78" count="0" type="stmt"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="103" count="0" type="stmt"/>
+        <line num="127" count="0" type="stmt"/>
+        <line num="131" count="0" type="stmt"/>
       </file>
       <file name="SalesSubmissionSignaturesPage.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/sales/components/SalesSubmissionSignaturesPage.js">
         <metrics statements="8" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="0"/>
@@ -1645,43 +1673,41 @@
         <line num="259" count="0" type="stmt"/>
       </file>
       <file name="SalesSubmissionVehiclesTable.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/sales/components/SalesSubmissionVehiclesTable.js">
-        <metrics statements="13" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="6" coveredmethods="0"/>
-        <line num="10" count="0" type="stmt"/>
-        <line num="16" count="0" type="stmt"/>
-        <line num="18" count="0" type="stmt"/>
-        <line num="26" count="0" type="stmt"/>
-        <line num="62" count="0" type="stmt"/>
-        <line num="76" count="0" type="stmt"/>
-        <line num="77" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="78" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="83" count="0" type="stmt"/>
-        <line num="85" count="0" type="stmt"/>
-        <line num="90" count="0" type="stmt"/>
-        <line num="103" count="0" type="stmt"/>
-        <line num="105" count="0" type="stmt"/>
+        <metrics statements="11" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="3" coveredmethods="0"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="40" count="0" type="stmt"/>
+        <line num="41" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="42" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="54" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="69" count="0" type="stmt"/>
       </file>
       <file name="SalesSubmissionsListTable.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/sales/components/SalesSubmissionsListTable.js">
         <metrics statements="16" coveredstatements="0" conditionals="10" coveredconditionals="0" methods="5" coveredmethods="0"/>
-        <line num="12" count="0" type="stmt"/>
-        <line num="13" count="0" type="stmt"/>
-        <line num="22" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="44" count="0" type="stmt"/>
-        <line num="45" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="46" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="20" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="43" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="44" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="49" count="0" type="stmt"/>
         <line num="51" count="0" type="stmt"/>
         <line num="53" count="0" type="stmt"/>
-        <line num="55" count="0" type="stmt"/>
-        <line num="66" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="64" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="65" count="0" type="stmt"/>
         <line num="67" count="0" type="stmt"/>
         <line num="69" count="0" type="stmt"/>
-        <line num="71" count="0" type="stmt"/>
-        <line num="77" count="0" type="stmt"/>
+        <line num="75" count="0" type="stmt"/>
+        <line num="83" count="0" type="stmt"/>
         <line num="85" count="0" type="stmt"/>
-        <line num="87" count="0" type="stmt"/>
       </file>
     </package>
     <package name="src.users">
-      <metrics statements="79" coveredstatements="0" conditionals="16" coveredconditionals="0" methods="21" coveredmethods="0"/>
+      <metrics statements="81" coveredstatements="0" conditionals="18" coveredconditionals="0" methods="21" coveredmethods="0"/>
       <file name="UserAddContainer.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/users/UserAddContainer.js">
         <metrics statements="38" coveredstatements="0" conditionals="8" coveredconditionals="0" methods="10" coveredmethods="0"/>
         <line num="17" count="0" type="stmt"/>
@@ -1724,7 +1750,7 @@
         <line num="101" count="0" type="stmt"/>
       </file>
       <file name="UserEditContainer.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/users/UserEditContainer.js">
-        <metrics statements="41" coveredstatements="0" conditionals="8" coveredconditionals="0" methods="11" coveredmethods="0"/>
+        <metrics statements="43" coveredstatements="0" conditionals="10" coveredconditionals="0" methods="11" coveredmethods="0"/>
         <line num="17" count="0" type="stmt"/>
         <line num="18" count="0" type="stmt"/>
         <line num="19" count="0" type="stmt"/>
@@ -1746,47 +1772,51 @@
         <line num="46" count="0" type="stmt"/>
         <line num="47" count="0" type="stmt"/>
         <line num="51" count="0" type="stmt"/>
-        <line num="53" count="0" type="stmt"/>
-        <line num="55" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="53" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="54" count="0" type="stmt"/>
         <line num="56" count="0" type="stmt"/>
-        <line num="59" count="0" type="stmt"/>
+        <line num="59" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="60" count="0" type="stmt"/>
-        <line num="62" count="0" type="stmt"/>
         <line num="63" count="0" type="stmt"/>
+        <line num="64" count="0" type="stmt"/>
+        <line num="66" count="0" type="stmt"/>
         <line num="67" count="0" type="stmt"/>
-        <line num="68" count="0" type="stmt"/>
-        <line num="70" count="0" type="stmt"/>
         <line num="71" count="0" type="stmt"/>
+        <line num="72" count="0" type="stmt"/>
         <line num="74" count="0" type="stmt"/>
         <line num="75" count="0" type="stmt"/>
-        <line num="77" count="0" type="stmt"/>
         <line num="78" count="0" type="stmt"/>
         <line num="79" count="0" type="stmt"/>
+        <line num="81" count="0" type="stmt"/>
         <line num="82" count="0" type="stmt"/>
         <line num="83" count="0" type="stmt"/>
+        <line num="86" count="0" type="stmt"/>
         <line num="87" count="0" type="stmt"/>
-        <line num="102" count="0" type="stmt"/>
+        <line num="91" count="0" type="stmt"/>
+        <line num="106" count="0" type="stmt"/>
       </file>
     </package>
     <package name="src.users.components">
-      <metrics statements="15" coveredstatements="8" conditionals="22" coveredconditionals="9" methods="7" coveredmethods="2"/>
+      <metrics statements="17" coveredstatements="12" conditionals="27" coveredconditionals="13" methods="8" coveredmethods="4"/>
       <file name="UserDetailsForm.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/users/components/UserDetailsForm.js">
-        <metrics statements="15" coveredstatements="8" conditionals="22" coveredconditionals="9" methods="7" coveredmethods="2"/>
+        <metrics statements="17" coveredstatements="12" conditionals="27" coveredconditionals="13" methods="8" coveredmethods="4"/>
         <line num="10" count="1" type="stmt"/>
         <line num="19" count="1" type="stmt"/>
         <line num="21" count="1" type="cond" truecount="1" falsecount="1"/>
         <line num="22" count="0" type="stmt"/>
         <line num="25" count="1" type="stmt"/>
-        <line num="26" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="27" count="0" type="stmt"/>
+        <line num="26" count="2" type="cond" truecount="3" falsecount="1"/>
+        <line num="27" count="2" type="stmt"/>
         <line num="30" count="0" type="stmt"/>
-        <line num="33" count="2" type="stmt"/>
-        <line num="34" count="0" type="stmt"/>
-        <line num="38" count="1" type="stmt"/>
-        <line num="46" count="0" type="stmt"/>
-        <line num="155" count="0" type="stmt"/>
-        <line num="177" count="1" type="stmt"/>
+        <line num="33" count="1" type="stmt"/>
+        <line num="34" count="2" type="stmt"/>
+        <line num="36" count="2" type="stmt"/>
+        <line num="41" count="1" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="160" count="0" type="stmt"/>
+        <line num="165" count="0" type="stmt"/>
         <line num="181" count="1" type="stmt"/>
+        <line num="185" count="1" type="stmt"/>
       </file>
     </package>
     <package name="src.vehicles">
@@ -1960,7 +1990,7 @@
       </file>
     </package>
     <package name="src.vehicles.components">
-      <metrics statements="145" coveredstatements="26" conditionals="95" coveredconditionals="5" methods="58" coveredmethods="6"/>
+      <metrics statements="153" coveredstatements="26" conditionals="101" coveredconditionals="5" methods="61" coveredmethods="6"/>
       <file name="ActionBarGov.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/vehicles/components/ActionBarGov.js">
         <metrics statements="13" coveredstatements="9" conditionals="4" coveredconditionals="2" methods="4" coveredmethods="2"/>
         <line num="4" count="1" type="stmt"/>
@@ -2109,29 +2139,37 @@
         <line num="139" count="0" type="stmt"/>
       </file>
       <file name="VehicleValidatePage.js" path="/Users/emhillie/Documents/projects/zeva/frontend/src/vehicles/components/VehicleValidatePage.js">
-        <metrics statements="22" coveredstatements="0" conditionals="16" coveredconditionals="0" methods="8" coveredmethods="0"/>
-        <line num="10" count="0" type="stmt"/>
-        <line num="13" count="0" type="stmt"/>
-        <line num="14" count="0" type="stmt"/>
-        <line num="15" count="0" type="cond" truecount="0" falsecount="2"/>
+        <metrics statements="30" coveredstatements="0" conditionals="22" coveredconditionals="0" methods="11" coveredmethods="0"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
         <line num="16" count="0" type="stmt"/>
+        <line num="17" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="18" count="0" type="stmt"/>
-        <line num="19" count="0" type="stmt"/>
         <line num="20" count="0" type="stmt"/>
+        <line num="21" count="0" type="stmt"/>
         <line num="22" count="0" type="stmt"/>
-        <line num="23" count="0" type="stmt"/>
-        <line num="24" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="24" count="0" type="stmt"/>
         <line num="25" count="0" type="stmt"/>
+        <line num="26" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="27" count="0" type="stmt"/>
-        <line num="31" count="0" type="stmt"/>
-        <line num="34" count="0" type="stmt"/>
-        <line num="41" count="0" type="stmt"/>
-        <line num="75" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="87" count="0" type="stmt"/>
-        <line num="96" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="97" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="108" count="0" type="stmt"/>
-        <line num="110" count="0" type="stmt"/>
+        <line num="29" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="74" count="0" type="stmt"/>
+        <line num="79" count="0" type="stmt"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="88" count="0" type="stmt"/>
+        <line num="89" count="0" type="stmt"/>
+        <line num="90" count="0" type="stmt"/>
+        <line num="91" count="0" type="stmt"/>
+        <line num="92" count="0" type="stmt"/>
+        <line num="120" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="134" count="0" type="stmt"/>
+        <line num="145" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="146" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="158" count="0" type="stmt"/>
+        <line num="160" count="0" type="stmt"/>
       </file>
     </package>
   </project>
