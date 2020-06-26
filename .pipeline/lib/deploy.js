@@ -50,8 +50,6 @@ module.exports = settings => {
     }
   }))
  
-
-  /** 
   //deploy Patroni required secrets
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment-prereq.yaml`, {
     'param': {
@@ -76,7 +74,7 @@ module.exports = settings => {
       'STORAGE_CLASS': phases[phase].storageClass
     }
   }))
-**/
+
   //deploy rabbitmq, use docker image directly
   //POST_START_SLEEP is harded coded in the rabbitmq template, replacement was not successful
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
@@ -94,10 +92,11 @@ module.exports = settings => {
       'MEMORY_REQUEST': phases[phase].rabbitmqMemoryRequest,
       'MEMORY_LIMIT': phases[phase].rabbitmqMemoryLimit,
       'REPLICA': phases[phase].rabbitmqReplica,
-      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep
+      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep,
+      'STORAGE_CLASS': phases[phase].storageClass
     }
   }))
-/**
+
   // deploy frontend configmap
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-configmap.yaml`, {
     'param': {
@@ -153,34 +152,38 @@ module.exports = settings => {
       'HEALTH_CHECK_DELAY': phases[phase].schemaspyHealthCheckDelay
     }
   }))
-*/
 
-  //deploy postgresql unit test
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/postgresql-dc-unittest.yaml`, {
-    'param': {
-      'NAME': phases[phase].name,
-      'SUFFIX': phases[phase].suffix,
-      'ENV_NAME': phases[phase].phase
-    }
-  })) 
+  //deploy separate database and backend pod for unit test
+  if( phase === 'dev' ) {
 
-  //deploy backend unit test
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/backend-dc-unittest.yaml`, {
-    'param': {
-      'NAME': phases[phase].name,
-      'SUFFIX': phases[phase].suffix,
-      'VERSION': phases[phase].tag,
-      'ENV_NAME': phases[phase].phase,
-      'BACKEND_HOST_NAME': phases[phase].backendHost,
-      'RABBITMQ_CLUSTER_NAME': 'rabbitmq-cluster',
-      'CPU_REQUEST': phases[phase].backendCpuRequest,
-      'CPU_LIMIT': phases[phase].backendCpuLimit,
-      'MEMORY_REQUEST': phases[phase].backendMemoryRequest,
-      'MEMORY_LIMIT': phases[phase].backendMemoryLimit,
-      'HEALTH_CHECK_DELAY': phases[phase].backendHealthCheckDelay,
-      'REPLICAS':  phases[phase].backendReplicas
-    }
-  })) 
+    //deploy postgresql unit test
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/postgresql-dc-unittest.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'SUFFIX': phases[phase].suffix,
+        'ENV_NAME': phases[phase].phase
+      }
+    })) 
+
+    //deploy backend unit test
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/backend-dc-unittest.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'SUFFIX': phases[phase].suffix,
+        'VERSION': phases[phase].tag,
+        'ENV_NAME': phases[phase].phase,
+        'BACKEND_HOST_NAME': phases[phase].backendHost,
+        'RABBITMQ_CLUSTER_NAME': 'rabbitmq-cluster',
+        'CPU_REQUEST': phases[phase].backendCpuRequest,
+        'CPU_LIMIT': phases[phase].backendCpuLimit,
+        'MEMORY_REQUEST': phases[phase].backendMemoryRequest,
+        'MEMORY_LIMIT': phases[phase].backendMemoryLimit,
+        'HEALTH_CHECK_DELAY': phases[phase].backendHealthCheckDelay,
+        'REPLICAS':  phases[phase].backendReplicas
+      }
+    })) 
+
+  }
 
   //add autoacaler
   /*****
