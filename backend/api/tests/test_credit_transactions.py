@@ -5,6 +5,7 @@ from .base_test_case import BaseTestCase
 from ..models.credit_class import CreditClass
 from ..models.credit_transaction import CreditTransaction
 from ..models.credit_transaction_type import CreditTransactionType
+from ..models.vehicle import Vehicle
 
 
 class TestOrganizations(BaseTestCase):
@@ -28,39 +29,43 @@ class TestOrganizations(BaseTestCase):
 
         CreatedTransaction = namedtuple(
             'CreatedTransaction', (
-                'credit', 'debit', 'creditclass', 'type', 'value'
+                'credit', 'debit', 'creditclass', 'type', 'value', 'vehicle'
             )
         )
 
+        org1_vehicle = Vehicle.objects.filter(organization=self.org1).first()
+        org2_vehicle = Vehicle.objects.filter(organization=self.org2).first()
+
         to_create = [
             CreatedTransaction(
-                self.org1, self.gov, class_a, validation, 100.0
+                self.org1, self.gov, class_a, validation, 100.0, org1_vehicle
             ),
             CreatedTransaction(
-                self.org1, self.gov, class_b, validation, 50.0
+                self.org1, self.gov, class_b, validation, 50.0, org1_vehicle
             ),
             CreatedTransaction(
-                self.gov, self.org1, class_a, reduction, 93.0
+                self.gov, self.org1, class_a, reduction, 93.0, org1_vehicle
             ),
             CreatedTransaction(
-                self.org1, self.gov, class_b, validation, 50.0
+                self.org1, self.gov, class_b, validation, 50.0, org1_vehicle
             ),
             CreatedTransaction(
-                self.org1, self.gov, class_b, validation, 45.0
+                self.org1, self.gov, class_b, validation, 45.0, org1_vehicle
             ),
             CreatedTransaction(
-                self.org2, self.gov, class_a, validation, 99.0
+                self.org2, self.gov, class_a, validation, 99.0, org2_vehicle
             ),
         ]
 
         for t in to_create:
-            CreditTransaction.objects.create(
-                credit_to=t.credit,
-                debit_from=t.debit,
-                credit_class=t.creditclass,
-                transaction_type=t.type,
-                credit_value=t.value,
-            )
+            if t.vehicle:
+                CreditTransaction.objects.create(
+                    credit_to=t.credit,
+                    debit_from=t.debit,
+                    credit_class=t.creditclass,
+                    transaction_type=t.type,
+                    credit_value=t.value,
+                )
 
     def test_org1_credits(self):
         response = self.clients['RTAN_BCEID'].get("/api/credit-transactions")
