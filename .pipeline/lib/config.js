@@ -18,7 +18,7 @@ const phases = {
         backendCpuRequest: '300m', backendCpuLimit: '600m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 30, backendHost: `zeva-backend-dev-${changeId}.pathfinder.gov.bc.ca`, backendReplicas: 1,
         minioCpuRequest: '100m', minioCpuLimit: '200m', minioMemoryRequest: '200M', minioMemoryLimit: '500M', minioPvcSize: '1G',
         schemaspyCpuRequest: '50m', schemaspyCpuLimit: '200m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 160,
-        rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '1G', rabbitmqPvcSize: '1G', rabbitmqReplica: 1, rabbitmqPostStartSleep: 120,
+        rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '1G', rabbitmqPvcSize: '1G', rabbitmqReplica: 1, rabbitmqPostStartSleep: 120, storageClass: 'gluster-block',
         patroniCpuRequest: '200m', patroniCpuLimit: '400m', patroniMemoryRequest: '250M', patroniMemoryLimit: '500M', patroniPvcSize: '2G', patroniReplica: 1, storageClass: 'gluster-block'},
 
   test: {namespace:'tbiwaq-test', name: `${name}`, ssoSuffix:'-test', 
@@ -29,7 +29,7 @@ const phases = {
         backendCpuRequest: '100m', backendCpuLimit: '500m', backendMemoryRequest: '500M', backendMemoryLimit: '700M', backendHealthCheckDelay: 30, backendReplicas: 1, backendMinReplicas: 2, backendMaxReplicas: 5, backendHost: `zeva-backend-test.pathfinder.gov.bc.ca`,
         minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M', minioPvcSize: '5G',
         schemaspyCpuRequest: '20m', schemaspyCpuLimit: '200m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 160,
-        rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '700M', rabbitmqPvcSize: '1G', rabbitmqReplica: 2, rabbitmqPostStartSleep: 120,
+        rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '700M', rabbitmqPvcSize: '1G', rabbitmqReplica: 2, rabbitmqPostStartSleep: 120, storageClass: 'netapp-block-standard',
         patroniCpuRequest: '500m', patroniCpuLimit: '1000m', patroniMemoryRequest: '500M', patroniMemoryLimit: '1G', patroniPvcSize: '5G', patroniReplica: 2, storageClass: 'netapp-block-standard'},
 
   prod: {namespace:'tbiwaq-prod', name: `${name}`, ssoSuffix:'', 
@@ -40,7 +40,7 @@ const phases = {
         backendCpuRequest: '200m', backendCpuLimit: '700m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 30, backendReplicas: 1, backendMinReplicas: 2, backendMaxReplicas: 5, backendHost: `zeva-backend-prod.pathfinder.gov.bc.ca`,
         minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M', minioPvcSize: '10G',
         schemaspyCpuRequest: '50m', schemaspyCpuLimit: '400m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 160,
-        rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '1G', rabbitmqPvcSize: '5G', rabbitmqReplica: 3, rabbitmqPostStartSleep: 120,
+        rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '1G', rabbitmqPvcSize: '5G', rabbitmqReplica: 3, rabbitmqPostStartSleep: 120, storageClass: 'netapp-block-standard',
         patroniCpuRequest: '500m', patroniCpuLimit: '1000m', patroniMemoryRequest: '1G', patroniMemoryLimit: '2G', patroniPvcSize: '40G', patroniReplica: 3, storageClass: 'netapp-block-standard'},
 
 };
