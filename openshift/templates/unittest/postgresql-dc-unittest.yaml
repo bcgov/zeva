@@ -148,7 +148,7 @@ objects:
                   protocol: TCP
               env:
                 - name: POSTGRESQL_DATABASE
-                  value: zeva-unittest
+                  value: zeva
                 - name: POSTGRESQL_USER
                   valueFrom:
                     secretKeyRef:
@@ -185,7 +185,7 @@ objects:
                     - "/bin/sh"
                     - "-i"
                     - "-c"
-                    - psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d zeva-unittest -c 'SELECT 1'
+                    - psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d zeva -c 'SELECT 1'
                 initialDelaySeconds: 35
                 timeoutSeconds: 3
                 periodSeconds: 10
