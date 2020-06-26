@@ -54,6 +54,16 @@ parameters:
     value: '1'
     required: true
 objects:
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      labels:
+        app: ${NAME}${SUFFIX}
+      annotations:
+        as-copy-of: "template.django-secret"
+      name: ${NAME}-django-unittest${SUFFIX}
+    stringData:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
@@ -212,7 +222,7 @@ objects:
                 - name: DJANGO_SECRET_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-django${SUFFIX}
+                      name: ${NAME}-django-unittest${SUFFIX}
                       key: DJANGO_SECRET_KEY
                 - name: RABBITMQ_VHOST
                   valueFrom:
