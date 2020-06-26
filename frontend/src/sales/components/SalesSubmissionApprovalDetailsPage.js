@@ -1,32 +1,34 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import PropTypes from 'prop-types';
-
+import ButtonDelete from '../../app/components/ButtonDelete';
+import ButtonDownload from '../../app/components/ButtonDownload';
 import CustomPropTypes from '../../app/utilities/props';
-import history from '../../app/History';
 import SalesSubmissionVehiclesTable from './SalesSubmissionVehiclesTable';
 
 const SalesSubmissionApprovalDetailsPage = (props) => {
   const {
-    handleCheckboxClick,
-    handleSubmit,
+    handleDelete,
+    handleDownload,
     routeParams,
     submission,
     user,
   } = props;
-
   return (
     <div id="sales-details" className="page">
       <div className="row">
         <div className="col-sm-12">
-          <h1>{submission.organization && submission.organization.name} ZEV Sales Submission {submission.submissionDate}</h1>
+          <h1>Credit Request Submission (Report ZEV Sales)</h1>
+          <b> {submission.records.length} VIN were rejected</b>
         </div>
       </div>
 
+      <div className="action-bar">
+        <ButtonDelete action={handleDelete} />
+        <ButtonDownload action={handleDownload} buttonText="Download Rejected VIN as Excel" />
+      </div>
       <div className="row">
         <div className="col-sm-12">
           <SalesSubmissionVehiclesTable
-            handleCheckboxClick={handleCheckboxClick}
             routeParams={routeParams}
             submission={submission}
             user={user}
@@ -37,33 +39,12 @@ const SalesSubmissionApprovalDetailsPage = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <div className="action-bar">
-            <span className="left-content">
-              <button
-                className="button"
-                onClick={() => {
-                  history.goBack();
-                }}
-                type="button"
-              >
-                <FontAwesomeIcon icon="arrow-left" /> Back
-              </button>
-            </span>
-            <span className="right-content">
-              {user.isGovernment && (
-                <button
-                  className="button primary"
-                  onClick={() => {
-                    handleSubmit();
-                  }}
-                  type="button"
-                >
-                  <FontAwesomeIcon icon="save" /> Save
-                </button>
-              )}
-            </span>
+            <ButtonDelete action={handleDelete} />
+            <ButtonDownload action={handleDownload} buttonText="Download Rejected VIN as Excel" />
           </div>
         </div>
       </div>
+
     </div>
   );
 };
@@ -71,8 +52,8 @@ const SalesSubmissionApprovalDetailsPage = (props) => {
 SalesSubmissionApprovalDetailsPage.defaultProps = {};
 
 SalesSubmissionApprovalDetailsPage.propTypes = {
-  handleCheckboxClick: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
+  handleDownload: PropTypes.func.isRequired,
+  handleDelete: PropTypes.func.isRequired,
   routeParams: PropTypes.shape().isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,

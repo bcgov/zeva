@@ -81,7 +81,11 @@ class SalesSubmission(Auditable):
                     "You do not have the permission to finalize this "
                     "submission."
                 )
-
+        if status in [SalesSubmissionStatuses.DELETED]:
+            if self.validation_status != SalesSubmissionStatuses.REJECTED:
+                raise ValidationError(
+                    "Submission needs to be rejected before deleting."
+                )
         if status in [
             SalesSubmissionStatuses.RECOMMEND_APPROVAL,
             SalesSubmissionStatuses.RECOMMEND_REJECTION

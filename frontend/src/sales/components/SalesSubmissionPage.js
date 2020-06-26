@@ -28,7 +28,7 @@ const SalesSubmissionPage = (props) => {
 
   return (
     <div id="sales-edit" className="page">
-      <h2>Submit ZEV Sales for Credit Request</h2>
+      <h2>Credit Request Submission (Report ZEV Sales)</h2>
       <p>
         Download an Excel template containing all active ZEV models to submit sales.
       </p>
@@ -114,7 +114,7 @@ const SalesSubmissionPage = (props) => {
 
       <div className="clearfix" />
 
-      <h2>Previous ZEV Sales Submissions</h2>
+      <h2>Active ZEV Sales Submissions</h2>
 
       <SalesSubmissionsListTable
         items={submissions}
@@ -135,7 +135,6 @@ SalesSubmissionPage.propTypes = {
   submissions: PropTypes.arrayOf(PropTypes.shape).isRequired,
   upload: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired,
-  years: CustomPropTypes.years.isRequired,
 };
 
 export default SalesSubmissionPage;

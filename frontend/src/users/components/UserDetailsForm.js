@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import ButtonDelete from '../../app/components/ButtonDelete';
 import CustomPropTypes from '../../app/utilities/props';
 import Loading from '../../app/components/Loading';
 import TextInput from '../../app/components/TextInput';
@@ -162,8 +162,7 @@ const UserDetailsForm = (props) => {
                 >
                   <FontAwesomeIcon icon="arrow-left" /> Back
                 </button>
-                <button type="button" className="delete-button"> Delete
-                </button>
+                <ButtonDelete action={() => { console.log('delete'); }} />
               </span>
 
               <span className="right-content">

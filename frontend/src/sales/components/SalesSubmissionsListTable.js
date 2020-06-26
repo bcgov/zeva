@@ -4,8 +4,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTable from 'react-table';
-
-import CustomPropTypes from '../../app/utilities/props';
 import history from '../../app/History';
 import ROUTES_SALES from '../../app/routes/Sales';
 
@@ -22,6 +20,10 @@ const SalesSubmissionListTable = (props) => {
     accessor: (item) => (item.updateUser ? `${item.updateUser.displayName}` : ''),
     id: 'user',
   }, {
+    Header: 'Total Sales',
+    accessor: 'totals.vins',
+    className: 'text-right',
+  }, {
     Header: 'A-Credits',
     accessor: 'totalACredits',
     className: 'text-right',
@@ -31,10 +33,6 @@ const SalesSubmissionListTable = (props) => {
     accessor: 'totalBCredits',
     className: 'text-right',
     id: 'credits-b',
-  }, {
-    Header: 'Total Sales',
-    accessor: 'totals.vins',
-    className: 'text-right',
   }, {
     Header: 'Status',
     accessor: 'validationStatus',
@@ -50,7 +48,7 @@ const SalesSubmissionListTable = (props) => {
 
   const filterable = true;
 
-  const { items, user } = props;
+  const { items } = props;
 
   return (
     <ReactTable
@@ -86,7 +84,6 @@ SalesSubmissionListTable.defaultProps = {};
 
 SalesSubmissionListTable.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  user: CustomPropTypes.user.isRequired,
 };
 
 export default SalesSubmissionListTable;

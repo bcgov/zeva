@@ -9,3 +9,4 @@ class RecordOfSaleStatuses(Enum):
     VALIDATED = 'VALIDATED'
     REJECTED = 'REJECTED'
     TRANSACTED = 'TRANSACTED'
+
