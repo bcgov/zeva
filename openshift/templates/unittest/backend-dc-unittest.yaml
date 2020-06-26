@@ -122,13 +122,17 @@ objects:
           labels:
             name: ${NAME}-backend-unittest${SUFFIX}
         spec:
+          initContainers:
+            - name: wait-for-database
+              image: toschneck/wait-for-it:latest
+              command: ['sh', '-c', './wait-for-it.sh -t 0 ${NAME}-postgresql-unittest${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local:5432']
           containers:
             - name: backend-unittest
               image: null
               imagePullPolicy: IfNotPresent
               env:
                 - name: DATABASE_NAME
-                  value: zeva-unittest
+                  value: zeva
                 - name: DATABASE_USER
                   valueFrom:
                     secretKeyRef:
