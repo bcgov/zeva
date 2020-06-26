@@ -104,13 +104,7 @@ objects:
                 - /bin/sh
                 - '-c'
                 - |-
-                  sleep 90
-                  python ./manage.py migrate
-                  if [ $? -eq 0 ]; then 
-                    python ./manage.py load_ops_data --directory ./api/fixtures/operational
-                  else
-                    exit 1
-                  fi
+                  sleep 45
               containerName: backend-unittest
             failurePolicy: Retry
           timeoutSeconds: 600
@@ -122,10 +116,6 @@ objects:
           labels:
             name: ${NAME}-backend-unittest${SUFFIX}
         spec:
-          initContainers:
-            - name: wait-for-database
-              image: toschneck/wait-for-it:latest
-              command: ['sh', '-c', './wait-for-it.sh -t 0 ${NAME}-postgresql-unittest${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local:5432']
           containers:
             - name: backend-unittest
               image: null
@@ -153,7 +143,7 @@ objects:
                 - name: POSTGRESQL_SERVICE_HOST
                   value: ${NAME}-postgresql-unittest${SUFFIX}.tbiwaq-${SUFFIX}.svc.cluster.local
                 - name: POSTGRESQL_SERVICE_PORT
-                  value: 5432
+                  value: '5432'
                 - name: KEYCLOAK_CERTS_URL
                   valueFrom:
                     configMapKeyRef:
