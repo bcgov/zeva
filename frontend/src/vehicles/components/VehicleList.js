@@ -10,8 +10,10 @@ const VehicleList = (props) => {
     loading,
     vehicles,
     user,
-    handleCheckboxClick,
-    handleSubmit,
+    filtered,
+    setFiltered,
+    handleClear,
+
   } = props;
 
   if (loading) {
@@ -19,7 +21,7 @@ const VehicleList = (props) => {
   }
 
   const actionBar = user.isGovernment
-    ? <ActionBarGov handleSubmit={handleSubmit} vehicles={vehicles} /> : <ActionBarNonGov />;
+    ? <ActionBarGov vehicles={vehicles} handleClear={handleClear} filtered={filtered} setFiltered={setFiltered} /> : <ActionBarNonGov />;
 
   return (
     <div id="vehicle-list" className="page">
@@ -32,7 +34,8 @@ const VehicleList = (props) => {
         <div className="col-sm-12">
           {actionBar}
           <VehicleListTable
-            handleCheckboxClick={handleCheckboxClick}
+            filtered={filtered}
+            setFiltered={setFiltered}
             items={vehicles}
             user={user}
           />
@@ -46,8 +49,9 @@ const VehicleList = (props) => {
 VehicleList.defaultProps = {};
 
 VehicleList.propTypes = {
-  handleCheckboxClick: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
+  filtered: PropTypes.arrayOf(PropTypes.object).isRequired,
+  setFiltered: PropTypes.func.isRequired,
+  handleClear: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   user: PropTypes.shape({
     isGovernment: PropTypes.bool,
