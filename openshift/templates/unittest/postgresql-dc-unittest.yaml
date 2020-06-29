@@ -116,8 +116,10 @@ objects:
               command:
                 - /bin/sh
                 - '-c'
-                - psql -U postgres -q -c "ALTER USER ${DATABASE_USER} Superuser CREATEDB"
-              containerName: backend-unittest
+                - |-
+                  sleep 90
+#                 - psql -U postgres -q -c "ALTER USER ${DATABASE_USER} Superuser CREATEDB"
+              containerName: postgresql-unittest
             failurePolicy: Retry
           timeoutSeconds: 600
         type: Recreate
