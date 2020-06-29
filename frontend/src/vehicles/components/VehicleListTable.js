@@ -9,9 +9,25 @@ import history from '../../app/History';
 import formatStatus from '../../app/utilities/formatStatus';
 
 const VehicleListTable = (props) => {
-  const { items, user, handleCheckboxClick } = props;
-
+  const {
+    items, user, filtered, setFiltered,
+  } = props;
+  const toComma = (value) => {
+    let newValue = value;
+    if (typeof newValue === 'number') {
+      newValue = newValue.toString();
+    }
+    newValue = newValue.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+    return newValue;
+  };
   const columns = [{
+    accessor: (row) => (row.organization ? row.organization.name : ''),
+    className: 'text-center',
+    Header: 'Supplier',
+    id: 'col-supplier',
+    show: user && user.isGovernment,
+    width: 200,
+  }, {
     accessor: (row) => (row.make ? row.make : ''),
     Header: 'Make',
     id: 'make',
@@ -27,15 +43,47 @@ const VehicleListTable = (props) => {
     id: 'col-my',
     width: 125,
   }, {
-    accessor: (row) => (row.vehicleZevType.vehicleZevCode),
-    Header: 'ZEV Type',
-    id: 'zev-type',
-    width: 325,
+    accessor: (row) => (row.vehicleClassCode ? row.vehicleClassCode.description : ''),
+    className: 'text-center',
+    Header: 'Body',
+    id: 'col-class-desc',
+    width: 125,
+  }, {
+    accessor: (row) => (parseInt(row.weightKg, 10)),
+    Cell: (row) => (toComma(row.row['col-weight'])),
+    className: 'text-center',
+    Header: 'GVWR (kg)',
+    id: 'col-weight',
+    width: 125,
   }, {
     accessor: 'range',
+    Cell: (row) => (toComma(row.row.range)),
     className: 'text-right',
     Header: 'Range (km)',
     id: 'range',
+    width: 125,
+  }, {
+    accessor: (row) => (row.vehicleZevType.vehicleZevCode),
+    className: 'text-center',
+    Header: 'Type',
+    id: 'zev-type',
+    width: 100,
+  }, {
+    accessor: (row) => {
+      if ((row.vehicleZevType.vehicleZevCode === 'BEV' && row.range < 80.47)
+          || row.range < 16) {
+        return 'C';
+      }
+
+      if (row.vehicleZevType.vehicleZevCode === 'BEV') {
+        return 'A';
+      }
+
+      return 'B';
+    },
+    className: 'text-center',
+    Header: 'Class',
+    id: 'col-class',
     width: 125,
   }, {
     accessor: (row) => {
@@ -63,35 +111,11 @@ const VehicleListTable = (props) => {
     id: 'col-credit',
     width: 125,
   }, {
-    accessor: (row) => {
-      if ((row.vehicleZevType.vehicleZevCode === 'BEV' && row.range < 80.47)
-          || row.range < 16) {
-        return 'C';
-      }
-
-      if (row.vehicleZevType.vehicleZevCode === 'BEV') {
-        return 'A';
-      }
-
-      return 'B';
-    },
-    className: 'text-center',
-    Header: 'Class',
-    id: 'col-class',
-    width: 125,
-  }, {
     accessor: (row) => (formatStatus(row.validationStatus)),
     className: 'text-center text-capitalize',
     Header: 'Status',
     id: 'col-status',
     width: 175,
-  }, {
-    accessor: (row) => (row.validationStatus === 'VALIDATED' ? <input type="checkbox" defaultChecked disabled /> : <input type="checkbox" value={row.id} onChange={(event) => { handleCheckboxClick(event); }} />),
-    className: 'text-center',
-    Header: 'Validate',
-    id: 'col-validated',
-    show: user && user.isGovernment,
-    width: 125,
   }];
 
   const filterMethod = (filter, row) => {
@@ -106,8 +130,12 @@ const VehicleListTable = (props) => {
     <ReactTable
       className="searchable"
       columns={columns}
+      filtered={filtered}
       data={items}
       defaultFilterMethod={filterMethod}
+      onFilteredChange={(input) => {
+        setFiltered(input);
+      }}
       defaultPageSize={items.length}
       defaultSorted={[{
         id: 'make',
@@ -133,11 +161,11 @@ const VehicleListTable = (props) => {
 };
 
 VehicleListTable.defaultProps = {
-  handleCheckboxClick: null,
 };
 
 VehicleListTable.propTypes = {
-  handleCheckboxClick: PropTypes.func,
+  filtered: PropTypes.arrayOf(PropTypes.object).isRequired,
+  setFiltered: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.number,
   })).isRequired,

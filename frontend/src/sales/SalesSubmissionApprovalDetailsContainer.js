@@ -5,7 +5,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
-
+import history from '../app/History';
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import Loading from '../app/components/Loading';
 import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
@@ -15,10 +15,8 @@ import SalesSubmissionApprovalDetailsPage from './components/SalesSubmissionAppr
 const SalesSubmissionApprovalDetailsContainer = (props) => {
   const { match, user } = props;
   const { id } = match.params;
-
   const [submission, setSubmission] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [validatedList, setValidatedList] = useState([]);
 
   const refreshDetails = () => {
     axios.get(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id)).then((response) => {
@@ -31,31 +29,15 @@ const SalesSubmissionApprovalDetailsContainer = (props) => {
     refreshDetails();
   }, [id]);
 
-  const handleCheckboxClick = (event) => {
-    const { value: submissionId, checked } = event.target;
-
-    if (!checked) {
-      setValidatedList(validatedList.filter((item) => item !== submissionId));
-    } else {
-      setValidatedList(() => [...validatedList, submissionId]);
-    }
-  };
-
-  const handleSubmit = () => {
-    const records = [];
-
-    validatedList.forEach((recordId) => {
-      records.push({
-        id: recordId,
-        validationStatus: 'VALIDATED',
-      });
-    });
-
+  const handleDelete = () => {
     axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id), {
-      records,
+      validationStatus: 'DELETED',
     }).then(() => {
-      refreshDetails();
+      history.push('/sales/add');
     });
+  };
+  const handleDownload = () => {
+    console.log(submission);
   };
 
   if (loading) {
@@ -65,8 +47,8 @@ const SalesSubmissionApprovalDetailsContainer = (props) => {
   return ([
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
     <SalesSubmissionApprovalDetailsPage
-      handleCheckboxClick={handleCheckboxClick}
-      handleSubmit={handleSubmit}
+      handleDelete={handleDelete}
+      handleDownload={handleDownload}
       key="page"
       routeParams={match.params}
       submission={submission}
