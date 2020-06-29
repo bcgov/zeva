@@ -1,15 +1,25 @@
+# This template only used for creating postgresql unit test database
 apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
   name: zeva-postgresql-init
+parameters:
+  - name: NAME
+    displayName:
+    description: the module name entered when run yo bcdk:pipeline, which is zeva
+    required: true
+  - name: SUFFIX
+    displayName:
+    description: sample is -dev-97
+    required: true
 objects:
 - apiVersion: v1
   data:
     create-extension.sh: |-
       echo 'Creating extension: hstore'
-      psql -U postgres -q -d "$POSTGRESQL_DATABASE" -c 'create extension if not exists hstore'
-      psql -U postgres -q -d "$POSTGRESQL_DATABASE" -c 'ALTER USER zevaunittest Superuser CREATEDB'
+#     psql -U postgres -q -d "$POSTGRESQL_DATABASE" -c 'create extension if not exists hstore'
+      psql -U postgres -q -c "ALTER USER $POSTGRESQL_USER Superuser CREATEDB"
     prepare-init-scripts: |-
       #!/bin/bash
       DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -21,4 +31,4 @@ objects:
   kind: ConfigMap
   metadata:
     creationTimestamp: null
-    name: zeva-postgresql-init
+    name: ${NAME}-postgresql-init${SUFFIX}

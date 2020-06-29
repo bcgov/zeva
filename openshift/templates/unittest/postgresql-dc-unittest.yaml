@@ -138,7 +138,7 @@ objects:
                 claimName: ${NAME}-postgresql-unittest${SUFFIX}
             - configMap:
                 defaultMode: 420
-                name: zeva-postgresql-init
+                name: ${NAME}-postgresql-init${SUFFIX}
               name: volume-vzqaq
           containers:
             - name: postgresql-unittest

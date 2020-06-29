@@ -157,6 +157,13 @@ module.exports = settings => {
   //deploy separate database and backend pod for unit test
   if( phase === 'dev' ) {
 
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/zeva-postgresql-init.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'SUFFIX': phases[phase].suffix
+      }
+    })) 
+
     //deploy postgresql unit test
     objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/postgresql-dc-unittest.yaml`, {
       'param': {
