@@ -134,6 +134,28 @@ p {
   }
 }
 
+.btn {
+  &.btn-outline-danger {
+    border-color: $red;
+    color: $red;
+
+    &:hover {
+      background-color: $red;
+      color: $white;
+    }
+  }
+
+  &.btn-outline-primary {
+    border-color: $primary-blue;
+    color: $primary-blue;
+
+    &:hover {
+      background-color: $primary-blue;
+      color: $white;
+    }
+  }
+}
+
 .button {
   background-color: $white;
   border: 1px solid $default-background-blue;
@@ -173,6 +195,10 @@ p {
   padding: 0;
   text-align: left;
   text-decoration: underline;
+}
+
+.modal-backdrop {
+  opacity: 0.4;
 }
 
 .nav-tabs {

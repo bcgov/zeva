@@ -1,0 +1,5 @@
+.modal-dialog {
+  &.w-50, &.w-75, &.w-100 {
+    max-width: none;
+  }
+}

@@ -65,6 +65,7 @@ class TestOrganizations(BaseTestCase):
                     credit_class=t.creditclass,
                     transaction_type=t.type,
                     credit_value=t.value,
+                    vehicle=t.vehicle
                 )
 
     def test_org1_credits(self):
