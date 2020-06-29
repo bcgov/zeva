@@ -49,7 +49,7 @@ module.exports = settings => {
       'MEMORY_LIMIT': phases[phase].minioMemoryRequest      
     }
   }))
- /*** 
+
   //deploy Patroni required secrets
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment-prereq.yaml`, {
     'param': {
@@ -74,7 +74,6 @@ module.exports = settings => {
       'STORAGE_CLASS': phases[phase].storageClass
     }
   }))
-***/
 
   //deploy rabbitmq, use docker image directly
   //POST_START_SLEEP is harded coded in the rabbitmq template, replacement was not successful
@@ -97,7 +96,7 @@ module.exports = settings => {
       'STORAGE_CLASS': phases[phase].storageClass
     }
   }))
-/**** 
+
   // deploy frontend configmap
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-configmap.yaml`, {
     'param': {
@@ -140,7 +139,6 @@ module.exports = settings => {
     }
   })) 
   
-
   //deploy schemaspy
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/schemaspy/schemaspy-dc.yaml`, {
     'param': {
@@ -153,10 +151,11 @@ module.exports = settings => {
       'HEALTH_CHECK_DELAY': phases[phase].schemaspyHealthCheckDelay
     }
   }))
-****/
+
   //deploy separate database and backend pod for unit test
   if( phase === 'dev' ) {
 
+    //create unit test database init scripts
     objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/zeva-postgresql-init.yaml`, {
       'param': {
         'NAME': phases[phase].name,
