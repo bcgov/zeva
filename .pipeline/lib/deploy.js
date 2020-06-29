@@ -74,6 +74,7 @@ module.exports = settings => {
       'STORAGE_CLASS': phases[phase].storageClass
     }
   }))
+***/
 
   //deploy rabbitmq, use docker image directly
   //POST_START_SLEEP is harded coded in the rabbitmq template, replacement was not successful
@@ -96,7 +97,7 @@ module.exports = settings => {
       'STORAGE_CLASS': phases[phase].storageClass
     }
   }))
-
+/**** 
   // deploy frontend configmap
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-configmap.yaml`, {
     'param': {
