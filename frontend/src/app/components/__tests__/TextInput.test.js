@@ -46,7 +46,7 @@ describe('text input', () => {
     };
   };
 
-  it('gives an error message when nothing is entered into a mandatory field', () => {
+  it('gives an error message when nothing is entered into a mandatory field and removes it when something is added', () => {
     const { input } = setup2();
     input.focus();
     fireEvent.change((input), {
@@ -55,5 +55,38 @@ describe('text input', () => {
     input.blur();
     expect(input.value).toBe('');
     expect(input.parentElement.parentElement.className).toBe('form-group row error');
+    input.focus();
+    fireEvent.change((input), {
+      target: { value: 'test' },
+    });
+    input.blur();
+    expect(input.value).toBe('test');
+    expect(input.parentElement.parentElement.className).toBe('form-group row');
+  });
+
+  const notMandatorySetup = () => {
+    const utils = render(
+      <TextInput label="Model" id="modelName" name="modelName" defaultValue="a" num handleInputChange={handleInputChange} />,
+    );
+    const input = utils.getByTestId('input-test');
+    return {
+      input,
+      ...utils,
+    };
+  };
+
+  it('it does not give an error if nothing is entered on an optional field', () => {
+    const { input } = notMandatorySetup();
+    input.focus();
+    fireEvent.change((input), {
+      target: { value: '' },
+    });
+    input.blur();
+    expect(input.value).toBe('');
+    expect(input.parentElement.parentElement.className).toBe('form-group row');
+  });
+  it('has an integer type if a number is required', () => {
+    const { input } = notMandatorySetup();
+    expect(input.type).toBe('number');
   });
 });
