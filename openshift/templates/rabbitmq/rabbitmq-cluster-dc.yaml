@@ -59,6 +59,8 @@ parameters:
   value: '2'  
 - name: POST_START_SLEEP
   value: '120'  
+- name: STORAGE_CLASS
+  value: netapp-block-standard
 
 objects:
 
@@ -280,7 +282,7 @@ objects:
     - metadata:
         name: rabbitmq-storage
       spec:
-        storageClassName: netapp-block-standard
+        storageClassName: ${STORAGE_CLASS}
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
