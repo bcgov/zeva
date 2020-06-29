@@ -97,8 +97,6 @@ objects:
         name: ${NAME}-backend-unittest${SUFFIX}
       strategy:
         activeDeadlineSeconds: 800
-        recreateParams:
-          timeoutSeconds: 600
         resources: {}
         type: Recreate
       template:
