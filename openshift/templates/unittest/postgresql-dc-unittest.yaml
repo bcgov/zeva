@@ -19,15 +19,15 @@ parameters:
     displayName: Environment Name
     description: Environment Name
     required: true
-  - description: Username for PostgreSQL user that will be used for accessing the database.
-    from: zeva[A-Z0-9]{3}
+  - name: ZEVA_DB_USER
+    description: Username for PostgreSQL user that will be used for accessing the database.
+    from: zeva[a-z]{3}
     generate: expression
-    name: ZEVA_DB_USER
     required: true
-  - description: Password for the PostgreSQL connection user.
+  - name: ZEVA_DB_PASSWORD
+    description: Password for the PostgreSQL connection user.
     from: "[a-zA-Z0-9]{16}"
     generate: expression
-    name: ZEVA_DB_PASSWORD
     required: true
   - name: CPU_REQUEST
     value: 200m
