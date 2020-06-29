@@ -21,7 +21,7 @@ parameters:
     required: true
   - name: ZEVA_DB_USER
     description: Username for PostgreSQL user that will be used for accessing the database.
-    from: zeva[a-z]{3}
+    from: zevaunittest
     generate: expression
     required: true
   - name: ZEVA_DB_PASSWORD
@@ -110,18 +110,6 @@ objects:
     spec:
       replicas: 1
       strategy:
-        recreateParams:
-          post:
-            execNewPod:
-              command:
-                - /bin/sh
-                - '-c'
-                - |-
-                  sleep 90
-#                 - psql -U postgres -q -c "ALTER USER ${DATABASE_USER} Superuser CREATEDB"
-              containerName: postgresql-unittest
-            failurePolicy: Retry
-          timeoutSeconds: 600
         type: Recreate
       triggers:
       - imageChangeParams:

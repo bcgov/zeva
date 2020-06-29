@@ -9,6 +9,7 @@ objects:
     create-extension.sh: |-
       echo 'Creating extension: hstore'
       psql -U postgres -q -d "$POSTGRESQL_DATABASE" -c 'create extension if not exists hstore'
+      psql -U postgres -q -d "$POSTGRESQL_DATABASE" -c 'ALTER USER zevaunittest Superuser CREATEDB'
     prepare-init-scripts: |-
       #!/bin/bash
       DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
