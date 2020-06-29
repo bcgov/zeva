@@ -17,8 +17,6 @@ objects:
 - apiVersion: v1
   data:
     create-extension.sh: |-
-      echo 'Creating extension: hstore'
-#     psql -U postgres -q -d "$POSTGRESQL_DATABASE" -c 'create extension if not exists hstore'
       psql -U postgres -q -c "ALTER USER $POSTGRESQL_USER Superuser CREATEDB"
     prepare-init-scripts: |-
       #!/bin/bash
