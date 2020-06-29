@@ -100,7 +100,6 @@ def add_sales_sheet(**kwargs):
 
     workbook = kwargs.pop('workbook')
     descriptor = kwargs.pop('descriptor')
-    organization = kwargs.pop('organization')
     vehicles = kwargs.pop('vehicles')
 
     worksheet = workbook.add_sheet(sheet_name)
@@ -158,7 +157,6 @@ def create_sales_spreadsheet(organization, stream):
     add_sales_sheet(
         workbook=workbook,
         descriptor=descriptor,
-        organization=organization,
         vehicles=vehicles
     )
 
@@ -360,7 +358,7 @@ def ingest_sales_spreadsheet(
                         'id': record_of_sale.id,
                         'credits': vehicle.get_credit_value(),
                         'model': vehicle.model_name,
-                        'model_year': record_of_sale.vehicle.model_year.name,
+                        'model_year': vehicle.model_year.name,
                         'make': vehicle.make,
                         'class':
                         vehicle.vehicle_class_code.vehicle_class_code,
