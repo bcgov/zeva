@@ -98,14 +98,6 @@ objects:
       strategy:
         activeDeadlineSeconds: 800
         recreateParams:
-          post:
-            execNewPod:
-              command:
-                - /bin/sh
-                - '-c'
-                - psql -U postgres -q -c 'ALTER USER ${DATABASE_USER} Superuser CREATEDB'
-              containerName: backend
-            failurePolicy: Retry
           timeoutSeconds: 600
         resources: {}
         type: Recreate

@@ -110,6 +110,16 @@ objects:
     spec:
       replicas: 1
       strategy:
+        recreateParams:
+          post:
+            execNewPod:
+              command:
+                - /bin/sh
+                - '-c'
+                - psql -U postgres -q -c "ALTER USER ${DATABASE_USER} Superuser CREATEDB"
+              containerName: backend-unittest-post
+            failurePolicy: Retry
+          timeoutSeconds: 600
         type: Recreate
       triggers:
       - imageChangeParams:
