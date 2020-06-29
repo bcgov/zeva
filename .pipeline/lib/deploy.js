@@ -35,7 +35,7 @@ module.exports = settings => {
       'DJANGO_DEBUG': phases[phase].djangoDebug
     }
   }))
-/*** 
+
   // deploy minio
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/minio/minio-dc.yaml`, {
     'param': {
@@ -49,7 +49,7 @@ module.exports = settings => {
       'MEMORY_LIMIT': phases[phase].minioMemoryRequest      
     }
   }))
- 
+ /*** 
   //deploy Patroni required secrets
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment-prereq.yaml`, {
     'param': {
