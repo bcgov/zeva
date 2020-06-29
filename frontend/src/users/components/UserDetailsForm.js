@@ -117,7 +117,7 @@ const UserDetailsForm = (props) => {
                 />
               </span>
               <span className="col-md-4">
-                {user.hasPermission('EDIT_USERS') && (
+                {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_USERS') && (
                   <div className="form-group">
                     <div className="col-sm-4">
                       <label
@@ -136,7 +136,7 @@ const UserDetailsForm = (props) => {
 
                   </div>
                 )}
-                {(user.hasPermission('ASSIGN_BCEID_ROLES') || user.hasPermission('ASSIGN_IDIR_ROLES')) && (
+                {typeof user.hasPermission === 'function' && (user.hasPermission('ASSIGN_BCEID_ROLES') || user.hasPermission('ASSIGN_IDIR_ROLES')) && (
                 <div className="form-group">
                   <label
                     className="col-sm-4 col-form-label"
