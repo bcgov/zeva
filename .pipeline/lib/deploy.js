@@ -35,7 +35,7 @@ module.exports = settings => {
       'DJANGO_DEBUG': phases[phase].djangoDebug
     }
   }))
-
+/*** 
   // deploy minio
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/minio/minio-dc.yaml`, {
     'param': {
@@ -152,7 +152,7 @@ module.exports = settings => {
       'HEALTH_CHECK_DELAY': phases[phase].schemaspyHealthCheckDelay
     }
   }))
-
+****/
   //deploy separate database and backend pod for unit test
   if( phase === 'dev' ) {
 
