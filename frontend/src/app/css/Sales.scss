@@ -1,4 +1,14 @@
 #sales-details {
+  .actions {
+    padding: 1rem;
+    margin: 1rem 0 1rem 0;
+    background-color: $default-background-grey;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    button {
+    }
+  }
   .table {
     margin: 1rem 0 0;
   }

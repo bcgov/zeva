@@ -21,7 +21,7 @@ parameters:
     displayName: Environment name
     description: 'Environment name, dev, test and prod'
     required: true
-  - name: HOST_NAME
+  - name: BACKEND_HOST_NAME
     displayName: Host name for route
     description: Host name for route
     required: true    
@@ -50,14 +50,20 @@ parameters:
     displayName: Memory upper limit
     description: Memory upper limit
     required: true    
+  - name: REPLICAS
+    value: '1'
+    required: true
 objects:
   - apiVersion: v1
     kind: Secret
     metadata:
+      labels:
+        app: ${NAME}${SUFFIX}
+      annotations:
+        as-copy-of: "template.django-secret"
       name: ${NAME}-django${SUFFIX}
-      labels: {}
     stringData:
-       DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY}"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:
@@ -103,41 +109,42 @@ objects:
         app: zeva
         role: backend
         env: '${ENV_NAME}'
-      name: '${NAME}-backend-api${SUFFIX}'
+      name: ${NAME}-backend${SUFFIX}
     spec:
-      host: ${HOST_NAME}
+      host: ${BACKEND_HOST_NAME}
       path: /api
       port:
         targetPort: backend
       tls:
+        insecureEdgeTerminationPolicy: Redirect
         termination: edge
       to:
         kind: Service
         name: '${NAME}-backend${SUFFIX}'
         weight: 100
       wildcardPolicy: None
-  - apiVersion: route.openshift.io/v1
-    kind: Route
-    metadata:
-      creationTimestamp: null
-      labels:
-        name: backend
-        app: zeva
-        role: backend
-        env: '${ENV_NAME}'
-      name: '${NAME}-backend-health${SUFFIX}'
-    spec:
-      host: ${HOST_NAME}
-      path: /health
-      port:
-        targetPort: backend
-      tls:
-        termination: edge
-      to:
-        kind: Service
-        name: '${NAME}-backend${SUFFIX}'
-        weight: 100
-      wildcardPolicy: None
+#  - apiVersion: route.openshift.io/v1
+#    kind: Route
+#    metadata:
+#      creationTimestamp: null
+#      labels:
+#        name: backend
+#        app: zeva
+#        role: backend
+#        env: '${ENV_NAME}'
+#      name: '${NAME}-backend-health${SUFFIX}'
+#    spec:
+#      host: ${HOST_NAME}
+#      path: /health
+#      port:
+#        targetPort: backend
+#      tls:
+#        termination: edge
+#      to:
+#        kind: Service
+#        name: '${NAME}-backend${SUFFIX}'
+#        weight: 100
+#      wildcardPolicy: None
   - apiVersion: apps.openshift.io/v1
     kind: DeploymentConfig
     metadata:
@@ -151,7 +158,7 @@ objects:
         env: ${ENV_NAME}
       name: ${NAME}-backend${SUFFIX}
     spec:
-      replicas: 1
+      replicas: ${{REPLICAS}}
       revisionHistoryLimit: 10
       selector:
         name: ${NAME}-backend${SUFFIX}
@@ -164,10 +171,10 @@ objects:
                 - /bin/sh
                 - '-c'
                 - |-
-                  sleep 120
-                  python manage.py migrate
+                  sleep 90
+                  python ./manage.py migrate
                   if [ $? -eq 0 ]; then 
-                    ./load_data.sh 
+                    python ./manage.py load_ops_data --directory ./api/fixtures/operational
                   else
                     exit 1
                   fi

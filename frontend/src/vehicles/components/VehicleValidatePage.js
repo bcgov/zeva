@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
@@ -6,6 +7,7 @@ import Loading from '../../app/components/Loading';
 import DetailField from '../../app/components/DetailField';
 import history from '../../app/History';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
+import getFileSize from '../../app/utilities/getFileSize';
 
 const VehicleValidatePage = (props) => {
   const {
@@ -54,13 +56,57 @@ const VehicleValidatePage = (props) => {
             <DetailField label="Model" value={details.modelName} />
             <DetailField label="ZEV Type" value={details.vehicleZevType.description} />
             <DetailField label="Electric Range (km)" value={details.range} />
-            <DetailField label="Vehicle Class" value={details.vehicleClassCode.description} />
+            <DetailField label="Body Type" value={details.vehicleClassCode.description} />
             <DetailField label="Weight (kg)" value={details.weightKg} />
-            <DetailField label="ZEV Class" value={` ${details.creditClass} (calculated)`} />
+            <DetailField label="Vehicle Class" id={details.weightKg < 3856 ? '' : 'danger-text'} value={details.weightKg < 3856 ? 'LDV (calculated)' : 'Not within LDV range (calculated)'} />
+            <DetailField label="Credit Class" value={` ${details.creditClass} (calculated)`} />
             <DetailField label="Credits" value={` ${details.creditValue} (calculated)`} />
+
+            {details.attachments.length > 0 && (
+              <div className="attachments mt-4">
+                <div className="font-weight-bold label">Range Test Results</div>
+                <div className="row">
+                  <div className="col-9 filename header pl-4">Filename</div>
+                  <div className="col-3 size header">Size</div>
+                </div>
+
+                {details.attachments.map((attachment) => (
+                  <div className="row" key={attachment.id}>
+                    <div className="col-9 filename pl-4">
+                      <button
+                        className="link"
+                        onClick={() => {
+                          axios.get(attachment.url, {
+                            responseType: 'blob',
+                            headers: {
+                              Authorization: null,
+                            },
+                          }).then((response) => {
+                            const objectURL = window.URL.createObjectURL(
+                              new Blob([response.data]),
+                            );
+                            const link = document.createElement('a');
+                            link.href = objectURL;
+                            link.setAttribute('download', attachment.filename);
+                            document.body.appendChild(link);
+                            link.click();
+                          });
+                        }}
+                        type="button"
+                      >
+                        {attachment.filename}
+                      </button>
+                    </div>
+                    <div className="col-3 size">{getFileSize(attachment.size)}</div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {details.validationStatus === 'SUBMITTED' && (
       <div className="row">
         <div className="col-md-6 pt-4 pb-2">
           <div className="form">
@@ -76,6 +122,8 @@ const VehicleValidatePage = (props) => {
           </div>
         </div>
       </div>
+      )}
+
       <div className="row">
         <div className="col-md-6">
           <div className="action-bar">
@@ -93,8 +141,10 @@ const VehicleValidatePage = (props) => {
             <span className="right-content">
               {details.validationStatus === 'DRAFT' ? editButton : '' }
 
-              <button className="btn btn-outline-danger" disabled={!comments.vehicleComment || requestChangeCheck} type="button" key="REJECTED" onClick={() => postComment('REJECTED')}>Reject</button>
-              <button className="button primary" disabled={comments.vehicleComment || requestChangeCheck} type="button" key="VALIDATED" onClick={() => requestStateChange('VALIDATED')}>Validate</button>
+              {details.validationStatus === 'SUBMITTED' && ([
+                <button className="btn btn-outline-danger" disabled={!comments.vehicleComment || requestChangeCheck} type="button" key="REJECTED" onClick={() => postComment('REJECTED')}>Reject</button>,
+                <button className="button primary" disabled={comments.vehicleComment || requestChangeCheck} type="button" key="VALIDATED" onClick={() => requestStateChange('VALIDATED')}>Validate</button>
+              ])}
             </span>
           </div>
         </div>
@@ -109,11 +159,12 @@ VehicleValidatePage.defaultProps = {};
 
 VehicleValidatePage.propTypes = {
   details: PropTypes.shape({
-    id: PropTypes.any,
     actions: PropTypes.arrayOf(PropTypes.string),
+    attachments: PropTypes.arrayOf(PropTypes.shape()),
     creditClass: PropTypes.string,
     creditValue: PropTypes.number,
     history: PropTypes.arrayOf(PropTypes.object),
+    id: PropTypes.any,
     make: PropTypes.string,
     modelName: PropTypes.string,
     weightKg: PropTypes.string,

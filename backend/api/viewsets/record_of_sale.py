@@ -1,3 +1,6 @@
+"""
+Record of Sale Viewset
+"""
 import json
 
 from datetime import datetime
@@ -5,12 +8,10 @@ from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse
 
-from requests import Response
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 
-from api.models.model_year import ModelYear
 from api.models.record_of_sale import RecordOfSale
 from api.models.record_of_sale_statuses import RecordOfSaleStatuses
 from api.serializers.record_of_sale import RecordOfSaleSerializer
@@ -20,9 +21,13 @@ from auditable.views import AuditableMixin
 
 
 class RecordOfSaleViewset(
-    AuditableMixin, viewsets.GenericViewSet,
-    mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin
+        AuditableMixin, viewsets.GenericViewSet, mixins.ListModelMixin,
+        mixins.RetrieveModelMixin, mixins.UpdateModelMixin
 ):
+    """
+    Record of Sale Viewset for downloading the template and uploading the
+    sales information
+    """
     permission_classes = (AllowAny,)
     http_method_names = ['get', 'post']
 
@@ -53,21 +58,28 @@ class RecordOfSaleViewset(
 
     @action(detail=False)
     def template(self, request):
+        """
+        Download Record of Sale Template
+        """
         user = request.user
         response = HttpResponse(content_type='application/ms-excel')
-        my = ModelYear.objects.get(name=request.GET['year'])
-        create_sales_spreadsheet(user.organization, my, response)
+        create_sales_spreadsheet(user.organization, response)
+
         response['Content-Disposition'] = (
-            'attachment; filename="BC-ZEVA_Sales_Template_MY{my}_{org}_{date}.xls"'.format(
-                my=my.name,
-                org=user.organization.name,
+            'attachment; filename="BC-ZEVA_Sales_Template_{org}_{date}.xls"'
+            .format(
+                org=user.organization.short_name,
                 date=datetime.now().strftime(
                     "_%Y-%m-%d")
-            ))
+            )
+        )
         return response
 
     @action(detail=False, methods=['post'])
     def upload(self, request):
+        """
+        Upload and parse record of sales xls
+        """
         user = request.user
 
         try:

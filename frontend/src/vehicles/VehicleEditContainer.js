@@ -86,7 +86,28 @@ const VehicleEditContainer = (props) => {
     return promises;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = () => {
+    setLoading(true);
+    const data = edits;
+    const promises = handleUpload();
+    Promise.all(promises).then((attachments) => {
+      if (attachments.length > 0) {
+        data.vehicleAttachments = attachments;
+      }
+
+      axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), {
+        ...data,
+        deleteFiles,
+      }).then(() => {
+        axios.patch(`vehicles/${id}/state_change`, { validationStatus: 'SUBMITTED' }).then(() => {
+          setLoading(false);
+          history.push(`/vehicles/${id}`);
+        });
+      });
+    });
+  };
+
+  const handleSaveDraft = (event) => {
     event.preventDefault();
     const data = edits;
 
@@ -135,6 +156,7 @@ const VehicleEditContainer = (props) => {
       files={files}
       formTitle="Enter ZEV Model"
       handleInputChange={handleInputChange}
+      handleSaveDraft={handleSaveDraft}
       handleSubmit={handleSubmit}
       loading={loading}
       makes={orgMakes}

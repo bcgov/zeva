@@ -6,7 +6,7 @@ const SALES = {
   APPROVAL_DETAILS: `${API_BASE_PATH}/:id/approval/:vehicle_id`,
   DETAILS: `${API_BASE_PATH}/:id`,
   LIST: `${API_BASE_PATH}`,
-  TEMPLATE: `${API_BASE_PATH}/template?year=:yearName`,
+  TEMPLATE: `${API_BASE_PATH}/template`,
   UPLOAD: `${API_BASE_PATH}/upload`,
 };
 

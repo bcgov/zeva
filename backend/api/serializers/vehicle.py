@@ -1,7 +1,7 @@
 from django.core.exceptions import PermissionDenied
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from rest_framework.serializers import ModelSerializer, \
-    SerializerMethodField, SlugRelatedField
+    SerializerMethodField, SlugRelatedField, ValidationError
 
 from api.models.model_year import ModelYear
 from api.models.credit_class import CreditClass
@@ -12,6 +12,7 @@ from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.models.vehicle_zev_type import ZevType
 from api.serializers.user import UserSerializer
 from api.serializers.user import MemberSerializer
+from api.serializers.organization import OrganizationSerializer
 from api.models.user_profile import UserProfile
 from api.serializers.vehicle_attachment import VehicleAttachmentSerializer
 from api.services.minio import minio_remove_object
@@ -49,17 +50,34 @@ class VehicleStatusChangeSerializer(ModelSerializer):
     def validate_validation_status(self, value):
         request = self.context.get('request')
 
-        if value == VehicleDefinitionStatuses.SUBMITTED and \
-                not request.user.has_perm('SUBMIT_ZEV'):
-            raise PermissionDenied(
-                "You do not have the permission to submit this vehicle."
-            )
+        if value == VehicleDefinitionStatuses.SUBMITTED:
+            if self.instance.validation_status not in [
+                VehicleDefinitionStatuses.DRAFT,
+                VehicleDefinitionStatuses.CHANGES_REQUESTED
+            ]:
+                raise ValidationError(
+                    "Model cannot be submitted at this time."
+                )
 
-        if value == VehicleDefinitionStatuses.VALIDATED and \
-                not request.user.has_perm('VALIDATE_ZEV'):
-            raise PermissionDenied(
-                "You do not have the permission to validate this vehicle."
-            )
+            if not request.user.has_perm('SUBMIT_ZEV'):
+                raise PermissionDenied(
+                    "You do not have the permission to submit this vehicle."
+                )
+
+        if value in [
+            VehicleDefinitionStatuses.VALIDATED,
+            VehicleDefinitionStatuses.REJECTED
+        ]:
+            if self.instance.validation_status is not \
+                    VehicleDefinitionStatuses.SUBMITTED:
+                raise ValidationError(
+                    "Model cannot be validated at this time."
+                )
+
+            if not request.user.has_perm('VALIDATE_ZEV'):
+                raise PermissionDenied(
+                    "You do not have the permission to validate this model."
+                )
 
         return value
 
@@ -74,9 +92,9 @@ class VehicleStatusChangeSerializer(ModelSerializer):
         )
 
         if status == VehicleDefinitionStatuses.VALIDATED:
-            instance.credit_class = CreditClass.objects.get(
+            instance.credit_class = CreditClass.objects.filter(
                 credit_class=instance.get_credit_class()
-            )
+            ).first()
             instance.credit_value = instance.get_credit_value()
             instance.update_user = request.user.username
             instance.save()
@@ -123,6 +141,7 @@ class VehicleSerializer(
     vehicle_class_code = VehicleClassSerializer()
     vehicle_zev_type = VehicleZevTypeSerializer()
     update_user = SerializerMethodField()
+    organization = OrganizationSerializer()
 
     def get_actions(self, instance):
         request = self.context.get('request')
@@ -186,7 +205,8 @@ class VehicleSerializer(
             'id', 'actions', 'history', 'make', 'model_name', 'model_year',
             'range', 'validation_status', 'vehicle_class_code', 'weight_kg',
             'vehicle_zev_type', 'credit_class', 'credit_value',
-            'vehicle_comment', 'attachments', 'update_user', 'update_timestamp'
+            'vehicle_comment', 'attachments', 'update_user', 'update_timestamp',
+            'organization',
         )
         read_only_fields = ('validation_status',)
 

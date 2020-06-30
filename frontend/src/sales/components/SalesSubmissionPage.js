@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import ROUTES_SALES from '../../app/routes/Sales';
@@ -17,10 +17,7 @@ const SalesSubmissionPage = (props) => {
     submissions,
     upload,
     user,
-    years,
   } = props;
-
-  const [selectedYear, setSelectedYear] = useState(null);
 
   const removeFile = (removedFile) => {
     const found = files.findIndex((file) => (file === removedFile));
@@ -31,33 +28,22 @@ const SalesSubmissionPage = (props) => {
 
   return (
     <div id="sales-edit" className="page">
-      <h2>Submit ZEV Sales for Credit Request</h2>
+      <h2>Credit Request Submission (Report ZEV Sales)</h2>
       <p>
         Download an Excel template containing all active ZEV models to submit sales.
       </p>
 
       <div className="compact">
         <div className="content">
-          <select
-            defaultValue="Select a model year"
-            onChange={(e) => {
-              setSelectedYear(e.target.value);
-            }}
-          >
-            <option>Select a model year</option>
-            {years.map((y) => (<option key={y.name} value={y.name}>{y.name}</option>))}
-          </select>
-
           <button
             className="button"
-            disabled={selectedYear === null || selectedYear === 'Select a model year'}
             onClick={(e) => {
               const element = e.target;
               const original = element.innerHTML;
 
               element.firstChild.textContent = ' Downloading...';
 
-              return download(ROUTES_SALES.TEMPLATE.replace(':yearName', selectedYear), {}).then(() => {
+              return download(ROUTES_SALES.TEMPLATE, {}).then(() => {
                 element.innerHTML = original;
               });
             }}
@@ -128,7 +114,7 @@ const SalesSubmissionPage = (props) => {
 
       <div className="clearfix" />
 
-      <h2>Previous ZEV Sales Submissions</h2>
+      <h2>Active ZEV Sales Submissions</h2>
 
       <SalesSubmissionsListTable
         items={submissions}
@@ -149,7 +135,6 @@ SalesSubmissionPage.propTypes = {
   submissions: PropTypes.arrayOf(PropTypes.shape).isRequired,
   upload: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired,
-  years: CustomPropTypes.years.isRequired,
 };
 
 export default SalesSubmissionPage;

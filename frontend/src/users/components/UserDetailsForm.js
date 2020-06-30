@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import ButtonDelete from '../../app/components/ButtonDelete';
 import CustomPropTypes from '../../app/utilities/props';
 import Loading from '../../app/components/Loading';
 import TextInput from '../../app/components/TextInput';
@@ -30,11 +30,14 @@ const UserDetailsForm = (props) => {
     return details.roles.filter((detailRole) => detailRole.id === role.id).length > 0;
   };
 
-  const rolesCheckboxes = roles.filter((role) => role.isGovernmentRole === false).map((role) => (
+  const rolesCheckboxes = roles.filter(
+    (role) => role.isGovernmentRole === details.organization.isGovernment
+  ).map((role) => (
     <ul key={role.id}>
       <input type="checkbox" id={role.id} onChange={handleInputChange} name="roles-manager" defaultChecked={checked(role)} /> {role.description} <FontAwesomeIcon icon="info-circle" />
     </ul>
   ));
+
   return (
     <div id="form" className="page">
       <div className="row">
@@ -114,7 +117,7 @@ const UserDetailsForm = (props) => {
                 />
               </span>
               <span className="col-md-4">
-                {user.isGovernment && (
+                {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_USERS') && (
                   <div className="form-group">
                     <div className="col-sm-4">
                       <label
@@ -133,6 +136,7 @@ const UserDetailsForm = (props) => {
 
                   </div>
                 )}
+                {typeof user.hasPermission === 'function' && (user.hasPermission('ASSIGN_BCEID_ROLES') || user.hasPermission('ASSIGN_IDIR_ROLES')) && (
                 <div className="form-group">
                   <label
                     className="col-sm-4 col-form-label"
@@ -144,6 +148,7 @@ const UserDetailsForm = (props) => {
                     {rolesCheckboxes}
                   </div>
                 </div>
+                )}
               </span>
             </div>
             <div className="action-bar form-group row">
@@ -157,8 +162,7 @@ const UserDetailsForm = (props) => {
                 >
                   <FontAwesomeIcon icon="arrow-left" /> Back
                 </button>
-                <button type="button" className="delete-button"> Delete
-                </button>
+                <ButtonDelete action={() => { console.log('delete'); }} />
               </span>
 
               <span className="right-content">
@@ -189,6 +193,7 @@ UserDetailsForm.propTypes = {
     keycloakEmail: PropTypes.string,
     lastName: PropTypes.string,
     organization: PropTypes.shape({
+      isGovernment: PropTypes.bool,
       name: PropTypes.string,
     }),
     phone: PropTypes.string,

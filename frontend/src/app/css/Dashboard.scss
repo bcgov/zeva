@@ -188,8 +188,7 @@
   }
 }
 
-#organization-details, #user-settings {
-
+#organization-details, #user-settings, #administration {
   .content {
     .text {
       margin-left: 0rem;
@@ -207,5 +206,13 @@
     position: absolute;
     right: 2rem;
     top: 0;
+  }
+}
+
+#administration.dashboard-fieldset {
+  padding-top: 2.5rem;
+
+  .content {
+    margin-bottom: 1rem;
   }
 }

@@ -28,7 +28,8 @@ module.exports = settings => {
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
       'ENV_NAME': phases[phase].phase,
-      'BACKEND_HOST': phases[phase].host,
+      'HOST_NAME': phases[phase].host,
+      'BACKEND_HOST_NAME': phases[phase].backendHost,
       'SSO_NAME': phases[phase].ssoName,
       'KEYCLOAK_REALM': 'rzh2zkjq',
       'DJANGO_DEBUG': phases[phase].djangoDebug
@@ -48,7 +49,7 @@ module.exports = settings => {
       'MEMORY_LIMIT': phases[phase].minioMemoryRequest      
     }
   }))
- 
+
   //deploy Patroni required secrets
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment-prereq.yaml`, {
     'param': {
@@ -91,7 +92,8 @@ module.exports = settings => {
       'MEMORY_REQUEST': phases[phase].rabbitmqMemoryRequest,
       'MEMORY_LIMIT': phases[phase].rabbitmqMemoryLimit,
       'REPLICA': phases[phase].rabbitmqReplica,
-      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep
+      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep,
+      'STORAGE_CLASS': phases[phase].storageClass
     }
   }))
 
@@ -114,7 +116,8 @@ module.exports = settings => {
       'CPU_REQUEST': phases[phase].frontendCpuRequest,
       'CPU_LIMIT': phases[phase].frontendCpuLimit,
       'MEMORY_REQUEST': phases[phase].frontendMemoryRequest,
-      'MEMORY_LIMIT': phases[phase].frontendMemoryLimit
+      'MEMORY_LIMIT': phases[phase].frontendMemoryLimit,
+      'REPLICAS':  phases[phase].frontendReplicas
     }
   }))
 
@@ -125,16 +128,17 @@ module.exports = settings => {
       'SUFFIX': phases[phase].suffix,
       'VERSION': phases[phase].tag,
       'ENV_NAME': phases[phase].phase,
-      'HOST_NAME': phases[phase].host,
+      'BACKEND_HOST_NAME': phases[phase].backendHost,
       'RABBITMQ_CLUSTER_NAME': 'rabbitmq-cluster',
       'CPU_REQUEST': phases[phase].backendCpuRequest,
       'CPU_LIMIT': phases[phase].backendCpuLimit,
       'MEMORY_REQUEST': phases[phase].backendMemoryRequest,
       'MEMORY_LIMIT': phases[phase].backendMemoryLimit,
       'HEALTH_CHECK_DELAY': phases[phase].backendHealthCheckDelay,
+      'REPLICAS':  phases[phase].backendReplicas
     }
   })) 
-
+  
   //deploy schemaspy
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/schemaspy/schemaspy-dc.yaml`, {
     'param': {
@@ -148,7 +152,48 @@ module.exports = settings => {
     }
   }))
 
+  //deploy separate database and backend pod for unit test
+  if( phase === 'dev' ) {
+
+    //create unit test database init scripts
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/zeva-postgresql-init.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'SUFFIX': phases[phase].suffix
+      }
+    })) 
+
+    //deploy postgresql unit test
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/postgresql-dc-unittest.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'SUFFIX': phases[phase].suffix,
+        'ENV_NAME': phases[phase].phase
+      }
+    })) 
+
+    //deploy backend unit test
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/backend-dc-unittest.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'SUFFIX': phases[phase].suffix,
+        'VERSION': phases[phase].tag,
+        'ENV_NAME': phases[phase].phase,
+        'BACKEND_HOST_NAME': phases[phase].backendHost,
+        'RABBITMQ_CLUSTER_NAME': 'rabbitmq-cluster',
+        'CPU_REQUEST': phases[phase].backendCpuRequest,
+        'CPU_LIMIT': phases[phase].backendCpuLimit,
+        'MEMORY_REQUEST': phases[phase].backendMemoryRequest,
+        'MEMORY_LIMIT': phases[phase].backendMemoryLimit,
+        'HEALTH_CHECK_DELAY': phases[phase].backendHealthCheckDelay,
+        'REPLICAS':  phases[phase].backendReplicas
+      }
+    })) 
+
+  }
+
   //add autoacaler
+  /*****
   if(phase === 'test' || phase === 'prod') {
     objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-autoscaler.yaml`, {
       'param': {
@@ -167,6 +212,7 @@ module.exports = settings => {
       }
     }))
   }
+  ********/
 
   oc.applyRecommendedLabels(
       objects,

@@ -45,6 +45,7 @@ oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-prod --dr
 oc tag registry.access.redhat.com/rhscl/rhscl/nodejs-10-rhel7:1-28 tbiwaq-tools/nodejs:10-1-28
 
 ## Secrets
+zeva-django-prod as-copy-of template.django-secret
 patroni-prod as-copy-of template.patroni-patroni
 zeva-rabbitmq as-copy-of template.rabbitmq-secret
 patroni-backup for database backup 
@@ -52,7 +53,7 @@ ftp-secret for database backup
 zeva-django-prod for backend django framework
 zeva-keycloak includes keycloak connection info
 zeva-minio includes minio connection info
- zeva-prod-rabbitmq-cluster-secret for rabbitmq cluster
+zeva-prod-rabbitmq-cluster-secret for rabbitmq cluster
 
 ## Production Deployment
 * run nsp
@@ -100,9 +101,7 @@ patroni-master-prod:5432/zeva
 oc -n tbiwaq-prod create configmap backup-conf --from-file=../config/backup.conf
 5. create deployment config for backup container
 * use tmp-db-backup for now, should be replace by a NFS backup storage, applied already
-  -p BACKUP_VOLUME_NAME=tmp-db-backup \
-  -p BACKUP_VOLUME_SIZE=2G \
-  -p BACKUP_VOLUME_CLASS=netapp-file-standard 
+BACKUP_VOLUME_NAME is the nfs storage name
 oc -n tbiwaq-prod process -f ./templates/backup/backup-deploy.json \
   -p NAME=patroni-backup \
   -p SOURCE_IMAGE_NAME=patroni-backup \
@@ -118,13 +117,11 @@ oc -n tbiwaq-prod process -f ./templates/backup/backup-deploy.json \
   -p WEEKLY_BACKUPS=12 \
   -p MONTHLY_BACKUPS=3 \
   -p BACKUP_PERIOD=1d \
-  -p BACKUP_VOLUME_NAME=tmp-db-backup \
-  -p BACKUP_VOLUME_SIZE=2G \
-  -p BACKUP_VOLUME_CLASS=netapp-file-standard \
+  -p BACKUP_VOLUME_NAME=**** \
   -p VERIFICATION_VOLUME_NAME=backup-verification \
   -p VERIFICATION_VOLUME_SIZE=2G \
   -p VERIFICATION_VOLUME_CLASS=netapp-file-standard \
-  -p ENVIRONMENT_FRIENDLY_NAME='ZEVA Database Backip' \
+  -p ENVIRONMENT_FRIENDLY_NAME='ZEVA Database Backup' \
   -p ENVIRONMENT_NAME=zeva-prod | \
   oc create -f - -n tbiwaq-prod
 5.1 If need to remove, only keeps configmap/backup-conf and the the nfs storage
@@ -140,3 +137,8 @@ oc policy add-role-to-user edit system:serviceaccount:tbiwaq-prod:nagios --names
 oc process -f ./nagios-bc.yaml ENV_NAME=prod | oc create -f - -n tbiwaq-prod
 oc tag tbiwaq-prod/nagios:latest tabiwaq-prod/nagios:prod
 oc process -f ./nagios-dc.yaml ENV_NAME=prod NAGIOS_PVC_SIZE=2G | oc create -f - -n tbiwaq-prod
+
+
+## unit test
+oc process -f config/zeva-postgresql-init.yaml | oc create -f - -n tbiwaq-dev
+oc process -f postgresql-dc-unittest.yaml NAME=zeva SUFFIX=-dev-999 ENV_NAME=dev | oc create -f - -n tbiwaq-dev

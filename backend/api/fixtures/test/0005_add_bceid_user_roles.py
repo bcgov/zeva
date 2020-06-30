@@ -8,12 +8,19 @@ from api.models.user_role import UserRole
 
 class AddBCEIDUserRoles(OperationalDataScript):
     """
-    Gives our test accounts (bceid) user roles so we can do something in the system
+    Gives our test accounts (bceid) user roles so we can do something in the
+    system
     """
     is_revertable = False
     comment = 'Adds bceid user roles'
 
     list_of_users = [
+        "ARING_BCEID",
+        "EMHILLIE_BCEID",
+        "JADONALD_BCEID",
+        "KMENKE_BCEID",
+        "KLEFLER_BCEID",
+        "KFAN_BCEID",
         "RTAN_BCEID"
     ]
 

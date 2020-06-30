@@ -1,8 +1,55 @@
 
 
 #vehicle-validation {
+  .btn-outline-danger {
+    background-color: white;
+  }
+    .btn-outline-danger.disabled, .btn-outline-danger:disabled  {
+      opacity: .3;
+  }
+  .button.primary:disabled {
+    background-color: #38598A;
+    opacity: .3;
+  }
+
   .form {
-    background-color: $default-background-grey;
+    padding: 1rem;
+    
+    textarea {
+      margin-bottom: 1rem;
+    }
+    .request-changes-check {
+      margin: 0 0 1rem 0;
+      input[type=checkbox] {
+        margin-right: .5rem;
+      }
+    }
+  }
+  .attachments {
+    .header {
+      color: $default-text-blue;
+      font-weight: bold;
+    }
+
+    .label {
+      font-size: 1.1rem;
+    }
+
+    .row {
+      &:nth-child(odd) {
+        background-color: $default-background-grey;
+      }
+
+      > div {
+        padding-bottom: 0.5rem;
+        padding-top: 0.5rem;
+      }
+    }
+  }
+  
+
+  .form {
+    background-color: $form-background-grey;
     border: 1px solid $border-grey;
 
     .label {

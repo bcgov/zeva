@@ -14,13 +14,13 @@ import upload from '../app/utilities/upload';
 import withReferenceData from '../app/utilities/with_reference_data';
 import SalesSubmissionConfirmationPage from './components/SalesSubmissionConfirmationPage';
 import SalesSubmissionPage from './components/SalesSubmissionPage';
-import SalesSubmissionSignaturesPage from './components/SalesSubmissionSignaturesPage';
 import SalesSubmissionValidationPage from './components/SalesSubmissionValidationPage';
 
 const SalesSubmissionContainer = (props) => {
   const { user, referenceData } = props;
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const [submissions, setSubmissions] = useState([]);
   const [workflowState, setWorkflowState] = useState('new');
 
@@ -36,7 +36,9 @@ const SalesSubmissionContainer = (props) => {
     setLoading(showLoading);
 
     axios.get(ROUTES_SALES_SUBMISSIONS.LIST).then((response) => {
-      setSubmissions(response.data);
+      const nonValidatedVehicles = response.data
+        .filter((vehicle) => vehicle.validationStatus !== 'VALIDATED' && vehicle.validationStatus !== 'DELETED' );
+      setSubmissions(nonValidatedVehicles);
       setLoading(false);
     });
   };
@@ -54,14 +56,6 @@ const SalesSubmissionContainer = (props) => {
         setErrorMessage('An error has occurred while uploading. Please try again later.');
       }
     });
-  };
-
-  const readyToSign = () => {
-    setWorkflowState('readyToSign');
-  };
-
-  const backToValidationPage = () => {
-    setWorkflowState('validating');
   };
 
   const sign = (id) => {
@@ -88,24 +82,15 @@ const SalesSubmissionContainer = (props) => {
   let content;
 
   switch (workflowState) {
-    case 'readyToSign':
-      content = (
-        <SalesSubmissionSignaturesPage
-          backToValidationPage={backToValidationPage}
-          details={details}
-          key="page"
-          sign={sign}
-          user={user}
-        />
-      );
-      break;
     case 'validating':
       content = (
         <SalesSubmissionValidationPage
           backToStart={backToStart}
           details={details}
           key="page"
-          readyToSign={readyToSign}
+          setShowModal={setShowModal}
+          showModal={showModal}
+          sign={sign}
           user={user}
         />
       );
