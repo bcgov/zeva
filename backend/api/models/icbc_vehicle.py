@@ -1,12 +1,14 @@
-import django
-from django.contrib.postgres.fields import ArrayField
+"""
+ICBC Vehicle Model
+"""
 from django.db import models
 
 from auditable.models import Auditable
-from enumfields import EnumField
 
 
 class IcbcVehicle(Auditable):
+    "All vehicle models that have been added from icbc registration"
+    "spreadsheet."
     make = models.CharField(
         blank=False,
         db_comment="The make of vehicle"
@@ -33,4 +35,6 @@ class IcbcVehicle(Auditable):
             'make', 'model_name',
             'model_year'
         ]]
-    db_table_comment = "all vehicle models that have been added from icbc registration spreadsheet."
+
+    db_table_comment = "all vehicle models that have been added from icbc " \
+                       "registration spreadsheet."

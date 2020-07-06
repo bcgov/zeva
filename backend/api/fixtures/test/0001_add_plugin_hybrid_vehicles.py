@@ -195,7 +195,7 @@ class AddPluginHybridVehicles(OperationalDataScript):
 
         for vehicle in self.list_of_vehicles:
             Vehicle.objects.create(
-                make=vehicle.get("make"),
+                make=vehicle.get("make").upper(),
                 model_name=vehicle.get("model"),
                 model_year=model_year,
                 organization=Organization.objects.get(
