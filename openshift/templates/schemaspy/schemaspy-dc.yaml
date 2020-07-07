@@ -80,8 +80,7 @@ objects:
           initContainers:
             - name: wait-for-database
               image: toschneck/wait-for-it:latest
-              command: ['sh', '-c', './wait-for-it.sh -t 0 zeva-backend${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local:8080']
-#             command: ['sh', '-c', './wait-for-it.sh -t 0 patroni-master${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local:5432']
+              command: ['sh', '-c', './wait-for-it.sh -t 0 patroni-master${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local:5432']
           containers:
             - name: schemaspy-public
               image:

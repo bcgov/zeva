@@ -13,7 +13,7 @@ oc process -f ./secret-template.yaml | oc create -f - -n [environment namespace]
 
 ### After pipeline completes
 
-1. Create route for gui 
+1. Create route for gui when needed, remove it when no longer need it
 oc process -f ./rabbitmq-web-route.yaml NAME=zeva \
 ENV_NAME=dev \
 SUFFIX=-dev-133 \
