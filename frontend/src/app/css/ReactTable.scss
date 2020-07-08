@@ -1,6 +1,12 @@
 .ReactTable {
+
   .-odd {
     background-color: $default-background-grey;
+  }
+  .icbc-verification-warning {
+    .icbc-model-year, .icbc-model, .icbc-make, .warning, .validated{
+      background-color: #fff1f2 !important;
+    }
   }
 
   .clickable {
