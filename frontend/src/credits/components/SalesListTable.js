@@ -47,30 +47,25 @@ const SalesListTable = (props) => {
     Header: 'ICBC Registration',
     headerClassName: 'header-group',
     columns: [{
-      accessor: () => '-',
+      accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.modelYear.name : '-'),
       className: 'icbc-model-year text-center',
       Header: 'MY',
       headerClassName: 'icbc-model-year',
       id: 'icbc-model-year',
     }, {
-      accessor: () => '-',
+      accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.make : '-'),
       Header: 'Make',
       id: 'icbc-make',
     }, {
-      accessor: () => '-',
+      accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.modelName : '-'),
       Header: 'Model',
       id: 'icbc-model',
-    }, {
-      accessor: () => '-',
-      className: 'text-center',
-      Header: 'Registration',
-      id: 'icbc-registration-date',
     }],
   }, {
     Header: '',
     headerClassName: 'header-group',
     columns: [{
-      accessor: () => '-',
+      accessor: (item) => (item.icbcVerification ? '0' : '11'),
       className: 'warning text-right',
       Header: 'Warning',
       headerClassName: 'warning',
