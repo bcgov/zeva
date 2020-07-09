@@ -291,23 +291,7 @@ def ingest_sales_spreadsheet(
         is_valid, error_message = validate_row(row_contents, workbook, org)
 
         if is_valid:
-            if date_type == xlrd.XL_CELL_DATE:
-                try:
-                    parsed_date = xlrd.xldate.xldate_as_datetime(
-                        date,
-                        workbook.datemode
-                    )
-                except XLDateError:
-                    validation_problems.append(
-                        'Sales date has incorrect format. Please use YYYY-MM-DD'
-                    )
-            elif date_type == xlrd.XL_CELL_TEXT:
-                try:
-                    parsed_date = parse(str(date), fuzzy=True)
-                except ValueError:
-                    validation_problems.append(
-                        'Sales date has incorrect format. Please use YYYY-MM-DD'
-                    )
+            parsed_date = get_date(date, date_type, workbook.datemode)
 
             vehicle = Vehicle.objects.filter(
                 model_year__name=model_year,
@@ -345,6 +329,13 @@ def ingest_sales_spreadsheet(
         else:
             validation_problems.append({
                 'row': row,
+                'rowContents': {
+                    'make': make,
+                    'modelName': model_name,
+                    'modelYear': model_year,
+                    'saleDate': parsed_date,
+                    'vin': vin,
+                },
                 'message': error_message
             })
 
@@ -358,7 +349,7 @@ def ingest_sales_spreadsheet(
     return {
         'id': submission.id,
         'submissionID': datetime.now().strftime("%Y-%m-%d"),
-        'validation_problems': validation_problems,
+        'validationProblems': validation_problems,
         'entries': entries,
     }
 
@@ -395,29 +386,13 @@ def validate_row(row_contents, workbook, org):
             'VIN {} has incorrect length'.format(vin)
         )
 
-    if date == '':
-        validation_problems.append(
-            'VIN {} has no corresponding sale date'.format(vin)
-        )
-    elif date_type == xlrd.XL_CELL_DATE:
-        try:
-            parsed_date = xlrd.xldate.xldate_as_datetime(
-                date,
-                workbook.datemode
-            )
-        except XLDateError:
-            validation_problems.append(
-                'Sales date has incorrect format. Please use YYYY-MM-DD'
-            )
-    elif date_type == xlrd.XL_CELL_TEXT:
-        try:
-            parsed_date = parse(str(date), fuzzy=True)
-        except ValueError:
-            validation_problems.append(
-                'Sales date has incorrect format. Please use YYYY-MM-DD'
-            )
+    parsed_date = get_date(date, date_type, workbook.datemode)
 
-    if parsed_date and parsed_date < datetime(2018, 1, 2):
+    if parsed_date is None:
+        validation_problems.append(
+            'Invalid sales date. Please use YYYY-MM-DD.'
+        )
+    elif parsed_date < datetime(2018, 1, 2):
         validation_problems.append(
             'Sales date before January 2, 2018 are invalid'
         )
@@ -451,3 +426,21 @@ def validate_row(row_contents, workbook, org):
         error_message = ', '.join(validation_problems)
 
     return is_valid, error_message
+
+
+def get_date(date, date_type, datemode):
+    if date_type == xlrd.XL_CELL_DATE:
+        try:
+            return xlrd.xldate.xldate_as_datetime(
+                date,
+                datemode
+            )
+        except XLDateError:
+            return None
+    elif date_type == xlrd.XL_CELL_TEXT:
+        try:
+            return parse(str(date), fuzzy=True)
+        except ValueError:
+            return None
+
+    return None

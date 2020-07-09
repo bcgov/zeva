@@ -31,5 +31,4 @@ def award_credits(submission):
                 update_user=submission.update_user,
                 transaction_type_id="Validation",
                 vehicle_id=vehicle.id
-
             )

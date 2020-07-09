@@ -61,7 +61,7 @@ const SalesSubmissionValidationPage = (props) => {
     setPreviouslyValidated(newPreviouslyValidated);
     setnoProvincialMatch(newNoProvincialMatch);
     setVINMismatch(newVINMismatch);
-    setValidationErrors(details.validation_problems);
+    setValidationErrors(details.validationProblems);
   }, [details]);
 
   const actionbar = (
@@ -117,36 +117,15 @@ const SalesSubmissionValidationPage = (props) => {
       </div>
       <div className="row">
         <div className="col-sm-12">
-          <strong>{`${details.entries.length} VIN uploaded`}</strong><br />
-          <strong>{`${previouslyValidated.length + noProvincialMatch.length + VINMismatch.length} VIN had validation issues`}</strong><br />
-          <strong>{`${validationErrors.length} data validation errors occurred`}</strong><br />
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-sm-12">
           <Accordion>
-            <AccordionPanel
-              title={`${previouslyValidated.length} VIN had been previously validated and will be removed from this submission`}
-            >
-              <VINTable data={previouslyValidated} />
-            </AccordionPanel>
-            <AccordionPanel
-              title={`${VINMismatch.length} VIN does not match expected values for the specified vehicle or model year and have been removed from this submission`}
-            >
-              <VINTable data={VINMismatch} />
-            </AccordionPanel>
-            <AccordionPanel
-              title={`${noProvincialMatch.length} VIN did not validate with provincial registry data and have been saved separately in draft`}
-            >
-              <VINTable data={noProvincialMatch} />
-            </AccordionPanel>
-            <AccordionPanel title={`${validationErrors.length} entries had miscellaneous validation errors`}>
+            <AccordionPanel title={`${validationErrors.length} VIN were rejected, see rejected VIN`}>
               <ValidationErrorsTable data={validationErrors} />
             </AccordionPanel>
             <AccordionPanel
-              title={`${valid.length} VIN validated as follows and can be submitted to the Government of British Columbia for the credit totals indicated below`}
+              title={`The following ${details.entries.length} VIN can be submitted to government for further analysis to receive credits.`}
               startExpanded
-            > <VINTable data={valid} />
+            >
+              <VINTable data={valid} />
             </AccordionPanel>
           </Accordion>
         </div>
@@ -165,7 +144,7 @@ SalesSubmissionValidationPage.propTypes = {
     id: PropTypes.number,
     submissionID: PropTypes.string.isRequired,
     entries: PropTypes.arrayOf(PropTypes.object),
-    validation_problems: PropTypes.arrayOf(PropTypes.any),
+    validationProblems: PropTypes.arrayOf(PropTypes.any),
   }).isRequired,
   setShowModal: PropTypes.func.isRequired,
   showModal: PropTypes.bool.isRequired,
