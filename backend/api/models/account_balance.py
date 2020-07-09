@@ -37,4 +37,5 @@ class AccountBalance(Auditable, EffectiveDates):
     class Meta:
         db_table = "account_balance"
 
-    db_table_comment = "account balances"
+    db_table_comment = "account balances. A and B class credits"  \
+                       "are kept as separate records."
