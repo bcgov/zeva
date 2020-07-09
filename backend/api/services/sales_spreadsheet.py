@@ -6,6 +6,7 @@ import pickle
 from pickle import PickleError
 import magic
 
+from dateutil.parser import parse
 from django.core.exceptions import ValidationError
 
 import xlrd
@@ -121,9 +122,7 @@ def add_sales_sheet(**kwargs):
 
 
 def create_sales_spreadsheet(organization, stream):
-    logger.info('Starting to build spreadsheet for {org}'.format(
-        org=organization.name
-    ))
+    logger.info(f'Starting to build spreadsheet for {organization.name}')
     sheet_count = 0
 
     workbook = xlwt.Workbook('{} Sales Recording'.format(organization.name))
@@ -168,16 +167,16 @@ def create_sales_spreadsheet(organization, stream):
     worksheet.write(0, 0, encoded_descriptor.decode('ascii'), style=LOCKED)
 
     logger.info(
-        'Done building spreadsheet. {} sheets created'.format(sheet_count)
+        f'Done building spreadsheet. {sheet_count} sheets created'
     )
-    logger.info('Descriptor {}'.format(descriptor))
-    logger.info('Encoded {}'.format(encoded_descriptor.decode('ascii')))
+    logger.info(f'Descriptor {descriptor}')
+    logger.info(f'Encoded {encoded_descriptor.decode("ascii")}')
 
     workbook.save(stream)
 
 
 def ingest_sales_spreadsheet(
-    data, requesting_user=None, skip_authorization=False
+        data, requesting_user=None, skip_authorization=False
 ):
     logger.info('Opening spreadsheet')
 
@@ -203,22 +202,18 @@ def ingest_sales_spreadsheet(
         else:
             validation_problems.append({'row': None, 'message': 'Bad Magic'})
             logger.critical(
-                'Unable to parse. Validation problems: {}'.format(
-                    validation_problems
-                )
+                'Unable to parse. Validation problems: {validation_problems}'
             )
             return
 
         descriptor = pickle.loads(descriptor_bytes[4:])
-        logger.info('Read descriptor: {}'.format(descriptor))
+        logger.info(f'Read descriptor: {descriptor}')
     except XLRDError:
         validation_problems.append({
             'row': None, 'message': 'No metadata sheet'
         })
         logger.critical(
-            'Unable to parse. Validation problems: {}'.format(
-                validation_problems
-            )
+            f'Unable to parse. Validation problems: {validation_problems}'
         )
         return
     except IndexError:
@@ -226,9 +221,7 @@ def ingest_sales_spreadsheet(
             'row': None, 'message': 'Expected values not in metadata sheet'
         })
         logger.critical(
-            'Unable to parse. Validation problems: {}'.format(
-                validation_problems
-            )
+            f'Unable to parse. Validation problems: {validation_problems}'
         )
         return
     except binascii.Error:
@@ -236,9 +229,7 @@ def ingest_sales_spreadsheet(
             'row': None, 'message': 'Base64 decode failed'
         })
         logger.critical(
-            'Unable to parse. Validation problems: {}'.format(
-                validation_problems
-            )
+            f'Unable to parse. Validation problems: {validation_problems}'
         )
         return
     except PickleError:
@@ -246,9 +237,7 @@ def ingest_sales_spreadsheet(
             'row': None, 'message': 'Descriptor unpickling error'
         })
         logger.critical(
-            'Unable to parse. Validation problems: {}'.format(
-                validation_problems
-            )
+            f'Unable to parse. Validation problems: {validation_problems}'
         )
         return
 
@@ -287,94 +276,81 @@ def ingest_sales_spreadsheet(
         row_contents = sheet.row(row)
         model_year = int(row_contents[0].value)
         make = str(row_contents[1].value)
-        model_name = str(row_contents[2].value) 
+        model_name = str(row_contents[2].value)
         vin = str(row_contents[3].value)
+        date_type = row_contents[4].ctype
         date = row_contents[4].value
-        if len(vin) > 0:
-            logger.info('Found VIN {}'.format(vin))
-            if date == '':
-                validation_problems.append({
-                    'row': row + 1,
-                    'message': 'VIN {} has no corresponding sale '
-                               'date'.format(vin)
-                })
-            else:
-                parsed_date = None
+
+        parsed_date = None
+
+        row += 1  # so it matches the row in the spreadsheet
+
+        if len(vin) <= 0:
+            continue
+
+        is_valid, error_message = validate_row(row_contents, workbook, org)
+
+        if is_valid:
+            if date_type == xlrd.XL_CELL_DATE:
                 try:
                     parsed_date = xlrd.xldate.xldate_as_datetime(
-                        date, workbook.datemode
-                    )
-                    logger.debug(
-                        'I interpret the Excel date string {} as '
-                        '{}'.format(date, parsed_date)
+                        date,
+                        workbook.datemode
                     )
                 except XLDateError:
-                    validation_problems.append({
-                        'row': row + 1,
-                        'message': 'date {} insensible'.format(date)
-                    })
-
-                if RecordOfSale.objects.filter(
-                    vin=vin, submission__organization=org
-                ).exists():
-                    validation_problems.append({
-                        'row': row + 1,
-                        'message': 'VIN {} has previously been recorded '
-                                   '(but will be entered anyway)'.format(
-                                        vin
-                                   )
-                    })
-
-                vehicle = Vehicle.objects.filter(
-                    model_year__name=model_year,
-                    make=make,
-                    model_name=model_name
-                ).first()
-
-                if vehicle is None:
-                    validation_problems.append({
-                        'row': row + 1,
-                        'message': "{} doesn't match an approved vehicle model.".format(
-                            model_name
-                        )
-                    })
-                    row += 1
-                    continue
-
-                if parsed_date:
-                    record_of_sale = RecordOfSale.objects.create(
-                        submission=submission,
-                        vehicle=vehicle,
-                        vin=vin,
-                        sale_date=parsed_date,
-                        reference_number=None
+                    validation_problems.append(
+                        'Sales date has incorrect format. Please use YYYY-MM-DD'
+                    )
+            elif date_type == xlrd.XL_CELL_TEXT:
+                try:
+                    parsed_date = parse(str(date), fuzzy=True)
+                except ValueError:
+                    validation_problems.append(
+                        'Sales date has incorrect format. Please use YYYY-MM-DD'
                     )
 
-                    entries.append({
-                        'vin': vin,
-                        'vin_validation_status':
-                        record_of_sale.vin_validation_status.value,
-                        'sale_date': parsed_date,
-                        'id': record_of_sale.id,
-                        'credits': vehicle.get_credit_value(),
-                        'model': vehicle.model_name,
-                        'model_year': vehicle.model_year.name,
-                        'make': vehicle.make,
-                        'class':
-                        vehicle.vehicle_class_code.vehicle_class_code,
-                        'range': vehicle.range,
-                        'type':
-                        vehicle.vehicle_zev_type.vehicle_zev_code,
-                    })
-                    logger.info('Recorded sale {}'.format(vin))
+            vehicle = Vehicle.objects.filter(
+                model_year__name=model_year,
+                make=make,
+                model_name=model_name,
+                validation_status='VALIDATED'
+            ).first()
 
-        row += 1
+            record_of_sale = RecordOfSale.objects.create(
+                submission=submission,
+                vehicle=vehicle,
+                vin=vin,
+                sale_date=parsed_date,
+                reference_number=None
+            )
+
+            entries.append({
+                'vin': vin,
+                'vin_validation_status':
+                record_of_sale.vin_validation_status.value,
+                'sale_date': parsed_date,
+                'id': record_of_sale.id,
+                'credits': vehicle.get_credit_value(),
+                'model': vehicle.model_name,
+                'model_year': vehicle.model_year.name,
+                'make': vehicle.make,
+                'class':
+                vehicle.vehicle_class_code.vehicle_class_code,
+                'range': vehicle.range,
+                'type':
+                vehicle.vehicle_zev_type.vehicle_zev_code,
+            })
+            logger.info(f'Recorded sale {vin}')
+
+        else:
+            validation_problems.append({
+                'row': row,
+                'message': error_message
+            })
 
     if len(validation_problems) > 0:
         logger.info(
-            'Noncritical validation errors encountered: {}'.format(
-                validation_problems
-            )
+            f'Noncritical validation errors encountered: {validation_problems}'
         )
 
     logger.info('Done processing spreadsheet')
@@ -400,3 +376,78 @@ def validate_spreadsheet(request):
             )
 
     return True
+
+
+def validate_row(row_contents, workbook, org):
+    is_valid = True
+    model_year = int(row_contents[0].value)
+    make = str(row_contents[1].value)
+    model_name = str(row_contents[2].value)
+    vin = str(row_contents[3].value)
+    date_type = row_contents[4].ctype
+    date = row_contents[4].value
+    validation_problems = []
+    error_message = None
+    parsed_date = None
+
+    if len(vin) < 17:
+        validation_problems.append(
+            'VIN {} has incorrect length'.format(vin)
+        )
+
+    if date == '':
+        validation_problems.append(
+            'VIN {} has no corresponding sale date'.format(vin)
+        )
+    elif date_type == xlrd.XL_CELL_DATE:
+        try:
+            parsed_date = xlrd.xldate.xldate_as_datetime(
+                date,
+                workbook.datemode
+            )
+        except XLDateError:
+            validation_problems.append(
+                'Sales date has incorrect format. Please use YYYY-MM-DD'
+            )
+    elif date_type == xlrd.XL_CELL_TEXT:
+        try:
+            parsed_date = parse(str(date), fuzzy=True)
+        except ValueError:
+            validation_problems.append(
+                'Sales date has incorrect format. Please use YYYY-MM-DD'
+            )
+
+    if parsed_date and parsed_date < datetime(2018, 1, 2):
+        validation_problems.append(
+            'Sales date before January 2, 2018 are invalid'
+        )
+
+    if model_year < 2019:
+        validation_problems.append(
+            'Only model years 2019 and beyond are allowed'
+        )
+
+    if RecordOfSale.objects.filter(
+            vin=vin, submission__organization=org
+    ).exists():
+        validation_problems.append(
+            'VIN {} has previously been recorded'.format(vin)
+        )
+
+    vehicle = Vehicle.objects.filter(
+        model_year__name=model_year,
+        make=make,
+        model_name=model_name,
+        validation_status='VALIDATED'
+    ).first()
+
+    if vehicle is None:
+        validation_problems.append(
+            "{} doesn't match an approved vehicle model.".format(model_name)
+        )
+
+    if validation_problems:
+        is_valid = False
+        error_message = ', '.join(validation_problems)
+
+    return is_valid, error_message
