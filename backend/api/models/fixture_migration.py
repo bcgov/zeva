@@ -1,7 +1,14 @@
+"""
+Fixture Migration Model
+"""
 from django.db import models
 
 
 class FixtureMigration(models.Model):
+    """
+    Contains the list of fixtures that have been applied to the system.
+    This is used for the load_ops_data command
+    """
     fixture_filename = models.CharField(
         max_length=255,
         db_comment="File that has been loaded into the database."

@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import F, Sum
 
 from auditable.models import Auditable
+from .account_balance import AccountBalance
 from .credit_transaction import CreditTransaction
 from .organization_address import OrganizationAddress
 from .user_profile import UserProfile
@@ -44,21 +45,16 @@ class Organization(Auditable):
         organization
         """
         classes = ['A', 'B']
-        balance = {}
-
-        for c in classes:
-            credits = CreditTransaction.objects.filter(credit_to=self,
-                                                       credit_class__credit_class=c).aggregate(val=Sum('credit_value'))
-            debits = CreditTransaction.objects.filter(debit_from=self,
-                                                      credit_class__credit_class=c).aggregate(val=Sum('credit_value'))
-
-            if credits['val'] is None:
-                credits['val'] = decimal.Decimal(0)
-            if debits['val'] is None:
-                debits['val'] = decimal.Decimal(0)
-
-            balance[c] = credits['val'] - debits['val']
-
+        balance = {'A': 0, 'B': 0}
+        account_balances = AccountBalance.objects.filter(
+            organization_id=self.id,
+            expiration_date=None
+        ).order_by('-id')
+        for account_balance in account_balances:
+            if account_balance.credit_class_id == 'A':
+                balance['A'] = account_balance.balance
+            else:
+                balance['B'] = account_balance.balance
         return balance
 
     @property

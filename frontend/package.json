@@ -85,6 +85,7 @@
     "start": "node start",
     "dist": "webpack --production",
     "test": "jest --coverage",
+    "production": "NODE_ENV=production node start",
     "lint": "eslint src"
   }
 }

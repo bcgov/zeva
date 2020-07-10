@@ -58,8 +58,8 @@ class Navbar extends Component {
             <div className="logged-in-info">
               <div>
                 <h5 className="organization-name">{user.organization ? user.organization.name : ''}</h5>
-                {!user.isGovernment && (
-                  <span className="credit-balance">Credit Balance: 0-A/ 0-B</span>
+                {!user.isGovernment && user.organization && (
+                <span className="credit-balance">Credit Balance: {user.organization.balance.A}-A/ {user.organization.balance.B}-B</span>
                 )}
               </div>
             </div>

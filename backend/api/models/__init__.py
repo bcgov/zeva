@@ -1,3 +1,6 @@
+"""
+Model Initializer
+"""
 from . import organization, organization_address
 from . import user_creation_request, user_profile
 from . import model_year, vehicle, vehicle_change_history
@@ -12,3 +15,4 @@ from . import role, permission, role_permission, user_role
 from . import vehicle_class
 from . import fixture_migration
 from . import vehicle_attachment
+from . import account_balance

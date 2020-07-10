@@ -1,9 +1,17 @@
+"""
+Credit Transaction Model
+"""
 from django.db import models
 
 from auditable.models import Auditable
 
 
 class CreditTransaction(Auditable):
+    """
+    A ledger of all recorded credit transactions from
+    any source. Additionally used to calculate current
+    balance.
+    """
     credit_to = models.ForeignKey(
         'Organization',
         related_name='credit_transactions',
@@ -49,5 +57,6 @@ class CreditTransaction(Auditable):
     class Meta:
         db_table = "credit_transaction"
 
-    db_table_comment = "A ledger of all recorded credit transactions from any source. " \
-                       "Additionally used to calculate current balance."
+    db_table_comment = "A ledger of all recorded credit transactions from " \
+                       "any source. Additionally used to calculate current " \
+                       "balance."
