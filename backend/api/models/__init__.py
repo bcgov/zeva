@@ -1,3 +1,6 @@
+"""
+Model Initializer
+"""
 from . import organization, organization_address
 from . import user_creation_request, user_profile
 from . import model_year, vehicle, vehicle_change_history

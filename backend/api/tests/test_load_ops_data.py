@@ -12,30 +12,37 @@ class TestLoadOpsData(TestCase):
     """
 
     ScriptDefinition = namedtuple(
-        'ScriptDefinition', ('file', 'args', 'skip'), defaults=('', False,)
+        'ScriptDefinition', ('file', 'args', 'skip')
     )
 
     scripts = [
         ScriptDefinition(
-            'api.fixtures.operational.0000_add_government_organization'
+            'api.fixtures.operational.0000_add_government_organization',
+            '', False
         ),
         ScriptDefinition(
-            'api.fixtures.operational.0001_add_vehicle_classes'
+            'api.fixtures.operational.0001_add_vehicle_classes',
+            '', False
         ),
         ScriptDefinition(
-            'api.fixtures.operational.0002_add_vehicle_zev_types'
+            'api.fixtures.operational.0002_add_vehicle_zev_types',
+            '', False
         ),
         ScriptDefinition(
-            'api.fixtures.operational.0003_add_model_years'
+            'api.fixtures.operational.0003_add_model_years',
+            '', False
         ),
         ScriptDefinition(
-            'api.fixtures.operational.0004_add_organizations'
+            'api.fixtures.operational.0004_add_organizations',
+            '', False
         ),
         ScriptDefinition(
-            'api.fixtures.test.0001_add_plugin_hybrid_vehicles'
+            'api.fixtures.test.0001_add_plugin_hybrid_vehicles',
+            '', False
         ),
         ScriptDefinition(
-            'api.fixtures.test.0002_add_battery_electric_vehicles'
+            'api.fixtures.test.0002_add_battery_electric_vehicles',
+            '', False
         ),
     ]
 
