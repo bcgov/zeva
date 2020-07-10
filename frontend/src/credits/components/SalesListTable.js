@@ -47,30 +47,27 @@ const SalesListTable = (props) => {
     Header: 'ICBC Registration',
     headerClassName: 'header-group',
     columns: [{
-      accessor: () => '-',
+      accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.modelYear.name : '-'),
       className: 'icbc-model-year text-center',
       Header: 'MY',
       headerClassName: 'icbc-model-year',
       id: 'icbc-model-year',
     }, {
-      accessor: () => '-',
+      accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.make : '-'),
       Header: 'Make',
       id: 'icbc-make',
+      className: 'icbc-make',
     }, {
-      accessor: () => '-',
+      accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.modelName : '-'),
       Header: 'Model',
       id: 'icbc-model',
-    }, {
-      accessor: () => '-',
-      className: 'text-center',
-      Header: 'Registration',
-      id: 'icbc-registration-date',
+      className: 'icbc-model',
     }],
   }, {
     Header: '',
     headerClassName: 'header-group',
     columns: [{
-      accessor: () => '-',
+      accessor: (item) => (item.icbcVerification ? '0' : '11'),
       className: 'warning text-right',
       Header: 'Warning',
       headerClassName: 'warning',
@@ -86,7 +83,7 @@ const SalesListTable = (props) => {
           value={row.id}
         />
       ),
-      className: 'text-center',
+      className: 'text-center validated',
       Header: 'Validated',
       id: 'validated',
       show: user.isGovernment,
@@ -112,6 +109,15 @@ const SalesListTable = (props) => {
       defaultSorted={[{
         id: 'warning',
       }]}
+      getTrProps={(state, rowInfo) => {
+        if (rowInfo.row.warning === '11') {
+          return {
+            className: 'icbc-verification-warning',
+          };
+        }
+
+        return {};
+      }}
       filterable={filterable}
       pageSizeOptions={[(items.length > 0 ? items.length : 10), 5, 10, 15, 20, 25, 50, 100]}
     />
