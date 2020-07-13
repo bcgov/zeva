@@ -1,22 +1,17 @@
-import { React, useState } from 'react';
+import { React } from 'react';
 import { render } from '@testing-library/react';
 import UploadVerificationData from '../UploadVerificationData';
-import '@testing-library/jest-dom/extend-expect';
-
-const doUpload = () => {
-  console.log('test upload!');
-};
-
+// import '@testing-library/jest-dom/extend-expect';
 
 
 it('renders without crashing', () => {
   render(<UploadVerificationData
     title="test"
     errorMessage="test erro"
-    files="testfile.xls"
-    setUploadFiles="test"
-    upload={doUpload}
+    files={[]}
+    setUploadFiles={() => { console.log('hi'); }}
+    upload={() => { console.log('hi'); }}
     dateCurrentTo="2020-04-06"
-    setDateCurrentTo="test"
+    setDateCurrentTo={() => { console.log('hi'); }}
   />);
 });
