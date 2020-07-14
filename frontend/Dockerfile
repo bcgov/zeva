@@ -5,4 +5,4 @@ COPY . .
 RUN rm package-lock.json && \
     npm install && \
     npm rebuild node-sass
-CMD npm run start
+CMD npm run production
