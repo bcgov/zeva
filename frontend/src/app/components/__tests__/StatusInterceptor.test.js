@@ -27,25 +27,21 @@ describe('status interceptor', () => {
   it('gives a 404 message', () => {
     const testRender = TestRenderer.create(<StatusInterceptor statusCode={404} />);
     const output = testRender.toJSON();
-    // console.log(output.children[1].children[0].children)
     expect(output.children[1].children[0].children).toEqual(['The requested page could not be found.']);
   });
   it('gives a 500 message', () => {
     const testRender = TestRenderer.create(<StatusInterceptor statusCode={500} />);
     const output = testRender.toJSON();
-    // console.log(output.children[1].children[0].children)
     expect(output.children[1].children).toEqual(['It looks like our system is experiencing some technical difficulties. We have been notified and will look into it. Please try again later.']);
   });
   it('gives a 502 message', () => {
     const testRender = TestRenderer.create(<StatusInterceptor statusCode={502} />);
     const output = testRender.toJSON();
-    // console.log(output.children[1].children[0].children)
     expect(output.children[1].children).toEqual(['It looks like our system is currently down for maintenance. Please check back in a few minutes.']);
   });
   it('gives a default message', () => {
     const testRender = TestRenderer.create(<StatusInterceptor />);
     const output = testRender.toJSON();
-    // console.log(output.children[1].children[0].children)
     expect(output.children[1].children).toEqual(['It looks like our system is experiencing some technical difficulties. We have been notified and will look into it. Please try again later.']);
   });
 });
