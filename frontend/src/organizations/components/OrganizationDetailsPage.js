@@ -32,16 +32,6 @@ const OrganizationDetailsPage = (props) => {
             </div>
           )}
         </div>
-
-        <div className="col-sm-6">
-          {/* <div className="organization-info">
-            Organization Class: {(details.id % 2) ? 'Medium' : 'Large'}
-            <br />
-            2019 Compliance target: 55,000
-            <br />
-            Credit balance: 23,000-A / 28,000-B
-          </div> */}
-        </div>
       </div>
 
       <div className="row mt-5">

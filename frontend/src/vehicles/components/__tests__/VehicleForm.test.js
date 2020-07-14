@@ -7,25 +7,26 @@ import VehicleAddContainer from '../../VehicleAddContainer';
 
 afterEach(cleanup);
 
-const handleInputChange = (event) => {
+const handleInputChange = () => {
   const { value, name } = event.target;
   console.log('test function');
 };
 
-const handleSubmit = (event) => {
+const handleSubmit = () => {
   console.log('submt function');
 };
 
 describe('Vehicle Form', () => {
   it('renders without crashing', () => {
     render(<VehicleForm
-      loading="true"
-      vehicleMakes={[1, 2]}
-      vehicleYears={[2020]}
-      vehicleTypes={[1]}
-      vehicleClasses={[1]}
-      handleInputChange={handleSubmit()}
-      handleSubmit={handleSubmit()}
+      loading
+      makes={['test', 'test2']}
+      vehicleYears={[{ 1: 2020 }]}
+      vehicleTypes={[{ 1: 'test' }]}
+      vehicleClasses={[{ 1: 'test' }]}
+      handleInputChange={() => { console.log('hi'); }}
+      handleSubmit={() => { console.log('hi'); }}
+      setFields={() => { console.log('hi'); }}
       fields={{ make: 'testcar' }}
       formTitle="test"
     />);

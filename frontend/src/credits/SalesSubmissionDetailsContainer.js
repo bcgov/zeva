@@ -26,7 +26,7 @@ const SalesSubmissionDetailsContainer = (props) => {
       const submissions = response.data;
       setSubmission(submissions);
       const validatedRecords = submissions.records.filter(
-        (record) => record.validationStatus === 'VALIDATED',
+        (record) => record.validationStatus === 'VALIDATED' || record.icbcVerification,
       ).map((record) => record.id);
       setValidatedList(validatedRecords);
       setLoading(false);

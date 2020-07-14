@@ -5,7 +5,6 @@ const download = (url, params) => (
     responseType: 'blob',
     params,
   }).then((response) => {
-    console.dir(response);
     let filename = response.headers['content-disposition'].replace('attachment; filename=', '');
     filename = filename.replace(/"/g, '');
 

@@ -1,144 +1,54 @@
-## Tag Base Images
+# ZEVA Openshift Setup
 
-### Tag rhel7-atomic:77.371 from RedHat and build a new Jenkins image on top of it
-oc tag registry.access.redhat.com/rhel7-atomic:7.7-371 tbiwaq-tools/rhel7-atomic:7.7-371
-oc process -f jenkins/jenkins-bc.yaml | oc apply -f - -n tbiwaq-tools --dry-run=true
-Update Jenkins build-master.yaml SOURCE_IMAGE_STREAM_NAMESPACE and SOURCE_IMAGE_STREAM_TAG and trigger .jenkins pipeline to build and deploy Jenkins
+## 1. Network Security
 
-### Tag postgresql-10-rhel7:1-47 from RedHat
-The image fixed database initialization issue. Zeva uses this image to create extension hstore and others.  
-oc tag registry.access.redhat.com/rhscl/postgresql-10-rhel7:1-47 tbiwaq-tools/postgresql:10-1-47
+*  Followingthe instructions in openshift/templates/nsp/README.md
 
-### Tag python-36-rhel7:1-63 from RedHat 
-It fixed issues when reload operational and test data. This image will be used by backend build
-oc tag registry.access.redhat.com/rhscl/python-36-rhel7:1-63 tbiwaq-tools/python:3.6-1-63
+## 2. Jenkins setup on tools project
 
-### Tag Minio base image 7.7-481 and build Minio
-oc tag registry.access.redhat.com/rhel7/rhel:7.7-481 tbiwaq-tools/rhel7:7.7-481  
-oc process -f minio/minio-bc.yaml GIT_URL=https://github.com/bcgov/zeva.git GIT_REF=pipeline-6-7 | oc apply -f - -n tbiwaq-tools --dry-run=true  
+* openshift/jenkins/README.md
+* Build jenkins and jenkins-slave-main image, create a pr such as 161
+.jenkins/.pipeline$ npm run build -- --pr=161 --env=build
+* Deploy jenkins to tools project
+.jenkins/.pipeline$ npm run deploy -- --pr=161 --env=dev
+.jenkins/.pipeline$ npm run deploy -- --pr=161 --env=prod
 
-## Create Secrets for dev, test and prod
-oc process -f config/secrets.yaml | oc create -f - -n tbiwaq-dev --dry-run=true
-oc process -f config/secrets.yaml | oc create -f - -n tbiwaq-test --dry-run=true
-oc process -f config/secrets.yaml | oc create -f - -n tbiwaq-prod --dry-run=true
+Notes: for Jenkins, build, dev and prod are actually all on tools environment
 
-## Create Secret keycloak-secret.yaml in tools, dev, test and prod env. The value for tools and dev should be same
-oc process -f config/keycloak-secret.yaml KEYCLOAK_SA_CLIENT_SECRET= clientId= clientSecret= zevaPublic= realmId= ssoHost= | oc create -f - -n tbiwaq-*** --dry-run=true
+## 3. Pipeline to deploy on dev, test and prod
 
-## Create database init settings which will be mounted in database
-oc process -f config/zeva-postgresql-init.yaml | oc create -f - -n tbiwaq-dev --dry-run=true  
-oc process -f config/zeva-postgresql-init.yaml | oc create -f - -n tbiwaq-test --dry-run=true  
-oc process -f config/zeva-postgresql-init.yaml | oc create -f - -n tbiwaq-prod --dry-run=true  
+### 3.1 Preparation for pipeline
 
-## Patroni
-Zeva uses bcgov patroni:v10-stable as base, updates post_init.sh to create postgresql extensions as they can be only created by super user.
-oc process -f ./patroni/build.yaml -p GIT_URI=https://github.com/bcgov/zeva.git -p GIT_REF=******  | oc apply -f - -n tbiwaq-tools --dry-run=true
-oc tag tbiwaq-tools/patroni:v10-latest tbiwaq-tools/patroni:v10-stable
-oc tag tbiwaq-tools/patroni:v10-latest tbiwaq-dev/patroni:v10-stable
-oc tag tbiwaq-tools/patroni:v10-latest tbiwaq-test/patroni:v10-stable
-oc tag tbiwaq-tools/patroni:v10-latest tbiwaq-prod/patroni:v10-stable
-oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-dev --dry-run=true
-oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-test --dry-run=true
-oc process -f ./patroni/secret-template.yaml | oc apply -f - -n tbiwaq-prod --dry-run=true
+* openshift/templates/keycloak/README.md
+* openshift/templates/backend/README.md [Before triggering pipeline]
+* openshift/templates/frontend/README.md [Before triggering pipeline]
+* openshift/templates/minio/README.md [Before triggering pipeline]
+* openshift/templates/patroni/README.md [Before triggering pipeline]
+* openshift/templates/rabbitmq/README.md [Before triggering pipeline]
 
-## Frontend
-oc tag registry.access.redhat.com/rhscl/rhscl/nodejs-10-rhel7:1-28 tbiwaq-tools/nodejs:10-1-28
+### 3.2 Run pipeline
 
-## Secrets
-zeva-django-prod as-copy-of template.django-secret
-patroni-prod as-copy-of template.patroni-patroni
-zeva-rabbitmq as-copy-of template.rabbitmq-secret
-patroni-backup for database backup 
-ftp-secret for database backup 
-zeva-django-prod for backend django framework
-zeva-keycloak includes keycloak connection info
-zeva-minio includes minio connection info
-zeva-prod-rabbitmq-cluster-secret for rabbitmq cluster
+For example the latest tracking pr is 199
 
-## Production Deployment
-* run nsp
-oc process -f nsp/quickstart-nsp.yaml ENV_NAME=prod | oc create -f - -n tbiwaq-prod
-* patroni
-oc create imagestream patroni -n tbiwaq-prod
-oc tag tbiwaq-tools/patroni:v10-latest tbiwaq-prod/patroni:v10-stable
-oc process -f ./patroni/secret-template.yaml | oc create -f - -n tbiwaq-prod
-* rabbitmq
-oc create imagestream rabbitmq -n tbiwaq-prod
-oc tag docker.io/rabbitmq:3.8.3-management tbiwaq-prod/rabbitmq:3.8.3-management
-oc process -f ./rabbitmq/secret-template.yaml | oc create -f - -n tbiwaq-prod
-rabbitmq/rabbitmq-web-route.yaml can be used to create rabbitmq web management route when needed
-* create zeva-keycloak
-oc process -f ./keycloak/keycloak-secret.yaml \
-    KEYCLOAK_SA_CLIENT_SECRET=****** \
-    clientId=******** \
-    clientSecret=******** \
-    zevaPublic=******** \
-    realmId=******** \
-    host=sso.pathfinder.gov.bc.ca | oc create -f - -n tbiwaq-prod --dry-run=true
-* create zeva-minio secret
-oc process -f ./minio/minio-secret.yaml | oc create -f - -n tbiwaq-prod
-* create zeva-rabbitmq secret
-oc process -f ./rabbitmq/zeva-rabbitmq-secret.yaml | oc create -f - -n tbiwaq-prod
-* tag patroni image to prod
-oc tag tbiwaq-tools/patroni:v10-latest tbiwaq-prod/patroni:v10-stable
-* grant admin role to tbiwaq-tools/jenkins-prod
-oc policy add-role-to-user admin system:serviceaccount:tbiwaq-tools:jenkins-prod --namespace=tbiwaq-prod
-oc policy add-role-to-user system:image-puller system:serviceaccount:tbiwaq-prod:default --namespace=tbiwaq-tools
+* .pipeline$ npm run build -- --pr=199 --env=build
+* .pipeline$ npm run deploy -- --pr=199 --env=dev
+* .pipeline$ npm run deploy -- --pr=199 --env=test
+* .pipeline$ npm run deploy -- --pr=199 --env=prod
 
-## Setup Backup container
-Use backup container release 2.0.0 to run the backup
-1. Request NFS storage as backup space
-follow https://github.com/BCDevOps/provision-nfs-apb/blob/master/docs/usage-gui.md to request nfs-backup storage
-2. Build patroni-backup image
-oc -n tbiwaq-tools process -f ./openshift/templates/backup/backup-build.json \
--p NAME=patroni-backup OUTPUT_IMAGE_TAG=2.0.0 GIT_REF=2.0.0 \
-| oc -n tbiwaq-tools create -f -
-3. add to ./config/backup.conf, 9pm run backup, 10pm run verification
-patroni-master-prod:5432/zeva
-0 21 * * * default ./backup.sh -s
-0 22 * * * default ./backup.sh -s -v all
-4. create backup-conf configmap
-oc -n tbiwaq-prod create configmap backup-conf --from-file=../config/backup.conf
-5. create deployment config for backup container
-* use tmp-db-backup for now, should be replace by a NFS backup storage, applied already
-BACKUP_VOLUME_NAME is the nfs storage name
-oc -n tbiwaq-prod process -f ./templates/backup/backup-deploy.json \
-  -p NAME=patroni-backup \
-  -p SOURCE_IMAGE_NAME=patroni-backup \
-  -p IMAGE_NAMESPACE=tbiwaq-tools \
-  -p TAG_NAME=2.0.0 \
-  -p DATABASE_SERVICE_NAME=patroni-master-prod \
-  -p DATABASE_NAME=zeva \
-  -p DATABASE_DEPLOYMENT_NAME=patroni-prod \
-  -p DATABASE_USER_KEY_NAME=app-db-username \
-  -p DATABASE_PASSWORD_KEY_NAME=app-db-password \
-  -p TABLE_SCHEMA=public -p BACKUP_STRATEGY=rolling \
-  -p DAILY_BACKUPS=31 \
-  -p WEEKLY_BACKUPS=12 \
-  -p MONTHLY_BACKUPS=3 \
-  -p BACKUP_PERIOD=1d \
-  -p BACKUP_VOLUME_NAME=**** \
-  -p VERIFICATION_VOLUME_NAME=backup-verification \
-  -p VERIFICATION_VOLUME_SIZE=2G \
-  -p VERIFICATION_VOLUME_CLASS=netapp-file-standard \
-  -p ENVIRONMENT_FRIENDLY_NAME='ZEVA Database Backup' \
-  -p ENVIRONMENT_NAME=zeva-prod | \
-  oc create -f - -n tbiwaq-prod
-5.1 If need to remove, only keeps configmap/backup-conf and the the nfs storage
-oc -n tbiwaq-prod delete secret/patroni-backup secret/ftp-secret dc/patroni-backup pvc/backup-verification 
+### 3.3 Post pipeline
 
-## Setup Nagios
-nagios-base image is located in tbiwaq-tools project
-nagios image is located in tbiwaq-test and tbiwaq-prod project
-oc create imagestream nagios -n tbiwaq-prod
-oc process -f ./nagios-secret.yaml | oc create -f - -n tbiwaq-prod
-oc policy add-role-to-user system:image-puller system:serviceaccount:tbiwaq-prod:builder --namespace=tbiwaq-tools
-oc policy add-role-to-user edit system:serviceaccount:tbiwaq-prod:nagios --namespace=tbiwaq-prod
-oc process -f ./nagios-bc.yaml ENV_NAME=prod | oc create -f - -n tbiwaq-prod
-oc tag tbiwaq-prod/nagios:latest tabiwaq-prod/nagios:prod
-oc process -f ./nagios-dc.yaml ENV_NAME=prod NAGIOS_PVC_SIZE=2G | oc create -f - -n tbiwaq-prod
+openshift/templates/backend/README.md [After pipeline completes]
+openshift/templates/frontend/README.md [After pipeline completes]
 
+## 4. Backup container
 
-## unit test
-oc process -f config/zeva-postgresql-init.yaml | oc create -f - -n tbiwaq-dev
-oc process -f postgresql-dc-unittest.yaml NAME=zeva SUFFIX=-dev-999 ENV_NAME=dev | oc create -f - -n tbiwaq-dev
+openshift/templates/backup-container-2.0.0/openshift/templates/backup/README.md
+
+## 5. Nagios
+
+openshift/templates/nagios/README.md
+
+## 6. Database migration
+
+* openshift/templates/patroni/README.md [Database Migration from Openshift v3 to Openshift 4]
+
