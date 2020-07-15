@@ -21,6 +21,7 @@ import SalesSubmissionDetailsContainer from '../credits/SalesSubmissionDetailsCo
 import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
 import SalesSubmissionApprovalContainer from '../sales/SalesSubmissionApprovalContainer';
 import SalesSubmissionApprovalDetailsContainer from '../sales/SalesSubmissionApprovalDetailsContainer';
+import SalesSubmissionReviewContainer from '../sales/SalesSubmissionReviewContainer';
 import SalesListContainer from '../sales/SalesListContainer';
 import UserAddContainer from '../users/UserAddContainer';
 import UserEditContainer from '../users/UserEditContainer';
@@ -173,6 +174,13 @@ class Router extends Component {
                 path={ROUTES_SALES.APPROVAL_DETAILS}
                 render={() => (
                   <SalesSubmissionApprovalDetailsContainer keycloak={keycloak} user={user} />
+                )}
+              />
+              <Route
+                exact
+                path={ROUTES_SALES.DETAILS}
+                render={() => (
+                  <SalesSubmissionReviewContainer keycloak={keycloak} user={user} />
                 )}
               />
               <Route

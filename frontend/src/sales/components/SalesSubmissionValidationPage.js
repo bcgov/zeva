@@ -26,6 +26,7 @@ const SalesSubmissionValidationPage = (props) => {
   const [noProvincialMatch, setnoProvincialMatch] = useState([]);
   const [VINMismatch, setVINMismatch] = useState([]);
   const [validationErrors, setValidationErrors] = useState([]);
+  let entries = [];
 
   useEffect(() => {
     const newValid = [];
@@ -33,8 +34,16 @@ const SalesSubmissionValidationPage = (props) => {
     const newNoProvincialMatch = [];
     const newVINMismatch = [];
 
+    if (details.entries) {
+      ({ entries } = details);
+    }
+
+    if (details.records) {
+      entries = details.records;
+    }
+
     // eslint-disable-next-line array-callback-return
-    details.entries.map((e) => {
+    entries.map((e) => {
       switch (e.vin_validation_status) {
         case 'VALID':
           newValid.push(e);
@@ -107,22 +116,26 @@ const SalesSubmissionValidationPage = (props) => {
     />
   );
 
+  console.error(validationErrors);
+
   return (
     <div id="sales-validate" className="page">
 
       <div className="row">
         <div className="col-sm-12">
-          <h1>{user.organization.name} Sales Submission {details.submissionID}</h1>
+          <h1>{user.organization.name} Sales Submission {details.submissionId}</h1>
         </div>
       </div>
       <div className="row">
         <div className="col-sm-12">
           <Accordion>
+            {validationErrors && (
             <AccordionPanel title={`${validationErrors.length} VIN were rejected, see rejected VIN`}>
               <ValidationErrorsTable data={validationErrors} />
             </AccordionPanel>
+            )}
             <AccordionPanel
-              title={`The following ${details.entries.length} VIN can be submitted to government for further analysis to receive credits.`}
+              title={`The following ${entries.length} VIN can be submitted to government for further analysis to receive credits.`}
               startExpanded
             >
               <VINTable data={valid} />
@@ -142,8 +155,9 @@ SalesSubmissionValidationPage.propTypes = {
   backToStart: PropTypes.func.isRequired,
   details: PropTypes.shape({
     id: PropTypes.number,
-    submissionID: PropTypes.string.isRequired,
+    submissionId: PropTypes.string.isRequired,
     entries: PropTypes.arrayOf(PropTypes.object),
+    records: PropTypes.arrayOf(PropTypes.object),
     validationProblems: PropTypes.arrayOf(PropTypes.any),
   }).isRequired,
   setShowModal: PropTypes.func.isRequired,

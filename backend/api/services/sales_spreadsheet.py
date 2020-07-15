@@ -86,6 +86,12 @@ def add_instructions_sheet(**kwargs):
     row += 2
     worksheet.write(
         row, 0,
+        'Please input the Sales date in YYYY-MM-DD format.'
+    )
+
+    row += 2
+    worksheet.write(
+        row, 0,
         'Only the following models are currently valid:'
     )
 
@@ -241,7 +247,15 @@ def ingest_sales_spreadsheet(
         )
         return
 
-    org = Organization.objects.get(id=descriptor['organization_id'])
+    org = Organization.objects.filter(id=descriptor['organization_id']).first()
+
+    if org is None:
+        validation_problems.append({
+            'row': None,
+            'message': 'Organization mismatch!'
+        })
+        logger.critical('Organization mismatch!')
+        return
 
     if not skip_authorization and org != requesting_user.organization:
         validation_problems.append({
@@ -290,9 +304,9 @@ def ingest_sales_spreadsheet(
 
         is_valid, error_message = validate_row(row_contents, workbook, org)
 
-        if is_valid:
-            parsed_date = get_date(date, date_type, workbook.datemode)
+        parsed_date = get_date(date, date_type, workbook.datemode)
 
+        if is_valid:
             vehicle = Vehicle.objects.filter(
                 model_year__name=model_year,
                 make=make,
@@ -348,7 +362,7 @@ def ingest_sales_spreadsheet(
 
     return {
         'id': submission.id,
-        'submissionID': datetime.now().strftime("%Y-%m-%d"),
+        'submissionId': datetime.now().strftime("%Y-%m-%d"),
         'validationProblems': validation_problems,
         'entries': entries,
     }

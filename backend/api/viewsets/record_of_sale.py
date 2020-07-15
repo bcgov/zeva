@@ -64,11 +64,15 @@ class RecordOfSaleViewset(
         user = request.user
         response = HttpResponse(content_type='application/ms-excel')
         create_sales_spreadsheet(user.organization, response)
+        organization_name = user.organization.name
+
+        if user.organization.short_name:
+            organization_name = user.organization.short_name
 
         response['Content-Disposition'] = (
             'attachment; filename="BC-ZEVA_Sales_Template_{org}_{date}.xls"'
             .format(
-                org=user.organization.short_name,
+                org=organization_name.replace(' ', '_'),
                 date=datetime.now().strftime(
                     "_%Y-%m-%d")
             )

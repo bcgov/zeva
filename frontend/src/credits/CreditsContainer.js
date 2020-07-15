@@ -21,7 +21,7 @@ const CreditsContainer = (props) => {
   const [details, setDetails] = useState({
     entries: [],
     validationMessages: [],
-    submissionID: '',
+    submissionId: '',
   });
 
 

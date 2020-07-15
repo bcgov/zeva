@@ -31,6 +31,7 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user):
     df["MODEL"] = df["MODEL"].str.upper()
     df["MAKE"]= df["MAKE"].str.upper()
     df["MODEL_YEAR"] = df["MODEL_YEAR"].astype(int)
+
     # pd.options.display.float_format = '{:.0f}'.format
     try:
         # insert entry into the icbc upload date table
