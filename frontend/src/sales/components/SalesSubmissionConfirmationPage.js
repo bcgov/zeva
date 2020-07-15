@@ -60,7 +60,7 @@ const SalesSubmissionConfirmationPage = (props) => {
             <Link to={ROUTES_SALES.LIST}>
               Sales
             </Link>
-             table at any time.
+            {' table at any time.'}
           </p>
         </div>
       </div>

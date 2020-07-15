@@ -7,6 +7,7 @@ import ReactTable from 'react-table';
 
 import history from '../../app/History';
 import ROUTES_CREDITS from '../../app/routes/Credits';
+import formatStatus from '../../app/utilities/formatStatus';
 
 const SubmissionListTable = (props) => {
   const columns = [{
@@ -23,9 +24,14 @@ const SubmissionListTable = (props) => {
     className: 'text-right',
     Header: 'Total Sales',
   }, {
-    accessor: 'validationStatus',
-    className: 'text-center',
+    accessor: (item) => {
+      const { validationStatus } = item;
+
+      return formatStatus(validationStatus);
+    },
+    className: 'text-center text-capitalize',
     Header: 'Status',
+    id: 'status',
   }, {
     accessor: () => '',
     className: 'text-left',

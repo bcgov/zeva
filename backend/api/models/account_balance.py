@@ -18,7 +18,7 @@ class AccountBalance(Auditable, EffectiveDates):
         related_name="+",
         on_delete=models.PROTECT,
         null=False
-        )
+    )
 
     organization = models.ForeignKey(
         'Organization',
