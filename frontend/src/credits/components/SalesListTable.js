@@ -21,7 +21,9 @@ const SalesListTable = (props) => {
         errorField: 'model-year',
       };
     }
-    return '0';
+    return {
+      errorCode: '0'
+    };
   };
   const columns = [{
     Header: 'Supplier Information',
@@ -142,10 +144,6 @@ SalesListTable.defaultProps = {};
 SalesListTable.propTypes = {
   handleCheckboxClick: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  submission: PropTypes.shape({
-    records: PropTypes.arrayOf(PropTypes.shape({})),
-    submissionDate: PropTypes.string,
-  }).isRequired,
   user: CustomPropTypes.user.isRequired,
   validatedList: PropTypes.arrayOf(PropTypes.oneOfType([
     PropTypes.number,
