@@ -67,12 +67,19 @@ objects:
         uri: ${GIT_URL}
       type: Git
       contextDir: frontend
+#    strategy:
+#      dockerStrategy:
+#        forcePull: false
+#        noCache: true
+#        imageOptimizationPolicy: SkipLayers
+#      type: Docker
     strategy:
-      dockerStrategy:
-        forcePull: false
-        noCache: true
-        imageOptimizationPolicy: SkipLayers
-      type: Docker
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: nodejs:12
+          namespace: openshift
+      type: Source
     successfulBuildsHistoryLimit: 5
     triggers: []
   status:
