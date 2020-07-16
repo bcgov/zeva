@@ -14,8 +14,6 @@ const SalesListTable = (props) => {
     user,
     validatedList,
   } = props;
-  console.log(props);
-  console.log(items);
   const checkForWarnings = (item) => {
     if (item.vehicle.modelYear !== item.icbcVerification.icbcVehicle.modelYear.name) {
       return {
