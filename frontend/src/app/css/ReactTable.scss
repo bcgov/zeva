@@ -8,7 +8,11 @@
       background-color: #fff1f2 !important;
     }
   }
-
+  .icbc-mismatch-warning {
+    &.model-year .icbc-model-year{
+      background-color: #fffed2 !important;
+    }
+  }
   .clickable {
     cursor: pointer;
   
