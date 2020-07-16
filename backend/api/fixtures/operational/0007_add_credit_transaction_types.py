@@ -4,7 +4,7 @@ from api.management.data_script import OperationalDataScript
 from api.models.credit_transaction_type import CreditTransactionType
 
 
-class AddCreditTransactionType(OperationalDataScript):
+class AddCreditTransactionTypes(OperationalDataScript):
     """
     Adds the credit transaction types
     """
@@ -24,4 +24,4 @@ class AddCreditTransactionType(OperationalDataScript):
         )
 
 
-script_class = AddCreditTransactionType
+script_class = AddCreditTransactionTypes

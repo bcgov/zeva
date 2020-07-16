@@ -4,7 +4,7 @@ from api.management.data_script import OperationalDataScript
 from api.models.credit_class import CreditClass
 
 
-class AddCreditClass(OperationalDataScript):
+class AddCreditClasses(OperationalDataScript):
     """
     Adds the credit classes: A and B
     """
@@ -26,4 +26,4 @@ class AddCreditClass(OperationalDataScript):
         )
 
 
-script_class = AddCreditClass
+script_class = AddCreditClasses

@@ -6,6 +6,7 @@ from ..models.credit_class import CreditClass
 from ..models.credit_transaction import CreditTransaction
 from ..models.credit_transaction_type import CreditTransactionType
 from ..models.vehicle import Vehicle
+from ..models.weight_class import WeightClass
 
 
 class TestOrganizations(BaseTestCase):
@@ -65,7 +66,8 @@ class TestOrganizations(BaseTestCase):
                     credit_class=t.creditclass,
                     transaction_type=t.type,
                     credit_value=t.value,
-                    vehicle=t.vehicle
+                    model_year=t.vehicle.model_year,
+                    weight_class=WeightClass.objects.get(weight_class_code='LDV'),
                 )
 
     def test_org1_credits(self):

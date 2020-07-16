@@ -16,3 +16,4 @@ from . import vehicle_class
 from . import fixture_migration
 from . import vehicle_attachment
 from . import account_balance
+from . import weight_class
