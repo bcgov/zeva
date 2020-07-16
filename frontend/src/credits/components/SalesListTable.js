@@ -14,7 +14,17 @@ const SalesListTable = (props) => {
     user,
     validatedList,
   } = props;
-
+  console.log(props);
+  console.log(items);
+  const checkForWarnings = (item) => {
+    if (item.vehicle.modelYear !== item.icbcVerification.icbcVehicle.modelYear.name) {
+      return {
+        errorCode: '21',
+        errorField: 'model-year',
+      };
+    }
+    return '0';
+  };
   const columns = [{
     Header: 'Supplier Information',
     headerClassName: 'header-group',
@@ -67,7 +77,7 @@ const SalesListTable = (props) => {
     Header: '',
     headerClassName: 'header-group',
     columns: [{
-      accessor: (item) => (item.icbcVerification ? '0' : '11'),
+      accessor: (item) => (item.icbcVerification ? checkForWarnings(item).errorCode : '11'),
       className: 'warning text-right',
       Header: 'Warning',
       headerClassName: 'warning',
@@ -108,6 +118,7 @@ const SalesListTable = (props) => {
       defaultPageSize={items.length > 0 ? items.length : 10}
       defaultSorted={[{
         id: 'warning',
+        desc: true,
       }]}
       getTrProps={(state, rowInfo) => {
         if (rowInfo.row.warning === '11') {
@@ -115,7 +126,11 @@ const SalesListTable = (props) => {
             className: 'icbc-verification-warning',
           };
         }
-
+        if (rowInfo.row.warning === '21') {
+          return {
+            className: `${checkForWarnings(rowInfo.original).errorField} icbc-mismatch-warning`,
+          };
+        }
         return {};
       }}
       filterable={filterable}

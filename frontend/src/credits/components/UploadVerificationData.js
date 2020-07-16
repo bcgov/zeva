@@ -121,6 +121,7 @@ UploadVerificationData.propTypes = {
   title: PropTypes.string.isRequired,
   upload: PropTypes.func.isRequired,
   setDateCurrentTo: PropTypes.func.isRequired,
+  previousDateCurrentTo: PropTypes.string.isRequired,
 };
 
 export default UploadVerificationData;
