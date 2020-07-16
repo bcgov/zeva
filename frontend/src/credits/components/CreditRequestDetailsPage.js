@@ -14,6 +14,7 @@ const CreditRequestDetailsPage = (props) => {
     submission,
     user,
     validatedOnly,
+    previousDateCurrentTo,
   } = props;
 
   return (
@@ -29,7 +30,7 @@ const CreditRequestDetailsPage = (props) => {
 
       <div className="row mt-1">
         <div className="col-sm-12">
-          ICBC data current to: March 31, 2020 &mdash;{' '}
+          ICBC data current to: {previousDateCurrentTo} &mdash;{' '}
           <Link to={ROUTES_CREDITS.UPLOADVERIFICATION}>Update ICBC Data</Link>
         </div>
       </div>
