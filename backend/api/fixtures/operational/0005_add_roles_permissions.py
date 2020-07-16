@@ -9,7 +9,7 @@ from api.authorities import REQUIRED_AUTHORITIES
 
 class AddRolesPermissions(OperationalDataScript):
     """
-    Adds the known suppliers
+    Adds the Roles and Permissions
     """
     is_revertable = False
     comment = 'Adds the Roles and Permissions in the authorities file'
