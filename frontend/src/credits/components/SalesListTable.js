@@ -21,13 +21,9 @@ const SalesListTable = (props) => {
         errorField: 'model-year',
       };
     }
-<<<<<<< HEAD
     return {
-      errorCode: '0'
+      errorCode: '0',
     };
-=======
-    return '0';
->>>>>>> release-1.6.0
   };
   const columns = [{
     Header: 'Supplier Information',
