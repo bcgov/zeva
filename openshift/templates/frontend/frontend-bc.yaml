@@ -67,18 +67,14 @@ objects:
         uri: ${GIT_URL}
       type: Git
       contextDir: frontend
-#    strategy:
-#      dockerStrategy:
-#        forcePull: false
-#        noCache: true
-#        imageOptimizationPolicy: SkipLayers
-#      type: Docker
     strategy:
       sourceStrategy:
         from:
           kind: ImageStreamTag
           name: nodejs:12-1-45
           namespace: tbiwaq-tools
+        pullSecret:
+          name: zeva-image-pull-secret
       type: Source
     successfulBuildsHistoryLimit: 5
     triggers: []

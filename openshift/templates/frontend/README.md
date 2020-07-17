@@ -8,8 +8,7 @@
 ### Before triggering pipeline
 
 1. Create base image for frontend
-    * oc tag registry.access.redhat.com/rhscl/rhscl/nodejs-10-rhel7:1-28 tbiwaq-tools/nodejs:10-1-28
-    * oc tag registry.redhat.io/rhel8/nodejs-12:1-45 tbiwaq-tools/nodejs:12-1-45 --reference-policy=local
+    * oc tag registry.redhat.io/rhel8/nodejs-12:1-45 tbiwaq-tools/nodejs:12-1-45
 
 ### After pipeline completes
 
