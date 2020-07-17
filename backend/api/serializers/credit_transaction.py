@@ -34,6 +34,6 @@ class CreditTransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CreditTransaction
         fields = (
-            'credit_value', 'credit_to', 'debit_from', 'transaction_timestamp', 'credit_class',
-            'transaction_type', 'id'
+            'credit_value', 'credit_to', 'debit_from', 'transaction_timestamp',
+            'credit_class', 'transaction_type', 'id'
         )

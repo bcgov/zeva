@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, queryByText } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import jest from 'jest-mock';
 import SalesListTable from '../SalesListTable';
 import '@testing-library/jest-dom/extend-expect';

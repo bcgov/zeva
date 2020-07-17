@@ -3,7 +3,7 @@ from rest_framework import mixins, viewsets
 from rest_framework.permissions import AllowAny
 
 from api.models.credit_transaction import CreditTransaction
-from api.serializers.credit_transction import CreditTransactionSerializer
+from api.serializers.credit_transaction import CreditTransactionSerializer
 from auditable.views import AuditableMixin
 
 

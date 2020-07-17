@@ -6,12 +6,10 @@ import React from 'react';
 import ReactTable from 'react-table';
 import _ from 'lodash';
 
-import history from '../../app/History';
-import ROUTES_CREDITS from '../../app/routes/Credits';
 import getCreditClass from '../../app/utilities/getCreditClass';
 
 const ModelListTable = (props) => {
-  const { items, submission, validatedOnly } = props;
+  const { items, validatedOnly } = props;
 
   const columns = [{
     accessor: () => '0',
