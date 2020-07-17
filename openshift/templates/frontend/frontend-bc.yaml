@@ -77,8 +77,8 @@ objects:
       sourceStrategy:
         from:
           kind: ImageStreamTag
-          name: nodejs:10
-          namespace: openshift
+          name: nodejs:12-1-45
+          namespace: tbiwaq-tools
       type: Source
     successfulBuildsHistoryLimit: 5
     triggers: []
