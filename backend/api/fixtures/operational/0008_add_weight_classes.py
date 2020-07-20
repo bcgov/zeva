@@ -17,8 +17,9 @@ class AddWeightClasses(OperationalDataScript):
     @transaction.atomic
     def run(self):
         WeightClass.objects.get_or_create(
-            weight_class_code='LDV',
-            effective_date="2018-01-01"
+            description="Light Duty Vehicle",
+            effective_date="2018-01-01",
+            weight_class_code='LDV'
         )
 
 

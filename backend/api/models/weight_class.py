@@ -22,6 +22,10 @@ class WeightClass(EffectiveDates, Auditable):
         null=False,
         unique=True
     )
+    description = models.CharField(
+        max_length=1000,
+        db_comment="More detailed description of the weight class."
+    )
 
     db_table_comment = "A lookup table for weight classes." \
                        "Initially, LDV only, room to expand later."
