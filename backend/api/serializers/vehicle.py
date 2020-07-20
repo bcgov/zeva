@@ -13,7 +13,9 @@ from api.models.vehicle_zev_type import ZevType
 from api.serializers.user import MemberSerializer
 from api.serializers.organization import OrganizationSerializer
 from api.models.user_profile import UserProfile
+from api.models.vehicle_comment import VehicleComment
 from api.serializers.vehicle_attachment import VehicleAttachmentSerializer
+from api.serializers.vehicle_comment import VehicleCommentSerializer
 from api.services.minio import minio_remove_object
 from api.services.vehicle import change_status
 from api.models.vehicle_class import VehicleClass
@@ -141,6 +143,7 @@ class VehicleSerializer(
     vehicle_zev_type = VehicleZevTypeSerializer()
     update_user = SerializerMethodField()
     organization = OrganizationSerializer()
+    vehicle_comment = SerializerMethodField()
 
     def get_actions(self, instance):
         request = self.context.get('request')
@@ -198,6 +201,19 @@ class VehicleSerializer(
 
         return obj.update_user
 
+    def get_vehicle_comment(self, obj):
+        vehicle_comment = VehicleComment.objects.filter(
+            vehicle=obj
+        ).order_by('-create_timestamp')
+
+        if vehicle_comment.exists():
+            serializer = VehicleCommentSerializer(
+                vehicle_comment.first(), read_only=True
+            )
+            return serializer.data
+
+        return None
+
     class Meta:
         model = Vehicle
         fields = (
@@ -234,12 +250,17 @@ class VehicleSaveSerializer(
         VehicleDefinitionStatuses,
         read_only=True
     )
+    vehicle_comment = VehicleCommentSerializer(
+        allow_null=True,
+        required=False
+    )
 
     def create(self, validated_data):
         request = self.context.get('request')
         organization = request.user.organization
         make = validated_data.pop('make')
         make = " ".join(make.upper().split())
+        validated_data.pop('vehicle_comment', None)
 
         vehicle = Vehicle.objects.create(
             make=make,
@@ -253,6 +274,14 @@ class VehicleSaveSerializer(
         request = self.context.get('request')
         attachments = validated_data.pop('vehicle_attachments', [])
         files_to_be_removed = request.data.get('delete_files', [])
+        vehicle_comment = validated_data.pop('vehicle_comment', None)
+
+        if vehicle_comment:
+            VehicleComment.objects.create(
+                create_user=request.user.username,
+                vehicle=instance,
+                comment=vehicle_comment.get('comment')
+            )
 
         for attachment in attachments:
             VehicleAttachment.objects.create(

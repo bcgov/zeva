@@ -45,7 +45,6 @@ const VehicleForm = (props) => {
   if (loading) {
     return (<Loading />);
   }
-  
 
   return (
     <div id="form" className="page">
@@ -56,10 +55,12 @@ const VehicleForm = (props) => {
           && (
           <div>
             <h6 className="request-changes-vehicle">Range test results have been requested by government</h6>
+            {fields.vehicleComment && (
             <h6>
-              <b>Comment from {fields.updateUser.displayName}, {moment(fields.updateTimestamp).format('MMM d, YYYY')}: </b>
-              {fields.vehicleComment}
+              <b>Comment from {fields.vehicleComment.createUser && fields.vehicleComment.createUser.displayName}, {moment(fields.vehicleComment.createTimestamp).format('MMM d, YYYY')}: </b>
+              {fields.vehicleComment.comment}
             </h6>
+            )}
           </div>
           )}
         </div>
