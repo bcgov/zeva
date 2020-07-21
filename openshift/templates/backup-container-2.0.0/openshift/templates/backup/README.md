@@ -14,7 +14,7 @@ patroni-master-prod:5432/zeva
 oc -n tbiwaq-prod create configmap backup-conf --from-file=./config/backup.conf
 5. mount the NFS storage to httpd pod and create /postgresql-backup, /minio-backup and /rabbitmq-backup
 6. create deployment config for backup container
-BACKUP_VOLUME_NAME is the nfs storage name
+BACKUP_VOLUME_NAME is the nfs storage name, for example bk-tbiwaq-prod-s9fvzvwddd
 oc -n tbiwaq-prod process -f ./templates/backup/backup-deploy.json \
   -p NAME=patroni-backup \
   -p SOURCE_IMAGE_NAME=patroni-backup \
@@ -35,7 +35,8 @@ oc -n tbiwaq-prod process -f ./templates/backup/backup-deploy.json \
   -p VERIFICATION_VOLUME_SIZE=2G \
   -p VERIFICATION_VOLUME_CLASS=netapp-file-standard \
   -p ENVIRONMENT_FRIENDLY_NAME='ZEVA Database Backup' \
-  -p ENVIRONMENT_NAME=zeva-prod | \
+  -p ENVIRONMENT_NAME=zeva-prod \
+  -p MINIO_DATA_VOLUME_NAME=zeva-minio-prod | \
   oc create -f - -n tbiwaq-prod
 7. If need to remove, only keeps configmap/backup-conf and the the nfs storage
 oc -n tbiwaq-prod delete secret/patroni-backup secret/ftp-secret dc/patroni-backup pvc/backup-verification 
