@@ -11,9 +11,37 @@ patroni-master-prod:5432/zeva
 0 21 * * * default ./backup.sh -s
 0 22 * * * default ./backup.sh -s -v all
 4. create backup-conf configmap
+oc -n tbiwaq-dev create configmap backup-conf --from-file=./config/backup.conf
 oc -n tbiwaq-prod create configmap backup-conf --from-file=./config/backup.conf
 5. mount the NFS storage to httpd pod and create /postgresql-backup, /minio-backup and /rabbitmq-backup
 6. create deployment config for backup container
+6.1 for dev
+BACKUP_VOLUME_NAME is pvc name, don't have to be nfs
+oc -n tbiwaq-dev process -f ./templates/backup/backup-deploy.json \
+  -p NAME=patroni-backup \
+  -p SOURCE_IMAGE_NAME=patroni-backup \
+  -p IMAGE_NAMESPACE=tbiwaq-tools \
+  -p TAG_NAME=2.0.0 \
+  -p DATABASE_SERVICE_NAME=patroni-master-dev-257 \
+  -p DATABASE_NAME=zeva \
+  -p DATABASE_DEPLOYMENT_NAME=patroni-dev-257 \
+  -p DATABASE_USER_KEY_NAME=app-db-username \
+  -p DATABASE_PASSWORD_KEY_NAME=app-db-password \
+  -p TABLE_SCHEMA=public \
+  -p BACKUP_STRATEGY=rolling \
+  -p DAILY_BACKUPS=31 \
+  -p WEEKLY_BACKUPS=12 \
+  -p MONTHLY_BACKUPS=3 \
+  -p BACKUP_PERIOD=1d \
+  -p BACKUP_VOLUME_NAME=zeva-backup-dev \
+  -p VERIFICATION_VOLUME_NAME=backup-verification \
+  -p VERIFICATION_VOLUME_SIZE=2G \
+  -p VERIFICATION_VOLUME_CLASS=netapp-file-standard \
+  -p ENVIRONMENT_FRIENDLY_NAME='ZEVA Database Backup' \
+  -p ENVIRONMENT_NAME=zeva-dev \
+  -p MINIO_DATA_VOLUME_NAME=zeva-minio-dev-257 | \
+  oc create -f - -n tbiwaq-dev
+6.2 for production
 BACKUP_VOLUME_NAME is the nfs storage name, for example bk-tbiwaq-prod-s9fvzvwddd
 oc -n tbiwaq-prod process -f ./templates/backup/backup-deploy.json \
   -p NAME=patroni-backup \
