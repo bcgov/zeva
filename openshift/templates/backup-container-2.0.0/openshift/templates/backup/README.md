@@ -25,7 +25,8 @@ oc -n tbiwaq-prod process -f ./templates/backup/backup-deploy.json \
   -p DATABASE_DEPLOYMENT_NAME=patroni-prod \
   -p DATABASE_USER_KEY_NAME=app-db-username \
   -p DATABASE_PASSWORD_KEY_NAME=app-db-password \
-  -p TABLE_SCHEMA=public -p BACKUP_STRATEGY=rolling \
+  -p TABLE_SCHEMA=public \
+  -p BACKUP_STRATEGY=rolling \
   -p DAILY_BACKUPS=31 \
   -p WEEKLY_BACKUPS=12 \
   -p MONTHLY_BACKUPS=3 \
