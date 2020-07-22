@@ -1,6 +1,6 @@
 from datetime import date
 from decimal import Decimal
-from django.db.models import Count
+from django.db.models import Count, Sum, Value, IntegerField, F, Q
 
 from api.models.credit_transaction import CreditTransaction
 from api.models.record_of_sale import RecordOfSale
@@ -62,3 +62,26 @@ def award_credits(submission):
                 credit_transaction=credit_transaction,
                 organization_id=vehicle.organization_id
             )
+
+
+def aggregate_credit_balance_details(organization):
+    balance_credits = Sum('credit_value', filter=Q(
+        credit_to=organization
+    ))
+
+    balance_debits = Sum('credit_value', filter=Q(
+        debit_from=organization
+    ))
+
+    balance = CreditTransaction.objects.filter(
+        Q(credit_to=organization) |
+        Q(debit_from=organization)
+    ).values(
+        'model_year_id', 'credit_class_id', 'weight_class_id'
+    ).annotate(
+        credit=balance_credits,
+        debit=balance_debits,
+        credit_value=F('credit') - F('debit')
+    ).order_by('model_year_id', 'credit_class_id', 'weight_class_id')
+
+    return balance

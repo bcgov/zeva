@@ -22,7 +22,6 @@ class VehicleCommentSerializer(ModelSerializer):
         serializer = MemberSerializer(user, read_only=True)
         return serializer.data
 
-
     class Meta:
         model = VehicleComment
         fields = (
