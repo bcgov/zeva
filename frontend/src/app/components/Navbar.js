@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import CONFIG from '../config';
 import CustomPropTypes from '../utilities/props';
+import ROUTES_CREDITS from '../routes/Credits';
 import ROUTES_ORGANIZATIONS from '../routes/Organizations';
 import ROUTES_ROLES from '../routes/Roles';
 import ROUTES_VEHICLES from '../routes/Vehicles';
@@ -59,7 +60,7 @@ class Navbar extends Component {
               <div>
                 <h5 className="organization-name">{user.organization ? user.organization.name : ''}</h5>
                 {!user.isGovernment && user.organization && (
-                <span className="credit-balance">Credit Balance: {user.organization.balance.A}-A/ {user.organization.balance.B}-B</span>
+                <Link className="credit-balance" to={ROUTES_CREDITS.CREDIT_BALANCES}>Credit Balance: {user.organization.balance.A}-A/ {user.organization.balance.B}-B</Link>
                 )}
               </div>
             </div>

@@ -28,11 +28,20 @@ const data = [
   },
 ];
 
+const user = {
+  organization: {
+    balance: {
+      A: 0,
+      B: 0,
+    },
+  },
+};
+
 it('renders without crashing', () => {
-  render(<CreditTransactions title="hello" items={data} />);
+  render(<CreditTransactions title="hello" items={data} user={user} />);
 });
 
 it('renders hello as the title', () => {
-  const { getByText } = render(<CreditTransactions title="hello" items={data} />);
+  const { getByText } = render(<CreditTransactions title="hello" items={data} user={user} />);
   expect(getByText('hello')).toBeInTheDocument();
 });

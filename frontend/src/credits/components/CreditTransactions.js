@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Link } from 'react-router-dom';
+import ROUTES_CREDITS from '../../app/routes/Credits';
 
 const CreditTransactions = (props) => {
-  const { title, items } = props;
+  const { title, items, user } = props;
   let totalA = 0;
   let totalB = 0;
 
@@ -25,8 +27,11 @@ const CreditTransactions = (props) => {
     <div id="credit-transaction-details" className="page">
       <div className="row">
         <div className="col-sm-12">
-          <h2>{title}</h2>
-          <p id="balance">Credit Balance:</p>
+          <h1>{title}</h1>
+          <h2>
+            Credit Balance: {user.organization.balance.A}-A/ {user.organization.balance.B}-B
+            -- <Link className="link" to={ROUTES_CREDITS.CREDIT_BALANCES}>See credit detail</Link>
+          </h2>
         </div>
       </div>
       <table className="transaction-table">
@@ -79,6 +84,9 @@ const CreditTransactions = (props) => {
 CreditTransactions.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   title: PropTypes.string.isRequired,
+  user: PropTypes.shape({
+    organization: PropTypes.shape(),
+  }).isRequired,
 };
 
 export default CreditTransactions;
