@@ -20,8 +20,7 @@ class CreditClass(EffectiveDates, Auditable):
         db_comment="Credit Class (eg A, B)",
         max_length=3,
         null=False,
-        unique=True,
-        primary_key=True
+        unique=True
     )
 
     db_table_comment = "A lookup table for credit classes. Initially, A or " \

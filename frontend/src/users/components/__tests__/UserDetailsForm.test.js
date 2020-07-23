@@ -61,7 +61,7 @@ describe('User Form', () => {
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
       rolesList={['test']}
-      roles={['test', 'test1']}
+      roles={[{ 1: 'test' }, { 2: 'test1' }]}
     />);
   });
 });

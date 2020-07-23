@@ -19,7 +19,7 @@ const VehicleValidatePage = (props) => {
   }
   const { id } = details;
   const handleChange = (event) => {
-    setComments({ ...comments, vehicleComment: event.target.value });
+    setComments({ ...comments, vehicleComment: { comment: event.target.value } });
   };
   const handleCheckboxClick = (event) => {
     const { checked } = event.target;

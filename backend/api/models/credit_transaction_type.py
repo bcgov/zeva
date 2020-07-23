@@ -16,8 +16,7 @@ class CreditTransactionType(Auditable):
         db_comment="Transaction Type (eg Trade, Reduction, Grant)",
         max_length=20,
         null=False,
-        unique=True,
-        primary_key=True
+        unique=True
     )
 
     class Meta:

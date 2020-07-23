@@ -5,9 +5,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTable from 'react-table';
 
-import CustomPropTypes from '../../app/utilities/props';
 import history from '../../app/History';
 import ROUTES_SALES from '../../app/routes/Sales';
+import CustomPropTypes from '../../app/utilities/props';
+import formatStatus from '../../app/utilities/formatStatus';
 
 const SalesSubmissionListTable = (props) => {
   const columns = [{
@@ -36,9 +37,14 @@ const SalesSubmissionListTable = (props) => {
     accessor: 'totals.vins',
     className: 'text-right',
   }, {
+    accessor: (item) => {
+      const { validationStatus } = item;
+
+      return formatStatus(validationStatus);
+    },
+    className: 'text-center text-capitalize',
     Header: 'Status',
-    accessor: 'validationStatus',
-    className: 'text-center',
+    id: 'status',
   }];
 
   const filterMethod = (filter, row) => {

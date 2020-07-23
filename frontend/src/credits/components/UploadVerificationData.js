@@ -12,7 +12,7 @@ const UploadVerificationData = (props) => {
     setUploadFiles,
     upload,
     setDateCurrentTo,
-    dateCurrentTo,
+    previousDateCurrentTo,
   } = props;
 
   const removeFile = (removedFile) => {
@@ -29,7 +29,7 @@ const UploadVerificationData = (props) => {
   return (
     <div id="upload-verification-data" className="page">
       <h2>{title}</h2>
-      <p>ICBC data current to: {dateCurrentTo}</p>
+      <p>ICBC data current to: {previousDateCurrentTo}</p>
       <div className="compact">
         <div className="bordered">
           <div className="content">
@@ -121,7 +121,7 @@ UploadVerificationData.propTypes = {
   title: PropTypes.string.isRequired,
   upload: PropTypes.func.isRequired,
   setDateCurrentTo: PropTypes.func.isRequired,
-  dateCurrentTo: PropTypes.string.isRequired,
+  previousDateCurrentTo: PropTypes.string.isRequired,
 };
 
 export default UploadVerificationData;

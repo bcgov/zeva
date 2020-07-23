@@ -47,8 +47,14 @@ class CreditTransaction(Auditable):
         auto_now_add=True,
         db_comment="The timestamp at which the transaction was recorded"
     )
-    vehicle = models.ForeignKey(
-        'Vehicle',
+    model_year = models.ForeignKey(
+        'ModelYear',
+        related_name=None,
+        on_delete=models.PROTECT,
+        null=False
+    )
+    weight_class = models.ForeignKey(
+        'WeightClass',
         related_name='+',
         on_delete=models.PROTECT,
         null=False

@@ -29,6 +29,15 @@
     height: 100%;
     text-align: right;
 
+    .credit-balance {
+      color: $white;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
     .organization-name {
       font-size: 1rem;
       margin: 0;

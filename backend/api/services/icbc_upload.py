@@ -14,7 +14,7 @@ def trim_all_columns(df):
     return df.applymap(trim_strings)
 
 
-def ingest_icbc_spreadsheet(excelfile, requesting_user):
+def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
     df = pd.read_csv(excelfile, sep="|", error_bad_lines=False)
     df.drop(df[(df.HYBRID_VEHICLE_FLAG == 'N') &
             (df.ELECTRIC_VEHICLE_FLAG == 'N')].index, inplace=True)
@@ -35,7 +35,8 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user):
     # pd.options.display.float_format = '{:.0f}'.format
     try:
         # insert entry into the icbc upload date table
-        today_date = IcbcUploadDate.objects.create(
+        current_to_date = IcbcUploadDate.objects.create(
+            upload_date=dateCurrentTo,
             create_user=requesting_user.username,
             update_user=requesting_user.username,
             )
@@ -71,7 +72,7 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user):
                     'create_user': requesting_user.username,
                     'update_user': requesting_user.username,
                     'icbc_vehicle_id': vehicle_id,
-                    'icbc_upload_date_id': today_date.id
+                    'icbc_upload_date_id': current_to_date.id
                 })
     except Exception as e:
         print(e)
