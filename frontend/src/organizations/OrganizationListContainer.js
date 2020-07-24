@@ -16,10 +16,8 @@ const OrganizationListContainer = (props) => {
 
   const refreshDetails = () => {
     setLoading(true);
-
     axios.get(ROUTES_ORGANIZATIONS.LIST).then((response) => {
       setOrganizations(response.data);
-
       setLoading(false);
     });
   };

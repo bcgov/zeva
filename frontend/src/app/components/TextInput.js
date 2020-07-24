@@ -13,6 +13,10 @@ const TextInput = (props) => {
     mandatory,
     num,
     maxnum,
+    labelSize,
+    inputSize,
+    rowSize,
+    showCurrency,
   } = props;
 
   let type;
@@ -23,45 +27,54 @@ const TextInput = (props) => {
   }
 
   const [validationErrors, setValidationErrors] = useState('');
-  const [rowClass, setRowClass] = useState('form-group row');
+  const [rowClass, setRowClass] = useState(rowSize);
 
   const handleOnBlur = (event) => {
     const { value } = event.target;
     if (value === '' && mandatory === true) {
       setValidationErrors(`${label} cannot be left blank`);
-      setRowClass('form-group row error');
+      setRowClass(`${rowSize} error`);
     }
 
     if (value !== '' || !mandatory) {
       setValidationErrors('');
-      setRowClass('form-group row');
+      setRowClass(rowSize);
     }
     if (num && maxnum && value > maxnum) {
-      setValidationErrors(`Cannot be greater than ${maxnum} kg`);
-      setRowClass('form-group row error');
+      setValidationErrors(`Cannot be greater than ${maxnum}`);
+      setRowClass(`${rowSize} error`);
     }
   };
 
   return (
     <div className={rowClass}>
       <label
-        className="col-sm-4 col-form-label"
+        className={labelSize}
         htmlFor={id}
       >
         {label}
       </label>
-      <div className="col-sm-8">
+      <div className={inputSize}>
         {details && (<small className="form-text text-muted">{details}</small>) }
-        <input
-          data-testid="input-test"
-          className="form-control"
-          id={id}
-          name={name}
-          type={type}
-          defaultValue={defaultValue}
-          onChange={handleInputChange}
-          onBlur={handleOnBlur}
-        />
+        <div className={showCurrency ? 'has-currency' : ''}>
+          {showCurrency && (
+          <span className="currency-symbol">
+            <span>
+              $
+            </span>
+          </span>
+          )}
+          <input
+            data-testid="input-test"
+            className="form-control"
+            id={id}
+            name={name}
+            type={type}
+            value={defaultValue}
+            onChange={handleInputChange}
+            onBlur={handleOnBlur}
+          />
+        </div>
         <small className="form-text text-danger">{errorMessage || validationErrors}</small>
       </div>
     </div>
@@ -75,6 +88,10 @@ TextInput.defaultProps = {
   mandatory: false,
   num: false,
   maxnum: 0,
+  labelSize: 'col-sm-4 col-form-label',
+  inputSize: 'col-sm-8',
+  rowSize: 'form-group row',
+  showCurrency: false,
 };
 
 TextInput.propTypes = {
@@ -94,6 +111,10 @@ TextInput.propTypes = {
   name: PropTypes.string.isRequired,
   num: PropTypes.bool,
   maxnum: PropTypes.number,
+  labelSize: PropTypes.string,
+  inputSize: PropTypes.string,
+  rowSize: PropTypes.string,
+  showCurrency: PropTypes.bool,
 };
 
 export default TextInput;
