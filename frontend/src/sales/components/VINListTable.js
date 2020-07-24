@@ -3,47 +3,36 @@ import React from 'react';
 import ReactTable from 'react-table';
 
 const VINTable = (props) => {
-  const cols = [
-    {
-      Header: 'Make',
-      accessor: 'make',
-    },
-    {
-      Header: 'Model Year',
-      id: 'modelYear',
-      accessor: 'model_year',
-    },
-    {
-      Header: 'Model',
-      accessor: 'model',
-    },
-    {
-      Header: 'VIN',
-      accessor: 'vin',
-    },
-    {
-      Header: 'Sale Date',
-      id: 'saleDate',
-      accessor: 'sale_date',
-    },
-    {
-      Header: 'Type',
-      accessor: 'type',
-    },
-    {
-      Header: 'Range (km)',
-      accessor: 'range',
-    },
-    {
-      Header: 'Credit Class',
-      accessor: 'class',
-    },
-    {
-      Header: 'Credits',
-      accessor: 'credits',
-    },
-
-  ];
+  const cols = [{
+    Header: 'Make',
+    accessor: 'vehicle.make',
+  }, {
+    Header: 'Model Year',
+    id: 'modelYear',
+    accessor: 'vehicle.modelYear',
+  }, {
+    Header: 'Model',
+    accessor: 'vehicle.modelName',
+  }, {
+    Header: 'VIN',
+    accessor: 'vin',
+  }, {
+    Header: 'Sale Date',
+    id: 'saleDate',
+    accessor: 'saleDate',
+  }, {
+    Header: 'Type',
+    accessor: 'vehicle.vehicleZevType',
+  }, {
+    Header: 'Range (km)',
+    accessor: 'vehicle.range',
+  }, {
+    Header: 'Credit Class',
+    accessor: 'class',
+  }, {
+    Header: 'Credits',
+    accessor: 'credits',
+  }];
   const filterMethod = (filter, row) => {
     const id = filter.pivotId || filter.id;
     return row[id] !== undefined ? String(row[id])

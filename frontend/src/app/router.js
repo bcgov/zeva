@@ -22,7 +22,7 @@ import SalesSubmissionDetailsContainer from '../credits/SalesSubmissionDetailsCo
 import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
 import SalesSubmissionApprovalContainer from '../sales/SalesSubmissionApprovalContainer';
 import SalesSubmissionApprovalDetailsContainer from '../sales/SalesSubmissionApprovalDetailsContainer';
-import SalesSubmissionReviewContainer from '../sales/SalesSubmissionReviewContainer';
+import SalesSubmissionEditContainer from '../sales/SalesSubmissionEditContainer';
 import SalesListContainer from '../sales/SalesListContainer';
 import UserAddContainer from '../users/UserAddContainer';
 import UserEditContainer from '../users/UserEditContainer';
@@ -183,13 +183,6 @@ class Router extends Component {
               />
               <Route
                 exact
-                path={ROUTES_SALES.DETAILS}
-                render={() => (
-                  <SalesSubmissionReviewContainer keycloak={keycloak} user={user} />
-                )}
-              />
-              <Route
-                exact
                 path={ROUTES_SALES.APPROVAL}
                 render={() => <SalesSubmissionApprovalContainer keycloak={keycloak} user={user} />}
               />
@@ -197,6 +190,13 @@ class Router extends Component {
                 exact
                 path={ROUTES_SALES.DETAILS}
                 render={() => <SalesSubmissionApprovalContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_SALES.EDIT}
+                render={() => (
+                  <SalesSubmissionEditContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 exact

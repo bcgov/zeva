@@ -6,7 +6,7 @@ import AccordionPanel from '../../app/components/AccordionPanel';
 
 import SalesSubmissionSignaturesModal from './SalesSubmissionSignaturesModal';
 import ValidationErrorsTable from './ValidationErrorsTable';
-import VINTable from './VINTable';
+import VINListTable from './VINListTable';
 
 import CustomPropTypes from '../../app/utilities/props';
 
@@ -38,13 +38,15 @@ const SalesSubmissionValidationPage = (props) => {
       ({ entries } = details);
     }
 
+    console.error(details.records);
     if (details.records) {
       entries = details.records;
     }
 
     // eslint-disable-next-line array-callback-return
     entries.map((e) => {
-      switch (e.vin_validation_status) {
+      console.error(e.vin_validation_status);
+      switch (e.vinValidationStatus) {
         case 'VALID':
           newValid.push(e);
           break;
@@ -116,8 +118,6 @@ const SalesSubmissionValidationPage = (props) => {
     />
   );
 
-  console.error(validationErrors);
-
   return (
     <div id="sales-validate" className="page">
 
@@ -138,7 +138,7 @@ const SalesSubmissionValidationPage = (props) => {
               title={`The following ${entries.length} VIN can be submitted to government for further analysis to receive credits.`}
               startExpanded
             >
-              <VINTable data={valid} />
+              <VINListTable data={valid} />
             </AccordionPanel>
           </Accordion>
         </div>

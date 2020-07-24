@@ -17,6 +17,7 @@ from api.models.model_year import ModelYear
 from api.models.organization import Organization
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission import SalesSubmission
+from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.vehicle import Vehicle
 
 logger = logging.getLogger('zeva.sales_spreadsheet')
@@ -288,6 +289,8 @@ def ingest_sales_spreadsheet(
 
     while row < min((MAX_READ_ROWS + start_row), sheet.nrows):
         row_contents = sheet.row(row)
+        store_raw_value(submission, row_contents)
+
         model_year = int(row_contents[0].value)
         make = str(row_contents[1].value)
         model_name = str(row_contents[2].value)
@@ -456,5 +459,18 @@ def get_date(date, date_type, datemode):
             return parse(str(date), fuzzy=True)
         except ValueError:
             return None
+
+    return None
+
+
+def store_raw_value(submission, row_contents):
+    SalesSubmissionContent.objects.create(
+        submission=submission,
+        xls_model_year=row_contents[0].value,
+        xls_make=row_contents[1].value,
+        xls_model=row_contents[2].value,
+        xls_vin=row_contents[3].value,
+        xls_sale_date=row_contents[4].value
+    )
 
     return None

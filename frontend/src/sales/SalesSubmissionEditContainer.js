@@ -13,7 +13,7 @@ import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
 import CustomPropTypes from '../app/utilities/props';
 import SalesSubmissionValidationPage from './components/SalesSubmissionValidationPage';
 
-const SalesSubmissionReviewContainer = (props) => {
+const SalesSubmissionEditContainer = (props) => {
   const { match, user } = props;
   const { id } = match.params;
 
@@ -71,9 +71,9 @@ const SalesSubmissionReviewContainer = (props) => {
   );
 };
 
-SalesSubmissionReviewContainer.propTypes = {
+SalesSubmissionEditContainer.propTypes = {
   user: CustomPropTypes.user.isRequired,
   match: CustomPropTypes.routeMatch.isRequired,
 };
 
-export default withRouter(SalesSubmissionReviewContainer);
+export default withRouter(SalesSubmissionEditContainer);
