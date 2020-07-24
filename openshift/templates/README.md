@@ -19,6 +19,7 @@ Notes: for Jenkins, build, dev and prod are actually all on tools environment
 
 ### 3.1 Preparation for pipeline
 
+* openshift/templates/config/README.md [Before triggering pipeline]
 * openshift/templates/keycloak/README.md
 * openshift/templates/backend/README.md [Before triggering pipeline]
 * openshift/templates/frontend/README.md [Before triggering pipeline]

@@ -72,7 +72,7 @@ const CreditsContainer = (props) => {
       && (
       <div>
         <CreditTransactionTabs active="credit-transactions" key="tabs" user={user} />
-        <CreditTransactions title="Credit Transactions" items={creditTransactions} />
+        <CreditTransactions title="Credit Transactions" items={creditTransactions} user={user} />
       </div>
       )} {activeTab === 'upload-verification-data'
       && (

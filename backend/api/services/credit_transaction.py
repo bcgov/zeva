@@ -1,6 +1,6 @@
 from datetime import date
 from decimal import Decimal
-from django.db.models import Count
+from django.db.models import Count, Sum, Value, IntegerField, F, Q
 
 from api.models.credit_transaction import CreditTransaction
 from api.models.record_of_sale import RecordOfSale
@@ -8,6 +8,7 @@ from api.models.vehicle import Vehicle
 from api.models.account_balance import AccountBalance
 from api.models.credit_class import CreditClass
 from api.models.credit_transaction_type import CreditTransactionType
+from api.models.weight_class import WeightClass
 
 
 def award_credits(submission):
@@ -15,6 +16,8 @@ def award_credits(submission):
         submission_id=submission.id,
         validation_status="VALIDATED",
     ).values('vehicle_id').annotate(total=Count('id')).order_by('vehicle_id')
+
+    weight_class = WeightClass.objects.get(weight_class_code="LDV")
 
     for record in records:
         vehicle = Vehicle.objects.get(id=record.get('vehicle_id'))
@@ -28,11 +31,12 @@ def award_credits(submission):
                 ),
                 credit_to=submission.organization,
                 credit_value=credit_value,
-                update_user=submission.update_user,
+                model_year=vehicle.model_year,
                 transaction_type=CreditTransactionType.objects.get(
                     transaction_type="Validation"
                 ),
-                vehicle_id=vehicle.id
+                update_user=submission.update_user,
+                weight_class=weight_class
             )
             current_balance = AccountBalance.objects.filter(
                 credit_class=CreditClass.objects.get(
@@ -58,3 +62,26 @@ def award_credits(submission):
                 credit_transaction=credit_transaction,
                 organization_id=vehicle.organization_id
             )
+
+
+def aggregate_credit_balance_details(organization):
+    balance_credits = Sum('credit_value', filter=Q(
+        credit_to=organization
+    ))
+
+    balance_debits = Sum('credit_value', filter=Q(
+        debit_from=organization
+    ))
+
+    balance = CreditTransaction.objects.filter(
+        Q(credit_to=organization) |
+        Q(debit_from=organization)
+    ).values(
+        'model_year_id', 'credit_class_id', 'weight_class_id'
+    ).annotate(
+        credit=balance_credits,
+        debit=balance_debits,
+        credit_value=F('credit') - F('debit')
+    ).order_by('model_year_id', 'credit_class_id', 'weight_class_id')
+
+    return balance
