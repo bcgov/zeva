@@ -68,11 +68,11 @@ def award_credits(submission):
 def aggregate_credit_balance_details(organization):
     balance_credits = Coalesce(Sum('credit_value', filter=Q(
         credit_to=organization
-    )), 0)
+    )), Value(0))
 
     balance_debits = Coalesce(Sum('credit_value', filter=Q(
         debit_from=organization
-    )), 0)
+    )), Value(0))
 
     balance = CreditTransaction.objects.filter(
         Q(credit_to=organization) |
