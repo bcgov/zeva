@@ -1,6 +1,7 @@
 from datetime import date
 from decimal import Decimal
-from django.db.models import Count, Sum, Value, IntegerField, F, Q
+from django.db.models import Count, Sum, Value, F, Q
+from django.db.models.functions import Coalesce
 
 from api.models.credit_transaction import CreditTransaction
 from api.models.record_of_sale import RecordOfSale
@@ -65,13 +66,13 @@ def award_credits(submission):
 
 
 def aggregate_credit_balance_details(organization):
-    balance_credits = Sum('credit_value', filter=Q(
+    balance_credits = Coalesce(Sum('credit_value', filter=Q(
         credit_to=organization
-    ))
+    )), 0)
 
-    balance_debits = Sum('credit_value', filter=Q(
+    balance_debits = Coalesce(Sum('credit_value', filter=Q(
         debit_from=organization
-    ))
+    )), 0)
 
     balance = CreditTransaction.objects.filter(
         Q(credit_to=organization) |
