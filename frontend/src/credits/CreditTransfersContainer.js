@@ -97,6 +97,7 @@ const CreditTransfersContainer = (props) => {
       handleRowInputChange={handleRowInputChange}
       total={total}
       rows={rows}
+      fields={fields}
     />,
   ]);
 };
