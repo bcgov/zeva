@@ -19,6 +19,7 @@ const CreditTransfersPage = (props) => {
     handleRowInputChange,
     total,
     rows,
+    fields,
   } = props;
   const [checkboxes, setCheckboxes] = useState({
     authority: false, accurate: false, consent: false,
@@ -84,7 +85,7 @@ const CreditTransfersPage = (props) => {
                     dropdownData={organizations}
                     fieldName="transferPartner"
                     handleInputChange={handleInputChange}
-                    selectedOption="--"
+                    selectedOption={fields.transferPartner || '--'}
                     labelClassname="mr-2 d-inline-block"
                     inputClassname="d-inline-block"
                     rowClassname="mr-5 d-inline-block align-middle"
