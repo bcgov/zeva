@@ -13,6 +13,7 @@ import ROUTES_CREDITS from '../app/routes/Credits';
 import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
 import CustomPropTypes from '../app/utilities/props';
 import CreditRequestDetailsPage from './components/CreditRequestDetailsPage';
+import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification';
 
 const CreditRequestDetailsContainer = (props) => {
   const { match, user, validatedOnly } = props;
@@ -20,8 +21,11 @@ const CreditRequestDetailsContainer = (props) => {
 
   const [submission, setSubmission] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [previousDateCurrentTo, setPreviousDateCurrentTo] = useState('');
   const refreshDetails = () => {
+    axios.get(ROUTES_ICBCVERIFICATION.DATE).then((response) => {
+      setPreviousDateCurrentTo(response.data.uploadDate);
+    });
     axios.get(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id)).then((response) => {
       setSubmission(response.data);
       setLoading(false);
@@ -50,6 +54,7 @@ const CreditRequestDetailsContainer = (props) => {
       submission={submission}
       user={user}
       validatedOnly={validatedOnly}
+      previousDateCurrentTo={previousDateCurrentTo}
     />
   );
 };

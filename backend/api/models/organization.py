@@ -1,11 +1,10 @@
-import decimal
 from datetime import date
 from django.db import models
-from django.db.models import F, Sum
+from django.db.models import F
 
 from auditable.models import Auditable
 from .account_balance import AccountBalance
-from .credit_transaction import CreditTransaction
+from .credit_class import CreditClass
 from .organization_address import OrganizationAddress
 from .user_profile import UserProfile
 from ..managers.organization import OrganizationManager
@@ -44,14 +43,15 @@ class Organization(Auditable):
         Gets the class A and B balance for the current
         organization
         """
-        classes = ['A', 'B']
         balance = {'A': 0, 'B': 0}
         account_balances = AccountBalance.objects.filter(
             organization_id=self.id,
             expiration_date=None
         ).order_by('-id')
+
+        credit_class = CreditClass.objects.filter(credit_class="A").first()
         for account_balance in account_balances:
-            if account_balance.credit_class_id == 'A':
+            if account_balance.credit_class_id == credit_class.id:
                 balance['A'] = account_balance.balance
             else:
                 balance['B'] = account_balance.balance

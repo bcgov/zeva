@@ -1,18 +1,13 @@
 from django.core.exceptions import PermissionDenied
 from rest_framework import serializers
-from rest_framework.fields import SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
 
-from api.models.organization import Organization
 from api.models.role import Role
 from api.models.user_profile import UserProfile
-from api.models.user_role import UserRole
 from api.services.user import update_roles
 from .organization import OrganizationSerializer
 from .permission import PermissionSerializer
 from .role import RoleSerializer
-from ..services.keycloak_api import get_token, \
-    list_groups_for_username, update_user_groups
 
 
 class MemberSerializer(serializers.ModelSerializer):

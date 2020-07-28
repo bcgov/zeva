@@ -83,3 +83,44 @@
   border-radius: .25rem;
   transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
+
+.transfer-input-width {
+  width: 100px;
+}
+#transfer-text {
+  font-weight: normal !important;
+}
+.transfer-row-x {
+  position: relative;
+  float: right;
+  border: none;
+  font-weight: bold;
+  color: $default-text-blue;
+  background-color: transparent;
+}
+.transfer-total {
+  float: right;
+  font-weight: bold;
+  color: $default-text-blue;
+  padding-right:20px;
+}
+
+.transfer-add-line {
+  border: none;
+  background-color: $white;
+}
+.has-currency {
+  position: relative;
+  > input {
+    padding-left: 1.25rem;
+  }
+  .currency-symbol {
+    z-index:9999;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    padding-left: .5rem;
+  }
+}

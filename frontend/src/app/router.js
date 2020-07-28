@@ -15,7 +15,9 @@ import VehicleSupplierModelListContainer from '../organizations/VehicleSupplierM
 import VehicleSupplierUserListContainer from '../organizations/VehicleSupplierUserListContainer';
 import RoleListContainer from '../roles/RoleListContainer';
 import CreditsContainer from '../credits/CreditsContainer';
+import CreditBalanceContainer from '../credits/CreditBalanceContainer';
 import CreditRequestsContainer from '../credits/CreditRequestsContainer';
+import CreditTransfersContainer from '../credits/CreditTransfersContainer';
 import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContainer';
 import SalesSubmissionDetailsContainer from '../credits/SalesSubmissionDetailsContainer';
 import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
@@ -128,7 +130,9 @@ class Router extends Component {
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.NEW}
-                render={() => <VehicleSupplierEditContainer keycloak={keycloak} user={user} newSupplier />}
+                render={() => (
+                  <VehicleSupplierEditContainer keycloak={keycloak} user={user} newSupplier />
+                )}
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.ADD_USER}
@@ -144,7 +148,9 @@ class Router extends Component {
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.TRANSACTIONS}
-                render={() => <VehicleSupplierCreditTransactionListContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <VehicleSupplierCreditTransactionListContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.EDIT}
@@ -190,7 +196,6 @@ class Router extends Component {
                 path={ROUTES_SALES.LIST}
                 render={() => <SalesListContainer keycloak={keycloak} user={user} />}
               />
-
               <Route
                 exact
                 path={ROUTES_VEHICLES.ADD}
@@ -235,6 +240,11 @@ class Router extends Component {
                 render={() => <CreditRequestsContainer keycloak={keycloak} user={user} />}
               />
               <Route
+                exact
+                path={ROUTES_CREDITS.CREDIT_TRANSFERS}
+                render={() => <CreditTransfersContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
                 path={ROUTES_CREDITS.VALIDATED_CREDIT_REQUEST_DETAILS}
                 render={() => (
                   <CreditRequestDetailsContainer keycloak={keycloak} user={user} validatedOnly />
@@ -247,6 +257,10 @@ class Router extends Component {
               <Route
                 path={ROUTES_CREDITS.CREDIT_REQUEST_DETAILS}
                 render={() => <CreditRequestDetailsContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_CREDITS.CREDIT_BALANCES}
+                render={() => <CreditBalanceContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact

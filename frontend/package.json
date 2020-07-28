@@ -1,6 +1,6 @@
 {
   "name": "zeva-frontend",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
@@ -17,11 +17,12 @@
     "express": "^4.17.1",
     "express-history-api-fallback": "^2.2.1",
     "history": "^4.10.1",
+    "jest-mock": "^26.1.0",
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^1.8.0",
     "keycloak-js": "^8.0.1",
     "keycode-js": "^3.0.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "moment": "^2.26.0",
     "moment-timezone": "^0.5.31",
     "morgan": "^1.10.0",

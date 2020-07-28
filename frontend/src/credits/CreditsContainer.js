@@ -16,6 +16,7 @@ const CreditsContainer = (props) => {
   const [creditTransactions, setCreditTransactions] = useState([]);
   const { activeTab, user } = props;
   const [dateCurrentTo, setDateCurrentTo] = useState('');
+  const [previousDateCurrentTo, setPreviousDateCurrentTo] = useState('');
   const [files, setFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
   const [details, setDetails] = useState({
@@ -33,16 +34,20 @@ const CreditsContainer = (props) => {
     if (activeTab === 'transactions') {
       axios.get(ROUTES_CREDITS.LIST).then((response) => {
         setCreditTransactions(response.data);
+
         setLoading(false);
       });
     } else if (activeTab === 'upload-verification-data') {
+      axios.get(ROUTES_ICBCVERIFICATION.DATE).then((response) => {
+        setPreviousDateCurrentTo(response.data.uploadDate);
+      });
       setLoading(false);
       setDateCurrentTo(date);
     }
   };
 
   const doUpload = () => {
-    upload(ROUTES_ICBCVERIFICATION.UPLOAD, files).then((response) => {
+    upload(ROUTES_ICBCVERIFICATION.UPLOAD, files, dateCurrentTo).then((response) => {
       setDetails(response.data);
     }).catch((error) => {
       const { response } = error;
@@ -67,7 +72,7 @@ const CreditsContainer = (props) => {
       && (
       <div>
         <CreditTransactionTabs active="credit-transactions" key="tabs" user={user} />
-        <CreditTransactions title="Credit Transactions" items={creditTransactions} />
+        <CreditTransactions title="Credit Transactions" items={creditTransactions} user={user} />
       </div>
       )} {activeTab === 'upload-verification-data'
       && (
@@ -80,6 +85,7 @@ const CreditsContainer = (props) => {
           upload={doUpload}
           dateCurrentTo={dateCurrentTo}
           setDateCurrentTo={setDateCurrentTo}
+          previousDateCurrentTo={previousDateCurrentTo}
         />
       </div>
       )}

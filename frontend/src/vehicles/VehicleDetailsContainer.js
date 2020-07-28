@@ -15,7 +15,7 @@ import VehicleValidatePage from './components/VehicleValidatePage';
 const VehicleDetailsContainer = (props) => {
   const [vehicle, setVehicle] = useState({});
   const [loading, setLoading] = useState(true);
-  const [comments, setComments] = useState({ vehicleComment: '' });
+  const [comments, setComments] = useState({ vehicleComment: { comment: '' } });
   const { id } = useParams();
 
   const { keycloak, user } = props;

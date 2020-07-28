@@ -34,7 +34,7 @@ const CreditTransactionTabs = (props) => {
         className={`nav-item ${(active === 'credit-transfers') ? 'active' : ''}`}
         role="presentation"
       >
-        <Link to="/">Credit Transfers</Link>
+        <Link to={user.isGovernment ? '/' : ROUTES_CREDITS.CREDIT_TRANSFERS}>Credit Transfers</Link>
       </li>
       )}
       {CONFIG.FEATURES.INITIATIVE_AGREEMENTS.ENABLED && (

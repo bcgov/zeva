@@ -1,9 +1,7 @@
-import django
-from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from enumfields import EnumField
 
 from auditable.models import Auditable
-from enumfields import EnumField
 from .vehicle_statuses import VehicleDefinitionStatuses
 
 
@@ -74,12 +72,6 @@ class Vehicle(Auditable):
         max_digits=20,
         db_comment="The number of credits (of credit_class) a sale of this "
                    "vehicle can generate"
-    )
-    vehicle_comment = models.CharField(
-        blank=True,
-        null=True,
-        max_length=250,
-        db_comment="Comment left by idir user about vehicle"
     )
 
     def get_credit_class(self):

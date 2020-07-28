@@ -19,7 +19,7 @@ const VehicleValidatePage = (props) => {
   }
   const { id } = details;
   const handleChange = (event) => {
-    setComments({ ...comments, vehicleComment: event.target.value });
+    setComments({ ...comments, vehicleComment: { comment: event.target.value } });
   };
   const handleCheckboxClick = (event) => {
     const { checked } = event.target;
@@ -140,10 +140,9 @@ const VehicleValidatePage = (props) => {
             </span>
             <span className="right-content">
               {details.validationStatus === 'DRAFT' ? editButton : '' }
-
               {details.validationStatus === 'SUBMITTED' && ([
-                <button className="btn btn-outline-danger" disabled={!comments.vehicleComment || requestChangeCheck} type="button" key="REJECTED" onClick={() => postComment('REJECTED')}>Reject</button>,
-                <button className="button primary" disabled={comments.vehicleComment || requestChangeCheck} type="button" key="VALIDATED" onClick={() => requestStateChange('VALIDATED')}>Validate</button>
+                <button className="btn btn-outline-danger" disabled={!comments.vehicleComment.comment || requestChangeCheck} type="button" key="REJECTED" onClick={() => postComment('REJECTED')}>Reject</button>,
+                <button className="button primary" disabled={comments.vehicleComment.comment || requestChangeCheck} type="button" key="VALIDATED" onClick={() => requestStateChange('VALIDATED')}>Validate</button>
               ])}
             </span>
           </div>
@@ -188,7 +187,9 @@ VehicleValidatePage.propTypes = {
   setComments: PropTypes.func.isRequired,
   postComment: PropTypes.func.isRequired,
   comments: PropTypes.shape({
-    vehicleComment: PropTypes.string.isRequired,
+    vehicleComment: PropTypes.shape({
+      comment: PropTypes.string.isRequired,
+    }),
   }).isRequired,
 };
 

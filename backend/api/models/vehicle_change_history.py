@@ -53,13 +53,6 @@ class VehicleChangeHistory(Commentable):
     organization_id = models.IntegerField(
         db_comment="ID referencing the organization table"
     )
-
-    vehicle_comment = models.CharField(
-        blank=True,
-        null=True,
-        max_length=250,
-        db_comment="Comment left by idir user about vehicle"
-    )
     validation_status = EnumField(
         VehicleDefinitionStatuses,
         max_length=20,
