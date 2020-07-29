@@ -1,5 +1,5 @@
 """
-Credit Transaction Type Model
+Credit Transaction Type
 """
 from django.db import models
 

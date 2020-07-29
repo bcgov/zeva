@@ -18,11 +18,15 @@ class AddCreditClasses(OperationalDataScript):
     def run(self):
         CreditClass.objects.get_or_create(
             credit_class='A',
-            effective_date="2018-01-01"
+            defaults={
+                'effective_date': "2018-01-01"
+            }
         )
         CreditClass.objects.get_or_create(
             credit_class='B',
-            effective_date="2018-01-01"
+            defaults={
+                'effective_date': "2018-01-01"
+            }
         )
 
 

@@ -17,6 +17,7 @@ import RoleListContainer from '../roles/RoleListContainer';
 import CreditsContainer from '../credits/CreditsContainer';
 import CreditBalanceContainer from '../credits/CreditBalanceContainer';
 import CreditRequestsContainer from '../credits/CreditRequestsContainer';
+import CreditTransfersContainer from '../credits/CreditTransfersContainer';
 import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContainer';
 import SalesSubmissionDetailsContainer from '../credits/SalesSubmissionDetailsContainer';
 import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
@@ -245,6 +246,11 @@ class Router extends Component {
                 exact
                 path={ROUTES_CREDITS.CREDIT_REQUESTS}
                 render={() => <CreditRequestsContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_CREDITS.CREDIT_TRANSFERS}
+                render={() => <CreditTransfersContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 path={ROUTES_CREDITS.VALIDATED_CREDIT_REQUEST_DETAILS}
