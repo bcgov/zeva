@@ -73,9 +73,14 @@ def add_instructions_sheet(**kwargs):
     worksheet.write(
         row, 0,
         'Record each individual sale in the next sheet (ZEV Sales).'
-        'Vehicle Model, VIN and Sales Date fields are required.'
+        'Vehicle Model, VIN and Retail Sales Date fields are required.'
     )
-
+    row += 2
+    worksheet.write(
+        row, 0,
+        'Retail Sales Date in yyyy-mm-dd format, '
+        'eg. 2020-07-20'
+    )
     row += 2
     worksheet.write(
         row, 0,
@@ -116,7 +121,7 @@ def add_sales_sheet(**kwargs):
     worksheet.write(row, 1, 'Make', style=BOLD)
     worksheet.write(row, 2, 'Vehicle Model', style=BOLD)
     worksheet.write(row, 3, 'VIN', style=BOLD)
-    worksheet.write(row, 4, 'Sales Date', style=BOLD)
+    worksheet.write(row, 4, 'Retail Sales Date (yyyy-mm-dd)', style=BOLD)
 
     add_vehicle_rows(worksheet, row, vehicles, EDITABLE)
 
