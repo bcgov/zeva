@@ -37,6 +37,14 @@ const CreditTransactionTabs = (props) => {
         <Link to={user.isGovernment ? '/' : ROUTES_CREDITS.CREDIT_TRANSFERS}>Credit Transfers</Link>
       </li>
       )}
+      {user.isGovernment && (
+      <li
+        className={`nav-item ${(active === 'icbc-update') ? 'active' : ''}`}
+        role="presentation"
+      >
+        <Link to={ROUTES_CREDITS.UPLOADVERIFICATION}>Update ICBC Data</Link>
+      </li>
+      )}
       {CONFIG.FEATURES.INITIATIVE_AGREEMENTS.ENABLED && (
       <li
         className={`nav-item ${(active === 'initiative-agreements') ? 'active' : ''}`}

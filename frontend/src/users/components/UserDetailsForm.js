@@ -112,7 +112,6 @@ const UserDetailsForm = (props) => {
                   handleInputChange={handleInputChange}
                   id="phone"
                   label="Phone"
-                  mandatory
                   name="phone"
                 />
               </span>
