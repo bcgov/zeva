@@ -1,10 +1,7 @@
 from datetime import date
 from decimal import Decimal
 from django.db.models import Count, Sum, Value, F, Q
-<<<<<<< HEAD
-=======
 from django.db.models.functions import Coalesce
->>>>>>> release-1.7.0
 
 from api.models.credit_transaction import CreditTransaction
 from api.models.record_of_sale import RecordOfSale

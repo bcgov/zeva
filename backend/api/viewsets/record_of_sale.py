@@ -89,14 +89,20 @@ class RecordOfSaleViewset(
         try:
             validate_spreadsheet(request)
 
+            print(request.FILES['files'])
             data = request.FILES['files'].read()
-            result = ingest_sales_spreadsheet(data, requesting_user=user)
-            jsondata = json.dumps(
-                result,
-                sort_keys=True,
-                indent=1,
-                cls=DjangoJSONEncoder
-            )
+            print(data)
+
+            jsondata = {}
+
+            if data:
+                result = ingest_sales_spreadsheet(data, requesting_user=user)
+                jsondata = json.dumps(
+                    result,
+                    sort_keys=True,
+                    indent=1,
+                    cls=DjangoJSONEncoder
+                )
 
         except ValidationError as error:
             return HttpResponse(status=400, content=error)

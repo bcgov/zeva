@@ -34,6 +34,13 @@ class SalesSubmissionContent(Auditable):
         max_length=255,
         db_comment="Raw value of the Sales Date from the spreadsheet"
     )
+    xls_date_type = models.PositiveSmallIntegerField(
+        db_comment="Date Type: 1: XL_CELL_TEXT, 3: XL_CELL_DATE"
+    )
+    xls_date_mode = models.PositiveSmallIntegerField(
+        db_comment="XLS date mode: 0: 1900-based, 1: 1904-based (only applies "
+                   "to XL_CELL_DATE"
+    )
     xls_vin = models.CharField(
         blank=True,
         null=True,
