@@ -44,7 +44,7 @@ objects:
       contextDir: cicd/jenkins-basic/docker
       git:
         ref: master
-        uri: https://github.com/kuanfandevops/openshift-components.git
+        uri: https://github.com/BCDevOps/openshift-components.git
       type: Git
     strategy:
       dockerStrategy:
