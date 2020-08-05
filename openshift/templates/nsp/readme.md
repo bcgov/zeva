@@ -7,7 +7,7 @@
 ### Apply to name spaces before anything else
 
 * oc process -f ./nsp-tools.yaml | oc create -f - -n tbiwaq-tools
-* oc process -f ./quickstart-nsp.yaml | oc create -f - -n tbiwaq-dev
+* oc process -f ./quickstart-nsp.yaml | oc create -f - -n tbiwaq-tools
 * oc process -f ./quickstart-nsp.yaml | oc create -f - -n tbiwaq-dev
 * oc process -f ./quickstart-nsp.yaml | oc create -f - -n tbiwaq-test
 * oc process -f ./quickstart-nsp.yaml | oc create -f - -n tbiwaq-prod
