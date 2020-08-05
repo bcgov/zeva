@@ -16,7 +16,7 @@ from api.models.record_of_sale import RecordOfSale
 from api.models.record_of_sale_statuses import RecordOfSaleStatuses
 from api.serializers.record_of_sale import RecordOfSaleSerializer
 from api.services.sales_spreadsheet import create_sales_spreadsheet, \
-    ingest_sales_spreadsheet, validate_spreadsheet
+    ingest_sales_spreadsheet, validate_xls_file, validate_spreadsheet
 from auditable.views import AuditableMixin
 
 
@@ -86,14 +86,16 @@ class RecordOfSaleViewset(
         """
         user = request.user
 
+        jsondata = {}
+
         try:
-            validate_spreadsheet(request)
+            file = request.FILES['files']
+            validate_xls_file(file)
 
-            print(request.FILES['files'])
-            data = request.FILES['files'].read()
-            print(data)
+            data = file.read()
+            file.close()
 
-            jsondata = {}
+            validate_spreadsheet(data, user_organization=user.organization)
 
             if data:
                 result = ingest_sales_spreadsheet(data, requesting_user=user)

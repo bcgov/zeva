@@ -73,7 +73,7 @@ const SalesSubmissionListTable = (props) => {
             onClick: () => {
               const { id } = row.original;
 
-              history.push(ROUTES_SALES.APPROVAL.replace(/:id/g, id));
+              history.push(ROUTES_SALES.DETAILS.replace(/:id/g, id));
             },
             className: 'clickable',
           };

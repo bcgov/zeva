@@ -6,31 +6,43 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
 
-import history from '../app/History';
 import Loading from '../app/components/Loading';
-import ROUTES_CREDITS from '../app/routes/Credits';
+import ROUTES_SALES from '../app/routes/Sales';
 import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
+import history from '../app/History';
 import CustomPropTypes from '../app/utilities/props';
-import SalesSubmissionValidationPage from './components/SalesSubmissionValidationPage';
+import SalesSubmissionContentPage from './components/SalesSubmissionContentPage';
 
 const SalesSubmissionEditContainer = (props) => {
-  const { match, user } = props;
+  const { user } = props;
+  const { match } = props;
   const { id } = match.params;
 
-  const [submission, setSubmission] = useState([]);
+  const [content, setContent] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [validatedList, setValidatedList] = useState([]);
+  const [submission, setSubmission] = useState(false);
 
   const refreshDetails = () => {
-    axios.get(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id)).then((response) => {
-      const submission = response.data;
-      setSubmission(submission);
-      // const validatedRecords = submissions.records.filter(
-      //   (record) => record.validationStatus === 'VALIDATED' || record.icbcVerification,
-      // ).map((record) => record.id);
-      // setValidatedList(validatedRecords);
+    const promises = [];
+    promises.push(axios.get(ROUTES_SALES_SUBMISSIONS.CONTENT.replace(':id', id)).then((response) => {
+      setContent(response.data);
+    }));
+
+    promises.push(axios.get(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id)).then((response) => {
+      setSubmission(response.data);
+    }));
+
+    Promise.all(promises).then(() => {
       setLoading(false);
+    });
+  };
+
+  const sign = (submissionId) => {
+    axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', submissionId), {
+      validationStatus: 'SUBMITTED',
+    }).then(() => {
+      history.push(ROUTES_SALES.CONFIRM.replace(':id', submissionId));
     });
   };
 
@@ -38,34 +50,18 @@ const SalesSubmissionEditContainer = (props) => {
     refreshDetails();
   }, [id]);
 
-  const handleCheckboxClick = (event) => {
-    const { value: submissionId, checked } = event.target;
-
-    if (!checked) {
-      setValidatedList(validatedList.filter((item) => Number(item) !== Number(submissionId)));
-    } else {
-      setValidatedList(() => [...validatedList, submissionId]);
-    }
-  };
-
-  const sign = (id) => {
-    axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id), {
-      validationStatus: 'SUBMITTED',
-    });
-  };
-
 
   if (loading) {
     return (<Loading />);
   }
 
   return (
-    <SalesSubmissionValidationPage
-      backToStart={() => {}}
-      details={submission}
+    <SalesSubmissionContentPage
+      content={content}
       setShowModal={setShowModal}
       showModal={showModal}
       sign={sign}
+      submission={submission}
       user={user}
     />
   );

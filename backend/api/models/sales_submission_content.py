@@ -1,6 +1,7 @@
 from django.db import models
 
 from auditable.models import Auditable
+from api.models.vehicle import Vehicle
 
 
 class SalesSubmissionContent(Auditable):
@@ -35,11 +36,13 @@ class SalesSubmissionContent(Auditable):
         db_comment="Raw value of the Sales Date from the spreadsheet"
     )
     xls_date_type = models.PositiveSmallIntegerField(
+        default=3,
         db_comment="Date Type: 1: XL_CELL_TEXT, 3: XL_CELL_DATE"
     )
     xls_date_mode = models.PositiveSmallIntegerField(
+        default=1,
         db_comment="XLS date mode: 0: 1900-based, 1: 1904-based (only applies "
-                   "to XL_CELL_DATE"
+                   "to XL_CELL_DATE)"
     )
     xls_vin = models.CharField(
         blank=True,
@@ -47,6 +50,19 @@ class SalesSubmissionContent(Auditable):
         max_length=255,
         db_comment="Raw value of the VIN from the spreadsheet"
     )
+
+    @property
+    def vehicle(self):
+        try:
+            model_year = float(self.xls_model_year)
+        except ValueError:
+            return None
+
+        return Vehicle.objects.filter(
+            make=self.xls_make,
+            model_name=self.xls_model,
+            model_year__name=int(model_year),
+        ).first()
 
     class Meta:
         db_table = "sale_submission_content"

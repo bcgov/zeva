@@ -1,18 +1,23 @@
 from rest_framework import mixins, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 
-from api.services.credit_transaction import award_credits
 from api.models.sales_submission import SalesSubmission
+from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.serializers.sales_submission import SalesSubmissionSerializer, \
     SalesSubmissionListSerializer, SalesSubmissionSaveSerializer
+from api.serializers.sales_submission_content import \
+    SalesSubmissionContentSerializer
+from api.services.credit_transaction import award_credits
 from auditable.views import AuditableMixin
 
 
 class SalesSubmissionsViewset(
-    AuditableMixin, viewsets.GenericViewSet,
-    mixins.ListModelMixin, mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin
+        AuditableMixin, viewsets.GenericViewSet,
+        mixins.ListModelMixin, mixins.RetrieveModelMixin,
+        mixins.UpdateModelMixin
 ):
     permission_classes = (AllowAny,)
     http_method_names = ['get', 'patch', 'post', 'put']
@@ -32,6 +37,7 @@ class SalesSubmissionsViewset(
 
     serializer_classes = {
         'default': SalesSubmissionListSerializer,
+        'content': SalesSubmissionContentSerializer,
         'retrieve': SalesSubmissionSerializer,
         'partial_update': SalesSubmissionSaveSerializer,
         'update': SalesSubmissionSaveSerializer,
@@ -48,3 +54,10 @@ class SalesSubmissionsViewset(
 
         if submission.validation_status == SalesSubmissionStatuses.VALIDATED:
             award_credits(submission)
+
+    @action(detail=True, methods=['get'])
+    def content(self, request, pk=None):
+        rows = SalesSubmissionContent.objects.filter(submission_id=pk)
+        serializer = self.get_serializer(rows, many=True, read_only=True)
+
+        return Response(serializer.data)

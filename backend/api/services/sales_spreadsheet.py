@@ -213,6 +213,8 @@ def ingest_sales_spreadsheet(
         row_contents = sheet.row(row)
         store_raw_value(submission, row_contents, workbook.datemode)
 
+        row += 1
+
     return {
         'id': submission.id,
         'submissionId': datetime.now().strftime("%Y-%m-%d")
@@ -246,26 +248,26 @@ def get_organization(workbook):
     return organization
 
 
-def validate_spreadsheet(request, skip_authorization=False):
-    files = request.FILES.getlist('files')
+def validate_xls_file(file):
+    mime = magic.Magic(mime=True)
+    mimetype = mime.from_file(file.temporary_file_path())
 
-    for file in files:
-        mime = magic.Magic(mime=True)
-        mimetype = mime.from_file(file.temporary_file_path())
+    if mimetype != "application/vnd.ms-excel":
+        raise ValidationError(
+            'File must be an excel spreadsheet'
+        )
 
-        if mimetype != "application/vnd.ms-excel":
-            raise ValidationError(
-                'File must be an excel spreadsheet'
-            )
+    return True
 
-    data = request.FILES['files'].read()
+
+def validate_spreadsheet(data, user_organization=None, skip_authorization=False):
     workbook = xlrd.open_workbook(file_contents=data)
 
     organization = get_organization(workbook)
 
     if organization is None or (
             not skip_authorization and
-            organization != request.user.organization
+            organization != user_organization
     ):
         raise ValidationError(
             'Spreadsheet is designated for another organization. '
@@ -345,17 +347,22 @@ def validate_row(row_contents, workbook, org):
 
 
 def get_date(date, date_type, datemode):
+    try:
+        date_float = float(date)
+    except ValueError:
+        return None
+
     if date_type == xlrd.XL_CELL_DATE:
         try:
             return xlrd.xldate.xldate_as_datetime(
-                date,
+                date_float,
                 datemode
             )
         except XLDateError:
             return None
     elif date_type == xlrd.XL_CELL_TEXT:
         try:
-            return parse(str(date), fuzzy=True)
+            return parse(str(date_float), fuzzy=True)
         except ValueError:
             return None
 

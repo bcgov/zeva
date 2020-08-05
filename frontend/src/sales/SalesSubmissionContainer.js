@@ -4,23 +4,22 @@
  */
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import ROUTES_SALES from '../app/routes/Sales';
-import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
 
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import Loading from '../app/components/Loading';
+import history from '../app/History';
+import ROUTES_SALES from '../app/routes/Sales';
+import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
 import CustomPropTypes from '../app/utilities/props';
 import upload from '../app/utilities/upload';
 import withReferenceData from '../app/utilities/with_reference_data';
 import SalesSubmissionConfirmationPage from './components/SalesSubmissionConfirmationPage';
 import SalesSubmissionPage from './components/SalesSubmissionPage';
-import SalesSubmissionValidationPage from './components/SalesSubmissionValidationPage';
 
 const SalesSubmissionContainer = (props) => {
   const { user, referenceData } = props;
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
   const [submissions, setSubmissions] = useState([]);
   const [workflowState, setWorkflowState] = useState('new');
 
@@ -45,8 +44,8 @@ const SalesSubmissionContainer = (props) => {
 
   const doUpload = () => {
     upload(ROUTES_SALES.UPLOAD, files).then((response) => {
-      setDetails(response.data);
-      setWorkflowState('validating');
+      const { id } = response.data;
+      history.push(ROUTES_SALES.DETAILS.replace(':id', id));
     }).catch((error) => {
       const { response } = error;
 
@@ -56,19 +55,6 @@ const SalesSubmissionContainer = (props) => {
         setErrorMessage('An error has occurred while uploading. Please try again later.');
       }
     });
-  };
-
-  const sign = (id) => {
-    axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id), {
-      validationStatus: 'SUBMITTED',
-    }).then(() => {
-      setWorkflowState('complete');
-    });
-  };
-
-  const backToStart = () => {
-    setWorkflowState('new');
-    // @todo clear any details, maybe issue delete request
   };
 
   useEffect(() => {
@@ -82,19 +68,6 @@ const SalesSubmissionContainer = (props) => {
   let content;
 
   switch (workflowState) {
-    case 'validating':
-      content = (
-        <SalesSubmissionValidationPage
-          backToStart={backToStart}
-          details={details}
-          key="page"
-          setShowModal={setShowModal}
-          showModal={showModal}
-          sign={sign}
-          user={user}
-        />
-      );
-      break;
     case 'complete':
       content = (
         <SalesSubmissionConfirmationPage
