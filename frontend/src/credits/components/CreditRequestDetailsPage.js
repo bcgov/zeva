@@ -50,7 +50,7 @@ const CreditRequestDetailsPage = (props) => {
               </button>
             </span>
             <span className="right-content">
-              {user.isGovernment && submission.validationStatus === 'SUBMITTED' && (
+              {user.isGovernment && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0 && user.hasPermission('RECOMMEND_SALES') && (
                 <>
                   {validatedOnly && [
                     <button
@@ -120,7 +120,7 @@ const CreditRequestDetailsPage = (props) => {
               </button>
             </span>
             <span className="right-content">
-              {user.isGovernment && submission.validationStatus === 'SUBMITTED' && user.hasPermission('RECOMMEND_SALES') && (
+              {user.isGovernment && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0 && user.hasPermission('RECOMMEND_SALES') && (
                 <>
                   {validatedOnly && [
                     <button

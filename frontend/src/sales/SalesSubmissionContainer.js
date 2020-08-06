@@ -13,7 +13,6 @@ import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
 import CustomPropTypes from '../app/utilities/props';
 import upload from '../app/utilities/upload';
 import withReferenceData from '../app/utilities/with_reference_data';
-import SalesSubmissionConfirmationPage from './components/SalesSubmissionConfirmationPage';
 import SalesSubmissionPage from './components/SalesSubmissionPage';
 
 const SalesSubmissionContainer = (props) => {
@@ -21,13 +20,6 @@ const SalesSubmissionContainer = (props) => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submissions, setSubmissions] = useState([]);
-  const [workflowState, setWorkflowState] = useState('new');
-
-  const [details, setDetails] = useState({
-    entries: [],
-    validationMessages: [],
-    submissionId: '',
-  });
 
   const [files, setFiles] = useState([]);
 
@@ -65,40 +57,18 @@ const SalesSubmissionContainer = (props) => {
     return (<Loading />);
   }
 
-  let content;
-
-  switch (workflowState) {
-    case 'complete':
-      content = (
-        <SalesSubmissionConfirmationPage
-          details={details}
-          key="page"
-          user={user}
-        />
-      );
-      break;
-    case 'error':
-      content = (<p>An error occurred in validation. Please restart the submission</p>);
-      break;
-    case 'new':
-    default:
-      content = (
-        <SalesSubmissionPage
-          errorMessage={errorMessage}
-          files={files}
-          key="page"
-          setUploadFiles={setFiles}
-          submissions={submissions}
-          upload={doUpload}
-          user={user}
-          years={referenceData.years}
-        />
-      );
-  }
-
   return ([
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
-    content,
+    <SalesSubmissionPage
+      errorMessage={errorMessage}
+      files={files}
+      key="page"
+      setUploadFiles={setFiles}
+      submissions={submissions}
+      upload={doUpload}
+      user={user}
+      years={referenceData.years}
+    />,
   ]);
 };
 

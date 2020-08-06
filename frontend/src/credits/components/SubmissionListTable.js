@@ -61,7 +61,7 @@ const SubmissionListTable = (props) => {
       columns={columns}
       data={items}
       defaultFilterMethod={filterMethod}
-      defaultPageSize={items.length}
+      defaultPageSize={items.length || 5}
       defaultSorted={[{
         id: 'submissionDate',
       }]}

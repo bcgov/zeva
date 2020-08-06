@@ -65,7 +65,7 @@ class SalesSubmissionContent(Auditable):
         ).first()
 
     class Meta:
-        db_table = "sale_submission_content"
+        db_table = "sales_submission_content"
         ordering = ['id']
 
     db_table_comment = "Holds the raw records for sale submission. " \

@@ -7,7 +7,8 @@ from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.serializers.sales_submission import SalesSubmissionSerializer, \
-    SalesSubmissionListSerializer, SalesSubmissionSaveSerializer
+    SalesSubmissionListSerializer, SalesSubmissionSaveSerializer, \
+    SalesSubmissionWithContentSerializer
 from api.serializers.sales_submission_content import \
     SalesSubmissionContentSerializer
 from api.services.credit_transaction import award_credits
@@ -41,6 +42,7 @@ class SalesSubmissionsViewset(
         'retrieve': SalesSubmissionSerializer,
         'partial_update': SalesSubmissionSaveSerializer,
         'update': SalesSubmissionSaveSerializer,
+        'raw': SalesSubmissionWithContentSerializer,
     }
 
     def get_serializer_class(self):
@@ -59,5 +61,13 @@ class SalesSubmissionsViewset(
     def content(self, request, pk=None):
         rows = SalesSubmissionContent.objects.filter(submission_id=pk)
         serializer = self.get_serializer(rows, many=True, read_only=True)
+
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def raw(self, request, pk=None):
+        submission = self.get_object()
+
+        serializer = self.get_serializer(submission)
 
         return Response(serializer.data)

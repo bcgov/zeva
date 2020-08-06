@@ -22,7 +22,7 @@ const SalesSubmissionDetailsContainer = (props) => {
   const [validatedList, setValidatedList] = useState([]);
 
   const refreshDetails = () => {
-    axios.get(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id)).then((response) => {
+    axios.get(ROUTES_SALES_SUBMISSIONS.RAW.replace(':id', id)).then((response) => {
       const submissions = response.data;
       setSubmission(submissions);
       const validatedRecords = submissions.records.filter(
@@ -48,22 +48,9 @@ const SalesSubmissionDetailsContainer = (props) => {
   };
 
   const handleSubmit = () => {
-    const payload = [];
-    const { records } = submission;
-
-    if (records) {
-      records.forEach((record) => {
-        payload.push({
-          id: record.id,
-          validationStatus: (validatedList.findIndex(
-            (item) => Number(item) === Number(record.id)
-          ) >= 0 ? 'VALIDATED' : 'REJECTED'),
-        });
-      });
-    }
-
     axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id), {
-      records: payload,
+      records: validatedList,
+      validationStatus: 'CHECKED',
     }).then(() => {
       const url = ROUTES_CREDITS.VALIDATED_CREDIT_REQUEST_DETAILS.replace(/:id/g, submission.id);
 

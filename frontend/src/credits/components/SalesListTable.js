@@ -1,6 +1,7 @@
 /*
  * Presentational component
  */
+import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTable from 'react-table';
@@ -29,25 +30,35 @@ const SalesListTable = (props) => {
     Header: 'Supplier Information',
     headerClassName: 'header-group',
     columns: [{
-      accessor: 'vehicle.modelYear',
+      accessor: (row) => {
+        const { xlsModelYear } = row;
+
+        if (Number.isNaN(xlsModelYear)) {
+          return '';
+        }
+
+        return Math.trunc(row.xlsModelYear);
+      },
       className: 'text-center',
       Header: 'MY',
+      id: 'model-year',
     }, {
-      accessor: 'vehicle.make',
+      accessor: 'xlsMake',
       Header: 'Make',
     }, {
-      accessor: 'vehicle.modelName',
+      accessor: 'xlsModel',
       Header: 'Model',
     }, {
-      accessor: 'saleDate',
+      accessor: (row) => moment(row.salesDate).format('YYYY-MM-DD'),
       className: 'text-center',
       Header: 'Retail Sale',
+      id: 'salesDate',
     }],
   }, {
     Header: '',
     headerClassName: 'header-group',
     columns: [{
-      accessor: 'vin',
+      accessor: 'xlsVin',
       className: 'vin',
       Header: 'VIN',
       headerClassName: 'vin',
