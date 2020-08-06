@@ -1,6 +1,5 @@
 ### Files inlcuded
 configmap.yaml: the central configuration
-image-pull-secret.yaml: secret to pull image from registry.redhat.io
 
 ### Before triggering pipeline
 
