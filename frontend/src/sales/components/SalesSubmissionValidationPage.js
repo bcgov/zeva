@@ -10,7 +10,6 @@ import VINTable from './VINTable';
 
 import CustomPropTypes from '../../app/utilities/props';
 
-
 const SalesSubmissionValidationPage = (props) => {
   const {
     backToStart,
@@ -69,7 +68,7 @@ const SalesSubmissionValidationPage = (props) => {
       <div className="col-sm-12">
         <div className="action-bar">
           <span className="left-content">
-              Step 2 of 3
+            Step 2 of 3
           </span>
           <span className="right-content">
             <button
@@ -86,7 +85,7 @@ const SalesSubmissionValidationPage = (props) => {
               }}
               type="button"
             >
-              <FontAwesomeIcon icon="arrow-right" /> Proceed to Signature
+              <FontAwesomeIcon icon="paper-plane" /> Submit
             </button>
           </span>
         </div>

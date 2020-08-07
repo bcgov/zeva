@@ -12,6 +12,7 @@ const Modal = (props) => {
     modalClass,
     showModal,
     title,
+    icon,
   } = props;
 
   return ([
@@ -47,7 +48,7 @@ const Modal = (props) => {
               id="confirm"
               type="button"
               onClick={handleSubmit}
-            >{confirmLabel}
+            >{icon}{confirmLabel}
             </button>
           </div>
         </div>
@@ -58,6 +59,7 @@ const Modal = (props) => {
 };
 
 Modal.defaultProps = {
+  icon: '',
   cancelLabel: 'Cancel',
   confirmClass: 'btn-outline-primary',
   confirmLabel: 'Confirm',
@@ -78,6 +80,7 @@ Modal.propTypes = {
   modalClass: PropTypes.string,
   showModal: PropTypes.bool.isRequired,
   title: PropTypes.string,
+  icon: PropTypes.node,
 };
 
 export default Modal;
