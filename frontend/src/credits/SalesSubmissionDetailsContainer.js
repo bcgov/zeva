@@ -23,11 +23,19 @@ const SalesSubmissionDetailsContainer = (props) => {
 
   const refreshDetails = () => {
     axios.get(ROUTES_SALES_SUBMISSIONS.RAW.replace(':id', id)).then((response) => {
-      const submissions = response.data;
-      setSubmission(submissions);
-      const validatedRecords = submissions.records.filter(
-        (record) => record.validationStatus === 'VALIDATED' || record.icbcVerification,
+      const { data } = response;
+      setSubmission(data);
+
+      const validatedRecords = data.records.filter(
+        (record) => {
+          if (data.validationStatus === 'CHECKED') {
+            return record.checked;
+          }
+
+          return record.icbcVerification;
+        },
       ).map((record) => record.id);
+
       setValidatedList(validatedRecords);
       setLoading(false);
     });

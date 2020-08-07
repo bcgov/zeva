@@ -12,7 +12,8 @@ from api.models.vin_statuses import VINStatuses
 from api.serializers.user import MemberSerializer
 from api.serializers.organization import OrganizationSerializer
 from api.serializers.record_of_sale import RecordOfSaleSerializer
-from api.serializers.sales_submission_content import SalesSubmissionContentSerializer
+from api.serializers.sales_submission_content import \
+    SalesSubmissionContentSerializer, SalesSubmissionContentCheckedSerializer
 from api.services.sales_spreadsheet import get_date
 
 
@@ -22,7 +23,7 @@ class SalesSubmissionListSerializer(
     organization = OrganizationSerializer(read_only=True)
     totals = SerializerMethodField()
     update_user = SerializerMethodField()
-    validation_status = EnumField(SalesSubmissionStatuses, read_only=True)
+    validation_status = SerializerMethodField()
     total_a_credits = SerializerMethodField()
     total_b_credits = SerializerMethodField()
 
@@ -62,6 +63,18 @@ class SalesSubmissionListSerializer(
 
         return obj.update_user
 
+    def get_validation_status(self, obj):
+        request = self.context.get('request')
+        
+        #  do not show bceid users statuses of CHECKED
+        #  CHECKED is really an internal status for IDIR users that someone has
+        #  reviewed the vins
+        if not request.user.is_government and \
+                obj.validation_status == SalesSubmissionStatuses.CHECKED:
+            return SalesSubmissionStatuses.SUBMITTED.value
+
+        return obj.get_validation_status_display()
+
     class Meta:
         model = SalesSubmission
         fields = (
@@ -100,13 +113,15 @@ class SalesSubmissionSerializer(ModelSerializer, EnumSupportSerializerMixin):
         )
 
 
-class SalesSubmissionWithContentSerializer(ModelSerializer, EnumSupportSerializerMixin):
+class SalesSubmissionWithContentSerializer(
+    ModelSerializer, EnumSupportSerializerMixin
+):
     validation_status = EnumField(SalesSubmissionStatuses, read_only=True)
     organization = OrganizationSerializer(read_only=True)
     records = SerializerMethodField()
 
     def get_records(self, instance):
-        serializer = SalesSubmissionContentSerializer(
+        serializer = SalesSubmissionContentCheckedSerializer(
             instance.content,
             read_only=True,
             many=True

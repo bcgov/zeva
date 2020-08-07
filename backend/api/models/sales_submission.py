@@ -67,12 +67,12 @@ class SalesSubmission(Auditable):
 
     def validate_validation_status(self, status, request):
         if status in [
-            SalesSubmissionStatuses.VALIDATED,
-            SalesSubmissionStatuses.REJECTED
+                SalesSubmissionStatuses.VALIDATED,
+                SalesSubmissionStatuses.REJECTED
         ]:
             if self.validation_status not in [
-                SalesSubmissionStatuses.RECOMMEND_APPROVAL,
-                SalesSubmissionStatuses.RECOMMEND_REJECTION
+                    SalesSubmissionStatuses.RECOMMEND_APPROVAL,
+                    SalesSubmissionStatuses.RECOMMEND_REJECTION
             ]:
                 raise ValidationError(
                     "Submission needs a recommendation from an analyst first."
@@ -91,14 +91,13 @@ class SalesSubmission(Auditable):
                 )
 
         if status in [
-            SalesSubmissionStatuses.RECOMMEND_APPROVAL,
-            SalesSubmissionStatuses.RECOMMEND_REJECTION
+                SalesSubmissionStatuses.RECOMMEND_APPROVAL,
+                SalesSubmissionStatuses.RECOMMEND_REJECTION
         ]:
-            if self.validation_status not in \
-                [
+            if self.validation_status not in [
                     SalesSubmissionStatuses.SUBMITTED,
                     SalesSubmissionStatuses.CHECKED
-                ]:
+            ]:
                 raise ValidationError(
                     "Submission needs to submitted first."
                 )
