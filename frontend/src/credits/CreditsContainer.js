@@ -86,6 +86,7 @@ const CreditsContainer = (props) => {
           dateCurrentTo={dateCurrentTo}
           setDateCurrentTo={setDateCurrentTo}
           previousDateCurrentTo={previousDateCurrentTo}
+          user={user}
         />
       </div>
       )}
