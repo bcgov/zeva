@@ -1,6 +1,7 @@
 from django.db import models
 
 from auditable.models import Auditable
+from api.models.icbc_registration_data import IcbcRegistrationData
 from api.models.vehicle import Vehicle
 
 
@@ -62,6 +63,12 @@ class SalesSubmissionContent(Auditable):
             make=self.xls_make,
             model_name=self.xls_model,
             model_year__name=int(model_year),
+        ).first()
+
+    @property
+    def icbc_verification(self):
+        return IcbcRegistrationData.objects.filter(
+            vin__iexact=self.xls_vin
         ).first()
 
     class Meta:

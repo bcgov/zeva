@@ -28,7 +28,7 @@ const SalesSubmissionContainer = (props) => {
 
     axios.get(ROUTES_SALES_SUBMISSIONS.LIST).then((response) => {
       const nonValidatedVehicles = response.data
-        .filter((vehicle) => vehicle.validationStatus !== 'VALIDATED' && vehicle.validationStatus !== 'DELETED');
+        .filter((vehicle) => vehicle.validationStatus !== 'DELETED');
       setSubmissions(nonValidatedVehicles);
       setLoading(false);
     });

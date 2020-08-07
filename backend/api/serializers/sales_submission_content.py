@@ -5,7 +5,8 @@ from api.models.icbc_registration_data import IcbcRegistrationData
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission_content import SalesSubmissionContent
 from api.serializers.vehicle import VehicleMinSerializer
-from api.serializers.icbc_registration_data import IcbcRegistrationDataSerializer
+from api.serializers.icbc_registration_data import \
+    IcbcRegistrationDataSerializer
 from api.services.sales_spreadsheet import get_date
 
 
@@ -42,10 +43,8 @@ class SalesSubmissionContentCheckedSerializer(ModelSerializer):
     icbc_verification = SerializerMethodField()
     checked = SerializerMethodField()
 
-    def get_icbc_verification(self, obj):
-        icbc_data = IcbcRegistrationData.objects.filter(
-            vin__iexact=obj.xls_vin
-        ).first()
+    def get_icbc_verification(self, instance):
+        icbc_data = instance.icbc_verification
 
         if icbc_data:
             serializer = IcbcRegistrationDataSerializer(icbc_data)

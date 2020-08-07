@@ -13,6 +13,7 @@ import xlrd
 import xlwt
 from xlrd import XLRDError, XLDateError
 
+from api.models.icbc_upload_date import IcbcUploadDate
 from api.models.model_year import ModelYear
 from api.models.organization import Organization
 from api.models.record_of_sale import RecordOfSale
@@ -382,3 +383,92 @@ def store_raw_value(submission, row_contents, date_mode):
     )
 
     return None
+
+
+def create_errors_spreadsheet(submission_id, organization_id, stream):
+    sales_submission = SalesSubmission.objects.get(
+        id=submission_id,
+        organization_id=organization_id
+    )
+
+    organization = sales_submission.organization
+
+    workbook = xlwt.Workbook('{} Errors'.format(organization.name))
+    workbook.protect = True
+
+    descriptor = {
+        'version': 2,
+        'create_time': datetime.utcnow().timestamp(),
+        'organization_id': organization.id,
+        'sheets': []
+    }
+
+    sheet_name = 'ZEV Sales Errors'
+    worksheet = workbook.add_sheet(sheet_name)
+    worksheet.protect = True
+    descriptor['sheets'].append({
+        'index': 1,
+        'name': sheet_name
+    })
+
+    row = 0
+
+    worksheet.write(row, 0, 'Model Year', style=BOLD)
+    worksheet.write(row, 1, 'Make', style=BOLD)
+    worksheet.write(row, 2, 'Vehicle Model', style=BOLD)
+    worksheet.write(row, 3, 'VIN', style=BOLD)
+    worksheet.write(row, 4, 'Sales Date', style=BOLD)
+    worksheet.write(row, 5, 'Error', style=BOLD)
+
+    record_of_sales_vin = RecordOfSale.objects.filter(
+        submission_id=submission_id
+    ).values('vin')
+
+    submission_content = SalesSubmissionContent.objects.filter(
+        submission_id=submission_id
+    ).exclude(
+        xls_vin__in=record_of_sales_vin
+    )
+
+    icbc_upload_date = IcbcUploadDate.objects.order_by('-upload_date').first()
+
+    current_vehicle_col_width = 13
+
+    for content in submission_content:
+        row += 1
+
+        error = ''
+
+        if content.icbc_verification is None:
+            error += 'no matching ICBC data; '
+
+        date = get_date(
+            content.xls_sale_date,
+            content.xls_date_type,
+            content.xls_date_mode
+        )
+
+        if date is None:
+            error += 'Date cannot be parsed. Please use YYYY-MM-DD format;'
+        elif icbc_upload_date is not None:
+            date_diff = abs(
+                date.year - icbc_upload_date.upload_date.year
+            ) * 12 + abs(date.month - icbc_upload_date.upload_date.month)
+
+            if date_diff > 3:
+                error += 'retail sales date and registration date greater than 3 months apart;'
+
+        worksheet.write(row, 0, content.xls_model_year, style=LOCKED)
+        worksheet.write(row, 1, content.xls_make, style=LOCKED)
+        worksheet.write(row, 2, content.xls_model, style=LOCKED)
+        worksheet.write(row, 3, content.xls_vin, style=LOCKED)
+        worksheet.write(row, 4, date.strftime('%Y-%m-%d'), style=LOCKED)
+        worksheet.write(row, 5, error, style=LOCKED)
+
+        if len(content.xls_model) > current_vehicle_col_width:
+            current_vehicle_col_width = len(content.xls_model)
+
+    vehicle_model_col = worksheet.col(2)
+    vehicle_model_col.width = 256 * current_vehicle_col_width
+
+    workbook.save(stream)

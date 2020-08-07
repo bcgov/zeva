@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 import history from '../../app/History';
 import ROUTES_SALES from '../../app/routes/Sales';
+import download from '../../app/utilities/download';
 import SalesSubmissionSignaturesModal from './SalesSubmissionSignaturesModal';
 import SalesSubmissionContentTable from './SalesSubmissionContentTable';
 
@@ -36,16 +37,34 @@ const SalesSubmissionContentPage = (props) => {
             </button>
           </span>
           <span className="right-content">
+            {submission.validationStatus === 'VALIDATED' && (
+              <button
+                className="button primary"
+                onClick={(e) => {
+                  const element = e.target;
+                  const original = element.innerHTML;
+
+                  element.firstChild.textContent = ' Downloading...';
+
+                  return download(ROUTES_SALES.DOWNLOAD_ERRORS.replace(':id', submission.id), {}).then(() => {
+                    element.innerHTML = original;
+                  });
+                }}
+                type="button"
+              >
+                <FontAwesomeIcon icon="download" /> Download Errors
+              </button>
+            )}
             {submission.validationStatus === 'NEW' && (
-            <button
-              className="button primary"
-              onClick={() => {
-                setShowModal(true);
-              }}
-              type="button"
-            >
-              <FontAwesomeIcon icon="arrow-right" /> Proceed to Signature
-            </button>
+              <button
+                className="button primary"
+                onClick={() => {
+                  setShowModal(true);
+                }}
+                type="button"
+              >
+                <FontAwesomeIcon icon="arrow-right" /> Proceed to Signature
+              </button>
             )}
           </span>
         </div>
@@ -68,7 +87,7 @@ const SalesSubmissionContentPage = (props) => {
 
   return (
     <div id="sales-validate" className="page">
-
+      {actionbar}
       <div className="row">
         <div className="col-sm-12">
           <h1>{user.organization.name} Sales Submission</h1>

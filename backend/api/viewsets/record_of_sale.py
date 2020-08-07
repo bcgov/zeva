@@ -16,7 +16,8 @@ from api.models.record_of_sale import RecordOfSale
 from api.models.record_of_sale_statuses import RecordOfSaleStatuses
 from api.serializers.record_of_sale import RecordOfSaleSerializer
 from api.services.sales_spreadsheet import create_sales_spreadsheet, \
-    ingest_sales_spreadsheet, validate_xls_file, validate_spreadsheet
+    ingest_sales_spreadsheet, validate_xls_file, validate_spreadsheet, \
+    create_errors_spreadsheet
 from auditable.views import AuditableMixin
 
 
@@ -112,3 +113,26 @@ class RecordOfSaleViewset(
         return HttpResponse(
             status=201, content=jsondata, content_type='application/json'
         )
+
+    @action(detail=True)
+    def download_errors(self, request, pk):
+        """
+        Download a Spreadsheet containing all the rows that contain errors
+        """
+        user = request.user
+        response = HttpResponse(content_type='application/ms-excel')
+        create_errors_spreadsheet(pk, user.organization_id, response)
+        organization_name = user.organization.name
+
+        if user.organization.short_name:
+            organization_name = user.organization.short_name
+
+        response['Content-Disposition'] = (
+            'attachment; filename="BC-ZEVA_Sales_Errors_{org}_{date}.xls"'
+            .format(
+                org=organization_name.replace(' ', '_'),
+                date=datetime.now().strftime(
+                    "_%Y-%m-%d")
+            )
+        )
+        return response
