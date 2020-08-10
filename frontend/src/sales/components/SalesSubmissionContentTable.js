@@ -27,7 +27,7 @@ const SalesSubmissionContentTable = (props) => {
     accessor: 'xlsVin',
     Header: 'VIN',
   }, {
-    accessor: (row) => moment(row.salesDate).format('YYYY-MM-DD'),
+    accessor: (row) => (moment(row.salesDate).format('YYYY-MM-DD') !== 'Invalid date' ? moment(row.salesDate).format('YYYY-MM-DD') : row.salesDate),
     className: 'text-center',
     Header: 'Sale Date',
     id: 'salesDate',

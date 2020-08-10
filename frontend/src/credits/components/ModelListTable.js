@@ -54,7 +54,11 @@ const ModelListTable = (props) => {
     accessor: (item) => {
       const { vehicle } = item;
 
-      return getCreditClass(vehicle);
+      if (vehicle) {
+        return vehicle.creditClass;
+      }
+
+      return '';
     },
     className: 'text-center',
     Header: 'Class',
@@ -98,12 +102,15 @@ const ModelListTable = (props) => {
 
     if (!validatedOnly || item.validationStatus === 'VALIDATED') {
       addSale = 1;
-      ({ creditValue } = item.vehicle);
 
-      if (getCreditClass(item.vehicle) === 'A') {
-        totals.a += creditValue;
-      } else if (getCreditClass(item.vehicle) === 'B') {
-        totals.b += creditValue;
+      if (item.vehicle) {
+        ({ creditValue } = item.vehicle);
+
+        if (item.vehicle.creditClass === 'A') {
+          totals.a += creditValue;
+        } else if (item.vehicle.creditClass === 'B') {
+          totals.b += creditValue;
+        }
       }
     }
 

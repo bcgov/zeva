@@ -49,7 +49,7 @@ const SalesListTable = (props) => {
       accessor: 'xlsModel',
       Header: 'Model',
     }, {
-      accessor: (row) => moment(row.salesDate).format('YYYY-MM-DD'),
+      accessor: (row) => (moment(row.salesDate).format('YYYY-MM-DD') !== 'Invalid date' ? moment(row.salesDate).format('YYYY-MM-DD') : row.salesDate),
       className: 'text-center',
       Header: 'Retail Sale',
       id: 'salesDate',
