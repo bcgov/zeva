@@ -35,6 +35,12 @@ class VehicleViewSet(
         'partial_update': VehicleSaveSerializer
     }
 
+    def get_serializer_class(self):
+        if self.action in list(self.serializer_classes.keys()):
+            return self.serializer_classes[self.action]
+
+        return self.serializer_classes['default']
+
     def get_queryset(self):
         request = self.request
 
@@ -58,12 +64,6 @@ class VehicleViewSet(
                 queryset = queryset.filter(organization_id=organization_id)
 
         return queryset
-
-    def get_serializer_class(self):
-        if self.action in list(self.serializer_classes.keys()):
-            return self.serializer_classes[self.action]
-
-        return self.serializer_classes['default']
 
     @method_decorator(permission_required('VIEW_ZEV'))
     def list(self, request):

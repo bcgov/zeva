@@ -27,7 +27,7 @@ const CreditTransactionTabs = (props) => {
         className={`nav-item ${(active === 'credit-requests') ? 'active' : ''}`}
         role="presentation"
       >
-        <Link to={user.isGovernment ? ROUTES_CREDITS.CREDIT_REQUESTS : ROUTES_SALES.ADD}>Credit Requests</Link>
+        <Link to={user.isGovernment ? ROUTES_CREDITS.CREDIT_REQUESTS : ROUTES_SALES.LIST}>Credit Requests</Link>
       </li>
       {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED && (
       <li

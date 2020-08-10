@@ -331,6 +331,9 @@ class VehicleSaveSerializer(
 class VehicleMinSerializer(
     ModelSerializer, EnumSupportSerializerMixin
 ):
+    credit_class = SerializerMethodField()
+    credit_value = SerializerMethodField()
+
     model_year = SlugRelatedField(
         slug_field='name',
         queryset=ModelYear.objects.all()
@@ -344,10 +347,31 @@ class VehicleMinSerializer(
         queryset=ZevType.objects.all()
     )
 
+    def get_credit_class(self, instance):
+        request = self.context.get('request')
+
+        if instance.validation_status == \
+                VehicleDefinitionStatuses.VALIDATED or \
+                request.user.is_government:
+            return instance.get_credit_class()
+
+        return None
+
+    def get_credit_value(self, instance):
+        request = self.context.get('request')
+
+        if instance.validation_status == \
+                VehicleDefinitionStatuses.VALIDATED or \
+                request.user.is_government:
+            return instance.get_credit_value()
+
+        return None
+
     class Meta:
         model = Vehicle
         fields = (
             'id', 'make', 'model_name', 'model_year',
             'range', 'vehicle_class_code',
-            'vehicle_zev_type', 'weight_kg'
+            'vehicle_zev_type', 'weight_kg',
+            'credit_class', 'credit_value',
         )

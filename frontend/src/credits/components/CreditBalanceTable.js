@@ -55,20 +55,6 @@ const CreditBalancesTable = (props) => {
       }, {
         id: 'zev-class',
       }]}
-      getTrProps={(state, row) => {
-        if (row && row.original) {
-          return {
-            onClick: () => {
-              const { id } = row.original;
-
-              history.push(ROUTES_CREDITS.CREDIT_REQUEST_DETAILS.replace(/:id/g, id));
-            },
-            className: 'clickable',
-          };
-        }
-
-        return {};
-      }}
       filterable={filterable}
       pageSizeOptions={[items.length, 5, 10, 15, 20, 25, 50, 100]}
       showPagination={false}

@@ -16,7 +16,8 @@ from api.models.record_of_sale import RecordOfSale
 from api.models.record_of_sale_statuses import RecordOfSaleStatuses
 from api.serializers.record_of_sale import RecordOfSaleSerializer
 from api.services.sales_spreadsheet import create_sales_spreadsheet, \
-    ingest_sales_spreadsheet, validate_spreadsheet
+    ingest_sales_spreadsheet, validate_xls_file, validate_spreadsheet, \
+    create_errors_spreadsheet
 from auditable.views import AuditableMixin
 
 
@@ -64,11 +65,15 @@ class RecordOfSaleViewset(
         user = request.user
         response = HttpResponse(content_type='application/ms-excel')
         create_sales_spreadsheet(user.organization, response)
+        organization_name = user.organization.name
+
+        if user.organization.short_name:
+            organization_name = user.organization.short_name
 
         response['Content-Disposition'] = (
             'attachment; filename="BC-ZEVA_Sales_Template_{org}_{date}.xls"'
             .format(
-                org=user.organization.short_name,
+                org=organization_name.replace(' ', '_'),
                 date=datetime.now().strftime(
                     "_%Y-%m-%d")
             )
@@ -82,17 +87,25 @@ class RecordOfSaleViewset(
         """
         user = request.user
 
-        try:
-            validate_spreadsheet(request)
+        jsondata = {}
 
-            data = request.FILES['files'].read()
-            result = ingest_sales_spreadsheet(data, requesting_user=user)
-            jsondata = json.dumps(
-                result,
-                sort_keys=True,
-                indent=1,
-                cls=DjangoJSONEncoder
-            )
+        try:
+            file = request.FILES['files']
+            validate_xls_file(file)
+
+            data = file.read()
+            file.close()
+
+            validate_spreadsheet(data, user_organization=user.organization)
+
+            if data:
+                result = ingest_sales_spreadsheet(data, requesting_user=user)
+                jsondata = json.dumps(
+                    result,
+                    sort_keys=True,
+                    indent=1,
+                    cls=DjangoJSONEncoder
+                )
 
         except ValidationError as error:
             return HttpResponse(status=400, content=error)
@@ -100,3 +113,26 @@ class RecordOfSaleViewset(
         return HttpResponse(
             status=201, content=jsondata, content_type='application/json'
         )
+
+    @action(detail=True)
+    def download_errors(self, request, pk):
+        """
+        Download a Spreadsheet containing all the rows that contain errors
+        """
+        user = request.user
+        response = HttpResponse(content_type='application/ms-excel')
+        create_errors_spreadsheet(pk, user.organization_id, response)
+        organization_name = user.organization.name
+
+        if user.organization.short_name:
+            organization_name = user.organization.short_name
+
+        response['Content-Disposition'] = (
+            'attachment; filename="BC-ZEVA_Sales_Errors_{org}_{date}.xls"'
+            .format(
+                org=organization_name.replace(' ', '_'),
+                date=datetime.now().strftime(
+                    "_%Y-%m-%d")
+            )
+        )
+        return response

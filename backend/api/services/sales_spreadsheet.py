@@ -13,10 +13,12 @@ import xlrd
 import xlwt
 from xlrd import XLRDError, XLDateError
 
+from api.models.icbc_upload_date import IcbcUploadDate
 from api.models.model_year import ModelYear
 from api.models.organization import Organization
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission import SalesSubmission
+from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.vehicle import Vehicle
 
 logger = logging.getLogger('zeva.sales_spreadsheet')
@@ -86,6 +88,12 @@ def add_instructions_sheet(**kwargs):
         row, 0,
         'A maximum of {} entries per sheet will be read. If you need '
         'more entries, use multiple submissions'.format(MAX_READ_ROWS)
+    )
+
+    row += 2
+    worksheet.write(
+        row, 0,
+        'Please input the Sales date in YYYY-MM-DD format.'
     )
 
     row += 2
@@ -183,18 +191,43 @@ def create_sales_spreadsheet(organization, stream):
 def ingest_sales_spreadsheet(
         data, requesting_user=None, skip_authorization=False
 ):
-    logger.info('Opening spreadsheet')
-
-    if requesting_user is None and skip_authorization is False:
-        raise Exception(
-            'requesting_user is None and skip_authorization is disabled'
-        )
-
     workbook = xlrd.open_workbook(file_contents=data)
 
-    validation_problems = []
-    entries = []
+    if skip_authorization is True:
+        workbook = xlrd.open_workbook(file_contents=data)
+        organization = get_organization(workbook)
+        user = 'SYSTEM'
+    else:
+        organization = requesting_user.organization
+        user = requesting_user.username
 
+    submission = SalesSubmission.objects.create(
+        create_user=user,
+        update_user=user,
+        organization=organization,
+        submission_sequence=SalesSubmission.next_sequence(
+            organization, datetime.now()
+        )
+    )
+
+    sheet = workbook.sheet_by_name('ZEV Sales')
+
+    start_row = 1
+    row = start_row
+
+    while row < min((MAX_READ_ROWS + start_row), sheet.nrows):
+        row_contents = sheet.row(row)
+        store_raw_value(submission, row_contents, workbook.datemode)
+
+        row += 1
+
+    return {
+        'id': submission.id,
+        'submissionId': datetime.now().strftime("%Y-%m-%d")
+    }
+
+
+def get_organization(workbook):
     try:
         metadata_sheet = workbook.sheet_by_name('ZEVA Internal Use')
         row = metadata_sheet.row(0)
@@ -202,174 +235,60 @@ def ingest_sales_spreadsheet(
         descriptor_bytes = base64.standard_b64decode(encoded_descriptor)
         magic_verification = descriptor_bytes[0:4]
 
-        if bytes(magic_verification) == bytes(MAGIC):
-            logger.info('Good Magic')
-        else:
-            validation_problems.append({'row': None, 'message': 'Bad Magic'})
-            logger.critical(
-                'Unable to parse. Validation problems: {validation_problems}'
+        if bytes(magic_verification) != bytes(MAGIC):
+            raise ValidationError(
+                'ZEVA Internal Use sheet has been modified. '
+                'Please download the template again and try again.'
             )
-            return
 
         descriptor = pickle.loads(descriptor_bytes[4:])
-        logger.info(f'Read descriptor: {descriptor}')
-    except XLRDError:
-        validation_problems.append({
-            'row': None, 'message': 'No metadata sheet'
-        })
-        logger.critical(
-            f'Unable to parse. Validation problems: {validation_problems}'
+    except (XLRDError, IndexError, binascii.Error, PickleError) as error:
+        logger.critical(error)
+        raise ValidationError(
+            'ZEVA Internal Use sheet is missing. '
+            'Please download the template again and try again.'
         )
-        return
-    except IndexError:
-        validation_problems.append({
-            'row': None, 'message': 'Expected values not in metadata sheet'
-        })
-        logger.critical(
-            f'Unable to parse. Validation problems: {validation_problems}'
-        )
-        return
-    except binascii.Error:
-        validation_problems.append({
-            'row': None, 'message': 'Base64 decode failed'
-        })
-        logger.critical(
-            f'Unable to parse. Validation problems: {validation_problems}'
-        )
-        return
-    except PickleError:
-        validation_problems.append({
-            'row': None, 'message': 'Descriptor unpickling error'
-        })
-        logger.critical(
-            f'Unable to parse. Validation problems: {validation_problems}'
-        )
-        return
 
-    org = Organization.objects.get(id=descriptor['organization_id'])
+    organization = Organization.objects.filter(id=descriptor['organization_id']).first()
 
-    if not skip_authorization and org != requesting_user.organization:
-        validation_problems.append({
-            'row': None,
-            'message': 'Organization mismatch!'
-        })
-        logger.critical('Organization mismatch!')
-        return
+    return organization
 
-    submission = SalesSubmission.objects.create(
-        create_user=requesting_user.username,
-        update_user=requesting_user.username,
-        organization=org,
-        submission_sequence=SalesSubmission.next_sequence(org, datetime.now())
-    )
+
+def validate_xls_file(file):
+    mime = magic.Magic(mime=True)
+    mimetype = mime.from_file(file.temporary_file_path())
+
+    if mimetype != "application/vnd.ms-excel":
+        raise ValidationError(
+            'File must be an excel spreadsheet'
+        )
+
+    return True
+
+
+def validate_spreadsheet(data, user_organization=None, skip_authorization=False):
+    workbook = xlrd.open_workbook(file_contents=data)
+
+    organization = get_organization(workbook)
+
+    if organization is None or (
+            not skip_authorization and
+            organization != user_organization
+    ):
+        raise ValidationError(
+            'Spreadsheet is designated for another organization. '
+            'Please download the template again and try again.'
+        )
 
     try:
-        sheet = workbook.sheet_by_name('ZEV Sales')
+        workbook.sheet_by_name('ZEV Sales')
     except XLRDError:
-        logger.info('ZEV Sales Sheet missing')
-        validation_problems.append({
-            'row': None,
-            'message': 'Expected to find a sheet called ZEV Sales.'
-        })
-
-    logger.info('Reading ZEV Sales')
-
-    start_row = 1
-    row = start_row
-
-    while row < min((MAX_READ_ROWS + start_row), sheet.nrows):
-        row_contents = sheet.row(row)
-        model_year = int(row_contents[0].value)
-        make = str(row_contents[1].value)
-        model_name = str(row_contents[2].value)
-        vin = str(row_contents[3].value)
-        date_type = row_contents[4].ctype
-        date = row_contents[4].value
-
-        parsed_date = None
-
-        row += 1  # so it matches the row in the spreadsheet
-
-        if len(vin) <= 0:
-            continue
-
-        is_valid, error_message = validate_row(row_contents, workbook, org)
-
-        if is_valid:
-            parsed_date = get_date(date, date_type, workbook.datemode)
-
-            vehicle = Vehicle.objects.filter(
-                model_year__name=model_year,
-                make=make,
-                model_name=model_name,
-                validation_status='VALIDATED'
-            ).first()
-
-            record_of_sale = RecordOfSale.objects.create(
-                submission=submission,
-                vehicle=vehicle,
-                vin=vin,
-                sale_date=parsed_date,
-                reference_number=None
-            )
-
-            entries.append({
-                'vin': vin,
-                'vin_validation_status':
-                record_of_sale.vin_validation_status.value,
-                'sale_date': parsed_date,
-                'id': record_of_sale.id,
-                'credits': vehicle.get_credit_value(),
-                'model': vehicle.model_name,
-                'model_year': vehicle.model_year.name,
-                'make': vehicle.make,
-                'class':
-                vehicle.vehicle_class_code.vehicle_class_code,
-                'range': vehicle.range,
-                'type':
-                vehicle.vehicle_zev_type.vehicle_zev_code,
-            })
-            logger.info(f'Recorded sale {vin}')
-
-        else:
-            validation_problems.append({
-                'row': row,
-                'rowContents': {
-                    'make': make,
-                    'modelName': model_name,
-                    'modelYear': model_year,
-                    'saleDate': parsed_date,
-                    'vin': vin,
-                },
-                'message': error_message
-            })
-
-    if len(validation_problems) > 0:
-        logger.info(
-            f'Noncritical validation errors encountered: {validation_problems}'
+        raise ValidationError(
+            'Spreadsheet is missing ZEV Sales sheet.'
+            'Please download the template again and try again.'
         )
 
-    logger.info('Done processing spreadsheet')
-
-    return {
-        'id': submission.id,
-        'submissionID': datetime.now().strftime("%Y-%m-%d"),
-        'validationProblems': validation_problems,
-        'entries': entries,
-    }
-
-
-def validate_spreadsheet(request):
-    files = request.FILES.getlist('files')
-
-    for file in files:
-        mime = magic.Magic(mime=True)
-        mimetype = mime.from_file(file.temporary_file_path())
-
-        if mimetype != "application/vnd.ms-excel":
-            raise ValidationError(
-                'File must be an excel spreadsheet'
-            )
+    logger.info('Reading ZEV Sales')
 
     return True
 
@@ -434,18 +353,127 @@ def validate_row(row_contents, workbook, org):
 
 
 def get_date(date, date_type, datemode):
+    try:
+        date_float = float(date)
+    except ValueError:
+        return None
+
     if date_type == xlrd.XL_CELL_DATE:
         try:
             return xlrd.xldate.xldate_as_datetime(
-                date,
+                date_float,
                 datemode
             )
         except XLDateError:
             return None
     elif date_type == xlrd.XL_CELL_TEXT:
         try:
-            return parse(str(date), fuzzy=True)
+            return parse(str(date_float), fuzzy=True)
         except ValueError:
             return None
 
     return None
+
+
+def store_raw_value(submission, row_contents, date_mode):
+    SalesSubmissionContent.objects.create(
+        submission=submission,
+        xls_model_year=row_contents[0].value,
+        xls_make=row_contents[1].value,
+        xls_model=row_contents[2].value,
+        xls_vin=row_contents[3].value,
+        xls_sale_date=row_contents[4].value,
+        xls_date_type=row_contents[4].ctype,
+        xls_date_mode=date_mode
+    )
+
+    return None
+
+
+def create_errors_spreadsheet(submission_id, organization_id, stream):
+    sales_submission = SalesSubmission.objects.get(
+        id=submission_id,
+        organization_id=organization_id
+    )
+
+    organization = sales_submission.organization
+
+    workbook = xlwt.Workbook('{} Errors'.format(organization.name))
+    workbook.protect = True
+
+    descriptor = {
+        'version': 2,
+        'create_time': datetime.utcnow().timestamp(),
+        'organization_id': organization.id,
+        'sheets': []
+    }
+
+    sheet_name = 'ZEV Sales Errors'
+    worksheet = workbook.add_sheet(sheet_name)
+    worksheet.protect = True
+    descriptor['sheets'].append({
+        'index': 1,
+        'name': sheet_name
+    })
+
+    row = 0
+
+    worksheet.write(row, 0, 'Model Year', style=BOLD)
+    worksheet.write(row, 1, 'Make', style=BOLD)
+    worksheet.write(row, 2, 'Vehicle Model', style=BOLD)
+    worksheet.write(row, 3, 'VIN', style=BOLD)
+    worksheet.write(row, 4, 'Sales Date', style=BOLD)
+    worksheet.write(row, 5, 'Error', style=BOLD)
+
+    record_of_sales_vin = RecordOfSale.objects.filter(
+        submission_id=submission_id
+    ).values('vin')
+
+    submission_content = SalesSubmissionContent.objects.filter(
+        submission_id=submission_id
+    ).exclude(
+        xls_vin__in=record_of_sales_vin
+    )
+
+    icbc_upload_date = IcbcUploadDate.objects.order_by('-upload_date').first()
+
+    current_vehicle_col_width = 13
+
+    for content in submission_content:
+        row += 1
+
+        error = ''
+
+        if content.icbc_verification is None:
+            error += 'no matching ICBC data; '
+
+        date = get_date(
+            content.xls_sale_date,
+            content.xls_date_type,
+            content.xls_date_mode
+        )
+
+        if date is None:
+            error += 'Date cannot be parsed. Please use YYYY-MM-DD format;'
+        elif icbc_upload_date is not None:
+            date_diff = abs(
+                date.year - icbc_upload_date.upload_date.year
+            ) * 12 + abs(date.month - icbc_upload_date.upload_date.month)
+
+            if date_diff > 3:
+                error += 'retail sales date and registration date greater than 3 months apart;'
+
+        worksheet.write(row, 0, content.xls_model_year, style=LOCKED)
+        worksheet.write(row, 1, content.xls_make, style=LOCKED)
+        worksheet.write(row, 2, content.xls_model, style=LOCKED)
+        worksheet.write(row, 3, content.xls_vin, style=LOCKED)
+        worksheet.write(row, 4, date.strftime('%Y-%m-%d'), style=LOCKED)
+        worksheet.write(row, 5, error, style=LOCKED)
+
+        if len(content.xls_model) > current_vehicle_col_width:
+            current_vehicle_col_width = len(content.xls_model)
+
+    vehicle_model_col = worksheet.col(2)
+    vehicle_model_col.width = 256 * current_vehicle_col_width
+
+    workbook.save(stream)

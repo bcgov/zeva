@@ -1,15 +1,20 @@
-from decimal import Decimal
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from rest_framework.serializers import ModelSerializer, \
-    SerializerMethodField, Serializer, IntegerField, CharField
+    SerializerMethodField
 
 from api.models.record_of_sale import RecordOfSale
+from api.models.record_of_sale_statuses import RecordOfSaleStatuses
 from api.models.sales_submission import SalesSubmission
+from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.models.user_profile import UserProfile
+from api.models.vin_statuses import VINStatuses
 from api.serializers.user import MemberSerializer
 from api.serializers.organization import OrganizationSerializer
 from api.serializers.record_of_sale import RecordOfSaleSerializer
+from api.serializers.sales_submission_content import \
+    SalesSubmissionContentSerializer, SalesSubmissionContentCheckedSerializer
+from api.services.sales_spreadsheet import get_date
 
 
 class SalesSubmissionListSerializer(
@@ -18,7 +23,7 @@ class SalesSubmissionListSerializer(
     organization = OrganizationSerializer(read_only=True)
     totals = SerializerMethodField()
     update_user = SerializerMethodField()
-    validation_status = EnumField(SalesSubmissionStatuses, read_only=True)
+    validation_status = SerializerMethodField()
     total_a_credits = SerializerMethodField()
     total_b_credits = SerializerMethodField()
 
@@ -58,6 +63,18 @@ class SalesSubmissionListSerializer(
 
         return obj.update_user
 
+    def get_validation_status(self, obj):
+        request = self.context.get('request')
+        
+        #  do not show bceid users statuses of CHECKED
+        #  CHECKED is really an internal status for IDIR users that someone has
+        #  reviewed the vins
+        if not request.user.is_government and \
+                obj.validation_status == SalesSubmissionStatuses.CHECKED:
+            return SalesSubmissionStatuses.SUBMITTED.value
+
+        return obj.get_validation_status_display()
+
     class Meta:
         model = SalesSubmission
         fields = (
@@ -70,7 +87,47 @@ class SalesSubmissionListSerializer(
 class SalesSubmissionSerializer(ModelSerializer, EnumSupportSerializerMixin):
     validation_status = EnumField(SalesSubmissionStatuses, read_only=True)
     organization = OrganizationSerializer(read_only=True)
-    records = RecordOfSaleSerializer(read_only=True, many=True)
+    records = SerializerMethodField()
+
+    def get_records(self, instance):
+        if instance.validation_status == SalesSubmissionStatuses.SUBMITTED:
+            serializer = SalesSubmissionContentSerializer(
+                instance.content,
+                read_only=True,
+                many=True
+            )
+        else:
+            serializer = RecordOfSaleSerializer(
+                instance.records,
+                read_only=True,
+                many=True
+            )
+
+        return serializer.data
+
+    class Meta:
+        model = SalesSubmission
+        fields = (
+            'id', 'validation_status', 'organization', 'submission_date',
+            'submission_sequence', 'records', 'submission_id'
+        )
+
+
+class SalesSubmissionWithContentSerializer(
+    ModelSerializer, EnumSupportSerializerMixin
+):
+    validation_status = EnumField(SalesSubmissionStatuses, read_only=True)
+    organization = OrganizationSerializer(read_only=True)
+    records = SerializerMethodField()
+
+    def get_records(self, instance):
+        serializer = SalesSubmissionContentCheckedSerializer(
+            instance.content,
+            read_only=True,
+            many=True
+        )
+
+        return serializer.data
 
     class Meta:
         model = SalesSubmission
@@ -81,9 +138,8 @@ class SalesSubmissionSerializer(ModelSerializer, EnumSupportSerializerMixin):
 
 
 class SalesSubmissionSaveSerializer(
-    ModelSerializer
+        ModelSerializer
 ):
-    records = RecordOfSaleSerializer(many=True)
     validation_status = EnumField(SalesSubmissionStatuses)
 
     def validate_validation_status(self, value):
@@ -99,15 +155,26 @@ class SalesSubmissionSaveSerializer(
         records = request.data.get('records')
 
         if records:
-            for record in records:
-                record_id = record.get('id')
-                record_of_sale = RecordOfSale.objects.filter(
+            RecordOfSale.objects.filter(submission_id=instance.id).delete()
+
+            for record_id in records:
+                row = SalesSubmissionContent.objects.filter(
                     id=record_id
                 ).first()
-                record_of_sale.validation_status = record.get(
-                    'validation_status'
-                )
-                record_of_sale.save()
+
+                if row and row.vehicle:
+                    RecordOfSale.objects.create(
+                        sale_date=get_date(
+                            row.xls_sale_date,
+                            row.xls_date_type,
+                            row.xls_date_mode
+                        ),
+                        submission=instance,
+                        validation_status=RecordOfSaleStatuses.VALIDATED,
+                        vehicle=row.vehicle,
+                        vin=row.xls_vin,
+                        vin_validation_status=VINStatuses.MATCHED,
+                    )
 
         validation_status = validated_data.get('validation_status')
 
@@ -122,6 +189,6 @@ class SalesSubmissionSaveSerializer(
         model = SalesSubmission
         fields = (
             'id', 'organization', 'submission_date',
-            'submission_sequence', 'records', 'submission_id',
+            'submission_sequence', 'submission_id',
             'validation_status'
         )

@@ -4,31 +4,22 @@
  */
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import ROUTES_SALES from '../app/routes/Sales';
-import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
 
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import Loading from '../app/components/Loading';
+import history from '../app/History';
+import ROUTES_SALES from '../app/routes/Sales';
+import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
 import CustomPropTypes from '../app/utilities/props';
 import upload from '../app/utilities/upload';
 import withReferenceData from '../app/utilities/with_reference_data';
-import SalesSubmissionConfirmationPage from './components/SalesSubmissionConfirmationPage';
 import SalesSubmissionPage from './components/SalesSubmissionPage';
-import SalesSubmissionValidationPage from './components/SalesSubmissionValidationPage';
 
 const SalesSubmissionContainer = (props) => {
   const { user, referenceData } = props;
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
   const [submissions, setSubmissions] = useState([]);
-  const [workflowState, setWorkflowState] = useState('new');
-
-  const [details, setDetails] = useState({
-    entries: [],
-    validationMessages: [],
-    submissionID: '',
-  });
 
   const [files, setFiles] = useState([]);
 
@@ -37,7 +28,7 @@ const SalesSubmissionContainer = (props) => {
 
     axios.get(ROUTES_SALES_SUBMISSIONS.LIST).then((response) => {
       const nonValidatedVehicles = response.data
-        .filter((vehicle) => vehicle.validationStatus !== 'VALIDATED' && vehicle.validationStatus !== 'DELETED' );
+        .filter((vehicle) => vehicle.validationStatus !== 'DELETED');
       setSubmissions(nonValidatedVehicles);
       setLoading(false);
     });
@@ -45,8 +36,8 @@ const SalesSubmissionContainer = (props) => {
 
   const doUpload = () => {
     upload(ROUTES_SALES.UPLOAD, files).then((response) => {
-      setDetails(response.data);
-      setWorkflowState('validating');
+      const { id } = response.data;
+      history.push(ROUTES_SALES.DETAILS.replace(':id', id));
     }).catch((error) => {
       const { response } = error;
 
@@ -58,19 +49,6 @@ const SalesSubmissionContainer = (props) => {
     });
   };
 
-  const sign = (id) => {
-    axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id), {
-      validationStatus: 'SUBMITTED',
-    }).then(() => {
-      setWorkflowState('complete');
-    });
-  };
-
-  const backToStart = () => {
-    setWorkflowState('new');
-    // @todo clear any details, maybe issue delete request
-  };
-
   useEffect(() => {
     refreshList(true);
   }, []);
@@ -79,53 +57,18 @@ const SalesSubmissionContainer = (props) => {
     return (<Loading />);
   }
 
-  let content;
-
-  switch (workflowState) {
-    case 'validating':
-      content = (
-        <SalesSubmissionValidationPage
-          backToStart={backToStart}
-          details={details}
-          key="page"
-          setShowModal={setShowModal}
-          showModal={showModal}
-          sign={sign}
-          user={user}
-        />
-      );
-      break;
-    case 'complete':
-      content = (
-        <SalesSubmissionConfirmationPage
-          details={details}
-          key="page"
-          user={user}
-        />
-      );
-      break;
-    case 'error':
-      content = (<p>An error occurred in validation. Please restart the submission</p>);
-      break;
-    case 'new':
-    default:
-      content = (
-        <SalesSubmissionPage
-          errorMessage={errorMessage}
-          files={files}
-          key="page"
-          setUploadFiles={setFiles}
-          submissions={submissions}
-          upload={doUpload}
-          user={user}
-          years={referenceData.years}
-        />
-      );
-  }
-
   return ([
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
-    content,
+    <SalesSubmissionPage
+      errorMessage={errorMessage}
+      files={files}
+      key="page"
+      setUploadFiles={setFiles}
+      submissions={submissions}
+      upload={doUpload}
+      user={user}
+      years={referenceData.years}
+    />,
   ]);
 };
 

@@ -1,14 +1,5 @@
-import glob
-import re
-from os import listdir
-from os.path import isdir, join, isfile
-
 from django.core.management import BaseCommand
-from django.db import transaction, connection
 
-from api.management.commands._loader import ScriptLoader
-from api.models.model_year import ModelYear
-from api.models.organization import Organization
 from api.services.sales_spreadsheet import ingest_sales_spreadsheet
 
 
