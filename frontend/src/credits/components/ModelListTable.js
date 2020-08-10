@@ -102,6 +102,7 @@ const ModelListTable = (props) => {
 
     if (!validatedOnly || item.validationStatus === 'VALIDATED') {
       addSale = 1;
+      ({ creditValue } = item.vehicle);
 
       if (item.vehicle) {
         ({ creditValue } = item.vehicle);
