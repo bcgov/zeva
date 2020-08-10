@@ -3,7 +3,9 @@ from django.db import models
 from enumfields import EnumField
 from rest_framework.serializers import ValidationError
 
+from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
+from api.models.sales_submission_content import SalesSubmissionContent
 from auditable.models import Auditable
 
 
@@ -65,12 +67,12 @@ class SalesSubmission(Auditable):
 
     def validate_validation_status(self, status, request):
         if status in [
-            SalesSubmissionStatuses.VALIDATED,
-            SalesSubmissionStatuses.REJECTED
+                SalesSubmissionStatuses.VALIDATED,
+                SalesSubmissionStatuses.REJECTED
         ]:
             if self.validation_status not in [
-                SalesSubmissionStatuses.RECOMMEND_APPROVAL,
-                SalesSubmissionStatuses.RECOMMEND_REJECTION
+                    SalesSubmissionStatuses.RECOMMEND_APPROVAL,
+                    SalesSubmissionStatuses.RECOMMEND_REJECTION
             ]:
                 raise ValidationError(
                     "Submission needs a recommendation from an analyst first."
@@ -89,10 +91,13 @@ class SalesSubmission(Auditable):
                 )
 
         if status in [
-            SalesSubmissionStatuses.RECOMMEND_APPROVAL,
-            SalesSubmissionStatuses.RECOMMEND_REJECTION
+                SalesSubmissionStatuses.RECOMMEND_APPROVAL,
+                SalesSubmissionStatuses.RECOMMEND_REJECTION
         ]:
-            if self.validation_status != SalesSubmissionStatuses.SUBMITTED:
+            if self.validation_status not in [
+                    SalesSubmissionStatuses.SUBMITTED,
+                    SalesSubmissionStatuses.CHECKED
+            ]:
                 raise ValidationError(
                     "Submission needs to submitted first."
                 )
@@ -102,6 +107,18 @@ class SalesSubmission(Auditable):
                     "You do not have the permission to make recommendations "
                     "for this submission."
                 )
+
+    @property
+    def records(self):
+        return RecordOfSale.objects.filter(
+            submission_id=self.id
+        )
+
+    @property
+    def content(self):
+        return SalesSubmissionContent.objects.filter(
+            submission_id=self.id
+        )
 
     class Meta:
         db_table = "sales_submission"

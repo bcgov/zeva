@@ -21,9 +21,10 @@ import CreditTransfersContainer from '../credits/CreditTransfersContainer';
 import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContainer';
 import SalesSubmissionDetailsContainer from '../credits/SalesSubmissionDetailsContainer';
 import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
+import SalesSubmissionEditContainer from '../sales/SalesSubmissionEditContainer';
 import SalesSubmissionApprovalContainer from '../sales/SalesSubmissionApprovalContainer';
 import SalesSubmissionApprovalDetailsContainer from '../sales/SalesSubmissionApprovalDetailsContainer';
-import SalesListContainer from '../sales/SalesListContainer';
+import SalesSubmissionConfirmationContainer from '../sales/SalesSubmissionConfirmationContainer';
 import UserAddContainer from '../users/UserAddContainer';
 import UserEditContainer from '../users/UserEditContainer';
 import VehicleAddContainer from '../vehicles/VehicleAddContainer';
@@ -171,8 +172,8 @@ class Router extends Component {
               />
               <Route
                 exact
-                path={ROUTES_SALES.ADD}
-                render={() => <SalesSubmissionContainer mode="add" keycloak={keycloak} user={user} />}
+                path={ROUTES_SALES.LIST}
+                render={() => <SalesSubmissionContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact
@@ -189,12 +190,12 @@ class Router extends Component {
               <Route
                 exact
                 path={ROUTES_SALES.DETAILS}
-                render={() => <SalesSubmissionApprovalContainer keycloak={keycloak} user={user} />}
+                render={() => <SalesSubmissionEditContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact
-                path={ROUTES_SALES.LIST}
-                render={() => <SalesListContainer keycloak={keycloak} user={user} />}
+                path={ROUTES_SALES.CONFIRM}
+                render={() => <SalesSubmissionConfirmationContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact

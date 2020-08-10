@@ -7,6 +7,8 @@
 ## 2. Jenkins setup on tools project
 
 * openshift/jenkins/README.md
+* install node packages
+.jenkins/.pipeline$ npm install
 * Build jenkins and jenkins-slave-main image, create a pr such as 161
 .jenkins/.pipeline$ npm run build -- --pr=161 --env=build
 * Deploy jenkins to tools project

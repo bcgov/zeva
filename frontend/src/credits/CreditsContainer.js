@@ -22,7 +22,7 @@ const CreditsContainer = (props) => {
   const [details, setDetails] = useState({
     entries: [],
     validationMessages: [],
-    submissionID: '',
+    submissionId: '',
   });
 
 
@@ -86,6 +86,7 @@ const CreditsContainer = (props) => {
           dateCurrentTo={dateCurrentTo}
           setDateCurrentTo={setDateCurrentTo}
           previousDateCurrentTo={previousDateCurrentTo}
+          user={user}
         />
       </div>
       )}

@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 
 class StatusInterceptor extends Component {
   static render401Message() {
@@ -30,7 +29,7 @@ class StatusInterceptor extends Component {
     return (
       <div>
         <p>The requested page could not be found.</p>
-        <p>To trade this page for a valid one click <Link className="alert-link" to="/">here</Link>.</p>
+        <p>To trade this page for a valid one click <a href="/" className="alert-link">here</a>.</p>
       </div>
     );
   }

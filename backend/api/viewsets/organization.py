@@ -26,7 +26,6 @@ class OrganizationViewSet(
     """
     permission_classes = (AllowAny,)
     http_method_names = ['get', 'post', 'put', 'patch']
-    queryset = Organization.objects.all()
 
     serializer_classes = {
         'default': OrganizationSerializer,
@@ -37,6 +36,18 @@ class OrganizationViewSet(
         'sales': SalesSubmissionListSerializer,
         'users': OrganizationWithMembersSerializer,
     }
+
+    def get_queryset(self):
+        request = self.request
+
+        if request.user.is_government:
+            queryset = Organization.objects.all()
+        else:
+            queryset = Organization.objects.filter(
+                id=request.user.organization.id
+            )
+
+        return queryset
 
     def get_serializer_class(self):
         if self.action in list(self.serializer_classes.keys()):

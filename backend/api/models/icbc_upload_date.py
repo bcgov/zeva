@@ -1,6 +1,6 @@
-import django
 from django.db import models
 from auditable.models import Auditable
+
 
 class IcbcUploadDate(Auditable):
     upload_date = models.DateField(

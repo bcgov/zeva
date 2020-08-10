@@ -6,10 +6,9 @@ import AccordionPanel from '../../app/components/AccordionPanel';
 
 import SalesSubmissionSignaturesModal from './SalesSubmissionSignaturesModal';
 import ValidationErrorsTable from './ValidationErrorsTable';
-import VINTable from './VINTable';
+import VINListTable from './VINListTable';
 
 import CustomPropTypes from '../../app/utilities/props';
-
 
 const SalesSubmissionValidationPage = (props) => {
   const {
@@ -26,6 +25,7 @@ const SalesSubmissionValidationPage = (props) => {
   const [noProvincialMatch, setnoProvincialMatch] = useState([]);
   const [VINMismatch, setVINMismatch] = useState([]);
   const [validationErrors, setValidationErrors] = useState([]);
+  let entries = [];
 
   useEffect(() => {
     const newValid = [];
@@ -33,9 +33,19 @@ const SalesSubmissionValidationPage = (props) => {
     const newNoProvincialMatch = [];
     const newVINMismatch = [];
 
+    if (details.entries) {
+      ({ entries } = details);
+    }
+
+    console.error(details.records);
+    if (details.records) {
+      entries = details.records;
+    }
+
     // eslint-disable-next-line array-callback-return
-    details.entries.map((e) => {
-      switch (e.vin_validation_status) {
+    entries.map((e) => {
+      console.error(e.vin_validation_status);
+      switch (e.vinValidationStatus) {
         case 'VALID':
           newValid.push(e);
           break;
@@ -69,7 +79,7 @@ const SalesSubmissionValidationPage = (props) => {
       <div className="col-sm-12">
         <div className="action-bar">
           <span className="left-content">
-              Step 2 of 3
+            Step 2 of 3
           </span>
           <span className="right-content">
             <button
@@ -86,7 +96,7 @@ const SalesSubmissionValidationPage = (props) => {
               }}
               type="button"
             >
-              <FontAwesomeIcon icon="arrow-right" /> Proceed to Signature
+              <FontAwesomeIcon icon="paper-plane" /> Submit
             </button>
           </span>
         </div>
@@ -112,20 +122,22 @@ const SalesSubmissionValidationPage = (props) => {
 
       <div className="row">
         <div className="col-sm-12">
-          <h1>{user.organization.name} Sales Submission {details.submissionID}</h1>
+          <h1>{user.organization.name} Sales Submission {details.submissionId}</h1>
         </div>
       </div>
       <div className="row">
         <div className="col-sm-12">
           <Accordion>
+            {validationErrors && (
             <AccordionPanel title={`${validationErrors.length} VIN were rejected, see rejected VIN`}>
               <ValidationErrorsTable data={validationErrors} />
             </AccordionPanel>
+            )}
             <AccordionPanel
-              title={`The following ${details.entries.length} VIN can be submitted to government for further analysis to receive credits.`}
+              title={`The following ${entries.length} VIN can be submitted to government for further analysis to receive credits.`}
               startExpanded
             >
-              <VINTable data={valid} />
+              <VINListTable data={valid} />
             </AccordionPanel>
           </Accordion>
         </div>
@@ -142,8 +154,9 @@ SalesSubmissionValidationPage.propTypes = {
   backToStart: PropTypes.func.isRequired,
   details: PropTypes.shape({
     id: PropTypes.number,
-    submissionID: PropTypes.string.isRequired,
+    submissionId: PropTypes.string.isRequired,
     entries: PropTypes.arrayOf(PropTypes.object),
+    records: PropTypes.arrayOf(PropTypes.object),
     validationProblems: PropTypes.arrayOf(PropTypes.any),
   }).isRequired,
   setShowModal: PropTypes.func.isRequired,

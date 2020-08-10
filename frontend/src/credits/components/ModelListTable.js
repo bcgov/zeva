@@ -88,16 +88,22 @@ const ModelListTable = (props) => {
   };
 
   items.forEach((item) => {
+    if (!item.vehicle) {
+      return;
+    }
+
     const found = data.findIndex((obj) => (obj.vehicle.id === item.vehicle.id));
     let addSale = 0;
+    let creditValue = 0;
 
     if (!validatedOnly || item.validationStatus === 'VALIDATED') {
       addSale = 1;
+      ({ creditValue } = item.vehicle);
 
       if (getCreditClass(item.vehicle) === 'A') {
-        totals.a += item.credits;
+        totals.a += creditValue;
       } else if (getCreditClass(item.vehicle) === 'B') {
-        totals.b += item.credits;
+        totals.b += creditValue;
       }
     }
 
@@ -105,13 +111,13 @@ const ModelListTable = (props) => {
       data[found] = {
         ...data[found],
         sales: data[found].sales + addSale,
-        total: data[found].total + (item.credits * addSale),
+        total: data[found].total + (creditValue * addSale),
       };
     } else {
       data.push({
-        credits: item.credits,
+        credits: creditValue,
         sales: addSale,
-        total: (item.credits * addSale),
+        total: (creditValue * addSale),
         vehicle: item.vehicle,
       });
     }
@@ -123,13 +129,13 @@ const ModelListTable = (props) => {
       columns={columns}
       data={data}
       defaultFilterMethod={filterMethod}
-      defaultPageSize={data.length}
+      defaultPageSize={data.length || 5}
       defaultSorted={[{
         id: 'make',
       }]}
       filterable
       key="table"
-      pageSizeOptions={[items.length, 5, 10, 15, 20, 25, 50, 100]}
+      pageSizeOptions={[data.length, 5, 10, 15, 20, 25, 50, 100]}
     />,
     <div className="totals" key="totals">
       <table>

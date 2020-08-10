@@ -27,7 +27,7 @@ const CreditTransactionTabs = (props) => {
         className={`nav-item ${(active === 'credit-requests') ? 'active' : ''}`}
         role="presentation"
       >
-        <Link to={user.isGovernment ? ROUTES_CREDITS.CREDIT_REQUESTS : ROUTES_SALES.ADD}>Credit Requests</Link>
+        <Link to={user.isGovernment ? ROUTES_CREDITS.CREDIT_REQUESTS : ROUTES_SALES.LIST}>Credit Requests</Link>
       </li>
       {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED && (
       <li
@@ -35,6 +35,14 @@ const CreditTransactionTabs = (props) => {
         role="presentation"
       >
         <Link to={user.isGovernment ? '/' : ROUTES_CREDITS.CREDIT_TRANSFERS}>Credit Transfers</Link>
+      </li>
+      )}
+      {user.isGovernment && (
+      <li
+        className={`nav-item ${(active === 'icbc-update') ? 'active' : ''}`}
+        role="presentation"
+      >
+        <Link to={ROUTES_CREDITS.UPLOADVERIFICATION}>Update ICBC Data</Link>
       </li>
       )}
       {CONFIG.FEATURES.INITIATIVE_AGREEMENTS.ENABLED && (

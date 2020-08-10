@@ -11,7 +11,7 @@ import ROUTES_SALES from '../../app/routes/Sales';
 const SalesSubmissionConfirmationPage = (props) => {
   const {
     user,
-    details,
+    submissionId,
   } = props;
 
   const actionbar = (
@@ -27,7 +27,7 @@ const SalesSubmissionConfirmationPage = (props) => {
             <button
               className="button"
               onClick={() => {
-                history.push(ROUTES_SALES.DETAILS.replace(/:id/g, details.id));
+                history.push(ROUTES_SALES.DETAILS.replace(/:id/g, submissionId));
               }}
               type="button"
             >
@@ -44,7 +44,7 @@ const SalesSubmissionConfirmationPage = (props) => {
 
       <div className="row">
         <div className="col-sm-12">
-          <h1>{user.organization.name} ZEV Sales Submission {details.submissionID}</h1>
+          <h1>{user.organization.name} ZEV Sales Submission {submissionId}</h1>
         </div>
       </div>
 
@@ -73,13 +73,8 @@ const SalesSubmissionConfirmationPage = (props) => {
 SalesSubmissionConfirmationPage.defaultProps = {};
 
 SalesSubmissionConfirmationPage.propTypes = {
+  submissionId: PropTypes.string.isRequired,
   user: CustomPropTypes.user.isRequired,
-  details: PropTypes.shape({
-    id: PropTypes.number,
-    submissionID: PropTypes.string.isRequired,
-    entries: PropTypes.arrayOf(PropTypes.object),
-    validation_problems: PropTypes.arrayOf(PropTypes.any),
-  }).isRequired,
 };
 
 export default SalesSubmissionConfirmationPage;

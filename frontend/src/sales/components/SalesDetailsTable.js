@@ -53,8 +53,8 @@ const SalesDetailsTable = (props) => {
       aggregate: (vals) => _.round(_.mean(vals), 0),
       Aggregated: (row) => (
         <span>
-        {row.value} mean
-      </span>
+          {row.value} mean
+        </span>
       ),
       width: 150,
     }, {
@@ -85,8 +85,8 @@ const SalesDetailsTable = (props) => {
       aggregate: (vals) => _.round(_.sum(vals), 2),
       Aggregated: (row) => (
         <span>
-        {row.value} total
-      </span>
+          {row.value} total
+        </span>
       ),
       width: 150,
     }, {

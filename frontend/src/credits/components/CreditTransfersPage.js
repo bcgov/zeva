@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Modal from '../../app/components/Modal';
 import CustomPropTypes from '../../app/utilities/props';
 import TransferFormRow from './TransferFormRow';
 import FormDropdown from './FormDropdown';
@@ -21,6 +21,7 @@ const CreditTransfersPage = (props) => {
     rows,
     fields,
   } = props;
+  const [showModal, setShowModal] = useState(false);
   const [checkboxes, setCheckboxes] = useState({
     authority: false, accurate: false, consent: false,
   });
@@ -28,6 +29,24 @@ const CreditTransfersPage = (props) => {
     const { checked } = event.target;
     setCheckboxes({ ...checkboxes, [event.target.id]: checked });
   };
+  const modal = (
+    <Modal
+      confirmLabel=" Submit Notice"
+      handleCancel={() => { setShowModal(false); }}
+      handleSubmit={() => { handleSubmit(); }}
+      modalClass="w-75"
+      showModal={showModal}
+      confirmClass="button primary"
+      icon={<FontAwesomeIcon icon="paper-plane" />}
+    >
+      <div>
+        <div><br /><br /></div>
+        <h4 className="d-inline">Submit credit transfer notice to trade partner?
+        </h4>
+        <div><br /><br /></div>
+      </div>
+    </Modal>
+  );
   const actionbar = (
     <div className="row">
       <div className="col-sm-12">
@@ -47,11 +66,11 @@ const CreditTransfersPage = (props) => {
               className="button primary ml-2"
               disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent}
               onClick={() => {
-                handleSubmit();
+                setShowModal(true);
               }}
               type="button"
             >
-              Submit Notice
+            <FontAwesomeIcon icon="paper-plane" />  Submit Notice
             </button>
           </span>
         </div>
@@ -124,7 +143,7 @@ const CreditTransfersPage = (props) => {
                 {actionbar}
               </fieldset>
             </div>
-
+            {modal}
           </div>
 
         </form>

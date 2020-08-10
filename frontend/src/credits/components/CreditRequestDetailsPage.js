@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
-
+import Modal from '../../app/components/Modal';
 import CustomPropTypes from '../../app/utilities/props';
 import history from '../../app/History';
 import ROUTES_CREDITS from '../../app/routes/Credits';
@@ -16,7 +16,45 @@ const CreditRequestDetailsPage = (props) => {
     validatedOnly,
     previousDateCurrentTo,
   } = props;
-
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState('');
+  let confirmLabel;
+  let buttonClass;
+  let modalText;
+  let handle = () => {};
+  if (modalType === 'approve') {
+    confirmLabel = 'Recommend Approval';
+    handle = () => { handleSubmit('RECOMMEND_APPROVAL'); };
+    buttonClass = 'button primary';
+    modalText = 'Recommend approval of credits?';
+  } else if (modalType === 'reject') {
+    confirmLabel = 'Recommend Rejection';
+    handle = () => { handleSubmit('RECOMMEND_REJECTION'); };
+    buttonClass = 'btn-outline-danger';
+    modalText = 'Recommend rejection of credits?';
+  } else {
+    confirmLabel = 'Issue Credits';
+    buttonClass = 'button primary';
+    modalText = 'Issue credits to vehicle supplier?';
+    handle = () => { handleSubmit('VALIDATED'); };
+  }
+  const modal = (
+    <Modal
+      confirmLabel={confirmLabel}
+      handleCancel={() => { setShowModal(false); }}
+      handleSubmit={handle}
+      modalClass="w-75"
+      showModal={showModal}
+      confirmClass={buttonClass}
+    >
+      <div>
+        <div><br /><br /></div>
+        <h4 className="d-inline">{modalText}
+        </h4>
+        <div><br /><br /></div>
+      </div>
+    </Modal>
+  );
   return (
     <div id="credit-request-details" className="page">
       <div className="row">
@@ -50,14 +88,15 @@ const CreditRequestDetailsPage = (props) => {
               </button>
             </span>
             <span className="right-content">
-              {user.isGovernment && submission.validationStatus === 'SUBMITTED' && (
+              {user.isGovernment && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0 && user.hasPermission('RECOMMEND_SALES') && (
                 <>
                   {validatedOnly && [
                     <button
                       className="button text-danger"
                       key="recommend-rejection"
                       onClick={() => {
-                        handleSubmit('RECOMMEND_REJECTION');
+                        setModalType('reject');
+                        setShowModal(true);
                       }}
                       type="button"
                     >
@@ -67,7 +106,8 @@ const CreditRequestDetailsPage = (props) => {
                       className="button"
                       key="recommend-approval"
                       onClick={() => {
-                        handleSubmit('RECOMMEND_APPROVAL');
+                        setModalType('approve');
+                        setShowModal(true);
                       }}
                       type="button"
                     >
@@ -90,6 +130,7 @@ const CreditRequestDetailsPage = (props) => {
             </span>
           </div>
         </div>
+        {modal}
       </div>
 
       <div className="row">
@@ -120,14 +161,15 @@ const CreditRequestDetailsPage = (props) => {
               </button>
             </span>
             <span className="right-content">
-              {user.isGovernment && submission.validationStatus === 'SUBMITTED' && user.hasPermission('RECOMMEND_SALES') && (
+              {user.isGovernment && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0 && user.hasPermission('RECOMMEND_SALES') && (
                 <>
                   {validatedOnly && [
                     <button
                       className="button text-danger"
                       key="recommend-rejection"
                       onClick={() => {
-                        handleSubmit('RECOMMEND_REJECTION');
+                        setModalType('reject');
+                        setShowModal(true);;
                       }}
                       type="button"
                     >
@@ -137,7 +179,8 @@ const CreditRequestDetailsPage = (props) => {
                       className="button"
                       key="recommend-approval"
                       onClick={() => {
-                        handleSubmit('RECOMMEND_APPROVAL');
+                        setModalType('approve');
+                        setShowModal(true)
                       }}
                       type="button"
                     >
@@ -164,7 +207,8 @@ const CreditRequestDetailsPage = (props) => {
                 <button
                   className="button primary"
                   onClick={() => {
-                    handleSubmit('VALIDATED');
+                    setModalType('issue');
+                    setShowModal(true)
                   }}
                   type="button"
                 >

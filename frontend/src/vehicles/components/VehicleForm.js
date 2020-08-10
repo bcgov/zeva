@@ -1,6 +1,6 @@
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment-timezone';
 import History from '../../app/History';
@@ -10,6 +10,7 @@ import Loading from '../../app/components/Loading';
 import TextInput from '../../app/components/TextInput';
 import getFileSize from '../../app/utilities/getFileSize';
 import VehicleFormDropdown from './VehicleFormDropdown';
+import Modal from '../../app/components/Modal';
 
 const VehicleForm = (props) => {
   const {
@@ -31,6 +32,27 @@ const VehicleForm = (props) => {
     vehicleTypes,
     vehicleYears,
   } = props;
+  const [showModal, setShowModal] = useState(false);
+
+  const modalText = setUploadFiles ? 'Submit vehicle model and range test results to government' : 'Submit ZEV model to government?';
+  const modal = (
+    <Modal
+      confirmLabel=" Submit"
+      handleCancel={() => { setShowModal(false); }}
+      handleSubmit={() => { handleSubmit(); }}
+      modalClass="w-75"
+      showModal={showModal}
+      confirmClass="button primary"
+      icon={<FontAwesomeIcon icon="paper-plane" />}
+    >
+      <div>
+        <div><br /><br /></div>
+        <h4 className="d-inline">{modalText}
+        </h4>
+        <div><br /><br /></div>
+      </div>
+    </Modal>
+  );
   const deleteFile = (attachmentId) => {
     setDeleteFiles([...deleteFiles, attachmentId]);
   };
@@ -268,12 +290,13 @@ const VehicleForm = (props) => {
                 <button
                   type="button"
                   className="button primary"
-                  onClick={() => { handleSubmit(); }}
+                  onClick={() => { setShowModal(true); }}
                 >
-                  <FontAwesomeIcon icon="save" /> Submit
+                  <FontAwesomeIcon icon="paper-plane" /> Submit
                 </button>
               </span>
             </div>
+            {modal}
           </div>
         </div>
       </form>

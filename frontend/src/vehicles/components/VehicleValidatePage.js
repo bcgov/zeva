@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-
+import Modal from '../../app/components/Modal';
 import Loading from '../../app/components/Loading';
 import DetailField from '../../app/components/DetailField';
 import history from '../../app/History';
@@ -14,6 +14,8 @@ const VehicleValidatePage = (props) => {
     details, loading, requestStateChange, setComments, postComment, comments,
   } = props;
   const [requestChangeCheck, setRequestChangeCheck] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState('');
   if (loading) {
     return <Loading />;
   }
@@ -29,6 +31,43 @@ const VehicleValidatePage = (props) => {
       setRequestChangeCheck(false);
     }
   };
+  let confirmLabel;
+  let handleSubmit = () => {};
+  let buttonClass;
+  let modalText;
+  if (modalType === 'accept') {
+    confirmLabel = 'Validate';
+    handleSubmit = () => { requestStateChange('VALIDATED'); };
+    buttonClass = 'button primary';
+    modalText = 'Validate ZEV model';
+  } else if (modalType === 'reject') {
+    confirmLabel = 'Reject';
+    handleSubmit = () => { postComment('REJECTED'); };
+    buttonClass = 'btn-outline-danger';
+    modalText = 'Reject ZEV model';
+  } else {
+    confirmLabel = 'Request';
+    handleSubmit = () => { postComment('CHANGES_REQUESTED'); };
+    buttonClass = 'button primary';
+    modalText = 'Request range change/test results';
+  }
+  const modal = (
+    <Modal
+      confirmLabel={confirmLabel}
+      handleCancel={() => { setShowModal(false); }}
+      handleSubmit={handleSubmit}
+      modalClass="w-75"
+      showModal={showModal}
+      confirmClass={buttonClass}
+    >
+      <div>
+        <div><br /><br /></div>
+        <h4 className="d-inline">{modalText}
+        </h4>
+        <div><br /><br /></div>
+      </div>
+    </Modal>
+  );
   const editButton = (
     <button
       className="button primary"
@@ -112,12 +151,12 @@ const VehicleValidatePage = (props) => {
           <div className="form">
             <div className="request-changes-check">
               <input type="checkbox" onChange={handleCheckboxClick} />
-                Request range results and/or a change to the range value from the vehicle supplier, specify below.
+              Request range results and/or a change to the range value from the vehicle supplier, specify below.
             </div>
             <div>Add a comment to the vehicle supplier for request or rejection.</div>
             <textarea className="form-control" rows="3" onChange={handleChange} />
             <div className="text-right">
-              <button className="button primary" disabled={!requestChangeCheck || !comments.vehicleComment} type="button" key="REQUEST" onClick={() => postComment('CHANGES_REQUESTED')}>Request Range Change/Test Results</button>
+              <button className="button primary" disabled={!requestChangeCheck || !comments.vehicleComment} type="button" key="REQUEST" onClick={() => { setModalType('request'); setShowModal(true); }}>Request Range Change/Test Results</button>
             </div>
           </div>
         </div>
@@ -141,15 +180,35 @@ const VehicleValidatePage = (props) => {
             <span className="right-content">
               {details.validationStatus === 'DRAFT' ? editButton : '' }
               {details.validationStatus === 'SUBMITTED' && ([
-                <button className="btn btn-outline-danger" disabled={!comments.vehicleComment.comment || requestChangeCheck} type="button" key="REJECTED" onClick={() => postComment('REJECTED')}>Reject</button>,
-                <button className="button primary" disabled={comments.vehicleComment.comment || requestChangeCheck} type="button" key="VALIDATED" onClick={() => requestStateChange('VALIDATED')}>Validate</button>
+                <button
+                  className="btn btn-outline-danger"
+                  disabled={!comments.vehicleComment.comment || requestChangeCheck}
+                  type="button"
+                  key="REJECTED"
+                  onClick={() => {
+                    setModalType('reject');
+                    setShowModal(true);
+                  }}
+                >Reject
+                </button>,
+                <button
+                  className="button primary"
+                  disabled={comments.vehicleComment.comment || requestChangeCheck}
+                  type="button"
+                  key="VALIDATED"
+                  onClick={() => {
+                    setModalType('accept');
+                    setShowModal(true);
+                  }}
+                >Validate
+                </button>,
               ])}
             </span>
           </div>
+          {modal}
         </div>
       </div>
     </div>
-
 
   );
 };
