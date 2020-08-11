@@ -143,7 +143,11 @@ const CreditTransfersPage = (props) => {
                 {actionbar}
               </fieldset>
             </div>
+<<<<<<< HEAD
             {modal}
+=======
+
+>>>>>>> ee8c8cf057d75f7fd10f40c597634e11b5350563
           </div>
 
         </form>
