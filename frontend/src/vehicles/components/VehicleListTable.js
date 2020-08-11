@@ -124,7 +124,6 @@ const VehicleListTable = (props) => {
       .toLowerCase()
       .includes(filter.value.toLowerCase()) : true;
   };
-  const filterable = true;
 
   return (
     <ReactTable
@@ -140,7 +139,7 @@ const VehicleListTable = (props) => {
       defaultSorted={[{
         id: 'make',
       }]}
-      filterable={filterable}
+      filterable
       getTrProps={(state, row) => {
         if (row && row.original && user) {
           return {
