@@ -93,6 +93,12 @@ def add_instructions_sheet(**kwargs):
     row += 2
     worksheet.write(
         row, 0,
+        'Please input the Sales date in YYYY-MM-DD format.'
+    )
+
+    row += 2
+    worksheet.write(
+        row, 0,
         'Only the following models are currently valid:'
     )
 
