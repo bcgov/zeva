@@ -6,8 +6,6 @@ import React from 'react';
 import ReactTable from 'react-table';
 import _ from 'lodash';
 
-import getCreditClass from '../../app/utilities/getCreditClass';
-
 const ModelListTable = (props) => {
   const { items, validatedOnly } = props;
 
@@ -54,7 +52,11 @@ const ModelListTable = (props) => {
     accessor: (item) => {
       const { vehicle } = item;
 
-      return getCreditClass(vehicle);
+      if (vehicle) {
+        return vehicle.creditClass;
+      }
+
+      return '';
     },
     className: 'text-center',
     Header: 'Class',
@@ -98,11 +100,14 @@ const ModelListTable = (props) => {
 
     if (!validatedOnly || item.validationStatus === 'VALIDATED') {
       addSale = 1;
+      ({ creditValue } = item.vehicle);
+
       if (item.vehicle) {
         ({ creditValue } = item.vehicle);
-        if (getCreditClass(item.vehicle) === 'A') {
+
+        if (item.vehicle.creditClass === 'A') {
           totals.a += creditValue;
-        } else if (getCreditClass(item.vehicle) === 'B') {
+        } else if (item.vehicle.creditClass === 'B') {
           totals.b += creditValue;
         }
       }
