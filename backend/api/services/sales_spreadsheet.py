@@ -376,16 +376,17 @@ def get_date(date, date_type, datemode):
 
 
 def store_raw_value(submission, row_contents, date_mode):
-    SalesSubmissionContent.objects.create(
-        submission=submission,
-        xls_model_year=row_contents[0].value,
-        xls_make=row_contents[1].value,
-        xls_model=row_contents[2].value,
-        xls_vin=row_contents[3].value,
-        xls_sale_date=row_contents[4].value,
-        xls_date_type=row_contents[4].ctype,
-        xls_date_mode=date_mode
-    )
+    if row_contents[3].value != '':
+        SalesSubmissionContent.objects.create(
+            submission=submission,
+            xls_model_year=row_contents[0].value,
+            xls_make=row_contents[1].value,
+            xls_model=row_contents[2].value,
+            xls_vin=row_contents[3].value,
+            xls_sale_date=row_contents[4].value,
+            xls_date_type=row_contents[4].ctype,
+            xls_date_mode=date_mode
+        )
 
     return None
 
@@ -463,11 +464,13 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
             if date_diff > 3:
                 error += 'retail sales date and registration date greater than 3 months apart;'
 
-        worksheet.write(row, 0, content.xls_model_year, style=LOCKED)
+        if content.xls_model_year is not None:
+            worksheet.write(row, 0, int(float(content.xls_model_year)), style=LOCKED)
         worksheet.write(row, 1, content.xls_make, style=LOCKED)
         worksheet.write(row, 2, content.xls_model, style=LOCKED)
         worksheet.write(row, 3, content.xls_vin, style=LOCKED)
-        worksheet.write(row, 4, date.strftime('%Y-%m-%d'), style=LOCKED)
+        if date is not None:
+            worksheet.write(row, 4, date.strftime('%Y-%m-%d'), style=LOCKED)
         worksheet.write(row, 5, error, style=LOCKED)
 
         if len(content.xls_model) > current_vehicle_col_width:
