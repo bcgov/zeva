@@ -98,12 +98,13 @@ const ModelListTable = (props) => {
 
     if (!validatedOnly || item.validationStatus === 'VALIDATED') {
       addSale = 1;
-      ({ creditValue } = item.vehicle);
-
-      if (getCreditClass(item.vehicle) === 'A') {
-        totals.a += creditValue;
-      } else if (getCreditClass(item.vehicle) === 'B') {
-        totals.b += creditValue;
+      if (item.vehicle) {
+        ({ creditValue } = item.vehicle);
+        if (getCreditClass(item.vehicle) === 'A') {
+          totals.a += creditValue;
+        } else if (getCreditClass(item.vehicle) === 'B') {
+          totals.b += creditValue;
+        }
       }
     }
 

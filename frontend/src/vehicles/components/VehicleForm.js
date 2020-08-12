@@ -39,7 +39,7 @@ const VehicleForm = (props) => {
     <Modal
       confirmLabel=" Submit"
       handleCancel={() => { setShowModal(false); }}
-      handleSubmit={() => { handleSubmit(); }}
+      handleSubmit={() => { handleSubmit(); setShowModal(false); }}
       modalClass="w-75"
       showModal={showModal}
       confirmClass="button primary"

@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import CustomPropTypes from '../../app/utilities/props';
@@ -14,6 +14,14 @@ const SalesSubmissionDetailsPage = (props) => {
     user,
     validatedList,
   } = props;
+
+  const [filtered, setFiltered] = useState([]);
+  const filterWarnings = () => {
+    setFiltered([...filtered, { id: 'warning', value: '1' }]);
+  };
+  const clearFilters = () => {
+    setFiltered([]);
+  };
 
   return (
     <div id="sales-details" className="page">
@@ -53,6 +61,14 @@ const SalesSubmissionDetailsPage = (props) => {
               <button
                 className="button"
                 type="button"
+                onClick={() => { clearFilters(); }}
+              >
+                Clear Filter
+              </button>
+              <button
+                className="button btn btn-outline-danger"
+                type="button"
+                onClick={() => { filterWarnings(); }}
               >
                 View Warnings Only
               </button>
@@ -78,6 +94,8 @@ const SalesSubmissionDetailsPage = (props) => {
             submission={submission}
             user={user}
             validatedList={validatedList}
+            filtered={filtered}
+            setFiltered={setFiltered}
           />
         </div>
       </div>

@@ -80,7 +80,7 @@ def add_instructions_sheet(**kwargs):
     row += 2
     worksheet.write(
         row, 0,
-        'Retail Sales Date in yyyy-mm-dd format, '
+        'Retail Sales Date in YYYY-MM-DD format, '
         'eg. 2020-07-20'
     )
     row += 2
