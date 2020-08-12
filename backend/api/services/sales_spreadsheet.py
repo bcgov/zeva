@@ -281,14 +281,36 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
         )
 
     try:
-        workbook.sheet_by_name('ZEV Sales')
+        sheet = workbook.sheet_by_name('ZEV Sales')
     except XLRDError:
         raise ValidationError(
             'Spreadsheet is missing ZEV Sales sheet.'
             'Please download the template again and try again.'
         )
 
-    logger.info('Reading ZEV Sales')
+    start_row = 1
+    row = start_row
+
+    while row < min((MAX_READ_ROWS + start_row), sheet.nrows):
+        row_contents = sheet.row(row)
+        model_year = str(row_contents[0].value).strip()
+        make = str(row_contents[1].value).strip()
+        model_name = str(row_contents[2].value).strip()
+        vin = str(row_contents[3].value)
+        date = str(row_contents[4].value).strip()
+
+        row_contains_content = False
+
+        if len(model_year) > 0 or len(make) > 0 or len(model_name) > 0 or \
+                len(date) > 0:
+            row_contains_content = True
+
+        if row_contains_content and len(vin) < 1:
+            raise ValidationError(
+                'Spreadsheet contains a row with missing VIN. Please clear '
+                'the row and try again.'
+            )
+        row += 1
 
     return True
 
