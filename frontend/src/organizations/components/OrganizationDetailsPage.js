@@ -1,8 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import history from '../../app/History';
 import Loading from '../../app/components/Loading';
+import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
 import CustomPropTypes from '../../app/utilities/props';
+
 import UsersTable from './UsersTable';
 
 const OrganizationDetailsPage = (props) => {
@@ -35,8 +39,19 @@ const OrganizationDetailsPage = (props) => {
       </div>
 
       <div className="row mt-5">
-        <div className="col-sm-12">
+        <div className="col-sm-6">
           <h2>Users</h2>
+        </div>
+        <div className="col-sm-6 text-right">
+          <button
+            className="button primary mb-3"
+            onClick={() => {
+              history.push(ROUTES_ORGANIZATIONS.MINE_ADD_USER);
+            }}
+            type="button"
+          >
+            <FontAwesomeIcon icon="user-plus" /> <span>New User</span>
+          </button>
         </div>
       </div>
 

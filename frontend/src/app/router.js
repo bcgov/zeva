@@ -126,6 +126,11 @@ class Router extends Component {
             <Switch>
               <Route
                 exact
+                path={ROUTES_ORGANIZATIONS.MINE_ADD_USER}
+                render={() => <UserAddContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
                 path={ROUTES_ORGANIZATIONS.MINE}
                 render={() => <OrganizationDetailsContainer keycloak={keycloak} user={user} />}
               />

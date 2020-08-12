@@ -31,12 +31,14 @@ const UserDetailsForm = (props) => {
   };
 
   const rolesCheckboxes = roles.filter(
-    (role) => role.isGovernmentRole === details.organization.isGovernment
+    (role) => role.isGovernmentRole === details.organization.isGovernment,
   ).map((role) => (
     <ul key={role.id}>
       <input type="checkbox" id={role.id} onChange={handleInputChange} name="roles-manager" defaultChecked={checked(role)} /> {role.description} <FontAwesomeIcon icon="info-circle" />
     </ul>
   ));
+
+  const accountType = details.organization.isGovernment ? 'IDIR' : 'BCeID';
 
   return (
     <div id="form" className="page">
@@ -83,37 +85,41 @@ const UserDetailsForm = (props) => {
                   errorMessage={'username' in errorFields && errorFields.username}
                   handleInputChange={handleInputChange}
                   id="username"
-                  label="BCeID User Name"
+                  label={`${accountType} User Name`}
                   mandatory
                   name="username"
                 />
                 <TextInput
                   defaultValue={details.keycloakEmail}
-                  details="the email associated with the BCeID account"
+                  details={accountType === 'BCeID' ? `the email associated with the ${accountType} account` : ''}
                   errorMessage={'keycloakEmail' in errorFields && errorFields.keycloakEmail}
                   handleInputChange={handleInputChange}
                   id="email"
-                  label="BCeID Email"
+                  label={`${accountType === 'BCeID' ? accountType : ''} Email`}
                   mandatory
                   name="keycloakEmail"
                 />
-                <TextInput
-                  defaultValue={details.email}
-                  details="the email used to receive notifications, if different from above"
-                  errorMessage={'email' in errorFields && errorFields.email}
-                  handleInputChange={handleInputChange}
-                  id="notificationsEmail"
-                  label="Notifications Email"
-                  name="email"
-                />
-                <TextInput
-                  defaultValue={details.phone}
-                  errorMessage={'phone' in errorFields && errorFields.phone}
-                  handleInputChange={handleInputChange}
-                  id="phone"
-                  label="Phone"
-                  name="phone"
-                />
+                {accountType === 'BCeID' && ([
+                  <TextInput
+                    defaultValue={details.email}
+                    details="the email used to receive notifications, if different from above"
+                    errorMessage={'email' in errorFields && errorFields.email}
+                    handleInputChange={handleInputChange}
+                    id="notificationsEmail"
+                    key="notificationsEmail"
+                    label="Notifications Email"
+                    name="email"
+                  />,
+                  <TextInput
+                    defaultValue={details.phone}
+                    errorMessage={'phone' in errorFields && errorFields.phone}
+                    handleInputChange={handleInputChange}
+                    id="phone"
+                    key="phone"
+                    label="Phone"
+                    name="phone"
+                  />,
+                ])}
               </span>
               <span className="col-md-4">
                 {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_USERS') && (
