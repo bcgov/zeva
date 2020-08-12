@@ -6,8 +6,6 @@ import React from 'react';
 import ReactTable from 'react-table';
 import _ from 'lodash';
 
-import getCreditClass from '../../app/utilities/getCreditClass';
-
 const ModelListTable = (props) => {
   const { items, validatedOnly } = props;
 
