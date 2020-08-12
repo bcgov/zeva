@@ -379,11 +379,11 @@ def store_raw_value(submission, row_contents, date_mode):
     if row_contents[3].value != '':
         SalesSubmissionContent.objects.create(
             submission=submission,
-            xls_model_year=row_contents[0].value,
-            xls_make=row_contents[1].value,
-            xls_model=row_contents[2].value,
-            xls_vin=row_contents[3].value,
-            xls_sale_date=row_contents[4].value,
+            xls_model_year=str(row_contents[0].value).strip(),
+            xls_make=str(row_contents[1].value).strip(),
+            xls_model=str(row_contents[2].value).strip(),
+            xls_vin=str(row_contents[3].value).strip(),
+            xls_sale_date=str(row_contents[4].value).strip(),
             xls_date_type=row_contents[4].ctype,
             xls_date_mode=date_mode
         )
