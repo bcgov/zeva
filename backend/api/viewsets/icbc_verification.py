@@ -39,7 +39,7 @@ class IcbcVerificationViewSet(
             dateCurrentTo = request.data['submissionCurrentDate']
             data = request.FILES['files']
             result = ingest_icbc_spreadsheet(data.temporary_file_path(), user, dateCurrentTo)
-        except:
+        except Exception as error:
             return HttpResponse(status=400, content=error)
 
         return HttpResponse(

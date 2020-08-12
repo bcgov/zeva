@@ -453,15 +453,21 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
             content.xls_date_mode
         )
 
+        if content.is_already_awarded:
+            error += 'VIN has already been validated before; '
+
+        if content.is_duplicate:
+            error += 'VIN contains duplicate in this set; '
+
         if date is None:
-            error += 'Date cannot be parsed. Please use YYYY-MM-DD format;'
+            error += 'Date cannot be parsed. Please use YYYY-MM-DD format; '
         elif icbc_upload_date is not None:
             date_diff = abs(
                 date.year - icbc_upload_date.upload_date.year
             ) * 12 + abs(date.month - icbc_upload_date.upload_date.month)
 
             if date_diff > 3:
-                error += 'retail sales date and registration date greater than 3 months apart;'
+                error += 'retail sales date and registration date greater than 3 months apart; '
 
         worksheet.write(row, 0, content.xls_model_year, style=LOCKED)
         worksheet.write(row, 1, content.xls_make, style=LOCKED)

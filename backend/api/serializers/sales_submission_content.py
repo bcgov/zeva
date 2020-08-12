@@ -1,7 +1,6 @@
 from rest_framework.serializers import ModelSerializer, \
     SerializerMethodField
 
-from api.models.icbc_registration_data import IcbcRegistrationData
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission_content import SalesSubmissionContent
 from api.serializers.vehicle import VehicleMinSerializer
@@ -42,6 +41,21 @@ class SalesSubmissionContentCheckedSerializer(ModelSerializer):
     vehicle = SerializerMethodField()
     icbc_verification = SerializerMethodField()
     checked = SerializerMethodField()
+    errors = SerializerMethodField()
+
+    def get_errors(self, instance):
+        errors = ''
+
+        if instance.is_already_awarded:
+            errors += 'VIN validated before; '
+
+        if instance.is_duplicate:
+            errors += 'VIN contains duplicate in this set; '
+
+        if errors == '':
+            return None
+
+        return errors
 
     def get_icbc_verification(self, instance):
         icbc_data = instance.icbc_verification
@@ -80,7 +94,7 @@ class SalesSubmissionContentCheckedSerializer(ModelSerializer):
         fields = (
             'id', 'sales_date', 'vehicle', 'xls_make', 'xls_model',
             'xls_model_year', 'xls_vin', 'icbc_verification',
-            'checked',
+            'checked', 'errors',
         )
         read_only_fields = (
             'id',

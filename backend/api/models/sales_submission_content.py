@@ -71,6 +71,31 @@ class SalesSubmissionContent(Auditable):
             vin__iexact=self.xls_vin
         ).first()
 
+    @property
+    def is_duplicate(self):
+        contains_duplicate = SalesSubmissionContent.objects.filter(
+            submission_id=self.submission_id,
+            xls_vin=self.xls_vin
+        ).exclude(
+            id=self.id
+        ).first()
+
+        if contains_duplicate:
+            return True
+
+        return False
+
+    @property
+    def is_already_awarded(self):
+        has_been_awarded = IcbcRegistrationData.objects.filter(
+            vin=self.xls_vin
+        ).first()
+
+        if has_been_awarded:
+            return True
+
+        return False
+
     class Meta:
         db_table = "sales_submission_content"
         ordering = ['id']
