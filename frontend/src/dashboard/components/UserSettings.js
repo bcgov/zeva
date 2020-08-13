@@ -51,18 +51,23 @@ const UserSettings = (props) => {
         </div>
       </div>
 
-      <div className="content">
-        <div className="text pdf-link">
-          <FontAwesomeIcon icon={['fas', 'play']} />
-          <button
-            type="button"
-            onClick={() => {
-              History.push(ROUTES_ORGANIZATIONS.EDIT.replace(/:id/gi, details.organization.id));
-            }}
-          > Edit Vehicle Supplier Info
-          </button>
+      {typeof details.hasPermission === 'function'
+        && details.hasPermission('EDIT_ORGANIZATION_INFORMATION')
+        && !details.isGovernment
+        && (
+        <div className="content">
+          <div className="text pdf-link">
+            <FontAwesomeIcon icon={['fas', 'play']} />
+            <button
+              type="button"
+              onClick={() => {
+                History.push(ROUTES_ORGANIZATIONS.EDIT.replace(/:id/gi, details.organization.id));
+              }}
+            > Edit Vehicle Supplier Info
+            </button>
+          </div>
         </div>
-      </div>
+        )}
     </div>
   );
 };

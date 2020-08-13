@@ -214,7 +214,7 @@ class Navbar extends Component {
               )}
 
               {typeof user.hasPermission === 'function'
-              && user.hasPermission('VIEW_ORGANIZATION_INFORMATION')
+              && user.hasPermission('EDIT_ORGANIZATION_INFORMATION')
               && !user.isGovernment
               && (
                 <li className="nav-item">
@@ -222,7 +222,7 @@ class Navbar extends Component {
                     activeClassName="active"
                     to={ROUTES_ORGANIZATIONS.MINE}
                   >
-                    <span>Organization Details</span>
+                    <span>Administration</span>
                   </NavLink>
                 </li>
               )}

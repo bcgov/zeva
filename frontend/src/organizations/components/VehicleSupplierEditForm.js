@@ -50,6 +50,7 @@ const VehicleSupplierEditForm = (props) => {
     </Modal>
   );
   let addressDetails = {};
+
   if (details.organizationAddress) {
     addressDetails = {
       ...details.organizationAddress,
@@ -74,7 +75,7 @@ const VehicleSupplierEditForm = (props) => {
           <h5>{display.name} {display.shortName && `(${display.shortName})`}</h5>
           {display.organizationAddress && (
           <p>
-            {addressDisplay.addressLine1} {addressDisplay.addressLine2} {addressDisplay.city} {addressDisplay.state} {addressDisplay.postalCode}
+            {addressDisplay.addressLine_1} {addressDisplay.addressLine_2} {addressDisplay.city} {addressDisplay.state} {addressDisplay.postalCode}
           </p>
           )}
         </div>
@@ -141,7 +142,7 @@ const VehicleSupplierEditForm = (props) => {
                   name="shortName"
                 />
                 <TextInput
-                  defaultValue={addressDetails.addressLine1}
+                  defaultValue={addressDetails.addressLine_1 || ''}
                   errorMessage={'addressLine1' in errorFields && errorFields.addressLine1}
                   handleInputChange={handleAddressChange}
                   id="StreetAddress"
@@ -153,11 +154,11 @@ const VehicleSupplierEditForm = (props) => {
                   label="Address Other (optional)"
                   id="addressLine2"
                   name="addressLine_2"
-                  defaultValue={addressDetails.addressLine2}
+                  defaultValue={addressDetails.addressLine_2 || ''}
                   handleInputChange={handleAddressChange}
                 />
                 <TextInput
-                  defaultValue={addressDetails.city}
+                  defaultValue={addressDetails.city || ''}
                   errorMessage={'city' in errorFields && errorFields.city}
                   handleInputChange={handleAddressChange}
                   id="City"
@@ -166,7 +167,7 @@ const VehicleSupplierEditForm = (props) => {
                   name="city"
                 />
                 <TextInput
-                  defaultValue={addressDetails.state}
+                  defaultValue={addressDetails.state || ''}
                   errorMessage={'state' in errorFields && errorFields.state}
                   handleInputChange={handleAddressChange}
                   id="Province"
@@ -175,7 +176,7 @@ const VehicleSupplierEditForm = (props) => {
                   name="state"
                 />
                 <TextInput
-                  defaultValue={addressDetails.country}
+                  defaultValue={addressDetails.country || ''}
                   errorMessage={'country' in errorFields && errorFields.country}
                   handleInputChange={handleAddressChange}
                   id="Country"
@@ -184,7 +185,7 @@ const VehicleSupplierEditForm = (props) => {
                   name="country"
                 />
                 <TextInput
-                  defaultValue={addressDetails.postalCode}
+                  defaultValue={addressDetails.postalCode || ''}
                   errorMessage={'postalCode' in errorFields && errorFields.postalCode}
                   handleInputChange={handleAddressChange}
                   id="PostalCode"
@@ -192,7 +193,6 @@ const VehicleSupplierEditForm = (props) => {
                   mandatory
                   name="postalCode"
                 />
-
               </div>
             </div>
             <div className="action-bar form-group row">
