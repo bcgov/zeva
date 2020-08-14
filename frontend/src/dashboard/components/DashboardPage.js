@@ -21,7 +21,7 @@ const DashboardPage = (props) => {
           )}
         </div>
 
-        <div className="col-lg-9">
+        <div className="col-xl-7 col-lg-9">
           <Actions details={user} />
         </div>
       </div>

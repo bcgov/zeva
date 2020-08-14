@@ -10,10 +10,10 @@ const Feedback = () => (
       <h2>We want to hear from you</h2>
     </div>
     <div className="content">
-      <p>We are always striving to improve ZEV.</p>
+      <p>We are always striving to improve ZEVA.</p>
       <p>
         {'Please send your suggestions and feedback to '}
-        <a href="mailto: zev@gov.bc.ca" rel="noopener noreferrer" target="_blank">zev@gov.bc.ca</a>
+        <a href="mailto: zev@gov.bc.ca?subject=ZEVA Comments" rel="noopener noreferrer" target="_blank">zev@gov.bc.ca</a>
       </p>
     </div>
   </div>
