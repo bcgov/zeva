@@ -23,14 +23,28 @@ const VehicleEditContainer = (props) => {
   const [vehicles, setVehicles] = useState([]);
   const { keycloak } = props;
   const { id } = useParams();
-  const [edits, setEdits] = useState({});
 
   const handleInputChange = (event) => {
-    const { value, name } = event.target;
+    const {
+      checked,
+      name,
+      type,
+      value,
+    } = event.target;
 
-    setEdits({
-      ...edits,
-      [name]: value,
+    let input = value;
+    if (name === 'make') {
+      input = input.toUpperCase();
+    }
+
+    if (type === 'checkbox') {
+      fields[name] = checked;
+    } else {
+      fields[name] = input;
+    }
+
+    setFields({
+      ...fields,
     });
   };
 
@@ -88,7 +102,14 @@ const VehicleEditContainer = (props) => {
 
   const handleSubmit = () => {
     setLoading(true);
-    const data = edits;
+    const data = fields;
+
+    Object.keys(data).forEach((key) => {
+      if (typeof data[key] === 'string') {
+        data[key] = data[key].trim();
+      }
+    });
+
     const promises = handleUpload();
     Promise.all(promises).then((attachments) => {
       if (attachments.length > 0) {
@@ -109,7 +130,13 @@ const VehicleEditContainer = (props) => {
 
   const handleSaveDraft = (event) => {
     event.preventDefault();
-    const data = edits;
+    const data = fields;
+
+    Object.keys(data).forEach((key) => {
+      if (typeof data[key] === 'string') {
+        data[key] = data[key].trim();
+      }
+    });
 
     const promises = handleUpload();
 
@@ -126,7 +153,22 @@ const VehicleEditContainer = (props) => {
       });
     });
   };
-  const orgMakes = vehicles.map((vehicle) => vehicle.make);
+
+  const loadVehicle = (data) => {
+    setFields({
+      additionalCredit: data.additionalCredit,
+      attachments: data.attachments,
+      make: data.make,
+      modelName: data.modelName,
+      vehicleZevType: data.vehicleZevType.vehicleZevCode,
+      range: data.range,
+      modelYear: data.modelYear.name,
+      vehicleClassCode: data.vehicleClassCode.vehicleClassCode,
+      weightKg: data.weightKg,
+    });
+  };
+
+  const orgMakes = [...new Set(vehicles.map((vehicle) => vehicle.make))];
   const refreshList = () => {
     setLoading(true);
     axios.all([
@@ -138,7 +180,7 @@ const VehicleEditContainer = (props) => {
     ]).then(axios.spread((yearsRes, typesRes, vehicleRes, classesRes, orgVehiclesRes) => (
       [setYears(yearsRes.data),
         setTypes(typesRes.data),
-        setFields(vehicleRes.data),
+        loadVehicle(vehicleRes.data),
         setClasses(classesRes.data),
         setVehicles(orgVehiclesRes.data),
         setLoading(false)]

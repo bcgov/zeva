@@ -7,10 +7,11 @@ import React, { useEffect, useState } from 'react';
 import CustomPropTypes from '../app/utilities/props';
 import VehicleForm from './components/VehicleForm';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
-import History from '../app/History';
+import history from '../app/History';
 
 const VehicleAddContainer = (props) => {
   const emptyForm = {
+    additionalCredit: false,
     make: '',
     modelName: '',
     vehicleZevType: { vehicleZevCode: '--' },
@@ -20,7 +21,10 @@ const VehicleAddContainer = (props) => {
     weightKg: '',
   };
   const [fields, setFields] = useState(emptyForm);
+  const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [progressBars, setProgressBars] = useState({});
+  const [showProgressBars, setShowProgressBars] = useState(false);
   const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
   const [classes, setClasses] = useState([]);
@@ -29,35 +33,147 @@ const VehicleAddContainer = (props) => {
 
 
   const handleInputChange = (event) => {
-    const { value, name } = event.target;
-    let input = value.trim();
+    const {
+      checked,
+      name,
+      type,
+      value,
+    } = event.target;
+
+    let input = value;
     if (name === 'make') {
       input = input.toUpperCase();
     }
-    fields[name] = input;
+
+    if (type === 'checkbox') {
+      fields[name] = checked;
+    } else {
+      fields[name] = input;
+    }
+
     setFields({
       ...fields,
     });
   };
 
+  const updateProgressBars = (progressEvent, index) => {
+    const percentage = Math.round((100 * progressEvent.loaded) / progressEvent.total);
+    setProgressBars({
+      ...progressBars,
+      [index]: percentage,
+    });
+
+    progressBars[index] = percentage;
+  };
+
+  const handleUpload = (id) => {
+    const promises = [];
+    setShowProgressBars(true);
+
+    files.forEach((file, index) => {
+      promises.push(new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const blob = reader.result;
+
+          axios.get(ROUTES_VEHICLES.MINIO_URL.replace(/:id/gi, id)).then((response) => {
+            const { url: uploadUrl, minioObjectName } = response.data;
+
+            axios.put(uploadUrl, blob, {
+              headers: {
+                Authorization: null,
+              },
+              onUploadProgress: (progressEvent) => {
+                updateProgressBars(progressEvent, index);
+
+                if (progressEvent.loaded >= progressEvent.total) {
+                  resolve({
+                    filename: file.name,
+                    mimeType: file.type,
+                    minioObjectName,
+                    size: file.size,
+                  });
+                }
+              },
+            }).catch(() => {
+              reject();
+            });
+          });
+        };
+
+        reader.readAsArrayBuffer(file);
+      }));
+    });
+
+    return promises;
+  };
+
   const handleSaveDraft = (event) => {
     event.preventDefault();
     const data = fields;
-    axios.post(ROUTES_VEHICLES.LIST, data).then(() => {
-      History.push(ROUTES_VEHICLES.LIST);
+
+    Object.keys(data).forEach((key) => {
+      if (typeof data[key] === 'string') {
+        data[key] = data[key].trim();
+      }
     });
 
-    return false;
+    axios.post(ROUTES_VEHICLES.LIST, data).then((response) => {
+      const { id } = response.data;
+      const promises = handleUpload(id);
+
+      if (files.length > 0) {
+        Promise.all(promises).then((attachments) => {
+          if (attachments.length > 0) {
+            data.vehicleAttachments = attachments;
+          }
+
+          axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), {
+            ...data,
+          }).then(() => {
+            history.push(ROUTES_VEHICLES.LIST);
+          });
+        });
+      } else {
+        history.push(ROUTES_VEHICLES.LIST);
+      }
+    });
   };
 
   const handleSubmit = () => {
     setLoading(true);
+
     const data = fields;
+
+    Object.keys(data).forEach((key) => {
+      if (typeof data[key] === 'string') {
+        data[key] = data[key].trim();
+      }
+    });
+
     axios.post(ROUTES_VEHICLES.LIST, data).then((response) => {
       const { id } = response.data;
       axios.patch(`vehicles/${id}/state_change`, { validationStatus: 'SUBMITTED' });
-      setFields(emptyForm);
-      setLoading(false);
+
+      const promises = handleUpload(id);
+
+      if (files.length > 0) {
+        Promise.all(promises).then((attachments) => {
+          if (attachments.length > 0) {
+            data.vehicleAttachments = attachments;
+          }
+
+          axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), {
+            ...data,
+          }).then(() => {
+            setFields(emptyForm);
+            setLoading(false);
+          });
+        });
+      } else {
+        setFields(emptyForm);
+        setLoading(false);
+      }
     });
   };
 
@@ -85,13 +201,17 @@ const VehicleAddContainer = (props) => {
   return (
     <VehicleForm
       fields={fields}
+      files={files}
       formTitle="Enter ZEV"
       handleInputChange={handleInputChange}
-      handleSubmit={handleSubmit}
       handleSaveDraft={handleSaveDraft}
+      handleSubmit={handleSubmit}
       loading={loading}
       makes={orgMakes}
+      progressBars={progressBars}
       setFields={setFields}
+      setUploadFiles={setFiles}
+      showProgressBars={showProgressBars}
       vehicleClasses={classes}
       vehicleTypes={types}
       vehicleYears={years}

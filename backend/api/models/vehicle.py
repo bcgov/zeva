@@ -66,6 +66,11 @@ class Vehicle(Auditable):
         on_delete=models.PROTECT,
         null=True
     )
+    additional_credit = models.BooleanField(
+        default=False,
+        db_comment="Boolean Field to see whether the vehicle should get "
+                   "additional credit"
+    )
     credit_value = models.DecimalField(
         null=True,
         decimal_places=2,
@@ -101,6 +106,10 @@ class Vehicle(Auditable):
             variable = 0.5
 
         credit = (self.range * 0.006214) + variable
+
+        if self.vehicle_zev_type in ['EREV', 'PHEV'] and \
+            self.additional_credit is True:
+            credit += 0.2
 
         if credit > 4:
             credit = 4
