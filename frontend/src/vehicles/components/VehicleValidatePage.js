@@ -79,6 +79,7 @@ const VehicleValidatePage = (props) => {
       <FontAwesomeIcon icon="edit" /> Edit
     </button>
   );
+
   return (
     <div id="vehicle-validation" className="page">
       <div className="row">
@@ -94,6 +95,9 @@ const VehicleValidatePage = (props) => {
             <DetailField label="Make" value={details.make} />
             <DetailField label="Model" value={details.modelName} />
             <DetailField label="ZEV Type" value={details.vehicleZevType.description} />
+            {['EREV', 'PHEV'].indexOf(details.vehicleZevType.vehicleZevCode) >= 0 && (
+              <DetailField label="Claim US06 Credit" value={details.additionalCredit ? 'Yes' : 'No'} />
+            )}
             <DetailField label="Electric Range (km)" value={details.range} />
             <DetailField label="Body Type" value={details.vehicleClassCode.description} />
             <DetailField label="Weight (kg)" value={details.weightKg} />
@@ -218,6 +222,7 @@ VehicleValidatePage.defaultProps = {};
 VehicleValidatePage.propTypes = {
   details: PropTypes.shape({
     actions: PropTypes.arrayOf(PropTypes.string),
+    additionalCredit: PropTypes.bool,
     attachments: PropTypes.arrayOf(PropTypes.shape()),
     creditClass: PropTypes.string,
     creditValue: PropTypes.number,
@@ -231,6 +236,7 @@ VehicleValidatePage.propTypes = {
     }),
     vehicleZevType: PropTypes.shape({
       description: PropTypes.string,
+      vehicleZevCode: PropTypes.string,
     }),
     range: PropTypes.oneOfType([
       PropTypes.number,
