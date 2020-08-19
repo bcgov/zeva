@@ -17,6 +17,8 @@ const SalesSubmissionPage = (props) => {
     submissions,
     upload,
     user,
+    filtered,
+    setFiltered,
   } = props;
 
   const removeFile = (removedFile) => {
@@ -25,7 +27,6 @@ const SalesSubmissionPage = (props) => {
 
     setUploadFiles([...files]);
   };
-
   return (
     <div id="sales-edit" className="page">
       <h2>Credit Request Submission (Report ZEV Sales)</h2>
@@ -119,6 +120,8 @@ const SalesSubmissionPage = (props) => {
       <SalesSubmissionsListTable
         items={submissions}
         user={user}
+        filtered={filtered}
+        setFiltered={setFiltered}
       />
     </div>
   );

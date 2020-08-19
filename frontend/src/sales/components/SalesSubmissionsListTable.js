@@ -10,6 +10,7 @@ import ROUTES_SALES from '../../app/routes/Sales';
 import formatStatus from '../../app/utilities/formatStatus';
 
 const SalesSubmissionListTable = (props) => {
+  const { items, filtered, setFiltered } = props;
   const columns = [{
     Header: 'Submission ID',
     accessor: 'submissionId',
@@ -44,6 +45,17 @@ const SalesSubmissionListTable = (props) => {
     className: 'text-center text-capitalize',
     Header: 'Status',
     id: 'status',
+    filterMethod: (filter, row) => {
+      const filterValues = filter.value.split(',');
+      let returnValue = false;
+      filterValues.forEach((filterValue) => {
+        const value = filterValue.toLowerCase().trim();
+        if (value !== '' && !returnValue) {
+          returnValue = row[filter.id].toLowerCase().includes(value);
+        }
+      });
+      return returnValue;
+    },
   }];
 
   const filterMethod = (filter, row) => {
@@ -52,10 +64,6 @@ const SalesSubmissionListTable = (props) => {
       .toLowerCase()
       .includes(filter.value.toLowerCase()) : true;
   };
-
-  const filterable = true;
-
-  const { items } = props;
 
   return (
     <ReactTable
@@ -67,6 +75,11 @@ const SalesSubmissionListTable = (props) => {
       defaultSorted={[{
         id: 'submissionDate',
       }]}
+      filterable
+      filtered={filtered}
+      onFilteredChange={(input) => {
+        setFiltered(input);
+      }}
       getTrProps={(state, row) => {
         if (row && row.original) {
           return {
@@ -81,7 +94,6 @@ const SalesSubmissionListTable = (props) => {
 
         return {};
       }}
-      filterable={filterable}
       pageSizeOptions={[items.length, 5, 10, 15, 20, 25, 50, 100]}
     />
   );

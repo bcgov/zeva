@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment-timezone';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 
 import ROUTES_SALES_SUBMISSIONS from '../../app/routes/SalesSubmissions';
+import ROUTES_SALES from '../../app/routes/Sales';
+
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 import Loading from '../../app/components/Loading';
 import CustomPropTypes from '../../app/utilities/props';
 import ActivityBanner from './ActivityBanner';
 
-const Actions = (props) => {
-  const { details } = props;
+const ActionsBceid = () => {
   const [loading, setLoading] = useState(true);
   const [activityCount, setActivityCount] = useState({
     modelAwaitingValidation: 0,
@@ -19,16 +19,16 @@ const Actions = (props) => {
     creditNew: 0,
     creditsAwaiting: 0,
     creditsIssued: 0,
-    transferAwaitingPartner: 0,
-    transferAwaitingGovernment: 0,
-    transferRecorded: 0,
+    transfersAwaitingPartner: 0,
+    transfersAwaitingGovernment: 0,
+    transfersRecorded: 0,
   });
   const refreshList = () => {
     const date3months = moment().subtract(3, 'months').calendar();
     axios.all([
-      axios.get(ROUTES_SALES_SUBMISSIONS.LIST),
       axios.get(ROUTES_VEHICLES.LIST),
-    ]).then(axios.spread((salesResponse, vehiclesResponse) => {
+      axios.get(ROUTES_SALES_SUBMISSIONS.LIST),
+    ]).then(axios.spread((vehiclesResponse, salesResponse) => {
       const changesRequested = vehiclesResponse.data
         .filter((vehicle) => vehicle.validationStatus === 'CHANGES_REQUESTED')
         .map((vehicle) => vehicle.modelName);
@@ -46,12 +46,12 @@ const Actions = (props) => {
         .filter((submission) => submission.validationStatus === 'VALIDATED');
       setActivityCount({
         ...activityCount,
-        modelAwaitingValidation: submittedVehicles.length,
-        modelvalidated: validatedVehicles.length,
-        modelInfoRequest: changesRequested.length,
+        modelsAwaitingValidation: submittedVehicles.length,
+        modelsValidated: validatedVehicles.length,
+        modelsInfoRequest: changesRequested.length,
         creditsNew: newCredits.length,
         creditsIssued: validatedSales.length,
-        creditAwaiting: submittedSales.length,
+        creditsAwaiting: submittedSales.length,
       });
       setLoading(false);
     }));
@@ -66,37 +66,39 @@ const Actions = (props) => {
     <div id="actions" className="dashboard-card">
       <div className="content">
         <h1>Latest Activity</h1>
-        {activityCount.modelInfoRequest > 0
+        {activityCount.modelsInfoRequest > 0
         && (
         <ActivityBanner
           colour="yellow"
           icon="car"
           boldText="ZEV Models"
-          regularText={`${activityCount.modelInfoRequest} range information requests`}
-          linkTo={ROUTES_VEHICLES.LIST}
-          filter="CHANGES_REQUESTED"
+          regularText={`${activityCount.modelsInfoRequest} range information requests`}
+          linkTo={`${ROUTES_VEHICLES.LIST}?col-status=Changes%20Requested`}
+
         />
         )}
-        {activityCount.modelAwaitingValidation > 0
+        {activityCount.modelsAwaitingValidation > 0
         && (
         <ActivityBanner
           colour="blue"
           icon="car"
           boldText="ZEV Models"
-          regularText={`${activityCount.modelAwaitingValidation} awaiting validation`}
+          regularText={`${activityCount.modelsAwaitingValidation} awaiting validation`}
+          linkTo={`${ROUTES_VEHICLES.LIST}?col-status=Submitted`}
         />
         )}
-        {activityCount.modelValidated > 0
+        {activityCount.modelsValidated > 0
         && (
         <ActivityBanner
           colour="green"
           icon="car"
           boldText="ZEV Models"
-          regularText={`${activityCount.modelValidated} validated by government`}
+          regularText={`${activityCount.modelsValidated} validated by government`}
+          linkTo={`${ROUTES_VEHICLES.LIST}?col-status=Validated`}
         />
         )}
-        {activityCount.modelInfoRequest === 0
-        && activityCount.modelAwaitingValidation === 0 && activityCount.modelValidated === 0
+        {activityCount.modelsInfoRequest === 0
+        && activityCount.modelsAwaitingValidation === 0 && activityCount.modelsValidated === 0
         && (
           <ActivityBanner
             colour="green"
@@ -112,6 +114,7 @@ const Actions = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsNew} saved awaiting submission`}
+          linkTo={`${ROUTES_SALES.LIST}?status=New`}
         />
         )}
         {activityCount.creditsAwaiting > 0
@@ -120,7 +123,8 @@ const Actions = (props) => {
           colour="blue"
           icon="check-square"
           boldText="Credit Applications"
-          regularText={`${activityCount.creditAwaiting} awaiting validation`}
+          regularText={`${activityCount.creditsAwaiting} awaiting validation`}
+          linkTo={`${ROUTES_SALES.LIST}?status=Submitted%2CRecommend`}
         />
         )}
         {activityCount.creditsIssued > 0
@@ -130,9 +134,10 @@ const Actions = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsIssued} processed by government`}
+          linkTo={`${ROUTES_SALES.LIST}?status=Validated`}
         />
         )}
-        {activityCount.creditNew === 0
+        {activityCount.creditsNew === 0
         && activityCount.creditsAwaiting === 0 && activityCount.creditsIssued === 0
         && (
           <ActivityBanner
@@ -142,13 +147,13 @@ const Actions = (props) => {
             regularText="no current activity"
           />
         )}
-        {activityCount.transferAwaitingPartner > 0
+        {activityCount.transfersAwaitingPartner > 0
         && (
         <ActivityBanner
           colour="yellow"
           icon="exchange-alt"
           boldText="Credit Transfer"
-          regularText={`${activityCount.transferAwaitingPartner} awaiting partner confirmation`}
+          regularText={`${activityCount.transfersAwaitingPartner} awaiting partner confirmation`}
         />
         )}
         {activityCount.transferAwaitingGovernment > 0
@@ -157,7 +162,7 @@ const Actions = (props) => {
           colour="blue"
           icon="exchange-alt"
           boldText="Credit Transfer"
-          regularText={`${activityCount.transferAwaitingGovernment} awaiting  government action`}
+          regularText={`${activityCount.transfersAwaitingGovernment} awaiting  government action`}
         />
         )}
         {activityCount.transferRecorded > 0
@@ -166,11 +171,11 @@ const Actions = (props) => {
           colour="green"
           icon="exchange-alt"
           boldText="Credit Transfer"
-          regularText={`${activityCount.transferRecorded} recorded by government`}
+          regularText={`${activityCount.transfersRecorded} recorded by government`}
         />
         )}
-        {activityCount.transferAwaitingGovernment === 0
-        && activityCount.transferAwaitingPartner === 0 && activityCount.transferRecorded === 0
+        {activityCount.transfersAwaitingGovernment === 0
+        && activityCount.transfersAwaitingPartner === 0 && activityCount.transfersRecorded === 0
         && (
           <ActivityBanner
             colour="green"
@@ -184,11 +189,11 @@ const Actions = (props) => {
   );
 };
 
-Actions.defaultProps = {
+ActionsBceid.defaultProps = {
 };
 
-Actions.propTypes = {
+ActionsBceid.propTypes = {
   details: CustomPropTypes.organizationDetails.isRequired,
 };
 
-export default Actions;
+export default ActionsBceid;

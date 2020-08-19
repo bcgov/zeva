@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import History from '../../app/History';
+import history from '../../app/History';
 
 const ActivityBanner = (props) => {
   const {
@@ -10,11 +10,10 @@ const ActivityBanner = (props) => {
     boldText,
     regularText,
     linkTo,
-    filter,
   } = props;
 
-  return ([
-    <div className="alert alert-light activity-banner" key={regularText}>
+  return (
+    <div role="button" className="alert alert-light activity-banner" key={regularText} onClick={()=>{history.push(linkTo)}}>
       <div>
         <FontAwesomeIcon icon={icon} size="3x" className={colour} />
       </div>
@@ -25,8 +24,8 @@ const ActivityBanner = (props) => {
       <div id="fa-arrow">
         <FontAwesomeIcon icon="chevron-right" size="2x" className={colour} />
       </div>
-    </div>,
-  ]);
+    </div>
+  );
 };
 
 export default ActivityBanner;

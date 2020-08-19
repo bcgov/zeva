@@ -214,27 +214,12 @@ class Navbar extends Component {
                 </li>
               )}
               {typeof user.hasPermission === 'function'
-              && user.hasPermission('EDIT_ORGANIZATIONS', 'EDIT_ORGANIZATION_INFORMATION')
-              && !user.isGovernment
+              && (user.hasPermission('EDIT_ORGANIZATIONS') || user.hasPermission('EDIT_ORGANIZATION_INFORMATION'))
               && (
                 <li className="nav-item">
                   <NavLink
                     activeClassName="active"
                     to={ROUTES_ORGANIZATIONS.EDIT.replace(/:id/gi, user.organization.id)}
-                  >
-                    <span>Administration</span>
-                  </NavLink>
-                </li>
-              )}
-
-              {typeof user.hasPermission === 'function'
-              && user.hasPermission('EDIT_USERS')
-              && user.isGovernment
-              && (
-                <li className="nav-item">
-                  <NavLink
-                    activeClassName="active"
-                    to={ROUTES_ORGANIZATIONS.MINE}
                   >
                     <span>Administration</span>
                   </NavLink>

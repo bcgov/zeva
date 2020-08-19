@@ -40,10 +40,10 @@ const VehicleSupplierDetailsPage = (props) => {
             </div>
             )}
           </div>
-          {/* <h4>Supplier Class</h4>
+          <h4>Supplier Class</h4>
           <p className="supplier-text">
             {supplierClassSize()}
-          </p> */}
+          </p>
           <h4>Credit Balance</h4>
           <p className="supplier-text">A-{details.balance.A} — B-{details.balance.B}</p>
         </div>
