@@ -3,8 +3,8 @@
  */
 import PropTypes from 'prop-types';
 import React from 'react';
-import ReactTable from 'react-table';
 
+import ReactTable from '../../app/components/ReactTable';
 import history from '../../app/History';
 import ROUTES_CREDITS from '../../app/routes/Credits';
 import formatStatus from '../../app/utilities/formatStatus';
@@ -44,24 +44,12 @@ const SubmissionListTable = (props) => {
     id: 'warnings',
   }];
 
-  const filterMethod = (filter, row) => {
-    const id = filter.pivotId || filter.id;
-    return row[id] !== undefined ? String(row[id])
-      .toLowerCase()
-      .includes(filter.value.toLowerCase()) : true;
-  };
-
-  const filterable = true;
-
   const { items } = props;
 
   return (
     <ReactTable
-      className="searchable"
       columns={columns}
       data={items}
-      defaultFilterMethod={filterMethod}
-      defaultPageSize={items.length || 5}
       defaultSorted={[{
         id: 'submissionDate',
       }]}
@@ -79,8 +67,6 @@ const SubmissionListTable = (props) => {
 
         return {};
       }}
-      filterable={filterable}
-      pageSizeOptions={[items.length, 5, 10, 15, 20, 25, 50, 100]}
     />
   );
 };
