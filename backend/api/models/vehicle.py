@@ -68,8 +68,8 @@ class Vehicle(Auditable):
     )
     additional_credit = models.BooleanField(
         default=False,
-        db_comment="Boolean Field to see whether the vehicle should get "
-                   "additional credit"
+        db_comment="Boolean field used to claim whether the vehicle should "
+                   "get additional credit for passing the US06 range test."
     )
     credit_value = models.DecimalField(
         null=True,
