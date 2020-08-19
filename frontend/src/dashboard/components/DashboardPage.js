@@ -24,7 +24,7 @@ const DashboardPage = (props) => {
         </div>
 
         <div className="col-xl-7 col-lg-9">
-          {user.isGovernment ? <ActionsIdir /> : <ActionsBceid details={user} />}
+          {user.isGovernment ? <ActionsIdir user={user} /> : <ActionsBceid details={user} />}
         </div>
       </div>
     </div>

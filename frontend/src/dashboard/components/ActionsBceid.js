@@ -105,6 +105,7 @@ const ActionsBceid = () => {
             icon="exchange-alt"
             boldText="ZEV Models"
             regularText="no current activity"
+            className="no-hover"
           />
         )}
         {activityCount.creditsNew > 0
@@ -142,9 +143,10 @@ const ActionsBceid = () => {
         && (
           <ActivityBanner
             colour="green"
-            icon="exchange-alt"
+            icon="check-square"
             boldText="Credit Applications"
             regularText="no current activity"
+            className="no-hover"
           />
         )}
         {activityCount.transfersAwaitingPartner > 0
@@ -172,6 +174,7 @@ const ActionsBceid = () => {
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersRecorded} recorded by government`}
+          className="no-hover"
         />
         )}
         {activityCount.transfersAwaitingGovernment === 0
@@ -182,6 +185,7 @@ const ActionsBceid = () => {
             icon="exchange-alt"
             boldText="Credit Transfer"
             regularText="no current activity"
+            className="no-hover"
           />
         )}
       </div>

@@ -138,6 +138,8 @@ SalesSubmissionPage.propTypes = {
   submissions: PropTypes.arrayOf(PropTypes.shape).isRequired,
   upload: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired,
+  filtered: PropTypes.arrayOf(PropTypes.shape).isRequired,
+  setFiltered: PropTypes.func.isRequired,
 };
 
 export default SalesSubmissionPage;

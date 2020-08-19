@@ -22,7 +22,7 @@ const SalesSubmissionContainer = (props) => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submissions, setSubmissions] = useState([]);
-  const [filtered, setFiltered] = useState([])
+  const [filtered, setFiltered] = useState([]);
   const [files, setFiles] = useState([]);
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
   const refreshList = (showLoading) => {

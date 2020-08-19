@@ -10,10 +10,11 @@ const ActivityBanner = (props) => {
     boldText,
     regularText,
     linkTo,
+    className,
   } = props;
 
   return (
-    <div role="button" className="alert alert-light activity-banner" key={regularText} onClick={()=>{history.push(linkTo)}}>
+    <div role="button" className={`alert alert-light activity-banner ${className}`} key={regularText} onClick={()=>{history.push(linkTo)}}>
       <div>
         <FontAwesomeIcon icon={icon} size="3x" className={colour} />
       </div>
@@ -29,3 +30,17 @@ const ActivityBanner = (props) => {
 };
 
 export default ActivityBanner;
+
+ActivityBanner.defaultProps = {
+  className: '',
+  linkTo: '',
+};
+
+ActivityBanner.propTypes = {
+  colour: PropTypes.string.isRequired,
+  icon: PropTypes.string.isRequired,
+  boldText: PropTypes.string.isRequired,
+  regularText: PropTypes.string.isRequired,
+  linkTo: PropTypes.string,
+  className: PropTypes.string,
+};

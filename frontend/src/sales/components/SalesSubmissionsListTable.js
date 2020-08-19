@@ -103,6 +103,8 @@ SalesSubmissionListTable.defaultProps = {};
 
 SalesSubmissionListTable.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  setFiltered: PropTypes.func.isRequired,
+  filtered: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
 
 export default SalesSubmissionListTable;

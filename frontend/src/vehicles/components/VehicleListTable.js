@@ -10,7 +10,7 @@ import formatStatus from '../../app/utilities/formatStatus';
 
 const VehicleListTable = (props) => {
   const {
-    items, user, filtered, setFiltered, 
+    items, user, filtered, setFiltered,
   } = props;
   const toComma = (value) => {
     let newValue = value;
