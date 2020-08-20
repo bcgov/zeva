@@ -21,7 +21,15 @@ const VehicleList = (props) => {
   }
 
   const actionBar = user.isGovernment
-    ? <ActionBarGov vehicles={vehicles} handleClear={handleClear} filtered={filtered} setFiltered={setFiltered} /> : <ActionBarNonGov />;
+    ? (
+      <ActionBarGov
+        vehicles={vehicles}
+        handleClear={handleClear}
+        filtered={filtered}
+        setFiltered={setFiltered}
+      />
+    )
+    : <ActionBarNonGov />;
 
   return (
     <div id="vehicle-list" className="page">

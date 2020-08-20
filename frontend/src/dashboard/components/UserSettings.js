@@ -18,19 +18,7 @@ const UserSettings = (props) => {
         </div>
       </div>
 
-      <div className="content">
-        <div className="text">
-          <FontAwesomeIcon icon={['fas', 'play']} />
-          <button
-            type="button"
-            onClick={() => {
-              History.push(ROUTES_USERS.EDIT.replace(/:id/gi, details.id));
-            }}
-          >
-            Edit Profile/Users
-          </button>
-        </div>
-      </div>
+
 
       <div className="content">
         <div className="text">
@@ -50,8 +38,21 @@ const UserSettings = (props) => {
           )}
         </div>
       </div>
+      {/* <div className="content">
+        <div className="text">
+          <FontAwesomeIcon icon={['fas', 'play']} />
+          <button
+            type="button"
+            onClick={() => {
+              History.push(ROUTES_USERS.EDIT.replace(/:id/gi, details.id));
+            }}
+          >
+            Edit Profile/Users
+          </button>
+        </div>
+      </div> */}
 
-      <div className="content">
+      {/* <div className="content">
         <div className="text pdf-link">
           <FontAwesomeIcon icon={['fas', 'play']} />
           <button
@@ -62,7 +63,7 @@ const UserSettings = (props) => {
           > Edit Vehicle Supplier Info
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

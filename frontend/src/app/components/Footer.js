@@ -12,47 +12,25 @@ const Footer = () => (
     </div>
 
     <div className="links">
-      <NavLink
-        activeClassName="active"
-        to="/"
-      >
-        Home
-      </NavLink>
-      |
-      <NavLink
-        activeClassName="active"
-        to="/"
-      >
+      <a href="http://www.gov.bc.ca/disclaimer">
         Disclaimer
-      </NavLink>
+      </a>
       |
-      <NavLink
-        activeClassName="active"
-        to="/"
-      >
+      <a href="http://www.gov.bc.ca/privacy">
         Privacy
-      </NavLink>
+      </a>
       |
-      <NavLink
-        activeClassName="active"
-        to="/"
-      >
+      <a href="http://www.gov.bc.ca/accessible-government">
         Accessibility
-      </NavLink>
+      </a>
       |
-      <NavLink
-        activeClassName="active"
-        to="/"
-      >
+      <a href="http://www.gov.bc.ca/copyright">
         Copyright
-      </NavLink>
+      </a>
       |
-      <NavLink
-        activeClassName="active"
-        to="/"
-      >
+      <a href="http://www.gov.bc.ca/contactus">
         Contact Us
-      </NavLink>
+      </a>
     </div>
   </div>
 );

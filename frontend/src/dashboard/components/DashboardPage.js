@@ -1,7 +1,8 @@
 import React from 'react';
 import CustomPropTypes from '../../app/utilities/props';
 
-import Actions from './Actions';
+import ActionsBceid from './ActionsBceid';
+import ActionsIdir from './ActionsIdir';
 import Administration from './Administration';
 import Feedback from './Feedback';
 import UserSettings from './UserSettings';
@@ -16,13 +17,14 @@ const DashboardPage = (props) => {
           {user && !user.isGovernment && (
             <Feedback />
           )}
-          {user && user.isGovernment && (
+          {user && user.isGovernment && (user.hasPermission('EDIT_ORGANIZATIONS') || user.hasPermission('EDIT_ORGANIZATION_INFORMATION'))
+            && (
             <Administration user={user} />
-          )}
+            )}
         </div>
 
-        <div className="col-lg-9">
-          <Actions details={user} />
+        <div className="col-xl-7 col-lg-9">
+          {user.isGovernment ? <ActionsIdir user={user} /> : <ActionsBceid details={user} />}
         </div>
       </div>
     </div>
