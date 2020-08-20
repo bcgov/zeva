@@ -18,19 +18,7 @@ const UserSettings = (props) => {
         </div>
       </div>
 
-      <div className="content">
-        <div className="text">
-          <FontAwesomeIcon icon={['fas', 'play']} />
-          <button
-            type="button"
-            onClick={() => {
-              History.push(ROUTES_USERS.EDIT.replace(/:id/gi, details.id));
-            }}
-          >
-            Edit Profile/Users
-          </button>
-        </div>
-      </div>
+
 
       <div className="content">
         <div className="text">
@@ -50,24 +38,32 @@ const UserSettings = (props) => {
           )}
         </div>
       </div>
-
-      {typeof details.hasPermission === 'function'
-        && details.hasPermission('EDIT_ORGANIZATION_INFORMATION')
-        && !details.isGovernment
-        && (
-        <div className="content">
-          <div className="text pdf-link">
-            <FontAwesomeIcon icon={['fas', 'play']} />
-            <button
-              type="button"
-              onClick={() => {
-                History.push(ROUTES_ORGANIZATIONS.EDIT.replace(/:id/gi, details.organization.id));
-              }}
-            > Edit Vehicle Supplier Info
-            </button>
-          </div>
+      {/* <div className="content">
+        <div className="text">
+          <FontAwesomeIcon icon={['fas', 'play']} />
+          <button
+            type="button"
+            onClick={() => {
+              History.push(ROUTES_USERS.EDIT.replace(/:id/gi, details.id));
+            }}
+          >
+            Edit Profile/Users
+          </button>
         </div>
-        )}
+      </div> */}
+
+      {/* <div className="content">
+        <div className="text pdf-link">
+          <FontAwesomeIcon icon={['fas', 'play']} />
+          <button
+            type="button"
+            onClick={() => {
+              History.push(ROUTES_ORGANIZATIONS.EDIT.replace(/:id/gi, details.organization.id));
+            }}
+          > Edit Vehicle Supplier Info
+          </button>
+        </div>
+      </div> */}
     </div>
   );
 };

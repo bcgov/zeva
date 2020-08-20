@@ -21,7 +21,7 @@ const Administration = (props) => {
             <button
               type="button"
               onClick={() => {
-                History.push(ROUTES_ORGANIZATIONS.LIST);
+                History.push(ROUTES_ORGANIZATIONS.USERS.replace(/:id/gi, user.organization.id));
               }}
             >
               Manage government users
