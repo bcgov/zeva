@@ -91,7 +91,6 @@ class RecordOfSaleViewset(
 
         try:
             file = request.FILES['files']
-            validate_xls_file(file)
 
             data = file.read()
             file.close()
