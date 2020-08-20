@@ -12,6 +12,7 @@ RUN curl -o minio https://dl.minio.io/server/minio/release/linux-amd64/minio && 
     chmod +x mc && \
     mkdir config && \
     mkdir data  && \
+    mkdir data/zeva  && \
     mkdir s3 && \
     mkdir s3/config && \
     mkdir s3/data && \    

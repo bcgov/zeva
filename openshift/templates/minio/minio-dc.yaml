@@ -123,16 +123,6 @@ objects:
     spec:
       strategy:
         type: Recreate
-        recreateParams:
-          post:
-            execNewPod:
-              command:
-                - /bin/sh
-                - '-c'
-                - mkdir /data/zeva
-              containerName: backend
-            failurePolicy: Retry
-          timeoutSeconds: 600
         resources: {}
         activeDeadlineSeconds: 21600
       triggers:
