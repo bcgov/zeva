@@ -98,6 +98,10 @@ const VehicleListTable = (props) => {
         variable = 0.5;
       }
 
+      if (['EREV', 'PHEV'].indexOf(row.vehicleZevType.vehicleZevCode) >= 0) {
+        variable += 0.2;
+      }
+
       let credit = ((row.range * 0.006214) + variable).toFixed(2);
 
       if (credit > 4) {

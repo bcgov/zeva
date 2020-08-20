@@ -256,6 +256,10 @@ p {
 
 .text-blue {
   color: $default-text-blue;
+
+  &.disabled, .disabled {
+    color: rgba(26, 90, 150, 0.5);
+  }
 }
 
 .well {
