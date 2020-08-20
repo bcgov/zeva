@@ -221,7 +221,7 @@ class VehicleSerializer(
             'range', 'validation_status', 'vehicle_class_code', 'weight_kg',
             'vehicle_zev_type', 'credit_class', 'credit_value',
             'vehicle_comment', 'attachments', 'update_user',
-            'update_timestamp', 'organization', 'additional_credit',
+            'update_timestamp', 'organization', 'has_passed_us06_test',
         )
         read_only_fields = ('validation_status',)
 
@@ -323,7 +323,7 @@ class VehicleSaveSerializer(
             'id', 'make', 'model_name', 'model_year', 'range', 'weight_kg',
             'validation_status', 'vehicle_zev_type', 'vehicle_class_code',
             'create_user', 'update_user', 'vehicle_attachments',
-            'vehicle_comment', 'additional_credit',
+            'vehicle_comment', 'has_passed_us06_test',
         )
         read_only_fields = ('validation_status', 'id',)
 

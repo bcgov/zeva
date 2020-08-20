@@ -133,15 +133,15 @@ const VehicleForm = (props) => {
               <div className="form-group row mt-0 pt-0 text-blue">
                 <span
                   className="col-sm-4"
-                  htmlFor="additionalCredit"
+                  htmlFor="hasPassedUs06Test"
                 >
                   Claim Additional US06 0.2 credit
                 </span>
                 <div className={`col-sm-8 ${['EREV', 'PHEV'].indexOf(selectedZevType) < 0 ? 'disabled' : ''}`}>
                   <input
-                    defaultChecked={fields.additionalCredit}
+                    defaultChecked={fields.hasPassedUs06Test}
                     disabled={['EREV', 'PHEV'].indexOf(selectedZevType) < 0}
-                    name="additionalCredit"
+                    name="hasPassedUs06Test"
                     onChange={handleInputChange}
                     type="checkbox"
                   />
@@ -177,7 +177,7 @@ const VehicleForm = (props) => {
             </fieldset>
           </div>
 
-          {(fields.additionalCredit || (fields.validationStatus === 'CHANGES_REQUESTED' && setUploadFiles)) && (
+          {(fields.hasPassedUs06Test || (fields.validationStatus === 'CHANGES_REQUESTED' && setUploadFiles)) && (
             <div className="col-lg-6">
               <h3 className="font-weight-bold mt-2">Upload range test results</h3>
               <fieldset>
@@ -310,7 +310,7 @@ const VehicleForm = (props) => {
                 </button>
                 <button
                   className="button primary"
-                  disabled={fields.additionalCredit && files.length === 0 && (!fields.attachments || fields.attachments.length <= deleteFiles.length)}
+                  disabled={fields.hasPassedUs06Test && files.length === 0 && (!fields.attachments || fields.attachments.length <= deleteFiles.length)}
                   onClick={() => { setShowModal(true); }}
                   type="button"
                 >

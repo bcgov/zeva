@@ -45,7 +45,7 @@ class Vehicle(Auditable):
         default=VehicleDefinitionStatuses.DRAFT,
         db_comment="The validation status of the vehicle. Valid statuses: "
                    "{statuses}".format(
-                        statuses=[c.name for c in VehicleDefinitionStatuses]
+                       statuses=[c.name for c in VehicleDefinitionStatuses]
                    )
     )
     organization = models.ForeignKey(
@@ -66,7 +66,7 @@ class Vehicle(Auditable):
         on_delete=models.PROTECT,
         null=True
     )
-    additional_credit = models.BooleanField(
+    has_passed_us06_test = models.BooleanField(
         default=False,
         db_comment="Boolean field used to claim whether the vehicle should "
                    "get additional credit for passing the US06 range test."
@@ -107,8 +107,8 @@ class Vehicle(Auditable):
 
         credit = (self.range * 0.006214) + variable
 
-        if self.vehicle_zev_type in ['EREV', 'PHEV'] and \
-            self.additional_credit is True:
+        if self.vehicle_zev_type.vehicle_zev_code in ['EREV', 'PHEV'] and \
+            self.has_passed_us06_test is True:
             credit += 0.2
 
         if credit > 4:
