@@ -1,0 +1,22 @@
+#organization-details {
+  .organization-address {
+    background-color: $default-background-grey;
+    border: 1px solid $border-grey;
+    padding: 1rem;
+
+    a {
+      color: $default-link-blue;
+    }
+
+    label {
+      margin: 0;
+      padding: 0;
+      min-width: 10rem;
+    }
+
+    .value {
+      color: $default-text-blue;
+      font-weight: bold;
+    }
+  }
+}
