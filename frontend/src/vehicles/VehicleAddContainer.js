@@ -11,7 +11,7 @@ import history from '../app/History';
 
 const VehicleAddContainer = (props) => {
   const emptyForm = {
-    additionalCredit: false,
+    hasPassedUs06Test: false,
     make: '',
     modelName: '',
     vehicleZevType: { vehicleZevCode: '--' },

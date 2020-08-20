@@ -156,14 +156,14 @@ const VehicleEditContainer = (props) => {
 
   const loadVehicle = (data) => {
     setFields({
-      additionalCredit: data.additionalCredit,
       attachments: data.attachments,
+      hasPassedUs06Test: data.hasPassedUs06Test,
       make: data.make,
       modelName: data.modelName,
-      vehicleZevType: data.vehicleZevType.vehicleZevCode,
-      range: data.range,
       modelYear: data.modelYear.name,
+      range: data.range,
       vehicleClassCode: data.vehicleClassCode.vehicleClassCode,
+      vehicleZevType: data.vehicleZevType.vehicleZevCode,
       weightKg: data.weightKg,
     });
   };
