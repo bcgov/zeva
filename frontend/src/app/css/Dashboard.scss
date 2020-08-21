@@ -32,7 +32,6 @@
       padding: 0;
     }
 
-
     .content {
       margin-bottom: 1rem;
 
@@ -71,7 +70,6 @@
     font-size: 1.1rem;
     position: relative;
     padding:1rem;
-
   
     a {
       color: $default-link-blue;
@@ -95,13 +93,13 @@
     }
 
     h1 {
-      background-color: $white; 
+      // background-color: $white; 
       color: $primary-blue;
       font-size: 1.75rem;
       padding: 0 0.7rem;
-      position: absolute;
-      top: -1rem;
-      left: 1.5rem;
+      // position: absolute; 
+      // top: -1rem;
+      // left: 1.5rem;
     }
     #action-org-name {
       padding-left: 1.5rem;
@@ -146,14 +144,6 @@
         display: inline-block;
         vertical-align: middle;
       }
-  
-      .fa-play {
-        color: $primary-yellow;
-        display: inline-block;
-        font-size: 1rem;
-        margin: 0 1.5rem 0 .3rem;
-        vertical-align: middle;
-      }
     }
 
     .value {
@@ -180,11 +170,68 @@
 }
 
 #actions {
-
+  h1 {
+    text-align: left;
+  }
+  .activity-banner {
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    &.no-hover {
+      cursor: default;
+    }
+    #action-icon {
+      width: 3rem;
+    }
+    .activity-text {
+      display: flex;
+      margin-left:2rem;
+      text-align: left;
+    }
+    #fa-arrow {
+      transform: scale(.8,1.6);
+      margin-left: auto;
+    }
+    .blue {
+      color: $default-text-blue;
+    }
+    .yellow {
+      color: $primary-yellow;
+    }
+    .green {
+      color: green;
+    }
+    div {
+      margin: auto 20px auto 10px;
+    }
+  }
+  h3 {
+    font-size: 1.35rem;
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+  }
   .icon-secure {
     display: inline-block;
     font-size: 1rem;
     vertical-align: middle;
+  }
+  @media(max-width:576px){
+    .activity-banner, .activity-banner * {
+      display: block;
+      text-align: center;
+      svg {
+        margin: 0 auto;
+      }
+      #fa-arrow {
+        display: none;
+      }
+    }
+    .activity-banner .activity-text{
+      display: block;
+      padding: 0;
+      margin: 0;
+    }
   }
 }
 
@@ -194,12 +241,10 @@
       margin-left: 0rem;
       padding-left: 1.5rem;
     }
-
     .value {
       width: 2rem;
     }
   }
-
   .icon {
     color: $primary-yellow;
     font-size: 3rem;
@@ -211,8 +256,16 @@
 
 #administration.dashboard-fieldset {
   padding-top: 2.5rem;
-
   .content {
     margin-bottom: 1rem;
+    svg {
+      margin-right: 1rem;
+      color: $primary-yellow;
+    }
+  }
+  @media(max-width:576px){
+   svg {
+     display: none;
+   }
   }
 }

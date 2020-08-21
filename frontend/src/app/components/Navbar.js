@@ -50,8 +50,9 @@ class Navbar extends Component {
       <div id="navbar">
         <div className="row header">
           <div className="col-lg-9">
-            <div className="brand-logo" />
-
+            <a href="http://www.gov.bc.ca">
+              <div className="brand-logo" />
+            </a>
             <h1>Zero Emission Vehicle Reporting System</h1>
           </div>
 
@@ -98,14 +99,14 @@ class Navbar extends Component {
                 aria-labelledby="navbarDropdown"
                 className={`dropdown-menu ${userMenuCollapsed ? 'd-none' : ''}`}
               >
-                <div className="dropdown-item">
+                {/* <div className="dropdown-item">
                   <button type="button">
                     <span className="icon">
                       <FontAwesomeIcon icon="user-cog" />
                     </span>
                     <span>Settings</span>
                   </button>
-                </div>
+                </div> */}
                 <div className="dropdown-item">
                   <button
                     onClick={() => keycloak.logout({
@@ -122,7 +123,7 @@ class Navbar extends Component {
                 </div>
               </div>
             </li>
-            <li>
+            {/* <li>
               <NavLink
                 activeClassName="active"
                 className="notifications"
@@ -139,7 +140,7 @@ class Navbar extends Component {
               >
                 <span><FontAwesomeIcon icon={['far', 'question-circle']} /></span>
               </NavLink>
-            </li>
+            </li> */}
           </ul>
 
           <div className={`collapse navbar-collapse ${collapsed === false ? 'show' : ''}`}>
@@ -212,24 +213,8 @@ class Navbar extends Component {
                   </NavLink>
                 </li>
               )}
-
               {typeof user.hasPermission === 'function'
-              && user.hasPermission('VIEW_ORGANIZATION_INFORMATION')
-              && !user.isGovernment
-              && (
-                <li className="nav-item">
-                  <NavLink
-                    activeClassName="active"
-                    to={ROUTES_ORGANIZATIONS.MINE}
-                  >
-                    <span>Organization Details</span>
-                  </NavLink>
-                </li>
-              )}
-
-              {typeof user.hasPermission === 'function'
-              && user.hasPermission('EDIT_USERS')
-              && user.isGovernment
+              && (user.hasPermission('EDIT_ORGANIZATIONS') || user.hasPermission('EDIT_ORGANIZATION_INFORMATION'))
               && (
                 <li className="nav-item">
                   <NavLink
