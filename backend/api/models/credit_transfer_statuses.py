@@ -1,0 +1,13 @@
+from enum import Enum, unique
+
+
+@unique
+class CreditTransferStatuses(Enum):
+    DRAFT = 'DRAFT'
+    SUBMITTED = 'SUBMITTED'
+    APPROVED = 'APPROVED'
+    RECOMMEND_APPROVAL = 'RECOMMEND_APPROVAL'
+    RECOMMEND_REJECTION = 'RECOMMEND_REJECTION'
+    VALIDATED = 'VALIDATED'
+    REJECTED = 'REJECTED'
+    DELETED = 'DELETED'
