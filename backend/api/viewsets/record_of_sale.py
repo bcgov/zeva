@@ -16,7 +16,7 @@ from api.models.record_of_sale import RecordOfSale
 from api.models.record_of_sale_statuses import RecordOfSaleStatuses
 from api.serializers.record_of_sale import RecordOfSaleSerializer
 from api.services.sales_spreadsheet import create_sales_spreadsheet, \
-    ingest_sales_spreadsheet, validate_xls_file, validate_spreadsheet, \
+    ingest_sales_spreadsheet, validate_spreadsheet, \
     create_errors_spreadsheet
 from auditable.views import AuditableMixin
 

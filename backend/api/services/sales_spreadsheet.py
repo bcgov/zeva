@@ -260,7 +260,7 @@ def validate_xls_file(file):
 
     if mimetype != "application/vnd.ms-excel":
         raise ValidationError(
-            'File must be an excel spreadsheet {}'.format(mimetype)
+            'File must be an excel spreadsheet'
         )
 
     return True
