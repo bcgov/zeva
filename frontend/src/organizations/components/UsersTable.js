@@ -1,9 +1,10 @@
 /*
  * Presentational component
  */
-import ReactTable from 'react-table';
 import React from 'react';
 import PropTypes from 'prop-types';
+
+import ReactTable from '../../app/components/ReactTable';
 import history from '../../app/History';
 
 const UsersTable = (props) => {
@@ -23,28 +24,15 @@ const UsersTable = (props) => {
     id: 'status',
   }];
 
-  const filterMethod = (filter, row) => {
-    const id = filter.pivotId || filter.id;
-    return row[id] !== undefined ? String(row[id])
-      .toLowerCase()
-      .includes(filter.value.toLowerCase()) : true;
-  };
-
-  const filterable = true;
-
   const { items } = props;
 
   return (
     <ReactTable
-      className="searchable"
       columns={columns}
       data={items}
-      defaultFilterMethod={filterMethod}
-      defaultPageSize={10}
       defaultSorted={[{
         id: 'displayName',
       }]}
-      filterable={filterable}
       getTrProps={(state, row) => {
         if (row && row.original) {
           return {
@@ -58,7 +46,6 @@ const UsersTable = (props) => {
 
         return {};
       }}
-      pageSizeOptions={[5, 10, 15, 20, 25, 50, 100]}
     />
   );
 };

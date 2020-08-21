@@ -77,7 +77,7 @@ const SalesSubmissionPage = (props) => {
                 </div>
                 {files.map((file) => (
                   <div className="row" key={file.name}>
-                    <div className="col-8">{file.name}</div>
+                    <div className="col-8 filename">{file.name}</div>
                     <div className="col-3 size">{getFileSize(file.size)}</div>
                     <div className="col-1 actions">
                       <button

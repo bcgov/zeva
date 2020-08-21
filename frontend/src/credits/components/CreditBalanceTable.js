@@ -5,9 +5,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTable from 'react-table';
 
-import history from '../../app/History';
-import ROUTES_CREDITS from '../../app/routes/Credits';
-
 const CreditBalancesTable = (props) => {
   const columns = [{
     accessor: 'modelYear.name',
