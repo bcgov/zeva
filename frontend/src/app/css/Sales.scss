@@ -43,6 +43,12 @@
   .files {
     margin: 1rem -1px 0;
 
+    .filename {
+      overflow: hidden;
+      padding-left: 2rem;
+      text-overflow: ellipsis;
+    }
+
     .row:nth-child(odd) {
       background-color: $white;
     }

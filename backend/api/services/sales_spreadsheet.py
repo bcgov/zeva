@@ -267,8 +267,13 @@ def validate_xls_file(file):
 
 
 def validate_spreadsheet(data, user_organization=None, skip_authorization=False):
-    workbook = xlrd.open_workbook(file_contents=data)
-
+    try:
+        workbook = xlrd.open_workbook(file_contents=data)
+    except XLRDError:
+        raise ValidationError(
+            'File cannot be opened. '
+            "Please make sure it's an xls file"
+        )
     organization = get_organization(workbook)
 
     if organization is None or (
@@ -284,7 +289,7 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
         sheet = workbook.sheet_by_name('ZEV Sales')
     except XLRDError:
         raise ValidationError(
-            'Spreadsheet is missing ZEV Sales sheet.'
+            'Spreadsheet is missing ZEV Sales sheet. '
             'Please download the template again and try again.'
         )
 

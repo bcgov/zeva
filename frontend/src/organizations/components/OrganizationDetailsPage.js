@@ -20,19 +20,38 @@ const OrganizationDetailsPage = (props) => {
     <div id="organization-details" className="page">
       <div className="row">
         <div className="col-sm-12">
-          <h1>{details.name}</h1>
+          <h1>{details.isGovernment ? details.name : 'Vehicle Supplier Information'}</h1>
         </div>
       </div>
 
       <div className="row">
-        <div className="col-sm-6">
-          {details.organizationAddress && (
+        <div className="col-md-12 col-lg-8 col-xl-6">
+          {!details.isGovernment && details.organizationAddress && (
             <div className="organization-address">
-              {details.organizationAddress.addressLine1}
-              <br />
-              {details.organizationAddress.city} {details.organizationAddress.state}
-              <br />
-              {details.organizationAddress.postalCode}
+              <div className="row">
+                <div className="col-md-4">Legal name:</div>
+                <div className="col-md-8 value">{details.name}</div>
+              </div>
+              <div className="row">
+                <div className="col-md-4">Common name:</div>
+                <div className="col-md-8 value">{details.shortName}</div>
+              </div>
+              <div className="row">
+                <div className="col-md-4">Address:</div>
+                <div className="col-md-8 value">
+                  {details.organizationAddress.addressLine1}{' '}
+                  {details.organizationAddress.addressLine2}{' '}
+                  {details.organizationAddress.addressLine3}{' '}
+                  {details.organizationAddress.city}{' '}
+                  {details.organizationAddress.state}{' '}
+                  {details.organizationAddress.postalCode}
+                </div>
+              </div>
+              <div className="row">
+                <div className="offset-4 col-md-8">
+                  <a href="mailto:CEVEnquiries@gov.bc.ca?subject=ZEVA supplier address change request">Request change to name or address</a>
+                </div>
+              </div>
             </div>
           )}
         </div>

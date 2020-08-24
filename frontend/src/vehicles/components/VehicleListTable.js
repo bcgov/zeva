@@ -3,9 +3,9 @@
  */
 import PropTypes from 'prop-types';
 import React from 'react';
-import ReactTable from 'react-table';
 
 import history from '../../app/History';
+import ReactTable from '../../app/components/ReactTable';
 import formatStatus from '../../app/utilities/formatStatus';
 
 const VehicleListTable = (props) => {
@@ -98,6 +98,10 @@ const VehicleListTable = (props) => {
         variable = 0.5;
       }
 
+      if (['EREV', 'PHEV'].indexOf(row.vehicleZevType.vehicleZevCode) >= 0) {
+        variable += 0.2;
+      }
+
       let credit = ((row.range * 0.006214) + variable).toFixed(2);
 
       if (credit > 4) {
@@ -118,28 +122,14 @@ const VehicleListTable = (props) => {
     width: 175,
   }];
 
-  const filterMethod = (filter, row) => {
-    const id = filter.pivotId || filter.id;
-    return row[id] !== undefined ? String(row[id])
-      .toLowerCase()
-      .includes(filter.value.toLowerCase()) : true;
-  };
-
   return (
     <ReactTable
-      className="searchable"
       columns={columns}
       filtered={filtered}
       data={items}
-      defaultFilterMethod={filterMethod}
-      onFilteredChange={(input) => {
-        setFiltered(input);
-      }}
-      defaultPageSize={items.length}
       defaultSorted={[{
         id: 'make',
       }]}
-      filterable
       getTrProps={(state, row) => {
         if (row && row.original && user) {
           return {
@@ -154,7 +144,9 @@ const VehicleListTable = (props) => {
 
         return {};
       }}
-      pageSizeOptions={[items.length, 5, 10, 15, 20, 25, 50, 100]}
+      onFilteredChange={(input) => {
+        setFiltered(input);
+      }}
     />
   );
 };

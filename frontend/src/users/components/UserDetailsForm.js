@@ -99,27 +99,16 @@ const UserDetailsForm = (props) => {
                   mandatory
                   name="keycloakEmail"
                 />
-                {accountType === 'BCeID' && ([
-                  <TextInput
-                    defaultValue={details.email}
-                    details="the email used to receive notifications, if different from above"
-                    errorMessage={'email' in errorFields && errorFields.email}
-                    handleInputChange={handleInputChange}
-                    id="notificationsEmail"
-                    key="notificationsEmail"
-                    label="Notifications Email"
-                    name="email"
-                  />,
+                {accountType === 'BCeID' && (
                   <TextInput
                     defaultValue={details.phone}
                     errorMessage={'phone' in errorFields && errorFields.phone}
                     handleInputChange={handleInputChange}
                     id="phone"
-                    key="phone"
                     label="Phone"
                     name="phone"
-                  />,
-                ])}
+                  />
+                )}
               </span>
               <span className="col-md-4">
                 {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_USERS') && (
@@ -167,7 +156,6 @@ const UserDetailsForm = (props) => {
                 >
                   <FontAwesomeIcon icon="arrow-left" /> Back
                 </button>
-                <ButtonDelete action={() => { console.log('delete'); }} />
               </span>
 
               <span className="right-content">

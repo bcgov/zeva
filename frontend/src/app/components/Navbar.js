@@ -219,7 +219,7 @@ class Navbar extends Component {
                 <li className="nav-item">
                   <NavLink
                     activeClassName="active"
-                    to={ROUTES_ORGANIZATIONS.EDIT.replace(/:id/gi, user.organization.id)}
+                    to={ROUTES_ORGANIZATIONS.MINE}
                   >
                     <span>Administration</span>
                   </NavLink>

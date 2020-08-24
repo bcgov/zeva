@@ -68,6 +68,8 @@ const VehicleForm = (props) => {
     return (<Loading />);
   }
 
+  const selectedZevType = fields.vehicleZevType.vehicleZevCode || fields.vehicleZevType;
+
   return (
     <div id="form" className="page">
       <div className="row">
@@ -98,7 +100,7 @@ const VehicleForm = (props) => {
                 dropdownData={vehicleYears}
                 fieldName="modelYear"
                 handleInputChange={handleInputChange}
-                selectedOption={fields.modelYear.name}
+                selectedOption={fields.modelYear.name || fields.modelYear}
               />
               <AutocompleteInput
                 label="Make"
@@ -121,12 +123,31 @@ const VehicleForm = (props) => {
               />
               <VehicleFormDropdown
                 accessor={(zevType) => zevType.vehicleZevCode}
+                className="mb-0"
                 dropdownName="ZEV Type"
                 dropdownData={vehicleTypes}
                 fieldName="vehicleZevType"
                 handleInputChange={handleInputChange}
-                selectedOption={fields.vehicleZevType.vehicleZevCode}
+                selectedOption={selectedZevType}
               />
+              <div className="form-group row mt-0 pt-0 text-blue">
+                <span
+                  className="col-sm-4"
+                  htmlFor="hasPassedUs06Test"
+                >
+                  Claim Additional US06 0.2 credit
+                </span>
+                <div className={`col-sm-8 ${['EREV', 'PHEV'].indexOf(selectedZevType) < 0 ? 'disabled' : ''}`}>
+                  <input
+                    defaultChecked={fields.hasPassedUs06Test}
+                    disabled={['EREV', 'PHEV'].indexOf(selectedZevType) < 0}
+                    name="hasPassedUs06Test"
+                    onChange={handleInputChange}
+                    type="checkbox"
+                  />
+                  (requires certificate upload)
+                </div>
+              </div>
               <TextInput
                 label="Electric Range (km)"
                 id="range"
@@ -141,7 +162,7 @@ const VehicleForm = (props) => {
                 dropdownData={vehicleClasses}
                 fieldName="vehicleClassCode"
                 handleInputChange={handleInputChange}
-                selectedOption={fields.vehicleClassCode.vehicleClassCode}
+                selectedOption={fields.vehicleClassCode.vehicleClassCode || fields.vehicleClassCode}
               />
               <TextInput
                 num
@@ -156,7 +177,7 @@ const VehicleForm = (props) => {
             </fieldset>
           </div>
 
-          {fields.validationStatus === 'CHANGES_REQUESTED' && setUploadFiles && (
+          {(fields.hasPassedUs06Test || (fields.validationStatus === 'CHANGES_REQUESTED' && setUploadFiles)) && (
             <div className="col-lg-6">
               <h3 className="font-weight-bold mt-2">Upload range test results</h3>
               <fieldset>
@@ -181,7 +202,7 @@ const VehicleForm = (props) => {
                       <div className="col-3 size header">Size</div>
                       <div className="col-1 actions header" />
                     </div>
-                    {fields.attachments.filter((attachment) => (
+                    {fields.attachments && fields.attachments.filter((attachment) => (
                       deleteFiles.indexOf(attachment.id) < 0
                     )).map((attachment) => (
                       <div className="row" key={attachment.id}>
@@ -288,9 +309,10 @@ const VehicleForm = (props) => {
                   <FontAwesomeIcon icon="save" /> Save Draft
                 </button>
                 <button
-                  type="button"
                   className="button primary"
+                  disabled={fields.hasPassedUs06Test && files.length === 0 && (!fields.attachments || fields.attachments.length <= deleteFiles.length)}
                   onClick={() => { setShowModal(true); }}
+                  type="button"
                 >
                   <FontAwesomeIcon icon="paper-plane" /> Submit
                 </button>
@@ -319,6 +341,7 @@ VehicleForm.propTypes = {
   files: PropTypes.arrayOf(PropTypes.shape()),
   formTitle: PropTypes.string.isRequired,
   handleInputChange: PropTypes.func.isRequired,
+  handleSaveDraft: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
