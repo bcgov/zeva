@@ -10,7 +10,7 @@ import enumfields.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0064_auto_20200806_0850'),
+        ('api', '0065_vehicle_has_passed_us06_test'),
     ]
 
     operations = [
