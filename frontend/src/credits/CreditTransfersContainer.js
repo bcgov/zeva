@@ -4,22 +4,24 @@
  */
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-
+import history from '../app/History';
 import Loading from '../app/components/Loading';
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import CustomPropTypes from '../app/utilities/props';
 import CreditTransfersPage from './components/CreditTransfersPage';
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
+import ROUTES_CREDITS from '../app/routes/Credits';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 
 const CreditTransfersContainer = (props) => {
+  const emptyRow = {
+    creditType: '', modelYear: '', quantity: 0, value: 0,
+  };
   const emptyForm = {
     transferPartner: '',
     transferType: '',
   };
-  const [rows, setRows] = useState([{
-    creditType: '', modelYear: '', quantity: 0, value: 0,
-  }]);
+  const [rows, setRows] = useState([emptyRow]);
   const { user, keycloak } = props;
   const [loading, setLoading] = useState(true);
   const [organizations, setOrganizations] = useState([]);
@@ -38,29 +40,44 @@ const CreditTransfersContainer = (props) => {
     const filteredRows = rows.filter((item, index) => (index !== rowId));
     setRows(filteredRows);
   };
+
+  const submitOrSave = (status) => {
+    let toSupplier = '';
+    let fromSupplier = '';
+    if (fields.transferType === 'transfer to') {
+      toSupplier = fields.transferPartner;
+      fromSupplier = user.organization.id;
+    } else {
+      toSupplier = user.organization.id;
+      fromSupplier = fields.transferPartner;
+    }
+    const data = rows.map((row) => ({
+      numberOfCredits: row.quantity,
+      valuePerCredit: row.value,
+      creditClass: row.creditType,
+      toSupplier,
+      fromSupplier,
+      modelYear: row.modelYear,
+      status,
+    }));
+    setLoading(true);
+    axios.post('/credit-transfers', { rows: data }).then((response) => {
+      history.push(ROUTES_CREDITS.LIST);
+      setLoading(false);
+    });
+  };
   const handleSave = () => {
-    // setFields({ ...fields, rowArray: rows });
-    console.log(rows);
+    submitOrSave('DRAFT');
   };
   const handleSubmit = () => {
-    // setFields({ ...fields, rowArray: rows });
-    setLoading(true);
-    console.log(rows);
-    // axios.post(ROUTES_VEHICLES.LIST, data).then((response) => {
-    //   const { id } = response.data;
-    //   axios.patch(`vehicles/${id}/state_change`, { validationStatus: 'SUBMITTED' });
-    setFields(emptyForm);
-    setLoading(false);
-    // });
+    submitOrSave('SUBMITTED');
   };
   const addRow = () => {
-    setRows([...rows, {
-      creditType: '', modelYear: '', quantity: '', value: '',
-    }]);
+    setRows([...rows, emptyRow]);
   };
   const handleRowInputChange = (event, rowId) => {
     const { value, name } = event.target;
-    let rowsCopy = JSON.parse(JSON.stringify(rows));
+    const rowsCopy = JSON.parse(JSON.stringify(rows));
     rowsCopy[rowId][name] = value;
     setRows(rowsCopy);
   };
