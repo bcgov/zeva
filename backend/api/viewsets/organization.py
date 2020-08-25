@@ -12,6 +12,7 @@ from api.serializers.sales_submission import SalesSubmissionListSerializer
 from api.serializers.organization import \
     OrganizationSerializer, OrganizationWithMembersSerializer, \
     OrganizationSaveSerializer
+from api.permissions.organization import OrganizationPermissions
 from auditable.views import AuditableMixin
 
 
@@ -24,7 +25,7 @@ class OrganizationViewSet(
     This viewset automatically provides `list`, `create`, `retrieve`,
     and  `update`  actions.
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (OrganizationPermissions,)
     http_method_names = ['get', 'post', 'put', 'patch']
 
     serializer_classes = {

@@ -17,6 +17,8 @@ const SalesSubmissionPage = (props) => {
     submissions,
     upload,
     user,
+    filtered,
+    setFiltered,
   } = props;
 
   const removeFile = (removedFile) => {
@@ -25,7 +27,6 @@ const SalesSubmissionPage = (props) => {
 
     setUploadFiles([...files]);
   };
-
   return (
     <div id="sales-edit" className="page">
       <h2>Credit Request Submission (Report ZEV Sales)</h2>
@@ -76,7 +77,7 @@ const SalesSubmissionPage = (props) => {
                 </div>
                 {files.map((file) => (
                   <div className="row" key={file.name}>
-                    <div className="col-8">{file.name}</div>
+                    <div className="col-8 filename">{file.name}</div>
                     <div className="col-3 size">{getFileSize(file.size)}</div>
                     <div className="col-1 actions">
                       <button
@@ -119,6 +120,8 @@ const SalesSubmissionPage = (props) => {
       <SalesSubmissionsListTable
         items={submissions}
         user={user}
+        filtered={filtered}
+        setFiltered={setFiltered}
       />
     </div>
   );
@@ -135,6 +138,8 @@ SalesSubmissionPage.propTypes = {
   submissions: PropTypes.arrayOf(PropTypes.shape).isRequired,
   upload: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired,
+  filtered: PropTypes.arrayOf(PropTypes.shape).isRequired,
+  setFiltered: PropTypes.func.isRequired,
 };
 
 export default SalesSubmissionPage;

@@ -11,7 +11,7 @@ import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import CustomPropTypes from '../app/utilities/props';
 import VehicleSupplierEditForm from './components/VehicleSupplierEditForm';
 import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs';
-import History from '../app/History';
+import history from '../app/History';
 import parseErrorResponse from '../app/utilities/parseErrorResponse';
 
 const VehicleSupplierEditContainer = (props) => {
@@ -79,8 +79,7 @@ const VehicleSupplierEditContainer = (props) => {
   const handleSubmit = () => {
     if (newSupplier) {
       axios.post(ROUTES_ORGANIZATIONS.LIST, details).then((response) => {
-        refreshDetails();
-        History.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, response.data.id));
+        history.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, response.data.id));
       }).catch((errors) => {
         if (!errors.response) {
           return;
@@ -94,8 +93,7 @@ const VehicleSupplierEditContainer = (props) => {
       });
     } else {
       axios.patch(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id), details).then(() => {
-        refreshDetails();
-        History.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));
+        history.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));
       }).catch((errors) => {
         if (!errors.response) {
           return;

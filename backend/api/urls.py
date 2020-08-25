@@ -8,6 +8,7 @@ from .viewsets.submissions import SalesSubmissionsViewset
 from .viewsets.user import UserViewSet
 from .viewsets.vehicle import VehicleViewSet
 from .viewsets.icbc_verification import IcbcVerificationViewSet
+from .viewsets.credit_transfer import CreditTransferViewset
 
 router = routers.SimpleRouter(trailing_slash=False)
 router.register(r'organizations', OrganizationViewSet, basename='organization')
@@ -18,5 +19,5 @@ router.register(r'sales', RecordOfSaleViewset, basename='sale')
 router.register(r'submissions', SalesSubmissionsViewset, basename='submission')
 router.register(r'credit-transactions', CreditTransactionViewSet, basename='credit')
 router.register(r'icbc-verification', IcbcVerificationViewSet, basename='upload')
-
+router.register(r'credit-transfers', CreditTransferViewset, basename='credit-transfer')
 urlpatterns = router.urls

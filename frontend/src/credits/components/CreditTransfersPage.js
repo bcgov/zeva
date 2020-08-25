@@ -99,7 +99,7 @@ const CreditTransfersPage = (props) => {
                     <label htmlFor="transfer-from">receive from</label>
                   </div>
                   <FormDropdown
-                    accessor={(organization) => organization.name}
+                    accessor={(organization) => organization.id}
                     dropdownName="select transfer partner"
                     dropdownData={organizations}
                     fieldName="transferPartner"

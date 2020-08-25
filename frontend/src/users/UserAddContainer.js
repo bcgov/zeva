@@ -15,7 +15,7 @@ import CustomPropTypes from '../app/utilities/props';
 import UserDetailsForm from './components/UserDetailsForm';
 
 const UserAddContainer = (props) => {
-  const { id } = useParams();
+  let { id } = useParams();
   const [details, setDetails] = useState({});
   const [errorFields, setErrorFields] = useState({});
   const [loading, setLoading] = useState(true);
@@ -23,6 +23,10 @@ const UserAddContainer = (props) => {
   const [userRoles, setUserRoles] = useState([]);
 
   const { keycloak, user } = props;
+
+  if (!id) {
+    ({ id } = user.organization);
+  }
 
   const handleInputChange = (event) => {
     const { value, name } = event.target;

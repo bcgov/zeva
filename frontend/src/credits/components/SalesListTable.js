@@ -14,6 +14,8 @@ const SalesListTable = (props) => {
     items,
     user,
     validatedList,
+    filtered,
+    setFiltered,
   } = props;
   const checkForWarnings = (item) => {
     if (item.vehicle.modelYear !== item.icbcVerification.icbcVehicle.modelYear.name) {
@@ -49,7 +51,7 @@ const SalesListTable = (props) => {
       accessor: 'xlsModel',
       Header: 'Model',
     }, {
-      accessor: (row) => moment(row.salesDate).format('YYYY-MM-DD'),
+      accessor: (row) => (moment(row.salesDate).format('YYYY-MM-DD') !== 'Invalid date' ? moment(row.salesDate).format('YYYY-MM-DD') : row.salesDate),
       className: 'text-center',
       Header: 'Retail Sale',
       id: 'salesDate',
@@ -118,13 +120,16 @@ const SalesListTable = (props) => {
       .includes(filter.value.toLowerCase()) : true;
   };
 
-  const filterable = true;
-
   return (
     <ReactTable
       className="searchable"
       columns={columns}
       data={items}
+      filtered={filtered}
+      filterable
+      onFilteredChange={(input) => {
+        setFiltered(input);
+      }}
       defaultFilterMethod={filterMethod}
       defaultPageSize={items.length > 0 ? items.length : 10}
       defaultSorted={[{
@@ -132,19 +137,20 @@ const SalesListTable = (props) => {
         desc: true,
       }]}
       getTrProps={(state, rowInfo) => {
-        if (rowInfo.row.warning === '11') {
-          return {
-            className: 'icbc-verification-warning',
-          };
-        }
-        if (rowInfo.row.warning === '21') {
-          return {
-            className: `${checkForWarnings(rowInfo.original).errorField} icbc-mismatch-warning`,
-          };
+        if (rowInfo) {
+          if (rowInfo.row.warning === '11') {
+            return {
+              className: 'icbc-verification-warning',
+            };
+          }
+          if (rowInfo.row.warning === '21') {
+            return {
+              className: `${checkForWarnings(rowInfo.original).errorField} icbc-mismatch-warning`,
+            };
+          }
         }
         return {};
       }}
-      filterable={filterable}
       pageSizeOptions={[(items.length > 0 ? items.length : 10), 5, 10, 15, 20, 25, 50, 100]}
     />
   );
@@ -160,6 +166,8 @@ SalesListTable.propTypes = {
     PropTypes.number,
     PropTypes.string,
   ])).isRequired,
+  filtered: PropTypes.arrayOf(PropTypes.object).isRequired,
+  setFiltered: PropTypes.func.isRequired,
 };
 
 export default SalesListTable;

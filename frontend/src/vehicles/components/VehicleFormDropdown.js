@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 
 const VehicleFormDropdown = (props) => {
   const {
+    accessor,
+    className,
     dropdownData,
     dropdownName,
-    handleInputChange,
     fieldName,
-    accessor,
+    handleInputChange,
     selectedOption,
   } = props;
 
@@ -15,7 +16,7 @@ const VehicleFormDropdown = (props) => {
     <option key={accessor(obj)} value={accessor(obj)}>{obj.name || obj.description}</option>
   ));
   return (
-    <div className="form-group row">
+    <div className={`form-group row ${className}`}>
       <label
         className="col-sm-4 col-form-label"
         htmlFor={dropdownName}
@@ -40,10 +41,12 @@ const VehicleFormDropdown = (props) => {
 
 VehicleFormDropdown.defaultProps = {
   accessor: (obj) => obj.id,
+  className: '',
 };
 
 VehicleFormDropdown.propTypes = {
   accessor: PropTypes.func,
+  className: PropTypes.string,
   dropdownData: PropTypes.arrayOf(PropTypes.shape({
     description: PropTypes.string,
     id: PropTypes.any,

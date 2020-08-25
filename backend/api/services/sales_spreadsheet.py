@@ -80,7 +80,7 @@ def add_instructions_sheet(**kwargs):
     row += 2
     worksheet.write(
         row, 0,
-        'Retail Sales Date in yyyy-mm-dd format, '
+        'Retail Sales Date in YYYY-MM-DD format, '
         'eg. 2020-07-20'
     )
     row += 2
@@ -267,8 +267,13 @@ def validate_xls_file(file):
 
 
 def validate_spreadsheet(data, user_organization=None, skip_authorization=False):
-    workbook = xlrd.open_workbook(file_contents=data)
-
+    try:
+        workbook = xlrd.open_workbook(file_contents=data)
+    except XLRDError:
+        raise ValidationError(
+            'File cannot be opened. '
+            "Please make sure it's an xls file"
+        )
     organization = get_organization(workbook)
 
     if organization is None or (
@@ -281,14 +286,36 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
         )
 
     try:
-        workbook.sheet_by_name('ZEV Sales')
+        sheet = workbook.sheet_by_name('ZEV Sales')
     except XLRDError:
         raise ValidationError(
-            'Spreadsheet is missing ZEV Sales sheet.'
+            'Spreadsheet is missing ZEV Sales sheet. '
             'Please download the template again and try again.'
         )
 
-    logger.info('Reading ZEV Sales')
+    start_row = 1
+    row = start_row
+
+    while row < min((MAX_READ_ROWS + start_row), sheet.nrows):
+        row_contents = sheet.row(row)
+        model_year = str(row_contents[0].value).strip()
+        make = str(row_contents[1].value).strip()
+        model_name = str(row_contents[2].value).strip()
+        vin = str(row_contents[3].value)
+        date = str(row_contents[4].value).strip()
+
+        row_contains_content = False
+
+        if len(model_year) > 0 or len(make) > 0 or len(model_name) > 0 or \
+                len(date) > 0:
+            row_contains_content = True
+
+        if row_contains_content and len(vin) < 1:
+            raise ValidationError(
+                'Spreadsheet contains a row with missing VIN. Please clear '
+                'the row and try again.'
+            )
+        row += 1
 
     return True
 
@@ -376,16 +403,17 @@ def get_date(date, date_type, datemode):
 
 
 def store_raw_value(submission, row_contents, date_mode):
-    SalesSubmissionContent.objects.create(
-        submission=submission,
-        xls_model_year=row_contents[0].value,
-        xls_make=row_contents[1].value,
-        xls_model=row_contents[2].value,
-        xls_vin=row_contents[3].value,
-        xls_sale_date=row_contents[4].value,
-        xls_date_type=row_contents[4].ctype,
-        xls_date_mode=date_mode
-    )
+    if row_contents[3].value != '':
+        SalesSubmissionContent.objects.create(
+            submission=submission,
+            xls_model_year=str(row_contents[0].value).strip(),
+            xls_make=str(row_contents[1].value).strip(),
+            xls_model=str(row_contents[2].value).strip(),
+            xls_vin=str(row_contents[3].value).strip(),
+            xls_sale_date=str(row_contents[4].value).strip(),
+            xls_date_type=row_contents[4].ctype,
+            xls_date_mode=date_mode
+        )
 
     return None
 
@@ -453,21 +481,29 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
             content.xls_date_mode
         )
 
+        if content.is_already_awarded:
+            error += 'VIN has already been validated before; '
+
+        if content.is_duplicate:
+            error += 'VIN contains duplicate in this set; '
+
         if date is None:
-            error += 'Date cannot be parsed. Please use YYYY-MM-DD format;'
+            error += 'Date cannot be parsed. Please use YYYY-MM-DD format; '
         elif icbc_upload_date is not None:
             date_diff = abs(
                 date.year - icbc_upload_date.upload_date.year
             ) * 12 + abs(date.month - icbc_upload_date.upload_date.month)
 
             if date_diff > 3:
-                error += 'retail sales date and registration date greater than 3 months apart;'
+                error += 'retail sales date and registration date greater than 3 months apart; '
 
-        worksheet.write(row, 0, content.xls_model_year, style=LOCKED)
+        if content.xls_model_year is not None:
+            worksheet.write(row, 0, int(float(content.xls_model_year)), style=LOCKED)
         worksheet.write(row, 1, content.xls_make, style=LOCKED)
         worksheet.write(row, 2, content.xls_model, style=LOCKED)
         worksheet.write(row, 3, content.xls_vin, style=LOCKED)
-        worksheet.write(row, 4, date.strftime('%Y-%m-%d'), style=LOCKED)
+        if date is not None:
+            worksheet.write(row, 4, date.strftime('%Y-%m-%d'), style=LOCKED)
         worksheet.write(row, 5, error, style=LOCKED)
 
         if len(content.xls_model) > current_vehicle_col_width:

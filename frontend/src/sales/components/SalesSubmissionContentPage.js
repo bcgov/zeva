@@ -63,7 +63,7 @@ const SalesSubmissionContentPage = (props) => {
                 }}
                 type="button"
               >
-                <FontAwesomeIcon icon="arrow-right" /> Proceed to Signature
+                <FontAwesomeIcon icon="arrow-right" /> Submit
               </button>
             )}
           </span>
