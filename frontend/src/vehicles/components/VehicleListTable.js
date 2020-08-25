@@ -12,6 +12,7 @@ const VehicleListTable = (props) => {
   const {
     items, user, filtered, setFiltered,
   } = props;
+
   const toComma = (value) => {
     let newValue = value;
     if (typeof newValue === 'number') {
@@ -147,6 +148,7 @@ const VehicleListTable = (props) => {
       onFilteredChange={(input) => {
         setFiltered(input);
       }}
+      setFiltered={setFiltered}
     />
   );
 };

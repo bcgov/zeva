@@ -3,6 +3,7 @@
  * All data handling & manipulation should be handled here.
  */
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
@@ -51,6 +52,7 @@ const VehicleListContainer = (props) => {
 
 VehicleListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
+  location: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 

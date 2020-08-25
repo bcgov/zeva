@@ -30,17 +30,28 @@ const ActionBarGov = (props) => {
     newFiltered = newFiltered.filter((each) => (each.id !== id));
     setFiltered([...newFiltered, { id, value }]);
   };
+
   return (
     <div className="action-bar">
       <span className="left-content" />
       <span className="right-content">
         <label htmlFor="supplier">Select a different model year/supplier</label>
-        <select className="form-control" id="col-my" onChange={handleChange}>
+        <select
+          className="form-control"
+          id="col-my"
+          onChange={handleChange}
+          value={filtered.length > 0 && filtered.findIndex((arr) => (arr.id === 'col-my')) >= 0 ? filtered[filtered.findIndex((arr) => (arr.id === 'col-my'))].value : ''}
+        >
           <option value=""> </option>
           {getOptions(vehicles, 'modelYear')}
         </select>
 
-        <select className="form-control" id="col-supplier" onChange={handleChange}>
+        <select
+          className="form-control"
+          id="col-supplier"
+          onChange={handleChange}
+          value={filtered.length > 0 && filtered.findIndex((arr) => (arr.id === 'col-supplier')) >= 0 ? filtered[filtered.findIndex((arr) => (arr.id === 'col-supplier'))].value : ''}
+        >
           <option value=""> </option>
           {getOptions(vehicles, 'organization')}
         </select>
