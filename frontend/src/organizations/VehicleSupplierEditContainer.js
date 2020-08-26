@@ -10,7 +10,6 @@ import { useParams } from 'react-router-dom';
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import CustomPropTypes from '../app/utilities/props';
 import VehicleSupplierEditForm from './components/VehicleSupplierEditForm';
-import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs';
 import history from '../app/History';
 import parseErrorResponse from '../app/utilities/parseErrorResponse';
 
@@ -115,7 +114,7 @@ const VehicleSupplierEditContainer = (props) => {
           <h1>{display.name}</h1>
         </div>
       </div>
-      <VehicleSupplierTabs supplierId={details.id} active="supplier-info" />
+
       <VehicleSupplierEditForm
         details={details}
         display={display}

@@ -44,7 +44,7 @@ const SubmissionListTable = (props) => {
     id: 'warnings',
   }];
 
-  const { items } = props;
+  const { items, filtered, setFiltered } = props;
 
   return (
     <ReactTable
@@ -53,6 +53,7 @@ const SubmissionListTable = (props) => {
       defaultSorted={[{
         id: 'submissionDate',
       }]}
+      filtered={filtered}
       getTrProps={(state, row) => {
         if (row && row.original) {
           return {
@@ -67,6 +68,7 @@ const SubmissionListTable = (props) => {
 
         return {};
       }}
+      setFiltered={setFiltered}
     />
   );
 };
@@ -74,7 +76,9 @@ const SubmissionListTable = (props) => {
 SubmissionListTable.defaultProps = {};
 
 SubmissionListTable.propTypes = {
+  filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  setFiltered: PropTypes.func.isRequired,
 };
 
 export default SubmissionListTable;

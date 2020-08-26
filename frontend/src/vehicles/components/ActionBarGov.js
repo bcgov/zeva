@@ -7,7 +7,7 @@ const ActionBarGov = (props) => {
   } = props;
 
   const getOptions = (inputObj, displayField) => {
-    let uniqueArr = [...new Set(inputObj.map((eachVehicle) => {
+    const uniqueArr = [...new Set(inputObj.map((eachVehicle) => {
       if (typeof eachVehicle[displayField] === 'string') {
         return eachVehicle[displayField];
       }
@@ -15,11 +15,7 @@ const ActionBarGov = (props) => {
       return eachVehicle[displayField].name;
     }))];
 
-    if (displayField === 'make') {
-      uniqueArr = uniqueArr.sort();
-    }
-
-    return uniqueArr.map((each) => (
+    return uniqueArr.sort().map((each) => (
       <option key={each}>{each}</option>
     ));
   };

@@ -2,10 +2,21 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 class StatusInterceptor extends Component {
+  static render400Message() {
+    return (
+      <div className="alert alert-danger" role="alert">
+        <p>
+          Please review the form for errors then try again.
+        </p>
+      </div>
+    );
+  }
+
   static render401Message() {
     return (
       <div>
-        <p>It looks like you don&apos;t have an account setup yet, or that you are trying to access
+        <p>
+          It looks like you don&apos;t have an account setup yet, or that you are trying to access
           a page that you do not have permissions to see.
         </p>
         <p>
@@ -36,7 +47,8 @@ class StatusInterceptor extends Component {
 
   static render500Message() {
     return (
-      <p>It looks like our system is experiencing some technical difficulties. We have been
+      <p>
+        It looks like our system is experiencing some technical difficulties. We have been
         notified and will look into it. Please try again later.
       </p>
     );
@@ -44,7 +56,8 @@ class StatusInterceptor extends Component {
 
   static render502Message() {
     return (
-      <p>It looks like our system is currently down for maintenance.
+      <p>
+        It looks like our system is currently down for maintenance.
         Please check back in a few minutes.
       </p>
     );
@@ -52,7 +65,8 @@ class StatusInterceptor extends Component {
 
   static renderDefaultMessage() {
     return (
-      <p>It looks like our system is experiencing some technical difficulties. We have been
+      <p>
+        It looks like our system is experiencing some technical difficulties. We have been
         notified and will look into it. Please try again later.
       </p>
     );
@@ -63,6 +77,8 @@ class StatusInterceptor extends Component {
     let content;
 
     switch (statusCode) {
+      case 400:
+        return StatusInterceptor.render400Message();
       case 401:
         content = StatusInterceptor.render401Message();
         break;

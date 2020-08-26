@@ -8,6 +8,7 @@ import CustomPropTypes from '../app/utilities/props';
 import VehicleForm from './components/VehicleForm';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import history from '../app/History';
+import parseErrorResponse from '../app/utilities/parseErrorResponse';
 
 const VehicleAddContainer = (props) => {
   const emptyForm = {
@@ -20,6 +21,7 @@ const VehicleAddContainer = (props) => {
     vehicleClassCode: { vehicleClassCode: '--' },
     weightKg: '',
   };
+  const [errorFields, setErrorFields] = useState({});
   const [fields, setFields] = useState(emptyForm);
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -108,7 +110,7 @@ const VehicleAddContainer = (props) => {
     return promises;
   };
 
-  const handleSaveDraft = (event) => {
+  const handleSubmit = (event, validationStatus = null) => {
     event.preventDefault();
     const data = fields;
 
@@ -120,6 +122,11 @@ const VehicleAddContainer = (props) => {
 
     axios.post(ROUTES_VEHICLES.LIST, data).then((response) => {
       const { id } = response.data;
+
+      if (validationStatus) {
+        axios.patch(`vehicles/${id}/state_change`, { validationStatus });
+      }
+
       const promises = handleUpload(id);
 
       if (files.length > 0) {
@@ -131,49 +138,28 @@ const VehicleAddContainer = (props) => {
           axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), {
             ...data,
           }).then(() => {
-            history.push(ROUTES_VEHICLES.LIST);
+            if (validationStatus === 'SUBMITTED') {
+              setFields(emptyForm);
+            } else {
+              history.push(ROUTES_VEHICLES.LIST);
+            }
           });
         });
+      } else if (validationStatus === 'SUBMITTED') {
+        setFields(emptyForm);
       } else {
         history.push(ROUTES_VEHICLES.LIST);
       }
-    });
-  };
-
-  const handleSubmit = () => {
-    setLoading(true);
-
-    const data = fields;
-
-    Object.keys(data).forEach((key) => {
-      if (typeof data[key] === 'string') {
-        data[key] = data[key].trim();
+    }).catch((errors) => {
+      if (!errors.response) {
+        return;
       }
-    });
 
-    axios.post(ROUTES_VEHICLES.LIST, data).then((response) => {
-      const { id } = response.data;
-      axios.patch(`vehicles/${id}/state_change`, { validationStatus: 'SUBMITTED' });
+      const { data: errorData } = errors.response;
+      const err = {};
 
-      const promises = handleUpload(id);
-
-      if (files.length > 0) {
-        Promise.all(promises).then((attachments) => {
-          if (attachments.length > 0) {
-            data.vehicleAttachments = attachments;
-          }
-
-          axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), {
-            ...data,
-          }).then(() => {
-            setFields(emptyForm);
-            setLoading(false);
-          });
-        });
-      } else {
-        setFields(emptyForm);
-        setLoading(false);
-      }
+      parseErrorResponse(err, errorData);
+      setErrorFields(err);
     });
   };
 
@@ -200,11 +186,11 @@ const VehicleAddContainer = (props) => {
 
   return (
     <VehicleForm
+      errorFields={errorFields}
       fields={fields}
       files={files}
       formTitle="Enter ZEV"
       handleInputChange={handleInputChange}
-      handleSaveDraft={handleSaveDraft}
       handleSubmit={handleSubmit}
       loading={loading}
       makes={orgMakes}

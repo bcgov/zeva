@@ -145,9 +145,6 @@ const VehicleListTable = (props) => {
 
         return {};
       }}
-      onFilteredChange={(input) => {
-        setFiltered(input);
-      }}
       setFiltered={setFiltered}
     />
   );
