@@ -3,26 +3,30 @@
  * All data handling & manipulation should be handled here.
  */
 import axios from 'axios';
-import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import VehicleForm from './components/VehicleForm';
+
+import CustomPropTypes from '../app/utilities/props';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import history from '../app/History';
+import parseErrorResponse from '../app/utilities/parseErrorResponse';
+import VehicleForm from './components/VehicleForm';
 
 const VehicleEditContainer = (props) => {
   const [classes, setClasses] = useState([]);
   const [deleteFiles, setDeleteFiles] = useState([]);
+  const [errorFields, setErrorFields] = useState({});
   const [fields, setFields] = useState({});
   const [files, setFiles] = useState([]);
-  const [progressBars, setProgressBars] = useState({});
   const [loading, setLoading] = useState(true);
-  const [types, setTypes] = useState([]);
+  const [progressBars, setProgressBars] = useState({});
   const [showProgressBars, setShowProgressBars] = useState(false);
+  const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
   const [vehicles, setVehicles] = useState([]);
-  const { keycloak } = props;
+
   const { id } = useParams();
+  const { keycloak } = props;
 
   const handleInputChange = (event) => {
     const {
@@ -58,7 +62,7 @@ const VehicleEditContainer = (props) => {
     progressBars[index] = percentage;
   };
 
-  const handleUpload = () => {
+  const handleUpload = (paramId) => {
     const promises = [];
     setShowProgressBars(true);
 
@@ -68,7 +72,7 @@ const VehicleEditContainer = (props) => {
         reader.onload = () => {
           const blob = reader.result;
 
-          axios.get(ROUTES_VEHICLES.MINIO_URL.replace(/:id/gi, id)).then((response) => {
+          axios.get(ROUTES_VEHICLES.MINIO_URL.replace(/:id/gi, paramId)).then((response) => {
             const { url: uploadUrl, minioObjectName } = response.data;
 
             axios.put(uploadUrl, blob, {
@@ -100,35 +104,7 @@ const VehicleEditContainer = (props) => {
     return promises;
   };
 
-  const handleSubmit = () => {
-    setLoading(true);
-    const data = fields;
-
-    Object.keys(data).forEach((key) => {
-      if (typeof data[key] === 'string') {
-        data[key] = data[key].trim();
-      }
-    });
-
-    const promises = handleUpload();
-    Promise.all(promises).then((attachments) => {
-      if (attachments.length > 0) {
-        data.vehicleAttachments = attachments;
-      }
-
-      axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), {
-        ...data,
-        deleteFiles,
-      }).then(() => {
-        axios.patch(`vehicles/${id}/state_change`, { validationStatus: 'SUBMITTED' }).then(() => {
-          setLoading(false);
-          history.push(`/vehicles/${id}`);
-        });
-      });
-    });
-  };
-
-  const handleSaveDraft = (event) => {
+  const handleSubmit = (event, validationStatus = null) => {
     event.preventDefault();
     const data = fields;
 
@@ -138,19 +114,40 @@ const VehicleEditContainer = (props) => {
       }
     });
 
-    const promises = handleUpload();
+    axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), {
+      ...data,
+      deleteFiles,
+    }).then(() => {
+      const uploadPromises = handleUpload(id);
 
-    Promise.all(promises).then((attachments) => {
-      if (attachments.length > 0) {
-        data.vehicleAttachments = attachments;
+      Promise.all(uploadPromises).then((attachments) => {
+        const patchData = {};
+
+        if (attachments.length > 0) {
+          patchData.vehicleAttachments = attachments;
+        }
+
+        if (validationStatus) {
+          patchData.validationStatus = validationStatus;
+        }
+
+        axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), {
+          ...patchData,
+          deleteFiles,
+        }).then(() => {
+          history.push(`/vehicles/${id}`);
+        });
+      });
+    }).catch((errors) => {
+      if (!errors.response) {
+        return;
       }
 
-      axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), {
-        ...data,
-        deleteFiles,
-      }).then(() => {
-        history.push(`/vehicles/${id}`);
-      });
+      const { data: errorData } = errors.response;
+      const err = {};
+
+      parseErrorResponse(err, errorData);
+      setErrorFields(err);
     });
   };
 
@@ -177,14 +174,14 @@ const VehicleEditContainer = (props) => {
       axios.get(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id)),
       axios.get(ROUTES_VEHICLES.CLASSES),
       axios.get(ROUTES_VEHICLES.LIST),
-    ]).then(axios.spread((yearsRes, typesRes, vehicleRes, classesRes, orgVehiclesRes) => (
-      [setYears(yearsRes.data),
-        setTypes(typesRes.data),
-        loadVehicle(vehicleRes.data),
-        setClasses(classesRes.data),
-        setVehicles(orgVehiclesRes.data),
-        setLoading(false)]
-    )));
+    ]).then(axios.spread((yearsRes, typesRes, vehicleRes, classesRes, orgVehiclesRes) => ([
+      setYears(yearsRes.data),
+      setTypes(typesRes.data),
+      loadVehicle(vehicleRes.data),
+      setClasses(classesRes.data),
+      setVehicles(orgVehiclesRes.data),
+      setLoading(false),
+    ])));
   };
 
   useEffect(() => {
@@ -194,11 +191,11 @@ const VehicleEditContainer = (props) => {
   return (
     <VehicleForm
       deleteFiles={deleteFiles}
+      errorFields={errorFields}
       fields={fields}
       files={files}
       formTitle="Enter ZEV Model"
       handleInputChange={handleInputChange}
-      handleSaveDraft={handleSaveDraft}
       handleSubmit={handleSubmit}
       loading={loading}
       makes={orgMakes}
@@ -215,7 +212,7 @@ const VehicleEditContainer = (props) => {
 };
 
 VehicleEditContainer.propTypes = {
-  keycloak: PropTypes.shape().isRequired,
+  keycloak: CustomPropTypes.keycloak.isRequired,
 };
 
 export default VehicleEditContainer;

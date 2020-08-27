@@ -248,7 +248,7 @@ class VehicleSaveSerializer(
     )
     validation_status = EnumField(
         VehicleDefinitionStatuses,
-        read_only=True
+        required=False
     )
     vehicle_comment = VehicleCommentSerializer(
         allow_null=True,

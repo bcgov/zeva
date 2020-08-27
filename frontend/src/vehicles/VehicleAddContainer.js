@@ -4,11 +4,13 @@
  */
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+
+
 import CustomPropTypes from '../app/utilities/props';
-import VehicleForm from './components/VehicleForm';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import history from '../app/History';
 import parseErrorResponse from '../app/utilities/parseErrorResponse';
+import VehicleForm from './components/VehicleForm';
 
 const VehicleAddContainer = (props) => {
   const emptyForm = {
@@ -21,6 +23,7 @@ const VehicleAddContainer = (props) => {
     vehicleClassCode: { vehicleClassCode: '--' },
     weightKg: '',
   };
+  const [classes, setClasses] = useState([]);
   const [errorFields, setErrorFields] = useState({});
   const [fields, setFields] = useState(emptyForm);
   const [files, setFiles] = useState([]);
@@ -29,7 +32,6 @@ const VehicleAddContainer = (props) => {
   const [showProgressBars, setShowProgressBars] = useState(false);
   const [types, setTypes] = useState([]);
   const [years, setYears] = useState([]);
-  const [classes, setClasses] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const { keycloak } = props;
 
@@ -123,33 +125,28 @@ const VehicleAddContainer = (props) => {
     axios.post(ROUTES_VEHICLES.LIST, data).then((response) => {
       const { id } = response.data;
 
-      if (validationStatus) {
-        axios.patch(`vehicles/${id}/state_change`, { validationStatus });
-      }
+      const uploadPromises = handleUpload(id);
 
-      const promises = handleUpload(id);
+      Promise.all(uploadPromises).then((attachments) => {
+        const patchData = {};
+        if (attachments.length > 0) {
+          patchData.vehicleAttachments = attachments;
+        }
 
-      if (files.length > 0) {
-        Promise.all(promises).then((attachments) => {
-          if (attachments.length > 0) {
-            data.vehicleAttachments = attachments;
+        if (validationStatus) {
+          patchData.validationStatus = validationStatus;
+        }
+
+        axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), {
+          ...patchData,
+        }).then(() => {
+          if (validationStatus === 'SUBMITTED') {
+            setFields(emptyForm);
+          } else {
+            history.push(ROUTES_VEHICLES.LIST);
           }
-
-          axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), {
-            ...data,
-          }).then(() => {
-            if (validationStatus === 'SUBMITTED') {
-              setFields(emptyForm);
-            } else {
-              history.push(ROUTES_VEHICLES.LIST);
-            }
-          });
         });
-      } else if (validationStatus === 'SUBMITTED') {
-        setFields(emptyForm);
-      } else {
-        history.push(ROUTES_VEHICLES.LIST);
-      }
+      });
     }).catch((errors) => {
       if (!errors.response) {
         return;
