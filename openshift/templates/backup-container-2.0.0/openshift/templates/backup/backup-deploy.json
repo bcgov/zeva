@@ -417,13 +417,6 @@
       "value": "/backups/patroni-backup/"
     },
     {
-      "name": "MINIO_BACKUP_DIR",
-      "displayName": "The minio backup directory",
-      "description": "The name of the minio backup directory.",
-      "required": true,
-      "value": "/backups-minio/"
-    },
-    {
       "name": "NUM_BACKUPS",
       "displayName": "The number of backup files to be retained",
       "description": "Used for backward compatibility only.  Ignored when using the recommended `rolling` backup strategy.  The number of backup files to be retained.  Used for the `daily` backup strategy.",
