@@ -11,6 +11,7 @@ const SALES = {
   LIST: `${API_BASE_PATH}`,
   TEMPLATE: `${API_BASE_PATH}/template`,
   UPLOAD: `${API_BASE_PATH}/upload`,
+  NEW_CREDIT_APPLICATION: `${API_BASE_PATH}/new_credit_application`,
 };
 
 export default SALES;

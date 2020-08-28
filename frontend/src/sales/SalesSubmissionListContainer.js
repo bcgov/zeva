@@ -13,7 +13,7 @@ import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
 import CustomPropTypes from '../app/utilities/props';
 import upload from '../app/utilities/upload';
 import withReferenceData from '../app/utilities/with_reference_data';
-import SalesUploadPage from './components/SalesUploadPage';
+import SalesSubmissionPage from './components/SalesSubmissionPage';
 
 const qs = require('qs');
 
@@ -66,7 +66,7 @@ const SalesSubmissionContainer = (props) => {
 
   return ([
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
-    <SalesUploadPage
+    <SalesSubmissionPage
       errorMessage={errorMessage}
       files={files}
       key="page"
