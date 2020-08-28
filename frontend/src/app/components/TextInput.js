@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 const TextInput = (props) => {
@@ -17,6 +17,10 @@ const TextInput = (props) => {
     inputSize,
     rowSize,
     showCurrency,
+    disabled,
+    readonly,
+    serviceSame,
+    addressType,
   } = props;
 
   let type;
@@ -28,6 +32,15 @@ const TextInput = (props) => {
 
   const [validationErrors, setValidationErrors] = useState('');
   const [rowClass, setRowClass] = useState(rowSize);
+
+  useEffect(() => {
+    // this is for the service address side of the organization edit form
+    // to remove the error if service address checkbox clicked
+    if (serviceSame && addressType === 'Service') {
+      setValidationErrors('');
+      setRowClass(rowSize);
+    }
+  });
 
   const handleOnBlur = (event) => {
     const { value } = event.target;
@@ -70,9 +83,11 @@ const TextInput = (props) => {
             id={id}
             name={name}
             type={type}
-            value={defaultValue}
+            value={disabled ? '' : defaultValue}
             onChange={handleInputChange}
             onBlur={handleOnBlur}
+            disabled={disabled}
+            readOnly={readonly}
           />
         </div>
         <small className="form-text text-danger">{errorMessage || validationErrors}</small>
@@ -92,6 +107,10 @@ TextInput.defaultProps = {
   inputSize: 'col-sm-8',
   rowSize: 'form-group row',
   showCurrency: false,
+  disabled: false,
+  readonly: false,
+  addressType: 'none',
+  serviceSame: false,
 };
 
 TextInput.propTypes = {
@@ -115,6 +134,10 @@ TextInput.propTypes = {
   inputSize: PropTypes.string,
   rowSize: PropTypes.string,
   showCurrency: PropTypes.bool,
+  disabled: PropTypes.bool,
+  readonly: PropTypes.bool,
+  addressType: PropTypes.string,
+  serviceSame: PropTypes.bool,
 };
 
 export default TextInput;

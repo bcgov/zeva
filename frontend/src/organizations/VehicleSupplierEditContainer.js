@@ -21,7 +21,7 @@ const VehicleSupplierEditContainer = (props) => {
   const [errorFields, setErrorFields] = useState({});
   const [loading, setLoading] = useState(true);
   const { keycloak, newSupplier } = props;
-
+  const [serviceSame, setServiceSame] = useState(false);
   const refreshDetails = () => {
     if (newSupplier) {
       setLoading(false);
@@ -32,8 +32,8 @@ const VehicleSupplierEditContainer = (props) => {
 
     if (!newSupplier) {
       setLoading(true);
-
       axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
+        console.log(response.data)
         setDetails({
           ...response.data,
           organizationAddress: {
@@ -43,9 +43,7 @@ const VehicleSupplierEditContainer = (props) => {
             addressLine_3: response.data.organizationAddress ? response.data.organizationAddress.addressLine3 : '',
           },
         });
-
         setDisplay(response.data);
-
         setLoading(false);
       });
     }
@@ -57,7 +55,6 @@ const VehicleSupplierEditContainer = (props) => {
 
   const handleInputChange = (event) => {
     const { value, name } = event.target;
-
     setDetails({
       ...details,
       [name]: value,
@@ -66,7 +63,6 @@ const VehicleSupplierEditContainer = (props) => {
 
   const handleAddressChange = (event) => {
     const { value, name } = event.target;
-
     setDetails({
       ...details,
       organizationAddress: {
@@ -77,8 +73,33 @@ const VehicleSupplierEditContainer = (props) => {
   };
 
   const handleSubmit = () => {
+    let formData = {};
+    const recordsAddress = {
+      addressType: 'Records',
+      addressLine_1: details.organizationAddress.Records_addressLine_1,
+      addressLine_2: details.organizationAddress.Records_addressLine_2,
+      city: details.organizationAddress.Records_city,
+      state: 'BC',
+      country: 'Canada',
+      postalCode: details.organizationAddress.Records_postalCode,
+    };
+    let serviceAddress;
+    if (serviceSame) {
+      serviceAddress = { ...recordsAddress, addressType: 'Service' };
+    } else {
+      serviceAddress = {
+        addressType: 'Service',
+        addressLine_1: details.organizationAddress.Service_addressLine_1,
+        addressLine_2: details.organizationAddress.Service_addressLine_2,
+        city: details.organizationAddress.Service_city,
+        state: details.organizationAddress.Service_state,
+        country: details.organizationAddress.Service_country,
+        postalCode: details.organizationAddress.Service_postalCode,
+      };
+    }
+    formData = {...details, organizationAddress: [recordsAddress, serviceAddress]}
     if (newSupplier) {
-      axios.post(ROUTES_ORGANIZATIONS.LIST, details).then((response) => {
+      axios.post(ROUTES_ORGANIZATIONS.LIST, formData).then((response) => {
         history.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, response.data.id));
       }).catch((errors) => {
         if (!errors.response) {
@@ -92,7 +113,7 @@ const VehicleSupplierEditContainer = (props) => {
         setErrorFields(err);
       });
     } else {
-      axios.patch(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id), details).then(() => {
+      axios.patch(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id), formData).then(() => {
         history.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));
       }).catch((errors) => {
         if (!errors.response) {
@@ -126,6 +147,8 @@ const VehicleSupplierEditContainer = (props) => {
         loading={loading}
         newSupplier={newSupplier}
         setDetails={setDetails}
+        serviceSame={serviceSame}
+        setServiceSame={setServiceSame}
       />
     </div>
   );

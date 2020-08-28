@@ -18,3 +18,4 @@ from . import vehicle_attachment
 from . import account_balance
 from . import weight_class
 from . import sales_submission_content
+from . import address_type

@@ -46,7 +46,7 @@
   }
 
   input[type=radio], input[type=checkbox] {
-      margin-right: 1rem;        
+      margin-right: 1rem;      
   }
   input[type=text], select {
     border: 2px solid $default-text-black;
@@ -66,6 +66,10 @@
       padding: 0;
       white-space: nowrap;
   }
+}
+#service-address-checkbox {
+    margin-left: 1.5rem;
+    margin-right: .5rem !important;
 }
 
 .react-autosuggest__input {
