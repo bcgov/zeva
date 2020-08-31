@@ -108,7 +108,11 @@ class Vehicle(Auditable):
         credit = (self.range * 0.006214) + variable
 
         if self.vehicle_zev_type.vehicle_zev_code in ['EREV', 'PHEV'] and \
+<<<<<<< HEAD
             self.has_passed_us_06_test is True:
+=======
+            self.has_passed_us06_test is True:
+>>>>>>> upstream/release-1.9.0
             credit += 0.2
 
         if credit > 4:
