@@ -55,7 +55,7 @@ const SalesSubmissionContentPage = (props) => {
                 <FontAwesomeIcon icon="download" /> Download Errors
               </button>
             )}
-            {submission.validationStatus === 'NEW' && (
+            {submission.validationStatus === 'DRAFT' && (
               <button
                 className="button primary"
                 onClick={() => {
@@ -84,6 +84,7 @@ const SalesSubmissionContentPage = (props) => {
       user={user}
     />
   );
+  console.log(user.organization)
 
   return (
     <div id="sales-validate" className="page">
@@ -91,6 +92,8 @@ const SalesSubmissionContentPage = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <h1>{user.organization.name} Sales Submission</h1>
+          <h2>{user.organization.organizationAddress}</h2>
+
         </div>
       </div>
       <div className="row">

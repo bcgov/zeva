@@ -32,11 +32,14 @@ const SalesUploadPage = (props) => {
   };
 
   return (
-    <div className="page">
-      <div className="compact">
-        <h2 className="d-inline">Application for Credits for Consumer Sales</h2>
-        <p>Download an Excel template containing all active ZEV models to submit consumer sales</p>
-        <div className="action-bar">
+    <div id="sales-edit" className="page">
+      <h2>Application for Credits for Consumer Sales</h2>
+      <p>
+        Download an Excel template containing all active ZEV models to submit consumer sales
+      </p>
+
+      <div className="compact w-50">
+        <div className="content">
           <button
             className="button"
             onClick={(e) => {
@@ -57,15 +60,17 @@ const SalesUploadPage = (props) => {
       </div>
 
       <h2>Upload ZEV Sales Information</h2>
-      <p>Credits can be issued for eligible ZEV sales made prior to May 31, 2020.</p>
-      <div className="compact">
+      <p>
+        Credits can be issued for eligible ZEV sales made prior to May 31, 2020.
+      </p>
+      <div className="compact w-50">
         <div className="bordered">
           <div className="content">
             {errorMessage && (
-              <div className="alert alert-danger" role="alert">
-                <h4 className="alert-heading mb-4">We&apos;re sorry.</h4>
-                {errorMessage}
-              </div>
+            <div className="alert alert-danger" role="alert">
+              <h4 className="alert-heading mb-4">We&apos;re sorry.</h4>
+              {errorMessage}
+            </div>
             )}
 
             <div className="panel panel-default">
@@ -95,35 +100,40 @@ const SalesUploadPage = (props) => {
                 ))}
               </div>
 
-              <div className="action-bar">
-                <span className="left-content">
-                  <button
-                    className="button"
-                    onClick={() => {
-                      history.goBack();
-                    }}
-                    type="button"
-                  >
-                    <FontAwesomeIcon icon="arrow-left" /> Back
-                  </button>
-                </span>
-
-                <span className="right-content">
-                  <button
-                    disabled={files.length === 0}
-                    className="button primary"
-                    onClick={() => upload()}
-                    type="button"
-                  >
-                    <FontAwesomeIcon icon="upload" /> Upload
-                  </button>
-                </span>
-              </div>
+              
             </div>
           </div>
         </div>
       </div>
+
+      <div className="clearfix" />
+
+      <div className="action-bar">
+        <span className="left-content">
+          <button
+            className="button"
+            onClick={() => {
+              history.goBack();
+            }}
+            type="button"
+          >
+            <FontAwesomeIcon icon="arrow-left" /> Back
+          </button>
+        </span>
+
+        <span className="right-content">
+          <button
+            disabled={files.length === 0}
+            className="button primary"
+            onClick={() => upload()}
+            type="button"
+          >
+            <FontAwesomeIcon icon="upload" /> Upload
+          </button>
+        </span>
+      </div>
     </div>
+
   );
 };
 export default SalesUploadPage;

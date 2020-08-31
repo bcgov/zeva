@@ -39,8 +39,11 @@ const SalesSubmissionListTable = (props) => {
   }, {
     accessor: (item) => {
       const { validationStatus } = item;
-
-      return formatStatus(validationStatus);
+      const status = formatStatus(validationStatus);
+      if (status === 'validated') {
+        return 'issued';
+      }
+      return status;
     },
     className: 'text-center text-capitalize',
     Header: 'Status',

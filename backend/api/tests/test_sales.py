@@ -45,7 +45,7 @@ class TestSales(BaseTestCase):
         sub = SalesSubmission.objects.create(
             organization=self.users['RTAN_BCEID'].organization,
             submission_sequence=1,
-            validation_status='NEW'
+            validation_status='DRAFT'
         )
 
         request = {

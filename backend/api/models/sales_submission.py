@@ -36,7 +36,7 @@ class SalesSubmission(Auditable):
         SalesSubmissionStatuses,
         max_length=20,
         null=False,
-        default=SalesSubmissionStatuses.NEW,
+        default=SalesSubmissionStatuses.DRAFT,
         db_comment="The validation status of this sales submission. "
                    "Valid statuses: {statuses}".format(
                         statuses=[c.name for c in SalesSubmissionStatuses]
