@@ -56,7 +56,10 @@ VehicleFormDropdown.propTypes = {
     name: PropTypes.string,
   })).isRequired,
   dropdownName: PropTypes.string.isRequired,
-  errorMessage: PropTypes.string,
+  errorMessage: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.string,
+  ]),
   fieldName: PropTypes.string.isRequired,
   handleInputChange: PropTypes.func.isRequired,
   selectedOption: PropTypes.oneOfType([

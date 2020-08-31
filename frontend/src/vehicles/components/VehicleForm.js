@@ -143,7 +143,7 @@ const VehicleForm = (props) => {
                 </span>
                 <div className={`col-sm-8 ${['EREV', 'PHEV'].indexOf(selectedZevType) < 0 ? 'disabled' : ''}`}>
                   <input
-                    defaultChecked={fields.hasPassedUs06Test}
+                    checked={fields.hasPassedUs06Test}
                     disabled={['EREV', 'PHEV'].indexOf(selectedZevType) < 0}
                     name="hasPassedUs06Test"
                     onChange={handleInputChange}

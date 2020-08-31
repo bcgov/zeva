@@ -4,7 +4,7 @@ import { render, cleanup } from '@testing-library/react';
 
 import VehicleFormDropdown from '../VehicleFormDropdown';
 
-import handleInputChange from '../../VehicleAddContainer';
+import handleInputChange from '../../VehicleEditContainer';
 
 afterEach(cleanup);
 

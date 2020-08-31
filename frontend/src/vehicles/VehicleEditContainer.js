@@ -3,6 +3,7 @@
  * All data handling & manipulation should be handled here.
  */
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -26,7 +27,7 @@ const VehicleEditContainer = (props) => {
   const [vehicles, setVehicles] = useState([]);
 
   const { id } = useParams();
-  const { keycloak } = props;
+  const { keycloak, newVehicle } = props;
 
   const handleInputChange = (event) => {
     const {
@@ -50,6 +51,21 @@ const VehicleEditContainer = (props) => {
     setFields({
       ...fields,
     });
+  };
+
+  const resetForm = () => {
+    setFields({
+      hasPassedUs06Test: false,
+      make: '',
+      modelName: '',
+      vehicleZevType: { vehicleZevCode: '--' },
+      range: '',
+      modelYear: { name: '--' },
+      vehicleClassCode: { vehicleClassCode: '--' },
+      weightKg: '',
+    });
+    setFiles([]);
+    setProgressBars({});
   };
 
   const updateProgressBars = (progressEvent, index) => {
@@ -104,6 +120,17 @@ const VehicleEditContainer = (props) => {
     return promises;
   };
 
+  const saveVehicle = (data) => {
+    if (!newVehicle && id) {
+      return axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), {
+        ...data,
+        deleteFiles,
+      });
+    }
+
+    return axios.post(ROUTES_VEHICLES.LIST, data);
+  };
+
   const handleSubmit = (event, validationStatus = null) => {
     event.preventDefault();
     const data = fields;
@@ -114,11 +141,10 @@ const VehicleEditContainer = (props) => {
       }
     });
 
-    axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), {
-      ...data,
-      deleteFiles,
-    }).then(() => {
-      const uploadPromises = handleUpload(id);
+    saveVehicle(data).then((response) => {
+      const { id: vehicleId } = response.data;
+
+      const uploadPromises = handleUpload(vehicleId);
 
       Promise.all(uploadPromises).then((attachments) => {
         const patchData = {};
@@ -131,11 +157,17 @@ const VehicleEditContainer = (props) => {
           patchData.validationStatus = validationStatus;
         }
 
-        axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), {
+        axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, vehicleId), {
           ...patchData,
           deleteFiles,
         }).then(() => {
-          history.push(`/vehicles/${id}`);
+          if (newVehicle && validationStatus === 'SUBMITTED') {
+            resetForm();
+          } else if (newVehicle && validationStatus !== 'SUBMITTED') {
+            history.push(ROUTES_VEHICLES.LIST);
+          } else {
+            history.push(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, vehicleId));
+          }
         });
       });
     }).catch((errors) => {
@@ -168,20 +200,28 @@ const VehicleEditContainer = (props) => {
   const orgMakes = [...new Set(vehicles.map((vehicle) => vehicle.make))];
   const refreshList = () => {
     setLoading(true);
-    axios.all([
+
+    const promises = [
       axios.get(ROUTES_VEHICLES.YEARS),
       axios.get(ROUTES_VEHICLES.ZEV_TYPES),
-      axios.get(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id)),
       axios.get(ROUTES_VEHICLES.CLASSES),
       axios.get(ROUTES_VEHICLES.LIST),
-    ]).then(axios.spread((yearsRes, typesRes, vehicleRes, classesRes, orgVehiclesRes) => ([
-      setYears(yearsRes.data),
-      setTypes(typesRes.data),
-      loadVehicle(vehicleRes.data),
-      setClasses(classesRes.data),
-      setVehicles(orgVehiclesRes.data),
-      setLoading(false),
-    ])));
+    ];
+
+    if (id) {
+      promises.push(axios.get(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id)));
+    }
+
+    axios.all(promises).then(
+      axios.spread((yearsRes, typesRes, classesRes, orgVehiclesRes, vehicleRes) => ([
+        vehicleRes ? loadVehicle(vehicleRes.data) : resetForm(),
+        setClasses(classesRes.data),
+        setTypes(typesRes.data),
+        setVehicles(orgVehiclesRes.data),
+        setYears(yearsRes.data),
+        setLoading(false),
+      ])),
+    );
   };
 
   useEffect(() => {
@@ -211,8 +251,13 @@ const VehicleEditContainer = (props) => {
   );
 };
 
+VehicleEditContainer.defaultProps = {
+  newVehicle: false,
+};
+
 VehicleEditContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
+  newVehicle: PropTypes.bool,
 };
 
 export default VehicleEditContainer;
