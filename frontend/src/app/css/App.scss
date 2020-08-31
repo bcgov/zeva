@@ -234,23 +234,27 @@ p {
   h1 {
     color: $default-text-blue;
     font-size: 2rem;
+    font-weight: bold;
   }
 
   h2 {
     color: $default-text-blue;
     font-size: 1.5rem;
+    font-weight: bold;
     padding-bottom: 1rem;
     padding-top: 1rem;
   }
 
   h3 {
     font-size: 1.25rem;
+    font-weight: bold;
     padding-bottom: 0.5rem;
     padding-top: 0.5rem;
   }
 
   h3, h4, h5, h6 {
     color: $default-text-blue;
+    font-weight: bold;
   }
 }
 

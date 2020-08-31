@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTable from 'react-table';
 
-const CreditBalancesTable = (props) => {
+const CreditBalanceTable = (props) => {
   const columns = [{
     accessor: 'modelYear.name',
     className: 'text-left',
@@ -59,10 +59,10 @@ const CreditBalancesTable = (props) => {
   );
 };
 
-CreditBalancesTable.defaultProps = {};
+CreditBalanceTable.defaultProps = {};
 
-CreditBalancesTable.propTypes = {
+CreditBalanceTable.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
 
-export default CreditBalancesTable;
+export default CreditBalanceTable;

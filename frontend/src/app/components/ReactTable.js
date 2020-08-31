@@ -58,9 +58,10 @@ const CustomReactTable = (props) => {
 
 CustomReactTable.defaultProps = {
   className: '',
+  defaultSorted: undefined,
   filterable: true,
   filtered: [],
-  getTrProps: () => {},
+  getTrProps: undefined,
   onFilteredChange: () => {},
 };
 
@@ -68,7 +69,7 @@ CustomReactTable.propTypes = {
   className: PropTypes.string,
   columns: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  defaultSorted: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  defaultSorted: PropTypes.arrayOf(PropTypes.shape({})),
   filterable: PropTypes.bool,
   filtered: PropTypes.arrayOf(PropTypes.shape({})),
   getTrProps: PropTypes.func,

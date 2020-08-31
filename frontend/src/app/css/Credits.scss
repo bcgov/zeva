@@ -150,11 +150,6 @@ h2 {
       }
     }
 
-    .-pagination {
-      border-top-width: 1px;
-      box-shadow: none;
-    }
-
     .rt-table {
       padding-bottom: 0.5rem;
     }
@@ -208,4 +203,67 @@ h2 {
       margin-left: 10px;
       margin-bottom:auto;
   } 
+}
+
+#credit-transaction-details {
+  .credit-transaction-list-table {
+    .-header {
+      box-shadow: none;
+  
+      .rt-th {
+        border-bottom: 1px solid $react-border;
+        border-top: 1px solid $react-border;
+      }
+    }
+  
+    .-headerGroups {
+      border-bottom: none;
+  
+      .header-group {
+        background-color: $white;
+        border-color: $white;
+      }
+    }
+
+    .-filters, .rt-tr-group {
+      border-bottom: none;
+
+      .-odd {
+        background-color: transparent;
+  
+        .rt-td {
+          background-color: $default-background-grey;
+        }
+      }
+    }
+
+    .-header, .-filters, .rt-tr-group { /* inner "padding" */
+      .rt-td, .rt-th {
+        border-bottom: 1px solid $react-border;
+
+        &:first-child {
+          border-left: 1px solid $react-border;
+          margin-left: 0.5rem;
+        }
+
+        &:last-child {
+          border-right: 1px solid $react-border;
+          margin-right: 0.5rem;
+        }
+
+        &:not(:last-child) {
+          border-right: 1px solid $react-border;
+        }
+      }
+    }
+
+    .rt-table {
+      padding-bottom: 0.5rem;
+    }
+
+    .balance-left, .credits-left, .date, .transaction {
+      border-left: 1px solid $react-border;
+      margin-left: 1rem;
+    }
+  }
 }
