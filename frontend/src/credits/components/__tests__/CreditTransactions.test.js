@@ -2,6 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import CreditTransactions from '../CreditTransactions';
 import '@testing-library/jest-dom/extend-expect';
+import { BrowserRouter as Router } from 'react-router-dom'
 
 const data = [
   {
@@ -38,10 +39,10 @@ const user = {
 };
 
 it('renders without crashing', () => {
-  render(<CreditTransactions title="hello" items={data} user={user} />);
+  render(<Router><CreditTransactions title="hello" items={data} user={user} /></Router>);
 });
 
 it('renders hello as the title', () => {
-  const { getByText } = render(<CreditTransactions title="hello" items={data} user={user} />);
+  const { getByText } = render(<Router><CreditTransactions title="hello" items={data} user={user} /></Router>);
   expect(getByText('hello')).toBeInTheDocument();
 });

@@ -25,6 +25,7 @@ const SalesSubmissionContainer = (props) => {
   const [filtered, setFiltered] = useState([]);
   const [files, setFiles] = useState([]);
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
+
   const refreshList = (showLoading) => {
     setLoading(showLoading);
     const queryFilter = [];

@@ -7,6 +7,7 @@ import Loading from '../../app/components/Loading';
 import Modal from '../../app/components/Modal';
 import History from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
+import AddressForm from './AddressForm';
 
 const VehicleSupplierEditForm = (props) => {
   const {
@@ -19,8 +20,11 @@ const VehicleSupplierEditForm = (props) => {
     loading,
     newSupplier,
     setDetails,
+    setServiceSame,
+    serviceSame,
   } = props;
   const [showModal, setShowModal] = useState(false);
+
   const modal = (
     <Modal
       confirmClass="btn-outline-danger"
@@ -43,8 +47,8 @@ const VehicleSupplierEditForm = (props) => {
       title="Make Supplier Inactive"
     >
       <p>You have selected to make this vehicle supplier Inactive. <br /><br />
-      They will no longer have the ability to make any further changes
-      within their account and all their users will have read only access
+        They will no longer have the ability to make any further changes
+        within their account and all their users will have read only access
       </p><br />
       <p>Do you want to make this supplier Inactive?</p>
     </Modal>
@@ -82,17 +86,17 @@ const VehicleSupplierEditForm = (props) => {
       </div>
       <form onSubmit={(event) => handleSubmit(event)}>
         <div className="row align-items-center">
-          <fieldset className="col-lg-6">
+          <fieldset className="col-lg-12 col-xl-11">
             <div className="form-layout row">
               <div className="col-lg-12">
                 <div className="form-group row">
                   <label
-                    className="col-sm-4 col-form-label"
+                    className="col-sm-3 col-form-label"
                     htmlFor="active"
                   >
                     Supplier Status
                   </label>
-                  <div className="col-sm-8" id="radio">
+                  <div className="col-sm-9" id="radio">
                     <div>
                       <input
                         type="radio"
@@ -107,7 +111,7 @@ const VehicleSupplierEditForm = (props) => {
                         value="true"
                         checked={details.isActive === true}
                       />
-                    Actively supplying vehicles in B.C.
+                      Actively supplying vehicles in B.C.
                     </div>
                     <div>
                       <input
@@ -118,13 +122,15 @@ const VehicleSupplierEditForm = (props) => {
                         value="false"
                         checked={details.isActive === false}
                       />
-                    Inactive
+                      Inactive
                     </div>
                   </div>
                   {setShowModal && modal}
                 </div>
 
                 <TextInput
+                  labelSize="col-sm-3 col-form-label"
+                  inputSize= 'col-sm-7'
                   defaultValue={details.name}
                   errorMessage={'name' in errorFields && errorFields.name}
                   handleInputChange={handleInputChange}
@@ -134,6 +140,8 @@ const VehicleSupplierEditForm = (props) => {
                   name="name"
                 />
                 <TextInput
+                  labelSize="col-sm-3 col-form-label"
+                  inputSize= 'col-sm-7'
                   defaultValue={details.shortName}
                   errorMessage={'shortName' in errorFields && errorFields.shortName}
                   handleInputChange={handleInputChange}
@@ -141,58 +149,29 @@ const VehicleSupplierEditForm = (props) => {
                   label="Common Name"
                   name="shortName"
                 />
-                <TextInput
-                  defaultValue={addressDetails.addressLine_1 || ''}
-                  errorMessage={'addressLine1' in errorFields && errorFields.addressLine1}
-                  handleInputChange={handleAddressChange}
-                  id="StreetAddress"
-                  label="Street Address/PO Box"
-                  mandatory
-                  name="addressLine_1"
-                />
-                <TextInput
-                  label="Address Other (optional)"
-                  id="addressLine2"
-                  name="addressLine_2"
-                  defaultValue={addressDetails.addressLine_2 || ''}
-                  handleInputChange={handleAddressChange}
-                />
-                <TextInput
-                  defaultValue={addressDetails.city || ''}
-                  errorMessage={'city' in errorFields && errorFields.city}
-                  handleInputChange={handleAddressChange}
-                  id="City"
-                  label="City"
-                  mandatory
-                  name="city"
-                />
-                <TextInput
-                  defaultValue={addressDetails.state || ''}
-                  errorMessage={'state' in errorFields && errorFields.state}
-                  handleInputChange={handleAddressChange}
-                  id="Province"
-                  label="Province/State/Region"
-                  mandatory
-                  name="state"
-                />
-                <TextInput
-                  defaultValue={addressDetails.country || ''}
-                  errorMessage={'country' in errorFields && errorFields.country}
-                  handleInputChange={handleAddressChange}
-                  id="Country"
-                  label="Country"
-                  mandatory
-                  name="country"
-                />
-                <TextInput
-                  defaultValue={addressDetails.postalCode || ''}
-                  errorMessage={'postalCode' in errorFields && errorFields.postalCode}
-                  handleInputChange={handleAddressChange}
-                  id="PostalCode"
-                  label="Postal/ZIP Code"
-                  mandatory
-                  name="postalCode"
-                />
+                <div className="row">
+                  <div className="col-lg-7 col-md-6">
+                    <AddressForm
+                      type="Records"
+                      errorFields={errorFields}
+                      handleAddressChange={handleAddressChange}
+                      addressDetails={addressDetails}
+                      addressType="Records"
+                    />
+                  </div>
+                  <div className="d-sm-block d-md-none">&nbsp;</div>
+                  <div className="col-lg-5 col-md-6">
+                    <AddressForm
+                      type="Service"
+                      errorFields={errorFields}
+                      handleAddressChange={handleAddressChange}
+                      addressDetails={addressDetails}
+                      addressType="Service"
+                      setServiceSame={setServiceSame}
+                      serviceSame={serviceSame}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
             <div className="action-bar form-group row">

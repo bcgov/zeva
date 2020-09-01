@@ -28,7 +28,6 @@ import SalesSubmissionApprovalDetailsContainer from '../sales/SalesSubmissionApp
 import SalesSubmissionConfirmationContainer from '../sales/SalesSubmissionConfirmationContainer';
 import UserAddContainer from '../users/UserAddContainer';
 import UserEditContainer from '../users/UserEditContainer';
-import VehicleAddContainer from '../vehicles/VehicleAddContainer';
 import VehicleDetailsContainer from '../vehicles/VehicleDetailsContainer';
 import VehicleEditContainer from '../vehicles/VehicleEditContainer';
 import VehicleListContainer from '../vehicles/VehicleListContainer';
@@ -64,7 +63,7 @@ class Router extends Component {
     axios.interceptors.response.use(
       (response) => (response),
       (error) => {
-        if (error.response && error.response.status > 400) {
+        if (error.response && error.response.status >= 400) {
           this.setState({
             loading: false,
             statusCode: error.response.status,
@@ -211,7 +210,7 @@ class Router extends Component {
               <Route
                 exact
                 path={ROUTES_VEHICLES.ADD}
-                render={() => <VehicleAddContainer keycloak={keycloak} user={user} />}
+                render={() => <VehicleEditContainer keycloak={keycloak} user={user} newVehicle />}
               />
               <Route
                 exact

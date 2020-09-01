@@ -116,7 +116,7 @@ OrganizationsTable.defaultProps = {
 OrganizationsTable.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.number,
-    organizationAddress: PropTypes.shape({
+    organizationAddress: PropTypes.arrayOf(PropTypes.shape({
       addressLine1: PropTypes.string,
       addressLine2: PropTypes.string,
       addressLine3: PropTypes.string,
@@ -124,7 +124,10 @@ OrganizationsTable.propTypes = {
       country: PropTypes.string,
       postalCode: PropTypes.string,
       state: PropTypes.string,
-    }),
+      addressType: PropTypes.shape({
+        addressType: PropTypes.string,
+      }),
+    })),
   })).isRequired,
 };
 
