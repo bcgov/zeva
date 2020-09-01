@@ -33,17 +33,22 @@ const VehicleSupplierEditContainer = (props) => {
     if (!newSupplier) {
       setLoading(true);
       axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
-        console.log(response.data)
+        const addresses = {};
+        response.data.organizationAddress.forEach(element => {
+          addresses[`${element.addressType.addressType}_addressLine_1`] = element.addressLine1;
+          addresses[`${element.addressType.addressType}_addressLine_2`] = element.addressLine2;
+          addresses[`${element.addressType.addressType}_addressLine_3`] = element.addressLine3;
+          addresses[`${element.addressType.addressType}_city`] = element.city;
+          addresses[`${element.addressType.addressType}_state`] = element.state;
+          addresses[`${element.addressType.addressType}_country`] = element.country;
+          addresses[`${element.addressType.addressType}_postalCode`] = element.postalCode;
+        });
+
         setDetails({
           ...response.data,
-          organizationAddress: {
-            ...response.data.organizationAddress,
-            addressLine_1: response.data.organizationAddress ? response.data.organizationAddress.addressLine1 : '',
-            addressLine_2: response.data.organizationAddress ? response.data.organizationAddress.addressLine2 : '',
-            addressLine_3: response.data.organizationAddress ? response.data.organizationAddress.addressLine3 : '',
-          },
+          organizationAddress: addresses,
         });
-        setDisplay(response.data);
+        setDisplay({ ...response.data, organizationAddress: addresses });
         setLoading(false);
       });
     }

@@ -79,10 +79,10 @@ class Organization(Auditable):
             effective_date__lte=date.today(),
             organization_id=self.id
         ).exclude(
-            expiration_date__lt=date.today()
+            expiration_date__lte=date.today()
         ).exclude(
             expiration_date=F('effective_date')
-        ).order_by('-effective_date', '-update_timestamp').first()
+        ).order_by('-effective_date', '-update_timestamp')
 
         return data
 

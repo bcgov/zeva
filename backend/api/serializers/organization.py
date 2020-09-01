@@ -11,26 +11,26 @@ class OrganizationSerializer(serializers.ModelSerializer):
     Serializer for the Supplier
     Loads most of the fields and the balance for the Supplier
     """
-    # organization_address = serializers.SerializerMethodField()
+    organization_address = serializers.SerializerMethodField()
 
-    # def get_organization_address(self, obj):
-    #     """
-    #     Loads the latest valid address for the organization
-    #     """
-    #     if obj.organization_address is None:
-    #         return None
+    def get_organization_address(self, obj):
+        """
+        Loads the latest valid address for the organization
+        """
+        if obj.organization_address is None:
+            return None
 
-    #     serializer = OrganizationAddressSerializer(
-    #         obj.organization_address, read_only=True
-    #     )
+        serializer = OrganizationAddressSerializer(
+            obj.organization_address, read_only=True, many=True
+        )
 
-    #     return serializer.data
+        return serializer.data
 
     class Meta:
         model = Organization
         fields = (
-            'id', 'name', 'create_timestamp',
-            'balance', 'is_active', 'short_name', 'is_government'
+            'id', 'name', 'create_timestamp', 'organization_address',
+            'balance', 'is_active', 'short_name', 'is_government',
         )
 
 
@@ -68,12 +68,14 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
         obj = Organization.objects.create(
             **validated_data
         )
-        OrganizationAddress.objects.create(
-            create_user=request.user.username,
-            effective_date=date.today(),
-            organization=obj,
-            **addr
-        )
+        if addr:
+            for i in addr:
+                OrganizationAddress.objects.create(
+                    create_user=request.user.username,
+                    effective_date=date.today(),
+                    organization=obj,
+                    **i
+                )
         return obj
 
     def update(self, obj, validated_data):
@@ -91,12 +93,23 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
         obj.save()
         if addr:
             for i in addr:
-                OrganizationAddress.objects.create(
-                    create_user=request.user.username,
-                    effective_date=date.today(),
+                found = OrganizationAddress.objects.filter(
+                    **i,
                     organization=obj,
-                    **i
-                )
+                    expiration_date=None)
+                if not found:
+                    OrganizationAddress.objects.filter(
+                        address_type=i.get('address_type')
+                    ).update(
+                        expiration_date=date.today(),
+                        update_user=request.user.username
+                    )
+                    OrganizationAddress.objects.create(
+                        create_user=request.user.username,
+                        effective_date=date.today(),
+                        organization=obj,
+                        **i
+                    )
         return validated_data
 
     class Meta:

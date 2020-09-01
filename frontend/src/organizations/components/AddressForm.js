@@ -24,8 +24,6 @@ const AddressForm = (props) => {
     title = 'Service Address';
     secondaryText = '';
   }
-  console.log(addressDetails)
-  console.log(errorFields)
   return (
     <span>
       <div className="form-group">
@@ -127,6 +125,7 @@ AddressForm.propTypes = {
   setServiceSame: PropTypes.func,
   errorFields: PropTypes.shape({}).isRequired,
   handleAddressChange: PropTypes.func.isRequired,
+  addressDetails: PropTypes.shape({}).isRequired,
 };
 
 export default AddressForm;

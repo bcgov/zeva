@@ -16,7 +16,7 @@ class OrganizationAddressSerializer(ModelSerializer):
     Address Serializer that loads all the fields that useful for
     displaying.
     """
-    # address_type = AddressTypeSerializer(read_only=True)
+    address_type = AddressTypeSerializer(read_only=True)
 
     class Meta:
         model = OrganizationAddress
@@ -24,23 +24,6 @@ class OrganizationAddressSerializer(ModelSerializer):
             'id', 'address_line_1', 'address_line_2', 'address_line_3',
             'city', 'postal_code', 'state', 'county', 'country', 'address_type'
         )
-        # extra_kwargs = {
-            # 'address_line_1': {
-            #     'allow_null': False, 'allow_blank': False, 'required': True
-            # },
-            # 'city': {
-            #     'allow_null': False, 'allow_blank': False, 'required': True
-            # },
-            # 'postal_code': {
-            #     'allow_null': False, 'allow_blank': False, 'required': True
-            # },
-            # 'state': {
-            #     'allow_null': False, 'allow_blank': False, 'required': True
-            # },
-            # 'country': {
-            #     'allow_null': False, 'allow_blank': False, 'required': True
-            # },
-        # }
 
 
 class OrganizationAddressSaveSerializer(ModelSerializer):
