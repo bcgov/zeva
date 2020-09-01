@@ -5,7 +5,7 @@ import CreditBalanceTable from './CreditBalanceTable';
 import CreditTransactionListTable from './CreditTransactionListTable';
 
 const CreditTransactions = (props) => {
-  const { balances, items, user } = props;
+  const { balances: propsBalances, items, user } = props;
 
   let totalA = 0;
   let totalB = 0;
@@ -28,19 +28,56 @@ const CreditTransactions = (props) => {
     return obj;
   });
 
+  const balances = {};
+
+  propsBalances.sort((a, b) => (
+    parseFloat(b.modelYear.name) - parseFloat(a.modelYear.name)
+  ));
+
+  const totalCredits = {};
+
+  propsBalances.forEach((balance) => {
+    if (balance.modelYear && balance.creditClass) {
+      balances[balance.modelYear.name] = {
+        ...balances[balance.modelYear.name],
+        [balance.creditClass.creditClass]: parseFloat(balance.creditValue),
+      };
+
+      const currentValue = totalCredits[balance.creditClass.creditClass]
+        ? parseFloat(totalCredits[balance.creditClass.creditClass]) : 0;
+
+      /*
+      While this looks unnecessarily complicated,
+      this is needed as we'll have more weight classes in the future
+      */
+      totalCredits[balance.weightClass.weightClassCode] = {
+        ...totalCredits[balance.weightClass.weightClassCode],
+        label: `Total ${balance.weightClass.weightClassCode}`,
+        [balance.creditClass.creditClass]: currentValue + parseFloat(balance.creditValue),
+      };
+    }
+  });
+
   return (
     <div id="credit-transaction-details" className="page">
-      <div className="row">
-        <div className="col-sm-6">
+      {!user.isGovernment && (
+      <div className="row mb-5">
+        <div className="col-sm-5">
           <h2>Detailed Credit Balance</h2>
           <CreditBalanceTable
-            items={balances}
+            items={
+              Object.entries(balances).map(([key, value]) => ({
+                label: key,
+                ...value,
+              })).concat(Object.values(totalCredits))
+            }
             user={user}
           />
         </div>
       </div>
+      )}
 
-      <div className="row mt-5">
+      <div className="row">
         <div className="col-sm-12">
           <h3>Credit Transactions</h3>
           <CreditTransactionListTable items={transactions} />
@@ -54,6 +91,7 @@ CreditTransactions.propTypes = {
   balances: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   user: PropTypes.shape({
+    isGovernment: PropTypes.bool,
     organization: PropTypes.shape(),
   }).isRequired,
 };

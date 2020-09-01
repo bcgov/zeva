@@ -23,60 +23,65 @@ const CreditTransactionListTable = (props) => {
     headerClassName: 'header-group',
     columns: [{
       accessor: 'id',
-      className: 'text-center col-id',
+      className: 'text-center',
       Header: 'ID',
-      headerClassName: 'col-id',
       id: 'id',
+      maxWidth: 100,
     }],
   }, {
     Header: '',
-    headerClassName: 'header-group',
+    headerClassName: 'header-group date',
     columns: [{
       accessor: (item) => (moment(item.transactionTimestamp).format('YYYY-MM-DD')),
       className: 'text-center date',
       Header: 'Date',
       headerClassName: 'date',
       id: 'date',
+      maxWidth: 150,
     }],
   }, {
     Header: '',
-    headerClassName: 'header-group',
+    headerClassName: 'header-group transaction',
     columns: [{
       accessor: (item) => translateTransactionType(item.transactionType.transactionType),
-      className: 'text-center transaction',
+      className: 'text-left transaction',
       Header: 'Transaction',
-      headerClassName: 'transaction',
+      headerClassName: 'text-left transaction',
       id: 'transaction',
     }],
   }, {
     Header: 'Credits',
-    headerClassName: 'header-group',
+    headerClassName: 'header-group credits-left',
     columns: [{
       accessor: (item) => (item.creditClass.creditClass === 'A' ? item.creditValue : '-'),
       className: 'text-right credits-left',
       Header: 'A',
       headerClassName: 'credits-left',
       id: 'credit-class-a',
+      maxWidth: 150,
     }, {
       accessor: (item) => (item.creditClass.creditClass === 'B' ? item.creditValue : '-'),
       className: 'text-right',
       Header: 'B',
       id: 'credit-class-b',
+      maxWidth: 150,
     }],
   }, {
     Header: 'Balance',
-    headerClassName: 'header-group',
+    headerClassName: 'header-group balance-left',
     columns: [{
       accessor: (item) => (_.round(item.displayTotalA, 2).toFixed(2)),
       className: 'text-right balance-left',
       Header: 'A',
       headerClassName: 'balance-left',
       id: 'credit-balance-a',
+      maxWidth: 150,
     }, {
       accessor: (item) => (_.round(item.displayTotalB, 2).toFixed(2)),
       className: 'text-right',
       Header: 'B',
       id: 'credit-balance-b',
+      maxWidth: 150,
     }],
   }];
 

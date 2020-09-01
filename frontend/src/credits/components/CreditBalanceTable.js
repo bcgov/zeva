@@ -3,58 +3,54 @@
  */
 import PropTypes from 'prop-types';
 import React from 'react';
-import ReactTable from 'react-table';
+
+import ReactTable from '../../app/components/ReactTable';
 
 const CreditBalanceTable = (props) => {
   const columns = [{
-    accessor: 'modelYear.name',
-    className: 'text-left',
-    Header: 'Model Year',
-    id: 'model-year',
-  }, {
-    accessor: 'weightClass.weightClassCode',
-    className: 'text-left',
-    Header: 'Vehicle Class',
-    id: 'vehicle-class',
-  }, {
-    accessor: 'creditClass.creditClass',
-    className: 'text-center',
-    Header: 'ZEV Class',
-    id: 'zev-class',
-  }, {
-    accessor: 'creditValue',
+    accessor: (item) => (`${item.label} Credits`),
     className: 'text-right',
-    Header: 'Total',
-    id: 'total',
+    Header: '',
+    id: 'label',
+  }, {
+    accessor: 'A',
+    className: 'text-right credits-left',
+    Header: 'A',
+    headerClassName: 'font-weight-bold credits-left',
+    id: 'credit-class-A',
+    maxWidth: 150,
+  }, {
+    accessor: 'B',
+    className: 'text-right',
+    Header: 'B',
+    headerClassName: 'font-weight-bold',
+    id: 'credit-class-B',
+    maxWidth: 150,
   }];
-
-  const filterMethod = (filter, row) => {
-    const id = filter.pivotId || filter.id;
-    return row[id] !== undefined ? String(row[id])
-      .toLowerCase()
-      .includes(filter.value.toLowerCase()) : true;
-  };
-
-  const filterable = true;
 
   const { items } = props;
 
   return (
     <ReactTable
-      className="searchable"
+      className="credit-balance-table"
       columns={columns}
       data={items}
-      defaultFilterMethod={filterMethod}
-      defaultPageSize={items.length}
       defaultSorted={[{
-        id: 'model-year',
+        id: 'label',
         desc: true,
-      }, {
-        id: 'zev-class',
       }]}
-      filterable={filterable}
-      pageSizeOptions={[items.length, 5, 10, 15, 20, 25, 50, 100]}
-      showPagination={false}
+      filterable={false}
+      getTrProps={(state, rowInfo) => {
+        if (rowInfo) {
+          if (rowInfo.row.label.toLowerCase().includes('total')) {
+            return {
+              className: 'font-weight-bold',
+            };
+          }
+        }
+
+        return {};
+      }}
     />
   );
 };
