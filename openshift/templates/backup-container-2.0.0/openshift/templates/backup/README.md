@@ -43,7 +43,7 @@ oc -n tbiwaq-dev process -f ./templates/backup/backup-deploy.json \
   oc create -f - -n tbiwaq-dev
 6.2 for production
 BACKUP_VOLUME_NAME is the nfs storage name, for example bk-tbiwaq-prod-s9fvzvwddd
-oc -n tbiwaq-prod process -f ./templates/backup/backup-deploy.json \
+oc -n tbiwaq-prod process -f ./backup-deploy.json \
   -p NAME=patroni-backup \
   -p SOURCE_IMAGE_NAME=patroni-backup \
   -p IMAGE_NAMESPACE=tbiwaq-tools \
@@ -59,7 +59,7 @@ oc -n tbiwaq-prod process -f ./templates/backup/backup-deploy.json \
   -p WEEKLY_BACKUPS=12 \
   -p MONTHLY_BACKUPS=3 \
   -p BACKUP_PERIOD=1d \
-  -p BACKUP_VOLUME_NAME=**** \
+  -p BACKUP_VOLUME_NAME=bk****** \
   -p VERIFICATION_VOLUME_NAME=backup-verification \
   -p VERIFICATION_VOLUME_SIZE=2G \
   -p VERIFICATION_VOLUME_CLASS=netapp-file-standard \

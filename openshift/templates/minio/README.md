@@ -2,12 +2,21 @@
 
 * minio-bc.yaml minio build config
 * minio-dc.yaml minio deployment config
-* minio-secret.yaml create template.minio-secret, it is used by pipeline
+* minio-secret.yaml create template.minio-secret, it is NOT being used as minio creation is not part of pipeline anymore
 
-### Before triggering pipeline
+### One minio instance serve all PRs on Dev
 
-1. Create Minio base image 
-oc tag registry.access.redhat.com/rhel7/rhel:7.7-481 tbiwaq-tools/rhel7:7.7-481  
+oc process -f ./minio-dc.yaml \
+NAME=zeva SUFFIX=-dev \
+| oc create -f - -n tbiwaq-dev
 
-2. Create minio template secret template.minio-secret
-oc process -f minio-secret.yaml | oc creat -f - -n [namespace]
+#### Test and Prod Minio setup
+
+oc process -f ./minio-dc.yaml \
+NAME=zeva SUFFIX=-test \
+| oc create -f - -n tbiwaq-test
+
+
+oc process -f ./minio-dc.yaml \
+NAME=zeva SUFFIX=-prod \
+| oc create -f - -n tbiwaq-prod

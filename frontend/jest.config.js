@@ -22,4 +22,13 @@ module.exports = {
     'node_modules/(?!(react.*|@babel.*|es.*)/)',
   ],
   verbose: true,
+  globals: {
+    __APIBASE__: '/',
+    __KEYCLOAK_CLIENT_ID__: '',
+    __KEYCLOAK_LOGOUT_REDIRECT_URL__: '',
+    __KEYCLOAK_REALM_NAME__: '',
+    __KEYCLOAK_URL__: '',
+    __VERSION__: '',
+  },
+
 };
