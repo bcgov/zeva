@@ -86,7 +86,7 @@ const VehicleSupplierEditForm = (props) => {
       </div>
       <form onSubmit={(event) => handleSubmit(event)}>
         <div className="row align-items-center">
-          <fieldset className="col-lg-10">
+          <fieldset className="col-lg-12 col-xl-11">
             <div className="form-layout row">
               <div className="col-lg-12">
                 <div className="form-group row">
@@ -149,9 +149,8 @@ const VehicleSupplierEditForm = (props) => {
                   label="Common Name"
                   name="shortName"
                 />
-                <div className = "row">
-
-                  <div className="col-sm-6">
+                <div className="row">
+                  <div className="col-lg-7 col-md-6">
                     <AddressForm
                       type="Records"
                       errorFields={errorFields}
@@ -160,7 +159,8 @@ const VehicleSupplierEditForm = (props) => {
                       addressType="Records"
                     />
                   </div>
-                  <div className="col-sm-6">
+                  <div className="d-sm-block d-md-none">&nbsp;</div>
+                  <div className="col-lg-5 col-md-6">
                     <AddressForm
                       type="Service"
                       errorFields={errorFields}

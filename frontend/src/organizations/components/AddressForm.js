@@ -27,11 +27,11 @@ const AddressForm = (props) => {
   return (
     <span>
       <div className="form-group">
-        <label>{title}</label>
-        <h6 className="d-inline"> {secondaryText}</h6>
+        <label className="d-lg-block d-xl-inline d-md-block">{title}</label>
+        {type==='Records'&& <h6 className="d-lg-block d-xl-inline"> {secondaryText}</h6>}
 
         {type === 'Service' && (
-        <span>
+        <span className="d-lg-block d-xl-inline">
           <input type="checkbox" id="service-address-checkbox" onChange={(event) => { handleCheckboxClick(event); }} />
           <h6 className="d-inline" htmlFor="service-address">
             same as records address
@@ -45,6 +45,8 @@ const AddressForm = (props) => {
         handleInputChange={handleAddressChange}
         id="StreetAddress"
         label="Street Address/PO Box"
+        labelSize = {`col-lg-12 col-xl-5 col-form-label ${type === 'Records' ? '' : 'd-xl-none'}`}
+        inputSize = {type === 'Records'? 'col-lg-12 col-xl-7' :'col-xl-12'}
         mandatory
         name={`${type}_addressLine_1`}
         disabled={serviceSame}
@@ -54,6 +56,8 @@ const AddressForm = (props) => {
       <TextInput
         label="Address Other (optional)"
         id="addressLine2"
+        labelSize = {`col-lg-12 col-xl-5 col-form-label ${type === 'Records' ? '' : 'd-xl-none'}`}
+        inputSize = {type === 'Records'? 'col-lg-12 col-xl-7' :'col-xl-12'}
         name={`${type}_addressLine_2`}
         defaultValue={addressDetails[`${type}_addressLine_2`] || ''}
         handleInputChange={handleAddressChange}
@@ -62,6 +66,8 @@ const AddressForm = (props) => {
         serviceSame={serviceSame}
       />
       <TextInput
+        labelSize = {`col-lg-12 col-xl-5 col-form-label ${type === 'Records' ? '' : 'd-xl-none'}`}
+        inputSize = {type === 'Records'? 'col-lg-12 col-xl-7' :'col-xl-12'}
         defaultValue={addressDetails[`${type}_city`] || ''}
         errorMessage={'city' in errorFields && errorFields.city}
         handleInputChange={handleAddressChange}
@@ -74,6 +80,8 @@ const AddressForm = (props) => {
         serviceSame={serviceSame}
       />
       <TextInput
+        labelSize = {`col-lg-12 col-xl-5 col-form-label ${type === 'Records' ? '' : 'd-xl-none'}`}
+        inputSize = {type === 'Records'? 'col-lg-12 col-xl-7' :'col-xl-12'}
         defaultValue={type === 'Records' ? 'BC' : addressDetails[`${type}_state`]}
         errorMessage={'state' in errorFields && errorFields.state}
         handleInputChange={handleAddressChange}
@@ -98,6 +106,8 @@ const AddressForm = (props) => {
         readonly={type === 'Records'}
         addressType={type}
         serviceSame={serviceSame}
+        labelSize = {`col-lg-12 col-xl-5 col-form-label ${type === 'Records' ? '' : 'd-xl-none'}`}
+        inputSize = {type === 'Records'? 'col-lg-12 col-xl-7' :'col-xl-12'}
       />
       <TextInput
         defaultValue={addressDetails[`${type}_postalCode`] || ''}
@@ -110,6 +120,8 @@ const AddressForm = (props) => {
         disabled={serviceSame}
         addressType={type}
         serviceSame={serviceSame}
+        labelSize = {`col-lg-12 col-xl-5 col-form-label ${type === 'Records' ? '' : 'd-xl-none'}`}
+        inputSize = {type === 'Records'? 'col-lg-12 col-xl-7' :'col-xl-12'}
       />
     </span>
   );
