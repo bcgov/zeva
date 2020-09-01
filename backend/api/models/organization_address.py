@@ -10,6 +10,12 @@ class OrganizationAddress(Auditable, EffectiveDates):
         related_name='addresses',
         on_delete=models.CASCADE
     )
+    address_type = models.ForeignKey(
+        'AddressType',
+        related_name='+',
+        on_delete=models.PROTECT,
+        null=False
+    )
     address_line_1 = models.CharField(
         blank=True,
         max_length=500,
