@@ -15,12 +15,12 @@ import Modal from '../../app/components/Modal';
 const VehicleForm = (props) => {
   const {
     deleteFiles,
+    errorFields,
     fields,
     files,
     formTitle,
     handleInputChange,
     handleSubmit,
-    handleSaveDraft,
     loading,
     makes,
     progressBars,
@@ -39,7 +39,7 @@ const VehicleForm = (props) => {
     <Modal
       confirmLabel=" Submit"
       handleCancel={() => { setShowModal(false); }}
-      handleSubmit={() => { handleSubmit(); setShowModal(false); }}
+      handleSubmit={(event) => { handleSubmit(event, 'SUBMITTED'); setShowModal(false); }}
       modalClass="w-75"
       showModal={showModal}
       confirmClass="button primary"
@@ -90,7 +90,7 @@ const VehicleForm = (props) => {
         </div>
       </div>
 
-      <form onSubmit={(event) => handleSaveDraft(event)}>
+      <form onSubmit={(event) => handleSubmit(event)}>
         <div className="row">
           <div className="col-lg-6">
             <fieldset>
@@ -98,6 +98,7 @@ const VehicleForm = (props) => {
                 accessor={(model) => model.name}
                 dropdownName="Model Year"
                 dropdownData={vehicleYears}
+                errorMessage={'modelYear' in errorFields && 'Please select a Model Year'}
                 fieldName="modelYear"
                 handleInputChange={handleInputChange}
                 selectedOption={fields.modelYear.name || fields.modelYear}
@@ -107,6 +108,7 @@ const VehicleForm = (props) => {
                 id="make"
                 name="make"
                 defaultValue={fields.make}
+                errorMessage={'make' in errorFields && errorFields.make}
                 handleInputChange={handleInputChange}
                 mandatory
                 possibleChoicesList={makes}
@@ -114,18 +116,20 @@ const VehicleForm = (props) => {
                 fields={fields}
               />
               <TextInput
-                label="Model"
-                id="modelName"
-                name="modelName"
                 defaultValue={fields.modelName}
+                errorMessage={'modelName' in errorFields && errorFields.modelName}
                 handleInputChange={handleInputChange}
+                id="modelName"
+                label="Model"
                 mandatory
+                name="modelName"
               />
               <VehicleFormDropdown
                 accessor={(zevType) => zevType.vehicleZevCode}
                 className="mb-0"
                 dropdownName="ZEV Type"
                 dropdownData={vehicleTypes}
+                errorMessage={'vehicleZevType' in errorFields && 'Please select a ZEV Type'}
                 fieldName="vehicleZevType"
                 handleInputChange={handleInputChange}
                 selectedOption={selectedZevType}
@@ -139,7 +143,7 @@ const VehicleForm = (props) => {
                 </span>
                 <div className={`col-sm-8 ${['EREV', 'PHEV'].indexOf(selectedZevType) < 0 ? 'disabled' : ''}`}>
                   <input
-                    defaultChecked={fields.hasPassedUs06Test}
+                    checked={fields.hasPassedUs06Test}
                     disabled={['EREV', 'PHEV'].indexOf(selectedZevType) < 0}
                     name="hasPassedUs06Test"
                     onChange={handleInputChange}
@@ -149,30 +153,33 @@ const VehicleForm = (props) => {
                 </div>
               </div>
               <TextInput
-                label="Electric Range (km)"
-                id="range"
-                name="range"
                 defaultValue={fields.range}
+                errorMessage={'range' in errorFields && errorFields.range}
                 handleInputChange={handleInputChange}
+                id="range"
+                label="Electric Range (km)"
                 mandatory
+                name="range"
               />
               <VehicleFormDropdown
                 accessor={(classCode) => classCode.vehicleClassCode}
                 dropdownName="Body Type"
                 dropdownData={vehicleClasses}
+                errorMessage={'vehicleClassCode' in errorFields && 'Please select a Body Type'}
                 fieldName="vehicleClassCode"
                 handleInputChange={handleInputChange}
                 selectedOption={fields.vehicleClassCode.vehicleClassCode || fields.vehicleClassCode}
               />
               <TextInput
-                num
-                maxnum={3855}
-                label="GVWR (kg)"
-                id="weightKg"
-                name="weightKg"
                 defaultValue={fields.weightKg}
+                errorMessage={'weightKg' in errorFields && errorFields.weightKg}
                 handleInputChange={handleInputChange}
+                id="weightKg"
+                label="GVWR (kg)"
                 mandatory
+                maxnum={3855}
+                name="weightKg"
+                num
               />
             </fieldset>
           </div>
@@ -328,6 +335,7 @@ const VehicleForm = (props) => {
 
 VehicleForm.defaultProps = {
   deleteFiles: [],
+  errorFields: {},
   files: [],
   progressBars: {},
   setDeleteFiles: null,
@@ -337,11 +345,11 @@ VehicleForm.defaultProps = {
 
 VehicleForm.propTypes = {
   deleteFiles: PropTypes.arrayOf(PropTypes.number),
+  errorFields: PropTypes.shape(),
   fields: PropTypes.shape().isRequired,
   files: PropTypes.arrayOf(PropTypes.shape()),
   formTitle: PropTypes.string.isRequired,
   handleInputChange: PropTypes.func.isRequired,
-  handleSaveDraft: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,

@@ -50,6 +50,7 @@ const UserAddContainer = (props) => {
   const handleSubmit = () => {
     axios.post(ROUTES_USERS.LIST, {
       ...details,
+      email: details.keycloakEmail,
       roles: userRoles,
     }).then((response) => {
       const { organization } = response.data;

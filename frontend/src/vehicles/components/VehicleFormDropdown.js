@@ -7,6 +7,7 @@ const VehicleFormDropdown = (props) => {
     className,
     dropdownData,
     dropdownName,
+    errorMessage,
     fieldName,
     handleInputChange,
     selectedOption,
@@ -29,11 +30,12 @@ const VehicleFormDropdown = (props) => {
           id={dropdownName}
           name={fieldName}
           onChange={handleInputChange}
-          defaultValue={selectedOption}
+          value={selectedOption}
         >
-          {selectedOption === '--' && <option disabled>--</option>}
+          {selectedOption === '--' && <option value="--" disabled>--</option>}
           {selectionList}
         </select>
+        <small className="form-text text-danger">{errorMessage}</small>
       </div>
     </div>
   );
@@ -42,6 +44,7 @@ const VehicleFormDropdown = (props) => {
 VehicleFormDropdown.defaultProps = {
   accessor: (obj) => obj.id,
   className: '',
+  errorMessage: '',
 };
 
 VehicleFormDropdown.propTypes = {
@@ -53,6 +56,10 @@ VehicleFormDropdown.propTypes = {
     name: PropTypes.string,
   })).isRequired,
   dropdownName: PropTypes.string.isRequired,
+  errorMessage: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.string,
+  ]),
   fieldName: PropTypes.string.isRequired,
   handleInputChange: PropTypes.func.isRequired,
   selectedOption: PropTypes.oneOfType([

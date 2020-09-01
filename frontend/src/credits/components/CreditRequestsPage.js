@@ -6,6 +6,8 @@ import SubmissionListTable from './SubmissionListTable';
 
 const CreditRequestsPage = (props) => {
   const {
+    filtered,
+    setFiltered,
     submissions,
     user,
   } = props;
@@ -21,8 +23,10 @@ const CreditRequestsPage = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <SubmissionListTable
+            filtered={filtered}
             items={submissions}
             user={user}
+            setFiltered={setFiltered}
           />
         </div>
       </div>
@@ -33,7 +37,9 @@ const CreditRequestsPage = (props) => {
 CreditRequestsPage.defaultProps = {};
 
 CreditRequestsPage.propTypes = {
-  submissions: PropTypes.arrayOf(PropTypes.object).isRequired,
+  filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  setFiltered: PropTypes.func.isRequired,
+  submissions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 

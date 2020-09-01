@@ -1,5 +1,5 @@
 import Autosuggest from 'react-autosuggest';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { KEY_RETURN } from 'keycode-js';
 
@@ -111,6 +111,10 @@ const AutocompleteInput = (props) => {
       }
     },
   };
+
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
 
   return (
     <div id="autocomplete-container" className={rowClass}>
