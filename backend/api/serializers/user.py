@@ -110,9 +110,6 @@ class UserSaveSerializer(serializers.ModelSerializer):
             'phone', 'keycloak_email', 'roles', 'create_user', 'update_user',
         )
         extra_kwargs = {
-            'email': {
-                'allow_null': False, 'allow_blank': False, 'required': True
-            },
             'first_name': {
                 'allow_null': False, 'allow_blank': False, 'required': True
             },
@@ -120,9 +117,6 @@ class UserSaveSerializer(serializers.ModelSerializer):
                 'allow_null': False, 'allow_blank': False, 'required': True
             },
             'last_name': {
-                'allow_null': False, 'allow_blank': False, 'required': True
-            },
-            'phone': {
                 'allow_null': False, 'allow_blank': False, 'required': True
             },
             'title': {
