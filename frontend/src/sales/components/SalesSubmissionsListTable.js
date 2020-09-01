@@ -23,8 +23,12 @@ const SalesSubmissionListTable = (props) => {
     accessor: (item) => (item.updateUser ? `${item.updateUser.displayName}` : ''),
     id: 'user',
   }, {
-    Header: 'Total Sales',
+    Header: 'Sales Total',
     accessor: 'totals.vins',
+    className: 'text-right',
+  }, {
+    Header: 'Errors',
+    accessor: '-',
     className: 'text-right',
   }, {
     Header: 'A-Credits',

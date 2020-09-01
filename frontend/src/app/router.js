@@ -178,7 +178,7 @@ class Router extends Component {
               />
               <Route
                 exact
-                path={ROUTES_SALES.NEW_CREDIT_APPLICATION}
+                path={ROUTES_SALES.NEW_UPLOAD}
                 render={() => <SalesSubmissionContainer keycloak={keycloak} user={user} />}
               />
               <Route

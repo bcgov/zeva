@@ -16,7 +16,6 @@ const SalesSubmissionPage = (props) => {
     files,
     setUploadFiles,
     submissions,
-    upload,
     user,
     filtered,
     setFiltered,
@@ -32,7 +31,7 @@ const SalesSubmissionPage = (props) => {
           <button
             className="button primary"
             onClick={() => {
-              history.push('/sales/new_credit_application');
+              history.push('/sales/new_upload');
             }}
             type="button"
           >

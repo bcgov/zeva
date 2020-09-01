@@ -14,14 +14,8 @@ const SalesUploadPage = (props) => {
   const {
     errorMessage,
     files,
-    key,
     setUploadFiles,
-    submissions,
     upload,
-    user,
-    years,
-    filtered,
-    setFiltered,
   } = props;
 
   const removeFile = (removedFile) => {
@@ -99,8 +93,6 @@ const SalesUploadPage = (props) => {
                   </div>
                 ))}
               </div>
-
-              
             </div>
           </div>
         </div>

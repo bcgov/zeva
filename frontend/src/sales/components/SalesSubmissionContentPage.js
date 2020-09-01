@@ -92,7 +92,7 @@ const SalesSubmissionContentPage = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <h1>{user.organization.name} Sales Submission</h1>
-          <h2>{user.organization.organizationAddress}</h2>
+          {/* <h2>{user.organization.organizationAddress}</h2> */}
 
         </div>
       </div>
