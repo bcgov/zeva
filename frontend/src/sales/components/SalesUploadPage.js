@@ -5,9 +5,7 @@ import history from '../../app/History';
 
 import ROUTES_SALES from '../../app/routes/Sales';
 import download from '../../app/utilities/download';
-import CustomPropTypes from '../../app/utilities/props';
 import ExcelFileDrop from '../../app/components/FileDrop';
-import SalesSubmissionsListTable from './SalesSubmissionsListTable';
 import getFileSize from '../../app/utilities/getFileSize';
 
 const SalesUploadPage = (props) => {
@@ -28,9 +26,9 @@ const SalesUploadPage = (props) => {
   return (
     <div id="sales-edit" className="page">
       <h2>Application for Credits for Consumer Sales</h2>
-      <p>
+      <h5 className="sales-upload-grey">
         Download an Excel template containing all active ZEV models to submit consumer sales
-      </p>
+      </h5>
 
       <div className="compact w-50">
         <div className="content">

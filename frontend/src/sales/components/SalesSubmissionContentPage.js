@@ -7,7 +7,7 @@ import ROUTES_SALES from '../../app/routes/Sales';
 import download from '../../app/utilities/download';
 import SalesSubmissionSignaturesModal from './SalesSubmissionSignaturesModal';
 import SalesSubmissionContentTable from './SalesSubmissionContentTable';
-
+import SalesSubmissionModelsTable from './SalesSubmissionModelsTable';
 import CustomPropTypes from '../../app/utilities/props';
 
 
@@ -87,18 +87,32 @@ const SalesSubmissionContentPage = (props) => {
   console.log(user.organization)
 
   return (
-    <div id="sales-validate" className="page">
+    <div id="sales-validate" className="page sales-upload-details">
       {actionbar}
       <div className="row">
         <div className="col-sm-12">
-          <h1>{user.organization.name} Sales Submission</h1>
+          <h2>Application for Credits for Consumer Sales</h2>
+          <h3>{user.organization.name}</h3>
+          <h5 className="d-inline sales-upload-grey mr-5">Service address: </h5>
+          <h5 className="d-inline sales-upload-blue">1235 Main Street Vancouver BC V4V 4R7</h5>
+          <br />
+          <h5 className="d-inline sales-upload-grey mr-5">Records address: </h5>
+          <h5 className="d-inline sales-upload-blue">45678 First Street Toronto Ontario ON D4E4R5</h5>
+          <p className="font-weight-bold">
+            Consumer Sales:
+          </p>
           {/* <h2>{user.organization.organizationAddress}</h2> */}
 
         </div>
       </div>
       <div className="row">
         <div className="col-sm-12">
-          <SalesSubmissionContentTable data={content} />
+        <SalesSubmissionModelsTable
+            items={content}
+            submission={submission}
+            user={user}
+          />
+          {/* <SalesSubmissionContentTable data={content} /> */}
         </div>
       </div>
       {actionbar}

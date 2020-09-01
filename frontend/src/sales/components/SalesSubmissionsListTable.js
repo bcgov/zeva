@@ -13,7 +13,7 @@ const SalesSubmissionListTable = (props) => {
   const { items, filtered, setFiltered } = props;
   const columns = [{
     Header: 'Submission ID',
-    accessor: 'submissionId',
+    accessor: 'id',
   }, {
     Header: 'Date',
     accessor: 'submissionDate',
@@ -92,7 +92,6 @@ const SalesSubmissionListTable = (props) => {
           return {
             onClick: () => {
               const { id } = row.original;
-
               history.push(ROUTES_SALES.DETAILS.replace(/:id/g, id));
             },
             className: 'clickable',

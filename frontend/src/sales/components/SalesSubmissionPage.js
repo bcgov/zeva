@@ -2,13 +2,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import PropTypes from 'prop-types';
 import history from '../../app/History';
-
-import ROUTES_SALES from '../../app/routes/Sales';
-import download from '../../app/utilities/download';
 import CustomPropTypes from '../../app/utilities/props';
-import ExcelFileDrop from '../../app/components/FileDrop';
 import SalesSubmissionsListTable from './SalesSubmissionsListTable';
-import getFileSize from '../../app/utilities/getFileSize';
 
 const SalesSubmissionPage = (props) => {
   const {
