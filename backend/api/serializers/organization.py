@@ -2,7 +2,7 @@ from datetime import date
 from rest_framework import serializers
 
 from api.models.organization import Organization
-from api.serializers.organization_address import OrganizationAddressSerializer
+from api.serializers.organization_address import OrganizationAddressSerializer, OrganizationAddressSaveSerializer
 from api.models.organization_address import OrganizationAddress
 
 
@@ -21,7 +21,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
             return None
 
         serializer = OrganizationAddressSerializer(
-            obj.organization_address, read_only=True
+            obj.organization_address, read_only=True, many=True
         )
 
         return serializer.data
@@ -29,8 +29,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = (
-            'id', 'name', 'organization_address', 'create_timestamp',
-            'balance', 'is_active', 'short_name', 'is_government'
+            'id', 'name', 'create_timestamp', 'organization_address',
+            'balance', 'is_active', 'short_name', 'is_government',
         )
 
 
@@ -60,7 +60,7 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
     Serializer for saving/editing the Supplier
     Loads most of the fields and the balance for the Supplier
     """
-    organization_address = OrganizationAddressSerializer(allow_null=True)
+    organization_address = OrganizationAddressSaveSerializer(allow_null=True, many=True)
 
     def create(self, validated_data):
         request = self.context.get('request')
@@ -68,43 +68,49 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
         obj = Organization.objects.create(
             **validated_data
         )
-        OrganizationAddress.objects.create(
-            create_user=request.user.username,
-            effective_date=date.today(),
-            organization=obj,
-            **addr
-        )
+        if addr:
+            for i in addr:
+                OrganizationAddress.objects.create(
+                    create_user=request.user.username,
+                    effective_date=date.today(),
+                    organization=obj,
+                    **i
+                )
         return obj
 
     def update(self, obj, validated_data):
         request = self.context.get('request')
 
-        addr = validated_data.pop('organization_address')
-        short_name = validated_data.pop('short_name')
-        is_active = validated_data.pop('is_active')
-        name = validated_data.pop('name')
+        addr = validated_data.get('organization_address')
+        short_name = validated_data.get('short_name')
+        is_active = validated_data.get('is_active')
+        name = validated_data.get('name')
 
         obj.short_name = short_name
         obj.is_active = is_active
         obj.name = name
         obj.update_user = request.user.username
         obj.save()
-
-        organization_address = obj.organization_address
-
         if addr:
-            if organization_address:
-                organization_address.expiration_date = date.today()
-                organization_address.update_user = request.user.username
-                organization_address.save()
-
-            OrganizationAddress.objects.create(
-                create_user=request.user.username,
-                effective_date=date.today(),
-                organization=obj,
-                **addr
-            )
-        return obj
+            for i in addr:
+                found = OrganizationAddress.objects.filter(
+                    **i,
+                    organization=obj,
+                    expiration_date=None)
+                if not found:
+                    OrganizationAddress.objects.filter(
+                        address_type=i.get('address_type')
+                    ).update(
+                        expiration_date=date.today(),
+                        update_user=request.user.username
+                    )
+                    OrganizationAddress.objects.create(
+                        create_user=request.user.username,
+                        effective_date=date.today(),
+                        organization=obj,
+                        **i
+                    )
+        return validated_data
 
     class Meta:
         model = Organization

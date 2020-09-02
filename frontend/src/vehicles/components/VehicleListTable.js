@@ -12,6 +12,7 @@ const VehicleListTable = (props) => {
   const {
     items, user, filtered, setFiltered,
   } = props;
+
   const toComma = (value) => {
     let newValue = value;
     if (typeof newValue === 'number') {
@@ -45,7 +46,7 @@ const VehicleListTable = (props) => {
   }, {
     accessor: (row) => (row.vehicleClassCode ? row.vehicleClassCode.description : ''),
     className: 'text-center',
-    Header: 'Body',
+    Header: 'Body Type',
     id: 'col-class-desc',
     width: 125,
   }, {
@@ -65,7 +66,7 @@ const VehicleListTable = (props) => {
   }, {
     accessor: (row) => (row.vehicleZevType.vehicleZevCode),
     className: 'text-center',
-    Header: 'Type',
+    Header: 'ZEV Type',
     id: 'zev-type',
     width: 100,
   }, {
@@ -82,7 +83,7 @@ const VehicleListTable = (props) => {
       return 'B';
     },
     className: 'text-center',
-    Header: 'Class',
+    Header: 'Zev Class',
     id: 'col-class',
     width: 125,
   }, {
@@ -111,7 +112,7 @@ const VehicleListTable = (props) => {
       return credit;
     },
     className: 'text-right',
-    Header: 'Credit',
+    Header: 'Credit Entitlement',
     id: 'col-credit',
     width: 125,
   }, {
@@ -144,9 +145,7 @@ const VehicleListTable = (props) => {
 
         return {};
       }}
-      onFilteredChange={(input) => {
-        setFiltered(input);
-      }}
+      setFiltered={setFiltered}
     />
   );
 };

@@ -4,57 +4,94 @@ ie. Page Size options is disabled and the number of row displayed
 is based on the items provided
 */
 import PropTypes from 'prop-types';
-import React, { useRef, useState } from 'react';
+import React, { Component } from 'react';
 import ReactTable from 'react-table';
 
-const CustomReactTable = (props) => {
-  const {
-    className,
-    columns,
-    data,
-    defaultSorted,
-    filterable,
-    filtered: propsFiltered,
-    getTrProps,
-    onFilteredChange,
-  } = props;
-
-  const [pageSize, setPageSize] = useState(data.length);
-  const [filtered, setFiltered] = useState(propsFiltered);
-  let reactTable = useRef(null);
-
-  const defaultFilterMethod = (filter, row) => {
+class CustomReactTable extends Component {
+  static defaultFilterMethod(filter, row) {
     const id = filter.pivotId || filter.id;
+
     return row[id] !== undefined ? String(row[id])
       .toLowerCase()
       .includes(filter.value.toLowerCase()) : true;
-  };
+  }
 
-  return (
-    <ReactTable
-      ref={(r) => {
-        reactTable = r;
-      }}
-      className={`searchable ${className}`}
-      columns={columns}
-      filtered={filtered}
-      data={data}
-      defaultFilterMethod={defaultFilterMethod}
-      onFilteredChange={(input) => {
-        onFilteredChange(input);
-        setFiltered(input);
-        setPageSize(reactTable.getResolvedState().sortedData.length);
-      }}
-      defaultPageSize={data.length}
-      defaultSorted={defaultSorted}
-      filterable={filterable}
-      getTrProps={getTrProps}
-      pageSize={pageSize}
-      pageSizeOptions={[pageSize]}
-      showPagination={false}
-    />
-  );
-};
+  constructor(props) {
+    super(props);
+
+    this.defaultPageSize = props.data.length;
+    this.pageSize = props.data.length;
+
+    this.table = React.createRef();
+  }
+
+  componentDidMount() {
+    const { filtered } = this.props;
+
+    if (filtered && filtered.length > 0) {
+      filtered.forEach((arr) => {
+        this.table.current.filterColumn(arr, arr.value);
+      });
+    }
+  }
+
+  shouldComponentUpdate(nextProps) {
+    if (this.table.current) {
+      if (
+        JSON.stringify(this.table.current.state.filtered)
+        !== JSON.stringify(nextProps.filtered)
+      ) {
+        nextProps.filtered.forEach((arr) => {
+          this.table.current.filterColumn(arr, arr.value);
+        });
+      }
+
+      if (nextProps.filtered.length === 0) {
+        this.pageSize = this.defaultPageSize;
+      }
+    }
+
+    return true;
+  }
+
+  render() {
+    const {
+      className,
+      columns,
+      data,
+      defaultSorted,
+      filterable,
+      filtered,
+      getTrProps,
+      onFilteredChange,
+      setFiltered,
+    } = this.props;
+
+    return (
+      <ReactTable
+        ref={this.table}
+        className={`searchable ${className}`}
+        columns={columns}
+        filtered={filtered}
+        data={data}
+        defaultFilterMethod={CustomReactTable.defaultFilterMethod}
+        defaultPageSize={this.defaultPageSize}
+        defaultSorted={defaultSorted}
+        filterable={filterable}
+        getTrProps={getTrProps}
+        onFilteredChange={(input) => {
+          onFilteredChange(input);
+          setFiltered(input);
+
+          this.pageSize = this.table.current.getResolvedState().sortedData.length;
+        }}
+        pageSize={this.pageSize}
+        pageSizeOptions={[this.pageSize]}
+        showPagination={false}
+      />
+    );
+  }
+}
 
 CustomReactTable.defaultProps = {
   className: '',
@@ -63,6 +100,7 @@ CustomReactTable.defaultProps = {
   filtered: [],
   getTrProps: undefined,
   onFilteredChange: () => {},
+  setFiltered: () => {},
 };
 
 CustomReactTable.propTypes = {
@@ -74,6 +112,7 @@ CustomReactTable.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.shape({})),
   getTrProps: PropTypes.func,
   onFilteredChange: PropTypes.func,
+  setFiltered: PropTypes.func,
 };
 
 export default CustomReactTable;

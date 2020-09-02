@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+import ROUTES_CREDITS from '../../app/routes/Credits';
 import ROUTES_SALES_SUBMISSIONS from '../../app/routes/SalesSubmissions';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
-import ROUTES_SALES from '../../app/routes/Sales';
 import Loading from '../../app/components/Loading';
 import CustomPropTypes from '../../app/utilities/props';
 import ActivityBanner from './ActivityBanner';
@@ -84,7 +84,7 @@ const ActionsIdir = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsAnalyst} require analyst/engineer validation`}
-          linkTo={`${ROUTES_SALES.LIST}?status=Submitted`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_REQUESTS}?status=Submitted`}
         />
         )}
         {activityCount.creditsRecommendApprove > 0
@@ -94,7 +94,7 @@ const ActionsIdir = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsRecommendApprove} recommended for director approval`}
-          linkTo={`${ROUTES_SALES.LIST}?status=Recommend%20Approval`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_REQUESTS}?status=Recommend%20Approval`}
         />
         )}
         {activityCount.creditsRecommendReject > 0
@@ -104,7 +104,7 @@ const ActionsIdir = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsRecommendReject} recommended for director rejection`}
-          linkTo={`${ROUTES_SALES.LIST}?status=Recommend%20Rejection`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_REQUESTS}?status=Recommend%20Rejection`}
         />
         )}
         {((!user.hasPermission('RECOMMEND_SALES') && activityCount.creditsRecommendApprove === 0
