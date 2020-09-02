@@ -23,8 +23,9 @@ class AddressType(EffectiveDates, Auditable):
         unique=True
     )
 
-    db_table_comment = "A lookup table for address type./"
-    "Can be either records or service addresses./
-    "Service = the address for service of the supplier/"
-    "Records = the address where the supplier keeps records required/
-    "to be kept and maintained under the Act"
+    db_table_comment = "A lookup table for address type." \
+                       "Can be either records or service addresses." \
+                       "Service = the address for service of the supplier" \
+                       "Records = the address where the supplier keeps " \
+                       "records required to be kept and maintained under " \
+                       "the Act"
