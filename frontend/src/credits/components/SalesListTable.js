@@ -77,14 +77,14 @@ const SalesListTable = (props) => {
       id: 'icbc-model-year',
     }, {
       accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.make : '-'),
+      className: 'icbc-make',
       Header: 'Make',
       id: 'icbc-make',
-      className: 'icbc-make',
     }, {
       accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.modelName : '-'),
+      className: 'icbc-model',
       Header: 'Model',
       id: 'icbc-model',
-      className: 'icbc-model',
     }],
   }, {
     Header: '',
