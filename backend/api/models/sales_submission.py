@@ -85,7 +85,7 @@ class SalesSubmission(Auditable):
                 )
 
         if status in [SalesSubmissionStatuses.DELETED]:
-            if self.validation_status != SalesSubmissionStatuses.REJECTED:
+            if self.validation_status not in [SalesSubmissionStatuses.REJECTED, SalesSubmissionStatuses.DRAFT]:
                 raise ValidationError(
                     "Submission needs to be rejected before deleting."
                 )

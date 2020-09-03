@@ -47,6 +47,9 @@ const SalesSubmissionListTable = (props) => {
       if (status === 'validated') {
         return 'issued';
       }
+      if (status === 'recommend rejection' || status === 'recommend approval') {
+        return 'submitted';
+      }
       return status;
     },
     className: 'text-center text-capitalize',

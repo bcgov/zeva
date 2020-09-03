@@ -106,7 +106,6 @@ class OrganizationViewSet(
             organization_id=pk
         ).exclude(validation_status__in=(
             SalesSubmissionStatuses.DRAFT,
-            SalesSubmissionStatuses.NEW
         ))
 
         serializer = SalesSubmissionListSerializer(sales, many=True)

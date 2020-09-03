@@ -38,11 +38,15 @@ const SalesSubmissionEditContainer = (props) => {
     });
   };
 
-  const sign = (submissionId) => {
+  const sign = (submissionId, action) => {
     axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', submissionId), {
-      validationStatus: 'SUBMITTED',
+      validationStatus: action,
     }).then(() => {
-      history.push(ROUTES_SALES.CONFIRM.replace(':id', submissionId));
+      if (action === 'SUBMITTED') {
+        history.push(ROUTES_SALES.CONFIRM.replace(':id', submissionId));
+      } else {
+        history.push(ROUTES_SALES.LIST)
+      }
     });
   };
 
