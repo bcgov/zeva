@@ -150,11 +150,6 @@ h2 {
       }
     }
 
-    .-pagination {
-      border-top-width: 1px;
-      box-shadow: none;
-    }
-
     .rt-table {
       padding-bottom: 0.5rem;
     }
@@ -208,4 +203,78 @@ h2 {
       margin-left: 10px;
       margin-bottom:auto;
   } 
+}
+
+#credit-transaction-details {
+  .credit-balance-table, .credit-transaction-list-table {
+    .-header {
+      box-shadow: none;
+      font-weight: bold;
+  
+      .rt-th {
+        background-color: $default-background-grey;
+        border-top: none;
+      }
+    }
+  
+    .-headerGroups {
+      border-bottom: none;
+      font-weight: bold;
+  
+      .header-group {
+        background-color: $default-background-grey;
+
+        &.rt-th {
+          border-bottom: none;
+        }
+      }
+
+      .rt-tr {
+        background-color: $white;
+      }
+    }
+
+    .-filters, .rt-tr-group {
+      border-bottom: none;
+
+      .-even {
+        background-color: transparent;
+  
+        .rt-td {
+          background-color: $default-background-grey;
+        }
+      }
+
+      .-odd {
+        background-color: transparent;
+      }
+    }
+
+    .-headerGroups, .-header, .-filters, .rt-tr-group { /* inner "padding" */
+      .rt-td, .rt-th {
+        &:first-child {
+          margin-left: 0.5rem;
+        }
+
+        &:last-child {
+          margin-right: 0.5rem;
+        }
+      }
+    }
+
+    .rt-table {
+      padding-bottom: 0.5rem;
+      padding-top: 0.5rem;
+
+      .rt-th, .rt-td {
+        border-right: none;
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+    }
+
+    .balance-left, .credits-left, .date, .transaction {
+      margin-left: 0.5rem;
+    }
+  }
 }

@@ -13,6 +13,7 @@ import upload from '../app/utilities/upload';
 
 const CreditsContainer = (props) => {
   const [loading, setLoading] = useState(true);
+  const [balances, setBalances] = useState([]);
   const [creditTransactions, setCreditTransactions] = useState([]);
   const { activeTab, user } = props;
   const [dateCurrentTo, setDateCurrentTo] = useState('');
@@ -32,9 +33,15 @@ const CreditsContainer = (props) => {
   const refreshList = (showLoading) => {
     setLoading(showLoading);
     if (activeTab === 'transactions') {
-      axios.get(ROUTES_CREDITS.LIST).then((response) => {
-        setCreditTransactions(response.data);
+      const balancePromise = axios.get(ROUTES_CREDITS.CREDIT_BALANCES).then((response) => {
+        setBalances(response.data);
+      });
 
+      const listPromise = axios.get(ROUTES_CREDITS.LIST).then((response) => {
+        setCreditTransactions(response.data);
+      });
+
+      Promise.all([balancePromise, listPromise]).then(() => {
         setLoading(false);
       });
     } else if (activeTab === 'upload-verification-data') {
@@ -72,7 +79,7 @@ const CreditsContainer = (props) => {
       && (
       <div>
         <CreditTransactionTabs active="credit-transactions" key="tabs" user={user} />
-        <CreditTransactions title="Credit Transactions" items={creditTransactions} user={user} />
+        <CreditTransactions balances={balances} items={creditTransactions} user={user} />
       </div>
       )} {activeTab === 'upload-verification-data'
       && (

@@ -21,7 +21,7 @@ const CreditTransactionTabs = (props) => {
         className={`nav-item ${(active === 'credit-transactions') ? 'active' : ''}`}
         role="presentation"
       >
-        <Link to={ROUTES_CREDITS.LIST}>Credit Transactions</Link>
+        <Link to={ROUTES_CREDITS.LIST}>Credit Balance</Link>
       </li>
       <li
         className={`nav-item ${(active === 'credit-requests') ? 'active' : ''}`}
