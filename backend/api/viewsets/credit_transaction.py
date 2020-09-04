@@ -1,4 +1,4 @@
-from django.db.models import Q, Sum
+from django.db.models import Q
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -12,8 +12,8 @@ from auditable.views import AuditableMixin
 
 
 class CreditTransactionViewSet(
-    AuditableMixin, viewsets.GenericViewSet,
-    mixins.ListModelMixin, mixins.RetrieveModelMixin
+        AuditableMixin, viewsets.GenericViewSet,
+        mixins.ListModelMixin, mixins.RetrieveModelMixin
 ):
     permission_classes = (AllowAny,)
     http_method_names = ['get', 'post', 'put', 'patch']
@@ -46,6 +46,6 @@ class CreditTransactionViewSet(
     def balances(self, request):
         user = self.request.user
         balances = aggregate_credit_balance_details(user.organization)
-    
+
         serializer = self.get_serializer(balances, many=True)
         return Response(serializer.data)

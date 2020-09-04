@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import Modal from '../../app/components/Modal';
+import history from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
 import TransferFormRow from './TransferFormRow';
 import FormDropdown from './FormDropdown';
@@ -51,7 +53,17 @@ const CreditTransfersPage = (props) => {
     <div className="row">
       <div className="col-sm-12">
         <div className="action-bar">
-          <span className="left-content" />
+          <span className="left-content">
+            <button
+              className="button"
+              onClick={() => {
+                history.push('/credit-transactions/transfers');
+              }}
+              type="button"
+            >
+              Back
+            </button>
+          </span>
           <span className="right-content">
             <button
               className="button"
@@ -70,7 +82,7 @@ const CreditTransfersPage = (props) => {
               }}
               type="button"
             >
-            <FontAwesomeIcon icon="paper-plane" />  Submit Notice
+              <FontAwesomeIcon icon="paper-plane" />  Submit Notice
             </button>
           </span>
         </div>
@@ -85,7 +97,7 @@ const CreditTransfersPage = (props) => {
         </div>
       </div>
       <div id="form">
-        <form onSubmit={(event) => console.log('submitted')}>
+        <form onSubmit={handleSave}>
           <div className="row">
             <div className="col-sm-12">
               <fieldset>

@@ -97,7 +97,7 @@ CustomReactTable.defaultProps = {
   className: '',
   defaultSorted: undefined,
   filterable: true,
-  filtered: [],
+  filtered: undefined,
   getTrProps: undefined,
   onFilteredChange: () => {},
   setFiltered: () => {},
