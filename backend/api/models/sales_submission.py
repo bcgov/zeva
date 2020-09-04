@@ -36,7 +36,7 @@ class SalesSubmission(Auditable):
         SalesSubmissionStatuses,
         max_length=20,
         null=False,
-        default=SalesSubmissionStatuses.NEW,
+        default=SalesSubmissionStatuses.DRAFT,
         db_comment="The validation status of this sales submission. "
                    "Valid statuses: {statuses}".format(
                         statuses=[c.name for c in SalesSubmissionStatuses]
@@ -85,7 +85,7 @@ class SalesSubmission(Auditable):
                 )
 
         if status in [SalesSubmissionStatuses.DELETED]:
-            if self.validation_status != SalesSubmissionStatuses.REJECTED:
+            if self.validation_status not in [SalesSubmissionStatuses.REJECTED, SalesSubmissionStatuses.DRAFT]:
                 raise ValidationError(
                     "Submission needs to be rejected before deleting."
                 )

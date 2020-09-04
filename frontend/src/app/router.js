@@ -15,13 +15,13 @@ import VehicleSupplierModelListContainer from '../organizations/VehicleSupplierM
 import VehicleSupplierUserListContainer from '../organizations/VehicleSupplierUserListContainer';
 import RoleListContainer from '../roles/RoleListContainer';
 import CreditsContainer from '../credits/CreditsContainer';
-import CreditBalanceContainer from '../credits/CreditBalanceContainer';
 import CreditRequestsContainer from '../credits/CreditRequestsContainer';
 import CreditTransfersContainer from '../credits/CreditTransfersContainer';
 import CreditTransferListContainer from '../credits/CreditTransferListContainer';
 import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContainer';
 import SalesSubmissionDetailsContainer from '../credits/SalesSubmissionDetailsContainer';
 import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
+import SalesSubmissionListContainer from '../sales/SalesSubmissionListContainer';
 import SalesSubmissionEditContainer from '../sales/SalesSubmissionEditContainer';
 import SalesSubmissionApprovalContainer from '../sales/SalesSubmissionApprovalContainer';
 import SalesSubmissionApprovalDetailsContainer from '../sales/SalesSubmissionApprovalDetailsContainer';
@@ -177,8 +177,13 @@ class Router extends Component {
               />
               <Route
                 exact
-                path={ROUTES_SALES.LIST}
+                path={ROUTES_SALES.NEW_UPLOAD}
                 render={() => <SalesSubmissionContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_SALES.LIST}
+                render={() => <SalesSubmissionListContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact
@@ -268,10 +273,6 @@ class Router extends Component {
               <Route
                 path={ROUTES_CREDITS.CREDIT_REQUEST_DETAILS}
                 render={() => <CreditRequestDetailsContainer keycloak={keycloak} user={user} />}
-              />
-              <Route
-                path={ROUTES_CREDITS.CREDIT_BALANCES}
-                render={() => <CreditBalanceContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact

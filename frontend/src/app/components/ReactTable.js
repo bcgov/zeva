@@ -95,7 +95,7 @@ class CustomReactTable extends Component {
 
 CustomReactTable.defaultProps = {
   className: '',
-  defaultSorted: [],
+  defaultSorted: undefined,
   filterable: true,
   filtered: undefined,
   getTrProps: undefined,
