@@ -20,6 +20,7 @@ import CreditTransfersContainer from '../credits/CreditTransfersContainer';
 import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContainer';
 import SalesSubmissionDetailsContainer from '../credits/SalesSubmissionDetailsContainer';
 import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
+import SalesSubmissionListContainer from '../sales/SalesSubmissionListContainer';
 import SalesSubmissionEditContainer from '../sales/SalesSubmissionEditContainer';
 import SalesSubmissionApprovalContainer from '../sales/SalesSubmissionApprovalContainer';
 import SalesSubmissionApprovalDetailsContainer from '../sales/SalesSubmissionApprovalDetailsContainer';
@@ -175,8 +176,13 @@ class Router extends Component {
               />
               <Route
                 exact
-                path={ROUTES_SALES.LIST}
+                path={ROUTES_SALES.NEW_UPLOAD}
                 render={() => <SalesSubmissionContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_SALES.LIST}
+                render={() => <SalesSubmissionListContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact

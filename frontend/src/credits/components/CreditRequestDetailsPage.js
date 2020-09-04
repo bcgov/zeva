@@ -138,7 +138,6 @@ const CreditRequestDetailsPage = (props) => {
           <div className="table">
             <ModelListTable
               items={submission.records}
-              submission={submission}
               user={user}
               validatedOnly={validatedOnly}
             />
