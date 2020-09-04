@@ -5,6 +5,7 @@ const CREDITS = {
   CREDIT_REQUESTS: `${API_BASE_PATH}/requests`,
   CREDIT_REQUEST_DETAILS: `${API_BASE_PATH}/requests/:id`,
   CREDIT_TRANSFERS: `${API_BASE_PATH}/transfers`,
+  CREDIT_TRANSFERS_ADD: `${API_BASE_PATH}/transfers/add`,
   LIST: `${API_BASE_PATH}`,
   SALES_SUBMISSION_DETAILS: `${API_BASE_PATH}/requests/:id/validate`,
   VALIDATED_CREDIT_REQUEST_DETAILS: `${API_BASE_PATH}/requests/:id/validated`,

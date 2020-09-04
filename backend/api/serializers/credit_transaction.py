@@ -1,4 +1,6 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from enumfields.drf import EnumField
+from rest_framework.serializers import ModelSerializer, \
+    SerializerMethodField, SlugRelatedField
 
 from api.models.credit_class import CreditClass
 from api.models.credit_transaction import CreditTransaction
@@ -73,4 +75,45 @@ class CreditTransactionBalanceSerializer(ModelSerializer):
         model = CreditTransaction
         fields = (
             'credit_value', 'credit_class', 'model_year', 'weight_class',
+        )
+
+
+class CreditTransactionSaveSerializer(ModelSerializer):
+    """
+    Serializer for credit transactions
+    """
+    model_year = SlugRelatedField(
+        slug_field='name',
+        queryset=ModelYear.objects.all()
+    )
+    credit_class = SlugRelatedField(
+        slug_field='credit_class',
+        queryset=CreditClass.objects.all()
+    )
+    weight_class = SlugRelatedField(
+        slug_field='weight_class_code',
+        queryset=WeightClass.objects.all()
+    )
+    transaction_type = SlugRelatedField(
+        slug_field='transaction_type',
+        queryset=CreditTransactionType.objects.all()
+    )
+
+    def create(self, validated_data):
+        number_of_credits = validated_data.get('number_of_credits')
+        credit_value = validated_data.get('credit_value')
+        total_value = number_of_credits * credit_value
+
+        credit_transaction = CreditTransaction.objects.create(
+            **validated_data,
+            total_value=total_value
+        )
+        return credit_transaction
+
+    class Meta:
+        model = CreditTransaction
+        fields = (
+            'credit_value', 'credit_to', 'debit_from', 'transaction_timestamp',
+            'credit_class', 'transaction_type', 'id', 'weight_class',
+            'model_year', 'create_user', 'update_user', 'number_of_credits',
         )

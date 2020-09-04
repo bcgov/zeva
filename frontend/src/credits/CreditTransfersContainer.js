@@ -5,7 +5,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import history from '../app/History';
-import Loading from '../app/components/Loading';
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import CustomPropTypes from '../app/utilities/props';
 import CreditTransfersPage from './components/CreditTransfersPage';
@@ -23,7 +22,6 @@ const CreditTransfersContainer = (props) => {
   };
   const [rows, setRows] = useState([emptyRow]);
   const { user, keycloak } = props;
-  const [loading, setLoading] = useState(true);
   const [organizations, setOrganizations] = useState([]);
   const [fields, setFields] = useState(emptyForm);
   const [years, setYears] = useState([]);
@@ -53,17 +51,19 @@ const CreditTransfersContainer = (props) => {
     }
     const data = rows.map((row) => ({
       numberOfCredits: row.quantity,
-      valuePerCredit: row.value,
+      creditValue: row.value,
       creditClass: row.creditType,
-      toSupplier,
-      fromSupplier,
+      creditTo: toSupplier,
+      debitFrom: fromSupplier,
       modelYear: row.modelYear,
-      status,
+      transactionType: 'Credit Transfer',
+      weightClass: 'LDV',
     }));
-    setLoading(true);
-    axios.post('/credit-transfers', { rows: data }).then((response) => {
+    axios.post('/credit-transfers', {
+      data,
+      status,
+    }).then(() => {
       history.push(ROUTES_CREDITS.LIST);
-      setLoading(false);
     });
   };
   const handleSave = () => {
@@ -83,14 +83,12 @@ const CreditTransfersContainer = (props) => {
   };
 
   const refreshDetails = () => {
-    setLoading(true);
     axios.all([
       axios.get(ROUTES_ORGANIZATIONS.LIST),
       axios.get(ROUTES_VEHICLES.YEARS),
     ]).then(axios.spread((orgResponse, yearsResponse) => {
       setOrganizations(orgResponse.data);
       setYears(yearsResponse.data);
-      setLoading(false);
     }));
   };
 

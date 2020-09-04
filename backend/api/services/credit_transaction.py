@@ -22,7 +22,9 @@ def award_credits(submission):
 
     for record in records:
         vehicle = Vehicle.objects.get(id=record.get('vehicle_id'))
-        credit_value = record.get('total') * vehicle.get_credit_value()
+        number_of_credits = record.get('total')
+        credit_value = number_of_credits * vehicle.get_credit_value()
+        total_value = number_of_credits * credit_value
         credit_class = vehicle.get_credit_class()
         if credit_class in ['A', 'B']:
             credit_transaction = CreditTransaction.objects.create(
@@ -32,6 +34,8 @@ def award_credits(submission):
                 ),
                 credit_to=submission.organization,
                 credit_value=credit_value,
+                number_of_credits=number_of_credits,
+                total_value=total_value,
                 model_year=vehicle.model_year,
                 transaction_type=CreditTransactionType.objects.get(
                     transaction_type="Validation"
