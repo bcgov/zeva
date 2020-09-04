@@ -1,6 +1,7 @@
 """
 Credit Transfer Model
 """
+from django.db import models
 from enumfields import EnumField
 
 from auditable.models import Auditable
@@ -20,6 +21,16 @@ class CreditTransfer(Auditable):
                    "Valid statuses: {statuses}".format(
                        statuses=[c.name for c in CreditTransferStatuses]
                    )
+    )
+    credit_to = models.ForeignKey(
+        'Organization',
+        related_name='+',
+        on_delete=models.PROTECT
+    )
+    debit_from = models.ForeignKey(
+        'Organization',
+        related_name='+',
+        on_delete=models.PROTECT
     )
 
     class Meta:

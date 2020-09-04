@@ -40,21 +40,21 @@ const CreditTransfersContainer = (props) => {
   };
 
   const submitOrSave = (status) => {
-    let toSupplier = '';
-    let fromSupplier = '';
+    let creditTo = '';
+    let debitFrom = '';
     if (fields.transferType === 'transfer to') {
-      toSupplier = fields.transferPartner;
-      fromSupplier = user.organization.id;
+      creditTo = fields.transferPartner;
+      debitFrom = user.organization.id;
     } else {
-      toSupplier = user.organization.id;
-      fromSupplier = fields.transferPartner;
+      creditTo = user.organization.id;
+      debitFrom = fields.transferPartner;
     }
     const data = rows.map((row) => ({
       numberOfCredits: row.quantity,
       creditValue: row.value,
       creditClass: row.creditType,
-      creditTo: toSupplier,
-      debitFrom: fromSupplier,
+      creditTo,
+      debitFrom,
       modelYear: row.modelYear,
       transactionType: 'Credit Transfer',
       weightClass: 'LDV',
@@ -62,8 +62,10 @@ const CreditTransfersContainer = (props) => {
     axios.post('/credit-transfers', {
       data,
       status,
+      creditTo,
+      debitFrom,
     }).then(() => {
-      history.push(ROUTES_CREDITS.LIST);
+      history.push('/credit-transactions/transfers');
     });
   };
   const handleSave = () => {

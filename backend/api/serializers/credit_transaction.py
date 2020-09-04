@@ -41,7 +41,8 @@ class CreditTransactionSerializer(ModelSerializer):
         model = CreditTransaction
         fields = (
             'credit_value', 'credit_to', 'debit_from', 'transaction_timestamp',
-            'credit_class', 'transaction_type', 'id'
+            'credit_class', 'transaction_type', 'id', 'number_of_credits',
+            'total_value',
         )
 
 

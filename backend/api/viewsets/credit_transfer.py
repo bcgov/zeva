@@ -36,7 +36,8 @@ class CreditTransferViewset(
             queryset = CreditTransfer.objects.all()
         else:
             queryset = CreditTransfer.objects.filter(
-                Q(create_user=request.user)
+                Q(credit_to_id=request.user.organization.id) |
+                Q(debit_from_id=request.user.organization.id)
             )
 
         return queryset

@@ -15,7 +15,7 @@ class CreditTransferContent(Auditable):
     )
     credit_transaction = models.ForeignKey(
         'CreditTransaction',
-        related_name='credit_transaction',
+        related_name='credit_transfer_content',
         on_delete=models.CASCADE
     )
 
