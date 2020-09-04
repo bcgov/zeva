@@ -47,3 +47,61 @@ class TestVehicles(BaseTestCase):
                 "/api/vehicles/{}".format(vehicle.id)
             )
             self.assertEqual(response.status_code, 200)
+
+    def test_create_vehicle(self):
+        organization = self.users['RTAN_BCEID'].organization            
+        response = self.clients['RTAN_BCEID'].post(
+            "/api/vehicles",
+            content_type='application/json',
+            data=json.dumps({
+                'make': "Teddy's Car Company",
+                'model_name': "Fastcar1",
+                'model_year': "2020",
+                'vehicle_class_code': "L",
+                'range' : 200,
+                'weight_kg': 1000,
+                'vehicle_zev_type': 'PHEV'
+                })
+        )
+        self.assertEqual(response.status_code, 201)
+
+    def test_create_vehicle_insufficient_data(self):
+        organization = self.users['RTAN_BCEID'].organization            
+        response = self.clients['RTAN_BCEID'].post(
+            "/api/vehicles",
+            content_type='application/json',
+            data=json.dumps({
+                'make': "Teddy's Car Company",
+                'range': 200,
+                'weight_kg': 1000,
+                'vehicle_zev_type': 'PHEV'
+                })
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_create_vehicle_check_data_match(self):
+        organization = self.users['RTAN_BCEID'].organization            
+        response = self.clients['RTAN_BCEID'].post(
+            "/api/vehicles",
+            content_type='application/json',
+            data=json.dumps({
+                'make': "Teddys Car Company",
+                'model_name': "Fastcar1",
+                'model_year': "2020",
+                'vehicle_class_code': "L",
+                'range': 200,
+                'weight_kg': 1000,
+                'vehicle_zev_type': 'PHEV'
+                })
+        )
+        self.assertEqual(response.status_code, 201)
+        car = Vehicle.objects.filter(
+            make="TEDDYS CAR COMPANY",
+            model_name="Fastcar1",
+            model_year__name="2020",
+            vehicle_class_code__vehicle_class_code="L",
+            range=200,
+            weight_kg=1000,
+            vehicle_zev_type__vehicle_zev_code="PHEV"
+        )
+        self.assertGreaterEqual(len(car), 1)
