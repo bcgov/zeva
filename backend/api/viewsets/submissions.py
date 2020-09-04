@@ -28,7 +28,6 @@ class SalesSubmissionsViewset(
         if user.organization.is_government:
             qs = SalesSubmission.objects.exclude(validation_status__in=(
                 SalesSubmissionStatuses.DRAFT,
-                SalesSubmissionStatuses.NEW
             ))
         else:
             qs = SalesSubmission.objects.filter(organization=user.organization)

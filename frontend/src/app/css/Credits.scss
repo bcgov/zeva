@@ -278,3 +278,16 @@ h2 {
     }
   }
 }
+
+.totals {
+  table {
+    margin-top: 15px;
+    td {
+      padding: 3px 15px 3px 15px;
+      border: 2px solid $border-grey;
+    }
+    .total-grey {
+      background-color: $default-background-grey;
+    }
+  }
+}

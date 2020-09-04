@@ -13,7 +13,7 @@ const SalesSubmissionListTable = (props) => {
   const { items, filtered, setFiltered } = props;
   const columns = [{
     Header: 'Submission ID',
-    accessor: 'submissionId',
+    accessor: 'id',
   }, {
     Header: 'Date',
     accessor: 'submissionDate',
@@ -23,8 +23,12 @@ const SalesSubmissionListTable = (props) => {
     accessor: (item) => (item.updateUser ? `${item.updateUser.displayName}` : ''),
     id: 'user',
   }, {
-    Header: 'Total Sales',
+    Header: 'Sales Total',
     accessor: 'totals.vins',
+    className: 'text-right',
+  }, {
+    Header: 'Errors',
+    accessor: '-',
     className: 'text-right',
   }, {
     Header: 'A-Credits',
@@ -39,8 +43,14 @@ const SalesSubmissionListTable = (props) => {
   }, {
     accessor: (item) => {
       const { validationStatus } = item;
-
-      return formatStatus(validationStatus);
+      const status = formatStatus(validationStatus);
+      if (status === 'validated') {
+        return 'issued';
+      }
+      if (status === 'recommend rejection' || status === 'recommend approval') {
+        return 'submitted';
+      }
+      return status;
     },
     className: 'text-center text-capitalize',
     Header: 'Status',
@@ -85,7 +95,6 @@ const SalesSubmissionListTable = (props) => {
           return {
             onClick: () => {
               const { id } = row.original;
-
               history.push(ROUTES_SALES.DETAILS.replace(/:id/g, id));
             },
             className: 'clickable',
