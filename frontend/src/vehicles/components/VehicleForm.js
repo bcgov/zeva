@@ -28,6 +28,7 @@ const VehicleForm = (props) => {
     setFields,
     setUploadFiles,
     showProgressBars,
+    status,
     vehicleClasses,
     vehicleTypes,
     vehicleYears,
@@ -184,7 +185,7 @@ const VehicleForm = (props) => {
             </fieldset>
           </div>
 
-          {(fields.hasPassedUs06Test || (fields.validationStatus === 'CHANGES_REQUESTED' && setUploadFiles)) && (
+          {(fields.hasPassedUs06Test || (status === 'CHANGES_REQUESTED' && setUploadFiles)) && (
             <div className="col-lg-6">
               <h3 className="font-weight-bold mt-2">Upload range test results</h3>
               <fieldset>
@@ -358,6 +359,7 @@ VehicleForm.propTypes = {
   setFields: PropTypes.func.isRequired,
   setUploadFiles: PropTypes.func,
   showProgressBars: PropTypes.bool,
+  status: PropTypes.string.isRequired,
   vehicleTypes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleClasses: PropTypes.arrayOf(PropTypes.shape()).isRequired,

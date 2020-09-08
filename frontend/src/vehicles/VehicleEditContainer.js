@@ -23,8 +23,9 @@ const VehicleEditContainer = (props) => {
   const [progressBars, setProgressBars] = useState({});
   const [showProgressBars, setShowProgressBars] = useState(false);
   const [types, setTypes] = useState([]);
-  const [years, setYears] = useState([]);
+  const [status, setStatus] = useState('DRAFT');
   const [vehicles, setVehicles] = useState([]);
+  const [years, setYears] = useState([]);
 
   const { id } = useParams();
   const { keycloak, newVehicle } = props;
@@ -38,6 +39,7 @@ const VehicleEditContainer = (props) => {
     } = event.target;
 
     let input = value;
+
     if (name === 'make') {
       input = input.toUpperCase();
     }
@@ -46,6 +48,10 @@ const VehicleEditContainer = (props) => {
       fields[name] = checked;
     } else {
       fields[name] = input;
+    }
+
+    if (name === 'vehicleZevType' && ['EREV', 'PHEV'].indexOf(value) < 0) {
+      fields.hasPassedUs06Test = false;
     }
 
     setFields({
@@ -195,6 +201,8 @@ const VehicleEditContainer = (props) => {
       vehicleZevType: data.vehicleZevType.vehicleZevCode,
       weightKg: data.weightKg,
     });
+
+    setStatus(data.validationStatus);
   };
 
   const orgMakes = [...new Set(vehicles.map((vehicle) => vehicle.make))];
@@ -244,6 +252,7 @@ const VehicleEditContainer = (props) => {
       setFields={setFields}
       setUploadFiles={setFiles}
       showProgressBars={showProgressBars}
+      status={status}
       vehicleClasses={classes}
       vehicleTypes={types}
       vehicleYears={years}
