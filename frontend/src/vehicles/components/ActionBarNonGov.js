@@ -6,12 +6,12 @@ const ActionBarNonGov = () => (
   <div className="action-bar">
     <span className="left-content" />
     <span className="right-content">
-      <button
+      {/* <button
         className="button"
         type="button"
       >
         <FontAwesomeIcon icon="download" /> Download as Excel
-      </button>
+      </button> */}
 
       <button
         className="button primary"

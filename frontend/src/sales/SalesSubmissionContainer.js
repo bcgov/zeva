@@ -13,7 +13,7 @@ import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
 import CustomPropTypes from '../app/utilities/props';
 import upload from '../app/utilities/upload';
 import withReferenceData from '../app/utilities/with_reference_data';
-import SalesSubmissionPage from './components/SalesSubmissionPage';
+import SalesUploadPage from './components/SalesUploadPage';
 
 const qs = require('qs');
 
@@ -25,6 +25,7 @@ const SalesSubmissionContainer = (props) => {
   const [filtered, setFiltered] = useState([]);
   const [files, setFiles] = useState([]);
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
+
   const refreshList = (showLoading) => {
     setLoading(showLoading);
     const queryFilter = [];
@@ -66,7 +67,7 @@ const SalesSubmissionContainer = (props) => {
 
   return ([
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
-    <SalesSubmissionPage
+    <SalesUploadPage
       errorMessage={errorMessage}
       files={files}
       key="page"

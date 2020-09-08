@@ -15,19 +15,19 @@ import VehicleSupplierModelListContainer from '../organizations/VehicleSupplierM
 import VehicleSupplierUserListContainer from '../organizations/VehicleSupplierUserListContainer';
 import RoleListContainer from '../roles/RoleListContainer';
 import CreditsContainer from '../credits/CreditsContainer';
-import CreditBalanceContainer from '../credits/CreditBalanceContainer';
 import CreditRequestsContainer from '../credits/CreditRequestsContainer';
 import CreditTransfersContainer from '../credits/CreditTransfersContainer';
+import CreditTransferListContainer from '../credits/CreditTransferListContainer';
 import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContainer';
 import SalesSubmissionDetailsContainer from '../credits/SalesSubmissionDetailsContainer';
 import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
+import SalesSubmissionListContainer from '../sales/SalesSubmissionListContainer';
 import SalesSubmissionEditContainer from '../sales/SalesSubmissionEditContainer';
 import SalesSubmissionApprovalContainer from '../sales/SalesSubmissionApprovalContainer';
 import SalesSubmissionApprovalDetailsContainer from '../sales/SalesSubmissionApprovalDetailsContainer';
 import SalesSubmissionConfirmationContainer from '../sales/SalesSubmissionConfirmationContainer';
 import UserAddContainer from '../users/UserAddContainer';
 import UserEditContainer from '../users/UserEditContainer';
-import VehicleAddContainer from '../vehicles/VehicleAddContainer';
 import VehicleDetailsContainer from '../vehicles/VehicleDetailsContainer';
 import VehicleEditContainer from '../vehicles/VehicleEditContainer';
 import VehicleListContainer from '../vehicles/VehicleListContainer';
@@ -63,7 +63,7 @@ class Router extends Component {
     axios.interceptors.response.use(
       (response) => (response),
       (error) => {
-        if (error.response && error.response.status > 400) {
+        if (error.response && error.response.status >= 400) {
           this.setState({
             loading: false,
             statusCode: error.response.status,
@@ -177,8 +177,13 @@ class Router extends Component {
               />
               <Route
                 exact
-                path={ROUTES_SALES.LIST}
+                path={ROUTES_SALES.NEW_UPLOAD}
                 render={() => <SalesSubmissionContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_SALES.LIST}
+                render={() => <SalesSubmissionListContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact
@@ -205,7 +210,7 @@ class Router extends Component {
               <Route
                 exact
                 path={ROUTES_VEHICLES.ADD}
-                render={() => <VehicleAddContainer keycloak={keycloak} user={user} />}
+                render={() => <VehicleEditContainer keycloak={keycloak} user={user} newVehicle />}
               />
               <Route
                 exact
@@ -248,6 +253,11 @@ class Router extends Component {
               <Route
                 exact
                 path={ROUTES_CREDITS.CREDIT_TRANSFERS}
+                render={() => <CreditTransferListContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_CREDITS.CREDIT_TRANSFERS_ADD}
                 render={() => <CreditTransfersContainer keycloak={keycloak} user={user} />}
               />
               <Route
@@ -263,10 +273,6 @@ class Router extends Component {
               <Route
                 path={ROUTES_CREDITS.CREDIT_REQUEST_DETAILS}
                 render={() => <CreditRequestDetailsContainer keycloak={keycloak} user={user} />}
-              />
-              <Route
-                path={ROUTES_CREDITS.CREDIT_BALANCES}
-                render={() => <CreditBalanceContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact

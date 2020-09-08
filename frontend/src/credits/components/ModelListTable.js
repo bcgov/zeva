@@ -144,14 +144,14 @@ const ModelListTable = (props) => {
       pageSizeOptions={[data.length, 5, 10, 15, 20, 25, 50, 100]}
     />,
     <div className="totals" key="totals">
-      <table>
-        <tbody>
-          <tr>
-            <td className="text-center">Total A</td>
+      <table className="float-right">
+        <tbody className="font-weight-bold">
+          <tr className="total-grey">
+            <td className="text-centerr">Total A Credits</td>
             <td className="text-right">{_.round(totals.a, 2).toFixed(2)}</td>
           </tr>
           <tr>
-            <td className="text-center">Total B</td>
+            <td className="text-center">Total B Credits</td>
             <td className="text-right">{_.round(totals.b, 2).toFixed(2)}</td>
           </tr>
         </tbody>
@@ -166,9 +166,6 @@ ModelListTable.defaultProps = {
 
 ModelListTable.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  submission: PropTypes.shape({
-    id: PropTypes.number,
-  }).isRequired,
   validatedOnly: PropTypes.bool,
 };
 

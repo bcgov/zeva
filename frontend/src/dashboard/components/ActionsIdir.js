@@ -1,55 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React from 'react';
 
-import ROUTES_SALES_SUBMISSIONS from '../../app/routes/SalesSubmissions';
+import ROUTES_CREDITS from '../../app/routes/Credits';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
-import ROUTES_SALES from '../../app/routes/Sales';
 import Loading from '../../app/components/Loading';
 import CustomPropTypes from '../../app/utilities/props';
 import ActivityBanner from './ActivityBanner';
 
 const ActionsIdir = (props) => {
-  const { user } = props;
-  const [loading, setLoading] = useState(true);
-  const [activityCount, setActivityCount] = useState({
-    modelAwaitingValidation: 0,
-    modelValidated: 0,
-    modelInfoRequest: 0,
-    creditNew: 0,
-    creditsAwaiting: 0,
-    creditsIssued: 0,
-    transferAwaitingPartner: 0,
-    transferAwaitingGovernment: 0,
-    transferRecorded: 0,
-  });
-
-  const refreshList = () => {
-    axios.all([
-      axios.get(ROUTES_SALES_SUBMISSIONS.LIST),
-      axios.get(ROUTES_VEHICLES.LIST),
-    ]).then(axios.spread((salesResponse, vehiclesResponse) => {
-      const submittedVehicles = vehiclesResponse.data
-        .filter((vehicle) => vehicle.validationStatus === 'SUBMITTED')
-        .map((vehicle) => vehicle.modelName);
-      const recommendApprove = salesResponse.data
-        .filter((submission) => submission.validationStatus === 'RECOMMEND_APPROVAL');
-      const recommendReject = salesResponse.data
-        .filter((submission) => submission.validationStatus === 'RECOMMEND_REJECTION');
-      const analystNeeded = salesResponse.data
-        .filter((submission) => submission.validationStatus === 'SUBMITTED');
-      setActivityCount({
-        ...activityCount,
-        submittedVehicles: submittedVehicles.length,
-        creditsAnalyst: analystNeeded.length,
-        creditsRecommendApprove: recommendApprove.length,
-        creditsRecommendReject: recommendReject.length,
-      });
-      setLoading(false);
-    }));
-  };
-  useEffect(() => {
-    refreshList(true);
-  }, []);
+  const { user, activityCount, loading } = props;
   if (loading) {
     return <Loading />;
   }
@@ -84,7 +42,7 @@ const ActionsIdir = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsAnalyst} require analyst/engineer validation`}
-          linkTo={`${ROUTES_SALES.LIST}?status=Submitted`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_REQUESTS}?status=Submitted`}
         />
         )}
         {activityCount.creditsRecommendApprove > 0
@@ -94,7 +52,7 @@ const ActionsIdir = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsRecommendApprove} recommended for director approval`}
-          linkTo={`${ROUTES_SALES.LIST}?status=Recommend%20Approval`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_REQUESTS}?status=Recommend%20Approval`}
         />
         )}
         {activityCount.creditsRecommendReject > 0
@@ -104,7 +62,7 @@ const ActionsIdir = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsRecommendReject} recommended for director rejection`}
-          linkTo={`${ROUTES_SALES.LIST}?status=Recommend%20Rejection`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_REQUESTS}?status=Recommend%20Rejection`}
         />
         )}
         {((!user.hasPermission('RECOMMEND_SALES') && activityCount.creditsRecommendApprove === 0
@@ -120,26 +78,26 @@ const ActionsIdir = (props) => {
 
           />
         )}
-        {activityCount.transferAwaitingPartner > 0 && user.hasPermission('RECOMMEND_SALES')
+        {activityCount.transfersAwaitingPartner > 0 && user.hasPermission('RECOMMEND_SALES')
         && (
         <ActivityBanner
           colour="yellow"
           icon="exchange-alt"
           boldText="Credit Transfer"
-          regularText={`${activityCount.transferAwaitingPartner} awaiting partner confirmation`}
+          regularText={`${activityCount.transfersAwaitingPartner} awaiting partner confirmation`}
         />
         )}
-        {activityCount.transferAwaitingGovernment > 0
+        {activityCount.transfersAwaitingGovernment > 0
         && (
         <ActivityBanner
           colour="blue"
           icon="exchange-alt"
           boldText="Credit Transfer"
-          regularText={`${activityCount.transferAwaitingGovernment} require director approval`}
+          regularText={`${activityCount.transfersAwaitingGovernment} require director approval`}
         />
         )}
-        {activityCount.transferAwaitingGovernment === 0
-        && activityCount.transferAwaitingPartner === 0 && activityCount.transferRecorded === 0
+        {activityCount.transfersAwaitingGovernment === 0
+        && activityCount.transfersAwaitingPartner === 0 && activityCount.transfersRecorded === 0
         && (
           <ActivityBanner
             colour="green"

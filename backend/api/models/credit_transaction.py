@@ -27,7 +27,10 @@ class CreditTransaction(Auditable):
     credit_value = models.DecimalField(
         max_digits=20,
         decimal_places=2,
-        db_comment='The number of credits transferred'
+        db_comment='The value in dollars for each credit transferred'
+    )
+    number_of_credits = models.IntegerField(
+        db_comment='number of credits transferred'
     )
     credit_class = models.ForeignKey(
         'CreditClass',
@@ -59,6 +62,17 @@ class CreditTransaction(Auditable):
         on_delete=models.PROTECT,
         null=False
     )
+    total_value = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
+        db_comment='calculated field: number of credits x credit value'
+    )
+
+    def get_total_value(self):
+        """
+        Gets the total value of the credits
+        """
+        return self.number_of_credits * self.credit_value
 
     class Meta:
         db_table = "credit_transaction"

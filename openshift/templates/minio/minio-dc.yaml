@@ -20,7 +20,7 @@ parameters:
   - name: PVC_SIZE
     displayName: Volume Capacity
     description: Volume space available to Minio server for files, e.g. 512Mi, 2Gi.
-    value: 1Gi
+    value: 5G
     required: true
   - name: CPU_REQUEST
     displayName: Requested CPU
@@ -41,18 +41,25 @@ parameters:
     displayName: Memory upper limit
     description: Memory upper limit
     required: true
-    value: '500M'      
+    value: '500M'    
+  - name: MINIO_ACCESS_KEY
+    description: Minio access key
+    from: "[a-zA-Z0-9]{8}"
+    generate: expression
+    required: true
+  - name: MINIO_SECRET_KEY
+    description: Minio secret key
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
+    required: true      
 objects:
   - apiVersion: v1
     kind: Secret
     metadata:
-      annotations:
-        as-copy-of: template.minio-secret
       name: ${NAME}-minio${SUFFIX}
-      stringData:
-        MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-        MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
-      type: kubernetes.io/basic-auth
+    stringData:
+       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
   - kind: PersistentVolumeClaim
     apiVersion: v1
     metadata:
@@ -144,7 +151,7 @@ objects:
         metadata:
           creationTimestamp:
           labels:
-            name: ${NAME}-minio${SUFFIX}
+            app: ${NAME}-minio${SUFFIX}
         spec:
           volumes:
             - name: minio-data

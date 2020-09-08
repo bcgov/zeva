@@ -7,7 +7,7 @@ const ActionBarGov = (props) => {
   } = props;
 
   const getOptions = (inputObj, displayField) => {
-    let uniqueArr = [...new Set(inputObj.map((eachVehicle) => {
+    const uniqueArr = [...new Set(inputObj.map((eachVehicle) => {
       if (typeof eachVehicle[displayField] === 'string') {
         return eachVehicle[displayField];
       }
@@ -15,11 +15,7 @@ const ActionBarGov = (props) => {
       return eachVehicle[displayField].name;
     }))];
 
-    if (displayField === 'make') {
-      uniqueArr = uniqueArr.sort();
-    }
-
-    return uniqueArr.map((each) => (
+    return uniqueArr.sort().map((each) => (
       <option key={each}>{each}</option>
     ));
   };
@@ -30,17 +26,28 @@ const ActionBarGov = (props) => {
     newFiltered = newFiltered.filter((each) => (each.id !== id));
     setFiltered([...newFiltered, { id, value }]);
   };
+
   return (
     <div className="action-bar">
       <span className="left-content" />
       <span className="right-content">
         <label htmlFor="supplier">Select a different model year/supplier</label>
-        <select className="form-control" id="col-my" onChange={handleChange}>
+        <select
+          className="form-control"
+          id="col-my"
+          onChange={handleChange}
+          value={filtered.length > 0 && filtered.findIndex((arr) => (arr.id === 'col-my')) >= 0 ? filtered[filtered.findIndex((arr) => (arr.id === 'col-my'))].value : ''}
+        >
           <option value=""> </option>
           {getOptions(vehicles, 'modelYear')}
         </select>
 
-        <select className="form-control" id="col-supplier" onChange={handleChange}>
+        <select
+          className="form-control"
+          id="col-supplier"
+          onChange={handleChange}
+          value={filtered.length > 0 && filtered.findIndex((arr) => (arr.id === 'col-supplier')) >= 0 ? filtered[filtered.findIndex((arr) => (arr.id === 'col-supplier'))].value : ''}
+        >
           <option value=""> </option>
           {getOptions(vehicles, 'organization')}
         </select>

@@ -8,7 +8,7 @@ import Feedback from './Feedback';
 import UserSettings from './UserSettings';
 
 const DashboardPage = (props) => {
-  const { user } = props;
+  const { user, activityCount, loading } = props;
   return (
     <div id="dashboard">
       <div className="row">
@@ -24,7 +24,7 @@ const DashboardPage = (props) => {
         </div>
 
         <div className="col-xl-7 col-lg-9">
-          {user.isGovernment ? <ActionsIdir user={user} /> : <ActionsBceid details={user} />}
+          {user.isGovernment ? <ActionsIdir user={user} activityCount={activityCount} loading={loading} /> : <ActionsBceid activityCount={activityCount} loading={loading} />}
         </div>
       </div>
     </div>

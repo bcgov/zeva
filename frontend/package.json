@@ -1,6 +1,6 @@
 {
   "name": "zeva-frontend",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
@@ -10,6 +10,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@fortawesome/react-fontawesome": "^0.1.10",
     "@hot-loader/react-dom": "^16.13.0",
+    "@storybook/preset-scss": "^1.0.2",
     "@types/react": "^16.9.36",
     "amqp": "^0.2.7",
     "axios": "^0.19.1",
@@ -42,6 +43,7 @@
     "react-table": "^6.11.4",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
+    "storybook": "^6.0.16",
     "winston": "^3.2.1"
   },
   "devDependencies": {
@@ -50,6 +52,10 @@
     "@babel/polyfill": "^7.10.1",
     "@babel/preset-env": "^7.10.2",
     "@babel/preset-react": "^7.10.1",
+    "@storybook/addon-actions": "^6.0.16",
+    "@storybook/addon-essentials": "^6.0.16",
+    "@storybook/addon-links": "^6.0.16",
+    "@storybook/react": "^6.0.16",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
@@ -75,8 +81,10 @@
     "jest": "^24.9.0",
     "mini-css-extract-plugin": "^0.8.2",
     "node-sass": "^4.14.1",
+    "react-is": "^16.13.1",
     "react-test-renderer": "^16.13.1",
     "sass-loader": "^8.0.0",
+    "sass-resources-loader": "^2.1.0",
     "typescript": "^3.9.5",
     "url-loader": "^3.0.0",
     "webpack": "^4.43.0",
@@ -89,6 +97,8 @@
     "dist": "webpack --production",
     "test": "jest --coverage",
     "production": "NODE_ENV=production node start",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   }
 }

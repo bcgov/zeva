@@ -3,11 +3,10 @@ import React from 'react';
 import { render, cleanup } from '@testing-library/react';
 
 import VehicleForm from '../VehicleForm';
-import VehicleAddContainer from '../../VehicleAddContainer';
 
 afterEach(cleanup);
 
-const handleInputChange = () => {
+const handleInputChange = (event) => {
   const { value, name } = event.target;
   console.log('test function');
 };
@@ -24,8 +23,8 @@ describe('Vehicle Form', () => {
       vehicleYears={[{ 1: 2020 }]}
       vehicleTypes={[{ 1: 'test' }]}
       vehicleClasses={[{ 1: 'test' }]}
-      handleInputChange={() => { console.log('hi'); }}
-      handleSubmit={() => { console.log('hi'); }}
+      handleInputChange={handleInputChange}
+      handleSubmit={handleSubmit}
       setFields={() => { console.log('hi'); }}
       fields={{ make: 'testcar' }}
       formTitle="test"
