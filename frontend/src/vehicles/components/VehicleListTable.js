@@ -7,6 +7,7 @@ import React from 'react';
 import history from '../../app/History';
 import ReactTable from '../../app/components/ReactTable';
 import formatStatus from '../../app/utilities/formatStatus';
+import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 
 const VehicleListTable = (props) => {
   const {
@@ -135,9 +136,13 @@ const VehicleListTable = (props) => {
         if (row && row.original && user) {
           return {
             onClick: () => {
-              const { id } = row.original;
+              const { id, validationStatus } = row.original;
 
-              history.push(`/vehicles/${id}`);
+              if (validationStatus === 'CHANGES_REQUESTED') {
+                history.push(ROUTES_VEHICLES.EDIT.replace(/:id/g, id));
+              } else {
+                history.push(ROUTES_VEHICLES.DETAILS.replace(/:id/g, id));
+              }
             },
             className: 'clickable',
           };
