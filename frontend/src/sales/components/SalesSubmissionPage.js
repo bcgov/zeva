@@ -7,9 +7,6 @@ import SalesSubmissionsListTable from './SalesSubmissionsListTable';
 
 const SalesSubmissionPage = (props) => {
   const {
-    errorMessage,
-    files,
-    setUploadFiles,
     submissions,
     user,
     filtered,
@@ -44,16 +41,10 @@ const SalesSubmissionPage = (props) => {
   );
 };
 
-SalesSubmissionPage.defaultProps = {
-  errorMessage: null,
-};
+SalesSubmissionPage.defaultProps = {};
 
 SalesSubmissionPage.propTypes = {
-  errorMessage: PropTypes.string,
-  files: PropTypes.arrayOf(PropTypes.shape).isRequired,
-  setUploadFiles: PropTypes.func.isRequired,
   submissions: PropTypes.arrayOf(PropTypes.shape).isRequired,
-  upload: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired,
   filtered: PropTypes.arrayOf(PropTypes.shape).isRequired,
   setFiltered: PropTypes.func.isRequired,

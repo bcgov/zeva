@@ -80,7 +80,7 @@ class SalesSubmissionListSerializer(
         fields = (
             'id', 'validation_status', 'organization', 'submission_date',
             'submission_sequence', 'totals', 'submission_id', 'update_user',
-            'total_a_credits', 'total_b_credits'
+            'total_a_credits', 'total_b_credits', 'errors',
         )
 
 
@@ -109,7 +109,7 @@ class SalesSubmissionSerializer(ModelSerializer, EnumSupportSerializerMixin):
         model = SalesSubmission
         fields = (
             'id', 'validation_status', 'organization', 'submission_date',
-            'submission_sequence', 'records', 'submission_id'
+            'submission_sequence', 'records', 'submission_id', 'errors',
         )
 
 

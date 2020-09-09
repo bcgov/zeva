@@ -16,7 +16,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
   const { id } = useParams();
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
-  const [sales, setSales] = useState(true);
+  const [sales, setSales] = useState([]);
   const { keycloak } = props;
 
 
