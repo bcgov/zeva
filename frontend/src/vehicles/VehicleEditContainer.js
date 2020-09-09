@@ -25,6 +25,7 @@ const VehicleEditContainer = (props) => {
   const [status, setStatus] = useState('DRAFT');
   const [types, setTypes] = useState([]);
   const [vehicles, setVehicles] = useState([]);
+  const [vehicleComment, setVehicleComment] = useState({});
   const [years, setYears] = useState([]);
 
   const { id } = useParams();
@@ -203,6 +204,8 @@ const VehicleEditContainer = (props) => {
     });
 
     setStatus(data.validationStatus);
+
+    setVehicleComment(data.vehicleComment);
   };
 
   const orgMakes = [...new Set(vehicles.map((vehicle) => vehicle.make))];
@@ -254,6 +257,7 @@ const VehicleEditContainer = (props) => {
       showProgressBars={showProgressBars}
       status={status}
       vehicleClasses={classes}
+      vehicleComment={vehicleComment}
       vehicleTypes={types}
       vehicleYears={years}
     />

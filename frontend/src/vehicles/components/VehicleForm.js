@@ -30,6 +30,7 @@ const VehicleForm = (props) => {
     showProgressBars,
     status,
     vehicleClasses,
+    vehicleComment,
     vehicleTypes,
     vehicleYears,
   } = props;
@@ -76,14 +77,14 @@ const VehicleForm = (props) => {
       <div className="row">
         <div className="col-12">
           <h1>{formTitle}</h1>
-          {fields.validationStatus === 'CHANGES_REQUESTED'
+          {status === 'CHANGES_REQUESTED'
           && (
           <div>
             <h6 className="request-changes-vehicle">Range test results have been requested by government</h6>
-            {fields.vehicleComment && (
+            {vehicleComment && (
             <h6>
-              <b>Comment from {fields.vehicleComment.createUser && fields.vehicleComment.createUser.displayName}, {moment(fields.vehicleComment.createTimestamp).format('MMM d, YYYY')}: </b>
-              {fields.vehicleComment.comment}
+              <b>Comment from {vehicleComment.createUser && vehicleComment.createUser.displayName}, {moment(vehicleComment.createTimestamp).format('MMM d, YYYY')}: </b>
+              {vehicleComment.comment}
             </h6>
             )}
           </div>
@@ -342,6 +343,7 @@ VehicleForm.defaultProps = {
   setDeleteFiles: null,
   setUploadFiles: null,
   showProgressBars: false,
+  vehicleComment: {},
 };
 
 VehicleForm.propTypes = {
@@ -363,6 +365,7 @@ VehicleForm.propTypes = {
   vehicleTypes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleClasses: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  vehicleComment: PropTypes.shape(),
 };
 
 export default VehicleForm;
