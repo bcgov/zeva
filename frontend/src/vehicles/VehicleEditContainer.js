@@ -22,8 +22,8 @@ const VehicleEditContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [progressBars, setProgressBars] = useState({});
   const [showProgressBars, setShowProgressBars] = useState(false);
-  const [types, setTypes] = useState([]);
   const [status, setStatus] = useState('DRAFT');
+  const [types, setTypes] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [years, setYears] = useState([]);
 
