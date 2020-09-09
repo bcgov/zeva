@@ -103,7 +103,8 @@ const SalesSubmissionContentPage = (props) => {
             )}
           </span>
           <span className="right-content">
-            {submission.validationStatus === 'VALIDATED' && (
+            {submission.validationStatus === 'VALIDATED'
+            && submission.errors > 0 && (
               <button
                 className="button primary"
                 onClick={(e) => {
@@ -169,6 +170,7 @@ SalesSubmissionContentPage.propTypes = {
   showModal: PropTypes.bool.isRequired,
   sign: PropTypes.func.isRequired,
   submission: PropTypes.shape({
+    errors: PropTypes.number,
     id: PropTypes.number,
     validationStatus: PropTypes.string,
   }).isRequired,

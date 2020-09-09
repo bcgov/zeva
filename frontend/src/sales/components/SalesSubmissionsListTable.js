@@ -3,8 +3,8 @@
  */
 import PropTypes from 'prop-types';
 import React from 'react';
-import ReactTable from 'react-table';
 
+import ReactTable from '../../app/components/ReactTable';
 import history from '../../app/History';
 import ROUTES_SALES from '../../app/routes/Sales';
 import formatStatus from '../../app/utilities/formatStatus';
@@ -12,33 +12,34 @@ import formatStatus from '../../app/utilities/formatStatus';
 const SalesSubmissionListTable = (props) => {
   const { items, filtered, setFiltered } = props;
   const columns = [{
-    Header: 'Submission ID',
     accessor: 'id',
+    Header: 'Submission ID',
   }, {
-    Header: 'Date',
     accessor: 'submissionDate',
     className: 'text-center',
+    Header: 'Date',
   }, {
-    Header: 'Last Transaction User',
     accessor: (item) => (item.updateUser ? `${item.updateUser.displayName}` : ''),
+    Header: 'Last Transaction User',
     id: 'user',
   }, {
-    Header: 'Sales Total',
     accessor: 'totals.vins',
     className: 'text-right',
+    Header: 'Sales Total',
   }, {
-    Header: 'Errors',
-    accessor: '-',
+    accessor: (item) => (item.validationStatus === 'VALIDATED' ? item.errors : '-'),
     className: 'text-right',
+    Header: 'Errors',
+    id: 'errors',
   }, {
-    Header: 'A-Credits',
     accessor: 'totalACredits',
     className: 'text-right',
+    Header: 'A-Credits',
     id: 'credits-a',
   }, {
-    Header: 'B-Credits',
     accessor: 'totalBCredits',
     className: 'text-right',
+    Header: 'B-Credits',
     id: 'credits-b',
   }, {
     accessor: (item) => {
@@ -53,43 +54,32 @@ const SalesSubmissionListTable = (props) => {
       return status;
     },
     className: 'text-center text-capitalize',
-    Header: 'Status',
-    id: 'status',
     filterMethod: (filter, row) => {
       const filterValues = filter.value.split(',');
       let returnValue = false;
+
       filterValues.forEach((filterValue) => {
         const value = filterValue.toLowerCase().trim();
+
         if (value !== '' && !returnValue) {
           returnValue = row[filter.id].toLowerCase().includes(value);
         }
       });
+
       return returnValue;
     },
+    Header: 'Status',
+    id: 'status',
   }];
-
-  const filterMethod = (filter, row) => {
-    const id = filter.pivotId || filter.id;
-    return row[id] !== undefined ? String(row[id])
-      .toLowerCase()
-      .includes(filter.value.toLowerCase()) : true;
-  };
 
   return (
     <ReactTable
-      className="searchable"
       columns={columns}
       data={items}
-      defaultFilterMethod={filterMethod}
-      defaultPageSize={items.length}
       defaultSorted={[{
         id: 'submissionDate',
       }]}
-      filterable
       filtered={filtered}
-      onFilteredChange={(input) => {
-        setFiltered(input);
-      }}
       getTrProps={(state, row) => {
         if (row && row.original) {
           return {
@@ -103,17 +93,20 @@ const SalesSubmissionListTable = (props) => {
 
         return {};
       }}
-      pageSizeOptions={[items.length, 5, 10, 15, 20, 25, 50, 100]}
+      setFiltered={setFiltered}
     />
   );
 };
 
-SalesSubmissionListTable.defaultProps = {};
+SalesSubmissionListTable.defaultProps = {
+  filtered: undefined,
+  setFiltered: undefined,
+};
 
 SalesSubmissionListTable.propTypes = {
+  filtered: PropTypes.arrayOf(PropTypes.shape({})),
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  setFiltered: PropTypes.func.isRequired,
-  filtered: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  setFiltered: PropTypes.func,
 };
 
 export default SalesSubmissionListTable;

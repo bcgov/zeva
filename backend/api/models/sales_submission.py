@@ -120,6 +120,10 @@ class SalesSubmission(Auditable):
             submission_id=self.id
         )
 
+    @property
+    def errors(self):
+        return self.content.count() - self.records.count()
+
     class Meta:
         db_table = "sales_submission"
         unique_together = [(
