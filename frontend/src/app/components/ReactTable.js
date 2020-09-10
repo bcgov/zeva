@@ -36,7 +36,7 @@ class CustomReactTable extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    if (this.table.current) {
+    if (this.table.current && nextProps.filtered) {
       if (
         JSON.stringify(this.table.current.state.filtered)
         !== JSON.stringify(nextProps.filtered)
