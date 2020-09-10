@@ -16,7 +16,9 @@ import UserDetailsForm from './components/UserDetailsForm';
 
 const UserAddContainer = (props) => {
   let { id } = useParams();
-  const [details, setDetails] = useState({});
+  const [details, setDetails] = useState({
+    isActive: true,
+  });
   const [errorFields, setErrorFields] = useState({});
   const [loading, setLoading] = useState(true);
   const [roles, setRoles] = useState([]);
