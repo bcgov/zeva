@@ -3,6 +3,7 @@
 * nsp-env.yaml not being used
 * nsp-tools.yaml pods-to-external-network, apply it to tools name space only
 * quickstart-nsp.yaml apply this to all namespaces
+* aporeto-setup.md documentation for aporeto setup, including more specific security policies
 
 ### Apply to name spaces before anything else
 

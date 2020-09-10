@@ -135,7 +135,6 @@ objects:
     metadata:
       name: ${NAME}-frontend${SUFFIX}
       labels:
-        name: frontend
         app: zeva
         role: frontend
         env: ${ENV_NAME}

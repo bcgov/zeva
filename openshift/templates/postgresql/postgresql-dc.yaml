@@ -108,7 +108,6 @@ objects:
         template.alpha.openshift.io/wait-for-ready: 'true'
       name: ${NAME}-postgresql${SUFFIX}
       labels:
-        name: postgresql
         app: zeva
         role: postgresql
         env: ${ENV_NAME}
