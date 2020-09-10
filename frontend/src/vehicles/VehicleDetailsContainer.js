@@ -10,7 +10,6 @@ import history from '../app/History';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import CustomPropTypes from '../app/utilities/props';
 import VehicleDetailsPage from './components/VehicleDetailsPage';
-import VehicleValidatePage from './components/VehicleValidatePage';
 
 const VehicleDetailsContainer = (props) => {
   const [vehicle, setVehicle] = useState({});
@@ -46,24 +45,15 @@ const VehicleDetailsContainer = (props) => {
     refreshList();
   }, [keycloak.authenticated]);
 
-  if (user.isGovernment) {
-    return (
-      <VehicleValidatePage
-        loading={loading}
-        comments={comments}
-        details={vehicle}
-        setComments={setComments}
-        requestStateChange={stateChange}
-        postComment={postComment}
-      />
-    );
-  }
-
   return (
     <VehicleDetailsPage
-      loading={loading}
+      comments={comments}
       details={vehicle}
+      loading={loading}
+      postComment={postComment}
       requestStateChange={stateChange}
+      setComments={setComments}
+      user={user}
     />
   );
 };

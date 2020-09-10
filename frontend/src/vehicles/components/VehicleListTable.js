@@ -138,7 +138,7 @@ const VehicleListTable = (props) => {
             onClick: () => {
               const { id, validationStatus } = row.original;
 
-              if (validationStatus === 'CHANGES_REQUESTED') {
+              if (validationStatus === 'CHANGES_REQUESTED' && !user.isGovernment) {
                 history.push(ROUTES_VEHICLES.EDIT.replace(/:id/g, id));
               } else {
                 history.push(ROUTES_VEHICLES.DETAILS.replace(/:id/g, id));
