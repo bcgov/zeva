@@ -33,7 +33,7 @@ const VehicleSupplierEditContainer = (props) => {
       setLoading(true);
       axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
         const addresses = {};
-        response.data.organizationAddress.forEach(element => {
+        response.data.organizationAddress.forEach((element) => {
           addresses[`${element.addressType.addressType}_addressLine_1`] = element.addressLine1;
           addresses[`${element.addressType.addressType}_addressLine_2`] = element.addressLine2;
           addresses[`${element.addressType.addressType}_addressLine_3`] = element.addressLine3;
@@ -78,30 +78,33 @@ const VehicleSupplierEditContainer = (props) => {
 
   const handleSubmit = () => {
     let formData = {};
-    const recordsAddress = {
-      addressType: 'Records',
-      addressLine_1: details.organizationAddress.Records_addressLine_1,
-      addressLine_2: details.organizationAddress.Records_addressLine_2,
-      city: details.organizationAddress.Records_city,
+    const serviceAddress = {
+      addressType: 'Service',
+      addressLine_1: details.organizationAddress.Service_addressLine_1,
+      addressLine_2: details.organizationAddress.Service_addressLine_2,
+      city: details.organizationAddress.Service_city,
       state: 'BC',
       country: 'Canada',
-      postalCode: details.organizationAddress.Records_postalCode,
+      postalCode: details.organizationAddress.Service_postalCode,
     };
-    let serviceAddress;
+
+    let recordsAddress;
+
     if (serviceSame) {
-      serviceAddress = { ...recordsAddress, addressType: 'Service' };
+      recordsAddress = { ...serviceAddress, addressType: 'Records' };
     } else {
-      serviceAddress = {
-        addressType: 'Service',
-        addressLine_1: details.organizationAddress.Service_addressLine_1,
-        addressLine_2: details.organizationAddress.Service_addressLine_2,
-        city: details.organizationAddress.Service_city,
-        state: details.organizationAddress.Service_state,
-        country: details.organizationAddress.Service_country,
-        postalCode: details.organizationAddress.Service_postalCode,
+      recordsAddress = {
+        addressType: 'Records',
+        addressLine_1: details.organizationAddress.Records_addressLine_1,
+        addressLine_2: details.organizationAddress.Records_addressLine_2,
+        city: details.organizationAddress.Records_city,
+        state: details.organizationAddress.Records_state,
+        country: details.organizationAddress.Records_country,
+        postalCode: details.organizationAddress.Records_postalCode,
       };
     }
-    formData = {...details, organizationAddress: [recordsAddress, serviceAddress]}
+    formData = { ...details, organizationAddress: [serviceAddress, recordsAddress] };
+
     if (newSupplier) {
       axios.post(ROUTES_ORGANIZATIONS.LIST, formData).then((response) => {
         history.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, response.data.id));
