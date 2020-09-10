@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import TextInput from '../../app/components/TextInput';
+import React from 'react';
 import PropTypes from 'prop-types';
+
+import TextInput from '../../app/components/TextInput';
 
 const AddressForm = (props) => {
   const {
@@ -17,111 +18,113 @@ const AddressForm = (props) => {
   };
   let title;
   let secondaryText;
-  if (type === 'Records') {
-    title = 'Records Address';
+  if (type === 'Service') {
+    title = 'Service Address';
     secondaryText = '(must be a B.C. address)';
   } else {
-    title = 'Service Address';
+    title = 'Records Address';
     secondaryText = '';
   }
   return (
     <span>
       <div className="form-group">
         <label className="d-lg-block d-xl-inline d-md-block">{title}</label>
-        {type==='Records'&& <h6 className="d-lg-block d-xl-inline"> {secondaryText}</h6>}
+        {type === 'Sercice' && <h6 className="d-lg-block d-xl-inline"> {secondaryText}</h6>}
 
-        {type === 'Service' && (
+        {type === 'Records' && (
         <span className="d-lg-block d-xl-inline">
-          <input type="checkbox" id="service-address-checkbox" onChange={(event) => { handleCheckboxClick(event); }} />
-          <h6 className="d-inline" htmlFor="service-address">
-            same as records address
+          <span className="d-inline-block">
+            <input type="checkbox" id="records-address-checkbox" onChange={(event) => { handleCheckboxClick(event); }} />
+          </span>
+          <h6 className="d-inline-block" htmlFor="records-address">
+            same as service address
           </h6>
         </span>
         )}
       </div>
       <TextInput
+        addressType={type}
         defaultValue={addressDetails[`${type}_addressLine_1`] || ''}
+        disabled={serviceSame}
         errorMessage={'addressLine1' in errorFields && errorFields.addressLine1}
         handleInputChange={handleAddressChange}
         id="StreetAddress"
+        inputSize={type === 'Service' ? 'col-lg-12 col-xl-7' : 'col-xl-12'}
         label="Street Address/PO Box"
-        labelSize = {`col-lg-12 col-xl-5 col-form-label ${type === 'Records' ? '' : 'd-xl-none'}`}
-        inputSize = {type === 'Records'? 'col-lg-12 col-xl-7' :'col-xl-12'}
+        labelSize={`col-lg-12 col-xl-5 col-form-label ${type === 'Service' ? '' : 'd-xl-none'}`}
         mandatory
         name={`${type}_addressLine_1`}
-        disabled={serviceSame}
-        addressType={type}
         serviceSame={serviceSame}
       />
       <TextInput
-        label="Address Other (optional)"
-        id="addressLine2"
-        labelSize = {`col-lg-12 col-xl-5 col-form-label ${type === 'Records' ? '' : 'd-xl-none'}`}
-        inputSize = {type === 'Records'? 'col-lg-12 col-xl-7' :'col-xl-12'}
-        name={`${type}_addressLine_2`}
+        addressType={type}
         defaultValue={addressDetails[`${type}_addressLine_2`] || ''}
-        handleInputChange={handleAddressChange}
         disabled={serviceSame}
-        addressType={type}
+        handleInputChange={handleAddressChange}
+        id="addressLine2"
+        inputSize={type === 'Service' ? 'col-lg-12 col-xl-7' : 'col-xl-12'}
+        label="Address Other (optional)"
+        labelSize={`col-lg-12 col-xl-5 col-form-label ${type === 'Service' ? '' : 'd-xl-none'}`}
+        name={`${type}_addressLine_2`}
         serviceSame={serviceSame}
       />
       <TextInput
-        labelSize = {`col-lg-12 col-xl-5 col-form-label ${type === 'Records' ? '' : 'd-xl-none'}`}
-        inputSize = {type === 'Records'? 'col-lg-12 col-xl-7' :'col-xl-12'}
+        addressType={type}
         defaultValue={addressDetails[`${type}_city`] || ''}
+        disabled={serviceSame}
         errorMessage={'city' in errorFields && errorFields.city}
         handleInputChange={handleAddressChange}
         id="City"
+        inputSize={type === 'Service' ? 'col-lg-12 col-xl-7' : 'col-xl-12'}
         label="City"
+        labelSize={`col-lg-12 col-xl-5 col-form-label ${type === 'Service' ? '' : 'd-xl-none'}`}
         mandatory
         name={`${type}_city`}
-        disabled={serviceSame}
-        addressType={type}
         serviceSame={serviceSame}
       />
       <TextInput
-        labelSize = {`col-lg-12 col-xl-5 col-form-label ${type === 'Records' ? '' : 'd-xl-none'}`}
-        inputSize = {type === 'Records'? 'col-lg-12 col-xl-7' :'col-xl-12'}
-        defaultValue={type === 'Records' ? 'BC' : addressDetails[`${type}_state`]}
+        addressType={type}
+        defaultValue={type === 'Service' ? 'BC' : addressDetails[`${type}_state`]}
+        disabled={serviceSame}
         errorMessage={'state' in errorFields && errorFields.state}
         handleInputChange={handleAddressChange}
         id="Province"
+        inputSize={type === 'Service' ? 'col-lg-12 col-xl-7' : 'col-xl-12'}
         label="Province/State/Region"
+        labelSize={`col-lg-12 col-xl-5 col-form-label ${type === 'Service' ? '' : 'd-xl-none'}`}
         mandatory
         name={`${type}_state`}
-        disabled={serviceSame}
-        readonly={type === 'Records'}
-        addressType={type}
+        readonly={type === 'Service'}
         serviceSame={serviceSame}
       />
       <TextInput
-        defaultValue={type === 'Records' ? 'Canada' : addressDetails[`${type}_country`]}
+        addressType={type}
+        defaultValue={type === 'Service' ? 'Canada' : addressDetails[`${type}_country`]}
+        disabled={serviceSame}
         errorMessage={'country' in errorFields && errorFields.country}
         handleInputChange={handleAddressChange}
         id="Country"
+        inputSize={type === 'Service' ? 'col-lg-12 col-xl-7' : 'col-xl-12'}
         label="Country"
+        labelSize={`col-lg-12 col-xl-5 col-form-label ${type === 'Service' ? '' : 'd-xl-none'}`}
         mandatory
         name={`${type}_country`}
-        disabled={serviceSame}
-        readonly={type === 'Records'}
-        addressType={type}
+        readonly={type === 'Service'}
         serviceSame={serviceSame}
-        labelSize = {`col-lg-12 col-xl-5 col-form-label ${type === 'Records' ? '' : 'd-xl-none'}`}
-        inputSize = {type === 'Records'? 'col-lg-12 col-xl-7' :'col-xl-12'}
       />
       <TextInput
+        addressType={type}
         defaultValue={addressDetails[`${type}_postalCode`] || ''}
+        disabled={serviceSame}
         errorMessage={'postalCode' in errorFields && errorFields.postalCode}
         handleInputChange={handleAddressChange}
         id="PostalCode"
+        inputSize={type === 'Service' ? 'col-lg-12 col-xl-7' : 'col-xl-12'}
         label="Postal/ZIP Code"
+        labelSize={`col-lg-12 col-xl-5 col-form-label ${type === 'Service' ? '' : 'd-xl-none'}`}
         mandatory
         name={`${type}_postalCode`}
-        disabled={serviceSame}
-        addressType={type}
         serviceSame={serviceSame}
-        labelSize = {`col-lg-12 col-xl-5 col-form-label ${type === 'Records' ? '' : 'd-xl-none'}`}
-        inputSize = {type === 'Records'? 'col-lg-12 col-xl-7' :'col-xl-12'}
       />
     </span>
   );
@@ -135,7 +138,13 @@ AddressForm.propTypes = {
   type: PropTypes.string,
   serviceSame: PropTypes.bool,
   setServiceSame: PropTypes.func,
-  errorFields: PropTypes.shape({}).isRequired,
+  errorFields: PropTypes.shape({
+    addressLine1: PropTypes.string,
+    city: PropTypes.string,
+    country: PropTypes.string,
+    postalCode: PropTypes.string,
+    state: PropTypes.string,
+  }).isRequired,
   handleAddressChange: PropTypes.func.isRequired,
   addressDetails: PropTypes.shape({}).isRequired,
 };

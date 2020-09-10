@@ -26,63 +26,71 @@ const DashboardContainer = (props) => {
   });
   const [loading, setLoading] = useState(true);
 
-  const refreshList = () => {
-    if (!user.isGovernment) {
-      const date3months = moment().subtract(3, 'months').calendar();
-      axios.all([
-        axios.get(ROUTES_VEHICLES.LIST),
-        axios.get(ROUTES_SALES_SUBMISSIONS.LIST),
-      ]).then(axios.spread((vehiclesResponse, salesResponse) => {
-        const changesRequested = vehiclesResponse.data
-          .filter((vehicle) => vehicle.validationStatus === 'CHANGES_REQUESTED')
-          .map((vehicle) => vehicle.modelName);
-        const submittedVehicles = vehiclesResponse.data
-          .filter((vehicle) => vehicle.validationStatus === 'SUBMITTED')
-          .map((vehicle) => vehicle.modelName);
-        const validatedVehicles = vehiclesResponse.data
-          .filter((vehicle) => vehicle.validationStatus === 'VALIDATED' && moment(vehicle.updatedTimestamp).isAfter(date3months))
-          .map((vehicle) => vehicle.modelName);
-        const newCredits = salesResponse.data
-          .filter((submission) => submission.validationStatus === 'NEW');
-        const submittedSales = salesResponse.data
-          .filter((submission) => submission.validationStatus === 'SUBMITTED' || submission.validationStatus === 'RECOMMEND_APPROVAL' || submission.validationStatus === 'RECOMMEND_REJECTION');
-        const validatedSales = salesResponse.data
-          .filter((submission) => submission.validationStatus === 'VALIDATED');
-        setActivityCount({
-          ...activityCount,
-          modelsAwaitingValidation: submittedVehicles.length,
-          modelsValidated: validatedVehicles.length,
-          modelsInfoRequest: changesRequested.length,
-          creditsNew: newCredits.length,
-          creditsIssued: validatedSales.length,
-          creditsAwaiting: submittedSales.length,
-        });
-      }));
-    } else if (user.isGovernment) {
-      axios.all([ 
-        axios.get(ROUTES_SALES_SUBMISSIONS.LIST),
-        axios.get(ROUTES_VEHICLES.LIST),
-      ]).then(axios.spread((salesResponse, vehiclesResponse) => {
-        const submittedVehicles = vehiclesResponse.data
-          .filter((vehicle) => vehicle.validationStatus === 'SUBMITTED')
-          .map((vehicle) => vehicle.modelName);
-        const recommendApprove = salesResponse.data
-          .filter((submission) => submission.validationStatus === 'RECOMMEND_APPROVAL');
-        const recommendReject = salesResponse.data
-          .filter((submission) => submission.validationStatus === 'RECOMMEND_REJECTION');
-        const analystNeeded = salesResponse.data
-          .filter((submission) => submission.validationStatus === 'SUBMITTED');
-        setActivityCount({
-          ...activityCount,
-          submittedVehicles: submittedVehicles.length,
-          creditsAnalyst: analystNeeded.length,
-          creditsRecommendApprove: recommendApprove.length,
-          creditsRecommendReject: recommendReject.length,
-        });
-      }));
-    }
-    setLoading(false);
+  const getBCEIDActivityCount = (salesResponse, vehiclesResponse) => {
+    const date3months = moment().subtract(3, 'months').calendar();
+
+    const changesRequested = vehiclesResponse.data
+      .filter((vehicle) => vehicle.validationStatus === 'CHANGES_REQUESTED')
+      .map((vehicle) => vehicle.modelName);
+    const submittedVehicles = vehiclesResponse.data
+      .filter((vehicle) => vehicle.validationStatus === 'SUBMITTED')
+      .map((vehicle) => vehicle.modelName);
+    const validatedVehicles = vehiclesResponse.data
+      .filter((vehicle) => vehicle.validationStatus === 'VALIDATED' && moment(vehicle.updatedTimestamp).isAfter(date3months))
+      .map((vehicle) => vehicle.modelName);
+    const newCredits = salesResponse.data
+      .filter((submission) => submission.validationStatus === 'NEW');
+    const submittedSales = salesResponse.data
+      .filter((submission) => submission.validationStatus === 'SUBMITTED' || submission.validationStatus === 'RECOMMEND_APPROVAL' || submission.validationStatus === 'RECOMMEND_REJECTION');
+    const validatedSales = salesResponse.data
+      .filter((submission) => submission.validationStatus === 'VALIDATED');
+
+    setActivityCount({
+      ...activityCount,
+      modelsAwaitingValidation: submittedVehicles.length,
+      modelsValidated: validatedVehicles.length,
+      modelsInfoRequest: changesRequested.length,
+      creditsNew: newCredits.length,
+      creditsIssued: validatedSales.length,
+      creditsAwaiting: submittedSales.length,
+    });
   };
+
+  const getIDIRActivityCount = (salesResponse, vehiclesResponse) => {
+    const submittedVehicles = vehiclesResponse.data
+      .filter((vehicle) => vehicle.validationStatus === 'SUBMITTED')
+      .map((vehicle) => vehicle.modelName);
+    const recommendApprove = salesResponse.data
+      .filter((submission) => submission.validationStatus === 'RECOMMEND_APPROVAL');
+    const recommendReject = salesResponse.data
+      .filter((submission) => submission.validationStatus === 'RECOMMEND_REJECTION');
+    const analystNeeded = salesResponse.data
+      .filter((submission) => submission.validationStatus === 'SUBMITTED');
+
+    setActivityCount({
+      ...activityCount,
+      submittedVehicles: submittedVehicles.length,
+      creditsAnalyst: analystNeeded.length,
+      creditsRecommendApprove: recommendApprove.length,
+      creditsRecommendReject: recommendReject.length,
+    });
+  };
+
+  const refreshList = () => {
+    axios.all([
+      axios.get(ROUTES_SALES_SUBMISSIONS.LIST),
+      axios.get(ROUTES_VEHICLES.LIST),
+    ]).then(axios.spread((salesResponse, vehiclesResponse) => {
+      if (!user.isGovernment) {
+        getBCEIDActivityCount(salesResponse, vehiclesResponse);
+      } else {
+        getIDIRActivityCount(salesResponse, vehiclesResponse);
+      }
+
+      setLoading(false);
+    }));
+  };
+
   useEffect(() => {
     refreshList(true);
   }, []);
