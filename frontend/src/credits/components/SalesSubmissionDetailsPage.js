@@ -66,7 +66,7 @@ const SalesSubmissionDetailsPage = (props) => {
                 Clear Filter
               </button>
               <button
-                className="button btn btn-outline-danger"
+                className="button"
                 type="button"
                 onClick={() => { filterWarnings(); }}
               >

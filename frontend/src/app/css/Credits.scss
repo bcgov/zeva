@@ -96,6 +96,19 @@ h2 {
       }
     }
   }
+  .recommendation-comment {
+    border: 1px solid $border-grey;
+    margin: 1rem 0 1.5rem 0;
+  }
+  .comment-area {
+    margin: 0 auto 0 auto;
+    textarea {
+      width: 100%;
+      resize: none;
+      display: block;
+      margin: 0 auto 1rem auto;
+    }
+  }
 }
 
 #sales-details {

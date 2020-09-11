@@ -7,6 +7,7 @@ import CustomPropTypes from '../../app/utilities/props';
 import history from '../../app/History';
 import ROUTES_CREDITS from '../../app/routes/Credits';
 import ModelListTable from './ModelListTable';
+import ButtonBack from '../../app/components/ButtonBack';
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -15,23 +16,25 @@ const CreditRequestDetailsPage = (props) => {
     user,
     validatedOnly,
     previousDateCurrentTo,
+    nonValidated,
   } = props;
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
+  const [comment, setComment] = useState('');
   let confirmLabel;
   let buttonClass;
   let modalText;
   let handle = () => {};
   if (modalType === 'approve') {
     confirmLabel = 'Recommend Approval';
-    handle = () => { handleSubmit('RECOMMEND_APPROVAL'); };
+    handle = () => { handleSubmit('RECOMMEND_APPROVAL', comment); };
     buttonClass = 'button primary';
     modalText = 'Recommend approval of credits?';
-  } else if (modalType === 'reject') {
-    confirmLabel = 'Recommend Rejection';
-    handle = () => { handleSubmit('RECOMMEND_REJECTION'); };
+  } else if (modalType === 'return') {
+    confirmLabel = 'Return to Analyst';
+    handle = () => { handleSubmit('SUBMITTED', comment); };
     buttonClass = 'btn-outline-danger';
-    modalText = 'Recommend rejection of credits?';
+    modalText = 'Return submission to analyst?';
   } else {
     confirmLabel = 'Issue Credits';
     buttonClass = 'button primary';
@@ -51,12 +54,24 @@ const CreditRequestDetailsPage = (props) => {
         <div><br /><br /></div>
         <h4 className="d-inline">{modalText}
         </h4>
-        <div><br /><br /></div>
+        <div><br />{comment && (
+        <p>Comment: {comment}</p>
+        )}<br />
+        </div>
       </div>
     </Modal>
   );
+  const directorAction = user.isGovernment
+  && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
+  && user.hasPermission('SIGN_SALES');
+  const analystAction = user.isGovernment
+  && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0
+  && user.hasPermission('RECOMMEND_SALES');
+  console.log('submissions: ', submission);
+  console.log('non validated: ', nonValidated)
   return (
     <div id="credit-request-details" className="page">
+      {modal}
       <div className="row">
         <div className="col-sm-12">
           <h1>
@@ -65,74 +80,49 @@ const CreditRequestDetailsPage = (props) => {
           </h1>
         </div>
       </div>
-
+      {analystAction
+      && (
       <div className="row mt-1">
         <div className="col-sm-12">
           ICBC data current to: {previousDateCurrentTo} &mdash;{' '}
           <Link to={ROUTES_CREDITS.UPLOADVERIFICATION}>Update ICBC Data</Link>
         </div>
       </div>
-
-      <div className="row mt-3">
-        <div className="col-sm-12">
-          <div className="action-bar">
-            <span className="left-content">
-              <button
-                className="button"
-                onClick={() => {
-                  history.goBack();
-                }}
-                type="button"
-              >
-                <FontAwesomeIcon icon="arrow-left" /> Back
-              </button>
-            </span>
-            <span className="right-content">
-              {user.isGovernment && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0 && user.hasPermission('RECOMMEND_SALES') && (
-                <>
-                  {validatedOnly && [
-                    <button
-                      className="button text-danger"
-                      key="recommend-rejection"
-                      onClick={() => {
-                        setModalType('reject');
-                        setShowModal(true);
-                      }}
-                      type="button"
-                    >
-                      Recommend Rejection
-                    </button>,
-                    <button
-                      className="button"
-                      key="recommend-approval"
-                      onClick={() => {
-                        setModalType('approve');
-                        setShowModal(true);
-                      }}
-                      type="button"
-                    >
-                      Recommend Approval
-                    </button>,
-                  ]}
-                  <button
-                    className="button primary"
-                    onClick={() => {
-                      const url = ROUTES_CREDITS.SALES_SUBMISSION_DETAILS.replace(/:id/g, submission.id);
-
-                      history.push(url);
-                    }}
-                    type="button"
-                  >
-                    Validate
-                  </button>
-                </>
+      )}
+      {(directorAction || analystAction)
+              && (
+                <div className="row mt-1">
+                  <div className="col-sm-12">
+                    <div className="recommendation-comment">
+                      {submission.validationStatus === 'RECOMMEND_APPROVAL'
+                      && (
+                        <>
+                          <h5 className="d-inline mr-2">
+                            {submission.updateUser.displayName} recommended this submission be approved.
+                          </h5>
+                          <span>{nonValidated.length} VIN were rejected, see rejected vins.</span>
+                        </>
+                      )}
+                      {(submission.validationStatus === 'CHECKED' || submission.validationStatus === 'SUBMITTED') && submission.salesSubmissionComment
+                      && (
+                      <h5>
+                        {submission.updateUser.displayName} has returned this submission.
+                      </h5>
+                      )}
+                      {submission.salesSubmissionComment && (
+                      <div>
+                        <h5 className="d-inline mr-2">
+                          Comments from {submission.salesSubmissionComment.createUser.displayName}:
+                        </h5>
+                        <span>
+                          {submission.salesSubmissionComment.comment}
+                        </span>
+                      </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               )}
-            </span>
-          </div>
-        </div>
-        {modal}
-      </div>
-
       <div className="row">
         <div className="col-sm-12">
           <div className="table">
@@ -140,81 +130,95 @@ const CreditRequestDetailsPage = (props) => {
               items={submission.records}
               user={user}
               validatedOnly={validatedOnly}
+              validationStatus={submission.validationStatus}
             />
           </div>
         </div>
       </div>
+      {user.isGovernment
+      && ((analystAction && validatedOnly) || directorAction)
+      && (
+        <div className="comment-area">
+          <label htmlFor="comment">{analystAction ? 'Comment' : 'Comment to Analyst'}</label>
+          <textarea name="comment" rows="4" onChange={(event) => { setComment(event.target.value); }} />
+          {analystAction
+          && (
+          <p>if recommended for issuance, unvalidated VIN will be removed
+            and saved in a separate dataset for the supplier to review.
+          </p>
+          )}
+        </div>
+      )}
 
       <div className="row mt-3">
         <div className="col-sm-12">
           <div className="action-bar">
-            <span className="left-content">
-              <button
-                className="button"
-                onClick={() => {
-                  history.goBack();
-                }}
-                type="button"
-              >
-                <FontAwesomeIcon icon="arrow-left" /> Back
-              </button>
-            </span>
-            <span className="right-content">
-              {user.isGovernment && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0 && user.hasPermission('RECOMMEND_SALES') && (
-                <>
-                  {validatedOnly && [
-                    <button
-                      className="button text-danger"
-                      key="recommend-rejection"
-                      onClick={() => {
-                        setModalType('reject');
-                        setShowModal(true);;
-                      }}
-                      type="button"
-                    >
-                      Recommend Rejection
-                    </button>,
+
+            {analystAction && (
+            <>
+              <span className="left-content">
+                <ButtonBack />
+              </span>
+              <span className="right-content">
+                {validatedOnly
+                    && (
                     <button
                       className="button"
                       key="recommend-approval"
                       onClick={() => {
                         setModalType('approve');
-                        setShowModal(true)
+                        setShowModal(true);
                       }}
                       type="button"
                     >
-                      Recommend Approval
-                    </button>,
-                  ]}
-                  <button
-                    className="button primary"
-                    onClick={() => {
-                      const url = ROUTES_CREDITS.SALES_SUBMISSION_DETAILS.replace(/:id/g, submission.id);
-
-                      history.push(url);
-                    }}
-                    type="button"
-                  >
-                    Validate
-                  </button>
-                </>
-              )}
-              {user.isGovernment
-              && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
-              && user.hasPermission('SIGN_SALES')
-              && (
+                      Recommend Issuance
+                    </button>
+                    )}
                 <button
                   className="button primary"
                   onClick={() => {
-                    setModalType('issue');
-                    setShowModal(true)
+                    const url = ROUTES_CREDITS.SALES_SUBMISSION_DETAILS.replace(/:id/g, submission.id);
+
+                    history.push(url);
                   }}
                   type="button"
                 >
-                  Issue Credits
+                  Validate
                 </button>
+              </span>
+            </>
+            )}
+            {directorAction
+              && (
+                <>
+                  <span className="left-content">
+                    <ButtonBack />
+                    <button
+                      className="button text-danger"
+                      onClick={() => {
+                        setModalType('return');
+                        setShowModal(true);
+                      }}
+                      type="button"
+                    >
+                      Return to Analyst
+                    </button>
+                  </span>
+                  <span className="right-content">
+                    <button
+                      className="button primary"
+                      onClick={() => {
+                        setModalType('issue');
+                        setShowModal(true);
+                      }}
+                      type="button"
+                    >
+                      Issue Credits
+                    </button>
+                  </span>
+                </>
               )}
-            </span>
+
           </div>
         </div>
       </div>
