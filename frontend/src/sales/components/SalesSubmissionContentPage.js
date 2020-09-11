@@ -103,7 +103,8 @@ const SalesSubmissionContentPage = (props) => {
             )}
           </span>
           <span className="right-content">
-            {submission.validationStatus === 'VALIDATED' && (
+            {submission.validationStatus === 'VALIDATED'
+            && submission.errors > 0 && (
               <button
                 className="button primary"
                 onClick={(e) => {
@@ -137,10 +138,10 @@ const SalesSubmissionContentPage = (props) => {
           <h2>Application for Credits for Consumer Sales</h2>
           <h3>{user.organization.name}</h3>
           <h5 className="d-inline sales-upload-grey mr-5">Service address: </h5>
-          <h5 className="d-inline sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h5>
+          {serviceAddress && <h5 className="d-inline sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h5>}
           <br />
           <h5 className="d-inline sales-upload-grey mr-5">Records address: </h5>
-          <h5 className="d-inline sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h5>
+          {recordsAddress && <h5 className="d-inline sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h5>}
           <p className="font-weight-bold my-3">
             Consumer Sales: {content.length}
           </p>
@@ -169,6 +170,7 @@ SalesSubmissionContentPage.propTypes = {
   showModal: PropTypes.bool.isRequired,
   sign: PropTypes.func.isRequired,
   submission: PropTypes.shape({
+    errors: PropTypes.number,
     id: PropTypes.number,
     validationStatus: PropTypes.string,
   }).isRequired,

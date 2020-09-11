@@ -130,7 +130,7 @@ const VehicleSupplierEditForm = (props) => {
 
                 <TextInput
                   labelSize="col-sm-3 col-form-label"
-                  inputSize= 'col-sm-7'
+                  inputSize="col-sm-7"
                   defaultValue={details.name}
                   errorMessage={'name' in errorFields && errorFields.name}
                   handleInputChange={handleInputChange}
@@ -141,7 +141,7 @@ const VehicleSupplierEditForm = (props) => {
                 />
                 <TextInput
                   labelSize="col-sm-3 col-form-label"
-                  inputSize= 'col-sm-7'
+                  inputSize="col-sm-7"
                   defaultValue={details.shortName}
                   errorMessage={'shortName' in errorFields && errorFields.shortName}
                   handleInputChange={handleInputChange}
@@ -152,23 +152,23 @@ const VehicleSupplierEditForm = (props) => {
                 <div className="row">
                   <div className="col-lg-7 col-md-6">
                     <AddressForm
-                      type="Records"
+                      addressDetails={addressDetails}
+                      addressType="Service"
                       errorFields={errorFields}
                       handleAddressChange={handleAddressChange}
-                      addressDetails={addressDetails}
-                      addressType="Records"
+                      type="Service"
                     />
                   </div>
                   <div className="d-sm-block d-md-none">&nbsp;</div>
                   <div className="col-lg-5 col-md-6">
                     <AddressForm
-                      type="Service"
+                      addressDetails={addressDetails}
+                      addressType="Records"
                       errorFields={errorFields}
                       handleAddressChange={handleAddressChange}
-                      addressDetails={addressDetails}
-                      addressType="Service"
-                      setServiceSame={setServiceSame}
                       serviceSame={serviceSame}
+                      setServiceSame={setServiceSame}
+                      type="Records"
                     />
                   </div>
                 </div>
@@ -213,7 +213,9 @@ VehicleSupplierEditForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   newSupplier: PropTypes.bool.isRequired,
+  serviceSame: PropTypes.bool.isRequired,
   setDetails: PropTypes.func.isRequired,
+  setServiceSame: PropTypes.func.isRequired,
 };
 
 export default VehicleSupplierEditForm;

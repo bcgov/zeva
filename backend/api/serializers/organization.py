@@ -91,19 +91,26 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
         obj.name = name
         obj.update_user = request.user.username
         obj.save()
+
         if addr:
             for i in addr:
                 found = OrganizationAddress.objects.filter(
                     **i,
                     organization=obj,
                     expiration_date=None)
+
+                # skip adding an address, if we already have the exact same
+                # address stored in the database
                 if not found:
+                    # expire all previous addresses for the address type
                     OrganizationAddress.objects.filter(
-                        address_type=i.get('address_type')
+                        address_type=i.get('address_type'),
+                        organization=obj
                     ).update(
                         expiration_date=date.today(),
                         update_user=request.user.username
                     )
+
                     OrganizationAddress.objects.create(
                         create_user=request.user.username,
                         effective_date=date.today(),

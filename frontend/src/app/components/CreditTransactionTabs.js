@@ -17,12 +17,14 @@ const CreditTransactionTabs = (props) => {
       key="tabs"
       role="tablist"
     >
+      {!user.isGovernment && (
       <li
         className={`nav-item ${(active === 'credit-transactions') ? 'active' : ''}`}
         role="presentation"
       >
         <Link to={ROUTES_CREDITS.LIST}>Credit Balance</Link>
       </li>
+      )}
       <li
         className={`nav-item ${(active === 'credit-requests') ? 'active' : ''}`}
         role="presentation"

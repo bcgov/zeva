@@ -26,8 +26,13 @@ const SubmissionListTable = (props) => {
   }, {
     accessor: (item) => {
       const { validationStatus } = item;
+      const status = formatStatus(validationStatus);
 
-      return formatStatus(validationStatus);
+      if (status === 'validated') {
+        return 'issued';
+      }
+
+      return status;
     },
     className: 'text-center text-capitalize',
     Header: 'Status',

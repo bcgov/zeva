@@ -169,7 +169,7 @@ class Navbar extends Component {
               <li className="nav-item">
                 <NavLink
                   activeClassName="active"
-                  to="/credit-transactions"
+                  to={user.isGovernment ? ROUTES_CREDITS.CREDIT_REQUESTS : ROUTES_CREDITS.LIST}
                 >
                   <span>Credit Transactions</span>
                 </NavLink>

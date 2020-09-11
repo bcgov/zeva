@@ -28,7 +28,9 @@ const VehicleForm = (props) => {
     setFields,
     setUploadFiles,
     showProgressBars,
+    status,
     vehicleClasses,
+    vehicleComment,
     vehicleTypes,
     vehicleYears,
   } = props;
@@ -75,14 +77,14 @@ const VehicleForm = (props) => {
       <div className="row">
         <div className="col-12">
           <h1>{formTitle}</h1>
-          {fields.validationStatus === 'CHANGES_REQUESTED'
+          {status === 'CHANGES_REQUESTED'
           && (
           <div>
             <h6 className="request-changes-vehicle">Range test results have been requested by government</h6>
-            {fields.vehicleComment && (
+            {vehicleComment && (
             <h6>
-              <b>Comment from {fields.vehicleComment.createUser && fields.vehicleComment.createUser.displayName}, {moment(fields.vehicleComment.createTimestamp).format('MMM d, YYYY')}: </b>
-              {fields.vehicleComment.comment}
+              <b>Comment from {vehicleComment.createUser && vehicleComment.createUser.displayName}, {moment(vehicleComment.createTimestamp).format('MMM d, YYYY')}: </b>
+              {vehicleComment.comment}
             </h6>
             )}
           </div>
@@ -184,7 +186,7 @@ const VehicleForm = (props) => {
             </fieldset>
           </div>
 
-          {(fields.hasPassedUs06Test || (fields.validationStatus === 'CHANGES_REQUESTED' && setUploadFiles)) && (
+          {(fields.hasPassedUs06Test || (status === 'CHANGES_REQUESTED' && setUploadFiles)) && (
             <div className="col-lg-6">
               <h3 className="font-weight-bold mt-2">Upload range test results</h3>
               <fieldset>
@@ -341,6 +343,7 @@ VehicleForm.defaultProps = {
   setDeleteFiles: null,
   setUploadFiles: null,
   showProgressBars: false,
+  vehicleComment: {},
 };
 
 VehicleForm.propTypes = {
@@ -358,9 +361,11 @@ VehicleForm.propTypes = {
   setFields: PropTypes.func.isRequired,
   setUploadFiles: PropTypes.func,
   showProgressBars: PropTypes.bool,
+  status: PropTypes.string.isRequired,
   vehicleTypes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleClasses: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  vehicleComment: PropTypes.shape(),
 };
 
 export default VehicleForm;

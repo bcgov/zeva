@@ -59,13 +59,13 @@ const CreditTransfersContainer = (props) => {
       transactionType: 'Credit Transfer',
       weightClass: 'LDV',
     }));
-    axios.post('/credit-transfers', {
+    axios.post(ROUTES_CREDITS.CREDIT_TRANSFERS_API, {
       data,
       status,
       creditTo,
       debitFrom,
     }).then(() => {
-      history.push('/credit-transactions/transfers');
+      history.push(ROUTES_CREDITS.CREDIT_TRANSFERS);
     });
   };
   const handleSave = () => {

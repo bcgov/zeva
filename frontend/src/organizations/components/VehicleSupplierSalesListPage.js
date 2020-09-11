@@ -4,10 +4,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import History from '../../app/History';
 import Loading from '../../app/components/Loading';
-import SalesSubmissionListTable from './SalesSubmissionListTable';
+import SalesSubmissionListTable from '../../sales/components/SalesSubmissionsListTable';
 
 const VehicleSupplierSalesListPage = (props) => {
   const { loading, sales } = props;
+
   if (loading) {
     return <Loading />;
   }

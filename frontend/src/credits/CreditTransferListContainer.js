@@ -3,9 +3,10 @@
  * All data handling & manipulation should be handled here.
  */
 import axios from 'axios';
-import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
+
+import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import ROUTES_CREDITS from '../app/routes/Credits';
 import CustomPropTypes from '../app/utilities/props';
 import CreditTransfersListPage from './components/CreditTransfersListPage';
@@ -18,7 +19,7 @@ const CreditTransferListContainer = (props) => {
   const refreshList = (showLoading) => {
     setLoading(showLoading);
 
-    axios.get('/credit-transfers').then((response) => {
+    axios.get(ROUTES_CREDITS.CREDIT_TRANSFERS_API).then((response) => {
       setCreditTransfers(response.data);
       setLoading(false);
     });
@@ -28,13 +29,15 @@ const CreditTransferListContainer = (props) => {
     refreshList(true);
   }, [keycloak.authenticated]);
 
-  return (
+  return ([
+    <CreditTransactionTabs active="credit-transfers" key="tabs" user={user} />,
     <CreditTransfersListPage
-      loading={loading}
       creditTransfers={creditTransfers}
+      loading={loading}
+      key="list"
       user={user}
-    />
-  );
+    />,
+  ]);
 };
 
 CreditTransferListContainer.propTypes = {
