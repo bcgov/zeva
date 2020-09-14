@@ -207,7 +207,7 @@ const CreditRequestDetailsPage = (props) => {
                   className="button primary"
                   onClick={() => {
                     setModalType('issue');
-                    setShowModal(true)
+                    setShowModal(true);
                   }}
                   type="button"
                 >
