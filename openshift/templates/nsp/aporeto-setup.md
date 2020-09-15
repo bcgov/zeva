@@ -44,6 +44,19 @@ $namspace=tbiwaq-tools
 
 $namspace=tbiwaq-[environment name]  
 
+### 1.10 KeyCloak
+
+$namespace=devops-sso-dev 
+app=sso-dev
+
+$namespace=devops-sso-test
+app=sso-test
+
+Notes: prod may be not right, could be just devops-sso and sso
+$namespace=devops-sso-prod
+app=sso-prod
+
+
 ## 2. Zeva Aporeto Security Model
 
 ### 2.1 Interweb -> Frontend
@@ -67,28 +80,29 @@ Source:
 Destination:  
     Patroni  
 
-### 2.3 Backend -> Interweb (covers Keycloak for now)
+### 2.4 Backend -> KeyCloak
 
 Source:   
     Backend  
 Destination:  
-    Interweb  
+    KeyCloa;  
 
-### 2.4 Environment Namespace -> Openshift K8S Cluster API
+
+### 2.5 Environment Namespace -> Openshift K8S Cluster API
 
 Source:  
     Environment Namespace  
 Destination:  
     Openshift Kubernets Cluster API  
 
-### 2.5 Tools Namspace -> Openshift K8S Cluster API
+### 2.6 Tools Namspace -> Openshift K8S Cluster API
 
 Source:   
     Tools Namspace  
 Destination:  
     Openshift K8S Cluster API  
 
-### 2.6 Tools Namespace -> Interweb
+### 2.7 Tools Namespace -> Interweb
 
 Source:  
     Tools Namespace  

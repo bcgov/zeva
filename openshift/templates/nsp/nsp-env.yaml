@@ -71,13 +71,14 @@ objects:
   - kind: NetworkSecurityPolicy
     apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
     metadata:
-      name: custom-backend-to-interweb
+      name: custom-backend-to-keycloak
     spec:
       description: |
-        This is used to cover backend to keycloak, question for Openshift v4 team.
+        Allow backend pod to communicate with keycloak
       source:
         - - app=zeva
           - role=backend
           - env=${ENV_NAME}
       destination:
-        - - ext:network=any
+        - - $namespace=devops-sso-${ENV_NAME}
+          - app=sso-${ENV_NAME}
