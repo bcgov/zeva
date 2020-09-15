@@ -8,6 +8,7 @@ import history from '../../app/History';
 import ROUTES_CREDITS from '../../app/routes/Credits';
 import ModelListTable from './ModelListTable';
 import ButtonBack from '../../app/components/ButtonBack';
+import moment from 'moment-timezone';
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -41,6 +42,7 @@ const CreditRequestDetailsPage = (props) => {
     modalText = 'Issue credits to vehicle supplier?';
     handle = () => { handleSubmit('VALIDATED'); };
   }
+
   const modal = (
     <Modal
       confirmLabel={confirmLabel}
@@ -67,8 +69,6 @@ const CreditRequestDetailsPage = (props) => {
   const analystAction = user.isGovernment
   && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0
   && user.hasPermission('RECOMMEND_SALES');
-  console.log('submissions: ', submission);
-  console.log('non validated: ', nonValidated)
   return (
     <div id="credit-request-details" className="page">
       {modal}
@@ -110,14 +110,16 @@ const CreditRequestDetailsPage = (props) => {
                       </h5>
                       )}
                       {submission.salesSubmissionComment && (
-                      <div>
-                        <h5 className="d-inline mr-2">
-                          Comments from {submission.salesSubmissionComment.createUser.displayName}:
-                        </h5>
-                        <span>
-                          {submission.salesSubmissionComment.comment}
-                        </span>
-                      </div>
+                        submission.salesSubmissionComment.map((each) => (
+                          <div key={each.id} >
+                            <h5 className="d-inline mr-2">
+                              Comments from {each.createUser.displayName} {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}:
+                            </h5>
+                            <span>
+                              {each.comment}
+                            </span>
+                          </div>
+                        ))
                       )}
                     </div>
                   </div>

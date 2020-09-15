@@ -118,7 +118,7 @@ class SalesSubmissionSerializer(ModelSerializer, EnumSupportSerializerMixin, Bas
 
         if sales_submission_comment.exists():
             serializer = SalesSubmissionCommentSerializer(
-                sales_submission_comment.first(), read_only=True
+                sales_submission_comment, read_only=True, many=True
             )
             return serializer.data
 

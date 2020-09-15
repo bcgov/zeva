@@ -47,11 +47,11 @@ const SalesSubmissionDetailsContainer = (props) => {
 
   const handleCheckboxClick = (event) => {
     const { value: submissionId, checked } = event.target;
-
+    const newId = Number(submissionId);
     if (!checked) {
       setValidatedList(validatedList.filter((item) => Number(item) !== Number(submissionId)));
     } else {
-      setValidatedList(() => [...validatedList, submissionId]);
+      setValidatedList(() => [...validatedList, newId]);
     }
   };
 
