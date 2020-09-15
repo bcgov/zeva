@@ -3,14 +3,16 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment-timezone';
-import History from '../../app/History';
+
+import history from '../../app/History';
 import AutocompleteInput from '../../app/components/AutocompleteInput';
 import ExcelFileDrop from '../../app/components/FileDrop';
 import Loading from '../../app/components/Loading';
+import Modal from '../../app/components/Modal';
 import TextInput from '../../app/components/TextInput';
+import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 import getFileSize from '../../app/utilities/getFileSize';
 import VehicleFormDropdown from './VehicleFormDropdown';
-import Modal from '../../app/components/Modal';
 
 const VehicleForm = (props) => {
   const {
@@ -119,7 +121,10 @@ const VehicleForm = (props) => {
               />
               <TextInput
                 defaultValue={fields.modelName}
-                errorMessage={'modelName' in errorFields && errorFields.modelName}
+                errorMessage={
+                  ('modelName' in errorFields && errorFields.modelName)
+                  || ('nonFieldErrors' in errorFields && errorFields.nonFieldErrors.replace(/_/g, ' '))
+                }
                 handleInputChange={handleInputChange}
                 id="modelName"
                 label="Model"
@@ -306,7 +311,7 @@ const VehicleForm = (props) => {
                   className="button"
                   type="button"
                   onClick={() => {
-                    History.goBack();
+                    history.push(ROUTES_VEHICLES.LIST);
                   }}
                 >
                   <FontAwesomeIcon icon="arrow-left" /> Back

@@ -67,6 +67,7 @@ const SalesUploadPage = (props) => {
 
             <div className="panel panel-default">
               <ExcelFileDrop setFiles={setUploadFiles} maxFiles={100000} />
+              {files.length > 0 && (
               <div className="files">
                 <div className="row">
                   <div className="col-8 header">Filename</div>
@@ -91,6 +92,7 @@ const SalesUploadPage = (props) => {
                   </div>
                 ))}
               </div>
+              )}
             </div>
           </div>
         </div>
@@ -103,7 +105,7 @@ const SalesUploadPage = (props) => {
           <button
             className="button"
             onClick={() => {
-              history.goBack();
+              history.push(ROUTES_SALES.LIST);
             }}
             type="button"
           >
@@ -126,4 +128,16 @@ const SalesUploadPage = (props) => {
 
   );
 };
+
+SalesUploadPage.defaultProps = {
+  errorMessage: '',
+};
+
+SalesUploadPage.propTypes = {
+  errorMessage: PropTypes.string,
+  files: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  setUploadFiles: PropTypes.func.isRequired,
+  upload: PropTypes.func.isRequired,
+};
+
 export default SalesUploadPage;
