@@ -30,7 +30,7 @@ class StatusInterceptor extends Component {
     return (
       <p>
         It looks like you don&apos;t have the permission to access this page.
-        If you&quot;re supposed to have access to the page.
+        If you&apos;re supposed to have access to the page.
         Please contact your administrator.
       </p>
     );
