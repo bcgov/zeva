@@ -18,10 +18,10 @@ const ModelListTable = (props) => {
   };
 
   const columns = [{
-    accessor: () => '0',
+    accessor: 'warnings',
     className: 'text-right',
     filterable: false,
-    Header: 'Warnings',
+    Header: 'Errors',
     id: 'warnings',
     show: showWarnings(),
     width: 100,
@@ -99,7 +99,7 @@ const ModelListTable = (props) => {
     let addSale = 0;
     let creditValue = 0;
 
-    if (!validatedOnly || item.validationStatus === 'VALIDATED') {
+    if (!validatedOnly || (item.record && item.record.validationStatus === 'VALIDATED')) {
       addSale = 1;
       ({ creditValue } = item.vehicle);
 
@@ -119,6 +119,7 @@ const ModelListTable = (props) => {
         ...data[found],
         sales: data[found].sales + addSale,
         total: data[found].total + (creditValue * addSale),
+        warnings: data[found].warnings + item.warnings,
       };
     } else {
       data.push({
@@ -126,6 +127,7 @@ const ModelListTable = (props) => {
         sales: addSale,
         total: (creditValue * addSale),
         vehicle: item.vehicle,
+        warnings: item.warnings,
       });
     }
   });
