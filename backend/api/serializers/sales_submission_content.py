@@ -21,7 +21,10 @@ class SalesSubmissionContentSerializer(ModelSerializer):
         )
 
     def get_vehicle(self, instance):
-        serializer = VehicleMinSerializer(instance.vehicle, read_only=True)
+        request = self.context.get('request')
+        serializer = VehicleMinSerializer(
+            instance.vehicle, read_only=True, context={'request': request}
+        )
 
         return serializer.data
 
@@ -85,7 +88,11 @@ class SalesSubmissionContentCheckedSerializer(ModelSerializer):
         return False
 
     def get_vehicle(self, instance):
-        serializer = VehicleMinSerializer(instance.vehicle, read_only=True)
+        request = self.context.get('request')
+
+        serializer = VehicleMinSerializer(
+            instance.vehicle, read_only=True, context={'request': request}
+        )
 
         return serializer.data
 

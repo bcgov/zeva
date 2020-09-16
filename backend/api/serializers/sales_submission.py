@@ -103,11 +103,14 @@ class SalesSubmissionSerializer(
     validation_status = SerializerMethodField()
 
     def get_records(self, instance):
+        request = self.context.get('request')
+
         if instance.validation_status == SalesSubmissionStatuses.SUBMITTED:
             serializer = SalesSubmissionContentSerializer(
                 instance.content,
                 read_only=True,
-                many=True
+                many=True,
+                context={'request': request}
             )
         else:
             serializer = RecordOfSaleSerializer(
@@ -149,10 +152,13 @@ class SalesSubmissionWithContentSerializer(
     validation_status = SerializerMethodField()
 
     def get_records(self, instance):
+        request = self.context.get('request')
+
         serializer = SalesSubmissionContentCheckedSerializer(
             instance.content,
             read_only=True,
-            many=True
+            many=True,
+            context={'request': request}
         )
 
         return serializer.data
