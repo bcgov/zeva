@@ -28,12 +28,14 @@ const DashboardContainer = (props) => {
 
   const getBCEIDActivityCount = (salesResponse, vehiclesResponse) => {
     const date3months = moment().subtract(3, 'months').calendar();
-
     const changesRequested = vehiclesResponse.data
       .filter((vehicle) => vehicle.validationStatus === 'CHANGES_REQUESTED')
       .map((vehicle) => vehicle.modelName);
     const submittedVehicles = vehiclesResponse.data
       .filter((vehicle) => vehicle.validationStatus === 'SUBMITTED')
+      .map((vehicle) => vehicle.modelName);
+    const draftVehicles = vehiclesResponse.data
+      .filter((vehicle) => vehicle.validationStatus === 'DRAFT')
       .map((vehicle) => vehicle.modelName);
     const validatedVehicles = vehiclesResponse.data
       .filter((vehicle) => vehicle.validationStatus === 'VALIDATED' && moment(vehicle.updatedTimestamp).isAfter(date3months))
@@ -47,6 +49,7 @@ const DashboardContainer = (props) => {
 
     setActivityCount({
       ...activityCount,
+      modelsDraft: draftVehicles.length,
       modelsAwaitingValidation: submittedVehicles.length,
       modelsValidated: validatedVehicles.length,
       modelsInfoRequest: changesRequested.length,
