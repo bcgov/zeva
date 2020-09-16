@@ -108,7 +108,7 @@ const CreditRequestDetailsPage = (props) => {
                       )}
                       {submission.salesSubmissionComment && (
                         submission.salesSubmissionComment.map((each) => (
-                          <div key={each.id} >
+                          <div key={each.id}>
                             <h5 className="d-inline mr-2">
                               Comments from {each.createUser.displayName} {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}:
                             </h5>
@@ -200,6 +200,7 @@ const CreditRequestDetailsPage = (props) => {
                   <span className="right-content">
                     <button
                       className="button primary"
+                      disabled={comment.length > 0}
                       onClick={() => {
                         setModalType('issue');
                         setShowModal(true);
