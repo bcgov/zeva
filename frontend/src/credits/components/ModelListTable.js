@@ -3,13 +3,29 @@
  */
 import PropTypes from 'prop-types';
 import React from 'react';
-import ReactTable from 'react-table';
 import _ from 'lodash';
 
+import ReactTable from '../../app/components/ReactTable';
+
 const ModelListTable = (props) => {
-  const { items, validatedOnly } = props;
+  const { items, validatedOnly, validationStatus } = props;
+  const showWarnings = () => {
+    if (validationStatus === 'RECOMMEND_APPROVAL') {
+      return true;
+    }
+
+    return validatedOnly;
+  };
 
   const columns = [{
+    accessor: () => '0',
+    className: 'text-right',
+    filterable: false,
+    Header: 'Warnings',
+    id: 'warnings',
+    show: showWarnings(),
+    width: 100,
+  }, {
     accessor: 'sales',
     className: 'text-right',
     filterable: false,
@@ -68,13 +84,6 @@ const ModelListTable = (props) => {
     width: 150,
   }];
 
-  const filterMethod = (filter, row) => {
-    const id = filter.pivotId || filter.id;
-    return row[id] !== undefined ? String(row[id])
-      .toLowerCase()
-      .includes(filter.value.toLowerCase()) : true;
-  };
-
   const data = [];
   const totals = {
     a: 0,
@@ -123,17 +132,12 @@ const ModelListTable = (props) => {
 
   return ([
     <ReactTable
-      className="searchable"
       columns={columns}
       data={data}
-      defaultFilterMethod={filterMethod}
-      defaultPageSize={data.length || 5}
       defaultSorted={[{
         id: 'make',
       }]}
-      filterable
       key="table"
-      pageSizeOptions={[data.length, 5, 10, 15, 20, 25, 50, 100]}
     />,
     <div className="totals" key="totals">
       <table className="float-right">

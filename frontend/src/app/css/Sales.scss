@@ -78,10 +78,14 @@
   }
 }
 
-.sales-upload-grey {
-  color: #747474 !important;
-  font-size: 1.1rem;
-}
-.sales-upload-blue {
-  font-size: 1.1rem;
+.sales-upload-details {
+  .sales-upload-grey {
+    color: #747474 !important;
+    font-size: 1.1rem;
+    width: 10rem;
+  }
+  
+  .sales-upload-blue {
+    font-size: 1.1rem;
+  }
 }

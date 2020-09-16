@@ -7,6 +7,8 @@ from api.models.record_of_sale_statuses import RecordOfSaleStatuses
 from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
+from api.models.sales_submission_comment import SalesSubmissionComment
+from api.serializers.sales_submission_comment import SalesSubmissionCommentSerializer
 from api.models.user_profile import UserProfile
 from api.models.vin_statuses import VINStatuses
 from api.serializers.user import MemberSerializer
@@ -17,7 +19,16 @@ from api.serializers.sales_submission_content import \
 from api.services.sales_spreadsheet import get_date
 
 
-class SalesSubmissionBaseSerializer():
+class BaseSerializer():
+    def get_update_user(self, obj):
+        user_profile = UserProfile.objects.filter(username=obj.update_user)
+
+        if user_profile.exists():
+            serializer = MemberSerializer(user_profile.first(), read_only=True)
+            return serializer.data
+
+        return obj.update_user
+
     def get_validation_status(self, obj):
         request = self.context.get('request')
 
@@ -36,8 +47,7 @@ class SalesSubmissionBaseSerializer():
 
 
 class SalesSubmissionListSerializer(
-        ModelSerializer, EnumSupportSerializerMixin,
-        SalesSubmissionBaseSerializer
+        ModelSerializer, EnumSupportSerializerMixin, BaseSerializer
 ):
     organization = OrganizationSerializer(read_only=True)
     totals = SerializerMethodField()
@@ -73,15 +83,6 @@ class SalesSubmissionListSerializer(
 
         return round(total, 2)
 
-    def get_update_user(self, obj):
-        user_profile = UserProfile.objects.filter(username=obj.update_user)
-
-        if user_profile.exists():
-            serializer = MemberSerializer(user_profile.first(), read_only=True)
-            return serializer.data
-
-        return obj.update_user
-
     class Meta:
         model = SalesSubmission
         fields = (
@@ -93,10 +94,12 @@ class SalesSubmissionListSerializer(
 
 class SalesSubmissionSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
-        SalesSubmissionBaseSerializer
+        BaseSerializer
 ):
     organization = OrganizationSerializer(read_only=True)
     records = SerializerMethodField()
+    sales_submission_comment = SerializerMethodField()
+    update_user = SerializerMethodField()
     validation_status = SerializerMethodField()
 
     def get_records(self, instance):
@@ -115,17 +118,31 @@ class SalesSubmissionSerializer(
 
         return serializer.data
 
+    def get_sales_submission_comment(self, obj):
+        sales_submission_comment = SalesSubmissionComment.objects.filter(
+            sales_submission=obj
+        ).order_by('-create_timestamp')
+
+        if sales_submission_comment.exists():
+            serializer = SalesSubmissionCommentSerializer(
+                sales_submission_comment, read_only=True, many=True
+            )
+            return serializer.data
+
+        return None
+
     class Meta:
         model = SalesSubmission
         fields = (
             'id', 'validation_status', 'organization', 'submission_date',
-            'submission_sequence', 'records', 'submission_id', 'errors',
+            'submission_sequence', 'records', 'submission_id',
+            'sales_submission_comment', 'update_user', 'errors',
         )
 
 
 class SalesSubmissionWithContentSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
-        SalesSubmissionBaseSerializer
+        BaseSerializer
 ):
     organization = OrganizationSerializer(read_only=True)
     records = SerializerMethodField()
@@ -152,6 +169,10 @@ class SalesSubmissionSaveSerializer(
         ModelSerializer
 ):
     validation_status = EnumField(SalesSubmissionStatuses)
+    sales_submission_comment = SalesSubmissionCommentSerializer(
+        allow_null=True,
+        required=False
+    )
 
     def validate_validation_status(self, value):
         request = self.context.get('request')
@@ -164,7 +185,14 @@ class SalesSubmissionSaveSerializer(
     def update(self, instance, validated_data):
         request = self.context.get('request')
         records = request.data.get('records')
+        sales_submission_comment = validated_data.pop('sales_submission_comment', None)
 
+        if sales_submission_comment:
+            SalesSubmissionComment.objects.create(
+                create_user=request.user.username,
+                sales_submission=instance,
+                comment=sales_submission_comment.get('comment')
+            )
         if records:
             RecordOfSale.objects.filter(submission_id=instance.id).delete()
 
@@ -201,5 +229,5 @@ class SalesSubmissionSaveSerializer(
         fields = (
             'id', 'organization', 'submission_date',
             'submission_sequence', 'submission_id',
-            'validation_status'
+            'validation_status', 'sales_submission_comment'
         )

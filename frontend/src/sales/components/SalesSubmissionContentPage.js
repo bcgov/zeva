@@ -175,11 +175,11 @@ const SalesSubmissionContentPage = (props) => {
         <div className="col-sm-12">
           <h2>Application for Credits for Consumer Sales</h2>
           <h3>{user.organization.name}</h3>
-          <h5 className="d-inline sales-upload-grey mr-5">Service address: </h5>
-          {serviceAddress && <h5 className="d-inline sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h5>}
+          <h5 className="d-inline-block sales-upload-grey">Service address: </h5>
+          {serviceAddress && <h5 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h5>}
           <br />
-          <h5 className="d-inline sales-upload-grey mr-5">Records address: </h5>
-          {recordsAddress && <h5 className="d-inline sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h5>}
+          <h5 className="d-inline-block sales-upload-grey">Records address: </h5>
+          {recordsAddress && <h5 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h5>}
           <p className="font-weight-bold my-3">
             Consumer Sales: {content.length}
           </p>
