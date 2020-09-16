@@ -7,15 +7,21 @@ import ReactTable from 'react-table';
 import _ from 'lodash';
 
 const ModelListTable = (props) => {
-  const { items, validatedOnly } = props;
+  const { items, validatedOnly, validationStatus } = props;
+  const showWarnings = () => {
+    if (validationStatus === 'RECOMMEND_APPROVAL') {
+      return true;
+    }
 
+    return validatedOnly;
+  };
   const columns = [{
     accessor: () => '0',
     className: 'text-right',
     filterable: false,
     Header: 'Warnings',
     id: 'warnings',
-    show: validatedOnly,
+    show: showWarnings(),
     width: 100,
   }, {
     accessor: 'sales',

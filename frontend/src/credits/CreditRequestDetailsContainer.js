@@ -22,24 +22,31 @@ const CreditRequestDetailsContainer = (props) => {
   const [submission, setSubmission] = useState([]);
   const [loading, setLoading] = useState(true);
   const [previousDateCurrentTo, setPreviousDateCurrentTo] = useState('');
+  const [nonValidated, setNonValidated] = useState([]);
   const refreshDetails = () => {
-    axios.get(ROUTES_ICBCVERIFICATION.DATE).then((response) => {
-      setPreviousDateCurrentTo(response.data.uploadDate);
-    });
-    axios.get(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id)).then((response) => {
-      setSubmission(response.data);
+    axios.all([
+      axios.get(ROUTES_ICBCVERIFICATION.DATE),
+      axios.get(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id)),
+      axios.get(ROUTES_SALES_SUBMISSIONS.RAW.replace(':id', id)),
+    ]).then(axios.spread((dateResponse, submissionResponse, rawResponse) => {
+      setPreviousDateCurrentTo(dateResponse.data.uploadDate);
+      setSubmission(submissionResponse.data);
+      setNonValidated(rawResponse.data.records
+        .filter((each) => each.checked === false));
       setLoading(false);
-    });
+    }));
   };
 
   useEffect(() => {
     refreshDetails();
   }, [id]);
 
-  const handleSubmit = (validationStatus) => {
-    axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id), {
-      validationStatus,
-    }).then(() => {
+  const handleSubmit = (validationStatus, comment) => {
+    const submissionContent = { validationStatus };
+    if (comment.length > 0) {
+      submissionContent.salesSubmissionComment = { comment };
+    }
+    axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id), submissionContent).then(() => {
       history.push(ROUTES_CREDITS.CREDIT_REQUESTS);
     });
   };
@@ -55,6 +62,7 @@ const CreditRequestDetailsContainer = (props) => {
       user={user}
       validatedOnly={validatedOnly}
       previousDateCurrentTo={previousDateCurrentTo}
+      nonValidated={nonValidated}
     />
   );
 };
