@@ -33,7 +33,7 @@ const ActionsIdir = (props) => {
             icon="car"
             boldText="ZEV Models"
             regularText="no current activity"
-            className="no-hover"
+            linkTo={ROUTES_VEHICLES.LIST}
           />
         )}
         {activityCount.creditsAnalyst > 0 && user.hasPermission('RECOMMEND_SALES')
@@ -75,8 +75,7 @@ const ActionsIdir = (props) => {
             icon="check-square"
             boldText="Credit Applications"
             regularText="no current activity"
-            className="no-hover"
-
+            linkTo={ROUTES_CREDITS.CREDIT_REQUESTS}
           />
         )}
         {activityCount.transfersAwaitingPartner > 0 && user.hasPermission('RECOMMEND_SALES')
@@ -105,7 +104,7 @@ const ActionsIdir = (props) => {
             icon="exchange-alt"
             boldText="Credit Transfer"
             regularText="no current activity"
-            className="no-hover"
+            linkTo={ROUTES_CREDITS.CREDIT_TRANSFERS}
           />
         )}
       </div>

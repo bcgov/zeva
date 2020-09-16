@@ -5,6 +5,7 @@ import Loading from '../../app/components/Loading';
 import ActivityBanner from './ActivityBanner';
 import ROUTES_SALES from '../../app/routes/Sales';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
+import ROUTES_CREDITS from '../../app/routes/Credits';
 
 const ActionsBceid = (props) => {
   const { activityCount, loading } = props;
@@ -12,7 +13,6 @@ const ActionsBceid = (props) => {
   if (loading) {
     return <Loading />;
   }
-
   return (
     <div id="actions" className="dashboard-card">
       <div className="content">
@@ -26,6 +26,16 @@ const ActionsBceid = (props) => {
           regularText={`${activityCount.modelsInfoRequest} range information requests`}
           linkTo={`${ROUTES_VEHICLES.LIST}?col-status=Changes%20Requested`}
 
+        />
+        )}
+        {activityCount.modelsDraft > 0
+        && (
+        <ActivityBanner
+          colour="yellow"
+          icon="car"
+          boldText="ZEV Models"
+          regularText={`${activityCount.modelsDraft} saved in draft`}
+          linkTo={`${ROUTES_VEHICLES.LIST}?col-status=Draft`}
         />
         )}
         {activityCount.modelsAwaitingValidation > 0
@@ -53,10 +63,10 @@ const ActionsBceid = (props) => {
         && (
           <ActivityBanner
             colour="green"
-            icon="exchange-alt"
+            icon="car"
             boldText="ZEV Models"
             regularText="no current activity"
-            className="no-hover"
+            linkTo={ROUTES_VEHICLES.LIST}
           />
         )}
         {activityCount.creditsNew > 0
@@ -97,7 +107,7 @@ const ActionsBceid = (props) => {
             icon="check-square"
             boldText="Credit Applications"
             regularText="no current activity"
-            className="no-hover"
+            linkTo={ROUTES_SALES.LIST}
           />
         )}
         {activityCount.transfersAwaitingPartner > 0
@@ -107,6 +117,7 @@ const ActionsBceid = (props) => {
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersAwaitingPartner} awaiting partner confirmation`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_TRANSFERS}`}
         />
         )}
         {activityCount.transferAwaitingGovernment > 0
@@ -116,6 +127,7 @@ const ActionsBceid = (props) => {
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersAwaitingGovernment} awaiting  government action`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_TRANSFERS}`}
         />
         )}
         {activityCount.transferRecorded > 0
@@ -125,7 +137,7 @@ const ActionsBceid = (props) => {
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersRecorded} recorded by government`}
-          className="no-hover"
+          linkTo={`${ROUTES_CREDITS.CREDIT_TRANSFERS}`}
         />
         )}
         {activityCount.transfersAwaitingGovernment === 0
@@ -136,7 +148,7 @@ const ActionsBceid = (props) => {
             icon="exchange-alt"
             boldText="Credit Transfer"
             regularText="no current activity"
-            className="no-hover"
+            linkTo={ROUTES_CREDITS.CREDIT_TRANSFERS}
           />
         )}
       </div>
