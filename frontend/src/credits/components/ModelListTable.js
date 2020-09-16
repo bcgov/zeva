@@ -147,7 +147,7 @@ const ModelListTable = (props) => {
       <table className="float-right">
         <tbody className="font-weight-bold">
           <tr className="total-grey">
-            <td className="text-centerr">Total A Credits</td>
+            <td className="text-center">Total A Credits</td>
             <td className="text-right">{_.round(totals.a, 2).toFixed(2)}</td>
           </tr>
           <tr>

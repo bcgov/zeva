@@ -36,7 +36,7 @@ const CreditTransactionTabs = (props) => {
         className={`nav-item ${(active === 'credit-transfers') ? 'active' : ''}`}
         role="presentation"
       >
-        <Link to={user.isGovernment ? '/' : ROUTES_CREDITS.CREDIT_TRANSFERS}>Credit Transfers</Link>
+        <Link to={ROUTES_CREDITS.CREDIT_TRANSFERS}>Credit Transfers</Link>
       </li>
       )}
       {user.isGovernment && (

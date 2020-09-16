@@ -24,15 +24,17 @@ const CreditTransfersListPage = (props) => {
           <h3>Light Duty Vehicle Credit Transfers</h3>
         </span>
         <span className="right-content">
-          <button
-            className="button primary"
-            onClick={() => {
-              history.push('/credit-transactions/transfers/add');
-            }}
-            type="button"
-          >
-            New Credit Transfer
-          </button>
+          {!user.isGovernment && (
+            <button
+              className="button primary"
+              onClick={() => {
+                history.push('/credit-transactions/transfers/add');
+              }}
+              type="button"
+            >
+              New Credit Transfer
+            </button>
+          )}
         </span>
       </div>
 

@@ -22,6 +22,46 @@ const SalesSubmissionDetailsPage = (props) => {
   const clearFilters = () => {
     setFiltered([]);
   };
+  const actionBar = (
+    <div className="action-bar">
+      <span className="left-content">
+        <button
+          className="button"
+          onClick={() => {
+            history.goBack();
+          }}
+          type="button"
+        >
+          <FontAwesomeIcon icon="arrow-left" /> Back
+        </button>
+      </span>
+      <span className="right-content">
+        <button
+          className="button"
+          type="button"
+          onClick={() => { clearFilters(); }}
+        >
+          Clear Filter
+        </button>
+        <button
+          className="button btn btn-outline-danger"
+          type="button"
+          onClick={() => { filterWarnings(); }}
+        >
+          View Warnings Only
+        </button>
+        <button
+          className="button primary"
+          onClick={() => {
+            handleSubmit();
+          }}
+          type="button"
+        >
+          <FontAwesomeIcon icon="save" /> Save
+        </button>
+      </span>
+    </div>
+  );
 
   return (
     <div id="sales-details" className="page">
@@ -45,44 +85,7 @@ const SalesSubmissionDetailsPage = (props) => {
 
       <div className="row">
         <div className="col-sm-12">
-          <div className="action-bar">
-            <span className="left-content">
-              <button
-                className="button"
-                onClick={() => {
-                  history.goBack();
-                }}
-                type="button"
-              >
-                <FontAwesomeIcon icon="arrow-left" /> Back
-              </button>
-            </span>
-            <span className="right-content">
-              <button
-                className="button"
-                type="button"
-                onClick={() => { clearFilters(); }}
-              >
-                Clear Filter
-              </button>
-              <button
-                className="button btn btn-outline-danger"
-                type="button"
-                onClick={() => { filterWarnings(); }}
-              >
-                View Warnings Only
-              </button>
-              <button
-                className="button primary"
-                onClick={() => {
-                  handleSubmit();
-                }}
-                type="button"
-              >
-                <FontAwesomeIcon icon="save" /> Save
-              </button>
-            </span>
-          </div>
+          {actionBar}
         </div>
       </div>
 
@@ -102,36 +105,7 @@ const SalesSubmissionDetailsPage = (props) => {
 
       <div className="row">
         <div className="col-sm-12 mt-3">
-          <div className="action-bar">
-            <span className="left-content">
-              <button
-                className="button"
-                onClick={() => {
-                  history.goBack();
-                }}
-                type="button"
-              >
-                <FontAwesomeIcon icon="arrow-left" /> Back
-              </button>
-            </span>
-            <span className="right-content">
-              <button
-                className="button"
-                type="button"
-              >
-                View Warnings Only
-              </button>
-              <button
-                className="button primary"
-                onClick={() => {
-                  handleSubmit();
-                }}
-                type="button"
-              >
-                <FontAwesomeIcon icon="save" /> Save
-              </button>
-            </span>
-          </div>
+          {actionBar}
         </div>
       </div>
     </div>

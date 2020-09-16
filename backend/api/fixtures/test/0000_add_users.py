@@ -48,10 +48,10 @@ class AddUsers(OperationalDataScript):
         "display_name": "Richard Tan",
         "username": "RTAN"
     }, {
-        "first_name": "Robert ",
-        "last_name": "Johnstone",
-        "display_name": "Robert Johnstone",
-        "username": "RJOHNSTONE"
+        "first_name": "Anton",
+        "last_name": "Coetzer",
+        "display_name": "Anton Coetzer",
+        "username": "ALCOETZE"
     }]
 
     def check_run_preconditions(self):

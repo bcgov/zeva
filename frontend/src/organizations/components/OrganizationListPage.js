@@ -27,10 +27,6 @@ const OrganizationListPage = (props) => {
             <span className="left-content" />
 
             <span className="right-content">
-              <button className="button" type="button">
-                <FontAwesomeIcon icon="download" /> Download as Excel
-              </button>
-
               <button
                 className="button primary"
                 type="button"
@@ -51,10 +47,6 @@ const OrganizationListPage = (props) => {
             <span className="left-content" />
 
             <span className="right-content">
-              <button className="button" type="button">
-                <FontAwesomeIcon icon="download" /> Download as Excel
-              </button>
-
               <button
                 className="button primary"
                 type="button"

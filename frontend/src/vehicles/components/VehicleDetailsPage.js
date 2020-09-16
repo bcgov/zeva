@@ -75,7 +75,7 @@ const VehicleDetailsPage = (props) => {
       </div>
 
       <div className="row align-items-center">
-        <div className="col-md-6">
+        <div className="col-md-12 col-lg-9 col-xl-7">
           <div className="form p-4">
             {user.isGovernment && (
               <DetailField label="Supplier" value={details.organization.shortName || details.organization.name} />
@@ -144,7 +144,7 @@ const VehicleDetailsPage = (props) => {
 
       {details.validationStatus === 'SUBMITTED' && user.isGovernment && (
       <div className="row">
-        <div className="col-md-6 pt-4 pb-2">
+        <div className="col-md-12 col-lg-9 col-xl-7 pt-4 pb-2">
           <div className="form">
             <div className="request-changes-check">
               <input type="checkbox" onChange={handleCheckboxClick} />
@@ -161,13 +161,13 @@ const VehicleDetailsPage = (props) => {
       )}
 
       <div className="row">
-        <div className="col-md-6">
+        <div className="col-md-12 col-lg-9 col-xl-7">
           <div className="action-bar">
             <span className="left-content">
               <button
                 className="button"
                 onClick={() => {
-                  history.goBack();
+                  history.push(ROUTES_VEHICLES.LIST);
                 }}
                 type="button"
               >

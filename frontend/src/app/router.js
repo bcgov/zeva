@@ -20,13 +20,13 @@ import CreditTransfersContainer from '../credits/CreditTransfersContainer';
 import CreditTransferListContainer from '../credits/CreditTransferListContainer';
 import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContainer';
 import SalesSubmissionDetailsContainer from '../credits/SalesSubmissionDetailsContainer';
+import UploadICBCVerificationContainer from '../credits/UploadICBCVerificationContainer';
 import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
 import SalesSubmissionListContainer from '../sales/SalesSubmissionListContainer';
 import SalesSubmissionEditContainer from '../sales/SalesSubmissionEditContainer';
 import SalesSubmissionApprovalContainer from '../sales/SalesSubmissionApprovalContainer';
 import SalesSubmissionApprovalDetailsContainer from '../sales/SalesSubmissionApprovalDetailsContainer';
 import SalesSubmissionConfirmationContainer from '../sales/SalesSubmissionConfirmationContainer';
-import UserAddContainer from '../users/UserAddContainer';
 import UserEditContainer from '../users/UserEditContainer';
 import VehicleDetailsContainer from '../vehicles/VehicleDetailsContainer';
 import VehicleEditContainer from '../vehicles/VehicleEditContainer';
@@ -127,7 +127,7 @@ class Router extends Component {
               <Route
                 exact
                 path={ROUTES_ORGANIZATIONS.MINE_ADD_USER}
-                render={() => <UserAddContainer keycloak={keycloak} user={user} />}
+                render={() => <UserEditContainer keycloak={keycloak} user={user} newUser />}
               />
               <Route
                 exact
@@ -142,7 +142,7 @@ class Router extends Component {
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.ADD_USER}
-                render={() => <UserAddContainer keycloak={keycloak} user={user} />}
+                render={() => <UserEditContainer keycloak={keycloak} user={user} newUser />}
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.USERS}
@@ -238,12 +238,12 @@ class Router extends Component {
               <Route
                 exact
                 path={ROUTES_CREDITS.LIST}
-                render={() => <CreditsContainer keycloak={keycloak} user={user} activeTab="transactions" />}
+                render={() => <CreditsContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact
                 path={ROUTES_CREDITS.UPLOADVERIFICATION}
-                render={() => <CreditsContainer keycloak={keycloak} user={user} activeTab="upload-verification-data" />}
+                render={() => <UploadICBCVerificationContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact
