@@ -23,7 +23,13 @@ const VehicleListTable = (props) => {
     return newValue;
   };
   const columns = [{
-    accessor: (row) => (row.organization ? row.organization.name : ''),
+    accessor: (row) => {
+      if (row.organization) {
+        return row.organization.shortName || row.organization.name;
+      }
+
+      return '';
+    },
     className: 'text-center',
     Header: 'Supplier',
     id: 'col-supplier',
@@ -130,7 +136,7 @@ const VehicleListTable = (props) => {
       filtered={filtered}
       data={items}
       defaultSorted={[{
-        id: 'make',
+        id: user.isGovernment ? 'col-supplier' : 'make',
       }]}
       getTrProps={(state, row) => {
         if (row && row.original && user) {
