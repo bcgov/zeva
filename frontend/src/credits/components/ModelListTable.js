@@ -10,14 +10,6 @@ const ModelListTable = (props) => {
   const { items, validatedOnly } = props;
 
   const columns = [{
-    accessor: () => '0',
-    className: 'text-right',
-    filterable: false,
-    Header: 'Warnings',
-    id: 'warnings',
-    show: validatedOnly,
-    width: 100,
-  }, {
     accessor: 'sales',
     className: 'text-right',
     filterable: false,

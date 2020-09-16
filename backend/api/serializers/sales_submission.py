@@ -17,8 +17,27 @@ from api.serializers.sales_submission_content import \
 from api.services.sales_spreadsheet import get_date
 
 
+class SalesSubmissionBaseSerializer():
+    def get_validation_status(self, obj):
+        request = self.context.get('request')
+
+        #  do not show bceid users statuses of CHECKED
+        #  CHECKED is really an internal status for IDIR users that someone has
+        #  reviewed the vins
+        if not request.user.is_government and \
+                obj.validation_status in [
+                        SalesSubmissionStatuses.CHECKED,
+                        SalesSubmissionStatuses.RECOMMEND_APPROVAL,
+                        SalesSubmissionStatuses.RECOMMEND_REJECTION
+                ]:
+            return SalesSubmissionStatuses.SUBMITTED.value
+
+        return obj.get_validation_status_display()
+
+
 class SalesSubmissionListSerializer(
-        ModelSerializer, EnumSupportSerializerMixin
+        ModelSerializer, EnumSupportSerializerMixin,
+        SalesSubmissionBaseSerializer
 ):
     organization = OrganizationSerializer(read_only=True)
     totals = SerializerMethodField()
@@ -63,18 +82,6 @@ class SalesSubmissionListSerializer(
 
         return obj.update_user
 
-    def get_validation_status(self, obj):
-        request = self.context.get('request')
-        
-        #  do not show bceid users statuses of CHECKED
-        #  CHECKED is really an internal status for IDIR users that someone has
-        #  reviewed the vins
-        if not request.user.is_government and \
-                obj.validation_status == SalesSubmissionStatuses.CHECKED:
-            return SalesSubmissionStatuses.SUBMITTED.value
-
-        return obj.get_validation_status_display()
-
     class Meta:
         model = SalesSubmission
         fields = (
@@ -84,10 +91,13 @@ class SalesSubmissionListSerializer(
         )
 
 
-class SalesSubmissionSerializer(ModelSerializer, EnumSupportSerializerMixin):
-    validation_status = EnumField(SalesSubmissionStatuses, read_only=True)
+class SalesSubmissionSerializer(
+        ModelSerializer, EnumSupportSerializerMixin,
+        SalesSubmissionBaseSerializer
+):
     organization = OrganizationSerializer(read_only=True)
     records = SerializerMethodField()
+    validation_status = SerializerMethodField()
 
     def get_records(self, instance):
         if instance.validation_status == SalesSubmissionStatuses.SUBMITTED:
@@ -114,11 +124,12 @@ class SalesSubmissionSerializer(ModelSerializer, EnumSupportSerializerMixin):
 
 
 class SalesSubmissionWithContentSerializer(
-    ModelSerializer, EnumSupportSerializerMixin
+        ModelSerializer, EnumSupportSerializerMixin,
+        SalesSubmissionBaseSerializer
 ):
-    validation_status = EnumField(SalesSubmissionStatuses, read_only=True)
     organization = OrganizationSerializer(read_only=True)
     records = SerializerMethodField()
+    validation_status = SerializerMethodField()
 
     def get_records(self, instance):
         serializer = SalesSubmissionContentCheckedSerializer(

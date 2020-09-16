@@ -19,33 +19,71 @@ const SalesSubmissionContentPage = (props) => {
     submission,
     user,
   } = props;
+
   const [modalType, setModalType] = useState('');
   const serviceAddress = user.organization.organizationAddress.find((address) => address.addressType.addressType === 'Service');
   const recordsAddress = user.organization.organizationAddress.find((address) => address.addressType.addressType === 'Records');
-  const tableContent = content.map((item) => {
-    const year = Math.trunc(item.xlsModelYear);
-    const vehicleItem = {
-      id: item.id,
-      salesDate: item.salesDate,
-      vehicle: {
-        id: item.vehicle.id || `${year}-${item.xlsModel}-${item.xlxMake}`,
-        creditClass: item.vehicle.creditClass || '',
-        creditValue: item.vehicle.creditValue || 0,
-        modelName: item.vehicle.modelName || item.xlsModel,
-        make: item.vehicle.make || item.xlsMake,
-        modelYear: item.vehicle.modelYear || year,
-        range: item.vehicle.range || 0,
-        vehicleClassCode: item.vehicle.vehicleClassCode || '',
-        vehicleZevType: item.vehicle.vehicleZevType || '',
-        weightKg: item.vehicle.weightKg || 0,
-      },
-      xlsMake: item.xlsMake,
-      xlsModel: item.xlsModel,
-      xlsModelYear: item.xlsModelYear,
-      xlsVin: item.xlsVin,
-    };
-    return vehicleItem;
-  });
+  let tableContent = [];
+
+  if (submission.validationStatus === 'VALIDATED') {
+    tableContent = submission.records.map((item) => {
+      if (item.vehicle) {
+        const { vehicle } = item;
+
+        const vehicleItem = {
+          id: item.id,
+          salesDate: item.saleDate,
+          validationStatus: item.validationStatus,
+          vehicle: {
+            id: vehicle.id || `${vehicle.modelYear}-${vehicle.modelName}-${vehicle.make}`,
+            creditClass: vehicle.creditClass || '',
+            creditValue: vehicle.creditValue || 0,
+            modelName: vehicle.modelName,
+            make: vehicle.make,
+            modelYear: vehicle.modelYear,
+            range: vehicle.range || 0,
+            vehicleClassCode: vehicle.vehicleClassCode || '',
+            vehicleZevType: vehicle.vehicleZevType || '',
+            weightKg: vehicle.weightKg || 0,
+          },
+          xlsMake: vehicle.make,
+          xlsModel: vehicle.modelName,
+          xlsModelYear: vehicle.modelYear,
+          xlsVin: item.vin,
+        };
+
+        return vehicleItem;
+      }
+
+      return false;
+    });
+  } else {
+    tableContent = content.map((item) => {
+      const year = Math.trunc(item.xlsModelYear);
+      const vehicleItem = {
+        id: item.id,
+        salesDate: item.salesDate,
+        vehicle: {
+          id: item.vehicle.id || `${year}-${item.xlsModel}-${item.xlxMake}`,
+          creditClass: item.vehicle.creditClass || '',
+          creditValue: item.vehicle.creditValue || 0,
+          modelName: item.vehicle.modelName || item.xlsModel,
+          make: item.vehicle.make || item.xlsMake,
+          modelYear: item.vehicle.modelYear || year,
+          range: item.vehicle.range || 0,
+          vehicleClassCode: item.vehicle.vehicleClassCode || '',
+          vehicleZevType: item.vehicle.vehicleZevType || '',
+          weightKg: item.vehicle.weightKg || 0,
+        },
+        xlsMake: item.xlsMake,
+        xlsModel: item.xlsModel,
+        xlsModelYear: item.xlsModelYear,
+        xlsVin: item.xlsVin,
+      };
+      return vehicleItem;
+    });
+  }
+
   let confirmLabel;
   let handleSubmit = () => {};
   let buttonClass;
@@ -54,13 +92,13 @@ const SalesSubmissionContentPage = (props) => {
 
   if (modalType === 'submit') {
     confirmLabel = ' Submit';
-    handleSubmit = () => {sign(submission.id, 'SUBMITTED'); };
+    handleSubmit = () => { sign(submission.id, 'SUBMITTED'); };
     buttonClass = 'button primary';
     modalText = 'Submit credit request to government?';
     icon = <FontAwesomeIcon icon="paper-plane" />;
   } else if (modalType === 'delete') {
     confirmLabel = ' Delete';
-    handleSubmit = () => {sign(submission.id, 'DELETED'); };
+    handleSubmit = () => { sign(submission.id, 'DELETED'); };
     buttonClass = 'btn-outline-danger';
     modalText = 'Delete submission? WARNING: this action cannot be undone';
     icon = <FontAwesomeIcon icon="trash" />;
@@ -153,6 +191,7 @@ const SalesSubmissionContentPage = (props) => {
           <ModelListTable
             items={tableContent}
             user={user}
+            validatedOnly={submission.validationStatus === 'VALIDATED'}
           />
         </div>
       </div>
@@ -172,6 +211,7 @@ SalesSubmissionContentPage.propTypes = {
   submission: PropTypes.shape({
     errors: PropTypes.number,
     id: PropTypes.number,
+    records: PropTypes.arrayOf(PropTypes.shape()),
     validationStatus: PropTypes.string,
   }).isRequired,
   user: CustomPropTypes.user.isRequired,
