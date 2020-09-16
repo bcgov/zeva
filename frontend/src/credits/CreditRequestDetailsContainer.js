@@ -21,7 +21,7 @@ const CreditRequestDetailsContainer = (props) => {
 
   const [submission, setSubmission] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [previousDateCurrentTo, setPreviousDateCurrentTo] = useState('');
+  const [previousDateCurrentTo, setPreviousDateCurrentTo] = useState('No ICBC data uploaded yet.');
   const [nonValidated, setNonValidated] = useState([]);
   const refreshDetails = () => {
     axios.all([

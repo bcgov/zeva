@@ -11,7 +11,7 @@ const UploadICBCVerificationContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const { user } = props;
   const [dateCurrentTo, setDateCurrentTo] = useState('');
-  const [previousDateCurrentTo, setPreviousDateCurrentTo] = useState('');
+  const [previousDateCurrentTo, setPreviousDateCurrentTo] = useState('No ICBC data uploaded yet');
   const [files, setFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
 
@@ -20,11 +20,10 @@ const UploadICBCVerificationContainer = (props) => {
 
   const refreshList = (showLoading) => {
     setLoading(showLoading);
-
     axios.get(ROUTES_ICBCVERIFICATION.DATE).then((response) => {
       setPreviousDateCurrentTo(response.data.uploadDate);
+      setLoading(false);
     });
-    setLoading(false);
     setDateCurrentTo(date);
   };
 
