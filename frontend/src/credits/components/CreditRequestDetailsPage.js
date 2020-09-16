@@ -24,12 +24,11 @@ const CreditRequestDetailsPage = (props) => {
   let buttonClass;
   let modalText;
   let handle = () => {};
-
   if (modalType === 'approve') {
-    confirmLabel = 'Recommend Approval';
+    confirmLabel = 'Recommend Issuance';
     handle = () => { handleSubmit('RECOMMEND_APPROVAL', comment); };
     buttonClass = 'button primary';
-    modalText = 'Recommend approval of credits?';
+    modalText = 'Recommend issuance of credits?';
   } else if (modalType === 'return') {
     confirmLabel = 'Return to Analyst';
     handle = () => { handleSubmit('SUBMITTED', comment); };
@@ -39,7 +38,7 @@ const CreditRequestDetailsPage = (props) => {
     confirmLabel = 'Issue Credits';
     buttonClass = 'button primary';
     modalText = 'Issue credits to vehicle supplier?';
-    handle = () => { handleSubmit('VALIDATED'); };
+    handle = () => { handleSubmit('VALIDATED', ''); };
   }
 
   const modal = (
@@ -109,7 +108,7 @@ const CreditRequestDetailsPage = (props) => {
                       )}
                       {submission.salesSubmissionComment && (
                         submission.salesSubmissionComment.map((each) => (
-                          <div key={each.id} >
+                          <div key={each.id}>
                             <h5 className="d-inline mr-2">
                               Comments from {each.createUser.displayName} {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}:
                             </h5>
@@ -141,12 +140,6 @@ const CreditRequestDetailsPage = (props) => {
         <div className="comment-area">
           <label htmlFor="comment">{analystAction ? 'Comment' : 'Comment to Analyst'}</label>
           <textarea name="comment" rows="4" onChange={(event) => { setComment(event.target.value); }} />
-          {analystAction
-          && (
-          <p>if recommended for issuance, unvalidated VIN will be removed
-            and saved in a separate dataset for the supplier to review.
-          </p>
-          )}
         </div>
       )}
 
@@ -207,6 +200,7 @@ const CreditRequestDetailsPage = (props) => {
                   <span className="right-content">
                     <button
                       className="button primary"
+                      disabled={comment.length > 0}
                       onClick={() => {
                         setModalType('issue');
                         setShowModal(true);
