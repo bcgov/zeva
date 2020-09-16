@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import ROUTES_CREDITS from '../../app/routes/Credits';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
@@ -116,6 +117,8 @@ ActionsIdir.defaultProps = {
 };
 
 ActionsIdir.propTypes = {
+  activityCount: PropTypes.shape().isRequired,
+  loading: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 

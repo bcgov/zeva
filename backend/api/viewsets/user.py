@@ -1,10 +1,9 @@
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from django.db.models import F, Q
 
 from api.models.user_profile import UserProfile
+from api.permissions.user import UserPermissions
 from api.serializers.user import UserSerializer, UserSaveSerializer
 from auditable.views import AuditableMixin
 
@@ -18,7 +17,7 @@ class UserViewSet(
     This viewset automatically provides `list`, `create`, `retrieve`,
     and  `update`  actions.
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (UserPermissions,)
     http_method_names = ['get', 'post', 'put', 'patch']
     queryset = UserProfile.objects.all()
 

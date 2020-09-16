@@ -1,14 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link } from 'react-router-dom';
+import moment from 'moment-timezone';
 import Modal from '../../app/components/Modal';
 import CustomPropTypes from '../../app/utilities/props';
 import history from '../../app/History';
 import ROUTES_CREDITS from '../../app/routes/Credits';
 import ModelListTable from './ModelListTable';
 import ButtonBack from '../../app/components/ButtonBack';
-import moment from 'moment-timezone';
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -26,6 +24,7 @@ const CreditRequestDetailsPage = (props) => {
   let buttonClass;
   let modalText;
   let handle = () => {};
+
   if (modalType === 'approve') {
     confirmLabel = 'Recommend Approval';
     handle = () => { handleSubmit('RECOMMEND_APPROVAL', comment); };
@@ -84,8 +83,7 @@ const CreditRequestDetailsPage = (props) => {
       && (
       <div className="row mt-1">
         <div className="col-sm-12">
-          ICBC data current to: {previousDateCurrentTo} &mdash;{' '}
-          <Link to={ROUTES_CREDITS.UPLOADVERIFICATION}>Update ICBC Data</Link>
+          ICBC data current to: {previousDateCurrentTo}
         </div>
       </div>
       )}
@@ -234,9 +232,11 @@ CreditRequestDetailsPage.defaultProps = {
 
 CreditRequestDetailsPage.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
+  previousDateCurrentTo: PropTypes.string.isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
   validatedOnly: PropTypes.bool,
+  nonValidated: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 };
 
 export default CreditRequestDetailsPage;

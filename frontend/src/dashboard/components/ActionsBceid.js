@@ -1,15 +1,18 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import Loading from '../../app/components/Loading';
-import CustomPropTypes from '../../app/utilities/props';
 import ActivityBanner from './ActivityBanner';
 import ROUTES_SALES from '../../app/routes/Sales';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 
 const ActionsBceid = (props) => {
   const { activityCount, loading } = props;
+
   if (loading) {
     return <Loading />;
   }
+
   return (
     <div id="actions" className="dashboard-card">
       <div className="content">
@@ -83,7 +86,7 @@ const ActionsBceid = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsIssued} processed by government`}
-          linkTo={`${ROUTES_SALES.LIST}?status=Validated`}
+          linkTo={`${ROUTES_SALES.LIST}?status=Issued`}
         />
         )}
         {activityCount.creditsNew === 0
@@ -145,7 +148,8 @@ ActionsBceid.defaultProps = {
 };
 
 ActionsBceid.propTypes = {
-  details: CustomPropTypes.organizationDetails.isRequired,
+  activityCount: PropTypes.shape().isRequired,
+  loading: PropTypes.bool.isRequired,
 };
 
 export default ActionsBceid;

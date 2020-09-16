@@ -45,7 +45,7 @@ const SalesSubmissionEditContainer = (props) => {
       if (action === 'SUBMITTED') {
         history.push(ROUTES_SALES.CONFIRM.replace(':id', submissionId));
       } else {
-        history.push(ROUTES_SALES.LIST)
+        history.push(ROUTES_SALES.LIST);
       }
     });
   };

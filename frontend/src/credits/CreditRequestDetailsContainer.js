@@ -22,7 +22,7 @@ const CreditRequestDetailsContainer = (props) => {
   const [submission, setSubmission] = useState([]);
   const [loading, setLoading] = useState(true);
   const [previousDateCurrentTo, setPreviousDateCurrentTo] = useState('');
-  const [nonValidated, setNonValidated] = useState(0);
+  const [nonValidated, setNonValidated] = useState([]);
   const refreshDetails = () => {
     axios.all([
       axios.get(ROUTES_ICBCVERIFICATION.DATE),

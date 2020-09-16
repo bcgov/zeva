@@ -10,10 +10,10 @@ from django.http import HttpResponse
 
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
 
 from api.models.record_of_sale import RecordOfSale
 from api.models.record_of_sale_statuses import RecordOfSaleStatuses
+from api.permissions.record_of_sale import RecordOfSalePermissions
 from api.serializers.record_of_sale import RecordOfSaleSerializer
 from api.services.sales_spreadsheet import create_sales_spreadsheet, \
     ingest_sales_spreadsheet, validate_spreadsheet, \
@@ -29,7 +29,7 @@ class RecordOfSaleViewset(
     Record of Sale Viewset for downloading the template and uploading the
     sales information
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (RecordOfSalePermissions,)
     http_method_names = ['get', 'post']
 
     def get_queryset(self):
