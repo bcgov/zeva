@@ -120,7 +120,6 @@ class UserAuthentication(authentication.BaseAuthentication):
                 '\n'.join([str(error) for error in token_validation_errors])
             )
 
-        user_found_via_email = None
         user = None
 
         if 'user_id' not in user_token:
@@ -135,8 +134,8 @@ class UserAuthentication(authentication.BaseAuthentication):
                         "User does not exist.")
 
                 if user_profile.count() > 1:
-                    _, preferred_username = user_token[
-                        'preferred_username'].split('\\')
+                    preferred_username, _ = user_token[
+                        'preferred_username'].split('@')
 
                     user_profile = user_profile.filter(
                         username__iexact=preferred_username
