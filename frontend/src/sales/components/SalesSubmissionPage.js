@@ -1,7 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import history from '../../app/History';
+import ROUTES_SALES from '../../app/routes/Sales';
 import CustomPropTypes from '../../app/utilities/props';
 import SalesSubmissionsListTable from './SalesSubmissionsListTable';
 
@@ -23,7 +25,7 @@ const SalesSubmissionPage = (props) => {
           <button
             className="button primary"
             onClick={() => {
-              history.push('/sales/new_upload');
+              history.push(ROUTES_SALES.NEW_UPLOAD);
             }}
             type="button"
           >
