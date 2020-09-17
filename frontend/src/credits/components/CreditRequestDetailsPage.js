@@ -156,7 +156,7 @@ const CreditRequestDetailsPage = (props) => {
                 {validatedOnly
                     && (
                     <button
-                      className="button"
+                      className="button primary"
                       key="recommend-approval"
                       onClick={() => {
                         setModalType('approve');
@@ -168,7 +168,7 @@ const CreditRequestDetailsPage = (props) => {
                     </button>
                     )}
                 <button
-                  className="button primary"
+                  className="button"
                   onClick={() => {
                     const url = ROUTES_CREDITS.SALES_SUBMISSION_DETAILS.replace(/:id/g, submission.id);
 
@@ -176,7 +176,7 @@ const CreditRequestDetailsPage = (props) => {
                   }}
                   type="button"
                 >
-                  Validate
+                  Revalidate
                 </button>
               </span>
             </>
