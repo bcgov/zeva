@@ -153,6 +153,17 @@ const CreditRequestDetailsPage = (props) => {
                 <ButtonBack />
               </span>
               <span className="right-content">
+                <button
+                  className={validatedOnly ? 'button' : 'button primary'}
+                  onClick={() => {
+                    const url = ROUTES_CREDITS.SALES_SUBMISSION_DETAILS.replace(/:id/g, submission.id);
+
+                    history.push(url);
+                  }}
+                  type="button"
+                >
+                  {validatedOnly ? 'Re-validate' : 'Validate'}
+                </button>
                 {validatedOnly
                     && (
                     <button
@@ -167,17 +178,7 @@ const CreditRequestDetailsPage = (props) => {
                       Recommend Issuance
                     </button>
                     )}
-                <button
-                  className="button"
-                  onClick={() => {
-                    const url = ROUTES_CREDITS.SALES_SUBMISSION_DETAILS.replace(/:id/g, submission.id);
 
-                    history.push(url);
-                  }}
-                  type="button"
-                >
-                  Revalidate
-                </button>
               </span>
             </>
             )}
