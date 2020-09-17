@@ -21,6 +21,7 @@ const VehicleDetailsPage = (props) => {
     setComments,
     title,
     user,
+    locationState,
   } = props;
   const [requestChangeCheck, setRequestChangeCheck] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -167,7 +168,7 @@ const VehicleDetailsPage = (props) => {
               <button
                 className="button"
                 onClick={() => {
-                  history.push(ROUTES_VEHICLES.LIST);
+                  history.push(ROUTES_VEHICLES.LIST, locationState);
                 }}
                 type="button"
               >
@@ -243,6 +244,7 @@ VehicleDetailsPage.defaultProps = {
   postComment: undefined,
   setComments: undefined,
   title: 'Vehicle Details',
+  locationState: undefined,
 };
 
 VehicleDetailsPage.propTypes = {
@@ -285,6 +287,7 @@ VehicleDetailsPage.propTypes = {
   setComments: PropTypes.func,
   title: PropTypes.string,
   user: CustomPropTypes.user.isRequired,
+  locationState: PropTypes.shape(),
 };
 
 export default VehicleDetailsPage;
