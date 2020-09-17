@@ -208,7 +208,7 @@ const VehicleEditContainer = (props) => {
     setVehicleComment(data.vehicleComment);
   };
 
-  const orgMakes = [...new Set(vehicles.map((vehicle) => vehicle.make))];
+  const orgMakes = [...new Set(vehicles.map((vehicle) => vehicle.make.toUpperCase()))];
   const refreshList = () => {
     setLoading(true);
 

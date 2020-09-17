@@ -35,10 +35,12 @@ const AutocompleteInput = (props) => {
     setIsHighlighting(false);
   };
   // Teach Autosuggest how to calculate suggestions for any given input value.
-  const getSuggestions = (value) => {
-    const inputValue = value.trim().toLowerCase();
+  const getSuggestions = (suggestion) => {
+    const inputValue = suggestion.trim().toLowerCase();
     const inputLength = inputValue.length;
-    return inputLength === 0 ? [] : possibleChoicesList.filter((item) => item.toLowerCase().slice(0, inputLength) === inputValue);
+    return inputLength === 0 ? [] : possibleChoicesList.filter(
+      (item) => item.toLowerCase().slice(0, inputLength) === inputValue,
+    );
   };
 
   // When suggestion is clicked, Autosuggest needs to populate the input
@@ -82,8 +84,8 @@ const AutocompleteInput = (props) => {
     setIsHighlighting(false);
   };
 
-  const onSuggestionsFetchRequested = ({ value }) => {
-    setSuggestions(getSuggestions(value));
+  const onSuggestionsFetchRequested = ({ value: suggestion }) => {
+    setSuggestions(getSuggestions(suggestion));
   };
 
   const onSuggestionsClearRequested = () => {
@@ -125,17 +127,19 @@ const AutocompleteInput = (props) => {
         {label}
       </label>
       <div className="col-sm-8">
-        <Autosuggest
-          className="form-control"
-          suggestions={suggestions}
-          onSuggestionHighlighted={onSuggestionHighlighted}
-          onSuggestionSelected={onSuggestionSelected}
-          onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-          onSuggestionsClearRequested={onSuggestionsClearRequested}
-          getSuggestionValue={getSuggestionValue}
-          renderSuggestion={renderSuggestion}
-          inputProps={inputProps}
-        />
+        <div className="react-autosuggest__wrapper">
+          <Autosuggest
+            className="form-control"
+            suggestions={suggestions}
+            onSuggestionHighlighted={onSuggestionHighlighted}
+            onSuggestionSelected={onSuggestionSelected}
+            onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+            onSuggestionsClearRequested={onSuggestionsClearRequested}
+            getSuggestionValue={getSuggestionValue}
+            renderSuggestion={renderSuggestion}
+            inputProps={inputProps}
+          />
+        </div>
         <small className="form-text text-danger">{errorMessage || validationErrors}</small>
       </div>
     </div>
