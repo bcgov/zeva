@@ -22,6 +22,20 @@ class Navbar extends Component {
     this.collapseUserMenu = this.collapseUserMenu.bind(this);
   }
 
+  componentDidMount() {
+    window.addEventListener('click', (e) => {
+      if (!document.getElementById('navbarDropdown').contains(e.target)) {
+        const { userMenuCollapsed } = this.state;
+
+        if (!userMenuCollapsed) {
+          this.setState({
+            userMenuCollapsed: true,
+          });
+        }
+      }
+    });
+  }
+
   collapseNavBar() {
     let { collapsed } = this.state;
 
