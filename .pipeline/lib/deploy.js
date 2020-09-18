@@ -63,6 +63,7 @@ module.exports = settings => {
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment.yaml`, {
     'param': {
       'NAME': 'patroni',
+      'ENV_NAME': phases[phase].phase,
       'SUFFIX': phases[phase].suffix,
       'CPU_REQUEST': phases[phase].patroniCpuRequest,
       'CPU_LIMIT': phases[phase].patroniCpuLimit,

@@ -152,7 +152,6 @@ objects:
         description: Defines how to deploy the application server
       creationTimestamp: null
       labels:
-        name: backend
         app: zeva
         role: backend
         env: ${ENV_NAME}
