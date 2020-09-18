@@ -118,7 +118,7 @@ const ModelListTable = (props) => {
 
     // does this row have any warnings?
     // if so, mark this as CONTAINS WARNINGS (vs how many warnings does this row have)
-    if (item.warnings.length > 0) {
+    if (item.warnings && item.warnings.length > 0) {
       warnings = 1;
     }
 
