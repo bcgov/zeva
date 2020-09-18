@@ -138,7 +138,7 @@ const CreditRequestDetailsPage = (props) => {
       && ((analystAction && validatedOnly) || directorAction)
       && (
         <div className="comment-area">
-          <label htmlFor="comment">{analystAction ? 'Comment' : 'Comment to Analyst'}</label>
+          <label htmlFor="comment">{analystAction ? 'Comment' : 'Comment to analyst if returning submission'}</label>
           <textarea name="comment" rows="4" onChange={(event) => { setComment(event.target.value); }} />
         </div>
       )}
