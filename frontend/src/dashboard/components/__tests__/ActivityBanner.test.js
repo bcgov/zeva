@@ -4,6 +4,7 @@ import {
 } from '@testing-library/react';
 import jest from 'jest-mock';
 import ActivityBanner from '../ActivityBanner';
+import history from '../../../app/History';
 
 require('@babel/core');
 require('@babel/polyfill');
@@ -27,35 +28,11 @@ describe('activity banner', () => {
         icon="car"
         boldText="ZEV Models"
         regularText="1 submitted for validation"
-        linkTo="/"
+        linkTo="/models"
       />,
     );
     const button = getByRole('button', { name: 'ZEV Models — 1 submitted for validation' });
-    console.log(button);
     fireEvent.click(button);
-    expect(handleClick).toHaveBeenCalledTimes(1);
-  });
-  it('is not a clickable button if there is no current activity', () => {
-    const handleClick = jest.fn();
-    const { container } = render(<ActivityBanner
-      colour="green"
-      icon="car"
-      boldText="ZEV Models"
-      regularText="no current activity"
-      className="no-hover"
-    />);
-    // const button = getByText('ZEV Models').parentElement.parentElement;
-    fireEvent.click(container);
-    expect(handleClick).toHaveBeenCalledTimes(0);
-  });
-  it('renders a green no activity button', () => {
-    const { getByTestId } = render(<ActivityBanner
-      colour="blue"
-      icon="car"
-      boldText="ZEV Models"
-      regularText="no current activity"
-      className="no-hover"
-    />);
-    expect(getByTestId('activity-button').toHaveClass('no-hover'));
+    expect(history.location.pathname).toEqual('/models');
   });
 });
