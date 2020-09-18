@@ -50,16 +50,16 @@ const SalesSubmissionVehiclesTable = (props) => {
     <ReactTable
       className="searchable"
       columns={columns}
-      data={submission.records.filter(
+      data={submission.content.filter(
         (record) => (record.vehicle.id === parseInt(routeParams.vehicle_id, 10)),
       )}
       defaultFilterMethod={filterMethod}
-      defaultPageSize={submission.records.length}
+      defaultPageSize={submission.content.length}
       defaultSorted={[{
         id: 'make',
       }]}
       filterable={filterable}
-      pageSizeOptions={[submission.records.length, 5, 10, 15, 20, 25, 50, 100]}
+      pageSizeOptions={[submission.content.length, 5, 10, 15, 20, 25, 50, 100]}
     />
   );
 };
@@ -69,7 +69,7 @@ SalesSubmissionVehiclesTable.defaultProps = {};
 SalesSubmissionVehiclesTable.propTypes = {
   routeParams: PropTypes.shape().isRequired,
   submission: PropTypes.shape({
-    records: PropTypes.arrayOf(PropTypes.shape({})),
+    content: PropTypes.arrayOf(PropTypes.shape({})),
     submissionDate: PropTypes.string,
   }).isRequired,
 };

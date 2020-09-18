@@ -26,7 +26,7 @@ const SalesSubmissionContentPage = (props) => {
   let tableContent = [];
 
   tableContent = content.map((item) => {
-    const record = submission.records.find((row) => (row.vin === item.xlsVin));
+    const record = submission.content.find((row) => (row.vin === item.xlsVin));
 
     const year = Math.trunc(item.xlsModelYear);
     const vehicleItem = {
@@ -181,7 +181,7 @@ SalesSubmissionContentPage.propTypes = {
   submission: PropTypes.shape({
     errors: PropTypes.number,
     id: PropTypes.number,
-    records: PropTypes.arrayOf(PropTypes.shape()),
+    content: PropTypes.arrayOf(PropTypes.shape()),
     validationStatus: PropTypes.string,
   }).isRequired,
   user: CustomPropTypes.user.isRequired,

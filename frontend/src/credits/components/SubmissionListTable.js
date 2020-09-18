@@ -28,6 +28,10 @@ const SubmissionListTable = (props) => {
       const { validationStatus } = item;
       const status = formatStatus(validationStatus);
 
+      if (status === 'checked') {
+        return 'submitted';
+      }
+
       if (status === 'validated') {
         return 'issued';
       }

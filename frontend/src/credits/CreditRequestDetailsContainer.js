@@ -27,12 +27,11 @@ const CreditRequestDetailsContainer = (props) => {
     axios.all([
       axios.get(ROUTES_ICBCVERIFICATION.DATE),
       axios.get(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id)),
-      axios.get(ROUTES_SALES_SUBMISSIONS.RAW.replace(':id', id)),
-    ]).then(axios.spread((dateResponse, submissionResponse, rawResponse) => {
+    ]).then(axios.spread((dateResponse, submissionResponse) => {
       setPreviousDateCurrentTo(dateResponse.data.uploadDate);
       setSubmission(submissionResponse.data);
-      setNonValidated(rawResponse.data.records
-        .filter((each) => each.checked === false));
+      setNonValidated(submissionResponse.data.content
+        .filter((row) => row.recordOfSale));
       setLoading(false);
     }));
   };

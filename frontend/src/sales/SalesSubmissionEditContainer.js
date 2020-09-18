@@ -24,16 +24,10 @@ const SalesSubmissionEditContainer = (props) => {
   const [submission, setSubmission] = useState(false);
 
   const refreshDetails = () => {
-    const promises = [];
-    promises.push(axios.get(ROUTES_SALES_SUBMISSIONS.CONTENT.replace(':id', id)).then((response) => {
-      setContent(response.data);
-    }));
-
-    promises.push(axios.get(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id)).then((response) => {
+    axios.get(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id)).then((response) => {
       setSubmission(response.data);
-    }));
+      setContent(response.data.content);
 
-    Promise.all(promises).then(() => {
       setLoading(false);
     });
   };

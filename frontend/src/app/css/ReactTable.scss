@@ -4,14 +4,20 @@
   }
 
   .icbc-verification-warning {
-    .icbc-model-year, .icbc-model, .icbc-make, .warning, .validated{
+    .icbc-model-year, .icbc-model, .icbc-make, .warning, .validated {
       background-color: #fff1f2 !important;
     }
   }
 
   .icbc-mismatch-warning {
-    &.model-year .icbc-model-year{
+    .icbc-model-year, .icbc-make, .icbc-model, .warning, .validated {
       background-color: #fffed2 !important;
+    }
+  }
+
+  .invalid-data {
+    .validated input {
+      display: none;
     }
   }
 

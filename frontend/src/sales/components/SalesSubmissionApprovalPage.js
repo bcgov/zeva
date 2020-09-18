@@ -24,7 +24,7 @@ const SalesSubmissionApprovalPage = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <SalesSubmissionModelsTable
-            items={submission.records}
+            items={submission.content}
             submission={submission}
             user={user}
           />

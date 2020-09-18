@@ -267,13 +267,8 @@ def validate_xls_file(file):
 
 
 def validate_spreadsheet(data, user_organization=None, skip_authorization=False):
-    try:
-        workbook = xlrd.open_workbook(file_contents=data)
-    except XLRDError:
-        raise ValidationError(
-            'File cannot be opened. '
-            "Please make sure it's an xls file"
-        )
+    workbook = xlrd.open_workbook(file_contents=data)
+
     organization = get_organization(workbook)
 
     if organization is None or (
@@ -289,7 +284,7 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
         sheet = workbook.sheet_by_name('ZEV Sales')
     except XLRDError:
         raise ValidationError(
-            'Spreadsheet is missing ZEV Sales sheet. '
+            'Spreadsheet is missing ZEV Sales sheet.'
             'Please download the template again and try again.'
         )
 
@@ -318,65 +313,6 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
         row += 1
 
     return True
-
-
-def validate_row(row_contents, workbook, org):
-    is_valid = True
-    model_year = int(row_contents[0].value)
-    make = str(row_contents[1].value)
-    model_name = str(row_contents[2].value)
-    vin = str(row_contents[3].value)
-    date_type = row_contents[4].ctype
-    date = row_contents[4].value
-    validation_problems = []
-    error_message = None
-    parsed_date = None
-
-    if len(vin) < 17:
-        validation_problems.append(
-            'VIN {} has incorrect length'.format(vin)
-        )
-
-    parsed_date = get_date(date, date_type, workbook.datemode)
-
-    if parsed_date is None:
-        validation_problems.append(
-            'Invalid sales date. Please use YYYY-MM-DD.'
-        )
-    elif parsed_date < datetime(2018, 1, 2):
-        validation_problems.append(
-            'Sales date before January 2, 2018 are invalid'
-        )
-
-    if model_year < 2019:
-        validation_problems.append(
-            'Only model years 2019 and beyond are allowed'
-        )
-
-    if RecordOfSale.objects.filter(
-            vin=vin, submission__organization=org
-    ).exists():
-        validation_problems.append(
-            'VIN {} has previously been recorded'.format(vin)
-        )
-
-    vehicle = Vehicle.objects.filter(
-        model_year__name=model_year,
-        make=make,
-        model_name=model_name,
-        validation_status='VALIDATED'
-    ).first()
-
-    if vehicle is None:
-        validation_problems.append(
-            "{} doesn't match an approved vehicle model.".format(model_name)
-        )
-
-    if validation_problems:
-        is_valid = False
-        error_message = ', '.join(validation_problems)
-
-    return is_valid, error_message
 
 
 def get_date(date, date_type, datemode):

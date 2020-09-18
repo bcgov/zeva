@@ -18,7 +18,7 @@ const SalesSubmissionApprovalDetailsPage = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <h1>Credit Request Submission (Report ZEV Sales)</h1>
-          <b> {submission.records.length} VIN were rejected</b>
+          <b> {submission.content.length} VIN were rejected</b>
         </div>
       </div>
 

@@ -31,7 +31,7 @@ const CreditRequestDetailsPage = (props) => {
     modalText = 'Recommend issuance of credits?';
   } else if (modalType === 'return') {
     confirmLabel = 'Return to Analyst';
-    handle = () => { handleSubmit('SUBMITTED', comment); };
+    handle = () => { handleSubmit('CHECKED', comment); };
     buttonClass = 'btn-outline-danger';
     modalText = 'Return submission to analyst?';
   } else {
@@ -87,46 +87,48 @@ const CreditRequestDetailsPage = (props) => {
       </div>
       )}
       {(directorAction || analystAction)
+      && (submission.salesSubmissionComment
+      || submission.validationStatus === 'RECOMMEND_APPROVAL')
+      && (
+        <div className="row mt-1">
+          <div className="col-sm-12">
+            <div className="recommendation-comment">
+              {submission.validationStatus === 'RECOMMEND_APPROVAL'
               && (
-                <div className="row mt-1">
-                  <div className="col-sm-12">
-                    <div className="recommendation-comment">
-                      {submission.validationStatus === 'RECOMMEND_APPROVAL'
-                      && (
-                        <>
-                          <h5 className="d-inline mr-2">
-                            {submission.updateUser.displayName} recommended this submission be approved.
-                          </h5>
-                          <span>{nonValidated.length} VIN were rejected, see rejected vins.</span>
-                        </>
-                      )}
-                      {(submission.validationStatus === 'CHECKED' || submission.validationStatus === 'SUBMITTED') && submission.salesSubmissionComment
-                      && (
-                      <h5>
-                        {submission.updateUser.displayName} has returned this submission.
-                      </h5>
-                      )}
-                      {submission.salesSubmissionComment && (
-                        submission.salesSubmissionComment.map((each) => (
-                          <div key={each.id}>
-                            <h5 className="d-inline mr-2">
-                              Comments from {each.createUser.displayName} {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}:
-                            </h5>
-                            <span>
-                              {each.comment}
-                            </span>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <>
+                  <h5 className="d-inline mr-2">
+                    {submission.updateUser.displayName} recommended this submission be approved.
+                  </h5>
+                  <span>{nonValidated.length} VIN were rejected, see rejected vins.</span>
+                </>
               )}
+              {(['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0) && submission.salesSubmissionComment
+              && (
+              <h5>
+                {submission.updateUser.displayName} has returned this submission.
+              </h5>
+              )}
+              {submission.salesSubmissionComment && (
+                submission.salesSubmissionComment.map((each) => (
+                  <div key={each.id}>
+                    <h5 className="d-inline mr-2">
+                      Comments from {each.createUser.displayName} {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}:
+                    </h5>
+                    <span>
+                      {each.comment}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       <div className="row">
         <div className="col-sm-12">
           <div className="table">
             <ModelListTable
-              items={submission.records}
+              items={submission.content}
               user={user}
               validatedOnly={validatedOnly}
               validationStatus={submission.validationStatus}
@@ -146,40 +148,39 @@ const CreditRequestDetailsPage = (props) => {
       <div className="row mt-3">
         <div className="col-sm-12">
           <div className="action-bar">
-
             {analystAction && (
-            <>
-              <span className="left-content">
-                <ButtonBack />
-              </span>
-              <span className="right-content">
-                {validatedOnly
-                    && (
-                    <button
-                      className="button"
-                      key="recommend-approval"
-                      onClick={() => {
-                        setModalType('approve');
-                        setShowModal(true);
-                      }}
-                      type="button"
-                    >
-                      Recommend Issuance
-                    </button>
-                    )}
-                <button
-                  className="button primary"
-                  onClick={() => {
-                    const url = ROUTES_CREDITS.SALES_SUBMISSION_DETAILS.replace(/:id/g, submission.id);
+              <>
+                <span className="left-content">
+                  <ButtonBack />
+                </span>
+                <span className="right-content">
+                  {validatedOnly
+                      && (
+                      <button
+                        className="button"
+                        key="recommend-approval"
+                        onClick={() => {
+                          setModalType('approve');
+                          setShowModal(true);
+                        }}
+                        type="button"
+                      >
+                        Recommend Issuance
+                      </button>
+                      )}
+                  <button
+                    className="button primary"
+                    onClick={() => {
+                      const url = ROUTES_CREDITS.SALES_SUBMISSION_DETAILS.replace(/:id/g, submission.id);
 
-                    history.push(url);
-                  }}
-                  type="button"
-                >
-                  Validate
-                </button>
-              </span>
-            </>
+                      history.push(url);
+                    }}
+                    type="button"
+                  >
+                    Validate
+                  </button>
+                </span>
+              </>
             )}
             {directorAction
               && (
@@ -212,7 +213,6 @@ const CreditRequestDetailsPage = (props) => {
                   </span>
                 </>
               )}
-
           </div>
         </div>
       </div>
