@@ -53,7 +53,7 @@ const SalesUploadPage = (props) => {
 
       <h2>Upload ZEV Sales Information</h2>
       <p>
-        Credits can be issued for eligible ZEV sales made prior to May 31, 2020.
+        Credits can be issued for active ZEV sales made prior to May 31, 2020.
       </p>
       <div className="compact w-50">
         <div className="bordered">
