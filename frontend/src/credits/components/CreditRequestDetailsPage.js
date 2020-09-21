@@ -191,7 +191,7 @@ const CreditRequestDetailsPage = (props) => {
       && ((analystAction && validatedOnly) || directorAction)
       && (
         <div className="comment-area">
-          <label htmlFor="comment">{analystAction ? 'Comment' : 'Comment to Analyst'}</label>
+          <label htmlFor="comment">{analystAction ? 'Comment' : 'Comment to analyst if returning submission'}</label>
           <textarea name="comment" rows="4" onChange={(event) => { setComment(event.target.value); }} />
         </div>
       )}
@@ -220,9 +220,20 @@ const CreditRequestDetailsPage = (props) => {
             <span className="right-content">
               {analystAction && (
                 <>
+                  <button
+                    className={validatedOnly ? 'button' : 'button primary'}
+                    onClick={() => {
+                      const url = ROUTES_CREDITS.SALES_SUBMISSION_DETAILS.replace(/:id/g, submission.id);
+
+                      history.push(url);
+                    }}
+                    type="button"
+                  >
+                    {validatedOnly ? 'Re-validate' : 'Validate'}
+                  </button>
                   {validatedOnly && (
                   <button
-                    className="button"
+                    className={validatedOnly ? 'button primary' : 'button'}
                     key="recommend-approval"
                     onClick={() => {
                       setModalType('approve');
@@ -233,17 +244,6 @@ const CreditRequestDetailsPage = (props) => {
                     Recommend Issuance
                   </button>
                   )}
-                  <button
-                    className="button primary"
-                    onClick={() => {
-                      const url = ROUTES_CREDITS.SALES_SUBMISSION_DETAILS.replace(/:id/g, submission.id);
-
-                      history.push(url);
-                    }}
-                    type="button"
-                  >
-                    Validate
-                  </button>
                 </>
               )}
               {directorAction && (

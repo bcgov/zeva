@@ -21,7 +21,9 @@ const UploadICBCVerificationContainer = (props) => {
   const refreshList = (showLoading) => {
     setLoading(showLoading);
     axios.get(ROUTES_ICBCVERIFICATION.DATE).then((response) => {
-      setPreviousDateCurrentTo(response.data.uploadDate);
+      if (response.data.uploadDate) {
+        setPreviousDateCurrentTo(response.data.uploadDate);
+      }
       setLoading(false);
     });
     setDateCurrentTo(date);

@@ -3,6 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import history from '../../app/History';
 
+import ROUTES_CREDITS from '../../app/routes/Credits';
 import ROUTES_SALES from '../../app/routes/Sales';
 import download from '../../app/utilities/download';
 import ExcelFileDrop from '../../app/components/FileDrop';
@@ -53,7 +54,7 @@ const SalesUploadPage = (props) => {
 
       <h2>Upload ZEV Sales Information</h2>
       <p>
-        Credits can be issued for eligible ZEV sales made prior to May 31, 2020.
+        Credits can be issued for active ZEV sales made prior to May 31, 2020.
       </p>
       <div className="compact w-50">
         <div className="bordered">
@@ -105,7 +106,7 @@ const SalesUploadPage = (props) => {
           <button
             className="button"
             onClick={() => {
-              history.push(ROUTES_SALES.LIST);
+              history.push(ROUTES_CREDITS.CREDIT_REQUESTS);
             }}
             type="button"
           >

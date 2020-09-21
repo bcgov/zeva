@@ -23,7 +23,7 @@ describe('status interceptor', () => {
     const testRender = TestRenderer
       .create(<StatusInterceptor statusCode={403} />)
       .toJSON();
-    expect(testRender.children[1].children).toEqual(["It looks like you don't have the permission to access this page. If you\"re supposed to have access to the page. Please contact your administrator."]);
+    expect(testRender.children[1].children).toEqual(["It looks like you don't have the permission to access this page. If you\'re supposed to have access to the page. Please contact your administrator."]);
   });
   it('gives a 404 message', () => {
     const testRender = TestRenderer

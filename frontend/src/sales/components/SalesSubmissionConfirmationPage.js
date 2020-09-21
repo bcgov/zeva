@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Link } from 'react-router-dom';
-
+import ButtonBack from '../../app/components/ButtonBack';
 import history from '../../app/History';
 
 import CustomPropTypes from '../../app/utilities/props';
@@ -24,6 +24,7 @@ const SalesSubmissionConfirmationPage = (props) => {
             </span>
           </span>
           <span className="right-content">
+            <ButtonBack locationRoute={ROUTES_CREDITS.CREDIT_REQUESTS} />
             <button
               className="button"
               onClick={() => {

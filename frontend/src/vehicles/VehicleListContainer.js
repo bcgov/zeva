@@ -28,6 +28,9 @@ const VehicleListContainer = (props) => {
       queryFilter.push({ id: key, value });
     });
     setFiltered([...filtered, ...queryFilter]);
+    if (location.state) {
+      setFiltered([...filtered, ...location.state]);
+    }
     axios.get(ROUTES_VEHICLES.LIST).then((response) => {
       setVehicles(response.data);
       setLoading(false);

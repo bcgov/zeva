@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import Loading from '../../app/components/Loading';
 import ActivityBanner from './ActivityBanner';
-import ROUTES_SALES from '../../app/routes/Sales';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 import ROUTES_CREDITS from '../../app/routes/Credits';
 
@@ -76,7 +75,7 @@ const ActionsBceid = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsNew} saved awaiting submission`}
-          linkTo={`${ROUTES_SALES.LIST}?status=New`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_REQUESTS}?status=New`}
         />
         )}
         {activityCount.creditsAwaiting > 0
@@ -86,7 +85,7 @@ const ActionsBceid = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsAwaiting} awaiting validation`}
-          linkTo={`${ROUTES_SALES.LIST}?status=Submitted%2CRecommend`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_REQUESTS}?status=Submitted`}
         />
         )}
         {activityCount.creditsIssued > 0
@@ -96,7 +95,7 @@ const ActionsBceid = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsIssued} processed by government`}
-          linkTo={`${ROUTES_SALES.LIST}?status=Issued`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_REQUESTS}?status=Issued`}
         />
         )}
         {activityCount.creditsNew === 0
@@ -107,7 +106,7 @@ const ActionsBceid = (props) => {
             icon="check-square"
             boldText="Credit Applications"
             regularText="no current activity"
-            linkTo={ROUTES_SALES.LIST}
+            linkTo={ROUTES_CREDITS.CREDIT_REQUESTS}
           />
         )}
         {activityCount.transfersAwaitingPartner > 0
@@ -117,27 +116,27 @@ const ActionsBceid = (props) => {
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersAwaitingPartner} awaiting partner confirmation`}
-          linkTo={`${ROUTES_CREDITS.CREDIT_TRANSFERS}`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_TRANSFERS}?status=Submitted`}
         />
         )}
-        {activityCount.transferAwaitingGovernment > 0
+        {activityCount.transfersAwaitingGovernment > 0
         && (
         <ActivityBanner
           colour="blue"
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersAwaitingGovernment} awaiting  government action`}
-          linkTo={`${ROUTES_CREDITS.CREDIT_TRANSFERS}`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_TRANSFERS}?status=Approved`}
         />
         )}
-        {activityCount.transferRecorded > 0
+        {activityCount.transfersRecorded > 0
         && (
         <ActivityBanner
           colour="green"
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersRecorded} recorded by government`}
-          linkTo={`${ROUTES_CREDITS.CREDIT_TRANSFERS}`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_TRANSFERS}?status=Issued`}
         />
         )}
         {activityCount.transfersAwaitingGovernment === 0

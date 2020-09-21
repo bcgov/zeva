@@ -5,7 +5,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-
+import { withRouter } from 'react-router';
+import PropTypes from 'prop-types';
 import history from '../app/History';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import CustomPropTypes from '../app/utilities/props';
@@ -17,7 +18,8 @@ const VehicleDetailsContainer = (props) => {
   const [comments, setComments] = useState({ vehicleComment: { comment: '' } });
   const { id } = useParams();
 
-  const { keycloak, user } = props;
+  const { keycloak, user, location } = props;
+  const { state: locationState } = location;
 
   const stateChange = (newState) => {
     setLoading(true);
@@ -47,6 +49,7 @@ const VehicleDetailsContainer = (props) => {
 
   return (
     <VehicleDetailsPage
+      locationState={locationState}
       comments={comments}
       details={vehicle}
       loading={loading}
@@ -61,6 +64,7 @@ const VehicleDetailsContainer = (props) => {
 VehicleDetailsContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   user: CustomPropTypes.user.isRequired,
+  location: PropTypes.shape().isRequired,
 };
 
-export default VehicleDetailsContainer;
+export default withRouter(VehicleDetailsContainer);

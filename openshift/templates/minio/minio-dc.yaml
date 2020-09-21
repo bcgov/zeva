@@ -101,7 +101,6 @@ objects:
     metadata:
       creationTimestamp: null
       labels:
-        name: minio
         app: zeva
         role: minio
         env: ${ENV_NAME}

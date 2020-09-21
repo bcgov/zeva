@@ -13,7 +13,14 @@ const ActivityBanner = (props) => {
   } = props;
 
   return (
-    <button type="button" name="activity-button" data-testid="activity-button" className="alert alert-light activity-banner" key={regularText} onClick={() => { history.push(linkTo); }}>
+    <button
+      type="button"
+      name="activity-button"
+      data-testid="activity-button"
+      className="alert alert-light activity-banner"
+      key={regularText}
+      onClick={() => { history.push(linkTo); }}
+    >
       <div>
         <FontAwesomeIcon icon={icon} size="3x" className={colour} />
       </div>

@@ -94,6 +94,9 @@ objects:
     generation: 3
     labels:
       cluster-name: ${NAME}${SUFFIX}
+      app: zeva
+      role: patroni
+      env: ${ENV_NAME}
     name: ${NAME}${SUFFIX}
   spec:
     podManagementPolicy: OrderedReady
@@ -287,6 +290,10 @@ parameters:
   displayName: Application Name
   name: NAME
   value: patroni
+- description: The environment name
+  displayName: environment name
+  name: ENV_NAME
+  required: true
 - name: SUFFIX
   description: A suffix appended to all artifact's name (NAME)
 - description: Starting amount of CPU the container can use.

@@ -20,7 +20,7 @@ const SubmissionListTable = (props) => {
     accessor: 'id',
     className: 'text-right',
     Header: 'ID',
-    maxWidth: 100,
+    maxWidth: 75,
   }, {
     accessor: 'submissionDate',
     className: 'text-center',
@@ -78,7 +78,7 @@ const SubmissionListTable = (props) => {
     className: 'text-center text-capitalize',
     Header: 'Status',
     id: 'status',
-    maxWidth: 200,
+    maxWidth: 250,
   }];
 
   return (

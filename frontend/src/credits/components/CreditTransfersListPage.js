@@ -1,17 +1,20 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import Loading from '../../app/components/Loading';
 import history from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
 import CreditTransfersListTable from './CreditTransfersListTable';
+import ROUTES_CREDITS from '../../app/routes/Credits';
 
 const CreditTransfersListPage = (props) => {
   const {
     creditTransfers,
     loading,
     user,
+    filtered,
+    setFiltered,
   } = props;
 
   if (loading) {
@@ -29,7 +32,7 @@ const CreditTransfersListPage = (props) => {
           <button
             className="button primary"
             onClick={() => {
-              history.push('/credit-transactions/transfers/add');
+              history.push(ROUTES_CREDITS.CREDIT_TRANSFERS_ADD);
             }}
             type="button"
           >
@@ -44,6 +47,8 @@ const CreditTransfersListPage = (props) => {
           <CreditTransfersListTable
             items={creditTransfers}
             user={user}
+            filtered={filtered}
+            setFiltered={setFiltered}
           />
         </div>
       </div>
@@ -51,11 +56,16 @@ const CreditTransfersListPage = (props) => {
   );
 };
 
-CreditTransfersListPage.defaultProps = {};
+CreditTransfersListPage.defaultProps = {
+  filtered: undefined,
+  setFiltered: undefined,
+};
 
 CreditTransfersListPage.propTypes = {
   creditTransfers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  filtered: PropTypes.arrayOf(),
   loading: PropTypes.bool.isRequired,
+  setFiltered: PropTypes.func,
   user: CustomPropTypes.user.isRequired,
 };
 

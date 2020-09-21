@@ -26,7 +26,7 @@ const CreditTransactionListTable = (props) => {
       className: 'text-center',
       Header: 'ID',
       id: 'id',
-      maxWidth: 100,
+      maxWidth: 150,
     }],
   }, {
     Header: '',
@@ -37,7 +37,7 @@ const CreditTransactionListTable = (props) => {
       Header: 'Date',
       headerClassName: 'date',
       id: 'date',
-      maxWidth: 150,
+      maxWidth: 200,
     }],
   }, {
     Header: '',
@@ -58,13 +58,13 @@ const CreditTransactionListTable = (props) => {
       Header: 'A',
       headerClassName: 'credits-left',
       id: 'credit-class-a',
-      maxWidth: 150,
+      maxWidth: 175,
     }, {
       accessor: (item) => (item.creditClass.creditClass === 'B' ? item.creditValue : '-'),
       className: 'text-right',
       Header: 'B',
       id: 'credit-class-b',
-      maxWidth: 150,
+      maxWidth: 175,
     }],
   }, {
     Header: 'Balance',
@@ -75,13 +75,13 @@ const CreditTransactionListTable = (props) => {
       Header: 'A',
       headerClassName: 'balance-left',
       id: 'credit-balance-a',
-      maxWidth: 150,
+      maxWidth: 175,
     }, {
       accessor: (item) => (_.round(item.displayTotalB, 2).toFixed(2)),
       className: 'text-right',
       Header: 'B',
       id: 'credit-balance-b',
-      maxWidth: 150,
+      maxWidth: 175,
     }],
   }];
 
