@@ -145,9 +145,9 @@ const VehicleListTable = (props) => {
               const { id, validationStatus } = row.original;
 
               if (['CHANGES_REQUESTED', 'DRAFT'].indexOf(validationStatus) >= 0 && !user.isGovernment) {
-                history.push(ROUTES_VEHICLES.EDIT.replace(/:id/g, id));
+                history.push(ROUTES_VEHICLES.EDIT.replace(/:id/g, id), filtered);
               } else {
-                history.push(ROUTES_VEHICLES.DETAILS.replace(/:id/g, id));
+                history.push(ROUTES_VEHICLES.DETAILS.replace(/:id/g, id), filtered);
               }
             },
             className: 'clickable',
