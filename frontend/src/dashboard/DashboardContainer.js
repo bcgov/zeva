@@ -23,6 +23,8 @@ const DashboardContainer = (props) => {
     creditsIssued: 0,
     transfersAwaitingPartner: 0,
     transfersAwaitingGovernment: 0,
+    transfersAwaitingDirector: 0,
+    transfersAwaitingAnalyst: 0,
     transfersRecorded: 0,
   });
   const [loading, setLoading] = useState(true);
@@ -38,7 +40,7 @@ const DashboardContainer = (props) => {
     const draftModels = vehiclesResponse.data
       .filter((vehicle) => vehicle.validationStatus === 'DRAFT')
       .map((vehicle) => vehicle.modelName);
-    const validatedModels= vehiclesResponse.data
+    const validatedModels = vehiclesResponse.data
       .filter((vehicle) => vehicle.validationStatus === 'VALIDATED' && moment(vehicle.updatedTimestamp).isAfter(date3months))
       .map((vehicle) => vehicle.modelName);
     const newCredits = salesResponse.data
@@ -50,12 +52,9 @@ const DashboardContainer = (props) => {
     const transfersAwaitingPartner = transfersResponse.data
       .filter((submission) => submission.status === 'SUBMITTED');
     const transfersAwaitingGovernment = transfersResponse.data
-      .filter((submission) => submission.status === 'ACCEPTED');
+      .filter((submission) => submission.status === 'APPROVED' || submission.status === 'RECOMMEND_APPROVAL');
     const transfersRecorded = transfersResponse.data
       .filter((submission) => submission.status === 'VALIDATED');
-
-
-
     setActivityCount({
       ...activityCount,
       modelsDraft: draftModels.length,
@@ -81,10 +80,10 @@ const DashboardContainer = (props) => {
       .filter((submission) => submission.validationStatus === 'RECOMMEND_REJECTION');
     const analystNeeded = salesResponse.data
       .filter((submission) => submission.validationStatus === 'SUBMITTED');
-    const transfersAwaitingAnalyst = transfersResponse.data
-      .filter((submission) => submission.status === 'ACCEPTED');
+    const transfersAwaitingPartner= transfersResponse.data
+      .filter((submission) => submission.status === 'SUBMITTED');
     const transfersAwaitingDirector = transfersResponse.data
-      .filter((submission) => submission.status === 'RECOMMENDED');
+      .filter((submission) => submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMENDED_REJECTION' || submission.status === 'APPROVED');
     const transfersRecorded = transfersResponse.data
       .filter((submission) => submission.status === 'VALIDATED');
     setActivityCount({
@@ -93,9 +92,9 @@ const DashboardContainer = (props) => {
       creditsAnalyst: analystNeeded.length,
       creditsRecommendApprove: recommendApprove.length,
       creditsRecommendReject: recommendReject.length,
-      transfersAwaitingAnalyst: transfersAwaitingAnalyst.length,
       transfersAwaitingDirector: transfersAwaitingDirector.length,
       transfersRecorded: transfersRecorded.length,
+      transfersAwaitingPartner: transfersAwaitingPartner.length,
     });
   };
 
@@ -110,7 +109,6 @@ const DashboardContainer = (props) => {
       } else {
         getIDIRActivityCount(salesResponse, vehiclesResponse, transfersResponse);
       }
-
       setLoading(false);
     }));
   };
