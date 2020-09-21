@@ -79,7 +79,7 @@ module.exports = settings => {
   }))
 
   //only deploy rabbitmq secret and configmap, rabbitmq is not being used yet 20200921
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-secret-configmap-only.yaml`, {
     'param': {
       'NAME': phases[phase].name,
       'ENV_NAME': phases[phase].phase,
