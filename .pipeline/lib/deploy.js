@@ -78,6 +78,17 @@ module.exports = settings => {
     }
   }))
 
+  //only deploy rabbitmq secret and configmap, rabbitmq is not being used yet 20200921
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
+    'param': {
+      'NAME': phases[phase].name,
+      'ENV_NAME': phases[phase].phase,
+      'SUFFIX': phases[phase].suffix,
+      'NAMESPACE': phases[phase].namespace,
+      'CLUSTER_NAME': 'rabbitmq-cluster'
+    }
+  }))
+
   /**
   //deploy rabbitmq, use docker image directly
   //POST_START_SLEEP is harded coded in the rabbitmq template, replacement was not successful
