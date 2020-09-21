@@ -7,9 +7,11 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
 
+import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import Loading from '../app/components/Loading';
 import history from '../app/History';
 import ROUTES_CREDITS from '../app/routes/Credits';
+import ROUTES_SALES from '../app/routes/Sales';
 import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
 import CustomPropTypes from '../app/utilities/props';
 import CreditRequestDetailsPage from './components/CreditRequestDetailsPage';
@@ -40,13 +42,17 @@ const CreditRequestDetailsContainer = (props) => {
     refreshDetails();
   }, [id]);
 
-  const handleSubmit = (validationStatus, comment) => {
+  const handleSubmit = (validationStatus, comment = '') => {
     const submissionContent = { validationStatus };
     if (comment.length > 0) {
       submissionContent.salesSubmissionComment = { comment };
     }
     axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id), submissionContent).then(() => {
-      history.push(ROUTES_CREDITS.CREDIT_REQUESTS);
+      if (validationStatus === 'SUBMITTED') {
+        history.push(ROUTES_SALES.CONFIRM.replace(':id', id));
+      } else {
+        history.push(ROUTES_CREDITS.CREDIT_REQUESTS);
+      }
     });
   };
 
@@ -54,16 +60,18 @@ const CreditRequestDetailsContainer = (props) => {
     return (<Loading />);
   }
 
-  return (
+  return ([
+    <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
     <CreditRequestDetailsPage
       handleSubmit={handleSubmit}
+      key="page"
+      nonValidated={nonValidated}
+      previousDateCurrentTo={previousDateCurrentTo}
       submission={submission}
       user={user}
       validatedOnly={validatedOnly}
-      previousDateCurrentTo={previousDateCurrentTo}
-      nonValidated={nonValidated}
-    />
-  );
+    />,
+  ]);
 };
 
 CreditRequestDetailsContainer.defaultProps = {

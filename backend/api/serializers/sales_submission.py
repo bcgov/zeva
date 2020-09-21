@@ -50,16 +50,12 @@ class SalesSubmissionListSerializer(
         ModelSerializer, EnumSupportSerializerMixin, BaseSerializer
 ):
     organization = OrganizationSerializer(read_only=True)
+    total_a_credits = SerializerMethodField()
+    total_b_credits = SerializerMethodField()
+    total_warnings = SerializerMethodField()
     totals = SerializerMethodField()
     update_user = SerializerMethodField()
     validation_status = SerializerMethodField()
-    total_a_credits = SerializerMethodField()
-    total_b_credits = SerializerMethodField()
-
-    def get_totals(self, obj):
-        return {
-            'vins': obj.records.count()
-        }
 
     def get_total_a_credits(self, obj):
         total = 0
@@ -83,12 +79,39 @@ class SalesSubmissionListSerializer(
 
         return round(total, 2)
 
+    def get_total_warnings(self, obj):
+        request = self.context.get('request')
+        warnings = 0
+
+        valid_statuses = [SalesSubmissionStatuses.VALIDATED]
+
+        if request.user.is_government:
+            valid_statuses = [
+                SalesSubmissionStatuses.CHECKED,
+                SalesSubmissionStatuses.RECOMMEND_APPROVAL,
+                SalesSubmissionStatuses.RECOMMEND_REJECTION,
+                SalesSubmissionStatuses.VALIDATED
+            ]
+
+        if obj.validation_status in valid_statuses:
+            for row in obj.content.all():
+                if len(row.warnings) > 0:
+                    warnings += 1
+
+        return warnings
+
+    def get_totals(self, obj):
+        return {
+            'vins': obj.records.count()
+        }
+
     class Meta:
         model = SalesSubmission
         fields = (
             'id', 'validation_status', 'organization', 'submission_date',
             'submission_sequence', 'totals', 'submission_id', 'update_user',
-            'total_a_credits', 'total_b_credits', 'unselected',
+            'total_a_credits', 'total_b_credits', 'total_warnings',
+            'unselected',
         )
 
 

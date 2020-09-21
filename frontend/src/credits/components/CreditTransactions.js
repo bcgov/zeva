@@ -59,11 +59,11 @@ const CreditTransactions = (props) => {
   });
 
   return (
-    <div id="credit-transaction-details" className="page">
+    <div id="credit-transaction-details" className="page mb-0">
       {!user.isGovernment && (
       <div className="row mb-5">
         <div className="col-sm-5">
-          <h2>Detailed Credit Balance</h2>
+          <h2 className="pt-0">Detailed Credit Balance</h2>
           <CreditBalanceTable
             items={
               Object.entries(balances).map(([key, value]) => ({

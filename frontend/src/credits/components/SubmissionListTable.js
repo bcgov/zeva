@@ -5,24 +5,60 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import ReactTable from '../../app/components/ReactTable';
+import formatNumeric from '../../app/utilities/formatNumeric';
 import history from '../../app/History';
 import ROUTES_CREDITS from '../../app/routes/Credits';
+import CustomPropTypes from '../../app/utilities/props';
 import formatStatus from '../../app/utilities/formatStatus';
 
 const SubmissionListTable = (props) => {
+  const {
+    items, filtered, setFiltered, user,
+  } = props;
+
   const columns = [{
+    accessor: 'id',
+    className: 'text-right',
+    Header: 'ID',
+    maxWidth: 100,
+  }, {
     accessor: 'submissionDate',
-    className: 'text-left',
+    className: 'text-center',
     Header: 'Date',
+  }, {
+    accessor: 'updateUser.displayName',
+    className: 'text-left',
+    Header: 'Last User',
+    id: 'updateUser',
   }, {
     accessor: (item) => (item.organization ? item.organization.name : ''),
     className: 'text-left',
     Header: 'Supplier',
     id: 'supplier',
+    show: user.isGovernment,
   }, {
     accessor: 'totals.vins',
     className: 'text-right',
     Header: 'Total Sales',
+    maxWidth: 150,
+  }, {
+    accessor: (item) => (item.totalWarnings > 0 ? item.totalWarnings : '-'),
+    className: 'text-right',
+    Header: 'Warnings',
+    id: 'warnings',
+    maxWidth: 150,
+  }, {
+    accessor: (item) => (formatNumeric(item.totalACredits)),
+    className: 'text-right',
+    Header: 'A-Credits',
+    id: 'credits-a',
+    maxWidth: 150,
+  }, {
+    accessor: (item) => (formatNumeric(item.totalBCredits)),
+    className: 'text-right',
+    Header: 'B-Credits',
+    id: 'credits-b',
+    maxWidth: 150,
   }, {
     accessor: (item) => {
       const { validationStatus } = item;
@@ -41,19 +77,8 @@ const SubmissionListTable = (props) => {
     className: 'text-center text-capitalize',
     Header: 'Status',
     id: 'status',
-  }, {
-    accessor: () => '',
-    className: 'text-left',
-    Header: 'Next to Act',
-    id: 'next-to-act',
-  }, {
-    accessor: () => '0',
-    className: 'text-right',
-    Header: 'Warnings',
-    id: 'warnings',
+    maxWidth: 200,
   }];
-
-  const { items, filtered, setFiltered } = props;
 
   return (
     <ReactTable
@@ -88,6 +113,7 @@ SubmissionListTable.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setFiltered: PropTypes.func.isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default SubmissionListTable;

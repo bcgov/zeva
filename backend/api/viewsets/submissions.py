@@ -26,9 +26,14 @@ class SalesSubmissionsViewset(
             qs = SalesSubmission.objects.exclude(validation_status__in=(
                 SalesSubmissionStatuses.DRAFT,
                 SalesSubmissionStatuses.NEW,
+                SalesSubmissionStatuses.DELETED,
             ))
         else:
-            qs = SalesSubmission.objects.filter(organization=user.organization)
+            qs = SalesSubmission.objects.filter(
+                organization=user.organization
+            ).exclude(validation_status__in=(
+                SalesSubmissionStatuses.DELETED,
+            ))
 
         return qs
 

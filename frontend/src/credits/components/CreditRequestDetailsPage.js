@@ -1,12 +1,18 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import moment from 'moment-timezone';
+
+import ButtonBack from '../../app/components/ButtonBack';
+import ButtonDelete from '../../app/components/ButtonDelete';
+import ButtonSubmit from '../../app/components/ButtonSubmit';
 import Modal from '../../app/components/Modal';
-import CustomPropTypes from '../../app/utilities/props';
 import history from '../../app/History';
 import ROUTES_CREDITS from '../../app/routes/Credits';
+import ROUTES_SALES from '../../app/routes/Sales';
+import download from '../../app/utilities/download';
+import CustomPropTypes from '../../app/utilities/props';
 import ModelListTable from './ModelListTable';
-import ButtonBack from '../../app/components/ButtonBack';
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -17,42 +23,71 @@ const CreditRequestDetailsPage = (props) => {
     previousDateCurrentTo,
     nonValidated,
   } = props;
+
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
   const [comment, setComment] = useState('');
-  let confirmLabel;
-  let buttonClass;
-  let modalText;
-  let handle = () => {};
-  if (modalType === 'approve') {
-    confirmLabel = 'Recommend Issuance';
-    handle = () => { handleSubmit('RECOMMEND_APPROVAL', comment); };
-    buttonClass = 'button primary';
-    modalText = 'Recommend issuance of credits?';
-  } else if (modalType === 'return') {
-    confirmLabel = 'Return to Analyst';
-    handle = () => { handleSubmit('CHECKED', comment); };
-    buttonClass = 'btn-outline-danger';
-    modalText = 'Return submission to analyst?';
-  } else {
-    confirmLabel = 'Issue Credits';
-    buttonClass = 'button primary';
-    modalText = 'Issue credits to vehicle supplier?';
-    handle = () => { handleSubmit('VALIDATED', ''); };
+
+  const serviceAddress = user.organization.organizationAddress.find((address) => address.addressType.addressType === 'Service');
+  const recordsAddress = user.organization.organizationAddress.find((address) => address.addressType.addressType === 'Records');
+
+  let modalProps = {};
+  switch (modalType) {
+    case 'submit':
+      modalProps = {
+        confirmLabel: ' Submit',
+        handleSubmit: () => { handleSubmit('SUBMITTED'); },
+        buttonClass: 'button primary',
+        modalText: 'Submit credit request to government?',
+        icon: <FontAwesomeIcon icon="paper-plane" />,
+      };
+      break;
+    case 'delete':
+      modalProps = {
+        confirmLabel: ' Delete',
+        handleSubmit: () => { handleSubmit('DELETED'); },
+        buttonClass: 'btn-outline-danger',
+        modalText: 'Delete submission? WARNING: this action cannot be undone',
+        icon: <FontAwesomeIcon icon="trash" />,
+      };
+      break;
+    case 'approve':
+      modalProps = {
+        confirmLabel: 'Recommend Issuance',
+        handleSubmit: () => { handleSubmit('RECOMMEND_APPROVAL', comment); },
+        buttonClass: 'button primary',
+        modalText: 'Recommend issuance of credits?',
+      };
+      break;
+    case 'return':
+      modalProps = {
+        confirmLabel: 'Return to Analyst',
+        handleSubmit: () => { handleSubmit('CHECKED', comment); },
+        buttonClass: 'btn-outline-danger',
+        modalText: 'Return submission to analyst?',
+      };
+      break;
+    default:
+      modalProps = {
+        confirmLabel: 'Issue Credits',
+        buttonClass: 'button primary',
+        modalText: 'Issue credits to vehicle supplier?',
+        handleSubmit: () => { handleSubmit('VALIDATED', ''); },
+      };
   }
 
   const modal = (
     <Modal
-      confirmLabel={confirmLabel}
+      confirmLabel={modalProps.confirmLabel}
       handleCancel={() => { setShowModal(false); }}
-      handleSubmit={handle}
+      handleSubmit={modalProps.handleSubmit}
       modalClass="w-75"
       showModal={showModal}
-      confirmClass={buttonClass}
+      confirmClass={modalProps.buttonClass}
     >
       <div>
         <div><br /><br /></div>
-        <h4 className="d-inline">{modalText}
+        <h4 className="d-inline">{modalProps.modalText}
         </h4>
         <div><br />{comment && (
         <p>Comment: {comment}</p>
@@ -72,15 +107,16 @@ const CreditRequestDetailsPage = (props) => {
       {modal}
       <div className="row">
         <div className="col-sm-12">
-          <h1>
+          <h2 className="py-0">Application for Credits for Consumer Sales</h2>
+          <h3 className="py-3">
             {submission.organization && `${submission.organization.name} `}
             ZEV Sales Submission {submission.submissionDate}
-          </h1>
+          </h3>
         </div>
       </div>
       {analystAction
       && (
-      <div className="row mt-1">
+      <div className="row mb-1">
         <div className="col-sm-12">
           ICBC data current to: {previousDateCurrentTo}
         </div>
@@ -124,6 +160,21 @@ const CreditRequestDetailsPage = (props) => {
           </div>
         </div>
       )}
+      {!user.isGovernment && (
+        <div className="row">
+          <div className="col-sm-12">
+            <h5 className="d-inline-block sales-upload-grey">Service address: </h5>
+            {serviceAddress && <h5 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h5>}
+            <br />
+            <h5 className="d-inline-block sales-upload-grey">Records address: </h5>
+            {recordsAddress && <h5 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h5>}
+            <p className="font-weight-bold my-3">
+              Consumer Sales: {submission.content.length}
+            </p>
+
+          </div>
+        </div>
+      )}
       <div className="row">
         <div className="col-sm-12">
           <div className="table">
@@ -148,26 +199,40 @@ const CreditRequestDetailsPage = (props) => {
       <div className="row mt-3">
         <div className="col-sm-12">
           <div className="action-bar">
-            {analystAction && (
-              <>
-                <span className="left-content">
-                  <ButtonBack />
-                </span>
-                <span className="right-content">
-                  {validatedOnly
-                      && (
-                      <button
-                        className="button"
-                        key="recommend-approval"
-                        onClick={() => {
-                          setModalType('approve');
-                          setShowModal(true);
-                        }}
-                        type="button"
-                      >
-                        Recommend Issuance
-                      </button>
-                      )}
+            <span className="left-content">
+              <ButtonBack />
+              {submission.validationStatus === 'DRAFT' && (
+                <ButtonDelete action={() => { setModalType('delete'); setShowModal(true); }} />
+              )}
+              {directorAction && (
+                <button
+                  className="button text-danger"
+                  onClick={() => {
+                    setModalType('return');
+                    setShowModal(true);
+                  }}
+                  type="button"
+                >
+                  Return to Analyst
+                </button>
+              )}
+            </span>
+            <span className="right-content">
+              {analystAction && (
+                <>
+                  {validatedOnly && (
+                  <button
+                    className="button"
+                    key="recommend-approval"
+                    onClick={() => {
+                      setModalType('approve');
+                      setShowModal(true);
+                    }}
+                    type="button"
+                  >
+                    Recommend Issuance
+                  </button>
+                  )}
                   <button
                     className="button primary"
                     onClick={() => {
@@ -179,40 +244,48 @@ const CreditRequestDetailsPage = (props) => {
                   >
                     Validate
                   </button>
-                </span>
-              </>
-            )}
-            {directorAction
-              && (
-                <>
-                  <span className="left-content">
-                    <ButtonBack />
-                    <button
-                      className="button text-danger"
-                      onClick={() => {
-                        setModalType('return');
-                        setShowModal(true);
-                      }}
-                      type="button"
-                    >
-                      Return to Analyst
-                    </button>
-                  </span>
-                  <span className="right-content">
-                    <button
-                      className="button primary"
-                      disabled={comment.length > 0}
-                      onClick={() => {
-                        setModalType('issue');
-                        setShowModal(true);
-                      }}
-                      type="button"
-                    >
-                      Issue Credits
-                    </button>
-                  </span>
                 </>
               )}
+              {directorAction && (
+                <button
+                  className="button primary"
+                  disabled={comment.length > 0}
+                  onClick={() => {
+                    setModalType('issue');
+                    setShowModal(true);
+                  }}
+                  type="button"
+                >
+                  Issue Credits
+                </button>
+              )}
+
+              {!user.isGovernment && (
+                <>
+                  {submission.validationStatus === 'VALIDATED' && submission.unselected > 0 && (
+                    <button
+                      className="button primary"
+                      onClick={(e) => {
+                        const element = e.target;
+                        const original = element.innerHTML;
+
+                        element.firstChild.textContent = ' Downloading...';
+
+                        return download(ROUTES_SALES.DOWNLOAD_ERRORS.replace(':id', submission.id), {}).then(() => {
+                          element.innerHTML = original;
+                        });
+                      }}
+                      type="button"
+                    >
+                      <FontAwesomeIcon icon="download" /> Download Errors
+                    </button>
+                  )}
+                  {submission.validationStatus === 'DRAFT' && (
+                    <ButtonSubmit action={() => { setModalType('submit'); setShowModal(true); }} />
+                  )}
+                </>
+              )}
+            </span>
           </div>
         </div>
       </div>

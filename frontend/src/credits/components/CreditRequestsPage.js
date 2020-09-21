@@ -1,6 +1,8 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import history from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
 import SubmissionListTable from './SubmissionListTable';
 
@@ -14,11 +16,23 @@ const CreditRequestsPage = (props) => {
 
   return (
     <div id="credit-requests-list" className="page">
-      <div className="row">
-        <div className="col-sm-12">
-          <h1>Approve Credit Requests</h1>
-          <h2>Active Credit Request Submissions</h2>
+      <div className="row mb-3">
+        <div className="col-md-8">
+          <h2 className="py-0">Application for Credits for Consumer Sales</h2>
         </div>
+        {!user.isGovernment && (
+        <div className="col-md-4 text-right">
+          <button
+            className="button primary"
+            onClick={() => {
+              history.push('/sales/new_upload');
+            }}
+            type="button"
+          >
+            <FontAwesomeIcon icon="plus" /> New Credit Application
+          </button>
+        </div>
+        )}
       </div>
       <div className="row">
         <div className="col-sm-12">

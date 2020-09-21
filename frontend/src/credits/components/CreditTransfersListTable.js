@@ -83,8 +83,8 @@ const CreditTransfersListTable = (props) => {
     id: 'transfer-value',
     maxWidth: 150,
   }, {
-    accessor: 'status',
-    className: 'text-left',
+    accessor: (row) => row.status.toLowerCase(),
+    className: 'text-center text-capitalize',
     Header: 'Status',
     id: 'status',
     maxWidth: 200,

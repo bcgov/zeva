@@ -10,7 +10,7 @@ import ReactTable from '../../app/components/ReactTable';
 const ModelListTable = (props) => {
   const { items, validatedOnly, validationStatus } = props;
   const showWarnings = () => {
-    if (validationStatus === 'RECOMMEND_APPROVAL') {
+    if (['RECOMMEND_APPROVAL', 'VALIDATED'].indexOf(validationStatus >= 0)) {
       return true;
     }
 

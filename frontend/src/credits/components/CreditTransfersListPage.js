@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import Loading from '../../app/components/Loading';
 import history from '../../app/History';
@@ -19,23 +20,23 @@ const CreditTransfersListPage = (props) => {
 
   return (
     <div className="page">
-      <div className="action-bar">
-        <span className="left-content">
-          <h3>Light Duty Vehicle Credit Transfers</h3>
-        </span>
-        <span className="right-content">
-          {!user.isGovernment && (
-            <button
-              className="button primary"
-              onClick={() => {
-                history.push('/credit-transactions/transfers/add');
-              }}
-              type="button"
-            >
-              New Credit Transfer
-            </button>
-          )}
-        </span>
+      <div className="row mb-3">
+        <div className="col-md-8">
+          <h2 className="py-0">Light Duty Vehicle Credit Transfers</h2>
+        </div>
+        {!user.isGovernment && (
+        <div className="col-md-4 text-right">
+          <button
+            className="button primary"
+            onClick={() => {
+              history.push('/credit-transactions/transfers/add');
+            }}
+            type="button"
+          >
+            <FontAwesomeIcon icon="plus" /> New Credit Transfer
+          </button>
+        </div>
+        )}
       </div>
 
       <div className="row">

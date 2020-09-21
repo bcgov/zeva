@@ -3,6 +3,7 @@ from rest_framework.serializers import ModelSerializer, \
 
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission_content import SalesSubmissionContent
+from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.serializers.vehicle import VehicleMinSerializer
 from api.serializers.icbc_registration_data import \
     IcbcRegistrationDataSerializer
@@ -29,7 +30,11 @@ class SalesSubmissionContentSerializer(ModelSerializer):
         request = self.context.get('request')
         record_of_sale = instance.record_of_sale
 
-        if request.user.is_government and record_of_sale:
+        if record_of_sale and (
+                request.user.is_government or
+                instance.submission.validation_status ==
+                SalesSubmissionStatuses.VALIDATED
+        ):
             serializer = RecordOfSaleSerializer(
                 instance.record_of_sale, read_only=True
             )
@@ -53,8 +58,10 @@ class SalesSubmissionContentSerializer(ModelSerializer):
     def get_warnings(self, instance):
         request = self.context.get('request')
 
+        print(instance.submission.validation_status)
         if request.user.is_government or \
-                instance.submission.validation_status == 'VALIDATED':
+                instance.submission.validation_status == \
+                SalesSubmissionStatuses.VALIDATED:
             return instance.warnings
 
         return None
