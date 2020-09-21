@@ -13,6 +13,8 @@ const CreditTransfersListPage = (props) => {
     creditTransfers,
     loading,
     user,
+    filtered,
+    setFiltered,
   } = props;
 
   if (loading) {
@@ -43,6 +45,8 @@ const CreditTransfersListPage = (props) => {
           <CreditTransfersListTable
             items={creditTransfers}
             user={user}
+            filtered={filtered}
+            setFiltered={setFiltered}
           />
         </div>
       </div>

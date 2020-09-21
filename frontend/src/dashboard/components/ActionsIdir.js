@@ -85,18 +85,20 @@ const ActionsIdir = (props) => {
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersAwaitingPartner} awaiting partner confirmation`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_TRANSFERS}?status=Submitted`}
         />
         )}
-        {activityCount.transfersAwaitingGovernment > 0
+        {activityCount.transfersAwaitingDirector > 0
         && (
         <ActivityBanner
           colour="blue"
           icon="exchange-alt"
           boldText="Credit Transfer"
-          regularText={`${activityCount.transfersAwaitingGovernment} require director approval`}
+          regularText={`${activityCount.transfersAwaitingDirector} require director approval`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_TRANSFERS}?status=Approved`}
         />
         )}
-        {activityCount.transfersAwaitingGovernment === 0
+        {activityCount.transfersAwaitingDirector === 0 && activityCount.transfersAwaitingAnalyst === 0
         && activityCount.transfersAwaitingPartner === 0 && activityCount.transfersRecorded === 0
         && (
           <ActivityBanner
