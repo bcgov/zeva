@@ -155,46 +155,6 @@ module.exports = settings => {
     }
   }))
 
-  //deploy separate database and backend pod for unit test
-  if( phase === 'dev' ) {
-
-    //create unit test database init scripts
-    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/zeva-postgresql-init.yaml`, {
-      'param': {
-        'NAME': phases[phase].name,
-        'SUFFIX': phases[phase].suffix
-      }
-    })) 
-
-    //deploy postgresql unit test
-    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/postgresql-dc-unittest.yaml`, {
-      'param': {
-        'NAME': phases[phase].name,
-        'SUFFIX': phases[phase].suffix,
-        'ENV_NAME': phases[phase].phase
-      }
-    })) 
-
-    //deploy backend unit test
-    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/backend-dc-unittest.yaml`, {
-      'param': {
-        'NAME': phases[phase].name,
-        'SUFFIX': phases[phase].suffix,
-        'VERSION': phases[phase].tag,
-        'ENV_NAME': phases[phase].phase,
-        'BACKEND_HOST_NAME': phases[phase].backendHost,
-        'RABBITMQ_CLUSTER_NAME': 'rabbitmq-cluster',
-        'CPU_REQUEST': phases[phase].backendCpuRequest,
-        'CPU_LIMIT': phases[phase].backendCpuLimit,
-        'MEMORY_REQUEST': phases[phase].backendMemoryRequest,
-        'MEMORY_LIMIT': phases[phase].backendMemoryLimit,
-        'HEALTH_CHECK_DELAY': phases[phase].backendHealthCheckDelay,
-        'REPLICAS':  phases[phase].backendReplicas
-      }
-    })) 
-
-  }
-
   //add autoacaler
   /*****
   if(phase === 'test' || phase === 'prod') {
