@@ -8,6 +8,7 @@ import { withRouter } from 'react-router';
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import Loading from '../app/components/Loading';
 import history from '../app/History';
+import ROUTES_CREDITS from '../app/routes/Credits';
 import ROUTES_SALES from '../app/routes/Sales';
 import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
 import CustomPropTypes from '../app/utilities/props';
@@ -45,7 +46,7 @@ const SalesSubmissionContainer = (props) => {
   const doUpload = () => {
     upload(ROUTES_SALES.UPLOAD, files).then((response) => {
       const { id } = response.data;
-      history.push(ROUTES_SALES.DETAILS.replace(':id', id));
+      history.push(ROUTES_CREDITS.CREDIT_REQUEST_DETAILS.replace(':id', id));
     }).catch((error) => {
       const { response } = error;
 

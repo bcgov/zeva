@@ -4,12 +4,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import CustomPropTypes from '../../app/utilities/props';
 import ReactTable from '../../app/components/ReactTable';
 import formatNumeric from '../../app/utilities/formatNumeric';
+import formatStatus from '../../app/utilities/formatStatus';
 import history from '../../app/History';
 import ROUTES_CREDITS from '../../app/routes/Credits';
-import CustomPropTypes from '../../app/utilities/props';
-import formatStatus from '../../app/utilities/formatStatus';
 
 const SubmissionListTable = (props) => {
   const {
@@ -37,10 +37,11 @@ const SubmissionListTable = (props) => {
     id: 'supplier',
     show: user.isGovernment,
   }, {
-    accessor: 'totals.vins',
+    accessor: (item) => (item.totals.vins > 0 ? item.totals.vins : '-'),
     className: 'text-right',
     Header: 'Total Sales',
     maxWidth: 150,
+    id: 'total-sales',
   }, {
     accessor: (item) => (item.totalWarnings > 0 ? item.totalWarnings : '-'),
     className: 'text-right',
@@ -48,13 +49,13 @@ const SubmissionListTable = (props) => {
     id: 'warnings',
     maxWidth: 150,
   }, {
-    accessor: (item) => (formatNumeric(item.totalACredits)),
+    accessor: (item) => (item.totalACredits > 0 ? formatNumeric(item.totalACredits) : '-'),
     className: 'text-right',
     Header: 'A-Credits',
     id: 'credits-a',
     maxWidth: 150,
   }, {
-    accessor: (item) => (formatNumeric(item.totalBCredits)),
+    accessor: (item) => (item.totalBCredits > 0 ? formatNumeric(item.totalBCredits) : '-'),
     className: 'text-right',
     Header: 'B-Credits',
     id: 'credits-b',
@@ -107,12 +108,15 @@ const SubmissionListTable = (props) => {
   );
 };
 
-SubmissionListTable.defaultProps = {};
+SubmissionListTable.defaultProps = {
+  filtered: undefined,
+  setFiltered: undefined,
+};
 
 SubmissionListTable.propTypes = {
-  filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  filtered: PropTypes.arrayOf(PropTypes.shape()),
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  setFiltered: PropTypes.func.isRequired,
+  setFiltered: PropTypes.func,
   user: CustomPropTypes.user.isRequired,
 };
 

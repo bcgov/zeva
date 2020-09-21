@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import history from '../../app/History';
 
 import CustomPropTypes from '../../app/utilities/props';
-import ROUTES_SALES from '../../app/routes/Sales';
+import ROUTES_CREDITS from '../../app/routes/Credits';
 
 const SalesSubmissionConfirmationPage = (props) => {
   const {
@@ -27,7 +27,7 @@ const SalesSubmissionConfirmationPage = (props) => {
             <button
               className="button"
               onClick={() => {
-                history.push(ROUTES_SALES.DETAILS.replace(/:id/g, submissionId));
+                history.push(ROUTES_CREDITS.CREDIT_REQUEST_DETAILS.replace(/:id/g, submissionId));
               }}
               type="button"
             >
@@ -57,7 +57,7 @@ const SalesSubmissionConfirmationPage = (props) => {
           </p>
           <p>
             {'You can view the status of your submission from the '}
-            <Link to={ROUTES_SALES.LIST}>
+            <Link to={ROUTES_CREDITS.CREDIT_REQUESTS}>
               Sales
             </Link>
             {' table at any time.'}

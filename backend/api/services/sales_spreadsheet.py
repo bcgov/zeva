@@ -389,49 +389,48 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
     worksheet.write(row, 4, 'Sales Date', style=BOLD)
     worksheet.write(row, 5, 'Error', style=BOLD)
 
-    record_of_sales_vin = RecordOfSale.objects.filter(
-        submission_id=submission_id
-    ).values('vin')
-
     submission_content = SalesSubmissionContent.objects.filter(
         submission_id=submission_id
-    ).exclude(
-        xls_vin__in=record_of_sales_vin
     )
-
-    icbc_upload_date = IcbcUploadDate.objects.order_by('-upload_date').first()
 
     current_vehicle_col_width = 13
 
     for content in submission_content:
+        if len(content.warnings) == 0:
+            next()
+
         row += 1
 
         error = ''
 
-        if content.icbc_verification is None:
+        if 'ROW_NOT_SELECTED' in content.warnings:
+            error += 'entry was not selected for validation; '
+
+        if 'DUPLICATE_VIN' in content.warnings:
+            error += 'VIN has already been validated before; '
+
+        if 'EXPIRED_REGISTRATION_DATE' in content.warnings:
+            error += 'retail sales date and registration date greater ' \
+                        'than 3 months apart; '
+
+        if 'INVALID_DATE' in content.warnings:
+            error += 'Date cannot be parsed. Please use YYYY-MM-DD ' \
+                        'format; '
+
+        if 'INVALID_MODEL' in content.warnings:
+            error += 'unmatched data; '
+
+        if 'NO_ICBC_MATCH' in content.warnings:
             error += 'no matching ICBC data; '
+
+        if 'VIN_ALREADY_AWARDED' in content.warnings:
+            error += 'credits already issued to VIN; '
 
         date = get_date(
             content.xls_sale_date,
             content.xls_date_type,
             content.xls_date_mode
         )
-
-        if content.is_already_awarded:
-            error += 'VIN has already been validated before; '
-
-        if content.is_duplicate:
-            error += 'VIN contains duplicate in this set; '
-
-        if date is None:
-            error += 'Date cannot be parsed. Please use YYYY-MM-DD format; '
-        elif icbc_upload_date is not None:
-            date_diff = abs(
-                date.year - icbc_upload_date.upload_date.year
-            ) * 12 + abs(date.month - icbc_upload_date.upload_date.month)
-
-            if date_diff > 3:
-                error += 'retail sales date and registration date greater than 3 months apart; '
 
         if content.xls_model_year is not None:
             worksheet.write(row, 0, int(float(content.xls_model_year)), style=LOCKED)

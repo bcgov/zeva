@@ -7,8 +7,8 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import CustomPropTypes from '../app/utilities/props';
+import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs';
 import VehicleSupplierSalesListPage from './components/VehicleSupplierSalesListPage';
 
@@ -50,6 +50,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
       <VehicleSupplierSalesListPage
         loading={loading}
         sales={sales}
+        user={{ isGovernment: false }}
       />
     </div>
   );

@@ -4,10 +4,10 @@
 import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import React from 'react';
-import _ from 'lodash';
 
-import CustomPropTypes from '../../app/utilities/props';
 import ReactTable from '../../app/components/ReactTable';
+import CustomPropTypes from '../../app/utilities/props';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const CreditTransfersListTable = (props) => {
   const { user } = props;
@@ -65,19 +65,19 @@ const CreditTransfersListTable = (props) => {
     Header: 'Transfer Partner',
     id: 'partner',
   }, {
-    accessor: (row) => (row.totalCreditsA > 0 ? row.totalCreditsA : '-'),
+    accessor: (row) => (row.totalCreditsA > 0 ? formatNumeric(row.totalCreditsA) : '-'),
     className: 'text-right',
     Header: 'A-Credits',
     id: 'credits-a',
     maxWidth: 150,
   }, {
-    accessor: (row) => (row.totalCreditsB > 0 ? row.totalCreditsB : '-'),
+    accessor: (row) => (row.totalCreditsB > 0 ? formatNumeric(row.totalCreditsB) : '-'),
     className: 'text-right',
     Header: 'B-Credits',
     id: 'credits-b',
     maxWidth: 150,
   }, {
-    accessor: (row) => `$ ${(_.round(row.totalTransferValue, 0).toFixed(0))}`,
+    accessor: (row) => `$ ${formatNumeric(row.totalTransferValue, 2)}`,
     className: 'text-right',
     Header: 'Transfer Value',
     id: 'transfer-value',
