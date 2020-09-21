@@ -132,12 +132,17 @@ const CreditTransfersListTable = (props) => {
   );
 };
 
-CreditTransfersListTable.defaultProps = {};
+CreditTransfersListTable.defaultProps = {
+  filtered: undefined,
+  setFiltered: undefined,
+};
 
 CreditTransfersListTable.propTypes = {
+  filtered: PropTypes.arrayOf(),
   items: PropTypes.arrayOf(PropTypes.shape({
     creditTransactions: PropTypes.arrayOf(PropTypes.shape()),
   })).isRequired,
+  setFiltered: PropTypes.func,
   user: CustomPropTypes.user.isRequired,
 };
 

@@ -76,6 +76,21 @@ const SubmissionListTable = (props) => {
       return status;
     },
     className: 'text-center text-capitalize',
+    filterMethod: (filter, row) => {
+      const filterValues = filter.value.split(',');
+
+      let returnValue = false;
+
+      filterValues.forEach((filterValue) => {
+        const value = filterValue.toLowerCase().trim();
+
+        if (value !== '' && !returnValue) {
+          returnValue = row[filter.id].toLowerCase().includes(value);
+        }
+      });
+
+      return returnValue;
+    },
     Header: 'Status',
     id: 'status',
     maxWidth: 250,
@@ -95,7 +110,7 @@ const SubmissionListTable = (props) => {
             onClick: () => {
               const { id } = row.original;
 
-              history.push(ROUTES_CREDITS.CREDIT_REQUEST_DETAILS.replace(/:id/g, id));
+              history.push(ROUTES_CREDITS.CREDIT_REQUEST_DETAILS.replace(/:id/g, id), filtered);
             },
             className: 'clickable',
           };

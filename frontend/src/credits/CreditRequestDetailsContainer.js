@@ -18,7 +18,10 @@ import CreditRequestDetailsPage from './components/CreditRequestDetailsPage';
 import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification';
 
 const CreditRequestDetailsContainer = (props) => {
-  const { match, user, validatedOnly } = props;
+  const {
+    location, match, user, validatedOnly,
+  } = props;
+  const { state: locationState } = location;
   const { id } = match.params;
 
   const [submission, setSubmission] = useState([]);
@@ -67,6 +70,7 @@ const CreditRequestDetailsContainer = (props) => {
     <CreditRequestDetailsPage
       handleSubmit={handleSubmit}
       key="page"
+      locationState={locationState}
       nonValidated={nonValidated}
       previousDateCurrentTo={previousDateCurrentTo}
       submission={submission}

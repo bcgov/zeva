@@ -17,11 +17,12 @@ import ModelListTable from './ModelListTable';
 const CreditRequestDetailsPage = (props) => {
   const {
     handleSubmit,
+    locationState,
+    nonValidated,
+    previousDateCurrentTo,
     submission,
     user,
     validatedOnly,
-    previousDateCurrentTo,
-    nonValidated,
   } = props;
 
   const [showModal, setShowModal] = useState(false);
@@ -200,7 +201,16 @@ const CreditRequestDetailsPage = (props) => {
         <div className="col-sm-12">
           <div className="action-bar">
             <span className="left-content">
-              <ButtonBack />
+              <button
+                className="button"
+                onClick={() => {
+                  console.error(locationState);
+                  history.push(ROUTES_CREDITS.CREDIT_REQUESTS, locationState);
+                }}
+                type="button"
+              >
+                <FontAwesomeIcon icon="arrow-left" /> Back
+              </button>
               {submission.validationStatus === 'DRAFT' && (
                 <ButtonDelete action={() => { setModalType('delete'); setShowModal(true); }} />
               )}
@@ -294,16 +304,18 @@ const CreditRequestDetailsPage = (props) => {
 };
 
 CreditRequestDetailsPage.defaultProps = {
+  locationState: undefined,
   validatedOnly: false,
 };
 
 CreditRequestDetailsPage.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
+  locationState: PropTypes.shape(),
+  nonValidated: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   previousDateCurrentTo: PropTypes.string.isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
   validatedOnly: PropTypes.bool,
-  nonValidated: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 };
 
 export default CreditRequestDetailsPage;
