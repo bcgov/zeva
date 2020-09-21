@@ -17,7 +17,6 @@ const CreditRequestDetailsPage = (props) => {
   const {
     handleSubmit,
     locationState,
-    nonValidated,
     previousDateCurrentTo,
     submission,
     user,
@@ -102,6 +101,7 @@ const CreditRequestDetailsPage = (props) => {
   const analystAction = user.isGovernment
   && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0
   && user.hasPermission('RECOMMEND_SALES');
+
   return (
     <div id="credit-request-details" className="page">
       {modal}
@@ -135,7 +135,6 @@ const CreditRequestDetailsPage = (props) => {
                   <h5 className="d-inline mr-2">
                     {submission.updateUser.displayName} recommended this submission be approved.
                   </h5>
-                  <span>{nonValidated.length} VIN were rejected, see rejected vins.</span>
                 </>
               )}
               {(['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0) && submission.salesSubmissionComment
@@ -168,10 +167,6 @@ const CreditRequestDetailsPage = (props) => {
             <br />
             <h5 className="d-inline-block sales-upload-grey">Records address: </h5>
             {recordsAddress && <h5 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h5>}
-            <p className="font-weight-bold my-3">
-              Consumer Sales: {submission.content.length}
-            </p>
-
           </div>
         </div>
       )}
@@ -309,7 +304,6 @@ CreditRequestDetailsPage.defaultProps = {
 CreditRequestDetailsPage.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   locationState: PropTypes.shape(),
-  nonValidated: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   previousDateCurrentTo: PropTypes.string.isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,

@@ -43,8 +43,13 @@ const CreditTransactions = (props) => {
         [balance.creditClass.creditClass]: parseFloat(balance.creditValue),
       };
 
-      const currentValue = totalCredits[balance.creditClass.creditClass]
-        ? parseFloat(totalCredits[balance.creditClass.creditClass]) : 0;
+      let currentValue = 0;
+      if (totalCredits[balance.weightClass.weightClassCode]
+        && totalCredits[balance.weightClass.weightClassCode][balance.creditClass.creditClass]) {
+        currentValue = parseFloat(
+          totalCredits[balance.weightClass.weightClassCode][balance.creditClass.creditClass],
+        );
+      }
 
       /*
       While this looks unnecessarily complicated,

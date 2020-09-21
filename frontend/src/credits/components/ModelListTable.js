@@ -95,23 +95,28 @@ const ModelListTable = (props) => {
     const id = `${item.xlsModelYear}-${item.xlsMake}-${item.xlsModel}`;
     const found = data.findIndex((obj) => (obj.id === id));
     let addSale = 0;
-    let { creditValue } = item.vehicle;
 
-    if (!creditValue || Number.isNaN(creditValue)) {
-      creditValue = 0;
-    }
+    let creditValue = 0;
 
-    if (['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(validationStatus) < 0) {
-      addSale = 1;
-    } else if (item.recordOfSale) {
-      addSale = 1;
-    }
+    if (item.vehicle) {
+      ({ creditValue } = item.vehicle);
 
-    if (addSale > 0) {
-      if (item.vehicle.creditClass === 'A') {
-        totals.a += creditValue;
-      } else if (item.vehicle.creditClass === 'B') {
-        totals.b += creditValue;
+      if (!creditValue || Number.isNaN(creditValue)) {
+        creditValue = 0;
+      }
+
+      if (['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(validationStatus) < 0) {
+        addSale = 1;
+      } else if (item.recordOfSale) {
+        addSale = 1;
+      }
+
+      if (addSale > 0) {
+        if (item.vehicle.creditClass === 'A') {
+          totals.a += creditValue;
+        } else if (item.vehicle.creditClass === 'B') {
+          totals.b += creditValue;
+        }
       }
     }
 

@@ -28,7 +28,7 @@ const SalesListTable = (props) => {
         if (fields) {
           errorCodes += ` ${CREDIT_ERROR_CODES[warning].errorField} `;
         } else {
-          if (errorCodes !== '') {
+          if (errorCodes !== '' && CREDIT_ERROR_CODES[warning].errorCode) {
             errorCodes += ', ';
           }
           errorCodes += CREDIT_ERROR_CODES[warning].errorCode;
@@ -110,16 +110,24 @@ const SalesListTable = (props) => {
       headerClassName: 'warning',
       id: 'warning',
     }, {
-      accessor: (row) => (
-        <input
-          checked={
-            validatedList.findIndex((item) => Number(item) === Number(row.id)) >= 0
-          }
-          onChange={(event) => { handleCheckboxClick(event); }}
-          type="checkbox"
-          value={row.id}
-        />
-      ),
+      accessor: (row) => {
+        if (row.warnings.some((warning) => [
+          'DUPLICATE_VIN', 'INVALID_MODEL', 'VIN_ALREADY_AWARDED',
+        ].indexOf(warning) >= 0)) {
+          return false;
+        }
+
+        return (
+          <input
+            checked={
+              validatedList.findIndex((item) => Number(item) === Number(row.id)) >= 0
+            }
+            onChange={(event) => { handleCheckboxClick(event); }}
+            type="checkbox"
+            value={row.id}
+          />
+        );
+      },
       className: 'text-center validated',
       Header: 'Validated',
       id: 'validated',

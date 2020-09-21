@@ -13,7 +13,6 @@ import xlrd
 import xlwt
 from xlrd import XLRDError, XLDateError
 
-from api.models.icbc_upload_date import IcbcUploadDate
 from api.models.model_year import ModelYear
 from api.models.organization import Organization
 from api.models.record_of_sale import RecordOfSale
@@ -389,8 +388,14 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
     worksheet.write(row, 4, 'Sales Date', style=BOLD)
     worksheet.write(row, 5, 'Error', style=BOLD)
 
+    record_of_sales_vin = RecordOfSale.objects.filter(
+        submission_id=submission_id
+    ).values('vin')
+
     submission_content = SalesSubmissionContent.objects.filter(
         submission_id=submission_id
+    ).exclude(
+        xls_vin__in=record_of_sales_vin
     )
 
     current_vehicle_col_width = 13
