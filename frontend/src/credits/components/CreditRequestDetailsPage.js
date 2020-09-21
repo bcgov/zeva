@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import moment from 'moment-timezone';
 
-import ButtonBack from '../../app/components/ButtonBack';
 import ButtonDelete from '../../app/components/ButtonDelete';
 import ButtonSubmit from '../../app/components/ButtonSubmit';
 import Modal from '../../app/components/Modal';
@@ -204,7 +203,6 @@ const CreditRequestDetailsPage = (props) => {
               <button
                 className="button"
                 onClick={() => {
-                  console.error(locationState);
                   history.push(ROUTES_CREDITS.CREDIT_REQUESTS, locationState);
                 }}
                 type="button"
