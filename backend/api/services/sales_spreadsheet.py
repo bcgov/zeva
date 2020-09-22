@@ -408,9 +408,6 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
 
         error = ''
 
-        if 'ROW_NOT_SELECTED' in content.warnings:
-            error += 'entry was not selected for validation; '
-
         if 'DUPLICATE_VIN' in content.warnings:
             error += 'VIN has already been validated before; '
 
@@ -430,6 +427,9 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
 
         if 'VIN_ALREADY_AWARDED' in content.warnings:
             error += 'credits already issued to VIN; '
+
+        if 'ROW_NOT_SELECTED' in content.warnings and error == '':
+            error += 'entry was rejected for validation; '
 
         date = get_date(
             content.xls_sale_date,

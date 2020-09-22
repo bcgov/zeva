@@ -108,7 +108,7 @@ const CreditRequestDetailsPage = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <h2 className="py-0">Application for Credits for Consumer Sales</h2>
-          <h3 className="py-3">
+          <h3 className="py-0 mt-2 mb-0">
             {submission.organization && `${submission.organization.name} `}
             ZEV Sales Submission {submission.submissionDate}
           </h3>
@@ -122,20 +122,18 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
       )}
-      {(directorAction || analystAction)
-      && (submission.salesSubmissionComment
-      || submission.validationStatus === 'RECOMMEND_APPROVAL')
-      && (
-        <div className="row mt-1">
+      {((
+        (directorAction || analystAction) && submission.validationStatus === 'RECOMMEND_APPROVAL'
+      ) || (user.isGovernment && submission.validationStatus === 'VALIDATED'))
+      && submission.salesSubmissionComment && (
+        <div className="row">
           <div className="col-sm-12">
-            <div className="recommendation-comment">
+            <div className="recommendation-comment p-2">
               {submission.validationStatus === 'RECOMMEND_APPROVAL'
               && (
-                <>
-                  <h5 className="d-inline mr-2">
-                    {submission.updateUser.displayName} recommended this submission be approved.
-                  </h5>
-                </>
+                <h5 className="d-inline mr-2">
+                  {submission.updateUser.displayName} recommended this submission be approved.
+                </h5>
               )}
               {(['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0) && submission.salesSubmissionComment
               && (
@@ -191,9 +189,9 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       )}
 
-      <div className="row mt-3">
+      <div className="row">
         <div className="col-sm-12">
-          <div className="action-bar">
+          <div className="action-bar mt-0">
             <span className="left-content">
               <button
                 className="button"

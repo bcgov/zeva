@@ -16,7 +16,7 @@ const qs = require('qs');
 const CreditTransferListContainer = (props) => {
   const [creditTransfers, setCreditTransfers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { keycloak, user } = props;
+  const { location, keycloak, user } = props;
   const [filtered, setFiltered] = useState([]);
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
   const refreshList = (showLoading) => {

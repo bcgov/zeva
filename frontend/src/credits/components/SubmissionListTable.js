@@ -73,6 +73,10 @@ const SubmissionListTable = (props) => {
         return 'issued';
       }
 
+      if (status === 'recommend approval') {
+        return 'recommend issuance';
+      }
+
       return status;
     },
     className: 'text-center text-capitalize',

@@ -183,6 +183,21 @@ class Navbar extends Component {
               <li className="nav-item">
                 <NavLink
                   activeClassName="active"
+                  isActive={(match, location) => {
+                    if (location.pathname.toLowerCase().includes('credit-transactions')) {
+                      return true;
+                    }
+
+                    if (location.pathname.toLowerCase().includes('sales')) {
+                      return true;
+                    }
+
+                    if (!match) {
+                      return false;
+                    }
+
+                    return true;
+                  }}
                   to={user.isGovernment ? ROUTES_CREDITS.CREDIT_REQUESTS : ROUTES_CREDITS.LIST}
                 >
                   <span>Credit Transactions</span>

@@ -58,7 +58,6 @@ class SalesSubmissionContentSerializer(ModelSerializer):
     def get_warnings(self, instance):
         request = self.context.get('request')
 
-        print(instance.submission.validation_status)
         if request.user.is_government or \
                 instance.submission.validation_status == \
                 SalesSubmissionStatuses.VALIDATED:

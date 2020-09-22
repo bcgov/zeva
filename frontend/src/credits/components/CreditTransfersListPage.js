@@ -63,7 +63,7 @@ CreditTransfersListPage.defaultProps = {
 
 CreditTransfersListPage.propTypes = {
   creditTransfers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  filtered: PropTypes.arrayOf(),
+  filtered: PropTypes.arrayOf(PropTypes.shape()),
   loading: PropTypes.bool.isRequired,
   setFiltered: PropTypes.func,
   user: CustomPropTypes.user.isRequired,

@@ -138,7 +138,7 @@ CreditTransfersListTable.defaultProps = {
 };
 
 CreditTransfersListTable.propTypes = {
-  filtered: PropTypes.arrayOf(),
+  filtered: PropTypes.arrayOf(PropTypes.shape()),
   items: PropTypes.arrayOf(PropTypes.shape({
     creditTransactions: PropTypes.arrayOf(PropTypes.shape()),
   })).isRequired,
