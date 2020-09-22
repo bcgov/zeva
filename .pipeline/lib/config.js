@@ -15,7 +15,7 @@ const phases = {
         instance: `${name}-dev-${changeId}`  , version:`${version}-${changeId}`, tag:`dev-${version}-${changeId}`, 
         host: `zeva-dev-${changeId}.pathfinder.gov.bc.ca`, djangoDebug: 'True',
         frontendCpuRequest: '100m', frontendCpuLimit: '700m', frontendMemoryRequest: '300M', frontendMemoryLimit: '4G', frontendReplicas: 1,
-        backendCpuRequest: '300m', backendCpuLimit: '600m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 30, backendHost: `zeva-backend-dev-${changeId}.pathfinder.gov.bc.ca`, backendReplicas: 1,
+        backendCpuRequest: '300m', backendCpuLimit: '400m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 30, backendHost: `zeva-backend-dev-${changeId}.pathfinder.gov.bc.ca`, backendReplicas: 1,
         minioCpuRequest: '100m', minioCpuLimit: '200m', minioMemoryRequest: '200M', minioMemoryLimit: '500M', minioPvcSize: '1G',
         schemaspyCpuRequest: '50m', schemaspyCpuLimit: '200m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 160,
         rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '1G', rabbitmqPvcSize: '1G', rabbitmqReplica: 1, rabbitmqPostStartSleep: 120, storageClass: 'netapp-block-standard',
