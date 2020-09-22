@@ -3,12 +3,13 @@ from decimal import Decimal
 from django.db.models import Count, Sum, Value, F, Q
 from django.db.models.functions import Coalesce
 
-from api.models.credit_transaction import CreditTransaction
-from api.models.record_of_sale import RecordOfSale
-from api.models.vehicle import Vehicle
 from api.models.account_balance import AccountBalance
 from api.models.credit_class import CreditClass
+from api.models.credit_transaction import CreditTransaction
 from api.models.credit_transaction_type import CreditTransactionType
+from api.models.credit_transfer_statuses import CreditTransferStatuses
+from api.models.record_of_sale import RecordOfSale
+from api.models.vehicle import Vehicle
 from api.models.weight_class import WeightClass
 
 
@@ -79,8 +80,13 @@ def aggregate_credit_balance_details(organization):
     )), Value(0))
 
     balance = CreditTransaction.objects.filter(
-        Q(credit_to=organization) |
-        Q(debit_from=organization)
+        Q(credit_to=organization) | Q(debit_from=organization)
+    ).filter(
+        Q(transaction_type__transaction_type__in=["Reduction", "Validation"]) |
+        (Q(transaction_type__transaction_type="Credit Transfer") &
+         Q(credit_transfer_content__credit_transfer__status__in=[
+             CreditTransferStatuses.VALIDATED
+         ]))
     ).values(
         'model_year_id', 'credit_class_id', 'weight_class_id'
     ).annotate(

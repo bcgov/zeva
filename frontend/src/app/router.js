@@ -22,10 +22,6 @@ import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContai
 import SalesSubmissionDetailsContainer from '../credits/SalesSubmissionDetailsContainer';
 import UploadICBCVerificationContainer from '../credits/UploadICBCVerificationContainer';
 import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
-import SalesSubmissionListContainer from '../sales/SalesSubmissionListContainer';
-import SalesSubmissionEditContainer from '../sales/SalesSubmissionEditContainer';
-import SalesSubmissionApprovalContainer from '../sales/SalesSubmissionApprovalContainer';
-import SalesSubmissionApprovalDetailsContainer from '../sales/SalesSubmissionApprovalDetailsContainer';
 import SalesSubmissionConfirmationContainer from '../sales/SalesSubmissionConfirmationContainer';
 import UserEditContainer from '../users/UserEditContainer';
 import VehicleDetailsContainer from '../vehicles/VehicleDetailsContainer';
@@ -179,28 +175,6 @@ class Router extends Component {
                 exact
                 path={ROUTES_SALES.NEW_UPLOAD}
                 render={() => <SalesSubmissionContainer keycloak={keycloak} user={user} />}
-              />
-              <Route
-                exact
-                path={ROUTES_SALES.LIST}
-                render={() => <SalesSubmissionListContainer keycloak={keycloak} user={user} />}
-              />
-              <Route
-                exact
-                path={ROUTES_SALES.APPROVAL_DETAILS}
-                render={() => (
-                  <SalesSubmissionApprovalDetailsContainer keycloak={keycloak} user={user} />
-                )}
-              />
-              <Route
-                exact
-                path={ROUTES_SALES.APPROVAL}
-                render={() => <SalesSubmissionApprovalContainer keycloak={keycloak} user={user} />}
-              />
-              <Route
-                exact
-                path={ROUTES_SALES.DETAILS}
-                render={() => <SalesSubmissionEditContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact

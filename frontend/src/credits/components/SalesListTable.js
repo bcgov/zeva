@@ -4,8 +4,9 @@
 import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import React from 'react';
-import ReactTable from 'react-table';
 
+import ReactTable from '../../app/components/ReactTable';
+import { CREDIT_ERROR_CODES } from '../../app/constants/errorCodes';
 import CustomPropTypes from '../../app/utilities/props';
 
 const SalesListTable = (props) => {
@@ -17,17 +18,27 @@ const SalesListTable = (props) => {
     filtered,
     setFiltered,
   } = props;
-  const checkForWarnings = (item) => {
-    if (item.vehicle.modelYear !== item.icbcVerification.icbcVehicle.modelYear.name) {
-      return {
-        errorCode: '21',
-        errorField: 'model-year',
-      };
-    }
-    return {
-      errorCode: '0',
-    };
+
+
+  const getErrorCodes = (item, fields = false) => {
+    let errorCodes = '';
+
+    item.warnings.forEach((warning) => {
+      if (CREDIT_ERROR_CODES[warning]) {
+        if (fields) {
+          errorCodes += ` ${CREDIT_ERROR_CODES[warning].errorField} `;
+        } else {
+          if (errorCodes !== '' && CREDIT_ERROR_CODES[warning].errorCode) {
+            errorCodes += ', ';
+          }
+          errorCodes += CREDIT_ERROR_CODES[warning].errorCode;
+        }
+      }
+    });
+
+    return errorCodes;
   };
+
   const columns = [{
     Header: 'Supplier Information',
     headerClassName: 'header-group',
@@ -36,7 +47,7 @@ const SalesListTable = (props) => {
         const { xlsModelYear } = row;
 
         if (Number.isNaN(xlsModelYear)) {
-          return '';
+          return xlsModelYear;
         }
 
         return Math.trunc(row.xlsModelYear);
@@ -47,14 +58,16 @@ const SalesListTable = (props) => {
     }, {
       accessor: 'xlsMake',
       Header: 'Make',
+      id: 'make',
     }, {
       accessor: 'xlsModel',
       Header: 'Model',
+      id: 'model',
     }, {
       accessor: (row) => (moment(row.salesDate).format('YYYY-MM-DD') !== 'Invalid date' ? moment(row.salesDate).format('YYYY-MM-DD') : row.salesDate),
       className: 'text-center',
       Header: 'Retail Sale',
-      id: 'salesDate',
+      id: 'sales-date',
     }],
   }, {
     Header: '',
@@ -64,6 +77,7 @@ const SalesListTable = (props) => {
       className: 'vin',
       Header: 'VIN',
       headerClassName: 'vin',
+      id: 'vin',
       minWidth: 150,
     }],
   }, {
@@ -90,22 +104,30 @@ const SalesListTable = (props) => {
     Header: '',
     headerClassName: 'header-group',
     columns: [{
-      accessor: (item) => (item.icbcVerification ? checkForWarnings(item).errorCode : '11'),
+      accessor: (item) => (getErrorCodes(item)),
       className: 'warning text-right',
       Header: 'Warning',
       headerClassName: 'warning',
       id: 'warning',
     }, {
-      accessor: (row) => (
-        <input
-          checked={
-            validatedList.findIndex((item) => Number(item) === Number(row.id)) >= 0
-          }
-          onChange={(event) => { handleCheckboxClick(event); }}
-          type="checkbox"
-          value={row.id}
-        />
-      ),
+      accessor: (row) => {
+        if (row.warnings.some((warning) => [
+          'DUPLICATE_VIN', 'INVALID_MODEL', 'VIN_ALREADY_AWARDED',
+        ].indexOf(warning) >= 0)) {
+          return false;
+        }
+
+        return (
+          <input
+            checked={
+              validatedList.findIndex((item) => Number(item) === Number(row.id)) >= 0
+            }
+            onChange={(event) => { handleCheckboxClick(event); }}
+            type="checkbox"
+            value={row.id}
+          />
+        );
+      },
       className: 'text-center validated',
       Header: 'Validated',
       id: 'validated',
@@ -113,45 +135,40 @@ const SalesListTable = (props) => {
     }],
   }];
 
-  const filterMethod = (filter, row) => {
-    const id = filter.pivotId || filter.id;
-    return row[id] !== undefined ? String(row[id])
-      .toLowerCase()
-      .includes(filter.value.toLowerCase()) : true;
-  };
-
   return (
     <ReactTable
-      className="searchable"
       columns={columns}
       data={items}
       filtered={filtered}
-      filterable
       onFilteredChange={(input) => {
         setFiltered(input);
       }}
-      defaultFilterMethod={filterMethod}
-      defaultPageSize={items.length > 0 ? items.length : 10}
       defaultSorted={[{
         id: 'warning',
         desc: true,
       }]}
       getTrProps={(state, rowInfo) => {
         if (rowInfo) {
-          if (rowInfo.row.warning === '11') {
+          if (rowInfo.row.warning.includes('11')) {
             return {
               className: 'icbc-verification-warning',
             };
           }
-          if (rowInfo.row.warning === '21') {
+
+          if (rowInfo.row.warning.includes('41')) {
             return {
-              className: `${checkForWarnings(rowInfo.original).errorField} icbc-mismatch-warning`,
+              className: 'icbc-mismatch-warning',
+            };
+          }
+
+          if (rowInfo.row.warning.includes('61')) {
+            return {
+              className: 'invalid-data',
             };
           }
         }
         return {};
       }}
-      pageSizeOptions={[(items.length > 0 ? items.length : 10), 5, 10, 15, 20, 25, 50, 100]}
     />
   );
 };

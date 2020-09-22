@@ -3,6 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import history from '../../app/History';
 
+import ROUTES_CREDITS from '../../app/routes/Credits';
 import ROUTES_SALES from '../../app/routes/Sales';
 import download from '../../app/utilities/download';
 import ExcelFileDrop from '../../app/components/FileDrop';
@@ -25,7 +26,7 @@ const SalesUploadPage = (props) => {
 
   return (
     <div id="sales-edit" className="page">
-      <h2>Application for Credits for Consumer Sales</h2>
+      <h2 className="pt-0">Application for Credits for Consumer Sales</h2>
       <h5 className="sales-upload-grey">
         Download an Excel template containing all active ZEV models to submit consumer sales
       </h5>
@@ -105,7 +106,7 @@ const SalesUploadPage = (props) => {
           <button
             className="button"
             onClick={() => {
-              history.push(ROUTES_SALES.LIST);
+              history.push(ROUTES_CREDITS.CREDIT_REQUESTS);
             }}
             type="button"
           >

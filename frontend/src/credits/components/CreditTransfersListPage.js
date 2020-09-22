@@ -24,10 +24,11 @@ const CreditTransfersListPage = (props) => {
   return (
     <div className="page">
       <div className="row mb-3">
-        <div className="col-9">
-          <h2 className="d-inline">Light Duty Vehicle Credit Transfers</h2>
+        <div className="col-md-8">
+          <h2 className="py-0">Light Duty Vehicle Credit Transfers</h2>
         </div>
-        <div className="col-3 text-right">
+        {!user.isGovernment && (
+        <div className="col-md-4 text-right">
           <button
             className="button primary"
             onClick={() => {
@@ -38,6 +39,7 @@ const CreditTransfersListPage = (props) => {
             <FontAwesomeIcon icon="plus" /> New Credit Transfer
           </button>
         </div>
+        )}
       </div>
 
       <div className="row">
@@ -54,11 +56,16 @@ const CreditTransfersListPage = (props) => {
   );
 };
 
-CreditTransfersListPage.defaultProps = {};
+CreditTransfersListPage.defaultProps = {
+  filtered: undefined,
+  setFiltered: undefined,
+};
 
 CreditTransfersListPage.propTypes = {
   creditTransfers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  filtered: PropTypes.arrayOf(PropTypes.shape()),
   loading: PropTypes.bool.isRequired,
+  setFiltered: PropTypes.func,
   user: CustomPropTypes.user.isRequired,
 };
 

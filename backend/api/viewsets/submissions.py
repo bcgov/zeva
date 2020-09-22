@@ -6,10 +6,7 @@ from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.serializers.sales_submission import SalesSubmissionSerializer, \
-    SalesSubmissionListSerializer, SalesSubmissionSaveSerializer, \
-    SalesSubmissionWithContentSerializer
-from api.serializers.sales_submission_content import \
-    SalesSubmissionContentSerializer
+    SalesSubmissionListSerializer, SalesSubmissionSaveSerializer
 from api.services.credit_transaction import award_credits
 from auditable.views import AuditableMixin
 
@@ -28,19 +25,23 @@ class SalesSubmissionsViewset(
         if user.organization.is_government:
             qs = SalesSubmission.objects.exclude(validation_status__in=(
                 SalesSubmissionStatuses.DRAFT,
+                SalesSubmissionStatuses.NEW,
+                SalesSubmissionStatuses.DELETED,
             ))
         else:
-            qs = SalesSubmission.objects.filter(organization=user.organization)
+            qs = SalesSubmission.objects.filter(
+                organization=user.organization
+            ).exclude(validation_status__in=(
+                SalesSubmissionStatuses.DELETED,
+            ))
 
         return qs
 
     serializer_classes = {
         'default': SalesSubmissionListSerializer,
-        'content': SalesSubmissionContentSerializer,
         'retrieve': SalesSubmissionSerializer,
         'partial_update': SalesSubmissionSaveSerializer,
         'update': SalesSubmissionSaveSerializer,
-        'raw': SalesSubmissionWithContentSerializer,
     }
 
     def get_serializer_class(self):
@@ -54,18 +55,3 @@ class SalesSubmissionsViewset(
 
         if submission.validation_status == SalesSubmissionStatuses.VALIDATED:
             award_credits(submission)
-
-    @action(detail=True, methods=['get'])
-    def content(self, request, pk=None):
-        rows = SalesSubmissionContent.objects.filter(submission_id=pk)
-        serializer = self.get_serializer(rows, many=True, read_only=True)
-
-        return Response(serializer.data)
-
-    @action(detail=True, methods=['get'])
-    def raw(self, request, pk=None):
-        submission = self.get_object()
-
-        serializer = self.get_serializer(submission)
-
-        return Response(serializer.data)

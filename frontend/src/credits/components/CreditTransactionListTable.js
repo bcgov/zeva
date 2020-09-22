@@ -27,6 +27,7 @@ const CreditTransactionListTable = (props) => {
       Header: 'ID',
       id: 'id',
       maxWidth: 150,
+      show: false,
     }],
   }, {
     Header: '',

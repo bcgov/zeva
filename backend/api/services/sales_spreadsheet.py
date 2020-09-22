@@ -13,7 +13,6 @@ import xlrd
 import xlwt
 from xlrd import XLRDError, XLDateError
 
-from api.models.icbc_upload_date import IcbcUploadDate
 from api.models.model_year import ModelYear
 from api.models.organization import Organization
 from api.models.record_of_sale import RecordOfSale
@@ -267,13 +266,8 @@ def validate_xls_file(file):
 
 
 def validate_spreadsheet(data, user_organization=None, skip_authorization=False):
-    try:
-        workbook = xlrd.open_workbook(file_contents=data)
-    except XLRDError:
-        raise ValidationError(
-            'File cannot be opened. '
-            "Please make sure it's an xls file"
-        )
+    workbook = xlrd.open_workbook(file_contents=data)
+
     organization = get_organization(workbook)
 
     if organization is None or (
@@ -289,7 +283,7 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
         sheet = workbook.sheet_by_name('ZEV Sales')
     except XLRDError:
         raise ValidationError(
-            'Spreadsheet is missing ZEV Sales sheet. '
+            'Spreadsheet is missing ZEV Sales sheet.'
             'Please download the template again and try again.'
         )
 
@@ -318,65 +312,6 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
         row += 1
 
     return True
-
-
-def validate_row(row_contents, workbook, org):
-    is_valid = True
-    model_year = int(row_contents[0].value)
-    make = str(row_contents[1].value)
-    model_name = str(row_contents[2].value)
-    vin = str(row_contents[3].value)
-    date_type = row_contents[4].ctype
-    date = row_contents[4].value
-    validation_problems = []
-    error_message = None
-    parsed_date = None
-
-    if len(vin) < 17:
-        validation_problems.append(
-            'VIN {} has incorrect length'.format(vin)
-        )
-
-    parsed_date = get_date(date, date_type, workbook.datemode)
-
-    if parsed_date is None:
-        validation_problems.append(
-            'Invalid sales date. Please use YYYY-MM-DD.'
-        )
-    elif parsed_date < datetime(2018, 1, 2):
-        validation_problems.append(
-            'Sales date before January 2, 2018 are invalid'
-        )
-
-    if model_year < 2019:
-        validation_problems.append(
-            'Only model years 2019 and beyond are allowed'
-        )
-
-    if RecordOfSale.objects.filter(
-            vin=vin, submission__organization=org
-    ).exists():
-        validation_problems.append(
-            'VIN {} has previously been recorded'.format(vin)
-        )
-
-    vehicle = Vehicle.objects.filter(
-        model_year__name=model_year,
-        make=make,
-        model_name=model_name,
-        validation_status='VALIDATED'
-    ).first()
-
-    if vehicle is None:
-        validation_problems.append(
-            "{} doesn't match an approved vehicle model.".format(model_name)
-        )
-
-    if validation_problems:
-        is_valid = False
-        error_message = ', '.join(validation_problems)
-
-    return is_valid, error_message
 
 
 def get_date(date, date_type, datemode):
@@ -463,39 +398,44 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
         xls_vin__in=record_of_sales_vin
     )
 
-    icbc_upload_date = IcbcUploadDate.objects.order_by('-upload_date').first()
-
     current_vehicle_col_width = 13
 
     for content in submission_content:
+        if len(content.warnings) == 0:
+            next()
+
         row += 1
 
         error = ''
 
-        if content.icbc_verification is None:
+        if 'DUPLICATE_VIN' in content.warnings:
+            error += 'VIN has already been validated before; '
+
+        if 'EXPIRED_REGISTRATION_DATE' in content.warnings:
+            error += 'retail sales date and registration date greater ' \
+                        'than 3 months apart; '
+
+        if 'INVALID_DATE' in content.warnings:
+            error += 'Date cannot be parsed. Please use YYYY-MM-DD ' \
+                        'format; '
+
+        if 'INVALID_MODEL' in content.warnings:
+            error += 'unmatched data; '
+
+        if 'NO_ICBC_MATCH' in content.warnings:
             error += 'no matching ICBC data; '
+
+        if 'VIN_ALREADY_AWARDED' in content.warnings:
+            error += 'credits already issued to VIN; '
+
+        if 'ROW_NOT_SELECTED' in content.warnings and error == '':
+            error += 'entry was rejected for validation; '
 
         date = get_date(
             content.xls_sale_date,
             content.xls_date_type,
             content.xls_date_mode
         )
-
-        if content.is_already_awarded:
-            error += 'VIN has already been validated before; '
-
-        if content.is_duplicate:
-            error += 'VIN contains duplicate in this set; '
-
-        if date is None:
-            error += 'Date cannot be parsed. Please use YYYY-MM-DD format; '
-        elif icbc_upload_date is not None:
-            date_diff = abs(
-                date.year - icbc_upload_date.upload_date.year
-            ) * 12 + abs(date.month - icbc_upload_date.upload_date.month)
-
-            if date_diff > 3:
-                error += 'retail sales date and registration date greater than 3 months apart; '
 
         if content.xls_model_year is not None:
             worksheet.write(row, 0, int(float(content.xls_model_year)), style=LOCKED)

@@ -4,10 +4,11 @@
 import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import React from 'react';
-import _ from 'lodash';
-import formatStatus from '../../app/utilities/formatStatus';
-import CustomPropTypes from '../../app/utilities/props';
+
 import ReactTable from '../../app/components/ReactTable';
+import CustomPropTypes from '../../app/utilities/props';
+import formatNumeric from '../../app/utilities/formatNumeric';
+import formatStatus from '../../app/utilities/formatStatus';
 
 const CreditTransfersListTable = (props) => {
   const { user, filtered, setFiltered } = props;
@@ -65,19 +66,19 @@ const CreditTransfersListTable = (props) => {
     Header: 'Transfer Partner',
     id: 'partner',
   }, {
-    accessor: (row) => (row.totalCreditsA > 0 ? row.totalCreditsA : '-'),
+    accessor: (row) => (row.totalCreditsA > 0 ? formatNumeric(row.totalCreditsA) : '-'),
     className: 'text-right',
     Header: 'A-Credits',
     id: 'credits-a',
     maxWidth: 150,
   }, {
-    accessor: (row) => (row.totalCreditsB > 0 ? row.totalCreditsB : '-'),
+    accessor: (row) => (row.totalCreditsB > 0 ? formatNumeric(row.totalCreditsB) : '-'),
     className: 'text-right',
     Header: 'B-Credits',
     id: 'credits-b',
     maxWidth: 150,
   }, {
-    accessor: (row) => `$ ${(_.round(row.totalTransferValue, 0).toFixed(0))}`,
+    accessor: (row) => `$ ${formatNumeric(row.totalTransferValue, 2)}`,
     className: 'text-right',
     Header: 'Transfer Value',
     id: 'transfer-value',
@@ -131,12 +132,17 @@ const CreditTransfersListTable = (props) => {
   );
 };
 
-CreditTransfersListTable.defaultProps = {};
+CreditTransfersListTable.defaultProps = {
+  filtered: undefined,
+  setFiltered: undefined,
+};
 
 CreditTransfersListTable.propTypes = {
+  filtered: PropTypes.arrayOf(PropTypes.shape()),
   items: PropTypes.arrayOf(PropTypes.shape({
     creditTransactions: PropTypes.arrayOf(PropTypes.shape()),
   })).isRequired,
+  setFiltered: PropTypes.func,
   user: CustomPropTypes.user.isRequired,
 };
 

@@ -85,7 +85,7 @@ class CustomReactTable extends Component {
 
           this.pageSize = this.table.current.getResolvedState().sortedData.length;
         }}
-        pageSize={this.pageSize}
+        pageSize={this.pageSize > 0 ? this.pageSize : 3}
         pageSizeOptions={[this.pageSize]}
         showPagination={false}
       />

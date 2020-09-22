@@ -9,8 +9,9 @@ import ReactTable from '../../app/components/ReactTable';
 
 const ModelListTable = (props) => {
   const { items, validatedOnly, validationStatus } = props;
+
   const showWarnings = () => {
-    if (validationStatus === 'RECOMMEND_APPROVAL') {
+    if (['RECOMMEND_APPROVAL', 'VALIDATED'].indexOf(validationStatus) >= 0) {
       return true;
     }
 
@@ -21,7 +22,7 @@ const ModelListTable = (props) => {
     accessor: 'warnings',
     className: 'text-right',
     filterable: false,
-    Header: 'Errors',
+    Header: 'Warnings',
     id: 'warnings',
     show: showWarnings(),
     width: 100,
@@ -73,13 +74,13 @@ const ModelListTable = (props) => {
   }, {
     className: 'text-right',
     Header: 'Credits',
-    accessor: (item) => (_.round(item.credits, 2).toFixed(2)),
+    accessor: (item) => (item.credits === 0 ? '-' : _.round(item.credits, 2).toFixed(2)),
     id: 'credits',
     width: 150,
   }, {
     className: 'text-right',
     Header: 'Total',
-    accessor: (item) => (_.round(item.total, 2).toFixed(2)),
+    accessor: (item) => (item.total === 0 ? '-' : _.round(item.total, 2).toFixed(2)),
     id: 'total',
     width: 150,
   }];
@@ -91,21 +92,26 @@ const ModelListTable = (props) => {
   };
 
   items.forEach((item) => {
-    if (!item.vehicle) {
-      return;
-    }
-
-    const found = data.findIndex((obj) => (obj.vehicle.id === item.vehicle.id));
+    const id = `${item.xlsModelYear}-${item.xlsMake}-${item.xlsModel}`;
+    const found = data.findIndex((obj) => (obj.id === id));
     let addSale = 0;
+
     let creditValue = 0;
 
-    if (!validatedOnly || (item.record && item.record.validationStatus === 'VALIDATED')) {
-      addSale = 1;
+    if (item.vehicle) {
       ({ creditValue } = item.vehicle);
 
-      if (item.vehicle) {
-        ({ creditValue } = item.vehicle);
+      if (!creditValue || Number.isNaN(creditValue)) {
+        creditValue = 0;
+      }
 
+      if (['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(validationStatus) < 0) {
+        addSale = 1;
+      } else if (item.recordOfSale) {
+        addSale = 1;
+      }
+
+      if (addSale > 0) {
         if (item.vehicle.creditClass === 'A') {
           totals.a += creditValue;
         } else if (item.vehicle.creditClass === 'B') {
@@ -114,20 +120,36 @@ const ModelListTable = (props) => {
       }
     }
 
+    let warnings = 0;
+
+    // does this row have any warnings?
+    // if so, mark this as CONTAINS WARNINGS (vs how many warnings does this row have)
+    if (item.warnings && item.warnings.length > 0) {
+      warnings = 1;
+    }
+
     if (found >= 0) {
       data[found] = {
         ...data[found],
         sales: data[found].sales + addSale,
         total: data[found].total + (creditValue * addSale),
-        warnings: data[found].warnings + item.warnings,
+        warnings: data[found].warnings + warnings,
       };
     } else {
       data.push({
+        id,
         credits: creditValue,
         sales: addSale,
         total: (creditValue * addSale),
-        vehicle: item.vehicle,
-        warnings: item.warnings,
+        vehicle: {
+          creditClass: (item.vehicle && item.vehicle.id) ? item.vehicle.creditClass : '-',
+          modelYear: Math.trunc(item.xlsModelYear),
+          make: item.xlsMake,
+          modelName: item.xlsModel,
+          range: (item.vehicle && item.vehicle.id) ? item.vehicle.range : '-',
+          vehicleZevType: (item.vehicle && item.vehicle.id) ? item.vehicle.vehicleZevType : '-',
+        },
+        warnings,
       });
     }
   });
@@ -142,7 +164,7 @@ const ModelListTable = (props) => {
       key="table"
     />,
     <div className="totals" key="totals">
-      <table className="float-right">
+      <table>
         <tbody className="font-weight-bold">
           <tr className="total-grey">
             <td className="text-center">Total A Credits</td>
