@@ -301,7 +301,7 @@ CreditRequestDetailsPage.defaultProps = {
 
 CreditRequestDetailsPage.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
-  locationState: PropTypes.shape(),
+  locationState: PropTypes.arrayOf(PropTypes.shape()),
   previousDateCurrentTo: PropTypes.string.isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
