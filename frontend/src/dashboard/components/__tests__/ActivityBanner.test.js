@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-  render, cleanup, getByTestId, fireEvent, getByRole,
+  render, cleanup, fireEvent,
 } from '@testing-library/react';
-import jest from 'jest-mock';
+
 import ActivityBanner from '../ActivityBanner';
 import history from '../../../app/History';
 
@@ -21,7 +21,6 @@ describe('activity banner', () => {
     />);
   });
   it('renders a clickable button', () => {
-    const handleClick = jest.fn();
     const { getByRole } = render(
       <ActivityBanner
         colour="blue"

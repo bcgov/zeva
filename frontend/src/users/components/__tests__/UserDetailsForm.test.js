@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import {
-  render, cleanup, waitForElement, fireEvent, getByText,
+  render, cleanup,
 } from '@testing-library/react';
 
 import UserDetailsForm from '../UserDetailsForm';
@@ -9,7 +9,7 @@ import UserDetailsForm from '../UserDetailsForm';
 afterEach(cleanup);
 
 const handleInputChange = (event) => {
-  const { value, name } = event.target;
+  const { name } = event.target;
   if (name === 'roles-manager') {
     if (!event.target.checked) {
       console.log('unchecked');
