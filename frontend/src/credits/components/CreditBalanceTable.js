@@ -15,6 +15,9 @@ const CreditBalanceTable = (props) => {
   }, {
     accessor: 'A',
     className: 'text-right credits-left',
+    Cell: (item) => (
+      <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>
+    ),
     Header: 'A',
     headerClassName: 'font-weight-bold credits-left',
     id: 'credit-class-A',
@@ -22,6 +25,9 @@ const CreditBalanceTable = (props) => {
   }, {
     accessor: 'B',
     className: 'text-right',
+    Cell: (item) => (
+      <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>
+    ),
     Header: 'B',
     headerClassName: 'font-weight-bold',
     id: 'credit-class-B',
