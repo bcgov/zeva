@@ -14,12 +14,16 @@ module.exports = {
   moduleNameMapper: {
     '^.+\\.(css|less|scss)$': '<rootDir>/__mocks__/style.js',
   },
+  setupFiles: [
+    './jest.setup.js',
+  ],
   testURL: 'http://localhost/',
   transform: {
     '^.+\\.(js|jsx)$': 'babel-jest',
   },
-  transformIgnorePatterns: [
-    'node_modules/(?!(react.*|@babel.*|es.*)/)',
+  coveragePathIgnorePatterns: [
+    'node_modules/',
+    'src/stories/',
   ],
   verbose: true,
   globals: {
