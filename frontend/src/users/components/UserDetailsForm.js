@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ButtonDelete from '../../app/components/ButtonDelete';
+
 import CustomPropTypes from '../../app/utilities/props';
 import Loading from '../../app/components/Loading';
 import TextInput from '../../app/components/TextInput';

@@ -96,6 +96,32 @@ h2 {
       }
     }
   }
+
+  .recommendation-comment {
+    border: 1px solid $border-grey;
+    margin: 1rem 0 1.5rem 0;
+    background-color: #fcfcfc;
+  }
+
+  .comment-area {
+    margin: 0 auto 0 auto;
+    textarea {
+      width: 100%;
+      resize: none;
+      display: block;
+      margin: 0 auto 1rem auto;
+    }
+  }
+
+  .sales-upload-grey {
+    color: #747474 !important;
+    font-size: 1.1rem;
+    width: 10rem;
+  }
+  
+  .sales-upload-blue {
+    font-size: 1.1rem;
+  }
 }
 
 #sales-details {
@@ -281,11 +307,11 @@ h2 {
 
 .totals {
   table {
-    margin-top: 15px;
     td {
       padding: 3px 15px 3px 15px;
       border: 2px solid $border-grey;
     }
+
     .total-grey {
       background-color: $default-background-grey;
     }

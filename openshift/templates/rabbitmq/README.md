@@ -5,6 +5,7 @@
 * rabbitmq-web-route.yaml create route to rabbitmq gui
 * secret-template.yaml create template.rabbitmq-secret
 * zeva-rabbitmq-secret not being used
+* rabbitmq-secret-configmap-only.yaml, used when deploy dev, only create secret and configmap, save dev redource as Rabbitmq is not being used yet (20200921)
 
 ### Before triggering pipeline
 

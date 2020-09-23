@@ -31,6 +31,9 @@ const CreditRequestsContainer = (props) => {
       queryFilter.push({ id: key, value });
     });
     setFiltered([...filtered, ...queryFilter]);
+    if (location.state) {
+      setFiltered([...filtered, ...location.state]);
+    }
 
     axios.get(ROUTES_SALES_SUBMISSIONS.LIST).then((response) => {
       setSubmissions(response.data);

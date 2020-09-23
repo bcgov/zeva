@@ -22,14 +22,14 @@ const SalesSubmissionDetailsContainer = (props) => {
   const [validatedList, setValidatedList] = useState([]);
 
   const refreshDetails = () => {
-    axios.get(ROUTES_SALES_SUBMISSIONS.RAW.replace(':id', id)).then((response) => {
+    axios.get(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id)).then((response) => {
       const { data } = response;
       setSubmission(data);
 
-      const validatedRecords = data.records.filter(
+      const validatedRecords = data.content.filter(
         (record) => {
           if (data.validationStatus === 'CHECKED') {
-            return record.checked;
+            return record.recordOfSale;
           }
 
           return record.icbcVerification;
@@ -47,11 +47,11 @@ const SalesSubmissionDetailsContainer = (props) => {
 
   const handleCheckboxClick = (event) => {
     const { value: submissionId, checked } = event.target;
-
+    const newId = Number(submissionId);
     if (!checked) {
       setValidatedList(validatedList.filter((item) => Number(item) !== Number(submissionId)));
     } else {
-      setValidatedList(() => [...validatedList, submissionId]);
+      setValidatedList(() => [...validatedList, newId]);
     }
   };
 

@@ -35,8 +35,9 @@ const BceidUser = {
   hasPermission: 'EDIT_ORGANIZATONS',
 };
 
+
+
 const activityCountIdir = {
-  creditNew: 0,
   creditsAnalyst: 2,
   creditsAwaiting: 0,
   creditsIssued: 0,
@@ -52,16 +53,30 @@ const activityCountIdir = {
 };
 
 const activityCountBceid = {
-  creditNew: 0,
   creditsAwaiting: 6,
   creditsIssued: 2,
-  creditsNew: 0,
+  creditsNew: 3,
   modelAwaitingValidation: 0,
   modelInfoRequest: 0,
   modelValidated: 0,
   modelsAwaitingValidation: 7,
   modelsInfoRequest: 4,
   modelsValidated: 8,
+  transfersAwaitingGovernment: 1,
+  transfersAwaitingPartner: 2,
+  transfersRecorded: 5,
+};
+
+const activityCountBceidNone = {
+  creditsAwaiting: 0,
+  creditsIssued: 0,
+  creditsNew: 0,
+  modelAwaitingValidation: 0,
+  modelInfoRequest: 0,
+  modelValidated: 0,
+  modelsAwaitingValidation: 0,
+  modelsInfoRequest: 0,
+  modelsValidated: 0,
   transfersAwaitingGovernment: 0,
   transfersAwaitingPartner: 0,
   transfersRecorded: 0,
@@ -138,4 +153,12 @@ storiesOf('Activity Banner BCEID', module)
         className="no-hover"
       />
     </div>
+  ));
+
+storiesOf('Actions page bceid', module)
+  .add('whole page', () => (
+    <ActionsBceid activityCount={activityCountBceid} loading={false} />
+  )) 
+  .add('no activity', () => (
+    <ActionsBceid activityCount={activityCountBceidNone} loading={false} />
   ));

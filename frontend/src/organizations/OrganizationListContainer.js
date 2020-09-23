@@ -12,14 +12,16 @@ import OrganizationListPage from './components/OrganizationListPage';
 const OrganizationListContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [organizations, setOrganizations] = useState([]);
-  const { keycloak } = props;
+  const { keycloak, user } = props;
 
   const refreshDetails = () => {
     setLoading(true);
-    axios.get(ROUTES_ORGANIZATIONS.LIST).then((response) => {
-      setOrganizations(response.data);
-      setLoading(false);
-    });
+    if (user.isGovernment) {
+      axios.get(ROUTES_ORGANIZATIONS.LIST).then((response) => {
+        setOrganizations(response.data);
+        setLoading(false);
+      });
+    }
   };
 
   useEffect(() => {
@@ -36,6 +38,7 @@ const OrganizationListContainer = (props) => {
 
 OrganizationListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default OrganizationListContainer;

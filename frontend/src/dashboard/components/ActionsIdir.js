@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import ROUTES_CREDITS from '../../app/routes/Credits';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
@@ -32,7 +33,7 @@ const ActionsIdir = (props) => {
             icon="car"
             boldText="ZEV Models"
             regularText="no current activity"
-            className="no-hover"
+            linkTo={ROUTES_VEHICLES.LIST}
           />
         )}
         {activityCount.creditsAnalyst > 0 && user.hasPermission('RECOMMEND_SALES')
@@ -74,8 +75,7 @@ const ActionsIdir = (props) => {
             icon="check-square"
             boldText="Credit Applications"
             regularText="no current activity"
-            className="no-hover"
-
+            linkTo={ROUTES_CREDITS.CREDIT_REQUESTS}
           />
         )}
         {activityCount.transfersAwaitingPartner > 0 && user.hasPermission('RECOMMEND_SALES')
@@ -85,18 +85,20 @@ const ActionsIdir = (props) => {
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersAwaitingPartner} awaiting partner confirmation`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_TRANSFERS}?status=Submitted`}
         />
         )}
-        {activityCount.transfersAwaitingGovernment > 0
+        {activityCount.transfersAwaitingDirector > 0
         && (
         <ActivityBanner
           colour="blue"
           icon="exchange-alt"
           boldText="Credit Transfer"
-          regularText={`${activityCount.transfersAwaitingGovernment} require director approval`}
+          regularText={`${activityCount.transfersAwaitingDirector} require director approval`}
+          linkTo={`${ROUTES_CREDITS.CREDIT_TRANSFERS}?status=Approved`}
         />
         )}
-        {activityCount.transfersAwaitingGovernment === 0
+        {activityCount.transfersAwaitingDirector === 0 && activityCount.transfersAwaitingAnalyst === 0
         && activityCount.transfersAwaitingPartner === 0 && activityCount.transfersRecorded === 0
         && (
           <ActivityBanner
@@ -104,7 +106,7 @@ const ActionsIdir = (props) => {
             icon="exchange-alt"
             boldText="Credit Transfer"
             regularText="no current activity"
-            className="no-hover"
+            linkTo={ROUTES_CREDITS.CREDIT_TRANSFERS}
           />
         )}
       </div>
@@ -116,6 +118,8 @@ ActionsIdir.defaultProps = {
 };
 
 ActionsIdir.propTypes = {
+  activityCount: PropTypes.shape().isRequired,
+  loading: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 

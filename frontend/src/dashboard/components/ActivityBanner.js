@@ -10,11 +10,17 @@ const ActivityBanner = (props) => {
     boldText,
     regularText,
     linkTo,
-    className,
   } = props;
 
   return (
-    <button type="button" name="activity-button" data-testid="activity-button" className={`alert alert-light activity-banner ${className}`} key={regularText} onClick={()=>{history.push(linkTo)}}>
+    <button
+      type="button"
+      name="activity-button"
+      data-testid="activity-button"
+      className="alert alert-light activity-banner"
+      key={regularText}
+      onClick={() => { history.push(linkTo); }}
+    >
       <div>
         <FontAwesomeIcon icon={icon} size="3x" className={colour} />
       </div>
@@ -32,7 +38,6 @@ const ActivityBanner = (props) => {
 export default ActivityBanner;
 
 ActivityBanner.defaultProps = {
-  className: '',
   linkTo: '',
 };
 
@@ -42,5 +47,4 @@ ActivityBanner.propTypes = {
   boldText: PropTypes.string.isRequired,
   regularText: PropTypes.string.isRequired,
   linkTo: PropTypes.string,
-  className: PropTypes.string,
 };

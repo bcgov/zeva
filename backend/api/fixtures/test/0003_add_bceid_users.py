@@ -49,10 +49,10 @@ class AddBCEIDUsers(OperationalDataScript):
         "display_name": "Richard Tan",
         "username": "RTAN_BCEID"
     }, {
-        "first_name": "Robert ",
-        "last_name": "Johnstone",
-        "display_name": "Robert Johnstone",
-        "username": "RJOHNSTONE_BCEID"
+        "first_name": "Anton",
+        "last_name": "Coetzer",
+        "display_name": "Anton Coetzer",
+        "username": "ALCOETZE_BCEID"
     }]
 
     def check_run_preconditions(self):

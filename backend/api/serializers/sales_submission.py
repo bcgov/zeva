@@ -7,30 +7,55 @@ from api.models.record_of_sale_statuses import RecordOfSaleStatuses
 from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
+from api.models.sales_submission_comment import SalesSubmissionComment
+from api.serializers.sales_submission_comment import \
+    SalesSubmissionCommentSerializer
 from api.models.user_profile import UserProfile
 from api.models.vin_statuses import VINStatuses
 from api.serializers.user import MemberSerializer
 from api.serializers.organization import OrganizationSerializer
-from api.serializers.record_of_sale import RecordOfSaleSerializer
 from api.serializers.sales_submission_content import \
-    SalesSubmissionContentSerializer, SalesSubmissionContentCheckedSerializer
+    SalesSubmissionContentSerializer
 from api.services.sales_spreadsheet import get_date
 
 
+class BaseSerializer():
+    def get_update_user(self, obj):
+        user_profile = UserProfile.objects.filter(username=obj.update_user)
+
+        if user_profile.exists():
+            serializer = MemberSerializer(user_profile.first(), read_only=True)
+            return serializer.data
+
+        return obj.update_user
+
+    def get_validation_status(self, obj):
+        request = self.context.get('request')
+
+        #  do not show bceid users statuses of CHECKED
+        #  CHECKED is really an internal status for IDIR users that someone has
+        #  reviewed the vins
+        if not request.user.is_government and \
+                obj.validation_status in [
+                        SalesSubmissionStatuses.CHECKED,
+                        SalesSubmissionStatuses.RECOMMEND_APPROVAL,
+                        SalesSubmissionStatuses.RECOMMEND_REJECTION
+                ]:
+            return SalesSubmissionStatuses.SUBMITTED.value
+
+        return obj.get_validation_status_display()
+
+
 class SalesSubmissionListSerializer(
-        ModelSerializer, EnumSupportSerializerMixin
+        ModelSerializer, EnumSupportSerializerMixin, BaseSerializer
 ):
     organization = OrganizationSerializer(read_only=True)
+    total_a_credits = SerializerMethodField()
+    total_b_credits = SerializerMethodField()
+    total_warnings = SerializerMethodField()
     totals = SerializerMethodField()
     update_user = SerializerMethodField()
     validation_status = SerializerMethodField()
-    total_a_credits = SerializerMethodField()
-    total_b_credits = SerializerMethodField()
-
-    def get_totals(self, obj):
-        return {
-            'vins': obj.records.count()
-        }
 
     def get_total_a_credits(self, obj):
         total = 0
@@ -54,86 +79,83 @@ class SalesSubmissionListSerializer(
 
         return round(total, 2)
 
-    def get_update_user(self, obj):
-        user_profile = UserProfile.objects.filter(username=obj.update_user)
-
-        if user_profile.exists():
-            serializer = MemberSerializer(user_profile.first(), read_only=True)
-            return serializer.data
-
-        return obj.update_user
-
-    def get_validation_status(self, obj):
+    def get_total_warnings(self, obj):
         request = self.context.get('request')
-        
-        #  do not show bceid users statuses of CHECKED
-        #  CHECKED is really an internal status for IDIR users that someone has
-        #  reviewed the vins
-        if not request.user.is_government and \
-                obj.validation_status == SalesSubmissionStatuses.CHECKED:
-            return SalesSubmissionStatuses.SUBMITTED.value
+        warnings = 0
 
-        return obj.get_validation_status_display()
+        valid_statuses = [SalesSubmissionStatuses.VALIDATED]
+
+        if request.user.is_government:
+            valid_statuses = [
+                SalesSubmissionStatuses.CHECKED,
+                SalesSubmissionStatuses.RECOMMEND_APPROVAL,
+                SalesSubmissionStatuses.RECOMMEND_REJECTION,
+                SalesSubmissionStatuses.VALIDATED
+            ]
+
+        if obj.validation_status in valid_statuses:
+            for row in obj.content.all():
+                if len(row.warnings) > 0:
+                    warnings += 1
+
+        return warnings
+
+    def get_totals(self, obj):
+        return {
+            'vins': obj.records.count()
+        }
 
     class Meta:
         model = SalesSubmission
         fields = (
             'id', 'validation_status', 'organization', 'submission_date',
             'submission_sequence', 'totals', 'submission_id', 'update_user',
-            'total_a_credits', 'total_b_credits'
+            'total_a_credits', 'total_b_credits', 'total_warnings',
+            'unselected',
         )
 
 
-class SalesSubmissionSerializer(ModelSerializer, EnumSupportSerializerMixin):
-    validation_status = EnumField(SalesSubmissionStatuses, read_only=True)
-    organization = OrganizationSerializer(read_only=True)
-    records = SerializerMethodField()
-
-    def get_records(self, instance):
-        if instance.validation_status == SalesSubmissionStatuses.SUBMITTED:
-            serializer = SalesSubmissionContentSerializer(
-                instance.content,
-                read_only=True,
-                many=True
-            )
-        else:
-            serializer = RecordOfSaleSerializer(
-                instance.records,
-                read_only=True,
-                many=True
-            )
-
-        return serializer.data
-
-    class Meta:
-        model = SalesSubmission
-        fields = (
-            'id', 'validation_status', 'organization', 'submission_date',
-            'submission_sequence', 'records', 'submission_id'
-        )
-
-
-class SalesSubmissionWithContentSerializer(
-    ModelSerializer, EnumSupportSerializerMixin
+class SalesSubmissionSerializer(
+        ModelSerializer, EnumSupportSerializerMixin,
+        BaseSerializer
 ):
-    validation_status = EnumField(SalesSubmissionStatuses, read_only=True)
     organization = OrganizationSerializer(read_only=True)
-    records = SerializerMethodField()
+    content = SerializerMethodField()
+    sales_submission_comment = SerializerMethodField()
+    update_user = SerializerMethodField()
+    validation_status = SerializerMethodField()
 
-    def get_records(self, instance):
-        serializer = SalesSubmissionContentCheckedSerializer(
+    def get_content(self, instance):
+        request = self.context.get('request')
+
+        serializer = SalesSubmissionContentSerializer(
             instance.content,
             read_only=True,
-            many=True
+            many=True,
+            context={'request': request}
         )
 
         return serializer.data
+
+    def get_sales_submission_comment(self, obj):
+        sales_submission_comment = SalesSubmissionComment.objects.filter(
+            sales_submission=obj
+        ).order_by('-create_timestamp')
+
+        if sales_submission_comment.exists():
+            serializer = SalesSubmissionCommentSerializer(
+                sales_submission_comment, read_only=True, many=True
+            )
+            return serializer.data
+
+        return None
 
     class Meta:
         model = SalesSubmission
         fields = (
             'id', 'validation_status', 'organization', 'submission_date',
-            'submission_sequence', 'records', 'submission_id'
+            'submission_sequence', 'content', 'submission_id',
+            'sales_submission_comment', 'update_user', 'unselected',
         )
 
 
@@ -141,6 +163,10 @@ class SalesSubmissionSaveSerializer(
         ModelSerializer
 ):
     validation_status = EnumField(SalesSubmissionStatuses)
+    sales_submission_comment = SalesSubmissionCommentSerializer(
+        allow_null=True,
+        required=False
+    )
 
     def validate_validation_status(self, value):
         request = self.context.get('request')
@@ -153,8 +179,16 @@ class SalesSubmissionSaveSerializer(
     def update(self, instance, validated_data):
         request = self.context.get('request')
         records = request.data.get('records')
+        sales_submission_comment = validated_data.pop('sales_submission_comment', None)
 
-        if records:
+        if sales_submission_comment:
+            SalesSubmissionComment.objects.create(
+                create_user=request.user.username,
+                sales_submission=instance,
+                comment=sales_submission_comment.get('comment')
+            )
+
+        if records is not None:
             RecordOfSale.objects.filter(submission_id=instance.id).delete()
 
             for record_id in records:
@@ -190,5 +224,5 @@ class SalesSubmissionSaveSerializer(
         fields = (
             'id', 'organization', 'submission_date',
             'submission_sequence', 'submission_id',
-            'validation_status'
+            'validation_status', 'sales_submission_comment'
         )

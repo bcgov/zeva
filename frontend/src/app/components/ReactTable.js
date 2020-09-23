@@ -36,7 +36,7 @@ class CustomReactTable extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    if (this.table.current) {
+    if (this.table.current && nextProps.filtered) {
       if (
         JSON.stringify(this.table.current.state.filtered)
         !== JSON.stringify(nextProps.filtered)
@@ -85,7 +85,7 @@ class CustomReactTable extends Component {
 
           this.pageSize = this.table.current.getResolvedState().sortedData.length;
         }}
-        pageSize={this.pageSize}
+        pageSize={this.pageSize > 0 ? this.pageSize : 3}
         pageSizeOptions={[this.pageSize]}
         showPagination={false}
       />

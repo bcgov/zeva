@@ -3,6 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import history from '../../app/History';
 
+import ROUTES_CREDITS from '../../app/routes/Credits';
 import ROUTES_SALES from '../../app/routes/Sales';
 import download from '../../app/utilities/download';
 import ExcelFileDrop from '../../app/components/FileDrop';
@@ -25,7 +26,7 @@ const SalesUploadPage = (props) => {
 
   return (
     <div id="sales-edit" className="page">
-      <h2>Application for Credits for Consumer Sales</h2>
+      <h2 className="pt-0">Application for Credits for Consumer Sales</h2>
       <h5 className="sales-upload-grey">
         Download an Excel template containing all active ZEV models to submit consumer sales
       </h5>
@@ -53,7 +54,7 @@ const SalesUploadPage = (props) => {
 
       <h2>Upload ZEV Sales Information</h2>
       <p>
-        Credits can be issued for eligible ZEV sales made prior to May 31, 2020.
+        Credits can be issued for active ZEV sales made prior to May 31, 2020.
       </p>
       <div className="compact w-50">
         <div className="bordered">
@@ -67,6 +68,7 @@ const SalesUploadPage = (props) => {
 
             <div className="panel panel-default">
               <ExcelFileDrop setFiles={setUploadFiles} maxFiles={100000} />
+              {files.length > 0 && (
               <div className="files">
                 <div className="row">
                   <div className="col-8 header">Filename</div>
@@ -91,6 +93,7 @@ const SalesUploadPage = (props) => {
                   </div>
                 ))}
               </div>
+              )}
             </div>
           </div>
         </div>
@@ -103,7 +106,7 @@ const SalesUploadPage = (props) => {
           <button
             className="button"
             onClick={() => {
-              history.goBack();
+              history.push(ROUTES_CREDITS.CREDIT_REQUESTS);
             }}
             type="button"
           >
@@ -126,4 +129,16 @@ const SalesUploadPage = (props) => {
 
   );
 };
+
+SalesUploadPage.defaultProps = {
+  errorMessage: '',
+};
+
+SalesUploadPage.propTypes = {
+  errorMessage: PropTypes.string,
+  files: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  setUploadFiles: PropTypes.func.isRequired,
+  upload: PropTypes.func.isRequired,
+};
+
 export default SalesUploadPage;

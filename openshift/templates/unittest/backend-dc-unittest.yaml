@@ -53,17 +53,20 @@ parameters:
   - name: REPLICAS
     value: '1'
     required: true
+  - name: DJANGO_SECRET
+    description: "Cookie used for authentication of cluster nodes"
+    from: "[a-zA-Z0-9]{50}"
+    generate: expression    
 objects:
   - apiVersion: v1
     kind: Secret
     metadata:
       labels:
-        app: ${NAME}${SUFFIX}
-      annotations:
-        as-copy-of: "template.django-secret"
+        app: ${NAME}${SUFFIX}    
+      annotations: null
       name: ${NAME}-django-unittest${SUFFIX}
     stringData:
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET}
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
     metadata:

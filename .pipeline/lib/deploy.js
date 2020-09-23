@@ -63,6 +63,7 @@ module.exports = settings => {
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment.yaml`, {
     'param': {
       'NAME': 'patroni',
+      'ENV_NAME': phases[phase].phase,
       'SUFFIX': phases[phase].suffix,
       'CPU_REQUEST': phases[phase].patroniCpuRequest,
       'CPU_LIMIT': phases[phase].patroniCpuLimit,
@@ -77,6 +78,18 @@ module.exports = settings => {
     }
   }))
 
+  //only deploy rabbitmq secret and configmap, rabbitmq is not being used yet 20200921
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-secret-configmap-only.yaml`, {
+    'param': {
+      'NAME': phases[phase].name,
+      'ENV_NAME': phases[phase].phase,
+      'SUFFIX': phases[phase].suffix,
+      'NAMESPACE': phases[phase].namespace,
+      'CLUSTER_NAME': 'rabbitmq-cluster'
+    }
+  }))
+
+  /**
   //deploy rabbitmq, use docker image directly
   //POST_START_SLEEP is harded coded in the rabbitmq template, replacement was not successful
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
@@ -98,6 +111,7 @@ module.exports = settings => {
       'STORAGE_CLASS': phases[phase].storageClass
     }
   }))
+  */
 
   // deploy frontend configmap
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-configmap.yaml`, {
@@ -153,46 +167,6 @@ module.exports = settings => {
       'HEALTH_CHECK_DELAY': phases[phase].schemaspyHealthCheckDelay
     }
   }))
-
-  //deploy separate database and backend pod for unit test
-  if( phase === 'dev' ) {
-
-    //create unit test database init scripts
-    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/zeva-postgresql-init.yaml`, {
-      'param': {
-        'NAME': phases[phase].name,
-        'SUFFIX': phases[phase].suffix
-      }
-    })) 
-
-    //deploy postgresql unit test
-    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/postgresql-dc-unittest.yaml`, {
-      'param': {
-        'NAME': phases[phase].name,
-        'SUFFIX': phases[phase].suffix,
-        'ENV_NAME': phases[phase].phase
-      }
-    })) 
-
-    //deploy backend unit test
-    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/unittest/backend-dc-unittest.yaml`, {
-      'param': {
-        'NAME': phases[phase].name,
-        'SUFFIX': phases[phase].suffix,
-        'VERSION': phases[phase].tag,
-        'ENV_NAME': phases[phase].phase,
-        'BACKEND_HOST_NAME': phases[phase].backendHost,
-        'RABBITMQ_CLUSTER_NAME': 'rabbitmq-cluster',
-        'CPU_REQUEST': phases[phase].backendCpuRequest,
-        'CPU_LIMIT': phases[phase].backendCpuLimit,
-        'MEMORY_REQUEST': phases[phase].backendMemoryRequest,
-        'MEMORY_LIMIT': phases[phase].backendMemoryLimit,
-        'HEALTH_CHECK_DELAY': phases[phase].backendHealthCheckDelay,
-        'REPLICAS':  phases[phase].backendReplicas
-      }
-    })) 
-
-  }
 
   //add autoacaler
   /*****

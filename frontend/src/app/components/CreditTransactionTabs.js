@@ -3,7 +3,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import ROUTES_CREDITS from '../routes/Credits';
-import ROUTES_SALES from '../routes/Sales';
 import CustomPropTypes from '../utilities/props';
 
 import CONFIG from '../config';
@@ -17,24 +16,26 @@ const CreditTransactionTabs = (props) => {
       key="tabs"
       role="tablist"
     >
+      {!user.isGovernment && (
       <li
         className={`nav-item ${(active === 'credit-transactions') ? 'active' : ''}`}
         role="presentation"
       >
         <Link to={ROUTES_CREDITS.LIST}>Credit Balance</Link>
       </li>
+      )}
       <li
         className={`nav-item ${(active === 'credit-requests') ? 'active' : ''}`}
         role="presentation"
       >
-        <Link to={user.isGovernment ? ROUTES_CREDITS.CREDIT_REQUESTS : ROUTES_SALES.LIST}>Credit Applications</Link>
+        <Link to={ROUTES_CREDITS.CREDIT_REQUESTS}>Credit Applications</Link>
       </li>
       {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED && (
       <li
         className={`nav-item ${(active === 'credit-transfers') ? 'active' : ''}`}
         role="presentation"
       >
-        <Link to={user.isGovernment ? '/' : ROUTES_CREDITS.CREDIT_TRANSFERS}>Credit Transfers</Link>
+        <Link to={ROUTES_CREDITS.CREDIT_TRANSFERS}>Credit Transfers</Link>
       </li>
       )}
       {user.isGovernment && (

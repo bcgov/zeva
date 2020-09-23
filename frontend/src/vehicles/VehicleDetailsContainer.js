@@ -5,12 +5,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-
+import { withRouter } from 'react-router';
+import PropTypes from 'prop-types';
 import history from '../app/History';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import CustomPropTypes from '../app/utilities/props';
 import VehicleDetailsPage from './components/VehicleDetailsPage';
-import VehicleValidatePage from './components/VehicleValidatePage';
 
 const VehicleDetailsContainer = (props) => {
   const [vehicle, setVehicle] = useState({});
@@ -18,7 +18,8 @@ const VehicleDetailsContainer = (props) => {
   const [comments, setComments] = useState({ vehicleComment: { comment: '' } });
   const { id } = useParams();
 
-  const { keycloak, user } = props;
+  const { keycloak, user, location } = props;
+  const { state: locationState } = location;
 
   const stateChange = (newState) => {
     setLoading(true);
@@ -46,24 +47,16 @@ const VehicleDetailsContainer = (props) => {
     refreshList();
   }, [keycloak.authenticated]);
 
-  if (user.isGovernment) {
-    return (
-      <VehicleValidatePage
-        loading={loading}
-        comments={comments}
-        details={vehicle}
-        setComments={setComments}
-        requestStateChange={stateChange}
-        postComment={postComment}
-      />
-    );
-  }
-
   return (
     <VehicleDetailsPage
-      loading={loading}
+      locationState={locationState}
+      comments={comments}
       details={vehicle}
+      loading={loading}
+      postComment={postComment}
       requestStateChange={stateChange}
+      setComments={setComments}
+      user={user}
     />
   );
 };
@@ -71,6 +64,7 @@ const VehicleDetailsContainer = (props) => {
 VehicleDetailsContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   user: CustomPropTypes.user.isRequired,
+  location: PropTypes.shape().isRequired,
 };
 
-export default VehicleDetailsContainer;
+export default withRouter(VehicleDetailsContainer);

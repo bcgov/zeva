@@ -3,19 +3,28 @@
  */
 import PropTypes from 'prop-types';
 import React from 'react';
-import ReactTable from 'react-table';
 import _ from 'lodash';
 
+import ReactTable from '../../app/components/ReactTable';
+
 const ModelListTable = (props) => {
-  const { items, validatedOnly } = props;
+  const { items, validatedOnly, validationStatus } = props;
+
+  const showWarnings = () => {
+    if (['RECOMMEND_APPROVAL', 'VALIDATED'].indexOf(validationStatus) >= 0) {
+      return true;
+    }
+
+    return validatedOnly;
+  };
 
   const columns = [{
-    accessor: () => '0',
+    accessor: 'warnings',
     className: 'text-right',
     filterable: false,
     Header: 'Warnings',
     id: 'warnings',
-    show: validatedOnly,
+    show: showWarnings(),
     width: 100,
   }, {
     accessor: 'sales',
@@ -65,23 +74,16 @@ const ModelListTable = (props) => {
   }, {
     className: 'text-right',
     Header: 'Credits',
-    accessor: (item) => (_.round(item.credits, 2).toFixed(2)),
+    accessor: (item) => (item.credits === 0 ? '-' : _.round(item.credits, 2).toFixed(2)),
     id: 'credits',
     width: 150,
   }, {
     className: 'text-right',
     Header: 'Total',
-    accessor: (item) => (_.round(item.total, 2).toFixed(2)),
+    accessor: (item) => (item.total === 0 ? '-' : _.round(item.total, 2).toFixed(2)),
     id: 'total',
     width: 150,
   }];
-
-  const filterMethod = (filter, row) => {
-    const id = filter.pivotId || filter.id;
-    return row[id] !== undefined ? String(row[id])
-      .toLowerCase()
-      .includes(filter.value.toLowerCase()) : true;
-  };
 
   const data = [];
   const totals = {
@@ -90,21 +92,26 @@ const ModelListTable = (props) => {
   };
 
   items.forEach((item) => {
-    if (!item.vehicle) {
-      return;
-    }
-
-    const found = data.findIndex((obj) => (obj.vehicle.id === item.vehicle.id));
+    const id = `${item.xlsModelYear}-${item.xlsMake}-${item.xlsModel}`;
+    const found = data.findIndex((obj) => (obj.id === id));
     let addSale = 0;
+
     let creditValue = 0;
 
-    if (!validatedOnly || item.validationStatus === 'VALIDATED') {
-      addSale = 1;
+    if (item.vehicle) {
       ({ creditValue } = item.vehicle);
 
-      if (item.vehicle) {
-        ({ creditValue } = item.vehicle);
+      if (!creditValue || Number.isNaN(creditValue)) {
+        creditValue = 0;
+      }
 
+      if (['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(validationStatus) < 0) {
+        addSale = 1;
+      } else if (item.recordOfSale) {
+        addSale = 1;
+      }
+
+      if (addSale > 0) {
         if (item.vehicle.creditClass === 'A') {
           totals.a += creditValue;
         } else if (item.vehicle.creditClass === 'B') {
@@ -113,41 +120,54 @@ const ModelListTable = (props) => {
       }
     }
 
+    let warnings = 0;
+
+    // does this row have any warnings?
+    // if so, mark this as CONTAINS WARNINGS (vs how many warnings does this row have)
+    if (item.warnings && item.warnings.length > 0) {
+      warnings = 1;
+    }
+
     if (found >= 0) {
       data[found] = {
         ...data[found],
         sales: data[found].sales + addSale,
         total: data[found].total + (creditValue * addSale),
+        warnings: data[found].warnings + warnings,
       };
     } else {
       data.push({
+        id,
         credits: creditValue,
         sales: addSale,
         total: (creditValue * addSale),
-        vehicle: item.vehicle,
+        vehicle: {
+          creditClass: (item.vehicle && item.vehicle.id) ? item.vehicle.creditClass : '-',
+          modelYear: Math.trunc(item.xlsModelYear),
+          make: item.xlsMake,
+          modelName: item.xlsModel,
+          range: (item.vehicle && item.vehicle.id) ? item.vehicle.range : '-',
+          vehicleZevType: (item.vehicle && item.vehicle.id) ? item.vehicle.vehicleZevType : '-',
+        },
+        warnings,
       });
     }
   });
 
   return ([
     <ReactTable
-      className="searchable"
       columns={columns}
       data={data}
-      defaultFilterMethod={filterMethod}
-      defaultPageSize={data.length || 5}
       defaultSorted={[{
         id: 'make',
       }]}
-      filterable
       key="table"
-      pageSizeOptions={[data.length, 5, 10, 15, 20, 25, 50, 100]}
     />,
     <div className="totals" key="totals">
-      <table className="float-right">
+      <table>
         <tbody className="font-weight-bold">
           <tr className="total-grey">
-            <td className="text-centerr">Total A Credits</td>
+            <td className="text-center">Total A Credits</td>
             <td className="text-right">{_.round(totals.a, 2).toFixed(2)}</td>
           </tr>
           <tr>

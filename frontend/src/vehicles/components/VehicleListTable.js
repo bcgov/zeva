@@ -7,6 +7,7 @@ import React from 'react';
 import history from '../../app/History';
 import ReactTable from '../../app/components/ReactTable';
 import formatStatus from '../../app/utilities/formatStatus';
+import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 
 const VehicleListTable = (props) => {
   const {
@@ -22,7 +23,13 @@ const VehicleListTable = (props) => {
     return newValue;
   };
   const columns = [{
-    accessor: (row) => (row.organization ? row.organization.name : ''),
+    accessor: (row) => {
+      if (row.organization) {
+        return row.organization.shortName || row.organization.name;
+      }
+
+      return '';
+    },
     className: 'text-center',
     Header: 'Supplier',
     id: 'col-supplier',
@@ -129,15 +136,19 @@ const VehicleListTable = (props) => {
       filtered={filtered}
       data={items}
       defaultSorted={[{
-        id: 'make',
+        id: user.isGovernment ? 'col-supplier' : 'make',
       }]}
       getTrProps={(state, row) => {
         if (row && row.original && user) {
           return {
             onClick: () => {
-              const { id } = row.original;
+              const { id, validationStatus } = row.original;
 
-              history.push(`/vehicles/${id}`);
+              if (['CHANGES_REQUESTED', 'DRAFT'].indexOf(validationStatus) >= 0 && !user.isGovernment) {
+                history.push(ROUTES_VEHICLES.EDIT.replace(/:id/g, id), filtered);
+              } else {
+                history.push(ROUTES_VEHICLES.DETAILS.replace(/:id/g, id), filtered);
+              }
             },
             className: 'clickable',
           };

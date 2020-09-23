@@ -3,14 +3,16 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment-timezone';
-import History from '../../app/History';
+
+import history from '../../app/History';
 import AutocompleteInput from '../../app/components/AutocompleteInput';
 import ExcelFileDrop from '../../app/components/FileDrop';
 import Loading from '../../app/components/Loading';
+import Modal from '../../app/components/Modal';
 import TextInput from '../../app/components/TextInput';
+import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 import getFileSize from '../../app/utilities/getFileSize';
 import VehicleFormDropdown from './VehicleFormDropdown';
-import Modal from '../../app/components/Modal';
 
 const VehicleForm = (props) => {
   const {
@@ -28,7 +30,9 @@ const VehicleForm = (props) => {
     setFields,
     setUploadFiles,
     showProgressBars,
+    status,
     vehicleClasses,
+    vehicleComment,
     vehicleTypes,
     vehicleYears,
   } = props;
@@ -75,14 +79,14 @@ const VehicleForm = (props) => {
       <div className="row">
         <div className="col-12">
           <h1>{formTitle}</h1>
-          {fields.validationStatus === 'CHANGES_REQUESTED'
+          {status === 'CHANGES_REQUESTED'
           && (
           <div>
             <h6 className="request-changes-vehicle">Range test results have been requested by government</h6>
-            {fields.vehicleComment && (
+            {vehicleComment && (
             <h6>
-              <b>Comment from {fields.vehicleComment.createUser && fields.vehicleComment.createUser.displayName}, {moment(fields.vehicleComment.createTimestamp).format('MMM d, YYYY')}: </b>
-              {fields.vehicleComment.comment}
+              <b>Comment from {vehicleComment.createUser && vehicleComment.createUser.displayName}, {moment(vehicleComment.createTimestamp).format('MMM d, YYYY')}: </b>
+              {vehicleComment.comment}
             </h6>
             )}
           </div>
@@ -117,7 +121,10 @@ const VehicleForm = (props) => {
               />
               <TextInput
                 defaultValue={fields.modelName}
-                errorMessage={'modelName' in errorFields && errorFields.modelName}
+                errorMessage={
+                  ('modelName' in errorFields && errorFields.modelName)
+                  || ('nonFieldErrors' in errorFields && errorFields.nonFieldErrors.replace(/_/g, ' '))
+                }
                 handleInputChange={handleInputChange}
                 id="modelName"
                 label="Model"
@@ -184,7 +191,7 @@ const VehicleForm = (props) => {
             </fieldset>
           </div>
 
-          {(fields.hasPassedUs06Test || (fields.validationStatus === 'CHANGES_REQUESTED' && setUploadFiles)) && (
+          {(fields.hasPassedUs06Test || (status === 'CHANGES_REQUESTED' && setUploadFiles)) && (
             <div className="col-lg-6">
               <h3 className="font-weight-bold mt-2">Upload range test results</h3>
               <fieldset>
@@ -304,7 +311,7 @@ const VehicleForm = (props) => {
                   className="button"
                   type="button"
                   onClick={() => {
-                    History.goBack();
+                    history.push(ROUTES_VEHICLES.LIST);
                   }}
                 >
                   <FontAwesomeIcon icon="arrow-left" /> Back
@@ -341,6 +348,7 @@ VehicleForm.defaultProps = {
   setDeleteFiles: null,
   setUploadFiles: null,
   showProgressBars: false,
+  vehicleComment: {},
 };
 
 VehicleForm.propTypes = {
@@ -358,9 +366,11 @@ VehicleForm.propTypes = {
   setFields: PropTypes.func.isRequired,
   setUploadFiles: PropTypes.func,
   showProgressBars: PropTypes.bool,
+  status: PropTypes.string.isRequired,
   vehicleTypes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleClasses: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  vehicleComment: PropTypes.shape(),
 };
 
 export default VehicleForm;

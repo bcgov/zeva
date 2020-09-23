@@ -108,6 +108,8 @@ class OrganizationViewSet(
             SalesSubmissionStatuses.DRAFT,
         ))
 
-        serializer = SalesSubmissionListSerializer(sales, many=True)
+        serializer = SalesSubmissionListSerializer(
+            sales, many=True, context={'request': request}
+        )
 
         return Response(serializer.data)

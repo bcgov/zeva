@@ -39,8 +39,8 @@ class SalesSubmission(Auditable):
         default=SalesSubmissionStatuses.DRAFT,
         db_comment="The validation status of this sales submission. "
                    "Valid statuses: {statuses}".format(
-                        statuses=[c.name for c in SalesSubmissionStatuses]
-                    )
+                       statuses=[c.name for c in SalesSubmissionStatuses]
+                   )
     )
 
     @property
@@ -119,6 +119,10 @@ class SalesSubmission(Auditable):
         return SalesSubmissionContent.objects.filter(
             submission_id=self.id
         )
+
+    @property
+    def unselected(self):
+        return self.content.count() - self.records.count()
 
     class Meta:
         db_table = "sales_submission"

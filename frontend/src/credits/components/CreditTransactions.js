@@ -43,8 +43,13 @@ const CreditTransactions = (props) => {
         [balance.creditClass.creditClass]: parseFloat(balance.creditValue),
       };
 
-      const currentValue = totalCredits[balance.creditClass.creditClass]
-        ? parseFloat(totalCredits[balance.creditClass.creditClass]) : 0;
+      let currentValue = 0;
+      if (totalCredits[balance.weightClass.weightClassCode]
+        && totalCredits[balance.weightClass.weightClassCode][balance.creditClass.creditClass]) {
+        currentValue = parseFloat(
+          totalCredits[balance.weightClass.weightClassCode][balance.creditClass.creditClass],
+        );
+      }
 
       /*
       While this looks unnecessarily complicated,
@@ -59,11 +64,11 @@ const CreditTransactions = (props) => {
   });
 
   return (
-    <div id="credit-transaction-details" className="page">
+    <div id="credit-transaction-details" className="page mb-0">
       {!user.isGovernment && (
       <div className="row mb-5">
         <div className="col-sm-5">
-          <h2>Detailed Credit Balance</h2>
+          <h2 className="pt-0">Detailed Credit Balance</h2>
           <CreditBalanceTable
             items={
               Object.entries(balances).map(([key, value]) => ({

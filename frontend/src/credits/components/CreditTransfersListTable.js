@@ -4,13 +4,14 @@
 import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import React from 'react';
-import _ from 'lodash';
 
-import CustomPropTypes from '../../app/utilities/props';
 import ReactTable from '../../app/components/ReactTable';
+import CustomPropTypes from '../../app/utilities/props';
+import formatNumeric from '../../app/utilities/formatNumeric';
+import formatStatus from '../../app/utilities/formatStatus';
 
 const CreditTransfersListTable = (props) => {
-  const { user } = props;
+  const { user, filtered, setFiltered } = props;
   let { items } = props;
 
   items = items.map((item) => {
@@ -43,7 +44,7 @@ const CreditTransfersListTable = (props) => {
     className: 'text-right',
     Header: 'ID',
     id: 'id',
-    maxWidth: 100,
+    maxWidth: 75,
   }, {
     accessor: (row) => (moment(row.createTimestamp).format('YYYY-MM-DD')),
     className: 'text-center',
@@ -65,29 +66,56 @@ const CreditTransfersListTable = (props) => {
     Header: 'Transfer Partner',
     id: 'partner',
   }, {
-    accessor: (row) => (row.totalCreditsA > 0 ? row.totalCreditsA : '-'),
+    accessor: (row) => (row.totalCreditsA > 0 ? formatNumeric(row.totalCreditsA) : '-'),
     className: 'text-right',
     Header: 'A-Credits',
     id: 'credits-a',
     maxWidth: 150,
   }, {
-    accessor: (row) => (row.totalCreditsB > 0 ? row.totalCreditsB : '-'),
+    accessor: (row) => (row.totalCreditsB > 0 ? formatNumeric(row.totalCreditsB) : '-'),
     className: 'text-right',
     Header: 'B-Credits',
     id: 'credits-b',
     maxWidth: 150,
   }, {
-    accessor: (row) => `$ ${(_.round(row.totalTransferValue, 0).toFixed(0))}`,
+    accessor: (row) => `$ ${formatNumeric(row.totalTransferValue, 2)}`,
     className: 'text-right',
     Header: 'Transfer Value',
     id: 'transfer-value',
     maxWidth: 150,
   }, {
-    accessor: 'status',
-    className: 'text-left',
+    accessor: (item) => {
+      const { status } = item;
+      const formattedStatus = formatStatus(status);
+      if (formattedStatus === 'validated') {
+        return 'issued';
+      }
+      if (formattedStatus === 'approved' || formattedStatus === 'recommend rejection' || formattedStatus === 'recommend approval') {
+        return 'approved by transfer partner';
+      }
+      if (formattedStatus === 'submitted') {
+        return 'submitted to transfer partner';
+      }
+      return formattedStatus;
+    },
+    className: 'text-center text-capitalize',
+    filterMethod: (filter, row) => {
+      const filterValues = filter.value.split(',');
+      let returnValue = false;
+
+      filterValues.forEach((filterValue) => {
+        const value = filterValue.toLowerCase().trim();
+
+        if (value !== '' && !returnValue) {
+          returnValue = row[filter.id].toLowerCase().includes(value);
+        }
+      });
+
+      return returnValue;
+    },
     Header: 'Status',
     id: 'status',
-    maxWidth: 200,
+    maxWidth: 250,
   }];
 
   return (
@@ -98,16 +126,23 @@ const CreditTransfersListTable = (props) => {
         id: 'id',
         desc: true,
       }]}
+      filtered={filtered}
+      setFiltered={setFiltered}
     />
   );
 };
 
-CreditTransfersListTable.defaultProps = {};
+CreditTransfersListTable.defaultProps = {
+  filtered: undefined,
+  setFiltered: undefined,
+};
 
 CreditTransfersListTable.propTypes = {
+  filtered: PropTypes.arrayOf(PropTypes.shape()),
   items: PropTypes.arrayOf(PropTypes.shape({
     creditTransactions: PropTypes.arrayOf(PropTypes.shape()),
   })).isRequired,
+  setFiltered: PropTypes.func,
   user: CustomPropTypes.user.isRequired,
 };
 

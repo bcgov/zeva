@@ -3,33 +3,74 @@ from rest_framework.serializers import ModelSerializer, \
 
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission_content import SalesSubmissionContent
+from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.serializers.vehicle import VehicleMinSerializer
 from api.serializers.icbc_registration_data import \
     IcbcRegistrationDataSerializer
-from api.services.sales_spreadsheet import get_date
+from api.serializers.record_of_sale import RecordOfSaleSerializer
 
 
 class SalesSubmissionContentSerializer(ModelSerializer):
-    sales_date = SerializerMethodField()
+    icbc_verification = SerializerMethodField()
+    record_of_sale = SerializerMethodField()
     vehicle = SerializerMethodField()
+    warnings = SerializerMethodField()
 
-    def get_sales_date(self, instance):
-        return get_date(
-            instance.xls_sale_date,
-            instance.xls_date_type,
-            instance.xls_date_mode
-        )
+    def get_icbc_verification(self, instance):
+        request = self.context.get('request')
+        icbc_data = instance.icbc_verification
+
+        if request.user.is_government and icbc_data:
+            serializer = IcbcRegistrationDataSerializer(icbc_data)
+            return serializer.data
+
+        return None
+
+    def get_record_of_sale(self, instance):
+        request = self.context.get('request')
+        record_of_sale = instance.record_of_sale
+
+        if record_of_sale and (
+                request.user.is_government or
+                instance.submission.validation_status ==
+                SalesSubmissionStatuses.VALIDATED
+        ):
+            serializer = RecordOfSaleSerializer(
+                instance.record_of_sale, read_only=True
+            )
+
+            return serializer.data
+
+        return None
 
     def get_vehicle(self, instance):
-        serializer = VehicleMinSerializer(instance.vehicle, read_only=True)
+        request = self.context.get('request')
 
-        return serializer.data
+        if instance.vehicle is not None:
+            serializer = VehicleMinSerializer(
+                instance.vehicle, read_only=True, context={'request': request}
+            )
+
+            return serializer.data
+
+        return None
+
+    def get_warnings(self, instance):
+        request = self.context.get('request')
+
+        if request.user.is_government or \
+                instance.submission.validation_status == \
+                SalesSubmissionStatuses.VALIDATED:
+            return instance.warnings
+
+        return None
 
     class Meta:
         model = SalesSubmissionContent
         fields = (
             'id', 'sales_date', 'vehicle', 'xls_make', 'xls_model',
-            'xls_model_year', 'xls_vin',
+            'xls_model_year', 'xls_vin', 'record_of_sale', 'sales_date',
+            'warnings', 'icbc_verification',
         )
         read_only_fields = (
             'id',
@@ -37,41 +78,11 @@ class SalesSubmissionContentSerializer(ModelSerializer):
 
 
 class SalesSubmissionContentCheckedSerializer(ModelSerializer):
-    sales_date = SerializerMethodField()
-    vehicle = SerializerMethodField()
-    icbc_verification = SerializerMethodField()
     checked = SerializerMethodField()
     errors = SerializerMethodField()
-
-    def get_errors(self, instance):
-        errors = ''
-
-        if instance.is_already_awarded:
-            errors += 'VIN validated before; '
-
-        if instance.is_duplicate:
-            errors += 'VIN contains duplicate in this set; '
-
-        if errors == '':
-            return None
-
-        return errors
-
-    def get_icbc_verification(self, instance):
-        icbc_data = instance.icbc_verification
-
-        if icbc_data:
-            serializer = IcbcRegistrationDataSerializer(icbc_data)
-            return serializer.data
-
-        return None
-
-    def get_sales_date(self, instance):
-        return get_date(
-            instance.xls_sale_date,
-            instance.xls_date_type,
-            instance.xls_date_mode
-        )
+    icbc_verification = SerializerMethodField()
+    record_of_sale = SerializerMethodField()
+    vehicle = SerializerMethodField()
 
     def get_checked(self, instance):
         record_of_sale = RecordOfSale.objects.filter(
@@ -84,8 +95,31 @@ class SalesSubmissionContentCheckedSerializer(ModelSerializer):
 
         return False
 
+    def get_errors(self, instance):
+        return instance.warnings
+
+    def get_icbc_verification(self, instance):
+        icbc_data = instance.icbc_verification
+
+        if icbc_data:
+            serializer = IcbcRegistrationDataSerializer(icbc_data)
+            return serializer.data
+
+        return None
+
+    def get_record_of_sale(self, instance):
+        serializer = RecordOfSaleSerializer(
+            instance.record_of_sale, read_only=True
+        )
+
+        return serializer.data
+
     def get_vehicle(self, instance):
-        serializer = VehicleMinSerializer(instance.vehicle, read_only=True)
+        request = self.context.get('request')
+
+        serializer = VehicleMinSerializer(
+            instance.vehicle, read_only=True, context={'request': request}
+        )
 
         return serializer.data
 
@@ -94,7 +128,7 @@ class SalesSubmissionContentCheckedSerializer(ModelSerializer):
         fields = (
             'id', 'sales_date', 'vehicle', 'xls_make', 'xls_model',
             'xls_model_year', 'xls_vin', 'icbc_verification',
-            'checked', 'errors',
+            'checked', 'errors', 'record_of_sale',
         )
         read_only_fields = (
             'id',
