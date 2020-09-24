@@ -35,6 +35,12 @@ const VehicleListTable = (props) => {
     show: showSupplier,
     width: 200,
   }, {
+    accessor: (row) => (formatStatus(row.validationStatus)),
+    className: 'text-center text-capitalize',
+    Header: 'Status',
+    id: 'col-status',
+    width: 175,
+  }, {
     accessor: (row) => (row.make ? row.make : ''),
     Header: 'Make',
     id: 'make',
@@ -121,12 +127,6 @@ const VehicleListTable = (props) => {
     Header: 'Credit Entitlement',
     id: 'col-credit',
     width: 125,
-  }, {
-    accessor: (row) => (formatStatus(row.validationStatus)),
-    className: 'text-center text-capitalize',
-    Header: 'Status',
-    id: 'col-status',
-    width: 175,
   }];
 
   return (

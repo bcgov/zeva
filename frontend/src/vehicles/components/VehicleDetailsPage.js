@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-
+import moment from 'moment-timezone';
 import Modal from '../../app/components/Modal';
 import Loading from '../../app/components/Loading';
 import DetailField from '../../app/components/DetailField';
@@ -10,6 +10,8 @@ import history from '../../app/History';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 import getFileSize from '../../app/utilities/getFileSize';
 import CustomPropTypes from '../../app/utilities/props';
+import Alert from '../../app/components/Alert';
+import Comment from '../../app/components/Comment';
 
 const VehicleDetailsPage = (props) => {
   const {
@@ -26,7 +28,6 @@ const VehicleDetailsPage = (props) => {
   const [requestChangeCheck, setRequestChangeCheck] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
-
   if (loading) {
     return <Loading />;
   }
@@ -77,6 +78,11 @@ const VehicleDetailsPage = (props) => {
 
       <div className="row align-items-center">
         <div className="col-md-12 col-lg-9 col-xl-7">
+          <Alert status={details.validationStatus} />
+          {details.validationStatus === 'CHANGES_REQUESTED' && user.isGovernment && details.vehicleComment.comment
+          && (
+            <Comment comment={details.vehicleComment.comment} user={details.vehicleComment.createUser.displayName} date={moment(details.vehicleComment.createTimestamp).format('MMM d, YYYY')} />
+          )}
           <div className="form p-4">
             {user.isGovernment && (
               <DetailField label="Supplier" value={details.organization.shortName || details.organization.name} />
@@ -274,6 +280,7 @@ VehicleDetailsPage.propTypes = {
     vehicleClassCode: PropTypes.shape({
       description: PropTypes.string,
     }),
+    vehicleComment: PropTypes.shape(),
     vehicleZevType: PropTypes.shape({
       description: PropTypes.string,
       vehicleZevCode: PropTypes.string,

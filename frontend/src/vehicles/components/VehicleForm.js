@@ -13,6 +13,8 @@ import TextInput from '../../app/components/TextInput';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 import getFileSize from '../../app/utilities/getFileSize';
 import VehicleFormDropdown from './VehicleFormDropdown';
+import Alert from '../../app/components/Alert';
+import Comment from '../../app/components/Comment';
 
 const VehicleForm = (props) => {
   const {
@@ -37,7 +39,6 @@ const VehicleForm = (props) => {
     vehicleYears,
   } = props;
   const [showModal, setShowModal] = useState(false);
-
   const modalText = setUploadFiles ? 'Submit vehicle model and range test results to government' : 'Submit ZEV model to government?';
   const modal = (
     <Modal
@@ -56,19 +57,7 @@ const VehicleForm = (props) => {
       </div>
     </Modal>
   );
-  const alert = (
-    <div className="alert-warning" role="alert">
-      <span>
-        <FontAwesomeIcon icon="exclamation-circle" size="2x" />
-      </span>
-      <span>
-        <b>
-          STATUS: Changes Requested &mdash;
-        </b>
-        information or change requested by government Oct. 31, 2020, see comments. Sales credits cannot be issued for this model until validated by government.
-      </span>
-    </div>
-  );
+
   const deleteFile = (attachmentId) => {
     setDeleteFiles([...deleteFiles, attachmentId]);
   };
@@ -91,18 +80,12 @@ const VehicleForm = (props) => {
       <div className="row mb-2">
         <div className="col-12">
           <h2>{formTitle}</h2>
+          <div className={fields.hasPassedUs06Test || (status === 'CHANGES_REQUESTED' && setUploadFiles) ? 'col-12' : 'col-6'}>
+            <Alert status={status} user={fields.user} date={moment(fields.updateTimestamp).format('MMM d, YYYY')} />
+          </div>
           {status === 'CHANGES_REQUESTED'
           && (
-            <div className="my-2">
-              {alert}
-              <h4 className="request-changes-vehicle">Range test results have been requested by government</h4>
-              {vehicleComment && (
-              <h4 className="mt-2">
-                <b>Comment from {vehicleComment.createUser && vehicleComment.createUser.displayName}, {moment(vehicleComment.createTimestamp).format('MMM d, YYYY')}: </b>
-                {vehicleComment.comment}
-              </h4>
-              )}
-            </div>
+            <Comment comment={vehicleComment.comment} user={vehicleComment.createUser.displayName} date={moment(vehicleComment.createTimestamp).format('MMM d, YYYY')} />
           )}
         </div>
       </div>

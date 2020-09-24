@@ -17,7 +17,7 @@ const VehicleDetailsContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState({ vehicleComment: { comment: '' } });
   const { id } = useParams();
-
+console.log(vehicle)
   const { keycloak, user, location } = props;
   const { state: locationState } = location;
 
