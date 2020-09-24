@@ -1,6 +1,5 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Modal from '../app/components/Modal';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
@@ -9,6 +8,8 @@ import '../app/css/index.scss';
 // import { storiesOf } from "@storybook/react";
 // import { action } from "@storybook/addon-actions";
 import { storiesOf } from '@storybook/react';
+
+import Modal from '../app/components/Modal';
 
 library.add(fab, far, fas);
 const handleCancel = () => console.log('CANCEL!');

@@ -22,6 +22,10 @@ const SalesListTable = (props) => {
   const getErrorCodes = (item, fields = false) => {
     let errorCodes = '';
 
+    if (!item.warnings) {
+      return errorCodes;
+    }
+
     item.warnings.forEach((warning) => {
       if (CREDIT_ERROR_CODES[warning]) {
         if (fields) {
@@ -110,7 +114,7 @@ const SalesListTable = (props) => {
       id: 'warning',
     }, {
       accessor: (row) => {
-        if (row.warnings.some((warning) => [
+        if (row.warnings && row.warnings.some((warning) => [
           'DUPLICATE_VIN', 'INVALID_MODEL', 'VIN_ALREADY_AWARDED',
         ].indexOf(warning) >= 0)) {
           return false;
@@ -172,7 +176,10 @@ const SalesListTable = (props) => {
   );
 };
 
-SalesListTable.defaultProps = {};
+SalesListTable.defaultProps = {
+  filtered: undefined,
+  setFiltered: undefined,
+};
 
 SalesListTable.propTypes = {
   handleCheckboxClick: PropTypes.func.isRequired,
@@ -182,8 +189,8 @@ SalesListTable.propTypes = {
     PropTypes.number,
     PropTypes.string,
   ])).isRequired,
-  filtered: PropTypes.arrayOf(PropTypes.object).isRequired,
-  setFiltered: PropTypes.func.isRequired,
+  filtered: PropTypes.arrayOf(PropTypes.object),
+  setFiltered: PropTypes.func,
 };
 
 export default SalesListTable;

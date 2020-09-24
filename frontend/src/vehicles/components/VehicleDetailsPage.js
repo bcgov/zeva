@@ -287,7 +287,7 @@ VehicleDetailsPage.propTypes = {
   setComments: PropTypes.func,
   title: PropTypes.string,
   user: CustomPropTypes.user.isRequired,
-  locationState: PropTypes.shape(),
+  locationState: PropTypes.arrayOf(PropTypes.shape()),
 };
 
 export default VehicleDetailsPage;
