@@ -61,13 +61,6 @@ const VehicleSupplierEditForm = (props) => {
     };
   }
 
-  let addressDisplay = {};
-  if (display.organizationAddress) {
-    addressDisplay = {
-      ...display.organizationAddress,
-    };
-  }
-
   if (loading) {
     return <Loading />;
   }

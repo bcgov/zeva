@@ -7,9 +7,11 @@ import _ from 'lodash';
 import moment from 'moment-timezone';
 
 import ReactTable from '../../app/components/ReactTable';
+import CustomPropTypes from '../../app/utilities/props';
 import formatNumeric from '../../app/utilities/formatNumeric';
 
 const CreditTransactionListTable = (props) => {
+  const { items, user } = props;
   const translateTransactionType = (type) => {
     switch (type.toLowerCase()) {
       case 'validation':
@@ -55,15 +57,41 @@ const CreditTransactionListTable = (props) => {
     Header: 'Credits',
     headerClassName: 'header-group credits-left',
     columns: [{
-      accessor: (item) => (item.creditClass.creditClass === 'A' ? formatNumeric(item.totalValue, 2) : '-'),
+      accessor: (item) => {
+        if (item.creditClass.creditClass === 'A') {
+          if (item.debitFrom && item.debitFrom.id === user.organization.id) {
+            return formatNumeric(item.totalValue * -1, 2);
+          }
+
+          return formatNumeric(item.totalValue, 2);
+        }
+
+        return '-';
+      },
       className: 'text-right credits-left',
       Header: 'A',
+      Cell: (item) => (
+        <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>
+      ),
       headerClassName: 'credits-left',
       id: 'credit-class-a',
       maxWidth: 175,
     }, {
-      accessor: (item) => (item.creditClass.creditClass === 'B' ? formatNumeric(item.totalValue, 2) : '-'),
+      accessor: (item) => {
+        if (item.creditClass.creditClass === 'B') {
+          if (item.debitFrom && item.debitFrom.id === user.organization.id) {
+            return formatNumeric(item.totalValue * -1, 2);
+          }
+
+          return formatNumeric(item.totalValue, 2);
+        }
+
+        return '-';
+      },
       className: 'text-right',
+      Cell: (item) => (
+        <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>
+      ),
       Header: 'B',
       id: 'credit-class-b',
       maxWidth: 175,
@@ -74,6 +102,9 @@ const CreditTransactionListTable = (props) => {
     columns: [{
       accessor: (item) => (_.round(item.displayTotalA, 2).toFixed(2)),
       className: 'text-right balance-left',
+      Cell: (item) => (
+        <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>
+      ),
       Header: 'A',
       headerClassName: 'balance-left',
       id: 'credit-balance-a',
@@ -81,13 +112,14 @@ const CreditTransactionListTable = (props) => {
     }, {
       accessor: (item) => (_.round(item.displayTotalB, 2).toFixed(2)),
       className: 'text-right',
+      Cell: (item) => (
+        <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>
+      ),
       Header: 'B',
       id: 'credit-balance-b',
       maxWidth: 175,
     }],
   }];
-
-  const { items } = props;
 
   return (
     <ReactTable
@@ -107,6 +139,7 @@ CreditTransactionListTable.defaultProps = {};
 
 CreditTransactionListTable.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default CreditTransactionListTable;

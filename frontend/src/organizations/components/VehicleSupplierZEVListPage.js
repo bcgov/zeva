@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import History from '../../app/History';
 import Loading from '../../app/components/Loading';
 import CustomPropTypes from '../../app/utilities/props';
 import ActionBarGov from '../../vehicles/components/ActionBarGov';

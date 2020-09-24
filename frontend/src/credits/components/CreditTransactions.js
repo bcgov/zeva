@@ -6,19 +6,25 @@ import CreditTransactionListTable from './CreditTransactionListTable';
 
 const CreditTransactions = (props) => {
   const { balances: propsBalances, items, user } = props;
-
   let totalA = 0;
   let totalB = 0;
 
   const transactions = items.map((item) => {
     if (item.creditClass.creditClass === 'A') {
-      totalA += parseFloat(item.totalValue);
+      if (item.debitFrom && item.debitFrom.id === user.organization.id) {
+        totalA -= parseFloat(item.totalValue);
+      } else {
+        totalA += parseFloat(item.totalValue);
+      }
     }
 
     if (item.creditClass.creditClass === 'B') {
-      totalB += parseFloat(item.totalValue);
+      if (item.debitFrom && item.debitFrom.id === user.organization.id) {
+        totalB -= parseFloat(item.totalValue);
+      } else {
+        totalB += parseFloat(item.totalValue);
+      }
     }
-
     const obj = {
       ...item,
       displayTotalA: totalA,
@@ -85,7 +91,7 @@ const CreditTransactions = (props) => {
       <div className="row mt-5">
         <div className="col-sm-12">
           <h2 className="mb-2">Credit Transactions</h2>
-          <CreditTransactionListTable items={transactions} />
+          <CreditTransactionListTable items={transactions} user={user} />
         </div>
       </div>
     </div>

@@ -6,7 +6,9 @@ import Loading from '../../app/components/Loading';
 import SubmissionListTable from '../../credits/components/SubmissionListTable';
 
 const VehicleSupplierSalesListPage = (props) => {
-  const { loading, sales, user, filtered, setFiltered } = props;
+  const {
+    loading, sales, user, filtered, setFiltered,
+  } = props;
 
   if (loading) {
     return <Loading />;
