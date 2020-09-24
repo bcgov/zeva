@@ -75,7 +75,7 @@ class CreditTransactionBalanceSerializer(ModelSerializer):
     class Meta:
         model = CreditTransaction
         fields = (
-            'credit_value', 'credit_class', 'model_year', 'weight_class',
+            'total_value', 'credit_class', 'model_year', 'weight_class',
         )
 
 

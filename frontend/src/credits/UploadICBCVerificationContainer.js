@@ -48,21 +48,17 @@ const UploadICBCVerificationContainer = (props) => {
   }
 
   return (
-    <div>
-      <div>
-        <UploadVerificationData
-          dateCurrentTo={dateCurrentTo}
-          errorMessage={errorMessage}
-          files={files}
-          previousDateCurrentTo={previousDateCurrentTo}
-          setDateCurrentTo={setDateCurrentTo}
-          setUploadFiles={setFiles}
-          title="Upload ICBC Registration Data"
-          upload={doUpload}
-          user={user}
-        />
-      </div>
-    </div>
+    <UploadVerificationData
+      dateCurrentTo={dateCurrentTo}
+      errorMessage={errorMessage}
+      files={files}
+      previousDateCurrentTo={previousDateCurrentTo}
+      setDateCurrentTo={setDateCurrentTo}
+      setUploadFiles={setFiles}
+      title="Upload ICBC Registration Data"
+      upload={doUpload}
+      user={user}
+    />
   );
 };
 

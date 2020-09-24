@@ -7,7 +7,6 @@ import { Route, Router as BrowserRouter } from 'react-router-dom';
 import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
 import OrganizationListContainer from '../organizations/OrganizationListContainer';
-import UserDetailsContainer from '../organizations/UserDetailsContainer';
 import VehicleSupplierCreditTransactionListContainer from '../organizations/VehicleSupplierCreditTransactionListContainer';
 import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
 import VehicleSupplierEditContainer from '../organizations/VehicleSupplierEditContainer';
@@ -204,10 +203,6 @@ class Router extends Component {
               <Route
                 path={ROUTES_USERS.EDIT}
                 render={() => <UserEditContainer keycloak={keycloak} user={user} />}
-              />
-              <Route
-                path={ROUTES_USERS.DETAILS}
-                render={() => <UserDetailsContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact

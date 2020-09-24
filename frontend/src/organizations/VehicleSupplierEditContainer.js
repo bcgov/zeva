@@ -137,27 +137,19 @@ const VehicleSupplierEditContainer = (props) => {
   };
 
   return (
-    <div>
-      <div className="row">
-        <div className="col-sm-12">
-          <h1>{display.name}</h1>
-        </div>
-      </div>
-
-      <VehicleSupplierEditForm
-        details={details}
-        display={display}
-        errorFields={errorFields}
-        handleAddressChange={handleAddressChange}
-        handleInputChange={handleInputChange}
-        handleSubmit={handleSubmit}
-        loading={loading}
-        newSupplier={newSupplier}
-        setDetails={setDetails}
-        serviceSame={serviceSame}
-        setServiceSame={setServiceSame}
-      />
-    </div>
+    <VehicleSupplierEditForm
+      details={details}
+      display={display}
+      errorFields={errorFields}
+      handleAddressChange={handleAddressChange}
+      handleInputChange={handleInputChange}
+      handleSubmit={handleSubmit}
+      loading={loading}
+      newSupplier={newSupplier}
+      setDetails={setDetails}
+      serviceSame={serviceSame}
+      setServiceSame={setServiceSame}
+    />
   );
 };
 

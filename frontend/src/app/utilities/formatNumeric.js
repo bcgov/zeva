@@ -1,6 +1,12 @@
 const formatNumeric = (value, decimals = 2) => {
   let newValue = value;
 
+  if (Number.isNaN(newValue)) {
+    return newValue;
+  }
+
+  newValue = Number(newValue);
+
   if (decimals > 0) {
     newValue = newValue.toFixed(decimals);
   }

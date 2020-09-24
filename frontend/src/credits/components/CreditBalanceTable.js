@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import ReactTable from '../../app/components/ReactTable';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const CreditBalanceTable = (props) => {
   const columns = [{
@@ -13,15 +14,21 @@ const CreditBalanceTable = (props) => {
     Header: '',
     id: 'label',
   }, {
-    accessor: 'A',
+    accessor: (item) => (item.A ? formatNumeric(item.A, 2) : '-'),
     className: 'text-right credits-left',
+    Cell: (item) => (
+      <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>
+    ),
     Header: 'A',
     headerClassName: 'font-weight-bold credits-left',
     id: 'credit-class-A',
     maxWidth: 150,
   }, {
-    accessor: 'B',
+    accessor: (item) => (item.B ? formatNumeric(item.B, 2) : '-'),
     className: 'text-right',
+    Cell: (item) => (
+      <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>
+    ),
     Header: 'B',
     headerClassName: 'font-weight-bold',
     id: 'credit-class-B',

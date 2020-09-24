@@ -16,10 +16,14 @@ import VehicleSupplierZEVListPage from './components/VehicleSupplierZEVListPage'
 const VehicleSupplierModelListContainer = (props) => {
   const { id } = useParams();
   const [details, setDetails] = useState({});
+  const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [vehicles, setVehicles] = useState([]);
   const { keycloak, user } = props;
 
+  const handleClear = () => {
+    setFiltered([]);
+  };
 
   const refreshDetails = () => {
     setLoading(true);
@@ -45,15 +49,14 @@ const VehicleSupplierModelListContainer = (props) => {
   }, [keycloak.authenticated]);
 
   return (
-    <div>
-      <div className="row">
-        <div className="col-sm-12">
-          <h1>{details.name}</h1>
-        </div>
-      </div>
+    <div className="page">
+      <h1>{details.name}</h1>
       <VehicleSupplierTabs supplierId={details.id} active="supplier-zev-models" />
       <VehicleSupplierZEVListPage
+        filtered={filtered}
+        handleClear={handleClear}
         loading={loading}
+        setFiltered={setFiltered}
         user={user}
         vehicles={vehicles}
       />

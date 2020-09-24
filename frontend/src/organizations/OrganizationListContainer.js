@@ -10,6 +10,7 @@ import CustomPropTypes from '../app/utilities/props';
 import OrganizationListPage from './components/OrganizationListPage';
 
 const OrganizationListContainer = (props) => {
+  const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [organizations, setOrganizations] = useState([]);
   const { keycloak, user } = props;
@@ -30,8 +31,10 @@ const OrganizationListContainer = (props) => {
 
   return (
     <OrganizationListPage
+      filtered={filtered}
       loading={loading}
       organizations={organizations}
+      setFiltered={setFiltered}
     />
   );
 };

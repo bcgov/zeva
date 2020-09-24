@@ -266,7 +266,13 @@ def validate_xls_file(file):
 
 
 def validate_spreadsheet(data, user_organization=None, skip_authorization=False):
-    workbook = xlrd.open_workbook(file_contents=data)
+    try:
+        workbook = xlrd.open_workbook(file_contents=data)
+    except XLRDError:
+        raise ValidationError(
+            'Invalid File Type. '
+            'Please download the template again and try again.'
+        )
 
     organization = get_organization(workbook)
 
@@ -409,7 +415,7 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
         error = ''
 
         if 'DUPLICATE_VIN' in content.warnings:
-            error += 'VIN has already been validated before; '
+            error += 'VIN contains duplicates; '
 
         if 'EXPIRED_REGISTRATION_DATE' in content.warnings:
             error += 'retail sales date and registration date greater ' \
@@ -420,6 +426,9 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
                         'format; '
 
         if 'INVALID_MODEL' in content.warnings:
+            error += 'invalid make, model and year combination; '
+
+        if 'MODEL_MISMATCHED' in content.warnings:
             error += 'unmatched data; '
 
         if 'NO_ICBC_MATCH' in content.warnings:

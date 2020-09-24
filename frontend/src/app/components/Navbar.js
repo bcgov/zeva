@@ -184,7 +184,8 @@ class Navbar extends Component {
                 <NavLink
                   activeClassName="active"
                   isActive={(match, location) => {
-                    if (location.pathname.toLowerCase().includes('credit-transactions')) {
+                    if (location.pathname.toLowerCase().includes('credit-transactions')
+                    && !location.pathname.toLowerCase().includes('organizations')) {
                       return true;
                     }
 
@@ -230,7 +231,7 @@ class Navbar extends Component {
                         return false;
                       }
 
-                      if (location.pathname === '/organizations/mine') {
+                      if (location.pathname.includes('/organizations/mine')) {
                         return false;
                       }
 
@@ -248,6 +249,22 @@ class Navbar extends Component {
                 <li className="nav-item">
                   <NavLink
                     activeClassName="active"
+                    isActive={(match, location) => {
+                      if (location.pathname.toLowerCase().includes('users')
+                      && !location.pathname.toLowerCase().includes('organizations/')) {
+                        return true;
+                      }
+
+                      if (location.pathname.toLowerCase().includes('sales')) {
+                        return true;
+                      }
+
+                      if (!match) {
+                        return false;
+                      }
+
+                      return true;
+                    }}
                     to={ROUTES_ORGANIZATIONS.MINE}
                   >
                     <span>Administration</span>

@@ -6,8 +6,6 @@
     display:flex;
     flex-direction: row;
     justify-content: space-between;
-    button {
-    }
   }
   .table {
     margin: 1rem 0 0;
@@ -19,25 +17,19 @@
     clear: both;
   }
 
+  .bordered {
+    border: 1px solid $border-grey;
+    padding: 0.5rem;
+  }
+
+  .content {
+    background-color: $default-background-grey;
+  }
+
   .compact {
     border-radius: 4px;
     clear: both;
     float: left;
-
-    select {
-      display: block;
-      width: 100%;
-    }
-
-    .bordered {
-      border: 1px solid $border-grey;
-      padding: 0.5rem;
-    }
-
-    .content {
-      background-color: $default-background-grey;
-      padding: 1rem;
-    }
   }
 
   .files {
@@ -45,12 +37,12 @@
 
     .filename {
       overflow: hidden;
-      padding-left: 2rem;
       text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    .row:nth-child(odd) {
-      background-color: $white;
+    .row:nth-child(even) {
+      background-color: $default-background-grey;
     }
 
     .actions {
@@ -68,24 +60,7 @@
     }
   }
 
-  .panel {
-    background-color: $default-background-grey;
-
-    .action-bar {
-      margin: 1rem 0 0;
-      padding: 0;
-    }
-  }
-}
-
-.sales-upload-details {
   .sales-upload-grey {
-    color: #747474 !important;
-    font-size: 1.1rem;
-    width: 10rem;
-  }
-  
-  .sales-upload-blue {
-    font-size: 1.1rem;
+    color: $default-text-black;
   }
 }
