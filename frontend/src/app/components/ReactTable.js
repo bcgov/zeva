@@ -81,7 +81,9 @@ class CustomReactTable extends Component {
         getTrProps={getTrProps}
         onFilteredChange={(input) => {
           onFilteredChange(input);
-          setFiltered(input);
+          if (setFiltered) {
+            setFiltered(input);
+          }
 
           this.pageSize = this.table.current.getResolvedState().sortedData.length;
         }}
@@ -100,7 +102,7 @@ CustomReactTable.defaultProps = {
   filtered: undefined,
   getTrProps: undefined,
   onFilteredChange: () => {},
-  setFiltered: () => {},
+  setFiltered: undefined,
 };
 
 CustomReactTable.propTypes = {

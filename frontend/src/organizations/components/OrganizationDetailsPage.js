@@ -10,7 +10,9 @@ import CustomPropTypes from '../../app/utilities/props';
 import UsersTable from './UsersTable';
 
 const OrganizationDetailsPage = (props) => {
-  const { details, loading, members } = props;
+  const {
+    details, filtered, loading, members, setFiltered,
+  } = props;
 
   if (loading) {
     return <Loading />;
@@ -18,37 +20,39 @@ const OrganizationDetailsPage = (props) => {
 
   return (
     <div id="organization-details" className="page">
-      <div className="row">
+      <div className="row mb-2">
         <div className="col-sm-12">
-          <h1>{details.isGovernment ? details.name : 'Vehicle Supplier Information'}</h1>
+          <h2>{details.isGovernment ? details.name : 'Vehicle Supplier Information'}</h2>
         </div>
       </div>
 
       <div className="row">
-        <div className="col-md-12 col-lg-8 col-xl-6">
+        <div className="col-md-12 col-lg-9 col-xl-7">
           {!details.isGovernment && details.organizationAddress && (
             <div className="organization-address">
               <div className="row">
-                <div className="col-md-4">Legal name:</div>
-                <div className="col-md-8 value">{details.name}</div>
+                <div className="col-md-3">Legal name:</div>
+                <div className="col-md-9 value">{details.name}</div>
               </div>
               <div className="row">
-                <div className="col-md-4">Common name:</div>
-                <div className="col-md-8 value">{details.shortName}</div>
+                <div className="col-md-3">Common name:</div>
+                <div className="col-md-9 value">{details.shortName}</div>
               </div>
-              <div className="row">
-                <div className="col-md-4">Address:</div>
-                <div className="col-md-8 value">
-                  {details.organizationAddress.addressLine1}{' '}
-                  {details.organizationAddress.addressLine2}{' '}
-                  {details.organizationAddress.addressLine3}{' '}
-                  {details.organizationAddress.city}{' '}
-                  {details.organizationAddress.state}{' '}
-                  {details.organizationAddress.postalCode}
+              {details.organizationAddress.map((each) => (
+                <div className="row" key={each.id}>
+                  <div className="col-md-3">{each.addressType ? each.addressType.addressType : ''} Address:</div>
+                  <div className="col-md-9 value">
+                    {each.addressLine1}{' '}
+                    {each.addressLine2}{' '}
+                    {each.addressLine3}{' '}
+                    {each.city}{' '}
+                    {each.state}{' '}
+                    {each.postalCode}
+                  </div>
                 </div>
-              </div>
+              ))}
               <div className="row">
-                <div className="offset-4 col-md-8">
+                <div className="offset-md-3 col-md-9 col-sm-12">
                   <a href="mailto:CEVEnquiries@gov.bc.ca?subject=ZEVA supplier address change request">Request change to name or address</a>
                 </div>
               </div>
@@ -57,13 +61,13 @@ const OrganizationDetailsPage = (props) => {
         </div>
       </div>
 
-      <div className="row mt-5">
-        <div className="col-sm-6">
+      <div className="row mt-4 mb-2">
+        <div className="col-sm-6 d-flex align-items-end">
           <h2>Users</h2>
         </div>
         <div className="col-sm-6 text-right">
           <button
-            className="button primary mb-3"
+            className="button primary"
             onClick={() => {
               history.push(ROUTES_ORGANIZATIONS.MINE_ADD_USER);
             }}
@@ -77,7 +81,9 @@ const OrganizationDetailsPage = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <UsersTable
+            filtered={filtered}
             items={members}
+            setFiltered={setFiltered}
           />
         </div>
       </div>
@@ -91,8 +97,10 @@ OrganizationDetailsPage.defaultProps = {
 
 OrganizationDetailsPage.propTypes = {
   details: CustomPropTypes.organizationDetails.isRequired,
+  filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
   members: PropTypes.arrayOf(PropTypes.shape()),
+  setFiltered: PropTypes.func.isRequired,
 };
 
 export default OrganizationDetailsPage;

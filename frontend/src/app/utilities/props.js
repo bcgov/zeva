@@ -19,13 +19,24 @@ const CustomPropTypes = {
   }),
   organizationDetails: PropTypes.shape({
     name: PropTypes.string,
-    organizationAddress: PropTypes.shape({
-      addressLine1: PropTypes.string,
-      city: PropTypes.string,
-      country: PropTypes.string,
-      postalCode: PropTypes.string,
-      state: PropTypes.string,
-    }),
+    organizationAddress: PropTypes.oneOfType([
+      PropTypes.arrayOf(
+        PropTypes.shape({
+          addressLine1: PropTypes.string,
+          city: PropTypes.string,
+          country: PropTypes.string,
+          postalCode: PropTypes.string,
+          state: PropTypes.string,
+        }),
+      ),
+      PropTypes.shape({
+        addressLine1: PropTypes.string,
+        city: PropTypes.string,
+        country: PropTypes.string,
+        postalCode: PropTypes.string,
+        state: PropTypes.string,
+      }),
+    ]),
   }),
   roles: PropTypes.arrayOf(PropTypes.shape({
     name: PropTypes.string,

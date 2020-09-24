@@ -28,7 +28,7 @@ const FileDrop = (props) => {
         {dropMessage === 'Drag and Drop files here' && (
           <>
             {' or '}
-            <br /> <button className="link" type="button">browse to select a file from your machine to upload</button>.
+            <br /> <button className="link text-center" type="button">browse to select a file from your machine to upload.</button>
           </>
         )}
       </div>

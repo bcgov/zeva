@@ -69,9 +69,9 @@ const VehicleDetailsPage = (props) => {
 
   return (
     <div id="vehicle-validation" className="page">
-      <div className="row">
+      <div className="row mb-2">
         <div className="col-sm-12">
-          <h1>{title}</h1>
+          <h2>{title}</h2>
         </div>
       </div>
 
@@ -162,7 +162,7 @@ const VehicleDetailsPage = (props) => {
       )}
 
       <div className="row">
-        <div className="col-md-12 col-lg-9 col-xl-7">
+        <div className="col-12">
           <div className="action-bar">
             <span className="left-content">
               <button

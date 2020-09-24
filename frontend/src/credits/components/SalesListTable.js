@@ -19,7 +19,6 @@ const SalesListTable = (props) => {
     setFiltered,
   } = props;
 
-
   const getErrorCodes = (item, fields = false) => {
     let errorCodes = '';
 

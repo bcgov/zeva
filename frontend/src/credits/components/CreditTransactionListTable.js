@@ -7,6 +7,7 @@ import _ from 'lodash';
 import moment from 'moment-timezone';
 
 import ReactTable from '../../app/components/ReactTable';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const CreditTransactionListTable = (props) => {
   const translateTransactionType = (type) => {
@@ -54,14 +55,14 @@ const CreditTransactionListTable = (props) => {
     Header: 'Credits',
     headerClassName: 'header-group credits-left',
     columns: [{
-      accessor: (item) => (item.creditClass.creditClass === 'A' ? item.creditValue : '-'),
+      accessor: (item) => (item.creditClass.creditClass === 'A' ? formatNumeric(item.totalValue, 2) : '-'),
       className: 'text-right credits-left',
       Header: 'A',
       headerClassName: 'credits-left',
       id: 'credit-class-a',
       maxWidth: 175,
     }, {
-      accessor: (item) => (item.creditClass.creditClass === 'B' ? item.creditValue : '-'),
+      accessor: (item) => (item.creditClass.creditClass === 'B' ? formatNumeric(item.totalValue, 2) : '-'),
       className: 'text-right',
       Header: 'B',
       id: 'credit-class-b',

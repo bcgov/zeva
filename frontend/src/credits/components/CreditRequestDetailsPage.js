@@ -105,10 +105,10 @@ const CreditRequestDetailsPage = (props) => {
   return (
     <div id="credit-request-details" className="page">
       {modal}
-      <div className="row">
+      <div className="row my-3">
         <div className="col-sm-12">
-          <h2 className="py-0">Application for Credits for Consumer Sales</h2>
-          <h3 className="py-0 mt-2 mb-0">
+          <h2>Application for Credits for Consumer Sales</h2>
+          <h3 className="mt-2">
             {submission.organization && `${submission.organization.name} `}
             ZEV Sales Submission {submission.submissionDate}
           </h3>
@@ -116,7 +116,7 @@ const CreditRequestDetailsPage = (props) => {
       </div>
       {analystAction
       && (
-      <div className="row mb-1">
+      <div className="row mb-3">
         <div className="col-sm-12">
           ICBC data current to: {previousDateCurrentTo}
         </div>
@@ -126,7 +126,7 @@ const CreditRequestDetailsPage = (props) => {
         (directorAction || analystAction) && submission.validationStatus === 'RECOMMEND_APPROVAL'
       ) || (user.isGovernment && submission.validationStatus === 'VALIDATED'))
       && submission.salesSubmissionComment && (
-        <div className="row">
+        <div className="row mb-3">
           <div className="col-sm-12">
             <div className="recommendation-comment p-2">
               {submission.validationStatus === 'RECOMMEND_APPROVAL'
@@ -158,7 +158,7 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       )}
       {!user.isGovernment && (
-        <div className="row">
+        <div className="row mb-3">
           <div className="col-sm-12">
             <h5 className="d-inline-block sales-upload-grey">Service address: </h5>
             {serviceAddress && <h5 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h5>}
@@ -301,7 +301,7 @@ CreditRequestDetailsPage.defaultProps = {
 
 CreditRequestDetailsPage.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
-  locationState: PropTypes.shape(),
+  locationState: PropTypes.arrayOf(PropTypes.shape()),
   previousDateCurrentTo: PropTypes.string.isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,

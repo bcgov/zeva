@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import Loading from '../../app/components/Loading';
-import VehicleListTable from './VehicleListTable';
+import history from '../../app/History';
 import ActionBarGov from './ActionBarGov';
-import ActionBarNonGov from './ActionBarNonGov';
+import VehicleListTable from './VehicleListTable';
 
 const VehicleList = (props) => {
   const {
@@ -20,34 +22,43 @@ const VehicleList = (props) => {
     return <Loading />;
   }
 
-  const actionBar = user.isGovernment
-    ? (
-      <ActionBarGov
-        vehicles={vehicles}
-        handleClear={handleClear}
-        filtered={filtered}
-        setFiltered={setFiltered}
-      />
-    )
-    : <ActionBarNonGov />;
-
   return (
     <div id="vehicle-list" className="page">
-      <div className="row">
-        <div className="col-sm-12">
-          <h1>ZEV Models</h1>
+      <div className="row mb-2">
+        <div className="col-lg-12 col-xl-4 d-flex align-items-end">
+          <h2>ZEV Models</h2>
+        </div>
+        <div className="col-lg-12 col-xl-8 text-right">
+          {!user.isGovernment && (
+          <button
+            className="button primary"
+            onClick={() => {
+              history.push('/vehicles/add');
+            }}
+            type="button"
+          >
+            <FontAwesomeIcon icon="plus" /> New Vehicle
+          </button>
+          )}
+          {user.isGovernment && (
+            <ActionBarGov
+              filtered={filtered}
+              handleClear={handleClear}
+              setFiltered={setFiltered}
+              vehicles={vehicles}
+            />
+          )}
         </div>
       </div>
       <div className="row">
         <div className="col-sm-12">
-          {actionBar}
           <VehicleListTable
             filtered={filtered}
-            setFiltered={setFiltered}
             items={vehicles}
+            setFiltered={setFiltered}
+            showSupplier={user && user.isGovernment}
             user={user}
           />
-          {actionBar}
         </div>
       </div>
     </div>

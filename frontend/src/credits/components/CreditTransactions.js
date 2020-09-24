@@ -12,11 +12,11 @@ const CreditTransactions = (props) => {
 
   const transactions = items.map((item) => {
     if (item.creditClass.creditClass === 'A') {
-      totalA += parseFloat(item.creditValue);
+      totalA += parseFloat(item.totalValue);
     }
 
     if (item.creditClass.creditClass === 'B') {
-      totalB += parseFloat(item.creditValue);
+      totalB += parseFloat(item.totalValue);
     }
 
     const obj = {
@@ -40,7 +40,7 @@ const CreditTransactions = (props) => {
     if (balance.modelYear && balance.creditClass) {
       balances[balance.modelYear.name] = {
         ...balances[balance.modelYear.name],
-        [balance.creditClass.creditClass]: parseFloat(balance.creditValue),
+        [balance.creditClass.creditClass]: parseFloat(balance.totalValue),
       };
 
       let currentValue = 0;
@@ -58,17 +58,17 @@ const CreditTransactions = (props) => {
       totalCredits[balance.weightClass.weightClassCode] = {
         ...totalCredits[balance.weightClass.weightClassCode],
         label: `Total ${balance.weightClass.weightClassCode}`,
-        [balance.creditClass.creditClass]: currentValue + parseFloat(balance.creditValue),
+        [balance.creditClass.creditClass]: currentValue + parseFloat(balance.totalValue),
       };
     }
   });
 
   return (
-    <div id="credit-transaction-details" className="page mb-0">
+    <div id="credit-transaction" className="page">
       {!user.isGovernment && (
-      <div className="row mb-5">
+      <div className="row my-3">
         <div className="col-sm-5">
-          <h2 className="pt-0">Detailed Credit Balance</h2>
+          <h2 className="mb-2">Detailed Credit Balance</h2>
           <CreditBalanceTable
             items={
               Object.entries(balances).map(([key, value]) => ({
@@ -82,9 +82,9 @@ const CreditTransactions = (props) => {
       </div>
       )}
 
-      <div className="row">
+      <div className="row mt-5">
         <div className="col-sm-12">
-          <h3>Credit Transactions</h3>
+          <h2 className="mb-2">Credit Transactions</h2>
           <CreditTransactionListTable items={transactions} />
         </div>
       </div>

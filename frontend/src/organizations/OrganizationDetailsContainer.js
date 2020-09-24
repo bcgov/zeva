@@ -10,9 +10,10 @@ import CustomPropTypes from '../app/utilities/props';
 import OrganizationDetailsPage from './components/OrganizationDetailsPage';
 
 const OrganizationDetailsContainer = (props) => {
+  const { keycloak, user } = props;
+  const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [members, setMembers] = useState([]);
-  const { keycloak, user } = props;
 
   const refreshDetails = () => {
     setLoading(true);
@@ -33,8 +34,10 @@ const OrganizationDetailsContainer = (props) => {
   return (
     <OrganizationDetailsPage
       details={user.organization}
+      filtered={filtered}
       loading={loading}
       members={members}
+      setFiltered={setFiltered}
     />
   );
 };

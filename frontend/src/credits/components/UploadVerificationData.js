@@ -32,7 +32,7 @@ const UploadVerificationData = (props) => {
     <div>
       <CreditTransactionTabs active="icbc-update" key="tabs" user={user} />
       <div id="upload-verification-data" className="page">
-        <h2>{title}</h2>
+        <h2 className="mt-3 mb-2">{title}</h2>
         <p>ICBC data current to: {previousDateCurrentTo}</p>
         <div className="compact">
           <div className="bordered">
