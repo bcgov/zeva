@@ -42,110 +42,116 @@ const UserDetailsForm = (props) => {
 
   return (
     <div id="form" className="page">
-      <div className="row">
+      <div className="row mb-2">
         <div className="col-md-12">
-          <h1>{details.organization.name} User Management</h1>
-          <h5>New/Edit User</h5>
+          <h2 className="mb-2">{details.organization.name} User Management</h2>
+          <h3>{`${(details && details.id) ? 'Edit' : 'New'} User`}</h3>
         </div>
       </div>
       <form onSubmit={(event) => handleSubmit(event)}>
-        <div className="row align-items-center">
-          <fieldset className="col-lg-12 col-xl-8">
-            <div className="form-layout row">
-              <span className="col-md-8">
-                <TextInput
-                  defaultValue={details.firstName}
-                  errorMessage={'firstName' in errorFields && errorFields.firstName}
-                  handleInputChange={handleInputChange}
-                  id="firstName"
-                  label="First Name"
-                  mandatory
-                  name="firstName"
-                />
-                <TextInput
-                  defaultValue={details.lastName}
-                  errorMessage={'lastName' in errorFields && errorFields.lastName}
-                  handleInputChange={handleInputChange}
-                  id="lastName"
-                  label="Last Name"
-                  mandatory
-                  name="lastName"
-                />
-                <TextInput
-                  defaultValue={details.title}
-                  errorMessage={'title' in errorFields && errorFields.title}
-                  handleInputChange={handleInputChange}
-                  id="jobTitle"
-                  label="Job Title"
-                  mandatory
-                  name="title"
-                />
-                <TextInput
-                  defaultValue={details.username}
-                  errorMessage={'username' in errorFields && errorFields.username}
-                  handleInputChange={handleInputChange}
-                  id="username"
-                  label={`${accountType} User Name`}
-                  mandatory
-                  name="username"
-                />
-                <TextInput
-                  defaultValue={details.keycloakEmail}
-                  details={accountType === 'BCeID' ? `the email associated with the ${accountType} account` : ''}
-                  errorMessage={'keycloakEmail' in errorFields && errorFields.keycloakEmail}
-                  handleInputChange={handleInputChange}
-                  id="email"
-                  label={`${accountType === 'BCeID' ? accountType : ''} Email`}
-                  mandatory
-                  name="keycloakEmail"
-                />
-                {accountType === 'BCeID' && (
+        <div className="row">
+          <div className="col-lg-12 col-xl-10">
+            <fieldset>
+              <div className="form-layout row">
+                <span className="col-md-8">
                   <TextInput
-                    defaultValue={details.phone}
-                    errorMessage={'phone' in errorFields && errorFields.phone}
+                    defaultValue={details.firstName}
+                    errorMessage={'firstName' in errorFields && errorFields.firstName}
                     handleInputChange={handleInputChange}
-                    id="phone"
-                    label="Phone"
-                    name="phone"
+                    id="firstName"
+                    label="First Name"
+                    mandatory
+                    name="firstName"
                   />
-                )}
-              </span>
-              <span className="col-md-4">
-                {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_USERS') && (
-                  <div className="form-group">
-                    <div className="col-sm-4">
-                      <label
-                        className="col-form-label"
-                        htmlFor="statusRadio"
-                      >
-                        Status
-                      </label>
-                    </div>
-                    <div className="col-sm-12">
-                      <input type="radio" id="active" onChange={handleInputChange} name="isActive" value="true" defaultChecked={details.isActive} />
-                      Active, user can log in to ZERO<br />
-                      <input type="radio" id="inactive" onChange={handleInputChange} name="isActive" value="false" defaultChecked={!details.isActive} />
-                      Inactive, user cannot log in to ZERO
-                    </div>
+                  <TextInput
+                    defaultValue={details.lastName}
+                    errorMessage={'lastName' in errorFields && errorFields.lastName}
+                    handleInputChange={handleInputChange}
+                    id="lastName"
+                    label="Last Name"
+                    mandatory
+                    name="lastName"
+                  />
+                  <TextInput
+                    defaultValue={details.title}
+                    errorMessage={'title' in errorFields && errorFields.title}
+                    handleInputChange={handleInputChange}
+                    id="jobTitle"
+                    label="Job Title"
+                    mandatory
+                    name="title"
+                  />
+                  <TextInput
+                    defaultValue={details.username}
+                    errorMessage={'username' in errorFields && errorFields.username}
+                    handleInputChange={handleInputChange}
+                    id="username"
+                    label={`${accountType} User Name`}
+                    mandatory
+                    name="username"
+                  />
+                  <TextInput
+                    defaultValue={details.keycloakEmail}
+                    details={accountType === 'BCeID' ? `the email associated with the ${accountType} account` : ''}
+                    errorMessage={'keycloakEmail' in errorFields && errorFields.keycloakEmail}
+                    handleInputChange={handleInputChange}
+                    id="email"
+                    label={`${accountType === 'BCeID' ? accountType : ''} Email`}
+                    mandatory
+                    name="keycloakEmail"
+                  />
+                  {accountType === 'BCeID' && (
+                    <TextInput
+                      defaultValue={details.phone}
+                      errorMessage={'phone' in errorFields && errorFields.phone}
+                      handleInputChange={handleInputChange}
+                      id="phone"
+                      label="Phone"
+                      name="phone"
+                    />
+                  )}
+                </span>
+                <span className="col-md-4">
+                  {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_USERS') && (
+                    <div className="form-group">
+                      <div className="col-sm-4">
+                        <label
+                          className="col-form-label"
+                          htmlFor="statusRadio"
+                        >
+                          Status
+                        </label>
+                      </div>
+                      <div className="col-sm-12">
+                        <input type="radio" id="active" onChange={handleInputChange} name="isActive" value="true" defaultChecked={details.isActive} />
+                        Active, user can log in to ZERO<br />
+                        <input type="radio" id="inactive" onChange={handleInputChange} name="isActive" value="false" defaultChecked={!details.isActive} />
+                        Inactive, user cannot log in to ZERO
+                      </div>
 
+                    </div>
+                  )}
+                  {typeof user.hasPermission === 'function' && (user.hasPermission('ASSIGN_BCEID_ROLES') || user.hasPermission('ASSIGN_IDIR_ROLES')) && (
+                  <div className="form-group">
+                    <label
+                      className="col-sm-4 col-form-label"
+                      htmlFor="rolesRadio"
+                    >
+                        Roles
+                    </label>
+                    <div className="col-sm-8">
+                      {rolesCheckboxes}
+                    </div>
                   </div>
-                )}
-                {typeof user.hasPermission === 'function' && (user.hasPermission('ASSIGN_BCEID_ROLES') || user.hasPermission('ASSIGN_IDIR_ROLES')) && (
-                <div className="form-group">
-                  <label
-                    className="col-sm-4 col-form-label"
-                    htmlFor="rolesRadio"
-                  >
-                      Roles
-                  </label>
-                  <div className="col-sm-8">
-                    {rolesCheckboxes}
-                  </div>
-                </div>
-                )}
-              </span>
-            </div>
-            <div className="action-bar form-group row">
+                  )}
+                </span>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-12">
+            <div className="action-bar form-group">
               <span className="left-content">
                 <button
                   className="button"
@@ -164,7 +170,7 @@ const UserDetailsForm = (props) => {
                 </button>
               </span>
             </div>
-          </fieldset>
+          </div>
         </div>
       </form>
     </div>
@@ -179,6 +185,10 @@ UserDetailsForm.propTypes = {
   details: PropTypes.shape({
     email: PropTypes.string,
     firstName: PropTypes.string,
+    id: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.string,
+    ]),
     isActive: PropTypes.oneOfType([
       PropTypes.bool,
       PropTypes.string,

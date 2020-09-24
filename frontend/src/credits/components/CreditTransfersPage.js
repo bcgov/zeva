@@ -91,9 +91,9 @@ const CreditTransfersPage = (props) => {
   );
   return (
     <div id="credit-requests-list" className="page">
-      <div className="row">
+      <div className="row mt-3 mb-2">
         <div className="col-sm-12">
-          <h1>Light Duty Vehicle Credit Transfer</h1>
+          <h2>Light Duty Vehicle Credit Transfer</h2>
         </div>
       </div>
       <div id="form">
@@ -123,32 +123,32 @@ const CreditTransfersPage = (props) => {
                   />
                 </div>
                 {rows.map((item, index) => (<TransferFormRow years={years} key={index} rows={rows} rowId={index} handleRowInputChange={handleRowInputChange} removeRow={removeRow} />))}
-                <button type="button" className="transfer-add-line" onClick={() => { addRow(); }}>
+                <button type="button" className="transfer-add-line my-2" onClick={() => { addRow(); }}>
                   <h5><FontAwesomeIcon icon="plus" /> Add another line</h5>
                 </button>
                 <span className="transfer-total">Total CAD: ${total}</span>
                 <div>
-                  <div className="d-inline-block align-middle my-2 mr-2">
+                  <div className="d-inline-block align-middle my-2 ml-2 mr-1">
                     <input type="checkbox" id="authority" onClick={(event) => { handleCheckboxClick(event); }} />
                   </div>
-                  <label className="d-inline" htmlFor="transfer-authority" id="transfer-text">
+                  <label className="d-inline" htmlFor="authority" id="transfer-text">
                     I confirm that I am an officer or employee of {user.organization.name},
                     and that records evidencing my authority to submit this notice are available on request.
                   </label>
                 </div>
                 <div>
-                  <div className="d-inline-block align-middle my-2 mr-2">
+                  <div className="d-inline-block align-middle my-2 ml-2 mr-1">
                     <input type="checkbox" id="accurate" onClick={(event) => { handleCheckboxClick(event); }} />
                   </div>
-                  <label className="d-inline" htmlFor="transfer-accurate" id="transfer-text">
+                  <label className="d-inline" htmlFor="accurate" id="transfer-text">
                     {user.organization.name} certifies that the information provided in this notice is accurate and complete
                   </label>
                 </div>
                 <div>
-                  <div className="d-inline-block align-middle my-2 mr-2">
+                  <div className="d-inline-block align-middle my-2 ml-2 mr-1">
                     <input type="checkbox" id="consent" onClick={(event) => { handleCheckboxClick(event); }} />
                   </div>
-                  <label className="d-inline" htmlFor="transfer-consent" id="transfer-text">
+                  <label className="d-inline" htmlFor="consent" id="transfer-text">
                     {user.organization.name} consents to the transfer of credits in this notice
                   </label>
                 </div>

@@ -76,9 +76,9 @@ const VehicleForm = (props) => {
 
   return (
     <div id="form" className="page">
-      <div className="row">
+      <div className="row mb-2">
         <div className="col-12">
-          <h1>{formTitle}</h1>
+          <h2>{formTitle}</h2>
           {status === 'CHANGES_REQUESTED'
           && (
           <div>
@@ -96,7 +96,7 @@ const VehicleForm = (props) => {
 
       <form onSubmit={(event) => handleSubmit(event)}>
         <div className="row">
-          <div className="col-lg-6">
+          <div className="col-xl-7 col-lg-10 col-md-12">
             <fieldset>
               <VehicleFormDropdown
                 accessor={(model) => model.name}
@@ -184,7 +184,7 @@ const VehicleForm = (props) => {
                 id="weightKg"
                 label="GVWR (kg)"
                 mandatory
-                maxnum={3855}
+                maxnum={3856}
                 name="weightKg"
                 num
               />

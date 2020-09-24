@@ -11,7 +11,7 @@ import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 
 const VehicleListTable = (props) => {
   const {
-    items, user, filtered, setFiltered,
+    items, user, filtered, setFiltered, showSupplier,
   } = props;
 
   const toComma = (value) => {
@@ -30,10 +30,9 @@ const VehicleListTable = (props) => {
 
       return '';
     },
-    className: 'text-center',
     Header: 'Supplier',
     id: 'col-supplier',
-    show: user && user.isGovernment,
+    show: showSupplier,
     width: 200,
   }, {
     accessor: (row) => (row.make ? row.make : ''),
@@ -162,14 +161,18 @@ const VehicleListTable = (props) => {
 };
 
 VehicleListTable.defaultProps = {
+  filtered: undefined,
+  setFiltered: undefined,
+  showSupplier: false,
 };
 
 VehicleListTable.propTypes = {
-  filtered: PropTypes.arrayOf(PropTypes.object).isRequired,
-  setFiltered: PropTypes.func.isRequired,
+  filtered: PropTypes.arrayOf(PropTypes.object),
+  setFiltered: PropTypes.func,
   items: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.number,
   })).isRequired,
+  showSupplier: PropTypes.bool,
   user: PropTypes.shape({
     isGovernment: PropTypes.bool,
   }).isRequired,

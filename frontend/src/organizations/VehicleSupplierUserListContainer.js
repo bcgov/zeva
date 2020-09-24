@@ -15,10 +15,10 @@ import VehicleSupplierUserListPage from './components/VehicleSupplierUserListPag
 const VehicleSupplierUserListContainer = (props) => {
   const { id } = useParams();
   const [details, setDetails] = useState({});
+  const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const { keycloak } = props;
-
 
   const refreshDetails = () => {
     setLoading(true);
@@ -42,16 +42,14 @@ const VehicleSupplierUserListContainer = (props) => {
   }, [keycloak.authenticated]);
 
   return (
-    <div>
-      <div className="row">
-        <div className="col-sm-12">
-          <h1>{details.name}</h1>
-        </div>
-      </div>
+    <div className="page">
+      <h1 className="mb-2">{details.name}</h1>
       <VehicleSupplierTabs supplierId={details.id} active="supplier-users" />
       <VehicleSupplierUserListPage
+        filtered={filtered}
         loading={loading}
         members={users}
+        setFiltered={setFiltered}
       />
     </div>
   );

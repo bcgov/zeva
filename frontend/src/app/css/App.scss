@@ -98,6 +98,10 @@ p {
   padding: 1rem;
   text-align: right;
 
+  &.no-bg {
+    background-color: transparent;
+  }
+
   > * {
     align-self: center;
     display: flex;
@@ -111,7 +115,6 @@ p {
     margin-left: 1rem;
     white-space: nowrap;
     align-self: center;
-
   }
 
   #supplier {
@@ -125,6 +128,12 @@ p {
   label {
     margin-top: 1rem;
     margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .right-content > * {
+      margin-left: 0;
+    }
   }
 }
 
@@ -229,31 +238,37 @@ p {
 }
 
 .page {
-  padding: 1rem 0 0;
+  padding: 0;
 
   h1 {
-    color: $default-text-blue;
     font-size: 2rem;
-    font-weight: bold;
   }
 
   h2 {
-    color: $default-text-blue;
     font-size: 1.5rem;
-    font-weight: bold;
-    padding-bottom: 1rem;
-    padding-top: 1rem;
   }
 
   h3 {
     font-size: 1.25rem;
-    font-weight: bold;
-    padding-bottom: 0.5rem;
-    padding-top: 0.5rem;
   }
 
-  h3, h4, h5, h6 {
+  h4 {
+    font-size: 1rem;
+  }
+
+  h5 {
+    font-size: .75rem;
+  }
+
+  h6 {
+    font-size: .5rem;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
     color: $default-text-blue;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
   }
 }
 

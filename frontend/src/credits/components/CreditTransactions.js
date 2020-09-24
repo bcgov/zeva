@@ -20,7 +20,7 @@ const CreditTransactions = (props) => {
 
     if (item.creditClass.creditClass === 'B') {
       if (item.debitFrom && item.debitFrom.id === user.organization.id) {
-        totalA -= parseFloat(item.totalValue);
+        totalB -= parseFloat(item.totalValue);
       } else {
         totalB += parseFloat(item.totalValue);
       }
@@ -70,11 +70,11 @@ const CreditTransactions = (props) => {
   });
 
   return (
-    <div id="credit-transaction-details" className="page mb-0">
+    <div id="credit-transaction" className="page">
       {!user.isGovernment && (
-      <div className="row mb-5">
+      <div className="row my-3">
         <div className="col-sm-5">
-          <h2 className="pt-0">Detailed Credit Balance</h2>
+          <h2 className="mb-2">Detailed Credit Balance</h2>
           <CreditBalanceTable
             items={
               Object.entries(balances).map(([key, value]) => ({
@@ -88,9 +88,9 @@ const CreditTransactions = (props) => {
       </div>
       )}
 
-      <div className="row">
+      <div className="row mt-5">
         <div className="col-sm-12">
-          <h3>Credit Transactions</h3>
+          <h2 className="mb-2">Credit Transactions</h2>
           <CreditTransactionListTable items={transactions} user={user} />
         </div>
       </div>

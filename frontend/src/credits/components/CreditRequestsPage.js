@@ -16,9 +16,9 @@ const CreditRequestsPage = (props) => {
 
   return (
     <div id="credit-requests-list" className="page">
-      <div className="row mb-3">
-        <div className="col-md-8">
-          <h2 className="py-0">Application for Credits for Consumer Sales</h2>
+      <div className="row mt-3 mb-2">
+        <div className="col-md-8 d-flex align-items-end">
+          <h2>Application for Credits for Consumer Sales</h2>
         </div>
         {!user.isGovernment && (
         <div className="col-md-4 text-right">

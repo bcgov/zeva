@@ -7,6 +7,8 @@ import _ from 'lodash';
 import moment from 'moment-timezone';
 
 import ReactTable from '../../app/components/ReactTable';
+import CustomPropTypes from '../../app/utilities/props';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const CreditTransactionListTable = (props) => {
   const { items, user } = props;
@@ -57,11 +59,13 @@ const CreditTransactionListTable = (props) => {
     columns: [{
       accessor: (item) => {
         if (item.creditClass.creditClass === 'A') {
-          if (item.debitFrom) {
-            if (item.debitFrom.id === user.organization.id) return (item.totalValue * -1);
+          if (item.debitFrom && item.debitFrom.id === user.organization.id) {
+            return formatNumeric(item.totalValue * -1, 2);
           }
-          return item.totalValue;
+
+          return formatNumeric(item.totalValue, 2);
         }
+
         return '-';
       },
       className: 'text-right credits-left',
@@ -73,7 +77,17 @@ const CreditTransactionListTable = (props) => {
       id: 'credit-class-a',
       maxWidth: 175,
     }, {
-      accessor: (item) => (item.creditClass.creditClass === 'B' ? item.totalValue : '-'),
+      accessor: (item) => {
+        if (item.creditClass.creditClass === 'B') {
+          if (item.debitFrom && item.debitFrom.id === user.organization.id) {
+            return formatNumeric(item.totalValue * -1, 2);
+          }
+
+          return formatNumeric(item.totalValue, 2);
+        }
+
+        return '-';
+      },
       className: 'text-right',
       Cell: (item) => (
         <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>
@@ -125,7 +139,7 @@ CreditTransactionListTable.defaultProps = {};
 
 CreditTransactionListTable.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  user: PropTypes.shape({}).isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default CreditTransactionListTable;
