@@ -20,7 +20,7 @@ const Modal = (props) => {
       <div className={`modal-dialog ${modalClass}`} role="document">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">{title}</h5>
+            <h3 className="modal-title">{title}</h3>
             <button
               aria-label="Close"
               className="close"

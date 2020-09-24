@@ -51,8 +51,7 @@ const VehicleForm = (props) => {
     >
       <div>
         <div><br /><br /></div>
-        <h4 className="d-inline">{modalText}
-        </h4>
+        <h3 className="d-inline">{modalText}</h3>
         <div><br /><br /></div>
       </div>
     </Modal>
@@ -94,15 +93,16 @@ const VehicleForm = (props) => {
           <h2>{formTitle}</h2>
           {status === 'CHANGES_REQUESTED'
           && (
-          <div>
-            {alert}
-            {vehicleComment && (
-            <h6>
-              <b>Comment from {vehicleComment.createUser && vehicleComment.createUser.displayName}, {moment(vehicleComment.createTimestamp).format('MMM d, YYYY')}: </b>
-              {vehicleComment.comment}
-            </h6>
-            )}
-          </div>
+            <div className="my-2">
+              {alert}
+              <h4 className="request-changes-vehicle">Range test results have been requested by government</h4>
+              {vehicleComment && (
+              <h4 className="mt-2">
+                <b>Comment from {vehicleComment.createUser && vehicleComment.createUser.displayName}, {moment(vehicleComment.createTimestamp).format('MMM d, YYYY')}: </b>
+                {vehicleComment.comment}
+              </h4>
+              )}
+            </div>
           )}
         </div>
       </div>
@@ -205,8 +205,8 @@ const VehicleForm = (props) => {
           </div>
 
           {(fields.hasPassedUs06Test || (status === 'CHANGES_REQUESTED' && setUploadFiles)) && (
-            <div className="col-lg-6">
-              <h3 className="font-weight-bold mt-2">Upload range test results (e.g. CARB Executive Order)</h3>
+            <div className="col-xl-5 col-lg-10 col-md-12">
+              <h3 className="font-weight-bold mt-2">Upload range test results</h3>
               <fieldset>
                 <div className="form-group row">
                   <label className="col-sm-3 col-form-label" htmlFor="file-upload">
