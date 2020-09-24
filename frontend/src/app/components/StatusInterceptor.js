@@ -100,7 +100,7 @@ class StatusInterceptor extends Component {
 
     return (
       <div className="alert alert-danger" role="alert">
-        <h4 className="alert-heading mb-4">We&apos;re sorry.</h4>
+        <h3 className="alert-heading mb-4">We&apos;re sorry.</h3>
         {content}
       </div>
     );

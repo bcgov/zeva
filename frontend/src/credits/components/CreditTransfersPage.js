@@ -43,8 +43,8 @@ const CreditTransfersPage = (props) => {
     >
       <div>
         <div><br /><br /></div>
-        <h4 className="d-inline">Submit credit transfer notice to trade partner?
-        </h4>
+        <h3 className="d-inline">Submit credit transfer notice to trade partner?
+        </h3>
         <div><br /><br /></div>
       </div>
     </Modal>
@@ -101,7 +101,7 @@ const CreditTransfersPage = (props) => {
           <div className="row">
             <div className="col-sm-12">
               <fieldset>
-                <h5>{user.organization.name} submits notice of the following proposed credit transfer:</h5>
+                <h3>{user.organization.name} submits notice of the following proposed credit transfer:</h3>
                 <div className="form-group">
                   <div className="d-inline-block align-middle mr-5">
                     <input type="radio" id="transfer-to" name="transferType" value="transfer to" onChange={handleInputChange} />
@@ -124,7 +124,7 @@ const CreditTransfersPage = (props) => {
                 </div>
                 {rows.map((item, index) => (<TransferFormRow years={years} key={index} rows={rows} rowId={index} handleRowInputChange={handleRowInputChange} removeRow={removeRow} />))}
                 <button type="button" className="transfer-add-line my-2" onClick={() => { addRow(); }}>
-                  <h5><FontAwesomeIcon icon="plus" /> Add another line</h5>
+                  <h4><FontAwesomeIcon icon="plus" /> Add another line</h4>
                 </button>
                 <span className="transfer-total">Total CAD: ${total}</span>
                 <div>

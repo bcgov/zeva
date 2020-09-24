@@ -86,8 +86,8 @@ const CreditRequestDetailsPage = (props) => {
     >
       <div>
         <div><br /><br /></div>
-        <h4 className="d-inline">{modalProps.modalText}
-        </h4>
+        <h3 className="d-inline">{modalProps.modalText}
+        </h3>
         <div><br />{comment && (
         <p>Comment: {comment}</p>
         )}<br />
@@ -124,29 +124,29 @@ const CreditRequestDetailsPage = (props) => {
       )}
       {((
         (directorAction || analystAction) && submission.validationStatus === 'RECOMMEND_APPROVAL'
-      ) || (user.isGovernment && submission.validationStatus === 'VALIDATED'))
+      ) || (user.isGovernment && ['SUBMITTES', 'CHECKED', 'VALIDATED'].indexOf(submission.validationStatus) >= 0))
       && submission.salesSubmissionComment && (
         <div className="row mb-3">
           <div className="col-sm-12">
-            <div className="recommendation-comment p-2">
+            <div className="recommendation-comment p-2 m-0">
               {submission.validationStatus === 'RECOMMEND_APPROVAL'
               && (
-                <h5 className="d-inline mr-2">
+                <h4 className="d-inline mr-2">
                   {submission.updateUser.displayName} recommended this submission be approved.
-                </h5>
+                </h4>
               )}
               {(['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0) && submission.salesSubmissionComment
               && (
-              <h5>
+              <h4>
                 {submission.updateUser.displayName} has returned this submission.
-              </h5>
+              </h4>
               )}
               {submission.salesSubmissionComment && (
                 submission.salesSubmissionComment.map((each) => (
                   <div key={each.id}>
-                    <h5 className="d-inline mr-2">
+                    <h4 className="d-inline mr-2">
                       Comments from {each.createUser.displayName} {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}:
-                    </h5>
+                    </h4>
                     <span>
                       {each.comment}
                     </span>
@@ -160,11 +160,11 @@ const CreditRequestDetailsPage = (props) => {
       {!user.isGovernment && (
         <div className="row mb-3">
           <div className="col-sm-12">
-            <h5 className="d-inline-block sales-upload-grey">Service address: </h5>
-            {serviceAddress && <h5 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h5>}
+            <h4 className="d-inline-block sales-upload-grey">Service address: </h4>
+            {serviceAddress && <h4 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h4>}
             <br />
-            <h5 className="d-inline-block sales-upload-grey">Records address: </h5>
-            {recordsAddress && <h5 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h5>}
+            <h4 className="d-inline-block sales-upload-grey">Records address: </h4>
+            {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
           </div>
         </div>
       )}
