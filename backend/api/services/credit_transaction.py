@@ -71,11 +71,11 @@ def award_credits(submission):
 
 
 def aggregate_credit_balance_details(organization):
-    balance_credits = Coalesce(Sum('credit_value', filter=Q(
+    balance_credits = Coalesce(Sum('total_value', filter=Q(
         credit_to=organization
     )), Value(0))
 
-    balance_debits = Coalesce(Sum('credit_value', filter=Q(
+    balance_debits = Coalesce(Sum('total_value', filter=Q(
         debit_from=organization
     )), Value(0))
 
@@ -92,7 +92,7 @@ def aggregate_credit_balance_details(organization):
     ).annotate(
         credit=balance_credits,
         debit=balance_debits,
-        credit_value=F('credit') - F('debit')
+        total_value=F('credit') - F('debit')
     ).order_by('model_year_id', 'credit_class_id', 'weight_class_id')
 
     return balance

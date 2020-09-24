@@ -6,19 +6,25 @@ import CreditTransactionListTable from './CreditTransactionListTable';
 
 const CreditTransactions = (props) => {
   const { balances: propsBalances, items, user } = props;
-
   let totalA = 0;
   let totalB = 0;
 
   const transactions = items.map((item) => {
     if (item.creditClass.creditClass === 'A') {
-      totalA += parseFloat(item.creditValue);
+      if (item.debitFrom && item.debitFrom.id === user.organization.id) {
+        totalA -= parseFloat(item.totalValue);
+      } else {
+        totalA += parseFloat(item.totalValue);
+      }
     }
 
     if (item.creditClass.creditClass === 'B') {
-      totalB += parseFloat(item.creditValue);
+      if (item.debitFrom && item.debitFrom.id === user.organization.id) {
+        totalA -= parseFloat(item.totalValue);
+      } else {
+        totalB += parseFloat(item.totalValue);
+      }
     }
-
     const obj = {
       ...item,
       displayTotalA: totalA,
@@ -40,7 +46,7 @@ const CreditTransactions = (props) => {
     if (balance.modelYear && balance.creditClass) {
       balances[balance.modelYear.name] = {
         ...balances[balance.modelYear.name],
-        [balance.creditClass.creditClass]: parseFloat(balance.creditValue),
+        [balance.creditClass.creditClass]: parseFloat(balance.totalValue),
       };
 
       let currentValue = 0;
@@ -58,7 +64,7 @@ const CreditTransactions = (props) => {
       totalCredits[balance.weightClass.weightClassCode] = {
         ...totalCredits[balance.weightClass.weightClassCode],
         label: `Total ${balance.weightClass.weightClassCode}`,
-        [balance.creditClass.creditClass]: currentValue + parseFloat(balance.creditValue),
+        [balance.creditClass.creditClass]: currentValue + parseFloat(balance.totalValue),
       };
     }
   });
@@ -85,7 +91,7 @@ const CreditTransactions = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <h3>Credit Transactions</h3>
-          <CreditTransactionListTable items={transactions} />
+          <CreditTransactionListTable items={transactions} user={user} />
         </div>
       </div>
     </div>
