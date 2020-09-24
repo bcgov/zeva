@@ -245,7 +245,7 @@ const VehicleEditContainer = (props) => {
       errorFields={errorFields}
       fields={fields}
       files={files}
-      formTitle="Enter ZEV Model"
+      formTitle="Enter Zero-Emission Vehicle"
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
       loading={loading}

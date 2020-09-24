@@ -57,6 +57,13 @@ const VehicleForm = (props) => {
       </div>
     </Modal>
   );
+  const alert = (
+    <div className="alert-warning" role="alert"><FontAwesomeIcon icon="exclamation-circle" />
+      <h4>
+        Vehicle changes have been requested
+      </h4>
+    </div>
+  );
   const deleteFile = (attachmentId) => {
     setDeleteFiles([...deleteFiles, attachmentId]);
   };
@@ -82,7 +89,7 @@ const VehicleForm = (props) => {
           {status === 'CHANGES_REQUESTED'
           && (
           <div>
-            <h6 className="request-changes-vehicle">Range test results have been requested by government</h6>
+            {alert}
             {vehicleComment && (
             <h6>
               <b>Comment from {vehicleComment.createUser && vehicleComment.createUser.displayName}, {moment(vehicleComment.createTimestamp).format('MMM d, YYYY')}: </b>
@@ -193,7 +200,7 @@ const VehicleForm = (props) => {
 
           {(fields.hasPassedUs06Test || (status === 'CHANGES_REQUESTED' && setUploadFiles)) && (
             <div className="col-lg-6">
-              <h3 className="font-weight-bold mt-2">Upload range test results</h3>
+              <h3 className="font-weight-bold mt-2">Upload range test results (e.g. CARB Executive Order)</h3>
               <fieldset>
                 <div className="form-group row">
                   <label className="col-sm-3 col-form-label" htmlFor="file-upload">
