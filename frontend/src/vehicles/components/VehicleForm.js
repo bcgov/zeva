@@ -58,10 +58,16 @@ const VehicleForm = (props) => {
     </Modal>
   );
   const alert = (
-    <div className="alert-warning" role="alert"><FontAwesomeIcon icon="exclamation-circle" />
-      <h4>
-        Vehicle changes have been requested
-      </h4>
+    <div className="alert-warning" role="alert">
+      <span>
+        <FontAwesomeIcon icon="exclamation-circle" size="2x" />
+      </span>
+      <span>
+        <b>
+          STATUS: Changes Requested &mdash;
+        </b>
+        information or change requested by government Oct. 31, 2020, see comments. Sales credits cannot be issued for this model until validated by government.
+      </span>
     </div>
   );
   const deleteFile = (attachmentId) => {
@@ -103,7 +109,7 @@ const VehicleForm = (props) => {
 
       <form onSubmit={(event) => handleSubmit(event)}>
         <div className="row">
-          <div className="col-xl-7 col-lg-10 col-md-12">
+          <div className="col-xl-6 col-lg-6 col-md-12">
             <fieldset>
               <VehicleFormDropdown
                 accessor={(model) => model.name}
