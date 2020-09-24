@@ -89,6 +89,7 @@ const ModelListTable = (props) => {
   const totals = {
     a: 0,
     b: 0,
+    sales: 0,
   };
 
   items.forEach((item) => {
@@ -118,6 +119,8 @@ const ModelListTable = (props) => {
           totals.b += creditValue;
         }
       }
+    } else if (['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(validationStatus) < 0) {
+      addSale = 1;
     }
 
     let warnings = 0;
@@ -152,32 +155,41 @@ const ModelListTable = (props) => {
         warnings,
       });
     }
+
+    totals.sales += addSale;
   });
 
-  return ([
-    <ReactTable
-      columns={columns}
-      data={data}
-      defaultSorted={[{
-        id: 'make',
-      }]}
-      key="table"
-    />,
-    <div className="totals" key="totals">
-      <table>
-        <tbody className="font-weight-bold">
-          <tr className="total-grey">
-            <td className="text-center">Total A Credits</td>
-            <td className="text-right">{_.round(totals.a, 2).toFixed(2)}</td>
-          </tr>
-          <tr>
-            <td className="text-center">Total B Credits</td>
-            <td className="text-right">{_.round(totals.b, 2).toFixed(2)}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>,
-  ]);
+  return (
+    <>
+      <h3 className="mb-2">Consumer Sales: {totals.sales}</h3>
+
+      <div className="table">
+        <ReactTable
+          columns={columns}
+          data={data}
+          defaultSorted={[{
+            id: 'make',
+          }]}
+          key="table"
+        />
+
+        <div className="totals">
+          <table>
+            <tbody className="font-weight-bold">
+              <tr className="total-grey">
+                <td className="text-center">Total A Credits</td>
+                <td className="text-right">{_.round(totals.a, 2).toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td className="text-center">Total B Credits</td>
+                <td className="text-right">{_.round(totals.b, 2).toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
+  );
 };
 
 ModelListTable.defaultProps = {

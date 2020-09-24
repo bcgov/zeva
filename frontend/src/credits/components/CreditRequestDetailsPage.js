@@ -116,7 +116,7 @@ const CreditRequestDetailsPage = (props) => {
       </div>
       {analystAction
       && (
-      <div className="row mb-3">
+      <div className="row mb-2">
         <div className="col-sm-12">
           ICBC data current to: {previousDateCurrentTo}
         </div>
@@ -126,7 +126,7 @@ const CreditRequestDetailsPage = (props) => {
         (directorAction || analystAction) && submission.validationStatus === 'RECOMMEND_APPROVAL'
       ) || (user.isGovernment && ['SUBMITTES', 'CHECKED', 'VALIDATED'].indexOf(submission.validationStatus) >= 0))
       && submission.salesSubmissionComment && (
-        <div className="row mb-3">
+        <div className="row mb-2">
           <div className="col-sm-12">
             <div className="recommendation-comment p-2 m-0">
               {submission.validationStatus === 'RECOMMEND_APPROVAL'
@@ -170,14 +170,12 @@ const CreditRequestDetailsPage = (props) => {
       )}
       <div className="row">
         <div className="col-sm-12">
-          <div className="table">
-            <ModelListTable
-              items={submission.content}
-              user={user}
-              validatedOnly={validatedOnly}
-              validationStatus={submission.validationStatus}
-            />
-          </div>
+          <ModelListTable
+            items={submission.content}
+            user={user}
+            validatedOnly={validatedOnly}
+            validationStatus={submission.validationStatus}
+          />
         </div>
       </div>
       {user.isGovernment

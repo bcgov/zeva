@@ -41,20 +41,6 @@ const SalesSubmissionDetailsPage = (props) => {
       </span>
       <span className="right-content">
         <button
-          className="button"
-          type="button"
-          onClick={() => { clearFilters(); }}
-        >
-          Clear Filter
-        </button>
-        <button
-          className="button btn btn-outline-danger"
-          type="button"
-          onClick={() => { filterWarnings(); }}
-        >
-          View Warnings Only
-        </button>
-        <button
           className="button primary"
           onClick={() => {
             handleSubmit();
@@ -92,9 +78,23 @@ const SalesSubmissionDetailsPage = (props) => {
       </div>
       )}
 
-      <div className="row">
-        <div className="col-sm-12">
-          {actionBar}
+      <div className="row mb-2">
+        <div className="col-sm-12 text-right">
+          <button
+            className="button btn btn-outline-danger d-inline-block align-middle mr-3"
+            type="button"
+            onClick={() => { filterWarnings(); }}
+          >
+            View Warnings Only
+          </button>
+
+          <button
+            className="button d-inline-block align-middle"
+            type="button"
+            onClick={() => { clearFilters(); }}
+          >
+            Clear Filter
+          </button>
         </div>
       </div>
 
@@ -113,7 +113,7 @@ const SalesSubmissionDetailsPage = (props) => {
       </div>
 
       <div className="row">
-        <div className="col-sm-12 mt-3">
+        <div className="col-sm-12">
           {actionBar}
         </div>
       </div>
