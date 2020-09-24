@@ -227,8 +227,7 @@ const VehicleDetailsPage = (props) => {
           >
             <div>
               <div><br /><br /></div>
-              <h4 className="d-inline">{modalText}
-              </h4>
+              <h3 className="d-inline">{modalText}</h3>
               <div><br /><br /></div>
             </div>
           </Modal>

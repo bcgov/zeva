@@ -29,9 +29,9 @@ const SalesUploadPage = (props) => {
       <div className="row mt-3 mb-2">
         <div className="col-12">
           <h2 className="mb-2">Application for Credits for Consumer Sales</h2>
-          <h4 className="sales-upload-grey">
+          <h3 className="sales-upload-grey">
             Download an Excel template containing all eligible ZEV models to submit consumer sales
-          </h4>
+          </h3>
         </div>
       </div>
 
