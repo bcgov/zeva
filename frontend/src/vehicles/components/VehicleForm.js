@@ -83,7 +83,7 @@ const VehicleForm = (props) => {
           <div className={fields.hasPassedUs06Test || (status === 'CHANGES_REQUESTED' && setUploadFiles) ? 'col-12' : 'col-6'}>
             <Alert status={status} user={fields.user} date={moment(fields.updateTimestamp).format('MMM d, YYYY')} />
           </div>
-          {status === 'CHANGES_REQUESTED'
+          {status === 'CHANGES_REQUESTED' && vehicleComment
           && (
           <div className="px-3">
             <Comment comment={vehicleComment.comment} user={vehicleComment.createUser.displayName} date={moment(vehicleComment.createTimestamp).format('MMM d, YYYY')} />
