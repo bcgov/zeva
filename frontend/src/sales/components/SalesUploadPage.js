@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import PropTypes from 'prop-types';
 import history from '../../app/History';
-
+import Button from '../../app/components/Button';
 import ROUTES_CREDITS from '../../app/routes/Credits';
 import ROUTES_SALES from '../../app/routes/Sales';
 import download from '../../app/utilities/download';
@@ -113,17 +113,11 @@ const SalesUploadPage = (props) => {
 
       <div className="action-bar">
         <span className="left-content">
-          <button
-            className="button"
-            onClick={() => {
-              history.push(ROUTES_CREDITS.CREDIT_REQUESTS);
-            }}
-            type="button"
-          >
-            <FontAwesomeIcon icon="arrow-left" /> Back
-          </button>
+          <Button
+            buttonType="back"
+            locationRoute={ROUTES_CREDITS.CREDIT_REQUESTS}
+          />
         </span>
-
         <span className="right-content">
           <button
             disabled={files.length === 0}

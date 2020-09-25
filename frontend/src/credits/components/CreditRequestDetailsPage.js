@@ -191,15 +191,7 @@ const CreditRequestDetailsPage = (props) => {
         <div className="col-sm-12">
           <div className="action-bar mt-0">
             <span className="left-content">
-            <Button buttonType="back" locationRoute={ROUTES_CREDITS.CREDIT_REQUESTS, locationState} />
-              <button
-                className="button"
-                onClick={() => {
-                  console.log(locationState)}}
-                type="button"
-              >
-                <FontAwesomeIcon icon="arrow-left" /> Back
-              </button>
+              <Button buttonType="back" />
               {submission.validationStatus === 'DRAFT' && (
                 <Button buttonType="delete" action={() => { setModalType('delete'); setShowModal(true); }} />
               )}

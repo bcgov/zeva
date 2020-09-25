@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
 import history from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
@@ -54,15 +54,7 @@ const CreditTransfersPage = (props) => {
       <div className="col-sm-12">
         <div className="action-bar">
           <span className="left-content">
-            <button
-              className="button"
-              onClick={() => {
-                history.push('/credit-transactions/transfers');
-              }}
-              type="button"
-            >
-              Back
-            </button>
+            <Button buttonType="back" locationRoute="/credit-transactions/transfers" />
           </span>
           <span className="right-content">
             <button

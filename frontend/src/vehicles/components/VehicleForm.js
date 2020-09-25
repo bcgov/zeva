@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment-timezone';
-
+import Button from '../../app/components/Button';
 import history from '../../app/History';
 import AutocompleteInput from '../../app/components/AutocompleteInput';
 import ExcelFileDrop from '../../app/components/FileDrop';
@@ -306,15 +306,7 @@ const VehicleForm = (props) => {
           <div className="col-12">
             <div className="action-bar form-group row">
               <span className="left-content">
-                <button
-                  className="button"
-                  type="button"
-                  onClick={() => {
-                    history.push(ROUTES_VEHICLES.LIST);
-                  }}
-                >
-                  <FontAwesomeIcon icon="arrow-left" /> Back
-                </button>
+                <Button buttonType="back" locationRoute={ROUTES_VEHICLES.LIST} />
               </span>
 
               <span className="right-content">
