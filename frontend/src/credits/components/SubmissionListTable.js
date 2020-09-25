@@ -37,7 +37,14 @@ const SubmissionListTable = (props) => {
     id: 'supplier',
     show: user.isGovernment,
   }, {
-    accessor: (item) => (item.totals.vins > 0 ? item.totals.vins : '-'),
+    accessor: (item) => {
+      if (['DRAFT', 'SUBMITTED'].indexOf(item.validationStatus) >= 0) {
+        const totals = item.totals.vins + item.unselected;
+        return (totals > 0 ? totals : '-');
+      }
+
+      return (item.totals.vins > 0 ? item.totals.vins : '-');
+    },
     className: 'text-right',
     Header: 'Total Sales',
     maxWidth: 150,
