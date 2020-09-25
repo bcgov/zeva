@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import moment from 'moment-timezone';
 
-import ButtonDelete from '../../app/components/ButtonDelete';
+import Button from '../../app/components/Button';
 import ButtonSubmit from '../../app/components/ButtonSubmit';
 import Modal from '../../app/components/Modal';
 import history from '../../app/History';
@@ -191,17 +191,17 @@ const CreditRequestDetailsPage = (props) => {
         <div className="col-sm-12">
           <div className="action-bar mt-0">
             <span className="left-content">
+            <Button buttonType="back" locationRoute={ROUTES_CREDITS.CREDIT_REQUESTS, locationState} />
               <button
                 className="button"
                 onClick={() => {
-                  history.push(ROUTES_CREDITS.CREDIT_REQUESTS, locationState);
-                }}
+                  console.log(locationState)}}
                 type="button"
               >
                 <FontAwesomeIcon icon="arrow-left" /> Back
               </button>
               {submission.validationStatus === 'DRAFT' && (
-                <ButtonDelete action={() => { setModalType('delete'); setShowModal(true); }} />
+                <Button buttonType="delete" action={() => { setModalType('delete'); setShowModal(true); }} />
               )}
               {directorAction && (
                 <button
