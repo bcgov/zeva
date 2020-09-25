@@ -31,7 +31,6 @@ const VehicleDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
-
   const { id } = details;
   const handleChange = (event) => {
     setComments({ ...comments, vehicleComment: { comment: event.target.value } });
@@ -41,6 +40,7 @@ const VehicleDetailsPage = (props) => {
     const { checked } = event.target;
     if (checked) {
       setRequestChangeCheck(true);
+      setComments({ ...comments, vehicleComment: { comment: 'Please provide range test results.' } });
     } else {
       setRequestChangeCheck(false);
     }
@@ -50,7 +50,6 @@ const VehicleDetailsPage = (props) => {
   let handleSubmit = () => {};
   let buttonClass;
   let modalText;
-
   if (modalType === 'accept') {
     confirmLabel = 'Validate';
     handleSubmit = () => { requestStateChange('VALIDATED'); };
@@ -78,8 +77,8 @@ const VehicleDetailsPage = (props) => {
 
       <div className="row align-items-center">
         <div className="col-md-12 col-lg-9 col-xl-7">
-          <Alert status={details.validationStatus} />
-          {details.validationStatus === 'CHANGES_REQUESTED' && user.isGovernment && details.vehicleComment.comment
+          <Alert status={details.validationStatus} user={details.validationStatus === 'SUBMITTED' ? details.createUser.displayName : details.updateUser.displayName} date={moment(details.updateTimestamp).format('MMM d, YYYY')} />
+          {details.validationStatus === 'CHANGES_REQUESTED' && user.isGovernment && details.vehicleComment
           && (
             <Comment comment={details.vehicleComment.comment} user={details.vehicleComment.createUser.displayName} date={moment(details.vehicleComment.createTimestamp).format('MMM d, YYYY')} />
           )}
@@ -158,7 +157,7 @@ const VehicleDetailsPage = (props) => {
               Request range results and/or a change to the range value from the vehicle supplier, specify below.
             </div>
             <div>Add a comment to the vehicle supplier for request or rejection.</div>
-            <textarea className="form-control" rows="3" onChange={handleChange} />
+            <textarea className="form-control" rows="3" onChange={handleChange} defaultValue={comments.vehicleComment.comment}/>
             <div className="text-right">
               <button className="button primary" disabled={!requestChangeCheck || !comments.vehicleComment} type="button" key="REQUEST" onClick={() => { setModalType('request'); setShowModal(true); }}>Request Range Change/Test Results</button>
             </div>
@@ -261,6 +260,9 @@ VehicleDetailsPage.propTypes = {
   details: PropTypes.shape({
     actions: PropTypes.arrayOf(PropTypes.string),
     attachments: PropTypes.arrayOf(PropTypes.shape()),
+    createUser: PropTypes.shape({
+      displayName: PropTypes.string,
+    }),
     creditClass: PropTypes.string,
     creditValue: PropTypes.number,
     hasPassedUs06Test: PropTypes.bool,
@@ -279,6 +281,9 @@ VehicleDetailsPage.propTypes = {
     validationStatus: PropTypes.string,
     vehicleClassCode: PropTypes.shape({
       description: PropTypes.string,
+    }),
+    updateUser: PropTypes.shape({
+      displayName: PropTypes.string,
     }),
     vehicleComment: PropTypes.shape(),
     vehicleZevType: PropTypes.shape({

@@ -191,12 +191,6 @@ const VehicleEditContainer = (props) => {
   };
 
   const loadVehicle = (data) => {
-    let user;
-    if (data.validationStatus === 'DRAFT') {
-      user = data.createUser.displayName;
-    } else {
-      user = data.updateUser.displayName;
-    }
     setFields({
       attachments: data.attachments,
       hasPassedUs06Test: data.hasPassedUs06Test,
@@ -208,7 +202,7 @@ const VehicleEditContainer = (props) => {
       vehicleZevType: data.vehicleZevType.vehicleZevCode,
       weightKg: data.weightKg,
       updateTimestamp: data.updateTimestamp,
-      user,
+      user: data.updateUser.displayName,
     });
 
     setStatus(data.validationStatus);
