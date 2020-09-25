@@ -32,7 +32,7 @@ const Alert = (props) => {
       break;
     case 'REJECTED':
       title = 'Rejected';
-      message = `rejected by government ${date}. Credits cannot be issued for sales of this model`;
+      message = `rejected by government ${date}. Credits cannot be issued for sales of this model.`;
       classname = 'alert-danger';
       break;
     default:

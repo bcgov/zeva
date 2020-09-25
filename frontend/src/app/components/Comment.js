@@ -8,8 +8,7 @@ const Comment = (props) => {
     <div className="bcgov-callout" role="alert">
       <span>
         <b>Comments &mdash;</b> {user}, {date}
-        <br />
-        {comment}
+        <p className="mt-3">{comment}</p>
       </span>
     </div>
   );
