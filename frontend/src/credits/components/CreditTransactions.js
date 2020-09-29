@@ -11,19 +11,11 @@ const CreditTransactions = (props) => {
 
   const transactions = items.map((item) => {
     if (item.creditClass.creditClass === 'A') {
-      if (item.debitFrom && item.debitFrom.id === user.organization.id) {
-        totalA -= parseFloat(item.totalValue);
-      } else {
-        totalA += parseFloat(item.totalValue);
-      }
+      totalA += parseFloat(item.totalValue);
     }
 
     if (item.creditClass.creditClass === 'B') {
-      if (item.debitFrom && item.debitFrom.id === user.organization.id) {
-        totalB -= parseFloat(item.totalValue);
-      } else {
-        totalB += parseFloat(item.totalValue);
-      }
+      totalB += parseFloat(item.totalValue);
     }
     const obj = {
       ...item,

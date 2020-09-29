@@ -7,17 +7,23 @@ import _ from 'lodash';
 import moment from 'moment-timezone';
 
 import ReactTable from '../../app/components/ReactTable';
-import CustomPropTypes from '../../app/utilities/props';
 import formatNumeric from '../../app/utilities/formatNumeric';
+import history from '../../app/History';
+import ROUTES_CREDITS from '../../app/routes/Credits';
 
 const CreditTransactionListTable = (props) => {
-  const { items, user } = props;
-  const translateTransactionType = (type) => {
-    switch (type.toLowerCase()) {
+  const { items } = props;
+  const translateTransactionType = (item) => {
+    if (!item.transactionType) {
+      return false;
+    }
+
+    const { transactionType } = item.transactionType;
+    switch (transactionType.toLowerCase()) {
       case 'validation':
-        return 'Credit Application';
+        return `Credit Application (ID: ${item.foreignKey})`;
       default:
-        return type;
+        return transactionType;
     }
   };
 
@@ -47,7 +53,7 @@ const CreditTransactionListTable = (props) => {
     Header: '',
     headerClassName: 'header-group transaction',
     columns: [{
-      accessor: (item) => translateTransactionType(item.transactionType.transactionType),
+      accessor: (item) => translateTransactionType(item),
       className: 'text-left transaction',
       Header: 'Transaction',
       headerClassName: 'text-left transaction',
@@ -59,10 +65,6 @@ const CreditTransactionListTable = (props) => {
     columns: [{
       accessor: (item) => {
         if (item.creditClass.creditClass === 'A') {
-          if (item.debitFrom && item.debitFrom.id === user.organization.id) {
-            return formatNumeric(item.totalValue * -1, 2);
-          }
-
           return formatNumeric(item.totalValue, 2);
         }
 
@@ -79,10 +81,6 @@ const CreditTransactionListTable = (props) => {
     }, {
       accessor: (item) => {
         if (item.creditClass.creditClass === 'B') {
-          if (item.debitFrom && item.debitFrom.id === user.organization.id) {
-            return formatNumeric(item.totalValue * -1, 2);
-          }
-
           return formatNumeric(item.totalValue, 2);
         }
 
@@ -131,6 +129,32 @@ const CreditTransactionListTable = (props) => {
         desc: true,
       }]}
       filterable={false}
+      getTrProps={(state, row) => {
+        if (row && row.original) {
+          return {
+            onClick: () => {
+              if (!row.original.transactionType) {
+                return false;
+              }
+
+              const item = row.original;
+
+              const { transactionType } = item.transactionType;
+              switch (transactionType.toLowerCase()) {
+                case 'validation':
+                  history.push(ROUTES_CREDITS.CREDIT_REQUEST_DETAILS.replace(/:id/g, item.foreignKey));
+                  break;
+                default:
+              }
+
+              return false;
+            },
+            className: 'clickable',
+          };
+        }
+
+        return {};
+      }}
     />
   );
 };
@@ -139,7 +163,6 @@ CreditTransactionListTable.defaultProps = {};
 
 CreditTransactionListTable.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  user: CustomPropTypes.user.isRequired,
 };
 
 export default CreditTransactionListTable;

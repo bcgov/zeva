@@ -4,8 +4,6 @@ from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from api.models.credit_transfer import CreditTransfer
 from api.models.credit_transfer_content import CreditTransferContent
 from api.models.credit_transfer_statuses import CreditTransferStatuses
-from api.models.credit_transaction import CreditTransaction
-from api.models.organization import Organization
 from api.models.user_profile import UserProfile
 from api.serializers.credit_transaction import CreditTransactionSerializer, \
     CreditTransactionSaveSerializer
@@ -23,12 +21,12 @@ class CreditTransferSerializer(
     update_user = SerializerMethodField()
 
     def get_credit_transactions(self, obj):
-        credit_transactions = CreditTransaction.objects.filter(
-            credit_transfer_content__credit_transfer_id=obj.id
+        content = CreditTransferContent.objects.filter(
+            credit_transfer_id=obj.id
         )
 
         serializer = CreditTransactionSerializer(
-            credit_transactions, many=True, read_only=True
+            content, many=True, read_only=True
         )
 
         return serializer.data
