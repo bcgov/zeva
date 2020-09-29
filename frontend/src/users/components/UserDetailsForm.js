@@ -157,9 +157,7 @@ const UserDetailsForm = (props) => {
               </span>
 
               <span className="right-content">
-                <button className="button primary" type="button" onClick={handleSubmit}>
-                  <FontAwesomeIcon icon="save" /> Save
-                </button>
+                <Button buttonType="save" optionalClassname="button primary" action={() => { handleSubmit; }} />
               </span>
             </div>
           </div>

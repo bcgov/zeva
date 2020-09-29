@@ -351,7 +351,7 @@ class VehicleMinSerializer(
         request = self.context.get('request')
         if instance.validation_status == \
                 VehicleDefinitionStatuses.VALIDATED or \
-                request.user.is_government:
+                (request and request.user and request.user.is_government):
             return instance.get_credit_class()
 
         return None
@@ -361,7 +361,7 @@ class VehicleMinSerializer(
 
         if instance.validation_status == \
                 VehicleDefinitionStatuses.VALIDATED or \
-                request.user.is_government:
+                (request and request.user and request.user.is_government):
             return instance.get_credit_value()
 
         return None
