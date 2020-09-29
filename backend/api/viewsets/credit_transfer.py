@@ -5,7 +5,7 @@ from django.db.models import Q
 
 from api.models.credit_transfer import CreditTransfer
 from api.serializers.credit_transaction import CreditTransactionSaveSerializer
-from api.serializers.credit_transfer import CreditTransferSerializer,\
+from api.serializers.credit_transfer import CreditTransferSerializer, \
     CreditTransferSaveSerializer
 from auditable.views import AuditableMixin
 

@@ -194,8 +194,11 @@ const CreditRequestDetailsPage = (props) => {
               <button
                 className="button"
                 onClick={() => {
-                  console.error(history);
-                  history.push(ROUTES_CREDITS.CREDIT_REQUESTS, locationState);
+                  if (locationState && locationState.href) {
+                    history.push(locationState.href);
+                  } else {
+                    history.push(ROUTES_CREDITS.CREDIT_REQUESTS, locationState);
+                  }
                 }}
                 type="button"
               >

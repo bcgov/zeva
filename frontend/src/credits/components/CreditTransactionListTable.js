@@ -142,7 +142,10 @@ const CreditTransactionListTable = (props) => {
               const { transactionType } = item.transactionType;
               switch (transactionType.toLowerCase()) {
                 case 'validation':
-                  history.push(ROUTES_CREDITS.CREDIT_REQUEST_DETAILS.replace(/:id/g, item.foreignKey));
+                  history.push(
+                    ROUTES_CREDITS.CREDIT_REQUEST_DETAILS.replace(/:id/g, item.foreignKey),
+                    { href: ROUTES_CREDITS.LIST },
+                  );
                   break;
                 default:
               }
