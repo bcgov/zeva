@@ -90,6 +90,7 @@ p {
   }
 }
 
+
 .action-bar {
   background-color: $default-background-grey;
   display: flex;
@@ -121,9 +122,7 @@ p {
     width: auto;
   }
 
-  .button svg {
-    margin-right: 0.25rem;
-  }
+
 
   label {
     margin-top: 1rem;
@@ -171,6 +170,10 @@ p {
   border-radius: 0.2rem;
   color: $primary-blue;
   padding: 0.5rem 1rem;
+  
+  svg {
+    margin-right: 0.25rem;
+  }
 
   &:disabled {
     background-color: $default-background-grey;
@@ -192,10 +195,6 @@ p {
   &.text-danger {
     border-color: $red;
   }
-}
-
-.button-icon {
-  margin: auto .25rem auto 0;
 }
 
 .link {

@@ -17,6 +17,15 @@ const SalesUploadPage = (props) => {
     upload,
   } = props;
 
+  const downloadTemplate = (e) => {
+    const element = e.target;
+    const original = element.innerHTML;
+    element.firstChild.textContent = ' Downloading...';
+    return download(ROUTES_SALES.TEMPLATE, {}).then(() => {
+      element.innerHTML = original;
+    });
+  };
+
   const removeFile = (removedFile) => {
     const found = files.findIndex((file) => (file === removedFile));
     files.splice(found, 1);
@@ -38,22 +47,11 @@ const SalesUploadPage = (props) => {
       <div className="row">
         <div className="col-12">
           <div className="compact content p-3">
-            <button
-              className="button"
-              onClick={(e) => {
-                const element = e.target;
-                const original = element.innerHTML;
-
-                element.firstChild.textContent = ' Downloading...';
-
-                return download(ROUTES_SALES.TEMPLATE, {}).then(() => {
-                  element.innerHTML = original;
-                });
-              }}
-              type="button"
-            >
-              <FontAwesomeIcon icon="download" /> Download Excel Sales Template
-            </button>
+            <Button
+              buttonType="download"
+              optionalText="Download Excel Sales Template"
+              action={(e) => { downloadTemplate(e); }}
+            />
           </div>
         </div>
       </div>

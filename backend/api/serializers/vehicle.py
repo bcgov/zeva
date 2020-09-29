@@ -349,7 +349,6 @@ class VehicleMinSerializer(
 
     def get_credit_class(self, instance):
         request = self.context.get('request')
-
         if instance.validation_status == \
                 VehicleDefinitionStatuses.VALIDATED or \
                 request.user.is_government:

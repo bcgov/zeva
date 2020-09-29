@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import moment from 'moment-timezone';
 
 import Button from '../../app/components/Button';
-import ButtonSubmit from '../../app/components/ButtonSubmit';
 import Modal from '../../app/components/Modal';
 import history from '../../app/History';
 import ROUTES_CREDITS from '../../app/routes/Credits';
@@ -30,6 +29,14 @@ const CreditRequestDetailsPage = (props) => {
   const serviceAddress = user.organization.organizationAddress.find((address) => address.addressType.addressType === 'Service');
   const recordsAddress = user.organization.organizationAddress.find((address) => address.addressType.addressType === 'Records');
 
+  const downloadErrors = (e) => {
+    const element = e.target;
+    const original = element.innerHTML;
+    element.firstChild.textContent = ' Downloading...';
+    return download(ROUTES_SALES.DOWNLOAD_ERRORS.replace(':id', submission.id), {}).then(() => {
+      element.innerHTML = original;
+    })
+  };
   let modalProps = {};
   switch (modalType) {
     case 'submit':
@@ -254,25 +261,15 @@ const CreditRequestDetailsPage = (props) => {
               {!user.isGovernment && (
                 <>
                   {submission.validationStatus === 'VALIDATED' && submission.unselected > 0 && (
-                    <button
-                      className="button primary"
-                      onClick={(e) => {
-                        const element = e.target;
-                        const original = element.innerHTML;
-
-                        element.firstChild.textContent = ' Downloading...';
-
-                        return download(ROUTES_SALES.DOWNLOAD_ERRORS.replace(':id', submission.id), {}).then(() => {
-                          element.innerHTML = original;
-                        });
-                      }}
-                      type="button"
-                    >
-                      <FontAwesomeIcon icon="download" /> Download Errors
-                    </button>
+                    <Button
+                      buttonType="download"
+                      optionalText="Download Errors"
+                      optionalClassname="button primary"
+                      action={(e) => { downloadErrors(e); }}
+                    />
                   )}
                   {submission.validationStatus === 'DRAFT' && (
-                    <ButtonSubmit action={() => { setModalType('submit'); setShowModal(true); }} />
+                    <Button buttonType="submit" action={() => { setModalType('submit'); setShowModal(true); }} />
                   )}
                 </>
               )}

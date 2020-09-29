@@ -4,7 +4,9 @@ import PropTypes from 'prop-types';
 import history from '../History';
 
 const Button = (props) => {
-  const { buttonType, locationRoute, action } = props;
+  const {
+    buttonType, locationRoute, action, optionalText, optionalIcon, disabled, optionalClassname
+  } = props;
   const getRoute = () => {
     if (locationRoute) {
       return history.push(locationRoute);
@@ -12,6 +14,7 @@ const Button = (props) => {
     return history.goBack();
   };
   let text;
+
   let icon;
   let classname = 'button';
   let onclick = () => {};
@@ -23,25 +26,72 @@ const Button = (props) => {
       break;
     case 'delete':
       icon = 'trash';
-      onclick = () => { action(); };
       text = 'Delete';
       classname += ' text-danger';
+      onclick = () => { action(); };
+      break;
+    case 'download':
+      text = 'Download';
+      icon = 'download';
+      onclick = (e) => { action(e); };
+      break;
+    case 'save':
+      text = 'Save';
+      icon = 'save';
+      if (action) {
+        onclick = () => { action(); };
+      }
+      break;
+    case 'submit':
+      text = 'Submit';
+      icon = 'paper-plane';
+      classname += ' primary';
+      onclick = () => { action(); };
       break;
     default:
+      text = optionalText;
+      onclick = (e) => { action(e); };
       break;
+  }
+  if (optionalText) {
+    text = optionalText;
+  }
+  if (optionalIcon) {
+    icon = optionalIcon;
+  }
+  if (optionalClassname) {
+    classname = optionalClassname;
   }
 
   return (
     <button
       className={classname}
-      onClick={() => {
-        onclick();
+      disabled={disabled}
+      onClick={(e) => {
+        onclick(e);
       }}
       type="button"
     >
-      <FontAwesomeIcon icon={icon} />{text}
+      {icon && <FontAwesomeIcon icon={icon} /> }{text}
     </button>
   );
 };
 
+Button.defaultProps = {
+  optionalText: null,
+  optionalIcon: null,
+  locationRoute: null,
+  action: null,
+  optionalClassname: null,
+  disabled: false,
+};
+Button.propTypes = {
+  buttonType: PropTypes.string.isRequired,
+  locationRoute: PropTypes.string,
+  optionalText: PropTypes.string,
+  optionalIcon: PropTypes.string,
+  optionalClassname: PropTypes.string,
+  action: PropTypes.func,
+  disabled: PropTypes.bool,
+};
 export default Button;

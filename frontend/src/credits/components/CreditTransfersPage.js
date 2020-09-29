@@ -57,25 +57,20 @@ const CreditTransfersPage = (props) => {
             <Button buttonType="back" locationRoute="/credit-transactions/transfers" />
           </span>
           <span className="right-content">
-            <button
-              className="button"
-              onClick={() => {
+            <Button
+              buttonType="save"
+              action={() => {
                 handleSave();
               }}
-              type="button"
-            >
-              Save
-            </button>
-            <button
-              className="button primary ml-2"
-              disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent}
-              onClick={() => {
+            />
+            <Button
+              buttonType="submit"
+              action={() => {
                 setShowModal(true);
               }}
-              type="button"
-            >
-              <FontAwesomeIcon icon="paper-plane" />  Submit Notice
-            </button>
+              optionalText="Submit Notice"
+              disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent}
+            />
           </span>
         </div>
       </div>

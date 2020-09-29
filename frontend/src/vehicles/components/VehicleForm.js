@@ -310,17 +310,13 @@ const VehicleForm = (props) => {
               </span>
 
               <span className="right-content">
-                <button className="button" type="submit">
-                  <FontAwesomeIcon icon="save" /> Save Draft
-                </button>
-                <button
-                  className="button primary"
-                  disabled={fields.hasPassedUs06Test && files.length === 0 && (!fields.attachments || fields.attachments.length <= deleteFiles.length)}
-                  onClick={() => { setShowModal(true); }}
-                  type="button"
-                >
-                  <FontAwesomeIcon icon="paper-plane" /> Submit
-                </button>
+                <Button buttonType="save" optionalText="Save Draft" action={(e) => {handleSubmit(e)}} />
+                <Button
+                  buttonType="submit"
+                  disabled={fields.hasPassedUs06Test && files.length === 0 && (!fields.attachments
+                    || fields.attachments.length <= deleteFiles.length)}
+                  action={() => { setShowModal(true); }}
+                />
               </span>
             </div>
             {modal}

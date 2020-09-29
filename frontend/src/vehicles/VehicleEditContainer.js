@@ -139,7 +139,6 @@ const VehicleEditContainer = (props) => {
   };
 
   const handleSubmit = (event, validationStatus = null) => {
-    event.preventDefault();
     const data = fields;
 
     Object.keys(data).forEach((key) => {
