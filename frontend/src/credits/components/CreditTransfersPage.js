@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
 import history from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
@@ -54,36 +54,23 @@ const CreditTransfersPage = (props) => {
       <div className="col-sm-12">
         <div className="action-bar">
           <span className="left-content">
-            <button
-              className="button"
-              onClick={() => {
-                history.push('/credit-transactions/transfers');
-              }}
-              type="button"
-            >
-              <FontAwesomeIcon icon="arrow-left" /> Back
-            </button>
+            <Button buttonType="back" locationRoute="/credit-transactions/transfers" />
           </span>
           <span className="right-content">
-            <button
-              className="button"
-              onClick={() => {
+            <Button
+              buttonType="save"
+              action={() => {
                 handleSave();
               }}
-              type="button"
-            >
-              Save
-            </button>
-            <button
-              className="button primary ml-2"
-              disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent}
-              onClick={() => {
+            />
+            <Button
+              buttonType="submit"
+              action={() => {
                 setShowModal(true);
               }}
-              type="button"
-            >
-              <FontAwesomeIcon icon="paper-plane" />  Submit Notice
-            </button>
+              optionalText="Submit Notice"
+              disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent}
+            />
           </span>
         </div>
       </div>
