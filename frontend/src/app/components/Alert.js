@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 
 const Alert = (props) => {
-  const { status, date, user } = props;
+  const { status, date, user, optionalMessage, optionalClassname } = props;
   let title;
   let icon = 'exclamation-circle';
   let classname;
@@ -37,7 +37,8 @@ const Alert = (props) => {
       break;
     default:
       title = '';
-      message = '';
+      message = optionalMessage;
+      classname = optionalClassname;
   }
 
   return (
@@ -59,10 +60,12 @@ Alert.defaultProps = {
   date: '',
   user: '',
   status: '',
+  optionalClassname: '',
 };
 Alert.propTypes = {
   date: PropTypes.string,
   user: PropTypes.string,
   status: PropTypes.string,
+  optionalClassname: PropTypes.string,
 };
 export default Alert;

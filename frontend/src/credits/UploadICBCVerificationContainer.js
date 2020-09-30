@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-
+import toastr from 'toastr';
 import Loading from '../app/components/Loading';
 import UploadVerificationData from './components/UploadVerificationData';
 import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification';
@@ -13,7 +13,7 @@ const UploadICBCVerificationContainer = (props) => {
   const [dateCurrentTo, setDateCurrentTo] = useState('');
   const [previousDateCurrentTo, setPreviousDateCurrentTo] = useState('No ICBC data uploaded yet');
   const [files, setFiles] = useState([]);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [alertMessage, setAlertMessage] = useState(null);
 
   const today = new Date();
   const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
@@ -30,14 +30,24 @@ const UploadICBCVerificationContainer = (props) => {
   };
 
   const doUpload = () => {
-    upload(ROUTES_ICBCVERIFICATION.UPLOAD, files, dateCurrentTo).catch((error) => {
-      const { response } = error;
-      if (response.status === 400) {
-        setErrorMessage(error.response.data);
-      } else {
-        setErrorMessage('An error has occurred while uploading. Please try again later.');
-      }
-    });
+    setLoading(true);
+    upload(ROUTES_ICBCVERIFICATION.UPLOAD, files, dateCurrentTo)
+      .then(() => {
+        setAlertMessage('upload successful');
+        toastr.success('upload successful!', '', { positionClass: 'toast-bottom-right' });
+        setFiles([]);
+      })
+      .catch((error) => {
+        const { response } = error;
+        if (response.status === 400) {
+          setAlertMessage(error.response.data);
+        } else {
+          setAlertMessage('An error has occurred while uploading. Please try again later.');
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -50,7 +60,7 @@ const UploadICBCVerificationContainer = (props) => {
   return (
     <UploadVerificationData
       dateCurrentTo={dateCurrentTo}
-      errorMessage={errorMessage}
+      alertMessage={alertMessage}
       files={files}
       previousDateCurrentTo={previousDateCurrentTo}
       setDateCurrentTo={setDateCurrentTo}
