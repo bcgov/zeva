@@ -27,10 +27,14 @@ class CreditTransaction(Auditable):
     credit_value = models.DecimalField(
         max_digits=20,
         decimal_places=2,
-        db_comment='The value in dollars for each credit transferred'
+        db_comment='Credit value of the model when the submission was '
+                   'approved. For credit transfers, this will be the amount '
+                   'that is going to be added or subtracted from the '
+                   'organization. (since it supports decimals)'
     )
     number_of_credits = models.IntegerField(
-        db_comment='number of credits transferred'
+        db_comment='Number of credits being transferred. For credit transfers '
+                   'this will always be 1.'
     )
     credit_class = models.ForeignKey(
         'CreditClass',

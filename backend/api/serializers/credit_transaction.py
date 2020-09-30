@@ -1,4 +1,3 @@
-from enumfields.drf import EnumField
 from rest_framework.serializers import ModelSerializer, \
     SerializerMethodField, SlugRelatedField
 
@@ -43,6 +42,61 @@ class CreditTransactionSerializer(ModelSerializer):
             'credit_value', 'credit_to', 'debit_from', 'transaction_timestamp',
             'credit_class', 'transaction_type', 'id', 'number_of_credits',
             'total_value',
+        )
+
+
+class CreditTransactionListSerializer(ModelSerializer):
+    """
+    Serializer for credit transactions
+    """
+    credit_class = SerializerMethodField()
+    foreign_key = SerializerMethodField()
+    model_year = SerializerMethodField()
+    total_value = SerializerMethodField()
+    transaction_type = SerializerMethodField()
+    weight_class = SerializerMethodField()
+
+    def get_credit_class(self, obj):
+        credit_class = CreditClass.objects.get(id=obj.get('credit_class_id'))
+
+        serializer = CreditClassSerializer(credit_class, read_only=True)
+        return serializer.data
+
+    def get_foreign_key(self, obj):
+        return obj.get(
+            'foreign_key'
+        )
+
+    def get_model_year(self, obj):
+        model_year = ModelYear.objects.get(id=obj.get('model_year_id'))
+
+        serializer = ModelYearSerializer(model_year, read_only=True)
+        return serializer.data
+
+    def get_total_value(self, obj):
+        return obj.get('total_value')
+
+    def get_transaction_type(self, obj):
+        transaction_type = CreditTransactionType.objects.get(
+            id=obj.get('transaction_type_id')
+        )
+
+        serializer = CreditTransactionTypeSerializer(
+            transaction_type, read_only=True
+        )
+        return serializer.data
+
+    def get_weight_class(self, obj):
+        weight_class = WeightClass.objects.get(id=obj.get('weight_class_id'))
+
+        serializer = WeightClassSerializer(weight_class, read_only=True)
+        return serializer.data
+
+    class Meta:
+        model = CreditTransaction
+        fields = (
+            'credit_class', 'foreign_key', 'model_year', 'total_value',
+            'transaction_type', 'weight_class',
         )
 
 

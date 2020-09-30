@@ -21,7 +21,7 @@ const UserSettings = (props) => {
           {details.organization.organizationAddress
           && details.organization.organizationAddress.map((address) => (
             address.addressType.addressType === 'Service' && (
-              <dl>
+              <dl key={address.id}>
                 <dd>{address.addressLine1}</dd>
                 <dt />
                 <dd>

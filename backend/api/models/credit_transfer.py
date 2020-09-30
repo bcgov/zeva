@@ -12,16 +12,6 @@ class CreditTransfer(Auditable):
     """
     A ledger of all recorded credit transfers between suppliers
     """
-    status = EnumField(
-        CreditTransferStatuses,
-        max_length=20,
-        null=False,
-        default=CreditTransferStatuses.DRAFT,
-        db_comment="The validation status of this transfer. "
-                   "Valid statuses: {statuses}".format(
-                       statuses=[c.name for c in CreditTransferStatuses]
-                   )
-    )
     credit_to = models.ForeignKey(
         'Organization',
         related_name='+',
@@ -31,6 +21,16 @@ class CreditTransfer(Auditable):
         'Organization',
         related_name='+',
         on_delete=models.PROTECT
+    )
+    status = EnumField(
+        CreditTransferStatuses,
+        max_length=20,
+        null=False,
+        default=CreditTransferStatuses.DRAFT,
+        db_comment="The validation status of this transfer. "
+                   "Valid statuses: {statuses}".format(
+                       statuses=[c.name for c in CreditTransferStatuses]
+                   )
     )
 
     class Meta:

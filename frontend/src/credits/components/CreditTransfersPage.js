@@ -61,7 +61,7 @@ const CreditTransfersPage = (props) => {
               }}
               type="button"
             >
-              Back
+              <FontAwesomeIcon icon="arrow-left" /> Back
             </button>
           </span>
           <span className="right-content">

@@ -28,6 +28,12 @@ const SalesSubmissionDetailsContainer = (props) => {
 
       const validatedRecords = data.content.filter(
         (record) => {
+          if (record.warnings && record.warnings.some((warning) => [
+            'DUPLICATE_VIN', 'INVALID_MODEL', 'VIN_ALREADY_AWARDED',
+          ].indexOf(warning) >= 0)) {
+            return false;
+          }
+
           if (data.validationStatus === 'CHECKED') {
             return record.recordOfSale;
           }

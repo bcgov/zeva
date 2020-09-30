@@ -45,7 +45,6 @@ const CreditRequestsContainer = (props) => {
     refreshList(true);
   }, []);
 
-
   if (loading) {
     return (<Loading />);
   }
