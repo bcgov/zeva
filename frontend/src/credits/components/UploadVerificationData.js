@@ -5,6 +5,7 @@ import history from '../../app/History';
 import ExcelFileDrop from '../../app/components/FileDrop';
 import getFileSize from '../../app/utilities/getFileSize';
 import CreditTransactionTabs from '../../app/components/CreditTransactionTabs';
+import Button from '../../app/components/Button';
 
 const UploadVerificationData = (props) => {
   const {
@@ -87,15 +88,7 @@ const UploadVerificationData = (props) => {
 
                 <div className="action-bar">
                   <span className="left-content">
-                    <button
-                      className="button"
-                      onClick={() => {
-                        history.goBack();
-                      }}
-                      type="button"
-                    >
-                      <FontAwesomeIcon icon="arrow-left" /> Back
-                    </button>
+                    <Button buttonType="back" />
                   </span>
 
                   <span className="right-content">

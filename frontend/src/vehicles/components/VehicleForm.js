@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment-timezone';
-
+import Button from '../../app/components/Button';
 import history from '../../app/History';
 import AutocompleteInput from '../../app/components/AutocompleteInput';
 import ExcelFileDrop from '../../app/components/FileDrop';
@@ -305,29 +305,17 @@ const VehicleForm = (props) => {
           <div className="col-12">
             <div className="action-bar form-group row">
               <span className="left-content">
-                <button
-                  className="button"
-                  type="button"
-                  onClick={() => {
-                    history.push(ROUTES_VEHICLES.LIST);
-                  }}
-                >
-                  <FontAwesomeIcon icon="arrow-left" /> Back
-                </button>
+                <Button buttonType="back" locationRoute={ROUTES_VEHICLES.LIST} />
               </span>
 
               <span className="right-content">
-                <button className="button" type="submit">
-                  <FontAwesomeIcon icon="save" /> Save Draft
-                </button>
-                <button
-                  className="button primary"
-                  disabled={fields.hasPassedUs06Test && files.length === 0 && (!fields.attachments || fields.attachments.length <= deleteFiles.length)}
-                  onClick={() => { setShowModal(true); }}
-                  type="button"
-                >
-                  <FontAwesomeIcon icon="paper-plane" /> Submit
-                </button>
+                <Button buttonType="save" optionalText="Save Draft" action={(e) => {handleSubmit(e)}} />
+                <Button
+                  buttonType="submit"
+                  disabled={fields.hasPassedUs06Test && files.length === 0 && (!fields.attachments
+                    || fields.attachments.length <= deleteFiles.length)}
+                  action={() => { setShowModal(true); }}
+                />
               </span>
             </div>
             {modal}

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
+import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
 import Loading from '../../app/components/Loading';
 import DetailField from '../../app/components/DetailField';
@@ -170,15 +171,7 @@ const VehicleDetailsPage = (props) => {
         <div className="col-12">
           <div className="action-bar">
             <span className="left-content">
-              <button
-                className="button"
-                onClick={() => {
-                  history.push(ROUTES_VEHICLES.LIST, locationState);
-                }}
-                type="button"
-              >
-                <FontAwesomeIcon icon="arrow-left" /> Back
-              </button>
+              <Button buttonType="back" />
             </span>
             <span className="right-content">
               {['DRAFT', 'CHANGES_REQUESTED'].indexOf(details.validationStatus) >= 0

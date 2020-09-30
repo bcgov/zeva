@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import PropTypes from 'prop-types';
 import history from '../../app/History';
-
+import Button from '../../app/components/Button';
 import ROUTES_CREDITS from '../../app/routes/Credits';
 import ROUTES_SALES from '../../app/routes/Sales';
 import download from '../../app/utilities/download';
@@ -16,6 +16,15 @@ const SalesUploadPage = (props) => {
     setUploadFiles,
     upload,
   } = props;
+
+  const downloadTemplate = (e) => {
+    const element = e.target;
+    const original = element.innerHTML;
+    element.firstChild.textContent = ' Downloading...';
+    return download(ROUTES_SALES.TEMPLATE, {}).then(() => {
+      element.innerHTML = original;
+    });
+  };
 
   const removeFile = (removedFile) => {
     const found = files.findIndex((file) => (file === removedFile));
@@ -38,22 +47,11 @@ const SalesUploadPage = (props) => {
       <div className="row">
         <div className="col-12">
           <div className="compact content p-3">
-            <button
-              className="button"
-              onClick={(e) => {
-                const element = e.target;
-                const original = element.innerHTML;
-
-                element.firstChild.textContent = ' Downloading...';
-
-                return download(ROUTES_SALES.TEMPLATE, {}).then(() => {
-                  element.innerHTML = original;
-                });
-              }}
-              type="button"
-            >
-              <FontAwesomeIcon icon="download" /> Download Excel Sales Template
-            </button>
+            <Button
+              buttonType="download"
+              optionalText="Download Excel Sales Template"
+              action={(e) => { downloadTemplate(e); }}
+            />
           </div>
         </div>
       </div>
@@ -113,17 +111,11 @@ const SalesUploadPage = (props) => {
 
       <div className="action-bar">
         <span className="left-content">
-          <button
-            className="button"
-            onClick={() => {
-              history.push(ROUTES_CREDITS.CREDIT_REQUESTS);
-            }}
-            type="button"
-          >
-            <FontAwesomeIcon icon="arrow-left" /> Back
-          </button>
+          <Button
+            buttonType="back"
+            locationRoute={ROUTES_CREDITS.CREDIT_REQUESTS}
+          />
         </span>
-
         <span className="right-content">
           <button
             disabled={files.length === 0}

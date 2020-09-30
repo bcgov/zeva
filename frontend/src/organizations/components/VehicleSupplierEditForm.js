@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import Button from '../../app/components/Button';
 import TextInput from '../../app/components/TextInput';
 import Loading from '../../app/components/Loading';
 import Modal from '../../app/components/Modal';
@@ -172,21 +172,11 @@ const VehicleSupplierEditForm = (props) => {
           <div className="col-12">
             <div className="action-bar">
               <span className="left-content">
-                <button
-                  className="button"
-                  type="button"
-                  onClick={() => {
-                    History.goBack();
-                  }}
-                >
-                  <FontAwesomeIcon icon="arrow-left" /> Back
-                </button>
+                <Button buttonType="back" />
               </span>
 
               <span className="right-content">
-                <button className="button primary" type="button" onClick={handleSubmit}>
-                  <FontAwesomeIcon icon="save" /> Save
-                </button>
+                <Button buttonType="save" optionalClassname="button primary" action={() => { handleSubmit(); }} />
               </span>
             </div>
           </div>
