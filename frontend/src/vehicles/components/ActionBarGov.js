@@ -14,7 +14,6 @@ const ActionBarGov = (props) => {
 
       return eachVehicle[displayField].shortName || eachVehicle[displayField].name;
     }))];
-
     return uniqueArr.sort().map((each) => (
       <option key={each}>{each}</option>
     ));
@@ -56,6 +55,7 @@ const ActionBarGov = (props) => {
           className="button"
           onClick={handleClear}
           type="button"
+          disabled={filtered.length === 0}
         >
           Clear Filters
         </button>

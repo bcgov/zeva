@@ -299,6 +299,10 @@
     .balance-left, .credits-left, .date, .transaction {
       margin-left: 0.5rem;
     }
+
+    .clickable:hover .rt-td {
+      background-color: $primary-yellow;
+    }
   }
 }
 

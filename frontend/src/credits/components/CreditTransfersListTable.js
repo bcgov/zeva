@@ -19,17 +19,19 @@ const CreditTransfersListTable = (props) => {
     let totalCreditsB = 0;
     let totalTransferValue = 0;
 
-    item.creditTransactions.forEach((transaction) => {
-      if (transaction.creditClass.creditClass === 'A') {
-        totalCreditsA += transaction.numberOfCredits;
-      }
+    if (item.creditTransferContent) {
+      item.creditTransferContent.forEach((row) => {
+        if (row.creditClass.creditClass === 'A') {
+          totalCreditsA += row.creditValue;
+        }
 
-      if (transaction.creditClass.creditClass === 'B') {
-        totalCreditsB += transaction.numberOfCredits;
-      }
+        if (row.creditClass.creditClass === 'B') {
+          totalCreditsB += row.creditValue;
+        }
 
-      totalTransferValue += parseFloat(transaction.totalValue);
-    });
+        totalTransferValue += (parseFloat(row.dollarValue) * row.creditValue);
+      });
+    }
 
     return {
       ...item,

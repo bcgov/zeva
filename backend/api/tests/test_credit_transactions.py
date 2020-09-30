@@ -1,5 +1,5 @@
 from collections import namedtuple
-from django.db.models import Q
+from django.db.models import Q, Sum
 
 from .base_test_case import BaseTestCase
 from ..models.credit_class import CreditClass
@@ -39,22 +39,22 @@ class TestOrganizations(BaseTestCase):
 
         to_create = [
             CreatedTransaction(
-                self.org1, self.gov, class_a, validation, 100.0, org1_vehicle
+                self.org1, None, class_a, validation, 100.0, org1_vehicle
             ),
             CreatedTransaction(
-                self.org1, self.gov, class_b, validation, 50.0, org1_vehicle
+                self.org1, None, class_b, validation, 50.0, org1_vehicle
             ),
             CreatedTransaction(
-                self.gov, self.org1, class_a, reduction, 93.0, org1_vehicle
+                None, self.org1, class_a, reduction, 93.0, org1_vehicle
             ),
             CreatedTransaction(
-                self.org1, self.gov, class_b, validation, 50.0, org1_vehicle
+                self.org1, None, class_b, validation, 50.0, org1_vehicle
             ),
             CreatedTransaction(
-                self.org1, self.gov, class_b, validation, 45.0, org1_vehicle
+                self.org1, None, class_b, validation, 45.0, org1_vehicle
             ),
             CreatedTransaction(
-                self.org2, self.gov, class_a, validation, 99.0, org2_vehicle
+                self.org2, None, class_a, validation, 99.0, org2_vehicle
             ),
         ]
 
@@ -65,8 +65,10 @@ class TestOrganizations(BaseTestCase):
                     debit_from=t.debit,
                     credit_class=t.creditclass,
                     transaction_type=t.type,
-                    credit_value=t.value,
+                    number_of_credits=t.value,
                     model_year=t.vehicle.model_year,
+                    credit_value=t.vehicle.get_credit_value(),
+                    total_value=t.value * t.vehicle.get_credit_value(),
                     weight_class=WeightClass.objects.get(weight_class_code='LDV'),
                 )
 
@@ -78,6 +80,13 @@ class TestOrganizations(BaseTestCase):
         count = CreditTransaction.objects.filter(
             Q(debit_from_id=self.org1.id) |
             Q(credit_to_id=self.org1.id)
+        ).values(
+            'model_year_id', 'credit_class_id', 'transaction_type_id',
+            'weight_class_id'
+        ).annotate(
+            # This isn't how you calculate the total credits,
+            # this is just to force the group by
+            total_value=Sum('total_value')
         ).count()
 
         self.assertEqual(len(result), count)
@@ -98,6 +107,11 @@ class TestOrganizations(BaseTestCase):
         count = CreditTransaction.objects.filter(
             Q(debit_from_id=self.org2.id) |
             Q(credit_to_id=self.org2.id)
+        ).values(
+            'model_year_id', 'credit_class_id', 'transaction_type_id',
+            'weight_class_id'
+        ).annotate(
+            total_value=Sum('total_value')
         ).count()
 
         self.assertEqual(len(result), count)
@@ -107,16 +121,3 @@ class TestOrganizations(BaseTestCase):
         )
         self.assertEqual(response.status_code, 200)
         result = response.data
-
-    def test_gov_credits(self):
-        response = self.clients['RTAN'].get("/api/credit-transactions")
-        self.assertEqual(response.status_code, 200)
-
-        result = response.data
-
-        count = CreditTransaction.objects.filter(
-            Q(debit_from_id=self.gov.id) |
-            Q(credit_to_id=self.gov.id)
-        ).count()
-
-        self.assertEqual(len(result), count)

@@ -19,3 +19,6 @@ from . import account_balance
 from . import weight_class
 from . import sales_submission_content
 from . import address_type
+from . import credit_transfer
+from . import sales_submission_credit_transaction
+from . import credit_transfer_credit_transaction

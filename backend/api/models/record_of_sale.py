@@ -60,14 +60,6 @@ class RecordOfSale(Auditable):
                    )
     )
 
-    # @todo we don't have a transaction table yet, but this should hold a reference to any credit transaction created
-    # transaction = models.ForeignKey(
-    #         'CreditTransaction',
-    #         related_name='sale',
-    #         on_delete=models.PROTECT,
-    #         null=True,
-    #     )
-
     class Meta:
         db_table = "record_of_sale"
         ordering = ['id']

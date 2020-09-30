@@ -5,10 +5,10 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from api.models.credit_transaction import CreditTransaction
-from api.models.credit_transfer_statuses import CreditTransferStatuses
 from api.serializers.credit_transaction import CreditTransactionSerializer, \
-    CreditTransactionBalanceSerializer
-from api.services.credit_transaction import aggregate_credit_balance_details
+    CreditTransactionBalanceSerializer, CreditTransactionListSerializer
+from api.services.credit_transaction import aggregate_credit_balance_details, \
+    aggregate_transactions_by_submission
 from auditable.views import AuditableMixin
 
 
@@ -21,6 +21,7 @@ class CreditTransactionViewSet(
 
     serializer_classes = {
         'default': CreditTransactionSerializer,
+        'list': CreditTransactionListSerializer,
         'balances': CreditTransactionBalanceSerializer,
     }
 
@@ -29,26 +30,10 @@ class CreditTransactionViewSet(
         org = user.organization
 
         if org.is_government:
-            qs = CreditTransaction.objects.all().filter(
-                Q(transaction_type__transaction_type__in=[
-                    "Reduction", "Validation"
-                ]) |
-                (Q(transaction_type__transaction_type="Credit Transfer") &
-                 Q(credit_transfer_content__credit_transfer__status__in=[
-                     CreditTransferStatuses.VALIDATED
-                 ]))
-            ).order_by('id')
+            qs = CreditTransaction.objects.all().order_by('id')
         else:
             qs = CreditTransaction.objects.filter(
                 Q(debit_from=org) | Q(credit_to=org)
-            ).filter(
-                Q(transaction_type__transaction_type__in=[
-                    "Reduction", "Validation"
-                ]) |
-                (Q(transaction_type__transaction_type="Credit Transfer") &
-                 Q(credit_transfer_content__credit_transfer__status__in=[
-                     CreditTransferStatuses.VALIDATED
-                 ]))
             ).order_by('id')
 
         return qs
@@ -58,6 +43,13 @@ class CreditTransactionViewSet(
             return self.serializer_classes[self.action]
 
         return self.serializer_classes['default']
+
+    def list(self, request):
+        user = self.request.user
+        transactions = aggregate_transactions_by_submission(user.organization)
+
+        serializer = self.get_serializer(transactions, many=True)
+        return Response(serializer.data)
 
     @action(detail=False)
     def balances(self, request):

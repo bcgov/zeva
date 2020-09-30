@@ -200,6 +200,8 @@ const VehicleEditContainer = (props) => {
       vehicleClassCode: data.vehicleClassCode.vehicleClassCode,
       vehicleZevType: data.vehicleZevType.vehicleZevCode,
       weightKg: data.weightKg,
+      updateTimestamp: data.updateTimestamp,
+      user: data.updateUser.displayName,
     });
 
     setStatus(data.validationStatus);
@@ -244,7 +246,7 @@ const VehicleEditContainer = (props) => {
       errorFields={errorFields}
       fields={fields}
       files={files}
-      formTitle="Enter ZEV Model"
+      formTitle="Enter Zero-Emission Vehicle"
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
       loading={loading}
