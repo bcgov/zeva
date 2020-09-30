@@ -44,6 +44,7 @@
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
     "storybook": "^6.0.16",
+    "toastr": "^2.1.4",
     "winston": "^3.2.1"
   },
   "devDependencies": {

@@ -6,6 +6,7 @@ import CONFIG from './config';
 import Login from './Login';
 import Router from './router';
 
+import 'toastr/build/toastr.min.css';
 import 'react-table/react-table.css';
 
 class App extends Component {

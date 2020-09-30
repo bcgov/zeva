@@ -1,11 +1,12 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import PropTypes from 'prop-types';
-import history from '../../app/History';
 import ExcelFileDrop from '../../app/components/FileDrop';
 import getFileSize from '../../app/utilities/getFileSize';
 import CreditTransactionTabs from '../../app/components/CreditTransactionTabs';
 import Button from '../../app/components/Button';
+import Alert from '../../app/components/Alert';
+import CustomPropTypes from '../../app/utilities/props';
 
 const UploadVerificationData = (props) => {
   const {
@@ -16,6 +17,7 @@ const UploadVerificationData = (props) => {
     setDateCurrentTo,
     previousDateCurrentTo,
     user,
+    alertMessage,
   } = props;
 
   const removeFile = (removedFile) => {
@@ -34,6 +36,7 @@ const UploadVerificationData = (props) => {
       <CreditTransactionTabs active="icbc-update" key="tabs" user={user} />
       <div id="upload-verification-data" className="page">
         <h2 className="mt-3 mb-2">{title}</h2>
+        {alertMessage && <Alert optionalMessage={alertMessage} optionalClassname={alertMessage === 'upload successful' ? 'alert-success' : 'alert-danger'} />}
         <p>ICBC data current to: {previousDateCurrentTo}</p>
         <div className="compact">
           <div className="bordered">
@@ -51,11 +54,6 @@ const UploadVerificationData = (props) => {
                     <div className="row" key={file.name}>
                       <div className="col-7">{file.name}</div>
                       <div className="col-3 size">{getFileSize(file.size)}</div>
-                      {/* <div className="col-2 size">
-                      <div className="check" type="button">
-                      <FontAwesomeIcon icon="check" />
-                      </div>
-                    </div> */}
                       <div className="col-2 actions">
                         <button
                           className="delete"
@@ -112,6 +110,10 @@ const UploadVerificationData = (props) => {
   );
 };
 
+UploadVerificationData.defaultProps = {
+  alertMessage: '',
+};
+
 UploadVerificationData.propTypes = {
   files: PropTypes.arrayOf(PropTypes.shape).isRequired,
   setUploadFiles: PropTypes.func.isRequired,
@@ -119,6 +121,8 @@ UploadVerificationData.propTypes = {
   upload: PropTypes.func.isRequired,
   setDateCurrentTo: PropTypes.func.isRequired,
   previousDateCurrentTo: PropTypes.string.isRequired,
+  alertMessage: PropTypes.string,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default UploadVerificationData;
