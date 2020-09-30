@@ -35,63 +35,11 @@ const VehicleListTable = (props) => {
     show: showSupplier,
     width: 200,
   }, {
-    accessor: (row) => (row.make ? row.make : ''),
-    Header: 'Make',
-    id: 'make',
-    width: 150,
-  }, {
-    accessor: (row) => (row.modelName ? row.modelName : ''),
-    Header: 'Model',
-    id: 'model',
-  }, {
-    accessor: (row) => (row.modelYear ? row.modelYear.name : ''),
-    className: 'text-center',
-    Header: 'Model Year',
-    id: 'col-my',
-    width: 125,
-  }, {
-    accessor: (row) => (row.vehicleClassCode ? row.vehicleClassCode.description : ''),
-    className: 'text-center',
-    Header: 'Body Type',
-    id: 'col-class-desc',
-    width: 125,
-  }, {
-    accessor: (row) => (parseInt(row.weightKg, 10)),
-    Cell: (row) => (toComma(row.row['col-weight'])),
-    className: 'text-center',
-    Header: 'GVWR (kg)',
-    id: 'col-weight',
-    width: 125,
-  }, {
-    accessor: 'range',
-    Cell: (row) => (toComma(row.row.range)),
-    className: 'text-right',
-    Header: 'Range (km)',
-    id: 'range',
-    width: 125,
-  }, {
-    accessor: (row) => (row.vehicleZevType.vehicleZevCode),
-    className: 'text-center',
-    Header: 'ZEV Type',
-    id: 'zev-type',
-    width: 100,
-  }, {
-    accessor: (row) => {
-      if ((row.vehicleZevType.vehicleZevCode === 'BEV' && row.range < 80.47)
-          || row.range < 16) {
-        return 'C';
-      }
-
-      if (row.vehicleZevType.vehicleZevCode === 'BEV') {
-        return 'A';
-      }
-
-      return 'B';
-    },
-    className: 'text-center',
-    Header: 'Zev Class',
-    id: 'col-class',
-    width: 125,
+    accessor: (row) => (formatStatus(row.validationStatus)),
+    className: 'text-center text-capitalize',
+    Header: 'Status',
+    id: 'col-status',
+    width: 175,
   }, {
     accessor: (row) => {
       if ((row.vehicleZevType.vehicleZevCode === 'BEV' && row.range < 80.47)
@@ -122,11 +70,50 @@ const VehicleListTable = (props) => {
     id: 'col-credit',
     width: 125,
   }, {
-    accessor: (row) => (formatStatus(row.validationStatus)),
-    className: 'text-center text-capitalize',
-    Header: 'Status',
-    id: 'col-status',
-    width: 175,
+    accessor: (row) => {
+      if ((row.vehicleZevType.vehicleZevCode === 'BEV' && row.range < 80.47)
+          || row.range < 16) {
+        return 'C';
+      }
+
+      if (row.vehicleZevType.vehicleZevCode === 'BEV') {
+        return 'A';
+      }
+
+      return 'B';
+    },
+    className: 'text-center',
+    Header: 'Zev Class',
+    id: 'col-class',
+    width: 125,
+  }, {
+    accessor: (row) => (row.modelYear ? row.modelYear.name : ''),
+    className: 'text-center',
+    Header: 'Model Year',
+    id: 'col-my',
+    width: 125,
+  }, {
+    accessor: (row) => (row.modelName ? row.modelName : ''),
+    Header: 'Model',
+    id: 'model',
+  }, {
+    accessor: (row) => (row.make ? row.make : ''),
+    Header: 'Make',
+    id: 'make',
+    width: 150,
+  }, {
+    accessor: 'range',
+    Cell: (row) => (toComma(row.row.range)),
+    className: 'text-right',
+    Header: 'Range (km)',
+    id: 'range',
+    width: 125,
+  }, {
+    accessor: (row) => (row.vehicleZevType.vehicleZevCode),
+    className: 'text-center',
+    Header: 'ZEV Type',
+    id: 'zev-type',
+    width: 100,
   }];
 
   return (
