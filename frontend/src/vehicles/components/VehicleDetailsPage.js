@@ -68,17 +68,29 @@ const VehicleDetailsPage = (props) => {
     modalText = 'Request range change/test results';
   }
 
+  let alertUser;
+
+  if (details.validationStatus === 'SUBMITTED') {
+    alertUser = details.createUser;
+  } else {
+    alertUser = details.updateUser;
+  }
+
   return (
     <div id="vehicle-validation" className="page">
       <div className="row mb-2">
         <div className="col-sm-12">
           <h2>{title}</h2>
+          <Alert
+            status={details.validationStatus}
+            user={alertUser && alertUser.displayName ? alertUser.displayName : alertUser}
+            date={moment(details.updateTimestamp).format('MMM d, YYYY')}
+          />
         </div>
       </div>
 
       <div className="row align-items-center">
         <div className="col-md-12 col-lg-9 col-xl-7">
-          <Alert status={details.validationStatus} user={details.validationStatus === 'SUBMITTED' ? details.createUser.displayName : details.updateUser.displayName} date={moment(details.updateTimestamp).format('MMM d, YYYY')} />
           {details.validationStatus === 'CHANGES_REQUESTED' && user.isGovernment && details.vehicleComment
           && (
             <Comment comment={details.vehicleComment.comment} user={details.vehicleComment.createUser.displayName} date={moment(details.vehicleComment.createTimestamp).format('MMM d, YYYY')} />
@@ -171,7 +183,11 @@ const VehicleDetailsPage = (props) => {
         <div className="col-12">
           <div className="action-bar">
             <span className="left-content">
-              <Button buttonType="back" />
+              <Button
+                buttonType="back"
+                locationRoute={ROUTES_VEHICLES.LIST}
+                locationState={locationState}
+              />
             </span>
             <span className="right-content">
               {['DRAFT', 'CHANGES_REQUESTED'].indexOf(details.validationStatus) >= 0
@@ -253,14 +269,20 @@ VehicleDetailsPage.propTypes = {
   details: PropTypes.shape({
     actions: PropTypes.arrayOf(PropTypes.string),
     attachments: PropTypes.arrayOf(PropTypes.shape()),
-    createUser: PropTypes.shape({
-      displayName: PropTypes.string,
-    }),
+    createUser: PropTypes.oneOfType([
+      PropTypes.shape({
+        displayName: PropTypes.string,
+      }),
+      PropTypes.string,
+    ]),
     creditClass: PropTypes.string,
     creditValue: PropTypes.number,
     hasPassedUs06Test: PropTypes.bool,
     history: PropTypes.arrayOf(PropTypes.object),
-    id: PropTypes.any,
+    id: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.string,
+    ]),
     make: PropTypes.string,
     modelName: PropTypes.string,
     modelYear: PropTypes.shape({
@@ -275,9 +297,12 @@ VehicleDetailsPage.propTypes = {
     vehicleClassCode: PropTypes.shape({
       description: PropTypes.string,
     }),
-    updateUser: PropTypes.shape({
-      displayName: PropTypes.string,
-    }),
+    updateUser: PropTypes.oneOfType([
+      PropTypes.shape({
+        displayName: PropTypes.string,
+      }),
+      PropTypes.string,
+    ]),
     vehicleComment: PropTypes.shape(),
     vehicleZevType: PropTypes.shape({
       description: PropTypes.string,

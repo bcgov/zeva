@@ -198,7 +198,11 @@ const CreditRequestDetailsPage = (props) => {
         <div className="col-sm-12">
           <div className="action-bar mt-0">
             <span className="left-content">
-              <Button buttonType="back" />
+              <Button
+                buttonType="back"
+                locationRoute={(locationState && locationState.href) ? locationState.href : ROUTES_CREDITS.CREDIT_REQUESTS}
+                locationState={locationState}
+              />
               {submission.validationStatus === 'DRAFT' && (
                 <Button buttonType="delete" action={() => { setModalType('delete'); setShowModal(true); }} />
               )}

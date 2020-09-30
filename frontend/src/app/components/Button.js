@@ -5,12 +5,18 @@ import history from '../History';
 
 const Button = (props) => {
   const {
-    buttonType, locationRoute, action, optionalText, optionalIcon, disabled, optionalClassname
+    buttonType, locationRoute, locationState, action, optionalText, optionalIcon,
+    disabled, optionalClassname,
   } = props;
   const getRoute = () => {
+    if (locationRoute && locationState) {
+      return history.push(locationRoute, locationState);
+    }
+
     if (locationRoute) {
       return history.push(locationRoute);
     }
+
     return history.goBack();
   };
   let text;
@@ -28,29 +34,29 @@ const Button = (props) => {
       icon = 'trash';
       text = 'Delete';
       classname += ' text-danger';
-      onclick = () => { action(); };
+      onclick = action;
       break;
     case 'download':
       text = 'Download';
       icon = 'download';
-      onclick = (e) => { action(e); };
+      onclick = action;
       break;
     case 'save':
       text = 'Save';
       icon = 'save';
       if (action) {
-        onclick = () => { action(); };
+        onclick = action;
       }
       break;
     case 'submit':
       text = 'Submit';
       icon = 'paper-plane';
       classname += ' primary';
-      onclick = () => { action(); };
+      onclick = action;
       break;
     default:
       text = optionalText;
-      onclick = (e) => { action(e); };
+      onclick = action;
       break;
   }
   if (optionalText) {
@@ -81,6 +87,7 @@ Button.defaultProps = {
   optionalText: null,
   optionalIcon: null,
   locationRoute: null,
+  locationState: undefined,
   action: null,
   optionalClassname: null,
   disabled: false,
@@ -88,6 +95,7 @@ Button.defaultProps = {
 Button.propTypes = {
   buttonType: PropTypes.string.isRequired,
   locationRoute: PropTypes.string,
+  locationState: PropTypes.arrayOf(PropTypes.shape()),
   optionalText: PropTypes.string,
   optionalIcon: PropTypes.string,
   optionalClassname: PropTypes.string,

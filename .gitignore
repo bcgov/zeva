@@ -13,11 +13,5 @@ venv/
 db.sqlite3
 package-lock.json
 .coverage
-frontend/coverage/lcov-report
-backend/minio/.minio.sys/buckets/.bloomcycle.bin
-backend/minio/.minio.sys/buckets/.tracker.bin
-backend/minio/.minio.sys/buckets/.usage-cache.bin
-backend/minio/.minio.sys/buckets/.usage.json
-backend/minio/.minio.sys/buckets/.minio.sys/buckets/.bloomcycle.bin/fs.json
-backend/minio/.minio.sys/buckets/.minio.sys/buckets/.usage-cache.bin/fs.json
-backend/minio/.minio.sys/buckets/.minio.sys/buckets/.usage.json/fs.json
+frontend/coverage/
+backend/minio/

@@ -52,7 +52,10 @@ VehicleFormDropdown.propTypes = {
   className: PropTypes.string,
   dropdownData: PropTypes.arrayOf(PropTypes.shape({
     description: PropTypes.string,
-    id: PropTypes.any,
+    id: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.string,
+    ]),
     name: PropTypes.string,
   })).isRequired,
   dropdownName: PropTypes.string.isRequired,
