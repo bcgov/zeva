@@ -35,7 +35,7 @@ const CreditRequestDetailsPage = (props) => {
     element.firstChild.textContent = ' Downloading...';
     return download(ROUTES_SALES.DOWNLOAD_ERRORS.replace(':id', submission.id), {}).then(() => {
       element.innerHTML = original;
-    })
+    });
   };
   let modalProps = {};
   switch (modalType) {
@@ -264,12 +264,13 @@ const CreditRequestDetailsPage = (props) => {
 
               {!user.isGovernment && (
                 <>
-                  {submission.validationStatus === 'VALIDATED' && submission.unselected > 0 && (
+                  {submission.validationStatus === 'VALIDATED' && (
                     <Button
                       buttonType="download"
                       optionalText="Download Errors"
                       optionalClassname="button primary"
                       action={(e) => { downloadErrors(e); }}
+                      disabled={submission.unselected === 0}
                     />
                   )}
                   {submission.validationStatus === 'DRAFT' && (
