@@ -35,8 +35,9 @@ const CreditRequestDetailsPage = (props) => {
     element.firstChild.textContent = ' Downloading...';
     return download(ROUTES_SALES.DOWNLOAD_ERRORS.replace(':id', submission.id), {}).then(() => {
       element.innerHTML = original;
-    })
+    });
   };
+
   let modalProps = {};
   switch (modalType) {
     case 'submit':
@@ -102,6 +103,9 @@ const CreditRequestDetailsPage = (props) => {
       </div>
     </Modal>
   );
+
+  const invalidSubmission = submission.content.some((row) => (row.warnings.includes('INVALID_MODEL')));
+
   const directorAction = user.isGovernment
   && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
   && user.hasPermission('SIGN_SALES');
@@ -273,7 +277,11 @@ const CreditRequestDetailsPage = (props) => {
                     />
                   )}
                   {submission.validationStatus === 'DRAFT' && (
-                    <Button buttonType="submit" action={() => { setModalType('submit'); setShowModal(true); }} />
+                    <Button
+                      buttonType="submit"
+                      action={() => { setModalType('submit'); setShowModal(true); }}
+                      disabled={invalidSubmission}
+                    />
                   )}
                 </>
               )}

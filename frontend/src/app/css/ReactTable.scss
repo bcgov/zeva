@@ -5,13 +5,13 @@
 
   .icbc-verification-warning {
     .icbc-model-year, .icbc-model, .icbc-make, .warning, .validated {
-      background-color: #fff1f2 !important;
+      background-color: $background-danger !important;
     }
   }
 
   .icbc-mismatch-warning {
     .icbc-model-year, .icbc-make, .icbc-model, .warning, .validated {
-      background-color: #fffed2 !important;
+      background-color: $background-warning !important;
     }
   }
 
