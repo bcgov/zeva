@@ -80,9 +80,7 @@ const VehicleForm = (props) => {
       <div className="row mb-2">
         <div className="col-12">
           <h2>{formTitle}</h2>
-          <div className={fields.hasPassedUs06Test || (status === 'CHANGES_REQUESTED' && setUploadFiles) ? 'col-12' : 'col-6'}>
-            <Alert status={status} user={fields.user} date={moment(fields.updateTimestamp).format('MMM d, YYYY')} />
-          </div>
+          <Alert status={status} user={fields.user} date={moment(fields.updateTimestamp).format('MMM d, YYYY')} />
           {status === 'CHANGES_REQUESTED' && vehicleComment
           && (
           <div className="px-3">
@@ -94,7 +92,7 @@ const VehicleForm = (props) => {
 
       <form onSubmit={(event) => handleSubmit(event)}>
         <div className="row">
-          <div className="col-xl-6 col-lg-6 col-md-12">
+          <div className="col-xl-6 col-lg-12">
             <fieldset>
               <VehicleFormDropdown
                 accessor={(model) => model.name}
@@ -190,7 +188,7 @@ const VehicleForm = (props) => {
           </div>
 
           {(fields.hasPassedUs06Test || (status === 'CHANGES_REQUESTED' && setUploadFiles)) && (
-            <div className="col-xl-5 col-lg-10 col-md-12">
+            <div className="col-xl-6 col-lg-12">
               <h3 className="font-weight-bold mt-2">Upload range test results</h3>
               <fieldset>
                 <div className="form-group row">
