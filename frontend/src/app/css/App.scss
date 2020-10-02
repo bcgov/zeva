@@ -183,7 +183,7 @@ p {
 
   &:disabled {
     background-color: $default-background-grey;
-    color: desaturate($primary-blue, 50%);
+    opacity: 0.6;
   }
 
   &.primary {
@@ -192,7 +192,6 @@ p {
   }
 
   &.primary:disabled {
-    // background-color: desaturate($default-background-blue, 50%);
     background-color: rgba(56, 89, 138, .5);
     color: $white;
     border-color: transparent;
