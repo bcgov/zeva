@@ -276,13 +276,25 @@ const CreditRequestDetailsPage = (props) => {
                       action={(e) => { downloadErrors(e); }}
                     />
                   )}
-                  {submission.validationStatus === 'DRAFT' && (
+                  {submission.validationStatus === 'DRAFT' && ([
+                    <button
+                      className="button"
+                      key="edit"
+                      onClick={() => {
+                        const url = ROUTES_CREDITS.EDIT.replace(/:id/g, submission.id);
+                        history.push(url);
+                      }}
+                      type="button"
+                    >
+                      <FontAwesomeIcon icon="edit" /> Edit
+                    </button>,
                     <Button
                       buttonType="submit"
                       action={() => { setModalType('submit'); setShowModal(true); }}
                       disabled={invalidSubmission}
-                    />
-                  )}
+                      key="submit"
+                    />,
+                  ])}
                 </>
               )}
             </span>

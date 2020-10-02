@@ -98,7 +98,13 @@ class RecordOfSaleViewset(
             validate_spreadsheet(data, user_organization=user.organization)
 
             if data:
-                result = ingest_sales_spreadsheet(data, requesting_user=user)
+                submission_id = request.data.get('id', None)
+
+                result = ingest_sales_spreadsheet(
+                    data, user=user,
+                    submission_id=submission_id
+                )
+
                 jsondata = json.dumps(
                     result,
                     sort_keys=True,
