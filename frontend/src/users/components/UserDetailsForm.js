@@ -157,7 +157,7 @@ const UserDetailsForm = (props) => {
               </span>
 
               <span className="right-content">
-                <Button buttonType="save" optionalClassname="button primary" action={() => { handleSubmit; }} />
+                <Button buttonType="save" optionalClassname="button primary" action={handleSubmit} />
               </span>
             </div>
           </div>
