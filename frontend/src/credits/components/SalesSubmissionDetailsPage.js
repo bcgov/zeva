@@ -1,9 +1,8 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+
 import Button from '../../app/components/Button';
 import CustomPropTypes from '../../app/utilities/props';
-import history from '../../app/History';
 import SalesListTable from './SalesListTable';
 
 const SalesSubmissionDetailsPage = (props) => {
@@ -72,18 +71,19 @@ const SalesSubmissionDetailsPage = (props) => {
         <div className="col-sm-12 text-right">
           <button
             className="button btn btn-outline-danger d-inline-block align-middle mr-3"
-            type="button"
             onClick={() => { filterWarnings(); }}
+            type="button"
           >
             View Warnings Only
           </button>
 
           <button
             className="button d-inline-block align-middle"
-            type="button"
+            disabled={filtered.length === 0}
             onClick={() => { clearFilters(); }}
+            type="button"
           >
-            Clear Filter
+            Clear Filters
           </button>
         </div>
       </div>
