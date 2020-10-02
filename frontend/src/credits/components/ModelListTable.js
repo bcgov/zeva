@@ -21,22 +21,26 @@ const ModelListTable = (props) => {
   const columns = [{
     accessor: 'warnings',
     className: 'text-right',
-    filterable: false,
     Header: 'Warnings',
     id: 'warnings',
     show: showWarnings(),
     width: 100,
   }, {
+    className: 'text-right',
+    Header: 'Total Credits',
+    accessor: (item) => (item.total === 0 ? '-' : _.round(item.total, 2).toFixed(2)),
+    id: 'total',
+    width: 150,
+  }, {
     accessor: 'sales',
     className: 'text-right',
-    filterable: false,
     Header: 'Sales',
     id: 'sales',
     width: 100,
   }, {
     accessor: 'vehicle.modelYear',
     className: 'text-center',
-    Header: 'MY',
+    Header: 'Model Year',
     width: 120,
   }, {
     accessor: 'vehicle.make',
@@ -48,16 +52,6 @@ const ModelListTable = (props) => {
     Header: 'Model',
     id: 'model',
   }, {
-    accessor: 'vehicle.vehicleZevType',
-    className: 'text-center',
-    Header: 'ZEV Type',
-    width: 150,
-  }, {
-    accessor: 'vehicle.range',
-    className: 'text-right',
-    Header: 'R. (km)',
-    width: 150,
-  }, {
     accessor: (item) => {
       const { vehicle } = item;
 
@@ -68,20 +62,24 @@ const ModelListTable = (props) => {
       return '';
     },
     className: 'text-center',
-    Header: 'Class',
+    Header: 'ZEV Class',
     id: 'credit-class',
     width: 120,
   }, {
     className: 'text-right',
-    Header: 'Credits',
+    Header: 'Credit Entitlement',
     accessor: (item) => (item.credits === 0 ? '-' : _.round(item.credits, 2).toFixed(2)),
     id: 'credits',
     width: 150,
   }, {
+    accessor: 'vehicle.vehicleZevType',
+    className: 'text-center',
+    Header: 'ZEV Type',
+    width: 150,
+  }, {
+    accessor: 'vehicle.range',
     className: 'text-right',
-    Header: 'Total',
-    accessor: (item) => (item.total === 0 ? '-' : _.round(item.total, 2).toFixed(2)),
-    id: 'total',
+    Header: 'Range (km)',
     width: 150,
   }];
 
@@ -96,8 +94,8 @@ const ModelListTable = (props) => {
     const id = `${item.xlsModelYear}-${item.xlsMake}-${item.xlsModel}`;
     const found = data.findIndex((obj) => (obj.id === id));
     let addSale = 0;
-
     let creditValue = 0;
+    let invalidModel = false;
 
     if (item.vehicle) {
       ({ creditValue } = item.vehicle);
@@ -124,11 +122,14 @@ const ModelListTable = (props) => {
     }
 
     let warnings = 0;
-
     // does this row have any warnings?
     // if so, mark this as CONTAINS WARNINGS (vs how many warnings does this row have)
-    if (item.warnings && item.warnings.length > 0) {
+    if (item.warnings && item.warnings.length > 0 && !item.recordOfSale) {
       warnings = 1;
+
+      if (item.warnings.includes('INVALID_MODEL')) {
+        invalidModel = true;
+      }
     }
 
     if (found >= 0) {
@@ -142,6 +143,7 @@ const ModelListTable = (props) => {
       data.push({
         id,
         credits: creditValue,
+        invalidModel,
         sales: addSale,
         total: (creditValue * addSale),
         vehicle: {
@@ -170,6 +172,15 @@ const ModelListTable = (props) => {
           defaultSorted={[{
             id: 'make',
           }]}
+          getTrProps={(state, row) => {
+            if (row && row.original && row.original.invalidModel) {
+              return {
+                className: 'background-danger',
+              };
+            }
+
+            return {};
+          }}
           key="table"
         />
 
@@ -199,6 +210,7 @@ ModelListTable.defaultProps = {
 ModelListTable.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   validatedOnly: PropTypes.bool,
+  validationStatus: PropTypes.string.isRequired,
 };
 
 export default ModelListTable;

@@ -39,6 +39,8 @@
 
 /* variables for colours */
 $alert-danger: #721c24;
+$background-danger: #FFF1F2;
+$background-warning: #FFFED2;
 $border-grey: #E0E0E0;
 $default-background-blue: #38598A;
 $default-background-grey: #F2F2F2;
@@ -142,6 +144,10 @@ p {
   }
 }
 
+.background-danger {
+  background-color: $background-danger !important;
+}
+
 .btn {
   &.btn-outline-danger {
     border-color: $red;
@@ -177,7 +183,7 @@ p {
 
   &:disabled {
     background-color: $default-background-grey;
-    color: desaturate($primary-blue, 50%);
+    opacity: 0.6;
   }
 
   &.primary {
@@ -186,7 +192,6 @@ p {
   }
 
   &.primary:disabled {
-    // background-color: desaturate($default-background-blue, 50%);
     background-color: rgba(56, 89, 138, .5);
     color: $white;
     border-color: transparent;

@@ -66,9 +66,7 @@ const UserEditContainer = (props) => {
     });
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
+  const handleSubmit = () => {
     saveUser().then((response) => {
       const { organization } = response.data;
 

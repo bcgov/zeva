@@ -36,6 +36,7 @@ const CreditRequestDetailsPage = (props) => {
       element.innerHTML = original;
     });
   };
+
   let modalProps = {};
 
   switch (modalType) {
@@ -102,6 +103,9 @@ const CreditRequestDetailsPage = (props) => {
       </div>
     </Modal>
   );
+
+  const invalidSubmission = submission.content.some((row) => (row.warnings.includes('INVALID_MODEL')));
+
   const directorAction = user.isGovernment
   && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
   && user.hasPermission('SIGN_SALES');
@@ -254,17 +258,34 @@ const CreditRequestDetailsPage = (props) => {
 
               {!user.isGovernment && (
                 <>
-                  {submission.validationStatus === 'VALIDATED' && submission.unselected > 0 && (
+                  {submission.validationStatus === 'VALIDATED' && (
                     <Button
                       buttonType="download"
                       optionalText="Download Errors"
                       optionalClassname="button primary"
                       action={(e) => { downloadErrors(e); }}
+                      disabled={submission.unselected === 0}
                     />
                   )}
-                  {submission.validationStatus === 'DRAFT' && (
-                    <Button buttonType="submit" action={() => { setModalType('submit'); setShowModal(true); }} />
-                  )}
+                  {submission.validationStatus === 'DRAFT' && ([
+                    <button
+                      className="button"
+                      key="edit"
+                      onClick={() => {
+                        const url = ROUTES_CREDITS.EDIT.replace(/:id/g, submission.id);
+                        history.push(url);
+                      }}
+                      type="button"
+                    >
+                      <FontAwesomeIcon icon="edit" /> Edit
+                    </button>,
+                    <Button
+                      buttonType="submit"
+                      action={() => { setModalType('submit'); setShowModal(true); }}
+                      disabled={invalidSubmission}
+                      key="submit"
+                    />,
+                  ])}
                 </>
               )}
             </span>

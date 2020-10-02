@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import PropTypes from 'prop-types';
-import history from '../../app/History';
+
 import Button from '../../app/components/Button';
 import ROUTES_CREDITS from '../../app/routes/Credits';
 import ROUTES_SALES from '../../app/routes/Sales';
