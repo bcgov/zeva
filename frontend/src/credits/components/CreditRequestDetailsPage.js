@@ -20,9 +20,6 @@ const CreditRequestDetailsPage = (props) => {
     submission,
     user,
   } = props;
-  console.log(submission);
-  // console.log(validatedOnly);
-  { console.log(submission.validationStatus); }
   const validatedOnly = submission.validationStatus === 'CHECKED';
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
