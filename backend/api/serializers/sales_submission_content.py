@@ -55,14 +55,7 @@ class SalesSubmissionContentSerializer(ModelSerializer):
         return None
 
     def get_warnings(self, instance):
-        request = self.context.get('request')
-
-        if request.user.is_government or \
-                instance.submission.validation_status == \
-                SalesSubmissionStatuses.VALIDATED:
-            return instance.warnings
-
-        return None
+        return instance.warnings
 
     class Meta:
         model = SalesSubmissionContent

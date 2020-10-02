@@ -94,8 +94,8 @@ const ModelListTable = (props) => {
     const id = `${item.xlsModelYear}-${item.xlsMake}-${item.xlsModel}`;
     const found = data.findIndex((obj) => (obj.id === id));
     let addSale = 0;
-
     let creditValue = 0;
+    let invalidModel = false;
 
     if (item.vehicle) {
       ({ creditValue } = item.vehicle);
@@ -126,6 +126,10 @@ const ModelListTable = (props) => {
     // if so, mark this as CONTAINS WARNINGS (vs how many warnings does this row have)
     if (item.warnings && item.warnings.length > 0 && !item.recordOfSale) {
       warnings = 1;
+
+      if (item.warnings.includes('INVALID_MODEL')) {
+        invalidModel = true;
+      }
     }
 
     if (found >= 0) {
@@ -139,6 +143,7 @@ const ModelListTable = (props) => {
       data.push({
         id,
         credits: creditValue,
+        invalidModel,
         sales: addSale,
         total: (creditValue * addSale),
         vehicle: {
@@ -167,6 +172,15 @@ const ModelListTable = (props) => {
           defaultSorted={[{
             id: 'make',
           }]}
+          getTrProps={(state, row) => {
+            if (row && row.original && row.original.invalidModel) {
+              return {
+                className: 'background-danger',
+              };
+            }
+
+            return {};
+          }}
           key="table"
         />
 
@@ -196,6 +210,7 @@ ModelListTable.defaultProps = {
 ModelListTable.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   validatedOnly: PropTypes.bool,
+  validationStatus: PropTypes.string.isRequired,
 };
 
 export default ModelListTable;

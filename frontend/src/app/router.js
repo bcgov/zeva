@@ -236,6 +236,11 @@ class Router extends Component {
                 )}
               />
               <Route
+                exact
+                path={ROUTES_CREDITS.EDIT}
+                render={() => <SalesSubmissionContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
                 path={ROUTES_CREDITS.SALES_SUBMISSION_DETAILS}
                 render={() => <SalesSubmissionDetailsContainer keycloak={keycloak} user={user} />}
               />

@@ -31,7 +31,7 @@ const UploadICBCVerificationContainer = (props) => {
 
   const doUpload = () => {
     setLoading(true);
-    upload(ROUTES_ICBCVERIFICATION.UPLOAD, files, dateCurrentTo)
+    upload(ROUTES_ICBCVERIFICATION.UPLOAD, files, { submissionCurrentDate: dateCurrentTo })
       .then(() => {
         setAlertMessage('upload successful');
         toastr.success('upload successful!', '', { positionClass: 'toast-bottom-right' });
