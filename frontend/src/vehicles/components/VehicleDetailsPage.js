@@ -82,6 +82,7 @@ const VehicleDetailsPage = (props) => {
         <div className="col-sm-12">
           <h2>{title}</h2>
           <Alert
+            alertType="vehicle"
             status={details.validationStatus}
             user={alertUser && alertUser.displayName ? alertUser.displayName : alertUser}
             date={moment(details.updateTimestamp).format('MMM D, YYYY')}
@@ -170,7 +171,7 @@ const VehicleDetailsPage = (props) => {
               Request range results and/or a change to the range value from the vehicle supplier, specify below.
             </div>
             <div>Add a comment to the vehicle supplier for request or rejection.</div>
-            <textarea className="form-control" rows="3" onChange={handleChange} defaultValue={comments.vehicleComment.comment}/>
+            <textarea className="form-control" rows="3" onChange={handleChange} defaultValue={comments.vehicleComment.comment} />
             <div className="text-right">
               <button className="button primary" disabled={!requestChangeCheck || !comments.vehicleComment} type="button" key="REQUEST" onClick={() => { setModalType('request'); setShowModal(true); }}>Request Range Change/Test Results</button>
             </div>

@@ -133,31 +133,38 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
       )}
-
-      {((
+      {/* {((
         (directorAction || analystAction) && submission.validationStatus === 'RECOMMEND_APPROVAL'
       ) || (user.isGovernment && ['SUBMITTED', 'CHECKED', 'VALIDATED'].indexOf(submission.validationStatus) >= 0))
-      && (
-        <div className="row mb-2">
-          <div className="col-sm-12">
-            <div className="recommendation-comment p-2 m-0">
-              <Alert alertType="credits" status={submission.validationStatus} user={submission.updateUser.displayName} date={moment(submission.updateTimestamp).format('MMM D, YYYY')} icbcDate={moment(previousDateCurrentTo).format('MMM D, YYYY')} />
-              {submission.salesSubmissionComment && (
-                submission.salesSubmissionComment.map((each) => (
-                  <div key={each.id}>
-                    <h4 className="d-inline mr-2">
-                      Comments from {each.createUser.displayName} {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}:
-                    </h4>
-                    <span>
-                      {each.comment}
-                    </span>
-                  </div>
-                ))
-              )}
-            </div>
+      && ( */}
+      {console.log(submission)}
+      <div className="row mb-2">
+        <div className="col-sm-12">
+          <div className="recommendation-comment p-2 m-0">
+            <Alert
+              isGovernment={user.isGovernment}
+              alertType="credit"
+              status={submission.validationStatus}
+              submission={submission}
+              date={moment(submission.updateTimestamp).format('MMM D, YYYY')}
+              icbcDate={moment(previousDateCurrentTo).format('MMM D, YYYY')}
+            />
+            {submission.salesSubmissionComment && user.isGovernment && (
+              submission.salesSubmissionComment.map((each) => (
+                <div key={each.id}>
+                  <h4 className="d-inline mr-2">
+                    Comments from {each.createUser.displayName} {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}:
+                  </h4>
+                  <span>
+                    {each.comment}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
-      )}
+      </div>
+      {/* )} */}
       {!user.isGovernment && (
         <div className="row mb-3">
           <div className="col-sm-12">

@@ -80,7 +80,7 @@ const VehicleForm = (props) => {
         <div className="col-12">
           <h2>{formTitle}</h2>
           {fields.make
-            && <Alert status={status} user={fields.user} date={moment(fields.updateTimestamp).format('MMM D, YYYY')} />}
+            && <Alert alertType="vehicle" status={status} user={fields.user} date={moment(fields.updateTimestamp).format('MMM D, YYYY')} />}
           {status === 'CHANGES_REQUESTED' && vehicleComment
           && (
           <div className="px-3">
