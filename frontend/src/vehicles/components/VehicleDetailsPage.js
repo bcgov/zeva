@@ -84,7 +84,7 @@ const VehicleDetailsPage = (props) => {
           <Alert
             status={details.validationStatus}
             user={alertUser && alertUser.displayName ? alertUser.displayName : alertUser}
-            date={moment(details.updateTimestamp).format('MMM d, YYYY')}
+            date={moment(details.updateTimestamp).format('MMM D, YYYY')}
           />
         </div>
       </div>
@@ -93,7 +93,7 @@ const VehicleDetailsPage = (props) => {
         <div className="col-md-12 col-lg-9 col-xl-7">
           {details.validationStatus === 'CHANGES_REQUESTED' && user.isGovernment && details.vehicleComment
           && (
-            <Comment comment={details.vehicleComment.comment} user={details.vehicleComment.createUser.displayName} date={moment(details.vehicleComment.createTimestamp).format('MMM d, YYYY')} />
+            <Comment comment={details.vehicleComment.comment} user={details.vehicleComment.createUser.displayName} date={moment(details.vehicleComment.createTimestamp).format('MMM D, YYYY')} />
           )}
           <div className="form p-4">
             {user.isGovernment && (

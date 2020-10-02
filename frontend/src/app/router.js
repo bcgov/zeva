@@ -230,12 +230,6 @@ class Router extends Component {
                 render={() => <CreditTransfersContainer keycloak={keycloak} user={user} />}
               />
               <Route
-                path={ROUTES_CREDITS.VALIDATED_CREDIT_REQUEST_DETAILS}
-                render={() => (
-                  <CreditRequestDetailsContainer keycloak={keycloak} user={user} validatedOnly />
-                )}
-              />
-              <Route
                 path={ROUTES_CREDITS.SALES_SUBMISSION_DETAILS}
                 render={() => <SalesSubmissionDetailsContainer keycloak={keycloak} user={user} />}
               />

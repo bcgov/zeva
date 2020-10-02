@@ -73,7 +73,7 @@ const SubmissionListTable = (props) => {
       const status = formatStatus(validationStatus);
 
       if (status === 'checked') {
-        return 'submitted';
+        return 'validated';
       }
 
       if (status === 'validated') {

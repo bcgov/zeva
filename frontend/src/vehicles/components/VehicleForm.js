@@ -74,17 +74,17 @@ const VehicleForm = (props) => {
   }
 
   const selectedZevType = fields.vehicleZevType.vehicleZevCode || fields.vehicleZevType;
-
   return (
     <div id="form" className="page">
       <div className="row mb-2">
         <div className="col-12">
           <h2>{formTitle}</h2>
-          <Alert status={status} user={fields.user} date={moment(fields.updateTimestamp).format('MMM d, YYYY')} />
+          {fields.make
+            && <Alert status={status} user={fields.user} date={moment(fields.updateTimestamp).format('MMM D, YYYY')} />}
           {status === 'CHANGES_REQUESTED' && vehicleComment
           && (
           <div className="px-3">
-            <Comment comment={vehicleComment.comment} user={vehicleComment.createUser.displayName} date={moment(vehicleComment.createTimestamp).format('MMM d, YYYY')} />
+            <Comment comment={vehicleComment.comment} user={vehicleComment.createUser.displayName} date={moment(vehicleComment.createTimestamp).format('MMM D, YYYY')} />
           </div>
           )}
         </div>
@@ -307,7 +307,7 @@ const VehicleForm = (props) => {
               </span>
 
               <span className="right-content">
-                <Button buttonType="save" optionalText="Save Draft" action={(e) => {handleSubmit(e)}} />
+                <Button buttonType="save" optionalText="Save Draft" action={(e) => { handleSubmit(e); }} />
                 <Button
                   buttonType="submit"
                   disabled={fields.hasPassedUs06Test && files.length === 0 && (!fields.attachments

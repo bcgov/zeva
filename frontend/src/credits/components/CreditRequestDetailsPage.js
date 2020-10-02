@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import moment from 'moment-timezone';
-
+import Alert from '../../app/components/Alert';
 import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
 import history from '../../app/History';
@@ -19,9 +19,11 @@ const CreditRequestDetailsPage = (props) => {
     previousDateCurrentTo,
     submission,
     user,
-    validatedOnly,
   } = props;
-
+  console.log(submission);
+  // console.log(validatedOnly);
+  { console.log(submission.validationStatus); }
+  const validatedOnly = submission.validationStatus === 'CHECKED';
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
   const [comment, setComment] = useState('');
@@ -35,9 +37,10 @@ const CreditRequestDetailsPage = (props) => {
     element.firstChild.textContent = ' Downloading...';
     return download(ROUTES_SALES.DOWNLOAD_ERRORS.replace(':id', submission.id), {}).then(() => {
       element.innerHTML = original;
-    })
+    });
   };
   let modalProps = {};
+
   switch (modalType) {
     case 'submit':
       modalProps = {
@@ -129,25 +132,15 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
       )}
+
       {((
         (directorAction || analystAction) && submission.validationStatus === 'RECOMMEND_APPROVAL'
-      ) || (user.isGovernment && ['SUBMITTES', 'CHECKED', 'VALIDATED'].indexOf(submission.validationStatus) >= 0))
-      && submission.salesSubmissionComment && (
+      ) || (user.isGovernment && ['SUBMITTED', 'CHECKED', 'VALIDATED'].indexOf(submission.validationStatus) >= 0))
+      && (
         <div className="row mb-2">
           <div className="col-sm-12">
             <div className="recommendation-comment p-2 m-0">
-              {submission.validationStatus === 'RECOMMEND_APPROVAL'
-              && (
-                <h4 className="d-inline mr-2">
-                  {submission.updateUser.displayName} recommended this submission be approved.
-                </h4>
-              )}
-              {(['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0) && submission.salesSubmissionComment
-              && (
-              <h4>
-                {submission.updateUser.displayName} has returned this submission.
-              </h4>
-              )}
+              <Alert alertType="credits" status={submission.validationStatus} user={submission.updateUser.displayName} date={moment(submission.updateTimestamp).format('MMM D, YYYY')} icbcDate={moment(previousDateCurrentTo).format('MMM D, YYYY')} />
               {submission.salesSubmissionComment && (
                 submission.salesSubmissionComment.map((each) => (
                   <div key={each.id}>

@@ -9,7 +9,6 @@ const CREDITS = {
   CREDIT_TRANSFERS_ADD: `${API_BASE_PATH}/transfers/add`,
   LIST: `${API_BASE_PATH}`,
   SALES_SUBMISSION_DETAILS: `${API_BASE_PATH}/requests/:id/validate`,
-  VALIDATED_CREDIT_REQUEST_DETAILS: `${API_BASE_PATH}/requests/:id/validated`,
   UPLOADVERIFICATION: `${API_BASE_PATH}/upload-verification-data`,
 };
 

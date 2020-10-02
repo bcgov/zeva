@@ -66,8 +66,7 @@ const SalesSubmissionDetailsContainer = (props) => {
       records: validatedList,
       validationStatus: 'CHECKED',
     }).then(() => {
-      const url = ROUTES_CREDITS.VALIDATED_CREDIT_REQUEST_DETAILS.replace(/:id/g, submission.id);
-
+      const url = ROUTES_CREDITS.CREDIT_REQUEST_DETAILS.replace(/:id/g, submission.id);
       history.push(url);
     });
   };
