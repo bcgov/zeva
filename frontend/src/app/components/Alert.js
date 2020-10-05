@@ -4,10 +4,8 @@ import PropTypes from 'prop-types';
 
 const Alert = (props) => {
   const {
-    alertType, date, optionalMessage, optionalClassname,
+    alertType, date, optionalMessage, optionalClassname, invalidSubmission,
   } = props;
-  console.log('ALERT TYPE: ', alertType);
-  console.log(props);
   let title;
   let icon = 'exclamation-circle';
   let classname;
@@ -50,10 +48,16 @@ const Alert = (props) => {
   if (alertType === 'credit') {
     const { isGovernment, submission, icbcDate } = props;
     const {
-      validationStatus, createUser, submissionDate, updateUser,
+      validationStatus, createUser, submissionDate, updateUser, unselected,
     } = submission;
     switch (validationStatus) {
       case 'DRAFT':
+        if (invalidSubmission) {
+          title = 'Errors found';
+          classname = 'alert-danger';
+          message = `You cannot submit this application. ${unselected} records are not eligible for credits. Delete this application, correct the errors and re-upload the Excel file.`;
+          break;
+        }
         title = 'Draft';
         message = `saved ${date} by ${createUser.displayName}, awaiting submission to government.`;
         classname = 'alert-warning';
@@ -61,6 +65,7 @@ const Alert = (props) => {
       case 'SUBMITTED':
         message = `Application submitted to government ${date}, by ${createUser.displayName}. Awaiting review by government.`;
         title = 'Submitted';
+        // add history when ready History - Excel template [insertname.ecl] uploaded Oct. 31st 2020, by Toni Carmaker.
         if (isGovernment) {
           classname = 'alert-warning';
         } else {
@@ -69,14 +74,15 @@ const Alert = (props) => {
         break;
       case 'VALIDATED':
         title = 'Issued';
-        if (isGovernment) {
-          message = `Credits issued ${date} by ${updateUser.displayName}. History - excel template uploaded ${submissionDate}`;
-        } else {
-          message = `Credits issued ${date} by government
-           History`;
-        }
         classname = 'alert-success';
         icon = 'check-circle';
+        if (isGovernment) {
+          message = `Credits issued ${date} by ${updateUser.displayName}.`;
+        } else {
+          message = `Credits issued ${date} by government.
+          History - excel template uploaded ${submissionDate}, by ${createUser}. `;
+          // add history when ready History - Excel template [insertname.ecl] uploaded Oct. 31st 2020, by Toni Carmaker. Application submitted to government Oct. 31st 2020, by Toni Carmaker.
+        }
         break;
       case 'RECOMMEND_APPROVAL':
         title = 'Recommended';
@@ -115,13 +121,21 @@ Alert.defaultProps = {
   user: '',
   status: '',
   optionalClassname: '',
+  optionalMessage: '',
   alertType: '',
+  icbcDate: '',
+  invalidSubmission: false,
 };
 Alert.propTypes = {
   date: PropTypes.string,
   user: PropTypes.string,
   status: PropTypes.string,
   optionalClassname: PropTypes.string,
+  optionalMessage: PropTypes.string,
   alertType: PropTypes.string,
+  submission: PropTypes.shape().isRequired,
+  icbcDate: PropTypes.string,
+  invalidSubmission: PropTypes.bool,
+  isGovernment: PropTypes.bool.isRequired,
 };
 export default Alert;

@@ -105,7 +105,6 @@ const CreditRequestDetailsPage = (props) => {
   );
 
   const invalidSubmission = submission.content.some((row) => (row.warnings.includes('INVALID_MODEL')));
-
   const directorAction = user.isGovernment
   && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
   && user.hasPermission('SIGN_SALES');
@@ -133,10 +132,6 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
       )}
-      {/* {((
-        (directorAction || analystAction) && submission.validationStatus === 'RECOMMEND_APPROVAL'
-      ) || (user.isGovernment && ['SUBMITTED', 'CHECKED', 'VALIDATED'].indexOf(submission.validationStatus) >= 0))
-      && ( */}
       {console.log(submission)}
       <div className="row mb-2">
         <div className="col-sm-12">
@@ -148,6 +143,7 @@ const CreditRequestDetailsPage = (props) => {
               submission={submission}
               date={moment(submission.updateTimestamp).format('MMM D, YYYY')}
               icbcDate={moment(previousDateCurrentTo).format('MMM D, YYYY')}
+              invalidSubmission={invalidSubmission}
             />
             {submission.salesSubmissionComment && user.isGovernment && (
               submission.salesSubmissionComment.map((each) => (
