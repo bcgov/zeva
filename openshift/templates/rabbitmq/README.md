@@ -18,4 +18,5 @@ oc process -f ./secret-template.yaml | oc create -f - -n [environment namespace]
 oc process -f ./rabbitmq-web-route.yaml NAME=zeva \
 ENV_NAME=dev \
 SUFFIX=-dev-133 \
+OCP_NAME=pathfinder \
 | oc create -f - -n [environment namespace]

@@ -11,9 +11,13 @@ parameters:
     displayName: Environment Name
     description: Environment Name
     required: true
+  - name: OCP_NAME
+    displayName: Openshift Name
+    description: Openshift Name
+    required: true    
 objects:
   - kind: NetworkSecurityPolicy
-    apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+    apiVersion: secops.${OCP_NAME}.gov.bc.ca/v1alpha1
     metadata:
       name: egress-internet
     spec:
@@ -24,7 +28,7 @@ objects:
       destination:
         - - ext:network=any
   - kind: NetworkSecurityPolicy
-    apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+    apiVersion: secops.${OCP_NAME}.gov.bc.ca/v1alpha1
     metadata:
       name: intra-namespace-comms
     spec:
@@ -35,7 +39,7 @@ objects:
       destination:
         - - $namespace=tbiwaq-${ENV_NAME}
   - kind: NetworkSecurityPolicy
-    apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+    apiVersion: secops.${OCP_NAME}.gov.bc.ca/v1alpha1
     metadata:
       name: int-cluster-k8s-api-comms
     spec:

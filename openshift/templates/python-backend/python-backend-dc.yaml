@@ -38,6 +38,10 @@ parameters:
     displayName: Postgresql database password
     description: Postgresql database password
     required: true
+  - name: OCP_NAME
+    displayName: Openshift Name
+    description: Openshift Name
+    required: true    
 objects:
 - apiVersion: v1
   kind: Service
@@ -96,13 +100,13 @@ objects:
             - name: DATABASE_URL
               value: "postgresql://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgresql.tbiwaq-${ENV_NAME}.svc.cluster.local/zeva"
             - name: KEYCLOAK_CERTS_URL
-              value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq/protocol/openid-connect/certs"
+              value: "https://sso${DASH_ENV_NAME}.${OCP_NAME}.gov.bc.ca/auth/realms/rzh2zkjq/protocol/openid-connect/certs"
             - name: KEYCLOAK_REALM
-              value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
+              value: "https://sso${DASH_ENV_NAME}.${OCP_NAME}.gov.bc.ca/auth/realms/rzh2zkjq"
             - name: KEYCLOAK_AUTHORITY
-              value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
+              value: "https://sso${DASH_ENV_NAME}.${OCP_NAME}.gov.bc.ca/auth/realms/rzh2zkjq"
             - name: KEYCLOAK_ISSUER
-              value: "https://sso${DASH_ENV_NAME}.pathfinder.gov.bc.ca/auth/realms/rzh2zkjq"
+              value: "https://sso${DASH_ENV_NAME}.${OCP_NAME}.gov.bc.ca/auth/realms/rzh2zkjq"
             - name: KEYCLOAK_AUDIENCE
               value: 'rzh2zkjq'
             - name: KEYCLOAK_CLIENT_ID

@@ -26,7 +26,7 @@ Settings:
   - mongo=identity-kit-db-bc/identity_kit_db
 
 - FTP server: not configured
-- Webhook Endpoint: https://chat.pathfinder.gov.bc.ca/hooks/***
+- Webhook Endpoint: https://chat.[ocp name].gov.bc.ca/hooks/***
 - Environment Friendly Name: Verifiable Organizations Network (mongo-test)
 - Environment Name (Id): devex-von-test
 

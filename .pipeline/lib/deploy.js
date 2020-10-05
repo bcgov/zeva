@@ -11,7 +11,6 @@ module.exports = settings => {
   const oc = new OpenShiftClientX(Object.assign({namespace: phases[phase].namespace}, options));
 
   //add Valid Redirect URIs for the pull request to keycloak
-  //for example: 	https://zeva-dev-79.pathfinder.gov.bc.ca/*
   if(phase === 'dev') {
     const kc = new KeyCloakClient(settings, oc);
     kc.addUris();
@@ -32,7 +31,8 @@ module.exports = settings => {
       'BACKEND_HOST_NAME': phases[phase].backendHost,
       'SSO_NAME': phases[phase].ssoName,
       'KEYCLOAK_REALM': 'rzh2zkjq',
-      'DJANGO_DEBUG': phases[phase].djangoDebug
+      'DJANGO_DEBUG': phases[phase].djangoDebug,
+      'OCP_NAME': phases[phase].ocpName
     }
   }))
 
