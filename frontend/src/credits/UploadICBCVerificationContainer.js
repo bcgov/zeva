@@ -1,11 +1,13 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import toastr from 'toastr';
+
+import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import Loading from '../app/components/Loading';
-import UploadVerificationData from './components/UploadVerificationData';
 import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification';
 import CustomPropTypes from '../app/utilities/props';
 import upload from '../app/utilities/upload';
+import UploadVerificationData from './components/UploadVerificationData';
 
 const UploadICBCVerificationContainer = (props) => {
   const [loading, setLoading] = useState(true);
@@ -57,19 +59,21 @@ const UploadICBCVerificationContainer = (props) => {
     return <Loading />;
   }
 
-  return (
+  return ([
+    <CreditTransactionTabs active="icbc-update" key="tabs" user={user} />,
     <UploadVerificationData
-      dateCurrentTo={dateCurrentTo}
       alertMessage={alertMessage}
+      dateCurrentTo={dateCurrentTo}
       files={files}
+      key="page"
       previousDateCurrentTo={previousDateCurrentTo}
       setDateCurrentTo={setDateCurrentTo}
       setUploadFiles={setFiles}
       title="Upload ICBC Registration Data"
       upload={doUpload}
       user={user}
-    />
-  );
+    />,
+  ]);
 };
 
 UploadICBCVerificationContainer.propTypes = {

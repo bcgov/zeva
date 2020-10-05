@@ -190,8 +190,8 @@ const VehicleForm = (props) => {
           </div>
 
           {(fields.hasPassedUs06Test || (status === 'CHANGES_REQUESTED' && setUploadFiles)) && (
-            <div className="col-xl-6 col-lg-12">
-              <h3 className="font-weight-bold mt-2">Upload range test results</h3>
+            <div className="col-xl-6 col-lg-12 mt-2 mt-xl-0">
+              <h3 className="font-weight-bold mb-2">Upload range test results</h3>
               <fieldset>
                 <div className="form-group row">
                   <label className="col-sm-3 col-form-label" htmlFor="file-upload">

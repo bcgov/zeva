@@ -56,17 +56,17 @@ def award_credits(submission):
                 credit_class=CreditClass.objects.get(
                     credit_class=credit_class
                 ),
-                organization_id=vehicle.organization_id,
+                organization_id=submission.organization.id,
                 expiration_date=None
             ).order_by('-id').first()
 
             if current_balance:
                 new_balance = Decimal(current_balance.balance) + \
-                    Decimal(credit_value)
+                    Decimal(total_value)
                 current_balance.expiration_date = date.today()
                 current_balance.save()
             else:
-                new_balance = credit_value
+                new_balance = total_value
 
             AccountBalance.objects.create(
                 balance=new_balance,
@@ -75,7 +75,7 @@ def award_credits(submission):
                     credit_class=credit_class
                 ),
                 credit_transaction=credit_transaction,
-                organization_id=vehicle.organization_id
+                organization_id=submission.organization.id
             )
 
 
