@@ -59,6 +59,7 @@ const Modal = (props) => {
 };
 
 Modal.defaultProps = {
+  children: undefined,
   icon: '',
   cancelLabel: 'Cancel',
   confirmClass: 'btn-outline-primary',
@@ -72,7 +73,7 @@ Modal.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
-  ]).isRequired,
+  ]),
   confirmClass: PropTypes.string,
   confirmLabel: PropTypes.string,
   handleCancel: PropTypes.func.isRequired,
