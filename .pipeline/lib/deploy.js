@@ -164,7 +164,8 @@ module.exports = settings => {
       'CPU_LIMIT': phases[phase].schemaspyCpuLimit,
       'MEMORY_REQUEST': phases[phase].schemaspyMemoryRequest,
       'MEMORY_LIMIT': phases[phase].schemaspyMemoryLimit,
-      'HEALTH_CHECK_DELAY': phases[phase].schemaspyHealthCheckDelay
+      'HEALTH_CHECK_DELAY': phases[phase].schemaspyHealthCheckDelay,
+      'OCP_NAME': phases[phase].ocpName
     }
   }))
 
