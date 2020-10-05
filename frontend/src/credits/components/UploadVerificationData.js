@@ -112,6 +112,7 @@ const UploadVerificationData = (props) => {
 
 UploadVerificationData.defaultProps = {
   alertMessage: '',
+  previousDateCurrentTo: '',
 };
 
 UploadVerificationData.propTypes = {
@@ -120,7 +121,7 @@ UploadVerificationData.propTypes = {
   title: PropTypes.string.isRequired,
   upload: PropTypes.func.isRequired,
   setDateCurrentTo: PropTypes.func.isRequired,
-  previousDateCurrentTo: PropTypes.string.isRequired,
+  previousDateCurrentTo: PropTypes.string,
   alertMessage: PropTypes.string,
   user: CustomPropTypes.user.isRequired,
 };

@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment-timezone';
+
 import Button from '../../app/components/Button';
-import history from '../../app/History';
 import AutocompleteInput from '../../app/components/AutocompleteInput';
 import ExcelFileDrop from '../../app/components/FileDrop';
 import Loading from '../../app/components/Loading';
@@ -80,7 +80,9 @@ const VehicleForm = (props) => {
       <div className="row mb-2">
         <div className="col-12">
           <h2>{formTitle}</h2>
-          <Alert status={status} user={fields.user} date={moment(fields.updateTimestamp).format('MMM d, YYYY')} />
+          {status && (
+            <Alert status={status} user={fields.user} date={moment(fields.updateTimestamp).format('MMM d, YYYY')} />
+          )}
           {status === 'CHANGES_REQUESTED' && vehicleComment
           && (
           <div className="px-3">
@@ -332,6 +334,7 @@ VehicleForm.defaultProps = {
   setDeleteFiles: null,
   setUploadFiles: null,
   showProgressBars: false,
+  status: undefined,
   vehicleComment: {},
 };
 
@@ -350,7 +353,7 @@ VehicleForm.propTypes = {
   setFields: PropTypes.func.isRequired,
   setUploadFiles: PropTypes.func,
   showProgressBars: PropTypes.bool,
-  status: PropTypes.string.isRequired,
+  status: PropTypes.string,
   vehicleTypes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleClasses: PropTypes.arrayOf(PropTypes.shape()).isRequired,
