@@ -10,7 +10,6 @@ const CREDITS = {
   EDIT: `${API_BASE_PATH}/requests/:id/edit`,
   LIST: `${API_BASE_PATH}`,
   SALES_SUBMISSION_DETAILS: `${API_BASE_PATH}/requests/:id/validate`,
-  VALIDATED_CREDIT_REQUEST_DETAILS: `${API_BASE_PATH}/requests/:id/validated`,
   UPLOADVERIFICATION: `${API_BASE_PATH}/upload-verification-data`,
 };
 

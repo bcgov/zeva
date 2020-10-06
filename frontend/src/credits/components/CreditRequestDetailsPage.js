@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import moment from 'moment-timezone';
-
+import Alert from '../../app/components/Alert';
 import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
 import history from '../../app/History';
@@ -19,9 +19,8 @@ const CreditRequestDetailsPage = (props) => {
     previousDateCurrentTo,
     submission,
     user,
-    validatedOnly,
   } = props;
-
+  const validatedOnly = submission.validationStatus === 'CHECKED';
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
   const [comment, setComment] = useState('');
@@ -39,6 +38,7 @@ const CreditRequestDetailsPage = (props) => {
   };
 
   let modalProps = {};
+
   switch (modalType) {
     case 'submit':
       modalProps = {
@@ -105,7 +105,6 @@ const CreditRequestDetailsPage = (props) => {
   );
 
   const invalidSubmission = submission.content.some((row) => (row.warnings.includes('INVALID_MODEL')));
-
   const directorAction = user.isGovernment
   && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
   && user.hasPermission('SIGN_SALES');
@@ -133,41 +132,34 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
       )}
-      {((
-        (directorAction || analystAction) && submission.validationStatus === 'RECOMMEND_APPROVAL'
-      ) || (user.isGovernment && ['SUBMITTES', 'CHECKED', 'VALIDATED'].indexOf(submission.validationStatus) >= 0))
-      && submission.salesSubmissionComment && (
-        <div className="row mb-2">
-          <div className="col-sm-12">
-            <div className="recommendation-comment p-2 m-0">
-              {submission.validationStatus === 'RECOMMEND_APPROVAL'
-              && (
-                <h4 className="d-inline mr-2">
-                  {submission.updateUser.displayName} recommended this submission be approved.
-                </h4>
-              )}
-              {(['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0) && submission.salesSubmissionComment
-              && (
-              <h4>
-                {submission.updateUser.displayName} has returned this submission.
-              </h4>
-              )}
-              {submission.salesSubmissionComment && (
-                submission.salesSubmissionComment.map((each) => (
-                  <div key={each.id}>
-                    <h4 className="d-inline mr-2">
-                      Comments from {each.createUser.displayName} {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}:
-                    </h4>
-                    <span>
-                      {each.comment}
-                    </span>
-                  </div>
-                ))
-              )}
-            </div>
+      <div className="row mb-2">
+        <div className="col-sm-12">
+          <div className="recommendation-comment p-2 m-0">
+            <Alert
+              isGovernment={user.isGovernment}
+              alertType="credit"
+              status={submission.validationStatus}
+              submission={submission}
+              date={moment(submission.updateTimestamp).format('MMM D, YYYY')}
+              icbcDate={moment(previousDateCurrentTo).format('MMM D, YYYY')}
+              invalidSubmission={invalidSubmission}
+            />
+            {submission.salesSubmissionComment && user.isGovernment && (
+              submission.salesSubmissionComment.map((each) => (
+                <div key={each.id}>
+                  <h4 className="d-inline mr-2">
+                    Comments from {each.createUser.displayName} {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}:
+                  </h4>
+                  <span>
+                    {each.comment}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
-      )}
+      </div>
+      {/* )} */}
       {!user.isGovernment && (
         <div className="row mb-3">
           <div className="col-sm-12">

@@ -82,9 +82,10 @@ const VehicleDetailsPage = (props) => {
         <div className="col-sm-12">
           <h2>{title}</h2>
           <Alert
+            alertType="vehicle"
             status={details.validationStatus}
             user={alertUser && alertUser.displayName ? alertUser.displayName : alertUser}
-            date={moment(details.updateTimestamp).format('MMM d, YYYY')}
+            date={moment(details.updateTimestamp).format('MMM D, YYYY')}
           />
         </div>
       </div>
@@ -93,7 +94,7 @@ const VehicleDetailsPage = (props) => {
         <div className="col-md-12 col-lg-9 col-xl-7">
           {details.validationStatus === 'CHANGES_REQUESTED' && user.isGovernment && details.vehicleComment
           && (
-            <Comment comment={details.vehicleComment.comment} user={details.vehicleComment.createUser.displayName} date={moment(details.vehicleComment.createTimestamp).format('MMM d, YYYY')} />
+            <Comment comment={details.vehicleComment.comment} user={details.vehicleComment.createUser.displayName} date={moment(details.vehicleComment.createTimestamp).format('MMM D, YYYY')} />
           )}
           <div className="form p-4">
             {user.isGovernment && (
@@ -170,7 +171,7 @@ const VehicleDetailsPage = (props) => {
               Request range results and/or a change to the range value from the vehicle supplier, specify below.
             </div>
             <div>Add a comment to the vehicle supplier for request or rejection.</div>
-            <textarea className="form-control" rows="3" onChange={handleChange} defaultValue={comments.vehicleComment.comment}/>
+            <textarea className="form-control" rows="3" onChange={handleChange} defaultValue={comments.vehicleComment.comment} />
             <div className="text-right">
               <button className="button primary" disabled={!requestChangeCheck || !comments.vehicleComment} type="button" key="REQUEST" onClick={() => { setModalType('request'); setShowModal(true); }}>Request Range Change/Test Results</button>
             </div>

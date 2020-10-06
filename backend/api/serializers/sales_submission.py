@@ -29,6 +29,14 @@ class BaseSerializer():
 
         return obj.update_user
 
+    def get_create_user(self, obj):
+        user_profile = UserProfile.objects.filter(username=obj.create_user)
+        if user_profile.exists():
+            serializer = MemberSerializer(user_profile.first(), read_only=True)
+            return serializer.data
+        return obj.create_user
+
+
     def get_validation_status(self, obj):
         request = self.context.get('request')
 
@@ -136,6 +144,7 @@ class SalesSubmissionSerializer(
     sales_submission_comment = SerializerMethodField()
     update_user = SerializerMethodField()
     validation_status = SerializerMethodField()
+    create_user = SerializerMethodField()
 
     def get_content(self, instance):
         request = self.context.get('request')
@@ -168,6 +177,7 @@ class SalesSubmissionSerializer(
             'id', 'validation_status', 'organization', 'submission_date',
             'submission_sequence', 'content', 'submission_id',
             'sales_submission_comment', 'update_user', 'unselected',
+             'update_timestamp', 'create_user'
         )
 
 
