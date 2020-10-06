@@ -35,7 +35,7 @@ Following are the instructions for running the backups and a restore.
 ## Storage
 *Before we get too far into the the details, we're going to take a moment to discuss the most important part of the whole process - **The Storage**.*  The backup container uses two volumes, one for storing the backups and the other for restore/verification testing.  The deployment template separates them intentionally.
 
-The following sections on storage discuss the recommendations and limitations of the storage classes created specifically for the BC Government's [PathFinder](https://console.pathfinder.gov.bc.ca:8443/) environment.
+The following sections on storage discuss the recommendations and limitations of the storage classes created specifically for the BC Government's environment.
 
 
 ### Backup Storage Volume
@@ -249,7 +249,7 @@ The [backup script](./docker/backup.sh) supports running manual or scheduled ver
 
 The Webhook integration feature is enabled by specifying the webhook URL, `WEBHOOK_URL`, in your configuration.  It's recommended that you also provide values for `ENVIRONMENT_FRIENDLY_NAME` and `ENVIRONMENT_NAME`, so you can better identify the environment from which the messages originate and do things like produce links to the environment.
 
-The Webhook integration feature was built with Rocket.Chat in mind and an integration script for Rocket.Chat can be found in [rocket.chat.integration.js](./scripts/rocket.chat.integration.js).  This script was developed to support the BC OpenShift Pathfinder environment and will format the notifications from the backup script into Rocket.Chat messages (examples below).  If you provide values for the environment name (`ENVIRONMENT_FRIENDLY_NAME` and `ENVIRONMENT_NAME`) hyperlinks will be added to the messages to link you to the pathfinder project console.
+The Webhook integration feature was built with Rocket.Chat in mind and an integration script for Rocket.Chat can be found in [rocket.chat.integration.js](./scripts/rocket.chat.integration.js).  This script was developed to support the BC OpenShift environment and will format the notifications from the backup script into Rocket.Chat messages (examples below).  If you provide values for the environment name (`ENVIRONMENT_FRIENDLY_NAME` and `ENVIRONMENT_NAME`) hyperlinks will be added to the messages to link you to the project console.
 
 Sample Message:
 

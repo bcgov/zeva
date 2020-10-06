@@ -7,13 +7,13 @@ metadata:
   name: zeva-nsp
   creationTimestamp:
 parameters:
-  - name: ENV_NAME
-    displayName: Environment Name
-    description: Environment Name
-    required: true
+  - name: OCP_NAME
+    displayName: Openshift Name
+    description: Openshift Name
+    required: true    
 objects:
   - kind: NetworkSecurityPolicy
-    apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+    apiVersion: secops.${OCP_NAME}.gov.bc.ca/v1alpha1
     metadata:
       name: pods-to-external-network
       labels:
@@ -28,7 +28,7 @@ objects:
       destination:
         - - ext:network=any
   - kind: NetworkSecurityPolicy
-    apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+    apiVersion: secops.${OCP_NAME}.gov.bc.ca/v1alpha1
     metadata:
       name: pods-to-external-network
       labels:

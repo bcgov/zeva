@@ -24,6 +24,10 @@ parameters:
   description: rabbitmq cluster name
   value: rabbitmq-cluster
   required: true   
+- name: OCP_NAME
+  displayName: openshift name
+  description: openshift name
+  required: true    
 objects:
 - apiVersion: route.openshift.io/v1
   kind: Route
@@ -36,7 +40,7 @@ objects:
       env: ${ENV_NAME}
     name: ${NAME}-rabbitmq-web${SUFFIX}
   spec:
-    host: ${NAME}-rabbitmq-web${SUFFIX}.pathfinder.gov.bc.ca
+    host: ${NAME}-rabbitmq-web${SUFFIX}.${OCP_NAME}.gov.bc.ca
     port:
       targetPort: web
     tls:
