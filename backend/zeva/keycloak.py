@@ -17,11 +17,11 @@ def config():
             'true'
         ).lower() in ['true', '1']),
         'SERVICE_ACCOUNT_REALM': os.getenv('KEYCLOAK_SA_REALM', 'zeva'),
-        'SERVICE_ACCOUNT_CLIENT_ID': os.getenv('KEYCLOAK_SA_CLIENT_ID', 'zeva'),
+        'SERVICE_ACCOUNT_CLIENT_ID': os.getenv('KEYCLOAK_SA_CLIENT_ID', 'zeva-app-sa'),
         'SERVICE_ACCOUNT_KEYCLOAK_API_BASE': os.getenv(
             'KEYCLOAK_SA_BASEURL',
             'http://localhost:8888'
         ),
-        'SERVICE_ACCOUNT_CLIENT_SECRET': os.getenv('KEYCLOAK_SA_CLIENT_SECRET', ''),
+        'SERVICE_ACCOUNT_CLIENT_SECRET': '06dc71d6-1800-4f5d-b7b3-4c4fda226599',
         'RS256_KEY': None
     }

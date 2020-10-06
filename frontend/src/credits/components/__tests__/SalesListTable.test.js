@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import jest from 'jest-mock';
-import SalesListTable from '../SalesListTable';
+import VINListTable from '../VINListTable';
 import '@testing-library/jest-dom/extend-expect';
 
 const baseProps = {
@@ -88,7 +88,7 @@ const basePropsNoMatch = {
 };
 
 it('renders without crashing', () => {
-  render(<SalesListTable
+  render(<VINListTable
     handleCheckboxClick={baseProps.handleCheckboxClick}
     items={baseProps.items}
     user={baseProps.user}
@@ -97,7 +97,7 @@ it('renders without crashing', () => {
 });
 
 it('gives an error code of 21 if vin has already been validated', () => {
-  const { getByText } = render(<SalesListTable
+  const { getByText } = render(<VINListTable
     handleCheckboxClick={baseProps.handleCheckboxClick}
     items={baseProps.items}
     loading={false}
@@ -108,7 +108,7 @@ it('gives an error code of 21 if vin has already been validated', () => {
 });
 
 it('gives an error code of 11 if there is no matching icbc vin', () => {
-  const { getByText } = render(<SalesListTable
+  const { getByText } = render(<VINListTable
     handleCheckboxClick={baseProps.handleCheckboxClick}
     items={basePropsNoMatch.items}
     loading={false}
@@ -119,7 +119,7 @@ it('gives an error code of 11 if there is no matching icbc vin', () => {
 });
 
 it('gives no error code if everything matches with icbcdata', () => {
-  const { queryByText } = render(<SalesListTable
+  const { queryByText } = render(<VINListTable
     handleCheckboxClick={baseProps.handleCheckboxClick}
     items={basePropsNoError.items}
     loading={false}

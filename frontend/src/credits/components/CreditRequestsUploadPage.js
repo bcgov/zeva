@@ -3,8 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Button from '../../app/components/Button';
-import ROUTES_CREDITS from '../../app/routes/Credits';
-import ROUTES_SALES from '../../app/routes/Sales';
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import download from '../../app/utilities/download';
 import ExcelFileDrop from '../../app/components/FileDrop';
 import getFileSize from '../../app/utilities/getFileSize';
@@ -21,7 +20,7 @@ const SalesUploadPage = (props) => {
     const element = e.target;
     const original = element.innerHTML;
     element.firstChild.textContent = ' Downloading...';
-    return download(ROUTES_SALES.TEMPLATE, {}).then(() => {
+    return download(ROUTES_CREDIT_REQUESTS.TEMPLATE, {}).then(() => {
       element.innerHTML = original;
     });
   };
@@ -113,7 +112,7 @@ const SalesUploadPage = (props) => {
         <span className="left-content">
           <Button
             buttonType="back"
-            locationRoute={ROUTES_CREDITS.CREDIT_REQUESTS}
+            locationRoute={ROUTES_CREDIT_REQUESTS.LIST}
           />
         </span>
         <span className="right-content">

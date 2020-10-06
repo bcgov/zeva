@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CONFIG from '../config';
 import CustomPropTypes from '../utilities/props';
 import ROUTES_CREDITS from '../routes/Credits';
+import ROUTES_CREDIT_REQUESTS from '../routes/CreditRequests';
 import ROUTES_ORGANIZATIONS from '../routes/Organizations';
 import ROUTES_ROLES from '../routes/Roles';
 import ROUTES_VEHICLES from '../routes/Vehicles';
@@ -199,7 +200,7 @@ class Navbar extends Component {
 
                     return true;
                   }}
-                  to={user.isGovernment ? ROUTES_CREDITS.CREDIT_REQUESTS : ROUTES_CREDITS.LIST}
+                  to={user.isGovernment ? ROUTES_CREDIT_REQUESTS.LIST : ROUTES_CREDITS.LIST}
                 >
                   <span>Credit Transactions</span>
                 </NavLink>

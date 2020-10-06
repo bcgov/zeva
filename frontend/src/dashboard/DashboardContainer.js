@@ -8,7 +8,7 @@ import axios from 'axios';
 import CustomPropTypes from '../app/utilities/props';
 import DashboardPage from './components/DashboardPage';
 
-import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
+import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import ROUTES_CREDITS from '../app/routes/Credits';
 
@@ -101,7 +101,7 @@ const DashboardContainer = (props) => {
 
   const refreshList = () => {
     axios.all([
-      axios.get(ROUTES_SALES_SUBMISSIONS.LIST),
+      axios.get(ROUTES_CREDIT_REQUESTS.LIST),
       axios.get(ROUTES_VEHICLES.LIST),
       axios.get(ROUTES_CREDITS.CREDIT_TRANSFERS_API),
     ]).then(axios.spread((salesResponse, vehiclesResponse, transfersResponse) => {

@@ -9,6 +9,7 @@ import moment from 'moment-timezone';
 import ReactTable from '../../app/components/ReactTable';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import history from '../../app/History';
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import ROUTES_CREDITS from '../../app/routes/Credits';
 
 const CreditTransactionListTable = (props) => {
@@ -143,7 +144,7 @@ const CreditTransactionListTable = (props) => {
               switch (transactionType.toLowerCase()) {
                 case 'validation':
                   history.push(
-                    ROUTES_CREDITS.CREDIT_REQUEST_DETAILS.replace(/:id/g, item.foreignKey),
+                    ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/g, item.foreignKey),
                     { href: ROUTES_CREDITS.LIST },
                   );
                   break;

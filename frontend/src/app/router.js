@@ -14,14 +14,14 @@ import VehicleSupplierModelListContainer from '../organizations/VehicleSupplierM
 import VehicleSupplierUserListContainer from '../organizations/VehicleSupplierUserListContainer';
 import RoleListContainer from '../roles/RoleListContainer';
 import CreditsContainer from '../credits/CreditsContainer';
-import CreditRequestsContainer from '../credits/CreditRequestsContainer';
+import CreditRequestListContainer from '../credits/CreditRequestListContainer';
 import CreditTransfersContainer from '../credits/CreditTransfersContainer';
 import CreditTransferListContainer from '../credits/CreditTransferListContainer';
 import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContainer';
-import SalesSubmissionDetailsContainer from '../credits/SalesSubmissionDetailsContainer';
+import CreditRequestVINListContainer from '../credits/CreditRequestVINListContainer';
+import UploadCreditRequestContainer from '../credits/UploadCreditRequestContainer';
+import UploadCreditRequestConfirmationContainer from '../credits/UploadCreditRequestConfirmationContainer';
 import UploadICBCVerificationContainer from '../credits/UploadICBCVerificationContainer';
-import SalesSubmissionContainer from '../sales/SalesSubmissionContainer';
-import SalesSubmissionConfirmationContainer from '../sales/SalesSubmissionConfirmationContainer';
 import UserEditContainer from '../users/UserEditContainer';
 import VehicleDetailsContainer from '../vehicles/VehicleDetailsContainer';
 import VehicleEditContainer from '../vehicles/VehicleEditContainer';
@@ -33,12 +33,12 @@ import StatusInterceptor from './components/StatusInterceptor';
 import CONFIG from './config';
 import History from './History';
 import PageLayout from './PageLayout';
+import ROUTES_CREDIT_REQUESTS from './routes/CreditRequests';
+import ROUTES_CREDITS from './routes/Credits';
 import ROUTES_ORGANIZATIONS from './routes/Organizations';
 import ROUTES_ROLES from './routes/Roles';
-import ROUTES_SALES from './routes/Sales';
 import ROUTES_USERS from './routes/Users';
 import ROUTES_VEHICLES from './routes/Vehicles';
-import ROUTES_CREDITS from './routes/Credits';
 
 class Router extends Component {
   constructor(props) {
@@ -172,16 +172,6 @@ class Router extends Component {
               />
               <Route
                 exact
-                path={ROUTES_SALES.NEW_UPLOAD}
-                render={() => <SalesSubmissionContainer keycloak={keycloak} user={user} />}
-              />
-              <Route
-                exact
-                path={ROUTES_SALES.CONFIRM}
-                render={() => <SalesSubmissionConfirmationContainer keycloak={keycloak} user={user} />}
-              />
-              <Route
-                exact
                 path={ROUTES_VEHICLES.ADD}
                 render={() => <VehicleEditContainer keycloak={keycloak} user={user} newVehicle />}
               />
@@ -216,11 +206,6 @@ class Router extends Component {
               />
               <Route
                 exact
-                path={ROUTES_CREDITS.CREDIT_REQUESTS}
-                render={() => <CreditRequestsContainer keycloak={keycloak} user={user} />}
-              />
-              <Route
-                exact
                 path={ROUTES_CREDITS.CREDIT_TRANSFERS}
                 render={() => <CreditTransferListContainer keycloak={keycloak} user={user} />}
               />
@@ -231,16 +216,37 @@ class Router extends Component {
               />
               <Route
                 exact
-                path={ROUTES_CREDITS.EDIT}
-                render={() => <SalesSubmissionContainer keycloak={keycloak} user={user} />}
+                path={ROUTES_CREDIT_REQUESTS.NEW}
+                render={() => <UploadCreditRequestContainer keycloak={keycloak} user={user} />}
               />
               <Route
-                path={ROUTES_CREDITS.SALES_SUBMISSION_DETAILS}
-                render={() => <SalesSubmissionDetailsContainer keycloak={keycloak} user={user} />}
+                path={ROUTES_CREDIT_REQUESTS.VALIDATED}
+                render={() => (
+                  <CreditRequestDetailsContainer keycloak={keycloak} user={user} validatedOnly />
+                )}
               />
               <Route
-                path={ROUTES_CREDITS.CREDIT_REQUEST_DETAILS}
+                exact
+                path={ROUTES_CREDIT_REQUESTS.CONFIRM}
+                render={() => <UploadCreditRequestConfirmationContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_CREDIT_REQUESTS.EDIT}
+                render={() => <UploadCreditRequestContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_CREDIT_REQUESTS.VALIDATE}
+                render={() => <CreditRequestVINListContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_CREDIT_REQUESTS.DETAILS}
                 render={() => <CreditRequestDetailsContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                exact
+                path={ROUTES_CREDIT_REQUESTS.LIST}
+                render={() => <CreditRequestListContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact

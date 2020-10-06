@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import ROUTES_CREDITS from '../routes/Credits';
+import ROUTES_CREDIT_REQUESTS from '../routes/CreditRequests';
 import CustomPropTypes from '../utilities/props';
 
 import CONFIG from '../config';
@@ -28,7 +29,7 @@ const CreditTransactionTabs = (props) => {
         className={`nav-item ${(active === 'credit-requests') ? 'active' : ''}`}
         role="presentation"
       >
-        <Link to={ROUTES_CREDITS.CREDIT_REQUESTS}>Credit Applications</Link>
+        <Link to={ROUTES_CREDIT_REQUESTS.LIST}>Credit Applications</Link>
       </li>
       {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED && (
       <li

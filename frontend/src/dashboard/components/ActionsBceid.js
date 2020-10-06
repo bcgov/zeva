@@ -5,6 +5,7 @@ import Loading from '../../app/components/Loading';
 import ActivityBanner from './ActivityBanner';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 import ROUTES_CREDITS from '../../app/routes/Credits';
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 
 const ActionsBceid = (props) => {
   const { activityCount, loading } = props;
@@ -75,7 +76,7 @@ const ActionsBceid = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsNew} saved awaiting submission`}
-          linkTo={`${ROUTES_CREDITS.CREDIT_REQUESTS}?status=New`}
+          linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=New`}
         />
         )}
         {activityCount.creditsAwaiting > 0
@@ -85,7 +86,7 @@ const ActionsBceid = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsAwaiting} awaiting validation`}
-          linkTo={`${ROUTES_CREDITS.CREDIT_REQUESTS}?status=Submitted`}
+          linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Submitted`}
         />
         )}
         {activityCount.creditsIssued > 0
@@ -95,7 +96,7 @@ const ActionsBceid = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsIssued} processed by government`}
-          linkTo={`${ROUTES_CREDITS.CREDIT_REQUESTS}?status=Issued`}
+          linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Issued`}
         />
         )}
         {activityCount.creditsNew === 0
@@ -106,7 +107,7 @@ const ActionsBceid = (props) => {
             icon="check-square"
             boldText="Credit Applications"
             regularText="no current activity"
-            linkTo={ROUTES_CREDITS.CREDIT_REQUESTS}
+            linkTo={ROUTES_CREDIT_REQUESTS.LIST}
           />
         )}
         {activityCount.transfersAwaitingPartner > 0

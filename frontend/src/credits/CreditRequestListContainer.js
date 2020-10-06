@@ -8,14 +8,13 @@ import { withRouter } from 'react-router';
 
 import Loading from '../app/components/Loading';
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
-import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
-
+import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
 import CustomPropTypes from '../app/utilities/props';
 import CreditRequestsPage from './components/CreditRequestsPage';
 
 const qs = require('qs');
 
-const CreditRequestsContainer = (props) => {
+const CreditRequestListContainer = (props) => {
   const { location, user } = props;
   const [loading, setLoading] = useState(true);
   const [submissions, setSubmissions] = useState([]);
@@ -35,7 +34,7 @@ const CreditRequestsContainer = (props) => {
       setFiltered([...filtered, ...location.state]);
     }
 
-    axios.get(ROUTES_SALES_SUBMISSIONS.LIST).then((response) => {
+    axios.get(ROUTES_CREDIT_REQUESTS.LIST).then((response) => {
       setSubmissions(response.data);
       setLoading(false);
     });
@@ -61,8 +60,8 @@ const CreditRequestsContainer = (props) => {
   ]);
 };
 
-CreditRequestsContainer.propTypes = {
+CreditRequestListContainer.propTypes = {
   user: CustomPropTypes.user.isRequired,
 };
 
-export default withRouter(CreditRequestsContainer);
+export default withRouter(CreditRequestListContainer);
