@@ -12,10 +12,10 @@ it('renders without crashing', () => {
         title="test"
         errorMessage="test erro"
         files={[]}
-        setUploadFiles={() => { console.log('hi'); }}
-        upload={() => { console.log('hi'); }}
+        setUploadFiles={() => {}}
+        upload={() => {}}
         dateCurrentTo="2020-04-06"
-        setDateCurrentTo={() => { console.log('hi'); }}
+        setDateCurrentTo={() => {}}
         user={{ isGovernment: true }}
       />
     </Router>,

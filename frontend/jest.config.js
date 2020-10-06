@@ -10,7 +10,7 @@ module.exports = {
       statements: -50,
     },
   },
-  moduleFileExtensions: ['js', 'node'],
+  moduleFileExtensions: ['js', 'node', 'json'],
   moduleNameMapper: {
     '^.+\\.(css|less|scss)$': '<rootDir>/__mocks__/style.js',
   },
@@ -23,7 +23,6 @@ module.exports = {
   },
   coveragePathIgnorePatterns: [
     'node_modules/',
-    'src/stories/',
   ],
   verbose: true,
   globals: {
