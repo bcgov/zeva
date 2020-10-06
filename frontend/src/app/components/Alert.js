@@ -9,7 +9,7 @@ const Alert = (props) => {
   let title;
   let icon = 'exclamation-circle';
   let classname;
-  let message = 'Sales credits cannot be issued for this model until validated by government.';
+  let message = 'Sales credits cannot be issued until validated by government.';
   if (alertType === 'vehicle') {
     const { user, status } = props;
     switch (status) {
@@ -79,15 +79,16 @@ const Alert = (props) => {
         if (isGovernment) {
           message = `Credits issued ${date} by ${updateUser.displayName}.`;
         } else {
-          message = `Credits issued ${date} by government.
-          History - excel template uploaded ${submissionDate}, by ${createUser}. `;
+          message = `Credits issued ${date} by government.`
           // add history when ready History - Excel template [insertname.ecl] uploaded Oct. 31st 2020, by Toni Carmaker. Application submitted to government Oct. 31st 2020, by Toni Carmaker.
         }
         break;
       case 'RECOMMEND_APPROVAL':
-        title = 'Recommended';
-        message = `Application reviewed and recommended to Director ${date} by ${updateUser.displayName}. ICBC data used was current to ${icbcDate}.`;
-        classname = 'alert-warning';
+        if (isGovernment) {
+          title = 'Recommended';
+          message = `Application reviewed and recommended to Director ${date} by ${updateUser.displayName}. ICBC data used was current to ${icbcDate}.`;
+          classname = 'alert-warning';
+        }
         break;
       case 'CHECKED':
         title = 'Validated';

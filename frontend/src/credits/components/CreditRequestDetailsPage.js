@@ -132,7 +132,6 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
       )}
-      {console.log(submission)}
       <div className="row mb-2">
         <div className="col-sm-12">
           <div className="recommendation-comment p-2 m-0">
