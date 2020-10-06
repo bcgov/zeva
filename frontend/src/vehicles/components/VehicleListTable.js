@@ -6,8 +6,9 @@ import React from 'react';
 
 import history from '../../app/History';
 import ReactTable from '../../app/components/ReactTable';
-import formatStatus from '../../app/utilities/formatStatus';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
+import formatNumeric from  '../../app/utilities/formatNumeric';
+import formatStatus from '../../app/utilities/formatStatus';
 
 const VehicleListTable = (props) => {
   const {
@@ -63,7 +64,7 @@ const VehicleListTable = (props) => {
         credit = 4;
       }
 
-      return credit;
+      return formatNumeric(credit, 2);
     },
     className: 'text-right',
     Header: 'Credit Entitlement',
