@@ -22,3 +22,4 @@ from . import address_type
 from . import credit_transfer
 from . import sales_submission_credit_transaction
 from . import credit_transfer_credit_transaction
+from . import sales_submission_history
