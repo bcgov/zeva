@@ -1,9 +1,8 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
+import Button from '../../app/components/Button';
 import CustomPropTypes from '../../app/utilities/props';
-import history from '../../app/History';
 import SalesListTable from './SalesListTable';
 
 const SalesSubmissionDetailsPage = (props) => {
@@ -29,40 +28,16 @@ const SalesSubmissionDetailsPage = (props) => {
   const actionBar = (
     <div className="action-bar">
       <span className="left-content">
-        <button
-          className="button"
-          onClick={() => {
-            history.goBack();
-          }}
-          type="button"
-        >
-          <FontAwesomeIcon icon="arrow-left" /> Back
-        </button>
+        <Button buttonType="back" />
       </span>
       <span className="right-content">
-        <button
-          className="button"
-          type="button"
-          onClick={() => { clearFilters(); }}
-        >
-          Clear Filter
-        </button>
-        <button
-          className="button btn btn-outline-danger"
-          type="button"
-          onClick={() => { filterWarnings(); }}
-        >
-          View Warnings Only
-        </button>
-        <button
-          className="button primary"
-          onClick={() => {
+        <Button
+          buttonType="save"
+          action={() => {
             handleSubmit();
           }}
-          type="button"
-        >
-          <FontAwesomeIcon icon="save" /> Save
-        </button>
+          optionalClassname="button primary"
+        />
       </span>
     </div>
   );
@@ -92,9 +67,24 @@ const SalesSubmissionDetailsPage = (props) => {
       </div>
       )}
 
-      <div className="row">
-        <div className="col-sm-12">
-          {actionBar}
+      <div className="row mb-2">
+        <div className="col-sm-12 text-right">
+          <button
+            className="button btn btn-outline-danger d-inline-block align-middle mr-3"
+            onClick={() => { filterWarnings(); }}
+            type="button"
+          >
+            View Warnings Only
+          </button>
+
+          <button
+            className="button d-inline-block align-middle"
+            disabled={filtered.length === 0}
+            onClick={() => { clearFilters(); }}
+            type="button"
+          >
+            Clear Filters
+          </button>
         </div>
       </div>
 
@@ -113,7 +103,7 @@ const SalesSubmissionDetailsPage = (props) => {
       </div>
 
       <div className="row">
-        <div className="col-sm-12 mt-3">
+        <div className="col-sm-12">
           {actionBar}
         </div>
       </div>

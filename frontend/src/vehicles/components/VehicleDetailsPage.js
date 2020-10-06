@@ -2,7 +2,8 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-
+import moment from 'moment-timezone';
+import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
 import Loading from '../../app/components/Loading';
 import DetailField from '../../app/components/DetailField';
@@ -10,6 +11,8 @@ import history from '../../app/History';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 import getFileSize from '../../app/utilities/getFileSize';
 import CustomPropTypes from '../../app/utilities/props';
+import Alert from '../../app/components/Alert';
+import Comment from '../../app/components/Comment';
 
 const VehicleDetailsPage = (props) => {
   const {
@@ -26,11 +29,9 @@ const VehicleDetailsPage = (props) => {
   const [requestChangeCheck, setRequestChangeCheck] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
-
   if (loading) {
     return <Loading />;
   }
-
   const { id } = details;
   const handleChange = (event) => {
     setComments({ ...comments, vehicleComment: { comment: event.target.value } });
@@ -40,6 +41,7 @@ const VehicleDetailsPage = (props) => {
     const { checked } = event.target;
     if (checked) {
       setRequestChangeCheck(true);
+      setComments({ ...comments, vehicleComment: { comment: 'Please provide range test results.' } });
     } else {
       setRequestChangeCheck(false);
     }
@@ -49,7 +51,6 @@ const VehicleDetailsPage = (props) => {
   let handleSubmit = () => {};
   let buttonClass;
   let modalText;
-
   if (modalType === 'accept') {
     confirmLabel = 'Validate';
     handleSubmit = () => { requestStateChange('VALIDATED'); };
@@ -67,16 +68,34 @@ const VehicleDetailsPage = (props) => {
     modalText = 'Request range change/test results';
   }
 
+  let alertUser;
+
+  if (details.validationStatus === 'SUBMITTED') {
+    alertUser = details.createUser;
+  } else {
+    alertUser = details.updateUser;
+  }
+
   return (
     <div id="vehicle-validation" className="page">
-      <div className="row">
+      <div className="row mb-2">
         <div className="col-sm-12">
-          <h1>{title}</h1>
+          <h2>{title}</h2>
+          <Alert
+            alertType="vehicle"
+            status={details.validationStatus}
+            user={alertUser && alertUser.displayName ? alertUser.displayName : alertUser}
+            date={moment(details.updateTimestamp).format('MMM D, YYYY')}
+          />
         </div>
       </div>
 
       <div className="row align-items-center">
         <div className="col-md-12 col-lg-9 col-xl-7">
+          {details.validationStatus === 'CHANGES_REQUESTED' && user.isGovernment && details.vehicleComment
+          && (
+            <Comment comment={details.vehicleComment.comment} user={details.vehicleComment.createUser.displayName} date={moment(details.vehicleComment.createTimestamp).format('MMM D, YYYY')} />
+          )}
           <div className="form p-4">
             {user.isGovernment && (
               <DetailField label="Supplier" value={details.organization.shortName || details.organization.name} />
@@ -152,7 +171,7 @@ const VehicleDetailsPage = (props) => {
               Request range results and/or a change to the range value from the vehicle supplier, specify below.
             </div>
             <div>Add a comment to the vehicle supplier for request or rejection.</div>
-            <textarea className="form-control" rows="3" onChange={handleChange} />
+            <textarea className="form-control" rows="3" onChange={handleChange} defaultValue={comments.vehicleComment.comment} />
             <div className="text-right">
               <button className="button primary" disabled={!requestChangeCheck || !comments.vehicleComment} type="button" key="REQUEST" onClick={() => { setModalType('request'); setShowModal(true); }}>Request Range Change/Test Results</button>
             </div>
@@ -162,18 +181,14 @@ const VehicleDetailsPage = (props) => {
       )}
 
       <div className="row">
-        <div className="col-md-12 col-lg-9 col-xl-7">
+        <div className="col-12">
           <div className="action-bar">
             <span className="left-content">
-              <button
-                className="button"
-                onClick={() => {
-                  history.push(ROUTES_VEHICLES.LIST, locationState);
-                }}
-                type="button"
-              >
-                <FontAwesomeIcon icon="arrow-left" /> Back
-              </button>
+              <Button
+                buttonType="back"
+                locationRoute={ROUTES_VEHICLES.LIST}
+                locationState={locationState}
+              />
             </span>
             <span className="right-content">
               {['DRAFT', 'CHANGES_REQUESTED'].indexOf(details.validationStatus) >= 0
@@ -227,8 +242,7 @@ const VehicleDetailsPage = (props) => {
           >
             <div>
               <div><br /><br /></div>
-              <h4 className="d-inline">{modalText}
-              </h4>
+              <h3 className="d-inline">{modalText}</h3>
               <div><br /><br /></div>
             </div>
           </Modal>
@@ -256,11 +270,20 @@ VehicleDetailsPage.propTypes = {
   details: PropTypes.shape({
     actions: PropTypes.arrayOf(PropTypes.string),
     attachments: PropTypes.arrayOf(PropTypes.shape()),
+    createUser: PropTypes.oneOfType([
+      PropTypes.shape({
+        displayName: PropTypes.string,
+      }),
+      PropTypes.string,
+    ]),
     creditClass: PropTypes.string,
     creditValue: PropTypes.number,
     hasPassedUs06Test: PropTypes.bool,
     history: PropTypes.arrayOf(PropTypes.object),
-    id: PropTypes.any,
+    id: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.string,
+    ]),
     make: PropTypes.string,
     modelName: PropTypes.string,
     modelYear: PropTypes.shape({
@@ -275,6 +298,13 @@ VehicleDetailsPage.propTypes = {
     vehicleClassCode: PropTypes.shape({
       description: PropTypes.string,
     }),
+    updateUser: PropTypes.oneOfType([
+      PropTypes.shape({
+        displayName: PropTypes.string,
+      }),
+      PropTypes.string,
+    ]),
+    vehicleComment: PropTypes.shape(),
     vehicleZevType: PropTypes.shape({
       description: PropTypes.string,
       vehicleZevCode: PropTypes.string,

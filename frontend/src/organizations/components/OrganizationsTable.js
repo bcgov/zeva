@@ -83,7 +83,7 @@ const OrganizationsTable = (props) => {
     id: 'address',
   }];
 
-  const { items } = props;
+  const { filtered, items, setFiltered } = props;
 
   return (
     <ReactTable
@@ -92,6 +92,7 @@ const OrganizationsTable = (props) => {
       defaultSorted={[{
         id: 'displayName',
       }]}
+      filtered={filtered}
       getTrProps={(state, row) => {
         if (row && row.original) {
           return {
@@ -106,6 +107,7 @@ const OrganizationsTable = (props) => {
 
         return {};
       }}
+      setFiltered={setFiltered}
     />
   );
 };
@@ -114,6 +116,7 @@ OrganizationsTable.defaultProps = {
 };
 
 OrganizationsTable.propTypes = {
+  filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.number,
     organizationAddress: PropTypes.arrayOf(PropTypes.shape({
@@ -129,6 +132,7 @@ OrganizationsTable.propTypes = {
       }),
     })),
   })).isRequired,
+  setFiltered: PropTypes.func.isRequired,
 };
 
 export default OrganizationsTable;

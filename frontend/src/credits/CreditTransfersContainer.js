@@ -50,8 +50,8 @@ const CreditTransfersContainer = (props) => {
       debitFrom = fields.transferPartner;
     }
     const data = rows.map((row) => ({
-      numberOfCredits: row.quantity,
-      creditValue: row.value,
+      creditValue: row.quantity,
+      dollarValue: row.value,
       creditClass: row.creditType,
       creditTo,
       debitFrom,
@@ -60,7 +60,7 @@ const CreditTransfersContainer = (props) => {
       weightClass: 'LDV',
     }));
     axios.post(ROUTES_CREDITS.CREDIT_TRANSFERS_API, {
-      data,
+      content: data,
       status,
       creditTo,
       debitFrom,

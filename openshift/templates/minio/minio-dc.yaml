@@ -52,7 +52,11 @@ parameters:
     from: "[a-zA-Z0-9]{16}"
     generate: expression
     required: true      
-objects:
+  - name: OCP_NAME
+    displayName: Openshift Name
+    description: Openshift Name
+    required: true
+Objects:
   - apiVersion: v1
     kind: Secret
     metadata:
@@ -106,7 +110,7 @@ objects:
         env: ${ENV_NAME}
       name: ${NAME}-minio${SUFFIX}
     spec:
-      host: ${NAME}-minio${SUFFIX}.pathfinder.gov.bc.ca
+      host: ${NAME}-minio${SUFFIX}.${OCP_NAME}.gov.bc.ca
       port:
         targetPort: 9000-tcp
       tls:

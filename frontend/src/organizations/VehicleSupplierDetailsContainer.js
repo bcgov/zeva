@@ -20,21 +20,11 @@ const VehicleSupplierDetailsContainer = (props) => {
   const [display, setDisplay] = useState({});
   const { keycloak } = props;
 
-
   const refreshDetails = () => {
     setLoading(true);
 
     axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
-      setDetails({
-        ...response.data,
-        organizationAddress: {
-          ...response.data.organizationAddress,
-          addressLine_1: response.data.organizationAddress ? response.data.organizationAddress.addressLine1 : '',
-          addressLine_2: response.data.organizationAddress ? response.data.organizationAddress.addressLine2 : '',
-          addressLine_3: response.data.organizationAddress ? response.data.organizationAddress.addressLine3 : '',
-        },
-      });
-
+      setDetails(response.data);
       setDisplay(response.data);
 
       setLoading(false);
@@ -58,12 +48,8 @@ const VehicleSupplierDetailsContainer = (props) => {
   );
 
   return (
-    <div>
-      <div className="row">
-        <div className="col-sm-12">
-          <h1>{display.name}</h1>
-        </div>
-      </div>
+    <div className="page">
+      <h1 className="mb-2">{display.name}</h1>
       <VehicleSupplierTabs supplierId={details.id} active="supplier-info" />
       <VehicleSupplierDetailsPage
         details={details}

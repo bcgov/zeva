@@ -2,9 +2,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import moment from 'moment-timezone';
-
-import ButtonDelete from '../../app/components/ButtonDelete';
-import ButtonSubmit from '../../app/components/ButtonSubmit';
+import Alert from '../../app/components/Alert';
+import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
 import history from '../../app/History';
 import ROUTES_CREDITS from '../../app/routes/Credits';
@@ -20,9 +19,8 @@ const CreditRequestDetailsPage = (props) => {
     previousDateCurrentTo,
     submission,
     user,
-    validatedOnly,
   } = props;
-
+  const validatedOnly = submission.validationStatus === 'CHECKED';
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
   const [comment, setComment] = useState('');
@@ -30,7 +28,17 @@ const CreditRequestDetailsPage = (props) => {
   const serviceAddress = user.organization.organizationAddress.find((address) => address.addressType.addressType === 'Service');
   const recordsAddress = user.organization.organizationAddress.find((address) => address.addressType.addressType === 'Records');
 
+  const downloadErrors = (e) => {
+    const element = e.target;
+    const original = element.innerHTML;
+    element.firstChild.textContent = ' Downloading...';
+    return download(ROUTES_SALES.DOWNLOAD_ERRORS.replace(':id', submission.id), {}).then(() => {
+      element.innerHTML = original;
+    });
+  };
+
   let modalProps = {};
+
   switch (modalType) {
     case 'submit':
       modalProps = {
@@ -86,8 +94,8 @@ const CreditRequestDetailsPage = (props) => {
     >
       <div>
         <div><br /><br /></div>
-        <h4 className="d-inline">{modalProps.modalText}
-        </h4>
+        <h3 className="d-inline">{modalProps.modalText}
+        </h3>
         <div><br />{comment && (
         <p>Comment: {comment}</p>
         )}<br />
@@ -95,6 +103,8 @@ const CreditRequestDetailsPage = (props) => {
       </div>
     </Modal>
   );
+
+  const invalidSubmission = submission.content.some((row) => (row.warnings.includes('INVALID_MODEL')));
   const directorAction = user.isGovernment
   && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
   && user.hasPermission('SIGN_SALES');
@@ -105,10 +115,10 @@ const CreditRequestDetailsPage = (props) => {
   return (
     <div id="credit-request-details" className="page">
       {modal}
-      <div className="row">
+      <div className="row my-3">
         <div className="col-sm-12">
-          <h2 className="py-0">Application for Credits for Consumer Sales</h2>
-          <h3 className="py-0 mt-2 mb-0">
+          <h2>Application for Credits for Consumer Sales</h2>
+          <h3 className="mt-2">
             {submission.organization && `${submission.organization.name} `}
             ZEV Sales Submission {submission.submissionDate}
           </h3>
@@ -116,68 +126,59 @@ const CreditRequestDetailsPage = (props) => {
       </div>
       {analystAction
       && (
-      <div className="row mb-1">
+      <div className="row mb-2">
         <div className="col-sm-12">
           ICBC data current to: {previousDateCurrentTo}
         </div>
       </div>
       )}
-      {((
-        (directorAction || analystAction) && submission.validationStatus === 'RECOMMEND_APPROVAL'
-      ) || (user.isGovernment && submission.validationStatus === 'VALIDATED'))
-      && submission.salesSubmissionComment && (
-        <div className="row">
-          <div className="col-sm-12">
-            <div className="recommendation-comment p-2">
-              {submission.validationStatus === 'RECOMMEND_APPROVAL'
-              && (
-                <h5 className="d-inline mr-2">
-                  {submission.updateUser.displayName} recommended this submission be approved.
-                </h5>
-              )}
-              {(['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0) && submission.salesSubmissionComment
-              && (
-              <h5>
-                {submission.updateUser.displayName} has returned this submission.
-              </h5>
-              )}
-              {submission.salesSubmissionComment && (
-                submission.salesSubmissionComment.map((each) => (
-                  <div key={each.id}>
-                    <h5 className="d-inline mr-2">
-                      Comments from {each.createUser.displayName} {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}:
-                    </h5>
-                    <span>
-                      {each.comment}
-                    </span>
-                  </div>
-                ))
-              )}
-            </div>
+      <div className="row mb-2">
+        <div className="col-sm-12">
+          <div className="recommendation-comment p-2 m-0">
+            <Alert
+              isGovernment={user.isGovernment}
+              alertType="credit"
+              status={submission.validationStatus}
+              submission={submission}
+              date={moment(submission.updateTimestamp).format('MMM D, YYYY')}
+              icbcDate={moment(previousDateCurrentTo).format('MMM D, YYYY')}
+              invalidSubmission={invalidSubmission}
+            />
+            {submission.salesSubmissionComment && user.isGovernment && (
+              submission.salesSubmissionComment.map((each) => (
+                <div key={each.id}>
+                  <h4 className="d-inline mr-2">
+                    Comments from {each.createUser.displayName} {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}:
+                  </h4>
+                  <span>
+                    {each.comment}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
-      )}
+      </div>
+      {/* )} */}
       {!user.isGovernment && (
-        <div className="row">
+        <div className="row mb-3">
           <div className="col-sm-12">
-            <h5 className="d-inline-block sales-upload-grey">Service address: </h5>
-            {serviceAddress && <h5 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h5>}
+            <h4 className="d-inline-block sales-upload-grey">Service address: </h4>
+            {serviceAddress && <h4 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h4>}
             <br />
-            <h5 className="d-inline-block sales-upload-grey">Records address: </h5>
-            {recordsAddress && <h5 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h5>}
+            <h4 className="d-inline-block sales-upload-grey">Records address: </h4>
+            {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
           </div>
         </div>
       )}
       <div className="row">
         <div className="col-sm-12">
-          <div className="table">
-            <ModelListTable
-              items={submission.content}
-              user={user}
-              validatedOnly={validatedOnly}
-              validationStatus={submission.validationStatus}
-            />
-          </div>
+          <ModelListTable
+            items={submission.content}
+            user={user}
+            validatedOnly={validatedOnly}
+            validationStatus={submission.validationStatus}
+          />
         </div>
       </div>
       {user.isGovernment
@@ -193,17 +194,13 @@ const CreditRequestDetailsPage = (props) => {
         <div className="col-sm-12">
           <div className="action-bar mt-0">
             <span className="left-content">
-              <button
-                className="button"
-                onClick={() => {
-                  history.push(ROUTES_CREDITS.CREDIT_REQUESTS, locationState);
-                }}
-                type="button"
-              >
-                <FontAwesomeIcon icon="arrow-left" /> Back
-              </button>
+              <Button
+                buttonType="back"
+                locationRoute={(locationState && locationState.href) ? locationState.href : ROUTES_CREDITS.CREDIT_REQUESTS}
+                locationState={locationState}
+              />
               {submission.validationStatus === 'DRAFT' && (
-                <ButtonDelete action={() => { setModalType('delete'); setShowModal(true); }} />
+                <Button buttonType="delete" action={() => { setModalType('delete'); setShowModal(true); }} />
               )}
               {directorAction && (
                 <button
@@ -263,27 +260,34 @@ const CreditRequestDetailsPage = (props) => {
 
               {!user.isGovernment && (
                 <>
-                  {submission.validationStatus === 'VALIDATED' && submission.unselected > 0 && (
+                  {submission.validationStatus === 'VALIDATED' && (
+                    <Button
+                      buttonType="download"
+                      optionalText="Download Errors"
+                      optionalClassname="button primary"
+                      action={(e) => { downloadErrors(e); }}
+                      disabled={submission.unselected === 0}
+                    />
+                  )}
+                  {submission.validationStatus === 'DRAFT' && ([
                     <button
-                      className="button primary"
-                      onClick={(e) => {
-                        const element = e.target;
-                        const original = element.innerHTML;
-
-                        element.firstChild.textContent = ' Downloading...';
-
-                        return download(ROUTES_SALES.DOWNLOAD_ERRORS.replace(':id', submission.id), {}).then(() => {
-                          element.innerHTML = original;
-                        });
+                      className="button"
+                      key="edit"
+                      onClick={() => {
+                        const url = ROUTES_CREDITS.EDIT.replace(/:id/g, submission.id);
+                        history.push(url);
                       }}
                       type="button"
                     >
-                      <FontAwesomeIcon icon="download" /> Download Errors
-                    </button>
-                  )}
-                  {submission.validationStatus === 'DRAFT' && (
-                    <ButtonSubmit action={() => { setModalType('submit'); setShowModal(true); }} />
-                  )}
+                      <FontAwesomeIcon icon="edit" /> Edit
+                    </button>,
+                    <Button
+                      buttonType="submit"
+                      action={() => { setModalType('submit'); setShowModal(true); }}
+                      disabled={invalidSubmission}
+                      key="submit"
+                    />,
+                  ])}
                 </>
               )}
             </span>

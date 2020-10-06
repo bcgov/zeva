@@ -24,7 +24,7 @@ const UsersTable = (props) => {
     id: 'status',
   }];
 
-  const { items } = props;
+  const { filtered, items, setFiltered } = props;
 
   return (
     <ReactTable
@@ -33,6 +33,7 @@ const UsersTable = (props) => {
       defaultSorted={[{
         id: 'displayName',
       }]}
+      filtered={filtered}
       getTrProps={(state, row) => {
         if (row && row.original) {
           return {
@@ -46,6 +47,7 @@ const UsersTable = (props) => {
 
         return {};
       }}
+      setFiltered={setFiltered}
     />
   );
 };
@@ -54,7 +56,9 @@ UsersTable.defaultProps = {
 };
 
 UsersTable.propTypes = {
+  filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  setFiltered: PropTypes.func.isRequired,
 };
 
 export default UsersTable;

@@ -5,13 +5,12 @@ import { useDropzone } from 'react-dropzone';
 
 const FileDrop = (props) => {
   const { setFiles, maxFiles } = props;
-  const [dropMessage, setDropMessage] = useState(
-    'Drag and Drop files here',
-  );
+  const [dropMessage, setDropMessage] = useState('');
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > maxFiles) {
-      setDropMessage(`File upload is limited to ${maxFiles}. Please select again`);
+      setDropMessage(`Please select only ${maxFiles} file${maxFiles !== 1 ? 's' : ''}.`);
     } else {
+      setDropMessage('');
       setFiles(acceptedFiles);
     }
   }, []);
@@ -24,12 +23,10 @@ const FileDrop = (props) => {
       <div className="file-upload">
         <FontAwesomeIcon icon="upload" />
         <br />
-        {dropMessage}
-        {dropMessage === 'Drag and Drop files here' && (
-          <>
-            {' or '}
-            <br /> <button className="link" type="button">browse to select a file from your machine to upload</button>.
-          </>
+        Drag and Drop files here or <br />
+        <button className="link text-center" type="button">browse to select a file from your machine to upload.</button>
+        {dropMessage && (
+          <div id="danger-text">{dropMessage}</div>
         )}
       </div>
     </div>

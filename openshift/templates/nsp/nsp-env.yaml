@@ -11,9 +11,13 @@ parameters:
     displayName: Environment Name
     description: Environment Name
     required: true
+  - name: OCP_NAME
+    displayName: Openshift Name
+    description: Openshift Name
+    required: true
 objects:
   - kind: NetworkSecurityPolicy
-    apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+    apiVersion: secops.${OCP_NAME}.gov.bc.ca/v1alpha1
     metadata:
       name: custom-interweb-to-frontend
     spec:
@@ -26,7 +30,7 @@ objects:
           - role=frontend
           - env=${ENV_NAME}
   - kind: NetworkSecurityPolicy
-    apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+    apiVersion: secops.${OCP_NAME}.gov.bc.ca/v1alpha1
     metadata:
       name: custom-frontend-to-backend
     spec:
@@ -41,7 +45,7 @@ objects:
           - role=backend
           - env=${ENV_NAME}
   - kind: NetworkSecurityPolicy
-    apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+    apiVersion: secops.${OCP_NAME}.gov.bc.ca/v1alpha1
     metadata:
       name: custom-backend-to-patroni
     spec:
@@ -56,7 +60,7 @@ objects:
           - role=patroni
           - env=${ENV_NAME}        
   - kind: NetworkSecurityPolicy
-    apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+    apiVersion: secops.${OCP_NAME}.gov.bc.ca/v1alpha1
     metadata:
       name: custom-pods-to-ocp-api
     spec:
@@ -69,7 +73,7 @@ objects:
       destination:
         - - int:network=internal-cluster-api-endpoint
   - kind: NetworkSecurityPolicy
-    apiVersion: secops.pathfinder.gov.bc.ca/v1alpha1
+    apiVersion: secops.${OCP_NAME}.gov.bc.ca/v1alpha1
     metadata:
       name: custom-backend-to-keycloak
     spec:

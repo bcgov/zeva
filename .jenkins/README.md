@@ -12,6 +12,9 @@ Github Webhooks are only created during the PROD deployment.
 
 Windows users can just do the `cd` manually to the root folder of their repo and remove `$(git rev-parse --show-toplevel)/` from the commands below.
 
+# Update OCP Name
+Replace pathfinder with proper name in docker/contrib/jenkins/configuration/config.xml
+
 # Build
 ```
 ( cd "$(git rev-parse --show-toplevel)/.jenkins/.pipeline" && npm run build -- --pr=0 --dev-mode=true )

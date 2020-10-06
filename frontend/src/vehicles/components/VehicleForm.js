@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment-timezone';
 
-import history from '../../app/History';
+import Button from '../../app/components/Button';
 import AutocompleteInput from '../../app/components/AutocompleteInput';
 import ExcelFileDrop from '../../app/components/FileDrop';
 import Loading from '../../app/components/Loading';
@@ -13,6 +13,8 @@ import TextInput from '../../app/components/TextInput';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 import getFileSize from '../../app/utilities/getFileSize';
 import VehicleFormDropdown from './VehicleFormDropdown';
+import Alert from '../../app/components/Alert';
+import Comment from '../../app/components/Comment';
 
 const VehicleForm = (props) => {
   const {
@@ -37,8 +39,7 @@ const VehicleForm = (props) => {
     vehicleYears,
   } = props;
   const [showModal, setShowModal] = useState(false);
-
-  const modalText = setUploadFiles ? 'Submit vehicle model and range test results to government' : 'Submit ZEV model to government?';
+  const modalText = (fields && fields.hasPassedUs06Test) ? 'Submit vehicle model and range test results to government' : 'Submit ZEV model to government?';
   const modal = (
     <Modal
       confirmLabel=" Submit"
@@ -51,12 +52,12 @@ const VehicleForm = (props) => {
     >
       <div>
         <div><br /><br /></div>
-        <h4 className="d-inline">{modalText}
-        </h4>
+        <h3 className="d-inline">{modalText}</h3>
         <div><br /><br /></div>
       </div>
     </Modal>
   );
+
   const deleteFile = (attachmentId) => {
     setDeleteFiles([...deleteFiles, attachmentId]);
   };
@@ -73,22 +74,17 @@ const VehicleForm = (props) => {
   }
 
   const selectedZevType = fields.vehicleZevType.vehicleZevCode || fields.vehicleZevType;
-
   return (
     <div id="form" className="page">
-      <div className="row">
+      <div className="row mb-2">
         <div className="col-12">
-          <h1>{formTitle}</h1>
-          {status === 'CHANGES_REQUESTED'
+          <h2>{formTitle}</h2>
+          {fields.make
+            && <Alert alertType="vehicle" status={status} user={fields.user} date={moment(fields.updateTimestamp).format('MMM D, YYYY')} />}
+          {status === 'CHANGES_REQUESTED' && vehicleComment
           && (
-          <div>
-            <h6 className="request-changes-vehicle">Range test results have been requested by government</h6>
-            {vehicleComment && (
-            <h6>
-              <b>Comment from {vehicleComment.createUser && vehicleComment.createUser.displayName}, {moment(vehicleComment.createTimestamp).format('MMM d, YYYY')}: </b>
-              {vehicleComment.comment}
-            </h6>
-            )}
+          <div className="px-3">
+            <Comment comment={vehicleComment.comment} user={vehicleComment.createUser.displayName} date={moment(vehicleComment.createTimestamp).format('MMM D, YYYY')} />
           </div>
           )}
         </div>
@@ -96,7 +92,7 @@ const VehicleForm = (props) => {
 
       <form onSubmit={(event) => handleSubmit(event)}>
         <div className="row">
-          <div className="col-lg-6">
+          <div className="col-xl-6 col-lg-12">
             <fieldset>
               <VehicleFormDropdown
                 accessor={(model) => model.name}
@@ -184,7 +180,7 @@ const VehicleForm = (props) => {
                 id="weightKg"
                 label="GVWR (kg)"
                 mandatory
-                maxnum={3855}
+                maxnum={3856}
                 name="weightKg"
                 num
               />
@@ -192,8 +188,8 @@ const VehicleForm = (props) => {
           </div>
 
           {(fields.hasPassedUs06Test || (status === 'CHANGES_REQUESTED' && setUploadFiles)) && (
-            <div className="col-lg-6">
-              <h3 className="font-weight-bold mt-2">Upload range test results</h3>
+            <div className="col-xl-6 col-lg-12 mt-2 mt-xl-0">
+              <h3 className="font-weight-bold mb-2">Upload range test results</h3>
               <fieldset>
                 <div className="form-group row">
                   <label className="col-sm-3 col-form-label" htmlFor="file-upload">
@@ -307,29 +303,17 @@ const VehicleForm = (props) => {
           <div className="col-12">
             <div className="action-bar form-group row">
               <span className="left-content">
-                <button
-                  className="button"
-                  type="button"
-                  onClick={() => {
-                    history.push(ROUTES_VEHICLES.LIST);
-                  }}
-                >
-                  <FontAwesomeIcon icon="arrow-left" /> Back
-                </button>
+                <Button buttonType="back" locationRoute={ROUTES_VEHICLES.LIST} />
               </span>
 
               <span className="right-content">
-                <button className="button" type="submit">
-                  <FontAwesomeIcon icon="save" /> Save Draft
-                </button>
-                <button
-                  className="button primary"
-                  disabled={fields.hasPassedUs06Test && files.length === 0 && (!fields.attachments || fields.attachments.length <= deleteFiles.length)}
-                  onClick={() => { setShowModal(true); }}
-                  type="button"
-                >
-                  <FontAwesomeIcon icon="paper-plane" /> Submit
-                </button>
+                <Button buttonType="save" optionalText="Save Draft" action={(e) => { handleSubmit(e); }} />
+                <Button
+                  buttonType="submit"
+                  disabled={fields.hasPassedUs06Test && files.length === 0 && (!fields.attachments
+                    || fields.attachments.length <= deleteFiles.length)}
+                  action={() => { setShowModal(true); }}
+                />
               </span>
             </div>
             {modal}
@@ -348,6 +332,7 @@ VehicleForm.defaultProps = {
   setDeleteFiles: null,
   setUploadFiles: null,
   showProgressBars: false,
+  status: undefined,
   vehicleComment: {},
 };
 
@@ -366,7 +351,7 @@ VehicleForm.propTypes = {
   setFields: PropTypes.func.isRequired,
   setUploadFiles: PropTypes.func,
   showProgressBars: PropTypes.bool,
-  status: PropTypes.string.isRequired,
+  status: PropTypes.string,
   vehicleTypes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleClasses: PropTypes.arrayOf(PropTypes.shape()).isRequired,

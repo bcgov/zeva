@@ -1,0 +1,16 @@
+.status-alert {
+    display: flex;
+    flex-direction: row;
+    padding: 1rem .5rem;
+    border: 1px solid $default-text-black;
+    color: $default-text-black;
+    margin: 0.5rem 0;
+    span {
+      margin-top: auto;
+      margin-bottom: auto;
+      svg {
+        margin-left: 1rem;
+        margin-right: 1rem;
+      }
+    }
+}

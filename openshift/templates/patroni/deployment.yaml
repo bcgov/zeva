@@ -47,9 +47,13 @@ objects:
   spec:
     ports:
     - port: 5432
-#      name: 'postgresql'
+      name: postgresql
       protocol: TCP
       targetPort: 5432
+    - port: 8008
+      name: health
+      protocol: TCP
+      targetPort: 8008
     selector:
       cluster-name: ${NAME}${SUFFIX}
       role: master

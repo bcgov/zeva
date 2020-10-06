@@ -39,6 +39,10 @@ parameters:
     displayName: 
     description: readyness and liveness initial delay seconds
     required: true     
+  - name: OCP_NAME
+    displayName: Openshift name
+    description: Openshift name
+    required: true 
 objects:
   - kind: DeploymentConfig
     apiVersion: apps.openshift.io/v1
@@ -174,7 +178,7 @@ objects:
       name: schemaspy-public${SUFFIX}
       creationTimestamp:
     spec:
-      host: schemaspy-public${SUFFIX}.pathfinder.gov.bc.ca
+      host: schemaspy-public${SUFFIX}.${OCP_NAME}.gov.bc.ca
       to:
         kind: Service
         name: schemaspy-public${SUFFIX}

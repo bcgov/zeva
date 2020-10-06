@@ -20,7 +20,7 @@ const Modal = (props) => {
       <div className={`modal-dialog ${modalClass}`} role="document">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">{title}</h5>
+            <h3 className="modal-title">{title}</h3>
             <button
               aria-label="Close"
               className="close"
@@ -59,6 +59,7 @@ const Modal = (props) => {
 };
 
 Modal.defaultProps = {
+  children: undefined,
   icon: '',
   cancelLabel: 'Cancel',
   confirmClass: 'btn-outline-primary',
@@ -72,7 +73,7 @@ Modal.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
-  ]).isRequired,
+  ]),
   confirmClass: PropTypes.string,
   confirmLabel: PropTypes.string,
   handleCancel: PropTypes.func.isRequired,

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import Button from '../../app/components/Button';
 import TextInput from '../../app/components/TextInput';
 import Loading from '../../app/components/Loading';
 import Modal from '../../app/components/Modal';
@@ -61,13 +61,6 @@ const VehicleSupplierEditForm = (props) => {
     };
   }
 
-  let addressDisplay = {};
-  if (display.organizationAddress) {
-    addressDisplay = {
-      ...display.organizationAddress,
-    };
-  }
-
   if (loading) {
     return <Loading />;
   }
@@ -75,125 +68,118 @@ const VehicleSupplierEditForm = (props) => {
     <div id="form" className="page">
       <div className="row">
         <div className="col-md-12">
-          <h4>{newSupplier ? 'Add' : 'Edit'} Supplier</h4>
-          <h5>{display.name} {display.shortName && `(${display.shortName})`}</h5>
-          {display.organizationAddress && (
-          <p>
-            {addressDisplay.addressLine_1} {addressDisplay.addressLine_2} {addressDisplay.city} {addressDisplay.state} {addressDisplay.postalCode}
-          </p>
+          <h2 className="mb-2">{newSupplier ? 'Add' : 'Edit'} Supplier</h2>
+          {display && (
+            <h3 className="mb-2">{display.name} {display.shortName && `(${display.shortName})`}</h3>
           )}
         </div>
       </div>
       <form onSubmit={(event) => handleSubmit(event)}>
         <div className="row align-items-center">
-          <fieldset className="col-lg-12 col-xl-11">
-            <div className="form-layout row">
-              <div className="col-lg-12">
-                <div className="form-group row">
-                  <label
-                    className="col-sm-3 col-form-label"
-                    htmlFor="active"
-                  >
-                    Supplier Status
-                  </label>
-                  <div className="col-sm-9" id="radio">
-                    <div>
-                      <input
-                        type="radio"
-                        id="active"
-                        onChange={() => {
-                          setDetails({
-                            ...details,
-                            isActive: true,
-                          });
-                        }}
-                        name="isActive"
-                        value="true"
-                        checked={details.isActive === true}
-                      />
-                      Actively supplying vehicles in B.C.
+          <div className="col-lg-12 col-xl-11">
+            <fieldset>
+              <div className="form-layout row">
+                <div className="col-lg-12">
+                  <div className="form-group row">
+                    <label
+                      className="col-sm-3 col-form-label"
+                      htmlFor="active"
+                    >
+                      Supplier Status
+                    </label>
+                    <div className="col-sm-9" id="radio">
+                      <div>
+                        <input
+                          type="radio"
+                          id="active"
+                          onChange={() => {
+                            setDetails({
+                              ...details,
+                              isActive: true,
+                            });
+                          }}
+                          name="isActive"
+                          value="true"
+                          checked={details.isActive === true}
+                        />
+                        Actively supplying vehicles in B.C.
+                      </div>
+                      <div>
+                        <input
+                          type="radio"
+                          id="inactive"
+                          onChange={() => setShowModal(true)}
+                          name="isActive"
+                          value="false"
+                          checked={details.isActive === false}
+                        />
+                        Inactive
+                      </div>
                     </div>
-                    <div>
-                      <input
-                        type="radio"
-                        id="inactive"
-                        onChange={() => setShowModal(true)}
-                        name="isActive"
-                        value="false"
-                        checked={details.isActive === false}
-                      />
-                      Inactive
-                    </div>
+                    {setShowModal && modal}
                   </div>
-                  {setShowModal && modal}
-                </div>
 
-                <TextInput
-                  labelSize="col-sm-3 col-form-label"
-                  inputSize="col-sm-7"
-                  defaultValue={details.name}
-                  errorMessage={'name' in errorFields && errorFields.name}
-                  handleInputChange={handleInputChange}
-                  id="LegalOrganizationName"
-                  label="Legal Organization Name"
-                  mandatory
-                  name="name"
-                />
-                <TextInput
-                  labelSize="col-sm-3 col-form-label"
-                  inputSize="col-sm-7"
-                  defaultValue={details.shortName}
-                  errorMessage={'shortName' in errorFields && errorFields.shortName}
-                  handleInputChange={handleInputChange}
-                  id="CommonName"
-                  label="Common Name"
-                  name="shortName"
-                />
-                <div className="row">
-                  <div className="col-lg-7 col-md-6">
-                    <AddressForm
-                      addressDetails={addressDetails}
-                      addressType="Service"
-                      errorFields={errorFields}
-                      handleAddressChange={handleAddressChange}
-                      type="Service"
-                    />
-                  </div>
-                  <div className="d-sm-block d-md-none">&nbsp;</div>
-                  <div className="col-lg-5 col-md-6">
-                    <AddressForm
-                      addressDetails={addressDetails}
-                      addressType="Records"
-                      errorFields={errorFields}
-                      handleAddressChange={handleAddressChange}
-                      serviceSame={serviceSame}
-                      setServiceSame={setServiceSame}
-                      type="Records"
-                    />
+                  <TextInput
+                    labelSize="col-sm-3 col-form-label"
+                    inputSize="col-sm-7"
+                    defaultValue={details.name}
+                    errorMessage={'name' in errorFields && errorFields.name}
+                    handleInputChange={handleInputChange}
+                    id="LegalOrganizationName"
+                    label="Legal Organization Name"
+                    mandatory
+                    name="name"
+                  />
+                  <TextInput
+                    labelSize="col-sm-3 col-form-label"
+                    inputSize="col-sm-7"
+                    defaultValue={details.shortName}
+                    errorMessage={'shortName' in errorFields && errorFields.shortName}
+                    handleInputChange={handleInputChange}
+                    id="CommonName"
+                    label="Common Name"
+                    name="shortName"
+                  />
+                  <div className="row">
+                    <div className="col-lg-7 col-md-6 pr-0">
+                      <AddressForm
+                        addressDetails={addressDetails}
+                        addressType="Service"
+                        errorFields={errorFields}
+                        handleAddressChange={handleAddressChange}
+                        type="Service"
+                      />
+                    </div>
+                    <div className="d-sm-block d-md-none">&nbsp;</div>
+                    <div className="col-lg-5 col-md-6">
+                      <AddressForm
+                        addressDetails={addressDetails}
+                        addressType="Records"
+                        errorFields={errorFields}
+                        handleAddressChange={handleAddressChange}
+                        serviceSame={serviceSame}
+                        setServiceSame={setServiceSame}
+                        type="Records"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="action-bar form-group row">
+            </fieldset>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-12">
+            <div className="action-bar">
               <span className="left-content">
-                <button
-                  className="button"
-                  type="button"
-                  onClick={() => {
-                    History.goBack();
-                  }}
-                >
-                  <FontAwesomeIcon icon="arrow-left" /> Back
-                </button>
+                <Button buttonType="back" />
               </span>
 
               <span className="right-content">
-                <button className="button primary" type="button" onClick={handleSubmit}>
-                  <FontAwesomeIcon icon="save" /> Save
-                </button>
+                <Button buttonType="save" optionalClassname="button primary" action={() => { handleSubmit(); }} />
               </span>
             </div>
-          </fieldset>
+          </div>
         </div>
       </form>
     </div>

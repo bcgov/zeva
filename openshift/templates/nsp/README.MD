@@ -7,11 +7,11 @@
 
 ### Apply to name spaces before anything else
 
-* oc process -f ./nsp-tools.yaml | oc create -f - -n tbiwaq-tools
-* oc process -f ./quickstart-nsp.yaml | oc create -f - -n tbiwaq-tools
-* oc process -f ./quickstart-nsp.yaml | oc create -f - -n tbiwaq-dev
-* oc process -f ./quickstart-nsp.yaml | oc create -f - -n tbiwaq-test
-* oc process -f ./quickstart-nsp.yaml | oc create -f - -n tbiwaq-prod
+* oc process -f ./nsp-tools.yaml OCP_NAME=pathfinder | oc create -f - -n tbiwaq-tools
+* oc process -f ./quickstart-nsp.yaml ENV_NAME=tools OCP_NAME=pathfinder | oc create -f - -n tbiwaq-tools
+* oc process -f ./quickstart-nsp.yaml ENV_NAME=dev OCP_NAME=pathfinder | oc create -f - -n tbiwaq-dev
+* oc process -f ./quickstart-nsp.yaml ENV_NAME=test OCP_NAME=pathfinder | oc create -f - -n tbiwaq-test
+* oc process -f ./quickstart-nsp.yaml ENV_NAME=prod OCP_NAME=pathfinder | oc create -f - -n tbiwaq-prod
 
 ### Add role to users, check if the settings already exist before run the grant
 

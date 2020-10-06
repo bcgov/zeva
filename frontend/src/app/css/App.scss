@@ -39,6 +39,8 @@
 
 /* variables for colours */
 $alert-danger: #721c24;
+$background-danger: #FFF1F2;
+$background-warning: #FFFED2;
 $border-grey: #E0E0E0;
 $default-background-blue: #38598A;
 $default-background-grey: #F2F2F2;
@@ -90,6 +92,7 @@ p {
   }
 }
 
+
 .action-bar {
   background-color: $default-background-grey;
   display: flex;
@@ -97,6 +100,10 @@ p {
   margin: 1rem 0 0;
   padding: 1rem;
   text-align: right;
+
+  &.no-bg {
+    background-color: transparent;
+  }
 
   > * {
     align-self: center;
@@ -111,20 +118,23 @@ p {
     margin-left: 1rem;
     white-space: nowrap;
     align-self: center;
-
   }
 
   #supplier {
     width: auto;
   }
 
-  .button svg {
-    margin-right: 0.25rem;
-  }
+
 
   label {
     margin-top: 1rem;
     margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .right-content > * {
+      margin-left: 0;
+    }
   }
 }
 
@@ -132,6 +142,10 @@ p {
   .alert-heading {
     color: $alert-danger;
   }
+}
+
+.background-danger {
+  background-color: $background-danger !important;
 }
 
 .btn {
@@ -162,10 +176,14 @@ p {
   border-radius: 0.2rem;
   color: $primary-blue;
   padding: 0.5rem 1rem;
+  
+  svg {
+    margin-right: 0.25rem;
+  }
 
   &:disabled {
     background-color: $default-background-grey;
-    color: desaturate($primary-blue, 50%);
+    opacity: 0.6;
   }
 
   &.primary {
@@ -174,7 +192,6 @@ p {
   }
 
   &.primary:disabled {
-    // background-color: desaturate($default-background-blue, 50%);
     background-color: rgba(56, 89, 138, .5);
     color: $white;
     border-color: transparent;
@@ -183,10 +200,6 @@ p {
   &.text-danger {
     border-color: $red;
   }
-}
-
-.button-icon {
-  margin: auto .25rem auto 0;
 }
 
 .link {
@@ -229,31 +242,37 @@ p {
 }
 
 .page {
-  padding: 1rem 0 0;
+  padding: 0;
 
   h1 {
-    color: $default-text-blue;
     font-size: 2rem;
-    font-weight: bold;
   }
 
   h2 {
-    color: $default-text-blue;
     font-size: 1.5rem;
-    font-weight: bold;
-    padding-bottom: 1rem;
-    padding-top: 1rem;
   }
 
   h3 {
     font-size: 1.25rem;
-    font-weight: bold;
-    padding-bottom: 0.5rem;
-    padding-top: 0.5rem;
   }
 
-  h3, h4, h5, h6 {
+  h4 {
+    font-size: 1rem;
+  }
+
+  h5 {
+    font-size: .75rem;
+  }
+
+  h6 {
+    font-size: .5rem;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
     color: $default-text-blue;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
   }
 }
 

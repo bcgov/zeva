@@ -29,6 +29,14 @@ class BaseSerializer():
 
         return obj.update_user
 
+    def get_create_user(self, obj):
+        user_profile = UserProfile.objects.filter(username=obj.create_user)
+        if user_profile.exists():
+            serializer = MemberSerializer(user_profile.first(), read_only=True)
+            return serializer.data
+        return obj.create_user
+
+
     def get_validation_status(self, obj):
         request = self.context.get('request')
 
@@ -60,22 +68,34 @@ class SalesSubmissionListSerializer(
     def get_total_a_credits(self, obj):
         total = 0
 
-        for record in obj.records.all():
-            credit_class = record.vehicle.get_credit_class()
+        records = obj.records.all()
 
-            if credit_class == 'A':
-                total += record.vehicle.get_credit_value()
+        if not records:
+            records = obj.content.all()
+
+        for record in records:
+            if record.vehicle:
+                credit_class = record.vehicle.get_credit_class()
+
+                if credit_class == 'A':
+                    total += record.vehicle.get_credit_value()
 
         return round(total, 2)
 
     def get_total_b_credits(self, obj):
         total = 0
 
-        for record in obj.records.all():
-            credit_class = record.vehicle.get_credit_class()
+        records = obj.records.all()
 
-            if credit_class == 'B':
-                total += record.vehicle.get_credit_value()
+        if not records:
+            records = obj.content.all()
+
+        for record in records:
+            if record.vehicle:
+                credit_class = record.vehicle.get_credit_class()
+
+                if credit_class == 'B':
+                    total += record.vehicle.get_credit_value()
 
         return round(total, 2)
 
@@ -95,7 +115,7 @@ class SalesSubmissionListSerializer(
 
         if obj.validation_status in valid_statuses:
             for row in obj.content.all():
-                if len(row.warnings) > 0:
+                if len(row.warnings) > 0 and row.record_of_sale is None:
                     warnings += 1
 
         return warnings
@@ -124,6 +144,7 @@ class SalesSubmissionSerializer(
     sales_submission_comment = SerializerMethodField()
     update_user = SerializerMethodField()
     validation_status = SerializerMethodField()
+    create_user = SerializerMethodField()
 
     def get_content(self, instance):
         request = self.context.get('request')
@@ -156,6 +177,7 @@ class SalesSubmissionSerializer(
             'id', 'validation_status', 'organization', 'submission_date',
             'submission_sequence', 'content', 'submission_id',
             'sales_submission_comment', 'update_user', 'unselected',
+             'update_timestamp', 'create_user'
         )
 
 

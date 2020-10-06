@@ -7,7 +7,7 @@ from pickle import PickleError
 import magic
 
 from dateutil.parser import parse
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, PermissionDenied
 
 import xlrd
 import xlwt
@@ -188,26 +188,49 @@ def create_sales_spreadsheet(organization, stream):
 
 
 def ingest_sales_spreadsheet(
-        data, requesting_user=None, skip_authorization=False
+        data, user=None, skip_authorization=False,
+        submission_id=None
 ):
     workbook = xlrd.open_workbook(file_contents=data)
 
     if skip_authorization is True:
         workbook = xlrd.open_workbook(file_contents=data)
         organization = get_organization(workbook)
-        user = 'SYSTEM'
+        username = 'SYSTEM'
     else:
-        organization = requesting_user.organization
-        user = requesting_user.username
+        organization = user.organization
+        username = user.username
 
-    submission = SalesSubmission.objects.create(
-        create_user=user,
-        update_user=user,
-        organization=organization,
-        submission_sequence=SalesSubmission.next_sequence(
-            organization, datetime.now()
+    # Enable this when we finally get our permissions correct
+    # if not skip_authorization and not user.has_perm('CREATE_SALES'):
+    #     raise PermissionDenied(
+    #         'You do not have permissions to upload new sales'
+    #     )
+
+    if not submission_id:
+        submission = SalesSubmission.objects.create(
+            create_user=username,
+            update_user=username,
+            organization=organization,
+            submission_sequence=SalesSubmission.next_sequence(
+                organization, datetime.now()
+            )
         )
-    )
+    else:
+        submission = SalesSubmission.objects.get(
+            id=submission_id,
+            organization_id=organization.id
+        )
+
+        # Enable this when we finally get our permissions correct
+        # if not user.has_perm('EDIT_SALES'):
+        #     raise PermissionDenied(
+        #         'You do not have permission to edit the sales submission'
+        #     )
+
+        SalesSubmissionContent.objects.filter(
+            submission_id=submission_id
+        ).delete()
 
     sheet = workbook.sheet_by_name('ZEV Sales')
 
@@ -266,7 +289,13 @@ def validate_xls_file(file):
 
 
 def validate_spreadsheet(data, user_organization=None, skip_authorization=False):
-    workbook = xlrd.open_workbook(file_contents=data)
+    try:
+        workbook = xlrd.open_workbook(file_contents=data)
+    except XLRDError:
+        raise ValidationError(
+            'Invalid File Type. '
+            'Please download the template again and try again.'
+        )
 
     organization = get_organization(workbook)
 
@@ -409,7 +438,7 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
         error = ''
 
         if 'DUPLICATE_VIN' in content.warnings:
-            error += 'VIN has already been validated before; '
+            error += 'VIN contains duplicates; '
 
         if 'EXPIRED_REGISTRATION_DATE' in content.warnings:
             error += 'retail sales date and registration date greater ' \
@@ -420,6 +449,9 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
                         'format; '
 
         if 'INVALID_MODEL' in content.warnings:
+            error += 'invalid make, model and year combination; '
+
+        if 'MODEL_MISMATCHED' in content.warnings:
             error += 'unmatched data; '
 
         if 'NO_ICBC_MATCH' in content.warnings:
@@ -438,7 +470,9 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
         )
 
         if content.xls_model_year is not None:
-            worksheet.write(row, 0, int(float(content.xls_model_year)), style=LOCKED)
+            worksheet.write(
+                row, 0, int(float(content.xls_model_year)), style=LOCKED
+            )
         worksheet.write(row, 1, content.xls_make, style=LOCKED)
         worksheet.write(row, 2, content.xls_model, style=LOCKED)
         worksheet.write(row, 3, content.xls_vin, style=LOCKED)

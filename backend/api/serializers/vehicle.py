@@ -144,6 +144,7 @@ class VehicleSerializer(
     update_user = SerializerMethodField()
     organization = OrganizationSerializer()
     vehicle_comment = SerializerMethodField()
+    create_user = SerializerMethodField()
 
     def get_actions(self, instance):
         request = self.context.get('request')
@@ -191,6 +192,15 @@ class VehicleSerializer(
             return instance.get_credit_value()
 
         return None
+
+    def get_create_user(self, obj):
+        user_profile = UserProfile.objects.filter(username=obj.create_user)
+
+        if user_profile.exists():
+            serializer = MemberSerializer(user_profile.first(), read_only=True)
+            return serializer.data
+
+        return obj.create_user
     
     def get_update_user(self, obj):
         user_profile = UserProfile.objects.filter(username=obj.update_user)
@@ -220,7 +230,7 @@ class VehicleSerializer(
             'id', 'actions', 'history', 'make', 'model_name', 'model_year',
             'range', 'validation_status', 'vehicle_class_code', 'weight_kg',
             'vehicle_zev_type', 'credit_class', 'credit_value',
-            'vehicle_comment', 'attachments', 'update_user',
+            'vehicle_comment', 'attachments', 'update_user', 'create_user',
             'update_timestamp', 'organization', 'has_passed_us_06_test',
         )
         read_only_fields = ('validation_status',)
@@ -349,10 +359,9 @@ class VehicleMinSerializer(
 
     def get_credit_class(self, instance):
         request = self.context.get('request')
-
         if instance.validation_status == \
                 VehicleDefinitionStatuses.VALIDATED or \
-                request.user.is_government:
+                (request and request.user and request.user.is_government):
             return instance.get_credit_class()
 
         return None
@@ -362,7 +371,7 @@ class VehicleMinSerializer(
 
         if instance.validation_status == \
                 VehicleDefinitionStatuses.VALIDATED or \
-                request.user.is_government:
+                (request and request.user and request.user.is_government):
             return instance.get_credit_value()
 
         return None

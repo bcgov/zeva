@@ -28,6 +28,12 @@ const SalesSubmissionDetailsContainer = (props) => {
 
       const validatedRecords = data.content.filter(
         (record) => {
+          if (record.warnings && record.warnings.some((warning) => [
+            'DUPLICATE_VIN', 'INVALID_MODEL', 'VIN_ALREADY_AWARDED',
+          ].indexOf(warning) >= 0)) {
+            return false;
+          }
+
           if (data.validationStatus === 'CHECKED') {
             return record.recordOfSale;
           }
@@ -60,8 +66,7 @@ const SalesSubmissionDetailsContainer = (props) => {
       records: validatedList,
       validationStatus: 'CHECKED',
     }).then(() => {
-      const url = ROUTES_CREDITS.VALIDATED_CREDIT_REQUEST_DETAILS.replace(/:id/g, submission.id);
-
+      const url = ROUTES_CREDITS.CREDIT_REQUEST_DETAILS.replace(/:id/g, submission.id);
       history.push(url);
     });
   };

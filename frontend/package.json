@@ -1,6 +1,6 @@
 {
   "name": "zeva-frontend",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
@@ -44,6 +44,7 @@
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
     "storybook": "^6.0.16",
+    "toastr": "^2.1.4",
     "winston": "^3.2.1"
   },
   "devDependencies": {
@@ -55,6 +56,7 @@
     "@storybook/addon-actions": "^6.0.16",
     "@storybook/addon-essentials": "^6.0.16",
     "@storybook/addon-links": "^6.0.16",
+    "@storybook/addon-storyshots": "^6.0.22",
     "@storybook/react": "^6.0.16",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",

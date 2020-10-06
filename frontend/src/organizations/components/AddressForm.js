@@ -26,19 +26,21 @@ const AddressForm = (props) => {
     secondaryText = '';
   }
   return (
-    <span>
+    <>
       <div className="form-group">
-        <label className="d-lg-block d-xl-inline d-md-block">{title}</label>
-        {type === 'Sercice' && <h6 className="d-lg-block d-xl-inline"> {secondaryText}</h6>}
+        <h3 className="d-lg-block d-xl-inline d-md-block mr-3">{title}</h3>
+        {type === 'Service' && (
+          <span className="d-lg-block d-xl-inline-block">
+            <h3 className="d-inline-block"> {secondaryText}</h3>
+          </span>
+        )}
 
         {type === 'Records' && (
-        <span className="d-lg-block d-xl-inline">
-          <span className="d-inline-block">
-            <input type="checkbox" id="records-address-checkbox" onChange={(event) => { handleCheckboxClick(event); }} />
-          </span>
-          <h6 className="d-inline-block" htmlFor="records-address">
+        <span className="d-lg-block d-xl-inline-block">
+          <input className="d-inline-block align-middle" type="checkbox" id="records-address-checkbox" onChange={(event) => { handleCheckboxClick(event); }} />
+          <h3 className="d-inline-block" htmlFor="records-address">
             same as service address
-          </h6>
+          </h3>
         </span>
         )}
       </div>
@@ -126,7 +128,7 @@ const AddressForm = (props) => {
         name={`${type}_postalCode`}
         serviceSame={serviceSame}
       />
-    </span>
+    </>
   );
 };
 AddressForm.defaultProps = {

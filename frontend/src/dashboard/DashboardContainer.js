@@ -2,7 +2,7 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import moment from 'moment-timezone';
 import axios from 'axios';
 import CustomPropTypes from '../app/utilities/props';
@@ -28,6 +28,7 @@ const DashboardContainer = (props) => {
     transfersRecorded: 0,
   });
   const [loading, setLoading] = useState(true);
+  const isMountedRef = useRef(null);
 
   const getBCEIDActivityCount = (salesResponse, vehiclesResponse, transfersResponse) => {
     const date3months = moment().subtract(3, 'months').calendar();
@@ -104,6 +105,10 @@ const DashboardContainer = (props) => {
       axios.get(ROUTES_VEHICLES.LIST),
       axios.get(ROUTES_CREDITS.CREDIT_TRANSFERS_API),
     ]).then(axios.spread((salesResponse, vehiclesResponse, transfersResponse) => {
+      if (!isMountedRef.current) {
+        return false;
+      }
+
       if (!user.isGovernment) {
         getBCEIDActivityCount(salesResponse, vehiclesResponse, transfersResponse);
       } else {
@@ -114,7 +119,12 @@ const DashboardContainer = (props) => {
   };
 
   useEffect(() => {
-    refreshList(true);
+    isMountedRef.current = true;
+    refreshList(isMountedRef.current);
+
+    return () => {
+      isMountedRef.current = false;
+    };
   }, []);
 
   return (

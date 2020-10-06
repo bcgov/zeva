@@ -7,7 +7,6 @@ import { Route, Router as BrowserRouter } from 'react-router-dom';
 import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
 import OrganizationListContainer from '../organizations/OrganizationListContainer';
-import UserDetailsContainer from '../organizations/UserDetailsContainer';
 import VehicleSupplierCreditTransactionListContainer from '../organizations/VehicleSupplierCreditTransactionListContainer';
 import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
 import VehicleSupplierEditContainer from '../organizations/VehicleSupplierEditContainer';
@@ -206,10 +205,6 @@ class Router extends Component {
                 render={() => <UserEditContainer keycloak={keycloak} user={user} />}
               />
               <Route
-                path={ROUTES_USERS.DETAILS}
-                render={() => <UserDetailsContainer keycloak={keycloak} user={user} />}
-              />
-              <Route
                 exact
                 path={ROUTES_CREDITS.LIST}
                 render={() => <CreditsContainer keycloak={keycloak} user={user} />}
@@ -235,10 +230,9 @@ class Router extends Component {
                 render={() => <CreditTransfersContainer keycloak={keycloak} user={user} />}
               />
               <Route
-                path={ROUTES_CREDITS.VALIDATED_CREDIT_REQUEST_DETAILS}
-                render={() => (
-                  <CreditRequestDetailsContainer keycloak={keycloak} user={user} validatedOnly />
-                )}
+                exact
+                path={ROUTES_CREDITS.EDIT}
+                render={() => <SalesSubmissionContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 path={ROUTES_CREDITS.SALES_SUBMISSION_DETAILS}

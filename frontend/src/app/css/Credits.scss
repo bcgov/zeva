@@ -1,6 +1,3 @@
-h2 {
-  margin-bottom:0
-}
 #balance {
   font-weight: bold;
   margin-bottom: 1rem;
@@ -36,37 +33,58 @@ h2 {
 
 #upload-verification-data {
   label {
-    margin-top: 2vh;
     font-weight: bold;
-    color:$default-text-blue;
+    color: $default-text-blue;
     text-align: center;
   }
-
-  #date-label {
-    padding-left: 15px;
-    width:100%;
-    text-align: left;
-    margin-bottom: 0;
-  }  
 
   div.check {
     color:green;
     text-align: center;
   }
 
-
   input[type="date"] {
-    position: relative;
-    padding: 10px;
-    margin: 5px 0 0 10px;
+    border-radius: 5px;
     border: 2px solid #616161;
-    border-radius: 5px
+    padding: 10px;
+    position: relative;
   }
 
-  .calendar-icon {
-    font-size:large;
-    margin-left: 10px;
-    margin-bottom:auto;
+  .bordered {
+    border: 1px solid $border-grey;
+    padding: 0.5rem;
+  }
+
+  .content {
+    background-color: $default-background-grey;
+  }
+
+  .files {
+    margin: 1rem -1px 0;
+
+    .filename {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .row:nth-child(even) {
+      background-color: $default-background-grey;
+    }
+
+    .actions {
+      padding: 0;
+
+      button {
+        background-color: transparent;
+        border: none;
+
+        &.delete {
+          color: $red;
+          text-align: center;
+        }
+      }
+    }
   }
 }
 
@@ -231,7 +249,7 @@ h2 {
   } 
 }
 
-#credit-transaction-details {
+#credit-transaction {
   .credit-balance-table, .credit-transaction-list-table {
     .-header {
       box-shadow: none;
@@ -301,6 +319,10 @@ h2 {
 
     .balance-left, .credits-left, .date, .transaction {
       margin-left: 0.5rem;
+    }
+
+    .clickable:hover .rt-td {
+      background-color: $primary-yellow;
     }
   }
 }

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
 import history from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
@@ -43,8 +43,8 @@ const CreditTransfersPage = (props) => {
     >
       <div>
         <div><br /><br /></div>
-        <h4 className="d-inline">Submit credit transfer notice to trade partner?
-        </h4>
+        <h3 className="d-inline">Submit credit transfer notice to trade partner?
+        </h3>
         <div><br /><br /></div>
       </div>
     </Modal>
@@ -54,36 +54,23 @@ const CreditTransfersPage = (props) => {
       <div className="col-sm-12">
         <div className="action-bar">
           <span className="left-content">
-            <button
-              className="button"
-              onClick={() => {
-                history.push('/credit-transactions/transfers');
-              }}
-              type="button"
-            >
-              Back
-            </button>
+            <Button buttonType="back" locationRoute="/credit-transactions/transfers" />
           </span>
           <span className="right-content">
-            <button
-              className="button"
-              onClick={() => {
+            <Button
+              buttonType="save"
+              action={() => {
                 handleSave();
               }}
-              type="button"
-            >
-              Save
-            </button>
-            <button
-              className="button primary ml-2"
-              disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent}
-              onClick={() => {
+            />
+            <Button
+              buttonType="submit"
+              action={() => {
                 setShowModal(true);
               }}
-              type="button"
-            >
-              <FontAwesomeIcon icon="paper-plane" />  Submit Notice
-            </button>
+              optionalText="Submit Notice"
+              disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent}
+            />
           </span>
         </div>
       </div>
@@ -91,9 +78,9 @@ const CreditTransfersPage = (props) => {
   );
   return (
     <div id="credit-requests-list" className="page">
-      <div className="row">
+      <div className="row mt-3 mb-2">
         <div className="col-sm-12">
-          <h1>Light Duty Vehicle Credit Transfer</h1>
+          <h2>Light Duty Vehicle Credit Transfer</h2>
         </div>
       </div>
       <div id="form">
@@ -101,7 +88,7 @@ const CreditTransfersPage = (props) => {
           <div className="row">
             <div className="col-sm-12">
               <fieldset>
-                <h5>{user.organization.name} submits notice of the following proposed credit transfer:</h5>
+                <h3>{user.organization.name} submits notice of the following proposed credit transfer:</h3>
                 <div className="form-group">
                   <div className="d-inline-block align-middle mr-5">
                     <input type="radio" id="transfer-to" name="transferType" value="transfer to" onChange={handleInputChange} />
@@ -123,32 +110,32 @@ const CreditTransfersPage = (props) => {
                   />
                 </div>
                 {rows.map((item, index) => (<TransferFormRow years={years} key={index} rows={rows} rowId={index} handleRowInputChange={handleRowInputChange} removeRow={removeRow} />))}
-                <button type="button" className="transfer-add-line" onClick={() => { addRow(); }}>
-                  <h5><FontAwesomeIcon icon="plus" /> Add another line</h5>
+                <button type="button" className="transfer-add-line my-2" onClick={() => { addRow(); }}>
+                  <h4><FontAwesomeIcon icon="plus" /> Add another line</h4>
                 </button>
                 <span className="transfer-total">Total CAD: ${total}</span>
                 <div>
-                  <div className="d-inline-block align-middle my-2 mr-2">
+                  <div className="d-inline-block align-middle my-2 ml-2 mr-1">
                     <input type="checkbox" id="authority" onClick={(event) => { handleCheckboxClick(event); }} />
                   </div>
-                  <label className="d-inline" htmlFor="transfer-authority" id="transfer-text">
+                  <label className="d-inline" htmlFor="authority" id="transfer-text">
                     I confirm that I am an officer or employee of {user.organization.name},
                     and that records evidencing my authority to submit this notice are available on request.
                   </label>
                 </div>
                 <div>
-                  <div className="d-inline-block align-middle my-2 mr-2">
+                  <div className="d-inline-block align-middle my-2 ml-2 mr-1">
                     <input type="checkbox" id="accurate" onClick={(event) => { handleCheckboxClick(event); }} />
                   </div>
-                  <label className="d-inline" htmlFor="transfer-accurate" id="transfer-text">
+                  <label className="d-inline" htmlFor="accurate" id="transfer-text">
                     {user.organization.name} certifies that the information provided in this notice is accurate and complete
                   </label>
                 </div>
                 <div>
-                  <div className="d-inline-block align-middle my-2 mr-2">
+                  <div className="d-inline-block align-middle my-2 ml-2 mr-1">
                     <input type="checkbox" id="consent" onClick={(event) => { handleCheckboxClick(event); }} />
                   </div>
-                  <label className="d-inline" htmlFor="transfer-consent" id="transfer-text">
+                  <label className="d-inline" htmlFor="consent" id="transfer-text">
                     {user.organization.name} consents to the transfer of credits in this notice
                   </label>
                 </div>

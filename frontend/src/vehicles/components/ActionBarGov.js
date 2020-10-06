@@ -3,7 +3,7 @@ import React from 'react';
 
 const ActionBarGov = (props) => {
   const {
-    vehicles, handleClear, filtered, setFiltered,
+    vehicles, handleClear, filtered, setFiltered, showOrganization,
   } = props;
 
   const getOptions = (inputObj, displayField) => {
@@ -12,9 +12,8 @@ const ActionBarGov = (props) => {
         return eachVehicle[displayField];
       }
 
-      return eachVehicle[displayField].name;
+      return eachVehicle[displayField].shortName || eachVehicle[displayField].name;
     }))];
-
     return uniqueArr.sort().map((each) => (
       <option key={each}>{each}</option>
     ));
@@ -28,10 +27,9 @@ const ActionBarGov = (props) => {
   };
 
   return (
-    <div className="action-bar">
-      <span className="left-content" />
-      <span className="right-content">
-        <label htmlFor="supplier">Select a different model year/supplier</label>
+    <div className="action-bar no-bg p-0 m-0 justify-content-end">
+      <span className="right-content d-block d-md-flex d-lg-flex d-xl-flex">
+        <label className="my-0" htmlFor="supplier">Select a different model year/supplier</label>
         <select
           className="form-control"
           id="col-my"
@@ -42,6 +40,7 @@ const ActionBarGov = (props) => {
           {getOptions(vehicles, 'modelYear')}
         </select>
 
+        {showOrganization && (
         <select
           className="form-control"
           id="col-supplier"
@@ -51,10 +50,12 @@ const ActionBarGov = (props) => {
           <option value=""> </option>
           {getOptions(vehicles, 'organization')}
         </select>
+        )}
         <button
           className="button"
           onClick={handleClear}
           type="button"
+          disabled={filtered.length === 0}
         >
           Clear Filters
         </button>
@@ -63,10 +64,15 @@ const ActionBarGov = (props) => {
   );
 };
 
+ActionBarGov.defaultProps = {
+  showOrganization: true,
+};
+
 ActionBarGov.propTypes = {
   handleClear: PropTypes.func.isRequired,
   filtered: PropTypes.arrayOf(PropTypes.object).isRequired,
   setFiltered: PropTypes.func.isRequired,
+  showOrganization: PropTypes.bool,
   vehicles: PropTypes.arrayOf(PropTypes.shape).isRequired,
 };
 

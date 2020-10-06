@@ -10,52 +10,39 @@ import UsersTable from './UsersTable';
 
 const VehicleSupplierUserListPage = (props) => {
   const { id } = useParams();
-  const { loading, members } = props;
+  const {
+    loading, members, filtered, setFiltered,
+  } = props;
   if (loading) {
     return <Loading />;
   }
 
   return (
-    <div>
-      <div className="row mt-5">
-        <div className="col-sm-12">
+    <div className="page">
+      <div className="row mt-3 mb-2">
+        <div className="col-md-8 d-flex align-items-end">
           <h2>Users</h2>
+        </div>
+        <div className="col-md-4 text-right">
+          <button
+            className="button primary"
+            onClick={() => {
+              History.push(ROUTES_ORGANIZATIONS.ADD_USER.replace(/:id/gi, id));
+            }}
+            type="button"
+          >
+            <FontAwesomeIcon icon="user-plus" /> <span>New User</span>
+          </button>
         </div>
       </div>
 
       <div className="row">
         <div className="col-sm-12">
-          <div className="text-right">
-            <button
-              className="button primary mb-3"
-              onClick={() => {
-                History.push(ROUTES_ORGANIZATIONS.ADD_USER.replace(/:id/gi, id));
-              }}
-              type="button"
-            >
-              <FontAwesomeIcon icon="user-plus" /> <span>New User</span>
-            </button>
-          </div>
-
           <UsersTable
+            filtered={filtered}
             items={members}
+            setFiltered={setFiltered}
           />
-
-          <div className="action-bar">
-            <span className="left-content">
-              <button
-                className="button"
-                onClick={() => {
-                  History.goBack();
-                }}
-                type="button"
-              >
-                <FontAwesomeIcon icon="arrow-left" /> <span>Back</span>
-              </button>
-            </span>
-
-            <span className="right-content" />
-          </div>
         </div>
       </div>
     </div>
@@ -67,8 +54,10 @@ VehicleSupplierUserListPage.defaultProps = {
 };
 
 VehicleSupplierUserListPage.propTypes = {
+  filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
   members: PropTypes.arrayOf(PropTypes.shape({})),
+  setFiltered: PropTypes.func.isRequired,
 };
 
 export default VehicleSupplierUserListPage;

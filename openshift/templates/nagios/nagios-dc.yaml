@@ -35,6 +35,10 @@ parameters:
     displayName: Memory upper limit
     description: Memory upper limit
     required: true
+  - name: OCP_NAME
+    displayName: Openshift Name
+    description: Openshift Name
+    required: true    
 objects:
 - apiVersion: v1
   kind: PersistentVolumeClaim
@@ -89,7 +93,7 @@ objects:
       app: nagios
     name: nagios
   spec:
-    host: nagios-${NAME}-${ENV_NAME}.pathfinder.gov.bc.ca
+    host: nagios-${NAME}-${ENV_NAME}.${OCP_NAME}.gov.bc.ca
     path: /
     port:
       targetPort: 8080-tcp
@@ -121,13 +125,6 @@ objects:
       activeDeadlineSeconds: 21600
       recreateParams:
         timeoutSeconds: 600
-      resources:
-        limits:
-          cpu: 300m
-          memory: 1G
-        requests:
-          cpu: 100m
-          memory: 200M
       type: Recreate
     template:
       metadata:
@@ -163,7 +160,7 @@ objects:
                 name: ${NAME}-${ENV_NAME}-rabbitmq-cluster-secret
                 key: password 
           - name: MINIO_ENDPOINT
-            value: docs-mem-${NAME}-${ENV_NAME}.pathfinder.gov.bc.ca:443
+            value: docs-mem-${NAME}-${ENV_NAME}.${OCP_NAME}.gov.bc.ca:443
           - name: MINIO_USE_SSL
             value: "true"
           - name: MINIO_ACCESS_KEY

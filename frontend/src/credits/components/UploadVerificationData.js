@@ -1,10 +1,11 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import PropTypes from 'prop-types';
-import history from '../../app/History';
+
+import Alert from '../../app/components/Alert';
+import Button from '../../app/components/Button';
 import ExcelFileDrop from '../../app/components/FileDrop';
 import getFileSize from '../../app/utilities/getFileSize';
-import CreditTransactionTabs from '../../app/components/CreditTransactionTabs';
 
 const UploadVerificationData = (props) => {
   const {
@@ -14,7 +15,7 @@ const UploadVerificationData = (props) => {
     upload,
     setDateCurrentTo,
     previousDateCurrentTo,
-    user,
+    alertMessage,
   } = props;
 
   const removeFile = (removedFile) => {
@@ -29,94 +30,94 @@ const UploadVerificationData = (props) => {
   };
 
   return (
-    <div>
-      <CreditTransactionTabs active="icbc-update" key="tabs" user={user} />
-      <div id="upload-verification-data" className="page">
-        <h2>{title}</h2>
-        <p>ICBC data current to: {previousDateCurrentTo}</p>
-        <div className="compact">
+    <div id="upload-verification-data" className="page">
+      <div className="row mt-3 mb-2">
+        <div className="col-12">
+          <h2>{title}</h2>
+          {alertMessage && (
+            <div className="mt-2">
+              <Alert optionalMessage={alertMessage} optionalClassname={alertMessage === 'upload successful' ? 'alert-success' : 'alert-danger'} />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="row">
+        <div className="col-md-12 col-lg-9 col-xl-6">
+          <div className="mb-2">ICBC data current to: {previousDateCurrentTo}</div>
+
           <div className="bordered">
-            <div className="content">
-              <div className="panel panel-default">
+            <div className="panel panel-default">
+              <div className="content p-3">
                 <ExcelFileDrop setFiles={setUploadFiles} maxFiles={1} />
-                <div className="files">
-                  <div className="row">
-                    <div className="col-7 header"><label htmlFor="filename">Filename</label></div>
-                    <div className="col-3 size header"><label htmlFor="filesize">Size</label></div>
-                    {/* <div className="col-2 size header"><label htmlFor="securityscan">Security<br />Scan</label></div> */}
-                    <div className="col-2 actions header" />
-                  </div>
-                  {files.map((file) => (
-                    <div className="row" key={file.name}>
-                      <div className="col-7">{file.name}</div>
-                      <div className="col-3 size">{getFileSize(file.size)}</div>
-                      {/* <div className="col-2 size">
-                      <div className="check" type="button">
-                      <FontAwesomeIcon icon="check" />
-                      </div>
-                    </div> */}
-                      <div className="col-2 actions">
-                        <button
-                          className="delete"
-                          onClick={() => {
-                            removeFile(file);
-                          }}
-                          type="button"
-                        >
-                          <FontAwesomeIcon icon="trash" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-
-                  <div>
-                    <div className="row">
-                      <label id="date-label" htmlFor="current-to">Date current to:</label>
-                      <div>
-                        <input
-                          type="date"
-                          id="date-current-to"
-                          name="date-current-to"
-                          onChange={handleCalendarChange}
-                        />
-                        <FontAwesomeIcon icon="calendar-alt" className="calendar-icon" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="action-bar">
-                  <span className="left-content">
-                    <button
-                      className="button"
-                      onClick={() => {
-                        history.goBack();
-                      }}
-                      type="button"
-                    >
-                      <FontAwesomeIcon icon="arrow-left" /> Back
-                    </button>
-                  </span>
-
-                  <span className="right-content">
-                    <button
-                      disabled={files.length === 0}
-                      className="button primary"
-                      onClick={() => upload()}
-                      type="button"
-                    >
-                      <FontAwesomeIcon icon="upload" /> Upload
-                    </button>
-                  </span>
-                </div>
               </div>
+              {files.length > 0 && (
+              <div className="files px-3">
+                <div className="row pb-1">
+                  <div className="col-8 header"><label htmlFor="filename">Filename</label></div>
+                  <div className="col-3 size header"><label htmlFor="filesize">Size</label></div>
+                  <div className="col-1 actions header" />
+                </div>
+                {files.map((file) => (
+                  <div className="row py-1" key={file.name}>
+                    <div className="col-8">{file.name}</div>
+                    <div className="col-3 size">{getFileSize(file.size)}</div>
+                    <div className="col-1 actions">
+                      <button
+                        className="delete"
+                        onClick={() => {
+                          removeFile(file);
+                        }}
+                        type="button"
+                      >
+                        <FontAwesomeIcon icon="trash" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-2">
+            <label id="date-label" htmlFor="current-to">Date current to:</label>
+
+            <div>
+              <input
+                type="date"
+                id="date-current-to"
+                name="date-current-to"
+                onChange={handleCalendarChange}
+              />
             </div>
           </div>
         </div>
-        <div className="clearfix" />
+      </div>
+
+      <div className="action-bar">
+        <span className="left-content">
+          <Button buttonType="back" />
+        </span>
+
+        <span className="right-content">
+          <button
+            disabled={files.length === 0}
+            className="button primary"
+            onClick={() => upload()}
+            type="button"
+          >
+            <FontAwesomeIcon icon="upload" /> Upload
+          </button>
+        </span>
       </div>
     </div>
   );
+};
+
+UploadVerificationData.defaultProps = {
+  alertMessage: '',
+  previousDateCurrentTo: '',
 };
 
 UploadVerificationData.propTypes = {
@@ -125,7 +126,8 @@ UploadVerificationData.propTypes = {
   title: PropTypes.string.isRequired,
   upload: PropTypes.func.isRequired,
   setDateCurrentTo: PropTypes.func.isRequired,
-  previousDateCurrentTo: PropTypes.string.isRequired,
+  previousDateCurrentTo: PropTypes.string,
+  alertMessage: PropTypes.string,
 };
 
 export default UploadVerificationData;
