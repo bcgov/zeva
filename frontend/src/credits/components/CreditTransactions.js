@@ -9,7 +9,9 @@ const CreditTransactions = (props) => {
   let totalA = 0;
   let totalB = 0;
 
-  const transactions = items.map((item) => {
+  const transactions = [];
+
+  items.forEach((item) => {
     if (item.creditClass.creditClass === 'A') {
       totalA += parseFloat(item.totalValue);
     }
@@ -17,14 +19,48 @@ const CreditTransactions = (props) => {
     if (item.creditClass.creditClass === 'B') {
       totalB += parseFloat(item.totalValue);
     }
-    const obj = {
-      ...item,
-      displayTotalA: totalA,
-      displayTotalB: totalB,
-    };
 
-    return obj;
+    const found = transactions.findIndex(
+      (transaction) => (transaction.foreignKey === item.foreignKey),
+    );
+
+    if (found >= 0) {
+      transactions[found] = {
+        ...transactions[found],
+        creditsA: (item.creditClass.creditClass === 'A' ? item.totalValue : transactions[found].creditsA),
+        creditsB: (item.creditClass.creditClass === 'B' ? item.totalValue : transactions[found].creditsB),
+        displayTotalA: totalA,
+        displayTotalB: totalB,
+      };
+    } else {
+      transactions.push({
+        creditsA: (item.creditClass.creditClass === 'A' ? item.totalValue : 0),
+        creditsB: (item.creditClass.creditClass === 'B' ? item.totalValue : 0),
+        displayTotalA: totalA,
+        displayTotalB: totalB,
+        foreignKey: item.foreignKey,
+        transactionTimestamp: item.transactionTimestamp,
+        transactionType: item.transactionType,
+      });
+    }
   });
+
+  // const transactions = items.map((item) => {
+  //   if (item.creditClass.creditClass === 'A') {
+  //     totalA += parseFloat(item.totalValue);
+  //   }
+
+  //   if (item.creditClass.creditClass === 'B') {
+  //     totalB += parseFloat(item.totalValue);
+  //   }
+  //   const obj = {
+  //     ...item,
+  //     displayTotalA: totalA,
+  //     displayTotalB: totalB,
+  //   };
+
+  //   return obj;
+  // });
 
   const balances = {};
 

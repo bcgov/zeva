@@ -21,7 +21,7 @@ const CreditTransactionListTable = (props) => {
     const { transactionType } = item.transactionType;
     switch (transactionType.toLowerCase()) {
       case 'validation':
-        return `Credit Application (ID: ${item.foreignKey})`;
+        return 'Credit Application';
       default:
         return transactionType;
     }
@@ -31,12 +31,11 @@ const CreditTransactionListTable = (props) => {
     Header: '',
     headerClassName: 'header-group',
     columns: [{
-      accessor: 'id',
+      accessor: 'foreignKey',
       className: 'text-center',
-      Header: 'ID',
+      Header: 'Transaction ID',
       id: 'id',
       maxWidth: 150,
-      show: false,
     }],
   }, {
     Header: '',
@@ -63,13 +62,7 @@ const CreditTransactionListTable = (props) => {
     Header: 'Credits',
     headerClassName: 'header-group credits-left',
     columns: [{
-      accessor: (item) => {
-        if (item.creditClass.creditClass === 'A') {
-          return formatNumeric(item.totalValue, 2);
-        }
-
-        return '-';
-      },
+      accessor: (item) => (item.creditsA ? formatNumeric(item.creditsA, 2) : '-'),
       className: 'text-right credits-left',
       Header: 'A',
       Cell: (item) => (
@@ -79,13 +72,7 @@ const CreditTransactionListTable = (props) => {
       id: 'credit-class-a',
       maxWidth: 175,
     }, {
-      accessor: (item) => {
-        if (item.creditClass.creditClass === 'B') {
-          return formatNumeric(item.totalValue, 2);
-        }
-
-        return '-';
-      },
+      accessor: (item) => (item.creditsB ? formatNumeric(item.creditsB, 2) : '-'),
       className: 'text-right',
       Cell: (item) => (
         <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>
@@ -98,7 +85,7 @@ const CreditTransactionListTable = (props) => {
     Header: 'Balance',
     headerClassName: 'header-group balance-left',
     columns: [{
-      accessor: (item) => (_.round(item.displayTotalA, 2).toFixed(2)),
+      accessor: (item) => (item.displayTotalA ? _.round(item.displayTotalA, 2).toFixed(2) : '-'),
       className: 'text-right balance-left',
       Cell: (item) => (
         <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>
@@ -108,7 +95,7 @@ const CreditTransactionListTable = (props) => {
       id: 'credit-balance-a',
       maxWidth: 175,
     }, {
-      accessor: (item) => (_.round(item.displayTotalB, 2).toFixed(2)),
+      accessor: (item) => (item.displayTotalB ? _.round(item.displayTotalB, 2).toFixed(2) : '-'),
       className: 'text-right',
       Cell: (item) => (
         <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>
@@ -125,7 +112,7 @@ const CreditTransactionListTable = (props) => {
       columns={columns}
       data={items}
       defaultSorted={[{
-        id: 'id',
+        id: 'date',
         desc: true,
       }]}
       filterable={false}
