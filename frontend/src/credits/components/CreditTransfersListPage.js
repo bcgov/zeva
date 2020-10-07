@@ -6,7 +6,7 @@ import Loading from '../../app/components/Loading';
 import history from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
 import CreditTransfersListTable from './CreditTransfersListTable';
-import ROUTES_CREDITS from '../../app/routes/Credits';
+import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 
 const CreditTransfersListPage = (props) => {
   const {
@@ -32,7 +32,7 @@ const CreditTransfersListPage = (props) => {
           <button
             className="button primary"
             onClick={() => {
-              history.push(ROUTES_CREDITS.CREDIT_TRANSFERS_ADD);
+              history.push(ROUTES_CREDIT_TRANSFERS.NEW);
             }}
             type="button"
           >

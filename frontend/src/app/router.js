@@ -34,6 +34,7 @@ import CONFIG from './config';
 import History from './History';
 import PageLayout from './PageLayout';
 import ROUTES_CREDIT_REQUESTS from './routes/CreditRequests';
+import ROUTES_CREDIT_TRANSFERS from './routes/CreditTransfers';
 import ROUTES_CREDITS from './routes/Credits';
 import ROUTES_ORGANIZATIONS from './routes/Organizations';
 import ROUTES_ROLES from './routes/Roles';
@@ -201,17 +202,17 @@ class Router extends Component {
               />
               <Route
                 exact
-                path={ROUTES_CREDITS.UPLOADVERIFICATION}
+                path={ROUTES_CREDITS.UPLOAD_VERIFICATION}
                 render={() => <UploadICBCVerificationContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact
-                path={ROUTES_CREDITS.CREDIT_TRANSFERS}
+                path={ROUTES_CREDIT_TRANSFERS.LIST}
                 render={() => <CreditTransferListContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact
-                path={ROUTES_CREDITS.CREDIT_TRANSFERS_ADD}
+                path={ROUTES_CREDIT_TRANSFERS.NEW}
                 render={() => <CreditTransfersContainer keycloak={keycloak} user={user} />}
               />
               <Route

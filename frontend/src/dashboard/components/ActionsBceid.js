@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import Loading from '../../app/components/Loading';
 import ActivityBanner from './ActivityBanner';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
-import ROUTES_CREDITS from '../../app/routes/Credits';
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
+import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 
 const ActionsBceid = (props) => {
   const { activityCount, loading } = props;
@@ -117,7 +117,7 @@ const ActionsBceid = (props) => {
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersAwaitingPartner} awaiting partner confirmation`}
-          linkTo={`${ROUTES_CREDITS.CREDIT_TRANSFERS}?status=Submitted`}
+          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Submitted`}
         />
         )}
         {activityCount.transfersAwaitingGovernment > 0
@@ -127,7 +127,7 @@ const ActionsBceid = (props) => {
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersAwaitingGovernment} awaiting  government action`}
-          linkTo={`${ROUTES_CREDITS.CREDIT_TRANSFERS}?status=Approved`}
+          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Approved`}
         />
         )}
         {activityCount.transfersRecorded > 0
@@ -137,7 +137,7 @@ const ActionsBceid = (props) => {
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersRecorded} recorded by government`}
-          linkTo={`${ROUTES_CREDITS.CREDIT_TRANSFERS}?status=Issued`}
+          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Issued`}
         />
         )}
         {activityCount.transfersAwaitingGovernment === 0
@@ -148,7 +148,7 @@ const ActionsBceid = (props) => {
             icon="exchange-alt"
             boldText="Credit Transfer"
             regularText="no current activity"
-            linkTo={ROUTES_CREDITS.CREDIT_TRANSFERS}
+            linkTo={ROUTES_CREDIT_TRANSFERS.LIST}
           />
         )}
       </div>
