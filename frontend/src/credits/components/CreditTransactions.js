@@ -45,23 +45,6 @@ const CreditTransactions = (props) => {
     }
   });
 
-  // const transactions = items.map((item) => {
-  //   if (item.creditClass.creditClass === 'A') {
-  //     totalA += parseFloat(item.totalValue);
-  //   }
-
-  //   if (item.creditClass.creditClass === 'B') {
-  //     totalB += parseFloat(item.totalValue);
-  //   }
-  //   const obj = {
-  //     ...item,
-  //     displayTotalA: totalA,
-  //     displayTotalB: totalB,
-  //   };
-
-  //   return obj;
-  // });
-
   const balances = {};
 
   propsBalances.sort((a, b) => (
