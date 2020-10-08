@@ -114,37 +114,40 @@ const CreditRequestDetailsPage = (props) => {
   return (
     <div id="credit-request-details" className="page">
       {modal}
-      <div className="row my-3">
+      <div className="row mt-3 mb-2">
         <div className="col-sm-12">
           <h2>Application for Credits for Consumer Sales</h2>
           <h3 className="mt-2">
             {submission.organization && `${submission.organization.name} `}
             ZEV Sales Submission {submission.submissionDate}
           </h3>
+          {!user.isGovernment && submission.filename && (
+            <h4 className="mt-2">{submission.filename}</h4>
+          )}
         </div>
       </div>
       {analystAction
       && (
-      <div className="row mb-2">
+      <div className="row my-1">
         <div className="col-sm-12">
           ICBC data current to: {previousDateCurrentTo}
         </div>
       </div>
       )}
-      <div className="row mb-2">
+      <div className="row mb-1">
         <div className="col-sm-12">
-          <div className="recommendation-comment p-2 m-0">
-            <Alert
-              isGovernment={user.isGovernment}
-              alertType="credit"
-              status={submission.validationStatus}
-              submission={submission}
-              date={moment(submission.updateTimestamp).format('MMM D, YYYY')}
-              icbcDate={moment(previousDateCurrentTo).format('MMM D, YYYY')}
-              invalidSubmission={invalidSubmission}
-            />
-            {submission.salesSubmissionComment && user.isGovernment && (
-              submission.salesSubmissionComment.map((each) => (
+          <Alert
+            alertType="credit"
+            date={moment(submission.updateTimestamp).format('MMM D, YYYY')}
+            icbcDate={moment(previousDateCurrentTo).format('MMM D, YYYY')}
+            invalidSubmission={invalidSubmission}
+            isGovernment={user.isGovernment}
+            status={submission.validationStatus}
+            submission={submission}
+          />
+          {submission.salesSubmissionComment && user.isGovernment && (
+            <div className="recommendation-comment p-2 mt-3 mb-2">
+              {submission.salesSubmissionComment.map((each) => (
                 <div key={each.id}>
                   <h4 className="d-inline mr-2">
                     Comments from {each.createUser.displayName} {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}:
@@ -153,14 +156,13 @@ const CreditRequestDetailsPage = (props) => {
                     {each.comment}
                   </span>
                 </div>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
-      {/* )} */}
       {!user.isGovernment && (
-        <div className="row mb-3">
+        <div className="row mb-2">
           <div className="col-sm-12">
             <h4 className="d-inline-block sales-upload-grey">Service address: </h4>
             {serviceAddress && <h4 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h4>}
