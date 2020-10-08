@@ -76,7 +76,7 @@ class Navbar extends Component {
               <div>
                 <h5 className="organization-name">{user.organization ? user.organization.name : ''}</h5>
                 {!user.isGovernment && user.organization && (
-                <Link className="credit-balance" to={ROUTES_CREDITS.CREDIT_BALANCES}>Credit Balance: {user.organization.balance.A}-A/ {user.organization.balance.B}-B</Link>
+                <Link className="credit-balance" to={ROUTES_CREDITS.LIST}>Credit Balance: {user.organization.balance.A}-A/ {user.organization.balance.B}-B</Link>
                 )}
               </div>
             </div>
