@@ -6,9 +6,9 @@ import Button from '../../app/components/Button';
 import history from '../../app/History';
 
 import CustomPropTypes from '../../app/utilities/props';
-import ROUTES_CREDITS from '../../app/routes/Credits';
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 
-const SalesSubmissionConfirmationPage = (props) => {
+const UploadRequestConfirmationPage = (props) => {
   const {
     user,
     submissionId,
@@ -24,11 +24,11 @@ const SalesSubmissionConfirmationPage = (props) => {
             </span>
           </span>
           <span className="right-content">
-            <Button buttonType="back" locationRoute={ROUTES_CREDITS.CREDIT_REQUESTS} />
+            <Button buttonType="back" locationRoute={ROUTES_CREDIT_REQUESTS.LIST} />
             <button
               className="button"
               onClick={() => {
-                history.push(ROUTES_CREDITS.CREDIT_REQUEST_DETAILS.replace(/:id/g, submissionId));
+                history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/g, submissionId));
               }}
               type="button"
             >
@@ -58,7 +58,7 @@ const SalesSubmissionConfirmationPage = (props) => {
           </p>
           <p>
             {'You can view the status of your submission from the '}
-            <Link to={ROUTES_CREDITS.CREDIT_REQUESTS}>
+            <Link to={ROUTES_CREDIT_REQUESTS.LIST}>
               Sales
             </Link>
             {' table at any time.'}
@@ -71,11 +71,11 @@ const SalesSubmissionConfirmationPage = (props) => {
   );
 };
 
-SalesSubmissionConfirmationPage.defaultProps = {};
+UploadRequestConfirmationPage.defaultProps = {};
 
-SalesSubmissionConfirmationPage.propTypes = {
+UploadRequestConfirmationPage.propTypes = {
   submissionId: PropTypes.string.isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 
-export default SalesSubmissionConfirmationPage;
+export default UploadRequestConfirmationPage;

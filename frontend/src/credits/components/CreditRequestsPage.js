@@ -4,7 +4,8 @@ import React from 'react';
 
 import history from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
-import SubmissionListTable from './SubmissionListTable';
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
+import CreditRequestListTable from './CreditRequestListTable';
 
 const CreditRequestsPage = (props) => {
   const {
@@ -25,7 +26,7 @@ const CreditRequestsPage = (props) => {
           <button
             className="button primary"
             onClick={() => {
-              history.push('/sales/new_upload');
+              history.push(ROUTES_CREDIT_REQUESTS.NEW);
             }}
             type="button"
           >
@@ -36,7 +37,7 @@ const CreditRequestsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-sm-12">
-          <SubmissionListTable
+          <CreditRequestListTable
             filtered={filtered}
             items={submissions}
             user={user}

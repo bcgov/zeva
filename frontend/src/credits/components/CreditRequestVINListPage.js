@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 
 import Button from '../../app/components/Button';
 import CustomPropTypes from '../../app/utilities/props';
-import SalesListTable from './SalesListTable';
+import VINListTable from './VINListTable';
 
-const SalesSubmissionDetailsPage = (props) => {
+const CreditRequestVINListPage = (props) => {
   const {
     handleCheckboxClick,
     handleSubmit,
@@ -90,7 +90,7 @@ const SalesSubmissionDetailsPage = (props) => {
 
       <div className="row">
         <div className="col-sm-12">
-          <SalesListTable
+          <VINListTable
             handleCheckboxClick={handleCheckboxClick}
             items={submission.content}
             submission={submission}
@@ -111,9 +111,9 @@ const SalesSubmissionDetailsPage = (props) => {
   );
 };
 
-SalesSubmissionDetailsPage.defaultProps = {};
+CreditRequestVINListPage.defaultProps = {};
 
-SalesSubmissionDetailsPage.propTypes = {
+CreditRequestVINListPage.propTypes = {
   handleCheckboxClick: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   submission: PropTypes.shape().isRequired,
@@ -124,4 +124,4 @@ SalesSubmissionDetailsPage.propTypes = {
   ])).isRequired,
 };
 
-export default SalesSubmissionDetailsPage;
+export default CreditRequestVINListPage;

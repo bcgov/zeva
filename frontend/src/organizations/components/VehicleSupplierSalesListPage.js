@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import CustomPropTypes from '../../app/utilities/props';
 import Loading from '../../app/components/Loading';
-import SubmissionListTable from '../../credits/components/SubmissionListTable';
+import CreditRequestListTable from '../../credits/components/CreditRequestListTable';
 
 const VehicleSupplierSalesListPage = (props) => {
   const {
@@ -24,7 +24,7 @@ const VehicleSupplierSalesListPage = (props) => {
 
       <div className="row">
         <div className="col-sm-12">
-          <SubmissionListTable
+          <CreditRequestListTable
             filtered={filtered}
             items={sales}
             setFiltered={setFiltered}

@@ -4,12 +4,13 @@
  */
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+
 import history from '../app/History';
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import CustomPropTypes from '../app/utilities/props';
 import CreditTransfersPage from './components/CreditTransfersPage';
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
-import ROUTES_CREDITS from '../app/routes/Credits';
+import ROUTES_CREDIT_TRANSFERS from '../app/routes/CreditTransfers';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 
 const CreditTransfersContainer = (props) => {
@@ -59,13 +60,13 @@ const CreditTransfersContainer = (props) => {
       transactionType: 'Credit Transfer',
       weightClass: 'LDV',
     }));
-    axios.post(ROUTES_CREDITS.CREDIT_TRANSFERS_API, {
+    axios.post(ROUTES_CREDIT_TRANSFERS.LIST, {
       content: data,
       status,
       creditTo,
       debitFrom,
     }).then(() => {
-      history.push(ROUTES_CREDITS.CREDIT_TRANSFERS);
+      history.push(ROUTES_CREDIT_TRANSFERS.LIST);
     });
   };
   const handleSave = () => {

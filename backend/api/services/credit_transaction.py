@@ -1,6 +1,6 @@
 from datetime import date
 from decimal import Decimal
-from django.db.models import Case, Count, Sum, Value, F, Q, When
+from django.db.models import Case, Count, Sum, Value, F, Q, When, Max
 from django.db.models.functions import Coalesce
 
 from api.models.account_balance import AccountBalance
@@ -127,16 +127,15 @@ def aggregate_transactions_by_submission(organization):
     transactions = CreditTransaction.objects.filter(
         Q(credit_to=organization) | Q(debit_from=organization)
     ).values(
-        'model_year_id', 'credit_class_id', 'transaction_type_id',
-        'weight_class_id'
+        'credit_class_id', 'transaction_type_id'
     ).annotate(
         credit=balance_credits,
         debit=balance_debits,
         foreign_key=foreign_key,
-        total_value=F('credit') - F('debit')
+        total_value=F('credit') - F('debit'),
+        transaction_timestamp=Max('transaction_timestamp')
     ).order_by(
-        'model_year_id', 'credit_class_id', 'transaction_type_id',
-        'weight_class_id'
+        'credit_class_id', 'transaction_type_id'
     )
 
     return transactions

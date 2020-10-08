@@ -7,6 +7,7 @@ from api.models.icbc_registration_data import IcbcRegistrationData
 from api.models.vehicle import Vehicle
 from api.models.record_of_sale import RecordOfSale
 from api.models.icbc_upload_date import IcbcUploadDate
+from api.models.vehicle_statuses import VehicleDefinitionStatuses
 
 
 class SalesSubmissionContent(Auditable):
@@ -67,6 +68,7 @@ class SalesSubmissionContent(Auditable):
             make__iexact=self.xls_make,
             model_name=self.xls_model,
             model_year__name=int(model_year),
+            validation_status=VehicleDefinitionStatuses.VALIDATED,
         ).first()
 
     @property
