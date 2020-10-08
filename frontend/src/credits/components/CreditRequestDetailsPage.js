@@ -280,7 +280,7 @@ const CreditRequestDetailsPage = (props) => {
                       }}
                       type="button"
                     >
-                      <FontAwesomeIcon icon="edit" /> Edit
+                      <FontAwesomeIcon icon="upload" /> Re-upload excel file
                     </button>,
                     <Button
                       buttonType="submit"
