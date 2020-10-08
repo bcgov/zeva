@@ -6,8 +6,7 @@ import Alert from '../../app/components/Alert';
 import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
 import history from '../../app/History';
-import ROUTES_CREDITS from '../../app/routes/Credits';
-import ROUTES_SALES from '../../app/routes/Sales';
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import download from '../../app/utilities/download';
 import CustomPropTypes from '../../app/utilities/props';
 import ModelListTable from './ModelListTable';
@@ -32,7 +31,7 @@ const CreditRequestDetailsPage = (props) => {
     const element = e.target;
     const original = element.innerHTML;
     element.firstChild.textContent = ' Downloading...';
-    return download(ROUTES_SALES.DOWNLOAD_ERRORS.replace(':id', submission.id), {}).then(() => {
+    return download(ROUTES_CREDIT_REQUESTS.DOWNLOAD_ERRORS.replace(':id', submission.id), {}).then(() => {
       element.innerHTML = original;
     });
   };
@@ -196,7 +195,7 @@ const CreditRequestDetailsPage = (props) => {
             <span className="left-content">
               <Button
                 buttonType="back"
-                locationRoute={(locationState && locationState.href) ? locationState.href : ROUTES_CREDITS.CREDIT_REQUESTS}
+                locationRoute={(locationState && locationState.href) ? locationState.href : ROUTES_CREDIT_REQUESTS.LIST}
                 locationState={locationState}
               />
               {submission.validationStatus === 'DRAFT' && (
@@ -221,7 +220,7 @@ const CreditRequestDetailsPage = (props) => {
                   <button
                     className={validatedOnly ? 'button' : 'button primary'}
                     onClick={() => {
-                      const url = ROUTES_CREDITS.SALES_SUBMISSION_DETAILS.replace(/:id/g, submission.id);
+                      const url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id);
 
                       history.push(url);
                     }}
@@ -274,7 +273,7 @@ const CreditRequestDetailsPage = (props) => {
                       className="button"
                       key="edit"
                       onClick={() => {
-                        const url = ROUTES_CREDITS.EDIT.replace(/:id/g, submission.id);
+                        const url = ROUTES_CREDIT_REQUESTS.EDIT.replace(/:id/g, submission.id);
                         history.push(url);
                       }}
                       type="button"

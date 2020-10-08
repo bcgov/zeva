@@ -6,24 +6,24 @@ import React from 'react';
 import { withRouter } from 'react-router';
 
 import CustomPropTypes from '../app/utilities/props';
-import SalesSubmissionConfirmationPage from './components/SalesSubmissionConfirmationPage';
+import UploadRequestConfirmationPage from './components/UploadRequestConfirmationPage';
 
-const SalesSubmissionConfirmationContainer = (props) => {
+const UploadCreditRequestConfirmationContainer = (props) => {
   const { user } = props;
   const { match } = props;
   const { id } = match.params;
 
   return (
-    <SalesSubmissionConfirmationPage
+    <UploadRequestConfirmationPage
       submissionId={id}
       user={user}
     />
   );
 };
 
-SalesSubmissionConfirmationContainer.propTypes = {
+UploadCreditRequestConfirmationContainer.propTypes = {
   user: CustomPropTypes.user.isRequired,
   match: CustomPropTypes.routeMatch.isRequired,
 };
 
-export default withRouter(SalesSubmissionConfirmationContainer);
+export default withRouter(UploadCreditRequestConfirmationContainer);
