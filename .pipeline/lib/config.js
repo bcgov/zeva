@@ -12,7 +12,7 @@ const phases = {
           version:`${version}-${changeId}`, tag:`build-${version}-${changeId}`, ocpName: `${ocpName}`},
 
   dev: {namespace:'tbiwaq-dev', transient:true, name: `${name}`, ssoSuffix:'-dev', 
-        ssoName:'sso-dev', phase: 'dev'  , changeId:`${changeId}`, suffix: `-dev-${changeId}`, 
+        ssoName:'dev.oidc.gov.bc.ca', phase: 'dev'  , changeId:`${changeId}`, suffix: `-dev-${changeId}`, 
         instance: `${name}-dev-${changeId}`  , version:`${version}-${changeId}`, tag:`dev-${version}-${changeId}`, 
         host: `zeva-dev-${changeId}.${ocpName}.gov.bc.ca`, djangoDebug: 'True',
         frontendCpuRequest: '100m', frontendCpuLimit: '700m', frontendMemoryRequest: '300M', frontendMemoryLimit: '4G', frontendReplicas: 1,
@@ -23,7 +23,7 @@ const phases = {
         patroniCpuRequest: '200m', patroniCpuLimit: '400m', patroniMemoryRequest: '250M', patroniMemoryLimit: '500M', patroniPvcSize: '2G', patroniReplica: 1, storageClass: 'netapp-block-standard', ocpName: `${ocpName}`},
 
   test: {namespace:'tbiwaq-test', name: `${name}`, ssoSuffix:'-test', 
-        ssoName:'sso-test', phase: 'test'  ,  changeId:`${changeId}`, suffix: `-test`, 
+        ssoName:'test.oidc.gov.bc.ca', phase: 'test'  ,  changeId:`${changeId}`, suffix: `-test`, 
         instance: `${name}-test`, version:`${version}`, tag:`test-${version}`, 
         host: `zeva-test.${ocpName}.gov.bc.ca`, djangoDebug: 'False',
         frontendCpuRequest: '300m', frontendCpuLimit: '600m', frontendMemoryRequest: '500M', frontendMemoryLimit: '1G', frontendReplicas: 2, frontendMinReplicas: 2, frontendMaxReplicas: 5,
@@ -34,7 +34,7 @@ const phases = {
         patroniCpuRequest: '500m', patroniCpuLimit: '1000m', patroniMemoryRequest: '500M', patroniMemoryLimit: '1G', patroniPvcSize: '5G', patroniReplica: 2, storageClass: 'netapp-block-standard', ocpName: `${ocpName}`},
 
   prod: {namespace:'tbiwaq-prod', name: `${name}`, ssoSuffix:'', 
-        ssoName:'sso', phase: 'prod'  , changeId:`${changeId}`, suffix: `-prod`, 
+        ssoName:'oidc.gov.bc.ca', phase: 'prod'  , changeId:`${changeId}`, suffix: `-prod`, 
         instance: `${name}-prod`, version:`${version}`, tag:`prod-${version}`, 
         host: `zeroemissionvehicles.${ocpName}.gov.bc.ca`, djangoDebug: 'False',
         frontendCpuRequest: '300m', frontendCpuLimit: '600m', frontendMemoryRequest: '1G', frontendMemoryLimit: '2G', frontendReplicas: 2, frontendMinReplicas: 2, frontendMaxReplicas: 5,
