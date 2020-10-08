@@ -178,7 +178,7 @@ class SalesSubmissionSerializer(
             'id', 'validation_status', 'organization', 'submission_date',
             'submission_sequence', 'content', 'submission_id',
             'sales_submission_comment', 'update_user', 'unselected',
-             'update_timestamp', 'create_user'
+            'update_timestamp', 'create_user', 'filename',
         )
 
 

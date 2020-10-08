@@ -15,14 +15,12 @@ class SalesSubmission(Auditable):
         related_name='submissions',
         on_delete=models.CASCADE
     )
-
     submission_date = models.DateField(
         blank=True,
         null=True,
         auto_now_add=True,
         db_comment="The calendar date the submission was created in ZEVA"
     )
-
     submission_sequence = models.IntegerField(
         blank=False,
         null=True,
@@ -31,7 +29,6 @@ class SalesSubmission(Auditable):
                    "submission_date) tuple, to create a unique reference "
                    "number for the submission."
     )
-
     validation_status = EnumField(
         SalesSubmissionStatuses,
         max_length=20,
@@ -42,10 +39,16 @@ class SalesSubmission(Auditable):
                        statuses=[c.name for c in SalesSubmissionStatuses]
                    )
     )
+    filename = models.CharField(
+        blank=True,
+        max_length=260,
+        null=True,
+        db_comment="Filename of the spreadsheet. Just to help the users keep "
+                   "track of their submissions."
+    )
 
     @property
     def submission_id(self):
-
         formatted_date = self.submission_date.strftime("%y%m%d")
         best_name = self.organization.short_name \
             if self.organization.short_name else self.organization.name
