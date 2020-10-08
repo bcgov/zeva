@@ -10,6 +10,7 @@ import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import download from '../../app/utilities/download';
 import CustomPropTypes from '../../app/utilities/props';
 import ModelListTable from './ModelListTable';
+import CreditRequestSummaryTable from './CreditRequestSummaryTable';
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -24,8 +25,8 @@ const CreditRequestDetailsPage = (props) => {
   const [modalType, setModalType] = useState('');
   const [comment, setComment] = useState('');
 
-  const serviceAddress = user.organization.organizationAddress.find((address) => address.addressType.addressType === 'Service');
-  const recordsAddress = user.organization.organizationAddress.find((address) => address.addressType.addressType === 'Records');
+  const serviceAddress = submission.organization.organizationAddress.find((address) => address.addressType.addressType === 'Service');
+  const recordsAddress = submission.organization.organizationAddress.find((address) => address.addressType.addressType === 'Records');
 
   const downloadErrors = (e) => {
     const element = e.target;
@@ -158,18 +159,16 @@ const CreditRequestDetailsPage = (props) => {
           </div>
         </div>
       </div>
-      {/* )} */}
-      {!user.isGovernment && (
-        <div className="row mb-3">
-          <div className="col-sm-12">
-            <h4 className="d-inline-block sales-upload-grey">Service address: </h4>
-            {serviceAddress && <h4 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h4>}
-            <br />
-            <h4 className="d-inline-block sales-upload-grey">Records address: </h4>
-            {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
-          </div>
+      <div className="row mb-3">
+        <div className="col-sm-12">
+          <h4 className="d-inline-block sales-upload-grey">Service address: </h4>
+          {serviceAddress && <h4 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h4>}
+          <br />
+          <h4 className="d-inline-block sales-upload-grey">Records address: </h4>
+          {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
         </div>
-      )}
+        <CreditRequestSummaryTable items={submission.content} user={user} validationStatus={submission.validationStatus} />
+      </div>
       <div className="row">
         <div className="col-sm-12">
           <ModelListTable
