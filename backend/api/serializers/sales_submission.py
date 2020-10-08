@@ -240,6 +240,7 @@ class SalesSubmissionSaveSerializer(
                 submission=instance,
                 validation_status=validation_status,
                 update_user=request.user.username,
+                create_user=request.user.username,
             )
             instance.validation_status = validation_status
             instance.update_user = request.user.username
