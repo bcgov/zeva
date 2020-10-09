@@ -11,6 +11,7 @@ import download from '../../app/utilities/download';
 import CustomPropTypes from '../../app/utilities/props';
 import ModelListTable from './ModelListTable';
 import CreditRequestSummaryTable from './CreditRequestSummaryTable';
+import Comment from '../../app/components/Comment';
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -118,10 +119,6 @@ const CreditRequestDetailsPage = (props) => {
       <div className="row my-3">
         <div className="col-sm-12">
           <h2>Application for Credits for Consumer Sales</h2>
-          <h3 className="mt-2">
-            {submission.organization && `${submission.organization.name} `}
-            ZEV Sales Submission {submission.submissionDate}
-          </h3>
         </div>
       </div>
       {analystAction
@@ -134,7 +131,7 @@ const CreditRequestDetailsPage = (props) => {
       )}
       <div className="row mb-2">
         <div className="col-sm-12">
-          <div className="recommendation-comment p-2 m-0">
+          <div className="p-2 m-0">
             <Alert
               isGovernment={user.isGovernment}
               alertType="credit"
@@ -145,32 +142,30 @@ const CreditRequestDetailsPage = (props) => {
               invalidSubmission={invalidSubmission}
             />
             {submission.salesSubmissionComment && user.isGovernment && (
-              submission.salesSubmissionComment.map((each) => (
-                <div key={each.id}>
-                  <h4 className="d-inline mr-2">
-                    Comments from {each.createUser.displayName} {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}:
-                  </h4>
-                  <span>
-                    {each.comment}
-                  </span>
-                </div>
-              ))
+              <Comment commentArray={submission.salesSubmissionComment} />
             )}
           </div>
         </div>
       </div>
-      <div className="row mb-3">
-        <div className="col-sm-12">
-          <h4 className="d-inline-block sales-upload-grey">Service address: </h4>
-          {serviceAddress && <h4 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h4>}
-          <br />
-          <h4 className="d-inline-block sales-upload-grey">Records address: </h4>
-          {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
+      <div className="row m-2 p-3 address-summary-table">
+        <div>
+          <h3 className="mt-2">
+            {submission.organization && `${submission.organization.name} `}
+          </h3>
+          <div>
+            <h4 className="d-inline-block sales-upload-grey my-2">Service address: </h4>
+            {serviceAddress && <h4 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h4>}
+            <br />
+            <h4 className="d-inline-block sales-upload-grey mb-3">Records address: </h4>
+            {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
+          </div>
+          <div >
+            <CreditRequestSummaryTable items={submission.content} user={user} validationStatus={submission.validationStatus} />
+          </div>
         </div>
-        <CreditRequestSummaryTable items={submission.content} user={user} validationStatus={submission.validationStatus} />
       </div>
-      <div className="row">
-        <div className="col-sm-12">
+      <div className="row m-2">
+        <div className="col-sm-12 p-0">
           <ModelListTable
             items={submission.content}
             user={user}

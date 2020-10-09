@@ -126,6 +126,8 @@ Alert.defaultProps = {
   alertType: '',
   icbcDate: '',
   invalidSubmission: false,
+  submission: undefined,
+  isGovernment: false,
 };
 Alert.propTypes = {
   date: PropTypes.string,
@@ -134,9 +136,9 @@ Alert.propTypes = {
   optionalClassname: PropTypes.string,
   optionalMessage: PropTypes.string,
   alertType: PropTypes.string,
-  submission: PropTypes.shape().isRequired,
+  submission: PropTypes.shape(),
   icbcDate: PropTypes.string,
   invalidSubmission: PropTypes.bool,
-  isGovernment: PropTypes.bool.isRequired,
+  isGovernment: PropTypes.bool,
 };
 export default Alert;

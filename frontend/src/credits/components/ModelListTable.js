@@ -183,21 +183,6 @@ const ModelListTable = (props) => {
           }}
           key="table"
         />
-
-        <div className="totals">
-          <table>
-            <tbody className="font-weight-bold">
-              <tr className="total-grey">
-                <td className="text-center">Total A Credits</td>
-                <td className="text-right">{_.round(totals.a, 2).toFixed(2)}</td>
-              </tr>
-              <tr>
-                <td className="text-center">Total B Credits</td>
-                <td className="text-right">{_.round(totals.b, 2).toFixed(2)}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
       </div>
     </>
   );
