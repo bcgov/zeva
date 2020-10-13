@@ -1,6 +1,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
+import moment from 'moment-timezone';
 
 const Alert = (props) => {
   const {
@@ -48,8 +49,9 @@ const Alert = (props) => {
   if (alertType === 'credit') {
     const { isGovernment, submission, icbcDate } = props;
     const {
-      validationStatus, createUser, submissionDate, updateUser, unselected,
+      validationStatus, createUser, submissionDate, updateUser, unselected, filename, createTimestamp,
     } = submission;
+    console.log(submission)
     switch (validationStatus) {
       case 'DRAFT':
         if (invalidSubmission) {
@@ -59,7 +61,7 @@ const Alert = (props) => {
           break;
         }
         title = 'Draft';
-        message = `saved ${date} by ${createUser.displayName}, awaiting submission to government.`;
+        message = `Excel template ${filename} uploaded and auto-saved ${moment(createTimestamp).format('MMM D, YYYY')} by ${createUser.displayName}, awaiting submission to government.`;
         classname = 'alert-warning';
         break;
       case 'SUBMITTED':
@@ -126,8 +128,6 @@ Alert.defaultProps = {
   alertType: '',
   icbcDate: '',
   invalidSubmission: false,
-  submission: undefined,
-  isGovernment: false,
 };
 Alert.propTypes = {
   date: PropTypes.string,
@@ -136,9 +136,9 @@ Alert.propTypes = {
   optionalClassname: PropTypes.string,
   optionalMessage: PropTypes.string,
   alertType: PropTypes.string,
-  submission: PropTypes.shape(),
+  submission: PropTypes.shape().isRequired,
   icbcDate: PropTypes.string,
   invalidSubmission: PropTypes.bool,
-  isGovernment: PropTypes.bool,
+  isGovernment: PropTypes.bool.isRequired,
 };
 export default Alert;
