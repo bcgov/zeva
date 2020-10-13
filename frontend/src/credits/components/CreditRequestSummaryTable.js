@@ -33,7 +33,7 @@ const CreditRequestSummaryTable = (props) => {
       id: 'credits',
       accessor: (item) => (item.creditsLabel),
       className: 'text-left font-weight-bold',
-      width: 150,
+      width: 275,
     }],
   }, {
     Header: 'A',
