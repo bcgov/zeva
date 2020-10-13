@@ -93,7 +93,7 @@ const ModelListTable = (props) => {
   items.forEach((item) => {
     const id = `${item.xlsModelYear}-${item.xlsMake}-${item.xlsModel}`;
     const found = data.findIndex((obj) => (obj.id === id));
-    let addSale = 1;
+    const addSale = 1;
     let creditValue = 0;
     let invalidModel = false;
 
@@ -116,7 +116,7 @@ const ModelListTable = (props) => {
           totals.b += creditValue;
         }
       }
-    };
+    }
     // else if (['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(validationStatus) < 0) {
     //   addSale = 1;
     // }
