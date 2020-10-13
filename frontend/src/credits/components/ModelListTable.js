@@ -93,22 +93,21 @@ const ModelListTable = (props) => {
   items.forEach((item) => {
     const id = `${item.xlsModelYear}-${item.xlsMake}-${item.xlsModel}`;
     const found = data.findIndex((obj) => (obj.id === id));
-    let addSale = 0;
+    let addSale = 1;
     let creditValue = 0;
     let invalidModel = false;
 
     if (item.vehicle) {
       ({ creditValue } = item.vehicle);
-
       if (!creditValue || Number.isNaN(creditValue)) {
         creditValue = 0;
       }
 
-      if (['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(validationStatus) < 0) {
-        addSale = 1;
-      } else if (item.recordOfSale) {
-        addSale = 1;
-      }
+      // if (['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(validationStatus) < 0) {
+      //   addSale = 1;
+      // } else if (item.recordOfSale) {
+      //   addSale = 1;
+      // }
 
       if (addSale > 0) {
         if (item.vehicle.creditClass === 'A') {
@@ -117,9 +116,10 @@ const ModelListTable = (props) => {
           totals.b += creditValue;
         }
       }
-    } else if (['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(validationStatus) < 0) {
-      addSale = 1;
-    }
+    };
+    // else if (['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(validationStatus) < 0) {
+    //   addSale = 1;
+    // }
 
     let warnings = 0;
     // does this row have any warnings?
@@ -163,7 +163,6 @@ const ModelListTable = (props) => {
 
   return (
     <>
-      <h3 className="mb-2">Consumer Sales: {totals.sales}</h3>
 
       <div className="table">
         <ReactTable
@@ -183,6 +182,7 @@ const ModelListTable = (props) => {
           }}
           key="table"
         />
+
       </div>
     </>
   );
