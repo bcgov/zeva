@@ -116,20 +116,20 @@ const CreditRequestDetailsPage = (props) => {
   return (
     <div id="credit-request-details" className="page">
       {modal}
-      <div className="row my-3">
+      <div className="row mt-3 mb-2">
         <div className="col-sm-12">
           <h2>Application for Credits for Consumer Sales</h2>
         </div>
       </div>
       {analystAction
       && (
-      <div className="row mb-2">
+      <div className="row my-1">
         <div className="col-sm-12">
           ICBC data current to: {previousDateCurrentTo}
         </div>
       </div>
       )}
-      <div className="row mb-2">
+      <div className="row mb-1">
         <div className="col-sm-12">
           <div className="p-2 m-0">
             <Alert
@@ -159,7 +159,7 @@ const CreditRequestDetailsPage = (props) => {
             <h4 className="d-inline-block sales-upload-grey mb-3">Records address: </h4>
             {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
           </div>
-          <div >
+          <div>
             <CreditRequestSummaryTable items={submission.content} user={user} validationStatus={submission.validationStatus} />
           </div>
         </div>
@@ -272,7 +272,7 @@ const CreditRequestDetailsPage = (props) => {
                       }}
                       type="button"
                     >
-                      <FontAwesomeIcon icon="edit" /> Edit
+                      <FontAwesomeIcon icon="upload" /> Re-upload excel file
                     </button>,
                     <Button
                       buttonType="submit"

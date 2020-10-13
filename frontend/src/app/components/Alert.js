@@ -111,7 +111,7 @@ const Alert = (props) => {
         <b>
           STATUS: {title} &mdash;
         </b>
-        {message}
+        {' '}{message}
       </span>
     </div>
   );

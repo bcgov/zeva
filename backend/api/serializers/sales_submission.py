@@ -8,6 +8,7 @@ from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.models.sales_submission_comment import SalesSubmissionComment
+from api.models.sales_submission_history import SalesSubmissionHistory
 from api.serializers.sales_submission_comment import \
     SalesSubmissionCommentSerializer
 from api.models.user_profile import UserProfile
@@ -177,7 +178,7 @@ class SalesSubmissionSerializer(
             'id', 'validation_status', 'organization', 'submission_date',
             'submission_sequence', 'content', 'submission_id',
             'sales_submission_comment', 'update_user', 'unselected',
-             'update_timestamp', 'create_user'
+            'update_timestamp', 'create_user', 'filename',
         )
 
 
@@ -235,6 +236,12 @@ class SalesSubmissionSaveSerializer(
         validation_status = validated_data.get('validation_status')
 
         if validation_status:
+            SalesSubmissionHistory.objects.create(
+                submission=instance,
+                validation_status=validation_status,
+                update_user=request.user.username,
+                create_user=request.user.username,
+            )
             instance.validation_status = validation_status
             instance.update_user = request.user.username
             instance.save()

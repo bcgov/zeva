@@ -109,7 +109,8 @@ class CreditRequestViewset(
 
                 result = ingest_sales_spreadsheet(
                     data, user=user,
-                    submission_id=submission_id
+                    submission_id=submission_id,
+                    filename=file
                 )
 
                 jsondata = json.dumps(
