@@ -9,7 +9,7 @@ from api.models.sales_submission_statuses import SalesSubmissionStatuses
 class SalesSubmissionHistory(Auditable):
     submission =  models.ForeignKey(
         'SalesSubmission',
-        related_name=None,
+        related_name='history',
         on_delete=models.PROTECT
     )
     validation_status = EnumField(

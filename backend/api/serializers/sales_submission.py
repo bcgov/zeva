@@ -37,7 +37,6 @@ class BaseSerializer():
             return serializer.data
         return obj.create_user
 
-
     def get_validation_status(self, obj):
         request = self.context.get('request')
 
@@ -135,11 +134,24 @@ class SalesSubmissionListSerializer(
             'unselected',
         )
 
+class SalesSubmissionHistorySerializer(
+        ModelSerializer, EnumSupportSerializerMixin, BaseSerializer
+):
+    create_user = SerializerMethodField()
+    update_user = SerializerMethodField()
+    validation_status = SerializerMethodField()
+    class Meta:
+        model = SalesSubmissionHistory
+        fields = (
+            'create_timestamp', 'create_user',
+            'validation_status', 'update_user'
+            )
 
 class SalesSubmissionSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
         BaseSerializer
 ):
+    history = SalesSubmissionHistorySerializer(read_only=True, many=True)
     organization = OrganizationSerializer(read_only=True)
     content = SerializerMethodField()
     sales_submission_comment = SerializerMethodField()
@@ -176,11 +188,10 @@ class SalesSubmissionSerializer(
         model = SalesSubmission
         fields = (
             'id', 'validation_status', 'organization', 'submission_date',
-            'submission_sequence', 'content', 'submission_id',
+            'submission_sequence', 'content', 'submission_id', 'history',
             'sales_submission_comment', 'update_user', 'unselected',
             'update_timestamp', 'create_user', 'filename', 'create_timestamp'
         )
-
 
 class SalesSubmissionSaveSerializer(
         ModelSerializer
