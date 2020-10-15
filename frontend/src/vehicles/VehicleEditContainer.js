@@ -30,7 +30,6 @@ const VehicleEditContainer = (props) => {
 
   const { id } = useParams();
   const { keycloak, newVehicle } = props;
-
   const handleInputChange = (event) => {
     const {
       checked,
@@ -261,6 +260,7 @@ const VehicleEditContainer = (props) => {
       vehicleComment={vehicleComment}
       vehicleTypes={types}
       vehicleYears={years}
+      newVehicle={newVehicle}
     />
   );
 };
