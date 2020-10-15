@@ -12,12 +12,14 @@ const OrganizationsTable = (props) => {
     accessor: 'name',
     className: 'col-name',
     Header: 'Company Name',
-  }, {
-    accessor: (item) => (item.id % 2 ? 'Large' : 'Medium'),
-    className: 'col-class',
-    Header: 'Class',
-    id: 'class',
-  }, {
+  },
+  // {
+  //   accessor: (item) => (item.id % 2 ? 'Large' : 'Medium'),
+  //   className: 'col-class',
+  //   Header: 'Class',
+  //   id: 'class',
+  // },
+  {
     accessor: () => '-',
     className: 'col-credit-balance',
     Header: 'A-Credits',
@@ -28,63 +30,64 @@ const OrganizationsTable = (props) => {
     className: 'col-credit-balance',
     Header: 'B-Credits',
     id: 'b-credits',
-  }, {
-    accessor: (item) => {
-      const { organizationAddress } = item;
+  },
+    //  {
+    //   accessor: (item) => {
+    //     const { organizationAddress } = item;
 
-      if (!organizationAddress) {
-        return '';
-      }
+    //     if (!organizationAddress) {
+    //       return '';
+    //     }
 
-      const {
-        addressLine1,
-        addressLine2,
-        addressLine3,
-        city,
-        country,
-        postalCode,
-        state,
-      } = organizationAddress;
+    //     const {
+    //       addressLine1,
+    //       addressLine2,
+    //       addressLine3,
+    //       city,
+    //       country,
+    //       postalCode,
+    //       state,
+    //     } = organizationAddress;
 
-      let address = '';
+    //     let address = '';
 
-      if (addressLine1) {
-        address += `${addressLine1} `;
-      }
+    //     if (addressLine1) {
+    //       address += `${addressLine1} `;
+    //     }
 
-      if (addressLine2) {
-        address += `${addressLine2} `;
-      }
+    //     if (addressLine2) {
+    //       address += `${addressLine2} `;
+    //     }
 
-      if (addressLine3) {
-        address += `${addressLine3} `;
-      }
+    //     if (addressLine3) {
+    //       address += `${addressLine3} `;
+    //     }
 
-      if (city) {
-        address += `${city} `;
-      }
+    //     if (city) {
+    //       address += `${city} `;
+    //     }
 
-      if (state) {
-        address += `${state} `;
-      }
+    //     if (state) {
+    //       address += `${state} `;
+    //     }
 
-      if (postalCode) {
-        address += `${postalCode} `;
-      }
+    //     if (postalCode) {
+    //       address += `${postalCode} `;
+    //     }
 
-      if (country) {
-        address += `${country} `;
-      }
+    //     if (country) {
+    //       address += `${country} `;
+    //     }
 
-      return address;
-    },
-    className: 'col-address',
-    Header: 'Address',
-    id: 'address',
-  }];
+  //     return address;
+  //   },
+  //   className: 'col-address',
+  //   Header: 'Address',
+  //   id: 'address',
+  // }
+  ];
 
   const { filtered, items, setFiltered } = props;
-
   return (
     <ReactTable
       columns={columns}
