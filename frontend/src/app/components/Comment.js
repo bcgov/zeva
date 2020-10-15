@@ -5,14 +5,11 @@ import moment from 'moment-timezone';
 
 const Comment = (props) => {
   const {
-    comment, date, user, commentArray,
+    commentArray,
   } = props;
-
   return (
     <div className="bcgov-callout" role="alert">
       <span>
-        <b>Comments &mdash;</b> {user && date && ({ user }, { date })}
-        {comment && (<p className="mt-3">{comment}</p>)}
         {commentArray && (
           commentArray.map((each) => (
             <p key={each.id}>
@@ -26,15 +23,9 @@ const Comment = (props) => {
 };
 
 Comment.defaultProps = {
-  date: '',
-  user: '',
-  comment: '',
   commentArray: [],
 };
 Comment.propTypes = {
-  date: PropTypes.string,
-  user: PropTypes.string,
-  comment: PropTypes.string,
   commentArray: PropTypes.arrayOf(PropTypes.shape()),
 };
 export default Comment;
