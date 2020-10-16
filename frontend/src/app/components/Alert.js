@@ -10,7 +10,7 @@ const Alert = (props) => {
   let title;
   let icon = 'exclamation-circle';
   let classname;
-  let message = 'Sales credits cannot be issued until validated by government.';
+  let message = 'ZEV credits cannot be issued until validated by government.';
   let historyMessage;
   if (alertType === 'vehicle') {
     const { user, status } = props;
@@ -52,11 +52,9 @@ const Alert = (props) => {
     const {
       validationStatus, history, unselected, filename,
     } = submission;
-    console.log(submission)
     const statusFilter = (status) => history.filter((each) => each.validationStatus === status)[0];
-    if (history.filter((each) => each.validationStatus === 'SUBMITTED').length > 1) {
-      console.log(history.filter((each) => each.validationStatus === 'SUBMITTED'));
-    }
+    // later we might put in a flag to check if submission has gone back and forth between
+    // analyst and director and have a new alert type
     const excelUploadMessage = `Excel template ${filename} uploaded and auto-saved, ${moment(statusFilter('DRAFT').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('DRAFT').createUser.displayName}`;
     switch (validationStatus) {
       case 'DRAFT':
