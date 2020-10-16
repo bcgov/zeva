@@ -13,12 +13,12 @@ const OrganizationsTable = (props) => {
     className: 'col-name',
     Header: 'Company Name',
   },
-  // {
-  //   accessor: (item) => (item.id % 2 ? 'Large' : 'Medium'),
-  //   className: 'col-class',
-  //   Header: 'Class',
-  //   id: 'class',
-  // },
+  {
+    accessor: () => '',
+    className: 'col-class',
+    Header: 'Class',
+    id: 'class',
+  },
   {
     accessor: () => '-',
     className: 'col-credit-balance',
