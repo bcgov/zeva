@@ -72,7 +72,6 @@ const DashboardContainer = (props) => {
   };
 
   const getIDIRActivityCount = (salesResponse, vehiclesResponse, transfersResponse) => {
-    console.error(salesResponse.data);
     const submittedVehicles = vehiclesResponse.data
       .filter((vehicle) => vehicle.validationStatus === 'SUBMITTED')
       .map((vehicle) => vehicle.modelName);

@@ -37,6 +37,7 @@ const VehicleForm = (props) => {
     vehicleComment,
     vehicleTypes,
     vehicleYears,
+    newVehicle,
   } = props;
   const [showModal, setShowModal] = useState(false);
   const modalText = (fields && fields.hasPassedUs06Test) ? 'Submit vehicle model and range test results to government' : 'Submit ZEV model to government?';
@@ -79,7 +80,7 @@ const VehicleForm = (props) => {
       <div className="row mb-2">
         <div className="col-12">
           <h2>{formTitle}</h2>
-          {fields.make
+          {status && !newVehicle
             && <Alert alertType="vehicle" status={status} user={fields.user} date={moment(fields.updateTimestamp).format('MMM D, YYYY')} />}
           {status === 'CHANGES_REQUESTED' && vehicleComment
           && (

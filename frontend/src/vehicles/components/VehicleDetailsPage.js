@@ -46,7 +46,6 @@ const VehicleDetailsPage = (props) => {
       setRequestChangeCheck(false);
     }
   };
-
   let confirmLabel;
   let handleSubmit = () => {};
   let buttonClass;
@@ -89,12 +88,11 @@ const VehicleDetailsPage = (props) => {
           />
         </div>
       </div>
-
       <div className="row align-items-center">
         <div className="col-md-12 col-lg-9 col-xl-7">
           {details.validationStatus === 'CHANGES_REQUESTED' && user.isGovernment && details.vehicleComment
           && (
-            <Comment comment={details.vehicleComment.comment} user={details.vehicleComment.createUser.displayName} date={moment(details.vehicleComment.createTimestamp).format('MMM D, YYYY')} />
+            <Comment commentArray={[details.vehicleComment]} />
           )}
           <div className="form p-4">
             {user.isGovernment && (

@@ -53,41 +53,77 @@ storiesOf('vehicle alert', module)
       alertType="vehicle"
     />
   ));
+const historyData = [
+  {
+    createTimestamp: '2020-01-01T15:51:51.602702-07:00',
+    createUser: {
+      id: 11, firstName: null, lastName: null, email: null, displayName: 'Wendy Worker',
+    },
+    validationStatus: 'DRAFT',
+  },
+
+  {
+    createTimestamp: '2020-02-01T16:12:47.114148-07:00',
+    createUser: {
+      id: 11, firstName: null, lastName: null, email: null, displayName: 'Barb Boss',
+    },
+    validationStatus: 'SUBMITTED',
+  },
+
+  {
+    createTimestamp: '2020-03-01T16:16:17.825740-07:00',
+    createUser: {
+      id: 10, firstName: 'Gov', lastName: 'User', email: 'asdsf@saf.com', displayName: 'Andy Analyst',
+    },
+    validationStatus: 'CHECKED',
+  },
+
+  {
+    createTimestamp: '2020-04-01T16:16:21.220723-07:00',
+    createUser: {
+      id: 10, firstName: 'Gov', lastName: 'User', email: 'asdsf@saf.com', displayName: 'Andy Analyst',
+    },
+    validationStatus: 'RECOMMEND_APPROVAL',
+  },
+
+  {
+    createTimestamp: '2020-05-01T16:16:32.941211-07:00',
+    createUser: {
+      id: 10, firstName: 'Gov', lastName: 'User', email: 'asdsf@saf.com', displayName: 'Devon Director',
+    },
+    validationStatus: 'VALIDATED',
+  },
+];
 
 const submissionDraft = {
   validationStatus: 'DRAFT',
-  createUser: { displayName: 'emily' },
-  submissionDate: 'March 3, 2020',
-  updateUser: { displayName: 'Teddy' },
   unselected: 1,
+  history: historyData,
+  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls',
 };
 const submissionErrors = {
   validationStatus: 'DRAFT',
-  createUser: { displayName: 'emily' },
-  submissionDate: 'March 3, 2020',
-  updateUser: { displayName: 'Teddy' },
   unselected: 1,
+  history: historyData,
+  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls',
 };
 const submissionSubmitted = {
   validationStatus: 'SUBMITTED',
-  createUser: { displayName: 'emily' },
-  submissionDate: 'March 3, 2020',
-  updateUser: { displayName: 'Teddy' },
   unselected: 1,
+  history: historyData,
+  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls',
 };
 const submissionValidated = {
   validationStatus: 'VALIDATED',
-  createUser: { displayName: 'emily' },
-  submissionDate: 'March 3, 2020',
-  updateUser: { displayName: 'Teddy' },
   unselected: 1,
+  history: historyData,
+  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls',
 };
 const submissionRecommend = {
   validationStatus: 'RECOMMEND_APPROVAL',
-  createUser: { displayName: 'emily' },
-  submissionDate: 'March 3, 2020',
-  updateUser: { displayName: 'Teddy' },
   unselected: 1,
+  history: historyData,
+  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls',
 };
 const submissionChecked = {
   validationStatus: 'CHECKED',
@@ -95,6 +131,8 @@ const submissionChecked = {
   submissionDate: 'March 3, 2020',
   updateUser: { displayName: 'Teddy' },
   unselected: 1,
+  history: historyData,
+  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls',
 };
 storiesOf('credit alert', module)
   .add('errors bceid', () => (
@@ -126,8 +164,6 @@ storiesOf('credit alert', module)
   .add('submitted IDIR', () => (
     <Alert
       status="SUBMITTED"
-      user="Emily"
-      date="Dec 1, 2020"
       alertType="credit"
       submission={submissionSubmitted}
       isGovernment
@@ -136,16 +172,12 @@ storiesOf('credit alert', module)
   .add('validated BCEID', () => (
     <Alert
       submission={submissionValidated}
-      user="Emily"
-      date="Dec 1, 2020"
       alertType="credit"
     />
   ))
   .add('validated IDIR', () => (
     <Alert
       submission={submissionValidated}
-      user="Emily"
-      date="Dec 1, 2020"
       alertType="credit"
       isGovernment
     />
@@ -154,8 +186,6 @@ storiesOf('credit alert', module)
   .add('recommend approval idir', () => (
     <Alert
       submission={submissionRecommend}
-      user="Emily"
-      date="Dec 1, 2020"
       alertType="credit"
       isGovernment
       icbcDate="Oct 1, 2020"
@@ -165,8 +195,6 @@ storiesOf('credit alert', module)
   .add('checked idir', () => (
     <Alert
       submission={submissionChecked}
-      user="Emily"
-      date="Dec 1, 2020"
       alertType="credit"
       isGovernment
       icbcDate="Oct 1, 2020"
