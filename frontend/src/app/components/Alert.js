@@ -53,6 +53,10 @@ const Alert = (props) => {
       validationStatus, history, unselected, filename,
     } = submission;
     const statusFilter = (status) => history.filter((each) => each.validationStatus === status)[0];
+
+    if (!history.some((each) => ['DRAFT', 'SUBMITTED', 'VALIDATED', 'RECOMMEND_APPROVAL', 'CHECKED'].includes(each))) {
+      return false;
+    }
     // later we might put in a flag to check if submission has gone back and forth between
     // analyst and director and have a new alert type
     const excelUploadMessage = `Excel template ${filename} uploaded and auto-saved, ${moment(statusFilter('DRAFT').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('DRAFT').createUser.displayName}`;
