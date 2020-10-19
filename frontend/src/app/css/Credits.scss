@@ -88,10 +88,8 @@
   }
 }
 .credit-summary-table {
-  border: 1px solid $border-grey;
-  td {
-    border: 1px solid $border-grey;
-  }
+  border-bottom: none;
+  border-right: none;
 }
 
 #credit-request-details {
@@ -123,6 +121,7 @@
 
   .address-summary-table {
     border: 1px solid $border-grey;
+
     .rt-thead {
       background-color: $white;
     }

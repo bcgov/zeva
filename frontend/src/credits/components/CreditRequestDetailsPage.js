@@ -129,6 +129,7 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
       )}
+      {submission && submission.history.length > 0 && (
       <div className="row mb-1">
         <div className="col-sm-12">
           <div className="p-2 m-0">
@@ -147,6 +148,7 @@ const CreditRequestDetailsPage = (props) => {
           </div>
         </div>
       </div>
+      )}
       <div className="row m-2 p-3 address-summary-table">
         <div>
           <h3 className="mt-2">
