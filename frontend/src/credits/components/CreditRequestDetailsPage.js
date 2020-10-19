@@ -132,7 +132,7 @@ const CreditRequestDetailsPage = (props) => {
       {submission && submission.history.length > 0 && (
       <div className="row mb-1">
         <div className="col-sm-12">
-          <div className="p-2 m-0">
+          <div className="m-0">
             <Alert
               isGovernment={user.isGovernment}
               alertType="credit"
@@ -149,25 +149,26 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
       )}
-      <div className="row m-2 p-3 address-summary-table">
-        <div>
-          <h3 className="mt-2">
-            {submission.organization && `${submission.organization.name} `}
-          </h3>
-          <div>
-            <h4 className="d-inline-block sales-upload-grey my-2">Service address: </h4>
-            {serviceAddress && <h4 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h4>}
-            <br />
-            <h4 className="d-inline-block sales-upload-grey mb-3">Records address: </h4>
-            {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
-          </div>
-          <div>
+      <div className="row">
+        <div className="col-sm-12">
+          <div className="my-2 px-2 pb-2 address-summary-table">
+            <h3 className="mt-2">
+              {submission.organization && `${submission.organization.name} `}
+            </h3>
+            <div>
+              <h4 className="d-inline-block sales-upload-grey my-2">Service address: </h4>
+              {serviceAddress && <h4 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h4>}
+              <br />
+              <h4 className="d-inline-block sales-upload-grey mb-3">Records address: </h4>
+              {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
+            </div>
+
             <CreditRequestSummaryTable items={submission.content} user={user} validationStatus={submission.validationStatus} />
           </div>
         </div>
       </div>
-      <div className="row m-2">
-        <div className="col-sm-12 p-0">
+      <div className="row mb-2">
+        <div className="col-sm-12">
           <ModelListTable
             items={submission.content}
             user={user}

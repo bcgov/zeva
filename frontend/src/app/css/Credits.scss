@@ -90,9 +90,14 @@
 .credit-summary-table {
   border-bottom: none;
   border-right: none;
+  display: inline-table;
 }
 
 #credit-request-details {
+  .status-alert {
+    margin: 0;
+  }
+
   .table {
     border: 1px solid $border-grey;
     padding: 0.5rem;

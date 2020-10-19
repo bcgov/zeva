@@ -54,7 +54,7 @@ const Alert = (props) => {
     } = submission;
     const statusFilter = (status) => history.filter((each) => each.validationStatus === status)[0];
 
-    if (!history.some((each) => ['DRAFT', 'SUBMITTED', 'VALIDATED', 'RECOMMEND_APPROVAL', 'CHECKED'].includes(each))) {
+    if (!history.some((each) => ['DRAFT', 'SUBMITTED', 'VALIDATED', 'RECOMMEND_APPROVAL', 'CHECKED'].includes(each.validationStatus))) {
       return false;
     }
     // later we might put in a flag to check if submission has gone back and forth between

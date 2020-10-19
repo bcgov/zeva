@@ -162,29 +162,23 @@ const ModelListTable = (props) => {
   });
 
   return (
-    <>
+    <ReactTable
+      columns={columns}
+      data={data}
+      defaultSorted={[{
+        id: 'make',
+      }]}
+      getTrProps={(state, row) => {
+        if (row && row.original && row.original.invalidModel) {
+          return {
+            className: 'background-danger',
+          };
+        }
 
-      <div className="table">
-        <ReactTable
-          columns={columns}
-          data={data}
-          defaultSorted={[{
-            id: 'make',
-          }]}
-          getTrProps={(state, row) => {
-            if (row && row.original && row.original.invalidModel) {
-              return {
-                className: 'background-danger',
-              };
-            }
-
-            return {};
-          }}
-          key="table"
-        />
-
-      </div>
-    </>
+        return {};
+      }}
+      key="table"
+    />
   );
 };
 
