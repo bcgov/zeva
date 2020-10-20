@@ -34,11 +34,11 @@ class TestSales(BaseTestCase):
             ros.save()
 
     def test_list_sales_fs(self):
-        response = self.clients['RTAN_BCEID'].get("/api/sales")
+        response = self.clients['RTAN_BCEID'].get("/api/credit-requests")
         self.assertEqual(response.status_code, 200)
 
     def test_list_sales_gov(self):
-        response = self.clients['RTAN'].get("/api/sales")
+        response = self.clients['RTAN'].get("/api/credit-requests")
         self.assertEqual(response.status_code, 200)
 
     def test_validate_validation_status(self):

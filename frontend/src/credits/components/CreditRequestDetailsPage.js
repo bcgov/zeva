@@ -6,11 +6,12 @@ import Alert from '../../app/components/Alert';
 import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
 import history from '../../app/History';
-import ROUTES_CREDITS from '../../app/routes/Credits';
-import ROUTES_SALES from '../../app/routes/Sales';
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import download from '../../app/utilities/download';
 import CustomPropTypes from '../../app/utilities/props';
 import ModelListTable from './ModelListTable';
+import CreditRequestSummaryTable from './CreditRequestSummaryTable';
+import Comment from '../../app/components/Comment';
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -25,14 +26,14 @@ const CreditRequestDetailsPage = (props) => {
   const [modalType, setModalType] = useState('');
   const [comment, setComment] = useState('');
 
-  const serviceAddress = user.organization.organizationAddress.find((address) => address.addressType.addressType === 'Service');
-  const recordsAddress = user.organization.organizationAddress.find((address) => address.addressType.addressType === 'Records');
+  const serviceAddress = submission.organization.organizationAddress.find((address) => address.addressType.addressType === 'Service');
+  const recordsAddress = submission.organization.organizationAddress.find((address) => address.addressType.addressType === 'Records');
 
   const downloadErrors = (e) => {
     const element = e.target;
     const original = element.innerHTML;
     element.firstChild.textContent = ' Downloading...';
-    return download(ROUTES_SALES.DOWNLOAD_ERRORS.replace(':id', submission.id), {}).then(() => {
+    return download(ROUTES_CREDIT_REQUESTS.DOWNLOAD_ERRORS.replace(':id', submission.id), {}).then(() => {
       element.innerHTML = original;
     });
   };
@@ -115,26 +116,23 @@ const CreditRequestDetailsPage = (props) => {
   return (
     <div id="credit-request-details" className="page">
       {modal}
-      <div className="row my-3">
+      <div className="row mt-3 mb-2">
         <div className="col-sm-12">
           <h2>Application for Credits for Consumer Sales</h2>
-          <h3 className="mt-2">
-            {submission.organization && `${submission.organization.name} `}
-            ZEV Sales Submission {submission.submissionDate}
-          </h3>
         </div>
       </div>
       {analystAction
       && (
-      <div className="row mb-2">
+      <div className="row my-1">
         <div className="col-sm-12">
           ICBC data current to: {previousDateCurrentTo}
         </div>
       </div>
       )}
-      <div className="row mb-2">
+      {submission && submission.history.length > 0 && (
+      <div className="row mb-1">
         <div className="col-sm-12">
-          <div className="recommendation-comment p-2 m-0">
+          <div className="m-0">
             <Alert
               isGovernment={user.isGovernment}
               alertType="credit"
@@ -145,33 +143,31 @@ const CreditRequestDetailsPage = (props) => {
               invalidSubmission={invalidSubmission}
             />
             {submission.salesSubmissionComment && user.isGovernment && (
-              submission.salesSubmissionComment.map((each) => (
-                <div key={each.id}>
-                  <h4 className="d-inline mr-2">
-                    Comments from {each.createUser.displayName} {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}:
-                  </h4>
-                  <span>
-                    {each.comment}
-                  </span>
-                </div>
-              ))
+              <Comment commentArray={submission.salesSubmissionComment} />
             )}
           </div>
         </div>
       </div>
-      {/* )} */}
-      {!user.isGovernment && (
-        <div className="row mb-3">
-          <div className="col-sm-12">
-            <h4 className="d-inline-block sales-upload-grey">Service address: </h4>
-            {serviceAddress && <h4 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h4>}
-            <br />
-            <h4 className="d-inline-block sales-upload-grey">Records address: </h4>
-            {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
-          </div>
-        </div>
       )}
       <div className="row">
+        <div className="col-sm-12">
+          <div className="my-2 px-2 pb-2 address-summary-table">
+            <h3 className="mt-2">
+              {submission.organization && `${submission.organization.name} `}
+            </h3>
+            <div>
+              <h4 className="d-inline-block sales-upload-grey my-2">Service address: </h4>
+              {serviceAddress && <h4 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h4>}
+              <br />
+              <h4 className="d-inline-block sales-upload-grey mb-3">Records address: </h4>
+              {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
+            </div>
+
+            <CreditRequestSummaryTable items={submission.content} user={user} validationStatus={submission.validationStatus} />
+          </div>
+        </div>
+      </div>
+      <div className="row mb-2">
         <div className="col-sm-12">
           <ModelListTable
             items={submission.content}
@@ -196,7 +192,7 @@ const CreditRequestDetailsPage = (props) => {
             <span className="left-content">
               <Button
                 buttonType="back"
-                locationRoute={(locationState && locationState.href) ? locationState.href : ROUTES_CREDITS.CREDIT_REQUESTS}
+                locationRoute={(locationState && locationState.href) ? locationState.href : ROUTES_CREDIT_REQUESTS.LIST}
                 locationState={locationState}
               />
               {submission.validationStatus === 'DRAFT' && (
@@ -221,7 +217,7 @@ const CreditRequestDetailsPage = (props) => {
                   <button
                     className={validatedOnly ? 'button' : 'button primary'}
                     onClick={() => {
-                      const url = ROUTES_CREDITS.SALES_SUBMISSION_DETAILS.replace(/:id/g, submission.id);
+                      const url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id);
 
                       history.push(url);
                     }}
@@ -274,12 +270,12 @@ const CreditRequestDetailsPage = (props) => {
                       className="button"
                       key="edit"
                       onClick={() => {
-                        const url = ROUTES_CREDITS.EDIT.replace(/:id/g, submission.id);
+                        const url = ROUTES_CREDIT_REQUESTS.EDIT.replace(/:id/g, submission.id);
                         history.push(url);
                       }}
                       type="button"
                     >
-                      <FontAwesomeIcon icon="edit" /> Edit
+                      <FontAwesomeIcon icon="upload" /> Re-upload excel file
                     </button>,
                     <Button
                       buttonType="submit"

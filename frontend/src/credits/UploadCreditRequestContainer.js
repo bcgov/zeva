@@ -8,13 +8,12 @@ import { useParams } from 'react-router-dom';
 
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import history from '../app/History';
-import ROUTES_CREDITS from '../app/routes/Credits';
-import ROUTES_SALES from '../app/routes/Sales';
+import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
 import CustomPropTypes from '../app/utilities/props';
 import upload from '../app/utilities/upload';
-import SalesUploadPage from './components/SalesUploadPage';
+import CreditRequestsUploadPage from './components/CreditRequestsUploadPage';
 
-const SalesSubmissionContainer = (props) => {
+const UploadCreditRequestsContainer = (props) => {
   const { user } = props;
   const [errorMessage, setErrorMessage] = useState(null);
   const [files, setFiles] = useState([]);
@@ -30,9 +29,9 @@ const SalesSubmissionContainer = (props) => {
       };
     }
 
-    upload(ROUTES_SALES.UPLOAD, files, data).then((response) => {
+    upload(ROUTES_CREDIT_REQUESTS.UPLOAD, files, data).then((response) => {
       const { id: creditRequestId } = response.data;
-      history.push(ROUTES_CREDITS.CREDIT_REQUEST_DETAILS.replace(':id', creditRequestId));
+      history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', creditRequestId));
     }).catch((error) => {
       const { response } = error;
 
@@ -48,7 +47,7 @@ const SalesSubmissionContainer = (props) => {
 
   return ([
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
-    <SalesUploadPage
+    <CreditRequestsUploadPage
       errorMessage={errorMessage}
       files={files}
       key="page"
@@ -59,8 +58,8 @@ const SalesSubmissionContainer = (props) => {
   ]);
 };
 
-SalesSubmissionContainer.propTypes = {
+UploadCreditRequestsContainer.propTypes = {
   user: CustomPropTypes.user.isRequired,
 };
 
-export default withRouter(SalesSubmissionContainer);
+export default withRouter(UploadCreditRequestsContainer);

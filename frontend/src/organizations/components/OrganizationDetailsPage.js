@@ -61,7 +61,7 @@ const OrganizationDetailsPage = (props) => {
         </div>
       </div>
 
-      <div className="row mt-4 mb-2">
+      <div className="row mb-2">
         <div className="col-sm-6 d-flex align-items-end">
           <h2>Users</h2>
         </div>

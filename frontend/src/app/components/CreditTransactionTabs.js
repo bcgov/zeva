@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import ROUTES_CREDIT_REQUESTS from '../routes/CreditRequests';
+import ROUTES_CREDIT_TRANSFERS from '../routes/CreditTransfers';
 import ROUTES_CREDITS from '../routes/Credits';
 import CustomPropTypes from '../utilities/props';
 
@@ -28,14 +30,14 @@ const CreditTransactionTabs = (props) => {
         className={`nav-item ${(active === 'credit-requests') ? 'active' : ''}`}
         role="presentation"
       >
-        <Link to={ROUTES_CREDITS.CREDIT_REQUESTS}>Credit Applications</Link>
+        <Link to={ROUTES_CREDIT_REQUESTS.LIST}>Credit Applications</Link>
       </li>
       {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED && (
       <li
         className={`nav-item ${(active === 'credit-transfers') ? 'active' : ''}`}
         role="presentation"
       >
-        <Link to={ROUTES_CREDITS.CREDIT_TRANSFERS}>Credit Transfers</Link>
+        <Link to={ROUTES_CREDIT_TRANSFERS.LIST}>Credit Transfers</Link>
       </li>
       )}
       {user.isGovernment && (
@@ -43,7 +45,7 @@ const CreditTransactionTabs = (props) => {
         className={`nav-item ${(active === 'icbc-update') ? 'active' : ''}`}
         role="presentation"
       >
-        <Link to={ROUTES_CREDITS.UPLOADVERIFICATION}>Update ICBC Data</Link>
+        <Link to={ROUTES_CREDITS.UPLOAD_VERIFICATION}>Update ICBC Data</Link>
       </li>
       )}
       {CONFIG.FEATURES.INITIATIVE_AGREEMENTS.ENABLED && (

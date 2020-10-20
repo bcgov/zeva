@@ -10,9 +10,7 @@ import { withRouter } from 'react-router';
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import Loading from '../app/components/Loading';
 import history from '../app/History';
-import ROUTES_CREDITS from '../app/routes/Credits';
-import ROUTES_SALES from '../app/routes/Sales';
-import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
+import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
 import CustomPropTypes from '../app/utilities/props';
 import CreditRequestDetailsPage from './components/CreditRequestDetailsPage';
 import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification';
@@ -31,7 +29,7 @@ const CreditRequestDetailsContainer = (props) => {
   const refreshDetails = () => {
     axios.all([
       axios.get(ROUTES_ICBCVERIFICATION.DATE),
-      axios.get(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id)),
+      axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
     ]).then(axios.spread((dateResponse, submissionResponse) => {
       if (dateResponse.data.uploadDate) {
         setPreviousDateCurrentTo(dateResponse.data.uploadDate);
@@ -52,11 +50,11 @@ const CreditRequestDetailsContainer = (props) => {
     if (comment.length > 0) {
       submissionContent.salesSubmissionComment = { comment };
     }
-    axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id), submissionContent).then(() => {
+    axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), submissionContent).then(() => {
       if (validationStatus === 'SUBMITTED') {
-        history.push(ROUTES_SALES.CONFIRM.replace(':id', id));
+        history.push(ROUTES_CREDIT_REQUESTS.CONFIRM.replace(':id', id));
       } else {
-        history.push(ROUTES_CREDITS.CREDIT_REQUESTS);
+        history.push(ROUTES_CREDIT_REQUESTS.LIST);
       }
     });
   };

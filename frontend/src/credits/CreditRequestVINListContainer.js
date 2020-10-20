@@ -8,12 +8,11 @@ import { withRouter } from 'react-router';
 
 import history from '../app/History';
 import Loading from '../app/components/Loading';
-import ROUTES_CREDITS from '../app/routes/Credits';
-import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
+import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
 import CustomPropTypes from '../app/utilities/props';
-import SalesSubmissionDetailsPage from './components/SalesSubmissionDetailsPage';
+import CreditRequestVINListPage from './components/CreditRequestVINListPage';
 
-const SalesSubmissionDetailsContainer = (props) => {
+const CreditRequestVINListContainer = (props) => {
   const { match, user } = props;
   const { id } = match.params;
 
@@ -22,7 +21,7 @@ const SalesSubmissionDetailsContainer = (props) => {
   const [validatedList, setValidatedList] = useState([]);
 
   const refreshDetails = () => {
-    axios.get(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id)).then((response) => {
+    axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)).then((response) => {
       const { data } = response;
       setSubmission(data);
 
@@ -62,11 +61,12 @@ const SalesSubmissionDetailsContainer = (props) => {
   };
 
   const handleSubmit = () => {
-    axios.patch(ROUTES_SALES_SUBMISSIONS.DETAILS.replace(':id', id), {
+    axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), {
       records: validatedList,
       validationStatus: 'CHECKED',
     }).then(() => {
-      const url = ROUTES_CREDITS.CREDIT_REQUEST_DETAILS.replace(/:id/g, submission.id);
+      const url = ROUTES_CREDIT_REQUESTS.VALIDATED.replace(/:id/g, submission.id);
+
       history.push(url);
     });
   };
@@ -76,7 +76,7 @@ const SalesSubmissionDetailsContainer = (props) => {
   }
 
   return (
-    <SalesSubmissionDetailsPage
+    <CreditRequestVINListPage
       handleCheckboxClick={handleCheckboxClick}
       handleSubmit={handleSubmit}
       routeParams={match.params}
@@ -87,9 +87,9 @@ const SalesSubmissionDetailsContainer = (props) => {
   );
 };
 
-SalesSubmissionDetailsContainer.propTypes = {
+CreditRequestVINListContainer.propTypes = {
   user: CustomPropTypes.user.isRequired,
   match: CustomPropTypes.routeMatch.isRequired,
 };
 
-export default withRouter(SalesSubmissionDetailsContainer);
+export default withRouter(CreditRequestVINListContainer);

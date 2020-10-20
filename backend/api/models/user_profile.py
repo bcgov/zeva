@@ -1,8 +1,5 @@
-import string
-
 from django.db import models
-from django.db.models import F, Q
-import django.contrib.auth.validators
+from django.db.models import Q
 
 from auditable.models import Auditable
 

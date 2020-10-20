@@ -87,8 +87,17 @@
     }
   }
 }
+.credit-summary-table {
+  border-bottom: none;
+  border-right: none;
+  display: inline-table;
+}
 
 #credit-request-details {
+  .status-alert {
+    margin: 0;
+  }
+
   .table {
     border: 1px solid $border-grey;
     padding: 0.5rem;
@@ -115,10 +124,16 @@
     }
   }
 
-  .recommendation-comment {
+  .address-summary-table {
     border: 1px solid $border-grey;
-    margin: 1rem 0 1.5rem 0;
-    background-color: #fcfcfc;
+
+    .rt-thead {
+      background-color: $white;
+    }
+    .rt-td, .rt-th {
+      border-bottom: 1px solid $react-border;
+      border-right: 1px solid $react-border;
+    }
   }
 
   .comment-area {

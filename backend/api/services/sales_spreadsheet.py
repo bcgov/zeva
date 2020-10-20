@@ -7,7 +7,7 @@ from pickle import PickleError
 import magic
 
 from dateutil.parser import parse
-from django.core.exceptions import ValidationError, PermissionDenied
+from django.core.exceptions import ValidationError
 
 import xlrd
 import xlwt
@@ -17,6 +17,7 @@ from api.models.model_year import ModelYear
 from api.models.organization import Organization
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission import SalesSubmission
+from api.models.sales_submission_history import SalesSubmissionHistory
 from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.vehicle import Vehicle
 
@@ -189,7 +190,7 @@ def create_sales_spreadsheet(organization, stream):
 
 def ingest_sales_spreadsheet(
         data, user=None, skip_authorization=False,
-        submission_id=None
+        submission_id=None, filename=None
 ):
     workbook = xlrd.open_workbook(file_contents=data)
 
@@ -214,13 +215,25 @@ def ingest_sales_spreadsheet(
             organization=organization,
             submission_sequence=SalesSubmission.next_sequence(
                 organization, datetime.now()
-            )
+            ),
+            filename=filename
         )
+        submissionHistory = SalesSubmissionHistory.objects.create(
+                submission=submission,
+                validation_status='DRAFT',
+                update_user=username,
+                create_user=username,
+            )
+        submissionHistory.save()
     else:
         submission = SalesSubmission.objects.get(
             id=submission_id,
             organization_id=organization.id
         )
+
+        submission.filename = filename
+        submission.save()
+
 
         # Enable this when we finally get our permissions correct
         # if not user.has_perm('EDIT_SALES'):

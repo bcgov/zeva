@@ -8,9 +8,9 @@ import axios from 'axios';
 import CustomPropTypes from '../app/utilities/props';
 import DashboardPage from './components/DashboardPage';
 
-import ROUTES_SALES_SUBMISSIONS from '../app/routes/SalesSubmissions';
+import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
-import ROUTES_CREDITS from '../app/routes/Credits';
+import ROUTES_CREDIT_TRANSFERS from '../app/routes/CreditTransfers';
 
 const DashboardContainer = (props) => {
   const { user } = props;
@@ -80,7 +80,7 @@ const DashboardContainer = (props) => {
     const recommendReject = salesResponse.data
       .filter((submission) => submission.validationStatus === 'RECOMMEND_REJECTION');
     const analystNeeded = salesResponse.data
-      .filter((submission) => submission.validationStatus === 'SUBMITTED');
+      .filter((submission) => ['SUBMITTED', 'CHECKED'].indexOf(submission.validationStatus) >= 0);
     const transfersAwaitingPartner= transfersResponse.data
       .filter((submission) => submission.status === 'SUBMITTED');
     const transfersAwaitingDirector = transfersResponse.data
@@ -101,9 +101,9 @@ const DashboardContainer = (props) => {
 
   const refreshList = () => {
     axios.all([
-      axios.get(ROUTES_SALES_SUBMISSIONS.LIST),
+      axios.get(ROUTES_CREDIT_REQUESTS.LIST),
       axios.get(ROUTES_VEHICLES.LIST),
-      axios.get(ROUTES_CREDITS.CREDIT_TRANSFERS_API),
+      axios.get(ROUTES_CREDIT_TRANSFERS.LIST),
     ]).then(axios.spread((salesResponse, vehiclesResponse, transfersResponse) => {
       if (!isMountedRef.current) {
         return false;

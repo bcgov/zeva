@@ -93,22 +93,21 @@ const ModelListTable = (props) => {
   items.forEach((item) => {
     const id = `${item.xlsModelYear}-${item.xlsMake}-${item.xlsModel}`;
     const found = data.findIndex((obj) => (obj.id === id));
-    let addSale = 0;
+    const addSale = 1;
     let creditValue = 0;
     let invalidModel = false;
 
     if (item.vehicle) {
       ({ creditValue } = item.vehicle);
-
       if (!creditValue || Number.isNaN(creditValue)) {
         creditValue = 0;
       }
 
-      if (['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(validationStatus) < 0) {
-        addSale = 1;
-      } else if (item.recordOfSale) {
-        addSale = 1;
-      }
+      // if (['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(validationStatus) < 0) {
+      //   addSale = 1;
+      // } else if (item.recordOfSale) {
+      //   addSale = 1;
+      // }
 
       if (addSale > 0) {
         if (item.vehicle.creditClass === 'A') {
@@ -117,9 +116,10 @@ const ModelListTable = (props) => {
           totals.b += creditValue;
         }
       }
-    } else if (['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(validationStatus) < 0) {
-      addSale = 1;
     }
+    // else if (['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(validationStatus) < 0) {
+    //   addSale = 1;
+    // }
 
     let warnings = 0;
     // does this row have any warnings?
@@ -162,44 +162,23 @@ const ModelListTable = (props) => {
   });
 
   return (
-    <>
-      <h3 className="mb-2">Consumer Sales: {totals.sales}</h3>
+    <ReactTable
+      columns={columns}
+      data={data}
+      defaultSorted={[{
+        id: 'make',
+      }]}
+      getTrProps={(state, row) => {
+        if (row && row.original && row.original.invalidModel) {
+          return {
+            className: 'background-danger',
+          };
+        }
 
-      <div className="table">
-        <ReactTable
-          columns={columns}
-          data={data}
-          defaultSorted={[{
-            id: 'make',
-          }]}
-          getTrProps={(state, row) => {
-            if (row && row.original && row.original.invalidModel) {
-              return {
-                className: 'background-danger',
-              };
-            }
-
-            return {};
-          }}
-          key="table"
-        />
-
-        <div className="totals">
-          <table>
-            <tbody className="font-weight-bold">
-              <tr className="total-grey">
-                <td className="text-center">Total A Credits</td>
-                <td className="text-right">{_.round(totals.a, 2).toFixed(2)}</td>
-              </tr>
-              <tr>
-                <td className="text-center">Total B Credits</td>
-                <td className="text-right">{_.round(totals.b, 2).toFixed(2)}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </>
+        return {};
+      }}
+      key="table"
+    />
   );
 };
 

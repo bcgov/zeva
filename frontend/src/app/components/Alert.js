@@ -1,6 +1,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
+import moment from 'moment-timezone';
 
 const Alert = (props) => {
   const {
@@ -9,7 +10,8 @@ const Alert = (props) => {
   let title;
   let icon = 'exclamation-circle';
   let classname;
-  let message = 'Sales credits cannot be issued until validated by government.';
+  let message = 'ZEV credits cannot be issued until validated by government.';
+  let historyMessage;
   if (alertType === 'vehicle') {
     const { user, status } = props;
     switch (status) {
@@ -48,8 +50,16 @@ const Alert = (props) => {
   if (alertType === 'credit') {
     const { isGovernment, submission, icbcDate } = props;
     const {
-      validationStatus, createUser, submissionDate, updateUser, unselected,
+      validationStatus, history, unselected, filename,
     } = submission;
+    const statusFilter = (status) => history.filter((each) => each.validationStatus === status)[0];
+
+    if (!history.some((each) => ['DRAFT', 'SUBMITTED', 'VALIDATED', 'RECOMMEND_APPROVAL', 'CHECKED'].includes(each.validationStatus))) {
+      return false;
+    }
+    // later we might put in a flag to check if submission has gone back and forth between
+    // analyst and director and have a new alert type
+    const excelUploadMessage = `Excel template ${filename} uploaded and auto-saved, ${moment(statusFilter('DRAFT').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('DRAFT').createUser.displayName}`;
     switch (validationStatus) {
       case 'DRAFT':
         if (invalidSubmission) {
@@ -59,17 +69,17 @@ const Alert = (props) => {
           break;
         }
         title = 'Draft';
-        message = `saved ${date} by ${createUser.displayName}, awaiting submission to government.`;
+        message = `${excelUploadMessage}, awaiting submission to government. `;
         classname = 'alert-warning';
         break;
       case 'SUBMITTED':
-        message = `Application submitted to government ${date}, by ${createUser.displayName}. Awaiting review by government.`;
+        message = `Application submitted to government ${moment(statusFilter('SUBMITTED').createTimestamp).format('MMM D, YYYY')}, by ${statusFilter('SUBMITTED').createUser.displayName}. Awaiting review by government.`;
         title = 'Submitted';
-        // add history when ready History - Excel template [insertname.ecl] uploaded Oct. 31st 2020, by Toni Carmaker.
         if (isGovernment) {
           classname = 'alert-warning';
         } else {
           classname = 'alert-primary';
+          historyMessage = `${excelUploadMessage}. `;
         }
         break;
       case 'VALIDATED':
@@ -77,22 +87,22 @@ const Alert = (props) => {
         classname = 'alert-success';
         icon = 'check-circle';
         if (isGovernment) {
-          message = `Credits issued ${date} by ${updateUser.displayName}.`;
+          message = `Credits issued ${moment(statusFilter('VALIDATED').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('VALIDATED').createUser.displayName}.`;
         } else {
-          message = `Credits issued ${date} by government.`
-          // add history when ready History - Excel template [insertname.ecl] uploaded Oct. 31st 2020, by Toni Carmaker. Application submitted to government Oct. 31st 2020, by Toni Carmaker.
+          message = `Credits issued ${moment(statusFilter('VALIDATED').createTimestamp).format('MMM D, YYYY')} by government.`;
+          historyMessage = `${excelUploadMessage}. Application submitted to government ${moment(statusFilter('SUBMITTED').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('SUBMITTED').createUser.displayName}`;
         }
         break;
       case 'RECOMMEND_APPROVAL':
         if (isGovernment) {
           title = 'Recommended';
-          message = `Application reviewed and recommended to Director ${date} by ${updateUser.displayName}. ICBC data used was current to ${icbcDate}.`;
+          message = `Application reviewed and recommended to Director ${moment(statusFilter('RECOMMEND_APPROVAL').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('RECOMMEND_APPROVAL').createUser.displayName}.  ICBC data used was current to ${icbcDate}.`;
           classname = 'alert-warning';
         }
         break;
       case 'CHECKED':
         title = 'Validated';
-        message = `Sales checked against ICBC registration data ${date} by ${updateUser.displayName}. ICBC data used was current to ${icbcDate}.`;
+        message = `Sales checked against ICBC registration data ${moment(statusFilter('CHECKED').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('CHECKED').createUser.displayName}. ICBC data used was current to ${icbcDate}.`;
         classname = 'alert-warning';
         break;
       default:
@@ -111,7 +121,15 @@ const Alert = (props) => {
         <b>
           STATUS: {title} &mdash;
         </b>
-        {message}
+        {' '}{message}
+        {historyMessage
+        && (
+        <>
+          <br /> <br />
+          <b>History - </b>
+          {historyMessage}
+        </>
+        )}
       </span>
     </div>
   );
@@ -126,6 +144,14 @@ Alert.defaultProps = {
   alertType: '',
   icbcDate: '',
   invalidSubmission: false,
+  submission: {
+    history: [{
+      createUser: { displayName: '' },
+      createTimestamp: '',
+      validationStatus: '',
+    }],
+  },
+  isGovernment: false,
 };
 Alert.propTypes = {
   date: PropTypes.string,
@@ -134,9 +160,9 @@ Alert.propTypes = {
   optionalClassname: PropTypes.string,
   optionalMessage: PropTypes.string,
   alertType: PropTypes.string,
-  submission: PropTypes.shape().isRequired,
+  submission: PropTypes.shape(),
   icbcDate: PropTypes.string,
   invalidSubmission: PropTypes.bool,
-  isGovernment: PropTypes.bool.isRequired,
+  isGovernment: PropTypes.bool,
 };
 export default Alert;

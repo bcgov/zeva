@@ -9,7 +9,7 @@ import ReactTable from '../../app/components/ReactTable';
 import { CREDIT_ERROR_CODES } from '../../app/constants/errorCodes';
 import CustomPropTypes from '../../app/utilities/props';
 
-const SalesListTable = (props) => {
+const VINListTable = (props) => {
   const {
     handleCheckboxClick,
     items,
@@ -176,12 +176,12 @@ const SalesListTable = (props) => {
   );
 };
 
-SalesListTable.defaultProps = {
+VINListTable.defaultProps = {
   filtered: undefined,
   setFiltered: undefined,
 };
 
-SalesListTable.propTypes = {
+VINListTable.propTypes = {
   handleCheckboxClick: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   user: CustomPropTypes.user.isRequired,
@@ -193,4 +193,4 @@ SalesListTable.propTypes = {
   setFiltered: PropTypes.func,
 };
 
-export default SalesListTable;
+export default VINListTable;
