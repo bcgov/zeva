@@ -19,7 +19,7 @@ module.exports = (settings)=>{
       'SOURCE_REPOSITORY_URL': oc.git.http_url,
       'SOURCE_REPOSITORY_REF': oc.git.ref,
       'SOURCE_IMAGE_STREAM_NAMESPACE': phases[phase].namespace,
-      'SOURCE_IMAGE_STREAM_TAG': 'bcgov-jenkins-basic:v2-202021021'
+      'SOURCE_IMAGE_STREAM_TAG': 'bcgov-jenkins-basic:v2-20201021'
     }
   }));
 
