@@ -43,9 +43,9 @@
         <defaultedServiceAccountName>jenkins-prod</defaultedServiceAccountName>
         <defaultedServerPrefix>https://openshift.default.svc</defaultedServerPrefix>
         <defaultedRedirectURL>https://console.pathfinder.gov.bc.ca:8443</defaultedRedirectURL>
-        <defaultedClientId>system:serviceaccount:tbiwaq-tools:jenkins-prod</defaultedClientId>
+        <defaultedClientId>system:serviceaccount:f52f12-tools:jenkins-prod</defaultedClientId>
         <defaultedClientSecret>eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJ0Yml3YXEtdG9vbHMiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlY3JldC5uYW1lIjoiamVua2lucy1wcm9kLXRva2VuLWhteHo5Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImplbmtpbnMtcHJvZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjEyZDJlYWNlLTJjMTItMTFlYS1hZGNkLTAwNTA1NjgzNDhjYyIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDp0Yml3YXEtdG9vbHM6amVua2lucy1wcm9kIn0.PJ7GysGdZdy3uPSLUmFRLUHZHpkocbPV08aXGeeIW5zWWlbwlWMHeTyiF3Tqo4ToYMhcXmqhFukEr6NNRtgxrVUsHuOx4i7OH8UFrW1TeXYgPBBUpfwXhOoIhhTA2Jl5lbWVvsPNNoB_f-SFe3cqcNC0sIctb2EwIl6CBV8JksjfWtxSXzJGkdBYFf9mvBftCq7QlEYVoMWBJ_goOd-j3ITHyo5klVFdmLN4i7GphWPcoFMEsxxEGhbvbG3NNiwA0J_43Ueo6po7V-UH9HNTuD38coqWJbK3PXsr9IUrlncVqj3pbWi3P9Ir_CInjInALpCQPiOupBZ7w2BfgiHdAA</defaultedClientSecret>
-        <namespace>tbiwaq-tools</namespace>
+        <namespace>f52f12-tools</namespace>
         <provider>
             <issuer>https://console.pathfinder.gov.bc.ca:8443</issuer>
             <authorization__endpoint>https://console.pathfinder.gov.bc.ca:8443/oauth/authorize</authorization__endpoint>
@@ -70,8 +70,8 @@
             <skipTlsVerify>false</skipTlsVerify>
             <addMasterProxyEnvVars>false</addMasterProxyEnvVars>
             <capOnlyOnAlivePods>false</capOnlyOnAlivePods>
-            <jenkinsUrl>http://jenkins-prod.tbiwaq-tools.svc:8080</jenkinsUrl>
-            <jenkinsTunnel>jenkins-prod.tbiwaq-tools.svc:50000</jenkinsTunnel>
+            <jenkinsUrl>http://jenkins-prod.f52f12-tools.svc:8080</jenkinsUrl>
+            <jenkinsTunnel>jenkins-prod.f52f12-tools.svc:50000</jenkinsTunnel>
             <containerCap>10</containerCap>
             <retentionTimeout>5</retentionTimeout>
             <connectTimeout>5</connectTimeout>
