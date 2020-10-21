@@ -113,6 +113,8 @@ const CreditRequestDetailsPage = (props) => {
   && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0
   && user.hasPermission('RECOMMEND_SALES');
 
+  console.error(analystAction);
+
   return (
     <div id="credit-request-details" className="page">
       {modal}
@@ -149,7 +151,7 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
       )}
-      <div className="row">
+      <div className="row mb-1">
         <div className="col-sm-12">
           <div className="my-2 px-2 pb-2 address-summary-table">
             <h3 className="mt-2">
