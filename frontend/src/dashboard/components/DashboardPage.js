@@ -1,6 +1,7 @@
 import React from 'react';
-import CustomPropTypes from '../../app/utilities/props';
+import PropTypes from 'prop-types';
 
+import CustomPropTypes from '../../app/utilities/props';
 import ActionsBceid from './ActionsBceid';
 import ActionsIdir from './ActionsIdir';
 import Administration from './Administration';
@@ -9,10 +10,11 @@ import UserSettings from './UserSettings';
 
 const DashboardPage = (props) => {
   const { user, activityCount, loading } = props;
+
   return (
     <div id="dashboard">
       <div className="row">
-        <div className="col-lg-3">
+        <div className="col-xl-3 col-lg-4 col-md-12">
           <UserSettings details={user} />
           {user && !user.isGovernment && (
             <Feedback />
@@ -23,7 +25,7 @@ const DashboardPage = (props) => {
             )}
         </div>
 
-        <div className="col-xl-7 col-lg-9">
+        <div className="col-xl-8 col-lg-8 col-md-12">
           {user.isGovernment ? <ActionsIdir user={user} activityCount={activityCount} loading={loading} /> : <ActionsBceid activityCount={activityCount} loading={loading} />}
         </div>
       </div>
@@ -32,6 +34,8 @@ const DashboardPage = (props) => {
 };
 
 DashboardPage.propTypes = {
+  activityCount: PropTypes.shape().isRequired,
+  loading: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 

@@ -149,7 +149,7 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
       )}
-      <div className="row">
+      <div className="row mb-1">
         <div className="col-sm-12">
           <div className="my-2 px-2 pb-2 address-summary-table">
             <h3 className="mt-2">
