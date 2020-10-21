@@ -113,8 +113,6 @@ const CreditRequestDetailsPage = (props) => {
   && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0
   && user.hasPermission('RECOMMEND_SALES');
 
-  console.error(analystAction);
-
   return (
     <div id="credit-request-details" className="page">
       {modal}
