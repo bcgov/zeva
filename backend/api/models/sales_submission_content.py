@@ -1,3 +1,4 @@
+import datetime
 from xlrd import xldate, XL_CELL_TEXT, XL_CELL_DATE, XLDateError
 from dateutil.parser import parse
 from django.db import models
@@ -6,7 +7,6 @@ from auditable.models import Auditable
 from api.models.icbc_registration_data import IcbcRegistrationData
 from api.models.vehicle import Vehicle
 from api.models.record_of_sale import RecordOfSale
-from api.models.icbc_upload_date import IcbcUploadDate
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
 
 
@@ -145,21 +145,10 @@ class SalesSubmissionContent(Auditable):
         if self.record_of_sale is None:
             warnings.append('ROW_NOT_SELECTED')
 
-        icbc_upload_date = IcbcUploadDate.objects.order_by(
-            '-upload_date'
-        ).first()
-
         if self.sales_date is None:
             warnings.append('INVALID_DATE')
-        elif icbc_upload_date is not None:
-            date_diff = abs(
-                self.sales_date.year - icbc_upload_date.upload_date.year
-            ) * 12 + abs(
-                self.sales_date.month - icbc_upload_date.upload_date.month
-            )
-
-            if date_diff > 3:
-                warnings.append('EXPIRED_REGISTRATION_DATE')
+        elif self.sales_date < datetime.datetime(2018, 1, 2):
+            warnings.append('EXPIRED_REGISTRATION_DATE')
 
         if self.is_already_awarded:
             warnings.append('VIN_ALREADY_AWARDED')
