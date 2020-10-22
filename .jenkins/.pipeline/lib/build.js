@@ -28,7 +28,7 @@ module.exports = (settings)=>{
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
       'VERSION': phases[phase].tag,
-      'SOURCE_IMAGE_STREAM_TAG': `${phases[phase].name}:${phases[phase].tag}`,
+      'SOURCE_IMAGE_STREAM_TAG': 'bcgov-jenkins-basic:v2-20201021',
       'SLAVE_NAME':'main'
     }
   }));
