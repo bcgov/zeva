@@ -201,9 +201,8 @@ objects:
         containerNames:
         - jenkins
         from:
-          namespace: e52f12-tools
           kind: ImageStreamTag
-          name: bcgov-jenkins-basic:v2-20201021
+          name: ${NAME}:${VERSION}
       type: ImageChange
     - type: ConfigChange
 - apiVersion: v1
