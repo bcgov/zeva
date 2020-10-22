@@ -7,6 +7,7 @@ import history from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
 import TransferFormRow from './TransferFormRow';
 import FormDropdown from './FormDropdown';
+import CreditTransferSignoff from './CreditTransfersSignOff';
 
 const CreditTransfersPage = (props) => {
   const {
@@ -114,31 +115,7 @@ const CreditTransfersPage = (props) => {
                   <h4><FontAwesomeIcon icon="plus" /> Add another line</h4>
                 </button>
                 <span className="transfer-total">Total CAD: ${total}</span>
-                <div>
-                  <div className="d-inline-block align-middle my-2 ml-2 mr-1">
-                    <input type="checkbox" id="authority" onClick={(event) => { handleCheckboxClick(event); }} />
-                  </div>
-                  <label className="d-inline" htmlFor="authority" id="transfer-text">
-                    I confirm that I am an officer or employee of {user.organization.name},
-                    and that records evidencing my authority to submit this notice are available on request.
-                  </label>
-                </div>
-                <div>
-                  <div className="d-inline-block align-middle my-2 ml-2 mr-1">
-                    <input type="checkbox" id="accurate" onClick={(event) => { handleCheckboxClick(event); }} />
-                  </div>
-                  <label className="d-inline" htmlFor="accurate" id="transfer-text">
-                    {user.organization.name} certifies that the information provided in this notice is accurate and complete
-                  </label>
-                </div>
-                <div>
-                  <div className="d-inline-block align-middle my-2 ml-2 mr-1">
-                    <input type="checkbox" id="consent" onClick={(event) => { handleCheckboxClick(event); }} />
-                  </div>
-                  <label className="d-inline" htmlFor="consent" id="transfer-text">
-                    {user.organization.name} consents to the transfer of credits in this notice
-                  </label>
-                </div>
+                <CreditTransferSignoff handleCheckboxClick={handleCheckboxClick} user={user} />
                 {actionbar}
               </fieldset>
             </div>
