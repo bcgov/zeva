@@ -17,3 +17,5 @@ Note: the base image is stored at e52f12-tools/bcgov-jenkins-basic:v2-20201021, 
 oc process -f .jenkins/openshift/deploy-prereq.yaml GH_USERNAME=*** GH_ACCESS_TOKEN=*** | oc create -f - -n e52f12-tools
 Note: the value of GH_ACCESS_TOKEN can go to github developer settings -> Personal access tokens to find "Used by Jenkins which setup for PR based Pipeline"
 
+* DO NOT run "npm run build -- --pr=365 --env=build", no need to build again, just use the e52f12-tools/bcgov-jenkins-basic:v2-20201021
+zeva/.jenkins/.pipeline$ npm run deploy -- --pr=365 --env=dev

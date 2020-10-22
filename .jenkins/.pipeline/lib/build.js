@@ -22,7 +22,7 @@ module.exports = (settings)=>{
       'SOURCE_IMAGE_STREAM_TAG': 'bcgov-jenkins-basic:v2-20201021'
     }
   }));
-
+/*
   objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/build-slave.yaml`, {
     'param':{
       'NAME': phases[phase].name,
@@ -32,7 +32,7 @@ module.exports = (settings)=>{
       'SLAVE_NAME':'main'
     }
   }));
-
+*/
   oc.applyRecommendedLabels(objects, phases[phase].name, phase, phases[phase].changeId, phases[phase].instance)
   oc.applyAndBuild(objects)
 }

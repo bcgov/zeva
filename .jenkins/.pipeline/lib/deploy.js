@@ -22,6 +22,7 @@ module.exports = (settings)=>{
     }
   }))
 
+  /**
   objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/deploy-slave.yaml`, {
     'param':{
       'NAME': phases[phase].name,
@@ -35,7 +36,7 @@ module.exports = (settings)=>{
       'MEMORY_REQUEST': '2Gi',
       'MEMORY_LIMIT': '2Gi'
     }
-  }))
+  })) */
 
   oc.applyRecommendedLabels(objects, phases[phase].name, phase, `${changeId}`, phases[phase].instance)
   oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag)
