@@ -48,6 +48,24 @@ class CreditTransferSaveSerializer(ModelSerializer):
     status = EnumField(CreditTransferStatuses)
     content = CreditTransferContentSaveSerializer(allow_null=True, many=True)
 
+    def validate_validation_status(self, value):
+        request = self.context.get('request')
+        instance = self.instance
+
+        instance.validate_validation_status(value, request)
+
+        return value
+
+    def update(self, instance, validated_data):
+        request = self.context.get('request')
+        records = request.data.get('records')
+        validation_status = validated_data.get('status')
+        if validation_status:
+            instance.status = validation_status
+            instance.update_user = request.user.username
+            instance.save()
+        return instance
+
     def create(self, validated_data):
         request = self.context.get('request')
         content = request.data.get('content')
