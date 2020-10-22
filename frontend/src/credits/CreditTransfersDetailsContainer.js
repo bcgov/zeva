@@ -27,7 +27,6 @@ const CreditTransfersDetailsContainer = (props) => {
     axios.get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id))
       .then((response) => {
         setSubmission(response.data);
-        console.log(response.data)
       });
     setLoading(false);
   };
@@ -36,10 +35,11 @@ const CreditTransfersDetailsContainer = (props) => {
     refreshDetails();
   }, [id]);
 
-  const handleSubmit = (status) => {
-    console.log(id)
-    console.log(status)
+  const handleSubmit = (status, comment = '') => {
     const submissionContent = {status}
+    if (comment.length > 0) {
+      submissionContent.creditTransferComment = {comment}
+    }
     axios.patch(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id), submissionContent).then(() => {
       history.push(ROUTES_CREDIT_TRANSFERS.LIST);
     });

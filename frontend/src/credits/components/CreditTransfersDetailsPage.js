@@ -34,7 +34,7 @@ const CreditTransfersDetailsPage = (props) => {
     case 'reject':
       modalProps = {
         confirmLabel: ' Reject',
-        handleSubmit: () => { handleSubmit('REJECTED'); },
+        handleSubmit: () => { handleSubmit('REJECTED', comment); },
         buttonClass: 'btn-outline-danger',
         modalText: 'Reject notice?',
       };
