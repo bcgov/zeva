@@ -10,7 +10,7 @@ module.exports = (settings)=>{
   var objects = []
 
   const templatesLocalBaseUrl =oc.toFileUrl(path.resolve(__dirname, '../../openshift'))
-/*
+
   objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/build-master.yaml`, {
     'param':{
       'NAME': phases[phase].name,
@@ -22,7 +22,6 @@ module.exports = (settings)=>{
       'SOURCE_IMAGE_STREAM_TAG': 'bcgov-jenkins-basic:v2-20201021'
     }
   }));
-*/
 
   objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/build-slave.yaml`, {
     'param':{

@@ -11,7 +11,7 @@ module.exports = (settings)=>{
   var objects = []
 
   const templatesLocalBaseUrl =oc.toFileUrl(path.resolve(__dirname, '../../openshift'))
-/*
+
   objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/deploy-master.yaml`, {
     'param':{
       'NAME': phases[phase].name,
@@ -21,7 +21,6 @@ module.exports = (settings)=>{
       'ROUTE_HOST': `${phases[phase].name}${phases[phase].suffix}-${phases[phase].namespace}.${phases[phase].ocpName}.gov.bc.ca`
     }
   }))
-*/
   
   objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/deploy-slave.yaml`, {
     'param':{
