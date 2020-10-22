@@ -59,7 +59,13 @@ const Alert = (props) => {
     }
     // later we might put in a flag to check if submission has gone back and forth between
     // analyst and director and have a new alert type
-    const excelUploadMessage = `Excel template ${filename} uploaded and auto-saved, ${moment(statusFilter('DRAFT').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('DRAFT').createUser.displayName}`;
+    let excelUploadMessage = '';
+
+    // additional check just in case for some reason draft status couldn't be found
+    if (history.find((each) => each.validationStatus === 'DRAFT')) {
+      excelUploadMessage = `Excel template ${filename} uploaded and auto-saved, ${moment(statusFilter('DRAFT').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('DRAFT').createUser.displayName}`;
+    }
+
     switch (validationStatus) {
       case 'DRAFT':
         if (invalidSubmission) {
@@ -75,7 +81,7 @@ const Alert = (props) => {
       case 'SUBMITTED':
         message = `Application submitted to government ${moment(statusFilter('SUBMITTED').createTimestamp).format('MMM D, YYYY')}, by ${statusFilter('SUBMITTED').createUser.displayName}. Awaiting review by government.`;
         title = 'Submitted';
-        if (isGovernment) {
+        if (isGovernment || excelUploadMessage === '') {
           classname = 'alert-warning';
         } else {
           classname = 'alert-primary';
@@ -86,7 +92,7 @@ const Alert = (props) => {
         title = 'Issued';
         classname = 'alert-success';
         icon = 'check-circle';
-        if (isGovernment) {
+        if (isGovernment || excelUploadMessage === '') {
           message = `Credits issued ${moment(statusFilter('VALIDATED').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('VALIDATED').createUser.displayName}.`;
         } else {
           message = `Credits issued ${moment(statusFilter('VALIDATED').createTimestamp).format('MMM D, YYYY')} by government.`;
@@ -94,7 +100,7 @@ const Alert = (props) => {
         }
         break;
       case 'RECOMMEND_APPROVAL':
-        if (isGovernment) {
+        if (isGovernment || excelUploadMessage === '') {
           title = 'Recommended';
           message = `Application reviewed and recommended to Director ${moment(statusFilter('RECOMMEND_APPROVAL').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('RECOMMEND_APPROVAL').createUser.displayName}.  ICBC data used was current to ${icbcDate}.`;
           classname = 'alert-warning';

@@ -167,6 +167,13 @@
       margin-left: 0.5rem;
     }
   }
+
+  @media (min-width: 1200px) and (max-width: 1480px) {
+    .col-xl-3 {
+      flex: 0 0 30% !important;
+      max-width: 30% !important;
+    } 
+  }
 }
 
 #actions {
