@@ -46,7 +46,7 @@ const CreditRequestDetailsPage = (props) => {
         confirmLabel: ' Submit',
         handleSubmit: () => { handleSubmit('SUBMITTED'); },
         buttonClass: 'button primary',
-        modalText: 'Submit credit request to government?',
+        modalText: 'Submit credit request to Government of B.C.?',
         icon: <FontAwesomeIcon icon="paper-plane" />,
       };
       break;

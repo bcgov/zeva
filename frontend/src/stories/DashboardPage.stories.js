@@ -107,14 +107,14 @@ storiesOf('Activity Banner BCEID', module)
       />
     </div>
   ))
-  .add('green validated by government', () => (
+  .add('green validated by Government of B.C.', () => (
     <div id="actions" className="dashboard-card">
       <ActivityBanner
         user={BceidUser}
         colour="green"
         icon="car"
         boldText="ZEV Models"
-        regularText="2 validated by government"
+        regularText="2 validated by Government of B.C."
         linkTo="/"
       />
     </div>

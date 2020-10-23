@@ -24,7 +24,7 @@ const Administration = (props) => {
                 History.push(ROUTES_ORGANIZATIONS.USERS.replace(/:id/gi, user.organization.id));
               }}
             >
-              Manage government users
+              Manage Government of B.C. users
             </button>
           </div>
         </div>
