@@ -5,6 +5,7 @@ import ReactTable from '../../app/components/ReactTable';
 import CreditTransferSignoff from './CreditTransfersSignOff';
 import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
+import CustomPropTypes from '../../app/utilities/props';
 
 const CreditTransfersDetailsPage = (props) => {
   const { submission, user, handleSubmit } = props;
@@ -96,12 +97,24 @@ const CreditTransfersDetailsPage = (props) => {
     </Modal>
   );
 
-  const actionbar = (
+  const actionBarNonTrade = (
     <div className="row">
       <div className="col-sm-12">
         <div className="action-bar">
           <span className="left-content">
-            <Button buttonType="back" locationRoute="/credit-transactions/transfers" />
+            <Button buttonType="back" locationRoute="/credit-transfers" />
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+
+  const actionbarTradePartner = (
+    <div className="row">
+      <div className="col-sm-12">
+        <div className="action-bar">
+          <span className="left-content">
+            <Button buttonType="back" locationRoute="/credit-transfers" />
             <Button
               buttonType="reject"
               optionalText="Reject Notice"
@@ -154,18 +167,24 @@ const CreditTransfersDetailsPage = (props) => {
                    columns={columns}
                    data={submission.creditTransferContent}
                  />
-                 <div className="text-blue">
-                   for a total value of ${submission.creditTransferContent.reduce((a, v) => a + v.dollarValue * v.creditValue, 0)} Canadian dollars.
+
+                 {(user.organization.name === submission.creditTo.name)
+                 && (
+                 <div>
+                   <div className="text-blue">
+                     for a total value of ${submission.creditTransferContent.reduce((a, v) => a + v.dollarValue * v.creditValue, 0)} Canadian dollars.
+                   </div>
+                   <h4>
+                     If you agree to this notice of transfer please confirm the following statements and click Submit Notice to send to the Government of B.C. Director for the transfer to be recorded.
+                   </h4>
+                   <CreditTransferSignoff handleCheckboxClick={handleCheckboxClick} user={user} />
+                   <h4 className="my-2">
+                     If you don&apos;t agree to this transfer enter a comment below to {submission.debitFrom.name} and click Reject Notice
+                   </h4>
+                   <textarea name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} disabled={allChecked} />
                  </div>
-                 <h4>
-                   If you agree to this notice of transfer please confirm the following statements and click Submit Notice to send to the Government of B.C. Director for the transfer to be recorded.
-                 </h4>
-                 <CreditTransferSignoff handleCheckboxClick={handleCheckboxClick} user={user} />
-                 <h4 className="my-2">
-                   If you don&apos;t agree to this transfer enter a comment below to {submission.debitFrom.name} and click Reject Notice
-                 </h4>
-                 <textarea name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} disabled={allChecked} />
-                 {actionbar}
+                 )}
+                 {(user.organization.name === submission.creditTo.name) ? actionbarTradePartner : actionBarNonTrade}
                </div>
                )}
           </div>
@@ -175,11 +194,10 @@ const CreditTransfersDetailsPage = (props) => {
   );
 };
 
-CreditTransfersDetailsPage.defaultProps = {
-
-};
-
 CreditTransfersDetailsPage.propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
+  user: CustomPropTypes.user.isRequired,
+  submission: PropTypes.shape().isRequired,
 
 };
 
