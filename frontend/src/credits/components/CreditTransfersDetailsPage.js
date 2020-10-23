@@ -41,6 +41,12 @@ const CreditTransfersDetailsPage = (props) => {
       };
       break;
     default:
+      modalProps = {
+        confirmLabel: '',
+        handleSubmit: () => {},
+        buttonClass: '',
+        modalText: '',
+      }
       break;
   }
 
@@ -56,24 +62,29 @@ const CreditTransfersDetailsPage = (props) => {
     Header: 'Quantity',
     accessor: (item) => (Math.ceil(item.creditValue)),
     id: 'credit-quantity',
+    className: 'text-right',
   }, {
     Header: 'Model Year',
     accessor: (item) => (item.modelYear.name),
     id: 'model-year',
+    className: 'text-center',
   }, {
     Header: 'ZEV Class',
     accessor: (item) => (item.creditClass.creditClass),
     id: 'zev-class',
+    className: 'text-center',
   },
   {
     Header: 'Value Per Credit',
     accessor: (item) => (item.dollarValue),
     id: 'dollar-value',
     width: 150,
+    className: 'text-right',
   }, {
     Header: 'Total',
     accessor: (item) => (`$${item.creditValue * item.dollarValue}`),
     id: 'total',
+    className: 'text-right',
   },
   ];
   const modal = (
@@ -141,7 +152,6 @@ const CreditTransfersDetailsPage = (props) => {
       </div>
     </div>
   );
-
   return (
     <div id="credit-transfers-details" className="page">
       {modal}
@@ -168,7 +178,7 @@ const CreditTransfersDetailsPage = (props) => {
                    data={submission.creditTransferContent}
                  />
 
-                 {(user.organization.name === submission.creditTo.name)
+                 {(user.organization.name === submission.creditTo.name && submission.status === 'SUBMITTED')
                  && (
                  <div>
                    <div className="text-blue">
@@ -184,7 +194,7 @@ const CreditTransfersDetailsPage = (props) => {
                    <textarea name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} disabled={allChecked} />
                  </div>
                  )}
-                 {(user.organization.name === submission.creditTo.name) ? actionbarTradePartner : actionBarNonTrade}
+                 {(user.organization.name === submission.creditTo.name && submission.status === 'SUBMITTED') ? actionbarTradePartner : actionBarNonTrade}
                </div>
                )}
           </div>

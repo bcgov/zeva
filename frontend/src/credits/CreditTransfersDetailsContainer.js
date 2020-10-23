@@ -21,7 +21,7 @@ const CreditTransfersDetailsContainer = (props) => {
   const { state: locationState } = location;
   const { id } = match.params;
 
-  const [submission, setSubmission] = useState([]);
+  const [submission, setSubmission] = useState({});
   const [loading, setLoading] = useState(true);
   const refreshDetails = () => {
     axios.get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id))

@@ -96,7 +96,6 @@
 
 #credit-transfers-details {
   .form {
-    // padding: .5rem;
     background-color: $form-background-grey;
     border: 1px solid $border-grey;
     .text-blue {
@@ -110,12 +109,14 @@
   }
 
   .transfer-summary-table {
+    padding: 5px;
     border: 1px solid $border-grey;
     display: inline-table;
     .rt-td {
       border: 1px solid $border-grey;
     }
      .rt-th {
+      padding: 1px;
       font-weight: bold;
       border: 1px solid $border-grey;
     }
@@ -143,6 +144,7 @@
       border: 1px solid $border-grey;
       border-collapse: collapse;
       margin-left: auto;
+
 
       td {
         border-collapse: collapse;
