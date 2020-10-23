@@ -115,7 +115,7 @@ const VINListTable = (props) => {
     }, {
       accessor: (row) => {
         if (row.warnings && row.warnings.some((warning) => [
-          'DUPLICATE_VIN', 'INVALID_MODEL', 'VIN_ALREADY_AWARDED',
+          'DUPLICATE_VIN', 'INVALID_MODEL', 'VIN_ALREADY_AWARDED', 'EXPIRED_REGISTRATION_DATE',
         ].indexOf(warning) >= 0)) {
           return false;
         }
@@ -152,21 +152,17 @@ const VINListTable = (props) => {
       }]}
       getTrProps={(state, rowInfo) => {
         if (rowInfo) {
-          if (rowInfo.row.warning.includes('11')) {
+          const warnings = rowInfo.row.warning.split(', ');
+
+          if (warnings.some((each) => ['21', '31', '51'].includes(each))) {
             return {
-              className: 'icbc-verification-warning',
+              className: 'icbc-danger',
             };
           }
 
-          if (rowInfo.row.warning.includes('41')) {
+          if (warnings.some((each) => ['11', '41', '61'].includes(each))) {
             return {
-              className: 'icbc-mismatch-warning',
-            };
-          }
-
-          if (rowInfo.row.warning.includes('61')) {
-            return {
-              className: 'invalid-data',
+              className: 'icbc-warning',
             };
           }
         }

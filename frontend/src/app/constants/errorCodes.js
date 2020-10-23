@@ -8,11 +8,11 @@ export const CREDIT_ERROR_CODES = {
     errorField: 'sales-date',
   },
   INVALID_DATE: {
-    errorCode: 71,
+    errorCode: 61,
     errorField: 'sales-date'
   },
   INVALID_MODEL: {
-    errorCode: 61,
+    errorCode: 71,
     errorField: 'model-year make model',
   },
   MODEL_MISMATCHED: {

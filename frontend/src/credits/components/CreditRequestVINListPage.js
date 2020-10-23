@@ -56,13 +56,12 @@ const CreditRequestVINListPage = (props) => {
         <div className="col-sm-12 mt-3">
           <strong>warnings found </strong>
           &mdash; warning codes:{' '}
-          11 = no matching ICBC data;{' '}
-          21 = credits already issued to VIN;{' '}
-          31 = VIN contains duplicates;{' '}
-          41 = unmatched data;{' '}
-          51 = retail sales date and registration date greater than 3 months apart;{' '}
-          61 = invalid make, model and year combination;{' '}
-          71 = invalid date
+          11 = VIN not registered in BC;{' '}
+          21 = VIN already issued credit;{' '}
+          31 = Duplicate VIN;{' '}
+          41 = Model year does not match BC registration data;{' '}
+          51 = Sale prior to 2 Jan 2018;{' '}
+          61 = Invalid Date
         </div>
       </div>
       )}
