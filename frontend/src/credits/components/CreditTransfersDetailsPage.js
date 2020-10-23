@@ -21,7 +21,6 @@ const CreditTransfersDetailsPage = (props) => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
   let modalProps = {};
-
   switch (modalType) {
     case 'submit':
       modalProps = {
@@ -46,7 +45,7 @@ const CreditTransfersDetailsPage = (props) => {
         handleSubmit: () => {},
         buttonClass: '',
         modalText: '',
-      }
+      };
       break;
   }
 
@@ -111,7 +110,7 @@ const CreditTransfersDetailsPage = (props) => {
   const actionBarNonTrade = (
     <div className="row">
       <div className="col-sm-12">
-        <div className="action-bar">
+        <div className="action-bar" testid="action-bar-basic">
           <span className="left-content">
             <Button buttonType="back" locationRoute="/credit-transfers" />
           </span>
@@ -127,6 +126,7 @@ const CreditTransfersDetailsPage = (props) => {
           <span className="left-content">
             <Button buttonType="back" locationRoute="/credit-transfers" />
             <Button
+              testid="reject-transfer"
               buttonType="reject"
               optionalText="Reject Notice"
               optionalClassname="button text-danger"
@@ -139,6 +139,7 @@ const CreditTransfersDetailsPage = (props) => {
           </span>
           <span className="right-content">
             <Button
+              testid="submit-transfer"
               buttonType="submit"
               action={() => {
                 setModalType('submit');
@@ -178,7 +179,7 @@ const CreditTransfersDetailsPage = (props) => {
                    data={submission.creditTransferContent}
                  />
 
-                 {(user.organization.name === submission.creditTo.name && submission.status === 'SUBMITTED')
+                 {(user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED')
                  && (
                  <div>
                    <div className="text-blue">
@@ -188,13 +189,15 @@ const CreditTransfersDetailsPage = (props) => {
                      If you agree to this notice of transfer please confirm the following statements and click Submit Notice to send to the Government of B.C. Director for the transfer to be recorded.
                    </h4>
                    <CreditTransferSignoff handleCheckboxClick={handleCheckboxClick} user={user} />
-                   <h4 className="my-2">
-                     If you don&apos;t agree to this transfer enter a comment below to {submission.debitFrom.name} and click Reject Notice
-                   </h4>
-                   <textarea name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} disabled={allChecked} />
+                   <label htmlFor="transfer-comment">
+                     <h4>
+                       If you don&apos;t agree to this transfer enter a comment below to {submission.debitFrom.name} and click Reject Notice
+                     </h4>
+                   </label>
+                   <textarea testid="transfer-comment" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} disabled={allChecked} />
                  </div>
                  )}
-                 {(user.organization.name === submission.creditTo.name && submission.status === 'SUBMITTED') ? actionbarTradePartner : actionBarNonTrade}
+                 {(user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED') ? actionbarTradePartner : actionBarNonTrade}
                </div>
                )}
           </div>
