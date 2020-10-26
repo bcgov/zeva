@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from django.db.models import Q
 
 from api.models.credit_transfer import CreditTransfer
+from api.models.credit_transfer_statuses import CreditTransferStatuses
 from api.serializers.credit_transaction import CreditTransactionSaveSerializer
 from api.serializers.credit_transfer import CreditTransferSerializer, \
     CreditTransferSaveSerializer
@@ -47,6 +48,9 @@ class CreditTransferViewset(
             return self.serializer_classes[self.action]
 
         return self.serializer_classes['default']
+    
+    # def perform_update(self, serializer):
+    #     submission = serializer.save()
 
     def create(self, request, *args, **kwargs):
         serializer = CreditTransferSaveSerializer(

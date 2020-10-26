@@ -4,11 +4,12 @@
 import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import React from 'react';
-
+import history from '../../app/History';
 import ReactTable from '../../app/components/ReactTable';
 import CustomPropTypes from '../../app/utilities/props';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import formatStatus from '../../app/utilities/formatStatus';
+import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 
 const CreditTransfersListTable = (props) => {
   const { user, filtered, setFiltered } = props;
@@ -130,6 +131,19 @@ const CreditTransfersListTable = (props) => {
       }]}
       filtered={filtered}
       setFiltered={setFiltered}
+      getTrProps={(state, row) => {
+        if (row && row.original) {
+          return {
+            onClick: () => {
+              const { id } = row.original;
+              history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/g, id), filtered);
+            },
+            className: 'clickable',
+          };
+        }
+
+        return {};
+      }}
     />
   );
 };
