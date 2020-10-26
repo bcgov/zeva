@@ -41,15 +41,8 @@ const CreditTransfersContainer = (props) => {
   };
 
   const submitOrSave = (status) => {
-    let creditTo = '';
-    let debitFrom = '';
-    if (fields.transferType === 'transfer to') {
-      creditTo = fields.transferPartner;
-      debitFrom = user.organization.id;
-    } else {
-      creditTo = user.organization.id;
-      debitFrom = fields.transferPartner;
-    }
+    const creditTo = fields.transferPartner;
+    const debitFrom = user.organization.id;
     const data = rows.map((row) => ({
       creditValue: row.quantity,
       dollarValue: row.value,

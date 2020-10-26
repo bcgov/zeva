@@ -91,16 +91,12 @@ const CreditTransfersPage = (props) => {
               <fieldset>
                 <h3>{user.organization.name} submits notice of the following proposed credit transfer:</h3>
                 <div className="form-group">
-                  <div className="d-inline-block align-middle mr-5">
-                    <input type="radio" id="transfer-to" name="transferType" value="transfer to" onChange={handleInputChange} />
-                    <label htmlFor="transfer-to">transfer to</label>
-                    <br />
-                    <input type="radio" id="transfer-from" name="transferType" value="receive from" onChange={handleInputChange} />
-                    <label htmlFor="transfer-from">receive from</label>
+                  <div className="d-inline-block align-middle mr-2">
+                    <h4>{user.organization.name} will transfer credits to</h4>
                   </div>
                   <FormDropdown
                     accessor={(organization) => organization.id}
-                    dropdownName="select transfer partner"
+                    dropdownName=" (select transfer partner)"
                     dropdownData={organizations}
                     fieldName="transferPartner"
                     handleInputChange={handleInputChange}
