@@ -10,35 +10,35 @@ const Alert = (props) => {
   let title;
   let icon = 'exclamation-circle';
   let classname;
-  let message = 'ZEV credits cannot be issued until validated by government.';
+  let message = 'ZEV credits cannot be issued until validated by Government of B.C.';
   let historyMessage;
   if (alertType === 'vehicle') {
     const { user, status } = props;
     switch (status) {
       case 'CHANGES_REQUESTED':
         title = 'Changes Requested';
-        message = `information or change requested by government ${date}, see comments. ${message}`;
+        message = `information or change requested by Government of B.C. ${date}, see comments. ${message}`;
         classname = 'alert-warning';
         break;
       case 'DRAFT':
         title = 'Draft';
-        message = `saved ${date} by ${user}, awaiting submission to government. ${message}`;
+        message = `saved ${date} by ${user}, awaiting submission to Government of B.C. ${message}`;
         classname = 'alert-warning';
         break;
       case 'SUBMITTED':
-        message = `submitted to government ${date} by ${user}, awaiting validation by government. ${message}`;
+        message = `submitted to Government of B.C. ${date} by ${user}, awaiting validation by Government of B.C. ${message}`;
         title = 'Submitted';
         classname = 'alert-primary';
         break;
       case 'VALIDATED':
         title = 'Validated';
-        message = `validated by government ${date}. Credits can be issued for eligible sales of this model`;
+        message = `validated by Government of B.C. ${date}. Credits can be issued for eligible sales of this model`;
         classname = 'alert-success';
         icon = 'check-circle';
         break;
       case 'REJECTED':
         title = 'Rejected';
-        message = `rejected by government ${date}. Credits cannot be issued for sales of this model.`;
+        message = `rejected by Government of B.C. ${date}. Credits cannot be issued for sales of this model.`;
         classname = 'alert-danger';
         break;
       default:
@@ -75,11 +75,11 @@ const Alert = (props) => {
           break;
         }
         title = 'Draft';
-        message = `${excelUploadMessage}, awaiting submission to government. `;
+        message = `${excelUploadMessage}, awaiting submission to Government of B.C. `;
         classname = 'alert-warning';
         break;
       case 'SUBMITTED':
-        message = `Application submitted to government ${moment(statusFilter('SUBMITTED').createTimestamp).format('MMM D, YYYY')}, by ${statusFilter('SUBMITTED').createUser.displayName}. Awaiting review by government.`;
+        message = `Application submitted to Government of B.C. ${moment(statusFilter('SUBMITTED').createTimestamp).format('MMM D, YYYY')}, by ${statusFilter('SUBMITTED').createUser.displayName}. Awaiting review by Government of B.C.`;
         title = 'Submitted';
         if (isGovernment || excelUploadMessage === '') {
           classname = 'alert-warning';
@@ -95,8 +95,8 @@ const Alert = (props) => {
         if (isGovernment || excelUploadMessage === '') {
           message = `Credits issued ${moment(statusFilter('VALIDATED').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('VALIDATED').createUser.displayName}.`;
         } else {
-          message = `Credits issued ${moment(statusFilter('VALIDATED').createTimestamp).format('MMM D, YYYY')} by government.`;
-          historyMessage = `${excelUploadMessage}. Application submitted to government ${moment(statusFilter('SUBMITTED').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('SUBMITTED').createUser.displayName}`;
+          message = `Credits issued ${moment(statusFilter('VALIDATED').createTimestamp).format('MMM D, YYYY')} by Government of B.C.`;
+          historyMessage = `${excelUploadMessage}. Application submitted to Government of B.C. ${moment(statusFilter('SUBMITTED').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('SUBMITTED').createUser.displayName}`;
         }
         break;
       case 'RECOMMEND_APPROVAL':

@@ -40,7 +40,7 @@ const VehicleForm = (props) => {
     newVehicle,
   } = props;
   const [showModal, setShowModal] = useState(false);
-  const modalText = (fields && fields.hasPassedUs06Test) ? 'Submit vehicle model and range test results to government' : 'Submit ZEV model to government?';
+  const modalText = (fields && fields.hasPassedUs06Test) ? 'Submit vehicle model and range test results to Government of B.C.' : 'Submit ZEV model to Government of B.C.?';
   const modal = (
     <Modal
       confirmLabel=" Submit"
