@@ -46,7 +46,7 @@
   }
 
   input[type=radio], input[type=checkbox] {
-      margin-right: 1rem;      
+      margin-right: .5rem;      
   }
   input[type=text], select {
     border: 2px solid $default-text-black;
@@ -67,9 +67,6 @@
       white-space: nowrap;
   }
 }
-// #service-title {
-//   float:right;
-// }
 
 .react-autosuggest__input {
   display: block;

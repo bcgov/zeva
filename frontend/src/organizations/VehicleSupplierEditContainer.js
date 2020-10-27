@@ -82,6 +82,7 @@ const VehicleSupplierEditContainer = (props) => {
   const handleSubmit = () => {
     let formData = {};
     const serviceAddress = {
+      representativeName: details.organizationAddress.Service_representativeName,
       addressType: 'Service',
       addressLine_1: details.organizationAddress.Service_addressLine_1,
       addressLine_2: details.organizationAddress.Service_addressLine_2,
