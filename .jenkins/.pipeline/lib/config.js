@@ -3,7 +3,6 @@ const options= require('@bcgov/pipeline-cli').Util.parseArguments()
 const changeId = options.pr //aka pull-request
 const version = '1.0.0'
 const name = 'jenkins'
-// const ocpName = 'pathfinder'
 const ocpName = 'apps.silver.devops'
 
 const phases = {
