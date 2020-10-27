@@ -48,7 +48,7 @@ const OrganizationsTable = (props) => {
             onClick: () => {
               const { id } = row.original;
 
-              history.push(`/organizations/${id}`);
+              history.push(`/organizations/${id}`, filtered);
             },
             className: 'clickable',
           };
