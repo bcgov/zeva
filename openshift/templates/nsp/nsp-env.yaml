@@ -69,7 +69,7 @@ objects:
         This only needs to be specified once per environment.
         Without this policy, pods could have PU Update error when starting container
       source:
-        - - $namespace=tbiwaq-${ENV_NAME}
+        - - $namespace=e52f12-${ENV_NAME}
       destination:
         - - int:network=internal-cluster-api-endpoint
   - kind: NetworkSecurityPolicy

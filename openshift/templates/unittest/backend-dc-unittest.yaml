@@ -111,7 +111,7 @@ objects:
           initContainers:
             - name: wait-for-database
               image: toschneck/wait-for-it:latest
-              command: ['sh', '-c', './wait-for-it.sh -t 0 ${NAME}-postgresql-unittest${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local:5432']
+              command: ['sh', '-c', './wait-for-it.sh -t 0 ${NAME}-postgresql-unittest${SUFFIX}.e52f12-${ENV_NAME}.svc.cluster.local:5432']
           containers:
             - name: backend-unittest
               image: null
@@ -137,7 +137,7 @@ objects:
                 - name: DATABASE_SERVICE_NAME
                   value: ${NAME}-postgresql-unittest${SUFFIX}
                 - name: POSTGRESQL_SERVICE_HOST
-                  value: ${NAME}-postgresql-unittest${SUFFIX}.tbiwaq-${SUFFIX}.svc.cluster.local
+                  value: ${NAME}-postgresql-unittest${SUFFIX}.e52f12-${SUFFIX}.svc.cluster.local
                 - name: POSTGRESQL_SERVICE_PORT
                   value: '5432'
                 - name: KEYCLOAK_CERTS_URL

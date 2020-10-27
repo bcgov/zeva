@@ -74,10 +74,10 @@ objects:
       keycloak_sa_realm: ${KEYCLOAK_REALM}
       keycloak_url: https://${SSO_NAME}/auth
       minio_endpoint: zeva-minio-${ENV_NAME}.${OCP_NAME}.gov.bc.ca
-      postgresql_service_host: patroni-master${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local
+      postgresql_service_host: patroni-master${SUFFIX}.e52f12-${ENV_NAME}.svc.cluster.local
       postgresql_service_port: '5432'
       rabbitmq_enabled: 'False'
-      rabbitmq_host: ${NAME}${SUFFIX}-rabbitmq-cluster.tbiwaq-${ENV_NAME}.svc.cluster.local
+      rabbitmq_host: ${NAME}${SUFFIX}-rabbitmq-cluster.e52f12-${ENV_NAME}.svc.cluster.local
       rabbitmq_port: '5672'
       rabbitmq_vhost: /zeva
       smtp_server_host: apps.smtp.gov.bc.ca
