@@ -298,3 +298,4 @@ The change is done through branch jenkins-add-oepnshift
 * Project team should be responsible to build jenkins slave, such as add npm modules into it, then no need to use npmw anymore
 * After the Jenkins create successfully, two webhooks should have been created in zeva repo (if the webhooks show failed, it is ok as Jenkins may not be fully up yet)
 * Under dev namespace, grant admin permission to service account "tbiwaq-tools/jenkins-prod", we only allow "tbiwaq-tools/jenkins-prod" to deploy on dev, test and prod, NOT to allow "tbiwaq-tools/jenkins-dev" to do anything on these three environment
+* 
