@@ -8,15 +8,15 @@
 
 oc process -f ./minio-dc.yaml \
 NAME=zeva SUFFIX=-dev OCP_NAME=pathfinder\
-| oc create -f - -n tbiwaq-dev
+| oc create -f - -n e52f12-dev
 
 #### Test and Prod Minio setup
 
 oc process -f ./minio-dc.yaml \
 NAME=zeva SUFFIX=-test OCP_NAME=pathfinder \
-| oc create -f - -n tbiwaq-test
+| oc create -f - -n e52f12-test
 
 
 oc process -f ./minio-dc.yaml \
 NAME=zeva SUFFIX=-prod  OCP_NAME=pathfinder\
-| oc create -f - -n tbiwaq-prod
+| oc create -f - -n e52f12-prod

@@ -158,7 +158,7 @@ objects:
         from:
           kind: ImageStreamTag
           name: python-backend:${ENV_NAME}
-          namespace: tbiwaq-tools
+          namespace: e52f12-tools
         lastTriggeredImage:
       type: ImageChange
     - type: ConfigChange

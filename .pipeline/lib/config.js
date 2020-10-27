@@ -7,7 +7,7 @@ const ocpName = 'pathfinder'
 
 const phases = {
 
-  build: {namespace:'tbiwaq-tools'   , transient:true, name: `${name}`, phase: 'build', 
+  build: {namespace:'e52f12-tools'   , transient:true, name: `${name}`, phase: 'build', 
           changeId:`${changeId}`, suffix: `-build-${changeId}`  , instance: `${name}-build-${changeId}`, 
           version:`${version}-${changeId}`, tag:`build-${version}-${changeId}`, ocpName: `${ocpName}`},
 

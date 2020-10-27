@@ -144,7 +144,7 @@ Objects:
               - minio
             from:
               kind: ImageStreamTag
-              namespace: tbiwaq-tools
+              namespace: e52f12-tools
               name: minio:20200309
       replicas: 1
       test: false

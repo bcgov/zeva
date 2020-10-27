@@ -38,23 +38,23 @@ oc policy add-role-to-user system:image-puller system:serviceaccount:e52f12-prod
 
 * dev enviornment
 
-oc policy add-role-to-user admin system:serviceaccount:tbiwaq-tools:jenkins-prod --namespace=tbiwaq-dev
-oc policy add-role-to-user edit system:serviceaccount:tbiwaq-dev:nagios --namespace=tbiwaq-dev
-oc policy add-role-to-user system:deployer system:serviceaccount:tbiwaq-dev:deployer --namespace=tbiwaq-dev
-oc policy add-role-to-user system:image-builder system:serviceaccount:tbiwaq-dev:builder --namespace=tbiwaq-dev
+oc policy add-role-to-user admin system:serviceaccount:e52f12-tools:jenkins-prod --namespace=e52f12-dev
+oc policy add-role-to-user edit system:serviceaccount:e52f12-dev:nagios --namespace=e52f12-dev
+oc policy add-role-to-user system:deployer system:serviceaccount:e52f12-dev:deployer --namespace=e52f12-dev
+oc policy add-role-to-user system:image-builder system:serviceaccount:e52f12-dev:builder --namespace=e52f12-dev
 
 * test enviornment
 
-oc policy add-role-to-user admin system:serviceaccount:tbiwaq-tools:jenkins-prod --namespace=tbiwaq-test
-oc policy add-role-to-user edit system:serviceaccount:tbiwaq-test:nagios --namespace=tbiwaq-test
-oc policy add-role-to-user system:deployer system:serviceaccount:tbiwaq-test:deployer --namespace=tbiwaq-test
-oc policy add-role-to-user system:image-builder system:serviceaccount:tbiwaq-test:builder --namespace=tbiwaq-test
+oc policy add-role-to-user admin system:serviceaccount:e52f12-tools:jenkins-prod --namespace=e52f12-test
+oc policy add-role-to-user edit system:serviceaccount:e52f12-test:nagios --namespace=e52f12-test
+oc policy add-role-to-user system:deployer system:serviceaccount:e52f12-test:deployer --namespace=e52f12-test
+oc policy add-role-to-user system:image-builder system:serviceaccount:e52f12-test:builder --namespace=e52f12-test
 
 * prod enviornment
 
-oc policy add-role-to-user admin system:serviceaccount:tbiwaq-tools:jenkins-prod --namespace=tbiwaq-prod
-oc policy add-role-to-user edit system:serviceaccount:tbiwaq-prod:nagios --namespace=tbiwaq-prod
-oc policy add-role-to-user system:deployer system:serviceaccount:tbiwaq-prod:deployer --namespace=tbiwaq-prod
-oc policy add-role-to-user system:image-builder system:serviceaccount:tbiwaq-prod:builder --namespace=tbiwaq-prod
+oc policy add-role-to-user admin system:serviceaccount:e52f12-tools:jenkins-prod --namespace=e52f12-prod
+oc policy add-role-to-user edit system:serviceaccount:e52f12-prod:nagios --namespace=e52f12-prod
+oc policy add-role-to-user system:deployer system:serviceaccount:e52f12-prod:deployer --namespace=e52f12-prod
+oc policy add-role-to-user system:image-builder system:serviceaccount:e52f12-prod:builder --namespace=e52f12-prod
 
 
