@@ -34,6 +34,9 @@ const VehicleSupplierEditContainer = (props) => {
       axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
         const addresses = {};
         response.data.organizationAddress.forEach((element) => {
+          if (element.addressType.addressType === 'Service') {
+            addresses[`${element.addressType.addressType}_representativeName`] = element.representativeName;
+          }
           addresses[`${element.addressType.addressType}_addressLine_1`] = element.addressLine1;
           addresses[`${element.addressType.addressType}_addressLine_2`] = element.addressLine2;
           addresses[`${element.addressType.addressType}_addressLine_3`] = element.addressLine3;

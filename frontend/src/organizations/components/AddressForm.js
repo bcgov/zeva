@@ -25,23 +25,40 @@ const AddressForm = (props) => {
     title = 'Records Address';
     secondaryText = '';
   }
+  console.log(addressDetails);
   return (
     <>
       <div className="form-group">
-        <h3 className="d-lg-block d-xl-inline d-md-block mr-3">{title}</h3>
+
         {type === 'Service' && (
-          <span className="d-lg-block d-xl-inline-block">
-            <h3 className="d-inline-block"> {secondaryText}</h3>
-          </span>
+          <div>
+              <h3 id="service-title" className="d-lg-block d-xl-inline d-md-block mr-3 text-right">{title}  {secondaryText}</h3>
+            <TextInput
+              addressType={type}
+              defaultValue={addressDetails[`${type}_representativeName`] || ''}
+              disabled={false}
+              handleInputChange={handleAddressChange}
+              id="RepresentativeName"
+              inputSize="col-lg-12 col-xl-7"
+              label="Name of Representative (optional)"
+              labelSize={`col-lg-12 col-xl-5 col-form-label ${type === 'Service' ? '' : 'd-xl-none'}`}
+              name={`${type}_representativeName`}
+              serviceSame={serviceSame}
+            />
+
+          </div>
         )}
 
         {type === 'Records' && (
-        <span className="d-lg-block d-xl-inline-block">
-          <input className="d-inline-block align-middle" type="checkbox" id="records-address-checkbox" onChange={(event) => { handleCheckboxClick(event); }} />
-          <h3 className="d-inline-block" htmlFor="records-address">
-            same as service address
-          </h3>
-        </span>
+          <div>
+            <h3 className="d-lg-block d-xl-inline d-md-block mr-3">{title}</h3>
+            <span className="d-lg-block d-xl-inline-block">
+              <input className="d-inline-block align-middle" type="checkbox" onChange={(event) => { handleCheckboxClick(event); }} />
+              <h3 className="d-inline-block" htmlFor="records-address">
+                same as service address
+              </h3>
+            </span>
+          </div>
         )}
       </div>
       <TextInput
