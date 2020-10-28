@@ -20,3 +20,21 @@
     }
   }
 }
+.records-address {
+  @media (min-width: 1200px) and (max-width: 1563px) {
+    height: 151px;
+  }
+  @media (min-width: 1564px) {
+  height: 131px;
+  }
+  @media (min-width: 992px) and (max-width: 1199px) {
+    height: 168px;
+  }
+  @media (min-width: 809px) and (max-width: 991px) {
+    height: 193px;
+  }
+  @media (min-width: 768px) and (max-width: 808px) {
+    height: 217px;
+  }
+  }
+

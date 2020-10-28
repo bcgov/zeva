@@ -21,7 +21,7 @@ class OrganizationAddressSerializer(ModelSerializer):
     class Meta:
         model = OrganizationAddress
         fields = (
-            'id', 'address_line_1', 'address_line_2', 'address_line_3',
+            'id', 'representative_name', 'address_line_1', 'address_line_2', 'address_line_3',
             'city', 'postal_code', 'state', 'county', 'country', 'address_type'
         )
 
@@ -36,6 +36,6 @@ class OrganizationAddressSaveSerializer(ModelSerializer):
     class Meta:
         model = OrganizationAddress
         fields = (
-            'id', 'address_line_1', 'address_line_2', 'address_line_3',
+            'id', 'representative_name', 'address_line_1', 'address_line_2', 'address_line_3',
             'city', 'postal_code', 'state', 'county', 'country', 'address_type'
         )
