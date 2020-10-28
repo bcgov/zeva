@@ -5,7 +5,9 @@
 
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
+import { withRouter } from 'react-router';
 
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
@@ -19,7 +21,8 @@ const VehicleSupplierModelListContainer = (props) => {
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [vehicles, setVehicles] = useState([]);
-  const { keycloak, user } = props;
+  const { keycloak, location, user } = props;
+  const { state: locationState } = location;
 
   const handleClear = () => {
     setFiltered([]);
@@ -51,11 +54,12 @@ const VehicleSupplierModelListContainer = (props) => {
   return (
     <div className="page">
       <h1>{details.name}</h1>
-      <VehicleSupplierTabs supplierId={details.id} active="supplier-zev-models" />
+      <VehicleSupplierTabs locationState={locationState} supplierId={details.id} active="supplier-zev-models" />
       <VehicleSupplierZEVListPage
         filtered={filtered}
         handleClear={handleClear}
         loading={loading}
+        locationState={locationState}
         setFiltered={setFiltered}
         user={user}
         vehicles={vehicles}
@@ -65,7 +69,8 @@ const VehicleSupplierModelListContainer = (props) => {
 };
 VehicleSupplierModelListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
+  location: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 
-export default VehicleSupplierModelListContainer;
+export default withRouter(VehicleSupplierModelListContainer);

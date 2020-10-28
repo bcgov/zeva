@@ -1,11 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
 import CustomPropTypes from '../../app/utilities/props';
+import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
 
 const VehicleSupplierDetailsPage = (props) => {
-  const { details, loading, editButton } = props;
+  const {
+    details, loading, editButton, locationState,
+  } = props;
   const { organizationAddress } = details;
 
   if (loading) {
@@ -39,14 +43,34 @@ const VehicleSupplierDetailsPage = (props) => {
           {editButton}
         </div>
       </div>
+
+      <div className="row">
+        <div className="col-12">
+          <div className="action-bar">
+            <span className="left-content">
+              <Button
+                buttonType="back"
+                locationRoute={ROUTES_ORGANIZATIONS.LIST}
+                locationState={locationState}
+              />
+            </span>
+            <span className="right-content" />
+          </div>
+        </div>
+      </div>
     </div>
   );
+};
+
+VehicleSupplierDetailsPage.defaultProps = {
+  locationState: undefined,
 };
 
 VehicleSupplierDetailsPage.propTypes = {
   details: CustomPropTypes.organizationDetails.isRequired,
   editButton: PropTypes.element.isRequired,
   loading: PropTypes.bool.isRequired,
+  locationState: PropTypes.arrayOf(PropTypes.shape()),
 };
 
 export default VehicleSupplierDetailsPage;

@@ -5,7 +5,9 @@
 
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
+import { withRouter } from 'react-router';
 
 import CustomPropTypes from '../app/utilities/props';
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
@@ -18,7 +20,8 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sales, setSales] = useState([]);
-  const { keycloak } = props;
+  const { keycloak, location } = props;
+  const { state: locationState } = location;
 
   const refreshDetails = () => {
     setLoading(true);
@@ -42,10 +45,11 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
   return (
     <div className="page">
       <h1 className="mb-2">{details.name}</h1>
-      <VehicleSupplierTabs supplierId={details.id} active="supplier-credit-transactions" />
+      <VehicleSupplierTabs locationState={locationState} supplierId={details.id} active="supplier-credit-transactions" />
       <VehicleSupplierSalesListPage
         filtered={filtered}
         loading={loading}
+        locationState={locationState}
         sales={sales}
         setFiltered={setFiltered}
         user={{ isGovernment: false }}
@@ -55,6 +59,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
 };
 VehicleSupplierCreditTransactionListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
+  location: PropTypes.shape().isRequired,
 };
 
-export default VehicleSupplierCreditTransactionListContainer;
+export default withRouter(VehicleSupplierCreditTransactionListContainer);
