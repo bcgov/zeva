@@ -34,6 +34,9 @@ const VehicleSupplierEditContainer = (props) => {
       axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
         const addresses = {};
         response.data.organizationAddress.forEach((element) => {
+          if (element.addressType.addressType === 'Service') {
+            addresses[`${element.addressType.addressType}_representativeName`] = element.representativeName;
+          }
           addresses[`${element.addressType.addressType}_addressLine_1`] = element.addressLine1;
           addresses[`${element.addressType.addressType}_addressLine_2`] = element.addressLine2;
           addresses[`${element.addressType.addressType}_addressLine_3`] = element.addressLine3;
@@ -79,6 +82,7 @@ const VehicleSupplierEditContainer = (props) => {
   const handleSubmit = () => {
     let formData = {};
     const serviceAddress = {
+      representativeName: details.organizationAddress.Service_representativeName,
       addressType: 'Service',
       addressLine_1: details.organizationAddress.Service_addressLine_1,
       addressLine_2: details.organizationAddress.Service_addressLine_2,

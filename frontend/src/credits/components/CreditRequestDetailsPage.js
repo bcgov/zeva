@@ -223,7 +223,7 @@ const CreditRequestDetailsPage = (props) => {
                     }}
                     type="button"
                   >
-                    {validatedOnly ? 'Re-validate' : 'Validate'}
+                    {validatedOnly ? 'Re-verify with ICBC Data' : 'Verify with ICBC Data'}
                   </button>
                   {validatedOnly && (
                   <button

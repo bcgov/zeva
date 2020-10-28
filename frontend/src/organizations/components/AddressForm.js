@@ -17,33 +17,51 @@ const AddressForm = (props) => {
     setServiceSame(checked);
   };
   let title;
-  let secondaryText;
   if (type === 'Service') {
     title = 'Service Address';
-    secondaryText = '(must be a B.C. address)';
   } else {
     title = 'Records Address';
-    secondaryText = '';
   }
   return (
     <>
-      <div className="form-group">
-        <h3 className="d-lg-block d-xl-inline d-md-block mr-3">{title}</h3>
-        {type === 'Service' && (
-          <span className="d-lg-block d-xl-inline-block">
-            <h3 className="d-inline-block"> {secondaryText}</h3>
-          </span>
-        )}
 
-        {type === 'Records' && (
-        <span className="d-lg-block d-xl-inline-block">
-          <input className="d-inline-block align-middle" type="checkbox" id="records-address-checkbox" onChange={(event) => { handleCheckboxClick(event); }} />
-          <h3 className="d-inline-block" htmlFor="records-address">
-            same as service address
-          </h3>
-        </span>
-        )}
+      {type === 'Service' && (
+      <>
+        <div className="form-group row mb-0">
+          <div className="col-12">
+            <h3 className="d-inline mr-2">{title}</h3>
+            <span className="text-blue d-md-block d-lg-inline">(must be a B.C. address)</span>
+          </div>
+        </div>
+        <TextInput
+          addressType={type}
+          defaultValue={addressDetails[`${type}_representativeName`] || ''}
+          disabled={false}
+          handleInputChange={handleAddressChange}
+          id="RepresentativeName"
+          inputSize="col-lg-12 col-xl-7"
+          label="Name of Representative (optional)"
+          labelSize={`col-lg-12 col-xl-5 col-form-label ${type === 'Service' ? '' : 'd-xl-none'}`}
+          name={`${type}_representativeName`}
+          serviceSame={serviceSame}
+          rowSize="form-group row mt-0"
+        />
+      </>
+      )}
+
+      {type === 'Records' && (
+      <div className="form-group row records-address">
+        <div className="col-12">
+          <h3 className="d-lg-block d-xl-inline d-md-block mr-3 d-sm-block">{title}</h3>
+          <div className="d-sm-block d-md-block d-lg-block mt-4">
+            <input className="d-inline-block align-middle" type="checkbox" id="records-address-checkbox" onChange={(event) => { handleCheckboxClick(event); }} />
+            <span className="d-inline-block" htmlFor="records-address">
+              same as service address
+            </span>
+          </div>
+        </div>
       </div>
+      )}
       <TextInput
         addressType={type}
         defaultValue={addressDetails[`${type}_addressLine_1`] || ''}

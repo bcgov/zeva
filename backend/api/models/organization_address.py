@@ -10,6 +10,12 @@ class OrganizationAddress(Auditable, EffectiveDates):
         related_name='addresses',
         on_delete=models.CASCADE
     )
+    representative_name = models.CharField(
+        blank=True,
+        max_length=100,
+        null=True,
+        db_comment="optional name of representative (eg attorney)"
+    )
     address_type = models.ForeignKey(
         'AddressType',
         related_name='+',

@@ -4,9 +4,12 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { withRouter } from 'react-router';
+
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import CustomPropTypes from '../app/utilities/props';
 import VehicleSupplierDetailsPage from './components/VehicleSupplierDetailsPage';
@@ -18,7 +21,8 @@ const VehicleSupplierDetailsContainer = (props) => {
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [display, setDisplay] = useState({});
-  const { keycloak } = props;
+  const { keycloak, location } = props;
+  const { state: locationState } = location;
 
   const refreshDetails = () => {
     setLoading(true);
@@ -50,10 +54,11 @@ const VehicleSupplierDetailsContainer = (props) => {
   return (
     <div className="page">
       <h1 className="mb-2">{display.name}</h1>
-      <VehicleSupplierTabs supplierId={details.id} active="supplier-info" />
+      <VehicleSupplierTabs locationState={locationState} supplierId={details.id} active="supplier-info" />
       <VehicleSupplierDetailsPage
         details={details}
         loading={loading}
+        locationState={locationState}
         editButton={editButton}
       />
     </div>
@@ -61,6 +66,7 @@ const VehicleSupplierDetailsContainer = (props) => {
 };
 VehicleSupplierDetailsContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
+  location: PropTypes.shape().isRequired,
 };
 
-export default VehicleSupplierDetailsContainer;
+export default withRouter(VehicleSupplierDetailsContainer);

@@ -1,13 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import Button from '../../app/components/Button';
 import CustomPropTypes from '../../app/utilities/props';
 import Loading from '../../app/components/Loading';
 import CreditRequestListTable from '../../credits/components/CreditRequestListTable';
+import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
 
 const VehicleSupplierSalesListPage = (props) => {
   const {
-    loading, sales, user, filtered, setFiltered,
+    loading, locationState, sales, user, filtered, setFiltered,
   } = props;
 
   if (loading) {
@@ -32,17 +34,34 @@ const VehicleSupplierSalesListPage = (props) => {
           />
         </div>
       </div>
+
+      <div className="row">
+        <div className="col-12">
+          <div className="action-bar">
+            <span className="left-content">
+              <Button
+                buttonType="back"
+                locationRoute={ROUTES_ORGANIZATIONS.LIST}
+                locationState={locationState}
+              />
+            </span>
+            <span className="right-content" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
 VehicleSupplierSalesListPage.defaultProps = {
+  locationState: undefined,
   sales: [],
 };
 
 VehicleSupplierSalesListPage.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
+  locationState: PropTypes.arrayOf(PropTypes.shape()),
   sales: PropTypes.arrayOf(PropTypes.shape({})),
   setFiltered: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired,
