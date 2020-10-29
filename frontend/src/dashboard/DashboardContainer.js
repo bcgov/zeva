@@ -15,10 +15,11 @@ import ROUTES_CREDIT_TRANSFERS from '../app/routes/CreditTransfers';
 const DashboardContainer = (props) => {
   const { user } = props;
   const [activityCount, setActivityCount] = useState({
-    modelAwaitingValidation: 0,
-    modelValidated: 0,
-    modelInfoRequest: 0,
-    creditNew: 0,
+    modelsRejected: 0,
+    modelsAwaitingValidation: 0,
+    modelsValidated: 0,
+    modelsInfoRequest: 0,
+    creditsNew: 0,
     creditsAwaiting: 0,
     creditsIssued: 0,
     transfersAwaitingPartner: 0,
@@ -26,12 +27,16 @@ const DashboardContainer = (props) => {
     transfersAwaitingDirector: 0,
     transfersAwaitingAnalyst: 0,
     transfersRecorded: 0,
+    transfersRejected: 0,
   });
   const [loading, setLoading] = useState(true);
   const isMountedRef = useRef(null);
 
   const getBCEIDActivityCount = (salesResponse, vehiclesResponse, transfersResponse) => {
     const date3months = moment().subtract(3, 'months').calendar();
+    const vehiclesRejected = vehiclesResponse.data
+      .filter((vehicle) => vehicle.validationStatus === 'REJECTED')
+      .map((vehicle) => vehicle.modelName);
     const changesRequested = vehiclesResponse.data
       .filter((vehicle) => vehicle.validationStatus === 'CHANGES_REQUESTED')
       .map((vehicle) => vehicle.modelName);
@@ -56,8 +61,11 @@ const DashboardContainer = (props) => {
       .filter((submission) => submission.status === 'APPROVED' || submission.status === 'RECOMMEND_APPROVAL');
     const transfersRecorded = transfersResponse.data
       .filter((submission) => submission.status === 'VALIDATED');
+      const transfersRejected = transfersResponse.data
+      .filter((submission) => submission.status === 'REJECTED');
     setActivityCount({
       ...activityCount,
+      modelsRejected: vehiclesRejected.length,
       modelsDraft: draftModels.length,
       modelsAwaitingValidation: submittedModels.length,
       modelsValidated: validatedModels.length,
@@ -68,6 +76,7 @@ const DashboardContainer = (props) => {
       transfersAwaitingPartner: transfersAwaitingPartner.length,
       transfersAwaitingGovernment: transfersAwaitingGovernment.length,
       transfersRecorded: transfersRecorded.length,
+      transfersRejected: transfersRejected.length,
     });
   };
 
