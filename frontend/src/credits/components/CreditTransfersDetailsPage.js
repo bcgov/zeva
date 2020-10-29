@@ -31,6 +31,15 @@ const CreditTransfersDetailsPage = (props) => {
         icon: <FontAwesomeIcon icon="paper-plane" />,
       };
       break;
+    case 'submit-partner':
+      modalProps = {
+        confirmLabel: ' Submit',
+        handleSubmit: () => { handleSubmit('SUBMITTED'); },
+        buttonClass: 'button primary',
+        modalText: 'Submit credit transfer notice to trade partner?',
+        icon: <FontAwesomeIcon icon="paper-plane" />,
+      };
+      break;
     case 'reject':
       modalProps = {
         confirmLabel: ' Reject',
@@ -114,6 +123,21 @@ const CreditTransfersDetailsPage = (props) => {
           <span className="left-content">
             <Button buttonType="back" locationRoute="/credit-transfers" />
           </span>
+          <span className="right-content">
+            {submission.status === 'DRAFT'
+           && (
+           <Button
+             testid="submit-transfer"
+             buttonType="submit"
+             action={() => {
+               setModalType('submit-partner');
+               setShowModal(true);
+             }}
+             optionalText="Submit Notice"
+             disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent || comment.length > 0}
+           />
+           )}
+          </span>
         </div>
       </div>
     </div>
@@ -178,7 +202,8 @@ const CreditTransfersDetailsPage = (props) => {
                    columns={columns}
                    data={submission.creditTransferContent}
                  />
-
+                 {user.organization.id === submission.debitFrom.id && submission.status === 'DRAFT'
+                 && <CreditTransferSignoff handleCheckboxClick={handleCheckboxClick} user={user} />}
                  {(user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED')
                  && (
                  <div>
