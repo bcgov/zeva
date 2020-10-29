@@ -98,7 +98,7 @@ objects:
     generation: 3
     labels:
       cluster-name: ${NAME}${SUFFIX}
-      app: zeva
+      app: ${NAME}${SUFFIX}
       role: patroni
       env: ${ENV_NAME}
     name: ${NAME}${SUFFIX}

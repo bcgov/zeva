@@ -24,6 +24,7 @@ module.exports = settings => {
   //create network security policies for internal pod to pod communications
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/nsp/nsp-env.yaml`, {
     'param': {
+      'NAME': phases[phase].name,
       'ENV_NAME': phases[phase].phase,
       'SUFFIX': phases[phase].suffix,
       'API_VERSION': 'security.devops.gov.bc.ca/v1alpha1'
