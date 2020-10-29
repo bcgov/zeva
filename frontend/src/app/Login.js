@@ -7,7 +7,7 @@ const Login = (props) => {
   return (
     <div id="login-page">
       <div id="header">
-        <div className="text">Zero Emission Vehicle Reporting System</div>
+        <div className="text">Zero-Emission Vehicles Reporting System</div>
       </div>
       <div id="main-content">
         <div className="flex-container">
