@@ -57,7 +57,7 @@ const CreditTransfersPage = (props) => {
       <div className="col-sm-12">
         <div className="action-bar">
           <span className="left-content">
-            <Button buttonType="back" locationRoute="/credit-transactions/transfers" />
+            <Button buttonType="back" locationRoute="/credit-transfers" />
           </span>
           <span className="right-content">
             <Button
