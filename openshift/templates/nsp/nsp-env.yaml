@@ -26,23 +26,10 @@ parameters:
     description: Api version, either secops.pathfinder.gov.bc.ca/v1alpha1 or security.devops.gov.bc.ca/v1alpha1
     required: true
 objects:
-#  - kind: NetworkSecurityPolicy
-#    apiVersion: ${API_VERSION}
-#    metadata:
-#      name: custom-interweb-to-frontend
-#    spec:
-#      description: |
-#        Allow frontend to communicate with internet.
-#      source:
-#        - - ext:network=any
-#      destination:
-#        - - app=zeva
-#          - role=frontend
-#          - env=${ENV_NAME}
   - kind: NetworkSecurityPolicy
     apiVersion: ${API_VERSION}
     metadata:
-      name: custom-frontend-to-backend
+      name: ${NAME}${SUFFIX}-custom-frontend-to-backend
     spec:
       description: |
         Allow frontend to communicate with backend.
@@ -57,7 +44,7 @@ objects:
   - kind: NetworkSecurityPolicy
     apiVersion: ${API_VERSION}
     metadata:
-      name: custom-backend-to-patroni
+      name: ${NAME}${SUFFIX}-custom-backend-to-patroni
     spec:
       description: |
         Allow backend to communicate with patroni.
@@ -72,7 +59,7 @@ objects:
   - kind: NetworkSecurityPolicy
     apiVersion: ${API_VERSION}
     metadata:
-      name: custom-patroni-to-patroni-itself
+      name: ${NAME}${SUFFIX}-custom-patroni-to-patroni-itself
     spec:
       description: |
         Allow patroni pods to communicate in patroni cluster.
@@ -83,31 +70,18 @@ objects:
   - kind: NetworkSecurityPolicy
     apiVersion: ${API_VERSION}
     metadata:
-      name: custom-backendmidlifecyclepod-to-patroni
+      name: ${NAME}${SUFFIX}-custom-backendmidlifecyclepod-to-patroni
     spec:
       description: |
-        Allow backend to communicate with patroni.
+        Allow backend mid lifecycle pod to run django migrations against patroni.
       source:
         - - openshift.io/deployer-pod.type=hook-mid
       destination:
         - - cluster-name=patroni${SUFFIX}      
-#  - kind: NetworkSecurityPolicy
-#    apiVersion: ${API_VERSION}
-#    metadata:
-#      name: custom-pods-to-ocp-api
-#    spec:
-#      description: |
-#        Allow pods to talk to the internal OCP api so deployments work.
-#        This only needs to be specified once per environment.
-#        Without this policy, pods could have PU Update error when starting container
-#      source:
-#        - - $namespace=e52f12-${ENV_NAME}
-#      destination:
-#        - - int:network=internal-cluster-api-endpoint
   - kind: NetworkSecurityPolicy
     apiVersion: ${API_VERSION}
     metadata:
-      name: custom-backend-to-keycloak
+      name: ${NAME}${SUFFIX}-custom-backend-to-keycloak
     spec:
       description: |
         Allow backend pod to communicate with keycloak
