@@ -44,7 +44,7 @@ const ActionsIdir = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsAnalyst} require analyst/engineer validation`}
-          linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Submitted`}
+          linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Submitted,Validated`}
         />
         )}
         {activityCount.creditsRecommendApprove > 0
