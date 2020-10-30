@@ -41,8 +41,8 @@ const CreditTransferSignOff = (props) => {
 };
 
 CreditTransferSignOff.defaultProps = {
-  checkboxes: { authority: false, accurate: false, consent: false },
-  disableCheckboxes: true,
+  checkboxes: {},
+  disableCheckboxes: false,
   hoverText: '',
 };
 CreditTransferSignOff.propTypes = {
