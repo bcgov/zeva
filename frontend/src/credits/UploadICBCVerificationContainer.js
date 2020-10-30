@@ -45,18 +45,19 @@ const UploadICBCVerificationContainer = (props) => {
         setAlertMessage('upload successful');
         toastr.success('upload successful!', '', { positionClass: 'toast-bottom-right' });
         setFiles([]);
-      })
-        .catch((error) => {
-          const { response } = error;
-          if (response.status === 400) {
-            setAlertMessage(error.response.data);
-          } else {
-            setAlertMessage('An error has occurred while uploading. Please try again later.');
-          }
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      }).catch((error) => {
+        const { response } = error;
+        if (response.status === 400) {
+          setAlertMessage(error.response.data);
+        } else {
+          setAlertMessage('An error has occurred while uploading. Please try again later.');
+        }
+      }).finally(() => {
+        setLoading(false);
+      });
+    }).catch((error) => {
+      console.error(error);
+      setAlertMessage('An error has occurred while uploading. Please try again later.');
     });
   };
 
