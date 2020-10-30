@@ -127,3 +127,14 @@ objects:
         - - name=${NAME}-backend${SUFFIX}
       destination:
         - - ext:network=any
+  - kind: NetworkSecurityPolicy
+    apiVersion: ${API_VERSION}
+    metadata:
+      name: ${NAME}${SUFFIX}-custom-schemaspy-to-patroni
+    spec:
+      description: |
+        Allow schemaspy to communicate with patroni.
+      source:
+        - - name=schemaspy-public${SUFFIX}
+      destination:
+        - - cluster-name=patroni${SUFFIX}        
