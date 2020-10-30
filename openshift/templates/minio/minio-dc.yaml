@@ -126,9 +126,6 @@ objects:
       name: ${NAME}-minio${SUFFIX}
       labels:
         name: minio
-        app: zeva
-        role: minio
-        env: ${ENV_NAME}
     spec:
       strategy:
         type: Recreate

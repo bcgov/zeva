@@ -31,7 +31,6 @@ module.exports = settings => {
     }
   }))
 
-
   // create configs
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/config/configmap.yaml`, {
     'param': {
@@ -99,7 +98,7 @@ module.exports = settings => {
       'CLUSTER_NAME': 'rabbitmq-cluster'
     }
   }))
-
+  
   /**
   //deploy rabbitmq, use docker image directly
   //POST_START_SLEEP is harded coded in the rabbitmq template, replacement was not successful

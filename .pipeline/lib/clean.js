@@ -135,7 +135,6 @@ module.exports = settings => {
         namespace: phase.namespace,
       });   
       nsps.forEach(nsp => {
-        console.log(nsp.metadata.name)
         oc.delete([`networksecuritypolicy/${nsp.metadata.name}`], {
             "ignore-not-found": "true",
             wait: "true",

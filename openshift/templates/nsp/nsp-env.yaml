@@ -29,18 +29,25 @@ objects:
   - kind: NetworkSecurityPolicy
     apiVersion: ${API_VERSION}
     metadata:
+      name: ${NAME}${SUFFIX}-custom-frontend-to-internet
+    spec:
+     description: |
+       allow frontend to talk to the internet.
+     source:
+        - - name=${NAME}-frontend${SUFFIX}
+     destination:
+        - - ext:network=any
+  - kind: NetworkSecurityPolicy
+    apiVersion: ${API_VERSION}
+    metadata:
       name: ${NAME}${SUFFIX}-custom-frontend-to-backend
     spec:
       description: |
         Allow frontend to communicate with backend.
       source:
-        - - app=${NAME}${SUFFIX}
-          - role=frontend
-          - env=${ENV_NAME}
+        - - name=${NAME}-frontend${SUFFIX}
       destination:
-        - - app=${NAME}${SUFFIX}
-          - role=backend
-          - env=${ENV_NAME}
+        - - name=${NAME}-backend${SUFFIX}
   - kind: NetworkSecurityPolicy
     apiVersion: ${API_VERSION}
     metadata:
@@ -49,13 +56,9 @@ objects:
       description: |
         Allow backend to communicate with patroni.
       source:
-        - - app=${NAME}${SUFFIX}
-          - role=backend
-          - env=${ENV_NAME}
+        - - name=${NAME}-backend${SUFFIX}
       destination:
-        - - app=${NAME}${SUFFIX}
-          - role=patroni
-          - env=${ENV_NAME}        
+        - - cluster-name=patroni${SUFFIX}
   - kind: NetworkSecurityPolicy
     apiVersion: ${API_VERSION}
     metadata:
@@ -77,7 +80,19 @@ objects:
       source:
         - - openshift.io/deployer-pod.type=hook-mid
       destination:
-        - - cluster-name=patroni${SUFFIX}      
+        - - cluster-name=patroni${SUFFIX}    
+  - kind: NetworkSecurityPolicy
+    apiVersion: ${API_VERSION}
+    metadata:
+      name: ${NAME}${SUFFIX}-custom-frontend-to-keycloak
+    spec:
+      description: |
+        Allow frontend pod to communicate with keycloak
+      source:
+        - - name=${NAME}-frontend${SUFFIX}
+      destination:
+        - - $namespace=devops-sso-${ENV_NAME}
+          - app=sso-${ENV_NAME}          
   - kind: NetworkSecurityPolicy
     apiVersion: ${API_VERSION}
     metadata:
@@ -86,9 +101,29 @@ objects:
       description: |
         Allow backend pod to communicate with keycloak
       source:
-        - - app=${NAME}${SUFFIX}
-          - role=backend
-          - env=${ENV_NAME}
+        - - name=${NAME}-backend${SUFFIX}
       destination:
         - - $namespace=devops-sso-${ENV_NAME}
           - app=sso-${ENV_NAME}
+  - kind: NetworkSecurityPolicy
+    apiVersion: ${API_VERSION}
+    metadata:
+      name: ${NAME}${SUFFIX}-custom-backend-to-minio
+    spec:
+      description: |
+        Allow backend pod to communicate with minio
+      source:
+        - - name=${NAME}-backend${SUFFIX}
+      destination:
+        - - name=${NAME}-minio-${ENV_NAME}
+  - kind: NetworkSecurityPolicy
+    apiVersion: ${API_VERSION}
+    metadata:
+      name: ${NAME}${SUFFIX}-custom-backend-to-internet
+    spec:
+      description: |
+        allow backend to talk to the internet.
+      source:
+        - - name=${NAME}-backend${SUFFIX}
+      destination:
+        - - ext:network=any
