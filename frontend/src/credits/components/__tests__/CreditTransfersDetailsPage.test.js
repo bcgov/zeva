@@ -74,6 +74,13 @@ const user = {
     name: 'FCA Canada Inc.',
   },
 };
+
+const user2 = {
+  organization: {
+    id: 61,
+    name: 'Toyota Canada Inc.',
+  },
+};
 const govUser = {
   organization: {
     id: 2,
@@ -101,15 +108,18 @@ it('shows the submit modal if the user selects the submit button', () => {
 });
 it('shows the reject modal if the user selects the submit button', () => {
   const { container } = render(<CreditTransfersDetailsPage submission={submission} user={user} handleSubmit={() => { console.log('submit!'); }} />);
-    fireEvent.click(getByText(container, 'Reject Notice'));
-    expect(queryByText(container, 'Reject notice?')).toBeInTheDocument;
-    expect(queryByText(container, 'Submit transfer to government of B.C. Director?')).not.toBeInTheDocument;
-
-  });
-
-
+  fireEvent.click(getByText(container, 'Reject Notice'));
+  expect(queryByText(container, 'Reject notice?')).toBeInTheDocument;
+  expect(queryByText(container, 'Submit transfer to government of B.C. Director?')).not.toBeInTheDocument;
+});
 it('does not show the commment box if the submission is already rejected', () => {
   submission.status = 'REJECTED';
   const { container } = render(<CreditTransfersDetailsPage submission={submission} user={user} handleSubmit={() => { console.log('submit!'); }} />);
   expect(findByTestId(container, 'transfer-comment')).not.toBeInTheDocument;
+});
+it('if its a draft, initiating company can submit to partner or press back', () => {
+  submission.status = 'DRAFT';
+  const { container } = render(<CreditTransfersDetailsPage submission={submission} user={user2} handleSubmit={() => { console.log('submit!'); }} />);
+  fireEvent.click(getByText(container, 'Submit Notice'));
+  expect(queryByText(container, 'Submit credit transfer notice to trade partner?')).toBeInTheDocument;
 });
