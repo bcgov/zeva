@@ -1,5 +1,5 @@
 import pandas as pd
-from django.core.exceptions import ObjectDoesNotExist
+
 from api.models.icbc_registration_data import IcbcRegistrationData
 from api.models.icbc_vehicle import IcbcVehicle
 from api.models.model_year import ModelYear
@@ -17,16 +17,16 @@ def trim_all_columns(df):
 def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
     df = pd.read_csv(excelfile, sep="|", error_bad_lines=False)
     df.drop(df[(df.HYBRID_VEHICLE_FLAG == 'N') &
-            (df.ELECTRIC_VEHICLE_FLAG == 'N')].index, inplace=True)
+               (df.ELECTRIC_VEHICLE_FLAG == 'N')].index, inplace=True)
     df['MODEL_YEAR'].fillna(0, inplace=True)
     df['VIN'].fillna(0, inplace=True)
     df.drop(df[(df.MODEL_YEAR < 2019)].index, inplace=True)
     df.drop(df[(df.VIN == 0)].index, inplace=True)
     df.drop(df.columns.difference([
-      'VIN',
-      'MODEL',
-      'MODEL_YEAR',
-      'MAKE']), 1, inplace=True)
+        'VIN',
+        'MODEL',
+        'MODEL_YEAR',
+        'MAKE']), 1, inplace=True)
     df = trim_all_columns(df)
     df["MODEL"] = df["MODEL"].str.upper()
     df["MAKE"]= df["MAKE"].str.upper()
@@ -41,7 +41,7 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
             update_user=requesting_user.username,
             )
 
-        #iterate through df and check if vehicle exists, if it doesn't, add it!
+        # iterate through df and check if vehicle exists, if it doesn't, add it!
         for index, row in df.iterrows():
             icbc_vehicle_model = row['MODEL']
             icbc_vehicle_year = row['MODEL_YEAR']
