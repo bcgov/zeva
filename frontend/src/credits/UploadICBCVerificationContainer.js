@@ -46,6 +46,7 @@ const UploadICBCVerificationContainer = (props) => {
         toastr.success('upload successful!', '', { positionClass: 'toast-bottom-right' });
         setFiles([]);
       }).catch((error) => {
+        console.error('error');
         console.error(error);
         const { response } = error;
         if (response.status === 400) {
@@ -57,6 +58,7 @@ const UploadICBCVerificationContainer = (props) => {
         setLoading(false);
       });
     }).catch((error) => {
+      console.error('error');
       console.error(error);
       setAlertMessage('An error has occurred while uploading. Please try again later.');
     });
