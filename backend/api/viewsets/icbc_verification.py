@@ -63,9 +63,9 @@ class IcbcVerificationViewSet(
                         outfile.write(infile.read())
 
             ingest_icbc_spreadsheet(filename, user, date_current_to)
-            os.remove(filename)
-            for chunk in range(chunks):
-                os.remove(tempfile)
+            # os.remove(filename)
+            # for chunk in range(chunks):
+            #     os.remove(tempfile)
         except Exception as error:
             print(error)
             return HttpResponse(status=400, content=error)
