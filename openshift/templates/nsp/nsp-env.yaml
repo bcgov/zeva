@@ -138,3 +138,25 @@ objects:
         - - name=schemaspy-public${SUFFIX}
       destination:
         - - cluster-name=patroni${SUFFIX}        
+  - kind: NetworkSecurityPolicy
+    apiVersion: ${API_VERSION}
+    metadata:
+      name: ${NAME}${SUFFIX}-custom-schemaspy-to-backend
+    spec:
+      description: |
+        Allow schemaspy to communicate with backend, as it needs to wait backend completes the migration.
+      source:
+        - - name=schemaspy-public${SUFFIX}
+      destination:
+        - - name=${NAME}-backend${SUFFIX}              
+  - kind: NetworkSecurityPolicy
+    apiVersion: ${API_VERSION}
+    metadata:
+      name: ${NAME}${SUFFIX}-custom-schemaspy-to-internet
+    spec:
+      description: |
+        allow schemaspy to talk to the internet.
+      source:
+        - - name=name=schemaspy-public${SUFFIX}
+      destination:
+        - - ext:network=any        
