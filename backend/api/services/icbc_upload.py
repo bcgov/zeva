@@ -15,33 +15,34 @@ def trim_all_columns(df):
 
 
 def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
-    df = pd.read_csv(excelfile, sep="|", error_bad_lines=False)
-    df.drop(df[(df.HYBRID_VEHICLE_FLAG == 'N') &
-               (df.ELECTRIC_VEHICLE_FLAG == 'N')].index, inplace=True)
-    df['MODEL_YEAR'].fillna(0, inplace=True)
-    df['VIN'].fillna(0, inplace=True)
-    df.drop(df[(df.MODEL_YEAR < 2019)].index, inplace=True)
-    df.drop(df[(df.VIN == 0)].index, inplace=True)
-    df.drop(df.columns.difference([
-        'VIN',
-        'MODEL',
-        'MODEL_YEAR',
-        'MAKE']), 1, inplace=True)
-    df = trim_all_columns(df)
-    df["MODEL"] = df["MODEL"].str.upper()
-    df["MAKE"] = df["MAKE"].str.upper()
-    df["MODEL_YEAR"] = df["MODEL_YEAR"].astype(int)
+    with open("log.txt", "wb") as outfile:
+        outfile.write('starting')
+        df = pd.read_csv(excelfile, sep="|", error_bad_lines=False)
+        df.drop(df[(df.HYBRID_VEHICLE_FLAG == 'N') &
+                (df.ELECTRIC_VEHICLE_FLAG == 'N')].index, inplace=True)
+        df['MODEL_YEAR'].fillna(0, inplace=True)
+        df['VIN'].fillna(0, inplace=True)
+        df.drop(df[(df.MODEL_YEAR < 2019)].index, inplace=True)
+        df.drop(df[(df.VIN == 0)].index, inplace=True)
+        df.drop(df.columns.difference([
+            'VIN',
+            'MODEL',
+            'MODEL_YEAR',
+            'MAKE']), 1, inplace=True)
+        df = trim_all_columns(df)
+        df["MODEL"] = df["MODEL"].str.upper()
+        df["MAKE"] = df["MAKE"].str.upper()
+        df["MODEL_YEAR"] = df["MODEL_YEAR"].astype(int)
 
-    # pd.options.display.float_format = '{:.0f}'.format
-    try:
-        # insert entry into the icbc upload date table
-        current_to_date = IcbcUploadDate.objects.create(
-            upload_date=dateCurrentTo,
-            create_user=requesting_user.username,
-            update_user=requesting_user.username,
-            )
+        # pd.options.display.float_format = '{:.0f}'.format
+        try:
+            # insert entry into the icbc upload date table
+            current_to_date = IcbcUploadDate.objects.create(
+                upload_date=dateCurrentTo,
+                create_user=requesting_user.username,
+                update_user=requesting_user.username,
+                )
 
-        with open("log.txt", "wb") as outfile:
             # iterate through df and check if vehicle exists, if it doesn't, add it!
             for index, row in df.iterrows():
                 outfile.write(index)

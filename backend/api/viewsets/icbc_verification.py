@@ -63,6 +63,7 @@ class IcbcVerificationViewSet(
                         outfile.write(infile.read())
 
             ingest_icbc_spreadsheet(filename, user, date_current_to)
+            outfile.close()
             # os.remove(filename)
             # for chunk in range(chunks):
             #     os.remove(tempfile)
