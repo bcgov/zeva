@@ -112,7 +112,6 @@ const CreditRequestDetailsPage = (props) => {
   const analystAction = user.isGovernment
   && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0
   && user.hasPermission('RECOMMEND_SALES');
-
   return (
     <div id="credit-request-details" className="page">
       {modal}
@@ -139,7 +138,7 @@ const CreditRequestDetailsPage = (props) => {
               status={submission.validationStatus}
               submission={submission}
               date={moment(submission.updateTimestamp).format('MMM D, YYYY')}
-              icbcDate={moment(previousDateCurrentTo).format('MMM D, YYYY')}
+              icbcDate={previousDateCurrentTo}
               invalidSubmission={invalidSubmission}
             />
             {submission.salesSubmissionComment && user.isGovernment && (

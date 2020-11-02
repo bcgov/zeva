@@ -116,15 +116,31 @@ const CreditTransfersDetailsPage = (props) => {
     </Modal>
   );
 
-  const actionBarNonTrade = (
+  const tradePartner = (user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED');
+  const initiatingSupplier = (user.organization.id === submission.debitFrom.id && submission.status === 'DRAFT');
+  const actionBar = (
     <div className="row">
       <div className="col-sm-12">
-        <div className="action-bar" testid="action-bar-basic">
+        <div className="action-bar">
           <span className="left-content">
             <Button buttonType="back" locationRoute="/credit-transfers" />
+            {tradePartner
+            && (
+            <Button
+              testid="reject-transfer"
+              buttonType="reject"
+              optionalText="Reject Notice"
+              optionalClassname="button text-danger"
+              disabled={comment.length === 0 || allChecked}
+              action={() => {
+                setModalType('reject');
+                setShowModal(true);
+              }}
+            />
+            )}
           </span>
           <span className="right-content">
-            {submission.status === 'DRAFT'
+            { initiatingSupplier
            && (
            <Button
              testid="submit-transfer"
@@ -137,31 +153,8 @@ const CreditTransfersDetailsPage = (props) => {
              disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent || comment.length > 0}
            />
            )}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-
-  const actionbarTradePartner = (
-    <div className="row">
-      <div className="col-sm-12">
-        <div className="action-bar">
-          <span className="left-content">
-            <Button buttonType="back" locationRoute="/credit-transfers" />
-            <Button
-              testid="reject-transfer"
-              buttonType="reject"
-              optionalText="Reject Notice"
-              optionalClassname="button text-danger"
-              disabled={comment.length === 0 || allChecked}
-              action={() => {
-                setModalType('reject');
-                setShowModal(true);
-              }}
-            />
-          </span>
-          <span className="right-content">
+            {tradePartner
+            && (
             <Button
               testid="submit-transfer"
               buttonType="submit"
@@ -172,7 +165,9 @@ const CreditTransfersDetailsPage = (props) => {
               optionalText="Submit Notice"
               disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent || comment.length > 0}
             />
+            )}
           </span>
+
         </div>
       </div>
     </div>
@@ -222,7 +217,7 @@ const CreditTransfersDetailsPage = (props) => {
                    <textarea testid="transfer-comment" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} disabled={allChecked} />
                  </div>
                  )}
-                 {(user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED') ? actionbarTradePartner : actionBarNonTrade}
+                 {actionBar}
                </div>
                )}
           </div>

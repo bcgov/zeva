@@ -27,8 +27,8 @@ const CreditTransfersDetailsContainer = (props) => {
     axios.get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id))
       .then((response) => {
         setSubmission(response.data);
+        setLoading(false);
       });
-    setLoading(false);
   };
 
   useEffect(() => {
