@@ -34,7 +34,6 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
 
     # pd.options.display.float_format = '{:.0f}'.format
     try:
-        print('processing')
         # insert entry into the icbc upload date table
         current_to_date = IcbcUploadDate.objects.create(
             upload_date=dateCurrentTo,
