@@ -77,5 +77,5 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
                         'icbc_vehicle_id': vehicle_id,
                         'icbc_upload_date_id': current_to_date.id
                     })
-    except Exception as e:
-        print(e)
+        except Exception as e:
+            print(e)
