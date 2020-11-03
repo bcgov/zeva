@@ -34,9 +34,12 @@ const UploadICBCVerificationContainer = (props) => {
   const doUpload = () => {
     setLoading(true);
 
-    const { promises, filename, chunks } = chunkUpload(ROUTES_ICBCVERIFICATION.CHUNK_UPLOAD, files);
+    // const { promises, filename, chunks } = chunkUpload(ROUTES_ICBCVERIFICATION.CHUNK_UPLOAD, files);
 
-    Promise.all(promises).then(() => {
+    // Promise.all(promises).then(() => {
+    chunkUpload(ROUTES_ICBCVERIFICATION.CHUNK_UPLOAD, files).then((response) => {
+      console.error(response);
+      const { filename, chunks } = response;
       axios.post(ROUTES_ICBCVERIFICATION.UPLOAD, {
         filename,
         chunks,
@@ -47,9 +50,9 @@ const UploadICBCVerificationContainer = (props) => {
         setFiles([]);
       }).catch((error) => {
         console.error(error);
-        const { response } = error;
-        if (response.status === 400) {
-          setAlertMessage(error.response.data);
+        const { response: errorResponse } = error;
+        if (errorResponse.status === 400) {
+          setAlertMessage(errorResponse.data);
         } else {
           setAlertMessage('An error has occurred while uploading. Please try again later.');
         }
