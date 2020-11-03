@@ -20,8 +20,7 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
 
     chunks = pd.read_csv(excelfile, sep="|", error_bad_lines=False, iterator=True, chunksize=1000)
     for df in chunks:
-        df.drop(df[(df.HYBRID_VEHICLE_FLAG == 'N') &
-                (df.ELECTRIC_VEHICLE_FLAG == 'N')].index, inplace=True)
+        df.drop(df[(df.HYBRID_VEHICLE_FLAG == 'N') & (df.ELECTRIC_VEHICLE_FLAG == 'N')].index, inplace=True)
         df['MODEL_YEAR'].fillna(0, inplace=True)
         df['VIN'].fillna(0, inplace=True)
         df.drop(df[(df.MODEL_YEAR < 2019)].index, inplace=True)
@@ -31,10 +30,10 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
             'MODEL',
             'MODEL_YEAR',
             'MAKE']), 1, inplace=True)
-        df = trim_all_columns(df)
-        df["MODEL"] = df["MODEL"].str.upper()
-        df["MAKE"] = df["MAKE"].str.upper()
-        df["MODEL_YEAR"] = df["MODEL_YEAR"].astype(int)
+        # df = trim_all_columns(df)
+        # df["MODEL"] = df["MODEL"].str.upper()
+        # df["MAKE"] = df["MAKE"].str.upper()
+        # df["MODEL_YEAR"] = df["MODEL_YEAR"].astype(int)
 
         # pd.options.display.float_format = '{:.0f}'.format
         try:
@@ -49,10 +48,10 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
             for index, row in df.iterrows():
                 with open("log.txt", "a") as outfile:
                     outfile.write(index)
-                icbc_vehicle_model = row['MODEL']
-                icbc_vehicle_year = row['MODEL_YEAR']
-                icbc_vehicle_make = row['MAKE']
-                icbc_vehicle_vin = row['VIN']
+                icbc_vehicle_model = str(row['MODEL']).upper().strip()
+                icbc_vehicle_year = str(int(row['MODEL_YEAR']))
+                icbc_vehicle_make = str(row['MAKE']).upper().strip()
+                icbc_vehicle_vin = str(row['VIN']).strip()
 
                 (model_year, _) = ModelYear.objects.get_or_create(
                     name=icbc_vehicle_year,
