@@ -38,7 +38,7 @@ objects:
     source:
       contextDir: openshift/templates/nagios
       git:
-        ref: master
+        ref: Openshift-v4
         uri: https://github.com/bcgov/zeva.git
       type: Git
     strategy:
