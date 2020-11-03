@@ -157,7 +157,8 @@ objects:
       description: |
         allow schemaspy to talk to the internet.
       source:
-        - - name=name=schemaspy-public${SUFFIX}
+        - - name=schemaspy-public${SUFFIX}
       destination:
         - - ext:network=any        
-        
+ 
+                

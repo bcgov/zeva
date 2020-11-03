@@ -37,7 +37,7 @@ parameters:
     required: true
   - name: OCP_NAME
     displayName: Openshift Name
-    description: Openshift Name
+    description: Openshift Name, v3 is pathfinder, v4 is apps.silver.devops
     required: true    
 objects:
 - apiVersion: v1
@@ -166,12 +166,12 @@ objects:
           - name: MINIO_ACCESS_KEY
             valueFrom:
               secretKeyRef:
-                name: ${NAME}-minio
+                name: ${NAME}-minio-${ENV_NAME}
                 key: MINIO_ACCESS_KEY
           - name: MINIO_SECRET_KEY
             valueFrom:
               secretKeyRef:
-                name: ${NAME}-minio
+                name: ${NAME}-minio-${ENV_NAME}
                 key: MINIO_SECRET_KEY
           - name: KEYCLOAK_SA_CLIENT_SECRET
             valueFrom:
