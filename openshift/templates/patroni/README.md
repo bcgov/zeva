@@ -13,6 +13,9 @@ oc process -f ./secret-template.yaml | oc create -f - -n [environment namespace]
 2. Build patroni image
 oc process -f ./build.yaml | oc create -f - -n [tools namespace]
 
+3. tag the patroni image to environment
+oc tag e52f12-tools/patroni:v10-latest e52f12-[env]]/patroni:v10-stable
+
 ### Database Migration from Openshift v3 to Openshift 4
 
 1. Openshift v4 - Update zeva database user same as the one on Openshift v3

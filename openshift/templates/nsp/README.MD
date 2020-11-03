@@ -1,6 +1,7 @@
 ### Files included
 
-* nsp-env.yaml not being used
+* nsp-env.yaml - used by pipeline
+* nsp-env-test-prod.yaml - setup nsps used by test and prod, pipeline doesn't use them
 * nsp-tools.yaml pods-to-external-network, apply it to tools name space only
 * quickstart-nsp.yaml apply this to all namespaces
 * aporeto-setup.md documentation for aporeto setup, including more specific security policies
@@ -21,6 +22,10 @@ for Openshift v4:
 * oc process -f ./quickstart-nsp.yaml API_VERSION=security.devops.gov.bc.ca/v1alpha1 NAMESPACE_PREFIX=e52f12 ENV_NAME=dev | oc create -f - -n e52f12-dev
 * oc process -f ./quickstart-nsp.yaml API_VERSION=security.devops.gov.bc.ca/v1alpha1 NAMESPACE_PREFIX=e52f12 ENV_NAME=test | oc create -f - -n e52f12-test
 * oc process -f ./quickstart-nsp.yaml API_VERSION=security.devops.gov.bc.ca/v1alpha1 NAMESPACE_PREFIX=e52f12 ENV_NAME=prod | oc create -f - -n e52f12-prod
+
+//non removeable by pipeline, manually create it
+* oc process -f ./nsp-env-test-prod.yaml API_VERSION=security.devops.gov.bc.ca/v1alpha1 NAME=zeva ENV_NAME=test | oc create -f - -n e52f12-test
+* oc process -f ./nsp-env-test-prod.yaml API_VERSION=security.devops.gov.bc.ca/v1alpha1 NAME=zeva ENV_NAME=prod | oc create -f - -n e52f12-prod
 
 
 ### Add role to users, check if the settings already exist before run the grant

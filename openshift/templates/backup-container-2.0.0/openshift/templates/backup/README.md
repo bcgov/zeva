@@ -13,18 +13,18 @@ patroni-master-prod:5432/zeva
 4. create backup-conf configmap
 oc -n e52f12-dev create configmap backup-conf --from-file=./config/backup.conf
 oc -n e52f12-prod create configmap backup-conf --from-file=./config/backup.conf
-5. mount the NFS storage to httpd pod and create /postgresql-backup, /minio-backup and /rabbitmq-backup
+5. mount the NFS storage to frontend pod and create /patroni-backup, /minio-backup and /rabbitmq-backup. remove the mount later
 6. create deployment config for backup container
-6.1 for dev
+6.1 for test
 BACKUP_VOLUME_NAME is pvc name, don't have to be nfs
-oc -n e52f12-dev process -f ./templates/backup/backup-deploy.json \
+oc -n e52f12-test process -f ./templates/backup/backup-deploy.json \
   -p NAME=patroni-backup \
   -p SOURCE_IMAGE_NAME=patroni-backup \
   -p IMAGE_NAMESPACE=e52f12-tools \
-  -p TAG_NAME=2.0.0 \
-  -p DATABASE_SERVICE_NAME=patroni-master-dev-257 \
+  -p TAG_NAME=2.2.1 \
+  -p DATABASE_SERVICE_NAME=patroni-master-test \
   -p DATABASE_NAME=zeva \
-  -p DATABASE_DEPLOYMENT_NAME=patroni-dev-257 \
+  -p DATABASE_DEPLOYMENT_NAME=patroni-test \
   -p DATABASE_USER_KEY_NAME=app-db-username \
   -p DATABASE_PASSWORD_KEY_NAME=app-db-password \
   -p TABLE_SCHEMA=public \
@@ -33,14 +33,14 @@ oc -n e52f12-dev process -f ./templates/backup/backup-deploy.json \
   -p WEEKLY_BACKUPS=12 \
   -p MONTHLY_BACKUPS=3 \
   -p BACKUP_PERIOD=1d \
-  -p BACKUP_VOLUME_NAME=zeva-backup-dev \
+  -p BACKUP_VOLUME_NAME=backup-zeva-test \
   -p VERIFICATION_VOLUME_NAME=backup-verification \
   -p VERIFICATION_VOLUME_SIZE=2G \
   -p VERIFICATION_VOLUME_CLASS=netapp-file-standard \
   -p ENVIRONMENT_FRIENDLY_NAME='ZEVA Database Backup' \
-  -p ENVIRONMENT_NAME=zeva-dev \
-  -p MINIO_DATA_VOLUME_NAME=zeva-minio-dev-257 | \
-  oc create -f - -n e52f12-dev
+  -p ENVIRONMENT_NAME=zeva-test \
+  -p MINIO_DATA_VOLUME_NAME=zeva-minio-test | \
+  oc create -f - -n e52f12-test
 6.2 for production
 BACKUP_VOLUME_NAME is the nfs storage name, for example bk-e52f12-prod-s9fvzvwddd
 oc -n e52f12-prod process -f ./backup-deploy.json \

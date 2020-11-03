@@ -1,0 +1,34 @@
+---
+kind: Template
+apiVersion: v1
+labels:
+  template: zeva-env-test-prod
+metadata:
+  name: zeva-env-test-prod
+  creationTimestamp:
+parameters:  
+  - name: NAME
+    displayName: App Name
+    description: App Name
+    value: 'zeva'
+    required: true
+  - name: ENV_NAME
+    displayName: Environment Name
+    description: Environment Name
+    required: true
+  - name: API_VERSION
+    displayName: Api version
+    description: Api version, either secops.pathfinder.gov.bc.ca/v1alpha1 or security.devops.gov.bc.ca/v1alpha1
+    required: true
+objects:
+  - kind: NetworkSecurityPolicy
+    apiVersion: ${API_VERSION}
+    metadata:
+      name: ${NAME}-${ENV_NAME}-custom-backupcontainer-to-patroni
+    spec:
+     description: |
+       allow backup conainer to talk to the patroni cluster.
+     source:
+        - - name=patroni-backup
+     destination:
+        - - cluster-name=patroni-${ENV_NAME} 

@@ -160,3 +160,4 @@ objects:
         - - name=name=schemaspy-public${SUFFIX}
       destination:
         - - ext:network=any        
+        

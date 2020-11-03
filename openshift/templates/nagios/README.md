@@ -15,7 +15,8 @@ oc create imagestream nagios-base -n [tools namespace]
 oc process -f ./nagios-base-bc.yaml | oc create -f - -n [tools namespace]
 
 3. Build nagios image
-oc process -f ./nagios-bc.yaml | oc create -f - -n [tools namespace]
+oc process -f ./nagios-bc.yaml ENV_NAME=test | oc create -f - -n [test namespace]
+oc process -f ./nagios-bc.yaml ENV_NAME=prod | oc create -f - -n [prod namespace]
 
 4. Deploy nagios 
 oc process -f ./nagios-dc.yaml NAME=zeva \
