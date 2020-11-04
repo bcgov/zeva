@@ -51,7 +51,7 @@ const uploadPartialData = (
 
 const chunkUpload = (url, files) => {
   const file = files[0];
-  let chunkSize = 1000000;
+  let chunkSize = 10000000;
   const totalNumberOfChunks = Math.ceil(file.size / chunkSize, chunkSize);
 
   if (file.size < chunkSize) {
