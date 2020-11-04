@@ -15,14 +15,16 @@ def trim_all_columns(df):
 
 
 def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
+    current_to_date = IcbcUploadDate.objects.create(
+        upload_date=dateCurrentTo,
+        create_user=requesting_user.username,
+        update_user=requesting_user.username,
+    )
+    
     for df in pd.read_csv(excelfile, sep="|", error_bad_lines=False, iterator=True, chunksize=1000):
-        # insert entry into the icbc upload date table
-        (current_to_date, _) = IcbcUploadDate.objects.get_or_create(
-            upload_date=dateCurrentTo,
-            defaults={
-                'create_user': requesting_user.username,
-                'update_user': requesting_user.username
-            }
+        # This is to tell postgres that we're still processing and keep the connection alive
+        _ = IcbcUploadDate.objects.get(
+            id=current_to_date.id
         )
         df = df[(df.MODEL_YEAR > 2018)]
         df = df[(df.HYBRID_VEHICLE_FLAG != 'N') | (df.ELECTRIC_VEHICLE_FLAG != 'N')]
