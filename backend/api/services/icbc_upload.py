@@ -17,10 +17,12 @@ def trim_all_columns(df):
 def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
     for df in pd.read_csv(excelfile, sep="|", error_bad_lines=False, iterator=True, chunksize=1000):
         # insert entry into the icbc upload date table
-        current_to_date = IcbcUploadDate.objects.create(
+        (current_to_date, _) = IcbcUploadDate.objects.get_or_create(
             upload_date=dateCurrentTo,
-            create_user=requesting_user.username,
-            update_user=requesting_user.username,
+            defaults={
+                'create_user': requesting_user.username,
+                'update_user': requesting_user.username
+            }
         )
         df = df[(df.MODEL_YEAR > 2018)]
         df = df[(df.HYBRID_VEHICLE_FLAG != 'N') | (df.ELECTRIC_VEHICLE_FLAG != 'N')]
