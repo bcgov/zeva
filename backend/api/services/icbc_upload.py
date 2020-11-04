@@ -24,7 +24,6 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
         )
 
     for df in pd.read_csv(excelfile, sep="|", error_bad_lines=False, iterator=True, chunksize=1000):
-        transaction.set_autocommit(False)
         df = df[(df.MODEL_YEAR > 2018)]
         df = df[(df.HYBRID_VEHICLE_FLAG != 'N') | (df.ELECTRIC_VEHICLE_FLAG != 'N')]
         df['MODEL_YEAR'].fillna(0, inplace=True)
@@ -75,12 +74,7 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
                         'icbc_vehicle_id': vehicle_id,
                         'icbc_upload_date_id': current_to_date.id
                     })
-
-            transaction.commit()
         except Exception as e:
-            transaction.rollback()
             print(e)
-        finally:
-            transaction.set_autocommit(True)
 
     return True
