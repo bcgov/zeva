@@ -1,14 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Loading from '../../app/components/Loading';
-import CustomPropTypes from '../../app/utilities/props';
 import ActionBarGov from '../../vehicles/components/ActionBarGov';
+import Button from '../../app/components/Button';
+import CustomPropTypes from '../../app/utilities/props';
+import Loading from '../../app/components/Loading';
+import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
 import VehicleListTable from '../../vehicles/components/VehicleListTable';
 
 const VehicleSupplierZEVListPage = (props) => {
   const {
-    filtered, handleClear, loading, setFiltered, user, vehicles,
+    filtered, handleClear, loading, locationState, setFiltered, user, vehicles,
   } = props;
 
   if (loading) {
@@ -42,11 +44,27 @@ const VehicleSupplierZEVListPage = (props) => {
           />
         </div>
       </div>
+
+      <div className="row">
+        <div className="col-12">
+          <div className="action-bar">
+            <span className="left-content">
+              <Button
+                buttonType="back"
+                locationRoute={ROUTES_ORGANIZATIONS.LIST}
+                locationState={locationState}
+              />
+            </span>
+            <span className="right-content" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
 VehicleSupplierZEVListPage.defaultProps = {
+  locationState: undefined,
   vehicles: [],
 };
 
@@ -54,6 +72,7 @@ VehicleSupplierZEVListPage.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleClear: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
+  locationState: PropTypes.arrayOf(PropTypes.shape()),
   setFiltered: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired,
   vehicles: PropTypes.arrayOf(PropTypes.shape({})),

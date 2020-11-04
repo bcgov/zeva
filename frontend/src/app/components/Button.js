@@ -1,12 +1,13 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
+import ReactTooltip from 'react-tooltip';
 import history from '../History';
 
 const Button = (props) => {
   const {
     buttonType, locationRoute, locationState, action, optionalText, optionalIcon,
-    disabled, optionalClassname,
+    disabled, optionalClassname, buttonTooltip,
   } = props;
   const getRoute = () => {
     if (locationRoute && locationState) {
@@ -24,6 +25,12 @@ const Button = (props) => {
   let icon;
   let classname = 'button';
   let onclick = () => {};
+  let tooltip;
+  if (buttonTooltip && !disabled) {
+    tooltip = '';
+  } else if (disabled) {
+    tooltip = buttonTooltip;
+  }
   switch (buttonType) {
     case 'back':
       onclick = () => { getRoute(); };
@@ -70,16 +77,23 @@ const Button = (props) => {
   }
 
   return (
-    <button
-      className={classname}
-      disabled={disabled}
-      onClick={(e) => {
-        onclick(e);
-      }}
-      type="button"
-    >
-      {icon && <FontAwesomeIcon icon={icon} /> }{text}
-    </button>
+    <>
+      {tooltip
+    && <ReactTooltip />}
+      <span data-tip={tooltip}>
+
+        <button
+          className={classname}
+          disabled={disabled}
+          onClick={(e) => {
+            onclick(e);
+          }}
+          type="button"
+        >
+          {icon && <FontAwesomeIcon icon={icon} /> }{text}
+        </button>
+      </span>
+    </>
   );
 };
 
@@ -91,6 +105,7 @@ Button.defaultProps = {
   action: null,
   optionalClassname: null,
   disabled: false,
+  buttonTooltip: '',
 };
 Button.propTypes = {
   buttonType: PropTypes.string.isRequired,
@@ -101,5 +116,6 @@ Button.propTypes = {
   optionalClassname: PropTypes.string,
   action: PropTypes.func,
   disabled: PropTypes.bool,
+  buttonTooltip: PropTypes.string,
 };
 export default Button;

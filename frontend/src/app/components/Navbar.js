@@ -68,7 +68,7 @@ class Navbar extends Component {
             <a href="http://www.gov.bc.ca">
               <div className="brand-logo" />
             </a>
-            <h1>Zero Emission Vehicle Reporting System</h1>
+            <h1>Zero-Emission Vehicles Reporting System</h1>
           </div>
 
           <div className="col-lg-3">

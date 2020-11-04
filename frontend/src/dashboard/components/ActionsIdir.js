@@ -44,7 +44,7 @@ const ActionsIdir = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsAnalyst} require analyst/engineer validation`}
-          linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Submitted`}
+          linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Submitted,Validated`}
         />
         )}
         {activityCount.creditsRecommendApprove > 0
@@ -54,7 +54,7 @@ const ActionsIdir = (props) => {
           icon="check-square"
           boldText="Credit Applications"
           regularText={`${activityCount.creditsRecommendApprove} recommended for director approval`}
-          linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Recommend%20Approval`}
+          linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Recommend%20Issuance`}
         />
         )}
         {activityCount.creditsRecommendReject > 0

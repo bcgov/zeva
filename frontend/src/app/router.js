@@ -18,6 +18,7 @@ import CreditRequestListContainer from '../credits/CreditRequestListContainer';
 import CreditTransfersContainer from '../credits/CreditTransfersContainer';
 import CreditTransferListContainer from '../credits/CreditTransferListContainer';
 import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContainer';
+import CreditTransfersDetailsContainer from '../credits/CreditTransfersDetailsContainer';
 import CreditRequestVINListContainer from '../credits/CreditRequestVINListContainer';
 import UploadCreditRequestContainer from '../credits/UploadCreditRequestContainer';
 import UploadCreditRequestConfirmationContainer from '../credits/UploadCreditRequestConfirmationContainer';
@@ -205,6 +206,7 @@ class Router extends Component {
                 path={ROUTES_CREDITS.UPLOAD_VERIFICATION}
                 render={() => <UploadICBCVerificationContainer keycloak={keycloak} user={user} />}
               />
+
               <Route
                 exact
                 path={ROUTES_CREDIT_TRANSFERS.LIST}
@@ -214,6 +216,12 @@ class Router extends Component {
                 exact
                 path={ROUTES_CREDIT_TRANSFERS.NEW}
                 render={() => <CreditTransfersContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_CREDIT_TRANSFERS.DETAILS}
+                render={() => (
+                  <CreditTransfersDetailsContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 exact

@@ -160,7 +160,11 @@ const VehicleDetailsPage = (props) => {
         </div>
       </div>
 
-      {details.validationStatus === 'SUBMITTED' && user.isGovernment && (
+      {details.validationStatus === 'SUBMITTED'
+      && user.isGovernment
+      && typeof user.hasPermission === 'function'
+      && user.hasPermission('REQUEST_ZEV_CHANGES')
+      && (
       <div className="row">
         <div className="col-md-12 col-lg-9 col-xl-7 pt-4 pb-2">
           <div className="form">
@@ -203,6 +207,8 @@ const VehicleDetailsPage = (props) => {
               )}
               {details.validationStatus === 'SUBMITTED'
               && user.isGovernment
+              && typeof user.hasPermission === 'function'
+              && user.hasPermission('VALIDATE_ZEV')
               && ([
                 <button
                   className="btn btn-outline-danger"

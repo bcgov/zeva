@@ -46,7 +46,7 @@ const CreditRequestDetailsPage = (props) => {
         confirmLabel: ' Submit',
         handleSubmit: () => { handleSubmit('SUBMITTED'); },
         buttonClass: 'button primary',
-        modalText: 'Submit credit request to government?',
+        modalText: 'Submit credit request to Government of B.C.?',
         icon: <FontAwesomeIcon icon="paper-plane" />,
       };
       break;
@@ -112,7 +112,6 @@ const CreditRequestDetailsPage = (props) => {
   const analystAction = user.isGovernment
   && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0
   && user.hasPermission('RECOMMEND_SALES');
-
   return (
     <div id="credit-request-details" className="page">
       {modal}
@@ -139,7 +138,7 @@ const CreditRequestDetailsPage = (props) => {
               status={submission.validationStatus}
               submission={submission}
               date={moment(submission.updateTimestamp).format('MMM D, YYYY')}
-              icbcDate={moment(previousDateCurrentTo).format('MMM D, YYYY')}
+              icbcDate={previousDateCurrentTo}
               invalidSubmission={invalidSubmission}
             />
             {submission.salesSubmissionComment && user.isGovernment && (
@@ -149,7 +148,7 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
       )}
-      <div className="row">
+      <div className="row mb-1">
         <div className="col-sm-12">
           <div className="my-2 px-2 pb-2 address-summary-table">
             <h3 className="mt-2">
@@ -223,7 +222,7 @@ const CreditRequestDetailsPage = (props) => {
                     }}
                     type="button"
                   >
-                    {validatedOnly ? 'Re-validate' : 'Validate'}
+                    {validatedOnly ? 'Re-verify with ICBC Data' : 'Verify with ICBC Data'}
                   </button>
                   {validatedOnly && (
                   <button

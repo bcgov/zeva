@@ -6,6 +6,7 @@ import React from 'react';
 
 import ReactTable from '../../app/components/ReactTable';
 import history from '../../app/History';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const OrganizationsTable = (props) => {
   const columns = [{
@@ -20,72 +21,17 @@ const OrganizationsTable = (props) => {
     id: 'class',
   },
   {
-    accessor: () => '-',
-    className: 'col-credit-balance',
+    accessor: (item) => (item.balance && item.balance.A ? formatNumeric(item.balance.A, 2) : '-'),
+    className: 'col-credit-balance text-right',
     Header: 'A-Credits',
     id: 'a-credits',
 
   }, {
-    accessor: () => '-',
-    className: 'col-credit-balance',
+    accessor: (item) => (item.balance && item.balance.B ? formatNumeric(item.balance.B, 2) : '-'),
+    className: 'col-credit-balance text-right',
     Header: 'B-Credits',
     id: 'b-credits',
-  },
-    //  {
-    //   accessor: (item) => {
-    //     const { organizationAddress } = item;
-
-    //     if (!organizationAddress) {
-    //       return '';
-    //     }
-
-    //     const {
-    //       addressLine1,
-    //       addressLine2,
-    //       addressLine3,
-    //       city,
-    //       country,
-    //       postalCode,
-    //       state,
-    //     } = organizationAddress;
-
-    //     let address = '';
-
-    //     if (addressLine1) {
-    //       address += `${addressLine1} `;
-    //     }
-
-    //     if (addressLine2) {
-    //       address += `${addressLine2} `;
-    //     }
-
-    //     if (addressLine3) {
-    //       address += `${addressLine3} `;
-    //     }
-
-    //     if (city) {
-    //       address += `${city} `;
-    //     }
-
-    //     if (state) {
-    //       address += `${state} `;
-    //     }
-
-    //     if (postalCode) {
-    //       address += `${postalCode} `;
-    //     }
-
-    //     if (country) {
-    //       address += `${country} `;
-    //     }
-
-  //     return address;
-  //   },
-  //   className: 'col-address',
-  //   Header: 'Address',
-  //   id: 'address',
-  // }
-  ];
+  }];
 
   const { filtered, items, setFiltered } = props;
   return (
@@ -102,7 +48,7 @@ const OrganizationsTable = (props) => {
             onClick: () => {
               const { id } = row.original;
 
-              history.push(`/organizations/${id}`);
+              history.push(`/organizations/${id}`, filtered);
             },
             className: 'clickable',
           };

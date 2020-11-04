@@ -3,15 +3,15 @@
     background-color: $default-background-grey;
   }
 
-  .icbc-verification-warning {
-    .icbc-model-year, .icbc-model, .icbc-make, .warning, .validated {
-      background-color: $background-danger !important;
+  .icbc-warning {
+    .icbc-model-year, .icbc-make, .icbc-model, .warning, .validated {
+      background-color: $background-warning !important;
     }
   }
 
-  .icbc-mismatch-warning {
-    .icbc-model-year, .icbc-make, .icbc-model, .warning, .validated {
-      background-color: $background-warning !important;
+  .icbc-danger, .icbc-warning.icbc-danger {
+    .icbc-model-year, .icbc-model, .icbc-make, .warning, .validated {
+      background-color: $background-danger !important;
     }
   }
 

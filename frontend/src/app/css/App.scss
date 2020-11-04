@@ -229,7 +229,7 @@ p {
       border: 1px solid $nav-border;
       border-bottom: none;
 
-      a {
+      a, button {
         color: $default-text-black;
       }
     }
@@ -237,6 +237,19 @@ p {
     a {
       color: $default-link-blue;
       padding: 1rem 1.5rem;
+    }
+
+    button {
+      background-color: transparent;
+      border: none;
+      color: $default-link-blue;
+      line-height: normal;
+      margin: 0;
+      padding: 0 1.5rem;
+
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 }

@@ -9,7 +9,6 @@ import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 
 const ActionsBceid = (props) => {
   const { activityCount, loading } = props;
-
   if (loading) {
     return <Loading />;
   }
@@ -54,8 +53,18 @@ const ActionsBceid = (props) => {
           colour="green"
           icon="car"
           boldText="ZEV Models"
-          regularText={`${activityCount.modelsValidated} validated by government`}
+          regularText={`${activityCount.modelsValidated} validated by Government of B.C.`}
           linkTo={`${ROUTES_VEHICLES.LIST}?col-status=Validated`}
+        />
+        )}
+        {activityCount.modelsRejected > 0
+        && (
+        <ActivityBanner
+          colour="red"
+          icon="car"
+          boldText="ZEV Models"
+          regularText={`${activityCount.modelsRejected} rejected by Government of B.C.`}
+          linkTo={`${ROUTES_VEHICLES.LIST}?col-status=Rejected`}
         />
         )}
         {activityCount.modelsInfoRequest === 0
@@ -95,7 +104,7 @@ const ActionsBceid = (props) => {
           colour="green"
           icon="check-square"
           boldText="Credit Applications"
-          regularText={`${activityCount.creditsIssued} processed by government`}
+          regularText={`${activityCount.creditsIssued} processed by Government of B.C.`}
           linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Issued`}
         />
         )}
@@ -126,7 +135,7 @@ const ActionsBceid = (props) => {
           colour="blue"
           icon="exchange-alt"
           boldText="Credit Transfer"
-          regularText={`${activityCount.transfersAwaitingGovernment} awaiting  government action`}
+          regularText={`${activityCount.transfersAwaitingGovernment} awaiting  Government of B.C. action`}
           linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Approved`}
         />
         )}
@@ -136,7 +145,7 @@ const ActionsBceid = (props) => {
           colour="green"
           icon="exchange-alt"
           boldText="Credit Transfer"
-          regularText={`${activityCount.transfersRecorded} recorded by government`}
+          regularText={`${activityCount.transfersRecorded} recorded by Government of B.C.`}
           linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Issued`}
         />
         )}
@@ -150,6 +159,16 @@ const ActionsBceid = (props) => {
             regularText="no current activity"
             linkTo={ROUTES_CREDIT_TRANSFERS.LIST}
           />
+        )}
+        {activityCount.transfersRejected > 0
+        && (
+        <ActivityBanner
+          colour="red"
+          icon="exchange-alt"
+          boldText="Credit Transfer"
+          regularText={`${activityCount.transfersRejected} rejected by Government of B.C.`}
+          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Rejected`}
+        />
         )}
       </div>
     </div>

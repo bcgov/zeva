@@ -88,6 +88,7 @@ const TextInput = (props) => {
             onBlur={handleOnBlur}
             disabled={disabled}
             readOnly={readonly}
+            min="0"
           />
         </div>
         <small className="form-text text-danger">{errorMessage || validationErrors}</small>

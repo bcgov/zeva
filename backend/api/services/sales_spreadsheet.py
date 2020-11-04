@@ -451,27 +451,26 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
         error = ''
 
         if 'DUPLICATE_VIN' in content.warnings:
-            error += 'VIN contains duplicates; '
+            error += 'Duplicate VIN; '
 
         if 'EXPIRED_REGISTRATION_DATE' in content.warnings:
-            error += 'retail sales date and registration date greater ' \
-                        'than 3 months apart; '
+            error += 'Sale prior to 2 Jan 2018; '
 
         if 'INVALID_DATE' in content.warnings:
-            error += 'Date cannot be parsed. Please use YYYY-MM-DD ' \
+            error += 'Invalid Date. Please use YYYY-MM-DD ' \
                         'format; '
 
         if 'INVALID_MODEL' in content.warnings:
             error += 'invalid make, model and year combination; '
 
         if 'MODEL_MISMATCHED' in content.warnings:
-            error += 'unmatched data; '
+            error += 'Model year does not match BC registration data; '
 
         if 'NO_ICBC_MATCH' in content.warnings:
-            error += 'no matching ICBC data; '
+            error += 'VIN not registered in BC; '
 
         if 'VIN_ALREADY_AWARDED' in content.warnings:
-            error += 'credits already issued to VIN; '
+            error += 'VIN already issued credit; '
 
         if 'ROW_NOT_SELECTED' in content.warnings and error == '':
             error += 'entry was rejected for validation; '

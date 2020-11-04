@@ -93,6 +93,40 @@
   display: inline-table;
 }
 
+
+#credit-transfers-details {
+  .form {
+    background-color: $form-background-grey;
+    border: 1px solid $border-grey;
+    .text-blue {
+      margin: 1rem 0 1rem 0;
+      font-size: 1.15rem;
+    }
+
+    textarea {
+      margin: 0 1rem 0 0;
+    }
+  }
+
+  .transfer-summary-table {
+    padding: 5px;
+    border: 1px solid $border-grey;
+    display: inline-table;
+    .rt-td {
+      border: 1px solid $border-grey;
+    }
+     .rt-th {
+      padding: 1px;
+      font-weight: bold;
+      border: 1px solid $border-grey;
+    }
+  }
+
+}
+#transfer-sign-off {
+  color: $default-text-blue;
+}
+
 #credit-request-details {
   .status-alert {
     margin: 0;
@@ -110,6 +144,7 @@
       border: 1px solid $border-grey;
       border-collapse: collapse;
       margin-left: auto;
+
 
       td {
         border-collapse: collapse;
