@@ -1,5 +1,4 @@
 import pandas as pd
-from django.db import transaction
 
 from api.models.icbc_registration_data import IcbcRegistrationData
 from api.models.icbc_vehicle import IcbcVehicle
@@ -48,33 +47,32 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
                 icbc_vehicle_make = str(row['MAKE']).upper().strip()
                 icbc_vehicle_vin = str(row['VIN']).upper().strip()
 
-                with transaction.atomic():
-                    (model_year, _) = ModelYear.objects.get_or_create(
-                        name=icbc_vehicle_year,
+                (model_year, _) = ModelYear.objects.get_or_create(
+                    name=icbc_vehicle_year,
+                    defaults={
+                        'create_user': requesting_user.username,
+                        'update_user': requesting_user.username
+                    })
+                icbc_vehicle_year_id = model_year.id
+
+                (vehicle, _) = IcbcVehicle.objects.get_or_create(
+                        model_name=icbc_vehicle_model,
+                        model_year_id=icbc_vehicle_year_id,
+                        make=icbc_vehicle_make,
                         defaults={
                             'create_user': requesting_user.username,
                             'update_user': requesting_user.username
                         })
-                    icbc_vehicle_year_id = model_year.id
+                vehicle_id = vehicle.id
 
-                    (vehicle, _) = IcbcVehicle.objects.get_or_create(
-                            model_name=icbc_vehicle_model,
-                            model_year_id=icbc_vehicle_year_id,
-                            make=icbc_vehicle_make,
-                            defaults={
-                                'create_user': requesting_user.username,
-                                'update_user': requesting_user.username
-                            })
-                    vehicle_id = vehicle.id
-
-                    IcbcRegistrationData.objects.get_or_create(
-                        vin=icbc_vehicle_vin,
-                        defaults={
-                            'create_user': requesting_user.username,
-                            'update_user': requesting_user.username,
-                            'icbc_vehicle_id': vehicle_id,
-                            'icbc_upload_date_id': current_to_date.id
-                        })
+                IcbcRegistrationData.objects.get_or_create(
+                    vin=icbc_vehicle_vin,
+                    defaults={
+                        'create_user': requesting_user.username,
+                        'update_user': requesting_user.username,
+                        'icbc_vehicle_id': vehicle_id,
+                        'icbc_upload_date_id': current_to_date.id
+                    })
         except Exception as e:
             print(e)
 

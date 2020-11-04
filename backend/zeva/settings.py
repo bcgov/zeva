@@ -38,6 +38,8 @@ RUNSERVER = 'runserver' in sys.argv
 
 ALLOWED_HOSTS = ['*']
 
+AUTOCOMMIT = False
+
 # Application definition
 
 INSTALLED_APPS = [
