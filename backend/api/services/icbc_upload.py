@@ -15,20 +15,19 @@ def trim_all_columns(df):
 
 
 def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
-    # with open("log.txt", "w") as outfile:
-    #     outfile.write('starting')
+    # insert entry into the icbc upload date table
+    current_to_date = IcbcUploadDate.objects.create(
+        upload_date=dateCurrentTo,
+        create_user=requesting_user.username,
+        update_user=requesting_user.username,
+        )
 
     for df in pd.read_csv(excelfile, sep="|", error_bad_lines=False, iterator=True, chunksize=1000):
-        # with open("log.txt", "a") as outfile:
-        #     outfile.write("test")
         df = df[(df.MODEL_YEAR > 2018)]
         df = df[(df.HYBRID_VEHICLE_FLAG != 'N') | (df.ELECTRIC_VEHICLE_FLAG != 'N')]
-        # df.drop(df[(df.HYBRID_VEHICLE_FLAG == 'N') & (df.ELECTRIC_VEHICLE_FLAG == 'N')].index, inplace=True)
         df['MODEL_YEAR'].fillna(0, inplace=True)
         df['VIN'].fillna(0, inplace=True)
         df = df[(df.VIN != 0)]
-        # df.drop(df[(df.MODEL_YEAR < 2019)].index, inplace=True)
-        # df.drop(df[(df.VIN == 0)].index, inplace=True)
         # df.drop(df.columns.difference([
         #     'VIN',
         #     'MODEL',
@@ -38,26 +37,11 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
         #     'ELECTRIC_VEHICLE_FLAG'
         # ]), 1, inplace=True)
         # df = trim_all_columns(df)
-        # df["MODEL"] = df["MODEL"].str.upper()
-        # df["MAKE"] = df["MAKE"].str.upper()
-        # df["MODEL_YEAR"] = df["MODEL_YEAR"].astype(int)
 
         # pd.options.display.float_format = '{:.0f}'.format
         try:
-            # insert entry into the icbc upload date table
-            current_to_date = IcbcUploadDate.objects.create(
-                upload_date=dateCurrentTo,
-                create_user=requesting_user.username,
-                update_user=requesting_user.username,
-                )
-
             # iterate through df and check if vehicle exists, if it doesn't, add it!
             for index, row in df.iterrows():
-                # with open("log.txt", "a") as outfile:
-                #     outfile.write(str(index))
-                #     outfile.write(str(row['MODEL']).upper())
-                #     outfile.write(str(row['MAKE']).upper())
-                #     outfile.write(str(row['VIN']).upper())
                 icbc_vehicle_model = str(row['MODEL']).upper().strip()
                 icbc_vehicle_year = str(int(row['MODEL_YEAR'])).strip()
                 icbc_vehicle_make = str(row['MAKE']).upper().strip()
@@ -91,3 +75,5 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
                     })
         except Exception as e:
             print(e)
+
+    return True
