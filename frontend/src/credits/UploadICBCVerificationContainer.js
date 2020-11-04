@@ -34,11 +34,7 @@ const UploadICBCVerificationContainer = (props) => {
   const doUpload = () => {
     setLoading(true);
 
-    // const { promises, filename, chunks } = chunkUpload(ROUTES_ICBCVERIFICATION.CHUNK_UPLOAD, files);
-
-    // Promise.all(promises).then(() => {
     chunkUpload(ROUTES_ICBCVERIFICATION.CHUNK_UPLOAD, files).then((response) => {
-      console.error(response);
       const { filename, chunks } = response;
       axios.post(ROUTES_ICBCVERIFICATION.UPLOAD, {
         filename,

@@ -35,7 +35,9 @@ const uploadPartialData = (
         'Content-Type': 'application/octet-stream',
       },
     }).then(() => {
-      uploadPartialData(url, filename, fileData, chunk + 1, chunkSize, totalNumberOfChunks, resolve, reject);
+      uploadPartialData(
+        url, filename, fileData, chunk + 1, chunkSize, totalNumberOfChunks, resolve, reject,
+      );
     }).catch((error) => {
       reject(error);
     });
@@ -63,28 +65,6 @@ const chunkUpload = (url, files) => {
   return new Promise((resolve, reject) => {
     uploadPartialData(url, filename, file, chunk, chunkSize, totalNumberOfChunks, resolve, reject);
   });
-
-  // const filename = moment().format('YYYY-MM-DD-hh-mm-ss');
-  // const promises = [];
-
-  // for (let chunk = 0; chunk < totalNumberOfChunks; chunk++) {
-  //   const data = new FormData();
-  //   const offset = chunk * chunkSize;
-  //   const chunkData = file.slice(offset, offset + chunkSize);
-  //   data.set('files', chunkData, `${filename}.part.${chunk}`);
-
-  //   promises.push(axios.post(url, data, {
-  //     headers: {
-  //       'Content-Type': 'application/octet-stream',
-  //     },
-  //   }));
-  // }
-
-  // return {
-  //   promises,
-  //   filename,
-  //   chunks: totalNumberOfChunks,
-  // };
 };
 
 export { upload, chunkUpload };
