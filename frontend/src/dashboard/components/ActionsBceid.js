@@ -9,7 +9,6 @@ import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 
 const ActionsBceid = (props) => {
   const { activityCount, loading } = props;
-
   if (loading) {
     return <Loading />;
   }
@@ -56,6 +55,16 @@ const ActionsBceid = (props) => {
           boldText="ZEV Models"
           regularText={`${activityCount.modelsValidated} validated by Government of B.C.`}
           linkTo={`${ROUTES_VEHICLES.LIST}?col-status=Validated`}
+        />
+        )}
+        {activityCount.modelsRejected > 0
+        && (
+        <ActivityBanner
+          colour="red"
+          icon="car"
+          boldText="ZEV Models"
+          regularText={`${activityCount.modelsRejected} rejected by Government of B.C.`}
+          linkTo={`${ROUTES_VEHICLES.LIST}?col-status=Rejected`}
         />
         )}
         {activityCount.modelsInfoRequest === 0
@@ -150,6 +159,16 @@ const ActionsBceid = (props) => {
             regularText="no current activity"
             linkTo={ROUTES_CREDIT_TRANSFERS.LIST}
           />
+        )}
+        {activityCount.transfersRejected > 0
+        && (
+        <ActivityBanner
+          colour="red"
+          icon="exchange-alt"
+          boldText="Credit Transfer"
+          regularText={`${activityCount.transfersRejected} rejected by Government of B.C.`}
+          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Rejected`}
+        />
         )}
       </div>
     </div>

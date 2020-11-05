@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ReactTooltip from 'react-tooltip';
 import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
-import history from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
 import TransferFormRow from './TransferFormRow';
 import FormDropdown from './FormDropdown';
@@ -23,11 +23,13 @@ const CreditTransfersPage = (props) => {
     total,
     rows,
     fields,
+    unfilledRow,
+    checkboxes,
+    setCheckboxes,
+    hoverText,
   } = props;
   const [showModal, setShowModal] = useState(false);
-  const [checkboxes, setCheckboxes] = useState({
-    authority: false, accurate: false, consent: false,
-  });
+  const submitTooltip = 'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.';
   const handleCheckboxClick = (event) => {
     const { checked } = event.target;
     setCheckboxes({ ...checkboxes, [event.target.id]: checked });
@@ -55,7 +57,7 @@ const CreditTransfersPage = (props) => {
       <div className="col-sm-12">
         <div className="action-bar">
           <span className="left-content">
-            <Button buttonType="back" locationRoute="/credit-transactions/transfers" />
+            <Button buttonType="back" locationRoute="/credit-transfers" />
           </span>
           <span className="right-content">
             <Button
@@ -70,6 +72,7 @@ const CreditTransfersPage = (props) => {
                 setShowModal(true);
               }}
               optionalText="Submit Notice"
+              buttonTooltip={submitTooltip}
               disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent}
             />
           </span>
@@ -79,6 +82,7 @@ const CreditTransfersPage = (props) => {
   );
   return (
     <div id="credit-requests-list" className="page">
+      <ReactTooltip />
       <div className="row mt-3 mb-2">
         <div className="col-sm-12">
           <h2>Light Duty Vehicle Credit Transfer</h2>
@@ -111,7 +115,7 @@ const CreditTransfersPage = (props) => {
                   <h4><FontAwesomeIcon icon="plus" /> Add another line</h4>
                 </button>
                 <span className="transfer-total">Total CAD: ${total}</span>
-                <CreditTransferSignoff handleCheckboxClick={handleCheckboxClick} user={user} />
+                <CreditTransferSignoff hoverText={hoverText} checkboxes={checkboxes} disableCheckboxes={unfilledRow} handleCheckboxClick={handleCheckboxClick} user={user} />
                 {actionbar}
               </fieldset>
             </div>
@@ -124,7 +128,11 @@ const CreditTransfersPage = (props) => {
   );
 };
 
-CreditTransfersPage.defaultProps = {};
+CreditTransfersPage.defaultProps = {
+  checkboxes: { authority: false, accurate: false, consent: false },
+  unfilledRow: true,
+  hoverText: '',
+};
 
 CreditTransfersPage.propTypes = {
   user: CustomPropTypes.user.isRequired,
@@ -138,6 +146,11 @@ CreditTransfersPage.propTypes = {
   handleRowInputChange: PropTypes.func.isRequired,
   total: PropTypes.number.isRequired,
   rows: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  checkboxes: PropTypes.shape(),
+  fields: PropTypes.shape().isRequired,
+  unfilledRow: PropTypes.bool,
+  setCheckboxes: PropTypes.func.isRequired,
+  hoverText: PropTypes.string,
 };
 
 export default CreditTransfersPage;

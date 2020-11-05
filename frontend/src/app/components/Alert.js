@@ -108,7 +108,7 @@ const Alert = (props) => {
         break;
       case 'CHECKED':
         title = 'Validated';
-        message = `Sales checked against ICBC registration data ${moment(statusFilter('CHECKED').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('CHECKED').createUser.displayName}. ICBC data used was current to ${icbcDate}.`;
+        message = `Sales checked against ICBC registration data ${moment(statusFilter('CHECKED').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('CHECKED').createUser.displayName}. ICBC data used was current to: ${icbcDate}`;
         classname = 'alert-warning';
         break;
       default:

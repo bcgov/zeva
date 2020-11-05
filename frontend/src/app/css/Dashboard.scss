@@ -93,23 +93,22 @@
     }
 
     h1 {
-      // background-color: $white; 
       color: $primary-blue;
       font-size: 1.75rem;
       padding: 0 0.7rem;
-      // position: absolute; 
-      // top: -1rem;
-      // left: 1.5rem;
     }
+
     #action-org-name {
       padding-left: 1.5rem;
     }
+
     h5 {
-      font-size: 1.35rem;
+      font-size: 1.2rem;
       color: $primary-blue;
       margin: 0;
       padding: 1rem 0 0 0;
     }
+
     dd {
       font-size: 1.1rem;
       margin-bottom: 0;
@@ -206,6 +205,9 @@
     .green {
       color: green;
     }
+    .red {
+      color: #a12622;
+    }
     div {
       margin: auto 20px auto 10px;
     }
@@ -259,16 +261,47 @@
   }
 }
 
-#administration.dashboard-fieldset {
-  padding-top: 2.5rem;
+#administration.dashboard-fieldset, #user-settings.dashboard-fieldset {
+  h1 {
+    margin-bottom: 1rem;
+    padding: 0;
+  }
+
+  h5 {
+    margin: 0;
+    padding: 0;
+  }
+
   .content {
     margin-bottom: 1rem;
+    padding: 0;
+
+    button {
+      display: block;
+      margin: 0;
+      padding: 0;
+    }
+
     svg {
-      margin-right: 1rem;
       color: $primary-yellow;
+      float: left;
+      margin: 5px 0.5rem 0 0;
+    }
+
+    .text {
+      padding: 0;
+
+      dl:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    &:last-child {
+      margin-bottom: 0;
     }
   }
-  @media(max-width:576px){
+
+  @media(max-width:576px) {
    svg {
      display: none;
    }

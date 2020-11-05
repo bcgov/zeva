@@ -1,7 +1,6 @@
 const formatNumeric = (value, decimals = 2) => {
   let newValue = value;
-
-  if (Number.isNaN(newValue)) {
+  if (isNaN(newValue)) {
     return newValue;
   }
 
