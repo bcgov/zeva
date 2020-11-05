@@ -61,7 +61,7 @@ const CreditRequestVINListPage = (props) => {
           31 = Duplicate VIN;{' '}
           41 = Model year does not match BC registration data;{' '}
           51 = Sale prior to 2 Jan 2018;{' '}
-          61 = Invalid Date
+          61 = Invalid Date Format
         </div>
       </div>
       )}

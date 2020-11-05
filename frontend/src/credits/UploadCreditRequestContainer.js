@@ -10,7 +10,7 @@ import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import history from '../app/History';
 import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
 import CustomPropTypes from '../app/utilities/props';
-import upload from '../app/utilities/upload';
+import { upload } from '../app/utilities/upload';
 import CreditRequestsUploadPage from './components/CreditRequestsUploadPage';
 
 const UploadCreditRequestsContainer = (props) => {

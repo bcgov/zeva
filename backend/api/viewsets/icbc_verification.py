@@ -1,8 +1,11 @@
+import os
+
+from django.http import HttpResponse
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from django.http import HttpResponse
+
 from api.services.icbc_upload import ingest_icbc_spreadsheet
 from api.models.icbc_upload_date import IcbcUploadDate
 from api.serializers.icbc_upload_date import IcbcUploadDateSerializer
@@ -33,16 +36,42 @@ class IcbcVerificationViewSet(
         return Response(serializer.data)
 
     @action(detail=False, methods=['post'])
-    def upload(self, request):
-        user = request.user
+    def chunk_upload(self, request):
         try:
-            dateCurrentTo = request.data['submissionCurrentDate']
-            data = request.FILES['files']
-            result = ingest_icbc_spreadsheet(data.temporary_file_path(), user, dateCurrentTo)
+            data = request.FILES.get('files')
+            os.rename(data.temporary_file_path(), data.name)
         except Exception as error:
+            print(error)
             return HttpResponse(status=400, content=error)
 
         return HttpResponse(
             status=201, content="nothing", content_type='application/json'
         )
-    
+
+    @action(detail=False, methods=['post'])
+    def upload(self, request):
+        user = request.user
+        try:
+            date_current_to = request.data.get('submission_current_date')
+            filename = request.data.get('filename')
+            chunks = request.data.get('chunks')
+
+            with open(filename, "wb") as outfile:
+                for chunk in range(chunks):
+                    tempfile = filename + '.part.' + str(chunk)
+                    with open(tempfile, "rb") as infile:
+                        outfile.write(infile.read())
+                        os.remove(tempfile)
+
+            done = ingest_icbc_spreadsheet(filename, user, date_current_to)
+            outfile.close()
+
+            if done:
+                os.remove(filename)
+        except Exception as error:
+            print(error)
+            return HttpResponse(status=400, content=error)
+
+        return HttpResponse(
+            status=201, content="nothing", content_type='application/json'
+        )

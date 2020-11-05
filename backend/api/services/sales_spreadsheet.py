@@ -457,7 +457,7 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
             error += 'Sale prior to 2 Jan 2018; '
 
         if 'INVALID_DATE' in content.warnings:
-            error += 'Invalid Date. Please use YYYY-MM-DD ' \
+            error += 'Invalid Date Format. Please use YYYY-MM-DD ' \
                         'format; '
 
         if 'INVALID_MODEL' in content.warnings:
