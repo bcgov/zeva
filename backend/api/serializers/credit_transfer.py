@@ -2,6 +2,7 @@ from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 from api.models.credit_transfer import CreditTransfer
+from api.models.credit_transfer_content import CreditTransferContent
 from api.models.credit_transfer_statuses import CreditTransferStatuses
 from api.models.user_profile import UserProfile
 from api.models.credit_transfer_comment import CreditTransferComment
@@ -78,6 +79,7 @@ class CreditTransferSaveSerializer(ModelSerializer):
     def update(self, instance, validated_data):
         request = self.context.get('request')
         records = request.data.get('records')
+        content = request.data.get('content')
         credit_transfer_comment = validated_data.pop('credit_transfer_comment', None)
         if credit_transfer_comment:
             CreditTransferComment.objects.create(
@@ -85,6 +87,21 @@ class CreditTransferSaveSerializer(ModelSerializer):
                 credit_transfer=instance,
                 comment=credit_transfer_comment.get('comment')
             )
+        if content:
+            CreditTransferContent.objects.filter(credit_transfer_id=instance.id).delete()
+            serializer = CreditTransferContentSaveSerializer(
+                data=content, many=True, context={
+                    'credit_transfer': instance
+                }
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+        credit_to = validated_data.get('credit_to')
+        if credit_to:
+            instance.credit_to = credit_to
+            instance.update_user = request.user.username
+            instance.save()
+
         validation_status = validated_data.get('status')
         if validation_status:
             instance.status = validation_status
