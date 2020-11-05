@@ -34,7 +34,10 @@ class CreditTransferViewset(
         request = self.request
 
         if request.user.is_government:
-            queryset = CreditTransfer.objects.all()
+            queryset = CreditTransfer.objects.exclude(status__in=(
+                CreditTransferStatuses.DRAFT,
+                CreditTransferStatuses.SUBMITTED,
+            ))
         else:
             queryset = CreditTransfer.objects.filter(
                 Q(credit_to_id=request.user.organization.id) |
