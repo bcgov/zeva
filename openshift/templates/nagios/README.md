@@ -25,7 +25,7 @@ oc tag [prod namespace]/nagios:latest [prod namespace]/nagios:prod
 
 4. Deploy nagios for environment
 oc process -f ./nagios-dc.yaml NAME=zeva \
-ENV_NAME=test \
+ENV_NAME=prod \
 NAGIOS_PVC_SIZE=2G \
 OCP_NAME=apps.silver.devops \
  | oc create -f - -n [environment namespace]

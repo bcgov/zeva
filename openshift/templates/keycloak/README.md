@@ -21,3 +21,4 @@ clientId=zeva-django-sa clientSecret=[] \
 zevaPublic=[] realmId=rzh2zkjq host=test.oidc.gov.bc.ca \
 | oc create -f - -n e52f12-test --dry-run=client
 Notes: in keycload, there are two clients: once is sa client, the other one is public client
+

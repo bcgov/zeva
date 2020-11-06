@@ -43,4 +43,14 @@ objects:
         - - app=nagios
       destination:
         - - ext:network=any               
-    
+  - kind: NetworkSecurityPolicy
+    apiVersion: ${API_VERSION}
+    metadata:
+      name: ${NAME}-${ENV_NAME}-custom-backupcontainer-to-patroni
+    spec:
+      description: |
+        allow backupcontainer to talk to patroni.
+      source:
+        - - name=patroni-backup
+      destination:
+        - - cluster-name=patroni-${ENV_NAME}                   
