@@ -8,8 +8,9 @@ from api.models.credit_transfer_comment import CreditTransferComment
 from api.serializers.credit_transfer_comment import CreditTransferCommentSerializer
 from api.serializers.credit_transfer_content import \
     CreditTransferContentSerializer, CreditTransferContentSaveSerializer
-from api.serializers.user import MemberSerializer
+from api.serializers.user import MemberSerializer, UserSerializer
 from api.serializers.organization import OrganizationSerializer
+from api.models.credit_transfer_history import CreditTransferHistory
 
 
 class CreditTransferBaseSerializer:
@@ -22,11 +23,33 @@ class CreditTransferBaseSerializer:
 
         return obj.update_user
 
+    def get_create_user(self, obj):
+        user_profile = UserProfile.objects.filter(username=obj.create_user)
+        if user_profile.exists():
+            serializer = UserSerializer(user_profile.first(), read_only=True)
+            return serializer.data
+        return obj.create_user
+
+
+class CreditTransferHistorySerializer(
+        ModelSerializer, EnumSupportSerializerMixin,
+        CreditTransferBaseSerializer
+):
+    create_user = SerializerMethodField()
+    update_user = SerializerMethodField()
+    status = EnumField(CreditTransferStatuses)
+    class Meta:
+        model = CreditTransferHistory
+        fields = (
+            'create_timestamp', 'create_user',
+            'status', 'update_user'
+            )
 
 class CreditTransferSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
         CreditTransferBaseSerializer
 ):
+    history = CreditTransferHistorySerializer(read_only=True, many=True)
     credit_to = OrganizationSerializer()
     credit_transfer_content = CreditTransferContentSerializer(
         many=True, read_only=True
@@ -53,9 +76,9 @@ class CreditTransferSerializer(
         model = CreditTransfer
         fields = (
             'create_timestamp', 'credit_to', 'credit_transfer_content',
-            'debit_from', 'id', 'status', 'update_user', 'credit_transfer_comment'
+            'debit_from', 'id', 'status', 'update_user',
+            'credit_transfer_comment', 'history',
         )
-
 
 class CreditTransferSaveSerializer(ModelSerializer):
     """
@@ -87,6 +110,12 @@ class CreditTransferSaveSerializer(ModelSerializer):
             )
         validation_status = validated_data.get('status')
         if validation_status:
+            CreditTransferHistory.objects.create(
+                transfer=instance,
+                status=validation_status,
+                update_user=request.user.username,
+                create_user=request.user.username,
+            )
             instance.status = validation_status
             instance.update_user = request.user.username
             instance.save()
@@ -103,6 +132,12 @@ class CreditTransferSaveSerializer(ModelSerializer):
             create_user=request.user.username,
             update_user=request.user.username
         )
+        credit_history = CreditTransferHistory.objects.create(
+                transfer=credit_transfer,
+                status=validated_data.get('status'),
+                update_user=request.user.username,
+                create_user=request.user.username,
+            )
 
         if content:
             serializer = CreditTransferContentSaveSerializer(
@@ -112,6 +147,7 @@ class CreditTransferSaveSerializer(ModelSerializer):
             )
             serializer.is_valid(raise_exception=True)
             serializer.save()
+            credit_history.save()
 
         serializer = CreditTransferSerializer(credit_transfer, read_only=True)
 

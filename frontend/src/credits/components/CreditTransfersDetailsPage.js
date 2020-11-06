@@ -6,6 +6,8 @@ import CreditTransferSignoff from './CreditTransfersSignOff';
 import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
 import CustomPropTypes from '../../app/utilities/props';
+import getSupplierSummary from '../../app/utilities/getSupplierSummary';
+import moment from 'moment-timezone';
 
 const CreditTransfersDetailsPage = (props) => {
   const { submission, user, handleSubmit } = props;
@@ -20,44 +22,13 @@ const CreditTransfersDetailsPage = (props) => {
   };
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
-  let modalProps = {};
-  switch (modalType) {
-    case 'submit':
-      modalProps = {
-        confirmLabel: ' Submit',
-        handleSubmit: () => { handleSubmit('APPROVED'); },
-        buttonClass: 'button primary',
-        modalText: 'Submit transfer to government of B.C. Director?',
-        icon: <FontAwesomeIcon icon="paper-plane" />,
-      };
-      break;
-    case 'submit-partner':
-      modalProps = {
-        confirmLabel: ' Submit',
-        handleSubmit: () => { handleSubmit('SUBMITTED'); },
-        buttonClass: 'button primary',
-        modalText: 'Submit credit transfer notice to trade partner?',
-        icon: <FontAwesomeIcon icon="paper-plane" />,
-      };
-      break;
-    case 'reject':
-      modalProps = {
-        confirmLabel: ' Reject',
-        handleSubmit: () => { handleSubmit('REJECTED', comment); },
-        buttonClass: 'btn-outline-danger',
-        modalText: 'Reject notice?',
-      };
-      break;
-    default:
-      modalProps = {
-        confirmLabel: '',
-        handleSubmit: () => {},
-        buttonClass: '',
-        modalText: '',
-      };
-      break;
-  }
 
+  const initiatingSupplier = (user.organization.id === submission.debitFrom.id && submission.status === 'DRAFT');
+  const tradePartner = (user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED');
+  const governmentAnalyst = (user.hasPermission('RECOMMEND_CREDIT_TRANSFER') && user.isGovernment && submission.status === 'APPROVED');
+  const governmentDirector = (user.hasPermission('SIGN_CREDIT_TRANSFERS') && user.isGovernment && (submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMEND_REJECTION'));
+
+  console.log(submission);
   useEffect(() => {
     if (checkboxes.authority && checkboxes.accurate && checkboxes.consent) {
       setAllChecked(true);
@@ -66,7 +37,78 @@ const CreditTransfersDetailsPage = (props) => {
       setAllChecked(false);
     }
   });
-  const columns = [{
+  const supplierBalanceData = getSupplierSummary(submission);
+  const supplierBalanceColumns = [{
+    Header: 'Supplier',
+    headerClassName: 'text-right',
+    columns: [{
+      id: 'supplier',
+      accessor: (item) => (item.supplierLabel),
+      className: 'text-right',
+      width: 250,
+    }],
+
+  }, {
+    Header: 'Current Balance',
+    id: 'current-balance',
+    headerClassName: 'font-weight-bold',
+    className: 'text-center',
+    columns: [{
+      headerClassName: 'd-none',
+      id: 'current-balance-a',
+      accessor: (item) => (`${item.currentBalanceA}-A`),
+      className: 'text-right',
+      width: 125,
+    },
+    {
+      headerClassName: 'd-none',
+      id: 'current-balance-b',
+      accessor: (item) => (`${item.currentBalanceB}-B`),
+      className: 'text-right',
+      width: 125,
+    }],
+  }, {
+    Header: 'New Balance',
+    headerClassName: 'font-weight-bold',
+    id: 'new-balance',
+    className: 'text-center',
+    columns: [{
+      headerClassName: 'd-none',
+      id: 'new-balance-a',
+      accessor: (item) => (`${item.newBalanceA}-A`),
+      className: 'text-right',
+      width: 125,
+    },
+    {
+      headerClassName: 'd-none',
+      id: 'new-balance-b',
+      accessor: (item) => (`${item.newBalanceB}-B`),
+      className: 'text-right',
+      width: 125,
+    }],
+  }];
+
+  const newBalanceTable = (
+    <div className="row mb-4">
+      <div className="col-sm-11">
+        <div className="form p-2">
+          <div className="my-2 px-2 pb-2">
+            <div className="text-blue">
+              Issuing this transfer will result in the following credit balance change to each supplier.
+            </div>
+            <ReactTable
+              className="transfer-summary-table"
+              columns={supplierBalanceColumns}
+              data={supplierBalanceData}
+              filterable={false}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const submissionProposalColumns = [{
     Header: 'Quantity',
     accessor: (item) => (Math.ceil(item.creditValue)),
     id: 'credit-quantity',
@@ -95,6 +137,62 @@ const CreditTransfersDetailsPage = (props) => {
     className: 'text-right',
   },
   ];
+
+  let modalProps = {};
+  switch (modalType) {
+    case 'initiating-submit':
+      modalProps = {
+        confirmLabel: ' Submit',
+        handleSubmit: () => { handleSubmit('SUBMITTED'); },
+        buttonClass: 'button primary',
+        modalText: 'Submit credit transfer notice to trade partner?',
+        icon: <FontAwesomeIcon icon="paper-plane" />,
+      };
+      break;
+
+    case 'partner-reject':
+      modalProps = {
+        confirmLabel: ' Reject',
+        handleSubmit: () => { handleSubmit('REJECTED', comment); },
+        buttonClass: 'btn-outline-danger',
+        modalText: 'Reject notice?',
+      };
+      break;
+    case 'partner-accept':
+      modalProps = {
+        confirmLabel: ' Submit',
+        handleSubmit: () => { handleSubmit('APPROVED'); },
+        buttonClass: 'button primary',
+        modalText: 'Submit transfer to government of B.C. Director?',
+        icon: <FontAwesomeIcon icon="paper-plane" />,
+      };
+      break;
+    case 'recommend-reject':
+      modalProps = {
+        confirmLabel: ' Recommend Rejection',
+        handleSubmit: () => { handleSubmit('RECOMMEND_REJECTION', comment); },
+        buttonClass: 'btn-outline-danger',
+        modalText: 'Recommend the Director reject the transfer?',
+      };
+      break;
+    case 'recommend-transfer':
+      modalProps = {
+        confirmLabel: ' Recommend Transfer',
+        handleSubmit: () => { handleSubmit('RECOMMEND_APPROVAL', comment); },
+        buttonClass: 'button primary',
+        modalText: 'Recommend the Director record the Transfer?',
+      };
+      break;
+    default:
+      modalProps = {
+        confirmLabel: '',
+        handleSubmit: () => {},
+        buttonClass: '',
+        modalText: '',
+      };
+      break;
+  }
+
   const modal = (
     <Modal
       confirmLabel={modalProps.confirmLabel}
@@ -116,8 +214,47 @@ const CreditTransfersDetailsPage = (props) => {
     </Modal>
   );
 
-  const tradePartner = (user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED');
-  const initiatingSupplier = (user.organization.id === submission.debitFrom.id && submission.status === 'DRAFT');
+  const transferValue = (
+    <div className="text-blue">
+      for a total value of ${submission.creditTransferContent.reduce(
+      (a, v) => a + v.dollarValue * v.creditValue, 0,
+    )} Canadian dollars.
+    </div>
+  );
+  const initiatingInformation = submission.history.find((each) => each.status === 'SUBMITTED');
+  const transferPartnerInformation = submission.history.find((each) => each.status === 'APPROVED');
+
+
+  const analystSignoff = (
+    <div>
+      {transferValue}
+      <div className="text-blue">
+        Signed and submitted by {initiatingInformation.createUser.displayName} of INITIATING-COMPANY {moment(initiatingInformation.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
+        <br />
+        Signed and submitted by {transferPartnerInformation.createUser.displayName} of ACCEPTING-COMPANY {moment(transferPartnerInformation.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
+      </div>
+      <label htmlFor="transfer-comment">comment to director</label>
+      <textarea testid="transfer-comment-analyst" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} />
+    </div>
+  );
+  const tradePartnerSignoff = (
+    <div>
+      {transferValue}
+      <h4>
+        If you agree to this notice of transfer please confirm the following statements and click
+        Submit Notice to send to the Government of B.C. Director for the transfer to be recorded.
+      </h4>
+      <CreditTransferSignoff handleCheckboxClick={handleCheckboxClick} user={user} />
+      <label htmlFor="transfer-comment">
+        <h4>
+          If you don&apos;t agree to this transfer enter a comment below to
+          {submission.debitFrom.name} and click Reject Notice
+        </h4>
+      </label>
+      <textarea testid="transfer-comment" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} disabled={allChecked} />
+    </div>
+  );
+
   const actionBar = (
     <div className="row">
       <div className="col-sm-12">
@@ -133,11 +270,25 @@ const CreditTransfersDetailsPage = (props) => {
               optionalClassname="button text-danger"
               disabled={comment.length === 0 || allChecked}
               action={() => {
-                setModalType('reject');
+                setModalType('partner-reject');
                 setShowModal(true);
               }}
             />
             )}
+            {governmentAnalyst
+            && (
+            <Button
+              testid="recommend-reject-transfer"
+              buttonType="reject"
+              optionalText="Recommend Rejection"
+              optionalClassname="button text-danger"
+              action={() => {
+                setModalType('recommend-reject');
+                setShowModal(true);
+              }}
+            />
+            )}
+
           </span>
           <span className="right-content">
             { initiatingSupplier
@@ -146,20 +297,33 @@ const CreditTransfersDetailsPage = (props) => {
              testid="submit-transfer"
              buttonType="submit"
              action={() => {
-               setModalType('submit-partner');
+               setModalType('initiating-submit');
                setShowModal(true);
              }}
              optionalText="Submit Notice"
              disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent || comment.length > 0}
            />
            )}
+            {governmentAnalyst
+            && (
+            <Button
+              testid="recommend-approve-transfer"
+              buttonType="approve"
+              optionalText="Recommend transfer"
+              optionalClassname="button primary"
+              action={() => {
+                setModalType('recommend-transfer');
+                setShowModal(true);
+              }}
+            />
+            )}
             {tradePartner
             && (
             <Button
               testid="submit-transfer"
               buttonType="submit"
               action={() => {
-                setModalType('submit');
+                setModalType('partner-accept');
                 setShowModal(true);
               }}
               optionalText="Submit Notice"
@@ -180,6 +344,7 @@ const CreditTransfersDetailsPage = (props) => {
           <h2>Light Duty Vehicle Credit Transfer</h2>
         </div>
       </div>
+      {governmentAnalyst && newBalanceTable}
       <div className="row">
         <div className="col-sm-11">
           <div className="form p-2">
@@ -194,29 +359,13 @@ const CreditTransfersDetailsPage = (props) => {
                  </div>
                  <ReactTable
                    className="transfer-summary-table"
-                   columns={columns}
+                   columns={submissionProposalColumns}
                    data={submission.creditTransferContent}
                  />
-                 {user.organization.id === submission.debitFrom.id && submission.status === 'DRAFT'
-                 && <CreditTransferSignoff handleCheckboxClick={handleCheckboxClick} user={user} />}
-                 {(user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED')
-                 && (
-                 <div>
-                   <div className="text-blue">
-                     for a total value of ${submission.creditTransferContent.reduce((a, v) => a + v.dollarValue * v.creditValue, 0)} Canadian dollars.
-                   </div>
-                   <h4>
-                     If you agree to this notice of transfer please confirm the following statements and click Submit Notice to send to the Government of B.C. Director for the transfer to be recorded.
-                   </h4>
-                   <CreditTransferSignoff handleCheckboxClick={handleCheckboxClick} user={user} />
-                   <label htmlFor="transfer-comment">
-                     <h4>
-                       If you don&apos;t agree to this transfer enter a comment below to {submission.debitFrom.name} and click Reject Notice
-                     </h4>
-                   </label>
-                   <textarea testid="transfer-comment" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} disabled={allChecked} />
-                 </div>
-                 )}
+                 {tradePartner
+                 && tradePartnerSignoff}
+                 {governmentAnalyst
+                 && analystSignoff}
                  {actionBar}
                </div>
                )}
