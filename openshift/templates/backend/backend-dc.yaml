@@ -151,10 +151,6 @@ objects:
       annotations:
         description: Defines how to deploy the application server
       creationTimestamp: null
-      labels:
-        app: zeva
-        role: backend
-        env: ${ENV_NAME}
       name: ${NAME}-backend${SUFFIX}
     spec:
       replicas: ${{REPLICAS}}

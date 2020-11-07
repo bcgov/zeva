@@ -44,10 +44,10 @@ Zeva has only one module, it has various components(frontend, backend and etc.) 
 ? What is this module version? 1.0.0
 ? What environments are supported by your app? separated by space build dev test prod
 ? What is the source code directory for this module? .
-? What namespace/project name is used for 'build'? tbiwaq-tools
-? What namespace/project name is used for 'dev'? tbiwaq-dev
-? What namespace/project name is used for 'test'? tbiwaq-test
-? What namespace/project name is used for 'prod'? tbiwaq-prod
+? What namespace/project name is used for 'build'? e52f12-tools
+? What namespace/project name is used for 'dev'? e52f12-dev
+? What namespace/project name is used for 'test'? e52f12-test
+? What namespace/project name is used for 'prod'? e52f12-prod
 ```
 
 ### 1.2 Create frontend build and deploy template for Openshift
@@ -170,15 +170,15 @@ Jenkins only has build, dev and prod and they are all under tools project. Jenki
 
 ```
 ~/Projects/zeva$ yo bcdk:jenkins
-? What is your openshift 'tools' namespace name? tbiwaq-tools
+? What is your openshift 'tools' namespace name? e52f12-tools
 ? What is this module name? jenkins
 ? What is this module name? jenkins
 ? What is this module version? 1.0.0
 Environments: build dev prod
 ? What is the source code directory for this module? .jenkins
-? What namespace/project name is used for 'build'? tbiwaq-tools
-? What namespace/project name is used for 'dev'? tbiwaq-tools
-? What namespace/project name is used for 'prod'? tbiwaq-tools
+? What namespace/project name is used for 'build'? e52f12-tools
+? What namespace/project name is used for 'dev'? e52f12-tools
+? What namespace/project name is used for 'prod'? e52f12-tools
 ? What is the GitHub organization where the repository is located? bcgov
 ? What is the repository's name? zeva
 ? What is the Jenkinsfile path? .jenkins/Jenkinsfile
@@ -239,8 +239,8 @@ If builds could not start, manually delete two jenkins image stream and rerun th
 > pipeline@1.0.0 build /Users/kfan/Projects/zeva/.jenkins/.pipeline
 > node build.js "--pr=0" "--dev-mode=true"
 
-Re-using image  tbiwaq-tools/ImageStreamImage/jenkins@sha256:19562b7307e461430fc4fc950c5c72d3300dc0826c5c7ac2dcd0ca289b5d2866 for build  buildconfig.build.openshift.io/jenkins-build-0
-Re-using image  tbiwaq-tools/ImageStreamImage/jenkins-slave-main@sha256:56afeca0b6ea96d330a5a60447d8d8558535dc901ca9f7ad6590434335026db9 for build  buildconfig.build.openshift.io/jenkins-slave-main-build-0
+Re-using image  e52f12-tools/ImageStreamImage/jenkins@sha256:19562b7307e461430fc4fc950c5c72d3300dc0826c5c7ac2dcd0ca289b5d2866 for build  buildconfig.build.openshift.io/jenkins-build-0
+Re-using image  e52f12-tools/ImageStreamImage/jenkins-slave-main@sha256:56afeca0b6ea96d330a5a60447d8d8558535dc901ca9f7ad6590434335026db9 for build  buildconfig.build.openshift.io/jenkins-slave-main-build-0
 ```
 Commit all changes and push to GitHub
 
@@ -261,8 +261,8 @@ The change is done through branch jenkins-add-oepnshift
     <skipTlsVerify>false</skipTlsVerify>
     <addMasterProxyEnvVars>false</addMasterProxyEnvVars>
     <capOnlyOnAlivePods>false</capOnlyOnAlivePods>
-    <jenkinsUrl>http://jenkins-prod.tbiwaq-tools.svc:8080</jenkinsUrl>
-    <jenkinsTunnel>jenkins-prod.tbiwaq-tools.svc:50000</jenkinsTunnel>
+    <jenkinsUrl>http://jenkins-prod.e52f12-tools.svc:8080</jenkinsUrl>
+    <jenkinsTunnel>jenkins-prod.e52f12-tools.svc:50000</jenkinsTunnel>
     <containerCap>10</containerCap>
     <retentionTimeout>5</retentionTimeout>
     <connectTimeout>5</connectTimeout>
@@ -297,4 +297,5 @@ The change is done through branch jenkins-add-oepnshift
 ## Tips
 * Project team should be responsible to build jenkins slave, such as add npm modules into it, then no need to use npmw anymore
 * After the Jenkins create successfully, two webhooks should have been created in zeva repo (if the webhooks show failed, it is ok as Jenkins may not be fully up yet)
-* Under dev namespace, grant admin permission to service account "tbiwaq-tools/jenkins-prod", we only allow "tbiwaq-tools/jenkins-prod" to deploy on dev, test and prod, NOT to allow "tbiwaq-tools/jenkins-dev" to do anything on these three environment
+* Under dev namespace, grant admin permission to service account "e52f12-tools/jenkins-prod", we only allow "e52f12-tools/jenkins-prod" to deploy on dev, test and prod, NOT to allow "e52f12-tools/jenkins-dev" to do anything on these three environment
+* 

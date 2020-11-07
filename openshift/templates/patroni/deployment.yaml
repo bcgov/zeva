@@ -98,7 +98,7 @@ objects:
     generation: 3
     labels:
       cluster-name: ${NAME}${SUFFIX}
-      app: zeva
+      app: ${NAME}${SUFFIX}
       role: patroni
       env: ${ENV_NAME}
     name: ${NAME}${SUFFIX}
@@ -331,6 +331,6 @@ parameters:
 - name: STORAGE_CLASS
   value: netapp-block-standard
 - name: IMAGE_REGISTRY
-  value: docker-registry.default.svc:5000
+  value: image-registry.openshift-image-registry.svc:5000
 - name: REPLICA
   value: '2'

@@ -134,10 +134,6 @@ objects:
     kind: DeploymentConfig
     metadata:
       name: ${NAME}-frontend${SUFFIX}
-      labels:
-        app: zeva
-        role: frontend
-        env: ${ENV_NAME}
       annotations:
         description: Defines how to deploy the frontend application
       creationTimestamp: null

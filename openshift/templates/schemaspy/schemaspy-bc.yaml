@@ -27,7 +27,7 @@ objects:
       to:
         kind: ImageStreamTag
         name: schemaspy:latest
-        namspace: tbiwaq-tools
+        namspace: e52f12-tools
     postCommit: {}
     resources: {}
     runPolicy: Serial
