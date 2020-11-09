@@ -8,25 +8,26 @@ import CustomPropTypes from '../../app/utilities/props';
 import TransferFormRow from './TransferFormRow';
 import FormDropdown from './FormDropdown';
 import CreditTransferSignoff from './CreditTransfersSignOff';
+import Loading from '../../app/components/Loading';
 
-const CreditTransfersPage = (props) => {
+const CreditTransfersForm = (props) => {
   const {
-    user,
-    organizations,
-    handleInputChange,
-    handleSubmit,
-    years,
-    handleSave,
-    removeRow,
     addRow,
-    handleRowInputChange,
-    total,
-    rows,
-    fields,
-    unfilledRow,
     checkboxes,
-    setCheckboxes,
+    fields,
+    handleInputChange,
+    handleRowInputChange,
+    handleSave,
+    handleSubmit,
     hoverText,
+    organizations,
+    removeRow,
+    rows,
+    setCheckboxes,
+    total,
+    unfilledRow,
+    user,
+    years,
   } = props;
   const [showModal, setShowModal] = useState(false);
   const submitTooltip = 'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.';
@@ -61,6 +62,7 @@ const CreditTransfersPage = (props) => {
           </span>
           <span className="right-content">
             <Button
+              disabled={unfilledRow || fields.transferPartner === ''}
               buttonType="save"
               action={() => {
                 handleSave();
@@ -128,13 +130,13 @@ const CreditTransfersPage = (props) => {
   );
 };
 
-CreditTransfersPage.defaultProps = {
+CreditTransfersForm.defaultProps = {
   checkboxes: { authority: false, accurate: false, consent: false },
   unfilledRow: true,
   hoverText: '',
 };
 
-CreditTransfersPage.propTypes = {
+CreditTransfersForm.propTypes = {
   user: CustomPropTypes.user.isRequired,
   organizations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleInputChange: PropTypes.func.isRequired,
@@ -153,4 +155,4 @@ CreditTransfersPage.propTypes = {
   hoverText: PropTypes.string,
 };
 
-export default CreditTransfersPage;
+export default CreditTransfersForm;

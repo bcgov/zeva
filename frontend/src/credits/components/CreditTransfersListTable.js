@@ -23,11 +23,10 @@ const CreditTransfersListTable = (props) => {
     if (item.creditTransferContent) {
       item.creditTransferContent.forEach((row) => {
         if (row.creditClass.creditClass === 'A') {
-          totalCreditsA += row.creditValue;
+          totalCreditsA += parseFloat(row.creditValue);
         }
-
         if (row.creditClass.creditClass === 'B') {
-          totalCreditsB += row.creditValue;
+          totalCreditsB += parseFloat(row.creditValue);
         }
 
         totalTransferValue += (parseFloat(row.dollarValue) * row.creditValue);
@@ -69,13 +68,13 @@ const CreditTransfersListTable = (props) => {
     Header: 'Transfer Partner',
     id: 'partner',
   }, {
-    accessor: (row) => (row.totalCreditsA > 0 ? formatNumeric(row.totalCreditsA) : '-'),
+    accessor: (row) => (row.totalCreditsA !== 0 ? formatNumeric(row.totalCreditsA) : '-'),
     className: 'text-right',
     Header: 'A-Credits',
     id: 'credits-a',
     maxWidth: 150,
   }, {
-    accessor: (row) => (row.totalCreditsB > 0 ? formatNumeric(row.totalCreditsB) : '-'),
+    accessor: (row) => (row.totalCreditsB !== 0 ? formatNumeric(row.totalCreditsB) : '-'),
     className: 'text-right',
     Header: 'B-Credits',
     id: 'credits-b',
@@ -135,8 +134,12 @@ const CreditTransfersListTable = (props) => {
         if (row && row.original) {
           return {
             onClick: () => {
-              const { id } = row.original;
-              history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/g, id), filtered);
+              const { id, status } = row.original;
+              if (status === 'DRAFT') {
+                history.push(ROUTES_CREDIT_TRANSFERS.EDIT.replace(/:id/g, id));
+              } else {
+                history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/g, id), filtered);
+              }
             },
             className: 'clickable',
           };
