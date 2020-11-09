@@ -53,13 +53,8 @@ const CreditTransfersListTable = (props) => {
     Header: 'Date',
     id: 'date',
     maxWidth: 150,
-  }, {
-    accessor: 'updateUser.displayName',
-    className: 'text-left',
-    Header: 'Last User',
-    id: 'updateUser',
-    maxWidth: 200,
-  }, {
+  },
+  {
     accessor: (row) => (row.creditTo.id !== user.organization.id
       ? row.creditTo.name
       : row.debitFrom.name
