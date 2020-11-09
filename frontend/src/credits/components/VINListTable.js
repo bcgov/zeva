@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import ReactTable from '../../app/components/ReactTable';
-import { CREDIT_ERROR_CODES } from '../../app/constants/errorCodes';
+import CREDIT_ERROR_CODES from '../../app/constants/errorCodes';
 import CustomPropTypes from '../../app/utilities/props';
 
 const VINListTable = (props) => {
@@ -68,7 +68,7 @@ const VINListTable = (props) => {
       id: 'model',
     }, {
       accessor: (row) => (moment(row.salesDate).format('YYYY-MM-DD') !== 'Invalid date' ? moment(row.salesDate).format('YYYY-MM-DD') : row.salesDate),
-      className: 'text-center',
+      className: 'text-center sales-date',
       Header: 'Retail Sale',
       id: 'sales-date',
     }],
@@ -161,8 +161,26 @@ const VINListTable = (props) => {
           }
 
           if (warnings.some((each) => ['11', '41', '61'].includes(each))) {
+            let className = 'icbc-warning';
+
+            if (rowInfo.original.warnings.includes('INVALID_DATE')) {
+              className += ' warning-sales-date';
+            }
+
+            if (rowInfo.original.warnings.includes('MAKE_MISMATCHED')) {
+              className += ' warning-icbc-make';
+            }
+
+            if (rowInfo.original.warnings.includes('MODEL_YEAR_MISMATCHED')) {
+              className += ' warning-icbc-model-year';
+            }
+
+            if (rowInfo.original.warnings.includes('NO_ICBC_MATCH')) {
+              className += ' warning-vin';
+            }
+
             return {
-              className: 'icbc-warning',
+              className,
             };
           }
         }
