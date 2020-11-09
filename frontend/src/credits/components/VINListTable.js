@@ -30,7 +30,7 @@ const VINListTable = (props) => {
       if (CREDIT_ERROR_CODES[warning]) {
         if (fields) {
           errorCodes += ` ${CREDIT_ERROR_CODES[warning].errorField} `;
-        } else {
+        } else if (!errorCodes.includes(CREDIT_ERROR_CODES[warning].errorCode)) {
           if (errorCodes !== '' && CREDIT_ERROR_CODES[warning].errorCode) {
             errorCodes += ', ';
           }
