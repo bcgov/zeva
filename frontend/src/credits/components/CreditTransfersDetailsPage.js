@@ -28,7 +28,6 @@ const CreditTransfersDetailsPage = (props) => {
   const governmentAnalyst = (user.hasPermission('RECOMMEND_CREDIT_TRANSFER') && user.isGovernment && submission.status === 'APPROVED');
   const governmentDirector = (user.hasPermission('SIGN_CREDIT_TRANSFERS') && user.isGovernment && (submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMEND_REJECTION'));
 
-  console.log(submission);
   useEffect(() => {
     if (checkboxes.authority && checkboxes.accurate && checkboxes.consent) {
       setAllChecked(true);
@@ -229,9 +228,9 @@ const CreditTransfersDetailsPage = (props) => {
     <div>
       {transferValue}
       <div className="text-blue">
-        Signed and submitted by {initiatingInformation.createUser.displayName} of INITIATING-COMPANY {moment(initiatingInformation.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
+        Signed and submitted by {initiatingInformation.createUser.displayName} of {initiatingInformation.createUser.organization.name} {moment(initiatingInformation.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
         <br />
-        Signed and submitted by {transferPartnerInformation.createUser.displayName} of ACCEPTING-COMPANY {moment(transferPartnerInformation.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
+        Signed and submitted by {transferPartnerInformation.createUser.displayName} of {transferPartnerInformation.createUser.organization.name} {moment(transferPartnerInformation.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
       </div>
       <label htmlFor="transfer-comment">comment to director</label>
       <textarea testid="transfer-comment-analyst" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} />
