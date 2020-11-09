@@ -25,8 +25,7 @@ const CreditRequestListTable = (props) => {
     accessor: 'submissionDate',
     className: 'text-center',
     Header: 'Date',
-  }, 
-  {
+  }, {
     accessor: (item) => (item.organization ? item.organization.name : ''),
     className: 'text-left',
     Header: 'Supplier',
