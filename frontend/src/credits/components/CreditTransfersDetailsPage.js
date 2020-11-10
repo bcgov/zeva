@@ -2,12 +2,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import moment from 'moment-timezone';
-import ReactTable from '../../app/components/ReactTable';
 import CreditTransferSignoff from './CreditTransfersSignOff';
-import Button from '../../app/components/Button';
+import CreditTransferDetailsActionBar from './CreditTransfersDetailsActionBar';
 import Modal from '../../app/components/Modal';
 import CustomPropTypes from '../../app/utilities/props';
-import CreditTransferTable from './CreditTransferTable';
+import CreditTransfersDetailsTable from './CreditTransfersDetailsTable';
+import CreditTransfersDetailsSupplierTable from './CreditTransfersDetailsSupplierTable';
 
 const CreditTransfersDetailsPage = (props) => {
   const { submission, user, handleSubmit } = props;
@@ -23,10 +23,13 @@ const CreditTransfersDetailsPage = (props) => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
 
-  const initiatingSupplier = (user.organization.id === submission.debitFrom.id && submission.status === 'DRAFT');
-  const tradePartner = (user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED');
-  const governmentAnalyst = (user.hasPermission('RECOMMEND_CREDIT_TRANSFER') && user.isGovernment && submission.status === 'APPROVED');
-  const governmentDirector = (user.hasPermission('SIGN_CREDIT_TRANSFERS') && user.isGovernment && (submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMEND_REJECTION'));
+  const permissions = {
+    tradePartner: user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED',
+    governmentAnalyst: user.hasPermission('RECOMMEND_CREDIT_TRANSFER')
+      && user.isGovernment && submission.status === 'APPROVED',
+    governmentDirector: user.hasPermission('SIGN_CREDIT_TRANSFERS') && user.isGovernment
+      && (submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMEND_REJECTION'),
+  };
 
   useEffect(() => {
     if (checkboxes.authority && checkboxes.accurate && checkboxes.consent) {
@@ -126,11 +129,14 @@ const CreditTransfersDetailsPage = (props) => {
   const analystSignoff = (
     <div>
       {transferValue}
+      {initiatingInformation && transferPartnerInformation
+      && (
       <div className="text-blue">
         Signed and submitted by {initiatingInformation.createUser.displayName} of {initiatingInformation.createUser.organization.name} {moment(initiatingInformation.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
         <br />
         Signed and submitted by {transferPartnerInformation.createUser.displayName} of {transferPartnerInformation.createUser.organization.name} {moment(transferPartnerInformation.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
       </div>
+      )}
       <label htmlFor="transfer-comment">comment to director</label>
       <textarea testid="transfer-comment-analyst" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} />
     </div>
@@ -146,94 +152,13 @@ const CreditTransfersDetailsPage = (props) => {
       <label htmlFor="transfer-comment">
         <h4>
           If you don&apos;t agree to this transfer enter a comment below to
-          {submission.debitFrom.name} and click Reject Notice
+          &nbsp;{submission.debitFrom.name} and click Reject Notice
         </h4>
       </label>
       <textarea testid="transfer-comment" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} disabled={allChecked} />
     </div>
   );
 
-  const actionBar = (
-    <div className="row">
-      <div className="col-sm-12">
-        <div className="action-bar">
-          <span className="left-content">
-            <Button buttonType="back" locationRoute="/credit-transfers" />
-            {tradePartner
-            && (
-            <Button
-              testid="reject-transfer"
-              buttonType="reject"
-              optionalText="Reject Notice"
-              optionalClassname="button text-danger"
-              disabled={comment.length === 0 || allChecked}
-              action={() => {
-                setModalType('partner-reject');
-                setShowModal(true);
-              }}
-            />
-            )}
-            {governmentAnalyst
-            && (
-            <Button
-              testid="recommend-reject-transfer"
-              buttonType="reject"
-              optionalText="Recommend Rejection"
-              optionalClassname="button text-danger"
-              action={() => {
-                setModalType('recommend-reject');
-                setShowModal(true);
-              }}
-            />
-            )}
-
-          </span>
-          <span className="right-content">
-            { initiatingSupplier
-           && (
-           <Button
-             testid="submit-transfer"
-             buttonType="submit"
-             action={() => {
-               setModalType('initiating-submit');
-               setShowModal(true);
-             }}
-             optionalText="Submit Notice"
-             disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent || comment.length > 0}
-           />
-           )}
-            {governmentAnalyst
-            && (
-            <Button
-              testid="recommend-approve-transfer"
-              buttonType="approve"
-              optionalText="Recommend transfer"
-              optionalClassname="button primary"
-              action={() => {
-                setModalType('recommend-transfer');
-                setShowModal(true);
-              }}
-            />
-            )}
-            {tradePartner
-            && (
-            <Button
-              testid="submit-transfer"
-              buttonType="submit"
-              action={() => {
-                setModalType('partner-accept');
-                setShowModal(true);
-              }}
-              optionalText="Submit Notice"
-              disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent || comment.length > 0}
-            />
-            )}
-          </span>
-
-        </div>
-      </div>
-    </div>
-  );
   return (
     <div id="credit-transfers-details" className="page">
       {modal}
@@ -242,11 +167,9 @@ const CreditTransfersDetailsPage = (props) => {
           <h2>Light Duty Vehicle Credit Transfer</h2>
         </div>
       </div>
-      {governmentAnalyst
+      {permissions.governmentAnalyst
       && (
-        <div className="my-2 px-2 pb-2">
-          <CreditTransferTable submission={submission} tableType="supplierBalance" />
-        </div>
+      <CreditTransfersDetailsSupplierTable submission={submission} tableType="supplierBalance" />
       )}
       <div className="row">
         <div className="col-sm-11">
@@ -254,12 +177,12 @@ const CreditTransfersDetailsPage = (props) => {
             {submission.debitFrom
                && (
                <div className="my-2 px-2 pb-2">
-                 <CreditTransferTable submission={submission} tableType="submissionSummary" />
-                 {tradePartner
+                 <CreditTransfersDetailsTable submission={submission} tableType="submissionSummary" />
+                 {permissions.tradePartner
                  && tradePartnerSignoff}
-                 {governmentAnalyst
+                 {permissions.governmentAnalyst
                  && analystSignoff}
-                 {actionBar}
+                 <CreditTransferDetailsActionBar checkboxes={checkboxes} permissions={permissions} setShowModal={setShowModal} setModalType={setModalType} comment={comment} allChecked={allChecked} />
                </div>
                )}
           </div>
