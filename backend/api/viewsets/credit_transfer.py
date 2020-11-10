@@ -34,13 +34,19 @@ class CreditTransferViewset(
         request = self.request
 
         if request.user.is_government:
-            queryset = CreditTransfer.objects.all()
+            queryset = CreditTransfer.objects.exclude(status__in=(
+                CreditTransferStatuses.DRAFT,
+                CreditTransferStatuses.SUBMITTED,
+                CreditTransferStatuses.DELETED,
+            ))
         else:
             queryset = CreditTransfer.objects.filter(
                 Q(credit_to_id=request.user.organization.id) |
-                Q(debit_from_id=request.user.organization.id)
-            )
-
+                Q(debit_from_id=request.user.organization.id),
+                ).exclude(status__in=(
+                    CreditTransferStatuses.RECOMMEND_APPROVAL,
+                    CreditTransferStatuses.RECOMMEND_REJECTION,
+                    ))
         return queryset
 
     def get_serializer_class(self):

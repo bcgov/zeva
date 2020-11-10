@@ -86,7 +86,13 @@ const CreditTransfersListTable = (props) => {
       if (formattedStatus === 'validated') {
         return 'issued';
       }
-      if (formattedStatus === 'approved' || formattedStatus === 'recommend rejection' || formattedStatus === 'recommend approval') {
+      if (formattedStatus === 'recommend rejection') {
+        return 'recommend rejection';
+      } 
+      if (formattedStatus === 'recommend approval') {
+        return 'recommend approval';
+      }
+      if (formattedStatus === 'approved') {
         return 'approved by transfer partner';
       }
       if (formattedStatus === 'submitted') {
