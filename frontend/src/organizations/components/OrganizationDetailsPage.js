@@ -42,6 +42,7 @@ const OrganizationDetailsPage = (props) => {
                 <div className="row" key={each.id}>
                   <div className="col-md-3">{each.addressType ? each.addressType.addressType : ''} Address:</div>
                   <div className="col-md-9 value">
+                    {(each.addressType.addressType === "Service") ? each.representativeName : ''}{' '}
                     {each.addressLine1}{' '}
                     {each.addressLine2}{' '}
                     {each.addressLine3}{' '}
