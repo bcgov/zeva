@@ -463,8 +463,11 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
         if 'INVALID_MODEL' in content.warnings:
             error += 'invalid make, model and year combination; '
 
-        if 'MODEL_MISMATCHED' in content.warnings:
+        if 'MODEL_YEAR_MISMATCHED' in content.warnings:
             error += 'Model year does not match BC registration data; '
+
+        if 'MAKE_MISMATCHED' in content.warnings:
+            error += 'Make does not match BC registration data; '
 
         if 'NO_ICBC_MATCH' in content.warnings:
             error += 'VIN not registered in BC; '

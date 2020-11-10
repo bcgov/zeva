@@ -1,4 +1,4 @@
-export const CREDIT_ERROR_CODES = {
+const CREDIT_ERROR_CODES = {
   DUPLICATE_VIN: {
     errorCode: 31,
     errorField: 'vin',
@@ -9,15 +9,19 @@ export const CREDIT_ERROR_CODES = {
   },
   INVALID_DATE: {
     errorCode: 61,
-    errorField: 'sales-date'
+    errorField: 'sales-date',
   },
   INVALID_MODEL: {
     errorCode: 71,
     errorField: 'model-year make model',
   },
-  MODEL_MISMATCHED: {
+  MODEL_YEAR_MISMATCHED: {
     errorCode: 41,
-    errorField: 'icbc-model-year icbc-make icbc-model'
+    errorField: 'icbc-model-year',
+  },
+  MAKE_MISMATCHED: {
+    errorCode: 41,
+    errorField: 'icbc-make',
   },
   NO_ICBC_MATCH: {
     errorCode: 11,
@@ -32,3 +36,5 @@ export const CREDIT_ERROR_CODES = {
     errorField: 'vin',
   },
 };
+
+export default CREDIT_ERROR_CODES;

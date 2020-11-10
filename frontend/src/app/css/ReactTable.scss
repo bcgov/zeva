@@ -4,8 +4,26 @@
   }
 
   .icbc-warning {
-    .icbc-model-year, .icbc-make, .icbc-model, .warning, .validated {
+    .warning, .validated {
       background-color: $background-warning !important;
+    }
+
+    &.warning-icbc-make .icbc-make {
+      background-color: $background-warning !important;
+    }
+
+    &.warning-icbc-model-year .icbc-model-year {
+      background-color: $background-warning !important;
+    }
+
+    &.warning-sales-date .sales-date {
+      background-color: $background-warning !important;
+    }
+
+    &.warning-vin {
+      .icbc-make, .icbc-model, .icbc-model-year, .vin {
+        background-color: $background-warning !important;
+      }
     }
   }
 
