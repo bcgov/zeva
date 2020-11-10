@@ -25,7 +25,7 @@ const CreditTransferSignOff = (props) => {
           <input type="checkbox" id="accurate" disabled={disableCheckboxes} checked={checkboxes.accurate} onClick={(event) => { handleCheckboxClick(event); }} />
         </div>
         <label className="d-inline" htmlFor="accurate" id="transfer-text">
-          {user.organization.name} certifies that the information provided in this notice is accurate and complete
+          {user.organization.name} certifies that the information provided in this notice is accurate and complete.
         </label>
       </div>
       <div>
@@ -33,7 +33,7 @@ const CreditTransferSignOff = (props) => {
           <input type="checkbox" id="consent" disabled={disableCheckboxes} checked={checkboxes.consent} onClick={(event) => { handleCheckboxClick(event); }} />
         </div>
         <label className="d-inline" htmlFor="consent" id="transfer-text">
-          {user.organization.name} consents to the transfer of credits in this notice
+          {user.organization.name} consents to the transfer of credits in this notice.
         </label>
       </div>
     </div>
