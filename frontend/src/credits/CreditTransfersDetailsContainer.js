@@ -39,8 +39,8 @@ const CreditTransfersDetailsContainer = (props) => {
     
     axios.get(ROUTES_CREDIT_TRANSFERS.LIST).then((listresponse) => {
       const organization_transfers = listresponse.data.filter((eachRecord) => eachRecord.debitFrom.id === orgId);
-      organization_transfers.forEach((each) => currentBalanceA += each.debitFrom.balance.A);
-      organization_transfers.forEach((each) => currentBalanceB += each.debitFrom.balance.B);
+      currentBalanceA = organization_transfers[0].debitFrom.balance.A;
+      currentBalanceB = organization_transfers[0].debitFrom.balance.B;
       organization_transfers.forEach((each) => {
         each.creditTransferContent.forEach((eachContent) => {
           (eachContent.creditClass.creditClass === 'A') ?
