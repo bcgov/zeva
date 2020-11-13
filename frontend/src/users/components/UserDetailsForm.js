@@ -6,6 +6,7 @@ import CustomPropTypes from '../../app/utilities/props';
 import Loading from '../../app/components/Loading';
 import TextInput from '../../app/components/TextInput';
 import History from '../../app/History';
+import ReactTooltip from 'react-tooltip';
 
 const UserDetailsForm = (props) => {
   const {
@@ -15,7 +16,7 @@ const UserDetailsForm = (props) => {
     user,
     handleInputChange,
     handleSubmit,
-    roles,
+    roles, 
   } = props;
 
   if (loading) {
@@ -34,7 +35,7 @@ const UserDetailsForm = (props) => {
     (role) => role.isGovernmentRole === details.organization.isGovernment,
   ).map((role) => (
     <ul key={role.id}>
-      <input type="checkbox" id={role.id} onChange={handleInputChange} name="roles-manager" defaultChecked={checked(role)} /> {role.description} <FontAwesomeIcon icon="info-circle" />
+      <input type="checkbox" id={role.id} onChange={handleInputChange} name="roles-manager" defaultChecked={checked(role)} /> {role.roleCode} <FontAwesomeIcon data-tip={role.description} icon="info-circle" />
     </ul>
   ));
 
@@ -42,6 +43,7 @@ const UserDetailsForm = (props) => {
 
   return (
     <div id="form" className="page">
+      <ReactTooltip />
       <div className="row mb-2">
         <div className="col-md-12">
           <h2 className="mb-2">{details.organization.name} User Management</h2>
@@ -111,6 +113,7 @@ const UserDetailsForm = (props) => {
                     />
                   )}
                 </span>
+  
                 <span className="col-md-4">
                   {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_USERS') && (
                     <div className="form-group">

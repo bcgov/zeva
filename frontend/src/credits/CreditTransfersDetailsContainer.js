@@ -21,14 +21,30 @@ const CreditTransfersDetailsContainer = (props) => {
   const { state: locationState } = location;
   const { id } = match.params;
 
+  const [negativeCredit, setNegativeCredit] = useState(false)
   const [submission, setSubmission] = useState({});
   const [loading, setLoading] = useState(true);
   const refreshDetails = () => {
+    let orgId;
     axios.get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id))
       .then((response) => {
         setSubmission(response.data);
+        orgId = response.data.debitFrom.id;
         setLoading(false);
       });
+
+    axios.get(ROUTES_CREDIT_TRANSFERS.LIST).then((listresponse) => {
+      const organization_transfers = listresponse.data.filter((eachRecord) => eachRecord.debitFrom.id === orgId);
+      console.log(organization_transfers);
+      
+      const currentBalanceA = organization_transfers[0].debitFrom.balance.A;
+      const currentBalanceB = organization_transfers[0].debitFrom.balance.B;
+      // console.log(organization_transfers.creditTransferContent)
+      const totalA = organization_transfers.forEach((each) => {console.log(each.creditTransferContent)})
+        // .reduce((a, v) => a + v.dollarValue * v.creditValue, 0));
+      // console.log(totalA)
+
+    });
   };
 
   useEffect(() => {
@@ -36,9 +52,9 @@ const CreditTransfersDetailsContainer = (props) => {
   }, [id]);
 
   const handleSubmit = (status, comment = '') => {
-    const submissionContent = {status}
+    const submissionContent = { status };
     if (comment.length > 0) {
-      submissionContent.creditTransferComment = {comment}
+      submissionContent.creditTransferComment = { comment };
     }
     axios.patch(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id), submissionContent).then(() => {
       history.push(ROUTES_CREDIT_TRANSFERS.LIST);
