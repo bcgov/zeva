@@ -12,7 +12,6 @@ import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDet
 import VehicleSupplierEditContainer from '../organizations/VehicleSupplierEditContainer';
 import VehicleSupplierModelListContainer from '../organizations/VehicleSupplierModelListContainer';
 import VehicleSupplierUserListContainer from '../organizations/VehicleSupplierUserListContainer';
-import RoleListContainer from '../roles/RoleListContainer';
 import CreditsContainer from '../credits/CreditsContainer';
 import CreditRequestListContainer from '../credits/CreditRequestListContainer';
 import CreditTransfersEditContainer from '../credits/CreditTransfersEditContainer';
@@ -186,11 +185,6 @@ class Router extends Component {
                 exact
                 path={ROUTES_VEHICLES.DETAILS}
                 render={() => <VehicleDetailsContainer keycloak={keycloak} user={user} />}
-              />
-              <Route
-                exact
-                path={ROUTES_ROLES.LIST}
-                render={() => <RoleListContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 path={ROUTES_USERS.EDIT}
