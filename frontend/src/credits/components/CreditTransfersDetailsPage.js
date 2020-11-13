@@ -10,7 +10,7 @@ import CreditTransfersDetailsTable from './CreditTransfersDetailsTable';
 import CreditTransfersDetailsSupplierTable from './CreditTransfersDetailsSupplierTable';
 
 const CreditTransfersDetailsPage = (props) => {
-  const { submission, user, handleSubmit } = props;
+  const { submission, user, handleSubmit, negativeCredit } = props;
   const [comment, setComment] = useState('');
   const [checkboxes, setCheckboxes] = useState({
     authority: false, accurate: false, consent: false,
@@ -167,9 +167,13 @@ const CreditTransfersDetailsPage = (props) => {
           <h2>Light Duty Vehicle Credit Transfer</h2>
         </div>
       </div>
+      {permissions.governmentAnalyst && negativeCredit && (
+      <div className="alert alert-danger"  id= "alert-warning" role="alert"><FontAwesomeIcon icon="exclamation-circle" size="lg"/>
+              &nbsp;<b>WARNING:&nbsp;</b> Supplier has insufficient credits to fulfill all pending transfers.
+      </div>)}
       {permissions.governmentAnalyst
       && (
-      <CreditTransfersDetailsSupplierTable submission={submission} tableType="supplierBalance" />
+      <CreditTransfersDetailsSupplierTable submission={submission} tableType="supplierBalance" /> 
       )}
       <div className="row">
         <div className="col-sm-11">

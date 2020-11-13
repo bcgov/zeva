@@ -49,17 +49,27 @@ const CreditTransfersDetailsSupplierTable = (props) => {
     className: 'text-center',
     columns: [{
       headerClassName: 'd-none',
-      id: 'new-balance-a',
+      id: 'newA',
       accessor: (item) => (`${item.newBalanceA}-A`),
       className: 'text-right',
       width: 125,
+      getProps: (state, rowInfo) => ({
+         style: {
+            color: (rowInfo.row.newA.slice(0,2) < 0 ? 'red' : null)
+          }
+        })
     },
     {
       headerClassName: 'd-none',
-      id: 'new-balance-b',
+      id: 'newB',
       accessor: (item) => (`${item.newBalanceB}-B`),
       className: 'text-right',
       width: 125,
+      getProps: (state, rowInfo) => ({
+         style: {
+            color: (rowInfo.row.newB.slice(0,2) < 0 ? 'red' : null)
+          }
+        })
     }],
   }];
   return (

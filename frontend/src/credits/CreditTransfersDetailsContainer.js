@@ -19,17 +19,39 @@ const CreditTransfersDetailsContainer = (props) => {
     location, user, match,
   } = props;
   const { state: locationState } = location;
+  const [negativeCredit, setNegativeCredit] = useState(false)
   const { id } = match.params;
-
   const [submission, setSubmission] = useState({});
   const [loading, setLoading] = useState(true);
+
   const refreshDetails = () => {
+    let orgId;
+    let transferContentA=0,transferContentB=0;
+    let currentBalanceA=0, currentBalanceB=0;
+    let newValueA, newValueB;
+    
     axios.get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id))
       .then((response) => {
         setSubmission(response.data);
+        orgId = response.data.debitFrom.id;
         setLoading(false);
       });
-  };
+    
+    axios.get(ROUTES_CREDIT_TRANSFERS.LIST).then((listresponse) => {
+      const organization_transfers = listresponse.data.filter((eachRecord) => eachRecord.debitFrom.id === orgId);
+      organization_transfers.forEach((each) => currentBalanceA += each.debitFrom.balance.A);
+      organization_transfers.forEach((each) => currentBalanceB += each.debitFrom.balance.B);
+      organization_transfers.forEach((each) => {
+        each.creditTransferContent.forEach((eachContent) => {
+          (eachContent.creditClass.creditClass === 'A') ?
+          transferContentA += eachContent.creditValue * eachContent.dollarValue : transferContentB += eachContent.creditValue * eachContent.dollarValue
+        })
+      })
+      newValueA = currentBalanceA - transferContentA;
+      newValueB = currentBalanceB - transferContentB;
+      (newValueA < 0 || newValueB < 0 ? setNegativeCredit(true): setNegativeCredit(false))
+ });
+};
 
   useEffect(() => {
     refreshDetails();
@@ -50,7 +72,7 @@ const CreditTransfersDetailsContainer = (props) => {
   }
   return ([
     <CreditTransactionTabs active="credit-transfers" key="tabs" user={user} />,
-    <CreditTransfersDetailsPage submission={submission} key="page" user={user} handleSubmit={handleSubmit} />,
+    <CreditTransfersDetailsPage submission={submission} key="page" user={user} negativeCredit={negativeCredit} handleSubmit={handleSubmit} />,
   ]);
 };
 
