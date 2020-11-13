@@ -103,7 +103,10 @@ objects:
   - apiVersion: route.openshift.io/v1
     kind: Route
     metadata:
-      creationTimestamp: null
+      creationTimestamp: 
+      annotations:      
+        haproxy.router.openshift.io/balance: source
+        haproxy.router.openshift.io/timeout: 1200s      
       labels:
         name: backend
         app: zeva

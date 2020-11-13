@@ -89,6 +89,9 @@ objects:
     kind: Route
     metadata:
       creationTimestamp: null
+      annotations:      
+        haproxy.router.openshift.io/balance: source
+        haproxy.router.openshift.io/timeout: 1200s            
       labels:
         name: frontend
         app: zeva
