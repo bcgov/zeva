@@ -93,7 +93,6 @@ const UserEditContainer = (props) => {
 
     const rolesPromise = axios.get(ROUTES_ROLES.LIST).then((response) => {
       setRoles(response.data);
-      console.log(response.data)
     });
 
     let detailsPromise;
