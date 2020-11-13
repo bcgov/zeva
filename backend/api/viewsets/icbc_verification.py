@@ -39,7 +39,7 @@ class IcbcVerificationViewSet(
     def chunk_upload(self, request):
         try:
             data = request.FILES.get('files')
-            os.rename(data.temporary_file_path(), '/zeva-uploads/' + data.name)
+            os.rename(data.temporary_file_path(), data.name)
         except Exception as error:
             print(error)
             return HttpResponse(status=400, content=error)
@@ -53,7 +53,7 @@ class IcbcVerificationViewSet(
         user = request.user
         try:
             date_current_to = request.data.get('submission_current_date')
-            filename = '/zeva-uploads/' + request.data.get('filename')
+            filename = request.data.get('filename')
             chunks = request.data.get('chunks')
 
             with open(filename, "wb") as outfile:
@@ -61,13 +61,13 @@ class IcbcVerificationViewSet(
                     tempfile = filename + '.part.' + str(chunk)
                     with open(tempfile, "rb") as infile:
                         outfile.write(infile.read())
-                        os.remove(tempfile)
+                        # os.remove(tempfile)
 
             done = ingest_icbc_spreadsheet(filename, user, date_current_to)
             outfile.close()
 
-            if done:
-                os.remove(filename)
+            # if done:
+            #     os.remove(filename)
         except Exception as error:
             print(error)
             return HttpResponse(status=400, content=error)
