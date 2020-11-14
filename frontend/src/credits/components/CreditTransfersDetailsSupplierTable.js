@@ -51,24 +51,18 @@ const CreditTransfersDetailsSupplierTable = (props) => {
       headerClassName: 'd-none',
       id: 'newA',
       accessor: (item) => (`${item.newBalanceA}-A`),
-      className: 'text-right',
       width: 125,
       getProps: (state, rowInfo) => ({
-         style: {
-            color: (rowInfo.row.newA.slice(0,2) < 0 ? 'red' : null)
-          }
+         className: `text-right ${(rowInfo.row.newA.slice(0,2) < 0) ? 'text-danger' : ''}`,
         })
     },
     {
       headerClassName: 'd-none',
       id: 'newB',
       accessor: (item) => (`${item.newBalanceB}-B`),
-      className: 'text-right',
       width: 125,
       getProps: (state, rowInfo) => ({
-         style: {
-            color: (rowInfo.row.newB.slice(0,2) < 0 ? 'red' : null)
-          }
+         className: `text-right ${(rowInfo.row.newB.slice(0,2) < 0) ? 'text-danger' : ''}`,
         })
     }],
   }];
