@@ -24,6 +24,7 @@ const CreditTransfersDetailsPage = (props) => {
   const [modalType, setModalType] = useState('');
 
   const permissions = {
+    initiatingSupplier: user.organization.id === submission.debitFrom.id && submission.status === 'DRAFT',
     tradePartner: user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED',
     governmentAnalyst: user.hasPermission('RECOMMEND_CREDIT_TRANSFER')
       && user.isGovernment && submission.status === 'APPROVED',

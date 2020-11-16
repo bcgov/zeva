@@ -46,7 +46,7 @@ const CreditTransfersDetailsSupplierTable = (props) => {
             { permissions.initiatingSupplier
            && (
            <Button
-             testid="submit-transfer"
+             testid="submit-to-partner"
              buttonType="submit"
              action={() => {
                setModalType('initiating-submit');
@@ -72,7 +72,7 @@ const CreditTransfersDetailsSupplierTable = (props) => {
             {permissions.tradePartner
             && (
             <Button
-              testid="submit-transfer"
+              testid="submit-to-gov"
               buttonType="submit"
               action={() => {
                 setModalType('partner-accept');
