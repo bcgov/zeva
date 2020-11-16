@@ -43,8 +43,13 @@ const CreditTransfersDetailsContainer = (props) => {
       currentBalanceB = organization_transfers[0].debitFrom.balance.B;
       organization_transfers.forEach((each) => {
         each.creditTransferContent.forEach((eachContent) => {
-          (eachContent.creditClass.creditClass === 'A') ?
-          transferContentA += eachContent.creditValue * eachContent.dollarValue : transferContentB += eachContent.creditValue * eachContent.dollarValue
+          if(eachContent.creditClass.creditClass === 'A') {
+            transferContentA += eachContent.creditValue * eachContent.dollarValue;
+           }
+          else if(eachContent.creditClass.creditClass === 'B') {
+            transferContentB += eachContent.creditValue * eachContent.dollarValue;
+          }
+          else {} 
         })
       })
       newValueA = currentBalanceA - transferContentA;
