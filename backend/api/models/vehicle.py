@@ -83,11 +83,19 @@ class Vehicle(Auditable):
         """
         Gets the credit class of the vehicle
         """
-        if (self.vehicle_zev_type.vehicle_zev_code == 'BEV' and
-                self.range < 80.47) or self.range < 16:
+        if self.vehicle_zev_type.vehicle_zev_code in ['BEV', 'FCEV'] and \
+                self.range < 80.47:
             return 'C'
 
-        if self.vehicle_zev_type.vehicle_zev_code == 'BEV':
+        if self.vehicle_zev_type.vehicle_zev_code not in ['BEV', 'FCEV'] and \
+                self.range < 16:
+            return 'C'
+
+        if self.vehicle_zev_type.vehicle_zev_code == 'EREV' and \
+                self.range >= 121:
+            return 'A'
+
+        if self.vehicle_zev_type.vehicle_zev_code in ['BEV', 'FCEV']:
             return 'A'
 
         return 'B'
