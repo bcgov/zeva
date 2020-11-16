@@ -174,24 +174,10 @@ class VehicleSerializer(
         return serializer.data
 
     def get_credit_class(self, instance):
-        request = self.context.get('request')
-
-        if instance.validation_status == \
-                VehicleDefinitionStatuses.VALIDATED or \
-                request.user.is_government:
-            return instance.get_credit_class()
-
-        return None
+        return instance.get_credit_class()
 
     def get_credit_value(self, instance):
-        request = self.context.get('request')
-
-        if instance.validation_status == \
-                VehicleDefinitionStatuses.VALIDATED or \
-                request.user.is_government:
-            return instance.get_credit_value()
-
-        return None
+        return instance.get_credit_value()
 
     def get_create_user(self, obj):
         user_profile = UserProfile.objects.filter(username=obj.create_user)

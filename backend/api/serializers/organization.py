@@ -2,7 +2,8 @@ from datetime import date
 from rest_framework import serializers
 
 from api.models.organization import Organization
-from api.serializers.organization_address import OrganizationAddressSerializer, OrganizationAddressSaveSerializer
+from api.serializers.organization_address import \
+    OrganizationAddressSerializer, OrganizationAddressSaveSerializer
 from api.models.organization_address import OrganizationAddress
 
 
