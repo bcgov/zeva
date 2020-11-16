@@ -36,7 +36,7 @@ const phases = {
   prod: {namespace:'e52f12-prod', name: `${name}`, ssoSuffix:'', 
         ssoName:'oidc.gov.bc.ca', phase: 'prod'  , changeId:`${changeId}`, suffix: `-prod`, 
         instance: `${name}-prod`, version:`${version}`, tag:`prod-${version}`, 
-        host: `zeroemissionvehicles.${ocpName}.gov.bc.ca`, djangoDebug: 'False', logoutHostName: 'logon7.gov.bc.ca',
+        host: 'zeroemissionvehicles.gov.bc.ca', djangoDebug: 'False', logoutHostName: 'logon7.gov.bc.ca',
         frontendCpuRequest: '300m', frontendCpuLimit: '600m', frontendMemoryRequest: '1G', frontendMemoryLimit: '2G', frontendReplicas: 2, frontendMinReplicas: 2, frontendMaxReplicas: 5,
         backendCpuRequest: '200m', backendCpuLimit: '700m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 30, backendReplicas: 1, backendMinReplicas: 2, backendMaxReplicas: 5, backendHost: `zeva-backend-prod.${ocpName}.gov.bc.ca`,
         minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M', minioPvcSize: '10G',
