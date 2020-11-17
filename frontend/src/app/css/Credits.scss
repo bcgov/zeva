@@ -6,10 +6,10 @@
   width: 80vw;
 
   thead {
-    background-color:$default-background-grey;
+    background-color: $default-background-grey;
 
     th {
-      text-align: center;      
+      text-align: center;
     }
   }
 
@@ -22,12 +22,12 @@
     text-align: center;
   }
   .balance-b {
-    padding-right:10px;
+    padding-right: 10px;
     text-align: center;
   }
   .date-column {
-    width:10vw;
-    padding-left:10px;
+    width: 10vw;
+    padding-left: 10px;
   }
 }
 
@@ -39,7 +39,7 @@
   }
 
   div.check {
-    color:green;
+    color: green;
     text-align: center;
   }
 
@@ -93,8 +93,15 @@
   display: inline-table;
 }
 
-
 #credit-transfers-details {
+  #alert-warning {
+    display: flex;
+    flex-direction: row;
+    padding: 1rem 0.5rem;
+    border: 1px solid #8b1a1a;
+    color: #8b1a1a;
+    margin: 0.5rem 0;
+  }
   .form {
     background-color: $form-background-grey;
     border: 1px solid $border-grey;
@@ -115,13 +122,12 @@
     .rt-td {
       border: 1px solid $border-grey;
     }
-     .rt-th {
+    .rt-th {
       padding: 1px;
       font-weight: bold;
       border: 1px solid $border-grey;
     }
   }
-
 }
 #transfer-sign-off {
   color: $default-text-blue;
@@ -145,7 +151,6 @@
       border-collapse: collapse;
       margin-left: auto;
 
-
       td {
         border-collapse: collapse;
         border: 1px solid $border-grey;
@@ -165,7 +170,8 @@
     .rt-thead {
       background-color: $white;
     }
-    .rt-td, .rt-th {
+    .rt-td,
+    .rt-th {
       border-bottom: 1px solid $react-border;
       border-right: 1px solid $react-border;
     }
@@ -186,46 +192,51 @@
     font-size: 1.1rem;
     width: 10rem;
   }
-  
+
   .sales-upload-blue {
     font-size: 1.1rem;
   }
 }
 
 #sales-details {
-  .ReactTable {  
+  .ReactTable {
     .-header {
       box-shadow: none;
-  
+
       .rt-th {
         border-bottom: 1px solid $react-border;
         border-top: 1px solid $react-border;
       }
     }
-  
+
     .-headerGroups {
       border-bottom: none;
-  
+
       .header-group {
         background-color: $white;
         border-color: $white;
       }
     }
 
-    .-filters, .rt-tr-group {
+    .-filters,
+    .rt-tr-group {
       border-bottom: none;
 
       .-odd {
         background-color: transparent;
-  
+
         .rt-td {
           background-color: $default-background-grey;
         }
       }
     }
 
-    .-header, .-filters, .rt-tr-group { /* inner "padding" */
-      .rt-td, .rt-th {
+    .-header,
+    .-filters,
+    .rt-tr-group {
+      /* inner "padding" */
+      .rt-td,
+      .rt-th {
         border-bottom: 1px solid $react-border;
 
         &:first-child {
@@ -265,56 +276,56 @@
   }
 
   label {
-      margin-top: 2vh;
-      font-weight: bold;
-      color:$default-text-blue;
-      text-align: center;
+    margin-top: 2vh;
+    font-weight: bold;
+    color: $default-text-blue;
+    text-align: center;
   }
 
   #date-label {
-      padding-left: 15px;
-      width:100%;
-      text-align: left;
-      margin-bottom: 0;
-  }  
-  
-  div.check {
-      color:green;
-      text-align: center;
+    padding-left: 15px;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 0;
   }
- 
+
+  div.check {
+    color: green;
+    text-align: center;
+  }
 
   input[type="date"] {
     position: relative;
     padding: 10px;
     margin: 5px 0 0 10px;
     border: 2px solid #616161;
-    border-radius: 5px
+    border-radius: 5px;
   }
 
   .calendar-icon {
-      font-size:large;
-      margin-left: 10px;
-      margin-bottom:auto;
-  } 
+    font-size: large;
+    margin-left: 10px;
+    margin-bottom: auto;
+  }
 }
 
 #credit-transaction {
-  .credit-balance-table, .credit-transaction-list-table {
+  .credit-balance-table,
+  .credit-transaction-list-table {
     .-header {
       box-shadow: none;
       font-weight: bold;
-  
+
       .rt-th {
         background-color: $default-background-grey;
         border-top: none;
       }
     }
-  
+
     .-headerGroups {
       border-bottom: none;
       font-weight: bold;
-  
+
       .header-group {
         background-color: $default-background-grey;
 
@@ -328,12 +339,13 @@
       }
     }
 
-    .-filters, .rt-tr-group {
+    .-filters,
+    .rt-tr-group {
       border-bottom: none;
 
       .-even {
         background-color: transparent;
-  
+
         .rt-td {
           background-color: $default-background-grey;
         }
@@ -344,8 +356,13 @@
       }
     }
 
-    .-headerGroups, .-header, .-filters, .rt-tr-group { /* inner "padding" */
-      .rt-td, .rt-th {
+    .-headerGroups,
+    .-header,
+    .-filters,
+    .rt-tr-group {
+      /* inner "padding" */
+      .rt-td,
+      .rt-th {
         &:first-child {
           margin-left: 0.5rem;
         }
@@ -360,14 +377,18 @@
       padding-bottom: 0.5rem;
       padding-top: 0.5rem;
 
-      .rt-th, .rt-td {
+      .rt-th,
+      .rt-td {
         border-right: none;
         padding-left: 1rem;
         padding-right: 1rem;
       }
     }
 
-    .balance-left, .credits-left, .date, .transaction {
+    .balance-left,
+    .credits-left,
+    .date,
+    .transaction {
       margin-left: 0.5rem;
     }
 

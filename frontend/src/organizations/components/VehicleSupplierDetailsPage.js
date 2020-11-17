@@ -28,6 +28,7 @@ const VehicleSupplierDetailsPage = (props) => {
             <h3 className="mt-3" key={`${each.id}-header`}>{each.addressType ? each.addressType.addressType : ''} Address</h3>,
             <div className="organization-address" key={each.id}>
               <div className="supplier-text">
+                {(each.addressType.addressType === "Service") ? each.representativeName : ''}
                 {each.addressLine1 && <div>{each.addressLine1}</div>}
                 {each.addressLine2 && <div>{each.addressLine2}</div>}
                 {each.addressLine3 && <div>{each.addressLine3}</div>}

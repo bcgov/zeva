@@ -42,47 +42,13 @@ const VehicleListTable = (props) => {
     id: 'col-status',
     width: 175,
   }, {
-    accessor: (row) => {
-      if ((row.vehicleZevType.vehicleZevCode === 'BEV' && row.range < 80.47)
-          || row.range < 16) {
-        return 0;
-      }
-
-      let variable = 0.3;
-
-      if (row.vehicleZevType.vehicleZevCode === 'BEV') {
-        variable = 0.5;
-      }
-
-      if (['EREV', 'PHEV'].indexOf(row.vehicleZevType.vehicleZevCode) >= 0) {
-        variable += 0.2;
-      }
-
-      let credit = ((row.range * 0.006214) + variable).toFixed(2);
-
-      if (credit > 4) {
-        credit = 4;
-      }
-
-      return formatNumeric(credit, 2);
-    },
+    accessor: (row) => (formatNumeric(row.creditValue, 2)),
     className: 'text-right',
     Header: 'Credit Entitlement',
     id: 'col-credit',
     width: 125,
   }, {
-    accessor: (row) => {
-      if ((row.vehicleZevType.vehicleZevCode === 'BEV' && row.range < 80.47)
-          || row.range < 16) {
-        return 'C';
-      }
-
-      if (row.vehicleZevType.vehicleZevCode === 'BEV') {
-        return 'A';
-      }
-
-      return 'B';
-    },
+    accessor: 'creditClass',
     className: 'text-center',
     Header: 'Zev Class',
     id: 'col-class',

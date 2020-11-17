@@ -6,7 +6,7 @@ import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import Loading from '../app/components/Loading';
 import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification';
 import CustomPropTypes from '../app/utilities/props';
-import upload from '../app/utilities/upload';
+import { chunkUpload } from '../app/utilities/upload';
 import UploadVerificationData from './components/UploadVerificationData';
 
 const UploadICBCVerificationContainer = (props) => {
@@ -33,23 +33,31 @@ const UploadICBCVerificationContainer = (props) => {
 
   const doUpload = () => {
     setLoading(true);
-    upload(ROUTES_ICBCVERIFICATION.UPLOAD, files, { submissionCurrentDate: dateCurrentTo })
-      .then(() => {
-        setAlertMessage('upload successful');
-        toastr.success('upload successful!', '', { positionClass: 'toast-bottom-right' });
-        setFiles([]);
-      })
-      .catch((error) => {
-        const { response } = error;
-        if (response.status === 400) {
-          setAlertMessage(error.response.data);
+
+    chunkUpload(ROUTES_ICBCVERIFICATION.CHUNK_UPLOAD, files).then((response) => {
+      const { filename, chunks } = response;
+      axios.post(ROUTES_ICBCVERIFICATION.UPLOAD, {
+        filename,
+        chunks,
+        submissionCurrentDate: dateCurrentTo,
+      }).catch((error) => {
+        console.error(error);
+        const { response: errorResponse } = error;
+        if (errorResponse.status === 400) {
+          setAlertMessage(errorResponse.data);
         } else {
           setAlertMessage('An error has occurred while uploading. Please try again later.');
         }
-      })
-      .finally(() => {
+      }).finally(() => {
+        setAlertMessage('upload successful');
+        toastr.success('upload successful!', '', { positionClass: 'toast-bottom-right' });
+        setFiles([]);
         setLoading(false);
       });
+    }).catch((error) => {
+      console.error(error);
+      setAlertMessage('An error has occurred while uploading. Please try again later.');
+    });
   };
 
   useEffect(() => {

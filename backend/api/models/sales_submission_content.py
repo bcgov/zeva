@@ -161,7 +161,11 @@ class SalesSubmissionContent(Auditable):
         elif self.vehicle is not None:
             if self.icbc_verification.icbc_vehicle.model_year != \
                     self.vehicle.model_year:
-                warnings.append('MODEL_MISMATCHED')
+                warnings.append('MODEL_YEAR_MISMATCHED')
+
+            if self.icbc_verification.icbc_vehicle.make != \
+                    self.vehicle.make:
+                warnings.append('MAKE_MISMATCHED')
 
         return warnings
 

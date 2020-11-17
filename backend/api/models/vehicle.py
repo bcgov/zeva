@@ -83,11 +83,19 @@ class Vehicle(Auditable):
         """
         Gets the credit class of the vehicle
         """
-        if (self.vehicle_zev_type.vehicle_zev_code == 'BEV' and
-                self.range < 80.47) or self.range < 16:
+        if self.vehicle_zev_type.vehicle_zev_code in ['BEV', 'FCEV'] and \
+                self.range < 80.47:
             return 'C'
 
-        if self.vehicle_zev_type.vehicle_zev_code == 'BEV':
+        if self.vehicle_zev_type.vehicle_zev_code not in ['BEV', 'FCEV'] and \
+                self.range < 16:
+            return 'C'
+
+        if self.vehicle_zev_type.vehicle_zev_code == 'EREV' and \
+                self.range >= 121:
+            return 'A'
+
+        if self.vehicle_zev_type.vehicle_zev_code in ['BEV', 'FCEV']:
             return 'A'
 
         return 'B'
@@ -96,20 +104,19 @@ class Vehicle(Auditable):
         """
         Gets the credit value of the vehicle
         """
-        if (self.vehicle_zev_type.vehicle_zev_code == 'BEV' and
-                self.range < 80.47) or self.range < 16:
+        credit_class = self.get_credit_class()
+        if credit_class == 'C':
             return 0
 
-        variable = 0.3
+        if credit_class == 'A':
+            credit = (self.range * 0.006214) + 0.5
 
-        if self.vehicle_zev_type.vehicle_zev_code == 'BEV':
-            variable = 0.5
+        if credit_class == 'B':
+            credit = (self.range * 0.006214) + 0.3
 
-        credit = (self.range * 0.006214) + variable
-
-        if self.vehicle_zev_type.vehicle_zev_code in ['EREV', 'PHEV'] and \
-            self.has_passed_us_06_test is True:
-            credit += 0.2
+            if self.vehicle_zev_type.vehicle_zev_code in ['EREV', 'PHEV'] and \
+                self.has_passed_us_06_test is True:
+                credit += 0.2
 
         if credit > 4:
             credit = 4

@@ -13,7 +13,7 @@ const UsersTable = (props) => {
     className: 'text-left',
     Header: 'Name',
   }, {
-    accessor: (item) => (item.roles.map((role) => role.description).join(', ')),
+    accessor: (item) => (item.roles.map((role) => role.roleCode).join(', ')),
     id: 'roles',
     className: 'text-left',
     Header: 'Roles',
@@ -25,7 +25,6 @@ const UsersTable = (props) => {
   }];
 
   const { filtered, items, setFiltered } = props;
-
   return (
     <ReactTable
       columns={columns}
