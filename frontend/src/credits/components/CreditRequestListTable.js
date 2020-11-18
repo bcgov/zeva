@@ -26,11 +26,6 @@ const CreditRequestListTable = (props) => {
     className: 'text-center',
     Header: 'Date',
   }, {
-    accessor: 'updateUser.displayName',
-    className: 'text-left',
-    Header: 'Last User',
-    id: 'updateUser',
-  }, {
     accessor: (item) => (item.organization ? item.organization.name : ''),
     className: 'text-left',
     Header: 'Supplier',

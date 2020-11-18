@@ -14,6 +14,7 @@ import '@testing-library/jest-dom/extend-expect';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 const submission = {
+  history: [],
   creditTo: {
     balance: { A: 0, B: 0 },
     createTimestamp: '2020-05-26T09:27:21.098202-07:00',
@@ -68,7 +69,9 @@ const submission = {
   id: 10,
   status: 'SUBMITTED',
 };
+
 const user = {
+  hasPermission: () => (true),
   organization: {
     id: 1,
     name: 'FCA Canada Inc.',
@@ -76,12 +79,14 @@ const user = {
 };
 
 const user2 = {
+  hasPermission: () => (true),
   organization: {
     id: 61,
     name: 'Toyota Canada Inc.',
   },
 };
 const govUser = {
+  hasPermission: () => (true),
   organization: {
     id: 2,
     name: 'Government of B.C.',
@@ -100,12 +105,7 @@ it('shows the comment box if the user is from the receiving supplier', () => {
   const commentbox = findByTestId(container, 'transfer-comment');
   expect(commentbox).toBeInTheDocument;
 });
-it('shows the submit modal if the user selects the submit button', () => {
-  const { container } = render(<CreditTransfersDetailsPage submission={submission} user={user} handleSubmit={() => { console.log('submit!'); }} />);
-  fireEvent.click(getByText(container, 'Submit Notice'));
-  expect(queryByText(container, 'Submit transfer to government of B.C. Director?')).toBeInTheDocument;
-  expect(queryByText(container, 'Reject notice?')).not.toBeInTheDocument;
-});
+
 it('shows the reject modal if the user selects the submit button', () => {
   const { container } = render(<CreditTransfersDetailsPage submission={submission} user={user} handleSubmit={() => { console.log('submit!'); }} />);
   fireEvent.click(getByText(container, 'Reject Notice'));
@@ -120,6 +120,13 @@ it('does not show the commment box if the submission is already rejected', () =>
 it('if its a draft, initiating company can submit to partner or press back', () => {
   submission.status = 'DRAFT';
   const { container } = render(<CreditTransfersDetailsPage submission={submission} user={user2} handleSubmit={() => { console.log('submit!'); }} />);
-  fireEvent.click(getByText(container, 'Submit Notice'));
+  fireEvent.click(getByTestId(container, 'submit-to-partner'));
   expect(queryByText(container, 'Submit credit transfer notice to trade partner?')).toBeInTheDocument;
+});
+it('shows the submit modal if the user selects the submit button', () => {
+  submission.status = 'DRAFT';
+  const { container } = render(<CreditTransfersDetailsPage submission={submission} user={user2} handleSubmit={() => { console.log('submit!'); }} />);
+  fireEvent.click(getByTestId(container, 'submit-to-partner'));
+  expect(queryByText(container, 'Submit transfer to government of B.C. Director?')).toBeInTheDocument;
+  expect(queryByText(container, 'Reject notice?')).not.toBeInTheDocument;
 });

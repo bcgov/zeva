@@ -7,7 +7,7 @@ import history from '../History';
 const Button = (props) => {
   const {
     buttonType, locationRoute, locationState, action, optionalText, optionalIcon,
-    disabled, optionalClassname, buttonTooltip,
+    disabled, optionalClassname, buttonTooltip, testid,
   } = props;
   const getRoute = () => {
     if (locationRoute && locationState) {
@@ -83,6 +83,7 @@ const Button = (props) => {
       <span data-tip={tooltip}>
 
         <button
+          data-testid={testid}
           className={classname}
           disabled={disabled}
           onClick={(e) => {
@@ -106,6 +107,7 @@ Button.defaultProps = {
   optionalClassname: null,
   disabled: false,
   buttonTooltip: '',
+  testid: '',
 };
 Button.propTypes = {
   buttonType: PropTypes.string.isRequired,
@@ -117,5 +119,6 @@ Button.propTypes = {
   action: PropTypes.func,
   disabled: PropTypes.bool,
   buttonTooltip: PropTypes.string,
+  testid: PropTypes.string,
 };
 export default Button;
