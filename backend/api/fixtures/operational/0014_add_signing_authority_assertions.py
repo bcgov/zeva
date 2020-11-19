@@ -20,16 +20,22 @@ class AddSigningAuthorityAssertions(OperationalDataScript):
             description="I confirm that I am an officer or employee of "
                         "{user.organization.name}, and that records "
                         "evidencing my authority to submit this notice "
-                        "are available on request."
+                        "are available on request.",
+            display_order="1",
+            effective_date="2020-01-01"
         )
         SigningAuthorityAssertion.objects.get_or_create(
             description="{user.organization.name} certifies that the "
                         "information provided in this notice is accurate "
-                        "and complete."
+                        "and complete.",
+            display_order="2",
+            effective_date="2020-01-01"
         )
         SigningAuthorityAssertion.objects.get_or_create(
             description="{user.organization.name} consents to the transfer "
-                        "of credits in this notice."
+                        "of credits in this notice.",
+            display_order="3",
+            effective_date="2020-01-01"
         )
 
 

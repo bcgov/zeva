@@ -13,6 +13,7 @@ import Loading from '../../app/components/Loading';
 const CreditTransfersForm = (props) => {
   const {
     addRow,
+    assertions,
     checkboxes,
     fields,
     handleInputChange,
@@ -117,13 +118,19 @@ const CreditTransfersForm = (props) => {
                   <h4><FontAwesomeIcon icon="plus" /> Add another line</h4>
                 </button>
                 <span className="transfer-total">Total CAD: ${total}</span>
-                <CreditTransferSignoff hoverText={hoverText} checkboxes={checkboxes} disableCheckboxes={unfilledRow} handleCheckboxClick={handleCheckboxClick} user={user} />
+                <CreditTransferSignoff
+                  assertions={assertions}
+                  checkboxes={checkboxes}
+                  disableCheckboxes={unfilledRow}
+                  handleCheckboxClick={handleCheckboxClick}
+                  hoverText={hoverText}
+                  user={user}
+                />
                 {actionbar}
               </fieldset>
             </div>
             {modal}
           </div>
-
         </form>
       </div>
     </div>

@@ -5,13 +5,30 @@ import CustomPropTypes from '../../app/utilities/props';
 
 const CreditTransferSignOff = (props) => {
   const {
-    checkboxes, handleCheckboxClick, user, disableCheckboxes, hoverText,
+    assertions,
+    checkboxes,
+    disableCheckboxes,
+    handleCheckboxClick,
+    hoverText,
+    user,
   } = props;
+
+  console.error(assertions);
 
   return (
     <div id="transfer-sign-off">
+      <ReactTooltip />
+      {assertions.map((assertion) => (
+        <div>
+          <div className="d-inline-block align-middle my-2 ml-2 mr-1" data-tip={hoverText}>
+            <input type="checkbox" id="authority" disabled={disableCheckboxes} checked={checkboxes.authority} onClick={(event) => { handleCheckboxClick(event); }} />
+          </div>
+          <label className="d-inline" htmlFor="authority" id="transfer-text">
+            {assertion.description}
+          </label>
+        </div>
+      ))}
       <div>
-        <ReactTooltip />
         <div className="d-inline-block align-middle my-2 ml-2 mr-1" data-tip={hoverText}>
           <input type="checkbox" id="authority" disabled={disableCheckboxes} checked={checkboxes.authority} onClick={(event) => { handleCheckboxClick(event); }} />
         </div>

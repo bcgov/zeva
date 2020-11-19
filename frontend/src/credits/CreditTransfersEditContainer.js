@@ -13,6 +13,7 @@ import CreditTransfersForm from './components/CreditTransfersForm';
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import ROUTES_CREDIT_TRANSFERS from '../app/routes/CreditTransfers';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
+import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 
 const CreditTransfersEditContainer = (props) => {
   const { id } = useParams();
@@ -25,6 +26,7 @@ const CreditTransfersEditContainer = (props) => {
   const emptyForm = {
     transferPartner: '',
   };
+  const [assertions, setAssertions] = useState([]);
   const [checkboxes, setCheckboxes] = useState(emptyCheckboxes);
   const [rows, setRows] = useState([emptyRow]);
   const { user, keycloak, newTransfer } = props;
@@ -127,9 +129,11 @@ const CreditTransfersEditContainer = (props) => {
     axios.all([
       axios.get(ROUTES_ORGANIZATIONS.LIST),
       axios.get(ROUTES_VEHICLES.YEARS),
-    ]).then(axios.spread((orgResponse, yearsResponse) => {
+      axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST),
+    ]).then(axios.spread((orgResponse, yearsResponse, assertionsResponse) => {
       setOrganizations(orgResponse.data);
       setYears(yearsResponse.data);
+      setAssertions(assertionsResponse.data);
     }));
     if (!newTransfer) {
       axios.get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/gi, id)).then((response) => {
@@ -157,24 +161,25 @@ const CreditTransfersEditContainer = (props) => {
   return ([
     <CreditTransactionTabs active="credit-transfers" key="tabs" user={user} />,
     <CreditTransfersForm
-      loading={loading}
-      key="page"
-      user={user}
-      organizations={organizations}
-      handleInputChange={handleInputChange}
-      handleSubmit={handleSubmit}
-      years={years}
-      handleSave={handleSave}
-      removeRow={removeRow}
       addRow={addRow}
-      handleRowInputChange={handleRowInputChange}
-      total={total}
-      rows={rows}
-      fields={fields}
-      unfilledRow={unfilledRow}
+      assertions={assertions}
       checkboxes={checkboxes}
-      setCheckboxes={setCheckboxes}
+      fields={fields}
+      handleInputChange={handleInputChange}
+      handleRowInputChange={handleRowInputChange}
+      handleSave={handleSave}
+      handleSubmit={handleSubmit}
       hoverText={hoverText}
+      key="page"
+      loading={loading}
+      organizations={organizations}
+      removeRow={removeRow}
+      rows={rows}
+      setCheckboxes={setCheckboxes}
+      total={total}
+      unfilledRow={unfilledRow}
+      user={user}
+      years={years}
     />,
   ]);
 };
