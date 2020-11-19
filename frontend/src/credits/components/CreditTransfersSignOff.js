@@ -19,12 +19,12 @@ const CreditTransferSignOff = (props) => {
     <div id="transfer-sign-off">
       <ReactTooltip />
       {assertions.map((assertion) => (
-        <div>
+        <div key={assertion.id}>
           <div className="d-inline-block align-middle my-2 ml-2 mr-1" data-tip={hoverText}>
             <input type="checkbox" id="authority" disabled={disableCheckboxes} checked={checkboxes.authority} onClick={(event) => { handleCheckboxClick(event); }} />
           </div>
           <label className="d-inline" htmlFor="authority" id="transfer-text">
-            {assertion.description}
+            {assertion.description.replace(/{user.organization.name}/g, user.organization.name)}
           </label>
         </div>
       ))}
