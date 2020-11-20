@@ -19,7 +19,6 @@ const CreditTransfersDetailsSupplierTable = (props) => {
               testid="reject-transfer"
               buttonType="reject"
               optionalText="Reject Notice"
-              optionalClassname="button text-danger"
               disabled={comment.length === 0 || allChecked}
               action={() => {
                 setModalType('partner-reject');
@@ -33,14 +32,24 @@ const CreditTransfersDetailsSupplierTable = (props) => {
               testid="recommend-reject-transfer"
               buttonType="reject"
               optionalText="Recommend Rejection"
-              optionalClassname="button text-danger"
               action={() => {
                 setModalType('recommend-reject');
                 setShowModal(true);
               }}
             />
             )}
-
+            {permissions.governmentDirector
+            && (
+            <Button
+              testid="director-reject-transfer"
+              buttonType="reject"
+              optionalText="Reject Transfer"
+              action={() => {
+                setModalType('director-reject');
+                setShowModal(true);
+              }}
+            />
+            )}
           </span>
           <span className="right-content">
             { permissions.initiatingSupplier
@@ -62,7 +71,6 @@ const CreditTransfersDetailsSupplierTable = (props) => {
               testid="recommend-approve-transfer"
               buttonType="approve"
               optionalText="Recommend transfer"
-              optionalClassname="button primary"
               action={() => {
                 setModalType('recommend-transfer');
                 setShowModal(true);
@@ -82,6 +90,18 @@ const CreditTransfersDetailsSupplierTable = (props) => {
               disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent || comment.length > 0}
             />
             )}
+            {permissions.governmentDirector
+              && (
+              <Button
+                testid="director-record"
+                buttonType="approve"
+                optionalText="Record Transfer"
+                action={() => {
+                  setModalType('director-record');
+                  setShowModal(true);
+                }}
+              />
+              )}
           </span>
 
         </div>

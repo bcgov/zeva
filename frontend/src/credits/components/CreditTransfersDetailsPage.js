@@ -8,9 +8,12 @@ import Modal from '../../app/components/Modal';
 import CustomPropTypes from '../../app/utilities/props';
 import CreditTransfersDetailsTable from './CreditTransfersDetailsTable';
 import CreditTransfersDetailsSupplierTable from './CreditTransfersDetailsSupplierTable';
+import Comment from '../../app/components/Comment';
 
 const CreditTransfersDetailsPage = (props) => {
-  const { submission, user, handleSubmit, negativeCredit } = props;
+  const {
+    submission, user, handleSubmit, negativeCredit,
+  } = props;
   const [comment, setComment] = useState('');
   const [checkboxes, setCheckboxes] = useState({
     authority: false, accurate: false, consent: false,
@@ -56,7 +59,7 @@ const CreditTransfersDetailsPage = (props) => {
     case 'partner-reject':
       modalProps = {
         confirmLabel: ' Reject',
-        handleSubmit: () => { handleSubmit('REJECTED', comment); },
+        handleSubmit: () => { handleSubmit('DISAPPROVED', comment); },
         buttonClass: 'btn-outline-danger',
         modalText: 'Reject notice?',
       };
@@ -84,6 +87,22 @@ const CreditTransfersDetailsPage = (props) => {
         handleSubmit: () => { handleSubmit('RECOMMEND_APPROVAL', comment); },
         buttonClass: 'button primary',
         modalText: 'Recommend the Director record the Transfer?',
+      };
+      break;
+    case 'director-record':
+      modalProps = {
+        confirmLabel: ' Record Transfer',
+        handleSubmit: () => { handleSubmit('VALIDATED', comment); },
+        buttonClass: 'button primary',
+        modalText: 'Record the transfer?',
+      };
+      break;
+    case 'director-reject':
+      modalProps = {
+        confirmLabel: ' Reject Transfer',
+        handleSubmit: () => { handleSubmit('REJECTED', comment); },
+        buttonClass: 'btn-outline-danger',
+        modalText: 'Reject the transfer?',
       };
       break;
     default:
@@ -126,9 +145,8 @@ const CreditTransfersDetailsPage = (props) => {
   );
   const initiatingInformation = submission.history.find((each) => each.status === 'SUBMITTED');
   const transferPartnerInformation = submission.history.find((each) => each.status === 'APPROVED');
-
-  const analystSignoff = (
-    <div>
+  const signedSubmittedInfo = (
+    <>
       {transferValue}
       {initiatingInformation && transferPartnerInformation
       && (
@@ -138,6 +156,11 @@ const CreditTransfersDetailsPage = (props) => {
         Signed and submitted by {transferPartnerInformation.createUser.displayName} of {transferPartnerInformation.createUser.organization.name} {moment(transferPartnerInformation.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
       </div>
       )}
+    </>
+  );
+  const analystSignoff = (
+    <div>
+      {signedSubmittedInfo}
       <label htmlFor="transfer-comment">comment to director</label>
       <textarea testid="transfer-comment-analyst" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} />
     </div>
@@ -167,14 +190,22 @@ const CreditTransfersDetailsPage = (props) => {
         <div className="col-sm-12">
           <h2>Light Duty Vehicle Credit Transfer</h2>
         </div>
+        {permissions.governmentDirector && submission.creditTransferComment
+      && (
+      <div className="ml-3">
+        <Comment commentArray={submission.creditTransferComment} />
+      </div>
+      )}
       </div>
       {permissions.governmentAnalyst && negativeCredit && (
-      <div className="alert alert-danger"  id= "alert-warning" role="alert"><FontAwesomeIcon icon="exclamation-circle" size="lg"/>
-              &nbsp;<b>WARNING:&nbsp;</b> Supplier has insufficient credits to fulfill all pending transfers.
-      </div>)}
+      <div className="alert alert-danger" id="alert-warning" role="alert"><FontAwesomeIcon icon="exclamation-circle" size="lg" />
+        &nbsp;<b>WARNING:&nbsp;</b>
+        Supplier has insufficient credits to fulfill all pending transfers.
+      </div>
+      )}
       {permissions.governmentAnalyst
       && (
-      <CreditTransfersDetailsSupplierTable submission={submission} tableType="supplierBalance" /> 
+      <CreditTransfersDetailsSupplierTable submission={submission} tableType="supplierBalance" />
       )}
       <div className="row">
         <div className="col-sm-11">
@@ -187,6 +218,8 @@ const CreditTransfersDetailsPage = (props) => {
                  && tradePartnerSignoff}
                  {permissions.governmentAnalyst
                  && analystSignoff}
+                 {permissions.governmentDirector
+                 && signedSubmittedInfo}
                  <CreditTransferDetailsActionBar checkboxes={checkboxes} permissions={permissions} setShowModal={setShowModal} setModalType={setModalType} comment={comment} allChecked={allChecked} />
                </div>
                )}
