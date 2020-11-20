@@ -27,7 +27,7 @@ const CreditTransfersEditContainer = (props) => {
     transferPartner: '',
   };
   const [assertions, setAssertions] = useState([]);
-  const [checkboxes, setCheckboxes] = useState(emptyCheckboxes);
+  const [checkboxes, setCheckboxes] = useState([]);
   const [rows, setRows] = useState([emptyRow]);
   const { user, keycloak, newTransfer } = props;
   const [organizations, setOrganizations] = useState([]);
@@ -46,7 +46,7 @@ const CreditTransfersEditContainer = (props) => {
       || val.value === 0
       || fields.transferPartner === '') {
         setUnfilledRow(true);
-        setCheckboxes(emptyCheckboxes);
+        // setCheckboxes(emptyCheckboxes);
         setHoverText(checkboxText);
       } else {
         setUnfilledRow(false);
@@ -54,6 +54,7 @@ const CreditTransfersEditContainer = (props) => {
       }
     });
   };
+
   const handleInputChange = (event) => {
     const { value, name } = event.target;
     const input = value.trim();
@@ -71,10 +72,12 @@ const CreditTransfersEditContainer = (props) => {
     setRows(rowsCopy);
     checkFilled(rowsCopy);
   };
+
   const addRow = () => {
     setRows([...rows, emptyRow]);
     setHoverText(checkboxText);
   };
+
   const removeRow = (rowId) => {
     const filteredRows = rows.filter((item, index) => (index !== rowId));
     setRows(filteredRows);
@@ -117,9 +120,25 @@ const CreditTransfersEditContainer = (props) => {
       });
     }
   };
-  const handleSave = () => {
-    submitOrSave('DRAFT');
+
+  const handleCheckboxClick = (event) => {
+    console.error('click');
+    if (!event.target.checked) {
+      const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
+      setCheckboxes(checked);
+    }
+
+    if (event.target.checked) {
+      const checked = checkboxes.concat(event.target.id);
+      setCheckboxes(checked);
+    }
   };
+
+  const handleSave = () => {
+    console.error(checkboxes);
+    // submitOrSave('DRAFT');
+  };
+
   const handleSubmit = () => {
     submitOrSave('SUBMITTED');
   };
@@ -165,6 +184,7 @@ const CreditTransfersEditContainer = (props) => {
       assertions={assertions}
       checkboxes={checkboxes}
       fields={fields}
+      handleCheckboxClick={handleCheckboxClick}
       handleInputChange={handleInputChange}
       handleRowInputChange={handleRowInputChange}
       handleSave={handleSave}

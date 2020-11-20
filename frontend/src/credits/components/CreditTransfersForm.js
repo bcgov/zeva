@@ -16,6 +16,7 @@ const CreditTransfersForm = (props) => {
     assertions,
     checkboxes,
     fields,
+    handleCheckboxClick,
     handleInputChange,
     handleRowInputChange,
     handleSave,
@@ -32,10 +33,10 @@ const CreditTransfersForm = (props) => {
   } = props;
   const [showModal, setShowModal] = useState(false);
   const submitTooltip = 'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.';
-  const handleCheckboxClick = (event) => {
-    const { checked } = event.target;
-    setCheckboxes({ ...checkboxes, [event.target.id]: checked });
-  };
+  // const handleCheckboxClick = (event) => {
+  //   const { checked } = event.target;
+  //   setCheckboxes({ ...checkboxes, [event.target.id]: checked });
+  // };
   const modal = (
     <Modal
       confirmLabel=" Submit Notice"
@@ -138,7 +139,7 @@ const CreditTransfersForm = (props) => {
 };
 
 CreditTransfersForm.defaultProps = {
-  checkboxes: { authority: false, accurate: false, consent: false },
+  checkboxes: [],
   unfilledRow: true,
   hoverText: '',
 };
@@ -155,7 +156,7 @@ CreditTransfersForm.propTypes = {
   handleRowInputChange: PropTypes.func.isRequired,
   total: PropTypes.number.isRequired,
   rows: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  checkboxes: PropTypes.shape(),
+  checkboxes: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])),
   fields: PropTypes.shape().isRequired,
   unfilledRow: PropTypes.bool,
   setCheckboxes: PropTypes.func.isRequired,

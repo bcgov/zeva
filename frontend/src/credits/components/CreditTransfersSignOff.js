@@ -13,58 +13,38 @@ const CreditTransferSignOff = (props) => {
     user,
   } = props;
 
-  console.error(assertions);
-
   return (
     <div id="transfer-sign-off">
       <ReactTooltip />
       {assertions.map((assertion) => (
         <div key={assertion.id}>
           <div className="d-inline-block align-middle my-2 ml-2 mr-1" data-tip={hoverText}>
-            <input type="checkbox" id="authority" disabled={disableCheckboxes} checked={checkboxes.authority} onClick={(event) => { handleCheckboxClick(event); }} />
+            <input
+              checked={checkboxes.findIndex((checkbox) => (parseInt(checkbox, 10) === parseInt(assertion.id, 10))) >= 0}
+              disabled={disableCheckboxes}
+              id={assertion.id}
+              name="terms"
+              onClick={(event) => { handleCheckboxClick(event); }}
+              type="checkbox"
+            />
           </div>
-          <label className="d-inline" htmlFor="authority" id="transfer-text">
+          <label className="d-inline" htmlFor={assertion.id} id="transfer-text">
             {assertion.description.replace(/{user.organization.name}/g, user.organization.name)}
           </label>
         </div>
       ))}
-      <div>
-        <div className="d-inline-block align-middle my-2 ml-2 mr-1" data-tip={hoverText}>
-          <input type="checkbox" id="authority" disabled={disableCheckboxes} checked={checkboxes.authority} onClick={(event) => { handleCheckboxClick(event); }} />
-        </div>
-        <label className="d-inline" htmlFor="authority" id="transfer-text">
-          I confirm that I am an officer or employee of {user.organization.name},
-          and that records evidencing my authority to submit this notice are available on request.
-        </label>
-      </div>
-      <div>
-        <div className="d-inline-block align-middle my-2 ml-2 mr-1" data-tip={hoverText}>
-          <input type="checkbox" id="accurate" disabled={disableCheckboxes} checked={checkboxes.accurate} onClick={(event) => { handleCheckboxClick(event); }} />
-        </div>
-        <label className="d-inline" htmlFor="accurate" id="transfer-text">
-          {user.organization.name} certifies that the information provided in this notice is accurate and complete.
-        </label>
-      </div>
-      <div>
-        <div className="d-inline-block align-middle my-2 ml-2 mr-1" data-tip={hoverText}>
-          <input type="checkbox" id="consent" disabled={disableCheckboxes} checked={checkboxes.consent} onClick={(event) => { handleCheckboxClick(event); }} />
-        </div>
-        <label className="d-inline" htmlFor="consent" id="transfer-text">
-          {user.organization.name} consents to the transfer of credits in this notice.
-        </label>
-      </div>
     </div>
   );
 };
 
 CreditTransferSignOff.defaultProps = {
-  checkboxes: {},
+  checkboxes: [],
   disableCheckboxes: false,
   hoverText: '',
 };
 CreditTransferSignOff.propTypes = {
   user: CustomPropTypes.user.isRequired,
-  checkboxes: PropTypes.shape(),
+  checkboxes: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])),
   disableCheckboxes: PropTypes.bool,
   hoverText: PropTypes.string,
   handleCheckboxClick: PropTypes.func.isRequired,
