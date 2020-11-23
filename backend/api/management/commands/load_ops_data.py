@@ -1,10 +1,8 @@
-import glob
 import re
 from os import listdir
 from os.path import isdir, join, isfile
 
 from django.core.management import BaseCommand
-from django.db import transaction, connection
 
 from api.management.commands._loader import ScriptLoader
 from api.models.fixture_migration import FixtureMigration
@@ -68,14 +66,16 @@ class Command(BaseCommand):
                     )
                 )
                 exit(-1)
+
             items = listdir(options['script'])
+            items.sort()
 
             for item in items:
                 fullpath = join(options['script'], item)
                 if isfile(fullpath):
                     match = re.match('(\d+).*py', item, re.IGNORECASE)
                     if match:
-                        seq = str(int(match.group(1)))
+                        seq = str(match.group(1))
                         ordered_scripts[seq] = fullpath
 
             for k in sorted(ordered_scripts.keys()):
