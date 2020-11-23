@@ -113,7 +113,7 @@ const UserDetailsForm = (props) => {
                     />
                   )}
                 </span>
-  
+
                 <span className="col-md-4">
                   {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_USERS') && (
                     <div className="form-group">

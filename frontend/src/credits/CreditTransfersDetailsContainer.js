@@ -10,6 +10,7 @@ import { withRouter } from 'react-router';
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import Loading from '../app/components/Loading';
 import history from '../app/History';
+import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 import ROUTES_CREDIT_TRANSFERS from '../app/routes/CreditTransfers';
 import CustomPropTypes from '../app/utilities/props';
 import CreditTransfersDetailsPage from './components/CreditTransfersDetailsPage';
@@ -19,53 +20,81 @@ const CreditTransfersDetailsContainer = (props) => {
     location, user, match,
   } = props;
   const { state: locationState } = location;
-  const [negativeCredit, setNegativeCredit] = useState(false)
+
+  const [assertions, setAssertions] = useState([]);
+  const [checkboxes, setCheckboxes] = useState([]);
+  const [negativeCredit, setNegativeCredit] = useState(false);
   const { id } = match.params;
   const [submission, setSubmission] = useState({});
   const [loading, setLoading] = useState(true);
 
   const refreshDetails = () => {
     let orgId;
-    let transferContentA=0,transferContentB=0;
-    let currentBalanceA=0, currentBalanceB=0;
-    let newValueA, newValueB;
-    
-    axios.get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id))
-      .then((response) => {
-        setSubmission(response.data);
-        orgId = response.data.debitFrom.id;
-        setLoading(false);
-      });
-    
-    axios.get(ROUTES_CREDIT_TRANSFERS.LIST).then((listresponse) => {
-      const organization_transfers = listresponse.data.filter((eachRecord) => eachRecord.debitFrom.id === orgId);
-      currentBalanceA = organization_transfers[0].debitFrom.balance.A;
-      currentBalanceB = organization_transfers[0].debitFrom.balance.B;
-      organization_transfers.forEach((each) => {
+    let transferContentA = 0;
+    let transferContentB = 0;
+    let currentBalanceA = 0;
+    let currentBalanceB = 0;
+    let newValueA;
+    let newValueB;
+
+    axios.all([
+      axios.get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id)),
+      axios.get(ROUTES_CREDIT_TRANSFERS.LIST),
+      axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST),
+    ]).then(axios.spread((response, listresponse, assertionsResponse) => {
+      setAssertions(assertionsResponse.data);
+      setSubmission(response.data);
+      orgId = response.data.debitFrom.id;
+
+      const organizationTransfers = listresponse.data.filter((eachRecord) => eachRecord.debitFrom.id === orgId);
+      currentBalanceA = organizationTransfers[0].debitFrom.balance.A;
+      currentBalanceB = organizationTransfers[0].debitFrom.balance.B;
+      organizationTransfers.forEach((each) => {
         each.creditTransferContent.forEach((eachContent) => {
-          if(eachContent.creditClass.creditClass === 'A') {
+          if (eachContent.creditClass.creditClass === 'A') {
             transferContentA += eachContent.creditValue * eachContent.dollarValue;
-           }
-          else if(eachContent.creditClass.creditClass === 'B') {
+          } else if (eachContent.creditClass.creditClass === 'B') {
             transferContentB += eachContent.creditValue * eachContent.dollarValue;
           }
-          else {} 
-        })
-      })
+        });
+      });
+
       newValueA = currentBalanceA - transferContentA;
       newValueB = currentBalanceB - transferContentB;
-      (newValueA < 0 || newValueB < 0 ? setNegativeCredit(true): setNegativeCredit(false))
- });
-};
+
+      if (newValueA < 0 || newValueB < 0) {
+        setNegativeCredit(true);
+      } else {
+        setNegativeCredit(false);
+      }
+
+      setLoading(false);
+    }));
+  };
 
   useEffect(() => {
     refreshDetails();
   }, [id]);
 
+  const handleCheckboxClick = (event) => {
+    if (!event.target.checked) {
+      const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
+      setCheckboxes(checked);
+    }
+
+    if (event.target.checked) {
+      const checked = checkboxes.concat(event.target.id);
+      setCheckboxes(checked);
+    }
+  };
+
   const handleSubmit = (status, comment = '') => {
-    const submissionContent = {status}
+    const submissionContent = { status };
     if (comment.length > 0) {
-      submissionContent.creditTransferComment = {comment}
+      submissionContent.creditTransferComment = { comment };
+    }
+    if (checkboxes.length > 0) {
+      submissionContent.signingConfirmation = checkboxes;
     }
     axios.patch(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id), submissionContent).then(() => {
       history.push(ROUTES_CREDIT_TRANSFERS.LIST);
@@ -77,7 +106,16 @@ const CreditTransfersDetailsContainer = (props) => {
   }
   return ([
     <CreditTransactionTabs active="credit-transfers" key="tabs" user={user} />,
-    <CreditTransfersDetailsPage submission={submission} key="page" user={user} negativeCredit={negativeCredit} handleSubmit={handleSubmit} />,
+    <CreditTransfersDetailsPage
+      assertions={assertions}
+      checkboxes={checkboxes}
+      handleCheckboxClick={handleCheckboxClick}
+      handleSubmit={handleSubmit}
+      key="page"
+      negativeCredit={negativeCredit}
+      submission={submission}
+      user={user}
+    />,
   ]);
 };
 

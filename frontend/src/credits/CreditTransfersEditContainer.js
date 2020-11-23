@@ -17,9 +17,6 @@ import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityA
 
 const CreditTransfersEditContainer = (props) => {
   const { id } = useParams();
-  const emptyCheckboxes = {
-    authority: false, accurate: false, consent: false,
-  };
   const emptyRow = {
     creditType: '', modelYear: '', quantity: 0, value: 0,
   };
@@ -100,12 +97,14 @@ const CreditTransfersEditContainer = (props) => {
         transactionType: 'Credit Transfer',
         weightClass: 'LDV',
       }));
+
     if (newTransfer) {
       axios.post(ROUTES_CREDIT_TRANSFERS.LIST, {
         content: data,
         status,
         creditTo,
         debitFrom,
+        signingConfirmation: checkboxes,
       }).then(() => {
         history.push(ROUTES_CREDIT_TRANSFERS.LIST);
       });
@@ -115,14 +114,14 @@ const CreditTransfersEditContainer = (props) => {
         status,
         creditTo,
         debitFrom,
-      }).then((response) => {
+        signingConfirmation: checkboxes,
+      }).then(() => {
         history.push(ROUTES_CREDIT_TRANSFERS.LIST);
       });
     }
   };
 
   const handleCheckboxClick = (event) => {
-    console.error('click');
     if (!event.target.checked) {
       const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
       setCheckboxes(checked);
@@ -135,8 +134,7 @@ const CreditTransfersEditContainer = (props) => {
   };
 
   const handleSave = () => {
-    console.error(checkboxes);
-    // submitOrSave('DRAFT');
+    submitOrSave('DRAFT');
   };
 
   const handleSubmit = () => {

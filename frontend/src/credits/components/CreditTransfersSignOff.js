@@ -24,7 +24,7 @@ const CreditTransferSignOff = (props) => {
               disabled={disableCheckboxes}
               id={assertion.id}
               name="terms"
-              onClick={(event) => { handleCheckboxClick(event); }}
+              onChange={(event) => { handleCheckboxClick(event); }}
               type="checkbox"
             />
           </div>
@@ -38,16 +38,18 @@ const CreditTransferSignOff = (props) => {
 };
 
 CreditTransferSignOff.defaultProps = {
+  assertions: [],
   checkboxes: [],
   disableCheckboxes: false,
   hoverText: '',
 };
 CreditTransferSignOff.propTypes = {
-  user: CustomPropTypes.user.isRequired,
+  assertions: PropTypes.arrayOf(PropTypes.shape()),
   checkboxes: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])),
   disableCheckboxes: PropTypes.bool,
-  hoverText: PropTypes.string,
   handleCheckboxClick: PropTypes.func.isRequired,
+  hoverText: PropTypes.string,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default CreditTransferSignOff;
