@@ -147,13 +147,19 @@ def validate_transfer(transfer):
     recieving_supplier = transfer.credit_to
     content = transfer.credit_transfer_content.all()
     credit_total = {}
+    credit_total_no_years = {}
     added_transaction = {}
+    
     for each in content:
         #aggregate by unique combinations of credit year/type
         credit_value = each.credit_value
         model_year = each.model_year.id
         credit_type = each.credit_class.id
         
+        if credit_type not in credit_total_no_years:
+            credit_total_no_years[credit_type] = credit_value
+        else:
+            credit_total_no_years[credit_type] += credit_value
         if model_year not in credit_total:
             credit_total[model_year] = {credit_type: credit_value}
         else:
@@ -179,46 +185,39 @@ def validate_transfer(transfer):
                 weight_class_id=1
             )
     for each_supplier in [initiating_supplier, recieving_supplier]:
-        ## right now it's inserting records seperately for each
-        ## model year but we aren't tracking that on the balance
-        ## table so we can combine it so uneccesary records
-        ## aren't added
-        print(each_supplier.name)
         reduce_total = each_supplier == transfer.debit_from
         add_total = each_supplier == transfer.credit_to
-        for year, v in credit_total.items():
-            for credit_class, credit_value in v.items():
-                new_balance = 0
-                current_balance = AccountBalance.objects.filter(
-                    credit_class=credit_class,
-                    organization_id=each_supplier.id,
-                    expiration_date=None
-                    ).order_by('-id').first()
-                if current_balance:
-                    if reduce_total:
-                        new_balance = Decimal(current_balance.balance) - \
-                            Decimal(credit_value)
-                    if add_total:
-                        new_balance = Decimal(current_balance.balance) + \
-                            Decimal(credit_value)
-                    current_balance.expiration_date = date.today()
-                    current_balance.save()
-                else:
-                    if add_total:
-                        new_balance = credit_value
-                    elif reduce_total:
-                        ## if they don't have a balance we should probably not allow this transfer
-                        new_balance = 0 - credit_value
-                        print('going into negatives')
-                AccountBalance.objects.create(
-                    balance=new_balance,
-                    effective_date=date.today(),
-                    credit_class=CreditClass.objects.get(
-                        id=credit_class
-                    ),
-                    credit_transaction=added_transaction,
-                    organization_id=each_supplier.id
-                )
+        for credit_class, credit_value in credit_total_no_years.items():
+            new_balance = 0
+            current_balance = AccountBalance.objects.filter(
+                credit_class=credit_class,
+                organization_id=each_supplier.id,
+                expiration_date=None
+                ).order_by('-id').first()
+            if current_balance:
+                if reduce_total:
+                    new_balance = Decimal(current_balance.balance) - \
+                        Decimal(credit_value)
+                if add_total:
+                    new_balance = Decimal(current_balance.balance) + \
+                        Decimal(credit_value)
+                current_balance.expiration_date = date.today()
+                current_balance.save()
+            else:
+                if add_total:
+                    new_balance = credit_value
+                elif reduce_total:
+                    ## if they don't have a balance we should probably not allow this transfer
+                    raise Exception('supplier does not have anything in balance table to transfer')
+            AccountBalance.objects.create(
+                balance=new_balance,
+                effective_date=date.today(),
+                credit_class=CreditClass.objects.get(
+                    id=credit_class
+                ),
+                credit_transaction=added_transaction,
+                organization_id=each_supplier.id
+            )
 
                 
 
