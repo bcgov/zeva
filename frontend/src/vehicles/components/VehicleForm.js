@@ -82,7 +82,7 @@ const VehicleForm = (props) => {
           <h2>{formTitle}</h2>
           {status && !newVehicle
             && <Alert alertType="vehicle" status={status} user={fields.user} date={moment(fields.updateTimestamp).format('MMM D, YYYY')} />}
-          { status === 'CHANGES_REQUESTED' && vehicleComment
+          {status === 'CHANGES_REQUESTED' && vehicleComment
           && (
             <Comment commentArray={[vehicleComment]} />
           )}
