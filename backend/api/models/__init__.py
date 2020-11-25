@@ -24,5 +24,5 @@ from . import credit_transfer_comment
 from . import sales_submission_credit_transaction
 from . import credit_transfer_credit_transaction
 from . import sales_submission_history
+from . import signing_authority_assertion, signing_authority_confirmation
 from . import credit_transfer_history
-

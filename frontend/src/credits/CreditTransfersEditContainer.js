@@ -13,19 +13,18 @@ import CreditTransfersForm from './components/CreditTransfersForm';
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import ROUTES_CREDIT_TRANSFERS from '../app/routes/CreditTransfers';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
+import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 
 const CreditTransfersEditContainer = (props) => {
   const { id } = useParams();
-  const emptyCheckboxes = {
-    authority: false, accurate: false, consent: false,
-  };
   const emptyRow = {
     creditType: '', modelYear: '', quantity: 0, value: 0,
   };
   const emptyForm = {
     transferPartner: '',
   };
-  const [checkboxes, setCheckboxes] = useState(emptyCheckboxes);
+  const [assertions, setAssertions] = useState([]);
+  const [checkboxes, setCheckboxes] = useState([]);
   const [rows, setRows] = useState([emptyRow]);
   const { user, keycloak, newTransfer } = props;
   const [organizations, setOrganizations] = useState([]);
@@ -44,7 +43,7 @@ const CreditTransfersEditContainer = (props) => {
       || val.value === 0
       || fields.transferPartner === '') {
         setUnfilledRow(true);
-        setCheckboxes(emptyCheckboxes);
+        // setCheckboxes(emptyCheckboxes);
         setHoverText(checkboxText);
       } else {
         setUnfilledRow(false);
@@ -52,6 +51,7 @@ const CreditTransfersEditContainer = (props) => {
       }
     });
   };
+
   const handleInputChange = (event) => {
     const { value, name } = event.target;
     const input = value.trim();
@@ -69,10 +69,12 @@ const CreditTransfersEditContainer = (props) => {
     setRows(rowsCopy);
     checkFilled(rowsCopy);
   };
+
   const addRow = () => {
     setRows([...rows, emptyRow]);
     setHoverText(checkboxText);
   };
+
   const removeRow = (rowId) => {
     const filteredRows = rows.filter((item, index) => (index !== rowId));
     setRows(filteredRows);
@@ -95,12 +97,14 @@ const CreditTransfersEditContainer = (props) => {
         transactionType: 'Credit Transfer',
         weightClass: 'LDV',
       }));
+
     if (newTransfer) {
       axios.post(ROUTES_CREDIT_TRANSFERS.LIST, {
         content: data,
         status,
         creditTo,
         debitFrom,
+        signingConfirmation: checkboxes,
       }).then(() => {
         history.push(ROUTES_CREDIT_TRANSFERS.LIST);
       });
@@ -110,14 +114,29 @@ const CreditTransfersEditContainer = (props) => {
         status,
         creditTo,
         debitFrom,
-      }).then((response) => {
+        signingConfirmation: checkboxes,
+      }).then(() => {
         history.push(ROUTES_CREDIT_TRANSFERS.LIST);
       });
     }
   };
+
+  const handleCheckboxClick = (event) => {
+    if (!event.target.checked) {
+      const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
+      setCheckboxes(checked);
+    }
+
+    if (event.target.checked) {
+      const checked = checkboxes.concat(event.target.id);
+      setCheckboxes(checked);
+    }
+  };
+
   const handleSave = () => {
     submitOrSave('DRAFT');
   };
+
   const handleSubmit = () => {
     submitOrSave('SUBMITTED');
   };
@@ -127,9 +146,11 @@ const CreditTransfersEditContainer = (props) => {
     axios.all([
       axios.get(ROUTES_ORGANIZATIONS.LIST),
       axios.get(ROUTES_VEHICLES.YEARS),
-    ]).then(axios.spread((orgResponse, yearsResponse) => {
+      axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST),
+    ]).then(axios.spread((orgResponse, yearsResponse, assertionsResponse) => {
       setOrganizations(orgResponse.data);
       setYears(yearsResponse.data);
+      setAssertions(assertionsResponse.data);
     }));
     if (!newTransfer) {
       axios.get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/gi, id)).then((response) => {
@@ -157,24 +178,26 @@ const CreditTransfersEditContainer = (props) => {
   return ([
     <CreditTransactionTabs active="credit-transfers" key="tabs" user={user} />,
     <CreditTransfersForm
-      loading={loading}
-      key="page"
-      user={user}
-      organizations={organizations}
-      handleInputChange={handleInputChange}
-      handleSubmit={handleSubmit}
-      years={years}
-      handleSave={handleSave}
-      removeRow={removeRow}
       addRow={addRow}
-      handleRowInputChange={handleRowInputChange}
-      total={total}
-      rows={rows}
-      fields={fields}
-      unfilledRow={unfilledRow}
+      assertions={assertions}
       checkboxes={checkboxes}
-      setCheckboxes={setCheckboxes}
+      fields={fields}
+      handleCheckboxClick={handleCheckboxClick}
+      handleInputChange={handleInputChange}
+      handleRowInputChange={handleRowInputChange}
+      handleSave={handleSave}
+      handleSubmit={handleSubmit}
       hoverText={hoverText}
+      key="page"
+      loading={loading}
+      organizations={organizations}
+      removeRow={removeRow}
+      rows={rows}
+      setCheckboxes={setCheckboxes}
+      total={total}
+      unfilledRow={unfilledRow}
+      user={user}
+      years={years}
     />,
   ]);
 };
