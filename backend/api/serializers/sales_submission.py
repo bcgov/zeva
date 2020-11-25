@@ -9,9 +9,11 @@ from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.models.sales_submission_comment import SalesSubmissionComment
 from api.models.sales_submission_history import SalesSubmissionHistory
+from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.serializers.sales_submission_comment import \
     SalesSubmissionCommentSerializer
 from api.models.user_profile import UserProfile
+from api.models.vehicle import Vehicle
 from api.models.vin_statuses import VINStatuses
 from api.serializers.user import MemberSerializer
 from api.serializers.organization import OrganizationSerializer
@@ -69,12 +71,12 @@ class SalesSubmissionListSerializer(
         total = 0
 
         # if obj.records.count() > 0:
-        for record in obj.records.all():
-            if record.vehicle:
-                credit_class = record.vehicle.get_credit_class()
+        # for record in obj.records.all():
+        #     if record.vehicle:
+        #         credit_class = record.vehicle.get_credit_class()
 
-                if credit_class == 'A':
-                    total += record.vehicle.get_credit_value()
+        #         if credit_class == 'A':
+        #             total += record.vehicle.get_credit_value()
         # else:
         #     for record in obj.content.all():
         #         if record.vehicle:
@@ -82,6 +84,25 @@ class SalesSubmissionListSerializer(
 
         #             if credit_class == 'A':
         #                 total += record.vehicle.get_credit_value()
+        for record in obj.get_totals_by_vehicles():
+            print(record)
+            try:
+                model_year = float(record['xls_model_year'])
+            except ValueError:
+                continue
+
+            vehicle = Vehicle.objects.filter(
+                make__iexact=record['xls_make'],
+                model_name=record['xls_model'],
+                model_year__name=int(model_year),
+                validation_status=VehicleDefinitionStatuses.VALIDATED,
+            ).first()
+
+            print(vehicle)
+            print(record)
+
+            if vehicle and vehicle.get_credit_class() == 'A':
+                total += vehicle.get_credit_value() * record['num_vins']
 
         return round(total, 2)
 
