@@ -68,20 +68,20 @@ class SalesSubmissionListSerializer(
     def get_total_a_credits(self, obj):
         total = 0
 
-        if obj.records.count() > 0:
-            for record in obj.records.all():
-                if record.vehicle:
-                    credit_class = record.vehicle.get_credit_class()
+        # if obj.records.count() > 0:
+        for record in obj.records.all():
+            if record.vehicle:
+                credit_class = record.vehicle.get_credit_class()
 
-                    if credit_class == 'A':
-                        total += record.vehicle.get_credit_value()
-        else:
-            for record in obj.content.all():
-                if record.vehicle:
-                    credit_class = record.vehicle.get_credit_class()
+                if credit_class == 'A':
+                    total += record.vehicle.get_credit_value()
+        # else:
+        #     for record in obj.content.all():
+        #         if record.vehicle:
+        #             credit_class = record.vehicle.get_credit_class()
 
-                    if credit_class == 'A':
-                        total += record.vehicle.get_credit_value()
+        #             if credit_class == 'A':
+        #                 total += record.vehicle.get_credit_value()
 
         return round(total, 2)
 
