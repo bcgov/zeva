@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Button from '../../app/components/Button';
 
-const CreditTransfersDetailsSupplierTable = (props) => {
+const CreditTransfersDetailsActionBar = (props) => {
   const {
-    setShowModal, setModalType, comment, allChecked, permissions, checkboxes,
+    setShowModal, setModalType, comment, allChecked, permissions, checkboxes, assertions,
   } = props;
 
-  const CreditTransfersDetailsActionBar = (
+  const actionBar = (
     <div className="row">
       <div className="col-sm-12">
         <div className="action-bar">
@@ -87,7 +87,7 @@ const CreditTransfersDetailsSupplierTable = (props) => {
                 setShowModal(true);
               }}
               optionalText="Submit Notice"
-              disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent || comment.length > 0}
+              disabled={checkboxes.length < assertions.length}
             />
             )}
             {permissions.governmentDirector
@@ -110,21 +110,26 @@ const CreditTransfersDetailsSupplierTable = (props) => {
   );
   return (
     <>
-      {CreditTransfersDetailsActionBar}
+      {actionBar}
     </>
   );
 };
-CreditTransfersDetailsSupplierTable.defaultProps = {
+CreditTransfersDetailsActionBar.defaultProps = {
+  assertions: [],
   comment: '',
 };
 
-CreditTransfersDetailsSupplierTable.propTypes = {
-  permissions: PropTypes.shape().isRequired,
-  checkboxes: PropTypes.shape().isRequired,
-  comment: PropTypes.string,
+CreditTransfersDetailsActionBar.propTypes = {
   allChecked: PropTypes.bool.isRequired,
-  setShowModal: PropTypes.func.isRequired,
+  assertions: PropTypes.arrayOf(PropTypes.shape()),
+  checkboxes: PropTypes.arrayOf(PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ])).isRequired,
+  comment: PropTypes.string,
+  permissions: PropTypes.shape().isRequired,
   setModalType: PropTypes.func.isRequired,
+  setShowModal: PropTypes.func.isRequired,
 
 };
-export default CreditTransfersDetailsSupplierTable;
+export default CreditTransfersDetailsActionBar;

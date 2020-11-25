@@ -2,16 +2,19 @@ from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 from api.models.credit_transfer import CreditTransfer
-from api.models.credit_transfer_content import CreditTransferContent
-from api.models.credit_transfer_statuses import CreditTransferStatuses
-from api.models.user_profile import UserProfile
 from api.models.credit_transfer_comment import CreditTransferComment
-from api.serializers.credit_transfer_comment import CreditTransferCommentSerializer
+from api.models.credit_transfer_content import CreditTransferContent
+from api.models.credit_transfer_history import CreditTransferHistory
+from api.models.credit_transfer_statuses import CreditTransferStatuses
+from api.models.signing_authority_confirmation import \
+    SigningAuthorityConfirmation
+from api.models.user_profile import UserProfile
+from api.serializers.credit_transfer_comment import \
+    CreditTransferCommentSerializer
 from api.serializers.credit_transfer_content import \
     CreditTransferContentSerializer, CreditTransferContentSaveSerializer
 from api.serializers.user import MemberSerializer, UserSerializer
 from api.serializers.organization import OrganizationSerializer
-from api.models.credit_transfer_history import CreditTransferHistory
 
 
 class CreditTransferBaseSerializer:
@@ -39,12 +42,14 @@ class CreditTransferHistorySerializer(
     create_user = SerializerMethodField()
     update_user = SerializerMethodField()
     status = EnumField(CreditTransferStatuses)
+
     class Meta:
         model = CreditTransferHistory
         fields = (
             'create_timestamp', 'create_user',
             'status', 'update_user'
             )
+
 
 class CreditTransferSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
@@ -81,6 +86,7 @@ class CreditTransferSerializer(
             'credit_transfer_comment', 'history',
         )
 
+
 class CreditTransferSaveSerializer(ModelSerializer):
     """
     Serializer to create a transfer
@@ -91,6 +97,7 @@ class CreditTransferSaveSerializer(ModelSerializer):
         allow_null=True,
         required=False
     )
+
     def validate_validation_status(self, value):
         request = self.context.get('request')
         instance = self.instance
@@ -101,9 +108,10 @@ class CreditTransferSaveSerializer(ModelSerializer):
 
     def update(self, instance, validated_data):
         request = self.context.get('request')
-        records = request.data.get('records')
         content = request.data.get('content')
+        signing_confirmation = request.data.get('signing_confirmation', None)
         credit_transfer_comment = validated_data.pop('credit_transfer_comment', None)
+
         if credit_transfer_comment:
             CreditTransferComment.objects.create(
                 create_user=request.user.username,
@@ -136,25 +144,40 @@ class CreditTransferSaveSerializer(ModelSerializer):
             instance.status = validation_status
             instance.update_user = request.user.username
             instance.save()
+
+        if signing_confirmation and validation_status in [
+                CreditTransferStatuses.APPROVED,
+                CreditTransferStatuses.SUBMITTED
+        ]:
+            for confirmation in signing_confirmation:
+                SigningAuthorityConfirmation.objects.create(
+                    credit_transfer=instance,
+                    has_accepted=True,
+                    title=request.user.title,
+                    signing_authority_assertion_id=confirmation
+                )
+
         return instance
 
     def create(self, validated_data):
         request = self.context.get('request')
         content = request.data.get('content')
+        signing_confirmation = request.data.get('signing_confirmation', None)
+        validation_status = validated_data.get('status')
 
         credit_transfer = CreditTransfer.objects.create(
             credit_to=validated_data.get('credit_to'),
             debit_from=validated_data.get('debit_from'),
-            status=validated_data.get('status'),
+            status=validation_status,
             create_user=request.user.username,
             update_user=request.user.username
         )
         credit_history = CreditTransferHistory.objects.create(
-                transfer=credit_transfer,
-                status=validated_data.get('status'),
-                update_user=request.user.username,
-                create_user=request.user.username,
-            )
+            transfer=credit_transfer,
+            status=validation_status,
+            update_user=request.user.username,
+            create_user=request.user.username,
+        )
 
         if content:
             serializer = CreditTransferContentSaveSerializer(
@@ -166,10 +189,23 @@ class CreditTransferSaveSerializer(ModelSerializer):
             serializer.save()
             credit_history.save()
 
+        if signing_confirmation and \
+                validation_status == CreditTransferStatuses.SUBMITTED:
+            for confirmation in signing_confirmation:
+                SigningAuthorityConfirmation.objects.create(
+                    credit_transfer=credit_transfer,
+                    has_accepted=True,
+                    title=request.user.title,
+                    signing_authority_assertion_id=confirmation
+                )
+
         serializer = CreditTransferSerializer(credit_transfer, read_only=True)
 
         return serializer.data
 
     class Meta:
         model = CreditTransfer
-        fields = ('id', 'status', 'credit_to', 'debit_from', 'content', 'credit_transfer_comment')
+        fields = (
+            'id', 'status', 'credit_to', 'debit_from', 'content',
+            'credit_transfer_comment'
+        )

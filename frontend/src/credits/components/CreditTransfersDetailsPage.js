@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import moment from 'moment-timezone';
 import CreditTransferSignoff from './CreditTransfersSignOff';
-import CreditTransferDetailsActionBar from './CreditTransfersDetailsActionBar';
+import CreditTransfersDetailsActionBar
+  from './CreditTransfersDetailsActionBar';
 import Modal from '../../app/components/Modal';
 import CustomPropTypes from '../../app/utilities/props';
 import CreditTransfersDetailsTable from './CreditTransfersDetailsTable';
@@ -12,17 +13,20 @@ import Comment from '../../app/components/Comment';
 
 const CreditTransfersDetailsPage = (props) => {
   const {
+<<<<<<< HEAD
     submission, user, handleSubmit, negativeCredit,
+=======
+    assertions,
+    checkboxes,
+    handleCheckboxClick,
+    handleSubmit,
+    negativeCredit,
+    submission,
+    user,
+>>>>>>> release-1.15.0
   } = props;
   const [comment, setComment] = useState('');
-  const [checkboxes, setCheckboxes] = useState({
-    authority: false, accurate: false, consent: false,
-  });
   const [allChecked, setAllChecked] = useState(false);
-  const handleCheckboxClick = (event) => {
-    const { checked } = event.target;
-    setCheckboxes({ ...checkboxes, [event.target.id]: checked });
-  };
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
 
@@ -36,7 +40,7 @@ const CreditTransfersDetailsPage = (props) => {
   };
 
   useEffect(() => {
-    if (checkboxes.authority && checkboxes.accurate && checkboxes.consent) {
+    if (checkboxes.length >= assertions.length) {
       setAllChecked(true);
       setComment('');
     } else {
@@ -172,7 +176,12 @@ const CreditTransfersDetailsPage = (props) => {
         If you agree to this notice of transfer please confirm the following statements and click
         Submit Notice to send to the Government of B.C. Director for the transfer to be recorded.
       </h4>
-      <CreditTransferSignoff handleCheckboxClick={handleCheckboxClick} user={user} />
+      <CreditTransferSignoff
+        assertions={assertions}
+        checkboxes={checkboxes}
+        handleCheckboxClick={handleCheckboxClick}
+        user={user}
+      />
       <label htmlFor="transfer-comment">
         <h4>
           If you don&apos;t agree to this transfer enter a comment below to
@@ -197,11 +206,16 @@ const CreditTransfersDetailsPage = (props) => {
       </div>
       )}
       </div>
-      {permissions.governmentAnalyst && negativeCredit && (
-      <div className="alert alert-danger" id="alert-warning" role="alert"><FontAwesomeIcon icon="exclamation-circle" size="lg" />
-        &nbsp;<b>WARNING:&nbsp;</b>
-        Supplier has insufficient credits to fulfill all pending transfers.
-      </div>
+      {permissions.governmentAnalyst && negativeCredit
+      && (
+        <div
+          className="alert alert-danger"
+          id="alert-warning"
+          role="alert"
+        >
+          <FontAwesomeIcon icon="exclamation-circle" size="lg" />
+          &nbsp;<b>WARNING:&nbsp;</b> Supplier has insufficient credits to fulfill all pending transfers.
+        </div>
       )}
       {permissions.governmentAnalyst
       && (
@@ -211,18 +225,24 @@ const CreditTransfersDetailsPage = (props) => {
         <div className="col-sm-11">
           <div className="form p-2">
             {submission.debitFrom
-               && (
-               <div className="my-2 px-2 pb-2">
-                 <CreditTransfersDetailsTable submission={submission} tableType="submissionSummary" />
-                 {permissions.tradePartner
-                 && tradePartnerSignoff}
-                 {permissions.governmentAnalyst
-                 && analystSignoff}
-                 {permissions.governmentDirector
-                 && signedSubmittedInfo}
-                 <CreditTransferDetailsActionBar checkboxes={checkboxes} permissions={permissions} setShowModal={setShowModal} setModalType={setModalType} comment={comment} allChecked={allChecked} />
-               </div>
-               )}
+            && (
+              <div className="my-2 px-2 pb-2">
+                <CreditTransfersDetailsTable submission={submission} tableType="submissionSummary" />
+                {permissions.tradePartner
+                && tradePartnerSignoff}
+                {permissions.governmentAnalyst
+                && analystSignoff}
+                <CreditTransfersDetailsActionBar
+                  allChecked={allChecked}
+                  assertions={assertions}
+                  checkboxes={checkboxes}
+                  comment={comment}
+                  permissions={permissions}
+                  setModalType={setModalType}
+                  setShowModal={setShowModal}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -231,10 +251,16 @@ const CreditTransfersDetailsPage = (props) => {
 };
 
 CreditTransfersDetailsPage.propTypes = {
+  assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  checkboxes: PropTypes.arrayOf(PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ])).isRequired,
+  handleCheckboxClick: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
+  negativeCredit: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired,
   submission: PropTypes.shape().isRequired,
-
 };
 
 export default CreditTransfersDetailsPage;

@@ -37,7 +37,6 @@ import ROUTES_CREDIT_REQUESTS from './routes/CreditRequests';
 import ROUTES_CREDIT_TRANSFERS from './routes/CreditTransfers';
 import ROUTES_CREDITS from './routes/Credits';
 import ROUTES_ORGANIZATIONS from './routes/Organizations';
-import ROUTES_ROLES from './routes/Roles';
 import ROUTES_USERS from './routes/Users';
 import ROUTES_VEHICLES from './routes/Vehicles';
 
@@ -200,28 +199,33 @@ class Router extends Component {
                 path={ROUTES_CREDITS.UPLOAD_VERIFICATION}
                 render={() => <UploadICBCVerificationContainer keycloak={keycloak} user={user} />}
               />
-
-              <Route
-                exact
-                path={ROUTES_CREDIT_TRANSFERS.LIST}
-                render={() => <CreditTransferListContainer keycloak={keycloak} user={user} />}
-              />
-              <Route
-                exact
-                path={ROUTES_CREDIT_TRANSFERS.NEW}
-                render={() => <CreditTransfersEditContainer keycloak={keycloak} user={user} newTransfer/>}
-              />
-              <Route
-                exact
-                path={ROUTES_CREDIT_TRANSFERS.EDIT}
-                render={() => <CreditTransfersEditContainer keycloak={keycloak} user={user} />}
-              />
-              <Route
-                path={ROUTES_CREDIT_TRANSFERS.DETAILS}
-                render={() => (
-                  <CreditTransfersDetailsContainer keycloak={keycloak} user={user} />
-                )}
-              />
+              {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED && ([
+                <Route
+                  exact
+                  key="route-credit-transfers-list"
+                  path={ROUTES_CREDIT_TRANSFERS.LIST}
+                  render={() => <CreditTransferListContainer keycloak={keycloak} user={user} />}
+                />,
+                <Route
+                  exact
+                  key="route-credit-transfers-new"
+                  path={ROUTES_CREDIT_TRANSFERS.NEW}
+                  render={() => <CreditTransfersEditContainer keycloak={keycloak} user={user} newTransfer/>}
+                />,
+                <Route
+                  exact
+                  key="route-credit-transfers-edit"
+                  path={ROUTES_CREDIT_TRANSFERS.EDIT}
+                  render={() => <CreditTransfersEditContainer keycloak={keycloak} user={user} />}
+                />,
+                <Route
+                  key="route-credit-transfers-details"
+                  path={ROUTES_CREDIT_TRANSFERS.DETAILS}
+                  render={() => (
+                    <CreditTransfersDetailsContainer keycloak={keycloak} user={user} />
+                  )}
+                />,
+              ])}
               <Route
                 exact
                 path={ROUTES_CREDIT_REQUESTS.NEW}

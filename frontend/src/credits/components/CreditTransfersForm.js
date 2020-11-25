@@ -8,13 +8,14 @@ import CustomPropTypes from '../../app/utilities/props';
 import TransferFormRow from './TransferFormRow';
 import FormDropdown from './FormDropdown';
 import CreditTransferSignoff from './CreditTransfersSignOff';
-import Loading from '../../app/components/Loading';
 
 const CreditTransfersForm = (props) => {
   const {
     addRow,
+    assertions,
     checkboxes,
     fields,
+    handleCheckboxClick,
     handleInputChange,
     handleRowInputChange,
     handleSave,
@@ -23,7 +24,6 @@ const CreditTransfersForm = (props) => {
     organizations,
     removeRow,
     rows,
-    setCheckboxes,
     total,
     unfilledRow,
     user,
@@ -31,10 +31,7 @@ const CreditTransfersForm = (props) => {
   } = props;
   const [showModal, setShowModal] = useState(false);
   const submitTooltip = 'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.';
-  const handleCheckboxClick = (event) => {
-    const { checked } = event.target;
-    setCheckboxes({ ...checkboxes, [event.target.id]: checked });
-  };
+
   const modal = (
     <Modal
       confirmLabel=" Submit Notice"
@@ -75,7 +72,7 @@ const CreditTransfersForm = (props) => {
               }}
               optionalText="Submit Notice"
               buttonTooltip={submitTooltip}
-              disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent}
+              disabled={checkboxes.length < assertions.length}
             />
           </span>
         </div>
@@ -117,13 +114,19 @@ const CreditTransfersForm = (props) => {
                   <h4><FontAwesomeIcon icon="plus" /> Add another line</h4>
                 </button>
                 <span className="transfer-total">Total CAD: ${total}</span>
-                <CreditTransferSignoff hoverText={hoverText} checkboxes={checkboxes} disableCheckboxes={unfilledRow} handleCheckboxClick={handleCheckboxClick} user={user} />
+                <CreditTransferSignoff
+                  assertions={assertions}
+                  checkboxes={checkboxes}
+                  disableCheckboxes={unfilledRow}
+                  handleCheckboxClick={handleCheckboxClick}
+                  hoverText={hoverText}
+                  user={user}
+                />
                 {actionbar}
               </fieldset>
             </div>
             {modal}
           </div>
-
         </form>
       </div>
     </div>
@@ -131,28 +134,30 @@ const CreditTransfersForm = (props) => {
 };
 
 CreditTransfersForm.defaultProps = {
-  checkboxes: { authority: false, accurate: false, consent: false },
+  assertions: [],
+  checkboxes: [],
   unfilledRow: true,
   hoverText: '',
 };
 
 CreditTransfersForm.propTypes = {
-  user: CustomPropTypes.user.isRequired,
-  organizations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  handleInputChange: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
-  years: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  handleSave: PropTypes.func.isRequired,
-  removeRow: PropTypes.func.isRequired,
   addRow: PropTypes.func.isRequired,
-  handleRowInputChange: PropTypes.func.isRequired,
-  total: PropTypes.number.isRequired,
-  rows: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  checkboxes: PropTypes.shape(),
+  assertions: PropTypes.arrayOf(PropTypes.shape()),
+  checkboxes: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])),
   fields: PropTypes.shape().isRequired,
-  unfilledRow: PropTypes.bool,
-  setCheckboxes: PropTypes.func.isRequired,
+  handleCheckboxClick: PropTypes.func.isRequired,
+  handleInputChange: PropTypes.func.isRequired,
+  handleRowInputChange: PropTypes.func.isRequired,
+  handleSave: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
   hoverText: PropTypes.string,
+  organizations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  removeRow: PropTypes.func.isRequired,
+  rows: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  total: PropTypes.number.isRequired,
+  unfilledRow: PropTypes.bool,
+  user: CustomPropTypes.user.isRequired,
+  years: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 };
 
 export default CreditTransfersForm;

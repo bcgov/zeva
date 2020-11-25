@@ -84,9 +84,7 @@ const VehicleForm = (props) => {
             && <Alert alertType="vehicle" status={status} user={fields.user} date={moment(fields.updateTimestamp).format('MMM D, YYYY')} />}
           {status === 'CHANGES_REQUESTED' && vehicleComment
           && (
-          <div className="px-3">
-            <Comment comment={vehicleComment.comment} user={vehicleComment.createUser.displayName} date={moment(vehicleComment.createTimestamp).format('MMM D, YYYY')} />
-          </div>
+            <Comment commentArray={[vehicleComment]} />
           )}
         </div>
       </div>
