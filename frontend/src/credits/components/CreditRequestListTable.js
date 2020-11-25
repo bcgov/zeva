@@ -22,7 +22,7 @@ const CreditRequestListTable = (props) => {
     Header: 'ID',
     maxWidth: 75,
   }, {
-    accessor: 'submissionDate',
+    accessor: 'submissionHistory',
     className: 'text-center',
     Header: 'Date',
   }, {
