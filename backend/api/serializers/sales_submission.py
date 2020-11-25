@@ -103,20 +103,20 @@ class SalesSubmissionListSerializer(
         request = self.context.get('request')
         warnings = 0
 
-        # valid_statuses = [SalesSubmissionStatuses.VALIDATED]
+        valid_statuses = [SalesSubmissionStatuses.VALIDATED]
 
-        # if request.user.is_government:
-        #     valid_statuses = [
-        #         SalesSubmissionStatuses.CHECKED,
-        #         SalesSubmissionStatuses.RECOMMEND_APPROVAL,
-        #         SalesSubmissionStatuses.RECOMMEND_REJECTION,
-        #         SalesSubmissionStatuses.VALIDATED
-        #     ]
+        if request.user.is_government:
+            valid_statuses = [
+                SalesSubmissionStatuses.CHECKED,
+                SalesSubmissionStatuses.RECOMMEND_APPROVAL,
+                SalesSubmissionStatuses.RECOMMEND_REJECTION,
+                SalesSubmissionStatuses.VALIDATED
+            ]
 
-        # if obj.validation_status in valid_statuses:
-        #     for row in obj.content.all():
-        #         if len(row.warnings) > 0 and row.record_of_sale is None:
-        #             warnings += 1
+        if obj.validation_status in valid_statuses:
+            for row in obj.content.all():
+                if len(row.warnings) > 0 and row.record_of_sale is None:
+                    warnings += 1
 
         return warnings
 
