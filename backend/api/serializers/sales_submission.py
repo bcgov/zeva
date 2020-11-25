@@ -134,18 +134,21 @@ class SalesSubmissionListSerializer(
             'unselected',
         )
 
+
 class SalesSubmissionHistorySerializer(
         ModelSerializer, EnumSupportSerializerMixin, BaseSerializer
 ):
     create_user = SerializerMethodField()
     update_user = SerializerMethodField()
     validation_status = SerializerMethodField()
+
     class Meta:
         model = SalesSubmissionHistory
         fields = (
             'create_timestamp', 'create_user',
             'validation_status', 'update_user'
             )
+
 
 class SalesSubmissionSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
@@ -192,6 +195,7 @@ class SalesSubmissionSerializer(
             'sales_submission_comment', 'update_user', 'unselected',
             'update_timestamp', 'create_user', 'filename', 'create_timestamp'
         )
+
 
 class SalesSubmissionSaveSerializer(
         ModelSerializer
