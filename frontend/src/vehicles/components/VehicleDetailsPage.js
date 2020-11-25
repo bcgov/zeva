@@ -90,7 +90,7 @@ const VehicleDetailsPage = (props) => {
       </div>
       <div className="row align-items-center">
         <div className="col-md-12 col-lg-9 col-xl-7">
-          {details.validationStatus === 'CHANGES_REQUESTED' && user.isGovernment && details.vehicleComment
+          {details.vehicleComment && (details.validationStatus === 'CHANGES_REQUESTED' || details.validationStatus === 'REJECTED')
           && (
             <Comment commentArray={[details.vehicleComment]} />
           )}
