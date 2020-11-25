@@ -8,6 +8,7 @@ from .viewsets.user import UserViewSet
 from .viewsets.vehicle import VehicleViewSet
 from .viewsets.icbc_verification import IcbcVerificationViewSet
 from .viewsets.credit_transfer import CreditTransferViewset
+from .viewsets.signing_authority_assertion import SigningAuthorityAssertionViewSet
 
 router = routers.SimpleRouter(trailing_slash=False)
 router.register(r'organizations', OrganizationViewSet, basename='organization')
@@ -25,5 +26,8 @@ router.register(
 )
 router.register(
     r'credit-transfers', CreditTransferViewset, basename='credit-transfer'
+)
+router.register(
+    r'signing-authority-assertions', SigningAuthorityAssertionViewSet, basename='signing-authority-assertion'
 )
 urlpatterns = router.urls
