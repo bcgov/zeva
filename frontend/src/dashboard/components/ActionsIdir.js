@@ -8,6 +8,8 @@ import Loading from '../../app/components/Loading';
 import CustomPropTypes from '../../app/utilities/props';
 import ActivityBanner from './ActivityBanner';
 
+import CONFIG from '../../app/config';
+
 const ActionsIdir = (props) => {
   const { user, activityCount, loading } = props;
   if (loading) {
@@ -79,7 +81,9 @@ const ActionsIdir = (props) => {
             linkTo={ROUTES_CREDIT_REQUESTS.LIST}
           />
         )}
-        {activityCount.transfersAwaitingPartner > 0 && user.hasPermission('RECOMMEND_SALES')
+        {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
+        && activityCount.transfersAwaitingPartner > 0
+        && user.hasPermission('RECOMMEND_SALES')
         && (
         <ActivityBanner
           colour="yellow"
@@ -89,7 +93,8 @@ const ActionsIdir = (props) => {
           linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Submitted`}
         />
         )}
-        {activityCount.transfersAwaitingDirector > 0
+        {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
+        && activityCount.transfersAwaitingDirector > 0
         && (
         <ActivityBanner
           colour="blue"
@@ -99,7 +104,8 @@ const ActionsIdir = (props) => {
           linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Approved`}
         />
         )}
-        {activityCount.transfersAwaitingDirector === 0 && activityCount.transfersAwaitingAnalyst === 0
+        {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
+        && activityCount.transfersAwaitingDirector === 0 && activityCount.transfersAwaitingAnalyst === 0
         && activityCount.transfersAwaitingPartner === 0 && activityCount.transfersRecorded === 0
         && (
           <ActivityBanner

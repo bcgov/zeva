@@ -1,12 +1,12 @@
 import React from 'react';
+import ReactTooltip from 'react-tooltip';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import Button from '../../app/components/Button';
 import CustomPropTypes from '../../app/utilities/props';
 import Loading from '../../app/components/Loading';
 import TextInput from '../../app/components/TextInput';
-import History from '../../app/History';
-import ReactTooltip from 'react-tooltip';
 
 const UserDetailsForm = (props) => {
   const {
@@ -113,7 +113,7 @@ const UserDetailsForm = (props) => {
                     />
                   )}
                 </span>
-  
+
                 <span className="col-md-4">
                   {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_USERS') && (
                     <div className="form-group">

@@ -59,9 +59,6 @@ class CreditTransferViewset(
             return self.serializer_classes[self.action]
 
         return self.serializer_classes['default']
-    
-    # def perform_update(self, serializer):
-    #     submission = serializer.save()
 
     def create(self, request, *args, **kwargs):
         serializer = CreditTransferSaveSerializer(

@@ -61,7 +61,7 @@ const DashboardContainer = (props) => {
       .filter((submission) => submission.status === 'APPROVED' || submission.status === 'RECOMMEND_APPROVAL');
     const transfersRecorded = transfersResponse.data
       .filter((submission) => submission.status === 'VALIDATED');
-      const transfersRejected = transfersResponse.data
+    const transfersRejected = transfersResponse.data
       .filter((submission) => submission.status === 'REJECTED');
     setActivityCount({
       ...activityCount,
@@ -90,7 +90,7 @@ const DashboardContainer = (props) => {
       .filter((submission) => submission.validationStatus === 'RECOMMEND_REJECTION');
     const analystNeeded = salesResponse.data
       .filter((submission) => ['SUBMITTED', 'CHECKED'].indexOf(submission.validationStatus) >= 0);
-    const transfersAwaitingPartner= transfersResponse.data
+    const transfersAwaitingPartner = transfersResponse.data
       .filter((submission) => submission.status === 'SUBMITTED');
     const transfersAwaitingDirector = transfersResponse.data
       .filter((submission) => submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMENDED_REJECTION' || submission.status === 'APPROVED');
