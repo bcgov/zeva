@@ -121,11 +121,8 @@ class SalesSubmissionListSerializer(
         return warnings
 
     def get_totals(self, obj):
-        # return {
-        #     'vins': obj.records.count()
-        # }
         return {
-            'vins': 0
+            'vins': obj.records.count()
         }
 
     class Meta:
