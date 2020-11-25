@@ -23,6 +23,19 @@ const UserDetailsForm = (props) => {
     return <Loading />;
   }
 
+  const disableEditing = (role) => {
+    if (!role){
+      user.roles.forEach((eachRole) => { 
+        if (eachRole.roleCode === "Organization Administrator"){
+          role = eachRole.roleCode;
+        }
+    })}
+    if (role === "Organization Administrator" && details.username === user.username && !user.isGovernment){
+      return true;
+    }
+    return false;
+  }
+
   const checked = (role) => {
     if (!details || !details.roles) {
       return false;
@@ -35,7 +48,7 @@ const UserDetailsForm = (props) => {
     (role) => role.isGovernmentRole === details.organization.isGovernment,
   ).map((role) => (
     <ul key={role.id}>
-      <input type="checkbox" id={role.id} onChange={handleInputChange} name="roles-manager" defaultChecked={checked(role)} /> {role.roleCode} <FontAwesomeIcon data-tip={role.description} icon="info-circle" />
+      <input type="checkbox" id={role.id} onChange={handleInputChange} name="roles-manager" defaultChecked={checked(role)} disabled={disableEditing(role.roleCode)}/> {role.roleCode} <FontAwesomeIcon data-tip={role.description} icon="info-circle" />
     </ul>
   ));
 
@@ -115,7 +128,7 @@ const UserDetailsForm = (props) => {
                 </span>
   
                 <span className="col-md-4">
-                  {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_USERS') && (
+                  {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_USERS') && (                 
                     <div className="form-group">
                       <div className="col-sm-4">
                         <label
@@ -126,10 +139,10 @@ const UserDetailsForm = (props) => {
                         </label>
                       </div>
                       <div className="col-sm-12">
-                        <input type="radio" id="active" onChange={handleInputChange} name="isActive" value="true" defaultChecked={details.isActive} />
-                        Active, user can log in to ZERO<br />
-                        <input type="radio" id="inactive" onChange={handleInputChange} name="isActive" value="false" defaultChecked={!details.isActive} />
-                        Inactive, user cannot log in to ZERO
+                        <input type="radio" id="active" onChange={handleInputChange} name="isActive" value="true" defaultChecked={details.isActive} disabled={disableEditing()}/>
+                        Active, user can log in to ZEVA<br />
+                        <input type="radio" id="inactive" onChange={handleInputChange} name="isActive" value="false" defaultChecked={!details.isActive} disabled={disableEditing()}/>
+                        Inactive, user cannot log in to ZEVA
                       </div>
 
                     </div>
