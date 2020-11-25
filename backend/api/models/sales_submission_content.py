@@ -21,19 +21,22 @@ class SalesSubmissionContent(Auditable):
         blank=True,
         null=True,
         max_length=255,
-        db_comment="Raw value of the Make from the spreadsheet"
+        db_comment="Raw value of the Make from the spreadsheet",
+        db_index=True
     )
     xls_model = models.CharField(
         blank=True,
         null=True,
         max_length=255,
-        db_comment="Raw value of the Vehicle Model from the spreadsheet"
+        db_comment="Raw value of the Vehicle Model from the spreadsheet",
+        db_index=True
     )
     xls_model_year = models.CharField(
         blank=True,
         null=True,
         max_length=255,
-        db_comment="Raw value of the Model Year from the spreadsheet"
+        db_comment="Raw value of the Model Year from the spreadsheet",
+        db_index=True
     )
     xls_sale_date = models.CharField(
         blank=True,
@@ -54,7 +57,8 @@ class SalesSubmissionContent(Auditable):
         blank=True,
         null=True,
         max_length=255,
-        db_comment="Raw value of the VIN from the spreadsheet"
+        db_comment="Raw value of the VIN from the spreadsheet",
+        db_index=True
     )
 
     @property
