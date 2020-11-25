@@ -13,9 +13,6 @@ import Comment from '../../app/components/Comment';
 
 const CreditTransfersDetailsPage = (props) => {
   const {
-<<<<<<< HEAD
-    submission, user, handleSubmit, negativeCredit,
-=======
     assertions,
     checkboxes,
     handleCheckboxClick,
@@ -23,7 +20,6 @@ const CreditTransfersDetailsPage = (props) => {
     negativeCredit,
     submission,
     user,
->>>>>>> release-1.15.0
   } = props;
   const [comment, setComment] = useState('');
   const [allChecked, setAllChecked] = useState(false);

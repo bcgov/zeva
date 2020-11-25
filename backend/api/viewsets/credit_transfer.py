@@ -41,22 +41,16 @@ class CreditTransferViewset(
                 CreditTransferStatuses.DELETED,
             ])
         else:
-            ## we need to update this so that bceid users see 
-            ## CreditTransferStatuses.APPROVED when it is actually
-            ## either recommended status
-            #possibly When( , then)
             queryset = CreditTransfer.objects.filter(
                 (Q(credit_to_id=request.user.organization.id) &
                     Q(status__in=[
                         CreditTransferStatuses.SUBMITTED,
                         CreditTransferStatuses.APPROVED,
-                        CreditTransferStatuses.VALIDATED
+                        CreditTransferStatuses.VALIDATED,
+                        CreditTransferStatuses.RECOMMEND_APPROVAL,
+                        CreditTransferStatuses.RECOMMEND_REJECTION
                         ])) |
-                Q(debit_from_id=request.user.organization.id),
-                ).exclude(status__in=[
-                    CreditTransferStatuses.RECOMMEND_APPROVAL,
-                    CreditTransferStatuses.RECOMMEND_REJECTION,
-                    ])
+                Q(debit_from_id=request.user.organization.id))
         return queryset
 
     def get_serializer_class(self):
