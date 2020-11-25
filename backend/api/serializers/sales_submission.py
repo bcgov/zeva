@@ -70,8 +70,8 @@ class SalesSubmissionListSerializer(
 
         records = obj.records.all()
 
-        if not records:
-            records = obj.content.all()
+        # if not records:
+        #     records = obj.content.all()
 
         for record in records:
             if record.vehicle:
