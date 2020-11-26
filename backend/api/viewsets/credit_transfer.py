@@ -9,6 +9,7 @@ from api.serializers.credit_transaction import CreditTransactionSaveSerializer
 from api.serializers.credit_transfer import CreditTransferSerializer, \
     CreditTransferSaveSerializer
 from auditable.views import AuditableMixin
+from api.services.credit_transaction import validate_transfer
 
 
 class CreditTransferViewset(
@@ -45,13 +46,11 @@ class CreditTransferViewset(
                     Q(status__in=[
                         CreditTransferStatuses.SUBMITTED,
                         CreditTransferStatuses.APPROVED,
-                        CreditTransferStatuses.VALIDATED
+                        CreditTransferStatuses.VALIDATED,
+                        CreditTransferStatuses.RECOMMEND_APPROVAL,
+                        CreditTransferStatuses.RECOMMEND_REJECTION
                         ])) |
-                Q(debit_from_id=request.user.organization.id),
-                ).exclude(status__in=[
-                    CreditTransferStatuses.RECOMMEND_APPROVAL,
-                    CreditTransferStatuses.RECOMMEND_REJECTION,
-                    ])
+                Q(debit_from_id=request.user.organization.id))
         return queryset
 
     def get_serializer_class(self):
@@ -74,3 +73,11 @@ class CreditTransferViewset(
         return Response(
             response, status=status.HTTP_201_CREATED, headers=headers
         )
+
+    def perform_update(self, serializer, *args, **kwargs):
+
+        transfer = serializer.save()
+        if transfer.status == CreditTransferStatuses.VALIDATED:
+            #call service that updates transactions and balance tables
+            validate_transfer(transfer)
+

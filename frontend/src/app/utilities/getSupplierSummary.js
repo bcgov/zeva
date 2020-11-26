@@ -1,31 +1,30 @@
 const getSupplierSummary = (submission) => {
-
-  const supplier1 = {
-    currentBalanceA: submission.debitFrom.balance.A,
-    currentBalanceB: submission.debitFrom.balance.B,
-    newBalanceA: submission.debitFrom.balance.A,
-    newBalanceB: submission.debitFrom.balance.B,
+  const initiatingSupplier = {
+    currentBalanceA: parseFloat(submission.debitFrom.balance.A),
+    currentBalanceB: parseFloat(submission.debitFrom.balance.B),
+    newBalanceA: parseFloat(submission.debitFrom.balance.A),
+    newBalanceB: parseFloat(submission.debitFrom.balance.B),
     supplierLabel: submission.debitFrom.name,
   };
-  const supplier2 = {
-    currentBalanceA: submission.creditTo.balance.A,
-    currentBalanceB: submission.creditTo.balance.B,
-    newBalanceA: submission.creditTo.balance.A,
-    newBalanceB: submission.creditTo.balance.B,
+  const receivingSupplier = {
+    currentBalanceA: parseFloat(submission.creditTo.balance.A),
+    currentBalanceB: parseFloat(submission.creditTo.balance.B),
+    newBalanceA: parseFloat(submission.creditTo.balance.A),
+    newBalanceB: parseFloat(submission.creditTo.balance.B),
     supplierLabel: submission.creditTo.name,
   };
   submission.creditTransferContent.forEach((item) => {
     if (item.creditClass.creditClass === 'A') {
-      supplier1.newBalanceA -= (item.creditValue * item.dollarValue);
-      supplier2.newBalanceA += (item.creditValue * item.dollarValue);
+      initiatingSupplier.newBalanceA -= parseFloat(item.creditValue);
+      receivingSupplier.newBalanceA += parseFloat(item.creditValue);
     }
     if (item.creditClass.creditClass === 'B') {
-      supplier1.newBalanceB -= (item.creditValue * item.dollarValue);
-      supplier2.newBalanceB += (item.creditValue * item.dollarValue);
+      initiatingSupplier.newBalanceB -= parseFloat(item.creditValue);
+      receivingSupplier.newBalanceB += parseFloat(item.creditValue);
     }
   });
 
-  const summaryData = [supplier1, supplier2];
+  const summaryData = [initiatingSupplier, receivingSupplier];
   return summaryData;
 };
 
