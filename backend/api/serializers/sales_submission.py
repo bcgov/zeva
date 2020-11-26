@@ -188,7 +188,10 @@ class SalesSubmissionSerializer(
 
             return None
 
-        valid_vehicles = Vehicle.objects.filter(organization_id=instance.organization_id)
+        valid_vehicles = Vehicle.objects.filter(
+            organization_id=instance.organization_id,
+            validation_status=VehicleDefinitionStatuses.VALIDATED
+        ).values_list('model_year__name', Upper('make'), 'model_name')
 
         matched_vins = SalesSubmissionContent.objects.filter(
             submission_id=instance.id,
@@ -211,14 +214,7 @@ class SalesSubmissionSerializer(
                 warnings = 1
                 model_year = 0
 
-            vehicle = valid_vehicles.filter(
-                make__iexact=row.xls_make,
-                model_name=row.xls_model,
-                model_year__name=int(model_year),
-                validation_status=VehicleDefinitionStatuses.VALIDATED,
-            ).first()
-
-            if not vehicle:
+            if (str(model_year), row.xls_make.upper(), row.xls_model) not in valid_vehicles:
                 warnings = 1
 
             index = find(content, {
