@@ -17,7 +17,7 @@ class SalesSubmissionContentSerializer(ModelSerializer):
 
     def get_icbc_verification(self, instance):
         request = self.context.get('request')
-        icbc_data = instance.icbc_verification
+        # icbc_data = instance.icbc_verification
 
         # if request.user.is_government and icbc_data:
         #     serializer = IcbcRegistrationDataSerializer(icbc_data)
@@ -27,7 +27,7 @@ class SalesSubmissionContentSerializer(ModelSerializer):
 
     def get_record_of_sale(self, instance):
         request = self.context.get('request')
-        record_of_sale = instance.record_of_sale
+        # record_of_sale = instance.record_of_sale
 
         # if record_of_sale and (
         #         request.user.is_government or
@@ -55,7 +55,8 @@ class SalesSubmissionContentSerializer(ModelSerializer):
         return None
 
     def get_warnings(self, instance):
-        return instance.warnings
+        return None
+        # return instance.warnings
 
     class Meta:
         model = SalesSubmissionContent

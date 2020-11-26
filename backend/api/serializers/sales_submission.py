@@ -188,8 +188,8 @@ class SalesSubmissionSerializer(
             warnings = 0
             sale = 1
 
-            if len(row.warnings) > 0:
-                warnings = 1
+            # if len(row.warnings) > 0:
+            warnings = 1
 
             index = find(content, {
                 'xls_make': row.xls_make,
