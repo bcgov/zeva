@@ -12,6 +12,7 @@ from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.models.sales_submission_comment import SalesSubmissionComment
 from api.models.sales_submission_history import SalesSubmissionHistory
+from api.models.vehicle import Vehicle
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.serializers.sales_submission_comment import \
     SalesSubmissionCommentSerializer
@@ -187,6 +188,8 @@ class SalesSubmissionSerializer(
 
             return None
 
+        valid_vehicles = Vehicle.objects.filter(organization_id=instance.organization_id)
+
         matched_vins = SalesSubmissionContent.objects.filter(
             submission_id=instance.id,
             xls_vin__in=Subquery(IcbcRegistrationData.objects.values('vin'))
@@ -201,6 +204,22 @@ class SalesSubmissionSerializer(
             if warnings == 0:
                 if row.id not in matched_vins:
                     warnings = 1
+
+            try:
+                model_year = float(row.xls_model_year)
+            except ValueError:
+                warnings = 1
+                model_year = 0
+
+            vehicle = valid_vehicles.filter(
+                make__iexact=row.xls_make,
+                model_name=row.xls_model,
+                model_year__name=int(model_year),
+                validation_status=VehicleDefinitionStatuses.VALIDATED,
+            ).first()
+
+            if not vehicle:
+                warnings = 1
 
             index = find(content, {
                 'xls_make': row.xls_make,

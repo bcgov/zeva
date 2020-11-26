@@ -72,6 +72,7 @@ class SalesSubmissionContent(Auditable):
             make__iexact=self.xls_make,
             model_name=self.xls_model,
             model_year__name=int(model_year),
+            organization_id=self.submission.organization_id,
             validation_status=VehicleDefinitionStatuses.VALIDATED,
         ).first()
 
@@ -154,11 +155,11 @@ class SalesSubmissionContent(Auditable):
         elif self.sales_date < datetime.datetime(2018, 1, 2):
             warnings.append('EXPIRED_REGISTRATION_DATE')
 
-        # if self.is_already_awarded:
-        #     warnings.append('VIN_ALREADY_AWARDED')
+        if self.is_already_awarded:
+            warnings.append('VIN_ALREADY_AWARDED')
 
-        # if self.is_duplicate:
-        #     warnings.append('DUPLICATE_VIN')
+        if self.is_duplicate:
+            warnings.append('DUPLICATE_VIN')
 
         if self.icbc_verification is None:
             warnings.append('NO_ICBC_MATCH')
