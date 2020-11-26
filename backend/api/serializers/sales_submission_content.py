@@ -19,9 +19,9 @@ class SalesSubmissionContentSerializer(ModelSerializer):
         request = self.context.get('request')
         icbc_data = instance.icbc_verification
 
-        if request.user.is_government and icbc_data:
-            serializer = IcbcRegistrationDataSerializer(icbc_data)
-            return serializer.data
+        # if request.user.is_government and icbc_data:
+        #     serializer = IcbcRegistrationDataSerializer(icbc_data)
+        #     return serializer.data
 
         return None
 
@@ -29,28 +29,28 @@ class SalesSubmissionContentSerializer(ModelSerializer):
         request = self.context.get('request')
         record_of_sale = instance.record_of_sale
 
-        if record_of_sale and (
-                request.user.is_government or
-                instance.submission.validation_status ==
-                SalesSubmissionStatuses.VALIDATED
-        ):
-            serializer = RecordOfSaleSerializer(
-                instance.record_of_sale, read_only=True
-            )
+        # if record_of_sale and (
+        #         request.user.is_government or
+        #         instance.submission.validation_status ==
+        #         SalesSubmissionStatuses.VALIDATED
+        # ):
+        #     serializer = RecordOfSaleSerializer(
+        #         instance.record_of_sale, read_only=True
+        #     )
 
-            return serializer.data
+        #     return serializer.data
 
         return None
 
     def get_vehicle(self, instance):
         request = self.context.get('request')
 
-        if instance.vehicle is not None:
-            serializer = VehicleMinSerializer(
-                instance.vehicle, read_only=True, context={'request': request}
-            )
+        # if instance.vehicle is not None:
+        #     serializer = VehicleMinSerializer(
+        #         instance.vehicle, read_only=True, context={'request': request}
+        #     )
 
-            return serializer.data
+        #     return serializer.data
 
         return None
 
