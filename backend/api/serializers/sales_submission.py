@@ -173,14 +173,51 @@ class SalesSubmissionSerializer(
     def get_content(self, instance):
         request = self.context.get('request')
 
-        serializer = SalesSubmissionContentSerializer(
-            instance.content,
-            read_only=True,
-            many=True,
-            context={'request': request}
-        )
+        content = []
 
-        return serializer.data
+        def find(lst, search):
+            for index, row in enumerate(lst):
+                if row['xls_model'] == search['xls_model'] and \
+                        row['xls_make'] == search['xls_make'] and \
+                        row['xls_model_year'] == search['xls_model_year']:
+                    return index
+
+            return None
+
+        for row in instance.content:
+            warnings = 0
+            sale = 1
+
+            if len(row.warnings) > 0:
+                warnings = 1
+
+            index = find(content, {
+                'xls_make': row.xls_make,
+                'xls_model': row.xls_model,
+                'xls_model_year': row.xls_model_year,
+            })
+
+            if index is not None:
+                content[index]['sale'] += sale
+                content[index]['warnings'] += warnings
+            else:
+                content.append({
+                    'xls_make': row.xls_make,
+                    'xls_model': row.xls_model,
+                    'xls_model_year': row.xls_model_year,
+                    'sale': sale,
+                    'warnings':  warnings
+                })
+
+        return content
+        # serializer = SalesSubmissionContentSerializer(
+        #     content,
+        #     read_only=True,
+        #     many=True,
+        #     context={'request': request}
+        # )
+
+        # return serializer.data
 
     def get_sales_submission_comment(self, obj):
         sales_submission_comment = SalesSubmissionComment.objects.filter(

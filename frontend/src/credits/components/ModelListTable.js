@@ -103,12 +103,6 @@ const ModelListTable = (props) => {
         creditValue = 0;
       }
 
-      // if (['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(validationStatus) < 0) {
-      //   addSale = 1;
-      // } else if (item.recordOfSale) {
-      //   addSale = 1;
-      // }
-
       if (addSale > 0) {
         if (item.vehicle.creditClass === 'A') {
           totals.a += creditValue;
@@ -117,9 +111,6 @@ const ModelListTable = (props) => {
         }
       }
     }
-    // else if (['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(validationStatus) < 0) {
-    //   addSale = 1;
-    // }
 
     let warnings = 0;
     // does this row have any warnings?

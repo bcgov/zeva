@@ -295,7 +295,6 @@ const CreditRequestDetailsPage = (props) => {
 
 CreditRequestDetailsPage.defaultProps = {
   locationState: undefined,
-  validatedOnly: false,
 };
 
 CreditRequestDetailsPage.propTypes = {
@@ -304,7 +303,6 @@ CreditRequestDetailsPage.propTypes = {
   previousDateCurrentTo: PropTypes.string.isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
-  validatedOnly: PropTypes.bool,
 };
 
 export default CreditRequestDetailsPage;
