@@ -1,7 +1,7 @@
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from rest_framework.serializers import ModelSerializer, \
     SerializerMethodField
-from django.db.models import Subquery
+from django.db.models import Subquery, Count
 from django.db.models.functions import Upper
 
 from api.models.icbc_registration_data import IcbcRegistrationData
@@ -198,6 +198,10 @@ class SalesSubmissionSerializer(
             xls_vin__in=Subquery(IcbcRegistrationData.objects.values('vin'))
         ).values_list('id', flat=True)
 
+        duplicate_vins = SalesSubmissionContent.objects.annotate(
+            vin_count=Count('xls_vin')
+        ).filter(vin_count__gt=1).values_list('xls_vin', flat=True)
+
         awarded_vins = RecordOfSale.objects.exclude(
             submission_id=instance.id
         ).values_list('vin', flat=True)
@@ -222,7 +226,10 @@ class SalesSubmissionSerializer(
             #     if (str(model_year), row.xls_make.upper(), row.xls_model) not in valid_vehicles:
             #         warnings = 1
 
-            if row.xls_vin in awarded_vins:
+            # if row.xls_vin in awarded_vins:
+            #     warnings = 1
+
+            if row.xls_vin in duplicate_vins:
                 warnings = 1
 
             index = find(content, {
