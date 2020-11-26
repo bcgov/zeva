@@ -8,6 +8,7 @@ import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 
+import Disclaimer from './components/Disclaimer';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
 import CustomPropTypes from './utilities/props';
@@ -17,16 +18,19 @@ library.add(fab, far, fas);
 const PageLayout = (props) => {
   const { children, user, keycloak } = props;
 
-  return ([
-    <div id="main" key="main">
-      <Navbar user={user} keycloak={keycloak} />
+  return (
+    <>
+      <div id="main" key="main">
+        <Navbar user={user} keycloak={keycloak} />
 
-      <div id="content">
-        {children}
+        <div id="content">
+          {children}
+        </div>
       </div>
-    </div>,
-    <Footer key="footer" />,
-  ]);
+      {!user.isGovernment && <Disclaimer />}
+      <Footer key="footer" />
+    </>
+  );
 };
 
 PageLayout.defaultProps = {
