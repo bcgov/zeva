@@ -209,7 +209,7 @@ class SalesSubmissionSerializer(
                     warnings = 1
 
             try:
-                model_year = float(row.xls_model_year)
+                model_year = int(float(row.xls_model_year))
             except ValueError:
                 warnings = 1
                 model_year = 0
