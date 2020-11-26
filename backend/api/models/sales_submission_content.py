@@ -154,11 +154,11 @@ class SalesSubmissionContent(Auditable):
         elif self.sales_date < datetime.datetime(2018, 1, 2):
             warnings.append('EXPIRED_REGISTRATION_DATE')
 
-        if self.is_already_awarded:
-            warnings.append('VIN_ALREADY_AWARDED')
+        # if self.is_already_awarded:
+        #     warnings.append('VIN_ALREADY_AWARDED')
 
-        if self.is_duplicate:
-            warnings.append('DUPLICATE_VIN')
+        # if self.is_duplicate:
+        #     warnings.append('DUPLICATE_VIN')
 
         if self.icbc_verification is None:
             warnings.append('NO_ICBC_MATCH')
@@ -170,6 +170,39 @@ class SalesSubmissionContent(Auditable):
             if self.icbc_verification.icbc_vehicle.make != \
                     self.vehicle.make:
                 warnings.append('MAKE_MISMATCHED')
+
+        return warnings
+
+    def get_warnings(self):
+        warnings = []
+
+        # if self.vehicle is None:
+        #     warnings.append('INVALID_MODEL')
+
+        # if self.record_of_sale is None:
+        #     warnings.append('ROW_NOT_SELECTED')
+
+        if self.sales_date is None:
+            warnings.append('INVALID_DATE')
+        elif self.sales_date < datetime.datetime(2018, 1, 2):
+            warnings.append('EXPIRED_REGISTRATION_DATE')
+
+        # if self.is_already_awarded:
+        #     warnings.append('VIN_ALREADY_AWARDED')
+
+        # if self.is_duplicate:
+        #     warnings.append('DUPLICATE_VIN')
+
+        # if self.icbc_verification is None:
+        #     warnings.append('NO_ICBC_MATCH')
+        # elif self.vehicle is not None:
+        #     if self.icbc_verification.icbc_vehicle.model_year != \
+        #             self.vehicle.model_year:
+        #         warnings.append('MODEL_YEAR_MISMATCHED')
+
+        #     if self.icbc_verification.icbc_vehicle.make != \
+        #             self.vehicle.make:
+        #         warnings.append('MAKE_MISMATCHED')
 
         return warnings
 

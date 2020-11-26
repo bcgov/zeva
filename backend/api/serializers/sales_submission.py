@@ -186,10 +186,9 @@ class SalesSubmissionSerializer(
 
         for row in instance.content:
             warnings = 0
-            sale = 1
 
-            # if len(row.warnings) > 0:
-            warnings = 1
+            if len(row.get_warnings()) > 0:
+                warnings = 1
 
             index = find(content, {
                 'xls_make': row.xls_make,
@@ -198,14 +197,14 @@ class SalesSubmissionSerializer(
             })
 
             if index is not None:
-                content[index]['sale'] += sale
+                content[index]['sale'] += 1
                 content[index]['warnings'] += warnings
             else:
                 content.append({
                     'xls_make': row.xls_make,
                     'xls_model': row.xls_model,
                     'xls_model_year': row.xls_model_year,
-                    'sale': sale,
+                    'sale': 1,
                     'warnings':  warnings
                 })
 
