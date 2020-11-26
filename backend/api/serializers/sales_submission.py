@@ -1,7 +1,10 @@
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from rest_framework.serializers import ModelSerializer, \
     SerializerMethodField
+from django.db.models import Subquery
+from django.db.models.functions import Upper
 
+from api.models.icbc_registration_data import IcbcRegistrationData
 from api.models.record_of_sale import RecordOfSale
 from api.models.record_of_sale_statuses import RecordOfSaleStatuses
 from api.models.sales_submission import SalesSubmission
@@ -184,11 +187,20 @@ class SalesSubmissionSerializer(
 
             return None
 
+        matched_vins = SalesSubmissionContent.objects.filter(
+            submission_id=instance.id,
+            xls_vin__in=Subquery(IcbcRegistrationData.objects.values('vin'))
+        ).values_list('id', flat=True)
+
         for row in instance.content:
             warnings = 0
 
-            if len(row.get_warnings()) > 0:
-                warnings = 1
+            # if not row.valid_sales_date:
+            #     warnings = 1
+
+            if warnings == 0:
+                if row.id not in matched_vins:
+                    warnings = 1
 
             index = find(content, {
                 'xls_make': row.xls_make,
@@ -209,14 +221,6 @@ class SalesSubmissionSerializer(
                 })
 
         return content
-        # serializer = SalesSubmissionContentSerializer(
-        #     content,
-        #     read_only=True,
-        #     many=True,
-        #     context={'request': request}
-        # )
-
-        # return serializer.data
 
     def get_sales_submission_comment(self, obj):
         sales_submission_comment = SalesSubmissionComment.objects.filter(

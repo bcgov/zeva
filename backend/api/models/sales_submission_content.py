@@ -173,8 +173,9 @@ class SalesSubmissionContent(Auditable):
 
         return warnings
 
-    def get_warnings(self):
-        warnings = []
+    @property
+    def valid_sales_date(self):
+        # warnings = []
 
         # if self.vehicle is None:
         #     warnings.append('INVALID_MODEL')
@@ -183,9 +184,9 @@ class SalesSubmissionContent(Auditable):
         #     warnings.append('ROW_NOT_SELECTED')
 
         if self.sales_date is None:
-            warnings.append('INVALID_DATE')
+            return False
         elif self.sales_date < datetime.datetime(2018, 1, 2):
-            warnings.append('EXPIRED_REGISTRATION_DATE')
+            return False
 
         # if self.is_already_awarded:
         #     warnings.append('VIN_ALREADY_AWARDED')
@@ -204,7 +205,7 @@ class SalesSubmissionContent(Auditable):
         #             self.vehicle.make:
         #         warnings.append('MAKE_MISMATCHED')
 
-        return warnings
+        return True
 
     class Meta:
         db_table = "sales_submission_content"
