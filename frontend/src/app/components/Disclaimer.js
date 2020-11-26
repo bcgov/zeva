@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-/* global __VERSION__ */
-
 const Disclaimer = () => (
   <div id="content">
     All Information is provided for your convenience and guidance only.
