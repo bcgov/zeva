@@ -198,23 +198,31 @@ class SalesSubmissionSerializer(
             xls_vin__in=Subquery(IcbcRegistrationData.objects.values('vin'))
         ).values_list('id', flat=True)
 
+        awarded_vins = RecordOfSale.objects.exclude(
+            submission_id=instance.id
+        ).values_list('vin', flat=True)
+
         for row in instance.content:
             warnings = 0
 
             # if not row.valid_sales_date:
             #     warnings = 1
 
-            if warnings == 0:
-                if row.id not in matched_vins:
-                    warnings = 1
+            # if warnings == 0:
+            #     if row.id not in matched_vins:
+            #         warnings = 1
 
-            try:
-                model_year = int(float(row.xls_model_year))
-            except ValueError:
-                warnings = 1
-                model_year = 0
+            # if warnings == 0:
+            #     try:
+            #         model_year = int(float(row.xls_model_year))
+            #     except ValueError:
+            #         warnings = 1
+            #         model_year = 0
 
-            if (str(model_year), row.xls_make.upper(), row.xls_model) not in valid_vehicles:
+            #     if (str(model_year), row.xls_make.upper(), row.xls_model) not in valid_vehicles:
+            #         warnings = 1
+
+            if row.xls_vin in awarded_vins:
                 warnings = 1
 
             index = find(content, {
