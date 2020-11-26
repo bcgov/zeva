@@ -60,68 +60,53 @@ class SalesSubmissionListSerializer(
         ModelSerializer, EnumSupportSerializerMixin, BaseSerializer
 ):
     organization = OrganizationSerializer(read_only=True)
-    total_a_credits = SerializerMethodField()
-    total_b_credits = SerializerMethodField()
+    total_credits = SerializerMethodField()
     total_warnings = SerializerMethodField()
     totals = SerializerMethodField()
     update_user = SerializerMethodField()
     validation_status = SerializerMethodField()
 
-    def get_total_a_credits(self, obj):
-        total = 0
+    def get_total_credits(self, obj):
+        total_a = 0
+        total_b = 0
 
-        # if obj.records.count() > 0:
-        # for record in obj.records.all():
-        #     if record.vehicle:
-        #         credit_class = record.vehicle.get_credit_class()
+        if obj.records.count() > 0:
+            for record in obj.get_records_totals_by_vehicles():
+                vehicle = Vehicle.objects.filter(
+                    id=record['vehicle_id']
+                ).first()
 
-        #         if credit_class == 'A':
-        #             total += record.vehicle.get_credit_value()
-        # else:
-        #     for record in obj.content.all():
-        #         if record.vehicle:
-        #             credit_class = record.vehicle.get_credit_class()
+                if vehicle:
+                    if vehicle.get_credit_class() == 'A':
+                        total_a += vehicle.get_credit_value() * record['num_vins']
 
-        #             if credit_class == 'A':
-        #                 total += record.vehicle.get_credit_value()
-        for record in obj.get_totals_by_vehicles():
-            print(record)
-            try:
-                model_year = float(record['xls_model_year'])
-            except ValueError:
-                continue
+                    if vehicle.get_credit_class() == 'B':
+                        total_b += vehicle.get_credit_value() * record['num_vins']
+        else:
+            for record in obj.get_content_totals_by_vehicles():
+                try:
+                    model_year = float(record['xls_model_year'])
+                except ValueError:
+                    continue
 
-            vehicle = Vehicle.objects.filter(
-                make__iexact=record['xls_make'],
-                model_name=record['xls_model'],
-                model_year__name=int(model_year),
-                validation_status=VehicleDefinitionStatuses.VALIDATED,
-            ).first()
+                vehicle = Vehicle.objects.filter(
+                    make__iexact=record['xls_make'],
+                    model_name=record['xls_model'],
+                    model_year__name=int(model_year),
+                    validation_status=VehicleDefinitionStatuses.VALIDATED,
+                ).first()
 
-            print(vehicle)
-            print(record)
+                if vehicle:
+                    if vehicle.get_credit_class() == 'A':
+                        total_a += vehicle.get_credit_value() * record['num_vins']
 
-            if vehicle and vehicle.get_credit_class() == 'A':
-                total += vehicle.get_credit_value() * record['num_vins']
+                    if vehicle.get_credit_class() == 'B':
+                        total_b += vehicle.get_credit_value() * record['num_vins']
 
-        return round(total, 2)
-
-    def get_total_b_credits(self, obj):
-        total = 0
-
-        # records = obj.records.all()
-
-        # if not records:
-        #     records = obj.content.all()
-
-        # for record in records:
-        #     if record.vehicle:
-        #         credit_class = record.vehicle.get_credit_class()
-
-        #         if credit_class == 'B':
-        #             total += record.vehicle.get_credit_value()
-
-        return round(total, 2)
+        return {
+            'a': round(total_a, 2),
+            'b': round(total_b, 2)
+        }
 
     def get_total_warnings(self, obj):
         request = self.context.get('request')
@@ -154,8 +139,7 @@ class SalesSubmissionListSerializer(
         fields = (
             'id', 'validation_status', 'organization', 'submission_date',
             'submission_sequence', 'totals', 'submission_id', 'update_user',
-            'total_a_credits', 'total_b_credits', 'total_warnings',
-            'unselected',
+            'total_credits', 'total_warnings', 'unselected',
         )
 
 
