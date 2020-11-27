@@ -41,7 +41,7 @@ const getCreditRequestSummary = (submission, validationStatus, user) => {
 
     let vinCount = 0;
 
-    if (item.vehicle && item.vehicle.id) {
+    if (item.vehicle && item.vehicle.id && submission.eligible) {
       const eligibleVins = submission.eligible.find((eligibleItem) => eligibleItem.vehicleId === item.vehicle.id);
 
       if (eligibleVins) {
