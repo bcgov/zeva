@@ -174,6 +174,7 @@ class SalesSubmissionSerializer(
     update_user = SerializerMethodField()
     validation_status = SerializerMethodField()
     create_user = SerializerMethodField()
+    eligible = SerializerMethodField()
 
     def get_content(self, instance):
         request = self.context.get('request')
@@ -210,20 +211,21 @@ class SalesSubmissionSerializer(
         for row in instance.content:
             warnings = 0
 
-            if not row.valid_sales_date:
+            try:
+                model_year = int(float(row.xls_model_year))
+            except ValueError:
+                model_year = 0
                 warnings = 1
+
+            if warnings == 0:
+                if not row.valid_sales_date:
+                    warnings = 1
 
             if warnings == 0:
                 if row.id not in matched_vins:
                     warnings = 1
 
             if warnings == 0:
-                try:
-                    model_year = int(float(row.xls_model_year))
-                except ValueError:
-                    warnings = 1
-                    model_year = 0
-
                 if (str(model_year), row.xls_make.upper(), row.xls_model) not in valid_vehicles:
                     warnings = 1
 
@@ -283,13 +285,26 @@ class SalesSubmissionSerializer(
 
         return None
 
+    def get_eligible(self, instance):
+        eligible = RecordOfSale.objects.filter(
+            submission_id=instance.id
+        ).values('vehicle_id').annotate(
+            vin_count=Count('vin')
+        ).order_by('vehicle_id')
+
+        if not eligible:
+            return None
+
+        return eligible
+
     class Meta:
         model = SalesSubmission
         fields = (
             'id', 'validation_status', 'organization', 'submission_date',
             'submission_sequence', 'content', 'submission_id', 'history',
             'sales_submission_comment', 'update_user', 'unselected',
-            'update_timestamp', 'create_user', 'filename', 'create_timestamp'
+            'update_timestamp', 'create_user', 'filename', 'create_timestamp',
+            'eligible'
         )
 
 

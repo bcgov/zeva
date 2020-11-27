@@ -105,8 +105,7 @@ const CreditRequestDetailsPage = (props) => {
     </Modal>
   );
 
-  // const invalidSubmission = submission.content.some((row) => (row.warnings.includes('INVALID_MODEL')));
-  const invalidSubmission = false;
+  const invalidSubmission = submission.content.some((row) => (!row.vehicle || row.vehicle.name === ''));
   const directorAction = user.isGovernment
   && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
   && user.hasPermission('SIGN_SALES');
@@ -163,7 +162,7 @@ const CreditRequestDetailsPage = (props) => {
               {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
             </div>
 
-            <CreditRequestSummaryTable items={submission.content} user={user} validationStatus={submission.validationStatus} />
+            <CreditRequestSummaryTable submission={submission} user={user} validationStatus={submission.validationStatus} />
           </div>
         </div>
       </div>

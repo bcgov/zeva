@@ -29,7 +29,7 @@ const ModelListTable = (props) => {
     accessor: (item) => {
       const { vehicle } = item;
 
-      if (vehicle && vehicle.creditValue !== 0) {
+      if (vehicle && vehicle.creditValue && vehicle.creditValue !== 0) {
         return _.round(item.sales * vehicle.creditValue, 2).toFixed(2);
       }
 
@@ -77,7 +77,7 @@ const ModelListTable = (props) => {
     accessor: (item) => {
       const { vehicle } = item;
 
-      if (vehicle && vehicle.creditValue !== 0) {
+      if (vehicle && vehicle.creditValue && vehicle.creditValue !== 0) {
         return _.round(vehicle.creditValue, 2).toFixed(2);
       }
 
