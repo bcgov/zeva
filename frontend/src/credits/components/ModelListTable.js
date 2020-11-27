@@ -176,7 +176,7 @@ const ModelListTable = (props) => {
         id: 'make',
       }]}
       getTrProps={(state, row) => {
-        if (row && row.original && row.original.invalidModel) {
+        if (row && row.original && (!row.original.vehicle || !row.original.vehicle.id || row.original.modelName === '')) {
           return {
             className: 'background-danger',
           };

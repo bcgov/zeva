@@ -50,8 +50,17 @@ const Alert = (props) => {
   if (alertType === 'credit') {
     const { isGovernment, submission, icbcDate } = props;
     const {
-      validationStatus, history, unselected, filename,
+      content, validationStatus, history, filename,
     } = submission;
+
+    let ineligible = 0;
+
+    content.forEach((item) => {
+      if (!item.vehicle || !item.vehicle.id || item.vehicle.modelName === '') {
+        ineligible += item.sales;
+      }
+    });
+
     const statusFilter = (status) => history.filter((each) => each.validationStatus === status)[0];
 
     if (!history.some((each) => ['DRAFT', 'SUBMITTED', 'VALIDATED', 'RECOMMEND_APPROVAL', 'CHECKED'].includes(each.validationStatus))) {
@@ -71,7 +80,7 @@ const Alert = (props) => {
         if (invalidSubmission) {
           title = 'Errors found';
           classname = 'alert-danger';
-          message = `You cannot submit this application. ${unselected} records are not eligible for credits. Delete this application, correct the errors and re-upload the Excel file.`;
+          message = `You cannot submit this application. ${ineligible} records are not eligible for credits. Delete this application, correct the errors and re-upload the Excel file.`;
           break;
         }
         title = 'Draft';
