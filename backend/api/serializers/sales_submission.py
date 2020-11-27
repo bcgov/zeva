@@ -209,28 +209,30 @@ class SalesSubmissionSerializer(
         for row in instance.content:
             warnings = 0
 
-            # if not row.valid_sales_date:
-            #     warnings = 1
-
-            # if warnings == 0:
-            #     if row.id not in matched_vins:
-            #         warnings = 1
-
-            # if warnings == 0:
-            #     try:
-            #         model_year = int(float(row.xls_model_year))
-            #     except ValueError:
-            #         warnings = 1
-            #         model_year = 0
-
-            #     if (str(model_year), row.xls_make.upper(), row.xls_model) not in valid_vehicles:
-            #         warnings = 1
-
-            # if row.xls_vin in awarded_vins:
-            #     warnings = 1
-
-            if row.xls_vin in duplicate_vins:
+            if not row.valid_sales_date:
                 warnings = 1
+
+            if warnings == 0:
+                if row.id not in matched_vins:
+                    warnings = 1
+
+            if warnings == 0:
+                try:
+                    model_year = int(float(row.xls_model_year))
+                except ValueError:
+                    warnings = 1
+                    model_year = 0
+
+                if (str(model_year), row.xls_make.upper(), row.xls_model) not in valid_vehicles:
+                    warnings = 1
+
+            if warnings == 0:
+                if row.xls_vin in awarded_vins:
+                    warnings = 1
+
+            if warnings == 0:
+                if row.xls_vin in duplicate_vins:
+                    warnings = 1
 
             index = find(content, {
                 'xls_make': row.xls_make,
