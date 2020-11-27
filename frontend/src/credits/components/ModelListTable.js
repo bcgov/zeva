@@ -26,9 +26,17 @@ const ModelListTable = (props) => {
     show: showWarnings(),
     width: 100,
   }, {
+    accessor: (item) => {
+      const { vehicle } = item;
+
+      if (vehicle && vehicle.creditValue !== 0) {
+        return _.round(item.sales * vehicle.creditValue, 2).toFixed(2);
+      }
+
+      return '-';
+    },
     className: 'text-right',
     Header: 'Total Credits',
-    accessor: (item) => (item.total === 0 ? '-' : _.round(item.total, 2).toFixed(2)),
     id: 'total',
     width: 150,
   }, {
@@ -69,11 +77,11 @@ const ModelListTable = (props) => {
     accessor: (item) => {
       const { vehicle } = item;
 
-      if (vehicle) {
-        return (vehicle.creditValue === 0 ? '-' : _.round(vehicle.creditValue, 2).toFixed(2));
+      if (vehicle && vehicle.creditValue !== 0) {
+        return _.round(vehicle.creditValue, 2).toFixed(2);
       }
 
-      return '';
+      return '-';
     },
     className: 'text-right',
     Header: 'Credit Entitlement',
