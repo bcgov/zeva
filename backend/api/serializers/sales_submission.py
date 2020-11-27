@@ -23,6 +23,7 @@ from api.serializers.user import MemberSerializer
 from api.serializers.organization import OrganizationSerializer
 from api.serializers.sales_submission_content import \
     SalesSubmissionContentSerializer
+from api.serializers.vehicle import VehicleSerializer
 from api.services.sales_spreadsheet import get_date
 
 
@@ -237,20 +238,35 @@ class SalesSubmissionSerializer(
             index = find(content, {
                 'xls_make': row.xls_make,
                 'xls_model': row.xls_model,
-                'xls_model_year': row.xls_model_year,
+                'xls_model_year': model_year,
             })
 
             if index is not None:
-                content[index]['sale'] += 1
+                content[index]['sales'] += 1
                 content[index]['warnings'] += warnings
             else:
                 content.append({
                     'xls_make': row.xls_make,
                     'xls_model': row.xls_model,
-                    'xls_model_year': row.xls_model_year,
-                    'sale': 1,
+                    'xls_model_year': model_year,
+                    'sales': 1,
                     'warnings':  warnings
                 })
+
+        for row in content:
+            vehicle = Vehicle.objects.filter(
+                make__iexact=row['xls_make'],
+                model_name=row['xls_model'],
+                model_year__name=row['xls_model_year'],
+                organization_id=instance.organization_id,
+                validation_status=VehicleDefinitionStatuses.VALIDATED,
+            ).first()
+
+            vehicle_serializer = VehicleSerializer(
+                vehicle, read_only=True, context={'request': request}
+            )
+
+            row['vehicle'] = vehicle_serializer.data
 
         return content
 

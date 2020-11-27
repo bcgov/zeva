@@ -105,7 +105,8 @@ const CreditRequestDetailsPage = (props) => {
     </Modal>
   );
 
-  const invalidSubmission = submission.content.some((row) => (row.warnings.includes('INVALID_MODEL')));
+  // const invalidSubmission = submission.content.some((row) => (row.warnings.includes('INVALID_MODEL')));
+  const invalidSubmission = false;
   const directorAction = user.isGovernment
   && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
   && user.hasPermission('SIGN_SALES');
