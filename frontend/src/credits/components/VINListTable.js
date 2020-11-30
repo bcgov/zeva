@@ -1,23 +1,30 @@
 /*
  * Presentational component
  */
+import axios from 'axios';
 import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
+import ReactTable from 'react-table';
 
-import ReactTable from '../../app/components/ReactTable';
 import CREDIT_ERROR_CODES from '../../app/constants/errorCodes';
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import CustomPropTypes from '../../app/utilities/props';
 
 const VINListTable = (props) => {
   const {
     handleCheckboxClick,
+    id,
     items,
     user,
     validatedList,
     filtered,
+    setContent,
     setFiltered,
   } = props;
+
+  const [loading, setLoading] = useState(false);
+  const [pages, setPages] = useState(-1);
 
   const getErrorCodes = (item, fields = false) => {
     let errorCodes = '';
@@ -186,6 +193,27 @@ const VINListTable = (props) => {
         }
         return {};
       }}
+      loading={loading}
+      manual
+      onFetchData={(state, instance) => {
+        setLoading(true);
+
+        axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id), {
+          params: {
+            filtered: state.filtered,
+            page: state.page + 1, // page from front-end is zero index, but in the back-end we need the actual page number
+            page_size: state.pageSize,
+            sorted: state.sorted,
+          },
+        }).then((response) => {
+          const { content, pages: numPages } = response.data;
+
+          setContent(content);
+          setPages(numPages);
+          setLoading(false);
+        });
+      }}
+      pages={pages}
     />
   );
 };

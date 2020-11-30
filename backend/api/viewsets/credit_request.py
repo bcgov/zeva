@@ -1,17 +1,22 @@
 import json
 
 from datetime import datetime
+from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 
 from api.models.sales_submission import SalesSubmission
+from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.serializers.sales_submission import SalesSubmissionSerializer, \
     SalesSubmissionListSerializer, SalesSubmissionSaveSerializer
+from api.serializers.sales_submission_content import \
+    SalesSubmissionContentSerializer
 from api.services.credit_transaction import award_credits
 from api.services.sales_spreadsheet import create_sales_spreadsheet, \
     ingest_sales_spreadsheet, validate_spreadsheet, \
@@ -50,6 +55,7 @@ class CreditRequestViewset(
         'retrieve': SalesSubmissionSerializer,
         'partial_update': SalesSubmissionSaveSerializer,
         'update': SalesSubmissionSaveSerializer,
+        'content': SalesSubmissionContentSerializer,
     }
 
     def get_serializer_class(self):
@@ -149,3 +155,33 @@ class CreditRequestViewset(
             )
         )
         return response
+
+    @action(detail=True)
+    def content(self, request, pk):
+        submission_content = SalesSubmissionContent.objects.filter(
+            submission_id=pk
+        )
+
+        page_size = request.GET.get('page_size', 20)
+        page = request.GET.get('page', 1)
+
+        try:
+            page = int(page)
+        except:
+            page = 1
+
+        if page < 1:
+            page = 1
+
+        submission_content_paginator = Paginator(submission_content, page_size)
+
+        paginated = submission_content_paginator.page(page)
+
+        serializer = SalesSubmissionContentSerializer(
+            paginated, many=True, read_only=True, context={'request': request}
+        )
+
+        return Response({
+            'content': serializer.data,
+            'pages': submission_content_paginator.num_pages
+        })

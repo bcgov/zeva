@@ -308,6 +308,31 @@ class SalesSubmissionSerializer(
         )
 
 
+class SalesSubmissionDetailSerializer(
+        ModelSerializer, EnumSupportSerializerMixin,
+        BaseSerializer
+):
+    content = SerializerMethodField()
+
+    def get_content(self, instance):
+        request = self.context.get('request')
+
+        serializer = SalesSubmissionContentSerializer(
+            instance.content,
+            read_only=True,
+            many=True,
+            context={'request': request}
+        )
+
+        return serializer.data
+
+    class Meta:
+        model = SalesSubmission
+        fields = (
+            'id', 'validation_status', 'content', 'submission_id'
+        )
+
+
 class SalesSubmissionSaveSerializer(
         ModelSerializer
 ):

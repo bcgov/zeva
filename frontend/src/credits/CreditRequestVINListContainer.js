@@ -16,14 +16,21 @@ const CreditRequestVINListContainer = (props) => {
   const { match, user } = props;
   const { id } = match.params;
 
+  const [content, setContent] = useState([]);
   const [submission, setSubmission] = useState([]);
   const [loading, setLoading] = useState(true);
   const [validatedList, setValidatedList] = useState([]);
 
   const refreshDetails = () => {
-    axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)).then((response) => {
-      const { data } = response;
-      setSubmission(data);
+    axios.all([
+      axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
+      axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id)),
+    ]).then(axios.spread((submissionResponse, contentResponse) => {
+      const { data: submissionData } = submissionResponse;
+      setSubmission(submissionData);
+
+      const { data } = contentResponse;
+      setContent(data.content);
 
       const validatedRecords = data.content.filter(
         (record) => {
@@ -33,9 +40,9 @@ const CreditRequestVINListContainer = (props) => {
             return false;
           }
 
-          if (data.validationStatus === 'CHECKED') {
-            return record.recordOfSale;
-          }
+          // if (data.validationStatus === 'CHECKED') {
+          //   return record.recordOfSale;
+          // }
 
           return record.icbcVerification;
         },
@@ -43,7 +50,7 @@ const CreditRequestVINListContainer = (props) => {
 
       setValidatedList(validatedRecords);
       setLoading(false);
-    });
+    }));
   };
 
   useEffect(() => {
@@ -77,9 +84,11 @@ const CreditRequestVINListContainer = (props) => {
 
   return (
     <CreditRequestVINListPage
+      content={content}
       handleCheckboxClick={handleCheckboxClick}
       handleSubmit={handleSubmit}
       routeParams={match.params}
+      setContent={setContent}
       submission={submission}
       user={user}
       validatedList={validatedList}

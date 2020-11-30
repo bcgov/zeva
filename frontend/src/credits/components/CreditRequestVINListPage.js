@@ -7,8 +7,10 @@ import VINListTable from './VINListTable';
 
 const CreditRequestVINListPage = (props) => {
   const {
+    content,
     handleCheckboxClick,
     handleSubmit,
+    setContent,
     submission,
     user,
     validatedList,
@@ -90,13 +92,15 @@ const CreditRequestVINListPage = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <VINListTable
+            filtered={filtered}
             handleCheckboxClick={handleCheckboxClick}
-            items={submission.content}
+            id={submission.id}
+            items={content}
+            setContent={setContent}
+            setFiltered={setFiltered}
             submission={submission}
             user={user}
             validatedList={validatedList}
-            filtered={filtered}
-            setFiltered={setFiltered}
           />
         </div>
       </div>
@@ -113,6 +117,7 @@ const CreditRequestVINListPage = (props) => {
 CreditRequestVINListPage.defaultProps = {};
 
 CreditRequestVINListPage.propTypes = {
+  content: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   submission: PropTypes.shape().isRequired,
