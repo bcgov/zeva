@@ -16,7 +16,7 @@ module.exports = settings => {
     kc.addUris();
   }
 
-  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, "../../openshift"));
+  const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, "../../openshift-v3"));
   var objects = [];
 
   // The deployment of your cool app goes here ▼▼▼
@@ -191,6 +191,8 @@ module.exports = settings => {
   }
   ********/
 
+  console.log('Start to deploy ..')
+
   oc.applyRecommendedLabels(
       objects,
       phases[phase].name,
@@ -200,5 +202,7 @@ module.exports = settings => {
   );
   oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
   oc.applyAndDeploy(objects, phases[phase].instance);
+
+  console.log('End of deploy ..')
 
 };

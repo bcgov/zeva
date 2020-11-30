@@ -9,7 +9,7 @@ module.exports = (settings)=>{
   const phase='build'
   var objects = []
 
-  const templatesLocalBaseUrl =oc.toFileUrl(path.resolve(__dirname, '../../openshift'))
+  const templatesLocalBaseUrl =oc.toFileUrl(path.resolve(__dirname, '../../openshift-v3'))
 
   objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/build-master.yaml`, {
     'param':{

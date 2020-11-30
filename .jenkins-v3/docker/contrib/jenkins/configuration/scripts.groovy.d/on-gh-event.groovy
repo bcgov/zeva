@@ -58,7 +58,7 @@ static Map exec(List args, File workingDirectory=null, Appendable stdout=null, A
                     println exec(['git', 'fetch', '--no-tags', payload.repository.clone_url, "+${sourceBranch}:PR-${payload.number}"], gitWorkDir)
                     println exec(['git', 'checkout', "PR-${payload.number}"] , gitWorkDir)
                     
-                    def pipelines = new FileNameFinder().getFileNames(gitWorkDir.getAbsolutePath(), '**/.pipeline/package.json')
+                    def pipelines = new FileNameFinder().getFileNames(gitWorkDir.getAbsolutePath(), '**/.pipeline-v3/package.json')
                     pipelines.each {
                         def pipelineWorkDir = new File(it).getParentFile()
                         println exec(['./npmw', 'ci'], pipelineWorkDir)
