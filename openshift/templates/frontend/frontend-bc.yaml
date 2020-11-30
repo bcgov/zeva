@@ -72,7 +72,7 @@ objects:
         from:
           kind: ImageStreamTag
           name: nodejs:12-1-45
-          namespace: tbiwaq-tools
+          namespace: e52f12-tools
         pullSecret:
           name: zeva-image-pull-secret
       type: Source
