@@ -107,4 +107,4 @@ parameters:
     value: master
   - name: SOURCE_CONTEXT_DIR
     required: true
-    value: .jenkins/docker-slave
+    value: .jenkins-v3/docker-slave
