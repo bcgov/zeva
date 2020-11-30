@@ -9,7 +9,7 @@ from api.serializers.credit_transaction import CreditTransactionSerializer, \
     CreditTransactionBalanceSerializer, CreditTransactionListSerializer
 from api.services.credit_transaction import aggregate_credit_balance_details, \
     aggregate_transactions_by_submission
-from api.services.credit_transfer import calculate_insufficient_credits
+from api.services.credit_transaction import calculate_insufficient_credits
 from auditable.views import AuditableMixin
 
 
