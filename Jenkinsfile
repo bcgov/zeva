@@ -8,12 +8,12 @@ pipeline {
             agent { label 'build' }
             steps {
                 script {
-                    def filesInThisCommitAsString = sh(script:"git diff --name-only HEAD~1..HEAD | grep -v '^.jenkins-v3/' || echo -n ''", returnStatus: false, returnStdout: true).trim()
+                    def filesInThisCommitAsString = sh(script:"git diff --name-only HEAD~1..HEAD | grep -v '^.jenkins/' || echo -n ''", returnStatus: false, returnStdout: true).trim()
                     def hasChangesInPath = (filesInThisCommitAsString.length() > 0)
                     echo "${filesInThisCommitAsString}"
                     if (!currentBuild.rawBuild.getCauses()[0].toString().contains('UserIdCause') && !hasChangesInPath){
                         currentBuild.rawBuild.delete()
-                        error("No changes detected in the path ('^.jenkins-v3/')")
+                        error("No changes detected in the path ('^.jenkins/')")
                     }
                 }
                 echo "Aborting all running jobs ..."
@@ -21,14 +21,14 @@ pipeline {
                     abortAllPreviousBuildInProgress(currentBuild)
                 }
                 echo "Building ..."
-                sh "cd .pipeline-v3 && ./npmw ci && ./npmw run build -- --pr=${CHANGE_ID}"
+                sh "cd .pipeline && ./npmw ci && ./npmw run build -- --pr=${CHANGE_ID}"
             }
         }
         stage('Deploy (DEV)') {
             agent { label 'deploy' }
             steps {
                 echo "Deploying ..."
-                sh "cd .pipeline-v3 && ./npmw ci && ./npmw run deploy -- --pr=${CHANGE_ID} --env=dev"
+                sh "cd .pipeline && ./npmw ci && ./npmw run deploy -- --pr=${CHANGE_ID} --env=dev"
             }
         }
 
@@ -44,7 +44,7 @@ pipeline {
             }
             steps {
                 echo "Deploying ..."
-                sh "cd .pipeline-v3 && ./npmw ci && ./npmw run deploy -- --pr=${CHANGE_ID} --env=test"
+                sh "cd .pipeline && ./npmw ci && ./npmw run deploy -- --pr=${CHANGE_ID} --env=test"
             }
         }
         stage('Deploy (PROD)') {
@@ -59,7 +59,7 @@ pipeline {
             }
             steps {
                 echo "Deploying ..."
-                sh "cd .pipeline-v3 && ./npmw ci && ./npmw run deploy -- --pr=${CHANGE_ID} --env=prod"
+                sh "cd .pipeline && ./npmw ci && ./npmw run deploy -- --pr=${CHANGE_ID} --env=prod"
             }
         }
 
