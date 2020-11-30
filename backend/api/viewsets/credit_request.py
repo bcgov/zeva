@@ -158,10 +158,7 @@ class CreditRequestViewset(
 
     @action(detail=True)
     def content(self, request, pk):
-        submission_content = SalesSubmissionContent.objects.filter(
-            submission_id=pk
-        )
-
+        filters = request.GET.get('filters')
         page_size = request.GET.get('page_size', 20)
         page = request.GET.get('page', 1)
 
@@ -172,6 +169,18 @@ class CreditRequestViewset(
 
         if page < 1:
             page = 1
+
+        submission_content = SalesSubmissionContent.objects.filter(
+            submission_id=pk
+        )
+
+        if filters:
+            submission_filters = json.loads(filters)
+
+            if 'xls_make' in submission_filters:
+                submission_content = submission_content.filter(
+                    xls_make__icontains=submission_filters['xls_make']
+                )
 
         submission_content_paginator = Paginator(submission_content, page_size)
 

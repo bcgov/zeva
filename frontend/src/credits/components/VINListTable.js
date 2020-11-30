@@ -64,20 +64,20 @@ const VINListTable = (props) => {
       },
       className: 'text-center',
       Header: 'MY',
-      id: 'model-year',
+      id: 'xls_model_year',
     }, {
       accessor: 'xlsMake',
       Header: 'Make',
-      id: 'make',
+      id: 'xls_make',
     }, {
       accessor: 'xlsModel',
       Header: 'Model',
-      id: 'model',
+      id: 'xls_model',
     }, {
       accessor: (row) => (moment(row.salesDate).format('YYYY-MM-DD') !== 'Invalid date' ? moment(row.salesDate).format('YYYY-MM-DD') : row.salesDate),
       className: 'text-center sales-date',
       Header: 'Retail Sale',
-      id: 'sales-date',
+      id: 'xls_sale_date',
     }],
   }, {
     Header: '',
@@ -87,7 +87,7 @@ const VINListTable = (props) => {
       className: 'vin',
       Header: 'VIN',
       headerClassName: 'vin',
-      id: 'vin',
+      id: 'xls_vin',
       minWidth: 150,
     }],
   }, {
@@ -150,6 +150,7 @@ const VINListTable = (props) => {
       columns={columns}
       data={items}
       filtered={filtered}
+      filterable
       onFilteredChange={(input) => {
         setFiltered(input);
       }}
@@ -195,12 +196,18 @@ const VINListTable = (props) => {
       }}
       loading={loading}
       manual
-      onFetchData={(state, instance) => {
+      onFetchData={(state) => {
         setLoading(true);
+
+        const filters = {};
+
+        state.filtered.forEach((each) => {
+          filters[each.id] = each.value;
+        });
 
         axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id), {
           params: {
-            filtered: state.filtered,
+            filters,
             page: state.page + 1, // page from front-end is zero index, but in the back-end we need the actual page number
             page_size: state.pageSize,
             sorted: state.sorted,
