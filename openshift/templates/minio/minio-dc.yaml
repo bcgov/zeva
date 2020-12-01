@@ -1,6 +1,5 @@
----
+apiVersion: template.openshift.io/v1
 kind: Template
-apiVersion: v1
 metadata:
   name: minio
   annotations:
@@ -56,7 +55,7 @@ parameters:
     displayName: Openshift Name
     description: Openshift Name
     required: true
-Objects:
+objects:
   - apiVersion: v1
     kind: Secret
     metadata:
@@ -127,9 +126,6 @@ Objects:
       name: ${NAME}-minio${SUFFIX}
       labels:
         name: minio
-        app: zeva
-        role: minio
-        env: ${ENV_NAME}
     spec:
       strategy:
         type: Recreate
@@ -144,7 +140,7 @@ Objects:
               - minio
             from:
               kind: ImageStreamTag
-              namespace: tbiwaq-tools
+              namespace: e52f12-tools
               name: minio:20200309
       replicas: 1
       test: false

@@ -9,6 +9,7 @@ from api.serializers.credit_transaction import CreditTransactionSerializer, \
     CreditTransactionBalanceSerializer, CreditTransactionListSerializer
 from api.services.credit_transaction import aggregate_credit_balance_details, \
     aggregate_transactions_by_submission
+from api.services.credit_transaction import calculate_insufficient_credits
 from auditable.views import AuditableMixin
 
 
@@ -57,4 +58,11 @@ class CreditTransactionViewSet(
         balances = aggregate_credit_balance_details(user.organization)
 
         serializer = self.get_serializer(balances, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True)
+    def calculate_balance(self, request, **kwargs):
+        org_id = kwargs.pop('pk')
+        balances = calculate_insufficient_credits(org_id)
+        serializer = CreditTransactionBalanceSerializer(balances, many=True)
         return Response(serializer.data)

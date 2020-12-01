@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Button from '../../app/components/Button';
 
-const CreditTransfersDetailsSupplierTable = (props) => {
+const CreditTransfersDetailsActionBar = (props) => {
   const {
-    setShowModal, setModalType, comment, allChecked, permissions, checkboxes,
+    setShowModal, setModalType, comment, allChecked, permissions, checkboxes, assertions,
   } = props;
 
-  const CreditTransfersDetailsActionBar = (
+  const actionBar = (
     <div className="row">
       <div className="col-sm-12">
         <div className="action-bar">
@@ -19,7 +19,6 @@ const CreditTransfersDetailsSupplierTable = (props) => {
               testid="reject-transfer"
               buttonType="reject"
               optionalText="Reject Notice"
-              optionalClassname="button text-danger"
               disabled={comment.length === 0 || allChecked}
               action={() => {
                 setModalType('partner-reject');
@@ -33,14 +32,24 @@ const CreditTransfersDetailsSupplierTable = (props) => {
               testid="recommend-reject-transfer"
               buttonType="reject"
               optionalText="Recommend Rejection"
-              optionalClassname="button text-danger"
               action={() => {
                 setModalType('recommend-reject');
                 setShowModal(true);
               }}
             />
             )}
-
+            {permissions.governmentDirector
+            && (
+            <Button
+              testid="director-reject-transfer"
+              buttonType="reject"
+              optionalText="Reject Transfer"
+              action={() => {
+                setModalType('director-reject');
+                setShowModal(true);
+              }}
+            />
+            )}
           </span>
           <span className="right-content">
             { permissions.initiatingSupplier
@@ -62,7 +71,6 @@ const CreditTransfersDetailsSupplierTable = (props) => {
               testid="recommend-approve-transfer"
               buttonType="approve"
               optionalText="Recommend transfer"
-              optionalClassname="button primary"
               action={() => {
                 setModalType('recommend-transfer');
                 setShowModal(true);
@@ -79,9 +87,21 @@ const CreditTransfersDetailsSupplierTable = (props) => {
                 setShowModal(true);
               }}
               optionalText="Submit Notice"
-              disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent || comment.length > 0}
+              disabled={checkboxes.length < assertions.length}
             />
             )}
+            {permissions.governmentDirector
+              && (
+              <Button
+                testid="director-record"
+                buttonType="approve"
+                optionalText="Record Transfer"
+                action={() => {
+                  setModalType('director-record');
+                  setShowModal(true);
+                }}
+              />
+              )}
           </span>
 
         </div>
@@ -90,21 +110,26 @@ const CreditTransfersDetailsSupplierTable = (props) => {
   );
   return (
     <>
-      {CreditTransfersDetailsActionBar}
+      {actionBar}
     </>
   );
 };
-CreditTransfersDetailsSupplierTable.defaultProps = {
+CreditTransfersDetailsActionBar.defaultProps = {
+  assertions: [],
   comment: '',
 };
 
-CreditTransfersDetailsSupplierTable.propTypes = {
-  permissions: PropTypes.shape().isRequired,
-  checkboxes: PropTypes.shape().isRequired,
-  comment: PropTypes.string,
+CreditTransfersDetailsActionBar.propTypes = {
   allChecked: PropTypes.bool.isRequired,
-  setShowModal: PropTypes.func.isRequired,
+  assertions: PropTypes.arrayOf(PropTypes.shape()),
+  checkboxes: PropTypes.arrayOf(PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ])).isRequired,
+  comment: PropTypes.string,
+  permissions: PropTypes.shape().isRequired,
   setModalType: PropTypes.func.isRequired,
+  setShowModal: PropTypes.func.isRequired,
 
 };
-export default CreditTransfersDetailsSupplierTable;
+export default CreditTransfersDetailsActionBar;

@@ -1,12 +1,12 @@
 import React from 'react';
+import ReactTooltip from 'react-tooltip';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import Button from '../../app/components/Button';
 import CustomPropTypes from '../../app/utilities/props';
 import Loading from '../../app/components/Loading';
 import TextInput from '../../app/components/TextInput';
-import History from '../../app/History';
-import ReactTooltip from 'react-tooltip';
 
 const UserDetailsForm = (props) => {
   const {
@@ -23,6 +23,27 @@ const UserDetailsForm = (props) => {
     return <Loading />;
   }
 
+  const disableEditing = (permissions) => {
+    let editPermission;
+    if (permissions){
+      permissions.forEach((each) => { 
+        if (each.permissionCode === "EDIT_USERS"){
+          editPermission = true;
+        }
+    })} 
+    else if(!permissions && typeof user.hasPermission === 'function' && user.hasPermission('EDIT_USERS')) { 
+      editPermission = true;
+    }
+    else{
+      editPermission = false;
+    }
+    
+    if (editPermission && details.username === user.username && !user.isGovernment){
+      return true;
+    }
+    return false;
+  }
+
   const checked = (role) => {
     if (!details || !details.roles) {
       return false;
@@ -35,7 +56,7 @@ const UserDetailsForm = (props) => {
     (role) => role.isGovernmentRole === details.organization.isGovernment,
   ).map((role) => (
     <ul key={role.id}>
-      <input type="checkbox" id={role.id} onChange={handleInputChange} name="roles-manager" defaultChecked={checked(role)} /> {role.roleCode} <FontAwesomeIcon data-tip={role.description} icon="info-circle" />
+      <input type="checkbox" id={role.id} onChange={handleInputChange} name="roles-manager" defaultChecked={checked(role)} disabled={disableEditing(role.permissions)}/> {role.roleCode} <FontAwesomeIcon data-tip={role.description} icon="info-circle" />
     </ul>
   ));
 
@@ -113,9 +134,9 @@ const UserDetailsForm = (props) => {
                     />
                   )}
                 </span>
-  
+
                 <span className="col-md-4">
-                  {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_USERS') && (
+                  {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_USERS') && (                 
                     <div className="form-group">
                       <div className="col-sm-4">
                         <label
@@ -126,10 +147,10 @@ const UserDetailsForm = (props) => {
                         </label>
                       </div>
                       <div className="col-sm-12">
-                        <input type="radio" id="active" onChange={handleInputChange} name="isActive" value="true" defaultChecked={details.isActive} />
-                        Active, user can log in to ZERO<br />
-                        <input type="radio" id="inactive" onChange={handleInputChange} name="isActive" value="false" defaultChecked={!details.isActive} />
-                        Inactive, user cannot log in to ZERO
+                        <input type="radio" id="active" onChange={handleInputChange} name="isActive" value="true" defaultChecked={details.isActive} disabled={disableEditing()}/>
+                        Active, user can log in to ZEVA<br />
+                        <input type="radio" id="inactive" onChange={handleInputChange} name="isActive" value="false" defaultChecked={!details.isActive} disabled={disableEditing()}/>
+                        Inactive, user cannot log in to ZEVA
                       </div>
 
                     </div>

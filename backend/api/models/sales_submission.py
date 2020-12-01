@@ -1,5 +1,7 @@
 from django.core.exceptions import PermissionDenied
 from django.db import models
+from django.db.models import Count
+
 from enumfields import EnumField
 from rest_framework.serializers import ValidationError
 
@@ -126,6 +128,24 @@ class SalesSubmission(Auditable):
     @property
     def unselected(self):
         return self.content.count() - self.records.count()
+
+    def get_content_totals_by_vehicles(self):
+        return self.content.values(
+            'xls_model', 'xls_model_year', 'xls_make'
+        ).annotate(
+            num_vins=Count('xls_vin')
+        ).order_by(
+            'xls_model', 'xls_model_year', 'xls_make'
+        )
+
+    def get_records_totals_by_vehicles(self):
+        return self.records.values(
+            'vehicle_id'
+        ).annotate(
+            num_vins=Count('vin')
+        ).order_by(
+            'vehicle_id'
+        )
 
     class Meta:
         db_table = "sales_submission"

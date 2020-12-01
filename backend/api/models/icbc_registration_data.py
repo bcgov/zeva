@@ -1,8 +1,5 @@
-from api.models.icbc_vehicle import IcbcVehicle
-from api.models.icbc_upload_date import IcbcUploadDate
 from auditable.models import Auditable
 from django.db import models
-from enumfields import EnumField
 
 
 class IcbcRegistrationData(Auditable):
@@ -21,7 +18,8 @@ class IcbcRegistrationData(Auditable):
         db_comment="A Vehicle Identification Number, a standard 17-character "
                    "identifier  used in the automative industry to identify "
                    "origin, colour, style, serial number, and other "
-                   "attributes (encoding is manufacturer-specific)"
+                   "attributes (encoding is manufacturer-specific)",
+        db_index=True
     )
 
     icbc_upload_date = models.ForeignKey(

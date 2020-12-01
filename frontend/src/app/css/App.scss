@@ -77,14 +77,14 @@ p {
 }
 
 #main {
-  min-height: 100%;
-  padding-bottom: 3rem;
+  min-height: 80%;
+  // padding-bottom: 3rem;
 }
 
 #content {
   background-color: $white;
   border: 2px solid $border-grey;
-  margin: 2rem;
+  margin: 2rem 2rem 1rem 2rem;
   padding: 1rem;
 
   .alert:first-child:last-child {

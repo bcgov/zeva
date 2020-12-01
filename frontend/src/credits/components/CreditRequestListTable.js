@@ -22,7 +22,7 @@ const CreditRequestListTable = (props) => {
     Header: 'ID',
     maxWidth: 75,
   }, {
-    accessor: 'submissionDate',
+    accessor: 'submissionHistory',
     className: 'text-center',
     Header: 'Date',
   }, {
@@ -51,13 +51,13 @@ const CreditRequestListTable = (props) => {
     id: 'warnings',
     maxWidth: 150,
   }, {
-    accessor: (item) => (item.totalACredits > 0 ? formatNumeric(item.totalACredits) : '-'),
+    accessor: (item) => (item.totalCredits && item.totalCredits.a > 0 ? formatNumeric(item.totalCredits.a) : '-'),
     className: 'text-right',
     Header: 'A-Credits',
     id: 'credits-a',
     maxWidth: 150,
   }, {
-    accessor: (item) => (item.totalBCredits > 0 ? formatNumeric(item.totalBCredits) : '-'),
+    accessor: (item) => (item.totalCredits && item.totalCredits.b > 0 ? formatNumeric(item.totalCredits.b) : '-'),
     className: 'text-right',
     Header: 'B-Credits',
     id: 'credits-b',

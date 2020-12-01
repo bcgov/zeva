@@ -59,8 +59,8 @@ const CreditRequestSummaryTable = (props) => {
 
   }];
 
-  const { items, validationStatus, user } = props;
-  const data = getCreditRequestSummary(items, validationStatus, user);
+  const { submission, validationStatus, user } = props;
+  const data = getCreditRequestSummary(submission, validationStatus, user);
   return (
     <ReactTable
       className="credit-summary-table"
@@ -74,7 +74,7 @@ const CreditRequestSummaryTable = (props) => {
 CreditRequestSummaryTable.defaultProps = {};
 
 CreditRequestSummaryTable.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
   validationStatus: PropTypes.string.isRequired,
 };

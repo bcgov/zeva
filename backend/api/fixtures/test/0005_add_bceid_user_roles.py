@@ -25,7 +25,7 @@ class AddBCEIDUserRoles(OperationalDataScript):
     ]
 
     list_of_roles = [
-        "Organization Administrator", "Signing Authority", "Manage ZEV"
+        "Organization Administrator", "Signing Authority", "ZEVA User"
     ]
 
     def check_run_preconditions(self):

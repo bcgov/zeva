@@ -38,11 +38,11 @@ int:network=internal-cluster-api-endpoint
 
 ### 1.8 Tools Namspace
 
-$namspace=tbiwaq-tools  
+$namspace=e52f12-tools  
 
 ### 1.9 Environment Namspace
 
-$namspace=tbiwaq-[environment name]  
+$namspace=e52f12-[environment name]  
 
 ### 1.10 KeyCloak
 

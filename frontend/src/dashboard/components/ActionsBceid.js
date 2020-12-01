@@ -6,6 +6,7 @@ import ActivityBanner from './ActivityBanner';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
+import CONFIG from '../../app/config';
 
 const ActionsBceid = (props) => {
   const { activityCount, loading } = props;
@@ -119,7 +120,8 @@ const ActionsBceid = (props) => {
             linkTo={ROUTES_CREDIT_REQUESTS.LIST}
           />
         )}
-        {activityCount.transfersAwaitingPartner > 0
+        {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
+        && activityCount.transfersAwaitingPartner > 0
         && (
         <ActivityBanner
           colour="yellow"
@@ -129,7 +131,8 @@ const ActionsBceid = (props) => {
           linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Submitted`}
         />
         )}
-        {activityCount.transfersAwaitingGovernment > 0
+        {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
+        && activityCount.transfersAwaitingGovernment > 0
         && (
         <ActivityBanner
           colour="blue"
@@ -139,7 +142,8 @@ const ActionsBceid = (props) => {
           linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Approved`}
         />
         )}
-        {activityCount.transfersRecorded > 0
+        {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
+        && activityCount.transfersRecorded > 0
         && (
         <ActivityBanner
           colour="green"
@@ -149,7 +153,8 @@ const ActionsBceid = (props) => {
           linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Issued`}
         />
         )}
-        {activityCount.transfersAwaitingGovernment === 0
+        {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
+        && activityCount.transfersAwaitingGovernment === 0
         && activityCount.transfersAwaitingPartner === 0 && activityCount.transfersRecorded === 0
         && (
           <ActivityBanner
@@ -160,7 +165,8 @@ const ActionsBceid = (props) => {
             linkTo={ROUTES_CREDIT_TRANSFERS.LIST}
           />
         )}
-        {activityCount.transfersRejected > 0
+        {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
+        && activityCount.transfersRejected > 0
         && (
         <ActivityBanner
           colour="red"

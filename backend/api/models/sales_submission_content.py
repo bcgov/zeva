@@ -21,19 +21,22 @@ class SalesSubmissionContent(Auditable):
         blank=True,
         null=True,
         max_length=255,
-        db_comment="Raw value of the Make from the spreadsheet"
+        db_comment="Raw value of the Make from the spreadsheet",
+        db_index=True
     )
     xls_model = models.CharField(
         blank=True,
         null=True,
         max_length=255,
-        db_comment="Raw value of the Vehicle Model from the spreadsheet"
+        db_comment="Raw value of the Vehicle Model from the spreadsheet",
+        db_index=True
     )
     xls_model_year = models.CharField(
         blank=True,
         null=True,
         max_length=255,
-        db_comment="Raw value of the Model Year from the spreadsheet"
+        db_comment="Raw value of the Model Year from the spreadsheet",
+        db_index=True
     )
     xls_sale_date = models.CharField(
         blank=True,
@@ -54,7 +57,8 @@ class SalesSubmissionContent(Auditable):
         blank=True,
         null=True,
         max_length=255,
-        db_comment="Raw value of the VIN from the spreadsheet"
+        db_comment="Raw value of the VIN from the spreadsheet",
+        db_index=True
     )
 
     @property
@@ -68,6 +72,7 @@ class SalesSubmissionContent(Auditable):
             make__iexact=self.xls_make,
             model_name=self.xls_model,
             model_year__name=int(model_year),
+            organization_id=self.submission.organization_id,
             validation_status=VehicleDefinitionStatuses.VALIDATED,
         ).first()
 
@@ -168,6 +173,15 @@ class SalesSubmissionContent(Auditable):
                 warnings.append('MAKE_MISMATCHED')
 
         return warnings
+
+    @property
+    def valid_sales_date(self):
+        if self.sales_date is None:
+            return False
+        elif self.sales_date < datetime.datetime(2018, 1, 2):
+            return False
+
+        return True
 
     class Meta:
         db_table = "sales_submission_content"

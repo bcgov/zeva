@@ -1,0 +1,44 @@
+---
+kind: Template
+apiVersion: v1
+labels:
+  template: zeva-nsp
+metadata:
+  name: zeva-nsp
+  creationTimestamp:
+parameters:
+  - name: OCP_NAME
+    displayName: Openshift Name
+    description: Openshift Name
+    required: true    
+objects:
+  - kind: NetworkSecurityPolicy
+    apiVersion: secops.${OCP_NAME}.gov.bc.ca/v1alpha1
+    metadata:
+      name: pods-to-external-network
+      labels:
+        name: pods-to-external-network
+        env: tbiwaq-tools
+    spec:
+      description: |
+        Allow the builds to access the internet.
+        This only needs to be specified once for tbiwaq-tools project as build only runs in tools project.
+      source:
+        - - $namespace=tbiwaq-tools
+      destination:
+        - - ext:network=any
+  - kind: NetworkSecurityPolicy
+    apiVersion: secops.${OCP_NAME}.gov.bc.ca/v1alpha1
+    metadata:
+      name: pods-to-external-network
+      labels:
+        name: pods-to-external-network
+        env: tbiwaq-tools
+    spec:
+      description: |
+        Allow the builds to access the internet.
+        This only needs to be specified once for tbiwaq-tools project as build only runs in tools project.
+      source:
+        - - $namespace=tbiwaq-tools
+      destination:
+        - - int:network=internal-cluster-api-endpoint
