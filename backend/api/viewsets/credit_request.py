@@ -188,7 +188,7 @@ class CreditRequestViewset(
                 )
 
             if 'warning' in submission_filters:
-                print('tesst')
+                print('warnings')
                 duplicate_vins = SalesSubmissionContent.objects.annotate(
                     vin_count=Count('xls_vin')
                 ).filter(vin_count__gt=1).values_list('xls_vin', flat=True)
