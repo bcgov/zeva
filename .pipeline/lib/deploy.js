@@ -21,6 +21,30 @@ module.exports = settings => {
 
   // The deployment of your cool app goes here ▼▼▼
 
+  //create network security policies for internal pod to pod communications
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/nsp/nsp-env.yaml`, {
+    'param': {
+      'NAME': phases[phase].name,
+      'ENV_NAME': phases[phase].phase,
+      'SUFFIX': phases[phase].suffix,
+      'API_VERSION': 'security.devops.gov.bc.ca/v1alpha1'
+    }
+  }))
+  /**** open this block, it will only deploy network security policies
+  console.log("will return22")
+  oc.applyRecommendedLabels(
+    objects,
+    phases[phase].name,
+    phase,
+    `${changeId}`,
+    phases[phase].instance,
+  );
+  oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
+  oc.applyAndDeploy(objects, phases[phase].instance);  
+  return;
+  console.log("you should not see this");
+   */
+  
   // create configs
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/config/configmap.yaml`, {
     'param': {
@@ -32,7 +56,8 @@ module.exports = settings => {
       'SSO_NAME': phases[phase].ssoName,
       'KEYCLOAK_REALM': 'rzh2zkjq',
       'DJANGO_DEBUG': phases[phase].djangoDebug,
-      'OCP_NAME': phases[phase].ocpName
+      'OCP_NAME': phases[phase].ocpName,
+      'LOGOUT_HOST_NAME': phases[phase].logoutHostName
     }
   }))
 
@@ -69,7 +94,7 @@ module.exports = settings => {
       'CPU_LIMIT': phases[phase].patroniCpuLimit,
       'MEMORY_REQUEST': phases[phase].patroniMemoryRequest,
       'MEMORY_LIMIT': phases[phase].patroniMemoryLimit,
-      'IMAGE_REGISTRY': 'docker-registry.default.svc:5000',
+      'IMAGE_REGISTRY': 'image-registry.openshift-image-registry.svc:5000',
       'IMAGE_STREAM_NAMESPACE': phases[phase].namespace,
       'IMAGE_STREAM_TAG': 'patroni:v10-stable',
       'REPLICA': phases[phase].patroniReplica,
@@ -88,7 +113,7 @@ module.exports = settings => {
       'CLUSTER_NAME': 'rabbitmq-cluster'
     }
   }))
-
+  
   /**
   //deploy rabbitmq, use docker image directly
   //POST_START_SLEEP is harded coded in the rabbitmq template, replacement was not successful
@@ -99,7 +124,7 @@ module.exports = settings => {
       'SUFFIX': phases[phase].suffix,
       'NAMESPACE': phases[phase].namespace,
       'CLUSTER_NAME': 'rabbitmq-cluster',
-      'ISTAG': `docker-registry.default.svc:5000/${phases[phase].namespace}/rabbitmq:3.8.3-management`,
+      'ISTAG': `image-registry.openshift-image-registry.svc:5000/${phases[phase].namespace}/rabbitmq:3.8.3-management`,
       'SERVICE_ACCOUNT': 'rabbitmq-discovery',
       'VOLUME_SIZE': phases[phase].rabbitmqPvcSize,
       'CPU_REQUEST': phases[phase].rabbitmqCpuRequest,

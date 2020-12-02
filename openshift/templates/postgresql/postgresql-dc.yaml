@@ -122,7 +122,7 @@ objects:
             - postgresql
           from:
             kind: ImageStreamTag
-            namespace: tbiwaq-tools
+            namespace: e52f12-tools
             name: postgresql:10-1-47
           lastTriggeredImage:
         type: ImageChange

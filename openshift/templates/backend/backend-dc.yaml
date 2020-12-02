@@ -103,8 +103,8 @@ objects:
   - apiVersion: route.openshift.io/v1
     kind: Route
     metadata:
-      creationTimestamp: null
-      annotations:
+      creationTimestamp: 
+      annotations:      
         haproxy.router.openshift.io/balance: source
         haproxy.router.openshift.io/timeout: 1200s      
       labels:
@@ -154,10 +154,6 @@ objects:
       annotations:
         description: Defines how to deploy the application server
       creationTimestamp: null
-      labels:
-        app: zeva
-        role: backend
-        env: ${ENV_NAME}
       name: ${NAME}-backend${SUFFIX}
     spec:
       replicas: ${{REPLICAS}}

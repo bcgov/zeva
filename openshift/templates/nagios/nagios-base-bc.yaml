@@ -16,7 +16,7 @@ objects:
       to:
         kind: ImageStreamTag
         name: nagios-base:latest
-        namespace: tbiwaq-tools
+        namespace: e52f12-tools
     postCommit: {}
     resources: {}
     runPolicy: Serial

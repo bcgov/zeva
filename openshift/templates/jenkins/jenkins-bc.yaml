@@ -30,7 +30,7 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: bcgov-jenkins-basic:v2-20200303
+        name: bcgov-jenkins-basic:v2-20201021
     postCommit: {}
     resources:
       limits:
@@ -43,14 +43,13 @@ objects:
     source:
       contextDir: cicd/jenkins-basic/docker
       git:
-        ref: master
-        uri: https://github.com/BCDevOps/openshift-components.git
+        ref: update-jenkins-build
+        uri: https://github.com/kuanfandevops/openshift-components.git
       type: Git
     strategy:
-      dockerStrategy:
-        from:
-          kind: ImageStreamTag
-          name: rhel7-atomic:7.7-371
+      from:
+        kind: DockerImage
+        name: registry.redhat.io/ubi8/ubi:8.2
       type: Docker
     successfulBuildsHistoryLimit: 5
     triggers:

@@ -6,83 +6,159 @@ labels:
 metadata:
   name: zeva-nsp
   creationTimestamp:
-parameters:
+parameters:  
+  - name: NAME
+    displayName: App Name
+    description: App Name
+    value: 'zeva'
+    required: true
   - name: ENV_NAME
     displayName: Environment Name
     description: Environment Name
     required: true
-  - name: OCP_NAME
-    displayName: Openshift Name
-    description: Openshift Name
+  - name: SUFFIX
+    displayName:
+    description: sample is -dev-365, -test and -prod
+    value: ""
+    required: true    
+  - name: API_VERSION
+    displayName: Api version
+    description: Api version, either secops.pathfinder.gov.bc.ca/v1alpha1 or security.devops.gov.bc.ca/v1alpha1
     required: true
 objects:
   - kind: NetworkSecurityPolicy
-    apiVersion: secops.${OCP_NAME}.gov.bc.ca/v1alpha1
+    apiVersion: ${API_VERSION}
     metadata:
-      name: custom-interweb-to-frontend
+      name: ${NAME}${SUFFIX}-custom-frontend-to-internet
     spec:
-      description: |
-        Allow frontend to communicate with internet.
-      source:
+     description: |
+       allow frontend to talk to the internet.
+     source:
+        - - name=${NAME}-frontend${SUFFIX}
+     destination:
         - - ext:network=any
-      destination:
-        - - app=zeva
-          - role=frontend
-          - env=${ENV_NAME}
   - kind: NetworkSecurityPolicy
-    apiVersion: secops.${OCP_NAME}.gov.bc.ca/v1alpha1
+    apiVersion: ${API_VERSION}
     metadata:
-      name: custom-frontend-to-backend
+      name: ${NAME}${SUFFIX}-custom-frontend-to-backend
     spec:
       description: |
         Allow frontend to communicate with backend.
       source:
-        - - app=zeva
-          - role=frontend
-          - env=${ENV_NAME}
+        - - name=${NAME}-frontend${SUFFIX}
       destination:
-        - - app=zeva
-          - role=backend
-          - env=${ENV_NAME}
+        - - name=${NAME}-backend${SUFFIX}
   - kind: NetworkSecurityPolicy
-    apiVersion: secops.${OCP_NAME}.gov.bc.ca/v1alpha1
+    apiVersion: ${API_VERSION}
     metadata:
-      name: custom-backend-to-patroni
+      name: ${NAME}${SUFFIX}-custom-backend-to-patroni
     spec:
       description: |
         Allow backend to communicate with patroni.
       source:
-        - - app=zeva
-          - role=backend
-          - env=${ENV_NAME}
+        - - name=${NAME}-backend${SUFFIX}
       destination:
-        - - app=zeva
-          - role=patroni
-          - env=${ENV_NAME}        
+        - - cluster-name=patroni${SUFFIX}
   - kind: NetworkSecurityPolicy
-    apiVersion: secops.${OCP_NAME}.gov.bc.ca/v1alpha1
+    apiVersion: ${API_VERSION}
     metadata:
-      name: custom-pods-to-ocp-api
+      name: ${NAME}${SUFFIX}-custom-patroni-to-patroni-itself
     spec:
       description: |
-        Allow pods to talk to the internal OCP api so deployments work.
-        This only needs to be specified once per environment.
-        Without this policy, pods could have PU Update error when starting container
+        Allow patroni pods to communicate in patroni cluster.
       source:
-        - - $namespace=tbiwaq-${ENV_NAME}
+        - - cluster-name=patroni${SUFFIX}
       destination:
-        - - int:network=internal-cluster-api-endpoint
+        - - cluster-name=patroni${SUFFIX}
   - kind: NetworkSecurityPolicy
-    apiVersion: secops.${OCP_NAME}.gov.bc.ca/v1alpha1
+    apiVersion: ${API_VERSION}
     metadata:
-      name: custom-backend-to-keycloak
+      name: ${NAME}${SUFFIX}-custom-backendmidlifecyclepod-to-patroni
+    spec:
+      description: |
+        Allow backend mid lifecycle pod to run django migrations against patroni.
+      source:
+        - - openshift.io/deployer-pod.type=hook-mid
+      destination:
+        - - cluster-name=patroni${SUFFIX}    
+  - kind: NetworkSecurityPolicy
+    apiVersion: ${API_VERSION}
+    metadata:
+      name: ${NAME}${SUFFIX}-custom-frontend-to-keycloak
+    spec:
+      description: |
+        Allow frontend pod to communicate with keycloak
+      source:
+        - - name=${NAME}-frontend${SUFFIX}
+      destination:
+        - - $namespace=devops-sso-${ENV_NAME}
+          - app=sso-${ENV_NAME}          
+  - kind: NetworkSecurityPolicy
+    apiVersion: ${API_VERSION}
+    metadata:
+      name: ${NAME}${SUFFIX}-custom-backend-to-keycloak
     spec:
       description: |
         Allow backend pod to communicate with keycloak
       source:
-        - - app=zeva
-          - role=backend
-          - env=${ENV_NAME}
+        - - name=${NAME}-backend${SUFFIX}
       destination:
         - - $namespace=devops-sso-${ENV_NAME}
           - app=sso-${ENV_NAME}
+  - kind: NetworkSecurityPolicy
+    apiVersion: ${API_VERSION}
+    metadata:
+      name: ${NAME}${SUFFIX}-custom-backend-to-minio
+    spec:
+      description: |
+        Allow backend pod to communicate with minio
+      source:
+        - - name=${NAME}-backend${SUFFIX}
+      destination:
+        - - name=${NAME}-minio-${ENV_NAME}
+  - kind: NetworkSecurityPolicy
+    apiVersion: ${API_VERSION}
+    metadata:
+      name: ${NAME}${SUFFIX}-custom-backend-to-internet
+    spec:
+      description: |
+        allow backend to talk to the internet.
+      source:
+        - - name=${NAME}-backend${SUFFIX}
+      destination:
+        - - ext:network=any
+  - kind: NetworkSecurityPolicy
+    apiVersion: ${API_VERSION}
+    metadata:
+      name: ${NAME}${SUFFIX}-custom-schemaspy-to-patroni
+    spec:
+      description: |
+        Allow schemaspy to communicate with patroni.
+      source:
+        - - name=schemaspy-public${SUFFIX}
+      destination:
+        - - cluster-name=patroni${SUFFIX}        
+  - kind: NetworkSecurityPolicy
+    apiVersion: ${API_VERSION}
+    metadata:
+      name: ${NAME}${SUFFIX}-custom-schemaspy-to-backend
+    spec:
+      description: |
+        Allow schemaspy to communicate with backend, as it needs to wait backend completes the migration.
+      source:
+        - - name=schemaspy-public${SUFFIX}
+      destination:
+        - - name=${NAME}-backend${SUFFIX}              
+  - kind: NetworkSecurityPolicy
+    apiVersion: ${API_VERSION}
+    metadata:
+      name: ${NAME}${SUFFIX}-custom-schemaspy-to-internet
+    spec:
+      description: |
+        allow schemaspy to talk to the internet.
+      source:
+        - - name=schemaspy-public${SUFFIX}
+      destination:
+        - - ext:network=any        
+ 
+                

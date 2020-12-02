@@ -66,7 +66,7 @@ objects:
               - schemaspy-public
             from:
               kind: ImageStreamTag
-              namespace: tbiwaq-tools
+              namespace: e52f12-tools
               name: schemaspy:prod
             lastTriggeredImage:
         - type: ConfigChange
@@ -84,7 +84,7 @@ objects:
           initContainers:
             - name: wait-for-database
               image: toschneck/wait-for-it:latest
-              command: ['sh', '-c', './wait-for-it.sh -t 0 zeva-backend${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local:8080']
+              command: ['sh', '-c', './wait-for-it.sh -t 0 zeva-backend${SUFFIX}.e52f12-${ENV_NAME}.svc.cluster.local:8080']
           containers:
             - name: schemaspy-public
               image:
