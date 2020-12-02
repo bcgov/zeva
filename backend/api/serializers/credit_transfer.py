@@ -208,7 +208,12 @@ class CreditTransferSaveSerializer(ModelSerializer):
                     signing_authority_assertion_id=confirmation
                 )
 
-        serializer = CreditTransferSerializer(credit_transfer, read_only=True)
+        serializer = CreditTransferSerializer(
+            credit_transfer, read_only=True,
+            context={
+                'request': request
+            }
+        )
 
         return serializer.data
 
