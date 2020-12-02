@@ -4,12 +4,17 @@ from datetime import datetime
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Subquery, Count
+from django.db.models import Q
 from django.http import HttpResponse
+
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from api.models.icbc_registration_data import IcbcRegistrationData
+from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
@@ -180,6 +185,25 @@ class CreditRequestViewset(
             if 'xls_make' in submission_filters:
                 submission_content = submission_content.filter(
                     xls_make__icontains=submission_filters['xls_make']
+                )
+
+            if 'warning' in submission_filters:
+                print('tesst')
+                duplicate_vins = SalesSubmissionContent.objects.annotate(
+                    vin_count=Count('xls_vin')
+                ).filter(vin_count__gt=1).values_list('xls_vin', flat=True)
+
+                awarded_vins = RecordOfSale.objects.exclude(
+                    submission_id=pk
+                ).values_list('vin', flat=True)
+
+                submission_content = submission_content.filter(
+                    Q(xls_vin__in=duplicate_vins) |
+                    Q(xls_vin__in=awarded_vins) |
+                    ~Q(xls_vin__in=Subquery(
+                        IcbcRegistrationData.objects.values('vin')
+                    )) |
+                    Q(xls_sale_date__lte="43102.0")
                 )
 
         submission_content_paginator = Paginator(submission_content, page_size)
