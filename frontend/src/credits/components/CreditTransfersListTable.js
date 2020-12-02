@@ -14,7 +14,6 @@ import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 const CreditTransfersListTable = (props) => {
   const { user, filtered, setFiltered } = props;
   let { items } = props;
-
   items = items.map((item) => {
     let totalCreditsA = 0;
     let totalCreditsB = 0;
@@ -54,13 +53,15 @@ const CreditTransfersListTable = (props) => {
     id: 'date',
     maxWidth: 150,
   }, {
-    accessor: (row) => (row.creditTo.id !== user.organization.id
-      ? row.creditTo.name
-      : row.debitFrom.name
-    ),
+    accessor: 'debitFrom.name',
     className: 'text-left',
-    Header: 'Transfer Partner',
-    id: 'partner',
+    Header: 'Seller',
+    id: 'seller',
+  }, {
+    accessor: 'creditTo.name',
+    className: 'text-left',
+    Header: 'Buyer',
+    id: 'buyer',
   }, {
     accessor: (row) => (row.totalCreditsA !== 0 ? formatNumeric(row.totalCreditsA) : '-'),
     className: 'text-right',

@@ -61,6 +61,16 @@ const Button = (props) => {
       classname += ' primary';
       onclick = action;
       break;
+    case 'approve':
+      text = optionalText;
+      classname += ' primary';
+      onclick = action;
+      break;
+    case 'reject':
+      text = optionalText;
+      classname += ' text-danger';
+      onclick = action;
+      break;
     default:
       text = optionalText;
       onclick = action;

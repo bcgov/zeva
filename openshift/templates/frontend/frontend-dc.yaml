@@ -89,7 +89,7 @@ objects:
     kind: Route
     metadata:
       creationTimestamp: null
-      annotations:
+      annotations:      
         haproxy.router.openshift.io/balance: source
         haproxy.router.openshift.io/timeout: 1200s            
       labels:
@@ -137,10 +137,6 @@ objects:
     kind: DeploymentConfig
     metadata:
       name: ${NAME}-frontend${SUFFIX}
-      labels:
-        app: zeva
-        role: frontend
-        env: ${ENV_NAME}
       annotations:
         description: Defines how to deploy the frontend application
       creationTimestamp: null

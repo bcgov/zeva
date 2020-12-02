@@ -61,9 +61,18 @@ class CreditTransferSerializer(
         many=True, read_only=True
     )
     debit_from = OrganizationSerializer()
-    status = EnumField(CreditTransferStatuses, read_only=True)
+    status = SerializerMethodField()
     update_user = SerializerMethodField()
     credit_transfer_comment = SerializerMethodField()
+
+    def get_status(self, obj):
+        request = self.context.get('request')
+        if not request.user.is_government and obj.status in [
+            CreditTransferStatuses.RECOMMEND_REJECTION,
+            CreditTransferStatuses.RECOMMEND_APPROVAL
+        ]:
+            return CreditTransferStatuses.APPROVED.value
+        return obj.get_status_display()
 
     def get_credit_transfer_comment(self, obj):
         credit_transfer_comment = CreditTransferComment.objects.filter(
@@ -199,7 +208,12 @@ class CreditTransferSaveSerializer(ModelSerializer):
                     signing_authority_assertion_id=confirmation
                 )
 
-        serializer = CreditTransferSerializer(credit_transfer, read_only=True)
+        serializer = CreditTransferSerializer(
+            credit_transfer, read_only=True,
+            context={
+                'request': request
+            }
+        )
 
         return serializer.data
 
