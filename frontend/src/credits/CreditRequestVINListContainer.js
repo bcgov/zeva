@@ -23,6 +23,7 @@ const CreditRequestVINListContainer = (props) => {
 
   const refreshDetails = () => {
     console.error(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id));
+    console.error('test');
     axios.all([
       axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
       axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id)),
