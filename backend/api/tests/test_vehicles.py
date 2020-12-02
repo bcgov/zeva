@@ -2,14 +2,35 @@ import json
 
 from .base_test_case import BaseTestCase
 from ..models.vehicle import Vehicle
+from ..models.user_role import UserRole
+from ..models.role import Role
 
 
 class TestVehicles(BaseTestCase):
     def test_get_vehicles(self):
+        UserRole.objects.create(
+            user_profile_id=self.users['RTAN_BCEID'].id,
+            role=Role.objects.get(
+                role_code='ZEVA User',
+            )
+        )
+        
         response = self.clients['RTAN_BCEID'].get("/api/vehicles")
         self.assertEqual(response.status_code, 200)
 
     def test_update_vehicle_state(self):
+        UserRole.objects.create(
+            user_profile_id=self.users['RTAN_BCEID'].id,
+            role=Role.objects.get(
+                role_code='Signing Authority',
+            )
+        )
+        UserRole.objects.create(
+            user_profile_id=self.users['RTAN_BCEID'].id,
+            role=Role.objects.get(
+                role_code='ZEVA User',
+            )
+        )
         org1 = self.users['RTAN_BCEID'].organization
 
         vehicle = Vehicle.objects.filter(organization=org1).first()
