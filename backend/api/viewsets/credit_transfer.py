@@ -7,7 +7,7 @@ from api.models.credit_transfer import CreditTransfer
 from api.models.credit_transfer_statuses import CreditTransferStatuses
 from api.serializers.credit_transaction import CreditTransactionSaveSerializer
 from api.serializers.credit_transfer import CreditTransferSerializer, \
-    CreditTransferSaveSerializer
+    CreditTransferSaveSerializer, CreditTransferListSerializer
 from auditable.views import AuditableMixin
 from api.services.credit_transaction import validate_transfer
 
@@ -29,6 +29,7 @@ class CreditTransferViewset(
         'create': CreditTransferSaveSerializer,
         'partial_update': CreditTransferSaveSerializer,
         'update': CreditTransferSaveSerializer,
+        'list': CreditTransferListSerializer,
     }
 
     def get_queryset(self):

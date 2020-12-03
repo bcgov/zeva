@@ -6,6 +6,9 @@ from api.models.credit_transfer_comment import CreditTransferComment
 from api.models.credit_transfer_content import CreditTransferContent
 from api.models.credit_transfer_history import CreditTransferHistory
 from api.models.credit_transfer_statuses import CreditTransferStatuses
+from api.models.credit_class import CreditClass
+from api.models.model_year import ModelYear
+from api.models.weight_class import WeightClass
 from api.models.organization import Organization
 from api.models.signing_authority_confirmation import \
     SigningAuthorityConfirmation
@@ -17,6 +20,7 @@ from api.serializers.credit_transfer_content import \
 from api.serializers.user import MemberSerializer, UserSerializer
 from api.serializers.organization import OrganizationSerializer
 from api.services.credit_transfer import aggregate_credit_transfer_details
+from api.services.credit_transaction import calculate_insufficient_credits
 
 class CreditTransferBaseSerializer:
     def get_update_user(self, obj):
@@ -51,6 +55,34 @@ class CreditTransferHistorySerializer(
             'status', 'update_user'
             )
 
+class CreditTransferListSerializer(
+        ModelSerializer, EnumSupportSerializerMixin,
+        CreditTransferBaseSerializer
+):
+    history = CreditTransferHistorySerializer(read_only=True, many=True)
+    credit_to = OrganizationSerializer()
+    credit_transfer_content = CreditTransferContentSerializer(
+        many=True, read_only=True
+    )
+    debit_from = OrganizationSerializer()
+    status = SerializerMethodField()
+    update_user = SerializerMethodField()
+
+    def get_status(self, obj):
+        request = self.context.get('request')
+        if not request.user.is_government and obj.status in [
+            CreditTransferStatuses.RECOMMEND_REJECTION,
+            CreditTransferStatuses.RECOMMEND_APPROVAL
+        ]:
+            return CreditTransferStatuses.APPROVED.value
+        return obj.get_status_display()
+
+    class Meta:
+        model = CreditTransfer
+        fields = (
+            'create_timestamp', 'credit_to', 'credit_transfer_content',
+            'debit_from', 'id', 'status', 'update_user', 'history'
+        )
 
 class CreditTransferSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
@@ -68,16 +100,31 @@ class CreditTransferSerializer(
     sufficient_credits = SerializerMethodField()
 
     def get_sufficient_credits(self, obj):
+        has_credits = True
         request = self.context.get('request')
         if request.user.is_government:
-            print(self.instance)
-            # if self.instance.status in [CreditTransferStatuses.APPROVED]:
-            supplier_balance = aggregate_credit_transfer_details(self.instance.debit_from)
-            # for record in supplier_balance:
-
-
-
-        return
+            supplier_balance = calculate_insufficient_credits(
+                self.instance.debit_from)
+            content = CreditTransferContent.objects.filter(
+                credit_transfer_id=self.instance.id
+            )
+            content_count = 0
+            for each in content:
+                content_count += 1
+                request_year = each.model_year.id
+                request_credit_class = each.credit_class.id
+                request_value = each.credit_value
+                request_weight = 1
+                for record in supplier_balance:
+                    if request_weight == record['weight_class_id']:
+                        if request_year == record['model_year_id']:
+                            if request_credit_class == record['credit_class_id']:
+                                content_count -= 1
+                                if record['total_value'] < 0:
+                                    has_credits = False
+                if content_count > 0:
+                    has_credits = False
+        return has_credits
 
     def get_status(self, obj):
         request = self.context.get('request')
@@ -124,10 +171,18 @@ class CreditTransferSaveSerializer(ModelSerializer):
         request = self.context.get('request')
         instance = self.instance
         content = request.data.get('content')
-        supplier_balance = aggregate_credit_transfer_details(content[0]['debit_from'])
-        print(request)
-        print(supplier_balance)
+        model_years = ModelYear.objects.all()
+        credit_classes = CreditClass.objects.all()
+        weights = WeightClass.objects.all()
+        ##check to make sure its a draft
+        supplier_totals = aggregate_credit_transfer_details(content[0]['debit_from'])
         ## loop through request and check against supplier balance
+        for each in content:
+            for balance in supplier_balance:         
+                year = model_years.filter(name=each.model_year).first()
+
+
+        #     print(each)
         return value
 
 

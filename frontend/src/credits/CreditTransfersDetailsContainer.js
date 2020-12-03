@@ -23,7 +23,7 @@ const CreditTransfersDetailsContainer = (props) => {
 
   const [assertions, setAssertions] = useState([]);
   const [checkboxes, setCheckboxes] = useState([]);
-  const [negativeCredit, setNegativeCredit] = useState(false);
+  const [sufficientCredit, setSufficientCredit] = useState(true);
   const { id } = match.params;
   const [submission, setSubmission] = useState({});
   const [loading, setLoading] = useState(true);
@@ -35,7 +35,7 @@ const CreditTransfersDetailsContainer = (props) => {
     ]).then(axios.spread((response, assertionsResponse) => {
       setAssertions(assertionsResponse.data);
       setSubmission(response.data);
-      // orgId = response.data.debitFrom.id;
+      setSufficientCredit(response.data.sufficientCredits);
       setLoading(false);
     }));
   };
@@ -80,7 +80,7 @@ const CreditTransfersDetailsContainer = (props) => {
       handleCheckboxClick={handleCheckboxClick}
       handleSubmit={handleSubmit}
       key="page"
-      negativeCredit={negativeCredit}
+      sufficientCredit={sufficientCredit}
       submission={submission}
       user={user}
     />,
