@@ -428,10 +428,11 @@ class SalesSubmissionSaveSerializer(
             content = SalesSubmissionContent.objects.filter(
                 submission_id=instance.id
             ).exclude(
+                id__in=invalidated
+            ).exclude(
                 xls_vin__in=awarded_vins
             ).exclude(
                 xls_vin__in=duplicate_vins,
-                id__in=invalidated,
                 xls_sale_date__lte="43102.0"
             )
 
