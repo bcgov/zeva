@@ -413,17 +413,17 @@ class SalesSubmissionSaveSerializer(
 
             duplicate_vins = SalesSubmissionContent.objects.annotate(
                 vin_count=Count('xls_vin')
-            ).filter(vin_count__gt=1).values_list('xls_vin', flat=True)
+            ).filter(
+                submission_id=instance.id,
+                vin_count__gt=1
+            ).values_list('xls_vin', flat=True)
 
             awarded_vins = RecordOfSale.objects.exclude(
                 submission_id=instance.id
             ).values_list('vin', flat=True)
 
             content = SalesSubmissionContent.objects.filter(
-                submission_id=instance.id,
-                xls_vin__in=Subquery(
-                    IcbcRegistrationData.objects.values('vin')
-                )
+                submission_id=instance.id
             ).exclude(
                 xls_vin__in=awarded_vins
             ).exclude(
@@ -432,9 +432,7 @@ class SalesSubmissionSaveSerializer(
                 xls_sale_date__lte="43102.0"
             )
 
-            rows = (row for row in content if row.vehicle)
-
-            for row in rows:
+            for row in (row for row in content if row.vehicle):
                 RecordOfSale.objects.create(
                     sale_date=get_date(
                         row.xls_sale_date,
