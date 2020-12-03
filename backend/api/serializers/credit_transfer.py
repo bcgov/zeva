@@ -6,6 +6,7 @@ from api.models.credit_transfer_comment import CreditTransferComment
 from api.models.credit_transfer_content import CreditTransferContent
 from api.models.credit_transfer_history import CreditTransferHistory
 from api.models.credit_transfer_statuses import CreditTransferStatuses
+from api.models.organization import Organization
 from api.models.signing_authority_confirmation import \
     SigningAuthorityConfirmation
 from api.models.user_profile import UserProfile
@@ -15,7 +16,7 @@ from api.serializers.credit_transfer_content import \
     CreditTransferContentSerializer, CreditTransferContentSaveSerializer
 from api.serializers.user import MemberSerializer, UserSerializer
 from api.serializers.organization import OrganizationSerializer
-
+from api.services.credit_transfer import aggregate_credit_transfer_details
 
 class CreditTransferBaseSerializer:
     def get_update_user(self, obj):
@@ -64,6 +65,19 @@ class CreditTransferSerializer(
     status = SerializerMethodField()
     update_user = SerializerMethodField()
     credit_transfer_comment = SerializerMethodField()
+    sufficient_credits = SerializerMethodField()
+
+    def get_sufficient_credits(self, obj):
+        request = self.context.get('request')
+        if request.user.is_government:
+            print(self.instance)
+            # if self.instance.status in [CreditTransferStatuses.APPROVED]:
+            supplier_balance = aggregate_credit_transfer_details(self.instance.debit_from)
+            # for record in supplier_balance:
+
+
+
+        return
 
     def get_status(self, obj):
         request = self.context.get('request')
@@ -92,7 +106,7 @@ class CreditTransferSerializer(
         fields = (
             'create_timestamp', 'credit_to', 'credit_transfer_content',
             'debit_from', 'id', 'status', 'update_user',
-            'credit_transfer_comment', 'history',
+            'credit_transfer_comment', 'history', 'sufficient_credits'
         )
 
 
@@ -106,11 +120,20 @@ class CreditTransferSaveSerializer(ModelSerializer):
         allow_null=True,
         required=False
     )
+    def validate_status(self, value):
+        request = self.context.get('request')
+        instance = self.instance
+        content = request.data.get('content')
+        supplier_balance = aggregate_credit_transfer_details(content[0]['debit_from'])
+        print(request)
+        print(supplier_balance)
+        ## loop through request and check against supplier balance
+        return value
+
 
     def validate_validation_status(self, value):
         request = self.context.get('request')
         instance = self.instance
-
         instance.validate_validation_status(value, request)
 
         return value

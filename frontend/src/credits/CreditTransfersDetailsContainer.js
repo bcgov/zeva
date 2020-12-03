@@ -29,45 +29,13 @@ const CreditTransfersDetailsContainer = (props) => {
   const [loading, setLoading] = useState(true);
 
   const refreshDetails = () => {
-    let orgId;
-    let transferContentA = 0;
-    let transferContentB = 0;
-    let currentBalanceA = 0;
-    let currentBalanceB = 0;
-    let newValueA;
-    let newValueB;
-
     axios.all([
       axios.get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id)),
-      axios.get(ROUTES_CREDIT_TRANSFERS.LIST),
       axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST),
-    ]).then(axios.spread((response, listresponse, assertionsResponse) => {
+    ]).then(axios.spread((response, assertionsResponse) => {
       setAssertions(assertionsResponse.data);
       setSubmission(response.data);
-      orgId = response.data.debitFrom.id;
-
-      const organizationTransfers = listresponse.data.filter((eachRecord) => eachRecord.debitFrom.id === orgId);
-      currentBalanceA = organizationTransfers[0].debitFrom.balance.A;
-      currentBalanceB = organizationTransfers[0].debitFrom.balance.B;
-      organizationTransfers.forEach((each) => {
-        each.creditTransferContent.forEach((eachContent) => {
-          if (eachContent.creditClass.creditClass === 'A') {
-            transferContentA += eachContent.creditValue * eachContent.dollarValue;
-          } else if (eachContent.creditClass.creditClass === 'B') {
-            transferContentB += eachContent.creditValue * eachContent.dollarValue;
-          }
-        });
-      });
-
-      newValueA = currentBalanceA - transferContentA;
-      newValueB = currentBalanceB - transferContentB;
-
-      if (newValueA < 0 || newValueB < 0) {
-        setNegativeCredit(true);
-      } else {
-        setNegativeCredit(false);
-      }
-
+      // orgId = response.data.debitFrom.id;
       setLoading(false);
     }));
   };

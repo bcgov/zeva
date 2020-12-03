@@ -26,7 +26,7 @@ class CreditTransferViewset(
 
     serializer_classes = {
         'default': CreditTransferSerializer,
-        'create': CreditTransactionSaveSerializer,
+        'create': CreditTransferSaveSerializer,
         'partial_update': CreditTransferSaveSerializer,
         'update': CreditTransferSaveSerializer,
     }
