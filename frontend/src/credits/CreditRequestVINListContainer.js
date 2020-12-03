@@ -19,7 +19,6 @@ const CreditRequestVINListContainer = (props) => {
   const [content, setContent] = useState([]);
   const [submission, setSubmission] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [validatedList, setValidatedList] = useState([]);
   const [invalidatedList, setInvalidatedList] = useState([]);
 
   const refreshDetails = () => {
@@ -71,6 +70,8 @@ const CreditRequestVINListContainer = (props) => {
   };
 
   const handleSubmit = () => {
+    setLoading(true);
+
     axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), {
       invalidated: invalidatedList,
       validationStatus: 'CHECKED',

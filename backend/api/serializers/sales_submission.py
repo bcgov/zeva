@@ -409,7 +409,10 @@ class SalesSubmissionSaveSerializer(
 
         if invalidated is not None:
             RecordOfSale.objects.filter(submission_id=instance.id).delete()
-            print(instance.id)
+            valid_vehicles = Vehicle.objects.filter(
+                organization_id=instance.organization_id,
+                validation_status=VehicleDefinitionStatuses.VALIDATED
+            ).values_list('model_year__name', Upper('make'), 'model_name')
 
             duplicate_vins = SalesSubmissionContent.objects.annotate(
                 vin_count=Count('xls_vin')
@@ -432,19 +435,27 @@ class SalesSubmissionSaveSerializer(
                 xls_sale_date__lte="43102.0"
             )
 
-            for row in (row for row in content if row.vehicle):
-                RecordOfSale.objects.create(
-                    sale_date=get_date(
-                        row.xls_sale_date,
-                        row.xls_date_type,
-                        row.xls_date_mode
-                    ),
-                    submission=instance,
-                    validation_status=RecordOfSaleStatuses.VALIDATED,
-                    vehicle=row.vehicle,
-                    vin=row.xls_vin,
-                    vin_validation_status=VINStatuses.MATCHED,
-                )
+            for row in content:
+                try:
+                    model_year = int(float(row.xls_model_year))
+                except ValueError:
+                    model_year = 0
+
+                if (
+                    str(model_year), row.xls_make.upper(), row.xls_model
+                ) not in valid_vehicles:
+                    RecordOfSale.objects.create(
+                        sale_date=get_date(
+                            row.xls_sale_date,
+                            row.xls_date_type,
+                            row.xls_date_mode
+                        ),
+                        submission=instance,
+                        validation_status=RecordOfSaleStatuses.VALIDATED,
+                        vehicle=row.vehicle,
+                        vin=row.xls_vin,
+                        vin_validation_status=VINStatuses.MATCHED,
+                    )
 
         validation_status = validated_data.get('validation_status')
 
