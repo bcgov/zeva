@@ -84,5 +84,3 @@ objects:
       rabbitmq_host: ${NAME}${SUFFIX}-rabbitmq-cluster.e52f12-${ENV_NAME}.svc.cluster.local
       rabbitmq_port: '5672'
       rabbitmq_vhost: /zeva
-      smtp_server_host: apps.smtp.gov.bc.ca
-      smtp_server_port: '25'
