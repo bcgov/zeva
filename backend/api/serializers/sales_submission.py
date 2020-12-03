@@ -442,8 +442,8 @@ class SalesSubmissionSaveSerializer(
                     model_year = 0
 
                 if (
-                    str(model_year), row.xls_make.upper(), row.xls_model
-                ) not in valid_vehicles:
+                    str(model_year), row.xls_make.upper(), row.xls_model,
+                ) in valid_vehicles:
                     RecordOfSale.objects.create(
                         sale_date=get_date(
                             row.xls_sale_date,
