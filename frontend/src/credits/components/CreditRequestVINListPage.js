@@ -13,7 +13,7 @@ const CreditRequestVINListPage = (props) => {
     setContent,
     submission,
     user,
-    validatedList,
+    invalidatedList,
   } = props;
 
   const [filtered, setFiltered] = useState([]);
@@ -95,12 +95,12 @@ const CreditRequestVINListPage = (props) => {
             filtered={filtered}
             handleCheckboxClick={handleCheckboxClick}
             id={submission.id}
+            invalidatedList={invalidatedList}
             items={content}
             setContent={setContent}
             setFiltered={setFiltered}
             submission={submission}
             user={user}
-            validatedList={validatedList}
           />
         </div>
       </div>
@@ -120,12 +120,12 @@ CreditRequestVINListPage.propTypes = {
   content: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-  submission: PropTypes.shape().isRequired,
-  user: CustomPropTypes.user.isRequired,
-  validatedList: PropTypes.arrayOf(PropTypes.oneOfType([
+  invalidatedList: PropTypes.arrayOf(PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string,
   ])).isRequired,
+  submission: PropTypes.shape().isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default CreditRequestVINListPage;

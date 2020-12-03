@@ -20,6 +20,7 @@ const CreditRequestVINListContainer = (props) => {
   const [submission, setSubmission] = useState([]);
   const [loading, setLoading] = useState(true);
   const [validatedList, setValidatedList] = useState([]);
+  const [invalidatedList, setInvalidatedList] = useState([]);
 
   const refreshDetails = () => {
     console.error(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id));
@@ -34,23 +35,23 @@ const CreditRequestVINListContainer = (props) => {
       const { data } = contentResponse;
       setContent(data.content);
 
-      const validatedRecords = data.content.filter(
-        (record) => {
-          if (record.warnings && record.warnings.some((warning) => [
-            'DUPLICATE_VIN', 'INVALID_MODEL', 'VIN_ALREADY_AWARDED',
-          ].indexOf(warning) >= 0)) {
-            return false;
-          }
+      // const validatedRecords = data.content.filter(
+      //   (record) => {
+      //     if (record.warnings && record.warnings.some((warning) => [
+      //       'DUPLICATE_VIN', 'INVALID_MODEL', 'VIN_ALREADY_AWARDED',
+      //     ].indexOf(warning) >= 0)) {
+      //       return false;
+      //     }
 
           // if (data.validationStatus === 'CHECKED') {
           //   return record.recordOfSale;
           // }
 
-          return record.icbcVerification;
-        },
-      ).map((record) => record.id);
+      //     return record.icbcVerification;
+      //   },
+      // ).map((record) => record.id);
 
-      setValidatedList(validatedRecords);
+      // setValidatedList(validatedRecords);
       setLoading(false);
     }));
   };
@@ -63,15 +64,15 @@ const CreditRequestVINListContainer = (props) => {
     const { value: submissionId, checked } = event.target;
     const newId = Number(submissionId);
     if (!checked) {
-      setValidatedList(validatedList.filter((item) => Number(item) !== Number(submissionId)));
+      setInvalidatedList(() => [...invalidatedList, newId]);
     } else {
-      setValidatedList(() => [...validatedList, newId]);
+      setInvalidatedList(invalidatedList.filter((item) => Number(item) !== Number(submissionId)));
     }
   };
 
   const handleSubmit = () => {
     axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), {
-      records: validatedList,
+      invalidated: invalidatedList,
       validationStatus: 'CHECKED',
     }).then(() => {
       const url = ROUTES_CREDIT_REQUESTS.VALIDATED.replace(/:id/g, submission.id);
@@ -89,11 +90,11 @@ const CreditRequestVINListContainer = (props) => {
       content={content}
       handleCheckboxClick={handleCheckboxClick}
       handleSubmit={handleSubmit}
+      invalidatedList={invalidatedList}
       routeParams={match.params}
       setContent={setContent}
       submission={submission}
       user={user}
-      validatedList={validatedList}
     />
   );
 };

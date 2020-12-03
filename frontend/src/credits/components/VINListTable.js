@@ -17,7 +17,7 @@ const VINListTable = (props) => {
     id,
     items,
     user,
-    validatedList,
+    invalidatedList,
     filtered,
     setContent,
     setFiltered,
@@ -130,7 +130,7 @@ const VINListTable = (props) => {
         return (
           <input
             checked={
-              validatedList.findIndex((item) => Number(item) === Number(row.id)) >= 0
+              invalidatedList.findIndex((item) => Number(item) === Number(row.id)) < 0
             }
             onChange={(event) => { handleCheckboxClick(event); }}
             type="checkbox"
@@ -234,7 +234,7 @@ VINListTable.propTypes = {
   handleCheckboxClick: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   user: CustomPropTypes.user.isRequired,
-  validatedList: PropTypes.arrayOf(PropTypes.oneOfType([
+  invalidatedList: PropTypes.arrayOf(PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string,
   ])).isRequired,

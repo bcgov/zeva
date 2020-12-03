@@ -1,7 +1,7 @@
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from rest_framework.serializers import ModelSerializer, \
     SerializerMethodField
-from django.db.models import Subquery, Count
+from django.db.models import Subquery, Count, Q
 from django.db.models.functions import Upper
 
 from api.models.icbc_registration_data import IcbcRegistrationData
@@ -397,7 +397,7 @@ class SalesSubmissionSaveSerializer(
 
     def update(self, instance, validated_data):
         request = self.context.get('request')
-        records = request.data.get('records')
+        invalidated = request.data.get('invalidated', [])
         sales_submission_comment = validated_data.pop('sales_submission_comment', None)
 
         if sales_submission_comment:
@@ -407,27 +407,46 @@ class SalesSubmissionSaveSerializer(
                 comment=sales_submission_comment.get('comment')
             )
 
-        if records is not None:
+        if invalidated is not None:
             RecordOfSale.objects.filter(submission_id=instance.id).delete()
+            print(instance.id)
 
-            for record_id in records:
-                row = SalesSubmissionContent.objects.filter(
-                    id=record_id
-                ).first()
+            duplicate_vins = SalesSubmissionContent.objects.annotate(
+                vin_count=Count('xls_vin')
+            ).filter(vin_count__gt=1).values_list('xls_vin', flat=True)
 
-                if row and row.vehicle:
-                    RecordOfSale.objects.create(
-                        sale_date=get_date(
-                            row.xls_sale_date,
-                            row.xls_date_type,
-                            row.xls_date_mode
-                        ),
-                        submission=instance,
-                        validation_status=RecordOfSaleStatuses.VALIDATED,
-                        vehicle=row.vehicle,
-                        vin=row.xls_vin,
-                        vin_validation_status=VINStatuses.MATCHED,
-                    )
+            awarded_vins = RecordOfSale.objects.exclude(
+                submission_id=instance.id
+            ).values_list('vin', flat=True)
+
+            content = SalesSubmissionContent.objects.filter(
+                submission_id=instance.id,
+                xls_vin__in=Subquery(
+                    IcbcRegistrationData.objects.values('vin')
+                )
+            ).exclude(
+                xls_vin__in=awarded_vins
+            ).exclude(
+                xls_vin__in=duplicate_vins,
+                id__in=invalidated,
+                xls_sale_date__lte="43102.0"
+            )
+
+            rows = (row for row in content if row.vehicle)
+
+            for row in rows:
+                RecordOfSale.objects.create(
+                    sale_date=get_date(
+                        row.xls_sale_date,
+                        row.xls_date_type,
+                        row.xls_date_mode
+                    ),
+                    submission=instance,
+                    validation_status=RecordOfSaleStatuses.VALIDATED,
+                    vehicle=row.vehicle,
+                    vin=row.xls_vin,
+                    vin_validation_status=VINStatuses.MATCHED,
+                )
 
         validation_status = validated_data.get('validation_status')
 
