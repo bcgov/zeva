@@ -15,6 +15,9 @@
 2. Create template secret template.django-secret
     * oc process -f django-secret-template.yaml | oc create -f - -n [project namespace]
 
+3. Create email service secret for each environment
+    * oc process -f email-service-secret.yaml EMAIL_SERVICE_CLIENT_ID= EMAIL_SERVICE_CLIENT_SECRET= CHES_AUTH_URL= CHES_EMAIL_URL= | oc create -f - -n [env namespace]
+
 #### After pipeline completes
 
 1. After pipeline completes, create autoscaler for backend
