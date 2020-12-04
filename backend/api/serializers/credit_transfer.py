@@ -21,6 +21,8 @@ from api.serializers.organization import OrganizationSerializer
 from api.services.credit_transfer import aggregate_credit_transfer_details
 from api.services.credit_transaction import calculate_insufficient_credits
 from decimal import Decimal
+
+
 class CreditTransferBaseSerializer:
     def get_update_user(self, obj):
         user_profile = UserProfile.objects.filter(username=obj.update_user)
@@ -54,6 +56,7 @@ class CreditTransferHistorySerializer(
             'status', 'update_user'
             )
 
+
 class CreditTransferListSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
         CreditTransferBaseSerializer
@@ -82,6 +85,7 @@ class CreditTransferListSerializer(
             'create_timestamp', 'credit_to', 'credit_transfer_content',
             'debit_from', 'id', 'status', 'update_user', 'history'
         )
+
 
 class CreditTransferSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
@@ -166,9 +170,9 @@ class CreditTransferSaveSerializer(ModelSerializer):
         allow_null=True,
         required=False
     )
+
     def validate_status(self, value):
         request = self.context.get('request')
-        instance = self.instance
         content = request.data.get('content')
         model_years = ModelYear.objects.all()
         credit_classes = CreditClass.objects.all()
@@ -198,7 +202,6 @@ class CreditTransferSaveSerializer(ModelSerializer):
                 if not has_enough:
                     raise ValidationError('not enough credits')
         return value
-
 
     def validate_validation_status(self, value):
         request = self.context.get('request')
