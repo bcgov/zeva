@@ -1,6 +1,5 @@
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
-
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, ValidationError
 from api.models.credit_transfer import CreditTransfer
 from api.models.credit_transfer_comment import CreditTransferComment
 from api.models.credit_transfer_content import CreditTransferContent
@@ -21,7 +20,7 @@ from api.serializers.user import MemberSerializer, UserSerializer
 from api.serializers.organization import OrganizationSerializer
 from api.services.credit_transfer import aggregate_credit_transfer_details
 from api.services.credit_transaction import calculate_insufficient_credits
-
+from decimal import Decimal
 class CreditTransferBaseSerializer:
     def get_update_user(self, obj):
         user_profile = UserProfile.objects.filter(username=obj.update_user)
@@ -175,14 +174,29 @@ class CreditTransferSaveSerializer(ModelSerializer):
         credit_classes = CreditClass.objects.all()
         weights = WeightClass.objects.all()
         ##check to make sure its a draft
-        supplier_totals = aggregate_credit_transfer_details(content[0]['debit_from'])
-        ## loop through request and check against supplier balance
-        for each in content:
-            for balance in supplier_balance:         
-                year = model_years.filter(name=each.model_year).first()
-
-
-        #     print(each)
+        if value in [CreditTransferStatuses.DRAFT, CreditTransferStatuses.SUBMITTED]:
+            supplier_totals = aggregate_credit_transfer_details(content[0]['debit_from'])
+            has_enough = True
+            ## loop through request and check against supplier balance
+            for each in content:
+                found = False
+                # aggregate by unique combinations of credit year/type
+                credit_value = each['credit_value']
+                model_year = model_years.filter(name=each['model_year']).first().id
+                credit_type = credit_classes.filter(credit_class=each['credit_class']).first().id
+                weight_type = weights.filter(weight_class_code=each['weight_class']).first().id
+                # check if supplier has enough for this transfer
+                for record in supplier_totals:
+                    if (record['model_year_id'] == model_year and record['credit_class_id'] == credit_type
+                            and record['weight_class_id'] == weight_type):
+                        found = True
+                        record['credit_value'] -= Decimal(float(credit_value))
+                        if record['credit_value'] < 0:
+                            has_enough = False
+                if not found:
+                    has_enough = False
+                if not has_enough:
+                    raise ValidationError('not enough credits')
         return value
 
 
