@@ -358,6 +358,26 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-config${SUFFIX}
                       key: minio_endpoint
+                - name: EMAIL_SERVICE_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: email-service
+                      key: EMAIL_SERVICE_CLIENT_ID                      
+                - name: EMAIL_SERVICE_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: email-service
+                      key: EMAIL_SERVICE_CLIENT_SECRET
+                - name: CHES_AUTH_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: email-service
+                      key: CHES_AUTH_URL                      
+                - name: CHES_EMAIL_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: email-service
+                      key: CHES_EMAIL_URL                      
               livenessProbe:
                 failureThreshold: 30
                 tcpSocket:
