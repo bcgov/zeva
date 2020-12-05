@@ -130,7 +130,7 @@ const CreditTransfersForm = (props) => {
                 <button type="button" className="transfer-add-line my-2" onClick={() => { addRow(); }}>
                   <h4><FontAwesomeIcon icon="plus" /> Add another line</h4>
                 </button>
-                <span className="transfer-total">Total CAD: ${total}</span>
+                <span className="transfer-total">Total CAD: ${total.toFixed(2)}</span>
                 <CreditTransferSignoff
                   assertions={assertions}
                   checkboxes={checkboxes}
