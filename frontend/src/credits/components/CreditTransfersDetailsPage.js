@@ -26,7 +26,9 @@ const CreditTransfersDetailsPage = (props) => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
 
-  const permissions = {
+  const transferRole = {
+    rescindable: (user.organization.id === submission.debitFrom.id && submission.status in ['SUBMITTED', 'APPROVED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL']) 
+      || (user.organization.id === submission.creditTo.id && submission.status === 'APPROVED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL'),
     initiatingSupplier: user.organization.id === submission.debitFrom.id && submission.status === 'DRAFT',
     tradePartner: user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED',
     governmentAnalyst: user.hasPermission('RECOMMEND_CREDIT_TRANSFER')
@@ -195,14 +197,14 @@ const CreditTransfersDetailsPage = (props) => {
         <div className="col-sm-12">
           <h2>Light Duty Vehicle Credit Transfer</h2>
         </div>
-        {permissions.governmentDirector && submission.creditTransferComment
+        {transferRole.governmentDirector && submission.creditTransferComment
       && (
       <div className="ml-3">
         <Comment commentArray={submission.creditTransferComment} />
       </div>
       )}
       </div>
-      {permissions.governmentAnalyst && negativeCredit
+      {transferRole.governmentAnalyst && negativeCredit
       && (
         <div
           className="alert alert-danger"
@@ -213,7 +215,7 @@ const CreditTransfersDetailsPage = (props) => {
           &nbsp;<b>WARNING:&nbsp;</b> Supplier has insufficient credits to fulfill all pending transfers.
         </div>
       )}
-      {permissions.governmentAnalyst
+      {transferRole.governmentAnalyst
       && (
       <CreditTransfersDetailsSupplierTable submission={submission} tableType="supplierBalance" />
       )}
@@ -224,16 +226,16 @@ const CreditTransfersDetailsPage = (props) => {
             && (
               <div className="my-2 px-2 pb-2">
                 <CreditTransfersDetailsTable submission={submission} tableType="submissionSummary" />
-                {permissions.tradePartner
+                {transferRole.tradePartner
                 && tradePartnerSignoff}
-                {permissions.governmentAnalyst
+                {transferRole.governmentAnalyst
                 && analystSignoff}
                 <CreditTransfersDetailsActionBar
                   allChecked={allChecked}
                   assertions={assertions}
                   checkboxes={checkboxes}
                   comment={comment}
-                  permissions={permissions}
+                  transferRole={transferRole}
                   setModalType={setModalType}
                   setShowModal={setShowModal}
                 />
