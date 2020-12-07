@@ -193,13 +193,13 @@ class CreditRequestViewset(
                 )
 
             if 'warning' in submission_filters:
-                duplicate_vins = submission_content.annotate(
+                duplicate_vins = Subquery(submission_content.annotate(
                     vin_count=Count('xls_vin')
-                ).filter(vin_count__gt=1).values_list('xls_vin', flat=True)
+                ).filter(vin_count__gt=1).values_list('xls_vin', flat=True))
 
-                awarded_vins = RecordOfSale.objects.exclude(
+                awarded_vins = Subquery(RecordOfSale.objects.exclude(
                     submission_id=pk
-                ).values_list('vin', flat=True)
+                ).values_list('vin', flat=True))
 
                 submission_content = submission_content.filter(
                     Q(xls_vin__in=duplicate_vins) |
@@ -228,9 +228,9 @@ class CreditRequestViewset(
         if not request.user.is_government:
             return HttpResponseForbidden()
 
-        selected_vins = RecordOfSale.objects.filter(
+        selected_vins = Subquery(RecordOfSale.objects.filter(
             submission_id=pk
-        ).values_list('vin', flat=True)
+        ).values_list('vin', flat=True))
 
         unselected_vins = SalesSubmissionContent.objects.filter(
             submission_id=pk
