@@ -1,7 +1,7 @@
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from rest_framework.serializers import ModelSerializer, \
     SerializerMethodField
-from django.db.models import Subquery, Count, Q
+from django.db.models import Subquery, Count
 from django.db.models.functions import Upper
 
 from api.models.icbc_registration_data import IcbcRegistrationData
@@ -460,7 +460,7 @@ class SalesSubmissionSaveSerializer(
 
         if validation_status:
             SalesSubmissionHistory.objects.create(
-                submission=instance,
+                submission_id=instance.id,
                 validation_status=validation_status,
                 update_user=request.user.username,
                 create_user=request.user.username,
