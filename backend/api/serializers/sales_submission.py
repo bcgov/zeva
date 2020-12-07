@@ -172,10 +172,10 @@ class SalesSubmissionListSerializer(
                 SalesSubmissionStatuses.VALIDATED
             ]
 
-        if obj.validation_status in valid_statuses:
-            for row in obj.content.all():
-                if len(row.warnings) > 0 and row.record_of_sale is None:
-                    warnings += 1
+        # if obj.validation_status in valid_statuses:
+        #     for row in obj.content.all():
+        #         if len(row.warnings) > 0 and row.record_of_sale is None:
+        #             warnings += 1
 
         return warnings
 
