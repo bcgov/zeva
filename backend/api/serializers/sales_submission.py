@@ -172,10 +172,59 @@ class SalesSubmissionListSerializer(
                 SalesSubmissionStatuses.VALIDATED
             ]
 
-        # if obj.validation_status in valid_statuses:
-        #     for row in obj.content.all():
-        #         if len(row.warnings) > 0 and row.record_of_sale is None:
-        #             warnings += 1
+        if obj.validation_status in valid_statuses:
+            # for row in obj.content.all():
+            #     if len(row.warnings) > 0 and row.record_of_sale is None:
+            #         warnings += 1
+
+            valid_vehicles = Vehicle.objects.filter(
+                organization_id=obj.organization_id,
+                validation_status=VehicleDefinitionStatuses.VALIDATED
+            ).values_list('model_year__name', Upper('make'), 'model_name')
+
+            matched_vins = SalesSubmissionContent.objects.filter(
+                submission_id=obj.id,
+                xls_vin__in=Subquery(IcbcRegistrationData.objects.values('vin'))
+            ).values_list('id', flat=True)
+
+            duplicate_vins = SalesSubmissionContent.objects.annotate(
+                vin_count=Count('xls_vin')
+            ).filter(vin_count__gt=1).values_list('xls_vin', flat=True)
+
+            awarded_vins = RecordOfSale.objects.exclude(
+                submission_id=obj.id
+            ).values_list('vin', flat=True)
+
+            for row in obj.content:
+                has_warning = 0
+
+                try:
+                    model_year = int(float(row.xls_model_year))
+                except ValueError:
+                    model_year = 0
+                    has_warning = 1
+
+                if has_warning == 0:
+                    if not row.valid_sales_date:
+                        has_warning = 1
+
+                if has_warning == 0:
+                    if row.id not in matched_vins:
+                        has_warning = 1
+
+                if has_warning == 0:
+                    if (str(model_year), row.xls_make.upper(), row.xls_model) not in valid_vehicles:
+                        has_warning = 1
+
+                if has_warning == 0:
+                    if row.xls_vin in awarded_vins:
+                        has_warning = 1
+
+                if has_warning == 0:
+                    if row.xls_vin in duplicate_vins:
+                        has_warning = 1
+
+                warnings += has_warning
 
         return warnings
 
