@@ -65,16 +65,6 @@ def check_external_services():
             logger.error(_error)
             raise RuntimeError('Keycloak connection failed')
 
-    if EMAIL['ENABLED']:
-        logger.info('Email sending enabled. Checking connection')
-
-        try:
-            with smtplib.SMTP(host=EMAIL['SMTP_SERVER_HOST'],
-                              port=EMAIL['SMTP_SERVER_PORT']) as server:
-                server.noop()
-        except Exception as error:
-            logger.error(error)
-            raise RuntimeError('SMTP Connection failed')
 
 
 def post_migration_callback(sender, **kwargs):
