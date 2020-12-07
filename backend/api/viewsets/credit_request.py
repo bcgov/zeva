@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Subquery, Count
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
@@ -175,6 +175,11 @@ class CreditRequestViewset(
         if page < 1:
             page = 1
 
+        # only government should be able to view the contents for icbc
+        # verification
+        if not request.user.is_government:
+            return HttpResponseForbidden()
+
         submission_content = SalesSubmissionContent.objects.filter(
             submission_id=pk
         )
@@ -217,3 +222,20 @@ class CreditRequestViewset(
             'content': serializer.data,
             'pages': submission_content_paginator.num_pages
         })
+
+    @action(detail=True)
+    def unselected(self, request, pk):
+        if not request.user.is_government:
+            return HttpResponseForbidden()
+
+        selected_vins = RecordOfSale.objects.filter(
+            submission_id=pk
+        ).values_list('vin', flat=True)
+
+        unselected_vins = SalesSubmissionContent.objects.filter(
+            submission_id=pk
+        ).exclude(
+            xls_vin__in=selected_vins
+        ).values_list('id', flat=True)
+
+        return Response(list(unselected_vins))

@@ -22,35 +22,20 @@ const CreditRequestVINListContainer = (props) => {
   const [invalidatedList, setInvalidatedList] = useState([]);
 
   const refreshDetails = () => {
-    console.error(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id));
-    console.error('test');
     axios.all([
       axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
       axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id)),
-    ]).then(axios.spread((submissionResponse, contentResponse) => {
+      axios.get(ROUTES_CREDIT_REQUESTS.UNSELECTED.replace(':id', id)),
+    ]).then(axios.spread((submissionResponse, contentResponse, unselectedResponse) => {
       const { data: submissionData } = submissionResponse;
       setSubmission(submissionData);
 
       const { data } = contentResponse;
       setContent(data.content);
 
-      // const validatedRecords = data.content.filter(
-      //   (record) => {
-      //     if (record.warnings && record.warnings.some((warning) => [
-      //       'DUPLICATE_VIN', 'INVALID_MODEL', 'VIN_ALREADY_AWARDED',
-      //     ].indexOf(warning) >= 0)) {
-      //       return false;
-      //     }
+      const { data: unselected } = unselectedResponse;
+      setInvalidatedList(unselected);
 
-          // if (data.validationStatus === 'CHECKED') {
-          //   return record.recordOfSale;
-          // }
-
-      //     return record.icbcVerification;
-      //   },
-      // ).map((record) => record.id);
-
-      // setValidatedList(validatedRecords);
       setLoading(false);
     }));
   };
