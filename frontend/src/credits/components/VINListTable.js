@@ -76,6 +76,7 @@ const VINListTable = (props) => {
     }, {
       accessor: (row) => (moment(row.salesDate).format('YYYY-MM-DD') !== 'Invalid date' ? moment(row.salesDate).format('YYYY-MM-DD') : row.salesDate),
       className: 'text-center sales-date',
+      filterable: false,
       Header: 'Retail Sale',
       id: 'xls_sale_date',
     }],
@@ -96,17 +97,23 @@ const VINListTable = (props) => {
     columns: [{
       accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.modelYear.name : '-'),
       className: 'icbc-model-year text-center',
+      filterable: false,
+      sortable: false,
       Header: 'MY',
       headerClassName: 'icbc-model-year',
       id: 'icbc-model-year',
     }, {
       accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.make : '-'),
       className: 'icbc-make',
+      filterable: false,
+      sortable: false,
       Header: 'Make',
       id: 'icbc-make',
     }, {
       accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.modelName : '-'),
       className: 'icbc-model',
+      filterable: false,
+      sortable: false,
       Header: 'Model',
       id: 'icbc-model',
     }],
@@ -139,6 +146,8 @@ const VINListTable = (props) => {
         );
       },
       className: 'text-center validated',
+      filterable: false,
+      sortable: false,
       Header: 'Validated',
       id: 'validated',
       show: user.isGovernment,
@@ -155,7 +164,7 @@ const VINListTable = (props) => {
         setFiltered(input);
       }}
       defaultSorted={[{
-        id: 'warning',
+        id: 'xls_vin',
         desc: true,
       }]}
       getTrProps={(state, rowInfo) => {
@@ -205,12 +214,24 @@ const VINListTable = (props) => {
           filters[each.id] = each.value;
         });
 
+        const sorted = [];
+
+        state.sorted.forEach((each) => {
+          let value = each.id;
+
+          if (each.desc) {
+            value = `-${value}`;
+          }
+
+          sorted.push(value);
+        });
+
         axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id), {
           params: {
             filters,
             page: state.page + 1, // page from front-end is zero index, but in the back-end we need the actual page number
             page_size: state.pageSize,
-            sorted: state.sorted,
+            sorted: sorted.join(','),
           },
         }).then((response) => {
           const { content, pages: numPages } = response.data;

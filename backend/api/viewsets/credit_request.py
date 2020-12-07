@@ -166,6 +166,7 @@ class CreditRequestViewset(
         filters = request.GET.get('filters')
         page_size = request.GET.get('page_size', 20)
         page = request.GET.get('page', 1)
+        sort_by = request.GET.get('sorted')
 
         try:
             page = int(page)
@@ -192,6 +193,21 @@ class CreditRequestViewset(
                     xls_make__icontains=submission_filters['xls_make']
                 )
 
+            if 'xls_model' in submission_filters:
+                submission_content = submission_content.filter(
+                    xls_model__icontains=submission_filters['xls_model']
+                )
+
+            if 'xls_model_year' in submission_filters:
+                submission_content = submission_content.filter(
+                    xls_model_year__icontains=submission_filters['xls_model_year']
+                )
+
+            if 'xls_vin' in submission_filters:
+                submission_content = submission_content.filter(
+                    xls_vin__icontains=submission_filters['xls_vin']
+                )
+
             if 'warning' in submission_filters:
                 duplicate_vins = Subquery(submission_content.annotate(
                     vin_count=Count('xls_vin')
@@ -209,6 +225,21 @@ class CreditRequestViewset(
                     )) |
                     Q(xls_sale_date__lte="43102.0")
                 )
+
+        if sort_by:
+            order_by = []
+            sort_by_list = sort_by.split(',')
+            for sort in sort_by_list:
+                if sort in [
+                    'xls_make', 'xls_model', 'xls_model_year',
+                    'xls_sale_date', 'xls_vin',
+                    '-xls_make', '-xls_model', '-xls_model_year',
+                    '-xls_sale_date', '-xls_vin',
+                ]:
+                    order_by.append(sort)
+
+            if order_by:
+                submission_content = submission_content.order_by(*order_by)
 
         submission_content_paginator = Paginator(submission_content, page_size)
 

@@ -395,7 +395,7 @@ class SalesSubmissionSaveSerializer(
 
     def update(self, instance, validated_data):
         request = self.context.get('request')
-        invalidated = request.data.get('invalidated', [])
+        invalidated = request.data.get('invalidated', None)
         sales_submission_comment = validated_data.pop('sales_submission_comment', None)
 
         if sales_submission_comment:
