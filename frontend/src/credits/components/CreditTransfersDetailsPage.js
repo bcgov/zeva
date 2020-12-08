@@ -17,7 +17,7 @@ const CreditTransfersDetailsPage = (props) => {
     checkboxes,
     handleCheckboxClick,
     handleSubmit,
-    negativeCredit,
+    sufficientCredit,
     submission,
     user,
   } = props;
@@ -202,7 +202,7 @@ const CreditTransfersDetailsPage = (props) => {
       </div>
       )}
       </div>
-      {permissions.governmentAnalyst && negativeCredit
+      {permissions.governmentAnalyst && !sufficientCredit
       && (
         <div
           className="alert alert-danger"
@@ -254,7 +254,7 @@ CreditTransfersDetailsPage.propTypes = {
   ])).isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-  negativeCredit: PropTypes.bool.isRequired,
+  sufficientCredit: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired,
   submission: PropTypes.shape().isRequired,
 };
