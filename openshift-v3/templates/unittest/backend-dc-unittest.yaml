@@ -230,16 +230,6 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-config${SUFFIX}
                       key: rabbitmq_port
-                - name: SMTP_SERVER_HOST
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: smtp_server_host
-                - name: SMTP_SERVER_PORT
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: smtp_server_port
                 - name: EMAIL_SENDING_ENABLED
                   valueFrom:
                     configMapKeyRef:
