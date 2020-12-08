@@ -14,6 +14,7 @@ const SalesUploadPage = (props) => {
     files,
     setUploadFiles,
     upload,
+    icbcDate,
   } = props;
 
   const downloadTemplate = (e) => {
@@ -59,7 +60,7 @@ const SalesUploadPage = (props) => {
         <div className="col-12">
           <h2 className="mb-2">Upload ZEV Sales Information</h2>
           <p>
-            Credits can be issued for active ZEV sales made prior to May 31, 2020.
+            Credits can be issued for active ZEV sales made prior to {icbcDate}.
           </p>
         </div>
       </div>
