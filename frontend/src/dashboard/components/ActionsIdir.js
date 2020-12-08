@@ -101,7 +101,7 @@ const ActionsIdir = (props) => {
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersAwaitingDirector} require director approval`}
-          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Approved`}
+          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Recommend`}
         />
         )}
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
