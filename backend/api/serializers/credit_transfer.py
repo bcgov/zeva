@@ -1,3 +1,4 @@
+import logging
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from rest_framework.serializers import ModelSerializer, SerializerMethodField, ValidationError
 from api.models.credit_transfer import CreditTransfer
@@ -18,10 +19,13 @@ from api.serializers.credit_transfer_content import \
     CreditTransferContentSerializer, CreditTransferContentSaveSerializer
 from api.serializers.user import MemberSerializer, UserSerializer
 from api.serializers.organization import OrganizationSerializer
+from api.models.organization import Organization
+from api.services.send_email import send_email
 from api.services.credit_transfer import aggregate_credit_transfer_details
 from api.services.credit_transaction import calculate_insufficient_credits
 from decimal import Decimal
 
+LOGGER = logging.getLogger(__name__)
 
 class CreditTransferBaseSerializer:
     def get_update_user(self, obj):
@@ -238,6 +242,7 @@ class CreditTransferSaveSerializer(ModelSerializer):
             instance.save()
 
         validation_status = validated_data.get('status')
+        
         if validation_status:
             CreditTransferHistory.objects.create(
                 transfer=instance,
@@ -248,6 +253,29 @@ class CreditTransferSaveSerializer(ModelSerializer):
             instance.status = validation_status
             instance.update_user = request.user.username
             instance.save()
+
+            """
+            Send email to the IDIR users if status is one of the following
+            """
+
+            gov = Organization.objects.get(is_government='True').id
+            email = None
+            if validation_status in [
+                    CreditTransferStatuses.RECOMMEND_APPROVAL,
+                    CreditTransferStatuses.RECOMMEND_REJECTION,
+                    CreditTransferStatuses.APPROVED
+            ]:
+                email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=gov).exclude(email__isnull=True)
+    
+            elif validation_status is CreditTransferStatuses.SUBMITTED and credit_to:
+                email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=credit_to).exclude(email__isnull=True)
+
+            if email:
+                try:
+                    send_email(list(email))
+                except Exception as e:
+                    LOGGER.error('Email Failed! %s', e)
+
 
         if signing_confirmation and validation_status in [
                 CreditTransferStatuses.APPROVED,
@@ -302,6 +330,15 @@ class CreditTransferSaveSerializer(ModelSerializer):
                     title=request.user.title,
                     signing_authority_assertion_id=confirmation
                 )
+
+            credit_to = validated_data.get('credit_to')
+            if credit_to:
+                email = UserProfile.objects.values_list('email', flat=True).filter(organization=credit_to).exclude(email__isnull=True)
+                if email:
+                    try:
+                        send_email(list(email))
+                    except Exception as e:
+                        LOGGER.error('Email Failed! %s', e)
 
         serializer = CreditTransferSerializer(
             credit_transfer, read_only=True,
