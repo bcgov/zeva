@@ -23,6 +23,7 @@ const CreditTransfersEditContainer = (props) => {
   const emptyForm = {
     transferPartner: '',
   };
+  const [errorMessage, setErrorMessage] = useState('');
   const [assertions, setAssertions] = useState([]);
   const [checkboxes, setCheckboxes] = useState([]);
   const [rows, setRows] = useState([emptyRow]);
@@ -105,9 +106,14 @@ const CreditTransfersEditContainer = (props) => {
         creditTo,
         debitFrom,
         signingConfirmation: checkboxes,
-      }).then(() => {
-        history.push(ROUTES_CREDIT_TRANSFERS.LIST);
-      });
+      })
+        .then(() => history.push(ROUTES_CREDIT_TRANSFERS.LIST))
+        .catch((error) => {
+          const { response } = error;
+          if (response.status === 400) {
+            setErrorMessage(error.response.data);
+          }
+        });
     } else {
       axios.patch(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/gi, id), {
         content: data,
@@ -115,9 +121,14 @@ const CreditTransfersEditContainer = (props) => {
         creditTo,
         debitFrom,
         signingConfirmation: checkboxes,
-      }).then(() => {
-        history.push(ROUTES_CREDIT_TRANSFERS.LIST);
-      });
+      })
+        .then(() => history.push(ROUTES_CREDIT_TRANSFERS.LIST))
+        .catch((error) => {
+          const { response } = error;
+          if (response.status === 400) {
+            setErrorMessage(error.response.data);
+          }
+        });
     }
   };
 
@@ -178,6 +189,7 @@ const CreditTransfersEditContainer = (props) => {
   return ([
     <CreditTransactionTabs active="credit-transfers" key="tabs" user={user} />,
     <CreditTransfersForm
+      errorMessage={errorMessage}
       addRow={addRow}
       assertions={assertions}
       checkboxes={checkboxes}

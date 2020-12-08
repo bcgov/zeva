@@ -11,6 +11,7 @@ import CreditTransferSignoff from './CreditTransfersSignOff';
 
 const CreditTransfersForm = (props) => {
   const {
+    errorMessage,
     addRow,
     assertions,
     checkboxes,
@@ -50,6 +51,17 @@ const CreditTransfersForm = (props) => {
       </div>
     </Modal>
   );
+  const alert = (
+    <div
+      className="alert alert-danger"
+      id="alert-warning"
+      role="alert"
+    >
+      <FontAwesomeIcon icon="exclamation-circle" size="lg" />
+      &nbsp;<b>STATUS: Error &mdash; &nbsp;</b>
+      Insufficient credits, you can only transfer credits available in your current balance
+    </div>
+  );
   const actionbar = (
     <div className="row">
       <div className="col-sm-12">
@@ -85,8 +97,13 @@ const CreditTransfersForm = (props) => {
       <div className="row mt-3 mb-2">
         <div className="col-sm-12">
           <h2>Light Duty Vehicle Credit Transfer</h2>
+          <div className="text-blue">
+            Transfer notices can only be initiated by the seller of credits.
+            To submit a notice of credit transfer there must be sufficient credits in your balance
+          </div>
         </div>
       </div>
+      {errorMessage && alert}
       <div id="form">
         <form onSubmit={handleSave}>
           <div className="row">
@@ -113,7 +130,7 @@ const CreditTransfersForm = (props) => {
                 <button type="button" className="transfer-add-line my-2" onClick={() => { addRow(); }}>
                   <h4><FontAwesomeIcon icon="plus" /> Add another line</h4>
                 </button>
-                <span className="transfer-total">Total CAD: ${total}</span>
+                <span className="transfer-total">Total CAD: ${total.toFixed(2)}</span>
                 <CreditTransferSignoff
                   assertions={assertions}
                   checkboxes={checkboxes}
