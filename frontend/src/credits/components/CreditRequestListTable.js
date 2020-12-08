@@ -47,9 +47,9 @@ const CreditRequestListTable = (props) => {
   }, {
     accessor: (item) => (item.totalWarnings > 0 ? item.totalWarnings : '-'),
     className: 'text-right',
-    Header: 'Warnings',
+    Header: 'Not Eligible for Credits',
     id: 'warnings',
-    maxWidth: 150,
+    maxWidth: 250,
   }, {
     accessor: (item) => (item.totalCredits && item.totalCredits.a > 0 ? formatNumeric(item.totalCredits.a) : '-'),
     className: 'text-right',

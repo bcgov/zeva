@@ -8,16 +8,16 @@
           "path": ".",
           "environments": {
             "build": {
-              "namespace": "tbiwaq-tools"
+              "namespace": "f52f12-tools"
             },
             "dev": {
-              "namespace": "tbiwaq-dev"
+              "namespace": "f52f12-dev"
             },
             "test": {
-              "namespace": "tbiwaq-test"
+              "namespace": "f52f12-test"
             },
             "prod": {
-              "namespace": "tbiwaq-prod"
+              "namespace": "f52f12-prod"
             }
           },
           "jenkinsJobName": "zeva",
@@ -29,17 +29,17 @@
         "jenkins": {
           "path": ".jenkins",
           "name": "jenkins",
-          "namespace": "tbiwaq-tools",
+          "namespace": "f52f12-tools",
           "version": "1.0.0",
           "environments": {
             "build": {
-              "namespace": "tbiwaq-tools"
+              "namespace": "f52f12-tools"
             },
             "dev": {
-              "namespace": "tbiwaq-tools"
+              "namespace": "f52f12-tools"
             },
             "prod": {
-              "namespace": "tbiwaq-tools"
+              "namespace": "f52f12-tools"
             }
           },
           "jenkinsJobName": "_jenkins",

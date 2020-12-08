@@ -30,11 +30,15 @@ const CreditRequestDetailsPage = (props) => {
   const recordsAddress = submission.organization.organizationAddress.find((address) => address.addressType.addressType === 'Records');
 
   const downloadErrors = (e) => {
-    const element = e.target;
+    const element = e.currentTarget;
     const original = element.innerHTML;
-    element.firstChild.textContent = ' Downloading...';
+
+    element.innerText = 'Downloading...';
+    element.disabled = true;
+
     return download(ROUTES_CREDIT_REQUESTS.DOWNLOAD_ERRORS.replace(':id', submission.id), {}).then(() => {
       element.innerHTML = original;
+      element.disabled = false;
     });
   };
 

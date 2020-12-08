@@ -196,11 +196,11 @@ const CreditTransfersDetailsPage = (props) => {
           <h2>Light Duty Vehicle Credit Transfer</h2>
         </div>
         {permissions.governmentDirector && submission.creditTransferComment
-      && (
-      <div className="ml-3">
-        <Comment commentArray={submission.creditTransferComment} />
-      </div>
-      )}
+        && (
+        <div className="ml-3">
+          <Comment commentArray={submission.creditTransferComment} />
+        </div>
+        )}
       </div>
       {permissions.governmentAnalyst && negativeCredit
       && (

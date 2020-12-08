@@ -8,6 +8,7 @@ import { useParams } from 'react-router-dom';
 
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import history from '../app/History';
+import Loading from '../app/components/Loading';
 import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
 import CustomPropTypes from '../app/utilities/props';
 import { upload } from '../app/utilities/upload';
@@ -17,10 +18,12 @@ const UploadCreditRequestsContainer = (props) => {
   const { user } = props;
   const [errorMessage, setErrorMessage] = useState(null);
   const [files, setFiles] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const { id } = useParams();
 
   const doUpload = () => {
+    setLoading(true);
     let data = {};
 
     if (id) {
@@ -40,10 +43,16 @@ const UploadCreditRequestsContainer = (props) => {
       } else {
         setErrorMessage('An error has occurred while uploading. Please try again later.');
       }
+
+      setLoading(false);
     });
   };
 
   useEffect(() => {}, []);
+
+  if (loading) {
+    return (<Loading />);
+  }
 
   return ([
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
