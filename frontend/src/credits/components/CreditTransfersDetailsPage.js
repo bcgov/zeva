@@ -29,8 +29,8 @@ const CreditTransfersDetailsPage = (props) => {
   const transferRole = {
     rescindable: (user.organization.id === submission.debitFrom.id && submission.status in ['SUBMITTED', 'APPROVED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL']) 
       || (user.organization.id === submission.creditTo.id && submission.status === 'APPROVED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL'),
-    initiatingSupplier: user.organization.id === submission.debitFrom.id && submission.status === 'DRAFT',
-    tradePartner: user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED',
+    initiatingSupplier: user.organization.id === submission.debitFrom.id && submission.status in ['DRAFT', 'RESCINDED'],
+    tradePartner: user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED' && submission.status in ['SUBMITTED'],
     governmentAnalyst: user.hasPermission('RECOMMEND_CREDIT_TRANSFER')
       && user.isGovernment && submission.status === 'APPROVED',
     governmentDirector: user.hasPermission('SIGN_CREDIT_TRANSFERS') && user.isGovernment
@@ -73,6 +73,14 @@ const CreditTransfersDetailsPage = (props) => {
         buttonClass: 'button primary',
         modalText: 'Submit transfer to government of B.C. Director?',
         icon: <FontAwesomeIcon icon="paper-plane" />,
+      };
+      break;
+    case 'rescind':
+      modalProps = {
+        confirmLabel: ' Rescind',
+        handleSubmit: () => { handleSubmit('RESCINDED'); },
+        buttonClass: 'button primary',
+        modalText: 'Rescind notice?',
       };
       break;
     case 'recommend-reject':
@@ -137,6 +145,7 @@ const CreditTransfersDetailsPage = (props) => {
       </div>
     </Modal>
   );
+
 
   const transferValue = (
     <div className="text-blue">
