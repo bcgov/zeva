@@ -10,8 +10,13 @@ const Alert = (props) => {
   let title;
   let icon = 'exclamation-circle';
   let classname;
-  let message = 'ZEV credits cannot be issued until validated by Government of B.C.';
+  let message = '';
   let historyMessage;
+  if (alertType === 'icbc') {
+    title = '';
+    message = optionalMessage;
+    classname = optionalClassname;
+  }
   if (alertType === 'vehicle') {
     const { user, status } = props;
     switch (status) {
