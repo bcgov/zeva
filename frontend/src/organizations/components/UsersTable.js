@@ -13,7 +13,20 @@ const UsersTable = (props) => {
     className: 'text-left',
     Header: 'Name',
   }, {
-    accessor: (item) => (item.roles.map((role) => role.roleCode).join(', ')),
+    accessor: (item) => (item.roles.sort((a, b) => {
+      const A = a.roleCode.toUpperCase();
+      const B = b.roleCode.toUpperCase();
+
+      if (A < B) {
+        return -1;
+      }
+
+      if (A > B) {
+        return 1;
+      }
+
+      return 0;
+    }).map((role) => role.roleCode).join(', ')),
     id: 'roles',
     className: 'text-left',
     Header: 'Roles',
