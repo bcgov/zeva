@@ -16,10 +16,7 @@ from api.serializers.credit_transfer_content import \
     CreditTransferContentSerializer, CreditTransferContentSaveSerializer
 from api.serializers.user import MemberSerializer, UserSerializer
 from api.serializers.organization import OrganizationSerializer
-from api.models.user_role import UserRole
-from api.models.role import Role
 from api.models.organization import Organization
-from rest_framework.response import Response
 from api.services.send_email import send_email
 
 LOGGER = logging.getLogger(__name__)
