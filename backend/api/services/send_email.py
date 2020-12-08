@@ -1,9 +1,5 @@
 import logging
 import json
-import datetime as dt
-import time
-import pandas as pd
-
 
 from django.conf import settings
 
@@ -105,7 +101,7 @@ def send_email(recipient_email: str) -> {}:
                "Content-Type": "application/json"}  
     try:
         response = requests.post(url, data=json.dumps(data), headers=headers)
-        if not response.status_code // 100 == 2:
+        if not response.status_code / 100 == 2:
             LOGGER.error("Error: Email failed!", response.text.encode('utf8'))
             return
 

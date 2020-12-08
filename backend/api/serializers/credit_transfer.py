@@ -171,18 +171,11 @@ class CreditTransferSaveSerializer(ModelSerializer):
             email = None
             if validation_status in [
                     CreditTransferStatuses.RECOMMEND_APPROVAL,
-                    CreditTransferStatuses.RECOMMEND_REJECTION
+                    CreditTransferStatuses.RECOMMEND_REJECTION,
+                    CreditTransferStatuses.APPROVED
             ]:
-                
-                director = Role.objects.get(role_code='Director').id
-                user_dir = UserRole.objects.filter(role_id=director).values_list('user_profile',flat=True)
-                email = UserProfile.objects.values_list('email', flat=True).filter(id__in=user_dir,organization_id=gov).exclude(email__isnull=True)
+                email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=gov).exclude(email__isnull=True)
     
-            elif validation_status is CreditTransferStatuses.APPROVED:
-                analyst = Role.objects.get(role_code='Engineer/Analyst').id
-                user_analyst = UserRole.objects.filter(role_id=analyst).values_list('user_profile',flat=True)
-                email = UserProfile.objects.values_list('email', flat=True).filter(id__in=user_analyst,organization_id=gov).exclude(email__isnull=True)
-
             elif validation_status is CreditTransferStatuses.SUBMITTED and credit_to:
                 email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=credit_to).exclude(email__isnull=True)
 
