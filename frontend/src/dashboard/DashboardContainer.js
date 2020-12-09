@@ -14,7 +14,7 @@ import ROUTES_CREDIT_TRANSFERS from '../app/routes/CreditTransfers';
 
 const DashboardContainer = (props) => {
   const { user } = props;
-  const [activityCount, setActivityCount] = useState({
+  let [activityCount, setActivityCount] = useState({
     modelsRejected: 0,
     modelsAwaitingValidation: 0,
     modelsValidated: 0,
@@ -29,102 +29,146 @@ const DashboardContainer = (props) => {
     transfersRecorded: 0,
     transfersRejected: 0,
   });
+
   const [loading, setLoading] = useState(true);
   const isMountedRef = useRef(null);
 
-  const getBCEIDActivityCount = (salesResponse, vehiclesResponse, transfersResponse) => {
-    const date3months = moment().subtract(3, 'months').calendar();
-    const vehiclesRejected = vehiclesResponse.data
-      .filter((vehicle) => vehicle.validationStatus === 'REJECTED')
-      .map((vehicle) => vehicle.modelName);
-    const changesRequested = vehiclesResponse.data
-      .filter((vehicle) => vehicle.validationStatus === 'CHANGES_REQUESTED')
-      .map((vehicle) => vehicle.modelName);
-    const submittedModels = vehiclesResponse.data
-      .filter((vehicle) => vehicle.validationStatus === 'SUBMITTED')
-      .map((vehicle) => vehicle.modelName);
-    const draftModels = vehiclesResponse.data
-      .filter((vehicle) => vehicle.validationStatus === 'DRAFT')
-      .map((vehicle) => vehicle.modelName);
-    const validatedModels = vehiclesResponse.data
-      .filter((vehicle) => vehicle.validationStatus === 'VALIDATED' && moment(vehicle.updatedTimestamp).isAfter(date3months))
-      .map((vehicle) => vehicle.modelName);
-    const newCredits = salesResponse.data
-      .filter((submission) => submission.validationStatus === 'NEW');
-    const submittedCredits = salesResponse.data
-      .filter((submission) => submission.validationStatus === 'SUBMITTED' || submission.validationStatus === 'RECOMMEND_APPROVAL' || submission.validationStatus === 'RECOMMEND_REJECTION');
-    const validatedCredits = salesResponse.data
-      .filter((submission) => submission.validationStatus === 'VALIDATED');
-    const transfersAwaitingPartner = transfersResponse.data
-      .filter((submission) => submission.status === 'SUBMITTED');
-    const transfersAwaitingGovernment = transfersResponse.data
-      .filter((submission) => submission.status === 'APPROVED' || submission.status === 'RECOMMEND_APPROVAL');
-    const transfersRecorded = transfersResponse.data
-      .filter((submission) => submission.status === 'VALIDATED');
-    const transfersRejected = transfersResponse.data
-      .filter((submission) => submission.status === 'REJECTED');
-    setActivityCount({
-      ...activityCount,
-      modelsRejected: vehiclesRejected.length,
-      modelsDraft: draftModels.length,
-      modelsAwaitingValidation: submittedModels.length,
-      modelsValidated: validatedModels.length,
-      modelsInfoRequest: changesRequested.length,
-      creditsNew: newCredits.length,
-      creditsIssued: validatedCredits.length,
-      creditsAwaiting: submittedCredits.length,
-      transfersAwaitingPartner: transfersAwaitingPartner.length,
-      transfersAwaitingGovernment: transfersAwaitingGovernment.length,
-      transfersRecorded: transfersRecorded.length,
-      transfersRejected: transfersRejected.length,
-    });
-  };
+  const getCreditRequests = () => (
+    axios.get(ROUTES_CREDIT_REQUESTS.LIST).then((salesResponse) => {
+      if (!user.isGovernment) {
+        const newCredits = salesResponse.data
+          .filter((submission) => submission.validationStatus === 'NEW');
+        const submittedCredits = salesResponse.data
+          .filter((submission) => submission.validationStatus === 'SUBMITTED' || submission.validationStatus === 'RECOMMEND_APPROVAL' || submission.validationStatus === 'RECOMMEND_REJECTION');
+        const validatedCredits = salesResponse.data
+          .filter((submission) => submission.validationStatus === 'VALIDATED');
 
-  const getIDIRActivityCount = (salesResponse, vehiclesResponse, transfersResponse) => {
-    const submittedVehicles = vehiclesResponse.data
-      .filter((vehicle) => vehicle.validationStatus === 'SUBMITTED')
-      .map((vehicle) => vehicle.modelName);
-    const recommendApprove = salesResponse.data
-      .filter((submission) => submission.validationStatus === 'RECOMMEND_APPROVAL');
-    const recommendReject = salesResponse.data
-      .filter((submission) => submission.validationStatus === 'RECOMMEND_REJECTION');
-    const analystNeeded = salesResponse.data
-      .filter((submission) => ['SUBMITTED', 'CHECKED'].indexOf(submission.validationStatus) >= 0);
-    const transfersAwaitingPartner = transfersResponse.data
-      .filter((submission) => submission.status === 'SUBMITTED');
-    const transfersAwaitingDirector = transfersResponse.data
-      .filter((submission) => submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMENDED_REJECTION' || submission.status === 'APPROVED');
-    const transfersRecorded = transfersResponse.data
-      .filter((submission) => submission.status === 'VALIDATED');
-    setActivityCount({
-      ...activityCount,
-      submittedVehicles: submittedVehicles.length,
-      creditsAnalyst: analystNeeded.length,
-      creditsRecommendApprove: recommendApprove.length,
-      creditsRecommendReject: recommendReject.length,
-      transfersAwaitingDirector: transfersAwaitingDirector.length,
-      transfersRecorded: transfersRecorded.length,
-      transfersAwaitingPartner: transfersAwaitingPartner.length,
-    });
-  };
+        activityCount = {
+          ...activityCount,
+          creditsNew: newCredits.length,
+          creditsIssued: validatedCredits.length,
+          creditsAwaiting: submittedCredits.length,
+        };
+      } else {
+        const recommendApprove = salesResponse.data
+          .filter((submission) => submission.validationStatus === 'RECOMMEND_APPROVAL');
+        const recommendReject = salesResponse.data
+          .filter((submission) => submission.validationStatus === 'RECOMMEND_REJECTION');
+        const analystNeeded = salesResponse.data
+          .filter((submission) => ['SUBMITTED', 'CHECKED'].indexOf(submission.validationStatus) >= 0);
+
+        activityCount = {
+          ...activityCount,
+          creditsAnalyst: analystNeeded.length,
+          creditsRecommendApprove: recommendApprove.length,
+          creditsRecommendReject: recommendReject.length,
+        };
+      }
+    })
+  );
+
+  const getVehicles = () => (
+    axios.get(ROUTES_VEHICLES.LIST).then((vehiclesResponse) => {
+      if (!user.isGovernment) {
+        const date3months = moment().subtract(3, 'months').calendar();
+
+        const vehiclesRejected = vehiclesResponse.data
+          .filter((vehicle) => vehicle.validationStatus === 'REJECTED')
+          .map((vehicle) => vehicle.modelName);
+        const changesRequested = vehiclesResponse.data
+          .filter((vehicle) => vehicle.validationStatus === 'CHANGES_REQUESTED')
+          .map((vehicle) => vehicle.modelName);
+        const submittedModels = vehiclesResponse.data
+          .filter((vehicle) => vehicle.validationStatus === 'SUBMITTED')
+          .map((vehicle) => vehicle.modelName);
+        const draftModels = vehiclesResponse.data
+          .filter((vehicle) => vehicle.validationStatus === 'DRAFT')
+          .map((vehicle) => vehicle.modelName);
+        const validatedModels = vehiclesResponse.data
+          .filter((vehicle) => vehicle.validationStatus === 'VALIDATED' && moment(vehicle.updatedTimestamp).isAfter(date3months))
+          .map((vehicle) => vehicle.modelName);
+
+        activityCount = {
+          ...activityCount,
+          modelsRejected: vehiclesRejected.length,
+          modelsDraft: draftModels.length,
+          modelsAwaitingValidation: submittedModels.length,
+          modelsValidated: validatedModels.length,
+          modelsInfoRequest: changesRequested.length,
+        };
+      } else {
+        const submittedVehicles = vehiclesResponse.data
+          .filter((vehicle) => vehicle.validationStatus === 'SUBMITTED')
+          .map((vehicle) => vehicle.modelName);
+
+        activityCount = {
+          ...activityCount,
+          submittedVehicles: submittedVehicles.length,
+        };
+      }
+    })
+  );
+
+  const getCreditTransfers = () => (
+    axios.get(ROUTES_CREDIT_TRANSFERS.LIST).then((transfersResponse) => {
+      if (!user.isGovernment) {
+        const transfersAwaitingPartner = transfersResponse.data
+          .filter((submission) => submission.status === 'SUBMITTED');
+        const transfersAwaitingGovernment = transfersResponse.data
+          .filter((submission) => submission.status === 'APPROVED' || submission.status === 'RECOMMEND_APPROVAL');
+        const transfersRecorded = transfersResponse.data
+          .filter((submission) => submission.status === 'VALIDATED');
+        const transfersRejected = transfersResponse.data
+          .filter((submission) => submission.status === 'REJECTED');
+
+        activityCount = {
+          ...activityCount,
+          transfersAwaitingPartner: transfersAwaitingPartner.length,
+          transfersAwaitingGovernment: transfersAwaitingGovernment.length,
+          transfersRecorded: transfersRecorded.length,
+          transfersRejected: transfersRejected.length,
+        };
+      } else {
+        const transfersAwaitingPartner = transfersResponse.data
+          .filter((submission) => submission.status === 'SUBMITTED');
+        const transfersAwaitingDirector = transfersResponse.data
+          .filter((submission) => submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMENDED_REJECTION' || submission.status === 'APPROVED');
+        const transfersRecorded = transfersResponse.data
+          .filter((submission) => submission.status === 'VALIDATED');
+
+        activityCount = {
+          ...activityCount,
+          transfersAwaitingDirector: transfersAwaitingDirector.length,
+          transfersRecorded: transfersRecorded.length,
+          transfersAwaitingPartner: transfersAwaitingPartner.length,
+        };
+      }
+    })
+  );
 
   const refreshList = () => {
-    axios.all([
-      axios.get(ROUTES_CREDIT_REQUESTS.LIST),
-      axios.get(ROUTES_VEHICLES.LIST),
-      axios.get(ROUTES_CREDIT_TRANSFERS.LIST),
-    ]).then(axios.spread((salesResponse, vehiclesResponse, transfersResponse) => {
+    const promises = [];
+
+    if (user.hasPermission('VIEW_SALES')) {
+      promises.push(getCreditRequests());
+    }
+
+    if (user.hasPermission('VIEW_ZEV')) {
+      promises.push(getVehicles());
+    }
+
+    if (user.hasPermission('VIEW_CREDIT_TRANSFERS') || user.hasPermission('VIEW_CREDIT_TRANSACTIONS')) {
+      promises.push(getCreditTransfers());
+    }
+
+    Promise.all(promises).then(() => {
+      setActivityCount(activityCount);
       if (!isMountedRef.current) {
         return false;
       }
 
-      if (!user.isGovernment) {
-        getBCEIDActivityCount(salesResponse, vehiclesResponse, transfersResponse);
-      } else {
-        getIDIRActivityCount(salesResponse, vehiclesResponse, transfersResponse);
-      }
       setLoading(false);
-    }));
+    });
   };
 
   useEffect(() => {
