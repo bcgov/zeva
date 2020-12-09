@@ -165,23 +165,52 @@ const CreditTransfersDetailsPage = (props) => {
     )} Canadian dollars.
     </div>
   );
-  const initiatingInformation = submission.history.find((each) => each.status === 'SUBMITTED');
-  const transferPartnerInformation = submission.history.find((each) => each.status === 'APPROVED');
+
+  let latestRescind = false;
+  let latestSubmit = false;
+  let latestApprove = false;
+  let showSubmissionConfirmation = true;
+  let showApproveConfirmation = true;
+  submission.history.forEach((history) => {
+    if (history.status === 'RESCINDED') {
+      latestRescind = history;
+    }
+    if (history.status === 'SUBMITTED') {
+      latestSubmit = history;
+    }
+    if (history.status === 'APPROVED') {
+      latestApprove = history;
+    }
+  });
+  if (latestRescind && latestSubmit) {
+    if (latestRescind.createTimestamp > latestSubmit.createTimestamp) {
+      showSubmissionConfirmation = false;
+      showApproveConfirmation = false;
+    }
+    if (latestApprove) {
+      if (latestSubmit.createTimestamp > latestApprove.createTimestamp) {
+        showApproveConfirmation = false;
+      }
+    } else {
+      showApproveConfirmation = false;
+    }
+  }
+
   const signedSubmittedInfo = (
     <>
       {transferValue}
-      {initiatingInformation
+      {showSubmissionConfirmation
       && (
       <div className="text-blue">
-        Signed and submitted by {initiatingInformation.createUser.displayName} of&nbsp;
-        {initiatingInformation.createUser.organization.name}&nbsp;
-        {moment(initiatingInformation.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
+        Signed and submitted by {latestSubmit.createUser.displayName} of&nbsp;
+        {latestSubmit.createUser.organization.name}&nbsp;
+        {moment(latestSubmit.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
         <br />
-        {transferPartnerInformation && (
+        {showApproveConfirmation && (
           <>
-            Signed and submitted by {transferPartnerInformation.createUser.displayName} of&nbsp;
-            {transferPartnerInformation.createUser.organization.name}&nbsp;
-            {moment(transferPartnerInformation.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
+            Signed and submitted by {latestApprove.createUser.displayName} of&nbsp;
+            {latestApprove.createUser.organization.name}&nbsp;
+            {moment(latestApprove.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
           </>
         )}
       </div>
