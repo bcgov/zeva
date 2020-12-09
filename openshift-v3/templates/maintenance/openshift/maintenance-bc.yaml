@@ -2,7 +2,7 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: redirect
+  name: maintenance-page
 objects:
 - apiVersion: image.openshift.io/v1
   kind: ImageStream
@@ -13,7 +13,7 @@ objects:
       shared: "true"
     creationTimestamp: null
     generation: 643
-    name: redirect
+    name: maintenance-page
   spec:
     lookupPolicy:
       local: false
@@ -24,22 +24,22 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      app: redirect
-    name: redirect
+      app: maintenance-page
+    name: maintenance-page
   spec:
     failedBuildsHistoryLimit: 5
     nodeSelector: null
     output:
       to:
         kind: ImageStreamTag
-        name: redirect:latest
+        name: maintenance-page:latest
     postCommit: {}
     resources: {}
     runPolicy: SerialLatestOnly
     source:
-      contextDir: openshift-v3/templates/redirect
+      contextDir: openshift-v3/templates/maintenance
       git:
-        ref: v4-migration
+        ref: master
         uri: https://github.com/bcgov/zeva.git
       type: Git
     strategy:
