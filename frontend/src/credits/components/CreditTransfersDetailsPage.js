@@ -198,7 +198,6 @@ const CreditTransfersDetailsPage = (props) => {
 
   const signedSubmittedInfo = (
     <>
-      {transferValue}
       {showSubmissionConfirmation
       && (
       <div className="text-blue">
@@ -226,7 +225,6 @@ const CreditTransfersDetailsPage = (props) => {
   );
   const tradePartnerSignoff = (
     <div>
-      {transferValue}
       <h4>
         If you agree to this notice of transfer please confirm the following statements and click
         Submit Notice to send to the Government of B.C. Director for the transfer to be recorded.
@@ -283,6 +281,7 @@ const CreditTransfersDetailsPage = (props) => {
             && (
               <div className="my-2 px-2 pb-2">
                 <CreditTransfersDetailsTable submission={submission} tableType="submissionSummary" />
+                {transferValue}
                 {transferRole.tradePartner
                 && tradePartnerSignoff}
                 {transferRole.rescindable
