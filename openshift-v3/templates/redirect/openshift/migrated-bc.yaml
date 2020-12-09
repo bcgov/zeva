@@ -1,0 +1,44 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: migrated
+objects:
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: maintenance-page
+    name: maintenance-page
+  spec:
+    failedBuildsHistoryLimit: 5
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: maintenance-page:latest
+        namespace: mem-tfrs-tools
+    postCommit: {}
+    resources: {}
+    runPolicy: SerialLatestOnly
+    source:
+      contextDir: openshift-v3/templates/redirect
+      git:
+        ref: v4-migration
+        uri: https://github.com/bcgov/zeva.git
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: bcgov-s2i-caddy:latest
+          namespace: openshift
+      type: Source
+    successfulBuildsHistoryLimit: 5
+    triggers:
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+  status:
+    lastVersion: 0
