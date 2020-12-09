@@ -39,7 +39,7 @@ objects:
     source:
       contextDir: openshift-v3/templates/redirect
       git:
-        ref: v4-migration
+        ref: master
         uri: https://github.com/bcgov/zeva.git
       type: Git
     strategy:

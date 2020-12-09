@@ -33,7 +33,7 @@ objects:
       app: maintenance-page
     name: maintenance-page
   spec:
-    replicas: 0
+    replicas: 1
     revisionHistoryLimit: 10
     selector:
       app: maintenance-page
@@ -69,7 +69,7 @@ objects:
               cpu: 100m
               memory: 128Mi
             requests:
-              request: 50m
+              cpu: 50m
               memory: 128Mi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File

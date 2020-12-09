@@ -33,7 +33,7 @@ objects:
       app: redirect
     name: redirect
   spec:
-    replicas: 0
+    replicas: 1
     revisionHistoryLimit: 10
     selector:
       app: redirect
