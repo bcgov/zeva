@@ -27,8 +27,8 @@ const CreditTransfersDetailsPage = (props) => {
   const [modalType, setModalType] = useState('');
 
   const transferRole = {
-    rescindable: (user.organization.id === submission.debitFrom.id && 
-      ['SUBMITTED', 'APPROVED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL'].indexOf(submission.status) >= 0)
+    rescindable: (user.organization.id === submission.debitFrom.id
+      && ['SUBMITTED', 'APPROVED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL'].indexOf(submission.status) >= 0)
       || (user.organization.id === submission.creditTo.id && ['APPROVED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL'].indexOf(submission.status) >= 0),
     initiatingSupplier: user.organization.id === submission.debitFrom.id && ['DRAFT', 'RESCINDED'].indexOf(submission.status) >= 0,
     tradePartner: user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED',
@@ -170,12 +170,20 @@ const CreditTransfersDetailsPage = (props) => {
   const signedSubmittedInfo = (
     <>
       {transferValue}
-      {initiatingInformation && transferPartnerInformation
+      {initiatingInformation
       && (
       <div className="text-blue">
-        Signed and submitted by {initiatingInformation.createUser.displayName} of {initiatingInformation.createUser.organization.name} {moment(initiatingInformation.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
+        Signed and submitted by {initiatingInformation.createUser.displayName} of&nbsp;
+        {initiatingInformation.createUser.organization.name}&nbsp;
+        {moment(initiatingInformation.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
         <br />
-        Signed and submitted by {transferPartnerInformation.createUser.displayName} of {transferPartnerInformation.createUser.organization.name} {moment(transferPartnerInformation.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
+        {transferPartnerInformation && (
+          <>
+            Signed and submitted by {transferPartnerInformation.createUser.displayName} of&nbsp;
+            {transferPartnerInformation.createUser.organization.name}&nbsp;
+            {moment(transferPartnerInformation.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
+          </>
+        )}
       </div>
       )}
     </>
@@ -249,7 +257,12 @@ const CreditTransfersDetailsPage = (props) => {
                 {transferRole.tradePartner
                 && tradePartnerSignoff}
                 {transferRole.rescindable
-                && rescindComment}
+                && (
+                <>
+                  {signedSubmittedInfo}
+                  {rescindComment}
+                </>
+                )}
                 {transferRole.governmentAnalyst
                 && analystSignoff}
                 <CreditTransfersDetailsActionBar
