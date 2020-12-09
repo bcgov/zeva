@@ -95,6 +95,7 @@ const ActionsIdir = (props) => {
         )}
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
         && activityCount.transfersAwaitingDirector > 0
+        && user.hasPermission('SIGN_CREDIT_TRANSFERS')
         && (
         <ActivityBanner
           colour="blue"
@@ -107,6 +108,7 @@ const ActionsIdir = (props) => {
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
         && activityCount.transfersAwaitingDirector === 0 && activityCount.transfersAwaitingAnalyst === 0
         && activityCount.transfersAwaitingPartner === 0 && activityCount.transfersRecorded === 0
+        && user.hasPermission('VIEW_CREDIT_TRANSFERS')
         && (
           <ActivityBanner
             colour="green"
