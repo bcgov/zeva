@@ -27,10 +27,11 @@ const CreditTransfersDetailsPage = (props) => {
   const [modalType, setModalType] = useState('');
 
   const transferRole = {
-    rescindable: (user.organization.id === submission.debitFrom.id && submission.status in ['SUBMITTED', 'APPROVED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL']) 
-      || (user.organization.id === submission.creditTo.id && submission.status === 'APPROVED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL'),
-    initiatingSupplier: user.organization.id === submission.debitFrom.id && submission.status in ['DRAFT', 'RESCINDED'],
-    tradePartner: user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED' && submission.status in ['SUBMITTED'],
+    rescindable: (user.organization.id === submission.debitFrom.id && 
+      ['SUBMITTED', 'APPROVED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL'].indexOf(submission.status) >= 0)
+      || (user.organization.id === submission.creditTo.id && ['APPROVED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL'].indexOf(submission.status) >= 0),
+    initiatingSupplier: user.organization.id === submission.debitFrom.id && ['DRAFT', 'RESCINDED'].indexOf(submission.status) >= 0,
+    tradePartner: user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED',
     governmentAnalyst: user.hasPermission('RECOMMEND_CREDIT_TRANSFER')
       && user.isGovernment && submission.status === 'APPROVED',
     governmentDirector: user.hasPermission('SIGN_CREDIT_TRANSFERS') && user.isGovernment
@@ -78,7 +79,7 @@ const CreditTransfersDetailsPage = (props) => {
     case 'rescind':
       modalProps = {
         confirmLabel: ' Rescind',
-        handleSubmit: () => { handleSubmit('RESCINDED'); },
+        handleSubmit: () => { handleSubmit('RESCINDED', comment); },
         buttonClass: 'button primary',
         modalText: 'Rescind notice?',
       };
@@ -146,7 +147,17 @@ const CreditTransfersDetailsPage = (props) => {
     </Modal>
   );
 
-
+  const rescindComment = (
+    <>
+      <label htmlFor="transfer-rescind-comment">
+        <h4>
+          If you need to rescind this transfer notice
+          please enter a reason to your transfer partner.
+        </h4>
+      </label>
+      <textarea name="transfer-rescind-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} />
+    </>
+  );
   const transferValue = (
     <div className="text-blue">
       for a total value of ${submission.creditTransferContent.reduce(
@@ -237,6 +248,8 @@ const CreditTransfersDetailsPage = (props) => {
                 <CreditTransfersDetailsTable submission={submission} tableType="submissionSummary" />
                 {transferRole.tradePartner
                 && tradePartnerSignoff}
+                {transferRole.rescindable
+                && rescindComment}
                 {transferRole.governmentAnalyst
                 && analystSignoff}
                 <CreditTransfersDetailsActionBar
