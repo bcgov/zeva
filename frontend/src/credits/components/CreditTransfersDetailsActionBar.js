@@ -4,7 +4,7 @@ import Button from '../../app/components/Button';
 
 const CreditTransfersDetailsActionBar = (props) => {
   const {
-    setShowModal, setModalType, comment, allChecked, permissions, checkboxes, assertions,
+    setShowModal, setModalType, comment, allChecked, transferRole, checkboxes, assertions,
   } = props;
 
   const actionBar = (
@@ -13,20 +13,31 @@ const CreditTransfersDetailsActionBar = (props) => {
         <div className="action-bar">
           <span className="left-content">
             <Button buttonType="back" locationRoute="/credit-transfers" />
-            {permissions.tradePartner
+            {transferRole.tradePartner
             && (
-            <Button
-              testid="reject-transfer"
-              buttonType="reject"
-              optionalText="Reject Notice"
-              disabled={comment.length === 0 || allChecked}
-              action={() => {
-                setModalType('partner-reject');
-                setShowModal(true);
-              }}
-            />
+              <Button
+                testid="reject-transfer"
+                buttonType="reject"
+                optionalText="Reject Notice"
+                disabled={comment.length === 0 || allChecked}
+                action={() => {
+                  setModalType('partner-reject');
+                  setShowModal(true);
+                }}
+              />
             )}
-            {permissions.governmentAnalyst
+            {transferRole.rescindable
+            && (
+              <Button
+                buttonType="rescind"
+                disabled={comment.length === 0}
+                action={() => {
+                  setModalType('rescind');
+                  setShowModal(true);
+                }}
+              />
+            )}
+            {transferRole.governmentAnalyst
             && (
             <Button
               testid="recommend-reject-transfer"
@@ -38,7 +49,7 @@ const CreditTransfersDetailsActionBar = (props) => {
               }}
             />
             )}
-            {permissions.governmentDirector
+            {transferRole.governmentDirector
             && (
             <Button
               testid="director-reject-transfer"
@@ -52,7 +63,7 @@ const CreditTransfersDetailsActionBar = (props) => {
             )}
           </span>
           <span className="right-content">
-            { permissions.initiatingSupplier
+            { transferRole.initiatingSupplier
            && (
            <Button
              testid="submit-to-partner"
@@ -65,7 +76,7 @@ const CreditTransfersDetailsActionBar = (props) => {
              disabled={!checkboxes.authority || !checkboxes.accurate || !checkboxes.consent || comment.length > 0}
            />
            )}
-            {permissions.governmentAnalyst
+            {transferRole.governmentAnalyst
             && (
             <Button
               testid="recommend-approve-transfer"
@@ -77,7 +88,7 @@ const CreditTransfersDetailsActionBar = (props) => {
               }}
             />
             )}
-            {permissions.tradePartner
+            {transferRole.tradePartner
             && (
             <Button
               testid="submit-to-gov"
@@ -90,7 +101,7 @@ const CreditTransfersDetailsActionBar = (props) => {
               disabled={checkboxes.length < assertions.length}
             />
             )}
-            {permissions.governmentDirector
+            {transferRole.governmentDirector
               && (
               <Button
                 testid="director-record"
@@ -127,7 +138,7 @@ CreditTransfersDetailsActionBar.propTypes = {
     PropTypes.number,
   ])).isRequired,
   comment: PropTypes.string,
-  permissions: PropTypes.shape().isRequired,
+  transferRole: PropTypes.shape().isRequired,
   setModalType: PropTypes.func.isRequired,
   setShowModal: PropTypes.func.isRequired,
 

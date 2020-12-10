@@ -166,6 +166,9 @@ const CreditTransfersEditContainer = (props) => {
     if (!newTransfer) {
       axios.get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/gi, id)).then((response) => {
         const details = response.data;
+        if (details.debitFrom.id !== user.organization.id || ['DRAFT', 'RESCINDED'].indexOf(details.status) < 0) {
+          history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/g, id));
+        }
         setFields({ ...fields, transferPartner: details.creditTo.id });
         const rowInfo = details.creditTransferContent.map((each) => ({
           creditType: each.creditClass.creditClass,
