@@ -136,7 +136,7 @@ const CreditTransfersListTable = (props) => {
           return {
             onClick: () => {
               const { id, status } = row.original;
-              if (status === 'DRAFT') {
+              if (status === 'DRAFT' || status === 'RESCINDED') {
                 history.push(ROUTES_CREDIT_TRANSFERS.EDIT.replace(/:id/g, id));
               } else {
                 history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/g, id), filtered);

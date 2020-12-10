@@ -283,6 +283,7 @@ class CreditTransferSaveSerializer(ModelSerializer):
         ]:
             for confirmation in signing_confirmation:
                 SigningAuthorityConfirmation.objects.create(
+                    create_user=request.user.username,
                     credit_transfer=instance,
                     has_accepted=True,
                     title=request.user.title,
@@ -325,6 +326,7 @@ class CreditTransferSaveSerializer(ModelSerializer):
                 validation_status == CreditTransferStatuses.SUBMITTED:
             for confirmation in signing_confirmation:
                 SigningAuthorityConfirmation.objects.create(
+                    create_user=request.user.username,
                     credit_transfer=credit_transfer,
                     has_accepted=True,
                     title=request.user.title,

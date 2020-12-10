@@ -210,7 +210,7 @@ class Router extends Component {
                   exact
                   key="route-credit-transfers-new"
                   path={ROUTES_CREDIT_TRANSFERS.NEW}
-                  render={() => <CreditTransfersEditContainer keycloak={keycloak} user={user} newTransfer/>}
+                  render={() => <CreditTransfersEditContainer keycloak={keycloak} user={user} newTransfer />}
                 />,
                 <Route
                   exact
