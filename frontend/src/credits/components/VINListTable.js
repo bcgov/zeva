@@ -1,23 +1,30 @@
 /*
  * Presentational component
  */
+import axios from 'axios';
 import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
+import ReactTable from 'react-table';
 
-import ReactTable from '../../app/components/ReactTable';
 import CREDIT_ERROR_CODES from '../../app/constants/errorCodes';
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import CustomPropTypes from '../../app/utilities/props';
 
 const VINListTable = (props) => {
   const {
     handleCheckboxClick,
+    id,
     items,
     user,
-    validatedList,
+    invalidatedList,
     filtered,
+    setContent,
     setFiltered,
   } = props;
+
+  const [loading, setLoading] = useState(false);
+  const [pages, setPages] = useState(-1);
 
   const getErrorCodes = (item, fields = false) => {
     let errorCodes = '';
@@ -57,20 +64,21 @@ const VINListTable = (props) => {
       },
       className: 'text-center',
       Header: 'MY',
-      id: 'model-year',
+      id: 'xls_model_year',
     }, {
       accessor: 'xlsMake',
       Header: 'Make',
-      id: 'make',
+      id: 'xls_make',
     }, {
       accessor: 'xlsModel',
       Header: 'Model',
-      id: 'model',
+      id: 'xls_model',
     }, {
       accessor: (row) => (moment(row.salesDate).format('YYYY-MM-DD') !== 'Invalid date' ? moment(row.salesDate).format('YYYY-MM-DD') : row.salesDate),
       className: 'text-center sales-date',
+      filterable: false,
       Header: 'Retail Sale',
-      id: 'sales-date',
+      id: 'xls_sale_date',
     }],
   }, {
     Header: '',
@@ -80,7 +88,7 @@ const VINListTable = (props) => {
       className: 'vin',
       Header: 'VIN',
       headerClassName: 'vin',
-      id: 'vin',
+      id: 'xls_vin',
       minWidth: 150,
     }],
   }, {
@@ -89,17 +97,23 @@ const VINListTable = (props) => {
     columns: [{
       accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.modelYear.name : '-'),
       className: 'icbc-model-year text-center',
+      filterable: false,
+      sortable: false,
       Header: 'MY',
       headerClassName: 'icbc-model-year',
       id: 'icbc-model-year',
     }, {
       accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.make : '-'),
       className: 'icbc-make',
+      filterable: false,
+      sortable: false,
       Header: 'Make',
       id: 'icbc-make',
     }, {
       accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.modelName : '-'),
       className: 'icbc-model',
+      filterable: false,
+      sortable: false,
       Header: 'Model',
       id: 'icbc-model',
     }],
@@ -123,7 +137,7 @@ const VINListTable = (props) => {
         return (
           <input
             checked={
-              validatedList.findIndex((item) => Number(item) === Number(row.id)) >= 0
+              invalidatedList.findIndex((item) => Number(item) === Number(row.id)) < 0
             }
             onChange={(event) => { handleCheckboxClick(event); }}
             type="checkbox"
@@ -132,6 +146,8 @@ const VINListTable = (props) => {
         );
       },
       className: 'text-center validated',
+      filterable: false,
+      sortable: false,
       Header: 'Validated',
       id: 'validated',
       show: user.isGovernment,
@@ -143,11 +159,12 @@ const VINListTable = (props) => {
       columns={columns}
       data={items}
       filtered={filtered}
+      filterable
       onFilteredChange={(input) => {
         setFiltered(input);
       }}
       defaultSorted={[{
-        id: 'warning',
+        id: 'xls_vin',
         desc: true,
       }]}
       getTrProps={(state, rowInfo) => {
@@ -186,6 +203,45 @@ const VINListTable = (props) => {
         }
         return {};
       }}
+      loading={loading}
+      manual
+      onFetchData={(state) => {
+        setLoading(true);
+
+        const filters = {};
+
+        state.filtered.forEach((each) => {
+          filters[each.id] = each.value;
+        });
+
+        const sorted = [];
+
+        state.sorted.forEach((each) => {
+          let value = each.id;
+
+          if (each.desc) {
+            value = `-${value}`;
+          }
+
+          sorted.push(value);
+        });
+
+        axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id), {
+          params: {
+            filters,
+            page: state.page + 1, // page from front-end is zero index, but in the back-end we need the actual page number
+            page_size: state.pageSize,
+            sorted: sorted.join(','),
+          },
+        }).then((response) => {
+          const { content, pages: numPages } = response.data;
+
+          setContent(content);
+          setPages(numPages);
+          setLoading(false);
+        });
+      }}
+      pages={pages}
     />
   );
 };
@@ -199,7 +255,7 @@ VINListTable.propTypes = {
   handleCheckboxClick: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   user: CustomPropTypes.user.isRequired,
-  validatedList: PropTypes.arrayOf(PropTypes.oneOfType([
+  invalidatedList: PropTypes.arrayOf(PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string,
   ])).isRequired,

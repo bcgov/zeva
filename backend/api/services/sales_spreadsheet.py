@@ -8,6 +8,7 @@ import magic
 
 from dateutil.parser import parse
 from django.core.exceptions import ValidationError
+from django.db.models import Subquery
 
 import xlrd
 import xlwt
@@ -430,12 +431,13 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
     worksheet.write(row, 4, 'Sales Date', style=BOLD)
     worksheet.write(row, 5, 'Error', style=BOLD)
 
-    record_of_sales_vin = RecordOfSale.objects.filter(
+    record_of_sales_vin = Subquery(RecordOfSale.objects.filter(
         submission_id=submission_id
-    ).values('vin')
+    ).values_list('vin', flat=True))
 
     submission_content = SalesSubmissionContent.objects.filter(
-        submission_id=submission_id
+        submission_id=submission_id,
+        submission__organization_id=organization.id
     ).exclude(
         xls_vin__in=record_of_sales_vin
     )

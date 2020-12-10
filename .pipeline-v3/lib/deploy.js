@@ -32,7 +32,8 @@ module.exports = settings => {
       'SSO_NAME': phases[phase].ssoName,
       'KEYCLOAK_REALM': 'rzh2zkjq',
       'DJANGO_DEBUG': phases[phase].djangoDebug,
-      'OCP_NAME': phases[phase].ocpName
+      'OCP_NAME': phases[phase].ocpName,
+      'LOGOUT_HOST': phases[phase].logoutHost
     }
   }))
 

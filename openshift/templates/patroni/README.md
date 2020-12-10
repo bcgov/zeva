@@ -37,7 +37,7 @@ login to patroni-backup pod and run backup.sh -1
 
 5. Recover the backup to paroni database on Openshift v4
 login patroini-backup pod on Openshift v4, run the following command
-./backup.sh -r patroni-master-prod/zeva -f /backups/fromv3/postgresql-zeva_2020-08-28_19-06-28.sql.gz
+./backup.sh -r patroni-master-prod/zeva -f /backups/fromv3   //yes, folder name only, it will pickup the file and ask confirmation
 
 6. Verify the database on Openshift v3 and v4 to make sure they are same
 
