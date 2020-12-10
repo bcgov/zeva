@@ -252,7 +252,7 @@ objects:
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               volumeMounts:
-                - mountPath: /app/src/app/config
+                - mountPath: /opt/app-root/src/src/app/config
                   name: ${NAME}-frontend-config${SUFFIX}              
           dnsPolicy: ClusterFirst
           restartPolicy: Always
