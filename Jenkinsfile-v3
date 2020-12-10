@@ -55,6 +55,7 @@ pipeline {
             }
             input {
                 message "Should we continue with deployment to PROD?"
+                message "Have you made a database backup and verified no clients are using the system?"
                 ok "Yes!"
             }
             steps {
