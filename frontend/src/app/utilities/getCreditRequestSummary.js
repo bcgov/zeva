@@ -63,9 +63,9 @@ const getCreditRequestSummary = (submission, validationStatus, user) => {
 
     if (item.vehicle) {
       if (item.vehicle.creditClass === 'A') {
-        notEligible.a += vinCount * creditValue;
+        notEligible.a += (item.sales - vinCount) * creditValue;
       } else if (item.vehicle.creditClass === 'B') {
-        notEligible.b += vinCount * creditValue;
+        notEligible.b += (item.sales - vinCount) * creditValue;
       }
     }
   });
