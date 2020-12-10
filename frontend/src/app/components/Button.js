@@ -32,6 +32,11 @@ const Button = (props) => {
     tooltip = buttonTooltip;
   }
   switch (buttonType) {
+    case 'approve':
+      text = optionalText;
+      classname += ' primary';
+      onclick = action;
+      break;
     case 'back':
       onclick = () => { getRoute(); };
       text = 'Back';
@@ -48,6 +53,16 @@ const Button = (props) => {
       icon = 'download';
       onclick = action;
       break;
+    case 'reject':
+      text = optionalText;
+      classname += ' text-danger';
+      onclick = action;
+      break;
+    case 'rescind':
+      text = 'Rescind Notice';
+      classname += ' text-danger';
+      onclick = action;
+      break;
     case 'save':
       text = 'Save';
       icon = 'save';
@@ -61,16 +76,7 @@ const Button = (props) => {
       classname += ' primary';
       onclick = action;
       break;
-    case 'approve':
-      text = optionalText;
-      classname += ' primary';
-      onclick = action;
-      break;
-    case 'reject':
-      text = optionalText;
-      classname += ' text-danger';
-      onclick = action;
-      break;
+
     default:
       text = optionalText;
       onclick = action;

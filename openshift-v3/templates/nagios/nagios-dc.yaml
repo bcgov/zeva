@@ -203,8 +203,6 @@ objects:
               configMapKeyRef:
                 name: ${NAME}-config-${ENV_NAME}
                 key: keycloak_realm
-          - name: SMTP_SERVER_HOST
-            value: apps.smtp.gov.bc.ca
           - name: DATABASE_SERVICE_NAME
             valueFrom:
               configMapKeyRef:

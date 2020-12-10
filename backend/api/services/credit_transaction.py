@@ -13,6 +13,8 @@ from api.models.record_of_sale import RecordOfSale
 from api.models.vehicle import Vehicle
 from api.models.weight_class import WeightClass
 from api.services.credit_transfer import aggregate_credit_transfer_details
+from rest_framework.serializers import ValidationError
+
 
 def award_credits(submission):
     records = RecordOfSale.objects.filter(
@@ -168,7 +170,7 @@ def validate_transfer(transfer):
     initiating_supplier = transfer.debit_from
     recieving_supplier = transfer.credit_to
     content = transfer.credit_transfer_content.all()
-    supplier_totals = calculate_insufficient_credits(initiating_supplier.id)
+    supplier_totals = aggregate_credit_balance_details(initiating_supplier.id)
     credit_total = {}
     credit_total_no_years = {}
     added_transaction = {}
@@ -182,19 +184,17 @@ def validate_transfer(transfer):
         weight_type = each.weight_class.id
         # check if supplier has enough for this transfer
         for record in supplier_totals:
-            if (record['model_year_id'] == model_year and record['credit_class_id'] == credit_type
-                and record['weight_class_id'] == weight_type):
-                    print(record['total_value'])
-                    found = True
-                    record['total_value'] -= credit_value
-                    print(record)
-                    if record['total_value'] < 0:
-                        print('NOT ENOUGH CREDITS')
-                        has_enough = False
+            if (record['model_year_id'] == model_year and record[
+                'credit_class_id'] == credit_type
+                    and record['weight_class_id'] == weight_type):
+                found = True
+                record['total_value'] -= credit_value
+                if record['total_value'] < 0:
+                    has_enough = False
         if not found:
             has_enough = False
         if not has_enough:
-            raise Exception('not enough credits')
+            raise ValidationError('not enough credits')
         else:
             # add to each dictionary (one broken down by years and the other not)
             if credit_type not in credit_total_no_years:
@@ -223,7 +223,8 @@ def validate_transfer(transfer):
                         ),
                         total_value=1 * credit_value,
                         update_user=transfer.update_user,
-                        weight_class_id=1
+                        weight_class=WeightClass.objects.get(
+                            weight_class_code='LDV')
                     )
             for each_supplier in [initiating_supplier, recieving_supplier]:
                 reduce_total = each_supplier == transfer.debit_from
@@ -259,6 +260,3 @@ def validate_transfer(transfer):
                         credit_transaction=added_transaction,
                         organization_id=each_supplier.id
                     )
-
-                
-

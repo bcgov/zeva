@@ -11,7 +11,7 @@ import UsersTable from './UsersTable';
 
 const OrganizationDetailsPage = (props) => {
   const {
-    details, filtered, loading, members, setFiltered,
+    details, filtered, loading, members, setFiltered, user
   } = props;
 
   if (loading) {
@@ -85,6 +85,7 @@ const OrganizationDetailsPage = (props) => {
             filtered={filtered}
             items={members}
             setFiltered={setFiltered}
+            user={user}
           />
         </div>
       </div>
@@ -102,6 +103,7 @@ OrganizationDetailsPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   members: PropTypes.arrayOf(PropTypes.shape()),
   setFiltered: PropTypes.func.isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default OrganizationDetailsPage;

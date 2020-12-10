@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import CustomPropTypes from '../../app/utilities/props';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useParams } from 'react-router-dom';
-
 import Button from '../../app/components/Button';
 import History from '../../app/History';
 import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
@@ -12,7 +12,7 @@ import UsersTable from './UsersTable';
 const VehicleSupplierUserListPage = (props) => {
   const { id } = useParams();
   const {
-    loading, locationState, members, filtered, setFiltered,
+    loading, locationState, members, filtered, user, setFiltered,
   } = props;
   if (loading) {
     return <Loading />;
@@ -24,7 +24,8 @@ const VehicleSupplierUserListPage = (props) => {
         <div className="col-md-8 d-flex align-items-end">
           <h2>Users</h2>
         </div>
-        <div className="col-md-4 text-right">
+        {typeof user.hasPermission === 'function'&& user.hasPermission('EDIT_USERS') && user.isGovernment && 
+          <div className="col-md-4 text-right">
           <button
             className="button primary"
             onClick={() => {
@@ -34,7 +35,7 @@ const VehicleSupplierUserListPage = (props) => {
           >
             <FontAwesomeIcon icon="user-plus" /> <span>New User</span>
           </button>
-        </div>
+        </div>}
       </div>
 
       <div className="row">
@@ -43,6 +44,7 @@ const VehicleSupplierUserListPage = (props) => {
             filtered={filtered}
             items={members}
             setFiltered={setFiltered}
+            user={user}
           />
         </div>
       </div>
@@ -76,6 +78,8 @@ VehicleSupplierUserListPage.propTypes = {
   locationState: PropTypes.arrayOf(PropTypes.shape()),
   members: PropTypes.arrayOf(PropTypes.shape({})),
   setFiltered: PropTypes.func.isRequired,
+  user: CustomPropTypes.user.isRequired
+  
 };
 
 export default VehicleSupplierUserListPage;

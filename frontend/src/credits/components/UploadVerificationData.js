@@ -36,7 +36,7 @@ const UploadVerificationData = (props) => {
           <h2>{title}</h2>
           {alertMessage && (
             <div className="mt-2">
-              <Alert optionalMessage={alertMessage} optionalClassname={alertMessage === 'upload successful' ? 'alert-success' : 'alert-danger'} />
+              <Alert alertType="icbc" optionalMessage={alertMessage} optionalClassname={alertMessage === 'upload successful' ? 'alert-success' : 'alert-danger'} />
             </div>
           )}
         </div>

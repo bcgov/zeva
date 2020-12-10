@@ -50,7 +50,7 @@ const VehicleListTable = (props) => {
   }, {
     accessor: 'creditClass',
     className: 'text-center',
-    Header: 'Zev Class',
+    Header: 'ZEV Class',
     id: 'col-class',
     width: 125,
   }, {

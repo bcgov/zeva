@@ -3,8 +3,10 @@ import os
 
 def config():
     return {
-        'ENABLED': bool(os.getenv('EMAIL_SENDING_ENABLED', 'False').lower() in ['true', 1]),
-        'SMTP_SERVER_PORT': int(os.getenv('SMTP_SERVER_PORT', 25)),
-        'SMTP_SERVER_HOST': os.getenv('SMTP_SERVER_HOST', 'localhost'),
-        'FROM_ADDRESS': os.getenv('EMAIL_FROM_ADDRESS', 'unconfigured')
+        'EMAIL_SERVICE_CLIENT_ID': os.getenv('EMAIL_SERVICE_CLIENT_ID', ''),
+        'EMAIL_SERVICE_CLIENT_SECRET': os.getenv('EMAIL_SERVICE_CLIENT_SECRET', ''),
+        'CHES_AUTH_URL': os.getenv('CHES_AUTH_URL', ''),
+        'CHES_EMAIL_URL': os.getenv('CHES_EMAIL_URL', ''),
+        'SENDER_EMAIL': 'donotreply@gov.bc.ca',
+        'SENDER_NAME': 'Zero-Emission Vehicles Reporting System'
     }

@@ -4,21 +4,37 @@
  */
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
+import axios from 'axios';
+import moment from 'moment-timezone';
 import { useParams } from 'react-router-dom';
-
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import history from '../app/History';
 import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
 import CustomPropTypes from '../app/utilities/props';
 import { upload } from '../app/utilities/upload';
 import CreditRequestsUploadPage from './components/CreditRequestsUploadPage';
+import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification';
+import Loading from '../app/components/Loading';
 
 const UploadCreditRequestsContainer = (props) => {
   const { user } = props;
   const [errorMessage, setErrorMessage] = useState(null);
   const [files, setFiles] = useState([]);
-
+  const [icbcDate, setIcbcDate] = useState('- no icbc data yet -');
+  const [loading, setLoading] = useState(true);
   const { id } = useParams();
+
+
+  const refreshDetails = () => {
+    setLoading(true);
+    axios.get(ROUTES_ICBCVERIFICATION.DATE)
+      .then((response) => {
+        if (response.data.uploadDate) {
+          setIcbcDate(moment(response.data.uploadDate).format('MMM D, YYYY'));
+        }
+      });
+    setLoading(false);
+  };
 
   const doUpload = () => {
     let data = {};
@@ -43,11 +59,14 @@ const UploadCreditRequestsContainer = (props) => {
     });
   };
 
-  useEffect(() => {}, []);
-
+  useEffect(() => { refreshDetails(); }, []);
+  if (loading) {
+    return (<Loading />);
+  }
   return ([
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
     <CreditRequestsUploadPage
+      icbcDate={icbcDate}
       errorMessage={errorMessage}
       files={files}
       key="page"
