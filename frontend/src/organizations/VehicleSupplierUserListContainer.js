@@ -20,7 +20,7 @@ const VehicleSupplierUserListContainer = (props) => {
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
-  const { keycloak, location } = props;
+  const { keycloak, location, user} = props;
   const { state: locationState } = location;
 
   const refreshDetails = () => {
@@ -53,6 +53,7 @@ const VehicleSupplierUserListContainer = (props) => {
         loading={loading}
         locationState={locationState}
         members={users}
+        user={user}
         setFiltered={setFiltered}
       />
     </div>
@@ -61,6 +62,7 @@ const VehicleSupplierUserListContainer = (props) => {
 VehicleSupplierUserListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   location: PropTypes.shape().isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default withRouter(VehicleSupplierUserListContainer);

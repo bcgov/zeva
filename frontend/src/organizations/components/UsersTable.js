@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-
+import CustomPropTypes from '../../app/utilities/props';
 import ReactTable from '../../app/components/ReactTable';
 import history from '../../app/History';
 
@@ -37,7 +37,7 @@ const UsersTable = (props) => {
     id: 'status',
   }];
 
-  const { filtered, items, setFiltered } = props;
+  const { filtered, items, setFiltered, user } = props;
   return (
     <ReactTable
       columns={columns}
@@ -47,13 +47,16 @@ const UsersTable = (props) => {
       }]}
       filtered={filtered}
       getTrProps={(state, row) => {
-        if (row && row.original) {
-          return {
-            onClick: () => {
-              const { id } = row.original;
-              history.push(`/users/${id}/edit`);
-            },
-            className: 'clickable',
+        if (row && row.original 
+            && typeof user.hasPermission === 'function'
+            && user.hasPermission('EDIT_USERS')
+            ) {
+            return {
+              onClick: () => {
+                const { id } = row.original;
+                history.push(`/users/${id}/edit`);
+              },
+              className: 'clickable',
           };
         }
 
@@ -71,6 +74,7 @@ UsersTable.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   setFiltered: PropTypes.func.isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default UsersTable;
