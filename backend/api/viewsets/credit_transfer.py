@@ -47,6 +47,7 @@ class CreditTransferViewset(
                     Q(status__in=[
                         CreditTransferStatuses.SUBMITTED,
                         CreditTransferStatuses.APPROVED,
+                        CreditTransferStatuses.RESCINDED,
                         CreditTransferStatuses.VALIDATED,
                         CreditTransferStatuses.RECOMMEND_APPROVAL,
                         CreditTransferStatuses.RECOMMEND_REJECTION
