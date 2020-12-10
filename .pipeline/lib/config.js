@@ -28,10 +28,10 @@ const phases = {
         host: `zeva-test.${ocpName}.gov.bc.ca`, djangoDebug: 'False', logoutHostName: 'logontest.gov.bc.ca',
         frontendCpuRequest: '300m', frontendCpuLimit: '600m', frontendMemoryRequest: '500M', frontendMemoryLimit: '1G', frontendReplicas: 2, frontendMinReplicas: 2, frontendMaxReplicas: 5,
         backendCpuRequest: '100m', backendCpuLimit: '500m', backendMemoryRequest: '500M', backendMemoryLimit: '2G', backendHealthCheckDelay: 30, backendReplicas: 1, backendMinReplicas: 2, backendMaxReplicas: 5, backendHost: `zeva-backend-test.${ocpName}.gov.bc.ca`,
-        minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M', minioPvcSize: '5G',
+        minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M', minioPvcSize: '3G',
         schemaspyCpuRequest: '20m', schemaspyCpuLimit: '200m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 160,
         rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '700M', rabbitmqPvcSize: '1G', rabbitmqReplica: 2, rabbitmqPostStartSleep: 120, storageClass: 'netapp-block-standard',
-        patroniCpuRequest: '500m', patroniCpuLimit: '1000m', patroniMemoryRequest: '500M', patroniMemoryLimit: '1G', patroniPvcSize: '5G', patroniReplica: 2, storageClass: 'netapp-block-standard', ocpName: `${ocpName}`},
+        patroniCpuRequest: '500m', patroniCpuLimit: '1000m', patroniMemoryRequest: '500M', patroniMemoryLimit: '1G', patroniPvcSize: '10G', patroniReplica: 2, storageClass: 'netapp-block-standard', ocpName: `${ocpName}`},
 
   prod: {namespace:'e52f12-prod', name: `${name}`, ssoSuffix:'', 
         ssoName:'oidc.gov.bc.ca', phase: 'prod'  , changeId:`${changeId}`, suffix: `-prod`, 
@@ -39,10 +39,10 @@ const phases = {
         host: 'zeroemissionvehicles.gov.bc.ca', djangoDebug: 'False', logoutHostName: 'logon7.gov.bc.ca',
         frontendCpuRequest: '300m', frontendCpuLimit: '600m', frontendMemoryRequest: '1G', frontendMemoryLimit: '2G', frontendReplicas: 2, frontendMinReplicas: 2, frontendMaxReplicas: 5,
         backendCpuRequest: '200m', backendCpuLimit: '700m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 30, backendReplicas: 1, backendMinReplicas: 2, backendMaxReplicas: 5, backendHost: `zeva-backend-prod.${ocpName}.gov.bc.ca`,
-        minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M', minioPvcSize: '10G',
+        minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M', minioPvcSize: '3G',
         schemaspyCpuRequest: '50m', schemaspyCpuLimit: '400m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 160,
         rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '1G', rabbitmqPvcSize: '5G', rabbitmqReplica: 2, rabbitmqPostStartSleep: 120, storageClass: 'netapp-block-standard',
-        patroniCpuRequest: '500m', patroniCpuLimit: '1000m', patroniMemoryRequest: '1G', patroniMemoryLimit: '2G', patroniPvcSize: '30G', patroniReplica: 3, storageClass: 'netapp-block-standard', ocpName: `${ocpName}`},
+        patroniCpuRequest: '500m', patroniCpuLimit: '1000m', patroniMemoryRequest: '1G', patroniMemoryLimit: '2G', patroniPvcSize: '25G', patroniReplica: 3, storageClass: 'netapp-block-standard', ocpName: `${ocpName}`}
 
 };
 

@@ -1,0 +1,58 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: redirect
+objects:
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      description: Keeps track of changes in the redirect image
+    labels:
+      shared: "true"
+    creationTimestamp: null
+    generation: 643
+    name: redirect
+  spec:
+    lookupPolicy:
+      local: false
+  status:
+    dockerImageRepository: ""
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: redirect
+    name: redirect
+  spec:
+    failedBuildsHistoryLimit: 5
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: redirect:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: SerialLatestOnly
+    source:
+      contextDir: openshift-v3/templates/redirect
+      git:
+        ref: master
+        uri: https://github.com/bcgov/zeva.git
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: bcgov-s2i-caddy:latest
+          namespace: openshift
+      type: Source
+    successfulBuildsHistoryLimit: 5
+    triggers:
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+  status:
+    lastVersion: 0
