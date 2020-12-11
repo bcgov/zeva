@@ -265,10 +265,10 @@ class CreditTransferSaveSerializer(ModelSerializer):
                     CreditTransferStatuses.RECOMMEND_REJECTION,
                     CreditTransferStatuses.APPROVED
             ]:
-                email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=gov).exclude(email__isnull=True)
+                email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=gov).exclude(email__isnull=True).exclude(email__exact='')
     
             elif validation_status is CreditTransferStatuses.SUBMITTED and credit_to:
-                email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=credit_to).exclude(email__isnull=True)
+                email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=credit_to).exclude(email__isnull=True).exclude(email__exact='')
 
             if email:
                 try:
@@ -335,7 +335,7 @@ class CreditTransferSaveSerializer(ModelSerializer):
 
             credit_to = validated_data.get('credit_to')
             if credit_to:
-                email = UserProfile.objects.values_list('email', flat=True).filter(organization=credit_to).exclude(email__isnull=True)
+                email = UserProfile.objects.values_list('email', flat=True).filter(organization=credit_to).exclude(email__isnull=True).exclude(email__exact='')
                 if email:
                     try:
                         send_email(list(email))
