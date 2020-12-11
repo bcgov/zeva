@@ -40,9 +40,12 @@ pipeline {
             }
             input {
                 message "Should we continue with deployment to TEST?"
-                message "Have you made a database backup and verified no clients are using the system?"
                 ok "Yes!"
             }
+            input {
+                message "This is Test, make sure you want to continue.."
+                ok "Yes!"
+            }            
             steps {
                 echo "Deploying ..."
                 sh "cd .pipeline && ./npmw ci && ./npmw run deploy -- --pr=${CHANGE_ID} --env=test"
@@ -56,9 +59,16 @@ pipeline {
             }
             input {
                 message "Should we continue with deployment to PROD?"
-                message "This is Prod!. Have you made a database backup and verified no clients are using the system?"
                 ok "Yes!"
             }
+            input {
+                message "This is Prod!. Have you made a database backup and verified no clients are using the system?"
+                ok "Yes!"
+            }         
+            input {
+                message "Last chance, this is Prod, make sure you want to continue.."
+                ok "Yes!"
+            }                  
             steps {
                 echo "Deploying ..."
                 sh "cd .pipeline && ./npmw ci && ./npmw run deploy -- --pr=${CHANGE_ID} --env=prod"
