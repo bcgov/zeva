@@ -191,9 +191,10 @@ const CreditTransfersDetailsPage = (props) => {
       if (latestSubmit.createTimestamp > latestApprove.createTimestamp) {
         showApproveConfirmation = false;
       }
-    } else {
-      showApproveConfirmation = false;
     }
+  }
+  if (!latestApprove) {
+    showApproveConfirmation = false;
   }
 
   const signedSubmittedInfo = (
