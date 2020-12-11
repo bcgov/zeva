@@ -42,10 +42,6 @@ pipeline {
                 message "Should we continue with deployment to TEST?"
                 ok "Yes!"
             }
-            input {
-                message "This is Test, make sure you want to continue.."
-                ok "Yes!"
-            }            
             steps {
                 echo "Deploying ..."
                 sh "cd .pipeline && ./npmw ci && ./npmw run deploy -- --pr=${CHANGE_ID} --env=test"
@@ -58,17 +54,9 @@ pipeline {
                 beforeInput true
             }
             input {
-                message "Should we continue with deployment to PROD?"
+                message "Should we continue with deployment to PROD? This is Prod!. Make sure you have made a database backup and verified no clients are using the system."
                 ok "Yes!"
             }
-            input {
-                message "This is Prod!. Have you made a database backup and verified no clients are using the system?"
-                ok "Yes!"
-            }         
-            input {
-                message "Last chance, this is Prod, make sure you want to continue.."
-                ok "Yes!"
-            }                  
             steps {
                 echo "Deploying ..."
                 sh "cd .pipeline && ./npmw ci && ./npmw run deploy -- --pr=${CHANGE_ID} --env=prod"
