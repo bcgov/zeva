@@ -53,9 +53,9 @@ const getCreditRequestSummary = (submission, validationStatus, user) => {
 
     if (item.vehicle) {
       if (item.vehicle.creditClass === 'A') {
-        eligible.a += eligible.sales * creditValue;
+        eligible.a += vinCount * creditValue;
       } else if (item.vehicle.creditClass === 'B') {
-        eligible.b += eligible.sales * creditValue;
+        eligible.b += vinCount * creditValue;
       }
     }
 
@@ -63,9 +63,9 @@ const getCreditRequestSummary = (submission, validationStatus, user) => {
 
     if (item.vehicle) {
       if (item.vehicle.creditClass === 'A') {
-        notEligible.a += notEligible.sales * creditValue;
+        notEligible.a += (item.sales - vinCount) * creditValue;
       } else if (item.vehicle.creditClass === 'B') {
-        notEligible.b += notEligible.sales * creditValue;
+        notEligible.b += (item.sales - vinCount) * creditValue;
       }
     }
   });
