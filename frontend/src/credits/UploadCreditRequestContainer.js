@@ -15,7 +15,6 @@ import CustomPropTypes from '../app/utilities/props';
 import { upload } from '../app/utilities/upload';
 import CreditRequestsUploadPage from './components/CreditRequestsUploadPage';
 import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification';
-import Loading from '../app/components/Loading';
 
 const UploadCreditRequestsContainer = (props) => {
   const { user } = props;
