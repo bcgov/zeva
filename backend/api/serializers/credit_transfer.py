@@ -1,4 +1,6 @@
 import logging
+from django.core.exceptions import PermissionDenied
+
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from rest_framework.serializers import ModelSerializer, SerializerMethodField, ValidationError
 from api.models.credit_transfer import CreditTransfer
@@ -181,11 +183,17 @@ class CreditTransferSaveSerializer(ModelSerializer):
         model_years = ModelYear.objects.all()
         credit_classes = CreditClass.objects.all()
         weights = WeightClass.objects.all()
-        ##check to make sure its a draft
+
+        if not request.user.has_perm('SUBMIT_CREDIT_TRANSFER_PROPOSAL') and \
+                value == CreditTransferStatuses.SUBMITTED:
+            raise PermissionDenied(
+                "You do not have the permission to sign this credit transfer."
+            )
+        # check to make sure its a draft
         if value in [CreditTransferStatuses.DRAFT, CreditTransferStatuses.SUBMITTED]:
             supplier_totals = aggregate_credit_transfer_details(content[0]['debit_from'])
             has_enough = True
-            ## loop through request and check against supplier balance
+            # loop through request and check against supplier balance
             for each in content:
                 found = False
                 # aggregate by unique combinations of credit year/type
