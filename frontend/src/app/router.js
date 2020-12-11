@@ -2,7 +2,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Switch } from 'react-router';
-import { Route, Router as BrowserRouter } from 'react-router-dom';
+import { Route, Redirect, Router as BrowserRouter } from 'react-router-dom';
 
 import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
@@ -155,7 +155,12 @@ class Router extends Component {
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.EDIT}
-                render={() => <VehicleSupplierEditContainer keycloak={keycloak} user={user} />}
+                render={() => (typeof user.hasPermission === 'function'&& user.hasPermission('EDIT_ORGANIZATIONS') && user.isGovernment)  ? 
+                <VehicleSupplierEditContainer keycloak={keycloak} user={user} /> : (
+                <Redirect
+                  to={{
+                    path: "/"}}/>
+                )}
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.DETAILS}

@@ -41,6 +41,7 @@ const OrganizationListContainer = (props) => {
       loading={loading}
       organizations={organizations}
       setFiltered={setFiltered}
+      user={user}
     />
   );
 };
