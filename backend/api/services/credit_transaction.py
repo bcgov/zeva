@@ -13,7 +13,7 @@ from api.models.record_of_sale import RecordOfSale
 from api.models.vehicle import Vehicle
 from api.models.weight_class import WeightClass
 from api.services.credit_transfer import aggregate_credit_transfer_details
-from django.core.exceptions import ValidationError
+from rest_framework.serializers import ValidationError
 
 
 def award_credits(submission):
@@ -170,7 +170,7 @@ def validate_transfer(transfer):
     initiating_supplier = transfer.debit_from
     recieving_supplier = transfer.credit_to
     content = transfer.credit_transfer_content.all()
-    supplier_totals = calculate_insufficient_credits(initiating_supplier.id)
+    supplier_totals = aggregate_credit_balance_details(initiating_supplier.id)
     credit_total = {}
     credit_total_no_years = {}
     added_transaction = {}

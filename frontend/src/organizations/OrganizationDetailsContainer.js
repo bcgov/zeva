@@ -38,6 +38,7 @@ const OrganizationDetailsContainer = (props) => {
       loading={loading}
       members={members}
       setFiltered={setFiltered}
+      user={user}
     />
   );
 };

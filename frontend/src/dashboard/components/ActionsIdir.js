@@ -95,18 +95,20 @@ const ActionsIdir = (props) => {
         )}
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
         && activityCount.transfersAwaitingDirector > 0
+        && user.hasPermission('SIGN_CREDIT_TRANSFERS')
         && (
         <ActivityBanner
           colour="blue"
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersAwaitingDirector} require director approval`}
-          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Approved`}
+          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Recommend`}
         />
         )}
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
         && activityCount.transfersAwaitingDirector === 0 && activityCount.transfersAwaitingAnalyst === 0
         && activityCount.transfersAwaitingPartner === 0 && activityCount.transfersRecorded === 0
+        && user.hasPermission('VIEW_CREDIT_TRANSFERS')
         && (
           <ActivityBanner
             colour="green"

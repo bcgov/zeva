@@ -180,7 +180,10 @@ class Navbar extends Component {
               </li>
               )}
 
-              {CONFIG.FEATURES.CREDIT_TRANSACTIONS.ENABLED && (
+              {CONFIG.FEATURES.CREDIT_TRANSACTIONS.ENABLED
+              && typeof user.hasPermission === 'function'
+              && user.hasPermission('VIEW_SALES')
+              && (
               <li className="nav-item">
                 <NavLink
                   activeClassName="active"
