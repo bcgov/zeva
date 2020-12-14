@@ -25,7 +25,7 @@ const CreditRequestVINListPage = (props) => {
     setFiltered([]);
   };
 
-  const showWarnings = submission.content.some((row) => (row.warnings.length > 0));
+  const showWarnings = submission.content.some((row) => (row.warnings > 0));
 
   const actionBar = (
     <div className="action-bar">

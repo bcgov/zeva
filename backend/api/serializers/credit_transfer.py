@@ -182,8 +182,9 @@ class CreditTransferSaveSerializer(ModelSerializer):
         credit_classes = CreditClass.objects.all()
         weights = WeightClass.objects.all()
         ##check to make sure its a draft
+
         if value in [CreditTransferStatuses.DRAFT, CreditTransferStatuses.SUBMITTED]:
-            supplier_totals = aggregate_credit_transfer_details(content[0]['debit_from'])
+            supplier_totals = calculate_insufficient_credits(content[0]['debit_from'])
             has_enough = True
             ## loop through request and check against supplier balance
             for each in content:
@@ -198,8 +199,8 @@ class CreditTransferSaveSerializer(ModelSerializer):
                     if (record['model_year_id'] == model_year and record['credit_class_id'] == credit_type
                             and record['weight_class_id'] == weight_type):
                         found = True
-                        record['credit_value'] -= Decimal(float(credit_value))
-                        if record['credit_value'] < 0:
+                        record['total_value'] -= Decimal(float(credit_value))
+                        if record['total_value'] < 0:
                             has_enough = False
                 if not found:
                     has_enough = False
