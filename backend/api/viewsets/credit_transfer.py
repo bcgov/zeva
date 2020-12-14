@@ -5,7 +5,7 @@ from django.db.models import Q
 
 from api.models.credit_transfer import CreditTransfer
 from api.models.credit_transfer_statuses import CreditTransferStatuses
-from api.serializers.credit_transaction import CreditTransactionSaveSerializer
+from api.permissions.credit_transfer import CreditTransferPermissions
 from api.serializers.credit_transfer import CreditTransferSerializer, \
     CreditTransferSaveSerializer, CreditTransferListSerializer
 from auditable.views import AuditableMixin
@@ -21,7 +21,7 @@ class CreditTransferViewset(
     This viewset automatically provides `list`, `create`, `retrieve`,
     and  `update`  actions.
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (CreditTransferPermissions,)
     http_method_names = ['get', 'post', 'put', 'patch']
 
     serializer_classes = {
