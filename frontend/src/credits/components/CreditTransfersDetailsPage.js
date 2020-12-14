@@ -191,28 +191,30 @@ const CreditTransfersDetailsPage = (props) => {
       if (latestSubmit.createTimestamp > latestApprove.createTimestamp) {
         showApproveConfirmation = false;
       }
-    } else {
-      showApproveConfirmation = false;
     }
+  }
+  if (!latestApprove) {
+    showApproveConfirmation = false;
   }
 
   const signedSubmittedInfo = (
     <>
       {showSubmissionConfirmation
       && (
-      <div className="text-blue">
-        Signed and submitted by {latestSubmit.createUser.displayName} of&nbsp;
-        {latestSubmit.createUser.organization.name}&nbsp;
-        {moment(latestSubmit.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
-        <br />
+      <>
+        <div className="text-blue mb-0" data-testid="submit-signature">
+          Signed and submitted by {latestSubmit.createUser.displayName} of&nbsp;
+          {latestSubmit.createUser.organization.name}&nbsp;
+          {moment(latestSubmit.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
+        </div>
         {showApproveConfirmation && (
-          <>
+          <div className="text-blue mt-0" data-testid="approve-signature">
             Signed and submitted by {latestApprove.createUser.displayName} of&nbsp;
             {latestApprove.createUser.organization.name}&nbsp;
             {moment(latestApprove.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
-          </>
+          </div>
         )}
-      </div>
+      </>
       )}
     </>
   );
