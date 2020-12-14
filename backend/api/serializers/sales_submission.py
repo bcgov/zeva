@@ -194,9 +194,7 @@ class SalesSubmissionListSerializer(
             ]
 
         if obj.validation_status in valid_statuses:
-            for row in obj.content.all():
-                if len(row.warnings) > 0 and row.record_of_sale is None:
-                    warnings += 1
+            warnings = obj.unselected
 
         return warnings
 
@@ -358,6 +356,31 @@ class SalesSubmissionSerializer(
         )
 
 
+class SalesSubmissionDetailSerializer(
+        ModelSerializer, EnumSupportSerializerMixin,
+        BaseSerializer
+):
+    content = SerializerMethodField()
+
+    def get_content(self, instance):
+        request = self.context.get('request')
+
+        serializer = SalesSubmissionContentSerializer(
+            instance.content,
+            read_only=True,
+            many=True,
+            context={'request': request}
+        )
+
+        return serializer.data
+
+    class Meta:
+        model = SalesSubmission
+        fields = (
+            'id', 'validation_status', 'content', 'submission_id'
+        )
+
+
 class SalesSubmissionSaveSerializer(
         ModelSerializer
 ):
@@ -377,7 +400,7 @@ class SalesSubmissionSaveSerializer(
 
     def update(self, instance, validated_data):
         request = self.context.get('request')
-        records = request.data.get('records')
+        invalidated = request.data.get('invalidated', None)
         sales_submission_comment = validated_data.pop('sales_submission_comment', None)
 
         if sales_submission_comment:
@@ -387,15 +410,44 @@ class SalesSubmissionSaveSerializer(
                 comment=sales_submission_comment.get('comment')
             )
 
-        if records is not None:
+        if invalidated is not None:
             RecordOfSale.objects.filter(submission_id=instance.id).delete()
+            valid_vehicles = Vehicle.objects.filter(
+                organization_id=instance.organization_id,
+                validation_status=VehicleDefinitionStatuses.VALIDATED
+            ).values_list('model_year__name', Upper('make'), 'model_name')
 
-            for record_id in records:
-                row = SalesSubmissionContent.objects.filter(
-                    id=record_id
-                ).first()
+            duplicate_vins = SalesSubmissionContent.objects.annotate(
+                vin_count=Count('xls_vin')
+            ).filter(
+                submission_id=instance.id,
+                vin_count__gt=1
+            ).values_list('xls_vin', flat=True)
 
-                if row and row.vehicle:
+            awarded_vins = RecordOfSale.objects.exclude(
+                submission_id=instance.id
+            ).values_list('vin', flat=True)
+
+            content = SalesSubmissionContent.objects.filter(
+                submission_id=instance.id
+            ).exclude(
+                id__in=invalidated
+            ).exclude(
+                xls_vin__in=awarded_vins
+            ).exclude(
+                xls_vin__in=duplicate_vins,
+                xls_sale_date__lte="43102.0"
+            )
+
+            for row in content:
+                try:
+                    model_year = int(float(row.xls_model_year))
+                except ValueError:
+                    model_year = 0
+
+                if (
+                    str(model_year), row.xls_make.upper(), row.xls_model,
+                ) in valid_vehicles:
                     RecordOfSale.objects.create(
                         sale_date=get_date(
                             row.xls_sale_date,
@@ -413,7 +465,7 @@ class SalesSubmissionSaveSerializer(
 
         if validation_status:
             SalesSubmissionHistory.objects.create(
-                submission=instance,
+                submission_id=instance.id,
                 validation_status=validation_status,
                 update_user=request.user.username,
                 create_user=request.user.username,

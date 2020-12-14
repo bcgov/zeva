@@ -40,7 +40,6 @@ pipeline {
             }
             input {
                 message "Should we continue with deployment to TEST?"
-                message "Have you made a database backup and verified no clients are using the system?"
                 ok "Yes!"
             }
             steps {
@@ -55,8 +54,7 @@ pipeline {
                 beforeInput true
             }
             input {
-                message "Should we continue with deployment to PROD?"
-                message "This is Prod!. Have you made a database backup and verified no clients are using the system?"
+                message "Should we continue with deployment to PROD? This is Prod!. Make sure you have made a database backup and verified no clients are using the system."
                 ok "Yes!"
             }
             steps {

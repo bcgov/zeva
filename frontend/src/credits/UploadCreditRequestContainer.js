@@ -9,12 +9,12 @@ import moment from 'moment-timezone';
 import { useParams } from 'react-router-dom';
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import history from '../app/History';
+import Loading from '../app/components/Loading';
 import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
 import CustomPropTypes from '../app/utilities/props';
 import { upload } from '../app/utilities/upload';
 import CreditRequestsUploadPage from './components/CreditRequestsUploadPage';
 import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification';
-import Loading from '../app/components/Loading';
 
 const UploadCreditRequestsContainer = (props) => {
   const { user } = props;
@@ -37,6 +37,7 @@ const UploadCreditRequestsContainer = (props) => {
   };
 
   const doUpload = () => {
+    setLoading(true);
     let data = {};
 
     if (id) {
@@ -56,6 +57,8 @@ const UploadCreditRequestsContainer = (props) => {
       } else {
         setErrorMessage('An error has occurred while uploading. Please try again later.');
       }
+
+      setLoading(false);
     });
   };
 

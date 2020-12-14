@@ -7,11 +7,13 @@ import VINListTable from './VINListTable';
 
 const CreditRequestVINListPage = (props) => {
   const {
+    content,
     handleCheckboxClick,
     handleSubmit,
+    setContent,
     submission,
     user,
-    validatedList,
+    invalidatedList,
   } = props;
 
   const [filtered, setFiltered] = useState([]);
@@ -90,13 +92,15 @@ const CreditRequestVINListPage = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <VINListTable
+            filtered={filtered}
             handleCheckboxClick={handleCheckboxClick}
-            items={submission.content}
+            id={submission.id}
+            invalidatedList={invalidatedList}
+            items={content}
+            setContent={setContent}
+            setFiltered={setFiltered}
             submission={submission}
             user={user}
-            validatedList={validatedList}
-            filtered={filtered}
-            setFiltered={setFiltered}
           />
         </div>
       </div>
@@ -113,14 +117,15 @@ const CreditRequestVINListPage = (props) => {
 CreditRequestVINListPage.defaultProps = {};
 
 CreditRequestVINListPage.propTypes = {
+  content: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-  submission: PropTypes.shape().isRequired,
-  user: CustomPropTypes.user.isRequired,
-  validatedList: PropTypes.arrayOf(PropTypes.oneOfType([
+  invalidatedList: PropTypes.arrayOf(PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string,
   ])).isRequired,
+  submission: PropTypes.shape().isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default CreditRequestVINListPage;
