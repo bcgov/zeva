@@ -99,27 +99,6 @@ class SalesSubmissionListSerializer(
                 submission_id=obj.id,
                 validation_status=SalesSubmissionStatuses.SUBMITTED
                 ).order_by('update_timestamp').first()
-            return history.update_timestamp.date()
-        # return the last updated date
-        history = SalesSubmissionHistory.objects.filter(
-                submission_id=obj.id,
-                validation_status=obj.validation_status
-                ).order_by('update_timestamp').first()
-        return history.update_timestamp.date()
-
-
-    def get_submission_history(self, obj):
-        request = self.context.get('request')
-        if not request.user.is_government and obj.validation_status in [
-            SalesSubmissionStatuses.RECOMMEND_REJECTION,
-            SalesSubmissionStatuses.RECOMMEND_APPROVAL,
-            SalesSubmissionStatuses.CHECKED,
-        ]:
-            # return the date that it was submitted
-            history = SalesSubmissionHistory.objects.filter(
-                submission_id=obj.id,
-                validation_status=SalesSubmissionStatuses.SUBMITTED
-                ).order_by('update_timestamp').first()
 
             if history is None:
                 return None
