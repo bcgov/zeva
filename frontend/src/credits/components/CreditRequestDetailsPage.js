@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useReducer, useState } from 'react';
 import moment from 'moment-timezone';
 import Alert from '../../app/components/Alert';
 import Button from '../../app/components/Button';
@@ -198,7 +198,10 @@ const CreditRequestDetailsPage = (props) => {
                 locationRoute={(locationState && locationState.href) ? locationState.href : ROUTES_CREDIT_REQUESTS.LIST}
                 locationState={locationState}
               />
-              {submission.validationStatus === 'DRAFT' && (
+              {submission.validationStatus === 'DRAFT'
+              && user.hasPermission === 'function'
+              && user.hasPermission('DELETE_SALES')
+              && (
                 <Button buttonType="delete" action={() => { setModalType('delete'); setShowModal(true); }} />
               )}
               {directorAction && (
@@ -268,7 +271,10 @@ const CreditRequestDetailsPage = (props) => {
                       disabled={submission.unselected === 0}
                     />
                   )}
-                  {submission.validationStatus === 'DRAFT' && ([
+                  {submission.validationStatus === 'DRAFT'
+                  && user.hasPermission === 'function'
+                  && user.hasPermission('EDIT_SALES')
+                  && (
                     <button
                       className="button"
                       key="edit"
@@ -279,14 +285,19 @@ const CreditRequestDetailsPage = (props) => {
                       type="button"
                     >
                       <FontAwesomeIcon icon="upload" /> Re-upload excel file
-                    </button>,
+                    </button>
+                  )}
+                  {submission.validationStatus === 'DRAFT'
+                  && user.hasPermission === 'function'
+                  && user.hasPermission('SUBMIT_SALES')
+                  && (
                     <Button
                       buttonType="submit"
                       action={() => { setModalType('submit'); setShowModal(true); }}
                       disabled={invalidSubmission}
                       key="submit"
-                    />,
-                  ])}
+                    />
+                  )}
                 </>
               )}
             </span>

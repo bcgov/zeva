@@ -18,6 +18,7 @@ from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
+from api.permissions.credit_request import CreditRequestPermissions
 from api.serializers.sales_submission import SalesSubmissionSerializer, \
     SalesSubmissionListSerializer, SalesSubmissionSaveSerializer
 from api.serializers.sales_submission_content import \
@@ -34,7 +35,7 @@ class CreditRequestViewset(
         mixins.ListModelMixin, mixins.RetrieveModelMixin,
         mixins.UpdateModelMixin
 ):
-    permission_classes = (AllowAny,)
+    permission_classes = (CreditRequestPermissions,)
     http_method_names = ['get', 'patch', 'post', 'put']
 
     def get_queryset(self):
