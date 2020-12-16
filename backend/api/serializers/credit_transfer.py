@@ -27,6 +27,7 @@ from decimal import Decimal
 
 LOGGER = logging.getLogger(__name__)
 
+
 class CreditTransferBaseSerializer:
     def get_update_user(self, obj):
         user_profile = UserProfile.objects.filter(username=obj.update_user)
@@ -52,12 +53,25 @@ class CreditTransferHistorySerializer(
     create_user = SerializerMethodField()
     update_user = SerializerMethodField()
     status = EnumField(CreditTransferStatuses)
+    credit_transfer_comment = SerializerMethodField()
+    def get_credit_transfer_comment(self, obj):
+        credit_transfer_comment = CreditTransferComment.objects.filter(
+            credit_transfer_history=obj
+        ).order_by('-create_timestamp')
+
+        if credit_transfer_comment.exists():
+            serializer = CreditTransferCommentSerializer(
+                credit_transfer_comment, read_only=True, many=True
+            )
+            return serializer.data
+
+        return None
 
     class Meta:
         model = CreditTransferHistory
         fields = (
             'create_timestamp', 'create_user',
-            'status', 'update_user'
+            'status', 'update_user', 'credit_transfer_comment'
             )
 
 
@@ -103,7 +117,6 @@ class CreditTransferSerializer(
     debit_from = OrganizationSerializer()
     status = SerializerMethodField()
     update_user = SerializerMethodField()
-    credit_transfer_comment = SerializerMethodField()
     sufficient_credits = SerializerMethodField()
 
     def get_sufficient_credits(self, obj):
@@ -142,25 +155,12 @@ class CreditTransferSerializer(
             return CreditTransferStatuses.APPROVED.value
         return obj.get_status_display()
 
-    def get_credit_transfer_comment(self, obj):
-        credit_transfer_comment = CreditTransferComment.objects.filter(
-            credit_transfer=obj
-        ).order_by('-create_timestamp')
-
-        if credit_transfer_comment.exists():
-            serializer = CreditTransferCommentSerializer(
-                credit_transfer_comment, read_only=True, many=True
-            )
-            return serializer.data
-
-        return None
-
     class Meta:
         model = CreditTransfer
         fields = (
             'create_timestamp', 'credit_to', 'credit_transfer_content',
             'debit_from', 'id', 'status', 'update_user',
-            'credit_transfer_comment', 'history', 'sufficient_credits'
+            'history', 'sufficient_credits'
         )
 
 
@@ -170,10 +170,6 @@ class CreditTransferSaveSerializer(ModelSerializer):
     """
     status = EnumField(CreditTransferStatuses)
     content = CreditTransferContentSaveSerializer(allow_null=True, many=True)
-    credit_transfer_comment = CreditTransferCommentSerializer(
-        allow_null=True,
-        required=False
-    )
 
     def validate_status(self, value):
         request = self.context.get('request')
@@ -218,14 +214,8 @@ class CreditTransferSaveSerializer(ModelSerializer):
         request = self.context.get('request')
         content = request.data.get('content')
         signing_confirmation = request.data.get('signing_confirmation', None)
-        credit_transfer_comment = validated_data.pop('credit_transfer_comment', None)
-
-        if credit_transfer_comment:
-            CreditTransferComment.objects.create(
-                create_user=request.user.username,
-                credit_transfer=instance,
-                comment=credit_transfer_comment.get('comment')
-            )
+        # credit_transfer_comment = validated_data.pop('credit_transfer_comment', None)
+        credit_transfer_comment = request.data.get('credit_transfer_comment')
         if content:
             CreditTransferContent.objects.filter(credit_transfer_id=instance.id).delete()
             serializer = CreditTransferContentSaveSerializer(
@@ -244,15 +234,23 @@ class CreditTransferSaveSerializer(ModelSerializer):
         validation_status = validated_data.get('status')
         
         if validation_status:
-            CreditTransferHistory.objects.create(
+            credit_history = CreditTransferHistory.objects.create(
                 transfer=instance,
                 status=validation_status,
                 update_user=request.user.username,
                 create_user=request.user.username,
             )
+            if credit_transfer_comment:
+                CreditTransferComment.objects.create(
+                    create_user=request.user.username,
+                    credit_transfer_history=credit_history,
+                    comment=credit_transfer_comment.get('comment')
+                )
             instance.status = validation_status
             instance.update_user = request.user.username
             instance.save()
+            credit_history.save()
+
 
             """
             Send email to the IDIR users if status is one of the following
@@ -355,5 +353,4 @@ class CreditTransferSaveSerializer(ModelSerializer):
         model = CreditTransfer
         fields = (
             'id', 'status', 'credit_to', 'debit_from', 'content',
-            'credit_transfer_comment'
         )
