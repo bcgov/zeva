@@ -259,14 +259,43 @@ class CreditRequestViewset(
         if not request.user.is_government:
             return HttpResponseForbidden()
 
-        selected_vins = Subquery(RecordOfSale.objects.filter(
-            submission_id=pk
-        ).values_list('vin', flat=True))
+        submission = SalesSubmission.objects.get(id=pk)
 
-        unselected_vins = SalesSubmissionContent.objects.filter(
+        record_of_sale_count = RecordOfSale.objects.filter(
             submission_id=pk
-        ).exclude(
-            xls_vin__in=selected_vins
-        ).values_list('id', flat=True)
+        ).count()
+
+        if (record_of_sale_count == 0 and
+                submission.validation_status == SalesSubmissionStatuses.CHECKED) or \
+                submission.validation_status == SalesSubmissionStatuses.SUBMITTED:
+            submission_content = SalesSubmissionContent.objects.filter(
+                submission_id=pk
+            )
+            duplicate_vins = Subquery(submission_content.annotate(
+                vin_count=Count('xls_vin')
+            ).filter(vin_count__gt=1).values_list('xls_vin', flat=True))
+
+            awarded_vins = Subquery(RecordOfSale.objects.exclude(
+                submission_id=pk
+            ).values_list('vin', flat=True))
+
+            unselected_vins = submission_content.filter(
+                Q(xls_vin__in=duplicate_vins) |
+                Q(xls_vin__in=awarded_vins) |
+                ~Q(xls_vin__in=Subquery(
+                    IcbcRegistrationData.objects.values('vin')
+                )) |
+                Q(xls_sale_date__lte="43102.0")
+            ).values_list('id', flat=True)
+        else:
+            selected_vins = Subquery(RecordOfSale.objects.filter(
+                submission_id=pk
+            ).values_list('vin', flat=True))
+
+            unselected_vins = SalesSubmissionContent.objects.filter(
+                submission_id=pk
+            ).exclude(
+                xls_vin__in=selected_vins
+            ).values_list('id', flat=True)
 
         return Response(list(unselected_vins))
