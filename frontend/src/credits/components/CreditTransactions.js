@@ -11,6 +11,18 @@ const CreditTransactions = (props) => {
 
   const transactions = [];
 
+  items.sort((a, b) => {
+    if (a.transactionTimestamp < b.transactionTimestamp) {
+      return -1;
+    }
+
+    if (a.transactionTimestamp > b.transactionTimestamp) {
+      return 1;
+    }
+
+    return 0;
+  });
+
   items.forEach((item) => {
     if (item.creditClass.creditClass === 'A') {
       totalA += parseFloat(item.totalValue);
