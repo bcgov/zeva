@@ -52,6 +52,7 @@ const CreditTransfersDetailsActionBar = (props) => {
             {transferRole.governmentDirector
             && (
             <Button
+              disabled={comment.length === 0}
               testid="director-reject-transfer"
               buttonType="reject"
               optionalText="Reject Transfer"

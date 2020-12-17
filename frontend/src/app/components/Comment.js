@@ -12,8 +12,8 @@ const Comment = (props) => {
       <span>
         {commentArray && (
           commentArray.map((each) => (
-            <p key={each.id}>
-              {each.createUser.displayName}, {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}: {each.comment}
+            <p key={each.comment.id}>
+              {each.createUser.displayName}, {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}: {each.comment.comment}
             </p>
           ))
         )}

@@ -49,9 +49,10 @@ class CreditTransferViewset(
                         CreditTransferStatuses.APPROVED,
                         CreditTransferStatuses.DISAPPROVED,
                         CreditTransferStatuses.RESCINDED,
-                        CreditTransferStatuses.VALIDATED,
                         CreditTransferStatuses.RECOMMEND_APPROVAL,
-                        CreditTransferStatuses.RECOMMEND_REJECTION
+                        CreditTransferStatuses.RECOMMEND_REJECTION,
+                        CreditTransferStatuses.REJECTED,
+                        CreditTransferStatuses.VALIDATED
                         ])) |
                 Q(debit_from_id=request.user.organization.id))
         return queryset

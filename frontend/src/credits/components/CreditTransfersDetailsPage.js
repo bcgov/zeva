@@ -46,6 +46,7 @@ const CreditTransfersDetailsPage = (props) => {
       setAllChecked(false);
     }
   });
+  const transferComments = submission.history.filter((each) => each.comment);
 
   let modalProps = {};
   switch (modalType) {
@@ -222,7 +223,10 @@ const CreditTransfersDetailsPage = (props) => {
   const idirSignoff = (
     <div>
       {signedSubmittedInfo}
-      <label className="mt-3" htmlFor="transfer-comment">{transferRole.governmentAnalyst ? 'Comment to director' : 'Comment to vehicle suppliers'}</label>
+      <label className="mt-3" htmlFor="transfer-comment">
+        <h4>{transferRole.governmentAnalyst ? 'Comment to director' : 'Comment to vehicle suppliers'}
+        </h4>
+      </label>
       <textarea testid="transfer-comment-analyst" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} />
     </div>
   );
@@ -265,10 +269,10 @@ const CreditTransfersDetailsPage = (props) => {
         <div className="col-sm-12">
           <h2>Light Duty Vehicle Credit Transfer</h2>
         </div>
-        {transferRole.governmentDirector && submission.creditTransferComment
+        {transferComments.length > 0 
       && (
       <div className="ml-3">
-        <Comment commentArray={submission.creditTransferComment} />
+        <Comment commentArray={transferComments} />
       </div>
       )}
       </div>
