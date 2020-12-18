@@ -199,7 +199,7 @@ const CreditRequestDetailsPage = (props) => {
                 locationState={locationState}
               />
               {submission.validationStatus === 'DRAFT'
-              && user.hasPermission === 'function'
+              && typeof user.hasPermission === 'function'
               && user.hasPermission('DELETE_SALES')
               && (
                 <Button buttonType="delete" action={() => { setModalType('delete'); setShowModal(true); }} />
@@ -272,7 +272,7 @@ const CreditRequestDetailsPage = (props) => {
                     />
                   )}
                   {submission.validationStatus === 'DRAFT'
-                  && user.hasPermission === 'function'
+                  && typeof user.hasPermission === 'function'
                   && user.hasPermission('EDIT_SALES')
                   && (
                     <button
@@ -288,7 +288,7 @@ const CreditRequestDetailsPage = (props) => {
                     </button>
                   )}
                   {submission.validationStatus === 'DRAFT'
-                  && user.hasPermission === 'function'
+                  && typeof user.hasPermission === 'function'
                   && user.hasPermission('SUBMIT_SALES')
                   && (
                     <Button

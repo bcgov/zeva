@@ -22,7 +22,7 @@ const CreditRequestsPage = (props) => {
           <h2>Application for Credits for Consumer Sales</h2>
         </div>
         {!user.isGovernment
-        && user.hasPermission === 'function'
+        && typeof user.hasPermission === 'function'
         && user.hasPermission('CREATE_SALES')
         && (
         <div className="col-md-4 text-right">
