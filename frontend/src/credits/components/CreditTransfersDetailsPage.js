@@ -46,6 +46,7 @@ const CreditTransfersDetailsPage = (props) => {
       setAllChecked(false);
     }
   });
+  const transferComments = submission.history.filter((each) => each.comment);
 
   let modalProps = {};
   switch (modalType) {
@@ -218,10 +219,14 @@ const CreditTransfersDetailsPage = (props) => {
       )}
     </>
   );
-  const analystSignoff = (
+
+  const idirSignoff = (
     <div>
       {signedSubmittedInfo}
-      <label htmlFor="transfer-comment">comment to director</label>
+      <label className="mt-3" htmlFor="transfer-comment">
+        <h4>{transferRole.governmentAnalyst ? 'Comment to director' : 'Comment to vehicle suppliers'}
+        </h4>
+      </label>
       <textarea testid="transfer-comment-analyst" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} />
     </div>
   );
@@ -246,6 +251,16 @@ const CreditTransfersDetailsPage = (props) => {
       <textarea testid="transfer-comment" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} disabled={allChecked} />
     </div>
   );
+  const insufficientCreditWarning = (
+    <div
+      className="alert alert-danger"
+      id="alert-warning"
+      role="alert"
+    >
+      <FontAwesomeIcon icon="exclamation-circle" size="lg" />
+      &nbsp;<b>WARNING:&nbsp;</b> Supplier has insufficient credits to fulfill all pending transfers.
+    </div>
+  );
 
   return (
     <div id="credit-transfers-details" className="page">
@@ -254,24 +269,15 @@ const CreditTransfersDetailsPage = (props) => {
         <div className="col-sm-12">
           <h2>Light Duty Vehicle Credit Transfer</h2>
         </div>
-        {transferRole.governmentDirector && submission.creditTransferComment
+        {transferComments.length > 0 
       && (
       <div className="ml-3">
-        <Comment commentArray={submission.creditTransferComment} />
+        <Comment commentArray={transferComments} />
       </div>
       )}
       </div>
       {transferRole.governmentAnalyst && !sufficientCredit
-      && (
-        <div
-          className="alert alert-danger"
-          id="alert-warning"
-          role="alert"
-        >
-          <FontAwesomeIcon icon="exclamation-circle" size="lg" />
-          &nbsp;<b>WARNING:&nbsp;</b> Supplier has insufficient credits to fulfill all pending transfers.
-        </div>
-      )}
+      && insufficientCreditWarning}
       {transferRole.governmentAnalyst
       && (
       <CreditTransfersDetailsSupplierTable submission={submission} tableType="supplierBalance" />
@@ -293,8 +299,8 @@ const CreditTransfersDetailsPage = (props) => {
                   {rescindComment}
                 </>
                 )}
-                {transferRole.governmentAnalyst
-                && analystSignoff}
+                {(transferRole.governmentAnalyst || transferRole.governmentDirector)
+                && idirSignoff}
                 <CreditTransfersDetailsActionBar
                   allChecked={allChecked}
                   assertions={assertions}

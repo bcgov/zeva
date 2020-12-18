@@ -45,6 +45,25 @@ class CreditTransferBaseSerializer:
             return serializer.data
         return obj.create_user
 
+    def get_history(self, obj):
+        request = self.context.get('request')
+        if request.user.is_government:
+            history = CreditTransferHistory.objects.filter(
+                transfer_id=obj.id)
+        else:
+            history = CreditTransferHistory.objects.filter(
+                transfer_id=obj.id,
+                status__in=[
+                    CreditTransferStatuses.SUBMITTED,
+                    CreditTransferStatuses.APPROVED,
+                    CreditTransferStatuses.DISAPPROVED,
+                    CreditTransferStatuses.RESCINDED,
+                    CreditTransferStatuses.REJECTED,
+                    CreditTransferStatuses.VALIDATED
+                ])
+        serializer = CreditTransferHistorySerializer(history, many=True, read_only=True)
+        return serializer.data
+
 
 class CreditTransferHistorySerializer(
         ModelSerializer, EnumSupportSerializerMixin,
@@ -53,25 +72,25 @@ class CreditTransferHistorySerializer(
     create_user = SerializerMethodField()
     update_user = SerializerMethodField()
     status = EnumField(CreditTransferStatuses)
-    credit_transfer_comment = SerializerMethodField()
-    def get_credit_transfer_comment(self, obj):
+    comment = SerializerMethodField()
+
+    def get_comment(self, obj):
         credit_transfer_comment = CreditTransferComment.objects.filter(
             credit_transfer_history=obj
-        ).order_by('-create_timestamp')
+        ).first()
 
-        if credit_transfer_comment.exists():
+        if credit_transfer_comment:
             serializer = CreditTransferCommentSerializer(
-                credit_transfer_comment, read_only=True, many=True
+                credit_transfer_comment, read_only=True, many=False
             )
             return serializer.data
-
         return None
 
     class Meta:
         model = CreditTransferHistory
         fields = (
             'create_timestamp', 'create_user',
-            'status', 'update_user', 'credit_transfer_comment'
+            'status', 'update_user', 'comment'
             )
 
 
@@ -79,7 +98,7 @@ class CreditTransferListSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
         CreditTransferBaseSerializer
 ):
-    history = CreditTransferHistorySerializer(read_only=True, many=True)
+    history = SerializerMethodField()
     credit_to = OrganizationSerializer()
     credit_transfer_content = CreditTransferContentSerializer(
         many=True, read_only=True
@@ -109,7 +128,7 @@ class CreditTransferSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
         CreditTransferBaseSerializer
 ):
-    history = CreditTransferHistorySerializer(read_only=True, many=True)
+    history = SerializerMethodField()
     credit_to = OrganizationSerializer()
     credit_transfer_content = CreditTransferContentSerializer(
         many=True, read_only=True
@@ -118,7 +137,7 @@ class CreditTransferSerializer(
     status = SerializerMethodField()
     update_user = SerializerMethodField()
     sufficient_credits = SerializerMethodField()
-
+     
     def get_sufficient_credits(self, obj):
         has_credits = True
         request = self.context.get('request')
@@ -251,6 +270,52 @@ class CreditTransferSaveSerializer(ModelSerializer):
             instance.update_user = request.user.username
             instance.save()
             credit_history.save()
+
+
+            """
+            Send email to the IDIR users if status is one of the following
+            """
+
+            gov = Organization.objects.get(is_government='True').id
+            email = None
+            if validation_status in [
+                    CreditTransferStatuses.RECOMMEND_APPROVAL,
+                    CreditTransferStatuses.RECOMMEND_REJECTION,
+                    CreditTransferStatuses.APPROVED
+            ]:
+                email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=gov).exclude(email__isnull=True).exclude(email__exact='')
+    
+            elif validation_status is CreditTransferStatuses.SUBMITTED and credit_to:
+                email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=credit_to).exclude(email__isnull=True).exclude(email__exact='')
+
+            if email:
+                try:
+                    send_email(list(email))
+                except Exception as e:
+                    LOGGER.error('Email Failed! %s', e)
+
+
+            """
+            Send email to the IDIR users if status is one of the following
+            """
+
+            gov = Organization.objects.get(is_government='True').id
+            email = None
+            if validation_status in [
+                    CreditTransferStatuses.RECOMMEND_APPROVAL,
+                    CreditTransferStatuses.RECOMMEND_REJECTION,
+                    CreditTransferStatuses.APPROVED
+            ]:
+                email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=gov).exclude(email__isnull=True).exclude(email__exact='')
+    
+            elif validation_status is CreditTransferStatuses.SUBMITTED and credit_to:
+                email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=credit_to).exclude(email__isnull=True).exclude(email__exact='')
+
+            if email:
+                try:
+                    send_email(list(email))
+                except Exception as e:
+                    LOGGER.error('Email Failed! %s', e)
 
 
             """
