@@ -70,6 +70,7 @@ const CreditTransfersForm = (props) => {
             <Button buttonType="back" locationRoute="/credit-transfers" />
           </span>
           <span className="right-content">
+            {user.hasPermission('CREATE_CREDIT_TRANSFERS') && (
             <Button
               disabled={unfilledRow || fields.transferPartner === ''}
               buttonType="save"
@@ -77,6 +78,8 @@ const CreditTransfersForm = (props) => {
                 handleSave();
               }}
             />
+            )}
+            {user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL') && (
             <Button
               buttonType="submit"
               action={() => {
@@ -86,6 +89,7 @@ const CreditTransfersForm = (props) => {
               buttonTooltip={submitTooltip}
               disabled={checkboxes.length < assertions.length}
             />
+            )}
           </span>
         </div>
       </div>

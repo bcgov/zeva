@@ -17,7 +17,6 @@ from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.serializers.sales_submission_comment import \
     SalesSubmissionCommentSerializer
 from api.models.user_profile import UserProfile
-from api.models.vehicle import Vehicle
 from api.models.vin_statuses import VINStatuses
 from api.serializers.user import MemberSerializer
 from api.serializers.organization import OrganizationSerializer
@@ -73,7 +72,7 @@ class SalesSubmissionHistorySerializer(
         fields = (
             'create_timestamp', 'create_user',
             'validation_status', 'update_user'
-            )
+        )
 
 
 class SalesSubmissionListSerializer(
@@ -98,28 +97,7 @@ class SalesSubmissionListSerializer(
             history = SalesSubmissionHistory.objects.filter(
                 submission_id=obj.id,
                 validation_status=SalesSubmissionStatuses.SUBMITTED
-                ).order_by('update_timestamp').first()
-            return history.update_timestamp.date()
-        # return the last updated date
-        history = SalesSubmissionHistory.objects.filter(
-                submission_id=obj.id,
-                validation_status=obj.validation_status
-                ).order_by('update_timestamp').first()
-        return history.update_timestamp.date()
-
-
-    def get_submission_history(self, obj):
-        request = self.context.get('request')
-        if not request.user.is_government and obj.validation_status in [
-            SalesSubmissionStatuses.RECOMMEND_REJECTION,
-            SalesSubmissionStatuses.RECOMMEND_APPROVAL,
-            SalesSubmissionStatuses.CHECKED,
-        ]:
-            # return the date that it was submitted
-            history = SalesSubmissionHistory.objects.filter(
-                submission_id=obj.id,
-                validation_status=SalesSubmissionStatuses.SUBMITTED
-                ).order_by('update_timestamp').first()
+                ).order_by('-update_timestamp').first()
 
             if history is None:
                 return None
@@ -128,9 +106,9 @@ class SalesSubmissionListSerializer(
 
         # return the last updated date
         history = SalesSubmissionHistory.objects.filter(
-                submission_id=obj.id,
-                validation_status=obj.validation_status
-                ).order_by('update_timestamp').first()
+            submission_id=obj.id,
+            validation_status=obj.validation_status
+        ).order_by('-update_timestamp').first()
 
         if history is None:
             return None
@@ -211,11 +189,12 @@ class SalesSubmissionListSerializer(
             'total_credits', 'total_warnings', 'unselected',
         )
 
+
 class SalesSubmissionSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
         BaseSerializer
 ):
-    history = SalesSubmissionHistorySerializer(read_only=True, many=True)
+    history = SerializerMethodField()
     organization = OrganizationSerializer(read_only=True)
     content = SerializerMethodField()
     sales_submission_comment = SerializerMethodField()
@@ -319,6 +298,19 @@ class SalesSubmissionSerializer(
             row['vehicle'] = vehicle_serializer.data
 
         return content
+
+    def get_history(self, obj):
+        request = self.context.get('request')
+
+        history = SalesSubmissionHistory.objects.filter(
+            submission_id=obj.id
+        ).order_by('-update_timestamp')
+
+        serializer = SalesSubmissionHistorySerializer(
+            history, read_only=True, many=True, context={'request': request}
+        )
+
+        return serializer.data
 
     def get_sales_submission_comment(self, obj):
         sales_submission_comment = SalesSubmissionComment.objects.filter(

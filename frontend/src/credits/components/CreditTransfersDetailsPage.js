@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import moment from 'moment-timezone';
+
 import CreditTransferSignoff from './CreditTransfersSignOff';
 import CreditTransfersDetailsActionBar
   from './CreditTransfersDetailsActionBar';
@@ -309,6 +310,7 @@ const CreditTransfersDetailsPage = (props) => {
                   transferRole={transferRole}
                   setModalType={setModalType}
                   setShowModal={setShowModal}
+                  user={user}
                 />
               </div>
             )}
