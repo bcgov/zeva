@@ -3,17 +3,21 @@ from decimal import Decimal
 from django.db.models import Case, Count, Sum, Value, F, Q, When, Max
 from django.db.models.functions import Coalesce
 from django.db import transaction
+from rest_framework.serializers import ValidationError
+
 from api.models.account_balance import AccountBalance
 from api.models.credit_class import CreditClass
 from api.models.credit_transaction import CreditTransaction
 from api.models.credit_transaction_type import CreditTransactionType
+from api.models.credit_transfer_credit_transaction import \
+    CreditTransferCreditTransaction
 from api.models.sales_submission_credit_transaction import \
     SalesSubmissionCreditTransaction
 from api.models.record_of_sale import RecordOfSale
 from api.models.vehicle import Vehicle
 from api.models.weight_class import WeightClass
+
 from api.services.credit_transfer import aggregate_credit_transfer_details
-from rest_framework.serializers import ValidationError
 
 
 def award_credits(submission):
@@ -207,7 +211,7 @@ def validate_transfer(transfer):
                 credit_total[model_year][credit_type] += credit_value
             for year, v in credit_total.items():
                 for credit_class, credit_value in v.items():
-                    #add record for each unique combination to credit transaction table
+                    # add record for each unique combination to credit transaction table
                     added_transaction = CreditTransaction.objects.create(
                         create_user=transfer.update_user,
                         credit_class=CreditClass.objects.get(
@@ -225,6 +229,13 @@ def validate_transfer(transfer):
                         update_user=transfer.update_user,
                         weight_class=WeightClass.objects.get(
                             weight_class_code='LDV')
+                    )
+
+                    CreditTransferCreditTransaction.objects.create(
+                        create_user=transfer.update_user,
+                        credit_transaction_id=added_transaction.id,
+                        credit_transfer_id=transfer.id,
+                        update_user=transfer.update_user,
                     )
             for each_supplier in [initiating_supplier, recieving_supplier]:
                 reduce_total = each_supplier == transfer.debit_from
