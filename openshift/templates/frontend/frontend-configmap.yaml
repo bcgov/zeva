@@ -14,6 +14,11 @@ parameters:
     description: sample is -dev-97
     value: ''
     required: true
+  - name: CREDIT_TRANSFER_ENABLED
+    displayName: null
+    description: enable credittransfer or not
+    value: 'false'
+    required: true    
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -23,7 +28,7 @@ objects:
     data:
       features.js: |
         window.zeva_config = {
-          'credit_transfers.enabled': false,
+          'credit_transfers.enabled': ${CREDIT_TRANSFER_ENABLED},
           'credit_transactions.enabled': true,
           'initiative_agreements.enabled': false,
           'model_year_report.enabled': false,

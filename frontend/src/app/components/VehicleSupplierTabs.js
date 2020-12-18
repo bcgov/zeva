@@ -80,7 +80,7 @@ VehicleSupplierTabs.defaultProps = {
 
 VehicleSupplierTabs.propTypes = {
   active: PropTypes.string.isRequired,
-  locationState: PropTypes.shape(),
+  locationState: PropTypes.arrayOf(PropTypes.shape()),
   supplierId: PropTypes.number,
 };
 

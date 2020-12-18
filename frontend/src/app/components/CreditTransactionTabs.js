@@ -40,7 +40,7 @@ const CreditTransactionTabs = (props) => {
         <Link to={ROUTES_CREDIT_TRANSFERS.LIST}>Credit Transfers</Link>
       </li>
       )}
-      {user.isGovernment && (
+      {typeof user.hasPermission === 'function'&& user.hasPermission('EDIT_ICBC_DATA') && user.isGovernment &&(
       <li
         className={`nav-item ${(active === 'icbc-update') ? 'active' : ''}`}
         role="presentation"

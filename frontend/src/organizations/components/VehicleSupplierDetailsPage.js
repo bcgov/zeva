@@ -69,7 +69,6 @@ VehicleSupplierDetailsPage.defaultProps = {
 
 VehicleSupplierDetailsPage.propTypes = {
   details: CustomPropTypes.organizationDetails.isRequired,
-  editButton: PropTypes.element.isRequired,
   loading: PropTypes.bool.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),
 };

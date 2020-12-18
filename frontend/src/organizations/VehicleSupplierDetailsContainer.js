@@ -21,7 +21,7 @@ const VehicleSupplierDetailsContainer = (props) => {
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [display, setDisplay] = useState({});
-  const { keycloak, location } = props;
+  const { keycloak, location, user } = props;
   const { state: locationState } = location;
 
   const refreshDetails = () => {
@@ -39,17 +39,21 @@ const VehicleSupplierDetailsContainer = (props) => {
     refreshDetails();
   }, [keycloak.authenticated]);
 
-  const editButton = (
-    <button
-      className="button primary"
-      onClick={() => {
-        History.push(ROUTES_ORGANIZATIONS.EDIT.replace(/:id/gi, id));
-      }}
-      type="button"
-    >
-      <FontAwesomeIcon icon="edit" /> Edit
-    </button>
-  );
+  const editButton = () => {
+    if (typeof user.hasPermission === 'function'&& user.hasPermission('EDIT_ORGANIZATIONS') && user.isGovernment){
+        return(
+          <button
+          className="button primary"
+          onClick={() => {
+            History.push(ROUTES_ORGANIZATIONS.EDIT.replace(/:id/gi, id));
+          }}
+          type="button"
+          >
+          <FontAwesomeIcon icon="edit" /> Edit
+          </button>
+        );
+    }
+  }
 
   return (
     <div className="page">
@@ -59,7 +63,8 @@ const VehicleSupplierDetailsContainer = (props) => {
         details={details}
         loading={loading}
         locationState={locationState}
-        editButton={editButton}
+        editButton={editButton()}
+        user={user}
       />
     </div>
   );
@@ -67,6 +72,7 @@ const VehicleSupplierDetailsContainer = (props) => {
 VehicleSupplierDetailsContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   location: PropTypes.shape().isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default withRouter(VehicleSupplierDetailsContainer);

@@ -96,36 +96,42 @@ const historyData = [
 ];
 
 const submissionDraft = {
+  content: [],
   validationStatus: 'DRAFT',
   unselected: 1,
   history: historyData,
   filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls',
 };
 const submissionErrors = {
+  content: [],
   validationStatus: 'DRAFT',
   unselected: 1,
   history: historyData,
   filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls',
 };
 const submissionSubmitted = {
+  content: [],
   validationStatus: 'SUBMITTED',
   unselected: 1,
   history: historyData,
   filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls',
 };
 const submissionValidated = {
+  content: [],
   validationStatus: 'VALIDATED',
   unselected: 1,
   history: historyData,
   filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls',
 };
 const submissionRecommend = {
+  content: [],
   validationStatus: 'RECOMMEND_APPROVAL',
   unselected: 1,
   history: historyData,
   filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls',
 };
 const submissionChecked = {
+  content: [],
   validationStatus: 'CHECKED',
   createUser: { displayName: 'emily' },
   submissionDate: 'March 3, 2020',
