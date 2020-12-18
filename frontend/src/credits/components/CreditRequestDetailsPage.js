@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-import React, { useReducer, useState } from 'react';
+import React, { useState } from 'react';
 import moment from 'moment-timezone';
 import Alert from '../../app/components/Alert';
 import Button from '../../app/components/Button';
