@@ -28,7 +28,7 @@ const CreditTransfersListPage = (props) => {
           <h2>Light Duty Vehicle Credit Transfers</h2>
         </div>
         {!user.isGovernment
-        && user.hasPermission === 'function'
+        && typeof user.hasPermission === 'function'
         && user.hasPermission('CREATE_CREDIT_TRANSFERS')
         && (
         <div className="col-md-4 text-right">
