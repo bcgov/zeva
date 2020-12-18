@@ -28,9 +28,14 @@ class CreditRequestPermissions(permissions.BasePermission):
                 request.user.has_perm('VALIDATE_SALES'):
             return True
 
-        if obj.id == request.user.id and \
-                request.method in permissions.SAFE_METHODS:
-            return True
+        if obj.organization_id == request.user.organization_id:
+            if request.method in permissions.SAFE_METHODS:
+                return True
+
+            if request.user.has_perm('CREATE_SALES') or \
+                    request.user.has_perm('SUBMIT_SALES') or \
+                    request.user.has_perm('EDIT_SALES'):
+                return True
 
         if request.method == 'GET' and \
                 request.user.has_perm('VIEW_SALES'):
