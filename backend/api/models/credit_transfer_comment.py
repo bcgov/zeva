@@ -11,8 +11,8 @@ class CreditTransferComment(Auditable):
     Contains comments made about the Credit Transfer between
     director and analyst (idir only)
     """
-    credit_transfer = models.ForeignKey(
-        'CreditTransfer',
+    credit_transfer_history = models.ForeignKey(
+        'CreditTransferHistory',
         related_name='credit_transfer_comments',
         null=False,
         on_delete=models.PROTECT
