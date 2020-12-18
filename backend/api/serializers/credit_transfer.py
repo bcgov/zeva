@@ -198,7 +198,6 @@ class CreditTransferSaveSerializer(ModelSerializer):
         model_years = ModelYear.objects.all()
         credit_classes = CreditClass.objects.all()
         weights = WeightClass.objects.all()
-        print('test')
 
         if not request.user.has_perm('SUBMIT_CREDIT_TRANSFER_PROPOSAL') and \
                 value == CreditTransferStatuses.SUBMITTED:
