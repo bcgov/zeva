@@ -27,6 +27,7 @@ from decimal import Decimal
 
 LOGGER = logging.getLogger(__name__)
 
+
 class CreditTransferBaseSerializer:
     def get_update_user(self, obj):
         user_profile = UserProfile.objects.filter(username=obj.update_user)
