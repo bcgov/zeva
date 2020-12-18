@@ -255,6 +255,39 @@ class CreditTransferSaveSerializer(ModelSerializer):
                     raise ValidationError('not enough credits')
         return value
 
+    def validate_status(self, value):
+        request = self.context.get('request')
+        content = request.data.get('content')
+        model_years = ModelYear.objects.all()
+        credit_classes = CreditClass.objects.all()
+        weights = WeightClass.objects.all()
+        ##check to make sure its a draft
+
+        if value in [CreditTransferStatuses.DRAFT, CreditTransferStatuses.SUBMITTED]:
+            supplier_totals = calculate_insufficient_credits(content[0]['debit_from'])
+            has_enough = True
+            ## loop through request and check against supplier balance
+            for each in content:
+                found = False
+                # aggregate by unique combinations of credit year/type
+                credit_value = each['credit_value']
+                model_year = model_years.filter(name=each['model_year']).first().id
+                credit_type = credit_classes.filter(credit_class=each['credit_class']).first().id
+                weight_type = weights.filter(weight_class_code=each['weight_class']).first().id
+                # check if supplier has enough for this transfer
+                for record in supplier_totals:
+                    if (record['model_year_id'] == model_year and record['credit_class_id'] == credit_type
+                            and record['weight_class_id'] == weight_type):
+                        found = True
+                        record['total_value'] -= Decimal(float(credit_value))
+                        if record['total_value'] < 0:
+                            has_enough = False
+                if not found:
+                    has_enough = False
+                if not has_enough:
+                    raise ValidationError('not enough credits')
+        return value
+
     def validate_validation_status(self, value):
         request = self.context.get('request')
         instance = self.instance
@@ -302,6 +335,29 @@ class CreditTransferSaveSerializer(ModelSerializer):
             instance.update_user = request.user.username
             instance.save()
             credit_history.save()
+
+
+            """
+            Send email to the IDIR users if status is one of the following
+            """
+
+            gov = Organization.objects.get(is_government='True').id
+            email = None
+            if validation_status in [
+                    CreditTransferStatuses.RECOMMEND_APPROVAL,
+                    CreditTransferStatuses.RECOMMEND_REJECTION,
+                    CreditTransferStatuses.APPROVED
+            ]:
+                email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=gov).exclude(email__isnull=True).exclude(email__exact='')
+    
+            elif validation_status is CreditTransferStatuses.SUBMITTED and credit_to:
+                email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=credit_to).exclude(email__isnull=True).exclude(email__exact='')
+
+            if email:
+                try:
+                    send_email(list(email))
+                except Exception as e:
+                    LOGGER.error('Email Failed! %s', e)
 
 
             """
