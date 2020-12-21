@@ -8,6 +8,7 @@ import CustomPropTypes from '../../app/utilities/props';
 import TransferFormRow from './TransferFormRow';
 import FormDropdown from './FormDropdown';
 import CreditTransferSignoff from './CreditTransfersSignOff';
+import Comment from '../../app/components/Comment';
 
 const CreditTransfersForm = (props) => {
   const {
@@ -29,10 +30,10 @@ const CreditTransfersForm = (props) => {
     unfilledRow,
     user,
     years,
+    transferComments,
   } = props;
   const [showModal, setShowModal] = useState(false);
   const submitTooltip = 'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.';
-
   const modal = (
     <Modal
       confirmLabel=" Submit Notice"
@@ -106,6 +107,12 @@ const CreditTransfersForm = (props) => {
             To submit a notice of credit transfer there must be sufficient credits in your balance
           </div>
         </div>
+        {transferComments.length > 0 
+      && (
+      <div className="ml-3">
+        <Comment commentArray={transferComments} />
+      </div>
+      )}
       </div>
       {errorMessage && alert}
       <div id="form">
@@ -159,6 +166,8 @@ CreditTransfersForm.defaultProps = {
   checkboxes: [],
   unfilledRow: true,
   hoverText: '',
+  transferComments: [{}],
+  errorMessage: '',
 };
 
 CreditTransfersForm.propTypes = {
@@ -179,6 +188,8 @@ CreditTransfersForm.propTypes = {
   unfilledRow: PropTypes.bool,
   user: CustomPropTypes.user.isRequired,
   years: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  transferComments: PropTypes.arrayOf(PropTypes.shape()),
+  errorMessage: PropTypes.string,
 };
 
 export default CreditTransfersForm;

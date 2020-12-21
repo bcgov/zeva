@@ -60,6 +60,7 @@ class CreditTransferBaseSerializer:
                     CreditTransferStatuses.APPROVED,
                     CreditTransferStatuses.DISAPPROVED,
                     CreditTransferStatuses.RESCINDED,
+                    CreditTransferStatuses.RESCIND_PRE_APPROVAL,
                     CreditTransferStatuses.REJECTED,
                     CreditTransferStatuses.VALIDATED
                 ])
@@ -241,7 +242,6 @@ class CreditTransferSaveSerializer(ModelSerializer):
         request = self.context.get('request')
         content = request.data.get('content')
         signing_confirmation = request.data.get('signing_confirmation', None)
-        # credit_transfer_comment = validated_data.pop('credit_transfer_comment', None)
         credit_transfer_comment = request.data.get('credit_transfer_comment')
         if content:
             CreditTransferContent.objects.filter(credit_transfer_id=instance.id).delete()
@@ -259,8 +259,9 @@ class CreditTransferSaveSerializer(ModelSerializer):
             instance.save()
 
         validation_status = validated_data.get('status')
-        
         if validation_status:
+            if (instance.status == CreditTransferStatuses.SUBMITTED) & (validation_status == CreditTransferStatuses.RESCINDED):
+                validation_status = CreditTransferStatuses.RESCIND_PRE_APPROVAL
             credit_history = CreditTransferHistory.objects.create(
                 transfer=instance,
                 status=validation_status,
