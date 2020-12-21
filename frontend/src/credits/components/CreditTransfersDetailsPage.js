@@ -48,7 +48,6 @@ const CreditTransfersDetailsPage = (props) => {
     }
   });
   const transferComments = submission.history.filter((each) => each.comment);
-
   let modalProps = {};
   switch (modalType) {
     case 'initiating-submit':
@@ -174,7 +173,7 @@ const CreditTransfersDetailsPage = (props) => {
   let showSubmissionConfirmation = true;
   let showApproveConfirmation = true;
   submission.history.forEach((history) => {
-    if (history.status === 'RESCINDED') {
+    if (history.status === 'RESCINDED' || history.status === 'RESCIND_PRE_APPROVAL') {
       latestRescind = history;
     }
     if (history.status === 'SUBMITTED') {

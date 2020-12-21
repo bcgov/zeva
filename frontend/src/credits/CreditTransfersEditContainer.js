@@ -23,6 +23,7 @@ const CreditTransfersEditContainer = (props) => {
   const emptyForm = {
     transferPartner: '',
   };
+  const [transferComments, setTransferComments] = useState([])
   const [errorMessage, setErrorMessage] = useState('');
   const [assertions, setAssertions] = useState([]);
   const [checkboxes, setCheckboxes] = useState([]);
@@ -166,7 +167,7 @@ const CreditTransfersEditContainer = (props) => {
     if (!newTransfer) {
       axios.get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/gi, id)).then((response) => {
         const details = response.data;
-        if (details.debitFrom.id !== user.organization.id || ['DRAFT', 'RESCINDED'].indexOf(details.status) < 0) {
+        if (details.debitFrom.id !== user.organization.id || ['DRAFT', 'RESCINDED', 'RESCIND_PRE_APPROVAL'].indexOf(details.status) < 0) {
           history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/g, id));
         }
         setFields({ ...fields, transferPartner: details.creditTo.id });
@@ -176,6 +177,7 @@ const CreditTransfersEditContainer = (props) => {
           quantity: each.creditValue,
           value: each.dollarValue,
         }));
+        setTransferComments(details.history.filter((each) => each.comment));
         setRows(rowInfo);
         setUnfilledRow(false);
         setHoverText('');
@@ -213,6 +215,7 @@ const CreditTransfersEditContainer = (props) => {
       unfilledRow={unfilledRow}
       user={user}
       years={years}
+      transferComments={transferComments}
     />,
   ]);
 };
