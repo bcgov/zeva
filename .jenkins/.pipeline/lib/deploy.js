@@ -29,11 +29,11 @@ module.exports = (settings)=>{
       'VERSION': phases[phase].tag,
       'SLAVE_NAME': 'slave',
       'SLAVE_LABELS': 'build deploy test ui-test',
-      'SLAVE_EXECUTORS': '3',
-      'CPU_REQUEST': '300m',
-      'CPU_LIMIT': '500m',
+      'SLAVE_EXECUTORS': '5',
+      'CPU_REQUEST': '500m',
+      'CPU_LIMIT': '2',
       'MEMORY_REQUEST': '2Gi',
-      'MEMORY_LIMIT': '2Gi'
+      'MEMORY_LIMIT': '6Gi'
     }
   })) 
 
