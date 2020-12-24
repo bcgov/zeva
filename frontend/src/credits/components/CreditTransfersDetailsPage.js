@@ -11,6 +11,7 @@ import CustomPropTypes from '../../app/utilities/props';
 import CreditTransfersDetailsTable from './CreditTransfersDetailsTable';
 import CreditTransfersDetailsSupplierTable from './CreditTransfersDetailsSupplierTable';
 import Comment from '../../app/components/Comment';
+import CreditTransfersAlert from './CreditTransfersAlert';
 
 const CreditTransfersDetailsPage = (props) => {
   const {
@@ -47,7 +48,9 @@ const CreditTransfersDetailsPage = (props) => {
       setAllChecked(false);
     }
   });
-  const transferComments = submission.history.filter((each) => each.comment);
+  const transferComments = submission.history
+    .filter((each) => each.comment)
+    .map((comment) => comment.comment);
   let modalProps = {};
   switch (modalType) {
     case 'initiating-submit':
@@ -276,6 +279,14 @@ const CreditTransfersDetailsPage = (props) => {
       </div>
       )}
       </div>
+      {submission.status
+      && (
+      <CreditTransfersAlert
+        user={user}
+        // errorMessage={errorMessage}
+        submission={submission}
+      />
+      )}
       {transferRole.governmentAnalyst && !sufficientCredit
       && insufficientCreditWarning}
       {transferRole.governmentAnalyst

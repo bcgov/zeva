@@ -9,6 +9,7 @@ import TransferFormRow from './TransferFormRow';
 import FormDropdown from './FormDropdown';
 import CreditTransferSignoff from './CreditTransfersSignOff';
 import Comment from '../../app/components/Comment';
+import CreditTransfersAlert from './CreditTransfersAlert';
 
 const CreditTransfersForm = (props) => {
   const {
@@ -31,6 +32,7 @@ const CreditTransfersForm = (props) => {
     user,
     years,
     transferComments,
+    submission,
   } = props;
   const [showModal, setShowModal] = useState(false);
   const submitTooltip = 'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.';
@@ -52,17 +54,7 @@ const CreditTransfersForm = (props) => {
       </div>
     </Modal>
   );
-  const alert = (
-    <div
-      className="alert alert-danger"
-      id="alert-warning"
-      role="alert"
-    >
-      <FontAwesomeIcon icon="exclamation-circle" size="lg" />
-      &nbsp;<b>STATUS: Error &mdash; &nbsp;</b>
-      Insufficient credits, you can only transfer credits available in your current balance
-    </div>
-  );
+
   const actionbar = (
     <div className="row">
       <div className="col-sm-12">
@@ -107,14 +99,21 @@ const CreditTransfersForm = (props) => {
             To submit a notice of credit transfer there must be sufficient credits in your balance
           </div>
         </div>
-        {transferComments.length > 0 
+        {transferComments.length > 0
       && (
       <div className="ml-3">
         <Comment commentArray={transferComments} />
       </div>
       )}
       </div>
-      {errorMessage && alert}
+      {submission.status
+      && (
+      <CreditTransfersAlert
+        user={user}
+        errorMessage={errorMessage}
+        submission={submission}
+      />
+      )}
       <div id="form">
         <form onSubmit={handleSave}>
           <div className="row">
