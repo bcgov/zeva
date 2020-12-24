@@ -229,7 +229,7 @@ class CreditTransferSaveSerializer(ModelSerializer):
                 if not found:
                     has_enough = False
                 if not has_enough:
-                    raise ValidationError('not enough credits')
+                    raise ValidationError('Supplier has insufficient credits to fulfil this transfer.')
         return value
 
     def validate_validation_status(self, value):

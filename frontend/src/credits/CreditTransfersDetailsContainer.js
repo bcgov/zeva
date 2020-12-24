@@ -88,6 +88,7 @@ const CreditTransfersDetailsContainer = (props) => {
       sufficientCredit={sufficientCredit}
       submission={submission}
       user={user}
+      errorMessage={errorMessage}
     />,
   ]);
 };

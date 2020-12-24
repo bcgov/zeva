@@ -12,6 +12,7 @@ import CreditTransfersDetailsTable from './CreditTransfersDetailsTable';
 import CreditTransfersDetailsSupplierTable from './CreditTransfersDetailsSupplierTable';
 import Comment from '../../app/components/Comment';
 import CreditTransfersAlert from './CreditTransfersAlert';
+import Alert from '../../app/components/Alert';
 
 const CreditTransfersDetailsPage = (props) => {
   const {
@@ -22,6 +23,7 @@ const CreditTransfersDetailsPage = (props) => {
     sufficientCredit,
     submission,
     user,
+    errorMessage,
   } = props;
   const [comment, setComment] = useState('');
   const [allChecked, setAllChecked] = useState(false);
@@ -254,16 +256,6 @@ const CreditTransfersDetailsPage = (props) => {
       <textarea testid="transfer-comment" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} disabled={allChecked} />
     </div>
   );
-  const insufficientCreditWarning = (
-    <div
-      className="alert alert-danger"
-      id="alert-warning"
-      role="alert"
-    >
-      <FontAwesomeIcon icon="exclamation-circle" size="lg" />
-      &nbsp;<b>WARNING:&nbsp;</b> Supplier has insufficient credits to fulfill all pending transfers.
-    </div>
-  );
 
   return (
     <div id="credit-transfers-details" className="page">
@@ -279,16 +271,16 @@ const CreditTransfersDetailsPage = (props) => {
       </div>
       )}
       </div>
+      {transferRole.governmentDirector && !sufficientCredit
+      && <Alert title="Error" classname="alert-danger" message={`${submission.debitFrom.name} has insufficient credits to fulfil this transfer.`} />}
       {submission.status
       && (
       <CreditTransfersAlert
         user={user}
-        // errorMessage={errorMessage}
+        errorMessage={errorMessage}
         submission={submission}
       />
       )}
-      {transferRole.governmentAnalyst && !sufficientCredit
-      && insufficientCreditWarning}
       {transferRole.governmentAnalyst
       && (
       <CreditTransfersDetailsSupplierTable submission={submission} tableType="supplierBalance" />
