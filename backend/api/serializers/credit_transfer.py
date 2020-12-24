@@ -56,6 +56,7 @@ class CreditTransferBaseSerializer:
             history = CreditTransferHistory.objects.filter(
                 transfer_id=obj.id,
                 status__in=[
+                    CreditTransferStatuses.DRAFT,
                     CreditTransferStatuses.SUBMITTED,
                     CreditTransferStatuses.APPROVED,
                     CreditTransferStatuses.DISAPPROVED,
