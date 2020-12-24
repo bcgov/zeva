@@ -1,5 +1,4 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 
@@ -12,8 +11,8 @@ const Comment = (props) => {
       <span>
         {commentArray && (
           commentArray.map((each) => (
-            <p key={each.comment.id}>
-              {each.createUser.displayName}, {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}: {each.comment.comment}
+            <p key={each.id}>
+              {each.createUser.displayName}, {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')}: {each.comment}
             </p>
           ))
         )}
