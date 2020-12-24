@@ -10,7 +10,6 @@ const CreditTransfersAlert = (props) => {
     user,
     submission,
   } = props;
-  console.log(submission);
   const {
     history, status, debitFrom, creditTo, sufficientCredits,
   } = submission;
@@ -21,7 +20,6 @@ const CreditTransfersAlert = (props) => {
   const statusFilter = (status) => history
     .filter((each) => each.status === status)
     .reverse()[0];
-
   const date = moment(statusFilter(status).createTimestamp).format('MMM D, YYYY');
   const statusOrg = statusFilter(status).createUser.organization.name;
   const userName = statusFilter(status).createUser.displayName;
