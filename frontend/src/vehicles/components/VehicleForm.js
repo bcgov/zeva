@@ -13,7 +13,7 @@ import TextInput from '../../app/components/TextInput';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 import getFileSize from '../../app/utilities/getFileSize';
 import VehicleFormDropdown from './VehicleFormDropdown';
-import Alert from '../../app/components/Alert';
+import VehicleAlert from './VehicleAlert';
 import Comment from '../../app/components/Comment';
 
 const VehicleForm = (props) => {
@@ -80,8 +80,14 @@ const VehicleForm = (props) => {
       <div className="row mb-2">
         <div className="col-12">
           <h2>{formTitle}</h2>
-          {status && !newVehicle
-            && <Alert alertType="vehicle" status={status} user={fields.user} date={moment(fields.updateTimestamp).format('MMM D, YYYY')} />}
+          {/* {status && !newVehicle
+          && (
+          <VehicleAlert
+            status={details.validationStatus}
+            user={alertUser && alertUser.displayName ? alertUser.displayName : alertUser}
+            date={moment(details.updateTimestamp).format('MMM D, YYYY')}
+          />
+          )} */}
           {status === 'CHANGES_REQUESTED' && vehicleComment
           && (
             <Comment commentArray={[vehicleComment]} />
