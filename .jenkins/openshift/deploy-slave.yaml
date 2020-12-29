@@ -155,10 +155,10 @@ parameters:
 - name: REPLICAS
   value: "1"
 - name: CPU_REQUEST
-  value: "300m"
-- name: CPU_LIMIT
   value: "500m"
+- name: CPU_LIMIT
+  value: "2"
 - name: MEMORY_REQUEST
-  value: "1Gi"
+  value: "2Gi"
 - name: MEMORY_LIMIT
-  value: "1Gi"
+  value: "6Gi"

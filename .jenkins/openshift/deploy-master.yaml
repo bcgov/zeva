@@ -138,9 +138,9 @@ objects:
           resources:
             limits:
               cpu: "2"
-              memory: 2Gi
+              memory: 6Gi
             requests:
-              cpu: 300m
+              cpu: 500m
               memory: 2Gi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
