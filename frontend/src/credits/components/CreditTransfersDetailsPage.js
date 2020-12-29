@@ -29,7 +29,6 @@ const CreditTransfersDetailsPage = (props) => {
   const [allChecked, setAllChecked] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
-
   const transferRole = {
     rescindable: (user.organization.id === submission.debitFrom.id
       && ['SUBMITTED', 'APPROVED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL'].indexOf(submission.status) >= 0)
@@ -101,7 +100,7 @@ const CreditTransfersDetailsPage = (props) => {
     case 'recommend-transfer':
       modalProps = {
         confirmLabel: ' Recommend Transfer',
-        handleSubmit: () => { handleSubmit('RECOMMEND_APPROVAL', comment); },
+        handleSubmit: () => { setShowModal(false); handleSubmit('RECOMMEND_APPROVAL', comment); },
         buttonClass: 'button primary',
         modalText: 'Recommend the Director record the Transfer?',
       };
@@ -109,7 +108,7 @@ const CreditTransfersDetailsPage = (props) => {
     case 'director-record':
       modalProps = {
         confirmLabel: ' Record Transfer',
-        handleSubmit: () => { handleSubmit('VALIDATED', comment); },
+        handleSubmit: () => { setShowModal(false); handleSubmit('VALIDATED', comment); },
         buttonClass: 'button primary',
         modalText: 'Record the transfer?',
       };
@@ -117,7 +116,7 @@ const CreditTransfersDetailsPage = (props) => {
     case 'director-reject':
       modalProps = {
         confirmLabel: ' Reject Transfer',
-        handleSubmit: () => { handleSubmit('REJECTED', comment); },
+        handleSubmit: () => { setShowModal(false); handleSubmit('REJECTED', comment); },
         buttonClass: 'btn-outline-danger',
         modalText: 'Reject the transfer?',
       };
@@ -171,7 +170,6 @@ const CreditTransfersDetailsPage = (props) => {
     )} Canadian dollars.
     </div>
   );
-
   let latestRescind = false;
   let latestSubmit = false;
   let latestApprove = false;
@@ -264,15 +262,29 @@ const CreditTransfersDetailsPage = (props) => {
         <div className="col-sm-12">
           <h2>Light Duty Vehicle Credit Transfer</h2>
         </div>
-        {transferComments.length > 0 
+        {transferComments.length > 0
       && (
       <div className="ml-3">
         <Comment commentArray={transferComments} />
       </div>
       )}
       </div>
-      {transferRole.governmentDirector && !sufficientCredit
-      && <Alert title="Error" classname="alert-danger" message={`${submission.debitFrom.name} has insufficient credits to fulfil this transfer.`} />}
+      {transferRole.governmentDirector && errorMessage
+      && (
+      <Alert
+        title="Error"
+        classname="alert-danger"
+        message={`${submission.debitFrom.name} has insufficient credits to fulfil this transfer.`}
+      />
+      )}
+      {transferRole.governmentAnalyst && !sufficientCredit
+      && (
+      <Alert
+        title="Error"
+        classname="alert-danger"
+        message={`${submission.debitFrom.name} has insufficient credits to fulfil ${submission.pending} pending transfer(s).`}
+      />
+      )}
       {submission.status
       && (
       <CreditTransfersAlert

@@ -141,6 +141,21 @@ class CreditTransferSerializer(
     status = SerializerMethodField()
     update_user = SerializerMethodField()
     sufficient_credits = SerializerMethodField()
+    pending = SerializerMethodField()
+
+    def get_pending(self, obj):
+        request = self.context.get('request')
+        if request.user.is_government:
+            pending_transfers = CreditTransfer.objects.filter(
+                debit_from=obj.debit_from.id,
+                status__in=[
+                            CreditTransferStatuses.SUBMITTED,
+                            CreditTransferStatuses.APPROVED,
+                            CreditTransferStatuses.RECOMMEND_APPROVAL,
+                            CreditTransferStatuses.RECOMMEND_REJECTION,
+                            ])
+            return pending_transfers.count()
+        return ''
      
     def get_sufficient_credits(self, obj):
         has_credits = True
@@ -183,7 +198,7 @@ class CreditTransferSerializer(
         fields = (
             'create_timestamp', 'credit_to', 'credit_transfer_content',
             'debit_from', 'id', 'status', 'update_user',
-            'history', 'sufficient_credits'
+            'history', 'sufficient_credits', 'pending'
         )
 
 

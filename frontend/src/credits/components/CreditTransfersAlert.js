@@ -17,8 +17,8 @@ const CreditTransfersAlert = (props) => {
   let title;
   let classname;
   let icon = 'exclamation-circle';
-  const statusFilter = (status) => history
-    .filter((each) => each.status === status)
+  const statusFilter = (transferStatus) => history
+    .filter((each) => each.status === transferStatus)
     .reverse()[0];
   const date = moment(statusFilter(status).createTimestamp).format('MMM D, YYYY');
   const statusOrg = statusFilter(status).createUser.organization.name;
@@ -36,14 +36,14 @@ const CreditTransfersAlert = (props) => {
       }
       break;
     case 'SUBMITTED':
-      if (user.organization.id === debitFrom.id) {
+      if (user.organization.id === debitFrom.id) { // bceid initiator
         title = 'Submitted to Transfer Partner';
         message = ` submitted ${date} by ${userName}, awaiting ${creditTo.name} acceptance.`;
-        classname = 'alert-warning'; // bceid initiator
-      } else {
+        classname = 'alert-warning';
+      } else { // bceid receiver
         title = 'Submitted by Transfer Partner';
         message = `submitted ${date} by ${debitFrom.name}, awaiting your signing authority acceptance.`;
-        classname = 'alert-danger'; // bceid receiver
+        classname = 'alert-danger';
       }
       break;
     case 'RESCIND_PRE_APPROVAL':
@@ -56,13 +56,7 @@ const CreditTransfersAlert = (props) => {
       title = 'Submitted to Government';
       if (user.isGovernment) {
         classname = 'alert-warning';
-        if (sufficientCredits) {
-          message = `submitted to the Government of B.C. ${date}, awaiting government analyst review and recommendation to the Director.`;
-        } else {
-          classname = 'alert-danger';
-          title = 'Error';
-          message = `${debitFrom.name} has insufficient credits to fulfil (NUMBER OF PENDING) pending transfer(s).`;
-        }
+        message = `submitted to the Government of B.C. ${date}, awaiting government analyst review and recommendation to the Director.`;
       } else {
         message = `submitted to the Government of B.C. ${date}, awaiting government review.`;
         classname = 'alert-primary';
@@ -110,11 +104,7 @@ const CreditTransfersAlert = (props) => {
     default:
       title = '';
   }
-  if (errorMessage && user.isGovernment) {
-    title = 'Error';
-    message = errorMessage;
-    classname = 'alert-danger';
-  }
+
   return (
     <>
       <Alert title={title} icon={icon} classname={classname} message={message} />
@@ -125,5 +115,8 @@ const CreditTransfersAlert = (props) => {
 CreditTransfersAlert.defaultProps = {
 };
 CreditTransfersAlert.propTypes = {
+  submission: PropTypes.shape().isRequired,
+  user: PropTypes.shape().isRequired,
+  errorMessage: PropTypes.string,
 };
 export default CreditTransfersAlert;
