@@ -35,21 +35,26 @@ const CreditTransfersAlert = (props) => {
         classname = 'alert-danger';
       }
       break;
+    case 'RESCINDED':
+      title = 'Rescinded';
+      message = `rescinded ${date} by ${statusOrg}`;
+      classname = 'alert-danger';
+      break;
+    case 'RESCIND_PRE_APPROVAL':
+      title = 'Rescinded';
+      message = `rescinded ${date} by ${statusOrg}`;
+      classname = 'alert-danger';
+      break;
     case 'SUBMITTED':
       if (user.organization.id === debitFrom.id) { // bceid initiator
         title = 'Submitted to Transfer Partner';
-        message = ` submitted ${date} by ${userName}, awaiting ${creditTo.name} acceptance.`;
+        message = `submitted ${date} by ${userName}, awaiting ${creditTo.name} acceptance.`;
         classname = 'alert-warning';
       } else { // bceid receiver
         title = 'Submitted by Transfer Partner';
         message = `submitted ${date} by ${debitFrom.name}, awaiting your signing authority acceptance.`;
         classname = 'alert-danger';
       }
-      break;
-    case 'RESCIND_PRE_APPROVAL':
-      title = 'Rescinded';
-      message = `rescinded ${date} by ${statusOrg}`;
-      classname = 'alert-danger';
       break;
 
     case 'APPROVED':
@@ -77,11 +82,7 @@ const CreditTransfersAlert = (props) => {
         message = `rejected ${date} by the Government of B.C.`;
       }
       break;
-    case 'RESCINDED':
-      title = 'Rescinded';
-      message = `rescinded ${date} by ${statusOrg}`;
-      classname = 'alert-danger';
-      break;
+
     case 'RECOMMEND_APPROVAL':
       if (user.isGovernment) {
         title = 'Recommend Transfer';
@@ -99,6 +100,11 @@ const CreditTransfersAlert = (props) => {
     case 'RECORDED':
       icon = 'check-circle';
       classname = 'alert-success';
+      if (user.isGovernment) {
+        message = `recorded ${date} by the Director, credit balances have been adjusted.`;
+      } else {
+        message = `recorded ${date} by the Government of B.C, credit balances have been adjusted.`;
+      }
       break;
 
     default:
