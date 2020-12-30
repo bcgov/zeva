@@ -7,6 +7,7 @@ import { Route, Redirect, Router as BrowserRouter } from 'react-router-dom';
 import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
 import OrganizationListContainer from '../organizations/OrganizationListContainer';
+import NotificationListContainer from '../notifications/NotificationListContainer';
 import VehicleSupplierCreditTransactionListContainer from '../organizations/VehicleSupplierCreditTransactionListContainer';
 import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
 import VehicleSupplierEditContainer from '../organizations/VehicleSupplierEditContainer';
@@ -37,6 +38,7 @@ import ROUTES_CREDIT_REQUESTS from './routes/CreditRequests';
 import ROUTES_CREDIT_TRANSFERS from './routes/CreditTransfers';
 import ROUTES_CREDITS from './routes/Credits';
 import ROUTES_ORGANIZATIONS from './routes/Organizations';
+import ROUTES_NOTIFICATIONS from './routes/Notifications';
 import ROUTES_USERS from './routes/Users';
 import ROUTES_VEHICLES from './routes/Vehicles';
 
@@ -174,6 +176,10 @@ class Router extends Component {
               <Route
                 path={ROUTES_ORGANIZATIONS.LIST}
                 render={() => <OrganizationListContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_NOTIFICATIONS.LIST}
+                render={() => <NotificationListContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact

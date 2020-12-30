@@ -114,6 +114,18 @@ class Navbar extends Component {
                 aria-labelledby="navbarDropdown"
                 className={`dropdown-menu ${userMenuCollapsed ? 'd-none' : ''}`}
               >
+                <div className="dropdown-item">
+                  <NavLink
+                  activeClassName="active"
+                  exact
+                  to="/notifications"
+                >
+                  <span className="ml-2 icon text-black" style={{color: "black"}}>
+                      <FontAwesomeIcon icon="envelope" />
+                    </span>
+                  <span className="ml-3" style={{color: "black"}}>Email Notifications</span>
+                </NavLink> 
+                </div>
                 {/* <div className="dropdown-item">
                   <button type="button">
                     <span className="icon">
