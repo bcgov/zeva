@@ -346,6 +346,7 @@ CreditTransfersDetailsPage.propTypes = {
   sufficientCredit: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired,
   submission: PropTypes.shape().isRequired,
+  errorMessage: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default CreditTransfersDetailsPage;

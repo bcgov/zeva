@@ -26,7 +26,7 @@ const CreditTransfersEditContainer = (props) => {
   };
   const [transferComments, setTransferComments] = useState([]);
   const [submission, setSubmission] = useState([]);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState([]);
   const [assertions, setAssertions] = useState([]);
   const [checkboxes, setCheckboxes] = useState([]);
   const [rows, setRows] = useState([emptyRow]);
@@ -114,7 +114,7 @@ const CreditTransfersEditContainer = (props) => {
         .catch((error) => {
           const { response } = error;
           if (response.status === 400) {
-            setErrorMessage(error.response.data);
+            setErrorMessage(error.response.data.status);
           }
         });
     } else {
@@ -129,7 +129,7 @@ const CreditTransfersEditContainer = (props) => {
         .catch((error) => {
           const { response } = error;
           if (response.status === 400) {
-            setErrorMessage(error.response.data);
+            setErrorMessage(error.response.data.status);
           }
         });
     }

@@ -10,7 +10,7 @@ import FormDropdown from './FormDropdown';
 import CreditTransferSignoff from './CreditTransfersSignOff';
 import Comment from '../../app/components/Comment';
 import CreditTransfersAlert from './CreditTransfersAlert';
-
+import Alert from '../../app/components/Alert';
 const CreditTransfersForm = (props) => {
   const {
     errorMessage,
@@ -40,7 +40,7 @@ const CreditTransfersForm = (props) => {
     <Modal
       confirmLabel=" Submit Notice"
       handleCancel={() => { setShowModal(false); }}
-      handleSubmit={() => { handleSubmit(); }}
+      handleSubmit={() => { setShowModal(false); handleSubmit(); }}
       modalClass="w-75"
       showModal={showModal}
       confirmClass="button primary"
@@ -54,7 +54,6 @@ const CreditTransfersForm = (props) => {
       </div>
     </Modal>
   );
-
   const actionbar = (
     <div className="row">
       <div className="col-sm-12">
@@ -106,7 +105,15 @@ const CreditTransfersForm = (props) => {
       </div>
       )}
       </div>
-      {submission.status
+      {errorMessage.length > 0
+      && (
+      <Alert
+        title="Error"
+        message="insufficient credits, you can only transfer credits available in your current balance."
+        classname="alert-danger"
+      />
+      )}
+      {submission.status && errorMessage.length === 0
       && (
       <CreditTransfersAlert
         user={user}
@@ -166,7 +173,7 @@ CreditTransfersForm.defaultProps = {
   unfilledRow: true,
   hoverText: '',
   transferComments: [{}],
-  errorMessage: '',
+  errorMessage: [],
 };
 
 CreditTransfersForm.propTypes = {
@@ -188,7 +195,7 @@ CreditTransfersForm.propTypes = {
   user: CustomPropTypes.user.isRequired,
   years: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   transferComments: PropTypes.arrayOf(PropTypes.shape()),
-  errorMessage: PropTypes.string,
+  errorMessage: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default CreditTransfersForm;

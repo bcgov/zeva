@@ -20,7 +20,7 @@ const CreditTransfersDetailsContainer = (props) => {
     location, user, match,
   } = props;
   const { state: locationState } = location;
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState([]);
   const [assertions, setAssertions] = useState([]);
   const [checkboxes, setCheckboxes] = useState([]);
   const [sufficientCredit, setSufficientCredit] = useState(true);
@@ -69,7 +69,7 @@ const CreditTransfersDetailsContainer = (props) => {
       .catch((error) => {
         const { response } = error;
         if (response.status === 400) {
-          setErrorMessage(error.response.data);
+          setErrorMessage(error.response.data.status);
         }
       });
   };

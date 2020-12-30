@@ -6,7 +6,6 @@ import Alert from '../../app/components/Alert';
 
 const CreditTransfersAlert = (props) => {
   const {
-    errorMessage,
     user,
     submission,
   } = props;
@@ -29,11 +28,6 @@ const CreditTransfersAlert = (props) => {
       title = 'Draft';
       message = `saved ${date} by ${userName}, awaiting submission to  ${creditTo.name} by your signing authority.`;
       classname = 'alert-warning';
-      if (errorMessage) {
-        title = 'Error';
-        message = ' insufficient credits, you can only transfer credits available in your current balance.';
-        classname = 'alert-danger';
-      }
       break;
     case 'RESCINDED':
       title = 'Rescinded';
@@ -53,7 +47,7 @@ const CreditTransfersAlert = (props) => {
       } else { // bceid receiver
         title = 'Submitted by Transfer Partner';
         message = `submitted ${date} by ${debitFrom.name}, awaiting your signing authority acceptance.`;
-        classname = 'alert-danger';
+        classname = 'alert-warning';
       }
       break;
 
@@ -97,7 +91,7 @@ const CreditTransfersAlert = (props) => {
         classname = 'alert-danger';
       }
       break;
-    case 'RECORDED':
+    case 'VALIDATED':
       icon = 'check-circle';
       classname = 'alert-success';
       if (user.isGovernment) {
@@ -123,6 +117,5 @@ CreditTransfersAlert.defaultProps = {
 CreditTransfersAlert.propTypes = {
   submission: PropTypes.shape().isRequired,
   user: PropTypes.shape().isRequired,
-  errorMessage: PropTypes.string,
 };
 export default CreditTransfersAlert;

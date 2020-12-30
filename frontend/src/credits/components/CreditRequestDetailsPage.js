@@ -138,7 +138,6 @@ const CreditRequestDetailsPage = (props) => {
           <div className="m-0">
             <CreditRequestAlert
               isGovernment={user.isGovernment}
-              status={submission.validationStatus}
               submission={submission}
               icbcDate={previousDateCurrentTo}
               invalidSubmission={invalidSubmission}
