@@ -262,12 +262,6 @@ const CreditTransfersDetailsPage = (props) => {
         <div className="col-sm-12">
           <h2>Light Duty Vehicle Credit Transfer</h2>
         </div>
-        {transferComments.length > 0
-      && (
-      <div className="ml-3">
-        <Comment commentArray={transferComments} />
-      </div>
-      )}
       </div>
       {transferRole.governmentDirector && errorMessage
       && (
@@ -292,6 +286,10 @@ const CreditTransfersDetailsPage = (props) => {
         errorMessage={errorMessage}
         submission={submission}
       />
+      )}
+      {transferComments.length > 0
+      && (
+        <Comment commentArray={transferComments} />
       )}
       {transferRole.governmentAnalyst
       && (

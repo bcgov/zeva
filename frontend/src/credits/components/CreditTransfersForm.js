@@ -11,6 +11,7 @@ import CreditTransferSignoff from './CreditTransfersSignOff';
 import Comment from '../../app/components/Comment';
 import CreditTransfersAlert from './CreditTransfersAlert';
 import Alert from '../../app/components/Alert';
+
 const CreditTransfersForm = (props) => {
   const {
     errorMessage,
@@ -98,12 +99,7 @@ const CreditTransfersForm = (props) => {
             To submit a notice of credit transfer there must be sufficient credits in your balance
           </div>
         </div>
-        {transferComments.length > 0
-      && (
-      <div className="ml-3">
-        <Comment commentArray={transferComments} />
-      </div>
-      )}
+
       </div>
       {errorMessage.length > 0
       && (
@@ -120,6 +116,10 @@ const CreditTransfersForm = (props) => {
         errorMessage={errorMessage}
         submission={submission}
       />
+      )}
+      {transferComments.length > 0
+      && (
+        <Comment commentArray={transferComments} />
       )}
       <div id="form">
         <form onSubmit={handleSave}>
