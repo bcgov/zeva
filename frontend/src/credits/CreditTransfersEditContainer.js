@@ -151,8 +151,8 @@ const CreditTransfersEditContainer = (props) => {
     submitOrSave('DRAFT');
   };
 
-  const handleSubmit = () => {
-    submitOrSave('SUBMITTED');
+  const handleSubmit = (type) => {
+    submitOrSave(type);
   };
 
   const refreshDetails = () => {
