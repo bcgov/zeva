@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import moment from 'moment-timezone';
-import Alert from '../../app/components/Alert';
+import CreditRequestAlert from './CreditRequestAlert';
 import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
 import history from '../../app/History';
@@ -136,12 +136,9 @@ const CreditRequestDetailsPage = (props) => {
       <div className="row mb-1">
         <div className="col-sm-12">
           <div className="m-0">
-            <Alert
+            <CreditRequestAlert
               isGovernment={user.isGovernment}
-              alertType="credit"
-              status={submission.validationStatus}
               submission={submission}
-              date={moment(submission.updateTimestamp).format('MMM D, YYYY')}
               icbcDate={previousDateCurrentTo}
               invalidSubmission={invalidSubmission}
             />

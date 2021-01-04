@@ -36,7 +36,7 @@ const UploadVerificationData = (props) => {
           <h2>{title}</h2>
           {alertMessage && (
             <div className="mt-2">
-              <Alert alertType="icbc" optionalMessage={alertMessage} optionalClassname={alertMessage === 'upload successful' ? 'alert-success' : 'alert-danger'} />
+              <Alert message={alertMessage} classname={alertMessage === 'upload successful' ? 'alert-success' : 'alert-danger'} />
             </div>
           )}
         </div>
@@ -45,7 +45,6 @@ const UploadVerificationData = (props) => {
       <div className="row">
         <div className="col-md-12 col-lg-9 col-xl-6">
           <div className="mb-2">ICBC data current to: {previousDateCurrentTo}</div>
-
           <div className="bordered">
             <div className="panel panel-default">
               <div className="content p-3">

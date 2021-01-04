@@ -9,6 +9,8 @@ import TransferFormRow from './TransferFormRow';
 import FormDropdown from './FormDropdown';
 import CreditTransferSignoff from './CreditTransfersSignOff';
 import Comment from '../../app/components/Comment';
+import CreditTransfersAlert from './CreditTransfersAlert';
+import Alert from '../../app/components/Alert';
 
 const CreditTransfersForm = (props) => {
   const {
@@ -31,6 +33,7 @@ const CreditTransfersForm = (props) => {
     user,
     years,
     transferComments,
+    submission,
   } = props;
   const [showModal, setShowModal] = useState(false);
   const submitTooltip = 'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.';
@@ -38,7 +41,7 @@ const CreditTransfersForm = (props) => {
     <Modal
       confirmLabel=" Submit Notice"
       handleCancel={() => { setShowModal(false); }}
-      handleSubmit={() => { handleSubmit(); }}
+      handleSubmit={() => { setShowModal(false); handleSubmit(); }}
       modalClass="w-75"
       showModal={showModal}
       confirmClass="button primary"
@@ -51,17 +54,6 @@ const CreditTransfersForm = (props) => {
         <div><br /><br /></div>
       </div>
     </Modal>
-  );
-  const alert = (
-    <div
-      className="alert alert-danger"
-      id="alert-warning"
-      role="alert"
-    >
-      <FontAwesomeIcon icon="exclamation-circle" size="lg" />
-      &nbsp;<b>STATUS: Error &mdash; &nbsp;</b>
-      Insufficient credits, you can only transfer credits available in your current balance
-    </div>
   );
   const actionbar = (
     <div className="row">
@@ -107,14 +99,28 @@ const CreditTransfersForm = (props) => {
             To submit a notice of credit transfer there must be sufficient credits in your balance
           </div>
         </div>
-        {transferComments.length > 0 
+
+      </div>
+      {errorMessage.length > 0
       && (
-      <div className="ml-3">
-        <Comment commentArray={transferComments} />
-      </div>
+      <Alert
+        title="Error"
+        message="insufficient credits, you can only transfer credits available in your current balance."
+        classname="alert-danger"
+      />
       )}
-      </div>
-      {errorMessage && alert}
+      {submission.status && errorMessage.length === 0
+      && (
+      <CreditTransfersAlert
+        user={user}
+        errorMessage={errorMessage}
+        submission={submission}
+      />
+      )}
+      {transferComments.length > 0
+      && (
+        <Comment commentArray={transferComments} />
+      )}
       <div id="form">
         <form onSubmit={handleSave}>
           <div className="row">
@@ -167,7 +173,7 @@ CreditTransfersForm.defaultProps = {
   unfilledRow: true,
   hoverText: '',
   transferComments: [{}],
-  errorMessage: '',
+  errorMessage: [],
 };
 
 CreditTransfersForm.propTypes = {
@@ -189,7 +195,7 @@ CreditTransfersForm.propTypes = {
   user: CustomPropTypes.user.isRequired,
   years: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   transferComments: PropTypes.arrayOf(PropTypes.shape()),
-  errorMessage: PropTypes.string,
+  errorMessage: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default CreditTransfersForm;
