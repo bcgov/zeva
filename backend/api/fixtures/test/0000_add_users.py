@@ -99,6 +99,8 @@ class AddUsers(OperationalDataScript):
                 last_name=user.get("last_name"),
                 organization=organization,
                 username=user.get("username"),
+                email=user.get("email"),
+                keycloak_email=user.get("keycloak_email"),
                 defaults={
                     "is_active": True,
                     "display_name": user.get("display_name")
