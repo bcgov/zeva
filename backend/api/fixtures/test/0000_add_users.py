@@ -16,42 +16,65 @@ class AddUsers(OperationalDataScript):
         "first_name": "Alasdair",
         "last_name": "Ring",
         "display_name": "Alasdair Ring",
-        "username": "AIRING"
+        "username": "AIRING",
+        "email": "alasdair.ring@gov.bc.ca",
+        "keycloak_email": "alasdair.ring@gov.bc.ca"
     }, {
         "first_name": "Emily",
         "last_name": "Hillier",
         "display_name": "Emily Hillier",
-        "username": "EMHILLIE"
+        "username": "EMHILLIE",
+        "email": "emily.hillier@gov.bc.ca",
+        "keycloak_email": "emily.hillier@gov.bc.ca"
     }, {
         "first_name": "James",
         "last_name": "Donald",
         "display_name": "James Donald",
-        "username": "JADONALD"
+        "username": "JADONALD",
+        "email": "james.donald@gov.bc.ca",
+        "keycloak_email": "james.donald@gov.bc.ca"
     }, {
         "first_name": "Katie",
         "last_name": "Menke",
         "display_name": "Katie Menke",
-        "username": "KMENKE"
+        "username": "KMENKE",
+        "email": "katie.menke@gov.bc.ca",
+        "keycloak_email": "katie.menke@gov.bc.ca"
     }, {
         "first_name": "Kristin",
         "last_name": "Lefler",
         "display_name": "Kristin Lefler",
-        "username": "KLEFLER"
+        "username": "KLEFLER",
+        "email": "kristin.lefler@gov.bc.ca",
+        "keycloak_email": "kristin.lefler@gov.bc.ca"
     }, {
         "first_name": "Kuan",
         "last_name": "Fan",
         "display_name": "Kuan Fan",
-        "username": "KFAN"
+        "username": "KFAN",
+        "email": "kuan.fan@gov.bc.ca",
+        "keycloak_email": "kuan.fan@gov.bc.ca"
     }, {
         "first_name": "Richard",
         "last_name": "Tan",
         "display_name": "Richard Tan",
-        "username": "RTAN"
+        "username": "RTAN",
+        "email": "richard.tan@gov.bc.ca",
+        "keycloak_email": "richard.tan@gov.bc.ca"
     }, {
         "first_name": "Anton",
         "last_name": "Coetzer",
         "display_name": "Anton Coetzer",
-        "username": "ALCOETZE"
+        "username": "ALCOETZE",
+        "email": "anton.coetzer@gov.bc.ca",
+        "keycloak_email": "anton.coetzer@gov.bc.ca"
+    }, {
+        "first_name": "Navpreet",
+        "last_name": "Grewal",
+        "display_name": "Navpreet Grewal",
+        "username": "NXGREWAL",
+        "email": "Navpreet.X.Grewal@gov.bc.ca",
+        "keycloak_email": "Navpreet.X.Grewal@gov.bc.ca"
     }]
 
     def check_run_preconditions(self):
