@@ -73,21 +73,20 @@ const VehicleForm = (props) => {
   if (loading) {
     return (<Loading />);
   }
-
   const selectedZevType = fields.vehicleZevType.vehicleZevCode || fields.vehicleZevType;
   return (
     <div id="form" className="page">
       <div className="row mb-2">
         <div className="col-12">
           <h2>{formTitle}</h2>
-          {/* {status && !newVehicle
+          {status && !newVehicle
           && (
           <VehicleAlert
-            status={details.validationStatus}
-            user={alertUser && alertUser.displayName ? alertUser.displayName : alertUser}
-            date={moment(details.updateTimestamp).format('MMM D, YYYY')}
+            status={status}
+            user={fields.user}
+            date={moment(fields.updateTimestamp).format('MMM D, YYYY')}
           />
-          )} */}
+          )}
           {status === 'CHANGES_REQUESTED' && vehicleComment
           && (
             <Comment commentArray={[vehicleComment]} />
