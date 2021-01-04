@@ -75,6 +75,13 @@ class AddUsers(OperationalDataScript):
         "username": "NXGREWAL",
         "email": "Navpreet.X.Grewal@gov.bc.ca",
         "keycloak_email": "Navpreet.X.Grewal@gov.bc.ca"
+    }, {
+        "first_name": "Molly",
+        "last_name": "Pilchar",
+        "display_name": "Molly Pilchar",
+        "username": "MPILCHAR",
+        "email": "molly.pilchar@gov.bc.ca",
+        "keycloak_email": "molly.pilchar@gov.bc.ca"
     }]
 
     def check_run_preconditions(self):
