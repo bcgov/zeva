@@ -5,6 +5,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
+import PropTypes from 'prop-types';
 
 import history from '../app/History';
 import Loading from '../app/components/Loading';
@@ -12,8 +13,10 @@ import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
 import CustomPropTypes from '../app/utilities/props';
 import CreditRequestVINListPage from './components/CreditRequestVINListPage';
 
+const qs = require('qs');
+
 const CreditRequestVINListContainer = (props) => {
-  const { match, user } = props;
+  const { location, match, user } = props;
   const { id } = match.params;
 
   const [content, setContent] = useState([]);
@@ -21,11 +24,13 @@ const CreditRequestVINListContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [invalidatedList, setInvalidatedList] = useState([]);
 
+  const query = qs.parse(location.search, { ignoreQueryPrefix: true });
+
   const refreshDetails = () => {
     axios.all([
       axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
       axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id)),
-      axios.get(ROUTES_CREDIT_REQUESTS.UNSELECTED.replace(':id', id)),
+      axios.get(ROUTES_CREDIT_REQUESTS.UNSELECTED.replace(':id', id), { params: query }),
     ]).then(axios.spread((submissionResponse, contentResponse, unselectedResponse) => {
       const { data: submissionData } = submissionResponse;
       setSubmission(submissionData);
@@ -86,6 +91,7 @@ const CreditRequestVINListContainer = (props) => {
 };
 
 CreditRequestVINListContainer.propTypes = {
+  location: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
   match: CustomPropTypes.routeMatch.isRequired,
 };
