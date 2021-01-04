@@ -36,20 +36,21 @@ const CreditTransfersForm = (props) => {
     submission,
   } = props;
   const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState({ type: '', buttonText: '', message: '' });
   const submitTooltip = 'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.';
   const modal = (
     <Modal
-      confirmLabel=" Submit Notice"
+      confirmLabel={modalType.buttonText}
       handleCancel={() => { setShowModal(false); }}
-      handleSubmit={() => { setShowModal(false); handleSubmit(); }}
+      handleSubmit={() => { setShowModal(false); handleSubmit(modalType.type); }}
       modalClass="w-75"
       showModal={showModal}
-      confirmClass="button primary"
-      icon={<FontAwesomeIcon icon="paper-plane" />}
+      confirmClass={modalType === 'SUBMITTED' ? 'button primary' : 'btn-outline-danger'}
+      icon={modalType === 'SUBMITTED' ? <FontAwesomeIcon icon="paper-plane" /> : <FontAwesomeIcon icon="trash" />}
     >
       <div>
         <div><br /><br /></div>
-        <h3 className="d-inline">Submit credit transfer notice to trade partner?
+        <h3 className="d-inline">{modalType.message}
         </h3>
         <div><br /><br /></div>
       </div>
@@ -61,6 +62,16 @@ const CreditTransfersForm = (props) => {
         <div className="action-bar">
           <span className="left-content">
             <Button buttonType="back" locationRoute="/credit-transfers" />
+            {submission.status === 'DRAFT'
+            && (
+            <Button
+              buttonType="delete"
+              action={() => {
+                setModalType({ type: 'DELETED', buttonText: ' Delete Notice', message: 'Delete transfer notice? WARNING: this action cannot be undone.' });
+                setShowModal(true);
+              }}
+            />
+            )}
           </span>
           <span className="right-content">
             {user.hasPermission('CREATE_CREDIT_TRANSFERS') && (
@@ -77,6 +88,7 @@ const CreditTransfersForm = (props) => {
               buttonType="submit"
               action={() => {
                 setShowModal(true);
+                setModalType({ type: 'SUBMITTED', buttonText: ' Submit Notice', message: 'Submit credit transfer notice to trade partner?' });
               }}
               optionalText="Submit Notice"
               buttonTooltip={submitTooltip}
