@@ -108,10 +108,10 @@ const VehicleDetailsPage = (props) => {
             <DetailField label="Weight (kg)" value={details.weightKg} />
             <DetailField label="Vehicle Class" id={details.weightKg < 3856 ? '' : 'danger-text'} value={details.weightKg < 3856 ? 'LDV (calculated)' : 'Not within LDV range (calculated)'} />
             {details.creditClass && (
-              <DetailField label="Credit Class" value={` ${details.creditClass} (calculated)`} />
+              <DetailField label="ZEV Class" value={` ${details.creditClass} (calculated)`} />
             )}
-            {details.creditValue && (
-              <DetailField label="Credits" value={` ${details.creditValue} (calculated)`} />
+            {(details.creditValue > 0 || details.creditValue < 0) && (
+              <DetailField label="Credit Entitlement" value={` ${details.creditValue} (calculated)`} />
             )}
 
             {details.attachments.length > 0 && (
