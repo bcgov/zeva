@@ -20,7 +20,7 @@ const CreditTransfersDetailsContainer = (props) => {
     location, user, match,
   } = props;
   const { state: locationState } = location;
-
+  const [errorMessage, setErrorMessage] = useState([]);
   const [assertions, setAssertions] = useState([]);
   const [checkboxes, setCheckboxes] = useState([]);
   const [sufficientCredit, setSufficientCredit] = useState(true);
@@ -64,9 +64,14 @@ const CreditTransfersDetailsContainer = (props) => {
     if (checkboxes.length > 0) {
       submissionContent.signingConfirmation = checkboxes;
     }
-    axios.patch(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id), submissionContent).then(() => {
-      history.push(ROUTES_CREDIT_TRANSFERS.LIST);
-    });
+    axios.patch(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id), submissionContent)
+      .then(() => history.push(ROUTES_CREDIT_TRANSFERS.LIST))
+      .catch((error) => {
+        const { response } = error;
+        if (response.status === 400) {
+          setErrorMessage(error.response.data.status);
+        }
+      });
   };
 
   if (loading) {
@@ -83,6 +88,7 @@ const CreditTransfersDetailsContainer = (props) => {
       sufficientCredit={sufficientCredit}
       submission={submission}
       user={user}
+      errorMessage={errorMessage}
     />,
   ]);
 };

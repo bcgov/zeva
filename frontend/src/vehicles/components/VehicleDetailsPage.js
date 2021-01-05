@@ -11,7 +11,7 @@ import history from '../../app/History';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 import getFileSize from '../../app/utilities/getFileSize';
 import CustomPropTypes from '../../app/utilities/props';
-import Alert from '../../app/components/Alert';
+import VehicleAlert from './VehicleAlert';
 import Comment from '../../app/components/Comment';
 
 const VehicleDetailsPage = (props) => {
@@ -74,14 +74,12 @@ const VehicleDetailsPage = (props) => {
   } else {
     alertUser = details.updateUser;
   }
-
   return (
     <div id="vehicle-validation" className="page">
       <div className="row mb-2">
         <div className="col-sm-12">
           <h2>{title}</h2>
-          <Alert
-            alertType="vehicle"
+          <VehicleAlert
             status={details.validationStatus}
             user={alertUser && alertUser.displayName ? alertUser.displayName : alertUser}
             date={moment(details.updateTimestamp).format('MMM D, YYYY')}

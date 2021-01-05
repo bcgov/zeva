@@ -14,6 +14,9 @@ import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 const CreditTransfersListTable = (props) => {
   const { user, filtered, setFiltered } = props;
   let { items } = props;
+  const statusFilter = (item) => item.history
+    .filter((each) => each.status === item.status)
+    .reverse()[0];
   items = items.map((item) => {
     let totalCreditsA = 0;
     let totalCreditsB = 0;
@@ -84,8 +87,9 @@ const CreditTransfersListTable = (props) => {
     accessor: (item) => {
       const { status } = item;
       const formattedStatus = formatStatus(status);
+ 
       if (formattedStatus === 'validated') {
-        return 'issued';
+        return 'recorded';
       }
       if (formattedStatus === 'recommend rejection') {
         return 'recommend rejection';
@@ -99,6 +103,23 @@ const CreditTransfersListTable = (props) => {
       if (formattedStatus === 'submitted') {
         return 'submitted to transfer partner';
       }
+      //find out who it was rescinded by
+      if (formattedStatus === 'rescind pre approval' || formattedStatus === 'rescinded') {
+        const rescindorg = statusFilter(item).createUser.organization.name;
+        return `rescinded by ${rescindorg}`;
+      }
+      // if (formattedStatus === 'rescind pre approval' || formattedStatus === 'rescinded') {
+      //   return 'rescinded by buyer';
+      // }
+      // rejected by Government
+      if (formattedStatus === 'rejected') {
+        return 'rejected by government';
+      }
+      // rejected by transfer partner
+      if (formattedStatus === 'disapproved') {
+        return 'rejected by transfer partner';
+      }
+
       return formattedStatus;
     },
     className: 'text-center text-capitalize',
