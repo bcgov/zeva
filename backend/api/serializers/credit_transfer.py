@@ -295,53 +295,6 @@ class CreditTransferSaveSerializer(ModelSerializer):
             instance.save()
             credit_history.save()
 
-
-            """
-            Send email to the IDIR users if status is one of the following
-            """
-
-            gov = Organization.objects.get(is_government='True').id
-            email = None
-            if validation_status in [
-                    CreditTransferStatuses.RECOMMEND_APPROVAL,
-                    CreditTransferStatuses.RECOMMEND_REJECTION,
-                    CreditTransferStatuses.APPROVED
-            ]:
-                email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=gov).exclude(email__isnull=True).exclude(email__exact='')
-    
-            elif validation_status is CreditTransferStatuses.SUBMITTED and credit_to:
-                email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=credit_to).exclude(email__isnull=True).exclude(email__exact='')
-
-            if email:
-                try:
-                    send_email(list(email))
-                except Exception as e:
-                    LOGGER.error('Email Failed! %s', e)
-
-
-            """
-            Send email to the IDIR users if status is one of the following
-            """
-
-            gov = Organization.objects.get(is_government='True').id
-            email = None
-            if validation_status in [
-                    CreditTransferStatuses.RECOMMEND_APPROVAL,
-                    CreditTransferStatuses.RECOMMEND_REJECTION,
-                    CreditTransferStatuses.APPROVED
-            ]:
-                email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=gov).exclude(email__isnull=True).exclude(email__exact='')
-    
-            elif validation_status is CreditTransferStatuses.SUBMITTED and credit_to:
-                email = UserProfile.objects.values_list('email', flat=True).filter(organization_id=credit_to).exclude(email__isnull=True).exclude(email__exact='')
-
-            if email:
-                try:
-                    send_email(list(email))
-                except Exception as e:
-                    LOGGER.error('Email Failed! %s', e)
-
-
             """
             Send email to the IDIR users if status is one of the following
             """

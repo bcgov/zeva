@@ -28,3 +28,4 @@ from . import signing_authority_assertion, signing_authority_confirmation
 from . import credit_transfer_history
 from . import icbc_vehicle
 from . import icbc_upload_date
+from . import notification, notification_subscription
