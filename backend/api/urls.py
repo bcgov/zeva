@@ -3,6 +3,7 @@ from rest_framework import routers
 from .viewsets.credit_request import CreditRequestViewset
 from .viewsets.credit_transaction import CreditTransactionViewSet
 from .viewsets.organization import OrganizationViewSet
+from .viewsets.notification import NotificationViewSet
 from .viewsets.role import RoleViewSet
 from .viewsets.user import UserViewSet
 from .viewsets.vehicle import VehicleViewSet
@@ -12,6 +13,7 @@ from .viewsets.signing_authority_assertion import SigningAuthorityAssertionViewS
 
 router = routers.SimpleRouter(trailing_slash=False)
 router.register(r'organizations', OrganizationViewSet, basename='organization')
+router.register(r'notifications', NotificationViewSet, basename='notification')
 router.register(r'users', UserViewSet)
 router.register(r'vehicles', VehicleViewSet)
 router.register(r'roles', RoleViewSet, basename='role')

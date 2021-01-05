@@ -3,7 +3,7 @@
   @include shadow;
 
   .brand-logo {
-    background-image: url('./images/BCID_H_rgb_rev.png');
+    background-image: url("./images/BCID_H_rgb_rev.png");
     background-position-x: center;
     background-position-y: center;
     background-repeat: no-repeat;
@@ -53,7 +53,8 @@
     position: relative;
   }
 
-  .navbar-nav, .user-control-panel {
+  .navbar-nav,
+  .user-control-panel {
     a {
       color: $white;
       font-size: 0.9rem;
@@ -67,7 +68,8 @@
     }
   }
 
-  .nav-item, .user-control-panel li {
+  .nav-item,
+  .user-control-panel li {
     position: relative;
 
     &:not(:first-child):before {
@@ -81,7 +83,7 @@
     }
     span.logout {
       color: $white;
-      font-size: 1.0rem;
+      font-size: 1rem;
       height: 100%;
       padding: 0.5rem 1rem;
       text-align: center;
@@ -103,7 +105,9 @@
     padding: 0.5rem 1rem;
     text-align: center;
   }
-
+  #navbarDropdown {
+    width: 185px;
+  }
   .user-control-panel {
     bottom: 0;
     color: $white;
@@ -123,6 +127,7 @@
 
       &.dropdown-menu {
         display: block;
+        width: 200px;
 
         button {
           background-color: transparent;
@@ -152,7 +157,8 @@
       padding: 0.5rem 1rem;
     }
 
-    .notifications, .help {
+    .notifications,
+    .help {
       font-size: 1.3rem;
       padding: 0.2rem 1rem;
     }
