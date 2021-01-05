@@ -11,6 +11,8 @@ import CustomPropTypes from '../../app/utilities/props';
 import CreditTransfersDetailsTable from './CreditTransfersDetailsTable';
 import CreditTransfersDetailsSupplierTable from './CreditTransfersDetailsSupplierTable';
 import Comment from '../../app/components/Comment';
+import CreditTransfersAlert from './CreditTransfersAlert';
+import Alert from '../../app/components/Alert';
 
 const CreditTransfersDetailsPage = (props) => {
   const {
@@ -21,12 +23,12 @@ const CreditTransfersDetailsPage = (props) => {
     sufficientCredit,
     submission,
     user,
+    errorMessage,
   } = props;
   const [comment, setComment] = useState('');
   const [allChecked, setAllChecked] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
-
   const transferRole = {
     rescindable: (user.organization.id === submission.debitFrom.id
       && ['SUBMITTED', 'APPROVED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL'].indexOf(submission.status) >= 0)
@@ -47,7 +49,9 @@ const CreditTransfersDetailsPage = (props) => {
       setAllChecked(false);
     }
   });
-  const transferComments = submission.history.filter((each) => each.comment);
+  const transferComments = submission.history
+    .filter((each) => each.comment)
+    .map((comment) => comment.comment);
   let modalProps = {};
   switch (modalType) {
     case 'initiating-submit':
@@ -96,7 +100,7 @@ const CreditTransfersDetailsPage = (props) => {
     case 'recommend-transfer':
       modalProps = {
         confirmLabel: ' Recommend Transfer',
-        handleSubmit: () => { handleSubmit('RECOMMEND_APPROVAL', comment); },
+        handleSubmit: () => { setShowModal(false); handleSubmit('RECOMMEND_APPROVAL', comment); },
         buttonClass: 'button primary',
         modalText: 'Recommend the Director record the Transfer?',
       };
@@ -104,7 +108,7 @@ const CreditTransfersDetailsPage = (props) => {
     case 'director-record':
       modalProps = {
         confirmLabel: ' Record Transfer',
-        handleSubmit: () => { handleSubmit('VALIDATED', comment); },
+        handleSubmit: () => { setShowModal(false); handleSubmit('VALIDATED', comment); },
         buttonClass: 'button primary',
         modalText: 'Record the transfer?',
       };
@@ -112,7 +116,7 @@ const CreditTransfersDetailsPage = (props) => {
     case 'director-reject':
       modalProps = {
         confirmLabel: ' Reject Transfer',
-        handleSubmit: () => { handleSubmit('REJECTED', comment); },
+        handleSubmit: () => { setShowModal(false); handleSubmit('REJECTED', comment); },
         buttonClass: 'btn-outline-danger',
         modalText: 'Reject the transfer?',
       };
@@ -166,7 +170,6 @@ const CreditTransfersDetailsPage = (props) => {
     )} Canadian dollars.
     </div>
   );
-
   let latestRescind = false;
   let latestSubmit = false;
   let latestApprove = false;
@@ -251,16 +254,6 @@ const CreditTransfersDetailsPage = (props) => {
       <textarea testid="transfer-comment" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} disabled={allChecked} />
     </div>
   );
-  const insufficientCreditWarning = (
-    <div
-      className="alert alert-danger"
-      id="alert-warning"
-      role="alert"
-    >
-      <FontAwesomeIcon icon="exclamation-circle" size="lg" />
-      &nbsp;<b>WARNING:&nbsp;</b> Supplier has insufficient credits to fulfill all pending transfers.
-    </div>
-  );
 
   return (
     <div id="credit-transfers-details" className="page">
@@ -269,15 +262,35 @@ const CreditTransfersDetailsPage = (props) => {
         <div className="col-sm-12">
           <h2>Light Duty Vehicle Credit Transfer</h2>
         </div>
-        {transferComments.length > 0 
+      </div>
+      {transferRole.governmentDirector && errorMessage
       && (
-      <div className="ml-3">
-        <Comment commentArray={transferComments} />
-      </div>
+      <Alert
+        title="Error"
+        classname="alert-danger"
+        message={`${submission.debitFrom.name} has insufficient credits to fulfil this transfer.`}
+      />
       )}
-      </div>
       {transferRole.governmentAnalyst && !sufficientCredit
-      && insufficientCreditWarning}
+      && (
+      <Alert
+        title="Error"
+        classname="alert-danger"
+        message={`${submission.debitFrom.name} has insufficient credits to fulfil ${submission.pending} pending transfer(s).`}
+      />
+      )}
+      {submission.status
+      && (
+      <CreditTransfersAlert
+        user={user}
+        errorMessage={errorMessage}
+        submission={submission}
+      />
+      )}
+      {transferComments.length > 0
+      && (
+        <Comment commentArray={transferComments} />
+      )}
       {transferRole.governmentAnalyst
       && (
       <CreditTransfersDetailsSupplierTable submission={submission} tableType="supplierBalance" />
@@ -331,6 +344,7 @@ CreditTransfersDetailsPage.propTypes = {
   sufficientCredit: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired,
   submission: PropTypes.shape().isRequired,
+  errorMessage: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default CreditTransfersDetailsPage;

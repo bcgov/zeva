@@ -16,6 +16,13 @@ import { BrowserRouter as Router } from 'react-router-dom';
 const handleCheckboxClick = () => { console.log('click'); };
 const submission = {
   history: [{
+    status: 'DRAFT',
+    createUser: {
+      displayName: 'emily',
+      organization: { name: 'Toyota Canada Inc.' },
+    },
+    createTimestamp: '2020-12-01T09:27:21.098202-07:00',
+  }, {
     status: 'SUBMITTED',
     createUser: {
       displayName: 'emily',
@@ -121,19 +128,31 @@ it('shows the reject modal if the user selects the reject button', () => {
   expect(queryByText(container, 'Reject notice?')).toBeInTheDocument;
   expect(queryByText(container, 'Submit transfer to government of B.C. Director?')).not.toBeInTheDocument;
 });
-it('does not show the commment box if the submission is already rejected', () => {
-  submission.status = 'REJECTED';
-  const { container } = render(<CreditTransfersDetailsPage submission={submission} checkboxes={[]} assertions={[]} user={user} handleSubmit={() => { console.log('submit!'); }} />);
-  expect(findByTestId(container, 'transfer-comment')).not.toBeInTheDocument;
-});
+
 it('if its a draft, initiating company can submit to partner or press back', () => {
   submission.status = 'DRAFT';
+  submission.history = [{
+    status: 'DRAFT',
+    createUser: {
+      displayName: 'emily',
+      organization: { name: 'Toyota Canada Inc.' },
+    },
+    createTimestamp: '2020-12-01T09:27:21.098202-07:00',
+  }];
   const { container } = render(<CreditTransfersDetailsPage submission={submission} checkboxes={[]} assertions={[]} user={user} handleSubmit={() => { console.log('submit!'); }} />);
   fireEvent.click(getByTestId(container, 'submit-to-partner'));
   expect(queryByText(container, 'Submit credit transfer notice to trade partner?')).toBeInTheDocument;
 });
 it('shows the submit modal if the user selects the submit button', () => {
   submission.status = 'DRAFT';
+  submission.history = [{
+    status: 'DRAFT',
+    createUser: {
+      displayName: 'emily',
+      organization: { name: 'Toyota Canada Inc.' },
+    },
+    createTimestamp: '2020-12-01T09:27:21.098202-07:00',
+  }];
   const { container } = render(<CreditTransfersDetailsPage submission={submission} checkboxes={[]} assertions={[]} user={user} handleSubmit={() => { console.log('submit!'); }} />);
   fireEvent.click(getByTestId(container, 'submit-to-partner'));
   expect(queryByText(container, 'Submit transfer to government of B.C. Director?')).toBeInTheDocument;
@@ -141,6 +160,14 @@ it('shows the submit modal if the user selects the submit button', () => {
 });
 it('shows the submission and signed date if the transfer partner opens it', () => {
   submission.status = 'SUBMITTED';
+  submission.history = [{
+    status: 'SUBMITTED',
+    createUser: {
+      displayName: 'emily',
+      organization: { name: 'Toyota Canada Inc.' },
+    },
+    createTimestamp: '2020-12-01T09:27:21.098202-07:00',
+  }];
   const { container } = render(<CreditTransfersDetailsPage submission={submission} checkboxes={[]} assertions={[]} user={user2} handleSubmit={() => { console.log('submit!'); }} />);
 
   expect(findByTestId(container, 'submit-signature')).toBeInTheDocument;
@@ -185,6 +212,27 @@ it('shows the comment box to the director if user is analyst', () => {
   // fireEvent.click(getByText(container, 'Recommend transfer'));
   // expect(queryByText(container, 'Recommend the Director record the Transfer?')).toBeInTheDocument;
 });
+it('does not show the commment box if the submission is already rejected', () => {
+  submission.status = 'REJECTED';
+  submission.history = [{
+    status: 'SUBMITTED',
+    createUser: {
+      displayName: 'emily',
+      organization: { name: 'Toyota Canada Inc.' },
+    },
+    createTimestamp: '2020-12-01T09:27:21.098202-07:00',
+  }, {
+    status: 'REJECTED',
+    createUser: {
+      displayName: 'emily',
+      organization: { name: 'Toyota Canada Inc.' },
+    },
+    createTimestamp: '2020-12-10T09:27:21.098202-07:00',
+  }];
+  const { container } = render(<CreditTransfersDetailsPage submission={submission} checkboxes={[]} assertions={[]} user={user} handleSubmit={() => { console.log('submit!'); }} />);
+  expect(findByTestId(container, 'transfer-comment')).not.toBeInTheDocument;
+});
+
 
 // show the rescind button if the user is bceid (initiator) and the status is approved, submitted, accepted
 

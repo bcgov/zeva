@@ -9,6 +9,8 @@ import TransferFormRow from './TransferFormRow';
 import FormDropdown from './FormDropdown';
 import CreditTransferSignoff from './CreditTransfersSignOff';
 import Comment from '../../app/components/Comment';
+import CreditTransfersAlert from './CreditTransfersAlert';
+import Alert from '../../app/components/Alert';
 
 const CreditTransfersForm = (props) => {
   const {
@@ -31,37 +33,28 @@ const CreditTransfersForm = (props) => {
     user,
     years,
     transferComments,
+    submission,
   } = props;
   const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState({ type: '', buttonText: '', message: '' });
   const submitTooltip = 'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.';
   const modal = (
     <Modal
-      confirmLabel=" Submit Notice"
+      confirmLabel={modalType.buttonText}
       handleCancel={() => { setShowModal(false); }}
-      handleSubmit={() => { handleSubmit(); }}
+      handleSubmit={() => { setShowModal(false); handleSubmit(modalType.type); }}
       modalClass="w-75"
       showModal={showModal}
-      confirmClass="button primary"
-      icon={<FontAwesomeIcon icon="paper-plane" />}
+      confirmClass={modalType === 'SUBMITTED' ? 'button primary' : 'btn-outline-danger'}
+      icon={modalType === 'SUBMITTED' ? <FontAwesomeIcon icon="paper-plane" /> : <FontAwesomeIcon icon="trash" />}
     >
       <div>
         <div><br /><br /></div>
-        <h3 className="d-inline">Submit credit transfer notice to trade partner?
+        <h3 className="d-inline">{modalType.message}
         </h3>
         <div><br /><br /></div>
       </div>
     </Modal>
-  );
-  const alert = (
-    <div
-      className="alert alert-danger"
-      id="alert-warning"
-      role="alert"
-    >
-      <FontAwesomeIcon icon="exclamation-circle" size="lg" />
-      &nbsp;<b>STATUS: Error &mdash; &nbsp;</b>
-      Insufficient credits, you can only transfer credits available in your current balance
-    </div>
   );
   const actionbar = (
     <div className="row">
@@ -69,6 +62,16 @@ const CreditTransfersForm = (props) => {
         <div className="action-bar">
           <span className="left-content">
             <Button buttonType="back" locationRoute="/credit-transfers" />
+            {submission.status === 'DRAFT'
+            && (
+            <Button
+              buttonType="delete"
+              action={() => {
+                setModalType({ type: 'DELETED', buttonText: ' Delete Notice', message: 'Delete transfer notice? WARNING: this action cannot be undone.' });
+                setShowModal(true);
+              }}
+            />
+            )}
           </span>
           <span className="right-content">
             {user.hasPermission('CREATE_CREDIT_TRANSFERS') && (
@@ -85,6 +88,7 @@ const CreditTransfersForm = (props) => {
               buttonType="submit"
               action={() => {
                 setShowModal(true);
+                setModalType({ type: 'SUBMITTED', buttonText: ' Submit Notice', message: 'Submit credit transfer notice to trade partner?' });
               }}
               optionalText="Submit Notice"
               buttonTooltip={submitTooltip}
@@ -107,14 +111,28 @@ const CreditTransfersForm = (props) => {
             To submit a notice of credit transfer there must be sufficient credits in your balance
           </div>
         </div>
-        {transferComments.length > 0 
+
+      </div>
+      {errorMessage.length > 0
       && (
-      <div className="ml-3">
-        <Comment commentArray={transferComments} />
-      </div>
+      <Alert
+        title="Error"
+        message="insufficient credits, you can only transfer credits available in your current balance."
+        classname="alert-danger"
+      />
       )}
-      </div>
-      {errorMessage && alert}
+      {submission.status && errorMessage.length === 0
+      && (
+      <CreditTransfersAlert
+        user={user}
+        errorMessage={errorMessage}
+        submission={submission}
+      />
+      )}
+      {transferComments.length > 0
+      && (
+        <Comment commentArray={transferComments} />
+      )}
       <div id="form">
         <form onSubmit={handleSave}>
           <div className="row">
@@ -167,7 +185,7 @@ CreditTransfersForm.defaultProps = {
   unfilledRow: true,
   hoverText: '',
   transferComments: [{}],
-  errorMessage: '',
+  errorMessage: [],
 };
 
 CreditTransfersForm.propTypes = {
@@ -189,7 +207,7 @@ CreditTransfersForm.propTypes = {
   user: CustomPropTypes.user.isRequired,
   years: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   transferComments: PropTypes.arrayOf(PropTypes.shape()),
-  errorMessage: PropTypes.string,
+  errorMessage: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default CreditTransfersForm;

@@ -198,7 +198,7 @@ def validate_transfer(transfer):
         if not found:
             has_enough = False
         if not has_enough:
-            raise ValidationError('not enough credits')
+            raise ValidationError('Supplier has insufficient credits to fulfil this transfer.')
         else:
             # add to each dictionary (one broken down by years and the other not)
             if credit_type not in credit_total_no_years:

@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import history from '../app/History';
+import Loading from '../app/components/Loading';
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import CustomPropTypes from '../app/utilities/props';
 import CreditTransfersForm from './components/CreditTransfersForm';
@@ -23,8 +24,9 @@ const CreditTransfersEditContainer = (props) => {
   const emptyForm = {
     transferPartner: '',
   };
-  const [transferComments, setTransferComments] = useState([])
-  const [errorMessage, setErrorMessage] = useState('');
+  const [transferComments, setTransferComments] = useState([]);
+  const [submission, setSubmission] = useState([]);
+  const [errorMessage, setErrorMessage] = useState([]);
   const [assertions, setAssertions] = useState([]);
   const [checkboxes, setCheckboxes] = useState([]);
   const [rows, setRows] = useState([emptyRow]);
@@ -112,7 +114,7 @@ const CreditTransfersEditContainer = (props) => {
         .catch((error) => {
           const { response } = error;
           if (response.status === 400) {
-            setErrorMessage(error.response.data);
+            setErrorMessage(error.response.data.status);
           }
         });
     } else {
@@ -127,7 +129,7 @@ const CreditTransfersEditContainer = (props) => {
         .catch((error) => {
           const { response } = error;
           if (response.status === 400) {
-            setErrorMessage(error.response.data);
+            setErrorMessage(error.response.data.status);
           }
         });
     }
@@ -149,8 +151,8 @@ const CreditTransfersEditContainer = (props) => {
     submitOrSave('DRAFT');
   };
 
-  const handleSubmit = () => {
-    submitOrSave('SUBMITTED');
+  const handleSubmit = (type) => {
+    submitOrSave(type);
   };
 
   const refreshDetails = () => {
@@ -177,7 +179,10 @@ const CreditTransfersEditContainer = (props) => {
           quantity: each.creditValue,
           value: each.dollarValue,
         }));
-        setTransferComments(details.history.filter((each) => each.comment));
+        setTransferComments(details.history
+          .filter((each) => each.comment)
+          .map((comment) => comment.comment));
+        setSubmission(details);
         setRows(rowInfo);
         setUnfilledRow(false);
         setHoverText('');
@@ -189,8 +194,10 @@ const CreditTransfersEditContainer = (props) => {
   useEffect(() => {
     refreshDetails();
   }, [keycloak.authenticated]);
-
   const total = rows.reduce((a, v) => a + v.quantity * v.value, 0);
+  if (loading) {
+    return (<Loading />);
+  }
   return ([
     <CreditTransactionTabs active="credit-transfers" key="tabs" user={user} />,
     <CreditTransfersForm
@@ -216,6 +223,7 @@ const CreditTransfersEditContainer = (props) => {
       user={user}
       years={years}
       transferComments={transferComments}
+      submission={submission}
     />,
   ]);
 };

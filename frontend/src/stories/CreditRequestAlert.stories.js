@@ -4,55 +4,11 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
-import '../app/css/index.scss';
-
-// import{ action } from "@storybook/addon-actions";
 import { storiesOf } from '@storybook/react';
-
-import Alert from '../app/components/Alert';
-
+import '../app/css/index.scss';
+import CreditRequestAlert from '../credits/components/CreditRequestAlert';
+// import{ action } from "@storybook/addon-actions";
 library.add(fab, far, fas);
-storiesOf('vehicle alert', module)
-  .add('changes requested alert', () => (
-    <Alert
-      status="CHANGES_REQUESTED"
-      user="Emily"
-      updateTimestamp="Dec 1, 2020"
-      alertType="vehicle"
-    />
-  ))
-  .add('draft alert', () => (
-    <Alert
-      status="DRAFT"
-      user="Emily"
-      updateTimestamp="Dec 1, 2020"
-      alertType="vehicle"
-    />
-  ))
-  .add('submitted alert', () => (
-    <Alert
-      status="SUBMITTED"
-      user="Emily"
-      updateTimestamp="Dec 1, 2020"
-      alertType="vehicle"
-    />
-  ))
-  .add('validated alert', () => (
-    <Alert
-      status="VALIDATED"
-      user="Emily"
-      updateTimestamp="Dec 1, 2020"
-      alertType="vehicle"
-    />
-  ))
-  .add('rejected alert', () => (
-    <Alert
-      status="REJECTED"
-      user="Emily"
-      updateTimestamp="Dec 1, 2020"
-      alertType="vehicle"
-    />
-  ));
 const historyData = [
   {
     createTimestamp: '2020-01-01T15:51:51.602702-07:00',
@@ -142,66 +98,50 @@ const submissionChecked = {
 };
 storiesOf('credit alert', module)
   .add('errors bceid', () => (
-    <Alert
-      user="Emily"
-      date="Dec 1, 2020"
-      alertType="credit"
+    <CreditRequestAlert
       submission={submissionErrors}
       invalidSubmission
     />
   ))
   .add('draft BCEID', () => (
-    <Alert
-      user="Emily"
-      date="Dec 1, 2020"
-      alertType="credit"
+    <CreditRequestAlert
       submission={submissionDraft}
     />
   ))
   .add('submitted BCEID', () => (
-    <Alert
-      status="SUBMITTED"
-      user="Emily"
-      date="Dec 1, 2020"
-      alertType="credit"
+    <CreditRequestAlert
       submission={submissionSubmitted}
     />
   ))
   .add('submitted IDIR', () => (
-    <Alert
-      status="SUBMITTED"
-      alertType="credit"
+    <CreditRequestAlert
       submission={submissionSubmitted}
       isGovernment
     />
   ))
   .add('validated BCEID', () => (
-    <Alert
+    <CreditRequestAlert
       submission={submissionValidated}
-      alertType="credit"
     />
   ))
   .add('validated IDIR', () => (
-    <Alert
+    <CreditRequestAlert
       submission={submissionValidated}
-      alertType="credit"
       isGovernment
     />
   ))
 
   .add('recommend approval idir', () => (
-    <Alert
+    <CreditRequestAlert
       submission={submissionRecommend}
-      alertType="credit"
       isGovernment
       icbcDate="Oct 1, 2020"
     />
   ))
 
   .add('checked idir', () => (
-    <Alert
+    <CreditRequestAlert
       submission={submissionChecked}
-      alertType="credit"
       isGovernment
       icbcDate="Oct 1, 2020"
     />
