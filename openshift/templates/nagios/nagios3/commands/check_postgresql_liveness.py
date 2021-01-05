@@ -16,7 +16,8 @@ try:
         database_service_name=DB['DATABASE_SERVICE_NAME'],
         database_name=DB['DATABASE_NAME'],
         database_user=DB['DATABASE_USER'],
-        database_password=DB['DATABASE_PASSWORD']
+        database_password=DB['DATABASE_PASSWORD'],
+        connect_timeout=10
     )
  
     conn=psycopg2.connect(conn_string)
