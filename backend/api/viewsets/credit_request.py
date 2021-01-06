@@ -266,9 +266,10 @@ class CreditRequestViewset(
             submission_id=pk
         ).count()
 
-        if (record_of_sale_count == 0 and
-                submission.validation_status == SalesSubmissionStatuses.CHECKED) or \
-                submission.validation_status == SalesSubmissionStatuses.SUBMITTED:
+        reset = request.GET.get('reset', None)
+
+        if submission.validation_status == SalesSubmissionStatuses.SUBMITTED or \
+                reset == 'Y':
             submission_content = SalesSubmissionContent.objects.filter(
                 submission_id=pk
             )

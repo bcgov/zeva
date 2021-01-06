@@ -7,9 +7,9 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import Button from '../app/components/Button';
 import { withRouter } from 'react-router';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ROUTES_NOTIFICATIONS from '../app/routes/Notifications';
 import CustomPropTypes from '../app/utilities/props';
+import Alert from '../app/components/Alert';
 import NotificationListPage from './components/NotificationListPage';
 
 const qs = require('qs');
@@ -18,8 +18,7 @@ const NotificationListContainer = (props) => {
   const [notifications, setNotifications] = useState([]);
   const [checkboxes, setCheckboxes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState(false);
+  const [alertMessage, setAlertMessage] = useState(null);
 
   const { keycloak, user, location ,
     } = props;
@@ -36,26 +35,15 @@ const NotificationListContainer = (props) => {
     }
   }; 
 
-  const alertSuccess = (
-    <div className="alert alert-success"  id= "alert-success" role="alert"><FontAwesomeIcon icon="check-circle" size="lg"/>
-              &nbsp;<b>Success:&nbsp;</b> Email notification preferences saved.
-      </div>
-  );
-  const alertError = (
-    <div className="alert alert-danger" role="alert"><FontAwesomeIcon icon="exclamation-circle" size="lg"/>
-              &nbsp;<b>Error:&nbsp;</b> Something went wrong, please try after some time.
-      </div>
-  );
-
   const handleSave = (checkboxes) => {
     axios.post(ROUTES_NOTIFICATIONS.LIST, {
         notification: checkboxes,
       })
         .then(() => {
-        setSuccess(true);
+        setAlertMessage("Email notification preferences saved.")
       })
         .catch(() => {
-        setError(true);
+        setAlertMessage("Something went wrong, please try again after some time.")
       })
         
   }
@@ -108,7 +96,10 @@ const NotificationListContainer = (props) => {
               Receive email notifications of transactions and status changes of interest in the system to : {user.email} 
             </div>
           </div>
-          {(success) ? alertSuccess : (error) ? alertError : false}
+          {alertMessage && (
+            <div className="mt-2">
+              <Alert message={alertMessage} classname={alertMessage === 'Email notification preferences saved.' ? 'alert-success' : 'alert-danger'} />
+            </div>)}
         </div>
       </div>
       <div id="form">

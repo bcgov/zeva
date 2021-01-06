@@ -21,7 +21,7 @@ const Administration = (props) => {
             <button
               type="button"
               onClick={() => {
-                History.push(ROUTES_ORGANIZATIONS.USERS.replace(/:id/gi, user.organization.id));
+                History.push(ROUTES_ORGANIZATIONS.MINE);
               }}
             >
               Manage Government of B.C. users

@@ -10,8 +10,8 @@ import { withRouter } from 'react-router';
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import Loading from '../app/components/Loading';
 import history from '../app/History';
-import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 import ROUTES_CREDIT_TRANSFERS from '../app/routes/CreditTransfers';
+import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 import CustomPropTypes from '../app/utilities/props';
 import CreditTransfersDetailsPage from './components/CreditTransfersDetailsPage';
 
@@ -36,6 +36,7 @@ const CreditTransfersDetailsContainer = (props) => {
       setAssertions(assertionsResponse.data);
       setSubmission(response.data);
       setSufficientCredit(response.data.sufficientCredits);
+
       setLoading(false);
     }));
   };

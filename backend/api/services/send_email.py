@@ -100,8 +100,8 @@ def send_email(recipient_email: str) -> {}:
                "Content-Type": "application/json"}  
     try:
         response = requests.post(url, data=json.dumps(data), headers=headers)
-        if not response.status_code / 100 == 2:
-            LOGGER.error("Error: Email failed!", response.text.encode('utf8'))
+        if not response.status_code == 201:
+            LOGGER.error("Error: Email failed! %s", response.text.encode('utf8'))
             return
 
         email_res = response.json()

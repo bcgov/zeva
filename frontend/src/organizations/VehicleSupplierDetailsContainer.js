@@ -40,25 +40,25 @@ const VehicleSupplierDetailsContainer = (props) => {
   }, [keycloak.authenticated]);
 
   const editButton = () => {
-    if (typeof user.hasPermission === 'function'&& user.hasPermission('EDIT_ORGANIZATIONS') && user.isGovernment){
-        return(
-          <button
+    if (typeof user.hasPermission === 'function' && user.hasPermission('EDIT_ORGANIZATIONS') && user.isGovernment) {
+      return (
+        <button
           className="button primary"
           onClick={() => {
             History.push(ROUTES_ORGANIZATIONS.EDIT.replace(/:id/gi, id));
           }}
           type="button"
-          >
+        >
           <FontAwesomeIcon icon="edit" /> Edit
-          </button>
-        );
+        </button>
+      );
     }
-  }
+  };
 
   return (
     <div className="page">
       <h1 className="mb-2">{display.name}</h1>
-      <VehicleSupplierTabs locationState={locationState} supplierId={details.id} active="supplier-info" />
+      <VehicleSupplierTabs locationState={locationState} supplierId={details.id} active="supplier-info" user={user} />
       <VehicleSupplierDetailsPage
         details={details}
         loading={loading}
