@@ -54,7 +54,7 @@ const VehicleSupplierModelListContainer = (props) => {
   return (
     <div className="page">
       <h1>{details.name}</h1>
-      <VehicleSupplierTabs locationState={locationState} supplierId={details.id} active="supplier-zev-models" />
+      <VehicleSupplierTabs locationState={locationState} supplierId={details.id} active="supplier-zev-models" user={user} />
       <VehicleSupplierZEVListPage
         filtered={filtered}
         handleClear={handleClear}
