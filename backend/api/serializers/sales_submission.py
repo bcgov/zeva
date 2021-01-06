@@ -97,7 +97,7 @@ class SalesSubmissionListSerializer(
             history = SalesSubmissionHistory.objects.filter(
                 submission_id=obj.id,
                 validation_status=SalesSubmissionStatuses.SUBMITTED
-                ).order_by('-update_timestamp').first()
+            ).order_by('-update_timestamp').first()
 
             if history is None:
                 return None
@@ -304,7 +304,18 @@ class SalesSubmissionSerializer(
 
         history = SalesSubmissionHistory.objects.filter(
             submission_id=obj.id
-        ).order_by('-update_timestamp')
+        )
+
+        if not request.user.is_government:
+            history = history.exclude(
+                validation_status__in=[
+                    SalesSubmissionStatuses.RECOMMEND_REJECTION,
+                    SalesSubmissionStatuses.RECOMMEND_APPROVAL,
+                    SalesSubmissionStatuses.CHECKED,
+                ]
+            )
+
+        history = history.order_by('-update_timestamp')
 
         serializer = SalesSubmissionHistorySerializer(
             history, read_only=True, many=True, context={'request': request}
