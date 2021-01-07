@@ -8,10 +8,11 @@ import download from '../../app/utilities/download';
 import ExcelFileDrop from '../../app/components/FileDrop';
 import getFileSize from '../../app/utilities/getFileSize';
 
-const SalesUploadPage = (props) => {
+const CreditRequestsUploadPage = (props) => {
   const {
     errorMessage,
     files,
+    setErrorMessage,
     setUploadFiles,
     upload,
     icbcDate,
@@ -30,6 +31,7 @@ const SalesUploadPage = (props) => {
     const found = files.findIndex((file) => (file === removedFile));
     files.splice(found, 1);
 
+    setErrorMessage('');
     setUploadFiles([...files]);
   };
 
@@ -76,7 +78,7 @@ const SalesUploadPage = (props) => {
 
             <div className="panel panel-default">
               <div className="content p-3">
-                <ExcelFileDrop setFiles={setUploadFiles} maxFiles={100000} />
+                <ExcelFileDrop setErrorMessage={setErrorMessage} setFiles={setUploadFiles} maxFiles={100000} />
               </div>
               {files.length > 0 && (
               <div className="files px-3">
@@ -132,15 +134,18 @@ const SalesUploadPage = (props) => {
   );
 };
 
-SalesUploadPage.defaultProps = {
+CreditRequestsUploadPage.defaultProps = {
   errorMessage: '',
+  icbcDate: '',
 };
 
-SalesUploadPage.propTypes = {
+CreditRequestsUploadPage.propTypes = {
   errorMessage: PropTypes.string,
   files: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  icbcDate: PropTypes.string,
+  setErrorMessage: PropTypes.func.isRequired,
   setUploadFiles: PropTypes.func.isRequired,
   upload: PropTypes.func.isRequired,
 };
 
-export default SalesUploadPage;
+export default CreditRequestsUploadPage;
