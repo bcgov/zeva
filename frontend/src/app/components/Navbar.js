@@ -194,7 +194,7 @@ class Navbar extends Component {
 
               {CONFIG.FEATURES.CREDIT_TRANSACTIONS.ENABLED
               && typeof user.hasPermission === 'function'
-              && user.hasPermission('VIEW_SALES')
+              && user.hasPermission('EDIT_SALES')
               && (
               <li className="nav-item">
                 <NavLink
