@@ -2,7 +2,7 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: zeva-backend-dc-unittest
+  name: zeva-upload-dc
 parameters:
   - name: NAME
     displayName: null
@@ -53,67 +53,33 @@ parameters:
   - name: REPLICAS
     value: '1'
     required: true
-  - name: DJANGO_SECRET
-    description: "Cookie used for authentication of cluster nodes"
-    from: "[a-zA-Z0-9]{50}"
-    generate: expression    
 objects:
-  - apiVersion: v1
-    kind: Secret
-    metadata:
-      labels:
-        app: ${NAME}${SUFFIX}    
-      annotations: null
-      name: ${NAME}-django-unittest${SUFFIX}
-    stringData:
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET}
-  - apiVersion: image.openshift.io/v1
-    kind: ImageStream
-    metadata:
-      annotations:
-        description: Keeps track of changes in the backend image
-      labels:
-        shared: "true"        
-      creationTimestamp: null
-      name: '${NAME}-backend'
-    spec:
-      lookupPolicy:
-        local: false
-    status:
-      dockerImageRepository: ''
   - apiVersion: apps.openshift.io/v1
     kind: DeploymentConfig
     metadata:
       annotations:
         description: Defines how to deploy the application server
       creationTimestamp: null
-      labels:
-        name: backend
-        app: zeva
-        role: backend-unittest
-        env: ${ENV_NAME}
-      name: ${NAME}-backend-unittest${SUFFIX}
+      name: ${NAME}-upload${SUFFIX}
     spec:
       replicas: ${{REPLICAS}}
       revisionHistoryLimit: 10
       selector:
-        name: ${NAME}-backend-unittest${SUFFIX}
+        name: ${NAME}-upload${SUFFIX}
       strategy:
         activeDeadlineSeconds: 800
+        recreateParams:
+          timeoutSeconds: 600
         resources: {}
         type: Recreate
       template:
         metadata:
           creationTimestamp: null
           labels:
-            name: ${NAME}-backend-unittest${SUFFIX}
+            name: ${NAME}-upload${SUFFIX}
         spec:
-          initContainers:
-            - name: wait-for-database
-              image: toschneck/wait-for-it:latest
-              command: ['sh', '-c', './wait-for-it.sh -t 0 ${NAME}-postgresql-unittest${SUFFIX}.tbiwaq-${ENV_NAME}.svc.cluster.local:5432']
           containers:
-            - name: backend-unittest
+            - name: upload
               image: null
               imagePullPolicy: IfNotPresent
               env:
@@ -122,24 +88,33 @@ objects:
                 - name: DATABASE_USER
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-postgresql-unittest${SUFFIX}
-                      key: DATABASE_USER
+                      name: patroni${SUFFIX}
+                      key: app-db-username
                 - name: DATABASE_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-postgresql-unittest${SUFFIX}
-                      key: DATABASE_PASSWORD
+                      name: patroni${SUFFIX}
+                      key: app-db-password
                 - name: DATABASE_ENGINE
                   valueFrom:
                     configMapKeyRef:
                       name: ${NAME}-config${SUFFIX}
                       key: database_engine
                 - name: DATABASE_SERVICE_NAME
-                  value: ${NAME}-postgresql-unittest${SUFFIX}
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-config${SUFFIX}
+                      key: database_service_name
                 - name: POSTGRESQL_SERVICE_HOST
-                  value: ${NAME}-postgresql-unittest${SUFFIX}.tbiwaq-${SUFFIX}.svc.cluster.local
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-config${SUFFIX}
+                      key: postgresql_service_host
                 - name: POSTGRESQL_SERVICE_PORT
-                  value: '5432'
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-config${SUFFIX}
+                      key: postgresql_service_port
                 - name: KEYCLOAK_CERTS_URL
                   valueFrom:
                     configMapKeyRef:
@@ -203,7 +178,7 @@ objects:
                 - name: DJANGO_SECRET_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-django-unittest${SUFFIX}
+                      name: ${NAME}-django${SUFFIX}
                       key: DJANGO_SECRET_KEY
                 - name: RABBITMQ_VHOST
                   valueFrom:
@@ -264,6 +239,26 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-config${SUFFIX}
                       key: minio_endpoint
+                - name: EMAIL_SERVICE_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: email-service
+                      key: EMAIL_SERVICE_CLIENT_ID                      
+                - name: EMAIL_SERVICE_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: email-service
+                      key: EMAIL_SERVICE_CLIENT_SECRET
+                - name: CHES_AUTH_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: email-service
+                      key: CHES_AUTH_URL                      
+                - name: CHES_EMAIL_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: email-service
+                      key: CHES_EMAIL_URL                      
               livenessProbe:
                 failureThreshold: 30
                 tcpSocket:
@@ -302,7 +297,7 @@ objects:
         - imageChangeParams:
             automatic: true
             containerNames:
-              - backend-unittest
+              - upload
             from:
               kind: ImageStreamTag
               name: ${NAME}-backend:${VERSION}
