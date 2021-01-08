@@ -22,14 +22,16 @@ module.exports = settings => {
   // The deployment of your cool app goes here ▼▼▼
 
   //create network security policies for internal pod to pod communications
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/nsp/nsp-env.yaml`, {
-    'param': {
-      'NAME': phases[phase].name,
-      'ENV_NAME': phases[phase].phase,
-      'SUFFIX': phases[phase].suffix,
-      'API_VERSION': 'security.devops.gov.bc.ca/v1alpha1'
-    }
-  }))
+  if(phase === 'dev') {
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/nsp/nsp-env.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'ENV_NAME': phases[phase].phase,
+        'SUFFIX': phases[phase].suffix,
+        'API_VERSION': 'security.devops.gov.bc.ca/v1alpha1'
+      }
+    }))
+  }
   /**** open this block, it will only deploy network security policies
   console.log("will return22")
   oc.applyRecommendedLabels(
@@ -46,20 +48,22 @@ module.exports = settings => {
    */
   
   // create configs
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/config/configmap.yaml`, {
-    'param': {
-      'NAME': phases[phase].name,
-      'SUFFIX': phases[phase].suffix,
-      'ENV_NAME': phases[phase].phase,
-      'HOST_NAME': phases[phase].host,
-      'BACKEND_HOST_NAME': phases[phase].backendHost,
-      'SSO_NAME': phases[phase].ssoName,
-      'KEYCLOAK_REALM': 'rzh2zkjq',
-      'DJANGO_DEBUG': phases[phase].djangoDebug,
-      'OCP_NAME': phases[phase].ocpName,
-      'LOGOUT_HOST_NAME': phases[phase].logoutHostName
-    }
-  }))
+  if(phase === 'dev') {
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/config/configmap.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'SUFFIX': phases[phase].suffix,
+        'ENV_NAME': phases[phase].phase,
+        'HOST_NAME': phases[phase].host,
+        'BACKEND_HOST_NAME': phases[phase].backendHost,
+        'SSO_NAME': phases[phase].ssoName,
+        'KEYCLOAK_REALM': 'rzh2zkjq',
+        'DJANGO_DEBUG': phases[phase].djangoDebug,
+        'OCP_NAME': phases[phase].ocpName,
+        'LOGOUT_HOST_NAME': phases[phase].logoutHostName
+      }
+    }))
+  }
 
   /*** remove minio deployment in pr pipeline, one pre-deployed minio will serve all prs
    * minio configurations stay in config.js unchanged
@@ -77,44 +81,49 @@ module.exports = settings => {
   }))
    */
 
-  //deploy Patroni required secrets
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment-prereq.yaml`, {
-    'param': {
-      'NAME': 'patroni',
-      'SUFFIX': phases[phase].suffix
-    }
-  }))
-  //deploy Patroni
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment.yaml`, {
-    'param': {
-      'NAME': 'patroni',
-      'ENV_NAME': phases[phase].phase,
-      'SUFFIX': phases[phase].suffix,
-      'CPU_REQUEST': phases[phase].patroniCpuRequest,
-      'CPU_LIMIT': phases[phase].patroniCpuLimit,
-      'MEMORY_REQUEST': phases[phase].patroniMemoryRequest,
-      'MEMORY_LIMIT': phases[phase].patroniMemoryLimit,
-      'IMAGE_REGISTRY': 'image-registry.openshift-image-registry.svc:5000',
-      'IMAGE_STREAM_NAMESPACE': phases[phase].namespace,
-      'IMAGE_STREAM_TAG': 'patroni:v10-stable',
-      'REPLICA': phases[phase].patroniReplica,
-      'PVC_SIZE': phases[phase].patroniPvcSize,
-      'STORAGE_CLASS': phases[phase].storageClass
-    }
-  }))
+  if(phase === 'dev') {
+    //deploy Patroni required secrets
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment-prereq.yaml`, {
+      'param': {
+        'NAME': 'patroni',
+        'SUFFIX': phases[phase].suffix
+      }
+    }))
+    //deploy Patroni
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/patroni/deployment.yaml`, {
+      'param': {
+        'NAME': 'patroni',
+        'ENV_NAME': phases[phase].phase,
+        'SUFFIX': phases[phase].suffix,
+        'CPU_REQUEST': phases[phase].patroniCpuRequest,
+        'CPU_LIMIT': phases[phase].patroniCpuLimit,
+        'MEMORY_REQUEST': phases[phase].patroniMemoryRequest,
+        'MEMORY_LIMIT': phases[phase].patroniMemoryLimit,
+        'IMAGE_REGISTRY': 'image-registry.openshift-image-registry.svc:5000',
+        'IMAGE_STREAM_NAMESPACE': phases[phase].namespace,
+        'IMAGE_STREAM_TAG': 'patroni:v10-stable',
+        'REPLICA': phases[phase].patroniReplica,
+        'PVC_SIZE': phases[phase].patroniPvcSize,
+        'STORAGE_CLASS': phases[phase].storageClass
+      }
+    }))
+  }
 
-  //only deploy rabbitmq secret and configmap, rabbitmq is not being used yet 20200921
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-secret-configmap-only.yaml`, {
-    'param': {
-      'NAME': phases[phase].name,
-      'ENV_NAME': phases[phase].phase,
-      'SUFFIX': phases[phase].suffix,
-      'NAMESPACE': phases[phase].namespace,
-      'CLUSTER_NAME': 'rabbitmq-cluster'
-    }
-  }))
-  
-  /**
+   
+  //only deploy rabbitmq secret and configmap
+  if(phase === 'dev') {
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-secret-configmap-only.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'ENV_NAME': phases[phase].phase,
+        'SUFFIX': phases[phase].suffix,
+        'NAMESPACE': phases[phase].namespace,
+        'CLUSTER_NAME': 'rabbitmq-cluster'
+      }
+    }))
+  }
+
+  /** 
   //deploy rabbitmq, use docker image directly
   //POST_START_SLEEP is harded coded in the rabbitmq template, replacement was not successful
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
@@ -139,13 +148,15 @@ module.exports = settings => {
   */
 
   // deploy frontend configmap
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-configmap.yaml`, {
-    'param': {
-      'NAME': phases[phase].name,
-      'SUFFIX': phases[phase].suffix,
-      'CREDIT_TRANSFER_ENABLED': phases[phase].creditTransferEnabled
-    }
-  }))
+  if(phase === 'dev') {
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-configmap.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'SUFFIX': phases[phase].suffix,
+        'CREDIT_TRANSFER_ENABLED': phases[phase].creditTransferEnabled
+      }
+    }))
+  }
 
   // deploy frontend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-dc.yaml`, {
@@ -182,18 +193,20 @@ module.exports = settings => {
   })) 
   
   //deploy schemaspy
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/schemaspy/schemaspy-dc.yaml`, {
-    'param': {
-      'SUFFIX': phases[phase].suffix,
-      'ENV_NAME': phases[phase].phase,
-      'CPU_REQUEST': phases[phase].schemaspyCpuRequest,
-      'CPU_LIMIT': phases[phase].schemaspyCpuLimit,
-      'MEMORY_REQUEST': phases[phase].schemaspyMemoryRequest,
-      'MEMORY_LIMIT': phases[phase].schemaspyMemoryLimit,
-      'HEALTH_CHECK_DELAY': phases[phase].schemaspyHealthCheckDelay,
-      'OCP_NAME': phases[phase].ocpName
-    }
-  }))
+  if(phase === 'dev') {
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/schemaspy/schemaspy-dc.yaml`, {
+      'param': {
+        'SUFFIX': phases[phase].suffix,
+        'ENV_NAME': phases[phase].phase,
+        'CPU_REQUEST': phases[phase].schemaspyCpuRequest,
+        'CPU_LIMIT': phases[phase].schemaspyCpuLimit,
+        'MEMORY_REQUEST': phases[phase].schemaspyMemoryRequest,
+        'MEMORY_LIMIT': phases[phase].schemaspyMemoryLimit,
+        'HEALTH_CHECK_DELAY': phases[phase].schemaspyHealthCheckDelay,
+        'OCP_NAME': phases[phase].ocpName
+      }
+    }))
+  }
 
   //add autoacaler
   /*****
