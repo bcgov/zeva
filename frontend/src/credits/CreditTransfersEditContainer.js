@@ -114,6 +114,7 @@ const CreditTransfersEditContainer = (props) => {
         .catch((error) => {
           const { response } = error;
           if (response.status === 400) {
+            console.log(response)
             setErrorMessage(error.response.data.status);
           }
         });
