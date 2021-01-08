@@ -165,9 +165,9 @@ const CreditTransfersDetailsPage = (props) => {
   );
   const transferValue = (
     <div className="text-blue">
-      for a total value of ${submission.creditTransferContent.reduce(
+      for a total value of ${(submission.creditTransferContent.reduce(
       (a, v) => a + v.dollarValue * v.creditValue, 0,
-    )} Canadian dollars.
+    ).toFixed(2))} Canadian dollars.
     </div>
   );
   let latestRescind = false;
@@ -254,7 +254,6 @@ const CreditTransfersDetailsPage = (props) => {
       <textarea testid="transfer-comment" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} disabled={allChecked} />
     </div>
   );
-
   return (
     <div id="credit-transfers-details" className="page">
       {modal}
@@ -263,7 +262,7 @@ const CreditTransfersDetailsPage = (props) => {
           <h2>Light Duty Vehicle Credit Transfer</h2>
         </div>
       </div>
-      {transferRole.governmentDirector && errorMessage
+      {transferRole.governmentDirector && errorMessage !== []
       && (
       <Alert
         title="Error"

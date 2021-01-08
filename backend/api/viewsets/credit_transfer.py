@@ -47,6 +47,7 @@ class CreditTransferViewset(
                 CreditTransferStatuses.SUBMITTED,
                 CreditTransferStatuses.DELETED,
                 CreditTransferStatuses.RESCIND_PRE_APPROVAL,
+                CreditTransferStatuses.DISAPPROVED,
             ])
         else:
             queryset = CreditTransfer.objects.filter(

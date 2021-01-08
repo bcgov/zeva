@@ -128,7 +128,7 @@ Button.defaultProps = {
 Button.propTypes = {
   buttonType: PropTypes.string.isRequired,
   locationRoute: PropTypes.string,
-  locationState: PropTypes.arrayOf(PropTypes.shape()),
+  locationState: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.shape()), PropTypes.shape()]),
   optionalText: PropTypes.string,
   optionalIcon: PropTypes.string,
   optionalClassname: PropTypes.string,

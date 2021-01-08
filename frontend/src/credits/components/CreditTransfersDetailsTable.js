@@ -40,7 +40,7 @@ const CreditTransfersDetailsTable = (props) => {
     className: 'text-right',
   }, {
     Header: 'Total',
-    accessor: (item) => (`$${item.creditValue * item.dollarValue}`),
+    accessor: (item) => (`$${(item.creditValue * item.dollarValue).toFixed(2)}`),
     id: 'total',
     className: 'text-right',
   },

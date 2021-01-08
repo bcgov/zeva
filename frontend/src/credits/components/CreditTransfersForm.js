@@ -92,7 +92,7 @@ const CreditTransfersForm = (props) => {
               }}
               optionalText="Submit Notice"
               buttonTooltip={submitTooltip}
-              disabled={checkboxes.length < assertions.length}
+              disabled={checkboxes.length < assertions.length || unfilledRow}
             />
             )}
           </span>
