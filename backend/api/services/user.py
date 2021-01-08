@@ -1,3 +1,5 @@
+from api.models.notification import Notification
+from api.models.notification_subscription import NotificationSubscription
 from api.models.user_role import UserRole
 
 
@@ -29,4 +31,16 @@ def update_roles(request, instance, roles):
                     'create_user': request.user.username,
                     'update_user': request.user.username
                 }
+            )
+
+
+def create_default_user_notification_settings(user):
+    notifications = Notification.objects.all()
+
+    for notification in notifications:
+        permission_code = notification.permission.permission_code
+        if user.has_perm(permission_code):
+            notification_subscription = NotificationSubscription.objects.get_or_create(
+                notification=notification,
+                user_profile_id=user.id
             )

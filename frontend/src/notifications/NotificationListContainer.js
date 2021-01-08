@@ -5,14 +5,13 @@
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
-import Button from '../app/components/Button';
 import { withRouter } from 'react-router';
+
+import Button from '../app/components/Button';
 import ROUTES_NOTIFICATIONS from '../app/routes/Notifications';
 import CustomPropTypes from '../app/utilities/props';
 import Alert from '../app/components/Alert';
 import NotificationListPage from './components/NotificationListPage';
-
-const qs = require('qs');
 
 const NotificationListContainer = (props) => {
   const [notifications, setNotifications] = useState([]);
@@ -20,8 +19,7 @@ const NotificationListContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [alertMessage, setAlertMessage] = useState(null);
 
-  const { keycloak, user, location ,
-    } = props;
+  const { keycloak, user, } = props;
 
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
@@ -37,16 +35,19 @@ const NotificationListContainer = (props) => {
 
   const handleSave = (checkboxes) => {
     axios.post(ROUTES_NOTIFICATIONS.LIST, {
-        notification: checkboxes,
-      })
-        .then(() => {
-        setAlertMessage("Email notification preferences saved.")
-      })
-        .catch(() => {
-        setAlertMessage("Something went wrong, please try again after some time.")
-      })
-        
-  }
+      notification: checkboxes,
+    }).then(() => {
+      setAlertMessage('Email notification preferences saved.');
+    }).catch(() => {
+      setAlertMessage('Something went wrong, please try again after some time.');
+    });
+  };
+
+  const filterNotifications = (notifications) => {
+    const filteredNotifications = notifications.filter((notification) => user.hasPermission(notification.permission));
+    setNotifications(filteredNotifications);
+  };
+
   const refreshList = (showLoading) => {
     setLoading(showLoading);
     axios.get(ROUTES_NOTIFICATIONS.LIST).then((response) => {
@@ -58,12 +59,6 @@ const NotificationListContainer = (props) => {
     });
   };
 
-  const filterNotifications = (notifications) => {
-    let filteredNotifications = notifications.filter((notification) => 
-      user.hasPermission(notification.permission)) 
-    setNotifications(filteredNotifications);
-  }
-
   useEffect(() => {
     refreshList(true);
   }, [keycloak.authenticated]);
@@ -72,8 +67,7 @@ const NotificationListContainer = (props) => {
     <div className="row">
       <div className="col-sm-12">
         <div className="action-bar">
-          <span className="left-content"> 
-          </span>
+          <span className="left-content" />
           <span className="right-content mr-3">
             <Button
               optionalClassname="button primary"
@@ -96,10 +90,12 @@ const NotificationListContainer = (props) => {
               Receive email notifications of transactions and status changes of interest in the system to : {user.email} 
             </div>
           </div>
-          {alertMessage && (
+          {alertMessage
+          && (
             <div className="mt-2">
               <Alert message={alertMessage} classname={alertMessage === 'Email notification preferences saved.' ? 'alert-success' : 'alert-danger'} />
-            </div>)}
+            </div>
+          )}
         </div>
       </div>
       <div id="form">
@@ -107,14 +103,14 @@ const NotificationListContainer = (props) => {
           <div className="row">
             <div className="col-sm-12">
               <fieldset>
-              <NotificationListPage
-              notifications={notifications}
-              checkboxes={checkboxes}
-              handleCheckboxClick={handleCheckboxClick}
-              user={user}
-              />
-              {actionbar}
-            </fieldset>
+                <NotificationListPage
+                  notifications={notifications}
+                  checkboxes={checkboxes}
+                  handleCheckboxClick={handleCheckboxClick}
+                  user={user}
+                />
+                {actionbar}
+              </fieldset>
             </div>
           </div>
         </form>

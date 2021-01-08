@@ -4,7 +4,7 @@ from rest_framework.relations import PrimaryKeyRelatedField
 
 from api.models.role import Role
 from api.models.user_profile import UserProfile
-from api.services.user import update_roles
+from api.services.user import update_roles, create_default_user_notification_settings
 from .organization import OrganizationSerializer
 from .permission import PermissionSerializer
 from .role import RoleSerializer
@@ -83,6 +83,7 @@ class UserSaveSerializer(serializers.ModelSerializer):
         user_profile.save()
 
         update_roles(request, user_profile, roles)
+        create_default_user_notification_settings(user_profile)
 
         return user_profile
 

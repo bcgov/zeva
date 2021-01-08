@@ -5,12 +5,12 @@ from api.models.permission import Permission
 from api.models.notification_subscription import NotificationSubscription
 
 
-
 class NotificationSerializer(ModelSerializer):
     permission = SlugRelatedField(
         slug_field='permission_code',
         queryset=Permission.objects.all()
     )
+
     class Meta:
         model = Notification
         fields = (
