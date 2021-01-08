@@ -27,6 +27,7 @@ const DashboardContainer = (props) => {
     transfersAwaitingDirector: 0,
     transfersAwaitingAnalyst: 0,
     transfersRecorded: 0,
+    transfersRejectedByPartner: 0,
     transfersRejected: 0,
   });
 
@@ -120,6 +121,8 @@ const DashboardContainer = (props) => {
           .filter((submission) => submission.status === 'VALIDATED');
         const transfersRejected = transfersResponse.data
           .filter((submission) => submission.status === 'REJECTED');
+        const transfersRejectedByTransferPartner = transfersResponse.data
+          .filter((submission) => submission.status === 'DISAPPROVED');
 
         activityCount = {
           ...activityCount,
@@ -127,6 +130,7 @@ const DashboardContainer = (props) => {
           transfersAwaitingGovernment: transfersAwaitingGovernment.length,
           transfersRecorded: transfersRecorded.length,
           transfersRejected: transfersRejected.length,
+          transfersRejectedByPartner: transfersRejectedByTransferPartner.length,
         };
       } else {
         const transfersAwaitingPartner = transfersResponse.data
