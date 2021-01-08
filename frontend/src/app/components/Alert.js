@@ -5,7 +5,7 @@ import moment from 'moment-timezone';
 
 const Alert = (props) => {
   const {
-    message, title, icon, classname, historyMessage,
+    message, title, icon, classname, historyMessage, status
   } = props;
 
   return (
@@ -15,7 +15,7 @@ const Alert = (props) => {
       </span>
       <span>
         <b>
-          STATUS: {title} &mdash;
+          {status}: {title} &mdash;
         </b>
         {' '}{message}
         {historyMessage
@@ -37,6 +37,7 @@ Alert.defaultProps = {
   message: '',
   icon: 'exclamation-circle',
   historyMessage: '',
+  status: 'STATUS',
 
 };
 Alert.propTypes = {
@@ -45,5 +46,6 @@ Alert.propTypes = {
   classname: PropTypes.string,
   icon: PropTypes.string,
   historyMessage: PropTypes.string,
+  status: PropTypes.string,
 };
 export default Alert;
