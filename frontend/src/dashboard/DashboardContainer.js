@@ -131,13 +131,16 @@ const DashboardContainer = (props) => {
       } else {
         const transfersAwaitingPartner = transfersResponse.data
           .filter((submission) => submission.status === 'SUBMITTED');
+        const transfersAwaitingAnalyst = transfersResponse.data
+          .filter((submission) => submission.status === 'APPROVED');
         const transfersAwaitingDirector = transfersResponse.data
-          .filter((submission) => submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMENDED_REJECTION' || submission.status === 'APPROVED');
+          .filter((submission) => submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMENDED_REJECTION');
         const transfersRecorded = transfersResponse.data
           .filter((submission) => submission.status === 'VALIDATED');
 
         activityCount = {
           ...activityCount,
+          transfersAwaitingAnalyst: transfersAwaitingAnalyst.length,
           transfersAwaitingDirector: transfersAwaitingDirector.length,
           transfersRecorded: transfersRecorded.length,
           transfersAwaitingPartner: transfersAwaitingPartner.length,

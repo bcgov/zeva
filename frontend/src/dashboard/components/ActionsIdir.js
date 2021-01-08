@@ -94,6 +94,18 @@ const ActionsIdir = (props) => {
         />
         )}
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
+        && activityCount.transfersAwaitingAnalyst > 0
+        && user.hasPermission('RECOMMEND_CREDIT_TRANSFER')
+        && (
+        <ActivityBanner
+          colour="blue"
+          icon="exchange-alt"
+          boldText="Credit Transfer"
+          regularText={`${activityCount.transfersAwaitingAnalyst} require analyst recommendation`}
+          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Approved`}
+        />
+        )}
+        {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
         && activityCount.transfersAwaitingDirector > 0
         && user.hasPermission('SIGN_CREDIT_TRANSFERS')
         && (
