@@ -19,6 +19,8 @@ const NotificationListContainer = (props) => {
   const [checkboxes, setCheckboxes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [alertMessage, setAlertMessage] = useState(null);
+  const [status, setStaus] = useState(null);
+  const [icon, setIcon] = useState(null);
 
   const { keycloak, user, location ,
     } = props;
@@ -40,10 +42,14 @@ const NotificationListContainer = (props) => {
         notification: checkboxes,
       })
         .then(() => {
-        setAlertMessage("Email notification preferences saved.")
+        setAlertMessage("Email notification preferences saved.");
+        setStaus("SAVED");
+        setIcon("check-circle");
       })
         .catch(() => {
         setAlertMessage("Something went wrong, please try again after some time.")
+        setStaus("ERROR")
+        setIcon("exclamation-circle");
       })
         
   }
@@ -98,7 +104,7 @@ const NotificationListContainer = (props) => {
           </div>
           {alertMessage && (
             <div className="mt-2">
-              <Alert message={alertMessage} classname={alertMessage === 'Email notification preferences saved.' ? 'alert-success' : 'alert-danger'} />
+              <Alert message={alertMessage} status={status} icon={icon} classname={alertMessage === 'Email notification preferences saved.' ? 'alert-success' : 'alert-danger'} />
             </div>)}
         </div>
       </div>
