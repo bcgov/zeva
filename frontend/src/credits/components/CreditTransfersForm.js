@@ -45,8 +45,8 @@ const CreditTransfersForm = (props) => {
       handleSubmit={() => { setShowModal(false); handleSubmit(modalType.type); }}
       modalClass="w-75"
       showModal={showModal}
-      confirmClass={modalType === 'SUBMITTED' ? 'button primary' : 'btn-outline-danger'}
-      icon={modalType === 'SUBMITTED' ? <FontAwesomeIcon icon="paper-plane" /> : <FontAwesomeIcon icon="trash" />}
+      confirmClass={modalType.type === 'SUBMITTED' ? 'button primary' : 'btn-outline-danger'}
+      icon={modalType.type === 'SUBMITTED' ? <FontAwesomeIcon icon="paper-plane" /> : <FontAwesomeIcon icon="trash" />}
     >
       <div>
         <div><br /><br /></div>

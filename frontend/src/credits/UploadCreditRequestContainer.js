@@ -73,6 +73,7 @@ const UploadCreditRequestsContainer = (props) => {
       errorMessage={errorMessage}
       files={files}
       key="page"
+      setErrorMessage={setErrorMessage}
       setUploadFiles={setFiles}
       upload={doUpload}
       user={user}

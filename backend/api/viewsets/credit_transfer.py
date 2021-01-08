@@ -94,7 +94,7 @@ class CreditTransferViewset(
         if transfer.status == CreditTransferStatuses.VALIDATED:
             #call service that updates transactions and balance tables
             validate_transfer(transfer)
-            notifications = Notification.objects.values_list('id', flat=True).filter(notification_code='CREDIT_TRANSFER_RECORDED_GOVT')
+            notifications = Notification.objects.values_list('id', flat=True).filter(Q(notification_code='CREDIT_TRANSFER_RECORDED_GOVT') | Q(notification_code='CREDIT_TRANSFER_RECORDED'))
     
         elif transfer.status == CreditTransferStatuses.RECOMMEND_APPROVAL:
             notifications = Notification.objects.values_list('id', flat=True).filter(notification_code='CREDIT_TRANSFER_RECOMMEND_APPROVAL') 
@@ -103,13 +103,19 @@ class CreditTransferViewset(
             notifications = Notification.objects.values_list('id', flat=True).filter(notification_code='CREDIT_TRANSFER_RECOMMEND_REJECT') 
                
         elif transfer.status == CreditTransferStatuses.APPROVED:
-            notifications = Notification.objects.values_list('id', flat=True).filter(notification_code='CREDIT_TRANSFER_APPROVED')
+            notifications = Notification.objects.values_list('id', flat=True).filter(Q(notification_code='CREDIT_TRANSFER_APPROVED') | Q(notification_code='CREDIT_TRANSFER_APPROVED_PARTNER'))
+
+        elif transfer.status == CreditTransferStatuses.DISAPPROVED:
+            notifications = Notification.objects.values_list('id', flat=True).filter(notification_code='CREDIT_TRANSFER_REJECT_PARTNER')
 
         elif transfer.status == CreditTransferStatuses.RESCINDED:
-            notifications = Notification.objects.values_list('id', flat=True).filter(notification_code='CREDIT_TRANSFER_RESCIND')
+            notifications = Notification.objects.values_list('id', flat=True).filter(Q(notification_code='CREDIT_TRANSFER_RESCIND') | Q(notification_code='CREDIT_TRANSFER_RESCIND_PARTNER'))
+
+        elif transfer.status == CreditTransferStatuses.RESCIND_PRE_APPROVAL:
+            notifications = Notification.objects.values_list('id', flat=True).filter(notification_code='CREDIT_TRANSFER_RESCIND_PARTNER') 
 
         elif transfer.status == CreditTransferStatuses.REJECTED:
-            notifications = Notification.objects.values_list('id', flat=True).filter(notification_code='CREDIT_TRANSFER_REJECTED_GOVT')
+            notifications = Notification.objects.values_list('id', flat=True).filter(Q(notification_code='CREDIT_TRANSFER_REJECTED_GOVT') | Q(notification_code='CREDIT_TRANSFER_REJECTED'))
         """
         Send email to the users based on their notification subscription for a credit transfer
         """   

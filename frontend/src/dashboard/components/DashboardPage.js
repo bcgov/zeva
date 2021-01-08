@@ -26,7 +26,9 @@ const DashboardPage = (props) => {
         </div>
 
         <div className="col-xl-8 col-lg-8 col-md-12">
-          {user.isGovernment ? <ActionsIdir user={user} activityCount={activityCount} loading={loading} /> : <ActionsBceid activityCount={activityCount} loading={loading} />}
+          {user.isGovernment && <ActionsIdir user={user} activityCount={activityCount} loading={loading} />}
+          {!user.isGovernment && (user.hasPermission('VIEW_ZEV') || user.hasPermission('EDIT_SALES') || user.hasPermission('VIEW_CREDIT_TRANSFERS'))
+            && <ActionsBceid activityCount={activityCount} loading={loading} user={user} />}
         </div>
       </div>
     </div>

@@ -4,13 +4,14 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 const FileDrop = (props) => {
-  const { setFiles, maxFiles } = props;
+  const { setErrorMessage, setFiles, maxFiles } = props;
   const [dropMessage, setDropMessage] = useState('');
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > maxFiles) {
       setDropMessage(`Please select only ${maxFiles} file${maxFiles !== 1 ? 's' : ''}.`);
     } else {
       setDropMessage('');
+      setErrorMessage('');
       setFiles(acceptedFiles);
     }
   }, []);
@@ -33,7 +34,12 @@ const FileDrop = (props) => {
   );
 };
 
+FileDrop.defaultProps = {
+  setErrorMessage: () => {},
+};
+
 FileDrop.propTypes = {
+  setErrorMessage: PropTypes.func,
   setFiles: PropTypes.func.isRequired,
   maxFiles: PropTypes.number.isRequired,
 };
