@@ -35,7 +35,6 @@ const CreditTransfersForm = (props) => {
     transferComments,
     submission,
   } = props;
-  console.log(errorMessage)
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState({ type: '', buttonText: '', message: '' });
   const submitTooltip = 'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.';

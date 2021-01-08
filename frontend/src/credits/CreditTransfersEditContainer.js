@@ -38,7 +38,7 @@ const CreditTransfersEditContainer = (props) => {
   const checkboxText = 'Please complete all fields in the transfer.';
   const [hoverText, setHoverText] = useState(checkboxText);
   const [loading, setLoading] = useState(true);
-  const checkFilled = (input, partner=fields) => {
+  const checkFilled = (input, partner = fields) => {
     Object.entries(input).forEach(([key, val]) => {
       if (
         val.creditType === ''
@@ -70,6 +70,21 @@ const CreditTransfersEditContainer = (props) => {
     const { value, name } = event.target;
     const rowsCopy = JSON.parse(JSON.stringify(rows));
     rowsCopy[rowId][name] = value;
+    if (name === 'value') {
+      const hasDecimal = value.indexOf('.') >= 0;
+      if (hasDecimal) {
+        const numberOfDecimals = value.split('.')[1].length;
+        if (numberOfDecimals > 2) {
+          rowsCopy[rowId][name] = parseFloat(value).toFixed(2);
+        }
+      }
+    }
+    if (name === 'quantity') {
+      const hasDecimal = value.indexOf('.') >= 0;
+      if (hasDecimal) {
+        rowsCopy[rowId][name] = parseFloat(value).toFixed(0);
+      }
+    }
     setRows(rowsCopy);
     checkFilled(rowsCopy);
   };
@@ -114,7 +129,6 @@ const CreditTransfersEditContainer = (props) => {
         .catch((error) => {
           const { response } = error;
           if (response.status === 400) {
-            console.log(response)
             setErrorMessage(error.response.data.status);
           }
         });
