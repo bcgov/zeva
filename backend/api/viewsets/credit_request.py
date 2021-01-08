@@ -210,21 +210,38 @@ class CreditRequestViewset(
                 )
 
             if 'warning' in submission_filters:
-                duplicate_vins = Subquery(submission_content.annotate(
-                    vin_count=Count('xls_vin')
-                ).filter(vin_count__gt=1).values_list('xls_vin', flat=True))
+                duplicate_vins = []
+                awarded_vins = []
+                not_registered = Q(xls_vin__in=[])
+                sale_date = "0"
 
-                awarded_vins = Subquery(RecordOfSale.objects.exclude(
-                    submission_id=pk
-                ).values_list('vin', flat=True))
+                if submission_filters['warning'] == '1' or \
+                        '3' in submission_filters['warning']:
+                    duplicate_vins = Subquery(submission_content.annotate(
+                        vin_count=Count('xls_vin')
+                    ).filter(vin_count__gt=1).values_list('xls_vin', flat=True))
 
+                if submission_filters['warning'] == '1' or \
+                        '2' in submission_filters['warning']:
+                    awarded_vins = Subquery(RecordOfSale.objects.exclude(
+                        submission_id=pk
+                    ).values_list('vin', flat=True))
+
+                if submission_filters['warning'] == '1' or \
+                        '11' in submission_filters['warning']:
+                    not_registered = ~Q(xls_vin__in=Subquery(
+                        IcbcRegistrationData.objects.values('vin')
+                    ))
+
+                if submission_filters['warning'] == '1' or \
+                        '6' in submission_filters['warning']:
+                    sale_date = "43102.0"
+                
                 submission_content = submission_content.filter(
                     Q(xls_vin__in=duplicate_vins) |
                     Q(xls_vin__in=awarded_vins) |
-                    ~Q(xls_vin__in=Subquery(
-                        IcbcRegistrationData.objects.values('vin')
-                    )) |
-                    Q(xls_sale_date__lte="43102.0")
+                    not_registered |
+                    Q(xls_sale_date__lte=sale_date)
                 )
 
         if sort_by:
