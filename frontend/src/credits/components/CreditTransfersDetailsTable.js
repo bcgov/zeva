@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactTable from '../../app/components/ReactTable';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const CreditTransfersDetailsTable = (props) => {
   const { submission } = props;
@@ -18,7 +19,7 @@ const CreditTransfersDetailsTable = (props) => {
 
   const submissionProposalColumns = [{
     Header: 'Quantity',
-    accessor: (item) => (Math.ceil(item.creditValue)),
+    accessor: (item) => (formatNumeric(item.creditValue)),
     id: 'credit-quantity',
     className: 'text-right',
   }, {
