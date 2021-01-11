@@ -173,6 +173,18 @@ const ActionsBceid = (props) => {
           />
         )}
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
+        && activityCount.transfersRejectedByPartner > 0
+        && user.hasPermission('VIEW_CREDIT_TRANSFERS')
+        && (
+        <ActivityBanner
+          colour="red"
+          icon="exchange-alt"
+          boldText="Credit Transfer"
+          regularText={`${activityCount.transfersRejectedByPartner} rejected by Transfer Partner`}
+          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Rejected By Transfer Partner`}
+        />
+        )}
+        {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
         && activityCount.transfersRejected > 0
         && user.hasPermission('VIEW_CREDIT_TRANSFERS')
         && (
@@ -181,7 +193,7 @@ const ActionsBceid = (props) => {
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersRejected} rejected by Government of B.C.`}
-          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Rejected`}
+          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Rejected By Government`}
         />
         )}
       </div>
