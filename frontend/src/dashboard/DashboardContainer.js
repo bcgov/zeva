@@ -36,13 +36,15 @@ const DashboardContainer = (props) => {
 
   const getCreditRequests = () => (
     axios.get(ROUTES_CREDIT_REQUESTS.LIST).then((salesResponse) => {
+      const days28 = moment().subtract(28, 'days').calendar();
+
       if (!user.isGovernment) {
         const newCredits = salesResponse.data
           .filter((submission) => submission.validationStatus === 'NEW');
         const submittedCredits = salesResponse.data
           .filter((submission) => submission.validationStatus === 'SUBMITTED' || submission.validationStatus === 'RECOMMEND_APPROVAL' || submission.validationStatus === 'RECOMMEND_REJECTION');
         const validatedCredits = salesResponse.data
-          .filter((submission) => submission.validationStatus === 'VALIDATED');
+          .filter((submission) => submission.validationStatus === 'VALIDATED' && moment(submission.updatedTimestamp).isAfter(days28));
 
         activityCount = {
           ...activityCount,
@@ -112,17 +114,19 @@ const DashboardContainer = (props) => {
 
   const getCreditTransfers = () => (
     axios.get(ROUTES_CREDIT_TRANSFERS.LIST).then((transfersResponse) => {
+      const days28 = moment().subtract(28, 'days').calendar();
+
       if (!user.isGovernment) {
         const transfersAwaitingPartner = transfersResponse.data
           .filter((submission) => submission.status === 'SUBMITTED');
         const transfersAwaitingGovernment = transfersResponse.data
           .filter((submission) => submission.status === 'APPROVED' || submission.status === 'RECOMMEND_APPROVAL');
         const transfersRecorded = transfersResponse.data
-          .filter((submission) => submission.status === 'VALIDATED');
+          .filter((submission) => submission.status === 'VALIDATED' && moment(submission.updatedTimestamp).isAfter(days28));
         const transfersRejected = transfersResponse.data
-          .filter((submission) => submission.status === 'REJECTED');
+          .filter((submission) => submission.status === 'REJECTED' && moment(submission.updatedTimestamp).isAfter(days28));
         const transfersRejectedByTransferPartner = transfersResponse.data
-          .filter((submission) => submission.status === 'DISAPPROVED');
+          .filter((submission) => submission.status === 'DISAPPROVED' && moment(submission.updatedTimestamp).isAfter(days28));
 
         activityCount = {
           ...activityCount,
