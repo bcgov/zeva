@@ -90,6 +90,8 @@ class CreditTransferViewset(
         )
 
     def perform_update(self, serializer, *args, **kwargs):
-
         transfer = serializer.save()
+        if transfer.status == CreditTransferStatuses.VALIDATED:
+            validate_transfer(transfer)
+
         notifications_credit_transfers(transfer)
