@@ -4,13 +4,13 @@ from datetime import datetime
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Subquery, Count
-from django.db.models import Q
+from django.db.models import Subquery, Count, Q, FloatField
+from django.db.models.expressions import RawSQL
+from django.db.models.functions import Cast
 from django.http import HttpResponse, HttpResponseForbidden
 
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from api.models.icbc_registration_data import IcbcRegistrationData
@@ -190,7 +190,9 @@ class CreditRequestViewset(
             submission_filters = json.loads(filters)
 
             if 'xls_make' in submission_filters:
-                submission_content = submission_content.filter(
+                submission_content = submission_content.annotate(
+                    xls_model_year_float=Cast('xls_model_year', FloatField())
+                ).filter(
                     xls_make__icontains=submission_filters['xls_make']
                 )
 
@@ -214,6 +216,7 @@ class CreditRequestViewset(
                 awarded_vins = []
                 not_registered = Q(xls_vin__in=[])
                 sale_date = "0"
+                mismatch_vins = Q(xls_vin__in=[])
 
                 if submission_filters['warning'] == '1' or \
                         '3' in submission_filters['warning']:
@@ -236,12 +239,35 @@ class CreditRequestViewset(
                 if submission_filters['warning'] == '1' or \
                         '6' in submission_filters['warning']:
                     sale_date = "43102.0"
-                
+
+                if submission_filters['warning'] == '1' or \
+                        '4' in submission_filters['warning']:
+                    # mismatch_vins = Q(xls_vin__in=RawSQL("SELECT id FROM sales_submission_content WHERE (xls_make, CAST(xls_model_year as float) NOT IN (SELECT make, CAST(model_year.description as float FROM vehicle JOIN model_year ON vehicle.model_year_id = model_year.id))", ()))
+                    # mismatch_vins = Q(id__in=RawSQL(" \
+                    #     SELECT id FROM sales_submission_content \
+                    #     WHERE (xls_make, CAST(xls_model_year as float)) NOT IN \
+                    #     (SELECT make, CAST(model_year.description as float) FROM vehicle JOIN model_year ON vehicle.model_year_id = model_year.id)",
+                    #     ()
+                    # ))
+                    mismatch_vins = Q(id__in=RawSQL(" \
+                        SELECT id FROM sales_submission_content a, \
+                            (SELECT vin, make, CAST(description as float) as model_year \
+                            FROM icbc_registration_data JOIN icbc_vehicle \
+                                ON icbc_vehicle_id = icbc_vehicle.id JOIN model_year \
+                                ON model_year_id = model_year.id) as b \
+                            WHERE a.xls_vin = b.vin AND \
+                                (xls_make != b.make OR \
+                                    CAST(xls_model_year as float) != b.model_year) \
+                            AND submission_id = %s",
+                        (pk,)
+                    ))
+
                 submission_content = submission_content.filter(
                     Q(xls_vin__in=duplicate_vins) |
                     Q(xls_vin__in=awarded_vins) |
                     not_registered |
-                    Q(xls_sale_date__lte=sale_date)
+                    Q(xls_sale_date__lte=sale_date) |
+                    mismatch_vins
                 )
 
         if sort_by:
