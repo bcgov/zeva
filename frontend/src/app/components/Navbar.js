@@ -114,26 +114,22 @@ class Navbar extends Component {
                 aria-labelledby="navbarDropdown"
                 className={`dropdown-menu ${userMenuCollapsed ? 'd-none' : ''}`}
               >
+                {CONFIG.FEATURES.NOTIFICATIONS.ENABLED && (
                 <div className="dropdown-item">
                   <NavLink
-                  activeClassName="active"
-                  exact
-                  to="/notifications"
-                >
-                  <span className="ml-2 icon text-black" style={{color: "black"}}>
+                    activeClassName="active"
+                    className="notifications"
+                    exact
+                    to="/notifications"
+                  >
+                    <span className="icon">
                       <FontAwesomeIcon icon="envelope" />
                     </span>
-                  <span className="ml-3" style={{color: "black"}}>Email Notifications</span>
-                </NavLink> 
+
+                    <span>Email Notifications</span>
+                  </NavLink>
                 </div>
-                {/* <div className="dropdown-item">
-                  <button type="button">
-                    <span className="icon">
-                      <FontAwesomeIcon icon="user-cog" />
-                    </span>
-                    <span>Settings</span>
-                  </button>
-                </div> */}
+                )}
                 <div className="dropdown-item">
                   <button
                     onClick={() => keycloak.logout({
@@ -150,24 +146,6 @@ class Navbar extends Component {
                 </div>
               </div>
             </li>
-            {/* <li>
-              <NavLink
-                activeClassName="active"
-                className="notifications"
-                to="/notifications"
-              >
-                <span><FontAwesomeIcon icon="bell" /></span>
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                activeClassName="active"
-                className="help"
-                to="/help"
-              >
-                <span><FontAwesomeIcon icon={['far', 'question-circle']} /></span>
-              </NavLink>
-            </li> */}
           </ul>
 
           <div className={`collapse navbar-collapse ${collapsed === false ? 'show' : ''}`}>
