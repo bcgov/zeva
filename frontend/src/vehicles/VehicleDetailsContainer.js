@@ -28,6 +28,7 @@ const VehicleDetailsContainer = (props) => {
       } else {
         history.push(ROUTES_VEHICLES.LIST);
       }
+      setLoading(false);
     });
   };
 
