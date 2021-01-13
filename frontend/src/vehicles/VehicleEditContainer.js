@@ -167,8 +167,6 @@ const VehicleEditContainer = (props) => {
           deleteFiles,
         }).then(() => {
           if (newVehicle && validationStatus === 'SUBMITTED') {
-            resetForm();
-          } else {
             history.push(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, vehicleId));
           }
         });
