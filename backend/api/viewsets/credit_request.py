@@ -242,22 +242,18 @@ class CreditRequestViewset(
 
                 if submission_filters['warning'] == '1' or \
                         '4' in submission_filters['warning']:
-                    # mismatch_vins = Q(xls_vin__in=RawSQL("SELECT id FROM sales_submission_content WHERE (xls_make, CAST(xls_model_year as float) NOT IN (SELECT make, CAST(model_year.description as float FROM vehicle JOIN model_year ON vehicle.model_year_id = model_year.id))", ()))
-                    # mismatch_vins = Q(id__in=RawSQL(" \
-                    #     SELECT id FROM sales_submission_content \
-                    #     WHERE (xls_make, CAST(xls_model_year as float)) NOT IN \
-                    #     (SELECT make, CAST(model_year.description as float) FROM vehicle JOIN model_year ON vehicle.model_year_id = model_year.id)",
-                    #     ()
-                    # ))
                     mismatch_vins = Q(id__in=RawSQL(" \
                         SELECT id FROM sales_submission_content a, \
-                            (SELECT vin, make, CAST(description as float) as model_year \
+                            (SELECT vin, make, CAST(description as float) \
+                                as model_year \
                             FROM icbc_registration_data JOIN icbc_vehicle \
-                                ON icbc_vehicle_id = icbc_vehicle.id JOIN model_year \
+                                ON icbc_vehicle_id = icbc_vehicle.id JOIN \
+                                    model_year \
                                 ON model_year_id = model_year.id) as b \
                             WHERE a.xls_vin = b.vin AND \
                                 (xls_make != b.make OR \
-                                    CAST(xls_model_year as float) != b.model_year) \
+                                    CAST(xls_model_year as float) \
+                                        != b.model_year) \
                             AND submission_id = %s",
                         (pk,)
                     ))
