@@ -32,6 +32,9 @@ const CONFIG = {
     MODEL_YEAR_REPORT: {
       ENABLED: getConfig('model_year_report.enabled', false),
     },
+    NOTIFICATIONS: {
+      ENABLED: getConfig('notifications.enabled', false),
+    },
     PURCHASE_REQUESTS: {
       ENABLED: getConfig('purchase_requests.enabled', false),
     },
