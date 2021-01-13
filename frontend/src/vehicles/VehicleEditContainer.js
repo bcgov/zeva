@@ -168,8 +168,6 @@ const VehicleEditContainer = (props) => {
         }).then(() => {
           if (newVehicle && validationStatus === 'SUBMITTED') {
             resetForm();
-          } else if (newVehicle && validationStatus !== 'SUBMITTED') {
-            history.push(ROUTES_VEHICLES.LIST);
           } else {
             history.push(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, vehicleId));
           }
