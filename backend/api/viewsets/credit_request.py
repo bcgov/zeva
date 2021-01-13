@@ -4,9 +4,8 @@ from datetime import datetime
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Subquery, Count, Q, FloatField
+from django.db.models import Subquery, Count, Q
 from django.db.models.expressions import RawSQL
-from django.db.models.functions import Cast
 from django.http import HttpResponse, HttpResponseForbidden
 
 from rest_framework import mixins, viewsets
@@ -190,9 +189,7 @@ class CreditRequestViewset(
             submission_filters = json.loads(filters)
 
             if 'xls_make' in submission_filters:
-                submission_content = submission_content.annotate(
-                    xls_model_year_float=Cast('xls_model_year', FloatField())
-                ).filter(
+                submission_content = submission_content.filter(
                     xls_make__icontains=submission_filters['xls_make']
                 )
 
