@@ -9,7 +9,7 @@ import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 import CONFIG from '../../app/config';
 
 const ActionsBceid = (props) => {
-  const { activityCount, loading } = props;
+  const { user, activityCount, loading } = props;
   if (loading) {
     return <Loading />;
   }
@@ -17,7 +17,7 @@ const ActionsBceid = (props) => {
     <div id="actions" className="dashboard-card">
       <div className="content">
         <h1>Latest Activity</h1>
-        {activityCount.modelsInfoRequest > 0
+        {activityCount.modelsInfoRequest > 0 && user.hasPermission('VIEW_ZEV')
         && (
         <ActivityBanner
           colour="yellow"
@@ -28,7 +28,7 @@ const ActionsBceid = (props) => {
 
         />
         )}
-        {activityCount.modelsDraft > 0
+        {activityCount.modelsDraft > 0 && user.hasPermission('VIEW_ZEV')
         && (
         <ActivityBanner
           colour="yellow"
@@ -38,7 +38,7 @@ const ActionsBceid = (props) => {
           linkTo={`${ROUTES_VEHICLES.LIST}?col-status=Draft`}
         />
         )}
-        {activityCount.modelsAwaitingValidation > 0
+        {activityCount.modelsAwaitingValidation > 0 && user.hasPermission('VIEW_ZEV')
         && (
         <ActivityBanner
           colour="blue"
@@ -48,7 +48,7 @@ const ActionsBceid = (props) => {
           linkTo={`${ROUTES_VEHICLES.LIST}?col-status=Submitted`}
         />
         )}
-        {activityCount.modelsValidated > 0
+        {activityCount.modelsValidated > 0 && user.hasPermission('VIEW_ZEV')
         && (
         <ActivityBanner
           colour="green"
@@ -58,7 +58,7 @@ const ActionsBceid = (props) => {
           linkTo={`${ROUTES_VEHICLES.LIST}?col-status=Validated`}
         />
         )}
-        {activityCount.modelsRejected > 0
+        {activityCount.modelsRejected > 0 && user.hasPermission('VIEW_ZEV')
         && (
         <ActivityBanner
           colour="red"
@@ -70,6 +70,7 @@ const ActionsBceid = (props) => {
         )}
         {activityCount.modelsInfoRequest === 0
         && activityCount.modelsAwaitingValidation === 0 && activityCount.modelsValidated === 0
+        && user.hasPermission('VIEW_ZEV')
         && (
           <ActivityBanner
             colour="green"
@@ -79,7 +80,8 @@ const ActionsBceid = (props) => {
             linkTo={ROUTES_VEHICLES.LIST}
           />
         )}
-        {activityCount.creditsNew > 0
+
+        {activityCount.creditsNew > 0 && user.hasPermission('EDIT_SALES')
         && (
         <ActivityBanner
           colour="yellow"
@@ -89,7 +91,7 @@ const ActionsBceid = (props) => {
           linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=New`}
         />
         )}
-        {activityCount.creditsAwaiting > 0
+        {activityCount.creditsAwaiting > 0 && user.hasPermission('EDIT_SALES')
         && (
         <ActivityBanner
           colour="blue"
@@ -99,7 +101,7 @@ const ActionsBceid = (props) => {
           linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Submitted`}
         />
         )}
-        {activityCount.creditsIssued > 0
+        {activityCount.creditsIssued > 0 && user.hasPermission('EDIT_SALES')
         && (
         <ActivityBanner
           colour="green"
@@ -111,6 +113,7 @@ const ActionsBceid = (props) => {
         )}
         {activityCount.creditsNew === 0
         && activityCount.creditsAwaiting === 0 && activityCount.creditsIssued === 0
+        && user.hasPermission('EDIT_SALES')
         && (
           <ActivityBanner
             colour="green"
@@ -122,6 +125,7 @@ const ActionsBceid = (props) => {
         )}
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
         && activityCount.transfersAwaitingPartner > 0
+        && user.hasPermission('VIEW_CREDIT_TRANSFERS')
         && (
         <ActivityBanner
           colour="yellow"
@@ -133,6 +137,7 @@ const ActionsBceid = (props) => {
         )}
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
         && activityCount.transfersAwaitingGovernment > 0
+        && user.hasPermission('VIEW_CREDIT_TRANSFERS')
         && (
         <ActivityBanner
           colour="blue"
@@ -144,6 +149,7 @@ const ActionsBceid = (props) => {
         )}
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
         && activityCount.transfersRecorded > 0
+        && user.hasPermission('VIEW_CREDIT_TRANSFERS')
         && (
         <ActivityBanner
           colour="green"
@@ -156,6 +162,7 @@ const ActionsBceid = (props) => {
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
         && activityCount.transfersAwaitingGovernment === 0
         && activityCount.transfersAwaitingPartner === 0 && activityCount.transfersRecorded === 0
+        && user.hasPermission('VIEW_CREDIT_TRANSFERS')
         && (
           <ActivityBanner
             colour="green"
@@ -166,14 +173,27 @@ const ActionsBceid = (props) => {
           />
         )}
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
+        && activityCount.transfersRejectedByPartner > 0
+        && user.hasPermission('VIEW_CREDIT_TRANSFERS')
+        && (
+        <ActivityBanner
+          colour="red"
+          icon="exchange-alt"
+          boldText="Credit Transfer"
+          regularText={`${activityCount.transfersRejectedByPartner} rejected by Transfer Partner`}
+          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Rejected By Transfer Partner`}
+        />
+        )}
+        {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
         && activityCount.transfersRejected > 0
+        && user.hasPermission('VIEW_CREDIT_TRANSFERS')
         && (
         <ActivityBanner
           colour="red"
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersRejected} rejected by Government of B.C.`}
-          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Rejected`}
+          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Rejected By Government`}
         />
         )}
       </div>

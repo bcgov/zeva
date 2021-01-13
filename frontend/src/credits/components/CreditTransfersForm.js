@@ -45,8 +45,8 @@ const CreditTransfersForm = (props) => {
       handleSubmit={() => { setShowModal(false); handleSubmit(modalType.type); }}
       modalClass="w-75"
       showModal={showModal}
-      confirmClass={modalType === 'SUBMITTED' ? 'button primary' : 'btn-outline-danger'}
-      icon={modalType === 'SUBMITTED' ? <FontAwesomeIcon icon="paper-plane" /> : <FontAwesomeIcon icon="trash" />}
+      confirmClass={modalType.type === 'SUBMITTED' ? 'button primary' : 'btn-outline-danger'}
+      icon={modalType.type === 'SUBMITTED' ? <FontAwesomeIcon icon="paper-plane" /> : <FontAwesomeIcon icon="trash" />}
     >
       <div>
         <div><br /><br /></div>
@@ -92,7 +92,7 @@ const CreditTransfersForm = (props) => {
               }}
               optionalText="Submit Notice"
               buttonTooltip={submitTooltip}
-              disabled={checkboxes.length < assertions.length}
+              disabled={checkboxes.length < assertions.length || unfilledRow}
             />
             )}
           </span>
@@ -160,14 +160,17 @@ const CreditTransfersForm = (props) => {
                   <h4><FontAwesomeIcon icon="plus" /> Add another line</h4>
                 </button>
                 <span className="transfer-total">Total CAD: ${total.toFixed(2)}</span>
-                <CreditTransferSignoff
-                  assertions={assertions}
-                  checkboxes={checkboxes}
-                  disableCheckboxes={unfilledRow}
-                  handleCheckboxClick={handleCheckboxClick}
-                  hoverText={hoverText}
-                  user={user}
-                />
+                {user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')
+                  && (
+                  <CreditTransferSignoff
+                    assertions={assertions}
+                    checkboxes={checkboxes}
+                    disableCheckboxes={unfilledRow}
+                    handleCheckboxClick={handleCheckboxClick}
+                    hoverText={hoverText}
+                    user={user}
+                  />
+                  )}
                 {actionbar}
               </fieldset>
             </div>

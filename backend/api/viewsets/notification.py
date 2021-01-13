@@ -1,23 +1,24 @@
 import logging
 from django.db.models import Q
+from django.http import HttpResponseBadRequest
 from rest_framework import filters, mixins, status, permissions, viewsets
 from rest_framework.response import Response
-from auditable.views import AuditableMixin
 from rest_framework.decorators import action
+from auditable.views import AuditableMixin
 
 from api.models.notification import Notification
-from django.http import HttpResponseBadRequest
 from api.models.notification_subscription import NotificationSubscription
 from api.serializers.notification import NotificationSerializer
 from api.serializers.notification_subscription import NotificationSubscriptionSerializer
 
 LOGGER = logging.getLogger(__name__)
 
+
 class NotificationViewSet(
-        AuditableMixin, 
-        mixins.CreateModelMixin, 
+        AuditableMixin,
+        mixins.CreateModelMixin,
         mixins.ListModelMixin,
-        mixins.UpdateModelMixin, 
+        mixins.UpdateModelMixin,
         viewsets.GenericViewSet
 ):
     """
@@ -29,8 +30,8 @@ class NotificationViewSet(
 
     serializer_classes = {
         'default': NotificationSerializer,
-        'create' : NotificationSubscriptionSerializer,
-        'update' : NotificationSubscriptionSerializer
+        'create': NotificationSubscriptionSerializer,
+        'update': NotificationSubscriptionSerializer
     }
 
     def get_serializer_class(self):
@@ -45,7 +46,9 @@ class NotificationViewSet(
         if not notifications:
             return HttpResponseBadRequest("No values passed")
 
-        notification_delete = NotificationSubscription.objects.filter(user_profile_id= request.user.id)
+        notification_delete = NotificationSubscription.objects.filter(
+            user_profile_id=request.user.id
+        )
         notification_delete.delete()
         notification_created = False
         try:
@@ -53,7 +56,7 @@ class NotificationViewSet(
                 notification_subscription = NotificationSubscription.objects.create(
                     notification=Notification.objects.get(id=notification),
                     user_profile_id=request.user.id
-            )
+                )
             notification_subscription.save()
             notification_created = True
 
@@ -66,5 +69,7 @@ class NotificationViewSet(
  
     @action(detail=False)
     def subscriptions(self, _request):
-        notifications = NotificationSubscription.objects.values_list('notification_id', flat=True).filter(user_profile_id=_request.user.id)
+        notifications = NotificationSubscription.objects.values_list(
+            'notification_id', flat=True
+        ).filter(user_profile_id=_request.user.id)
         return Response(list(notifications))

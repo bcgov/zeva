@@ -87,13 +87,13 @@ const CreditTransfersListTable = (props) => {
     accessor: (item) => {
       const { status } = item;
       const formattedStatus = formatStatus(status);
- 
+
       if (formattedStatus === 'validated') {
         return 'recorded';
       }
       if (formattedStatus === 'recommend rejection') {
         return 'recommend rejection';
-      } 
+      }
       if (formattedStatus === 'recommend approval') {
         return 'recommend approval';
       }
@@ -103,19 +103,13 @@ const CreditTransfersListTable = (props) => {
       if (formattedStatus === 'submitted') {
         return 'submitted to transfer partner';
       }
-      //find out who it was rescinded by
       if (formattedStatus === 'rescind pre approval' || formattedStatus === 'rescinded') {
         const rescindorg = statusFilter(item).createUser.organization.name;
         return `rescinded by ${rescindorg}`;
       }
-      // if (formattedStatus === 'rescind pre approval' || formattedStatus === 'rescinded') {
-      //   return 'rescinded by buyer';
-      // }
-      // rejected by Government
       if (formattedStatus === 'rejected') {
         return 'rejected by government';
       }
-      // rejected by transfer partner
       if (formattedStatus === 'disapproved') {
         return 'rejected by transfer partner';
       }
@@ -147,7 +141,7 @@ const CreditTransfersListTable = (props) => {
       columns={columns}
       data={items}
       defaultSorted={[{
-        id: 'id',
+        id: 'updateTimestamp',
         desc: true,
       }]}
       filtered={filtered}
@@ -156,8 +150,8 @@ const CreditTransfersListTable = (props) => {
         if (row && row.original) {
           return {
             onClick: () => {
-              const { id, status } = row.original;
-              if (status === 'DRAFT' || status === 'RESCINDED' || status === 'RESCIND_PRE_APPROVAL') {
+              const { id, status, debitFrom } = row.original;
+              if ((status === 'DRAFT' || status === 'RESCINDED' || status === 'RESCIND_PRE_APPROVAL') && user.organization.id === debitFrom.id) {
                 history.push(ROUTES_CREDIT_TRANSFERS.EDIT.replace(/:id/g, id));
               } else {
                 history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/g, id), filtered);
