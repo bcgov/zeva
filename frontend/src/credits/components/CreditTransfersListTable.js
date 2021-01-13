@@ -141,7 +141,7 @@ const CreditTransfersListTable = (props) => {
       columns={columns}
       data={items}
       defaultSorted={[{
-        id: 'id',
+        id: 'updateTimestamp',
         desc: true,
       }]}
       filtered={filtered}

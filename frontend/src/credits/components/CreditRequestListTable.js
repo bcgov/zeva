@@ -107,7 +107,8 @@ const CreditRequestListTable = (props) => {
       columns={columns}
       data={items}
       defaultSorted={[{
-        id: 'submissionDate',
+        id: 'updateTimestamp',
+        desc: true,
       }]}
       filtered={filtered}
       getTrProps={(state, row) => {

@@ -119,7 +119,8 @@ class CreditTransferListSerializer(
         model = CreditTransfer
         fields = (
             'create_timestamp', 'credit_to', 'credit_transfer_content',
-            'debit_from', 'id', 'status', 'update_user', 'history'
+            'debit_from', 'id', 'status', 'update_user', 'update_timestamp',
+            'history',
         )
 
 

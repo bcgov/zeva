@@ -187,6 +187,7 @@ class SalesSubmissionListSerializer(
             'id', 'validation_status', 'organization', 'submission_history',
             'submission_sequence', 'totals', 'submission_id', 'update_user',
             'total_credits', 'total_warnings', 'unselected',
+            'update_timestamp',
         )
 
 
