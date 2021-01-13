@@ -166,9 +166,7 @@ const VehicleEditContainer = (props) => {
           ...patchData,
           deleteFiles,
         }).then(() => {
-          if (newVehicle && validationStatus === 'SUBMITTED') {
-            history.push(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, vehicleId));
-          }
+          history.push(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, vehicleId));
         });
       });
     }).catch((errors) => {

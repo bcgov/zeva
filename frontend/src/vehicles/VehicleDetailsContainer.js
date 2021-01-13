@@ -23,6 +23,9 @@ const VehicleDetailsContainer = (props) => {
   const stateChange = (newState) => {
     setLoading(true);
     axios.patch(`vehicles/${id}/state_change`, { validationStatus: newState }).then(() => {
+      if (newState === 'SUBMITTED') {
+        history.push(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id))
+      }
       history.push(ROUTES_VEHICLES.LIST);
     });
   };
