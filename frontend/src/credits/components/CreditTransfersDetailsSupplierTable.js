@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactTable from '../../app/components/ReactTable';
+
+import formatNumeric from '../../app/utilities/formatNumeric';
 import getSupplierSummary from '../../app/utilities/getSupplierSummary';
 
 const CreditTransfersDetailsSupplierTable = (props) => {
@@ -31,14 +33,14 @@ const CreditTransfersDetailsSupplierTable = (props) => {
     columns: [{
       headerClassName: 'd-none',
       id: 'current-balance-a',
-      accessor: (item) => (`${item.currentBalanceA}-A`),
+      accessor: (item) => (`${formatNumeric(item.currentBalanceA)}-A`),
       className: 'text-right',
       width: 125,
     },
     {
       headerClassName: 'd-none',
       id: 'current-balance-b',
-      accessor: (item) => (`${item.currentBalanceB}-B`),
+      accessor: (item) => (`${formatNumeric(item.currentBalanceB)}-B`),
       className: 'text-right',
       width: 125,
     }],
@@ -50,20 +52,20 @@ const CreditTransfersDetailsSupplierTable = (props) => {
     columns: [{
       headerClassName: 'd-none',
       id: 'newA',
-      accessor: (item) => (`${item.newBalanceA}-A`),
+      accessor: (item) => (`${formatNumeric(item.newBalanceA)}-A`),
       width: 125,
       getProps: (state, rowInfo) => ({
-         className: `text-right ${(rowInfo.row.newA.slice(0,2) < 0) ? 'text-danger' : ''}`,
-        })
+        className: `text-right ${(rowInfo.row.newA.slice(0, 2) < 0) ? 'text-danger' : ''}`,
+      }),
     },
     {
       headerClassName: 'd-none',
       id: 'newB',
-      accessor: (item) => (`${item.newBalanceB}-B`),
+      accessor: (item) => (`${formatNumeric(item.newBalanceB)}-B`),
       width: 125,
       getProps: (state, rowInfo) => ({
-         className: `text-right ${(rowInfo.row.newB.slice(0,2) < 0) ? 'text-danger' : ''}`,
-        })
+        className: `text-right ${(rowInfo.row.newB.slice(0, 2) < 0) ? 'text-danger' : ''}`,
+      }),
     }],
   }];
   return (
