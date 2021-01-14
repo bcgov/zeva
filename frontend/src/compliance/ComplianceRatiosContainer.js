@@ -3,18 +3,18 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceTabs from '../app/components/ComplianceTabs';
-import ComplianceReportsDetailsPage from './components/ComplianceReportsDetailsPage';
+import ComplianceRatiosDetailsPage from './components/ComplianceRatiosDetailsPage';
 
-const ComplianceReportsContainer = (props) => {
+const ComplianceRatiosContainer = (props) => {
   const { user } = props;
   return (
     <>
-      <ComplianceTabs active="reports" user={user} />
-      <ComplianceReportsDetailsPage user={user} />
+      <ComplianceTabs active="ratios" user={user} />
+      <ComplianceRatiosDetailsPage user={user} />
     </>
   );
 };
-ComplianceReportsContainer.propTypes = {
+ComplianceRatiosContainer.propTypes = {
   user: CustomPropTypes.user.isRequired,
 };
-export default ComplianceReportsContainer;
+export default ComplianceRatiosContainer;
