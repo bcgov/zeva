@@ -29,11 +29,28 @@ const CreditTransactionListTable = (props) => {
     }
   };
 
+  const abbreviateTransactionType = (item) => {
+    if (!item.transactionType) {
+      return false;
+    }
+
+    const { transactionType } = item.transactionType;
+
+    switch (transactionType.toLowerCase()) {
+      case 'validation':
+        return 'CA';
+      case 'credit transfer':
+        return 'CT';
+      default:
+        return transactionType;
+    }
+  };
+
   const columns = [{
     Header: '',
     headerClassName: 'header-group',
     columns: [{
-      accessor: 'foreignKey',
+      accessor: (item) => (`${abbreviateTransactionType(item)}-${item.foreignKey}`),
       className: 'text-center',
       Header: 'Transaction ID',
       id: 'id',

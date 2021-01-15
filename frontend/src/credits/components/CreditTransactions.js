@@ -33,7 +33,8 @@ const CreditTransactions = (props) => {
     }
 
     const found = transactions.findIndex(
-      (transaction) => (transaction.foreignKey === item.foreignKey),
+      (transaction) => (transaction.foreignKey === item.foreignKey
+        && transaction.transactionType === item.transactionType),
     );
 
     if (found >= 0) {
