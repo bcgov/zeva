@@ -6,7 +6,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
-import moment from 'moment-timezone';
+
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import Loading from '../app/components/Loading';
 import history from '../app/History';
@@ -24,15 +24,15 @@ const CreditRequestDetailsContainer = (props) => {
 
   const [submission, setSubmission] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [previousDateCurrentTo, setPreviousDateCurrentTo] = useState('no ICBC data uploaded yet.');
   const [nonValidated, setNonValidated] = useState([]);
+  const [ICBCUploadDate, setICBCUploadDate] = useState(null);
   const refreshDetails = () => {
     axios.all([
       axios.get(ROUTES_ICBCVERIFICATION.DATE),
       axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
     ]).then(axios.spread((dateResponse, submissionResponse) => {
       if (dateResponse.data.uploadDate) {
-        setPreviousDateCurrentTo(moment(dateResponse.data.uploadDate).format('MMM D, YYYY'));
+        setICBCUploadDate(dateResponse.data.uploadDate);
       }
       setSubmission(submissionResponse.data);
       setNonValidated(submissionResponse.data.content
@@ -70,8 +70,8 @@ const CreditRequestDetailsContainer = (props) => {
       key="page"
       locationState={locationState}
       nonValidated={nonValidated}
-      previousDateCurrentTo={previousDateCurrentTo}
       submission={submission}
+      uploadDate={ICBCUploadDate}
       user={user}
       validatedOnly={validatedOnly}
     />,

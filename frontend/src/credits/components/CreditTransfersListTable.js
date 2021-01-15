@@ -14,6 +14,9 @@ import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 const CreditTransfersListTable = (props) => {
   const { user, filtered, setFiltered } = props;
   let { items } = props;
+  const statusFilter = (item) => item.history
+    .filter((each) => each.status === item.status)
+    .reverse()[0];
   items = items.map((item) => {
     let totalCreditsA = 0;
     let totalCreditsB = 0;
@@ -84,12 +87,13 @@ const CreditTransfersListTable = (props) => {
     accessor: (item) => {
       const { status } = item;
       const formattedStatus = formatStatus(status);
+
       if (formattedStatus === 'validated') {
-        return 'issued';
+        return 'recorded';
       }
       if (formattedStatus === 'recommend rejection') {
         return 'recommend rejection';
-      } 
+      }
       if (formattedStatus === 'recommend approval') {
         return 'recommend approval';
       }
@@ -99,6 +103,17 @@ const CreditTransfersListTable = (props) => {
       if (formattedStatus === 'submitted') {
         return 'submitted to transfer partner';
       }
+      if (formattedStatus === 'rescind pre approval' || formattedStatus === 'rescinded') {
+        const rescindorg = statusFilter(item).createUser.organization.name;
+        return `rescinded by ${rescindorg}`;
+      }
+      if (formattedStatus === 'rejected') {
+        return 'rejected by government';
+      }
+      if (formattedStatus === 'disapproved') {
+        return 'rejected by transfer partner';
+      }
+
       return formattedStatus;
     },
     className: 'text-center text-capitalize',
@@ -126,7 +141,7 @@ const CreditTransfersListTable = (props) => {
       columns={columns}
       data={items}
       defaultSorted={[{
-        id: 'id',
+        id: 'updateTimestamp',
         desc: true,
       }]}
       filtered={filtered}
@@ -135,8 +150,8 @@ const CreditTransfersListTable = (props) => {
         if (row && row.original) {
           return {
             onClick: () => {
-              const { id, status } = row.original;
-              if (status === 'DRAFT' || status === 'RESCINDED') {
+              const { id, status, debitFrom } = row.original;
+              if ((status === 'DRAFT' || status === 'RESCINDED' || status === 'RESCIND_PRE_APPROVAL') && user.organization.id === debitFrom.id) {
                 history.push(ROUTES_CREDIT_TRANSFERS.EDIT.replace(/:id/g, id));
               } else {
                 history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/g, id), filtered);

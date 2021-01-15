@@ -6,7 +6,13 @@ from django.conf import settings
 from requests.auth import HTTPBasicAuth
 from email.header import Header
 from email.utils import formataddr
+from api.models.user_profile import UserProfile
+from api.models.notification import Notification
+from api.models.credit_transfer_statuses import CreditTransferStatuses
+from api.models.notification_subscription import NotificationSubscription
+from api.models.organization import Organization
 import requests
+from django.db.models import Q
 
 LOGGER = logging.getLogger(__name__)
 
@@ -100,8 +106,8 @@ def send_email(recipient_email: str) -> {}:
                "Content-Type": "application/json"}  
     try:
         response = requests.post(url, data=json.dumps(data), headers=headers)
-        if not response.status_code / 100 == 2:
-            LOGGER.error("Error: Email failed!", response.text.encode('utf8'))
+        if not response.status_code == 201:
+            LOGGER.error("Error: Email failed! %s", response.text.encode('utf8'))
             return
 
         email_res = response.json()
@@ -110,4 +116,71 @@ def send_email(recipient_email: str) -> {}:
             return 
     except requests.exceptions.RequestException as e:
         LOGGER.error("Error: {}".format(e))
-        return    
+        return
+
+
+def notifications_credit_transfers(transfer: object):
+    validation_status = transfer.status
+    notifications = None
+    if validation_status == CreditTransferStatuses.VALIDATED:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            Q(notification_code='CREDIT_TRANSFER_RECORDED_GOVT') |
+            Q(notification_code='CREDIT_TRANSFER_RECORDED'))
+    
+    elif validation_status == CreditTransferStatuses.RECOMMEND_APPROVAL:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            notification_code='CREDIT_TRANSFER_RECOMMEND_APPROVAL') 
+
+    elif validation_status == CreditTransferStatuses.RECOMMEND_REJECTION:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            notification_code='CREDIT_TRANSFER_RECOMMEND_REJECT') 
+               
+    elif validation_status == CreditTransferStatuses.APPROVED:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            Q(notification_code='CREDIT_TRANSFER_APPROVED') |
+            Q(notification_code='CREDIT_TRANSFER_APPROVED_PARTNER'))
+
+    elif validation_status == CreditTransferStatuses.DISAPPROVED:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            notification_code='CREDIT_TRANSFER_REJECT_PARTNER')
+
+    elif validation_status == CreditTransferStatuses.RESCINDED:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            Q(notification_code='CREDIT_TRANSFER_RESCIND') |
+            Q(notification_code='CREDIT_TRANSFER_RESCIND_PARTNER'))
+
+    elif validation_status == CreditTransferStatuses.RESCIND_PRE_APPROVAL:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            notification_code='CREDIT_TRANSFER_RESCIND_PARTNER') 
+
+    elif validation_status == CreditTransferStatuses.REJECTED:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            Q(notification_code='CREDIT_TRANSFER_REJECTED_GOVT') |
+            Q(notification_code='CREDIT_TRANSFER_REJECTED'))
+
+    if notifications:
+        subscribed_users(notifications, transfer)
+
+
+"""
+Send email to the users based on their notification subscription
+"""
+
+
+def subscribed_users(notifications: list, transfer: object):
+    user_email = None
+    try:
+        subscribed_users = NotificationSubscription.objects.values_list('user_profile_id', flat=True).filter(notification__id__in=notifications)
+
+        if subscribed_users:
+            govt_org = Organization.objects.filter(is_government=True).first()
+            user_email = UserProfile.objects.values_list('email', flat=True).filter(
+                Q(organization_id__in=[transfer.debit_from_id,
+                                       transfer.credit_to_id,
+                                       govt_org.id]) &
+                Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=transfer.update_user)
+
+            if user_email:
+                send_email(list(user_email))
+    except Exception as e:
+        LOGGER.error('Unable to send email! %s', e)

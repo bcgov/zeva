@@ -11,6 +11,18 @@ const CreditTransactions = (props) => {
 
   const transactions = [];
 
+  items.sort((a, b) => {
+    if (a.transactionTimestamp < b.transactionTimestamp) {
+      return -1;
+    }
+
+    if (a.transactionTimestamp > b.transactionTimestamp) {
+      return 1;
+    }
+
+    return 0;
+  });
+
   items.forEach((item) => {
     if (item.creditClass.creditClass === 'A') {
       totalA += parseFloat(item.totalValue);
@@ -21,7 +33,8 @@ const CreditTransactions = (props) => {
     }
 
     const found = transactions.findIndex(
-      (transaction) => (transaction.foreignKey === item.foreignKey),
+      (transaction) => (transaction.foreignKey === item.foreignKey
+        && transaction.transactionType === item.transactionType),
     );
 
     if (found >= 0) {

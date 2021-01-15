@@ -5,6 +5,11 @@ const version = '1.0.0'
 const name = 'jenkins'
 const ocpName = 'apps.silver.devops'
 
+//if work directly on bcgov repo, the value is bcgov
+//if work on forked developer repo, the value is the developer's GitHub Id
+//without this line of code, the pr deployment cann't removed when the pr is closed
+options.git.owner='bcgov'
+
 const phases = {
   build: {namespace:'e52f12-tools'    , name: `${name}`, phase: 'build'  , changeId:changeId, suffix: `-build-${changeId}`  , instance: `${name}-build-${changeId}`  , version:`${version}-${changeId}`, tag:`build-${version}-${changeId}`, ocpName: `${ocpName}`},
   dev: {namespace:'e52f12-tools'    , name: `${name}`, phase: 'dev'  , changeId:changeId, suffix: `-dev-${changeId}`  , instance: `${name}-dev-${changeId}`  , version:`${version}-${changeId}`, tag:`dev-${version}-${changeId}`, ocpName: `${ocpName}`},

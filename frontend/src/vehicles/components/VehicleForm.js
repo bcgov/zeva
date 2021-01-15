@@ -13,7 +13,7 @@ import TextInput from '../../app/components/TextInput';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 import getFileSize from '../../app/utilities/getFileSize';
 import VehicleFormDropdown from './VehicleFormDropdown';
-import Alert from '../../app/components/Alert';
+import VehicleAlert from './VehicleAlert';
 import Comment from '../../app/components/Comment';
 
 const VehicleForm = (props) => {
@@ -73,7 +73,6 @@ const VehicleForm = (props) => {
   if (loading) {
     return (<Loading />);
   }
-
   const selectedZevType = fields.vehicleZevType.vehicleZevCode || fields.vehicleZevType;
   return (
     <div id="form" className="page">
@@ -81,7 +80,13 @@ const VehicleForm = (props) => {
         <div className="col-12">
           <h2>{formTitle}</h2>
           {status && !newVehicle
-            && <Alert alertType="vehicle" status={status} user={fields.user} date={moment(fields.updateTimestamp).format('MMM D, YYYY')} />}
+          && (
+          <VehicleAlert
+            status={status}
+            user={fields.user}
+            date={moment(fields.updateTimestamp).format('MMM D, YYYY')}
+          />
+          )}
           {status === 'CHANGES_REQUESTED' && vehicleComment
           && (
             <Comment commentArray={[vehicleComment]} />
@@ -188,7 +193,7 @@ const VehicleForm = (props) => {
 
           {(fields.hasPassedUs06Test || (status === 'CHANGES_REQUESTED' && setUploadFiles)) && (
             <div className="col-xl-6 col-lg-12 mt-2 mt-xl-0">
-              <h3 className="font-weight-bold mb-2">Upload range test results</h3>
+              <h3 className="font-weight-bold mb-2">Upload range test results/US06 certificate</h3>
               <fieldset>
                 <div className="form-group row">
                   <label className="col-sm-3 col-form-label" htmlFor="file-upload">

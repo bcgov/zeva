@@ -21,7 +21,10 @@ const CreditRequestsPage = (props) => {
         <div className="col-md-8 d-flex align-items-end">
           <h2>Application for Credits for Consumer Sales</h2>
         </div>
-        {!user.isGovernment && (
+        {!user.isGovernment
+        && typeof user.hasPermission === 'function'
+        && user.hasPermission('CREATE_SALES')
+        && (
         <div className="col-md-4 text-right">
           <button
             className="button primary"

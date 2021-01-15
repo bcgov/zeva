@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import moment from 'moment-timezone';
-import Alert from '../../app/components/Alert';
+import CreditRequestAlert from './CreditRequestAlert';
 import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
 import history from '../../app/History';
@@ -17,12 +17,13 @@ const CreditRequestDetailsPage = (props) => {
   const {
     handleSubmit,
     locationState,
-    previousDateCurrentTo,
     submission,
+    uploadDate,
     user,
   } = props;
   const validatedOnly = submission.validationStatus === 'CHECKED';
   const [showModal, setShowModal] = useState(false);
+  const [showReverifyModal, setShowReverifyModal] = useState(false);
   const [modalType, setModalType] = useState('');
   const [comment, setComment] = useState('');
 
@@ -109,6 +110,35 @@ const CreditRequestDetailsPage = (props) => {
     </Modal>
   );
 
+  const reverifyModal = (
+    <Modal
+      cancelLabel="No"
+      confirmLabel="Yes"
+      handleCancel={() => {
+        const url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id);
+
+        history.push(url);
+      }}
+      handleSubmit={() => {
+        let url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id);
+        url += '?reset=Y';
+        history.push(url);
+      }}
+      modalClass="w-75"
+      showModal={showReverifyModal}
+      confirmClass={modalProps.buttonClass}
+    >
+      <div>
+        <h3>
+          ICBC data has been updated since the application was verified.
+        </h3>
+        <h3 className="mt-3">
+          Would you like to reset the current validated VINs and re-verify with the new data?
+        </h3>
+      </div>
+    </Modal>
+  );
+
   const invalidSubmission = submission.content.some((row) => (!row.vehicle || !row.vehicle.id || row.vehicle.modelName === ''));
   const directorAction = user.isGovernment
   && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
@@ -119,6 +149,7 @@ const CreditRequestDetailsPage = (props) => {
   return (
     <div id="credit-request-details" className="page">
       {modal}
+      {reverifyModal}
       <div className="row mt-3 mb-2">
         <div className="col-sm-12">
           <h2>Application for Credits for Consumer Sales</h2>
@@ -128,7 +159,7 @@ const CreditRequestDetailsPage = (props) => {
       && (
       <div className="row my-1">
         <div className="col-sm-12">
-          ICBC data current to: {previousDateCurrentTo}
+          ICBC data current to: {uploadDate ? moment(uploadDate).format('MMM D, YYYY') : 'no ICBC data uploaded yet.'}
         </div>
       </div>
       )}
@@ -136,13 +167,11 @@ const CreditRequestDetailsPage = (props) => {
       <div className="row mb-1">
         <div className="col-sm-12">
           <div className="m-0">
-            <Alert
+            <CreditRequestAlert
               isGovernment={user.isGovernment}
-              alertType="credit"
-              status={submission.validationStatus}
               submission={submission}
               date={moment(submission.updateTimestamp).format('MMM D, YYYY')}
-              icbcDate={previousDateCurrentTo}
+              icbcDate={moment(uploadDate).format('MMM D, YYYY')}
               invalidSubmission={invalidSubmission}
             />
             {submission.salesSubmissionComment && user.isGovernment && (
@@ -198,7 +227,10 @@ const CreditRequestDetailsPage = (props) => {
                 locationRoute={(locationState && locationState.href) ? locationState.href : ROUTES_CREDIT_REQUESTS.LIST}
                 locationState={locationState}
               />
-              {submission.validationStatus === 'DRAFT' && (
+              {submission.validationStatus === 'DRAFT'
+              && typeof user.hasPermission === 'function'
+              && user.hasPermission('DELETE_SALES')
+              && (
                 <Button buttonType="delete" action={() => { setModalType('delete'); setShowModal(true); }} />
               )}
               {directorAction && (
@@ -220,9 +252,13 @@ const CreditRequestDetailsPage = (props) => {
                   <button
                     className={validatedOnly ? 'button' : 'button primary'}
                     onClick={() => {
-                      const url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id);
+                      if (validatedOnly && moment(uploadDate).format('YYYYMMDD') >= moment(submission.updateTimestamp).format('YYYYMMDD')) {
+                        setShowReverifyModal(true);
+                      } else {
+                        const url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id);
 
-                      history.push(url);
+                        history.push(url);
+                      }
                     }}
                     type="button"
                   >
@@ -268,7 +304,10 @@ const CreditRequestDetailsPage = (props) => {
                       disabled={submission.unselected === 0}
                     />
                   )}
-                  {submission.validationStatus === 'DRAFT' && ([
+                  {submission.validationStatus === 'DRAFT'
+                  && typeof user.hasPermission === 'function'
+                  && user.hasPermission('EDIT_SALES')
+                  && (
                     <button
                       className="button"
                       key="edit"
@@ -279,14 +318,19 @@ const CreditRequestDetailsPage = (props) => {
                       type="button"
                     >
                       <FontAwesomeIcon icon="upload" /> Re-upload excel file
-                    </button>,
+                    </button>
+                  )}
+                  {submission.validationStatus === 'DRAFT'
+                  && typeof user.hasPermission === 'function'
+                  && user.hasPermission('SUBMIT_SALES')
+                  && (
                     <Button
                       buttonType="submit"
                       action={() => { setModalType('submit'); setShowModal(true); }}
                       disabled={invalidSubmission}
                       key="submit"
-                    />,
-                  ])}
+                    />
+                  )}
                 </>
               )}
             </span>
@@ -303,9 +347,9 @@ CreditRequestDetailsPage.defaultProps = {
 
 CreditRequestDetailsPage.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
-  locationState: PropTypes.arrayOf(PropTypes.shape()),
-  previousDateCurrentTo: PropTypes.string.isRequired,
+  locationState: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.shape()), PropTypes.shape()]),
   submission: PropTypes.shape().isRequired,
+  uploadDate: PropTypes.string.isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 

@@ -10,6 +10,7 @@ import ReactTable from '../../app/components/ReactTable';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import history from '../../app/History';
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
+import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 import ROUTES_CREDITS from '../../app/routes/Credits';
 
 const CreditTransactionListTable = (props) => {
@@ -28,11 +29,28 @@ const CreditTransactionListTable = (props) => {
     }
   };
 
+  const abbreviateTransactionType = (item) => {
+    if (!item.transactionType) {
+      return false;
+    }
+
+    const { transactionType } = item.transactionType;
+
+    switch (transactionType.toLowerCase()) {
+      case 'validation':
+        return 'CA';
+      case 'credit transfer':
+        return 'CT';
+      default:
+        return transactionType;
+    }
+  };
+
   const columns = [{
     Header: '',
     headerClassName: 'header-group',
     columns: [{
-      accessor: 'foreignKey',
+      accessor: (item) => (`${abbreviateTransactionType(item)}-${item.foreignKey}`),
       className: 'text-center',
       Header: 'Transaction ID',
       id: 'id',
@@ -129,6 +147,12 @@ const CreditTransactionListTable = (props) => {
 
               const { transactionType } = item.transactionType;
               switch (transactionType.toLowerCase()) {
+                case 'credit transfer':
+                  history.push(
+                    ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/g, item.foreignKey),
+                    { href: ROUTES_CREDITS.LIST },
+                  );
+                  break;
                 case 'validation':
                   history.push(
                     ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/g, item.foreignKey),

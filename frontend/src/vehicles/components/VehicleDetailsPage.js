@@ -11,7 +11,7 @@ import history from '../../app/History';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 import getFileSize from '../../app/utilities/getFileSize';
 import CustomPropTypes from '../../app/utilities/props';
-import Alert from '../../app/components/Alert';
+import VehicleAlert from './VehicleAlert';
 import Comment from '../../app/components/Comment';
 
 const VehicleDetailsPage = (props) => {
@@ -46,25 +46,49 @@ const VehicleDetailsPage = (props) => {
       setRequestChangeCheck(false);
     }
   };
-  let confirmLabel;
-  let handleSubmit = () => {};
-  let buttonClass;
-  let modalText;
-  if (modalType === 'accept') {
-    confirmLabel = 'Validate';
-    handleSubmit = () => { requestStateChange('VALIDATED'); };
-    buttonClass = 'button primary';
-    modalText = 'Validate ZEV model';
-  } else if (modalType === 'reject') {
-    confirmLabel = 'Reject';
-    handleSubmit = () => { postComment('REJECTED'); };
-    buttonClass = 'btn-outline-danger';
-    modalText = 'Reject ZEV model';
-  } else {
-    confirmLabel = 'Request';
-    handleSubmit = () => { postComment('CHANGES_REQUESTED'); };
-    buttonClass = 'button primary';
-    modalText = 'Request range change/test results';
+  const handleSubmit = () => {};
+  let modalProps;
+  switch (modalType) {
+    case 'submit':
+      modalProps = {
+        confirmLabel: ' Submit',
+        handleSubmit: (event) => { requestStateChange('SUBMITTED'); },
+        buttonClass: 'button primary',
+        modalText: details.attachments.length > 0 ? 'Submit vehicle model and range test results to Government of B.C.?' : 'Submit ZEV model to Government of B.C.?',
+      };
+      break;
+    case 'accept':
+      modalProps = {
+        confirmLabel: 'Validate',
+        handleSubmit: () => { requestStateChange('VALIDATED'); },
+        buttonClass: 'button primary',
+        modalText: 'Validate ZEV model',
+      };
+      break;
+    case 'reject':
+      modalProps = {
+        handleSubmit: () => { postComment('REJECTED'); },
+        confirmLabel: 'Reject',
+        buttonClass: 'btn-outline-danger',
+        modalText: 'Reject ZEV model',
+      };
+      break;
+    case 'request':
+      modalProps = {
+        confirmLabel: 'Request',
+        buttonClass: 'button primary',
+        modalText: 'Request range change/test results',
+        handleSubmit: () => { postComment('CHANGES_REQUESTED'); },
+      };
+      break;
+    default:
+      modalProps = {
+        confirmLabel: '',
+        buttonClass: '',
+        modalText: '',
+        handleSubmit: () => {},
+      };
+      break;
   }
 
   let alertUser;
@@ -74,14 +98,12 @@ const VehicleDetailsPage = (props) => {
   } else {
     alertUser = details.updateUser;
   }
-
   return (
     <div id="vehicle-validation" className="page">
       <div className="row mb-2">
         <div className="col-sm-12">
           <h2>{title}</h2>
-          <Alert
-            alertType="vehicle"
+          <VehicleAlert
             status={details.validationStatus}
             user={alertUser && alertUser.displayName ? alertUser.displayName : alertUser}
             date={moment(details.updateTimestamp).format('MMM D, YYYY')}
@@ -110,10 +132,10 @@ const VehicleDetailsPage = (props) => {
             <DetailField label="Weight (kg)" value={details.weightKg} />
             <DetailField label="Vehicle Class" id={details.weightKg < 3856 ? '' : 'danger-text'} value={details.weightKg < 3856 ? 'LDV (calculated)' : 'Not within LDV range (calculated)'} />
             {details.creditClass && (
-              <DetailField label="Credit Class" value={` ${details.creditClass} (calculated)`} />
+              <DetailField label="ZEV Class" value={` ${details.creditClass} (calculated)`} />
             )}
-            {details.creditValue && (
-              <DetailField label="Credits" value={` ${details.creditValue} (calculated)`} />
+            {(details.creditValue > 0 || details.creditValue < 0) && (
+              <DetailField label="Credit Entitlement" value={` ${details.creditValue} (calculated)`} />
             )}
 
             {details.attachments.length > 0 && (
@@ -195,15 +217,21 @@ const VehicleDetailsPage = (props) => {
             <span className="right-content">
               {['DRAFT', 'CHANGES_REQUESTED'].indexOf(details.validationStatus) >= 0
               && !user.isGovernment && (
-                <button
-                  className="button primary"
-                  onClick={() => {
-                    history.push(ROUTES_VEHICLES.EDIT.replace(/:id/gi, id));
-                  }}
-                  type="button"
-                >
-                  <FontAwesomeIcon icon="edit" /> Edit
-                </button>
+                <>
+                  <button
+                    className="button primary"
+                    onClick={() => {
+                      history.push(ROUTES_VEHICLES.EDIT.replace(/:id/gi, id));
+                    }}
+                    type="button"
+                  >
+                    <FontAwesomeIcon icon="edit" /> Edit
+                  </button>
+                  <Button
+                    buttonType="submit"
+                    action={() => { setModalType('submit'); setShowModal(true); }}
+                  />
+                </>
               )}
               {details.validationStatus === 'SUBMITTED'
               && user.isGovernment
@@ -237,16 +265,16 @@ const VehicleDetailsPage = (props) => {
           </div>
 
           <Modal
-            confirmLabel={confirmLabel}
+            confirmLabel={modalProps.confirmLabel}
             handleCancel={() => { setShowModal(false); }}
-            handleSubmit={handleSubmit}
+            handleSubmit={modalProps.handleSubmit}
             modalClass="w-75"
             showModal={showModal}
-            confirmClass={buttonClass}
+            confirmClass={modalProps.buttonClass}
           >
             <div>
               <div><br /><br /></div>
-              <h3 className="d-inline">{modalText}</h3>
+              <h3 className="d-inline">{modalProps.modalText}</h3>
               <div><br /><br /></div>
             </div>
           </Modal>

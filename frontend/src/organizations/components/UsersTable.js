@@ -47,16 +47,16 @@ const UsersTable = (props) => {
       }]}
       filtered={filtered}
       getTrProps={(state, row) => {
-        if (row && row.original 
+        if (row && row.original
             && typeof user.hasPermission === 'function'
             && user.hasPermission('EDIT_USERS')
-            ) {
-            return {
-              onClick: () => {
-                const { id } = row.original;
-                history.push(`/users/${id}/edit`);
-              },
-              className: 'clickable',
+        ) {
+          return {
+            onClick: () => {
+              const { id } = row.original;
+              history.push(`/users/${id}/edit`);
+            },
+            className: 'clickable',
           };
         }
 

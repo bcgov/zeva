@@ -20,7 +20,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sales, setSales] = useState([]);
-  const { keycloak, location } = props;
+  const { keycloak, location, user } = props;
   const { state: locationState } = location;
 
   const refreshDetails = () => {
@@ -45,7 +45,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
   return (
     <div className="page">
       <h1 className="mb-2">{details.name}</h1>
-      <VehicleSupplierTabs locationState={locationState} supplierId={details.id} active="supplier-credit-transactions" />
+      <VehicleSupplierTabs locationState={locationState} supplierId={details.id} active="supplier-credit-transactions" user={user} />
       <VehicleSupplierSalesListPage
         filtered={filtered}
         loading={loading}

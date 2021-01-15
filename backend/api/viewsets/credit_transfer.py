@@ -1,3 +1,4 @@
+import logging
 from rest_framework import mixins, status, viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -5,11 +6,17 @@ from django.db.models import Q
 
 from api.models.credit_transfer import CreditTransfer
 from api.models.credit_transfer_statuses import CreditTransferStatuses
-from api.serializers.credit_transaction import CreditTransactionSaveSerializer
+from api.permissions.credit_transfer import CreditTransferPermissions
 from api.serializers.credit_transfer import CreditTransferSerializer, \
     CreditTransferSaveSerializer, CreditTransferListSerializer
+from api.models.user_profile import UserProfile
+from api.models.notification import Notification
+from api.models.notification_subscription import NotificationSubscription
 from auditable.views import AuditableMixin
+from api.services.send_email import notifications_credit_transfers
 from api.services.credit_transaction import validate_transfer
+
+LOGGER = logging.getLogger(__name__)
 
 
 class CreditTransferViewset(
@@ -21,7 +28,7 @@ class CreditTransferViewset(
     This viewset automatically provides `list`, `create`, `retrieve`,
     and  `update`  actions.
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (CreditTransferPermissions,)
     http_method_names = ['get', 'post', 'put', 'patch']
 
     serializer_classes = {
@@ -40,6 +47,8 @@ class CreditTransferViewset(
                 CreditTransferStatuses.DRAFT,
                 CreditTransferStatuses.SUBMITTED,
                 CreditTransferStatuses.DELETED,
+                CreditTransferStatuses.RESCIND_PRE_APPROVAL,
+                CreditTransferStatuses.DISAPPROVED,
             ])
         else:
             queryset = CreditTransfer.objects.filter(
@@ -49,11 +58,14 @@ class CreditTransferViewset(
                         CreditTransferStatuses.APPROVED,
                         CreditTransferStatuses.DISAPPROVED,
                         CreditTransferStatuses.RESCINDED,
-                        CreditTransferStatuses.VALIDATED,
+                        CreditTransferStatuses.RESCIND_PRE_APPROVAL,
                         CreditTransferStatuses.RECOMMEND_APPROVAL,
-                        CreditTransferStatuses.RECOMMEND_REJECTION
+                        CreditTransferStatuses.RECOMMEND_REJECTION,
+                        CreditTransferStatuses.REJECTED,
+                        CreditTransferStatuses.VALIDATED
                         ])) |
-                Q(debit_from_id=request.user.organization.id))
+                Q(debit_from_id=request.user.organization.id)
+                ).exclude(status__in=[CreditTransferStatuses.DELETED])
         return queryset
 
     def get_serializer_class(self):
@@ -78,9 +90,8 @@ class CreditTransferViewset(
         )
 
     def perform_update(self, serializer, *args, **kwargs):
-
         transfer = serializer.save()
         if transfer.status == CreditTransferStatuses.VALIDATED:
-            #call service that updates transactions and balance tables
             validate_transfer(transfer)
 
+        notifications_credit_transfers(transfer)

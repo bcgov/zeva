@@ -114,14 +114,22 @@ class Navbar extends Component {
                 aria-labelledby="navbarDropdown"
                 className={`dropdown-menu ${userMenuCollapsed ? 'd-none' : ''}`}
               >
-                {/* <div className="dropdown-item">
-                  <button type="button">
+                {CONFIG.FEATURES.NOTIFICATIONS.ENABLED && (
+                <div className="dropdown-item">
+                  <NavLink
+                    activeClassName="active"
+                    className="notifications"
+                    exact
+                    to="/notifications"
+                  >
                     <span className="icon">
-                      <FontAwesomeIcon icon="user-cog" />
+                      <FontAwesomeIcon icon="envelope" />
                     </span>
-                    <span>Settings</span>
-                  </button>
-                </div> */}
+
+                    <span>Email Notifications</span>
+                  </NavLink>
+                </div>
+                )}
                 <div className="dropdown-item">
                   <button
                     onClick={() => keycloak.logout({
@@ -138,24 +146,6 @@ class Navbar extends Component {
                 </div>
               </div>
             </li>
-            {/* <li>
-              <NavLink
-                activeClassName="active"
-                className="notifications"
-                to="/notifications"
-              >
-                <span><FontAwesomeIcon icon="bell" /></span>
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                activeClassName="active"
-                className="help"
-                to="/help"
-              >
-                <span><FontAwesomeIcon icon={['far', 'question-circle']} /></span>
-              </NavLink>
-            </li> */}
           </ul>
 
           <div className={`collapse navbar-collapse ${collapsed === false ? 'show' : ''}`}>
@@ -182,7 +172,8 @@ class Navbar extends Component {
 
               {CONFIG.FEATURES.CREDIT_TRANSACTIONS.ENABLED
               && typeof user.hasPermission === 'function'
-              && user.hasPermission('VIEW_SALES')
+              && ((!user.isGovernment && user.hasPermission('EDIT_SALES'))
+              || (user.isGovernment && user.hasPermission('VIEW_SALES')))
               && (
               <li className="nav-item">
                 <NavLink

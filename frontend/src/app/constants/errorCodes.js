@@ -12,7 +12,7 @@ const CREDIT_ERROR_CODES = {
     errorField: 'sales-date',
   },
   INVALID_MODEL: {
-    errorCode: 71,
+    errorCode: 41,
     errorField: 'model-year make model',
   },
   MODEL_YEAR_MISMATCHED: {

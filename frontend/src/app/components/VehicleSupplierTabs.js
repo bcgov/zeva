@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-
+import CustomPropTypes from '../utilities/props';
 import history from '../History';
 import ROUTES_ORGANIZATIONS from '../routes/Organizations';
 
@@ -9,8 +9,8 @@ const VehicleSupplierTabs = (props) => {
     active,
     locationState,
     supplierId,
+    user,
   } = props;
-
   return (
     <ul
       className="nav nav-tabs"
@@ -43,6 +43,8 @@ const VehicleSupplierTabs = (props) => {
           Users
         </button>
       </li>
+      {user.hasPermission('VIEW_ZEV')
+      && (
       <li
         className={`nav-item ${(active === 'supplier-zev-models') ? 'active' : ''}`}
         role="presentation"
@@ -56,19 +58,24 @@ const VehicleSupplierTabs = (props) => {
           ZEV Models
         </button>
       </li>
-      <li
-        className={`nav-item ${(active === 'supplier-credit-transactions') ? 'active' : ''}`}
-        role="presentation"
-      >
-        <button
-          onClick={() => {
-            history.push(ROUTES_ORGANIZATIONS.TRANSACTIONS.replace(/:id/g, supplierId), locationState);
-          }}
-          type="button"
+      )}
+      {user.hasPermission('VIEW_SALES')
+      && (
+
+        <li
+          className={`nav-item ${(active === 'supplier-credit-transactions') ? 'active' : ''}`}
+          role="presentation"
         >
-          Credit Transactions
-        </button>
-      </li>
+          <button
+            onClick={() => {
+              history.push(ROUTES_ORGANIZATIONS.TRANSACTIONS.replace(/:id/g, supplierId), locationState);
+            }}
+            type="button"
+          >
+            Credit Transactions
+          </button>
+        </li>
+      )}
     </ul>
   );
 };
@@ -82,6 +89,7 @@ VehicleSupplierTabs.propTypes = {
   active: PropTypes.string.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),
   supplierId: PropTypes.number,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default VehicleSupplierTabs;
