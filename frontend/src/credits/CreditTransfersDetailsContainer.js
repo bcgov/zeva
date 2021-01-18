@@ -70,7 +70,11 @@ const CreditTransfersDetailsContainer = (props) => {
       .catch((error) => {
         const { response } = error;
         if (response.status === 400) {
-          setErrorMessage(error.response.data.status);
+          if (typeof response.data === 'object') {
+            setErrorMessage(Object.values(response.data));
+          } else {
+            setErrorMessage(response.data.status);
+          }
         }
       });
   };

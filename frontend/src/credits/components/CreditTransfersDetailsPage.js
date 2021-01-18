@@ -263,7 +263,7 @@ const CreditTransfersDetailsPage = (props) => {
           <h2>Light Duty Vehicle Credit Transfer</h2>
         </div>
       </div>
-      {transferRole.governmentDirector && !submission.sufficientCredits
+      {transferRole.governmentDirector && errorMessage.length > 0
       && (
       <Alert
         title="Error"
