@@ -254,7 +254,6 @@ const CreditTransfersDetailsPage = (props) => {
       <textarea testid="transfer-comment" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { setComment(event.target.value); }} value={comment} disabled={allChecked} />
     </div>
   );
-
   return (
     <div id="credit-transfers-details" className="page">
       {modal}

@@ -1,4 +1,5 @@
 window.zeva_config = {
+  'compliance_report.enabled': true,
   'credit_transfers.enabled': true,
   'credit_transactions.enabled': true,
   'initiative_agreements.enabled': false,
