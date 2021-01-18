@@ -196,6 +196,15 @@ const CreditRequestDetailsPage = (props) => {
             </div>
 
             <CreditRequestSummaryTable submission={submission} user={user} validationStatus={submission.validationStatus} />
+            <div className="my-2">
+
+              <h3 className="mt-3">
+                Sales Evidence
+              </h3>
+              <div className="mt-2">
+                <h4>Filename  Size</h4>
+              </div>
+            </div>
           </div>
         </div>
       </div>
