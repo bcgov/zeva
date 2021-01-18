@@ -5,6 +5,7 @@ from django.db.models import Subquery, Count
 from django.db.models.functions import Upper
 
 from api.models.icbc_registration_data import IcbcRegistrationData
+from api.models.icbc_upload_date import IcbcUploadDate
 from api.models.record_of_sale import RecordOfSale
 from api.models.record_of_sale_statuses import RecordOfSaleStatuses
 from api.models.sales_submission import SalesSubmission
@@ -195,14 +196,15 @@ class SalesSubmissionSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
         BaseSerializer
 ):
-    history = SerializerMethodField()
-    organization = OrganizationSerializer(read_only=True)
     content = SerializerMethodField()
+    create_user = SerializerMethodField()
+    eligible = SerializerMethodField()
+    history = SerializerMethodField()
+    icbc_current_to = SerializerMethodField()
+    organization = OrganizationSerializer(read_only=True)
     sales_submission_comment = SerializerMethodField()
     update_user = SerializerMethodField()
     validation_status = SerializerMethodField()
-    create_user = SerializerMethodField()
-    eligible = SerializerMethodField()
 
     def get_content(self, instance):
         request = self.context.get('request')
@@ -324,6 +326,24 @@ class SalesSubmissionSerializer(
 
         return serializer.data
 
+    def get_icbc_current_to(self, obj):
+        last_checked = SalesSubmissionHistory.objects.filter(
+            submission_id=obj.id,
+            validation_status=SalesSubmissionStatuses.CHECKED
+        ).order_by('-update_timestamp').first()
+
+        if last_checked is None:
+            return None
+
+        icbc_upload_date = IcbcUploadDate.objects.filter(
+            update_timestamp__lte=last_checked.update_timestamp
+        ).order_by('-update_timestamp').first()
+
+        if icbc_upload_date is None:
+            return None
+
+        return icbc_upload_date.upload_date
+
     def get_sales_submission_comment(self, obj):
         sales_submission_comment = SalesSubmissionComment.objects.filter(
             sales_submission=obj
@@ -356,7 +376,7 @@ class SalesSubmissionSerializer(
             'submission_sequence', 'content', 'submission_id', 'history',
             'sales_submission_comment', 'update_user', 'unselected',
             'update_timestamp', 'create_user', 'filename', 'create_timestamp',
-            'eligible'
+            'eligible', 'icbc_current_to',
         )
 
 
