@@ -26,6 +26,7 @@ from api.services.credit_transaction import award_credits
 from api.services.sales_spreadsheet import create_sales_spreadsheet, \
     ingest_sales_spreadsheet, validate_spreadsheet, \
     create_errors_spreadsheet
+from api.services.send_email import notifications_credit_application
 from auditable.views import AuditableMixin
 
 
@@ -74,6 +75,8 @@ class CreditRequestViewset(
 
         if submission.validation_status == SalesSubmissionStatuses.VALIDATED:
             award_credits(submission)
+
+        notifications_credit_application(submission)
 
     @action(detail=False)
     def template(self, request):
