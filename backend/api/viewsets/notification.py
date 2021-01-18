@@ -26,7 +26,7 @@ class NotificationViewSet(
     """
     permission_classes = (permissions.AllowAny,)
     http_method_names = ['get', 'post', 'put']
-    queryset = Notification.objects.all()
+    queryset = Notification.objects.all().order_by('name')
 
     serializer_classes = {
         'default': NotificationSerializer,
@@ -64,7 +64,7 @@ class NotificationViewSet(
             LOGGER.error('ERROR! %s', ex)
 
         return Response(
-            {'Status':notification_created}
+            {'Status': notification_created}
         ) 
  
     @action(detail=False)
