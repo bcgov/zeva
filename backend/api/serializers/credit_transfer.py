@@ -25,7 +25,6 @@ from api.services.credit_transaction import calculate_insufficient_credits
 from decimal import Decimal
 
 
-
 class CreditTransferBaseSerializer:
     def get_update_user(self, obj):
         user_profile = UserProfile.objects.filter(username=obj.update_user)
