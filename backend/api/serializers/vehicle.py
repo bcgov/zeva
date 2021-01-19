@@ -18,6 +18,7 @@ from api.serializers.vehicle_attachment import VehicleAttachmentSerializer
 from api.serializers.vehicle_comment import VehicleCommentSerializer
 from api.services.minio import minio_remove_object
 from api.services.vehicle import change_status
+from api.services.send_email import notifications_zev_model
 from api.models.vehicle_class import VehicleClass
 
 
@@ -99,6 +100,9 @@ class VehicleStatusChangeSerializer(ModelSerializer):
             instance.credit_value = instance.get_credit_value()
             instance.update_user = request.user.username
             instance.save()
+
+        if status:
+            notifications_zev_model(instance, status)
 
         return instance
 
@@ -267,6 +271,7 @@ class VehicleSaveSerializer(
         return vehicle
 
     def update(self, instance, validated_data):
+        status = validated_data.get('validation_status')
         request = self.context.get('request')
         attachments = validated_data.pop('vehicle_attachments', [])
         files_to_be_removed = request.data.get('delete_files', [])
@@ -310,6 +315,9 @@ class VehicleSaveSerializer(
 
         instance.update_user = request.user.username
         instance.save()
+
+        if status:
+            notifications_zev_model(instance, status)
 
         return instance
 
