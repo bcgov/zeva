@@ -93,7 +93,7 @@ const NotificationListContainer = (props) => {
           <h2>Email Notifications</h2>
           <div className="mt-3 mb-2">
             <div className="text-blue">
-              Receive email notifications of transactions and status changes of interest in the system to : {user.email} 
+              Receive email notifications of transactions and status changes of interest in the system to: {user.email} 
             </div>
           </div>
           {alertMessage

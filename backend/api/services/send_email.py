@@ -10,6 +10,7 @@ from api.models.user_profile import UserProfile
 from api.models.notification import Notification
 from api.models.credit_transfer_statuses import CreditTransferStatuses
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
+from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.models.notification_subscription import NotificationSubscription
 from api.models.organization import Organization
 import requests
@@ -126,6 +127,10 @@ def notifications_credit_transfers(transfer: object):
             Q(notification_code='CREDIT_TRANSFER_RECORDED_GOVT') |
             Q(notification_code='CREDIT_TRANSFER_RECORDED'))
 
+    elif validation_status == CreditTransferStatuses.SUBMITTED:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            notification_code='CREDIT_TRANSFER_SUBMITTED')
+
     elif validation_status == CreditTransferStatuses.RECOMMEND_APPROVAL:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='CREDIT_TRANSFER_RECOMMEND_APPROVAL') 
@@ -141,16 +146,16 @@ def notifications_credit_transfers(transfer: object):
 
     elif validation_status == CreditTransferStatuses.DISAPPROVED:
         notifications = Notification.objects.values_list('id', flat=True).filter(
-            notification_code='CREDIT_TRANSFER_REJECT_PARTNER')
+            notification_code='CREDIT_TRANSFER_REJECTED_PARTNER')
 
     elif validation_status == CreditTransferStatuses.RESCINDED:
         notifications = Notification.objects.values_list('id', flat=True).filter(
-            Q(notification_code='CREDIT_TRANSFER_RESCIND') |
-            Q(notification_code='CREDIT_TRANSFER_RESCIND_PARTNER'))
+            Q(notification_code='CREDIT_TRANSFER_RESCINDED') |
+            Q(notification_code='CREDIT_TRANSFER_RESCINDED_PARTNER'))
 
     elif validation_status == CreditTransferStatuses.RESCIND_PRE_APPROVAL:
         notifications = Notification.objects.values_list('id', flat=True).filter(
-            notification_code='CREDIT_TRANSFER_RESCIND_PARTNER') 
+            notification_code='CREDIT_TRANSFER_RESCINDED_PARTNER') 
 
     elif validation_status == CreditTransferStatuses.REJECTED:
         notifications = Notification.objects.values_list('id', flat=True).filter(
@@ -186,6 +191,30 @@ def notifications_credit_application(submission: object):
         subscribed_users(notifications, submission, request_type)
 
 
+def notifications_zev_model(request: object, validation_status: str):
+    request_type = 'zev_model'
+    notifications = None
+    if validation_status == VehicleDefinitionStatuses.VALIDATED:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            notification_code='ZEV_MODEL_VALIDATED')
+
+    elif validation_status == VehicleDefinitionStatuses.REJECTED:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            notification_code='ZEV_MODEL_REJECTED')
+
+    elif validation_status == VehicleDefinitionStatuses.SUBMITTED:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            Q(notification_code='ZEV_MODEL_SUBMITTED') |
+            Q(notification_code='ZEV_MODEL_RANGE_REPORT_SUBMITTED'))
+
+    elif validation_status == VehicleDefinitionStatuses.CHANGES_REQUESTED:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            notification_code='ZEV_MODEL_RANGE_REPORT_TEST_RESULT_REQUESTED')
+
+    if notifications:
+        subscribed_users(notifications, request, request_type)
+
+
 """
 Send email to the users based on their notification subscription
 """
@@ -205,7 +234,7 @@ def subscribed_users(notifications: list, request: object, request_type: str):
                                            govt_org.id]) &
                     Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=request.update_user)
 
-            elif request_type == 'credit_application':
+            elif request_type == 'credit_application' or 'zev_model':
                 user_email = UserProfile.objects.values_list('email', flat=True).filter(
                     Q(organization_id__in=[request.organization,
                                            govt_org.id]) &
