@@ -12,6 +12,7 @@ import CustomPropTypes from '../../app/utilities/props';
 import ModelListTable from './ModelListTable';
 import CreditRequestSummaryTable from './CreditRequestSummaryTable';
 import Comment from '../../app/components/Comment';
+import getFileSize from '../../app/utilities/getFileSize';
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -20,6 +21,7 @@ const CreditRequestDetailsPage = (props) => {
     submission,
     uploadDate,
     user,
+    files,
   } = props;
   const validatedOnly = submission.validationStatus === 'CHECKED';
   const [showModal, setShowModal] = useState(false);
@@ -201,8 +203,22 @@ const CreditRequestDetailsPage = (props) => {
               <h3 className="mt-3">
                 Sales Evidence
               </h3>
-              <div className="mt-2">
-                <h4>Filename  Size</h4>
+              <div id="sales-edit" className="mt-2 col-8 pl-0">
+                {files.length > 0 && (
+                <div className="files px-3">
+                  <div className="row pb-1">
+                    <div className="col-9 header"><h4>Filename</h4></div>
+                    <div className="col-3 size header"><h4>Size</h4></div>
+                    <div className="col-1 actions header" />
+                  </div>
+                  {files.map((file) => (
+                    <div className="row py-1" key={file.name}>
+                      <div className="col-9 filename pl-1">{file.name}</div>
+                      <div className="col-3 size">{getFileSize(file.size)}</div>
+                    </div>
+                  ))}
+                </div>
+                )}
               </div>
             </div>
           </div>
@@ -352,6 +368,7 @@ const CreditRequestDetailsPage = (props) => {
 
 CreditRequestDetailsPage.defaultProps = {
   locationState: undefined,
+  files: [{ name: 'test', size: '3000' }, { name: 'test 2', size: '7000' }],
 };
 
 CreditRequestDetailsPage.propTypes = {
@@ -360,6 +377,7 @@ CreditRequestDetailsPage.propTypes = {
   submission: PropTypes.shape().isRequired,
   uploadDate: PropTypes.string.isRequired,
   user: CustomPropTypes.user.isRequired,
+  files: PropTypes.arrayOf(PropTypes.shape())
 };
 
 export default CreditRequestDetailsPage;
