@@ -19,7 +19,7 @@ const DashboardContainer = (props) => {
     modelsAwaitingValidation: 0,
     modelsValidated: 0,
     modelsInfoRequest: 0,
-    creditsNew: 0,
+    creditsDraft: 0,
     creditsAwaiting: 0,
     creditsIssued: 0,
     transfersAwaitingPartner: 0,
@@ -39,8 +39,8 @@ const DashboardContainer = (props) => {
       const days28 = moment().subtract(28, 'days').calendar();
 
       if (!user.isGovernment) {
-        const newCredits = salesResponse.data
-          .filter((submission) => submission.validationStatus === 'NEW');
+        const draftCredits = salesResponse.data
+          .filter((submission) => submission.validationStatus === 'DRAFT');
         const submittedCredits = salesResponse.data
           .filter((submission) => submission.validationStatus === 'SUBMITTED' || submission.validationStatus === 'RECOMMEND_APPROVAL' || submission.validationStatus === 'RECOMMEND_REJECTION');
         const validatedCredits = salesResponse.data
@@ -48,7 +48,7 @@ const DashboardContainer = (props) => {
 
         activityCount = {
           ...activityCount,
-          creditsNew: newCredits.length,
+          creditsDraft: draftCredits.length,
           creditsIssued: validatedCredits.length,
           creditsAwaiting: submittedCredits.length,
         };
