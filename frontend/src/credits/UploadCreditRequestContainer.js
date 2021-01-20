@@ -116,12 +116,13 @@ const UploadCreditRequestsContainer = (props) => {
 
           axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/gi, creditRequestId), {
             ...patchData,
-          }).then(() => {
+          }).then((response) => {
             history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/gi, creditRequestId));
           });
         });
+      } else {
+        history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/gi, creditRequestId));
       }
-      history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/gi, creditRequestId));
     }).catch((error) => {
       const { response } = error;
 
