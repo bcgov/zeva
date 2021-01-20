@@ -83,14 +83,14 @@ const ActionsBceid = (props) => {
           />
         )}
 
-        {activityCount.creditsNew > 0 && user.hasPermission('EDIT_SALES')
+        {activityCount.creditsDraft > 0 && user.hasPermission('EDIT_SALES')
         && (
         <ActivityBanner
           colour="yellow"
           icon="check-square"
           boldText="Credit Applications"
-          regularText={`${activityCount.creditsNew} saved awaiting submission`}
-          linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=New`}
+          regularText={`${activityCount.creditsDraft} saved awaiting submission`}
+          linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Draft`}
         />
         )}
         {activityCount.creditsAwaiting > 0 && user.hasPermission('EDIT_SALES')
@@ -113,7 +113,7 @@ const ActionsBceid = (props) => {
           linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Issued`}
         />
         )}
-        {activityCount.creditsNew === 0
+        {activityCount.creditsDraft === 0
         && activityCount.creditsAwaiting === 0 && activityCount.creditsIssued === 0
         && user.hasPermission('EDIT_SALES')
         && (

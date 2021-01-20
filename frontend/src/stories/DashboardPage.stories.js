@@ -55,7 +55,7 @@ const activityCountIdir = {
 const activityCountBceid = {
   creditsAwaiting: 6,
   creditsIssued: 2,
-  creditsNew: 3,
+  creditsDraft: 3,
   modelAwaitingValidation: 0,
   modelInfoRequest: 0,
   modelValidated: 0,
@@ -70,7 +70,7 @@ const activityCountBceid = {
 const activityCountBceidNone = {
   creditsAwaiting: 0,
   creditsIssued: 0,
-  creditsNew: 0,
+  creditsDraft: 0,
   modelAwaitingValidation: 0,
   modelInfoRequest: 0,
   modelValidated: 0,
