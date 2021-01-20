@@ -25,6 +25,8 @@ from api.serializers.sales_submission_content import \
     SalesSubmissionContentSerializer
 from api.serializers.vehicle import VehicleSerializer
 from api.services.sales_spreadsheet import get_date
+from api.models.sales_evidence import SalesEvidence
+from api.serializers.sales_evidence import SalesEvidenceSerializer
 
 
 class BaseSerializer():
@@ -196,6 +198,7 @@ class SalesSubmissionSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
         BaseSerializer
 ):
+    evidence = SerializerMethodField()
     content = SerializerMethodField()
     create_user = SerializerMethodField()
     eligible = SerializerMethodField()
@@ -205,6 +208,15 @@ class SalesSubmissionSerializer(
     sales_submission_comment = SerializerMethodField()
     update_user = SerializerMethodField()
     validation_status = SerializerMethodField()
+   
+    def get_evidence(self, instance):
+        attachments = SalesEvidence.objects.filter(
+            submission_id=instance.id,
+            is_removed=False)
+
+        serializer = SalesEvidenceSerializer(attachments, many=True)
+
+        return serializer.data
 
     def get_content(self, instance):
         request = self.context.get('request')
@@ -376,7 +388,7 @@ class SalesSubmissionSerializer(
             'submission_sequence', 'content', 'submission_id', 'history',
             'sales_submission_comment', 'update_user', 'unselected',
             'update_timestamp', 'create_user', 'filename', 'create_timestamp',
-            'eligible', 'icbc_current_to',
+            'eligible', 'icbc_current_to', 'evidence',
         )
 
 
@@ -413,6 +425,11 @@ class SalesSubmissionSaveSerializer(
         allow_null=True,
         required=False
     )
+    sales_evidences = SalesEvidenceSerializer(
+        allow_null=True,
+        many=True,
+        required=False
+    )
 
     def validate_validation_status(self, value):
         request = self.context.get('request')
@@ -425,13 +442,20 @@ class SalesSubmissionSaveSerializer(
     def update(self, instance, validated_data):
         request = self.context.get('request')
         invalidated = request.data.get('invalidated', None)
+        sales_evidences = validated_data.pop('sales_evidences', [])
+        test_evidence = request.data.get('sales_evidences', [])
         sales_submission_comment = validated_data.pop('sales_submission_comment', None)
-
         if sales_submission_comment:
             SalesSubmissionComment.objects.create(
                 create_user=request.user.username,
                 sales_submission=instance,
                 comment=sales_submission_comment.get('comment')
+            )
+        for each in sales_evidences:
+            SalesEvidence.objects.create(
+                create_user=request.user.username,
+                submission=instance,
+                **each
             )
 
         if invalidated is not None:
@@ -505,5 +529,6 @@ class SalesSubmissionSaveSerializer(
         fields = (
             'id', 'organization', 'submission_date',
             'submission_sequence', 'submission_id',
-            'validation_status', 'sales_submission_comment'
+            'validation_status', 'sales_submission_comment',
+            'sales_evidences'
         )

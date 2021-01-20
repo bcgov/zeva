@@ -7,9 +7,9 @@ class SalesEvidence(Auditable):
     Attachment information for the sale submission.
     """
     submission = models.ForeignKey(
-        'sale_submission',
+        'SalesSubmission',
         null=False,
-        related_name='sales_submission_attachments',
+        related_name='sales_evidence',
         on_delete=models.PROTECT
     )
     filename = models.CharField(
@@ -40,7 +40,7 @@ class SalesEvidence(Auditable):
     )
 
     class Meta:
-        db_table = 'sale_submission_file_attachment'
+        db_table = 'sales_submission_evidence'
 
     db_table_comment = "Attachment information for the sale submission." \
                        "Contains information such as mime type, file size, " \
