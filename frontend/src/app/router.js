@@ -21,7 +21,6 @@ import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContai
 import CreditTransfersDetailsContainer from '../credits/CreditTransfersDetailsContainer';
 import CreditRequestVINListContainer from '../credits/CreditRequestVINListContainer';
 import UploadCreditRequestContainer from '../credits/UploadCreditRequestContainer';
-import UploadCreditRequestConfirmationContainer from '../credits/UploadCreditRequestConfirmationContainer';
 import UploadICBCVerificationContainer from '../credits/UploadICBCVerificationContainer';
 import UserEditContainer from '../users/UserEditContainer';
 import VehicleDetailsContainer from '../vehicles/VehicleDetailsContainer';
@@ -264,11 +263,6 @@ class Router extends Component {
                 render={() => (
                   <CreditRequestDetailsContainer keycloak={keycloak} user={user} validatedOnly />
                 )}
-              />
-              <Route
-                exact
-                path={ROUTES_CREDIT_REQUESTS.CONFIRM}
-                render={() => <UploadCreditRequestConfirmationContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact
