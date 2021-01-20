@@ -1,4 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import moment from 'moment-timezone';
@@ -158,11 +159,10 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
       {analystAction
-      && submission.icbcCurrentTo
       && (
       <div className="row my-1">
         <div className="col-sm-12">
-          ICBC data current to: {moment(submission.icbcCurrentTo).format('MMM D, YYYY')}
+          ICBC data current to: {uploadDate ? moment(uploadDate).format('MMM D, YYYY') : 'no ICBC data uploaded yet.'}
         </div>
       </div>
       )}
@@ -214,7 +214,31 @@ const CreditRequestDetailsPage = (props) => {
                   </div>
                   {files.map((file) => (
                     <div className="row py-1" key={file.name}>
-                      <div className="col-9 filename pl-1">{file.name}</div>
+                      <div className="col-9 filename pl-1">
+                        <button
+                          className="link"
+                          onClick={() => {
+                            axios.get(file.url, {
+                              responseType: 'blob',
+                              headers: {
+                                Authorization: null,
+                              },
+                            }).then((response) => {
+                              const objectURL = window.URL.createObjectURL(
+                                new Blob([response.data]),
+                              );
+                              const link = document.createElement('a');
+                              link.href = objectURL;
+                              link.setAttribute('download', file.name);
+                              document.body.appendChild(link);
+                              link.click();
+                            });
+                          }}
+                          type="button"
+                        >
+                          {file.name}
+                        </button>
+                      </div>
                       <div className="col-3 size">{getFileSize(file.size)}</div>
                     </div>
                   ))}
@@ -369,7 +393,7 @@ const CreditRequestDetailsPage = (props) => {
 
 CreditRequestDetailsPage.defaultProps = {
   locationState: undefined,
-  files: [{ name: 'test', size: '3000' }, { name: 'test 2', size: '7000' }],
+  files: [{ name: 'test', size: '3000', url: '' }, { name: 'test 2', size: '7000', url: '' }],
 };
 
 CreditRequestDetailsPage.propTypes = {
@@ -378,7 +402,7 @@ CreditRequestDetailsPage.propTypes = {
   submission: PropTypes.shape().isRequired,
   uploadDate: PropTypes.string.isRequired,
   user: CustomPropTypes.user.isRequired,
-  files: PropTypes.arrayOf(PropTypes.shape())
+  files: PropTypes.arrayOf(PropTypes.shape()),
 };
 
 export default CreditRequestDetailsPage;
