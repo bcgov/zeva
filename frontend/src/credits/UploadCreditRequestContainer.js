@@ -55,7 +55,7 @@ const UploadCreditRequestsContainer = (props) => {
     const promises = [];
     setShowProgressBars(true);
 
-    files.forEach((file, index) => {
+    evidenceFiles.forEach((file, index) => {
       promises.push(new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => {
@@ -105,12 +105,23 @@ const UploadCreditRequestsContainer = (props) => {
 
     upload(ROUTES_CREDIT_REQUESTS.UPLOAD, files, data).then((response) => {
       const { id: creditRequestId } = response.data;
-      // upload evidence files
       if (evidenceCheckbox === true) {
-        console.log(evidenceFiles);
-        //handleEvidenceUpload(creditRequestId);
+        const uploadPromises = handleEvidenceUpload(creditRequestId);
+        Promise.all(uploadPromises).then((attachments) => {
+          const patchData = {};
+
+          if (attachments.length > 0) {
+            patchData.salesEvidences = attachments;
+          }
+
+          axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/gi, creditRequestId), {
+            ...patchData,
+          }).then(() => {
+            history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/gi, creditRequestId));
+          });
+        });
       }
-      history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', creditRequestId));
+      history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/gi, creditRequestId));
     }).catch((error) => {
       const { response } = error;
 

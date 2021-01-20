@@ -22,7 +22,6 @@ const CreditRequestDetailsPage = (props) => {
     submission,
     uploadDate,
     user,
-    files,
   } = props;
   const validatedOnly = submission.validationStatus === 'CHECKED';
   const [showModal, setShowModal] = useState(false);
@@ -199,21 +198,20 @@ const CreditRequestDetailsPage = (props) => {
             </div>
 
             <CreditRequestSummaryTable submission={submission} user={user} validationStatus={submission.validationStatus} />
-            <div className="my-2">
-
+            {submission.evidence.length > 0 && (
+            <div className="mt-4">
               <h3 className="mt-3">
                 Sales Evidence
               </h3>
               <div id="sales-edit" className="mt-2 col-8 pl-0">
-                {files.length > 0 && (
                 <div className="files px-3">
                   <div className="row pb-1">
                     <div className="col-9 header"><h4>Filename</h4></div>
                     <div className="col-3 size header"><h4>Size</h4></div>
                     <div className="col-1 actions header" />
                   </div>
-                  {files.map((file) => (
-                    <div className="row py-1" key={file.name}>
+                  {submission.evidence.map((file) => (
+                    <div className="row py-1" key={file.id}>
                       <div className="col-9 filename pl-1">
                         <button
                           className="link"
@@ -229,23 +227,23 @@ const CreditRequestDetailsPage = (props) => {
                               );
                               const link = document.createElement('a');
                               link.href = objectURL;
-                              link.setAttribute('download', file.name);
+                              link.setAttribute('download', file.filename);
                               document.body.appendChild(link);
                               link.click();
                             });
                           }}
                           type="button"
                         >
-                          {file.name}
+                          {file.filename}
                         </button>
                       </div>
                       <div className="col-3 size">{getFileSize(file.size)}</div>
                     </div>
                   ))}
                 </div>
-                )}
               </div>
             </div>
+            )}
           </div>
         </div>
       </div>
@@ -393,7 +391,7 @@ const CreditRequestDetailsPage = (props) => {
 
 CreditRequestDetailsPage.defaultProps = {
   locationState: undefined,
-  files: [{ name: 'test', size: '3000', url: '' }, { name: 'test 2', size: '7000', url: '' }],
+  files: [],
 };
 
 CreditRequestDetailsPage.propTypes = {
