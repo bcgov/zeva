@@ -158,10 +158,11 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
       {analystAction
+      && submission.icbcCurrentTo
       && (
       <div className="row my-1">
         <div className="col-sm-12">
-          ICBC data current to: {uploadDate ? moment(uploadDate).format('MMM D, YYYY') : 'no ICBC data uploaded yet.'}
+          ICBC data current to: {moment(submission.icbcCurrentTo).format('MMM D, YYYY')}
         </div>
       </div>
       )}
@@ -173,7 +174,7 @@ const CreditRequestDetailsPage = (props) => {
               isGovernment={user.isGovernment}
               submission={submission}
               date={moment(submission.updateTimestamp).format('MMM D, YYYY')}
-              icbcDate={moment(uploadDate).format('MMM D, YYYY')}
+              icbcDate={submission.icbcCurrentTo ? moment(submission.icbcCurrentTo).format('MMM D, YYYY') : ''}
               invalidSubmission={invalidSubmission}
             />
             {submission.salesSubmissionComment && user.isGovernment && (
