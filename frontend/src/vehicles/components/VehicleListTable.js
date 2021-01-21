@@ -7,7 +7,7 @@ import React from 'react';
 import history from '../../app/History';
 import ReactTable from '../../app/components/ReactTable';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
-import formatNumeric from  '../../app/utilities/formatNumeric';
+import formatNumeric from '../../app/utilities/formatNumeric';
 import formatStatus from '../../app/utilities/formatStatus';
 
 const VehicleListTable = (props) => {
