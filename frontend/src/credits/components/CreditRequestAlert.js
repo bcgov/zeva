@@ -13,7 +13,7 @@ const CreditRequestAlert = (props) => {
   const {
     content, validationStatus, history, filename,
   } = submission;
- 
+
   let message = '';
   let title;
   let classname;
