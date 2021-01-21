@@ -17,23 +17,29 @@ import VehicleSupplierSalesListPage from './components/VehicleSupplierSalesListP
 const VehicleSupplierCreditTransactionListContainer = (props) => {
   const { id } = useParams();
   const [details, setDetails] = useState({});
-  const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sales, setSales] = useState([]);
+  const [balances, setBalances] = useState([]);
+  const [creditTransactions, setCreditTransactions] = useState([]);
   const { keycloak, location, user } = props;
   const { state: locationState } = location;
 
   const refreshDetails = () => {
     setLoading(true);
+    const balancePromise = axios.get(ROUTES_ORGANIZATIONS.SUPPLIER_BALANCE.replace(/:id/gi, id)).then((response) => {
+      setBalances(response.data);
+      
+    });
+
+    const listPromise = axios.get(ROUTES_ORGANIZATIONS.SUPPLIER_TRANSACTIONS.replace(/:id/gi, id)).then((response) => {
+      setCreditTransactions(response.data);
+      
+    });
+
     const detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
       setDetails(response.data);
     });
 
-    const salesPromise = axios.get(ROUTES_ORGANIZATIONS.SALES.replace(/:id/gi, id)).then((response) => {
-      setSales(response.data);
-    });
-
-    Promise.all([detailsPromise, salesPromise]).then(() => {
+    Promise.all([balancePromise, listPromise, detailsPromise]).then(() => {
       setLoading(false);
     });
   };
@@ -47,12 +53,11 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
       <h1 className="mb-2">{details.name}</h1>
       <VehicleSupplierTabs locationState={locationState} supplierId={details.id} active="supplier-credit-transactions" user={user} />
       <VehicleSupplierSalesListPage
-        filtered={filtered}
         loading={loading}
         locationState={locationState}
-        sales={sales}
-        setFiltered={setFiltered}
-        user={{ isGovernment: false }}
+        balances={balances}
+        items={creditTransactions}
+        user={{ isGovernment: true }}
       />
     </div>
   );

@@ -9,6 +9,8 @@ const ORGANIZATIONS = {
   MINE_ADD_USER: `${API_BASE_PATH}/mine/add`,
   NEW: `${API_BASE_PATH}/add-supplier`,
   SALES: `${API_BASE_PATH}/:id/sales`,
+  SUPPLIER_TRANSACTIONS: `${API_BASE_PATH}/:id/supplier_transactions`,
+  SUPPLIER_BALANCE: `${API_BASE_PATH}/:id/supplier_balance`,
   TRANSACTIONS: `${API_BASE_PATH}/:id/credit-transactions`,
   USERS: `${API_BASE_PATH}/:id/users`,
   VEHICLES: `${API_BASE_PATH}/:id/vehicles`,
