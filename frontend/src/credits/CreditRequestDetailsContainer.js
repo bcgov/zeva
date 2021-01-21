@@ -19,6 +19,7 @@ const CreditRequestDetailsContainer = (props) => {
   const {
     location, match, user, validatedOnly,
   } = props;
+
   const { state: locationState } = location;
   const { id } = match.params;
 

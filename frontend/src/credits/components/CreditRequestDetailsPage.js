@@ -1,4 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import moment from 'moment-timezone';
@@ -12,6 +13,7 @@ import CustomPropTypes from '../../app/utilities/props';
 import ModelListTable from './ModelListTable';
 import CreditRequestSummaryTable from './CreditRequestSummaryTable';
 import Comment from '../../app/components/Comment';
+import getFileSize from '../../app/utilities/getFileSize';
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -156,11 +158,10 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
       {analystAction
-      && submission.icbcCurrentTo
       && (
       <div className="row my-1">
         <div className="col-sm-12">
-          ICBC data current to: {moment(submission.icbcCurrentTo).format('MMM D, YYYY')}
+          ICBC data current to: {uploadDate ? moment(uploadDate).format('MMM D, YYYY') : 'no ICBC data uploaded yet.'}
         </div>
       </div>
       )}
@@ -197,6 +198,52 @@ const CreditRequestDetailsPage = (props) => {
             </div>
 
             <CreditRequestSummaryTable submission={submission} user={user} validationStatus={submission.validationStatus} />
+            {submission.evidence.length > 0 && (
+            <div className="mt-4">
+              <h3 className="mt-3">
+                Sales Evidence
+              </h3>
+              <div id="sales-edit" className="mt-2 col-8 pl-0">
+                <div className="files px-3">
+                  <div className="row pb-1">
+                    <div className="col-9 header"><h4>Filename</h4></div>
+                    <div className="col-3 size header"><h4>Size</h4></div>
+                    <div className="col-1 actions header" />
+                  </div>
+                  {submission.evidence.map((file) => (
+                    <div className="row py-1" key={file.id}>
+                      <div className="col-9 filename pl-1">
+                        <button
+                          className="link"
+                          onClick={() => {
+                            axios.get(file.url, {
+                              responseType: 'blob',
+                              headers: {
+                                Authorization: null,
+                              },
+                            }).then((response) => {
+                              const objectURL = window.URL.createObjectURL(
+                                new Blob([response.data]),
+                              );
+                              const link = document.createElement('a');
+                              link.href = objectURL;
+                              link.setAttribute('download', file.filename);
+                              document.body.appendChild(link);
+                              link.click();
+                            });
+                          }}
+                          type="button"
+                        >
+                          {file.filename}
+                        </button>
+                      </div>
+                      <div className="col-3 size">{getFileSize(file.size)}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            )}
           </div>
         </div>
       </div>
@@ -344,6 +391,7 @@ const CreditRequestDetailsPage = (props) => {
 
 CreditRequestDetailsPage.defaultProps = {
   locationState: undefined,
+  files: [],
 };
 
 CreditRequestDetailsPage.propTypes = {
@@ -352,6 +400,7 @@ CreditRequestDetailsPage.propTypes = {
   submission: PropTypes.shape().isRequired,
   uploadDate: PropTypes.string.isRequired,
   user: CustomPropTypes.user.isRequired,
+  files: PropTypes.arrayOf(PropTypes.shape()),
 };
 
 export default CreditRequestDetailsPage;

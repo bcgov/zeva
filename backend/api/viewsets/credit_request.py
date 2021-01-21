@@ -1,4 +1,5 @@
 import json
+import uuid
 
 from datetime import datetime
 from django.core.paginator import Paginator
@@ -7,6 +8,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Subquery, Count, Q
 from django.db.models.expressions import RawSQL
 from django.http import HttpResponse, HttpResponseForbidden
+from api.services.minio import minio_put_object
 
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
@@ -340,3 +342,13 @@ class CreditRequestViewset(
             ).values_list('id', flat=True)
 
         return Response(list(unselected_vins))
+
+    @action(detail=True, methods=['get'])
+    def minio_url(self, request, pk=None):
+        object_name = uuid.uuid4().hex
+        url = minio_put_object(object_name)
+
+        return Response({
+            'url': url,
+            'minio_object_name': object_name
+        })
