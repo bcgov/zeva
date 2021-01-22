@@ -95,7 +95,6 @@ const CreditTransactions = (props) => {
 
   return (
     <div id="credit-transaction" className="page">
-      {!user.isGovernment && (
       <div className="row my-3">
         <div className="col-sm-5">
           <h2 className="mb-2">Detailed Credit Balance</h2>
@@ -110,7 +109,6 @@ const CreditTransactions = (props) => {
           />
         </div>
       </div>
-      )}
 
       <div className="row mt-5">
         <div className="col-sm-12">

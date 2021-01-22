@@ -25,7 +25,7 @@ const CreditTransfersEditContainer = (props) => {
     transferPartner: '',
   };
   const [transferComments, setTransferComments] = useState([]);
-  const [submission, setSubmission] = useState([]);
+  const [submission, setSubmission] = useState({});
   const [errorMessage, setErrorMessage] = useState([]);
   const [assertions, setAssertions] = useState([]);
   const [checkboxes, setCheckboxes] = useState([]);

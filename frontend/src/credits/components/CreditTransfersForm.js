@@ -35,6 +35,7 @@ const CreditTransfersForm = (props) => {
     transferComments,
     submission,
   } = props;
+
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState({ type: '', buttonText: '', message: '' });
   const submitTooltip = 'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.';
@@ -56,13 +57,14 @@ const CreditTransfersForm = (props) => {
       </div>
     </Modal>
   );
+
   const actionbar = (
     <div className="row">
       <div className="col-sm-12">
         <div className="action-bar">
           <span className="left-content">
             <Button buttonType="back" locationRoute="/credit-transfers" />
-            {submission.status === 'DRAFT'
+            {['DRAFT', 'RESCIND_PRE_APPROVAL', 'RESCINDED'].indexOf(submission.status) >= 0
             && (
             <Button
               buttonType="delete"
@@ -138,7 +140,9 @@ const CreditTransfersForm = (props) => {
           <div className="row">
             <div className="col-sm-12">
               <fieldset>
-                <h3>{user.organization.name} submits notice of the following proposed credit transfer:</h3>
+                <h3>
+                  {user.organization.name} submits notice of the following proposed credit transfer:
+                </h3>
                 <div className="form-group">
                   <div className="d-inline-block align-middle mr-2">
                     <h4>{user.organization.name} will transfer credits to</h4>
@@ -155,7 +159,16 @@ const CreditTransfersForm = (props) => {
                     rowClassname="mr-5 d-inline-block align-middle"
                   />
                 </div>
-                {rows.map((item, index) => (<TransferFormRow years={years} key={index} rows={rows} rowId={index} handleRowInputChange={handleRowInputChange} removeRow={removeRow} />))}
+                {rows.map((item, index) => (
+                  <TransferFormRow
+                    handleRowInputChange={handleRowInputChange}
+                    key={index}
+                    removeRow={removeRow}
+                    rowId={index}
+                    rows={rows}
+                    years={years}
+                  />
+                ))}
                 <button type="button" className="transfer-add-line my-2" onClick={() => { addRow(); }}>
                   <h4><FontAwesomeIcon icon="plus" /> Add another line</h4>
                 </button>
@@ -205,6 +218,7 @@ CreditTransfersForm.propTypes = {
   organizations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   removeRow: PropTypes.func.isRequired,
   rows: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  submission: PropTypes.shape().isRequired,
   total: PropTypes.number.isRequired,
   unfilledRow: PropTypes.bool,
   user: CustomPropTypes.user.isRequired,
