@@ -14,11 +14,38 @@ parameters:
     description: sample is -dev-97
     value: ''
     required: true
-  - name: CREDIT_TRANSFER_ENABLED
+  - name: CREDIT_TRANSFERS_ENABLED
     displayName: null
     description: enable credittransfer or not
-    value: 'false'
     required: true    
+  - name: CREDIT_TRANSACTIONS_ENABLED
+    displayName: null
+    description: 
+    required: true        
+  - name: INITIATIVE_AGREEMENTS_ENABLED
+    displayName: null
+    description: 
+    required: true   
+  - name: MODEL_YEAR_REPORT_ENABLED
+    displayName: null
+    description: 
+    required: true           
+  - name: PURCHASE_REQUESTS_ENABLED
+    displayName: null
+    description: 
+    required: true   
+  - name: NOTIFICATIONS_ENABLED
+    displayName: null
+    description: 
+    required: true   
+  - name: COMPLIANCE_REPORT_ENABLED
+    displayName: null
+    description: 
+    required: true               
+  - name: ROLES_ENABLED
+    displayName: null
+    description: 
+    required: true                   
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -28,10 +55,12 @@ objects:
     data:
       features.js: |
         window.zeva_config = {
-          'credit_transfers.enabled': ${CREDIT_TRANSFER_ENABLED},
-          'credit_transactions.enabled': true,
-          'initiative_agreements.enabled': false,
-          'model_year_report.enabled': false,
-          'purchase_requests.enabled': false,
-          'roles.enabled': false
+          'credit_transfers.enabled': ${CREDIT_TRANSFERS_ENABLED},
+          'credit_transactions.enabled': ${CREDIT_TRANSACTIONS_ENABLED},
+          'initiative_agreements.enabled': ${INITIATIVE_AGREEMENTS_ENABLED},
+          'model_year_report.enabled': ${MODEL_YEAR_REPORT_ENABLED},
+          'purchase_requests.enabled': ${PURCHASE_REQUESTS_ENABLED},
+          'notifications.enabled': ${NOTIFICATIONS_ENABLED},
+          'compliance_report.enabled': ${COMPLIANCE_REPORT_ENABLED},
+          'roles.enabled': ${ROLES_ENABLED}
         };
