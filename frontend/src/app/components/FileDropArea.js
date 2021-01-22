@@ -15,6 +15,8 @@ const FileDropArea = (props) => {
     files,
     setErrorMessage,
     setUploadFiles,
+    showProgressBars,
+    progressBars,
   } = props;
   const removeFile = (removedFile) => {
     const found = files.findIndex((file) => (file === removedFile));
@@ -47,21 +49,41 @@ const FileDropArea = (props) => {
                 <div className="col-3 size header">Size</div>
                 <div className="col-1 actions header" />
               </div>
-              {files.map((file) => (
-                <div className="row py-1" key={file.name}>
+              {files.map((file, index) => (
+                <div className="row py-1" key={file.id}>
                   <div className="col-8 filename">{file.name}</div>
-                  <div className="col-3 size">{getFileSize(file.size)}</div>
-                  <div className="col-1 actions">
-                    <button
-                      className="delete"
-                      onClick={() => {
-                        removeFile(file);
-                      }}
-                      type="button"
-                    >
-                      <FontAwesomeIcon icon="trash" />
-                    </button>
+                  {!showProgressBars && [
+                    <div className="col-3 size">{getFileSize(file.size)}</div>,
+                    <div className="col-1 actions">
+                      <button
+                        className="delete"
+                        onClick={() => {
+                          removeFile(file);
+                        }}
+                        type="button"
+                      >
+                        <FontAwesomeIcon icon="trash" />
+                      </button>
+                    </div>,
+                  ]}
+                  {showProgressBars && index in progressBars && (
+                  <div className="col-4">
+                    <div className="progress">
+                      <div
+                        aria-valuemax="100"
+                        aria-valuemin="0"
+                        aria-valuenow={progressBars[index]}
+                        className="progress-bar"
+                        role="progressbar"
+                        style={{
+                          width: `${progressBars[index]}%`,
+                        }}
+                      >
+                        {progressBars[index]}%
+                      </div>
+                    </div>
                   </div>
+                  )}
                 </div>
               ))}
             </div>

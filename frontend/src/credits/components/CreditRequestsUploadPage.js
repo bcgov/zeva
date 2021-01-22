@@ -22,7 +22,8 @@ const CreditRequestsUploadPage = (props) => {
     setEvidenceUploadFiles,
     evidenceCheckbox,
     setEvidenceCheckbox,
-    showProgressBars
+    showProgressBars,
+    progressBars,
   } = props;
 //
 //
@@ -113,6 +114,8 @@ const CreditRequestsUploadPage = (props) => {
         files={uploadEvidenceFiles}
         setErrorMessage={setEvidenceErrorMessage}
         setUploadFiles={setEvidenceUploadFiles}
+        showProgressBars={showProgressBars}
+        progressBars={progressBars}
       />
       )}
       <div className="action-bar">

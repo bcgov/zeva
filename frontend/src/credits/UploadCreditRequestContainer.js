@@ -158,6 +158,7 @@ const UploadCreditRequestsContainer = (props) => {
       evidenceCheckbox={evidenceCheckbox}
       setEvidenceCheckbox={setEvidenceCheckbox}
       showProgressBars={showProgressBars}
+      progressBars={progressBars}
     />,
   ]);
 };
