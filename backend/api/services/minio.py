@@ -35,4 +35,7 @@ def minio_remove_objects(objects_iter):
 
 
 def minio_remove_object(object_name):
-    return minio_remove_objects([object_name])
+    return minio.remove_object(
+        bucket_name=MINIO['BUCKET_NAME'],
+        object_name=object_name
+    )

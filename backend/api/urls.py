@@ -10,6 +10,7 @@ from .viewsets.vehicle import VehicleViewSet
 from .viewsets.icbc_verification import IcbcVerificationViewSet
 from .viewsets.credit_transfer import CreditTransferViewset
 from .viewsets.signing_authority_assertion import SigningAuthorityAssertionViewSet
+from .viewsets.upload import UploadViewSet
 
 router = routers.SimpleRouter(trailing_slash=False)
 router.register(r'organizations', OrganizationViewSet, basename='organization')
@@ -31,5 +32,8 @@ router.register(
 )
 router.register(
     r'signing-authority-assertions', SigningAuthorityAssertionViewSet, basename='signing-authority-assertion'
+)
+router.register(
+    r'uploads', UploadViewSet, basename='minio'
 )
 urlpatterns = router.urls

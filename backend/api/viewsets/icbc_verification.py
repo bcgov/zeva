@@ -1,4 +1,6 @@
+import json
 import os
+import urllib.request
 
 from django.http import HttpResponse
 from rest_framework import mixins, viewsets
@@ -7,6 +9,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from api.services.icbc_upload import ingest_icbc_spreadsheet
+from api.services.minio import minio_get_object, minio_remove_object
 from api.models.icbc_upload_date import IcbcUploadDate
 from api.serializers.icbc_upload_date import IcbcUploadDateSerializer
 from auditable.views import AuditableMixin
@@ -51,27 +54,27 @@ class IcbcVerificationViewSet(
     @action(detail=False, methods=['post'])
     def upload(self, request):
         user = request.user
-        try:
-            date_current_to = request.data.get('submission_current_date')
-            filename = request.data.get('filename')
-            chunks = request.data.get('chunks')
+        filename = request.data.get('filename')
 
-            with open(filename, "wb") as outfile:
-                for chunk in range(chunks):
-                    tempfile = filename + '.part.' + str(chunk)
-                    with open(tempfile, "rb") as infile:
-                        outfile.write(infile.read())
-                        os.remove(tempfile)
+        try:
+            url = minio_get_object(filename)
+            urllib.request.urlretrieve(url, filename)
+            date_current_to = request.data.get('submission_current_date')
 
             done = ingest_icbc_spreadsheet(filename, user, date_current_to)
-            outfile.close()
 
             if done:
                 os.remove(filename)
+                minio_remove_object(filename)
+
         except Exception as error:
             print(error)
             return HttpResponse(status=400, content=error)
 
         return HttpResponse(
-            status=201, content="nothing", content_type='application/json'
+            status=201,
+            content=json.dumps({
+                'dateCurrentTo': date_current_to
+            }),
+            content_type='application/json'
         )
