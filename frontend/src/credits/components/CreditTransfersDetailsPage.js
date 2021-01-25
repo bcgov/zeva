@@ -225,7 +225,6 @@ const CreditTransfersDetailsPage = (props) => {
 
   const idirSignoff = (
     <div>
-      {signedSubmittedInfo}
       <label className="mt-3" htmlFor="transfer-comment">
         <h4>{transferRole.governmentAnalyst ? 'Comment to director' : 'Comment to vehicle suppliers'}
         </h4>
@@ -302,12 +301,14 @@ const CreditTransfersDetailsPage = (props) => {
               <div className="my-2 px-2 pb-2">
                 <CreditTransfersDetailsTable submission={submission} tableType="submissionSummary" />
                 {transferValue}
+                <div className="mb-3">
+                  {signedSubmittedInfo}
+                </div>
                 {transferRole.tradePartner
                 && tradePartnerSignoff}
                 {transferRole.rescindable
                 && (
                 <>
-                  {signedSubmittedInfo}
                   {rescindComment}
                 </>
                 )}
