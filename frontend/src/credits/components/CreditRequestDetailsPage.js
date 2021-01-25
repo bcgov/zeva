@@ -251,10 +251,8 @@ const CreditRequestDetailsPage = (props) => {
       <div className="row mb-2">
         <div className="col-sm-12">
           <ModelListTable
-            items={submission.content}
+            submission={submission}
             user={user}
-            validatedOnly={validatedOnly}
-            validationStatus={submission.validationStatus}
           />
         </div>
       </div>
@@ -392,7 +390,6 @@ const CreditRequestDetailsPage = (props) => {
 
 CreditRequestDetailsPage.defaultProps = {
   locationState: undefined,
-  files: [],
 };
 
 CreditRequestDetailsPage.propTypes = {
@@ -401,7 +398,6 @@ CreditRequestDetailsPage.propTypes = {
   submission: PropTypes.shape().isRequired,
   uploadDate: PropTypes.string.isRequired,
   user: CustomPropTypes.user.isRequired,
-  files: PropTypes.arrayOf(PropTypes.shape()),
 };
 
 export default CreditRequestDetailsPage;

@@ -8,55 +8,62 @@ import _ from 'lodash';
 import ReactTable from '../../app/components/ReactTable';
 
 const ModelListTable = (props) => {
-  const { items, validatedOnly, validationStatus } = props;
-
-  const showWarnings = () => {
-    if (['RECOMMEND_APPROVAL', 'VALIDATED'].indexOf(validationStatus) >= 0) {
-      return true;
-    }
-
-    return validatedOnly;
-  };
+  const { submission } = props;
 
   const columns = [{
-    accessor: 'warnings',
+    accessor: 'sales',
     className: 'text-right',
-    Header: 'Warnings',
-    id: 'warnings',
-    show: showWarnings(),
-    width: 100,
+    Header: 'Sales Submitted',
+    id: 'sales',
+    width: 150,
+  }, {
+    accessor: (item) => {
+      if (!submission.eligible) {
+        return '-';
+      }
+
+      const eligibleSales = submission.eligible.find(
+        (eligible) => (eligible.vehicleId === item.vehicle.id),
+      );
+
+      if (!eligibleSales) {
+        return '-';
+      }
+
+      return eligibleSales.vinCount;
+    },
+    className: 'text-right',
+    Header: 'Eligible Sales',
+    id: 'eligible-sales',
+    width: 150,
   }, {
     accessor: (item) => {
       const { vehicle } = item;
 
+      if (!submission.eligible) {
+        return '-';
+      }
+
+      const eligibleSales = submission.eligible.find(
+        (eligible) => (eligible.vehicleId === vehicle.id),
+      );
+
+      if (!eligibleSales) {
+        return '-';
+      }
+
       if (vehicle && vehicle.creditValue && vehicle.creditValue !== 0) {
-        return _.round(item.sales * vehicle.creditValue, 2).toFixed(2);
+        return (eligibleSales.vinCount * _.round(vehicle.creditValue, 2)).toFixed(2);
       }
 
       return '-';
     },
     className: 'text-right',
-    Header: 'Total Credits',
-    id: 'total',
-    width: 150,
-  }, {
-    accessor: 'sales',
-    className: 'text-right',
-    Header: 'Sales',
-    id: 'sales',
-    width: 100,
-  }, {
-    accessor: 'xlsModelYear',
-    className: 'text-center',
-    Header: 'Model Year',
-    width: 120,
-  }, {
-    accessor: 'xlsMake',
-    Header: 'Make',
-    id: 'make',
+    Header: 'Eligible ZEV Credits',
+    id: 'eligible-zev-credits',
     width: 200,
   }, {
-    accessor: 'xlsModel',
+    accessor: (item) => (`${item.xlsModelYear} ${item.xlsMake} ${item.xlsModel}`),
     Header: 'Model',
     id: 'model',
   }, {
@@ -102,7 +109,7 @@ const ModelListTable = (props) => {
   return (
     <ReactTable
       columns={columns}
-      data={items}
+      data={submission.content}
       defaultSorted={[{
         id: 'make',
       }]}
@@ -120,14 +127,13 @@ const ModelListTable = (props) => {
   );
 };
 
-ModelListTable.defaultProps = {
-  validatedOnly: false,
-};
+ModelListTable.defaultProps = {};
 
 ModelListTable.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  validatedOnly: PropTypes.bool,
-  validationStatus: PropTypes.string.isRequired,
+  submission: PropTypes.shape({
+    content: PropTypes.arrayOf(PropTypes.shape()),
+    eligible: PropTypes.arrayOf(PropTypes.shape()),
+  }).isRequired,
 };
 
 export default ModelListTable;

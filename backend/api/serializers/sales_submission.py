@@ -208,7 +208,7 @@ class SalesSubmissionSerializer(
     sales_submission_comment = SerializerMethodField()
     update_user = SerializerMethodField()
     validation_status = SerializerMethodField()
-   
+
     def get_evidence(self, instance):
         attachments = SalesEvidence.objects.filter(
             submission_id=instance.id,
@@ -494,7 +494,7 @@ class SalesSubmissionSaveSerializer(
                     model_year = 0
 
                 if (
-                    str(model_year), row.xls_make.upper(), row.xls_model,
+                        str(model_year), row.xls_make.upper(), row.xls_model,
                 ) in valid_vehicles:
                     RecordOfSale.objects.create(
                         sale_date=get_date(
