@@ -6,9 +6,10 @@ import React from 'react';
 import _ from 'lodash';
 
 import ReactTable from '../../app/components/ReactTable';
+import CustomPropTypes from '../../app/utilities/props';
 
 const ModelListTable = (props) => {
-  const { submission } = props;
+  const { submission, user } = props;
 
   const columns = [{
     accessor: 'sales',
@@ -35,6 +36,7 @@ const ModelListTable = (props) => {
     className: 'text-right',
     Header: 'Eligible Sales',
     id: 'eligible-sales',
+    show: (user.isGovernment || submission.validationStatus === 'VALIDATED'),
     width: 150,
   }, {
     accessor: (item) => {
@@ -61,6 +63,7 @@ const ModelListTable = (props) => {
     className: 'text-right',
     Header: 'Eligible ZEV Credits',
     id: 'eligible-zev-credits',
+    show: (user.isGovernment || submission.validationStatus === 'VALIDATED'),
     width: 200,
   }, {
     accessor: (item) => (`${item.xlsModelYear} ${item.xlsMake} ${item.xlsModel}`),
@@ -133,7 +136,9 @@ ModelListTable.propTypes = {
   submission: PropTypes.shape({
     content: PropTypes.arrayOf(PropTypes.shape()),
     eligible: PropTypes.arrayOf(PropTypes.shape()),
+    validationStatus: PropTypes.string,
   }).isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default ModelListTable;
