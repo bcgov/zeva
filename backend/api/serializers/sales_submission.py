@@ -370,6 +370,11 @@ class SalesSubmissionSerializer(
         return None
 
     def get_eligible(self, instance):
+        request = self.context.get('request')
+
+        if not request.user.is_government and \
+                instance.validation_status != SalesSubmissionStatuses.VALIDATED:
+            return None
         eligible = RecordOfSale.objects.filter(
             submission_id=instance.id
         ).values('vehicle_id').annotate(
