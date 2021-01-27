@@ -14,12 +14,6 @@ const ComplianceTabs = (props) => {
       role="tablist"
     >
       <li
-        className={`nav-item ${(active === 'sales') ? 'active' : ''}`}
-        role="presentation"
-      >
-        <Link to={ROUTES_COMPLIANCE.LDVSALES}>LDV Sales</Link>
-      </li>
-      <li
         className={`nav-item ${(active === 'reports') ? 'active' : ''}`}
         role="presentation"
       >
@@ -31,7 +25,12 @@ const ComplianceTabs = (props) => {
       >
         <Link to={ROUTES_COMPLIANCE.RATIOS}>Compliance Ratios</Link>
       </li>
-
+      <li
+        className={`nav-item ${(active === 'calculator') ? 'active' : ''}`}
+        role="presentation"
+      >
+        <Link to={ROUTES_COMPLIANCE.CALCULATOR}>Compliance Calculator</Link>
+      </li>
     </ul>
   );
 };

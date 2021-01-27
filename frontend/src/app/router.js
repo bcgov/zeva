@@ -26,6 +26,7 @@ import UserEditContainer from '../users/UserEditContainer';
 import VehicleDetailsContainer from '../vehicles/VehicleDetailsContainer';
 import VehicleEditContainer from '../vehicles/VehicleEditContainer';
 import VehicleListContainer from '../vehicles/VehicleListContainer';
+import ComplianceCalculatorContainer from '../compliance/ComplianceCalculatorContainer';
 import ComplianceReportsContainer from '../compliance/ComplianceReportsContainer';
 import ComplianceRatiosContainer from '../compliance/ComplianceRatiosContainer';
 import LDVSalesContainer from '../compliance/LDVSalesContainer';
@@ -128,6 +129,10 @@ class Router extends Component {
               <Route
                 path={ROUTES_COMPLIANCE.LDVSALES}
                 render={() => <LDVSalesContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_COMPLIANCE.CALCULATOR}
+                render={() => <ComplianceCalculatorContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 path={ROUTES_COMPLIANCE.REPORTS}

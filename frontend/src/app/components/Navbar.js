@@ -167,7 +167,18 @@ class Navbar extends Component {
               <li className="nav-item">
                 <NavLink
                   activeClassName="active"
-                  to={ROUTES_COMPLIANCE.LDVSALES}
+                  isActive={(match, location) => {
+                    if (location.pathname.toLowerCase().indexOf('compliance') === 1) {
+                      return true;
+                    }
+
+                    if (!match) {
+                      return false;
+                    }
+
+                    return true;
+                  }}
+                  to={ROUTES_COMPLIANCE.REPORTS}
                 >
                   <span>Compliance Reporting</span>
                 </NavLink>
@@ -193,12 +204,7 @@ class Navbar extends Component {
                 <NavLink
                   activeClassName="active"
                   isActive={(match, location) => {
-                    if (location.pathname.toLowerCase().includes('credit-transactions')
-                    && !location.pathname.toLowerCase().includes('organizations')) {
-                      return true;
-                    }
-
-                    if (location.pathname.toLowerCase().includes('sales')) {
+                    if (location.pathname.toLowerCase().indexOf('credit-') === 1) {
                       return true;
                     }
 
