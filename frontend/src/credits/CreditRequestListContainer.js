@@ -22,6 +22,10 @@ const CreditRequestListContainer = (props) => {
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 
+  const handleClear = () => {
+    setFiltered([]);
+  };
+
   const refreshList = (showLoading) => {
     setLoading(showLoading);
 
@@ -52,6 +56,7 @@ const CreditRequestListContainer = (props) => {
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
     <CreditRequestsPage
       filtered={filtered}
+      handleClear={handleClear}
       key="page"
       setFiltered={setFiltered}
       submissions={submissions}

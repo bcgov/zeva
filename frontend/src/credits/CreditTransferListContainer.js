@@ -20,6 +20,11 @@ const CreditTransferListContainer = (props) => {
   const { location, keycloak, user } = props;
   const [filtered, setFiltered] = useState([]);
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
+
+  const handleClear = () => {
+    setFiltered([]);
+  };
+
   const refreshList = (showLoading) => {
     setLoading(showLoading);
     const queryFilter = [];
@@ -41,11 +46,12 @@ const CreditTransferListContainer = (props) => {
     <CreditTransactionTabs active="credit-transfers" key="tabs" user={user} />,
     <CreditTransfersListPage
       creditTransfers={creditTransfers}
-      loading={loading}
-      key="list"
-      user={user}
       filtered={filtered}
+      handleClear={handleClear}
+      key="list"
+      loading={loading}
       setFiltered={setFiltered}
+      user={user}
     />,
   ]);
 };
