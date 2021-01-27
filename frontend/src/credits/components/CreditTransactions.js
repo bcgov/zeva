@@ -58,8 +58,6 @@ const CreditTransactions = (props) => {
         transactionType: item.transactionType,
       });
     }
-
-    console.error(transactions);
   });
 
   const balances = {};
