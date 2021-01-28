@@ -4,7 +4,7 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 const FileDrop = (props) => {
-  const { setErrorMessage, setFiles, maxFiles } = props;
+  const { setErrorMessage, setFiles, maxFiles, allowedFileTypes } = props;
   const [dropMessage, setDropMessage] = useState('');
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > maxFiles) {
@@ -16,7 +16,7 @@ const FileDrop = (props) => {
     }
   }, []);
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop });
+  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: allowedFileTypes });
   return (
     <div {...getRootProps()}>
       <input {...getInputProps()} />
@@ -36,12 +36,14 @@ const FileDrop = (props) => {
 
 FileDrop.defaultProps = {
   setErrorMessage: () => {},
+  allowedFileTypes: null,
 };
 
 FileDrop.propTypes = {
   setErrorMessage: PropTypes.func,
   setFiles: PropTypes.func.isRequired,
   maxFiles: PropTypes.number.isRequired,
+  allowedFileTypes: PropTypes.string,
 };
 
 export default FileDrop;

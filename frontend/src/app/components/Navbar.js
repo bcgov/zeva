@@ -9,6 +9,7 @@ import ROUTES_CREDIT_REQUESTS from '../routes/CreditRequests';
 import ROUTES_ORGANIZATIONS from '../routes/Organizations';
 import ROUTES_ROLES from '../routes/Roles';
 import ROUTES_VEHICLES from '../routes/Vehicles';
+import ROUTES_COMPLIANCE from '../routes/Compliance';
 
 class Navbar extends Component {
   constructor(props) {
@@ -159,6 +160,30 @@ class Navbar extends Component {
                   <span>Home</span>
                 </NavLink>
               </li>
+              {CONFIG.FEATURES.COMPLIANCE_REPORT.ENABLED
+              && ((!user.isGovernment && user.hasPermission('EDIT_SALES'))
+              || (user.isGovernment && user.hasPermission('VIEW_SALES')))
+              && (
+              <li className="nav-item">
+                <NavLink
+                  activeClassName="active"
+                  isActive={(match, location) => {
+                    if (location.pathname.toLowerCase().indexOf('compliance') === 1) {
+                      return true;
+                    }
+
+                    if (!match) {
+                      return false;
+                    }
+
+                    return true;
+                  }}
+                  to={ROUTES_COMPLIANCE.REPORTS}
+                >
+                  <span>Compliance Reporting</span>
+                </NavLink>
+              </li>
+              )}
               {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED && (
               <li className="nav-item">
                 <NavLink
@@ -179,12 +204,7 @@ class Navbar extends Component {
                 <NavLink
                   activeClassName="active"
                   isActive={(match, location) => {
-                    if (location.pathname.toLowerCase().includes('credit-transactions')
-                    && !location.pathname.toLowerCase().includes('organizations')) {
-                      return true;
-                    }
-
-                    if (location.pathname.toLowerCase().includes('sales')) {
+                    if (location.pathname.toLowerCase().indexOf('credit-') === 1) {
                       return true;
                     }
 

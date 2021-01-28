@@ -21,12 +21,16 @@ import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContai
 import CreditTransfersDetailsContainer from '../credits/CreditTransfersDetailsContainer';
 import CreditRequestVINListContainer from '../credits/CreditRequestVINListContainer';
 import UploadCreditRequestContainer from '../credits/UploadCreditRequestContainer';
-import UploadCreditRequestConfirmationContainer from '../credits/UploadCreditRequestConfirmationContainer';
 import UploadICBCVerificationContainer from '../credits/UploadICBCVerificationContainer';
 import UserEditContainer from '../users/UserEditContainer';
 import VehicleDetailsContainer from '../vehicles/VehicleDetailsContainer';
 import VehicleEditContainer from '../vehicles/VehicleEditContainer';
 import VehicleListContainer from '../vehicles/VehicleListContainer';
+import ComplianceCalculatorContainer from '../compliance/ComplianceCalculatorContainer';
+import ComplianceReportsContainer from '../compliance/ComplianceReportsContainer';
+import ComplianceRatiosContainer from '../compliance/ComplianceRatiosContainer';
+import LDVSalesContainer from '../compliance/LDVSalesContainer';
+
 import ErrorHandler from './components/ErrorHandler';
 import Loading from './components/Loading';
 import StatusInterceptor from './components/StatusInterceptor';
@@ -41,6 +45,7 @@ import ROUTES_ORGANIZATIONS from './routes/Organizations';
 import ROUTES_NOTIFICATIONS from './routes/Notifications';
 import ROUTES_USERS from './routes/Users';
 import ROUTES_VEHICLES from './routes/Vehicles';
+import ROUTES_COMPLIANCE from './routes/Compliance';
 
 class Router extends Component {
   constructor(props) {
@@ -122,6 +127,22 @@ class Router extends Component {
           <ErrorHandler statusCode={statusCode}>
             <Switch>
               <Route
+                path={ROUTES_COMPLIANCE.LDVSALES}
+                render={() => <LDVSalesContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_COMPLIANCE.CALCULATOR}
+                render={() => <ComplianceCalculatorContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_COMPLIANCE.REPORTS}
+                render={() => <ComplianceReportsContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_COMPLIANCE.RATIOS}
+                render={() => <ComplianceRatiosContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
                 exact
                 path={ROUTES_ORGANIZATIONS.MINE_ADD_USER}
                 render={() => <UserEditContainer keycloak={keycloak} user={user} newUser />}
@@ -157,12 +178,12 @@ class Router extends Component {
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.EDIT}
-                render={() => (typeof user.hasPermission === 'function'&& user.hasPermission('EDIT_ORGANIZATIONS') && user.isGovernment)  ? 
-                <VehicleSupplierEditContainer keycloak={keycloak} user={user} /> : (
-                <Redirect
-                  to={{
-                    path: "/"}}/>
-                )}
+                render={() => ((typeof user.hasPermission === 'function' && user.hasPermission('EDIT_ORGANIZATIONS') && user.isGovernment)
+                  ? <VehicleSupplierEditContainer keycloak={keycloak} user={user} /> : (
+                    <Redirect
+                      to={{ path: '/' }}
+                    />
+                  ))}
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.DETAILS}
@@ -250,11 +271,6 @@ class Router extends Component {
               />
               <Route
                 exact
-                path={ROUTES_CREDIT_REQUESTS.CONFIRM}
-                render={() => <UploadCreditRequestConfirmationContainer keycloak={keycloak} user={user} />}
-              />
-              <Route
-                exact
                 path={ROUTES_CREDIT_REQUESTS.EDIT}
                 render={() => <UploadCreditRequestContainer keycloak={keycloak} user={user} />}
               />
@@ -271,6 +287,7 @@ class Router extends Component {
                 path={ROUTES_CREDIT_REQUESTS.LIST}
                 render={() => <CreditRequestListContainer keycloak={keycloak} user={user} />}
               />
+
               <Route
                 exact
                 path="/"

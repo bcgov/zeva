@@ -5,17 +5,21 @@ import PropTypes from 'prop-types';
 import Alert from '../../app/components/Alert';
 import Button from '../../app/components/Button';
 import ExcelFileDrop from '../../app/components/FileDrop';
+import Loading from '../../app/components/Loading';
 import getFileSize from '../../app/utilities/getFileSize';
 
 const UploadVerificationData = (props) => {
   const {
-    title,
-    files,
-    setUploadFiles,
-    upload,
-    setDateCurrentTo,
-    previousDateCurrentTo,
     alertMessage,
+    files,
+    previousDateCurrentTo,
+    setDateCurrentTo,
+    setUploadFiles,
+    showProcessing,
+    showProgressBar,
+    title,
+    upload,
+    uploadProgress,
   } = props;
 
   const removeFile = (removedFile) => {
@@ -28,6 +32,41 @@ const UploadVerificationData = (props) => {
     const { value } = event.target;
     setDateCurrentTo(value);
   };
+
+  if (showProgressBar) {
+    return (
+      <div id="upload-verification-data" className="page">
+        <div className="row mt-3">
+          <div className="col-12">
+            <h2 className="mb-2">Uploading:</h2>
+            <div
+              aria-valuemax="100"
+              aria-valuemin="0"
+              aria-valuenow={uploadProgress}
+              className="progress-bar mt-2"
+              role="progressbar"
+              style={{
+                width: `${uploadProgress}%`,
+              }}
+            >
+              {uploadProgress}%
+            </div>
+          </div>
+        </div>
+
+        {showProcessing && (
+          <div className="row mt-5 mb-2">
+            <div className="col-12">
+              <h2 className="mb-2">Processing:</h2>
+              <div>
+                <Loading />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div id="upload-verification-data" className="page">
@@ -120,13 +159,19 @@ UploadVerificationData.defaultProps = {
 };
 
 UploadVerificationData.propTypes = {
+  alertMessage: PropTypes.string,
   files: PropTypes.arrayOf(PropTypes.shape).isRequired,
+  previousDateCurrentTo: PropTypes.string,
+  setDateCurrentTo: PropTypes.func.isRequired,
   setUploadFiles: PropTypes.func.isRequired,
+  showProcessing: PropTypes.bool.isRequired,
+  showProgressBar: PropTypes.bool.isRequired,
   title: PropTypes.string.isRequired,
   upload: PropTypes.func.isRequired,
-  setDateCurrentTo: PropTypes.func.isRequired,
-  previousDateCurrentTo: PropTypes.string,
-  alertMessage: PropTypes.string,
+  uploadProgress: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]).isRequired,
 };
 
 export default UploadVerificationData;

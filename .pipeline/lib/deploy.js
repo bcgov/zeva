@@ -32,20 +32,6 @@ module.exports = settings => {
       }
     }))
   }
-  /**** open this block, it will only deploy network security policies
-  console.log("will return22")
-  oc.applyRecommendedLabels(
-    objects,
-    phases[phase].name,
-    phase,
-    `${changeId}`,
-    phases[phase].instance,
-  );
-  oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
-  oc.applyAndDeploy(objects, phases[phase].instance);  
-  return;
-  console.log("you should not see this");
-   */
   
   // create configs
   if(phase === 'dev') {
@@ -148,15 +134,20 @@ module.exports = settings => {
   */
 
   // deploy frontend configmap
-  if(phase === 'dev') {
-    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-configmap.yaml`, {
-      'param': {
-        'NAME': phases[phase].name,
-        'SUFFIX': phases[phase].suffix,
-        'CREDIT_TRANSFER_ENABLED': phases[phase].creditTransferEnabled
-      }
-    }))
-  }
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-configmap.yaml`, {
+    'param': {
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix,
+      'CREDIT_TRANSFERS_ENABLED': phases[phase].creditTransfersEnabled,
+      'CREDIT_TRANSACTIONS_ENABLED': phases[phase].creditTransactionsEnabled,
+      'INITIATIVE_AGREEMENTS_ENABLED': phases[phase].initiativeAgreementsEnabled,
+      'MODEL_YEAR_REPORT_ENABLED': phases[phase].modelYearReportEnabled,
+      'PURCHASE_REQUESTS_ENABLED': phases[phase].purchaseRequestsEnabled,
+      'NOTIFICATIONS_ENABLED': phases[phase].notificationsEnabled,
+      'COMPLIANCE_REPORT_ENABLED': phases[phase].complianceReportEnabled,
+      'ROLES_ENABLED': phases[phase].rolesEnabled
+    }
+  }))
 
   // deploy frontend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-dc.yaml`, {

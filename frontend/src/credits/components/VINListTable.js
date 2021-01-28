@@ -1,30 +1,28 @@
 /*
  * Presentational component
  */
-import axios from 'axios';
 import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React from 'react';
 import ReactTable from 'react-table';
 
 import CREDIT_ERROR_CODES from '../../app/constants/errorCodes';
-import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import CustomPropTypes from '../../app/utilities/props';
 
 const VINListTable = (props) => {
   const {
     handleCheckboxClick,
-    id,
     items,
     user,
     invalidatedList,
     filtered,
-    setContent,
+    loading,
+    pages,
+    refreshContent,
     setFiltered,
+    setLoading,
+    setReactTable,
   } = props;
-
-  const [loading, setLoading] = useState(false);
-  const [pages, setPages] = useState(-1);
 
   const getErrorCodes = (item, fields = false) => {
     let errorCodes = '';
@@ -126,6 +124,7 @@ const VINListTable = (props) => {
       Header: 'Warning',
       headerClassName: 'warning',
       id: 'warning',
+      sortable: false,
     }, {
       accessor: (row) => {
         if (row.warnings && row.warnings.some((warning) => [
@@ -226,22 +225,10 @@ const VINListTable = (props) => {
           sorted.push(value);
         });
 
-        axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id), {
-          params: {
-            filters,
-            page: state.page + 1, // page from front-end is zero index, but in the back-end we need the actual page number
-            page_size: state.pageSize,
-            sorted: sorted.join(','),
-          },
-        }).then((response) => {
-          const { content, pages: numPages } = response.data;
-
-          setContent(content);
-          setPages(numPages);
-          setLoading(false);
-        });
+        refreshContent(state, filters);
       }}
       pages={pages}
+      ref={(ref) => { setReactTable(ref); }}
     />
   );
 };
@@ -254,13 +241,18 @@ VINListTable.defaultProps = {
 VINListTable.propTypes = {
   handleCheckboxClick: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  user: CustomPropTypes.user.isRequired,
   invalidatedList: PropTypes.arrayOf(PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string,
   ])).isRequired,
   filtered: PropTypes.arrayOf(PropTypes.object),
+  loading: PropTypes.bool.isRequired,
+  pages: PropTypes.number.isRequired,
+  refreshContent: PropTypes.func.isRequired,
   setFiltered: PropTypes.func,
+  setLoading: PropTypes.func.isRequired,
+  setReactTable: PropTypes.func.isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default VINListTable;

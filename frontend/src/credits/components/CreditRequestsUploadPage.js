@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import Button from '../../app/components/Button';
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import download from '../../app/utilities/download';
-import ExcelFileDrop from '../../app/components/FileDrop';
+import FileDropArea from '../../app/components/FileDropArea';
 import getFileSize from '../../app/utilities/getFileSize';
 
 const CreditRequestsUploadPage = (props) => {
@@ -13,11 +13,30 @@ const CreditRequestsUploadPage = (props) => {
     errorMessage,
     files,
     setErrorMessage,
+    setEvidenceErrorMessage,
+    evidenceErrorMessage,
     setUploadFiles,
     upload,
     icbcDate,
+    uploadEvidenceFiles,
+    setEvidenceUploadFiles,
+    evidenceCheckbox,
+    setEvidenceCheckbox,
+    showProgressBars
   } = props;
-
+//
+//
+// PROGRESS BARS NEEED TO BE ADDED
+//
+//
+  const handleCheckboxChange = (event) => {
+    const { value, name } = event.target;
+    if (event.target.checked) {
+      setEvidenceCheckbox(true);
+    } else {
+      setEvidenceCheckbox(false);
+    }
+  };
   const downloadTemplate = (e) => {
     const element = e.target;
     const original = element.innerHTML;
@@ -25,14 +44,6 @@ const CreditRequestsUploadPage = (props) => {
     return download(ROUTES_CREDIT_REQUESTS.TEMPLATE, {}).then(() => {
       element.innerHTML = original;
     });
-  };
-
-  const removeFile = (removedFile) => {
-    const found = files.findIndex((file) => (file === removedFile));
-    files.splice(found, 1);
-
-    setErrorMessage('');
-    setUploadFiles([...files]);
   };
 
   return (
@@ -66,51 +77,44 @@ const CreditRequestsUploadPage = (props) => {
           </p>
         </div>
       </div>
-
-      <div className="row">
-        <div className="col-md-12 col-lg-9 col-xl-6">
-          <div className="bordered">
-            {errorMessage && (
-            <div className="alert alert-danger mb-2" role="alert">
-              {errorMessage}
-            </div>
-            )}
-
-            <div className="panel panel-default">
-              <div className="content p-3">
-                <ExcelFileDrop setErrorMessage={setErrorMessage} setFiles={setUploadFiles} maxFiles={100000} />
-              </div>
-              {files.length > 0 && (
-              <div className="files px-3">
-                <div className="row pb-1">
-                  <div className="col-8 header">Filename</div>
-                  <div className="col-3 size header">Size</div>
-                  <div className="col-1 actions header" />
-                </div>
-                {files.map((file) => (
-                  <div className="row py-1" key={file.name}>
-                    <div className="col-8 filename">{file.name}</div>
-                    <div className="col-3 size">{getFileSize(file.size)}</div>
-                    <div className="col-1 actions">
-                      <button
-                        className="delete"
-                        onClick={() => {
-                          removeFile(file);
-                        }}
-                        type="button"
-                      >
-                        <FontAwesomeIcon icon="trash" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              )}
-            </div>
+      <FileDropArea
+        type="excel"
+        errorMessage={errorMessage}
+        files={files}
+        setErrorMessage={setErrorMessage}
+        setUploadFiles={setUploadFiles}
+      />
+      <div className="row mt-5 mb-2">
+        <div className="col-12">
+          <h2 className="mb-2">Upload Sales Evidence</h2>
+          <p>
+            If you are reapplying for credits for VIN that were previously returned as errors you can upload additional sales evidence to support your credit application.
+          </p>
+          <div>
+            <input
+              type="checkbox"
+              name="evidence-upload-checkbox"
+              id="evidence-upload-checkbox"
+              onChange={(event) => { handleCheckboxChange(event); }}
+              defaultChecked={evidenceCheckbox}
+              className="m-3"
+            />
+            <span className="text-blue">
+              Upload sales evidence document (in addition to the Excel ZEV Sales Information above)
+            </span>
           </div>
         </div>
       </div>
-
+      {evidenceCheckbox === true
+      && (
+      <FileDropArea
+        type="pdf"
+        errorMessage={evidenceErrorMessage}
+        files={uploadEvidenceFiles}
+        setErrorMessage={setEvidenceErrorMessage}
+        setUploadFiles={setEvidenceUploadFiles}
+      />
+      )}
       <div className="action-bar">
         <span className="left-content">
           <Button

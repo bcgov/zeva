@@ -19,6 +19,7 @@ const CreditRequestDetailsContainer = (props) => {
   const {
     location, match, user, validatedOnly,
   } = props;
+
   const { state: locationState } = location;
   const { id } = match.params;
 
@@ -52,7 +53,9 @@ const CreditRequestDetailsContainer = (props) => {
     }
     axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), submissionContent).then(() => {
       if (validationStatus === 'SUBMITTED') {
-        history.push(ROUTES_CREDIT_REQUESTS.CONFIRM.replace(':id', id));
+        window.location.reload();
+      } else if (validationStatus === 'VALIDATED') {
+        window.location.reload();
       } else {
         history.push(ROUTES_CREDIT_REQUESTS.LIST);
       }

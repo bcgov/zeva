@@ -22,6 +22,7 @@ from api.serializers.organization import OrganizationSerializer
 from api.models.organization import Organization
 from api.services.credit_transfer import aggregate_credit_transfer_details
 from api.services.credit_transaction import calculate_insufficient_credits
+from api.services.send_email import notifications_credit_transfers
 from decimal import Decimal
 
 
@@ -346,6 +347,8 @@ class CreditTransferSaveSerializer(ModelSerializer):
                     title=request.user.title,
                     signing_authority_assertion_id=confirmation
                 )
+
+            notifications_credit_transfers(credit_transfer)
 
         serializer = CreditTransferSerializer(
             credit_transfer, read_only=True,

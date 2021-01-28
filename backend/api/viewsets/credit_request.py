@@ -1,4 +1,5 @@
 import json
+import uuid
 
 from datetime import datetime
 from django.core.paginator import Paginator
@@ -7,6 +8,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Subquery, Count, Q
 from django.db.models.expressions import RawSQL
 from django.http import HttpResponse, HttpResponseForbidden
+from api.services.minio import minio_put_object
 
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
@@ -26,6 +28,7 @@ from api.services.credit_transaction import award_credits
 from api.services.sales_spreadsheet import create_sales_spreadsheet, \
     ingest_sales_spreadsheet, validate_spreadsheet, \
     create_errors_spreadsheet
+from api.services.send_email import notifications_credit_application
 from auditable.views import AuditableMixin
 
 
@@ -74,6 +77,8 @@ class CreditRequestViewset(
 
         if submission.validation_status == SalesSubmissionStatuses.VALIDATED:
             award_credits(submission)
+
+        notifications_credit_application(submission)
 
     @action(detail=False)
     def template(self, request):
@@ -212,14 +217,19 @@ class CreditRequestViewset(
                 duplicate_vins = []
                 awarded_vins = []
                 not_registered = Q(xls_vin__in=[])
-                sale_date = "0"
+                sale_date = Q(xls_vin__in=[])
                 mismatch_vins = Q(xls_vin__in=[])
+                invalid_date = Q(xls_vin__in=[])
 
                 if submission_filters['warning'] == '1' or \
                         '3' in submission_filters['warning']:
-                    duplicate_vins = Subquery(submission_content.annotate(
+                    duplicate_vins = Subquery(submission_content.values(
+                        'xls_vin'
+                    ).annotate(
                         vin_count=Count('xls_vin')
-                    ).filter(vin_count__gt=1).values_list('xls_vin', flat=True))
+                    ).values_list(
+                        'xls_vin', flat=True
+                    ).filter(vin_count__gt=1))
 
                 if submission_filters['warning'] == '1' or \
                         '2' in submission_filters['warning']:
@@ -234,8 +244,12 @@ class CreditRequestViewset(
                     ))
 
                 if submission_filters['warning'] == '1' or \
+                        '5' in submission_filters['warning']:
+                    sale_date = Q(Q(xls_sale_date__lte="43102.0") & ~Q(xls_sale_date=""))
+
+                if submission_filters['warning'] == '1' or \
                         '6' in submission_filters['warning']:
-                    sale_date = "43102.0"
+                    invalid_date = Q(Q(xls_sale_date__lte="0") | Q(xls_sale_date=""))
 
                 if submission_filters['warning'] == '1' or \
                         '4' in submission_filters['warning']:
@@ -259,7 +273,8 @@ class CreditRequestViewset(
                     Q(xls_vin__in=duplicate_vins) |
                     Q(xls_vin__in=awarded_vins) |
                     not_registered |
-                    Q(xls_sale_date__lte=sale_date) |
+                    sale_date |
+                    invalid_date |
                     mismatch_vins
                 )
 
@@ -298,10 +313,6 @@ class CreditRequestViewset(
 
         submission = SalesSubmission.objects.get(id=pk)
 
-        record_of_sale_count = RecordOfSale.objects.filter(
-            submission_id=pk
-        ).count()
-
         reset = request.GET.get('reset', None)
 
         if submission.validation_status == SalesSubmissionStatuses.SUBMITTED or \
@@ -309,9 +320,14 @@ class CreditRequestViewset(
             submission_content = SalesSubmissionContent.objects.filter(
                 submission_id=pk
             )
-            duplicate_vins = Subquery(submission_content.annotate(
+
+            duplicate_vins = Subquery(submission_content.values(
+                'xls_vin'
+            ).annotate(
                 vin_count=Count('xls_vin')
-            ).filter(vin_count__gt=1).values_list('xls_vin', flat=True))
+            ).values_list(
+                'xls_vin', flat=True
+            ).filter(vin_count__gt=1))
 
             awarded_vins = Subquery(RecordOfSale.objects.exclude(
                 submission_id=pk
@@ -337,3 +353,13 @@ class CreditRequestViewset(
             ).values_list('id', flat=True)
 
         return Response(list(unselected_vins))
+
+    @action(detail=True, methods=['get'])
+    def minio_url(self, request, pk=None):
+        object_name = uuid.uuid4().hex
+        url = minio_put_object(object_name)
+
+        return Response({
+            'url': url,
+            'minio_object_name': object_name
+        })

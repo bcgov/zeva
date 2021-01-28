@@ -1,6 +1,6 @@
 {
   "name": "zeva-frontend",
-  "version": "1.17.0",
+  "version": "1.18.0",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
@@ -13,7 +13,7 @@
     "@storybook/preset-scss": "^1.0.2",
     "@types/react": "^16.9.36",
     "amqp": "^0.2.7",
-    "axios": "^0.19.1",
+    "axios": "^0.21.1",
     "classnames": "^2.2.6",
     "express": "^4.17.1",
     "express-history-api-fallback": "^2.2.1",
@@ -42,7 +42,7 @@
     "react-router-dom": "^5.2.0",
     "react-table": "^6.11.4",
     "react-tooltip": "^4.2.10",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.4.0",
     "socket.io-client": "^2.3.0",
     "storybook": "^6.0.16",
     "toastr": "^2.1.4",
@@ -93,7 +93,7 @@
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.11.0",
-    "webpack-subresource-integrity": "^1.4.1"
+    "webpack-subresource-integrity": "^1.5.2"
   },
   "scripts": {
     "start": "node start",

@@ -26,6 +26,9 @@ const CONFIG = {
     CREDIT_TRANSACTIONS: {
       ENABLED: getConfig('credit_transactions.enabled', false),
     },
+    COMPLIANCE_REPORT: {
+      ENABLED: getConfig('compliance_report.enabled', false),
+    },
     INITIATIVE_AGREEMENTS: {
       ENABLED: getConfig('initiative_agreements.enabled', false),
     },

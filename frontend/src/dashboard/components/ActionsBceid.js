@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+
 import Loading from '../../app/components/Loading';
 import ActivityBanner from './ActivityBanner';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 import CONFIG from '../../app/config';
+import CustomPropTypes from '../../app/utilities/props';
 
 const ActionsBceid = (props) => {
   const { user, activityCount, loading } = props;
@@ -81,14 +83,14 @@ const ActionsBceid = (props) => {
           />
         )}
 
-        {activityCount.creditsNew > 0 && user.hasPermission('EDIT_SALES')
+        {activityCount.creditsDraft > 0 && user.hasPermission('EDIT_SALES')
         && (
         <ActivityBanner
           colour="yellow"
           icon="check-square"
           boldText="Credit Applications"
-          regularText={`${activityCount.creditsNew} saved awaiting submission`}
-          linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=New`}
+          regularText={`${activityCount.creditsDraft} saved awaiting submission`}
+          linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Draft`}
         />
         )}
         {activityCount.creditsAwaiting > 0 && user.hasPermission('EDIT_SALES')
@@ -111,7 +113,7 @@ const ActionsBceid = (props) => {
           linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Issued`}
         />
         )}
-        {activityCount.creditsNew === 0
+        {activityCount.creditsDraft === 0
         && activityCount.creditsAwaiting === 0 && activityCount.creditsIssued === 0
         && user.hasPermission('EDIT_SALES')
         && (
@@ -156,7 +158,7 @@ const ActionsBceid = (props) => {
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersRecorded} recorded by Government of B.C.`}
-          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Issued`}
+          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Recorded`}
         />
         )}
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
@@ -207,6 +209,7 @@ ActionsBceid.defaultProps = {
 ActionsBceid.propTypes = {
   activityCount: PropTypes.shape().isRequired,
   loading: PropTypes.bool.isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default ActionsBceid;
