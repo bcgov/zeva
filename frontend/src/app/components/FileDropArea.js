@@ -22,16 +22,15 @@ const FileDropArea = (props) => {
     evidenceDeleteList,
     setEvidenceDeleteList,
   } = props;
-  const deleteIds = evidenceDeleteList && evidenceDeleteList.map((each) => each.id);
   const removeFile = (removedFile) => {
     const found = files.findIndex((file) => (file === removedFile));
-    files.splice(found, 1);
+    const newList = files.splice(found, 1);
     setErrorMessage('');
-    setUploadFiles([...files]);
+    setUploadFiles([...newList]);
     if (type === 'pdf') {
       const uploadedIds = submission.evidence.map((each) => each.id);
       if (uploadedIds.includes(removedFile.id)) {
-        setEvidenceDeleteList([...evidenceDeleteList, removedFile]);
+        setEvidenceDeleteList([...evidenceDeleteList, removedFile.id]);
       }
     }
   };
@@ -87,7 +86,7 @@ const FileDropArea = (props) => {
               <div>{submission.filename}</div>
               )}
               {type === 'pdf' && submission && submission.evidence && submission.evidence
-                .filter((submissionFile) => !deleteIds.includes(submissionFile.id))
+                .filter((submissionFile) => !evidenceDeleteList.includes(submissionFile.id))
                 .map((submissionFile, index) => (
                   <div className="row py-1" key={`submission-${submissionFile.id}`}>
                     <div className="col-8 filename">{submissionFile.filename || submissionFile.name}</div>

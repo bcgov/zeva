@@ -24,29 +24,32 @@ const UploadCreditRequestsContainer = (props) => {
   const [submission, setSubmission] = useState({});
   const [evidenceErrorMessage, setEvidenceErrorMessage] = useState(null);
   const [icbcDate, setIcbcDate] = useState('- no icbc data yet -');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState();
   const [evidenceCheckbox, setEvidenceCheckbox] = useState(false);
   const [showProgressBars, setShowProgressBars] = useState(false);
   const [evidenceDeleteList, setEvidenceDeleteList] = useState([]);
   const [progressBars, setProgressBars] = useState({});
+  const [uploadNewExcel, setUploadNewExcel] = useState(false)
   const { id } = useParams();
   const refreshDetails = () => {
-    setLoading(true);
     if (id) {
+      setLoading(true);
       axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id))
         .then((response) => {
           setSubmission(response.data);
           if (response.data.evidence.length > 0) {
             setEvidenceCheckbox(true);
           }
+          setLoading(false);
         });
+    } else {
+      setUploadNewExcel(true);
     }
     axios.get(ROUTES_ICBCVERIFICATION.DATE).then((response) => {
       if (response.data.uploadDate) {
         setIcbcDate(moment(response.data.uploadDate).format('MMM D, YYYY'));
       }
     });
-    setLoading(false);
   };
 
   const updateProgressBars = (progressEvent, index) => {
@@ -109,7 +112,9 @@ const UploadCreditRequestsContainer = (props) => {
         id,
       };
     }
-
+    if (uploadNewExcel) {
+      data.uploadNew = true;
+    }
     upload(ROUTES_CREDIT_REQUESTS.UPLOAD, files, data).then((response) => {
       const { id: creditRequestId } = response.data;
       if (evidenceCheckbox === true) {
@@ -123,7 +128,8 @@ const UploadCreditRequestsContainer = (props) => {
 
           axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/gi, creditRequestId), {
             ...patchData,
-          }).then((response) => {
+            evidenceDeleteList,
+          }).then(() => {
             history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/gi, creditRequestId));
           });
         });
@@ -169,6 +175,8 @@ const UploadCreditRequestsContainer = (props) => {
       submission={submission}
       evidenceDeleteList={evidenceDeleteList}
       setEvidenceDeleteList={setEvidenceDeleteList}
+      uploadNewExcel={uploadNewExcel}
+      setUploadNewExcel={setUploadNewExcel}
     />,
   ]);
 };

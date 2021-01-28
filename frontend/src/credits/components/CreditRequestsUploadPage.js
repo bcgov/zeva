@@ -27,14 +27,16 @@ const CreditRequestsUploadPage = (props) => {
     submission,
     evidenceDeleteList,
     setEvidenceDeleteList,
+    uploadNewExcel,
+    setUploadNewExcel,
   } = props;
-console.log(submission)
+
   const handleCheckboxChange = (event) => {
-    const { value, name } = event.target;
-    if (event.target.checked) {
-      setEvidenceCheckbox(true);
+    const { name, checked } = event.target;
+    if (name === 'evidence-upload-checkbox') {
+      setEvidenceCheckbox(checked);
     } else {
-      setEvidenceCheckbox(false);
+      setUploadNewExcel(checked);
     }
   };
   const downloadTemplate = (e) => {
@@ -45,7 +47,6 @@ console.log(submission)
       element.innerHTML = original;
     });
   };
-
   return (
     <div id="sales-edit" className="page">
       <div className="row mt-3 mb-2">
@@ -75,16 +76,34 @@ console.log(submission)
           <p>
             Credits can be issued for active ZEV sales made prior to {icbcDate}.
           </p>
+          {submission && (
+
+            <div>
+              <input
+                type="checkbox"
+                name="new-sales-upload-checkbox"
+                id="new-sales-upload-checkbox"
+                onChange={(event) => { handleCheckboxChange(event); }}
+                className="m-3"
+              />
+              <span className="text-blue">
+                Upload new sales spreadsheet
+              </span>
+            </div>
+          )}
         </div>
       </div>
-      <FileDropArea
-        type="excel"
-        errorMessage={errorMessage}
-        files={files}
-        setErrorMessage={setErrorMessage}
-        setUploadFiles={setUploadFiles}
-        submission={submission}
-      />
+      {(!submission || uploadNewExcel)
+      && (
+        <FileDropArea
+          type="excel"
+          errorMessage={errorMessage}
+          files={files}
+          setErrorMessage={setErrorMessage}
+          setUploadFiles={setUploadFiles}
+          submission={submission}
+        />
+      )}
       <div className="row mt-5 mb-2">
         <div className="col-12">
           <h2 className="mb-2">Upload Sales Evidence</h2>
@@ -97,7 +116,7 @@ console.log(submission)
               name="evidence-upload-checkbox"
               id="evidence-upload-checkbox"
               onChange={(event) => { handleCheckboxChange(event); }}
-              defaultChecked={submission.evidence && submission.evidence.length > 0}
+              defaultChecked={evidenceCheckbox}
               className="m-3"
             />
             <span className="text-blue">
@@ -106,7 +125,7 @@ console.log(submission)
           </div>
         </div>
       </div>
-      {evidenceCheckbox === true
+      {evidenceCheckbox
       && (
       <FileDropArea
         type="pdf"
