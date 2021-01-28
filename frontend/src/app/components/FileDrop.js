@@ -4,7 +4,9 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 const FileDrop = (props) => {
-  const { setErrorMessage, setFiles, maxFiles, allowedFileTypes } = props;
+  const {
+    setErrorMessage, setFiles, maxFiles, allowedFileTypes,
+  } = props;
   const [dropMessage, setDropMessage] = useState('');
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > maxFiles) {

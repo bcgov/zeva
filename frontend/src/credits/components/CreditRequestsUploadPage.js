@@ -1,12 +1,10 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import Button from '../../app/components/Button';
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import download from '../../app/utilities/download';
 import FileDropArea from '../../app/components/FileDropArea';
-import getFileSize from '../../app/utilities/getFileSize';
 
 const CreditRequestsUploadPage = (props) => {
   const {
@@ -165,16 +163,35 @@ const CreditRequestsUploadPage = (props) => {
 
 CreditRequestsUploadPage.defaultProps = {
   errorMessage: '',
+  evidenceErrorMessage: '',
   icbcDate: '',
+  progressBars: {},
+  showProgressBars: false,
+  evidenceDeleteList: [],
+  submission: {},
+  uploadNewExcel: false,
 };
 
 CreditRequestsUploadPage.propTypes = {
   errorMessage: PropTypes.string,
+  evidenceCheckbox: PropTypes.bool.isRequired,
+  evidenceDeleteList: PropTypes.arrayOf(PropTypes.string),
+  evidenceErrorMessage: PropTypes.string,
   files: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   icbcDate: PropTypes.string,
+  progressBars: PropTypes.shape(),
   setErrorMessage: PropTypes.func.isRequired,
+  setEvidenceCheckbox: PropTypes.func.isRequired,
+  setEvidenceDeleteList: PropTypes.func.isRequired,
+  setEvidenceErrorMessage: PropTypes.func.isRequired,
+  setEvidenceUploadFiles: PropTypes.func.isRequired,
+  setUploadNewExcel: PropTypes.func.isRequired,
+  showProgressBars: PropTypes.bool,
+  submission: PropTypes.shape(),
   setUploadFiles: PropTypes.func.isRequired,
+  uploadEvidenceFiles: PropTypes.arrayOf(PropTypes.string).isRequired,
   upload: PropTypes.func.isRequired,
+  uploadNewExcel: PropTypes.bool,
 };
 
 export default CreditRequestsUploadPage;

@@ -1,17 +1,15 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 const FileDrop = (props) => {
   const {
     setErrorMessage, setFiles, maxFiles, allowedFileTypes, getExistingFilesCount,
   } = props;
-  
   const [dropMessage, setDropMessage] = useState('');
   const onDrop = (acceptedFiles) => {
     if (acceptedFiles.length > (maxFiles - getExistingFilesCount())) {
-
       setDropMessage(`Please select only ${maxFiles} file${maxFiles !== 1 ? 's' : ''}.`);
     } else {
       setDropMessage('');
@@ -49,6 +47,7 @@ FileDrop.propTypes = {
   setFiles: PropTypes.func.isRequired,
   maxFiles: PropTypes.number.isRequired,
   allowedFileTypes: PropTypes.string,
+  getExistingFilesCount: PropTypes.func,
 };
 
 export default FileDrop;

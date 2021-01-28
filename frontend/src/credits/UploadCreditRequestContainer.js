@@ -19,17 +19,17 @@ import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification';
 const UploadCreditRequestsContainer = (props) => {
   const { user } = props;
   const [errorMessage, setErrorMessage] = useState(null);
-  const [files, setFiles] = useState([]);
-  const [evidenceFiles, setEvidenceFiles] = useState([]);
-  const [submission, setSubmission] = useState({});
+  const [evidenceCheckbox, setEvidenceCheckbox] = useState(false);
+  const [evidenceDeleteList, setEvidenceDeleteList] = useState([]);
   const [evidenceErrorMessage, setEvidenceErrorMessage] = useState(null);
+  const [evidenceFiles, setEvidenceFiles] = useState([]);
+  const [files, setFiles] = useState([]);
   const [icbcDate, setIcbcDate] = useState('- no icbc data yet -');
   const [loading, setLoading] = useState();
-  const [evidenceCheckbox, setEvidenceCheckbox] = useState(false);
-  const [showProgressBars, setShowProgressBars] = useState(false);
-  const [evidenceDeleteList, setEvidenceDeleteList] = useState([]);
   const [progressBars, setProgressBars] = useState({});
-  const [uploadNewExcel, setUploadNewExcel] = useState(false)
+  const [showProgressBars, setShowProgressBars] = useState(false);
+  const [submission, setSubmission] = useState({});
+  const [uploadNewExcel, setUploadNewExcel] = useState(false);
   const { id } = useParams();
   const refreshDetails = () => {
     if (id) {
@@ -156,27 +156,27 @@ const UploadCreditRequestsContainer = (props) => {
   return ([
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
     <CreditRequestsUploadPage
-      icbcDate={icbcDate}
       errorMessage={errorMessage}
+      evidenceCheckbox={evidenceCheckbox}
+      evidenceDeleteList={evidenceDeleteList}
       evidenceErrorMessage={evidenceErrorMessage}
       files={files}
+      icbcDate={icbcDate}
       key="page"
+      progressBars={progressBars}
       setErrorMessage={setErrorMessage}
+      setEvidenceCheckbox={setEvidenceCheckbox}
+      setEvidenceDeleteList={setEvidenceDeleteList}
       setEvidenceErrorMessage={setEvidenceErrorMessage}
+      setEvidenceUploadFiles={setEvidenceFiles}
       setUploadFiles={setFiles}
+      setUploadNewExcel={setUploadNewExcel}
+      showProgressBars={showProgressBars}
+      submission={submission}
+      uploadEvidenceFiles={evidenceFiles}
+      uploadNewExcel={uploadNewExcel}
       upload={doUpload}
       user={user}
-      uploadEvidenceFiles={evidenceFiles}
-      setEvidenceUploadFiles={setEvidenceFiles}
-      evidenceCheckbox={evidenceCheckbox}
-      setEvidenceCheckbox={setEvidenceCheckbox}
-      showProgressBars={showProgressBars}
-      progressBars={progressBars}
-      submission={submission}
-      evidenceDeleteList={evidenceDeleteList}
-      setEvidenceDeleteList={setEvidenceDeleteList}
-      uploadNewExcel={uploadNewExcel}
-      setUploadNewExcel={setUploadNewExcel}
     />,
   ]);
 };

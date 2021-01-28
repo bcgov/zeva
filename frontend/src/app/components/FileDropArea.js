@@ -1,10 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useCallback } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-
-import Button from './Button';
-import ROUTES_CREDIT_REQUESTS from '../routes/CreditRequests';
-import download from '../utilities/download';
 import FileDrop from './FileDrop';
 import FileDropEvidence from './FileDropEvidence';
 import getFileSize from '../utilities/getFileSize';
@@ -87,7 +83,7 @@ const FileDropArea = (props) => {
               )}
               {type === 'pdf' && submission && submission.evidence && submission.evidence
                 .filter((submissionFile) => !evidenceDeleteList.includes(submissionFile.id))
-                .map((submissionFile, index) => (
+                .map((submissionFile) => (
                   <div className="row py-1" key={`submission-${submissionFile.id}`}>
                     <div className="col-8 filename">{submissionFile.filename || submissionFile.name}</div>
                     {!showProgressBars && [
@@ -150,6 +146,29 @@ const FileDropArea = (props) => {
       </div>
     </div>
   );
+};
+
+FileDropArea.defaultProps = {
+  errorMessage: '',
+  files: [],
+  showProgressBars: false,
+  submission: {},
+  progressBars: {},
+  evidenceDeleteList: [],
+  setEvidenceDeleteList: () => {},
+};
+
+FileDropArea.propTypes = {
+  type: PropTypes.string.isRequired,
+  errorMessage: PropTypes.string,
+  files: PropTypes.arrayOf(PropTypes.shape()),
+  setErrorMessage: PropTypes.func.isRequired,
+  setUploadFiles: PropTypes.func.isRequired,
+  showProgressBars: PropTypes.bool,
+  submission: PropTypes.shape(),
+  progressBars: PropTypes.shape(),
+  evidenceDeleteList: PropTypes.arrayOf(PropTypes.string),
+  setEvidenceDeleteList: PropTypes.func,
 };
 
 export default FileDropArea;
