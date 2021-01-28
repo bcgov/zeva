@@ -1,11 +1,12 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import Button from './Button';
 import ROUTES_CREDIT_REQUESTS from '../routes/CreditRequests';
 import download from '../utilities/download';
 import FileDrop from './FileDrop';
+import FileDropEvidence from './FileDropEvidence';
 import getFileSize from '../utilities/getFileSize';
 
 const FileDropArea = (props) => {
@@ -17,12 +18,22 @@ const FileDropArea = (props) => {
     setUploadFiles,
     showProgressBars,
     progressBars,
+    submission,
+    evidenceDeleteList,
+    setEvidenceDeleteList,
   } = props;
+  const deleteIds = evidenceDeleteList && evidenceDeleteList.map((each) => each.id);
   const removeFile = (removedFile) => {
     const found = files.findIndex((file) => (file === removedFile));
     files.splice(found, 1);
     setErrorMessage('');
     setUploadFiles([...files]);
+    if (type === 'pdf') {
+      const uploadedIds = submission.evidence.map((each) => each.id);
+      if (uploadedIds.includes(removedFile.id)) {
+        setEvidenceDeleteList([...evidenceDeleteList, removedFile]);
+      }
+    }
   };
 
   return (
@@ -34,24 +45,71 @@ const FileDropArea = (props) => {
             {errorMessage}
           </div>
           )}
-
           <div className="panel panel-default">
             <div className="content p-3">
               {type === 'excel'
-              && <FileDrop setErrorMessage={setErrorMessage} setFiles={setUploadFiles} maxFiles={100000} />}
+              && <FileDrop setErrorMessage={setErrorMessage} setFiles={setUploadFiles} maxFiles={1} />}
               {type === 'pdf'
-          && <FileDrop setErrorMessage={setErrorMessage} setFiles={setUploadFiles} maxFiles={5} allowedFileTypes="image/png, image/gif, image/jpg,image/jpeg, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document" />}
+          && (
+          <>
+            <FileDropEvidence
+              getExistingFilesCount={() => (submission && submission.evidence ? (submission.evidence.length - evidenceDeleteList.length) : 0)}
+              setErrorMessage={setErrorMessage}
+              files={files}
+              setFiles={setUploadFiles}
+              maxFiles={5}
+              allowedFileTypes="image/png, image/gif, image/jpg,image/jpeg, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            />
+            <div className="form-group mt-4 row">
+              <div className="col-12 text-blue">
+                <div>
+                  <strong>Limit of 5 files</strong>
+                </div>
+                <strong>Files</strong> (doc, docx, pdf, jpg, png, gif)
+              </div>
             </div>
-            {files.length > 0 && (
+          </>
+          )}
+
+            </div>
+            {(files.length > 0
+            || (type === 'excel' && submission && submission.filename)
+            || (type === 'pdf' && submission && (submission.evidence && submission.evidence.length > 0)))
+            && (
             <div className="files px-3">
               <div className="row pb-1">
                 <div className="col-8 header">Filename</div>
                 <div className="col-3 size header">Size</div>
                 <div className="col-1 actions header" />
               </div>
+              {type === 'excel' && submission.filename && files.length === 0
+              && (
+              <div>{submission.filename}</div>
+              )}
+              {type === 'pdf' && submission && submission.evidence && submission.evidence
+                .filter((submissionFile) => !deleteIds.includes(submissionFile.id))
+                .map((submissionFile, index) => (
+                  <div className="row py-1" key={`submission-${submissionFile.id}`}>
+                    <div className="col-8 filename">{submissionFile.filename || submissionFile.name}</div>
+                    {!showProgressBars && [
+                      <div className="col-3 size">{getFileSize(submissionFile.size)}</div>,
+                      <div className="col-1 actions">
+                        <button
+                          className="delete"
+                          onClick={() => {
+                            removeFile(submissionFile);
+                          }}
+                          type="button"
+                        >
+                          <FontAwesomeIcon icon="trash" />
+                        </button>
+                      </div>,
+                    ]}
+                  </div>
+                ))}
               {files.map((file, index) => (
-                <div className="row py-1" key={file.id}>
-                  <div className="col-8 filename">{file.name}</div>
+                <div className="row py-1" key={`file-${file.id}`}>
+                  <div className="col-8 filename">{file.filename || file.name}</div>
                   {!showProgressBars && [
                     <div className="col-3 size">{getFileSize(file.size)}</div>,
                     <div className="col-1 actions">

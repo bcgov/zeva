@@ -24,12 +24,11 @@ const CreditRequestsUploadPage = (props) => {
     setEvidenceCheckbox,
     showProgressBars,
     progressBars,
+    submission,
+    evidenceDeleteList,
+    setEvidenceDeleteList,
   } = props;
-//
-//
-// PROGRESS BARS NEEED TO BE ADDED
-//
-//
+console.log(submission)
   const handleCheckboxChange = (event) => {
     const { value, name } = event.target;
     if (event.target.checked) {
@@ -84,6 +83,7 @@ const CreditRequestsUploadPage = (props) => {
         files={files}
         setErrorMessage={setErrorMessage}
         setUploadFiles={setUploadFiles}
+        submission={submission}
       />
       <div className="row mt-5 mb-2">
         <div className="col-12">
@@ -97,7 +97,7 @@ const CreditRequestsUploadPage = (props) => {
               name="evidence-upload-checkbox"
               id="evidence-upload-checkbox"
               onChange={(event) => { handleCheckboxChange(event); }}
-              defaultChecked={evidenceCheckbox}
+              defaultChecked={submission.evidence && submission.evidence.length > 0}
               className="m-3"
             />
             <span className="text-blue">
@@ -116,6 +116,9 @@ const CreditRequestsUploadPage = (props) => {
         setUploadFiles={setEvidenceUploadFiles}
         showProgressBars={showProgressBars}
         progressBars={progressBars}
+        submission={submission}
+        evidenceDeleteList={evidenceDeleteList}
+        setEvidenceDeleteList={setEvidenceDeleteList}
       />
       )}
       <div className="action-bar">
@@ -127,7 +130,7 @@ const CreditRequestsUploadPage = (props) => {
         </span>
         <span className="right-content">
           <button
-            disabled={files.length === 0}
+            disabled={files.length === 0 && !submission.filename}
             className="button primary"
             onClick={() => upload()}
             type="button"

@@ -21,23 +21,31 @@ const UploadCreditRequestsContainer = (props) => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [files, setFiles] = useState([]);
   const [evidenceFiles, setEvidenceFiles] = useState([]);
+  const [submission, setSubmission] = useState({});
   const [evidenceErrorMessage, setEvidenceErrorMessage] = useState(null);
   const [icbcDate, setIcbcDate] = useState('- no icbc data yet -');
   const [loading, setLoading] = useState(true);
   const [evidenceCheckbox, setEvidenceCheckbox] = useState(false);
   const [showProgressBars, setShowProgressBars] = useState(false);
+  const [evidenceDeleteList, setEvidenceDeleteList] = useState([]);
   const [progressBars, setProgressBars] = useState({});
-
   const { id } = useParams();
-
   const refreshDetails = () => {
     setLoading(true);
-    axios.get(ROUTES_ICBCVERIFICATION.DATE)
-      .then((response) => {
-        if (response.data.uploadDate) {
-          setIcbcDate(moment(response.data.uploadDate).format('MMM D, YYYY'));
-        }
-      });
+    if (id) {
+      axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id))
+        .then((response) => {
+          setSubmission(response.data);
+          if (response.data.evidence.length > 0) {
+            setEvidenceCheckbox(true);
+          }
+        });
+    }
+    axios.get(ROUTES_ICBCVERIFICATION.DATE).then((response) => {
+      if (response.data.uploadDate) {
+        setIcbcDate(moment(response.data.uploadDate).format('MMM D, YYYY'));
+      }
+    });
     setLoading(false);
   };
 
@@ -70,10 +78,9 @@ const UploadCreditRequestsContainer = (props) => {
               },
               onUploadProgress: (progressEvent) => {
                 updateProgressBars(progressEvent, index);
-
                 if (progressEvent.loaded >= progressEvent.total) {
                   resolve({
-                    filename: file.name,
+                    filename: file.filename || file.name,
                     mimeType: file.type,
                     minioObjectName,
                     size: file.size,
@@ -159,6 +166,9 @@ const UploadCreditRequestsContainer = (props) => {
       setEvidenceCheckbox={setEvidenceCheckbox}
       showProgressBars={showProgressBars}
       progressBars={progressBars}
+      submission={submission}
+      evidenceDeleteList={evidenceDeleteList}
+      setEvidenceDeleteList={setEvidenceDeleteList}
     />,
   ]);
 };
