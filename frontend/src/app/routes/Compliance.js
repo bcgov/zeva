@@ -7,7 +7,11 @@ const COMPLIANCE = {
   RATIOS: `${API_BASE_PATH}/ratios`,
   REPORT_ADD: `${API_BASE_PATH}/reports/add`,
   REPORT_DETAILS: `${API_BASE_PATH}/reports/:id`,
-  REPORT_EDIT: `${API_BASE_PATH}/reports/:id/edit`,
+  REPORT_SUPPLIER_INFORMATION: `${API_BASE_PATH}/reports/:id/supplier-information`,
+  REPORT_CONSUMER_SALES: `${API_BASE_PATH}/reports/:id/consumer-sales`,
+  REPORT_CREDIT_ACTIVITY: `${API_BASE_PATH}/reports/:id/credit-activity`,
+  REPORT_SUMMARY: `${API_BASE_PATH}/reports/:id/summary`,
+  REPORT_ASSESSMENT: `${API_BASE_PATH}/reports/:id/assessment`,
 };
 
 export default COMPLIANCE;
