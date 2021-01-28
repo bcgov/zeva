@@ -45,7 +45,7 @@ const phases = {
         instance: `${name}-prod`, version:`${version}`, tag:`prod-${version}`, 
         host: 'zeroemissionvehicles.gov.bc.ca', djangoDebug: 'False', logoutHostName: 'logon7.gov.bc.ca',
         frontendCpuRequest: '300m', frontendCpuLimit: '600m', frontendMemoryRequest: '1G', frontendMemoryLimit: '2G', frontendReplicas: 2, frontendMinReplicas: 2, frontendMaxReplicas: 5,
-        creditTransfersEnabled: 'false', creditTransactionsEnabled: 'true', initiativeAgreementsEnabled: 'false', modelYearReportEnabled: 'false', purchaseRequestsEnabled: 'false', notificationsEnabled: 'false', complianceReportEnabled: 'false', rolesEnabled: 'false',
+        creditTransfersEnabled: 'true', creditTransactionsEnabled: 'true', initiativeAgreementsEnabled: 'false', modelYearReportEnabled: 'false', purchaseRequestsEnabled: 'false', notificationsEnabled: 'false', complianceReportEnabled: 'false', rolesEnabled: 'false',
         backendCpuRequest: '200m', backendCpuLimit: '700m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 30, backendReplicas: 2, backendMinReplicas: 2, backendMaxReplicas: 5, backendHost: `zeva-backend-prod.${ocpName}.gov.bc.ca`,
         minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M', minioPvcSize: '3G',
         schemaspyCpuRequest: '50m', schemaspyCpuLimit: '400m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 160,
