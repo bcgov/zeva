@@ -32,20 +32,6 @@ module.exports = settings => {
       }
     }))
   }
-  /**** open this block, it will only deploy network security policies
-  console.log("will return22")
-  oc.applyRecommendedLabels(
-    objects,
-    phases[phase].name,
-    phase,
-    `${changeId}`,
-    phases[phase].instance,
-  );
-  oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
-  oc.applyAndDeploy(objects, phases[phase].instance);  
-  return;
-  console.log("you should not see this");
-   */
   
   // create configs
   if(phase === 'dev') {
