@@ -19,6 +19,9 @@ const NotificationListContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [alertMessage, setAlertMessage] = useState(null);
   const [status, setStaus] = useState(null);
+  const [displayList, setDisplayList] = useState(false);
+  const [subscribe, setSubscribe] = useState();
+  const [unsubscribe, setUnsubscribe] = useState();
   const [icon, setIcon] = useState(null);
 
   const { keycloak, user, } = props;
@@ -32,6 +35,20 @@ const NotificationListContainer = (props) => {
     if (event.target.checked) {
       const checked = checkboxes.concat(event.target.id);
       setCheckboxes(checked);
+    }
+  }; 
+  
+  const handleChange = (event) => {
+    let items;
+    if (event.target.checked && event.target.value === "Subscribe") {
+      items = notifications.map((notification) => notification.id)
+      setCheckboxes(items);
+      setDisplayList(true)
+    } 
+    if (event.target.checked && event.target.value === "Unsubscribe") {
+      items = [0]
+      setCheckboxes(items);
+      setDisplayList(false)
     }
   }; 
 
@@ -56,12 +73,22 @@ const NotificationListContainer = (props) => {
 
   const refreshList = (showLoading) => {
     setLoading(showLoading);
-    axios.get(ROUTES_NOTIFICATIONS.LIST).then((response) => {
+    let notificationList = axios.get(ROUTES_NOTIFICATIONS.LIST).then((response) => {
       filterNotifications(response.data);
-      setLoading(false);
     });
-    axios.get(ROUTES_NOTIFICATIONS.SUBSCRIPTIONS).then((response) => {
+    let subscriptionList = axios.get(ROUTES_NOTIFICATIONS.SUBSCRIPTIONS).then((response) => {
+      if (response.data.length === 0) {
+      setUnsubscribe(true)
+      setSubscribe(false)
+    } else {
+      setUnsubscribe(false)
+      setSubscribe(true)
+      setDisplayList(true)
       setCheckboxes(response.data);
+    } 
+    });
+    Promise.all([notificationList, subscriptionList]).then(() => {
+      setLoading(false);
     });
   };
 
@@ -113,7 +140,11 @@ const NotificationListContainer = (props) => {
                   notifications={notifications}
                   checkboxes={checkboxes}
                   handleCheckboxClick={handleCheckboxClick}
+                  handleChange={handleChange}
                   user={user}
+                  subscribe={subscribe}
+                  unsubscribe={unsubscribe}
+                  displayList={displayList}
                 />
                 {actionbar}
               </fieldset>
