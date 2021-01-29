@@ -9,6 +9,7 @@ from .viewsets.user import UserViewSet
 from .viewsets.vehicle import VehicleViewSet
 from .viewsets.icbc_verification import IcbcVerificationViewSet
 from .viewsets.credit_transfer import CreditTransferViewset
+from .viewsets.compliance_ratio import ComplianceRatioViewSet
 from .viewsets.signing_authority_assertion import SigningAuthorityAssertionViewSet
 from .viewsets.upload import UploadViewSet
 
@@ -32,6 +33,9 @@ router.register(
 )
 router.register(
     r'signing-authority-assertions', SigningAuthorityAssertionViewSet, basename='signing-authority-assertion'
+)
+router.register(
+    r'compliance/ratios', ComplianceRatioViewSet, basename='compliance'
 )
 router.register(
     r'uploads', UploadViewSet, basename='minio'

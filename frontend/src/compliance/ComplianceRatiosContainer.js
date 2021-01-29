@@ -3,14 +3,32 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceTabs from '../app/components/ComplianceTabs';
+import COMPLIANCE from '../app/routes/Compliance';
 import ComplianceRatiosDetailsPage from './components/ComplianceRatiosDetailsPage';
 
 const ComplianceRatiosContainer = (props) => {
+   const [loading, setLoading] = useState(true);
   const { user } = props;
+  const [complianceRatios, setComplianceRatios] = useState([]);
+
+  const refreshList = (showLoading) => {
+    setLoading(showLoading);
+    axios.get(COMPLIANCE.RATIOS).then((response) => {
+      setComplianceRatios(response.data);
+      setLoading(false);
+    });
+
+  };
+
+  useEffect(() => {
+    refreshList(true);
+  }, []);
+  
+
   return (
     <>
       <ComplianceTabs active="ratios" user={user} />
-      <ComplianceRatiosDetailsPage user={user} />
+      <ComplianceRatiosDetailsPage user={user} loading={loading} complianceRatios={complianceRatios} />
     </>
   );
 };
