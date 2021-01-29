@@ -132,7 +132,10 @@ class Router extends Component {
               />
               <Route
                 path={ROUTES_COMPLIANCE.CALCULATOR}
-                render={() => <ComplianceCalculatorContainer keycloak={keycloak} user={user} />}
+                render={() => ((typeof user.hasPermission === 'function' && user.hasPermission('EDIT_SALES') && !user.isGovernment)
+                  ? <ComplianceCalculatorContainer keycloak={keycloak} user={user} /> : (
+                    <ComplianceReportsContainer keycloak={keycloak} user={user} />
+                  ))}
               />
               <Route
                 path={ROUTES_COMPLIANCE.REPORTS}
