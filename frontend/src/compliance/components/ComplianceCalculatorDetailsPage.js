@@ -63,14 +63,19 @@ const ComplianceCalculatorDetailsPage = (props) => {
                     <div className="col-sm-6">
                       9.5%
                     </div>
-                    <div className="col-sm-5 text-blue pl-0">
-                      Large Supplier Class A Ratio:
+                    {supplierSize === 'Large'
+                    && (
+                    <>
+                      <div className="col-sm-5 text-blue pl-0">
+                        Large Supplier Class A Ratio:
 
-                    </div>
-                    <div className="col-sm-6">
-                      {supplierSize === 'Medium' ? 'NA' : '9%'}
+                      </div>
+                      <div className="col-sm-6">
+                        9%
 
-                    </div>
+                      </div>
+                    </>
+                    )}
                   </div>
                   <div className="form-group row mb-0 py-0">
                     <label
