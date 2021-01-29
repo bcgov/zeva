@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceTabs from '../app/components/ComplianceTabs';
-import COMPLIANCE from '../app/routes/Compliance';
+import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import ComplianceRatiosDetailsPage from './components/ComplianceRatiosDetailsPage';
 
 const ComplianceRatiosContainer = (props) => {
@@ -13,7 +13,7 @@ const ComplianceRatiosContainer = (props) => {
 
   const refreshList = (showLoading) => {
     setLoading(showLoading);
-    axios.get(COMPLIANCE.RATIOS).then((response) => {
+    axios.get(ROUTES_COMPLIANCE.RATIOS).then((response) => {
       setComplianceRatios(response.data);
       setLoading(false);
     });
