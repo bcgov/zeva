@@ -17,7 +17,7 @@ const ComplianceRatiosTable = (props) => {
     sortable: false,
     maxWidth: 200,
   }, {
-    accessor: (item) => (item.complianceRatio),
+    accessor: (item) => (item.complianceRatio) + '%',
     className: 'text-center',
     Header: 'Compliance Ratio',
     headerClassName: 'font-weight-bold',
@@ -25,7 +25,7 @@ const ComplianceRatiosTable = (props) => {
     sortable: false,
     maxWidth: 200,
   }, {
-    accessor: (item) => (item.zevClassA),
+    accessor: (item) => (item.zevClassA) + '%',
     className: 'text-center',
     Header: 'ZEV Class A',
     headerClassName: 'font-weight-bold',
