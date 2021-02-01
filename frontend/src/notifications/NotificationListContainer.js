@@ -141,6 +141,7 @@ const NotificationListContainer = (props) => {
                   checkboxes={checkboxes}
                   handleCheckboxClick={handleCheckboxClick}
                   handleChange={handleChange}
+                  loading={loading}
                   user={user}
                   subscribe={subscribe}
                   unsubscribe={unsubscribe}
