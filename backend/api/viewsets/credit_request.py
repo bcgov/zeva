@@ -111,7 +111,13 @@ class CreditRequestViewset(
         user = request.user
 
         jsondata = {}
-
+        upload_new = request.data.get('upload_new', False)
+        if not upload_new:
+            return HttpResponse(
+                status=200, content=json.dumps({
+                    'id': request.data.get('id', None)
+                }), content_type='application/json'
+            )
         try:
             file = request.FILES['files']
 
