@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTable from '../../app/components/ReactTable';
 import CustomPropTypes from '../../app/utilities/props';
+import history from '../../app/History';
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 
 const ComplianceReportsTable = (props) => {
   const { user, data } = props;
@@ -65,6 +67,20 @@ const ComplianceReportsTable = (props) => {
       columns={columns}
       data={data}
       filterable={true}
+      getTrProps={(state, row) => {
+        if (row && row.original && user) {
+          return {
+            onClick: () => {
+              const { id, validationStatus } = row.original;
+              //TODO: Add logic to call detail api
+              history.push(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id));
+            },
+            className: 'clickable',
+          };
+        }
+
+        return {};
+      }}
       />
   );
 };

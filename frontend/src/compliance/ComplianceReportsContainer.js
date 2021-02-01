@@ -11,8 +11,8 @@ const ComplianceReportsContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [displayBtn, setDisplayBtn] = useState(true);
-  let tempData = [{ "modelYear": "2021", "status": "Draft", "compliant": "", "totalLdvSales": "", "supplierClass": "Large", "obligationTotal": "", "obligationACredits": "" },
-    { "modelYear": "2020", "status": "Assessed", "compliant": "Yes", "totalLdvSales": "5,934", "supplierClass": "Medium", "obligationTotal": "574.10", "obligationACredits": "NA" }]
+  let tempData = [{ "id":"1","modelYear": "2021", "status": "Draft", "compliant": "", "totalLdvSales": "", "supplierClass": "Large", "obligationTotal": "", "obligationACredits": "" },
+    { "id":"2","modelYear": "2020", "status": "Assessed", "compliant": "Yes", "totalLdvSales": "5,934", "supplierClass": "Medium", "obligationTotal": "574.10", "obligationACredits": "NA" }]
   
   const refreshList = (showLoading) => {
     setLoading(showLoading);
