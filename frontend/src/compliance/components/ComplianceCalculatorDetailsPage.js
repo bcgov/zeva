@@ -3,10 +3,18 @@ import CustomPropTypes from '../../app/utilities/props';
 
 const ComplianceCalculatorDetailsPage = (props) => {
   const {
-    user, modelYear, setModelYear, supplierSize, setSupplierSize,
+    user,
+    complianceInfo,
+    selectedOption,
+    supplierSize,
+    setSupplierSize,
+    modelYearList,
+    handleYearChange,
+    handleSalesChange,
+    complianceNumbers,
   } = props;
-  const selectionList = [{ id: 1, name: '2019' }, { id: 2, name: '2020' }].map((obj) => (
-    <option key={(obj.id)} value={obj.name}>{obj.name || obj.description}</option>
+  const selectionList = modelYearList.map((obj) => (
+    <option key={(obj.id)} value={obj.name}>{obj.name}</option>
   ));
   return (
     <div id="compliance-ldvsales-details" className="page">
@@ -32,9 +40,10 @@ const ComplianceCalculatorDetailsPage = (props) => {
                       className="form-control"
                       id="model-year"
                       name="model-year"
-                      onChange={() => { console.log('hi'); }}
-                      value="--"
+                      value={selectedOption}
+                      onChange={(event) => { handleYearChange(event); }}
                     >
+                      {selectedOption === '--' && <option disabled>--</option>}
                       {selectionList}
                     </select>
                   </div>
@@ -60,18 +69,20 @@ const ComplianceCalculatorDetailsPage = (props) => {
                       Compliance Ratio:
 
                     </div>
+                    {supplierSize && (selectedOption !== '--') && (
                     <div className="col-sm-6">
-                      9.5%
+                      {complianceInfo.complianceRatio}%
                     </div>
+                    )}
                     {supplierSize === 'Large'
-                    && (
+                    && (selectedOption !== '--') && (
                     <>
                       <div className="col-sm-5 text-blue pl-0">
                         Large Supplier Class A Ratio:
 
                       </div>
                       <div className="col-sm-6">
-                        9%
+                        {complianceInfo.zevClassA}%
 
                       </div>
                     </>
@@ -84,7 +95,14 @@ const ComplianceCalculatorDetailsPage = (props) => {
                     >
                       Provisional LDV Sales:
                     </label>
-                    <input className="col-sm-2" />
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      id="total-sales-number"
+                      className="col-sm-2"
+                      onChange={(event) => { handleSalesChange(event); }}
+                    />
                   </div>
                   <div className="form-group row mb-0 py-0">
                     <label
@@ -95,7 +113,7 @@ const ComplianceCalculatorDetailsPage = (props) => {
                     </label>
                     <div className="col-sm-6 pb-0">
                       <b>
-                        950
+                        {complianceNumbers.total}
                       </b>
                     </div>
                     <label
@@ -106,7 +124,7 @@ const ComplianceCalculatorDetailsPage = (props) => {
                     </label>
                     <div className="col-sm-6 pb-0">
                       <b>
-                        600
+                        {complianceNumbers.classA}
                       </b>
                     </div>
                     <label
@@ -117,7 +135,7 @@ const ComplianceCalculatorDetailsPage = (props) => {
                     </label>
                     <div className="col-sm-6">
                       <b>
-                        350
+                        {complianceNumbers.remaining}
                       </b>
                     </div>
                   </div>

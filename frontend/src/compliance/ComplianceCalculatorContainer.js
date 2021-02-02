@@ -4,21 +4,34 @@ import Loading from '../app/components/Loading';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceTabs from '../app/components/ComplianceTabs';
 import ComplianceCalculatorDetailsPage from './components/ComplianceCalculatorDetailsPage';
+import ROUTES_COMPLIANCE from '../app/routes/Compliance';
+import ROUTES_VEHICLES from '../app/routes/Vehicles';
 
 const LDVSalesContainer = (props) => {
   const { user } = props;
   const [supplierSize, setSupplierSize] = useState('');
-  const [modelYear, setModelYear] = useState({});
+  const [selectedOption, setSelectedOption] = useState('--');
+  const [complianceInfo, setComplianceInfo] = useState('');
   const [complianceRatios, setComplianceRatios] = useState({});
+  const [modelYearList, setModelYearList] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [complianceNumbers, setComplianceNumbers] = useState({ total: 0, classA: 0, remaining: 0 });
+  const handleSalesChange = (event) => {
+    const { value } = event.target;
+    setComplianceNumbers({ total: value, classA: value, remaining: value });
+  };
+  const handleYearChange = (event) => {
+    const { id, value } = event.target;
+    setSelectedOption(value);
+    setComplianceInfo(complianceRatios.filter((each) => each.modelYear === value)[0]);
+  };
   const refreshDetails = () => {
     axios.all([
-      // axios.get(ROUTE FOR MODEL YEARS?),
-      // axios.get(ROUTE FOR COMPLIANCE RATIOS),
+      axios.get(ROUTES_VEHICLES.YEARS),
+      axios.get(ROUTES_COMPLIANCE.RATIOS),
     ]).then(axios.spread((modelYearResponse, complianceRatiosResponse) => {
-      setModelYear(modelYearResponse);
-      setComplianceRatios(complianceRatiosResponse);
+      setModelYearList(modelYearResponse.data);
+      setComplianceRatios(complianceRatiosResponse.data);
       setLoading(false);
     }));
   };
@@ -27,6 +40,10 @@ const LDVSalesContainer = (props) => {
     refreshDetails();
   }, []);
 
+  if (loading) {
+    return (<Loading />);
+  }
+
   return (
     <>
       <ComplianceTabs active="calculator" user={user} />
@@ -34,8 +51,12 @@ const LDVSalesContainer = (props) => {
         user={user}
         supplierSize={supplierSize}
         setSupplierSize={setSupplierSize}
-        modelYear={modelYear}
-        setModelYear={setModelYear}
+        complianceInfo={complianceInfo}
+        modelYearList={modelYearList}
+        handleYearChange={handleYearChange}
+        selectedOption={selectedOption}
+        handleSalesChange={handleSalesChange}
+        complianceNumbers={complianceNumbers}
       />
     </>
   );
