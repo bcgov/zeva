@@ -15,14 +15,8 @@ class ComplianceRatio(Auditable):
         max_length=250,
         db_comment='model year'
     )
-    compliance_ratio = models.CharField(
-        max_length=250,
-        db_comment="compliance ratio that doesn't specify ZEV class"
-    )
-    zev_class_a = models.CharField(
-        max_length=250,
-        db_comment="compliance ratio for ZEV class A"
-    )
+    compliance_ratio = models.FloatField()
+    zev_class_a = models.FloatField()
 
     class Meta:
         db_table = "compliance_ratio"
