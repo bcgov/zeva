@@ -21,13 +21,15 @@ const ComplianceRatiosDetailsPage = (props) => {
   } = props;
 
   const details = {
-    history: [{
+    supplierInformation: {
+      history: [{
+        status: 'DRAFT',
+        createTimestamp: now(),
+        createUser: user,
+      }],
       status: 'DRAFT',
-      createTimestamp: now(),
-      createUser: user,
-    }],
+    },
     organization: user.organization,
-    status: 'DRAFT',
   };
 
   if (loading) {
@@ -43,7 +45,7 @@ const ComplianceRatiosDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          <ComplianceReportAlert report={details} />
+          <ComplianceReportAlert report={details.supplierInformation} type="Supplier Information" />
         </div>
       </div>
       <div className="row mt-1">

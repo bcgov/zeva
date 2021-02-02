@@ -6,6 +6,7 @@ import Alert from '../../app/components/Alert';
 const ComplianceReportAlert = (props) => {
   const {
     report,
+    type,
   } = props;
 
   const {
@@ -26,7 +27,7 @@ const ComplianceReportAlert = (props) => {
   switch (status) {
     case 'DRAFT':
       title = 'Draft';
-      message = ` confirmed ${date} by ${userName}. Compliance report awaiting submission to Government of B.C.`;
+      message = `${type} confirmed ${date} by ${userName}. Compliance report awaiting submission to Government of B.C.`;
       classname = 'alert-warning';
       break;
 
@@ -44,6 +45,7 @@ ComplianceReportAlert.defaultProps = {
 
 ComplianceReportAlert.propTypes = {
   report: PropTypes.shape().isRequired,
+  type: PropTypes.string.isRequired,
 };
 
 export default ComplianceReportAlert;
