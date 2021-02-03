@@ -9,7 +9,7 @@ const ComplianceReportTabs = (props) => {
 
   return (
     <ul
-      className="nav nav-pills nav-fill compliance-report-tabs"
+      className="nav nav-pills nav-justified compliance-report-tabs"
       key="tabs"
       role="tablist"
     >
