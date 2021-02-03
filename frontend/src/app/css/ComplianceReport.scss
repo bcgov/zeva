@@ -1,0 +1,26 @@
+#compliance-supplier-information-details {
+  .supplier-information {
+    border: 1px solid $border-grey;
+  }
+
+  .ldv-makes {
+    background-color: $default-background-grey;
+    max-width: 500px;
+
+    .btn-primary {
+      background-color: $primary-blue;
+      width: 100%;
+    }
+
+    .list {
+      background-color: $white;
+      border: 1px solid $border-grey;
+
+      .delete button {
+        background-color: transparent;
+        border: none;
+        color: $red;
+      }
+    }
+  }
+}
