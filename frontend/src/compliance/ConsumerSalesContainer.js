@@ -1,6 +1,4 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ConsumerSalesDetailsPage from './components/ConsumerSalesDetailsPage';

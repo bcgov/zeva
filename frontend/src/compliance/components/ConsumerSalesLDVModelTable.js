@@ -1,9 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTable from '../../app/components/ReactTable';
-import CustomPropTypes from '../../app/utilities/props';
-import history from '../../app/History';
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 
 const ConsumerSalesLDVModalTable = (props) => {
   const { data } = props;
