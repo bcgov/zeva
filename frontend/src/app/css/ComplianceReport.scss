@@ -24,3 +24,15 @@
     }
   }
 }
+#compliance-consumer-sales-details {
+  .consumer-sales {
+    border: 1px solid $border-grey;
+  }
+  .ldv-sales,
+  .previous-ldv-sales {
+    background-color: $default-background-grey;
+  }
+  .textbox-sales {
+    width: 15%;
+  }
+}
