@@ -98,7 +98,7 @@ const CreditTransfersListTable = (props) => {
         return 'recommend approval';
       }
       if (formattedStatus === 'approved') {
-        return 'approved by transfer partner';
+        return 'submitted to government';
       }
       if (formattedStatus === 'submitted') {
         return 'submitted to transfer partner';
