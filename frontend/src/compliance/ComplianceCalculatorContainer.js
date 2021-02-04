@@ -4,41 +4,68 @@ import Loading from '../app/components/Loading';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceTabs from '../app/components/ComplianceTabs';
 import ComplianceCalculatorDetailsPage from './components/ComplianceCalculatorDetailsPage';
+import ComplianceCalculatorModelTable from './components/ComplianceCalculatorModelTable';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 
 const LDVSalesContainer = (props) => {
   const { user } = props;
+  const [selectedYearOption, setSelectedYearOption] = useState('--');
   const [supplierSize, setSupplierSize] = useState('');
-  const [selectedOption, setSelectedOption] = useState('--');
-  const [complianceInfo, setComplianceInfo] = useState('');
-  const [complianceRatios, setComplianceRatios] = useState({});
+  const [totalSales, setTotalSales] = useState('');
+  const [complianceYearInfo, setComplianceYearInfo] = useState({});
+  const [allComplianceRatios, setAllComplianceRatios] = useState({});
   const [modelYearList, setModelYearList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [complianceNumbers, setComplianceNumbers] = useState({ total: 0, classA: 0, remaining: 0 });
-  const handleSalesChange = (event) => {
-    const { value } = event.target;
-    setComplianceNumbers({ total: value, classA: value, remaining: value });
+  const [allVehicleModels, setAllVehicleModels] = useState([]);
+  const [complianceNumbers, setComplianceNumbers] = useState({ total: '', classA: '', remaining: '' });
+  const [estimatedModelSales, setEstimatedModelSales] = useState([{}]);
+
+  const calculateNumbers = () => {
+    if (totalSales && supplierSize && selectedYearOption !== '--') {
+      const total = Math.round(totalSales * (complianceYearInfo.complianceRatio / 100) * 100) / 100;
+      const classA = supplierSize === 'large' ? Math.round(totalSales * (complianceYearInfo.zevClassA / 100) * 100) / 100 : 'NA';
+      const remaining = supplierSize === 'large' ? Math.round((total - classA) * 100) / 100 : 'NA';
+      setComplianceNumbers({ total, classA, remaining });
+    }
   };
-  const handleYearChange = (event) => {
+
+  const handleInputChange = (event) => {
     const { id, value } = event.target;
-    setSelectedOption(value);
-    setComplianceInfo(complianceRatios.filter((each) => each.modelYear === value)[0]);
+    if (id === 'model-year') {
+      setSelectedYearOption(value);
+      setComplianceYearInfo(allComplianceRatios.filter((each) => each.modelYear === value)[0]);
+    }
+    if (id === 'supplier-size') {
+      setSupplierSize(value);
+    }
+    if (id === 'total-sales-number') {
+      setTotalSales(value);
+    }
   };
   const refreshDetails = () => {
     axios.all([
       axios.get(ROUTES_VEHICLES.YEARS),
       axios.get(ROUTES_COMPLIANCE.RATIOS),
-    ]).then(axios.spread((modelYearResponse, complianceRatiosResponse) => {
+      axios.get(ROUTES_VEHICLES.LIST),
+    ]).then(axios.spread((
+      modelYearResponse,
+      allComplianceRatiosResponse,
+      allVehicleModelsResponse,
+    ) => {
       setModelYearList(modelYearResponse.data);
-      setComplianceRatios(complianceRatiosResponse.data);
+      setAllComplianceRatios(allComplianceRatiosResponse.data);
+      setAllVehicleModels(allVehicleModelsResponse.data);
       setLoading(false);
     }));
   };
 
   useEffect(() => {
-    refreshDetails();
-  }, []);
+    if (loading === true) {
+      refreshDetails();
+    }
+    calculateNumbers();
+  }, [totalSales, supplierSize, selectedYearOption]);
 
   if (loading) {
     return (<Loading />);
@@ -48,16 +75,14 @@ const LDVSalesContainer = (props) => {
     <>
       <ComplianceTabs active="calculator" user={user} />
       <ComplianceCalculatorDetailsPage
-        user={user}
-        supplierSize={supplierSize}
-        setSupplierSize={setSupplierSize}
-        complianceInfo={complianceInfo}
-        modelYearList={modelYearList}
-        handleYearChange={handleYearChange}
-        selectedOption={selectedOption}
-        handleSalesChange={handleSalesChange}
         complianceNumbers={complianceNumbers}
+        complianceYearInfo={complianceYearInfo}
+        handleInputChange={handleInputChange}
+        modelYearList={modelYearList}
+        selectedYearOption={selectedYearOption}
+        supplierSize={supplierSize}
       />
+      <ComplianceCalculatorModelTable models={allVehicleModels} estimatedModelSales={estimatedModelSales} setEstimatedModelSales={setEstimatedModelSales} />
     </>
   );
 };
