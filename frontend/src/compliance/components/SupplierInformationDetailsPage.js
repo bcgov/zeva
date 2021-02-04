@@ -1,14 +1,14 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import PropTypes from 'prop-types';
+import { now } from 'moment';
 
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
 import CustomPropTypes from '../../app/utilities/props';
 import ComplianceReportAlert from './ComplianceReportAlert';
-import { now } from 'moment';
 
-const ComplianceRatiosDetailsPage = (props) => {
+const SupplierInformationDetailsPage = (props) => {
   const {
     handleChangeMake,
     handleDeleteMake,
@@ -167,10 +167,10 @@ const ComplianceRatiosDetailsPage = (props) => {
   );
 };
 
-ComplianceRatiosDetailsPage.defaultProps = {
+SupplierInformationDetailsPage.defaultProps = {
 };
 
-ComplianceRatiosDetailsPage.propTypes = {
+SupplierInformationDetailsPage.propTypes = {
   handleChangeMake: PropTypes.func.isRequired,
   handleDeleteMake: PropTypes.func.isRequired,
   handleSubmitMake: PropTypes.func.isRequired,
@@ -180,4 +180,4 @@ ComplianceRatiosDetailsPage.propTypes = {
   orgMakes: PropTypes.arrayOf(PropTypes.string).isRequired,
   user: CustomPropTypes.user.isRequired,
 };
-export default ComplianceRatiosDetailsPage;
+export default SupplierInformationDetailsPage;
