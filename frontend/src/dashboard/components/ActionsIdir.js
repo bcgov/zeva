@@ -90,7 +90,7 @@ const ActionsIdir = (props) => {
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersAwaitingPartner} awaiting partner confirmation`}
-          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Submitted`}
+          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Submitted%20to%20Transfer%20Partner`}
         />
         )}
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
@@ -102,7 +102,7 @@ const ActionsIdir = (props) => {
           icon="exchange-alt"
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersAwaitingAnalyst} require analyst recommendation`}
-          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Approved`}
+          linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Submitted%20to%20Government`}
         />
         )}
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
