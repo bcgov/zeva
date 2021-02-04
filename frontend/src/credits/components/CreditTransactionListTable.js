@@ -46,6 +46,60 @@ const CreditTransactionListTable = (props) => {
     }
   };
 
+  let totalA = 0;
+  let totalB = 0;
+
+  const transactions = [];
+
+  items.sort((a, b) => {
+    if (a.transactionTimestamp < b.transactionTimestamp) {
+      return -1;
+    }
+
+    if (a.transactionTimestamp > b.transactionTimestamp) {
+      return 1;
+    }
+
+    return 0;
+  });
+
+  items.forEach((item) => {
+    if (item.creditClass.creditClass === 'A') {
+      totalA += parseFloat(item.totalValue);
+    }
+
+    if (item.creditClass.creditClass === 'B') {
+      totalB += parseFloat(item.totalValue);
+    }
+
+    const found = transactions.findIndex(
+      (transaction) => (transaction.foreignKey === item.foreignKey
+        && transaction.transactionType
+        && item.transactionType
+        && transaction.transactionType.transactionType === item.transactionType.transactionType),
+    );
+
+    if (found >= 0) {
+      transactions[found] = {
+        ...transactions[found],
+        creditsA: (item.creditClass.creditClass === 'A' ? item.totalValue : transactions[found].creditsA),
+        creditsB: (item.creditClass.creditClass === 'B' ? item.totalValue : transactions[found].creditsB),
+        displayTotalA: totalA,
+        displayTotalB: totalB,
+      };
+    } else {
+      transactions.push({
+        creditsA: (item.creditClass.creditClass === 'A' ? item.totalValue : 0),
+        creditsB: (item.creditClass.creditClass === 'B' ? item.totalValue : 0),
+        displayTotalA: totalA,
+        displayTotalB: totalB,
+        foreignKey: item.foreignKey,
+        transactionTimestamp: item.transactionTimestamp,
+        transactionType: item.transactionType,
+      });
+    }
+  });
+
   const columns = [{
     Header: '',
     headerClassName: 'header-group',
@@ -129,7 +183,7 @@ const CreditTransactionListTable = (props) => {
     <ReactTable
       className="credit-transaction-list-table"
       columns={columns}
-      data={items}
+      data={transactions}
       defaultSorted={[{
         id: 'date',
         desc: true,
