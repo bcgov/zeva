@@ -142,7 +142,7 @@ const DashboardContainer = (props) => {
         const transfersAwaitingAnalyst = transfersResponse.data
           .filter((submission) => submission.status === 'APPROVED');
         const transfersAwaitingDirector = transfersResponse.data
-          .filter((submission) => submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMENDED_REJECTION');
+          .filter((submission) => submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMEND_REJECTION');
         const transfersRecorded = transfersResponse.data
           .filter((submission) => submission.status === 'VALIDATED');
 

@@ -113,7 +113,7 @@ const ActionsIdir = (props) => {
           colour="blue"
           icon="exchange-alt"
           boldText="Credit Transfer"
-          regularText={`${activityCount.transfersAwaitingDirector} require director approval`}
+          regularText={`${activityCount.transfersAwaitingDirector} recommended for director action`}
           linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Recommend`}
         />
         )}
