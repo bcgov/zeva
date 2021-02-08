@@ -74,7 +74,7 @@ const CreditRequestsUploadPage = (props) => {
           <p>
             Credits can be issued for active ZEV sales made prior to {icbcDate}.
           </p>
-          {submission && (
+          {submission && submission.id && (
 
             <div>
               <input

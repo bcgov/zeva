@@ -114,7 +114,7 @@ const UploadCreditRequestsContainer = (props) => {
       };
     }
     if (uploadNewExcel) {
-      data.uploadNew = true;
+      data.upload_new = true;
     }
     upload(ROUTES_CREDIT_REQUESTS.UPLOAD, files, data).then((response) => {
       const { id: creditRequestId } = response.data;
