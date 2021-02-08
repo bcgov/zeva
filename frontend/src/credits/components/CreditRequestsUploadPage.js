@@ -189,7 +189,10 @@ CreditRequestsUploadPage.propTypes = {
   showProgressBars: PropTypes.bool,
   submission: PropTypes.shape(),
   setUploadFiles: PropTypes.func.isRequired,
-  uploadEvidenceFiles: PropTypes.arrayOf(PropTypes.string).isRequired,
+  uploadEvidenceFiles: PropTypes.arrayOf(PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.shape(),
+  ])).isRequired,
   upload: PropTypes.func.isRequired,
   uploadNewExcel: PropTypes.bool,
 };
