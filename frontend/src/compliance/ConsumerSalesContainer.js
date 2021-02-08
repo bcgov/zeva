@@ -12,7 +12,7 @@ const ConsumerSalesContainer = (props) => {
     consumerSales: 'draft',
     creditActivity: '',
     reportSummary: '',
-    supplierInformation: 'draft',
+    supplierInformation: '',
   };
 
   const refreshDetails = () => {
