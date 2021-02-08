@@ -13,6 +13,7 @@ const NotificationListPage = (props) => {
     displayList,
     subscribe,
     unsubscribe,
+    loading,
     user,
   } = props;
 
