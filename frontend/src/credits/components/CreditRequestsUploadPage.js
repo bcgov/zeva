@@ -74,7 +74,7 @@ const CreditRequestsUploadPage = (props) => {
           <p>
             Credits can be issued for active ZEV sales made prior to {icbcDate}.
           </p>
-          {submission && (
+          {submission && submission.id && (
 
             <div>
               <input
@@ -189,7 +189,10 @@ CreditRequestsUploadPage.propTypes = {
   showProgressBars: PropTypes.bool,
   submission: PropTypes.shape(),
   setUploadFiles: PropTypes.func.isRequired,
-  uploadEvidenceFiles: PropTypes.arrayOf(PropTypes.string).isRequired,
+  uploadEvidenceFiles: PropTypes.arrayOf(PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.shape(),
+  ])).isRequired,
   upload: PropTypes.func.isRequired,
   uploadNewExcel: PropTypes.bool,
 };
