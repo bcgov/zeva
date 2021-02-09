@@ -44,7 +44,7 @@ const CreditTransfersListTable = (props) => {
   });
 
   const columns = [{
-    accessor: 'id',
+    accessor: (item) => (`CT-${item.id}`),
     className: 'text-right',
     Header: 'ID',
     id: 'id',

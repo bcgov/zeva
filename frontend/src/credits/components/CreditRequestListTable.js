@@ -17,7 +17,8 @@ const CreditRequestListTable = (props) => {
   } = props;
 
   const columns = [{
-    accessor: 'id',
+    id: 'id',
+    accessor: (item) => (`CA-${item.id}`),
     className: 'text-right',
     Header: 'ID',
     maxWidth: 75,
