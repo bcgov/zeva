@@ -27,6 +27,7 @@ from api.serializers.vehicle import VehicleSerializer
 from api.services.sales_spreadsheet import get_date
 from api.models.sales_evidence import SalesEvidence
 from api.serializers.sales_evidence import SalesEvidenceSerializer
+from api.services.minio import minio_remove_object
 
 
 class BaseSerializer():
@@ -448,7 +449,7 @@ class SalesSubmissionSaveSerializer(
         request = self.context.get('request')
         invalidated = request.data.get('invalidated', None)
         sales_evidences = validated_data.pop('sales_evidences', [])
-        test_evidence = request.data.get('sales_evidences', [])
+        files_to_be_removed = request.data.get('evidence_delete_list', [])
         sales_submission_comment = validated_data.pop('sales_submission_comment', None)
         if sales_submission_comment:
             SalesSubmissionComment.objects.create(
@@ -462,6 +463,18 @@ class SalesSubmissionSaveSerializer(
                 submission=instance,
                 **each
             )
+        for file_id in files_to_be_removed:
+            attachment = SalesEvidence.objects.filter(
+                id=file_id,
+                submission=instance
+            ).first()
+
+            if attachment:
+                minio_remove_object(attachment.minio_object_name)
+
+                attachment.is_removed = True
+                attachment.update_user = request.user.username
+                attachment.save()
 
         if invalidated is not None:
             RecordOfSale.objects.filter(submission_id=instance.id).delete()

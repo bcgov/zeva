@@ -30,3 +30,4 @@ from . import icbc_vehicle
 from . import icbc_upload_date
 from . import notification, notification_subscription
 from . import sales_evidence
+from . import compliance_ratio

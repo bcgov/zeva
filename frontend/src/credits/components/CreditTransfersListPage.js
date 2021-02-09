@@ -11,10 +11,11 @@ import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 const CreditTransfersListPage = (props) => {
   const {
     creditTransfers,
-    loading,
-    user,
     filtered,
+    handleClear,
+    loading,
     setFiltered,
+    user,
   } = props;
 
   if (loading) {
@@ -27,22 +28,31 @@ const CreditTransfersListPage = (props) => {
         <div className="col-md-8 d-flex align-items-end">
           <h2>Light Duty Vehicle Credit Transfers</h2>
         </div>
-        {!user.isGovernment
-        && typeof user.hasPermission === 'function'
-        && user.hasPermission('CREATE_CREDIT_TRANSFERS')
-        && (
+
         <div className="col-md-4 text-right">
           <button
-            className="button primary"
-            onClick={() => {
-              history.push(ROUTES_CREDIT_TRANSFERS.NEW);
-            }}
+            className="button"
+            onClick={handleClear}
             type="button"
+            disabled={filtered.length === 0}
           >
-            <FontAwesomeIcon icon="plus" /> New Credit Transfer
+            Clear Filters
           </button>
+          {!user.isGovernment
+          && typeof user.hasPermission === 'function'
+          && user.hasPermission('CREATE_CREDIT_TRANSFERS')
+          && (
+            <button
+              className="button primary ml-3"
+              onClick={() => {
+                history.push(ROUTES_CREDIT_TRANSFERS.NEW);
+              }}
+              type="button"
+            >
+              <FontAwesomeIcon icon="plus" /> New Credit Transfer
+            </button>
+          )}
         </div>
-        )}
       </div>
 
       <div className="row">
@@ -67,6 +77,7 @@ CreditTransfersListPage.defaultProps = {
 CreditTransfersListPage.propTypes = {
   creditTransfers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   filtered: PropTypes.arrayOf(PropTypes.shape()),
+  handleClear: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   setFiltered: PropTypes.func,
   user: CustomPropTypes.user.isRequired,

@@ -8,6 +8,43 @@ import ReactTable from '../../app/components/ReactTable';
 import formatNumeric from '../../app/utilities/formatNumeric';
 
 const CreditBalanceTable = (props) => {
+  const { items } = props;
+
+  const balances = {};
+
+  items.sort((a, b) => (
+    parseFloat(b.modelYear.name) - parseFloat(a.modelYear.name)
+  ));
+
+  const totalCredits = {};
+
+  items.forEach((balance) => {
+    if (balance.modelYear && balance.creditClass) {
+      balances[balance.modelYear.name] = {
+        ...balances[balance.modelYear.name],
+        [balance.creditClass.creditClass]: parseFloat(balance.totalValue),
+      };
+
+      let currentValue = 0;
+      if (totalCredits[balance.weightClass.weightClassCode]
+        && totalCredits[balance.weightClass.weightClassCode][balance.creditClass.creditClass]) {
+        currentValue = parseFloat(
+          totalCredits[balance.weightClass.weightClassCode][balance.creditClass.creditClass],
+        );
+      }
+
+      /*
+      While this looks unnecessarily complicated,
+      this is needed as we'll have more weight classes in the future
+      */
+      totalCredits[balance.weightClass.weightClassCode] = {
+        ...totalCredits[balance.weightClass.weightClassCode],
+        label: `Total ${balance.weightClass.weightClassCode}`,
+        [balance.creditClass.creditClass]: currentValue + parseFloat(balance.totalValue),
+      };
+    }
+  });
+
   const columns = [{
     accessor: (item) => (`${item.label} Credits`),
     className: 'text-right',
@@ -35,13 +72,16 @@ const CreditBalanceTable = (props) => {
     maxWidth: 150,
   }];
 
-  const { items } = props;
-
   return (
     <ReactTable
       className="credit-balance-table"
       columns={columns}
-      data={items}
+      data={
+        Object.entries(balances).map(([key, value]) => ({
+          label: key,
+          ...value,
+        })).concat(Object.values(totalCredits))
+      }
       defaultSorted={[{
         id: 'label',
         desc: true,

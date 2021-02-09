@@ -1,40 +1,40 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import Button from '../../app/components/Button';
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import download from '../../app/utilities/download';
 import FileDropArea from '../../app/components/FileDropArea';
-import getFileSize from '../../app/utilities/getFileSize';
 
 const CreditRequestsUploadPage = (props) => {
   const {
     errorMessage,
-    files,
-    setErrorMessage,
-    setEvidenceErrorMessage,
-    evidenceErrorMessage,
-    setUploadFiles,
-    upload,
-    icbcDate,
-    uploadEvidenceFiles,
-    setEvidenceUploadFiles,
     evidenceCheckbox,
+    evidenceDeleteList,
+    evidenceErrorMessage,
+    files,
+    icbcDate,
+    progressBars,
     setEvidenceCheckbox,
-    showProgressBars
+    setEvidenceErrorMessage,
+    setErrorMessage,
+    setEvidenceDeleteList,
+    setEvidenceUploadFiles,
+    setUploadFiles,
+    setUploadNewExcel,
+    showProgressBars,
+    submission,
+    uploadEvidenceFiles,
+    upload,
+    uploadNewExcel,
   } = props;
-//
-//
-// PROGRESS BARS NEEED TO BE ADDED
-//
-//
+
   const handleCheckboxChange = (event) => {
-    const { value, name } = event.target;
-    if (event.target.checked) {
-      setEvidenceCheckbox(true);
+    const { name, checked } = event.target;
+    if (name === 'evidence-upload-checkbox') {
+      setEvidenceCheckbox(checked);
     } else {
-      setEvidenceCheckbox(false);
+      setUploadNewExcel(checked);
     }
   };
   const downloadTemplate = (e) => {
@@ -45,7 +45,6 @@ const CreditRequestsUploadPage = (props) => {
       element.innerHTML = original;
     });
   };
-
   return (
     <div id="sales-edit" className="page">
       <div className="row mt-3 mb-2">
@@ -75,15 +74,34 @@ const CreditRequestsUploadPage = (props) => {
           <p>
             Credits can be issued for active ZEV sales made prior to {icbcDate}.
           </p>
+          {submission && submission.id && (
+
+            <div>
+              <input
+                type="checkbox"
+                name="new-sales-upload-checkbox"
+                id="new-sales-upload-checkbox"
+                onChange={(event) => { handleCheckboxChange(event); }}
+                className="m-3"
+              />
+              <span className="text-blue">
+                Upload new sales spreadsheet
+              </span>
+            </div>
+          )}
         </div>
       </div>
-      <FileDropArea
-        type="excel"
-        errorMessage={errorMessage}
-        files={files}
-        setErrorMessage={setErrorMessage}
-        setUploadFiles={setUploadFiles}
-      />
+      {(!submission || uploadNewExcel)
+      && (
+        <FileDropArea
+          type="excel"
+          errorMessage={errorMessage}
+          files={files}
+          setErrorMessage={setErrorMessage}
+          setUploadFiles={setUploadFiles}
+          submission={submission}
+        />
+      )}
       <div className="row mt-5 mb-2">
         <div className="col-12">
           <h2 className="mb-2">Upload Sales Evidence</h2>
@@ -105,7 +123,7 @@ const CreditRequestsUploadPage = (props) => {
           </div>
         </div>
       </div>
-      {evidenceCheckbox === true
+      {evidenceCheckbox
       && (
       <FileDropArea
         type="pdf"
@@ -113,6 +131,11 @@ const CreditRequestsUploadPage = (props) => {
         files={uploadEvidenceFiles}
         setErrorMessage={setEvidenceErrorMessage}
         setUploadFiles={setEvidenceUploadFiles}
+        showProgressBars={showProgressBars}
+        progressBars={progressBars}
+        submission={submission}
+        evidenceDeleteList={evidenceDeleteList}
+        setEvidenceDeleteList={setEvidenceDeleteList}
       />
       )}
       <div className="action-bar">
@@ -124,7 +147,7 @@ const CreditRequestsUploadPage = (props) => {
         </span>
         <span className="right-content">
           <button
-            disabled={files.length === 0}
+            disabled={files.length === 0 && !submission.filename}
             className="button primary"
             onClick={() => upload()}
             type="button"
@@ -140,16 +163,38 @@ const CreditRequestsUploadPage = (props) => {
 
 CreditRequestsUploadPage.defaultProps = {
   errorMessage: '',
+  evidenceDeleteList: [],
+  evidenceErrorMessage: '',
   icbcDate: '',
+  progressBars: {},
+  showProgressBars: false,
+  submission: {},
+  uploadNewExcel: false,
 };
 
 CreditRequestsUploadPage.propTypes = {
   errorMessage: PropTypes.string,
+  evidenceCheckbox: PropTypes.bool.isRequired,
+  evidenceDeleteList: PropTypes.arrayOf(PropTypes.string),
+  evidenceErrorMessage: PropTypes.string,
   files: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   icbcDate: PropTypes.string,
+  progressBars: PropTypes.shape(),
   setErrorMessage: PropTypes.func.isRequired,
+  setEvidenceCheckbox: PropTypes.func.isRequired,
+  setEvidenceDeleteList: PropTypes.func.isRequired,
+  setEvidenceErrorMessage: PropTypes.func.isRequired,
+  setEvidenceUploadFiles: PropTypes.func.isRequired,
+  setUploadNewExcel: PropTypes.func.isRequired,
+  showProgressBars: PropTypes.bool,
+  submission: PropTypes.shape(),
   setUploadFiles: PropTypes.func.isRequired,
+  uploadEvidenceFiles: PropTypes.arrayOf(PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.shape(),
+  ])).isRequired,
   upload: PropTypes.func.isRequired,
+  uploadNewExcel: PropTypes.bool,
 };
 
 export default CreditRequestsUploadPage;

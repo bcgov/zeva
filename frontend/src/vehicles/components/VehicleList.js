@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Loading from '../../app/components/Loading';
 import history from '../../app/History';
 import ActionBarGov from './ActionBarGov';
+import ActionBarNonGov from './ActionBarNonGov';
 import VehicleListTable from './VehicleListTable';
 
 const VehicleList = (props) => {
@@ -30,15 +31,10 @@ const VehicleList = (props) => {
         </div>
         <div className="col-lg-12 col-xl-8 text-right">
           {!user.isGovernment && (
-          <button
-            className="button primary"
-            onClick={() => {
-              history.push('/vehicles/add');
-            }}
-            type="button"
-          >
-            <FontAwesomeIcon icon="plus" /> New Vehicle
-          </button>
+            <ActionBarNonGov
+              filtered={filtered}
+              handleClear={handleClear}
+            />
           )}
           {user.isGovernment && (
             <ActionBarGov

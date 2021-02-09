@@ -105,7 +105,6 @@ objects:
     metadata:
       creationTimestamp: 
       annotations:      
-        haproxy.router.openshift.io/balance: source
         haproxy.router.openshift.io/timeout: 1200s      
       labels:
         name: backend
@@ -314,16 +313,6 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-config${SUFFIX}
                       key: rabbitmq_port
-                - name: EMAIL_SENDING_ENABLED
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: email_sending_enabled
-                - name: EMAIL_FROM_ADDRESS
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: email_from_address
                 - name: APP_CONFIG
                   value: /opt/app-root/src/gunicorn.cfg
                 - name: ENV_NAME

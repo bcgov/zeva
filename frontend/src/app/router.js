@@ -30,6 +30,9 @@ import ComplianceCalculatorContainer from '../compliance/ComplianceCalculatorCon
 import ComplianceReportsContainer from '../compliance/ComplianceReportsContainer';
 import ComplianceRatiosContainer from '../compliance/ComplianceRatiosContainer';
 import LDVSalesContainer from '../compliance/LDVSalesContainer';
+import SupplierInformationContainer from '../compliance/SupplierInformationContainer';
+import CreditActivityContainer from '../compliance/CreditActivityContainer';
+import ConsumerSalesContainer from '../compliance/ConsumerSalesContainer'
 
 import ErrorHandler from './components/ErrorHandler';
 import Loading from './components/Loading';
@@ -127,12 +130,27 @@ class Router extends Component {
           <ErrorHandler statusCode={statusCode}>
             <Switch>
               <Route
+                path={ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY}
+                render={() => <CreditActivityContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION}
+                render={() => <SupplierInformationContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES}
+                render={() => <ConsumerSalesContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
                 path={ROUTES_COMPLIANCE.LDVSALES}
                 render={() => <LDVSalesContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 path={ROUTES_COMPLIANCE.CALCULATOR}
-                render={() => <ComplianceCalculatorContainer keycloak={keycloak} user={user} />}
+                render={() => ((typeof user.hasPermission === 'function' && user.hasPermission('EDIT_SALES') && !user.isGovernment)
+                  ? <ComplianceCalculatorContainer keycloak={keycloak} user={user} /> : (
+                    <ComplianceReportsContainer keycloak={keycloak} user={user} />
+                  ))}
               />
               <Route
                 path={ROUTES_COMPLIANCE.REPORTS}

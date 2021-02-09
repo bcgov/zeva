@@ -1,0 +1,27 @@
+.compliance-report-tabs {
+  .nav-item {
+    padding: 1rem 1.5rem;
+
+    &.draft a {
+      border-bottom-color: $primary-yellow;
+    }
+
+    &.submitted a {
+      border-bottom-color: $default-text-blue;
+    }
+
+    &.reviewed a {
+      border-bottom-color: $primary-yellow;
+    }
+
+    &.assessed a {
+      border-bottom-color: $alert-success;
+    }
+
+    a {
+      border-bottom: 1rem transparent solid;
+      color: $default-text-black;
+      display: block;
+    }
+  }
+}

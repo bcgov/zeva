@@ -390,6 +390,7 @@ const CreditRequestDetailsPage = (props) => {
 
 CreditRequestDetailsPage.defaultProps = {
   locationState: undefined,
+  files: [],
 };
 
 CreditRequestDetailsPage.propTypes = {
@@ -398,6 +399,7 @@ CreditRequestDetailsPage.propTypes = {
   submission: PropTypes.shape().isRequired,
   uploadDate: PropTypes.string.isRequired,
   user: CustomPropTypes.user.isRequired,
+  files: PropTypes.arrayOf(PropTypes.shape()),
 };
 
 export default CreditRequestDetailsPage;
