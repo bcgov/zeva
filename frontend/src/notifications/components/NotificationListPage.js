@@ -31,7 +31,7 @@ const NotificationListPage = (props) => {
          </label>
         <input type="radio" id="Subscribe" onChange={(event) => { handleChange(event); }} name="Subscription" value="Subscribe" defaultChecked={subscribe}/>
           <label className="d-inline" id="transfer-text">
-            Suscribe to receive immediate email (one email per notification)
+            Subscribe to receive immediate email (one email per notification)
           </label>           
       </div>
       <ReactTooltip />

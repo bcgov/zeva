@@ -5,6 +5,7 @@ import Loading from '../../app/components/Loading';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import Button from '../../app/components/Button';
 import { now } from 'moment';
+import history from '../../app/History';
 import ConsumerSalesLDVModalTable from '../components/ConsumerSalesLDVModelTable';
 
 const ConsumerSalesDetailsPage = (props) => {
@@ -94,10 +95,10 @@ const ConsumerSalesDetailsPage = (props) => {
                 model year (ICE & ZEV)
               </div>
               <div className="ldv-sales mt-2 p-3">
-                <label className="text-blue mr-4 font-weight-bold">
-                  2020 Model Year LDV Sales
-                </label>
                 <form onSubmit={(event) => handleSave(event)}>
+                  <label className="text-blue mr-4 font-weight-bold">
+                    2020 Model Year LDV Sales
+                  </label>
                   <input
                     className="textbox-sales"
                     type="text"
@@ -136,7 +137,16 @@ const ConsumerSalesDetailsPage = (props) => {
               <div className="ldv-zev-models mt-2">
                 <div className="text-blue">
                   If there are ZEV models missing below that contribute to your
-                  2020 model year compliance report use the New ZEV Model form
+                  2020 model year compliance report use the{' '}
+                  <label
+                    className="text-primary"
+                    onClick={() => {
+                      history.push('/vehicles/add');
+                    }}
+                  >
+                    {' '}
+                    <u>New Vehicle Model</u>
+                  </label>{' '}
                   to add them, they will require government validation.
                 </div>
                 <div className="sales-table mt-2">
