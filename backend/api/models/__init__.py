@@ -33,4 +33,4 @@ from . import sales_evidence
 from . import compliance_ratio
 from . import model_year_report, model_year_report_confirmation
 from . import model_year_report_history, model_year_report_make
-from . import model_year_report_statuses
+from . import model_year_report_statuses, model_year_report_address
