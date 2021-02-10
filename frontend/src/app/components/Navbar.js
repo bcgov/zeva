@@ -178,7 +178,7 @@ class Navbar extends Component {
 
                     return true;
                   }}
-                  to={ROUTES_COMPLIANCE.REPORTS}
+                  to={CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED ? ROUTES_COMPLIANCE.REPORTS : ROUTES_COMPLIANCE.RATIOS}
                 >
                   <span>Compliance Reporting</span>
                 </NavLink>
