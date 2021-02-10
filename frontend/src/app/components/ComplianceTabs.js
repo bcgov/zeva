@@ -17,7 +17,7 @@ const ComplianceTabs = (props) => {
         className={`nav-item ${(active === 'reports') ? 'active' : ''}`}
         role="presentation"
       >
-        <Link to={ROUTES_COMPLIANCE.REPORTS}>Compliance Reports</Link>
+        <Link to={ROUTES_COMPLIANCE.REPORTS}>Model Year Reports</Link>
       </li>
       <li
         className={`nav-item ${(active === 'ratios') ? 'active' : ''}`}
