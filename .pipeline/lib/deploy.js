@@ -186,20 +186,18 @@ module.exports = settings => {
   })) 
   
   //deploy schemaspy
-  if(phase === 'dev') {
-    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/schemaspy/schemaspy-dc.yaml`, {
-      'param': {
-        'SUFFIX': phases[phase].suffix,
-        'ENV_NAME': phases[phase].phase,
-        'CPU_REQUEST': phases[phase].schemaspyCpuRequest,
-        'CPU_LIMIT': phases[phase].schemaspyCpuLimit,
-        'MEMORY_REQUEST': phases[phase].schemaspyMemoryRequest,
-        'MEMORY_LIMIT': phases[phase].schemaspyMemoryLimit,
-        'HEALTH_CHECK_DELAY': phases[phase].schemaspyHealthCheckDelay,
-        'OCP_NAME': phases[phase].ocpName
-      }
-    }))
-  }
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/schemaspy/schemaspy-dc.yaml`, {
+    'param': {
+      'SUFFIX': phases[phase].suffix,
+      'ENV_NAME': phases[phase].phase,
+      'CPU_REQUEST': phases[phase].schemaspyCpuRequest,
+      'CPU_LIMIT': phases[phase].schemaspyCpuLimit,
+      'MEMORY_REQUEST': phases[phase].schemaspyMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].schemaspyMemoryLimit,
+      'HEALTH_CHECK_DELAY': phases[phase].schemaspyHealthCheckDelay,
+      'OCP_NAME': phases[phase].ocpName
+    }
+  }))
 
   //add autoacaler
   /*****
