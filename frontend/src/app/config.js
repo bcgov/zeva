@@ -26,6 +26,12 @@ const CONFIG = {
     CREDIT_TRANSACTIONS: {
       ENABLED: getConfig('credit_transactions.enabled', false),
     },
+    COMPLIANCE_CALCULATOR: {
+      ENABLED: getConfig('compliance_calculator.enabled', false),
+    },
+    COMPLIANCE_RATIOS: {
+      ENABLED: getConfig('compliance_ratios.enabled', false),
+    },
     COMPLIANCE_REPORT: {
       ENABLED: getConfig('compliance_report.enabled', false),
     },

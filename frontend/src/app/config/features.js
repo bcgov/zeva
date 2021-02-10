@@ -1,5 +1,7 @@
 window.zeva_config = {
   'compliance_report.enabled': true,
+  'compliance_calculator.enabled': true,
+  'compliance_ratios.enabled': true,
   'credit_transfers.enabled': true,
   'credit_transactions.enabled': true,
   'initiative_agreements.enabled': false,
