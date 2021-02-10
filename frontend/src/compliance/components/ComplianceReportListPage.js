@@ -18,7 +18,7 @@ const ComplianceReportListPage = (props) => {
     <div id="compliance-report-list" className="page">
       <div className="row mt-3 mb-2">
         <div className="col-md-8 d-flex align-items-end">
-          <h2>Model Year Compliance Reports</h2>
+          <h2>Model Year Reports</h2>
         </div>
         {displayBtn && (<div className="col-md-4 text-right">
           <button
@@ -32,6 +32,22 @@ const ComplianceReportListPage = (props) => {
             </button>
         </div>
         )}
+      </div>
+      <div className="text-blue mt-4">
+        Under section 17 (5) of the ZEV Act a model year report must include for
+        the adjustment period ending September 30:
+        <ul className="mt-2">
+          <li>
+            the number of credits issued or transferred or added to your balance
+          </li>
+          <li>
+            the number of credits offset or transferred away from your balance
+          </li>
+        </ul>
+        Consumer sales of zero-emission vehicles made prior to October 1 must be
+        included in a submitted credit application prior to completing your
+        model year report. Model year reports must be submitted on or before
+        October 20.
       </div>
       <div className="row mt-4">
           <div className="col-sm-12">
