@@ -40,7 +40,7 @@ const SupplierInformationDetailsPage = (props) => {
     <div id="compliance-supplier-information-details" className="page">
       <div className="row mt-3">
         <div className="col-sm-12">
-          <h2>2020 Model Year Compliance Report</h2>
+          <h2>2020 Model Year Report</h2>
         </div>
       </div>
       <div className="row">
