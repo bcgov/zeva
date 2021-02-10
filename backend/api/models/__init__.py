@@ -31,3 +31,6 @@ from . import icbc_upload_date
 from . import notification, notification_subscription
 from . import sales_evidence
 from . import compliance_ratio
+from . import model_year_report, model_year_report_confirmation
+from . import model_year_report_history, model_year_report_make
+from . import model_year_report_statuses
