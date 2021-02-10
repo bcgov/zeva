@@ -1,5 +1,4 @@
-from django.utils.datetime_safe import datetime
-from django.core.exceptions import ValidationError
+from rest_framework.serializers import ValidationError
 
 from .base_test_case import BaseTestCase
 from ..models.credit_transfer import CreditTransfer
@@ -81,7 +80,8 @@ class TestTransfers(BaseTestCase):
         # try changing from status RECOMMENDED to ISSUED, this should fail
         # ie it should throw a Validation Error
         self.assertRaises(
-            ValidationError, validate_transfer, transfer_not_enough)
+            ValidationError, validate_transfer, transfer_not_enough
+        )
 
 
     # test that if the supplier does have enough of credit type/year the

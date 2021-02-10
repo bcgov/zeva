@@ -111,10 +111,12 @@ const govUser = {
 it('renders without crashing', () => {
   render(<Router><CreditTransfersDetailsPage checkboxes={[]} assertions={[]} submission={submission} user={user} handleSubmit={() => { console.log('submit!'); }} /></Router>);
 });
+
 it('shows an action bar with just a back button if the user is government', () => {
   const { container } = render(<CreditTransfersDetailsPage checkboxes={[]} submission={submission} assertions={[]} user={govUser} handleSubmit={() => { console.log('submit!'); }} />);
   expect(findByTestId(container, 'action-bar-basic')).toBeInTheDocument;
 });
+
 it('shows the comment box and reject button (but not rescind button) if the user is from the receiving supplier', () => {
   const { container } = render(<CreditTransfersDetailsPage checkboxes={[]} submission={submission} assertions={[]} user={user} handleSubmit={() => { console.log('submit!'); }} />);
   const commentbox = findByTestId(container, 'transfer-comment');
@@ -143,10 +145,18 @@ it('if its a draft, initiating company can submit to partner or press back', () 
   fireEvent.click(getByTestId(container, 'submit-to-partner'));
   expect(queryByText(container, 'Submit credit transfer notice to trade partner?')).toBeInTheDocument;
 });
+
 it('shows the submit modal if the user selects the submit button', () => {
   submission.status = 'DRAFT';
   submission.history = [{
     status: 'DRAFT',
+    createUser: {
+      displayName: 'emily',
+      organization: { name: 'Toyota Canada Inc.' },
+    },
+    createTimestamp: '2020-12-01T09:27:21.098202-07:00',
+  }, {
+    status: 'SUBMITTED',
     createUser: {
       displayName: 'emily',
       organization: { name: 'Toyota Canada Inc.' },
