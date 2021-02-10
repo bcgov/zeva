@@ -27,7 +27,7 @@ const ComplianceReportAlert = (props) => {
   switch (status) {
     case 'DRAFT':
       title = 'Draft';
-      message = `${type} confirmed ${date} by ${userName}. Compliance report awaiting submission to Government of B.C.`;
+      message = `${type} confirmed ${date} by ${userName}. Model Year Report pending submission to Government of B.C.`;
       classname = 'alert-warning';
       break;
 
