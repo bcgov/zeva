@@ -32,10 +32,10 @@ const BceidUser = {
     title: 'Toyota employee',
     username: 'fs1',
   },
-  hasPermission: 'EDIT_ORGANIZATONS',
+  hasPermission: () => ([
+    'EDIT_ORGANIZATONS',
+  ]),
 };
-
-
 
 const activityCountIdir = {
   creditsAnalyst: 2,
@@ -157,8 +157,8 @@ storiesOf('Activity Banner BCEID', module)
 
 storiesOf('Actions page bceid', module)
   .add('whole page', () => (
-    <ActionsBceid activityCount={activityCountBceid} loading={false} />
+    <ActionsBceid activityCount={activityCountBceid} loading={false} user={BceidUser} />
   )) 
   .add('no activity', () => (
-    <ActionsBceid activityCount={activityCountBceidNone} loading={false} />
+    <ActionsBceid activityCount={activityCountBceidNone} loading={false} user={BceidUser} />
   ));

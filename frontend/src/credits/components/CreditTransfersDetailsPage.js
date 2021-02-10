@@ -206,11 +206,13 @@ const CreditTransfersDetailsPage = (props) => {
       {showSubmissionConfirmation
       && (
       <>
+        {latestSubmit && (
         <div className="text-blue mb-0" data-testid="submit-signature">
           Signed and submitted by {latestSubmit.createUser.displayName} of&nbsp;
           {latestSubmit.createUser.organization.name}&nbsp;
           {moment(latestSubmit.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
         </div>
+        )}
         {showApproveConfirmation && (
           <div className="text-blue mt-0" data-testid="approve-signature">
             Signed and submitted by {latestApprove.createUser.displayName} of&nbsp;

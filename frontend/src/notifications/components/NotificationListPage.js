@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
-import CustomPropTypes from '../../app/utilities/props';
-import Loading from '../../app/components/Loading';
 
 const NotificationListPage = (props) => {
   const {
@@ -13,26 +11,19 @@ const NotificationListPage = (props) => {
     displayList,
     subscribe,
     unsubscribe,
-    loading,
-    user,
   } = props;
-
-
-  if (loading) {
-    return <Loading />;
-  }
 
   return (
     <div id="notification-list">
       <div className="col-sm-12">
         <input type="radio" id="Unsubscribe" onChange={(event) => { handleChange(event); }} name="Subscription" value="Unsubscribe" defaultChecked={unsubscribe} />
-         <label className="d-inline" id="transfer-text">
+        <label className="d-inline" htmlFor="Unsubscribe">
           Unsubscribe, do not receive email notifications<br />
-         </label>
-        <input type="radio" id="Subscribe" onChange={(event) => { handleChange(event); }} name="Subscription" value="Subscribe" defaultChecked={subscribe}/>
-          <label className="d-inline" id="transfer-text">
-            Subscribe to receive immediate email (one email per notification)
-          </label>           
+        </label>
+        <input type="radio" id="Subscribe" onChange={(event) => { handleChange(event); }} name="Subscription" value="Subscribe" defaultChecked={subscribe} />
+        <label className="d-inline" htmlFor="Subscribe">
+          Subscribe to receive immediate email (one email per notification)
+        </label>
       </div>
       <ReactTooltip />
       {displayList && (notifications.map((notification) => (
@@ -58,7 +49,10 @@ const NotificationListPage = (props) => {
 NotificationListPage.defaultProps = {
   notifications: [],
   checkboxes: [],
+  subscribe: false,
+  unsubscribe: false,
 };
+
 NotificationListPage.propTypes = {
   notifications: PropTypes.arrayOf(PropTypes.shape()),
   checkboxes: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])),
@@ -67,8 +61,6 @@ NotificationListPage.propTypes = {
   displayList: PropTypes.bool.isRequired,
   subscribe: PropTypes.bool,
   unsubscribe: PropTypes.bool,
-  user: CustomPropTypes.user.isRequired,
-  loading: PropTypes.bool.isRequired,
 };
 
 export default NotificationListPage;
