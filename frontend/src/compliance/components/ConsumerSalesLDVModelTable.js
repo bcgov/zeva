@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import _ from 'lodash';
 import ReactTable from '../../app/components/ReactTable';
 
 const ConsumerSalesLDVModalTable = (props) => {
@@ -7,12 +8,22 @@ const ConsumerSalesLDVModalTable = (props) => {
 
   const columns = [
     {
-      accessor: (item) => item.sales,
+      accessor: (item) => item.pendingSales,
       className: 'text-center',
-      Header: 'Sales',
+      Header: 'Pending Sales',
       headerClassName: 'font-weight-bold ',
-      id: 'sales',
+      id: 'pending-sales',
       maxWidth: 200,
+      Footer: <span><b>{_.sum(_.map(data, (d) => d.pendingSales))}</b></span>,
+    },
+    {
+      accessor: (item) => item.salesIssued,
+      className: 'text-center',
+      Header: 'Sales Issued',
+      headerClassName: 'font-weight-bold ',
+      id: 'sales-issued',
+      maxWidth: 200,
+      Footer: <span><b>{_.sum(_.map(data, (d) => d.salesIssued))}</b></span>,
     },
     {
       accessor: (item) => item.modelYear,
