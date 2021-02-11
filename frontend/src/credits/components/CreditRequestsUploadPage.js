@@ -78,6 +78,7 @@ const CreditRequestsUploadPage = (props) => {
 
             <div>
               <input
+                defaultChecked
                 type="checkbox"
                 name="new-sales-upload-checkbox"
                 id="new-sales-upload-checkbox"

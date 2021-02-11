@@ -41,6 +41,13 @@ class ModelYearReport(Auditable):
                        statuses=[c.name for c in ModelYearReportStatuses]
                    )
     )
+    ldv_sales = models.DecimalField(
+        null=True,
+        decimal_places=2,
+        max_digits=20,
+        db_comment="Contains the LDV Sales/Leases information for model year"
+    )
+    
 
     class Meta:
         db_table = 'model_year_report'
