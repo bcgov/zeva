@@ -37,6 +37,7 @@ const UploadCreditRequestsContainer = (props) => {
       axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id))
         .then((response) => {
           setSubmission(response.data);
+          setUploadNewExcel(true);
           if (response.data.evidence.length > 0) {
             setEvidenceCheckbox(true);
           }
@@ -113,7 +114,7 @@ const UploadCreditRequestsContainer = (props) => {
         id,
       };
     }
-    if (uploadNewExcel) {
+    if (uploadNewExcel && files.length > 0) {
       data.upload_new = true;
     }
     upload(ROUTES_CREDIT_REQUESTS.UPLOAD, files, data).then((response) => {

@@ -364,7 +364,7 @@ const CreditRequestDetailsPage = (props) => {
                       }}
                       type="button"
                     >
-                      <FontAwesomeIcon icon="upload" /> Re-upload excel file
+                      <FontAwesomeIcon icon="upload" /> Re-upload files
                     </button>
                   )}
                   {submission.validationStatus === 'DRAFT'
