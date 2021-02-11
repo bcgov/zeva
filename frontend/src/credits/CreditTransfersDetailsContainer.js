@@ -66,7 +66,13 @@ const CreditTransfersDetailsContainer = (props) => {
       submissionContent.signingConfirmation = checkboxes;
     }
     axios.patch(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id), submissionContent)
-      .then(() => history.push(ROUTES_CREDIT_TRANSFERS.LIST))
+      .then(() => {
+        if (status == "RESCINDED" || status == "DRAFT") {
+          history.push(ROUTES_CREDIT_TRANSFERS.EDIT.replace(':id', id))
+        } else {
+          window.location.reload();
+        }
+      })
       .catch((error) => {
         const { response } = error;
         if (response.status === 400) {
