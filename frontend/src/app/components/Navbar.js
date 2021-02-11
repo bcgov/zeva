@@ -184,17 +184,6 @@ class Navbar extends Component {
                 </NavLink>
               </li>
               )}
-              {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED && (
-              <li className="nav-item">
-                <NavLink
-                  activeClassName="active"
-                  to="/model-year-report"
-                >
-                  <span>Model Year Report</span>
-                </NavLink>
-              </li>
-              )}
-
               {CONFIG.FEATURES.CREDIT_TRANSACTIONS.ENABLED
               && typeof user.hasPermission === 'function'
               && ((!user.isGovernment && user.hasPermission('EDIT_SALES'))
