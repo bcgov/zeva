@@ -1,0 +1,20 @@
+.compliance-calculator-totals {
+  border: 1px solid black;
+}
+#calculator-model-table {
+  fieldset {
+    border: none !important;
+  }
+}
+.calculator-page {
+  border: 1.5px solid #c5c5c5;
+  padding: 0.5rem;
+}
+.compliance-calculator-inputs {
+  background-color: $default-background-grey;
+  fieldset {
+    background-color: none;
+    border: none;
+  }
+
+}
