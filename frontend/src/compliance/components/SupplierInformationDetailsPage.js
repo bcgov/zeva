@@ -12,11 +12,11 @@ const SupplierInformationDetailsPage = (props) => {
   const {
     handleChangeMake,
     handleDeleteMake,
+    handleSubmit,
     handleSubmitMake,
     loading,
     make,
     makes,
-    orgMakes,
     user,
   } = props;
 
@@ -114,7 +114,7 @@ const SupplierInformationDetailsPage = (props) => {
                   </div>
                 </form>
 
-                {(makes.length > 0 || orgMakes.length > 0) && (
+                {(makes.length > 0) && (
                   <div className="list mt-3 p-2">
                     {makes.map((item, index) => (
                       <div className="form-row my-2" key={index}>
@@ -128,11 +128,6 @@ const SupplierInformationDetailsPage = (props) => {
                           >x
                           </button>
                         </div>
-                      </div>
-                    ))}
-                    {orgMakes.map((item, index) => (
-                      <div className="form-row my-2" key={index}>
-                        <div className="col-11">{item}</div>
                       </div>
                     ))}
                   </div>
@@ -158,7 +153,13 @@ const SupplierInformationDetailsPage = (props) => {
               <Button buttonType="back" locationRoute="/compliance/reports" />
             </span>
             <span className="right-content">
-              <Button buttonType="save" optionalClassname="button primary" action={() => {}} />
+              <Button
+                buttonType="save"
+                optionalClassname="button primary"
+                action={(event) => {
+                  handleSubmit(event);
+                }}
+              />
             </span>
           </div>
         </div>
@@ -174,10 +175,10 @@ SupplierInformationDetailsPage.propTypes = {
   handleChangeMake: PropTypes.func.isRequired,
   handleDeleteMake: PropTypes.func.isRequired,
   handleSubmitMake: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   make: PropTypes.string.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
-  orgMakes: PropTypes.arrayOf(PropTypes.string).isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 export default SupplierInformationDetailsPage;

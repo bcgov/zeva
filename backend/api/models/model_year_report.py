@@ -6,6 +6,7 @@ from enumfields import EnumField
 
 from auditable.models import Auditable
 from api.models.model_year_report_statuses import ModelYearReportStatuses
+from api.models.model_year_report_make import ModelYearReportMake
 
 
 class ModelYearReport(Auditable):
@@ -15,6 +16,12 @@ class ModelYearReport(Auditable):
     Flat information goes here such as Supplier Class and organizatio name.
     While makes and other multiple rows table will reference this table
     """
+    organization = models.ForeignKey(
+        'Organization',
+        related_name=None,
+        on_delete=models.PROTECT,
+        null=False
+    )
     organization_name = models.CharField(
         db_comment="Name of the organization when the report was generated",
         max_length=500,
@@ -47,9 +54,19 @@ class ModelYearReport(Auditable):
         max_digits=20,
         db_comment="Contains the LDV Sales/Leases information for model year"
     )
-    
+
+    @property
+    def makes(self):
+        data = ModelYearReportMake.objects.filter(
+            model_year_report_id=self.id
+        )
+
+        return data
 
     class Meta:
         db_table = 'model_year_report'
 
-    db_table_comment = "Model Year Report container"
+    db_table_comment = "Model Year Report contains details of light duty " \
+                       "vehicle sales as submitted by the supplier each " \
+                       "model year in order to demonstrate regulatory " \
+                       "compliance."

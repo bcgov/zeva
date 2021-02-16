@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import moment from 'moment-timezone';
 
+import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
@@ -18,11 +20,10 @@ const SupplierInformationContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [makes, setMakes] = useState([]);
   const [make, setMake] = useState('');
-  const [orgMakes, setOrgMakes] = useState([]);
 
   const handleChangeMake = (event) => {
     const { value } = event.target;
-    setMake(value);
+    setMake(value.toUpperCase());
   };
 
   const handleDeleteMake = (index) => {
@@ -37,10 +38,24 @@ const SupplierInformationContainer = (props) => {
     setMakes([...makes, make]);
   };
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.error(moment().year());
+
+    const data = {
+      makes,
+      modelYear: moment().year(),
+    };
+
+    axios.post(ROUTES_COMPLIANCE.REPORTS, data).then(() => {
+
+    });
+  };
+
   const refreshDetails = () => {
     axios.get(ROUTES_VEHICLES.LIST).then((response) => {
       const { data } = response;
-      setOrgMakes([...new Set(data.map((vehicle) => vehicle.make.toUpperCase()))]);
+      setMakes([...new Set(data.map((vehicle) => vehicle.make.toUpperCase()))]);
       setLoading(false);
     });
   };
@@ -55,11 +70,11 @@ const SupplierInformationContainer = (props) => {
       <SupplierInformationDetailsPage
         handleChangeMake={handleChangeMake}
         handleDeleteMake={handleDeleteMake}
+        handleSubmit={handleSubmit}
         handleSubmitMake={handleSubmitMake}
         loading={loading}
         make={make}
         makes={makes}
-        orgMakes={orgMakes}
         user={user}
       />
     </>
