@@ -1,6 +1,5 @@
 import logging
 from rest_framework import mixins, status, viewsets
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.db.models import Q
 
@@ -9,9 +8,6 @@ from api.models.credit_transfer_statuses import CreditTransferStatuses
 from api.permissions.credit_transfer import CreditTransferPermissions
 from api.serializers.credit_transfer import CreditTransferSerializer, \
     CreditTransferSaveSerializer, CreditTransferListSerializer
-from api.models.user_profile import UserProfile
-from api.models.notification import Notification
-from api.models.notification_subscription import NotificationSubscription
 from auditable.views import AuditableMixin
 from api.services.send_email import notifications_credit_transfers
 from api.services.credit_transaction import validate_transfer

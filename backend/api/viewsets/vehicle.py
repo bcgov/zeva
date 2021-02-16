@@ -4,7 +4,6 @@ from django.utils.decorators import method_decorator
 
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from api.decorators.permission import permission_required
@@ -12,6 +11,7 @@ from api.models.vehicle_class import VehicleClass
 from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle, VehicleDefinitionStatuses
 from api.models.vehicle_zev_type import ZevType
+from api.permissions.vehicle import VehiclePermissions
 from api.serializers.vehicle import ModelYearSerializer, \
     VehicleZevTypeSerializer, VehicleClassSerializer, \
     VehicleSaveSerializer, VehicleSerializer, \
@@ -24,7 +24,7 @@ class VehicleViewSet(
     AuditableMixin, viewsets.GenericViewSet, mixins.CreateModelMixin,
     mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin
 ):
-    permission_classes = (AllowAny,)
+    permission_classes = (VehiclePermissions,)
     http_method_names = ['get', 'post', 'put', 'patch']
     queryset = Vehicle.objects.all()
 
