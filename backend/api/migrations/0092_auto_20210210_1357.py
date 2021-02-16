@@ -8,7 +8,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0090_modelyearreport_modelyearreportconfirmation_modelyearreporthistory_modelyearreportmake'),
+        ('api', '0091_modelyearreportaddress'),
     ]
 
     operations = [

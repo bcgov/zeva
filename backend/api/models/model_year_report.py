@@ -6,6 +6,7 @@ from enumfields import EnumField
 
 from auditable.models import Auditable
 from api.models.model_year_report_statuses import ModelYearReportStatuses
+from api.models.model_year_report_make import ModelYearReportMake
 
 
 class ModelYearReport(Auditable):
@@ -53,6 +54,14 @@ class ModelYearReport(Auditable):
         max_digits=20,
         db_comment="Contains the LDV Sales/Leases information for model year"
     )
+
+    @property
+    def makes(self):
+        data = ModelYearReportMake.objects.filter(
+            model_year_report_id=self.id
+        )
+
+        return data
 
     class Meta:
         db_table = 'model_year_report'

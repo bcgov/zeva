@@ -2,12 +2,16 @@ from rest_framework import mixins, viewsets
 
 from api.models.model_year_report import ModelYearReport
 from api.permissions.model_year_report import ModelYearReportPermissions
+from api.serializers.model_year_report import \
+    ModelYearReportSerializer, ModelYearReportListSerializer, \
+    ModelYearReportSaveSerializer
 from auditable.views import AuditableMixin
 
 
 class ModelYearReportViewset(
         AuditableMixin, viewsets.GenericViewSet,
-        mixins.ListModelMixin, mixins.RetrieveModelMixin
+        mixins.ListModelMixin, mixins.RetrieveModelMixin,
+        mixins.CreateModelMixin, mixins.UpdateModelMixin
 ):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
@@ -18,6 +22,7 @@ class ModelYearReportViewset(
 
     serializer_classes = {
         'default': ModelYearReportSerializer,
+        'create': ModelYearReportSaveSerializer,
         'list': ModelYearReportListSerializer,
     }
 
