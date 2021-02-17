@@ -2,15 +2,39 @@
   border: 1px solid black;
 }
 #calculator-model-table {
+  overflow: auto;
   fieldset {
     border: none !important;
+    input {
+      max-width: 125px;
+      width: 100%;
+    }
+  }
+  table {
+      min-width: 800px;
+      max-width: 100%;
+      width: 100%;
+      .zev-class {
+        width: 100px;
+      }
+      .estimated-sales {
+        width: 300px;
+      }
+      .credit-entitlement,.estimated-credits {
+        width: 200px;
+      }
+      .zev-model {
+        width: 650px;
+      }
+
+
   }
 }
 .calculator-page {
   border: 1.5px solid #c5c5c5;
   padding: 0.5rem;
 }
-.compliance-calculator-inputs {
+.compliance-calculator-grey {
   background-color: $default-background-grey;
   fieldset {
     background-color: none;

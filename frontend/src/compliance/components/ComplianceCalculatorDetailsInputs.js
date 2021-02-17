@@ -14,7 +14,7 @@ const ComplianceCalculatorDetailsInputs = (props) => {
     <option key={`${obj.id}-${obj.name}`} value={obj.name}>{obj.name}</option>
   ));
   return (
-    <div className="col-lg-5 col-sm-12 col-12 compliance-calculator-inputs pl-0 m-lg-2">
+    <div className="col-lg-5 col-sm-12 col-12 compliance-calculator-grey pl-0 m-lg-2">
       <fieldset>
         <div className="form-group row pl-0 mb-0">
           <label
