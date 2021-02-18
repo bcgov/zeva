@@ -67,10 +67,12 @@ const CreditTransfersDetailsContainer = (props) => {
     }
     axios.patch(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id), submissionContent)
       .then(() => {
-        if (status == "RESCINDED" || status == "DRAFT") {
-          history.push(ROUTES_CREDIT_TRANSFERS.EDIT.replace(':id', id))
-        } else {
-          window.location.reload();
+        history.push(ROUTES_CREDIT_TRANSFERS.EDIT.replace(':id', id));
+        if (status === "RESCINDED" || status === "DRAFT") {
+          history.replace(ROUTES_CREDIT_TRANSFERS.EDIT.replace(':id', id))
+        } 
+        else {
+          history.replace(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id));
         }
       })
       .catch((error) => {

@@ -126,7 +126,7 @@ const CreditTransfersEditContainer = (props) => {
         signingConfirmation: checkboxes,
       })
         .then((response) => {
-          if (status = "DRAFT") {
+          if (status === "DRAFT") {
             history.push(ROUTES_CREDIT_TRANSFERS.EDIT.replace(/:id/gi, response.data.id))
           }
           else {
@@ -148,10 +148,9 @@ const CreditTransfersEditContainer = (props) => {
         signingConfirmation: checkboxes,
       })
         .then(() => {
-          if (status == "DRAFT") {
-            window.location.reload();
-          } else {
-            history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/g, id))
+          history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/g, id));
+          if (status === 'DRAFT') {
+            history.replace(ROUTES_CREDIT_TRANSFERS.EDIT.replace(/:id/g, id));
           }
         })
         .catch((error) => {
