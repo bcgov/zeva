@@ -88,5 +88,5 @@ class ModelYearReportSaveSerializer(
     class Meta:
         model = ModelYearReport
         fields = (
-            'model_year', 'validation_status', 'makes',
+            'id', 'model_year', 'validation_status', 'makes',
         )
