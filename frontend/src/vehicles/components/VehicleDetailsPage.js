@@ -25,6 +25,7 @@ const VehicleDetailsPage = (props) => {
     title,
     user,
     locationState,
+    isActiveChange,
   } = props;
   const [requestChangeCheck, setRequestChangeCheck] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -49,6 +50,14 @@ const VehicleDetailsPage = (props) => {
   const handleSubmit = () => {};
   let modalProps;
   switch (modalType) {
+    case 'makeInactive':
+      modalProps = {
+        confirmLabel: 'Make Inactive',
+        modalText: 'This action can be reversed, you can re-activate a ZEV model if required',
+        title: 'Make ZEV Model Inactive?',
+        handleSubmit: (event) => { isActiveChange(false); },
+      };
+      break;
     case 'submit':
       modalProps = {
         confirmLabel: ' Submit',
@@ -233,6 +242,22 @@ const VehicleDetailsPage = (props) => {
                   />
                 </>
               )}
+              {['VALIDATED'].indexOf(details.validationStatus) >= 0
+              && !user.isGovernment && details.isActive && (
+              <Button
+                buttonType="makeInactive"
+                optionalText="Make Inactive"
+                action={() => { setModalType('makeInactive'); setShowModal(true); }}
+              />
+              )}
+              {['VALIDATED'].indexOf(details.validationStatus) >= 0
+              && !user.isGovernment && !details.isActive && (
+              <Button
+                buttonType="makeActive"
+                optionalText="Make Active"
+                action={() => { setModalType('makeActive'); setShowModal(true); }}
+              />
+              )}
               {details.validationStatus === 'SUBMITTED'
               && user.isGovernment
               && typeof user.hasPermission === 'function'
@@ -271,6 +296,7 @@ const VehicleDetailsPage = (props) => {
             modalClass="w-75"
             showModal={showModal}
             confirmClass={modalProps.buttonClass}
+            title={modalProps.title ? modalProps.title : 'Confirm'}
           >
             <div>
               <div><br /><br /></div>

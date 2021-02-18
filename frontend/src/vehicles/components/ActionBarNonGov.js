@@ -7,7 +7,6 @@ const ActionBarNonGov = (props) => {
   const {
     handleClear, filtered,
   } = props;
-
   return (
     <div className="action-bar no-bg p-0 m-0 justify-content-end">
       <span className="right-content d-block d-md-flex d-lg-flex d-xl-flex">

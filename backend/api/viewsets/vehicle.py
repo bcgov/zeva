@@ -15,7 +15,7 @@ from api.permissions.vehicle import VehiclePermissions
 from api.serializers.vehicle import ModelYearSerializer, \
     VehicleZevTypeSerializer, VehicleClassSerializer, \
     VehicleSaveSerializer, VehicleSerializer, \
-    VehicleStatusChangeSerializer
+    VehicleStatusChangeSerializer, VehicleIsActiveChangeSerializer
 from api.services.minio import minio_put_object
 from auditable.views import AuditableMixin
 
@@ -31,6 +31,7 @@ class VehicleViewSet(
     serializer_classes = {
         'default': VehicleSerializer,
         'state_change': VehicleStatusChangeSerializer,
+        'is_active_change': VehicleIsActiveChangeSerializer,
         'create': VehicleSaveSerializer,
         'partial_update': VehicleSaveSerializer
     }
@@ -101,6 +102,23 @@ class VehicleViewSet(
         """
         years = ModelYear.objects.all().order_by('-name')
         serializer = ModelYearSerializer(years, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['patch'])
+    def is_active_change(self, request, pk=None):
+        """
+        change active / inactive status for vehicle
+        """
+        serializer = self.get_serializer(
+            self.queryset.get(id=pk),
+            data=request.data
+        )
+
+        if not serializer.is_valid(raise_exception=True):
+            return Response(serializer.errors)
+
+        serializer.save()
+
         return Response(serializer.data)
 
     @action(detail=True, methods=['patch'])
