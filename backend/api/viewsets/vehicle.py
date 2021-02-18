@@ -15,7 +15,7 @@ from api.permissions.vehicle import VehiclePermissions
 from api.serializers.vehicle import ModelYearSerializer, \
     VehicleZevTypeSerializer, VehicleClassSerializer, \
     VehicleSaveSerializer, VehicleSerializer, \
-    VehicleStatusChangeSerializer
+    VehicleStatusChangeSerializer, VehicleSalesSerializer
 from api.services.minio import minio_put_object
 from auditable.views import AuditableMixin
 
@@ -92,6 +92,12 @@ class VehicleViewSet(
         """
         classes = VehicleClass.objects.all().order_by('description')
         serializer = VehicleClassSerializer(classes, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False)	
+    def vehicles_sales(self, _request):
+        vehicles = self.get_queryset()
+        serializer = VehicleSalesSerializer(vehicles, many=True)
         return Response(serializer.data)
 
     @action(detail=False)
