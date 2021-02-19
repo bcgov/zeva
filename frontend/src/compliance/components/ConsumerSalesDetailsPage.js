@@ -8,7 +8,16 @@ import { now } from 'moment';
 import ConsumerSalesLDVModalTable from '../components/ConsumerSalesLDVModelTable';
 
 const ConsumerSalesDetailsPage = (props) => {
-  const { user, loading, handleSave, handleChange, data } = props;
+  const {
+    user,
+    loading,
+    handleSave,
+    handleChange,
+    vehicles,
+    confirmed,
+    previousSales,
+    error,
+  } = props;
 
   const details = {
     consumerSales: {
@@ -35,14 +44,16 @@ const ConsumerSalesDetailsPage = (props) => {
           <h2>2020 Model Year Report</h2>
         </div>
       </div>
-      <div className="row">
-        <div className="col-12">
-          <ComplianceReportAlert
-            report={details.consumerSales}
-            type="Consumer Sales"
-          />
+      {confirmed && (
+        <div className="row">
+          <div className="col-12">
+            <ComplianceReportAlert
+              report={details.consumerSales}
+              type="Consumer Sales"
+            />
+          </div>
         </div>
-      </div>
+      )}
       <div className="row mt-1">
         <div className="col-12">
           <div className="p-3 consumer-sales">
@@ -64,6 +75,7 @@ const ConsumerSalesDetailsPage = (props) => {
                     type="text"
                     onChange={handleChange}
                   ></input>
+                  {error && <span className="text-danger ml-2">2020 Model Year LDV Sales\Leases can't be blank</span>}
                 </form>
               </div>
             </div>
@@ -74,31 +86,21 @@ const ConsumerSalesDetailsPage = (props) => {
                 {details.organization.name}.
               </div>
               <div className="previous-ldv-sales mt-2 p-3">
-                <div className="first-model-year-ldv">
-                  <label className="text-blue mr-4 font-weight-bold">
-                    2019 Model Year LDV Sales\Leases:
-                  </label>
-                  <label className="sales-numbers">9,456</label>
-                </div>
-                <div className="second-model-year-ldv">
-                  <label className="text-blue mr-4 font-weight-bold">
-                    2018 Model Year LDV Sales\Leases:
-                  </label>
-                  <label className="sales-numbers">8,123</label>
-                </div>
-                <div className="third-model-year-ldv">
-                  <label className="text-blue mr-4 font-weight-bold">
-                    2017 Model Year LDV Sales\Leases:
-                  </label>
-                  <label className="sales-numbers">7,789</label>
-                </div>
+                {previousSales.map((yearSale) => (
+                  <div className="model-year-ldv" key={yearSale.id}>
+                    <label className="text-blue mr-4 font-weight-bold">
+                      {yearSale.modelYear} Model Year LDV Sales\Leases:
+                    </label>
+                    <label className="sales-numbers">{yearSale.ldvSales}</label>
+                  </div>
+                ))}
               </div>
               <div className="ldv-zev-models mt-2">
                 <label className="text-blue mr-4 font-weight-bold">
                   Consumer Sales of Zero-Emission Vehicles
                 </label>
                 <div className="sales-table mt-2">
-                  <ConsumerSalesLDVModalTable data={data} />
+                  <ConsumerSalesLDVModalTable vehicles={vehicles} />
                 </div>
                 <div className="total-ldv-sales text-blue mt-2">
                   Pending Sales are VIN applied for in credit applications
@@ -156,6 +158,9 @@ ConsumerSalesDetailsPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   handleSave: PropTypes.func.isRequired,
   handleChange: PropTypes.func.isRequired,
-  data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  vehicles: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  confirmed: PropTypes.bool.isRequired,
+  previousSales: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  error: PropTypes.bool.isRequired
 };
 export default ConsumerSalesDetailsPage;

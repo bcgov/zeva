@@ -3,6 +3,8 @@ from rest_framework import mixins, viewsets, permissions,status
 from api.models.model_year_report_vehicle import ModelYearReportVehicle
 from api.models.model_year_report import ModelYearReport
 from api.models.vehicle import Vehicle
+from api.models.model_year import ModelYear
+from api.models.model_year_report_previous_sales import ModelYearReportPreviousSales
 from rest_framework.response import Response
 
 from api.serializers.model_year_report_vehicle import ModelYearReportVehicleSerializer, ModelYearReportVehicleSaveSerializer
@@ -29,6 +31,7 @@ class ModelYearReportVehicleViewSet(mixins.ListModelMixin, mixins.CreateModelMix
         vehicles = request.data.get('data')
         model_year_report_id = request.data.get('model_year_report_id')
         model_year_report_ldv_sales = request.data.get('ldv_sales')
+        previous_sales = request.data.get('previous_sales')
 
         vehicles_delete = ModelYearReportVehicle.objects.filter(
             model_year_report_id=model_year_report_id
@@ -47,6 +50,20 @@ class ModelYearReportVehicleViewSet(mixins.ListModelMixin, mixins.CreateModelMix
             )
             serializer.is_valid(raise_exception=True)
             model_year_report_vehicle = serializer.save()
+
+        previous_year_delete = ModelYearReportPreviousSales.objects.filter(
+            model_year_report_id=model_year_report_id
+        )
+
+        previous_year_delete.delete()
+
+        for previous_sale in previous_sales:
+            model_year_report_previous_sale = ModelYearReportPreviousSales.objects.create(
+                previous_sales=previous_sale.get('ldv_sales'),
+                model_year=ModelYear.objects.get(name=previous_sale.get('model_year')),
+                model_year_report=ModelYearReport.objects.get(id=model_year_report_id)
+            )
+            model_year_report_previous_sale.save()
 
         return Response(
            {"status":"saved"}
