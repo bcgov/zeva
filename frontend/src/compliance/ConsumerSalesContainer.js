@@ -10,10 +10,17 @@ import ROUTES_VEHICLES from '../app/routes/Vehicles';
 const ConsumerSalesContainer = (props) => {
   const { keycloak, user } = props;
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState([]);
   const [salesInput, setSalesInput] = useState('');
-  const [data, setData] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
+  const [confirmed, setConfirmed] = useState(false);
   const { id } = useParams();
+  let previousSales = [
+     { id:1, modelYear: 2017, ldvSales: 7789 },
+     { id:2, modelYear: 2018, ldvSales: 8123 },
+     { id:3, modelYear: 2019, ldvSales: 9456 },
+  ];
 
   const reportStatuses = {
     assessment: '',
@@ -26,7 +33,7 @@ const ConsumerSalesContainer = (props) => {
   const refreshDetails = (showLoading) => {
     setLoading(showLoading);
     axios.get(ROUTES_VEHICLES.VEHICLES_SALES).then((response) => {
-      setData(response.data);
+      setVehicles(response.data);
       setLoading(false);
     });
   };
@@ -36,19 +43,25 @@ const ConsumerSalesContainer = (props) => {
   };
 
   const handleSave = () => {
-    axios
-      .post(ROUTES_COMPLIANCE.VEHICLES, {
-        data: data,
-        ldvSales: salesInput,
-        modelYearReportId: id,
-      })
-      .then(() => console.log('Consumer Sales Saved'))
-      .catch((error) => {
-        const { response } = error;
-        if (response.status === 400) {
-          setErrorMessage(error.response.data.status);
-        }
-      });
+    if (!salesInput) {
+      setError(true);
+    }
+    else {
+      setError(false);
+      axios.post(ROUTES_COMPLIANCE.VEHICLES, {
+          data: vehicles,
+          ldvSales: salesInput,
+          modelYearReportId: id,
+          previousSales: previousSales
+        })
+        .then(() => setConfirmed(true))
+        .catch((error) => {
+          const { response } = error;
+          if (response.status === 400) {
+            setErrorMessage(error.response.data.status);
+          }
+        });
+    }
   };
 
   useEffect(() => {
@@ -67,7 +80,10 @@ const ConsumerSalesContainer = (props) => {
         loading={loading}
         handleSave={handleSave}
         handleChange={handleChange}
-        data={data}
+        vehicles={vehicles}
+        confirmed={confirmed}
+        previousSales={previousSales}
+        error={error}
       />
     </>
   );
