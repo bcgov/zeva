@@ -12,8 +12,14 @@ const ConsumerSalesContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState([]);
   const [salesInput, setSalesInput] = useState('');
-  const [data, setData] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
+  const [confirmed, setConfirmed] = useState(false);
   const { id } = useParams();
+  let previousSales = [
+     { id:1, modelYear: 2017, ldvSales: 7789 },
+     { id:2, modelYear: 2018, ldvSales: 8123 },
+     { id:3, modelYear: 2019, ldvSales: 9456 },
+  ];
 
   const reportStatuses = {
     assessment: '',
@@ -26,7 +32,7 @@ const ConsumerSalesContainer = (props) => {
   const refreshDetails = (showLoading) => {
     setLoading(showLoading);
     axios.get(ROUTES_VEHICLES.VEHICLES_SALES).then((response) => {
-      setData(response.data);
+      setVehicles(response.data);
       setLoading(false);
     });
   };
@@ -38,11 +44,12 @@ const ConsumerSalesContainer = (props) => {
   const handleSave = () => {
     axios
       .post(ROUTES_COMPLIANCE.VEHICLES, {
-        data: data,
+        data: vehicles,
         ldvSales: salesInput,
         modelYearReportId: id,
+        previousSales: previousSales
       })
-      .then(() => console.log('Consumer Sales Saved'))
+      .then(() => setConfirmed(true))
       .catch((error) => {
         const { response } = error;
         if (response.status === 400) {
@@ -67,7 +74,9 @@ const ConsumerSalesContainer = (props) => {
         loading={loading}
         handleSave={handleSave}
         handleChange={handleChange}
-        data={data}
+        vehicles={vehicles}
+        confirmed={confirmed}
+        previousSales={previousSales}
       />
     </>
   );

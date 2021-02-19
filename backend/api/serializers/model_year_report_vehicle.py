@@ -40,6 +40,7 @@ class ModelYearReportVehicleSaveSerializer(ModelSerializer):
     def create(self, validated_data):
         request = self.context.get('request')
         model_id = request.data.get('model_year_report_id')
+
         model_year_report_vehicle = ModelYearReportVehicle.objects.create(
             **validated_data,
             model_year_report=ModelYearReport.objects.get(id=model_id)
