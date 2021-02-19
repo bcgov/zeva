@@ -10,6 +10,7 @@ import ROUTES_VEHICLES from '../app/routes/Vehicles';
 const ConsumerSalesContainer = (props) => {
   const { keycloak, user } = props;
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState([]);
   const [salesInput, setSalesInput] = useState('');
   const [vehicles, setVehicles] = useState([]);
@@ -42,20 +43,25 @@ const ConsumerSalesContainer = (props) => {
   };
 
   const handleSave = () => {
-    axios
-      .post(ROUTES_COMPLIANCE.VEHICLES, {
-        data: vehicles,
-        ldvSales: salesInput,
-        modelYearReportId: id,
-        previousSales: previousSales
-      })
-      .then(() => setConfirmed(true))
-      .catch((error) => {
-        const { response } = error;
-        if (response.status === 400) {
-          setErrorMessage(error.response.data.status);
-        }
-      });
+    if (!salesInput) {
+      setError(true);
+    }
+    else {
+      setError(false);
+      axios.post(ROUTES_COMPLIANCE.VEHICLES, {
+          data: vehicles,
+          ldvSales: salesInput,
+          modelYearReportId: id,
+          previousSales: previousSales
+        })
+        .then(() => setConfirmed(true))
+        .catch((error) => {
+          const { response } = error;
+          if (response.status === 400) {
+            setErrorMessage(error.response.data.status);
+          }
+        });
+    }
   };
 
   useEffect(() => {
@@ -77,6 +83,7 @@ const ConsumerSalesContainer = (props) => {
         vehicles={vehicles}
         confirmed={confirmed}
         previousSales={previousSales}
+        error={error}
       />
     </>
   );

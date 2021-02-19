@@ -16,6 +16,7 @@ const ConsumerSalesDetailsPage = (props) => {
     vehicles,
     confirmed,
     previousSales,
+    error,
   } = props;
 
   const details = {
@@ -74,6 +75,7 @@ const ConsumerSalesDetailsPage = (props) => {
                     type="text"
                     onChange={handleChange}
                   ></input>
+                  {error && <span className="text-danger ml-2">2020 Model Year LDV Sales\Leases can't be blank</span>}
                 </form>
               </div>
             </div>
@@ -159,5 +161,6 @@ ConsumerSalesDetailsPage.propTypes = {
   vehicles: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   confirmed: PropTypes.bool.isRequired,
   previousSales: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  error: PropTypes.bool.isRequired
 };
 export default ConsumerSalesDetailsPage;
