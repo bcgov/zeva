@@ -6,7 +6,7 @@ import Alert from '../../app/components/Alert';
 
 const VehicleAlert = (props) => {
   const {
-    date, optionalMessage, optionalClassname, user, status,
+    date, optionalMessage, optionalClassname, user, status, isActive,
   } = props;
   let message = optionalMessage;
   let title;
@@ -44,6 +44,11 @@ const VehicleAlert = (props) => {
       message = optionalMessage;
       classname = optionalClassname;
   }
+  if (isActive === false) {
+    title = 'Inactive';
+    message = 'This ZEV model has been made inactive and can no longer be submitted for credits for consumer sales. You can make this model active again if you have more sales to submit.';
+    classname = 'alert-warning';
+  }
 
   return (
     <>
@@ -58,6 +63,7 @@ VehicleAlert.defaultProps = {
   status: '',
   optionalClassname: '',
   optionalMessage: '',
+  isActive: true,
 
 };
 VehicleAlert.propTypes = {
@@ -66,5 +72,6 @@ VehicleAlert.propTypes = {
   status: PropTypes.string,
   optionalClassname: PropTypes.string,
   optionalMessage: PropTypes.string,
+  isActive: PropTypes.bool,
 };
 export default VehicleAlert;

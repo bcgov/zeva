@@ -34,6 +34,7 @@ const VehicleList = (props) => {
             <ActionBarNonGov
               filtered={filtered}
               handleClear={handleClear}
+              setFiltered={setFiltered}
             />
           )}
           {user.isGovernment && (

@@ -48,6 +48,12 @@ const VehicleDetailsContainer = (props) => {
     });
   };
 
+  const isActiveChange = (isActive) => {
+    axios.patch(`vehicles/${id}/is_active_change`, { isActive }).then(() => {
+      refreshList();
+    });
+  };
+
   useEffect(() => {
     refreshList();
   }, [keycloak.authenticated]);
@@ -62,6 +68,7 @@ const VehicleDetailsContainer = (props) => {
       requestStateChange={stateChange}
       setComments={setComments}
       user={user}
+      isActiveChange={isActiveChange}
     />
   );
 };

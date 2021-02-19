@@ -48,6 +48,21 @@ class VehicleZevTypeSerializer(ModelSerializer):
         )
 
 
+class VehicleIsActiveChangeSerializer(ModelSerializer):
+    def update(self, obj, validated_data):
+        request = self.context.get('request')
+        is_active = validated_data.get('is_active')
+        obj.is_active = is_active
+        obj.save()
+        return obj
+
+    class Meta:
+        model = Vehicle
+        fields = (
+            'is_active',
+        )
+
+
 class VehicleStatusChangeSerializer(ModelSerializer):
     validation_status = EnumField(VehicleDefinitionStatuses)
 
@@ -223,7 +238,7 @@ class VehicleSerializer(
             'range', 'validation_status', 'vehicle_class_code', 'weight_kg',
             'vehicle_zev_type', 'credit_class', 'credit_value',
             'vehicle_comment', 'attachments', 'update_user', 'create_user',
-            'update_timestamp', 'organization', 'has_passed_us_06_test',
+            'update_timestamp', 'organization', 'has_passed_us_06_test', 'is_active'
         )
         read_only_fields = ('validation_status',)
 
