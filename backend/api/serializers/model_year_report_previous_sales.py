@@ -5,7 +5,7 @@ from api.serializers.vehicle import ModelYearSerializer
 from api.models.model_year_report_previous_sales import ModelYearReportPreviousSales
 
 
-class ModelYearReportPreviousSalesSerializer(ModelSerializer):
+class ModelYearReportPreviousSalesSerializer(ModelSerializer):  
     model_year = ModelYearSerializer()
     model_year_report = ModelYearReportSerializer
 

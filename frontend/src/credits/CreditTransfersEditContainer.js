@@ -125,7 +125,14 @@ const CreditTransfersEditContainer = (props) => {
         debitFrom,
         signingConfirmation: checkboxes,
       })
-        .then(() => history.push(ROUTES_CREDIT_TRANSFERS.LIST))
+        .then((response) => {
+          if (status === "DRAFT") {
+            history.push(ROUTES_CREDIT_TRANSFERS.EDIT.replace(/:id/gi, response.data.id))
+          }
+          else {
+            history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/gi, response.data.id))
+          }
+        })
         .catch((error) => {
           const { response } = error;
           if (response.status === 400) {
@@ -140,7 +147,12 @@ const CreditTransfersEditContainer = (props) => {
         debitFrom,
         signingConfirmation: checkboxes,
       })
-        .then(() => history.push(ROUTES_CREDIT_TRANSFERS.LIST))
+        .then(() => {
+          history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/g, id));
+          if (status === 'DRAFT') {
+            history.replace(ROUTES_CREDIT_TRANSFERS.EDIT.replace(/:id/g, id));
+          }
+        })
         .catch((error) => {
           const { response } = error;
           if (response.status === 400) {
