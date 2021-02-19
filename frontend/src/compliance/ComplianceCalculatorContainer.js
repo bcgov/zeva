@@ -55,7 +55,7 @@ const LDVSalesContainer = (props) => {
     ) => {
       setModelYearList(modelYearResponse.data);
       setAllComplianceRatios(allComplianceRatiosResponse.data);
-      setAllVehicleModels(allVehicleModelsResponse.data);
+      setAllVehicleModels(allVehicleModelsResponse.data.filter((each) => each.isActive === true && each.validationStatus === 'VALIDATED'));
       setLoading(false);
     }));
   };

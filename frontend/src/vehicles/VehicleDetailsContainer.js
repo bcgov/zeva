@@ -20,13 +20,6 @@ const VehicleDetailsContainer = (props) => {
   const { keycloak, user, location } = props;
   const { state: locationState } = location;
 
-  const isActiveChange = (isActive) => {
-    setLoading(true);
-    axios.patch(`vehicles/${id}/is_active_change`, { isActive }).then(() => {
-      history.push(ROUTES_VEHICLES.LIST);
-      setLoading(false);
-    });
-  };
   const stateChange = (newState) => {
     setLoading(true);
     axios.patch(`vehicles/${id}/state_change`, { validationStatus: newState }).then(() => {
@@ -52,6 +45,12 @@ const VehicleDetailsContainer = (props) => {
     axios.get(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id)).then((response) => {
       setVehicle(response.data);
       setLoading(false);
+    });
+  };
+
+  const isActiveChange = (isActive) => {
+    axios.patch(`vehicles/${id}/is_active_change`, { isActive }).then(() => {
+      refreshList();
     });
   };
 

@@ -47,21 +47,27 @@ const VehicleDetailsPage = (props) => {
       setRequestChangeCheck(false);
     }
   };
-  const handleSubmit = () => {};
   let modalProps;
   switch (modalType) {
     case 'makeInactive':
       modalProps = {
         confirmLabel: 'Make Inactive',
-        modalText: 'This action can be reversed, you can re-activate a ZEV model if required',
+        modalText: 'This action can be reversed, you can re-activate a ZEV model if required.Making a ZEV model inactive will remove it from various area of the system such as removing it from the Credit Application Excel template and from the compliance calculator.',
         title: 'Make ZEV Model Inactive?',
-        handleSubmit: (event) => { isActiveChange(false); },
+        handleSubmit: () => { setShowModal(false); isActiveChange(false); },
+      };
+      break;
+    case 'makeActive':
+      modalProps = {
+        confirmLabel: 'Make Active',
+        modalText: 'Make ZEV model active for submitting consumer sales?',
+        handleSubmit: () => { setShowModal(false); isActiveChange(true); },
       };
       break;
     case 'submit':
       modalProps = {
         confirmLabel: ' Submit',
-        handleSubmit: (event) => { requestStateChange('SUBMITTED'); },
+        handleSubmit: () => { requestStateChange('SUBMITTED'); },
         buttonClass: 'button primary',
         modalText: details.attachments.length > 0 ? 'Submit vehicle model and range test results to Government of B.C.?' : 'Submit ZEV model to Government of B.C.?',
       };
@@ -113,6 +119,7 @@ const VehicleDetailsPage = (props) => {
         <div className="col-sm-12">
           <h2>{title}</h2>
           <VehicleAlert
+            isActive={details.isActive}
             status={details.validationStatus}
             user={alertUser && alertUser.displayName ? alertUser.displayName : alertUser}
             date={moment(details.updateTimestamp).format('MMM D, YYYY')}
@@ -376,6 +383,7 @@ VehicleDetailsPage.propTypes = {
   title: PropTypes.string,
   user: CustomPropTypes.user.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),
+  isActiveChange: PropTypes.func.isRequired,
 };
 
 export default VehicleDetailsPage;

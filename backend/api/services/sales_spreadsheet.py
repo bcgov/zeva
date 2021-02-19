@@ -163,7 +163,8 @@ def create_sales_spreadsheet(organization, stream):
     vehicles = Vehicle.objects.filter(
         model_year__in=model_years,
         organization_id=organization.id,
-        validation_status='VALIDATED'
+        validation_status='VALIDATED',
+        is_active=True,
     )
 
     add_instructions_sheet(
