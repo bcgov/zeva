@@ -10,6 +10,8 @@ from api.models.vehicle_attachment import VehicleAttachment
 from api.models.vehicle_change_history import VehicleChangeHistory
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.models.vehicle_zev_type import ZevType
+from api.models.sales_submission_content import SalesSubmissionContent
+from api.models.record_of_sale import RecordOfSale
 from api.serializers.user import MemberSerializer
 from api.serializers.organization import OrganizationSerializer
 from api.models.user_profile import UserProfile
@@ -392,4 +394,56 @@ class VehicleMinSerializer(
             'range', 'vehicle_class_code',
             'vehicle_zev_type', 'weight_kg',
             'credit_class', 'credit_value',
+        )
+
+class VehicleSalesSerializer(
+    ModelSerializer
+):
+    pending_sales = SerializerMethodField()
+    sales_issued = SerializerMethodField()
+    zev_class = SerializerMethodField()
+    credit_value = SerializerMethodField()
+
+    model_year = SlugRelatedField(
+        slug_field='name',
+        queryset=ModelYear.objects.all()
+    )
+    vehicle_class_code = SlugRelatedField(
+        slug_field='vehicle_class_code',
+        queryset=VehicleClass.objects.all()
+    )
+    vehicle_zev_type = SlugRelatedField(
+        slug_field='vehicle_zev_code',
+        queryset=ZevType.objects.all()
+    )
+
+    def get_zev_class(self, instance):
+        return instance.get_credit_class()
+
+    def get_credit_value(self, instance):
+        return instance.get_credit_value()
+
+    def get_pending_sales(self, instance):
+        return SalesSubmissionContent.objects.filter(
+            xls_make__iexact=instance.make,
+            xls_model__iexact=instance.model_name,
+            xls_model_year=instance.model_year.name,
+            submission__validation_status__in=[
+                "SUBMITTED", "RECOMMEND_APPROVAL", "RECOMMEND_REJECTION",
+            ]
+        ).count()
+
+    def get_sales_issued(self, instance):
+        return RecordOfSale.objects.filter(
+            vehicle_id=instance.id,
+            submission__validation_status="VALIDATED"  # Validated actually means issued
+        ).count()
+
+    class Meta:
+        model = Vehicle
+        fields = (
+            'id', 'make', 'model_name', 'model_year',
+            'range', 'vehicle_class_code',
+            'vehicle_zev_type', 'zev_class', 'credit_value',
+            'pending_sales', 'sales_issued',
         )

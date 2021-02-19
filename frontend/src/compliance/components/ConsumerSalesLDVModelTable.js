@@ -42,7 +42,7 @@ const ConsumerSalesLDVModalTable = (props) => {
       maxWidth: 200,
     },
     {
-      accessor: (item) => item.model,
+      accessor: (item) => item.modelName,
       className: 'text-center',
       Header: 'Model',
       headerClassName: 'font-weight-bold',
@@ -50,7 +50,7 @@ const ConsumerSalesLDVModalTable = (props) => {
       maxWidth: 200,
     },
     {
-      accessor: (item) => item.type,
+      accessor: (item) => item.vehicleZevType,
       className: 'text-center',
       Header: 'Type',
       headerClassName: 'font-weight-bold',

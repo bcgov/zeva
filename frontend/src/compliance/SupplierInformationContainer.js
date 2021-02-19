@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment-timezone';
+import { useParams } from 'react-router-dom';
+import history from '../app/History';
 
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
@@ -10,6 +12,7 @@ import SupplierInformationDetailsPage from './components/SupplierInformationDeta
 
 const SupplierInformationContainer = (props) => {
   const { keycloak, user } = props;
+  const { id } = useParams();
   const reportStatuses = {
     assessment: '',
     consumerSales: '',
@@ -40,15 +43,14 @@ const SupplierInformationContainer = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.error(moment().year());
 
     const data = {
       makes,
       modelYear: moment().year(),
     };
 
-    axios.post(ROUTES_COMPLIANCE.REPORTS, data).then(() => {
-
+    axios.post(ROUTES_COMPLIANCE.REPORTS, data).then((response) => {
+      history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
     });
   };
 
@@ -66,7 +68,12 @@ const SupplierInformationContainer = (props) => {
 
   return (
     <>
-      <ComplianceReportTabs active="supplier-information" reportStatuses={reportStatuses} user={user} />
+      <ComplianceReportTabs
+        active="supplier-information"
+        reportStatuses={reportStatuses}
+        id={id}
+        user={user}
+      />
       <SupplierInformationDetailsPage
         handleChangeMake={handleChangeMake}
         handleDeleteMake={handleDeleteMake}

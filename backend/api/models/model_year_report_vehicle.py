@@ -28,13 +28,13 @@ class ModelYearReportVehicle(Auditable):
         max_length=250,
         null=False
     )
-    model = models.CharField(
+    model_name = models.CharField(
         blank=False,
         db_comment="Model of vehicle",
         max_length=250,
         null=False
     )
-    zev_type = models.ForeignKey(
+    vehicle_zev_type = models.ForeignKey(
         'ZevType',
         related_name=None,
         on_delete=models.PROTECT,
@@ -47,7 +47,13 @@ class ModelYearReportVehicle(Auditable):
         db_comment="vehicle range in km"
     )
     zev_class = models.ForeignKey(
-        'VehicleClass',
+        'CreditClass',
+        related_name=None,
+        on_delete=models.PROTECT,
+        null=False
+    )
+    model_year_report = models.ForeignKey(
+        'ModelYearReport',
         related_name=None,
         on_delete=models.PROTECT,
         null=False

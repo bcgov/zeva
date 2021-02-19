@@ -5,11 +5,10 @@ import Loading from '../../app/components/Loading';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import Button from '../../app/components/Button';
 import { now } from 'moment';
-import history from '../../app/History';
 import ConsumerSalesLDVModalTable from '../components/ConsumerSalesLDVModelTable';
 
 const ConsumerSalesDetailsPage = (props) => {
-  const { user, loading, handleSave, handleChange } = props;
+  const { user, loading, handleSave, handleChange, data } = props;
 
   const details = {
     consumerSales: {
@@ -24,49 +23,6 @@ const ConsumerSalesDetailsPage = (props) => {
     },
     organization: user.organization,
   };
-
-  let data = [
-    {
-      pendingSales: 32,
-      salesIssued: 452,
-      modelYear: '2019',
-      make: details.organization.name,
-      model: 'NIRO EV',
-      type: 'BEV',
-      range: '385',
-      zevClass: 'A',
-    },
-    {
-      pendingSales: 47,
-      salesIssued: 643,
-      modelYear: '2020',
-      make: details.organization.name,
-      model: 'SOUL EV',
-      type: 'BEV',
-      range: '179',
-      zevClass: 'A',
-    },
-    {
-      pendingSales: 28,
-      salesIssued: 256,
-      modelYear: '2020',
-      make: details.organization.name,
-      model: 'NIRO PLUG-IN',
-      type: 'PHEV',
-      range: '42',
-      zevClass: 'B',
-    },
-    {
-      pendingSales: 17,
-      salesIssued: 123,
-      modelYear: '2021',
-      make: details.organization.name,
-      model: 'OPTIMA PLUG-IN',
-      type: 'PHEV',
-      range: '47',
-      zevClass: 'B',
-    },
-  ];
 
   if (loading) {
     return <Loading />;
@@ -200,5 +156,6 @@ ConsumerSalesDetailsPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   handleSave: PropTypes.func.isRequired,
   handleChange: PropTypes.func.isRequired,
+  data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
 export default ConsumerSalesDetailsPage;

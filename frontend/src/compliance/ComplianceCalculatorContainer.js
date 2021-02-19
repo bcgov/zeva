@@ -75,14 +75,17 @@ const LDVSalesContainer = (props) => {
     <>
       <ComplianceTabs active="calculator" user={user} />
       <ComplianceCalculatorDetailsPage
+        user={user}
         complianceNumbers={complianceNumbers}
         complianceYearInfo={complianceYearInfo}
         handleInputChange={handleInputChange}
         modelYearList={modelYearList}
         selectedYearOption={selectedYearOption}
         supplierSize={supplierSize}
+        allVehicleModels={allVehicleModels}
+        estimatedModelSales={estimatedModelSales}
+        setEstimatedModelSales={setEstimatedModelSales}
       />
-      <ComplianceCalculatorModelTable models={allVehicleModels} estimatedModelSales={estimatedModelSales} setEstimatedModelSales={setEstimatedModelSales} />
     </>
   );
 };
