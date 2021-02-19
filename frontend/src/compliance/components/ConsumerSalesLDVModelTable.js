@@ -4,7 +4,7 @@ import _ from 'lodash';
 import ReactTable from '../../app/components/ReactTable';
 
 const ConsumerSalesLDVModalTable = (props) => {
-  const { data } = props;
+  const { vehicles } = props;
 
   const columns = [
     {
@@ -14,7 +14,7 @@ const ConsumerSalesLDVModalTable = (props) => {
       headerClassName: 'font-weight-bold ',
       id: 'pending-sales',
       maxWidth: 200,
-      Footer: <span><b>{_.sum(_.map(data, (d) => d.pendingSales))}</b></span>,
+      Footer: <span><b>{_.sum(_.map(vehicles, (d) => d.pendingSales))}</b></span>,
     },
     {
       accessor: (item) => item.salesIssued,
@@ -23,7 +23,7 @@ const ConsumerSalesLDVModalTable = (props) => {
       headerClassName: 'font-weight-bold ',
       id: 'sales-issued',
       maxWidth: 200,
-      Footer: <span><b>{_.sum(_.map(data, (d) => d.salesIssued))}</b></span>,
+      Footer: <span><b>{_.sum(_.map(vehicles, (d) => d.salesIssued))}</b></span>,
     },
     {
       accessor: (item) => item.modelYear,
@@ -79,7 +79,7 @@ const ConsumerSalesLDVModalTable = (props) => {
     <ReactTable
       className="compliance-reports-table"
       columns={columns}
-      data={data}
+      data={vehicles}
       filterable={false}
     />
   );
@@ -88,7 +88,7 @@ const ConsumerSalesLDVModalTable = (props) => {
 ConsumerSalesLDVModalTable.defaultProps = {};
 
 ConsumerSalesLDVModalTable.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  vehicles: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
 
 export default ConsumerSalesLDVModalTable;
