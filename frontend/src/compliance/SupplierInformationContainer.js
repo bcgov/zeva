@@ -43,7 +43,6 @@ const SupplierInformationContainer = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.error(moment().year());
 
     const data = {
       makes,
