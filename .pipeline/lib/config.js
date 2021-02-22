@@ -48,7 +48,7 @@ const phases = {
             creditTransfersEnabled: 'true', 
             creditTransactionsEnabled: 'true', 
             initiativeAgreementsEnabled: 'false', 
-            modelYearReportEnabled: 'false', 
+            modelYearReportEnabled: 'true', 
             purchaseRequestsEnabled: 'false', 
             notificationsEnabled: 'true', 
             rolesEnabled: 'false',
