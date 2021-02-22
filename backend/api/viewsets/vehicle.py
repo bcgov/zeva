@@ -107,7 +107,8 @@ class VehicleViewSet(
         """
         Get the years
         """
-        years = ModelYear.objects.all().order_by('-name')
+        exclude_years = ['2017','2018']
+        years = ModelYear.objects.all().order_by('-name').exclude(name__in=exclude_years)
         serializer = ModelYearSerializer(years, many=True)
         return Response(serializer.data)
 
