@@ -52,7 +52,7 @@ const VehicleDetailsPage = (props) => {
     case 'makeInactive':
       modalProps = {
         confirmLabel: 'Make Inactive',
-        modalText: 'This action can be reversed, you can re-activate a ZEV model if required.Making a ZEV model inactive will remove it from various area of the system such as removing it from the Credit Application Excel template and from the compliance calculator.',
+        modalText: 'Making a ZEV model inactive will remove it from various areas of the system including the Credit Application Excel template and the compliance calculator. Inactive ZEV models can be re-activated if required.',
         title: 'Make ZEV Model Inactive?',
         handleSubmit: () => { setShowModal(false); isActiveChange(false); },
       };
