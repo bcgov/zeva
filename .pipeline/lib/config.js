@@ -71,7 +71,7 @@ const phases = {
             initiativeAgreementsEnabled: 'false', 
             modelYearReportEnabled: 'false', 
             purchaseRequestsEnabled: 'false', 
-            notificationsEnabled: 'false', 
+            notificationsEnabled: 'true', 
             rolesEnabled: 'false',
         backendCpuRequest: '200m', backendCpuLimit: '700m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 30, backendReplicas: 2, backendMinReplicas: 2, backendMaxReplicas: 5, backendHost: `zeva-backend-prod.${ocpName}.gov.bc.ca`,
         minioCpuRequest: '100m', minioCpuLimit: '300m', minioMemoryRequest: '500M', minioMemoryLimit: '700M', minioPvcSize: '3G',
