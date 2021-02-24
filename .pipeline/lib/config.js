@@ -16,7 +16,7 @@ const phases = {
           changeId:`${changeId}`, suffix: `-build-${changeId}`  , instance: `${name}-build-${changeId}`, 
           version:`${version}-${changeId}`, tag:`build-${version}-${changeId}`, ocpName: `${ocpName}`},
 
-  dev: {namespace:'e52f12-dev', transient:true, name: `${name}`, ssoSuffix:'-dev', 
+  dev: {namespace:'e52f12-dev', transient:true, name: `${name}`, ssoSuffix:'-dev', namespacePrefix:'e52f12',
         ssoName:'dev.oidc.gov.bc.ca', phase: 'dev'  , changeId:`${changeId}`, suffix: `-dev-${changeId}`, 
         instance: `${name}-dev-${changeId}`  , version:`${version}-${changeId}`, tag:`dev-${version}-${changeId}`, 
         host: `zeva-dev-${changeId}.${ocpName}.gov.bc.ca`, djangoDebug: 'True', logoutHostName: 'logontest.gov.bc.ca',
@@ -37,7 +37,7 @@ const phases = {
         rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '1G', rabbitmqPvcSize: '1G', rabbitmqReplica: 1, rabbitmqPostStartSleep: 120, storageClass: 'netapp-block-standard',
         patroniCpuRequest: '200m', patroniCpuLimit: '400m', patroniMemoryRequest: '250M', patroniMemoryLimit: '500M', patroniPvcSize: '2G', patroniReplica: 1, storageClass: 'netapp-block-standard', ocpName: `${ocpName}`},
 
-  test: {namespace:'e52f12-test', name: `${name}`, ssoSuffix:'-test', 
+  test: {namespace:'e52f12-test', name: `${name}`, ssoSuffix:'-test', namespacePrefix:'e52f12',
         ssoName:'test.oidc.gov.bc.ca', phase: 'test'  ,  changeId:`${changeId}`, suffix: `-test`, 
         instance: `${name}-test`, version:`${version}`, tag:`test-${version}`, 
         host: `zeva-test.${ocpName}.gov.bc.ca`, djangoDebug: 'False', logoutHostName: 'logontest.gov.bc.ca',
@@ -58,7 +58,7 @@ const phases = {
         rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '700M', rabbitmqPvcSize: '1G', rabbitmqReplica: 2, rabbitmqPostStartSleep: 120, storageClass: 'netapp-block-standard',
         patroniCpuRequest: '500m', patroniCpuLimit: '1000m', patroniMemoryRequest: '500M', patroniMemoryLimit: '1G', patroniPvcSize: '10G', patroniReplica: 2, storageClass: 'netapp-block-standard', ocpName: `${ocpName}`},
 
-  prod: {namespace:'e52f12-prod', name: `${name}`, ssoSuffix:'', 
+  prod: {namespace:'e52f12-prod', name: `${name}`, ssoSuffix:'', namespacePrefix:'e52f12',
         ssoName:'oidc.gov.bc.ca', phase: 'prod'  , changeId:`${changeId}`, suffix: `-prod`, 
         instance: `${name}-prod`, version:`${version}`, tag:`prod-${version}`, 
         host: 'zeroemissionvehicles.gov.bc.ca', djangoDebug: 'False', logoutHostName: 'logon7.gov.bc.ca',

@@ -23,12 +23,11 @@ module.exports = settings => {
 
   //create network security policies for internal pod to pod communications
   if(phase === 'dev') {
-    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/nsp/nsp-env.yaml`, {
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/knp/knp-env.yaml`, {
       'param': {
-        'NAME': phases[phase].name,
-        'ENV_NAME': phases[phase].phase,
         'SUFFIX': phases[phase].suffix,
-        'API_VERSION': 'security.devops.gov.bc.ca/v1alpha1'
+        'ENVIRONMENT': phases[phase].phase,
+        'NAMESPACE_PREFIX': phases[phase].namespacePrefix
       }
     }))
   }
@@ -133,25 +132,25 @@ module.exports = settings => {
   }))
   */
 
- //if(phase === 'dev') {
+  if(phase === 'dev') {
     // deploy frontend configmap
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-configmap.yaml`, {
-    'param': {
-      'NAME': phases[phase].name,
-      'SUFFIX': phases[phase].suffix,
-      'COMPLIANCE_REPORT_ENABLED': phases[phase].complianceReportEnabled,
-      'COMPLIANCE_CALCULATOR_ENABLED': phases[phase].complianceCalculatorEnabled,
-      'COMPLIANCE_RATIOS_ENABLED': phases[phase].complianceRatiosEnabled,
-      'CREDIT_TRANSFERS_ENABLED': phases[phase].creditTransfersEnabled,
-      'CREDIT_TRANSACTIONS_ENABLED': phases[phase].creditTransactionsEnabled,
-      'INITIATIVE_AGREEMENTS_ENABLED': phases[phase].initiativeAgreementsEnabled,
-      'MODEL_YEAR_REPORT_ENABLED': phases[phase].modelYearReportEnabled,
-      'PURCHASE_REQUESTS_ENABLED': phases[phase].purchaseRequestsEnabled,
-      'NOTIFICATIONS_ENABLED': phases[phase].notificationsEnabled,
-      'ROLES_ENABLED': phases[phase].rolesEnabled
-    }
-  }))
-  //}
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-configmap.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'SUFFIX': phases[phase].suffix,
+        'COMPLIANCE_REPORT_ENABLED': phases[phase].complianceReportEnabled,
+        'COMPLIANCE_CALCULATOR_ENABLED': phases[phase].complianceCalculatorEnabled,
+        'COMPLIANCE_RATIOS_ENABLED': phases[phase].complianceRatiosEnabled,
+        'CREDIT_TRANSFERS_ENABLED': phases[phase].creditTransfersEnabled,
+        'CREDIT_TRANSACTIONS_ENABLED': phases[phase].creditTransactionsEnabled,
+        'INITIATIVE_AGREEMENTS_ENABLED': phases[phase].initiativeAgreementsEnabled,
+        'MODEL_YEAR_REPORT_ENABLED': phases[phase].modelYearReportEnabled,
+        'PURCHASE_REQUESTS_ENABLED': phases[phase].purchaseRequestsEnabled,
+        'NOTIFICATIONS_ENABLED': phases[phase].notificationsEnabled,
+        'ROLES_ENABLED': phases[phase].rolesEnabled
+      }
+    }))
+  }
 
   // deploy frontend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-dc.yaml`, {
