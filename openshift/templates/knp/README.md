@@ -25,10 +25,4 @@ oc process -f knp-env-non-pr.yaml ENVIRONMENT=<ENVIRONMENT_NAME_HERE> | oc creat
 #### Apply knp-env-pr.yaml
 Apply this through pipeline
 
-### Remove KNP allow-all-internal and build customized ones
-oc process -f knp-env.yaml \
-    SUFFIX=<suffix> \
-    NAMESPACE_PREFIX=<LICENS_PLATE_HERE> \
-    ENVIRONMENT=<ENVIRONMENT_NAME_HERE> | \
-    oc apply -f - -n <namespace>
     
