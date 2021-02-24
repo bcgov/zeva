@@ -23,11 +23,10 @@ module.exports = settings => {
 
   //create network security policies for internal pod to pod communications
   if(phase === 'dev') {
-    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/knp/knp-env.yaml`, {
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/knp/knp-env-pr.yaml`, {
       'param': {
         'SUFFIX': phases[phase].suffix,
-        'ENVIRONMENT': phases[phase].phase,
-        'NAMESPACE_PREFIX': phases[phase].namespacePrefix
+        'ENVIRONMENT': phases[phase].phase
       }
     }))
   }

@@ -130,12 +130,25 @@ module.exports = settings => {
       });
 
       //remove all custom security policies create for specific pull request
-      const nsps = oc.get("networksecuritypolicies", {
+      //const nsps = oc.get("networksecuritypolicies", {
+      //  selector: `app=${phase.name}${phase.suffix}`,
+      //  namespace: phase.namespace,
+      //});   
+      //nsps.forEach(nsp => {
+      //  oc.delete([`networksecuritypolicy/${nsp.metadata.name}`], {
+      //      "ignore-not-found": "true",
+      //      wait: "true",
+      //      namespace: phase.namespace,
+      //    });       
+      //});
+
+      //remove all PR's network policies
+      const knps = oc.get("networkpolicies", {
         selector: `app=${phase.name}${phase.suffix}`,
         namespace: phase.namespace,
       });   
-      nsps.forEach(nsp => {
-        oc.delete([`networksecuritypolicy/${nsp.metadata.name}`], {
+      knps.forEach(knp => {
+        oc.delete([`networkpolicy/${knp.metadata.name}`], {
             "ignore-not-found": "true",
             wait: "true",
             namespace: phase.namespace,
