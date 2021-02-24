@@ -20,7 +20,7 @@ const UserSettings = (props) => {
           <h5>{details.organization.name}</h5>
           {details.organization.organizationAddress
           && details.organization.organizationAddress.map((address) => (
-            address.addressType.addressType === 'Service' && (
+            address.addressType.addressType === 'Records' && (
               <dl key={address.id}>
                 <dd>{address.addressLine1}</dd>
                 <dt />

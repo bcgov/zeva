@@ -18,18 +18,25 @@ const ComplianceCalculatorDetailsPage = (props) => {
     setEstimatedModelSales,
     user,
   } = props;
-  const selectionList = modelYearList.map((obj) => (
-    <option key={(obj.id)} value={obj.name}>{obj.name}</option>
-  ));
+
   return (
     <div id="compliance-ldvsales-details" className="page">
       <div className="row mt-3 mb-2">
         <div className="col-sm-12">
-          <h2>Credit Obligation Calculator</h2>
+          <h2>Compliance Calculator</h2>
+        </div>
+      </div>
+      <div className="row mb-2">
+        <div className="col-12">
+          The compliance calculator is to assist in estimating your compliance obligation.<br />
+          Enter your estimated total LDV sales for a model year to see an estimated ratio{' '}
+          reduction.<br />
+          Enter your estimated total ZEV sales by model to see an estimate of credits{' '}
+          generated from these sales.
         </div>
       </div>
       <div className="calculator-page">
-        <div id="form" className="row px-2">
+        <div id="form" className="row px-3">
           <ComplianceCalculatorDetailsInputs
             complianceYearInfo={complianceYearInfo}
             handleInputChange={handleInputChange}
@@ -59,6 +66,7 @@ ComplianceCalculatorDetailsPage.defaultProps = {
   complianceNumbers: { total: '', classA: '', remaining: '' },
 };
 ComplianceCalculatorDetailsPage.propTypes = {
+  allVehicleModels: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   complianceNumbers: PropTypes.shape({
     total: PropTypes.oneOfType([
       PropTypes.number,

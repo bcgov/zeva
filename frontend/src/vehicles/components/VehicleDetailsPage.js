@@ -143,7 +143,7 @@ const VehicleDetailsPage = (props) => {
             {['EREV', 'PHEV'].indexOf(details.vehicleZevType.vehicleZevCode) >= 0 && (
               <DetailField label="Passed US06 Test" value={details.hasPassedUs06Test ? 'Yes' : 'No'} />
             )}
-            <DetailField label="Electric Range (km)" value={details.range} />
+            <DetailField label="Electric EPA Range (km)" value={details.range} />
             <DetailField label="Body Type" value={details.vehicleClassCode.description} />
             <DetailField label="Weight (kg)" value={details.weightKg} />
             <DetailField label="Vehicle Class" id={details.weightKg < 3856 ? '' : 'danger-text'} value={details.weightKg < 3856 ? 'LDV (calculated)' : 'Not within LDV range (calculated)'} />
