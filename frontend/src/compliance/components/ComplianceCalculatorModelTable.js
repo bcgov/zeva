@@ -44,7 +44,7 @@ const ComplianceCalculatorModelTable = (props) => {
                 </thead>
                 <tbody>
                   {models.map((each) => (
-                    <tr className="mx-2">
+                    <tr className="mx-2" key={each.id}>
                       <td className="text-left">{each.modelYear.name} {each.make} {each.modelName}</td>
                       <td className="text-center">{each.creditClass}</td>
                       <td className="text-right px-1">{each.creditValue}</td>
