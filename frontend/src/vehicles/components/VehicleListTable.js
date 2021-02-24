@@ -3,7 +3,6 @@
  */
 import PropTypes from 'prop-types';
 import React from 'react';
-
 import history from '../../app/History';
 import ReactTable from '../../app/components/ReactTable';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
@@ -14,7 +13,6 @@ const VehicleListTable = (props) => {
   const {
     items, user, filtered, setFiltered, showSupplier,
   } = props;
-
   const toComma = (value) => {
     let newValue = value;
     if (typeof newValue === 'number') {
@@ -28,7 +26,6 @@ const VehicleListTable = (props) => {
       if (row.organization) {
         return row.organization.shortName || row.organization.name;
       }
-
       return '';
     },
     Header: 'Supplier',
@@ -80,6 +77,12 @@ const VehicleListTable = (props) => {
     className: 'text-center',
     Header: 'ZEV Type',
     id: 'zev-type',
+    width: 100,
+  }, {
+    accessor: (row) => (row.isActive === true ? 'Yes' : 'No'),
+    className: 'text-center',
+    Header: 'Active',
+    id: 'is-active',
     width: 100,
   }];
 

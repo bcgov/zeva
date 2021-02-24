@@ -91,6 +91,9 @@ it('renders without crashing', () => {
   render(<VINListTable
     handleCheckboxClick={baseProps.handleCheckboxClick}
     items={baseProps.items}
+    refreshContent={() => {}}
+    setLoading={() => {}}
+    setReactTable={() => {}}
     user={baseProps.user}
     validatedList={baseProps.validatedList}
   />);
@@ -101,6 +104,9 @@ it('gives an error code of 21 if vin has already been validated', () => {
     handleCheckboxClick={baseProps.handleCheckboxClick}
     items={baseProps.items}
     loading={false}
+    refreshContent={() => {}}
+    setLoading={() => {}}
+    setReactTable={() => {}}
     user={baseProps.user}
     validatedList={baseProps.validatedList}
   />);
@@ -111,7 +117,11 @@ it('gives an error code of 11 if there is no matching icbc vin', () => {
   const { getByText } = render(<VINListTable
     handleCheckboxClick={baseProps.handleCheckboxClick}
     items={basePropsNoMatch.items}
+    invalidatedList={[]}
     loading={false}
+    refreshContent={() => {}}
+    setLoading={() => {}}
+    setReactTable={() => {}}
     user={baseProps.user}
     validatedList={basePropsNoMatch.validatedList}
   />);
@@ -121,8 +131,12 @@ it('gives an error code of 11 if there is no matching icbc vin', () => {
 it('gives no error code if everything matches with icbcdata', () => {
   const { queryByText } = render(<VINListTable
     handleCheckboxClick={baseProps.handleCheckboxClick}
+    invalidatedList={[]}
     items={basePropsNoError.items}
     loading={false}
+    refreshContent={() => {}}
+    setLoading={() => {}}
+    setReactTable={() => {}}
     user={baseProps.user}
     validatedList={baseProps.validatedList}
   />);

@@ -78,6 +78,11 @@ class Vehicle(Auditable):
         db_comment="The number of credits (of credit_class) a sale of this "
                    "vehicle can generate"
     )
+    is_active = models.BooleanField(
+        default=True,
+        db_comment="Boolean field used to determine whether a vehicle is "
+                   "active or inactive"
+    )
 
     def get_credit_class(self):
         """

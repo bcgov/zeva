@@ -178,23 +178,12 @@ class Navbar extends Component {
 
                     return true;
                   }}
-                  to={ROUTES_COMPLIANCE.REPORTS}
+                  to={CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED ? ROUTES_COMPLIANCE.REPORTS : ROUTES_COMPLIANCE.RATIOS}
                 >
                   <span>Compliance Reporting</span>
                 </NavLink>
               </li>
               )}
-              {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED && (
-              <li className="nav-item">
-                <NavLink
-                  activeClassName="active"
-                  to="/model-year-report"
-                >
-                  <span>Model Year Report</span>
-                </NavLink>
-              </li>
-              )}
-
               {CONFIG.FEATURES.CREDIT_TRANSACTIONS.ENABLED
               && typeof user.hasPermission === 'function'
               && ((!user.isGovernment && user.hasPermission('EDIT_SALES'))

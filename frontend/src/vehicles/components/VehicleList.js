@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import Loading from '../../app/components/Loading';
-import history from '../../app/History';
 import ActionBarGov from './ActionBarGov';
 import ActionBarNonGov from './ActionBarNonGov';
 import VehicleListTable from './VehicleListTable';
@@ -34,6 +32,7 @@ const VehicleList = (props) => {
             <ActionBarNonGov
               filtered={filtered}
               handleClear={handleClear}
+              setFiltered={setFiltered}
             />
           )}
           {user.isGovernment && (

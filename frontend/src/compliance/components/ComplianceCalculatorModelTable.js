@@ -1,34 +1,73 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ComplianceCalculatorModelRow from './ComplianceCalculatorModelRow';
 import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceCalculatorModelTable = (props) => {
   const { models, estimatedModelSales, setEstimatedModelSales } = props;
-
+  const findModelIndex = (model) => estimatedModelSales.findIndex((sale) => (model.id === sale.id));
+  const handleInputChange = (event, model) => {
+    const { value } = event.target;
+    const index = findModelIndex(model);
+    const totalValue = model.creditValue * value;
+    // make copy of estimatedModelSales and modify that instead
+    const estimatedSalesCopy = estimatedModelSales.map((each) => ({ ...each }));
+    if (index >= 0) {
+      estimatedSalesCopy[index].value = totalValue;
+      estimatedSalesCopy[index].estimatedSalesNum = value;
+      estimatedSalesCopy[index].creditClass = model.creditClass;
+    } else {
+      estimatedSalesCopy.push({
+        id: model.id,
+        value: totalValue,
+        estimatedSalesNum: value,
+        creditClass: model.creditClass,
+      });
+    }
+    setEstimatedModelSales(estimatedSalesCopy);
+  };
   return (
-    <div id="form" className="my-4">
+    <div id="form" className="my-3">
       <div className="row">
-        <div className="col-lg-12 col-xl-10">
-          <fieldset>
-            <div className="form-group row mb-0 font-weight-bold text-center">
-              <span className="col-4">ZEV Model</span>
-              <span className="col-1">ZEV Class</span>
-              <span className="col-2">Credit Entitlement</span>
-              <span className="col-3">Estimated Annual Sales Total</span>
-              <span className="col-2">Estimated Credits Total</span>
-
-            </div>
-            {models.map((each) => (
-              <ComplianceCalculatorModelRow key={each.id} model={each} setEstimatedModelSales={setEstimatedModelSales} estimatedModelSales={estimatedModelSales} />
-            ))}
-            <div className="form-group row text-blue font-weight-bold">
-              {/* to do: make this update when keydown happens (currently skipping first change) */}
-              Estimated Class A Credit Total: {estimatedModelSales && formatNumeric(estimatedModelSales.filter((each) => each.creditClass === 'A').reduce((a, v) => a + v.value, 0))}
-              <br />
-              Estimated Class B Credit Total: {estimatedModelSales && formatNumeric(estimatedModelSales.filter((each) => each.creditClass === 'B').reduce((a, v) => a + v.value, 0))}
-            </div>
-          </fieldset>
+        <div className="col-12">
+          <div id="calculator-model-table">
+            <fieldset>
+              <table>
+                <thead>
+                  <tr className="text-center compliance-calculator-grey">
+                    <th className="zev-model text-left">ZEV Model</th>
+                    <th className="zev-class">ZEV Class</th>
+                    <th className="credit-entitlement text-right">Credit Entitlement</th>
+                    <th className="estimated-sales">Estimated Annual Sales Total</th>
+                    <th className="estimated-credits text-right">Estimated Credits Total</th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  {models.map((each) => (
+                    <tr className="mx-2">
+                      <td className="text-left">{each.modelYear.name} {each.make} {each.modelName}</td>
+                      <td className="text-center">{each.creditClass}</td>
+                      <td className="text-right px-1">{each.creditValue}</td>
+                      <td className="px-4">
+                        <input
+                          className="mx-auto d-block text-right"
+                          id={`input-sales-${each.id}`}
+                          name="input-sales"
+                          step="1"
+                          type="number"
+                          min="0"
+                          onChange={(event) => {
+                            handleInputChange(event, each);
+                          }}
+                        />
+                      </td>
+                      <td className="text-right px-1">{estimatedModelSales[findModelIndex(each)] ? `${estimatedModelSales[findModelIndex(each)].creditClass}-${formatNumeric(estimatedModelSales[findModelIndex(each)].value)}` : ''}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </fieldset>
+          </div>
         </div>
       </div>
     </div>

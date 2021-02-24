@@ -4,7 +4,6 @@ from django.utils.decorators import method_decorator
 
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from api.decorators.permission import permission_required
@@ -12,10 +11,12 @@ from api.models.vehicle_class import VehicleClass
 from api.models.model_year import ModelYear
 from api.models.vehicle import Vehicle, VehicleDefinitionStatuses
 from api.models.vehicle_zev_type import ZevType
+from api.permissions.vehicle import VehiclePermissions
 from api.serializers.vehicle import ModelYearSerializer, \
     VehicleZevTypeSerializer, VehicleClassSerializer, \
     VehicleSaveSerializer, VehicleSerializer, \
-    VehicleStatusChangeSerializer
+    VehicleStatusChangeSerializer, VehicleIsActiveChangeSerializer, \
+    VehicleSalesSerializer
 from api.services.minio import minio_put_object
 from auditable.views import AuditableMixin
 
@@ -24,13 +25,14 @@ class VehicleViewSet(
     AuditableMixin, viewsets.GenericViewSet, mixins.CreateModelMixin,
     mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin
 ):
-    permission_classes = (AllowAny,)
+    permission_classes = (VehiclePermissions,)
     http_method_names = ['get', 'post', 'put', 'patch']
     queryset = Vehicle.objects.all()
 
     serializer_classes = {
         'default': VehicleSerializer,
         'state_change': VehicleStatusChangeSerializer,
+        'is_active_change': VehicleIsActiveChangeSerializer,
         'create': VehicleSaveSerializer,
         'partial_update': VehicleSaveSerializer
     }
@@ -94,13 +96,37 @@ class VehicleViewSet(
         serializer = VehicleClassSerializer(classes, many=True)
         return Response(serializer.data)
 
+    @action(detail=False)	
+    def vehicles_sales(self, _request):
+        vehicles = self.get_queryset()
+        serializer = VehicleSalesSerializer(vehicles, many=True)
+        return Response(serializer.data)
+
     @action(detail=False)
     def years(self, _request):
         """
         Get the years
         """
-        years = ModelYear.objects.all().order_by('-name')
+        exclude_years = ['2017','2018']
+        years = ModelYear.objects.all().order_by('-name').exclude(name__in=exclude_years)
         serializer = ModelYearSerializer(years, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['patch'])
+    def is_active_change(self, request, pk=None):
+        """
+        change active / inactive status for vehicle
+        """
+        serializer = self.get_serializer(
+            self.queryset.get(id=pk),
+            data=request.data
+        )
+
+        if not serializer.is_valid(raise_exception=True):
+            return Response(serializer.errors)
+
+        serializer.save()
+
         return Response(serializer.data)
 
     @action(detail=True, methods=['patch'])

@@ -25,6 +25,7 @@ const VehicleDetailsPage = (props) => {
     title,
     user,
     locationState,
+    isActiveChange,
   } = props;
   const [requestChangeCheck, setRequestChangeCheck] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -46,13 +47,27 @@ const VehicleDetailsPage = (props) => {
       setRequestChangeCheck(false);
     }
   };
-  const handleSubmit = () => {};
   let modalProps;
   switch (modalType) {
+    case 'makeInactive':
+      modalProps = {
+        confirmLabel: 'Make Inactive',
+        modalText: 'Making a ZEV model inactive will remove it from various areas of the system including the Credit Application Excel template and the compliance calculator. Inactive ZEV models can be re-activated if required.',
+        title: 'Make ZEV Model Inactive?',
+        handleSubmit: () => { setShowModal(false); isActiveChange(false); },
+      };
+      break;
+    case 'makeActive':
+      modalProps = {
+        confirmLabel: 'Make Active',
+        modalText: 'Make ZEV model active for submitting consumer sales?',
+        handleSubmit: () => { setShowModal(false); isActiveChange(true); },
+      };
+      break;
     case 'submit':
       modalProps = {
         confirmLabel: ' Submit',
-        handleSubmit: (event) => { requestStateChange('SUBMITTED'); },
+        handleSubmit: () => { requestStateChange('SUBMITTED'); },
         buttonClass: 'button primary',
         modalText: details.attachments.length > 0 ? 'Submit vehicle model and range test results to Government of B.C.?' : 'Submit ZEV model to Government of B.C.?',
       };
@@ -104,6 +119,7 @@ const VehicleDetailsPage = (props) => {
         <div className="col-sm-12">
           <h2>{title}</h2>
           <VehicleAlert
+            isActive={details.isActive}
             status={details.validationStatus}
             user={alertUser && alertUser.displayName ? alertUser.displayName : alertUser}
             date={moment(details.updateTimestamp).format('MMM D, YYYY')}
@@ -233,6 +249,22 @@ const VehicleDetailsPage = (props) => {
                   />
                 </>
               )}
+              {['VALIDATED'].indexOf(details.validationStatus) >= 0
+              && !user.isGovernment && details.isActive && (
+              <Button
+                buttonType="makeInactive"
+                optionalText="Make Inactive"
+                action={() => { setModalType('makeInactive'); setShowModal(true); }}
+              />
+              )}
+              {['VALIDATED'].indexOf(details.validationStatus) >= 0
+              && !user.isGovernment && !details.isActive && (
+              <Button
+                buttonType="makeActive"
+                optionalText="Make Active"
+                action={() => { setModalType('makeActive'); setShowModal(true); }}
+              />
+              )}
               {details.validationStatus === 'SUBMITTED'
               && user.isGovernment
               && typeof user.hasPermission === 'function'
@@ -271,6 +303,7 @@ const VehicleDetailsPage = (props) => {
             modalClass="w-75"
             showModal={showModal}
             confirmClass={modalProps.buttonClass}
+            title={modalProps.title ? modalProps.title : 'Confirm'}
           >
             <div>
               <div><br /><br /></div>
@@ -350,6 +383,7 @@ VehicleDetailsPage.propTypes = {
   title: PropTypes.string,
   user: CustomPropTypes.user.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),
+  isActiveChange: PropTypes.func.isRequired,
 };
 
 export default VehicleDetailsPage;

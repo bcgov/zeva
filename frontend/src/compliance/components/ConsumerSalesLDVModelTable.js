@@ -1,18 +1,29 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import _ from 'lodash';
 import ReactTable from '../../app/components/ReactTable';
 
 const ConsumerSalesLDVModalTable = (props) => {
-  const { data } = props;
+  const { vehicles } = props;
 
   const columns = [
     {
-      accessor: (item) => item.sales,
+      accessor: (item) => item.pendingSales,
       className: 'text-center',
-      Header: 'Sales',
+      Header: 'Pending Sales',
       headerClassName: 'font-weight-bold ',
-      id: 'sales',
+      id: 'pending-sales',
       maxWidth: 200,
+      Footer: <span><b>{_.sum(_.map(vehicles, (d) => d.pendingSales))}</b></span>,
+    },
+    {
+      accessor: (item) => item.salesIssued,
+      className: 'text-center',
+      Header: 'Sales Issued',
+      headerClassName: 'font-weight-bold ',
+      id: 'sales-issued',
+      maxWidth: 200,
+      Footer: <span><b>{_.sum(_.map(vehicles, (d) => d.salesIssued))}</b></span>,
     },
     {
       accessor: (item) => item.modelYear,
@@ -31,7 +42,7 @@ const ConsumerSalesLDVModalTable = (props) => {
       maxWidth: 200,
     },
     {
-      accessor: (item) => item.model,
+      accessor: (item) => item.modelName,
       className: 'text-center',
       Header: 'Model',
       headerClassName: 'font-weight-bold',
@@ -39,7 +50,7 @@ const ConsumerSalesLDVModalTable = (props) => {
       maxWidth: 200,
     },
     {
-      accessor: (item) => item.type,
+      accessor: (item) => item.vehicleZevType,
       className: 'text-center',
       Header: 'Type',
       headerClassName: 'font-weight-bold',
@@ -68,7 +79,7 @@ const ConsumerSalesLDVModalTable = (props) => {
     <ReactTable
       className="compliance-reports-table"
       columns={columns}
-      data={data}
+      data={vehicles}
       filterable={false}
     />
   );
@@ -77,7 +88,7 @@ const ConsumerSalesLDVModalTable = (props) => {
 ConsumerSalesLDVModalTable.defaultProps = {};
 
 ConsumerSalesLDVModalTable.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  vehicles: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
 
 export default ConsumerSalesLDVModalTable;

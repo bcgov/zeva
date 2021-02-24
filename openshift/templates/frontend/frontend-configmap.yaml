@@ -14,6 +14,18 @@ parameters:
     description: sample is -dev-97
     value: ''
     required: true
+  - name: COMPLIANCE_REPORT_ENABLED
+    displayName: null
+    description: 
+    required: true               
+  - name: COMPLIANCE_CALCULATOR_ENABLED
+    displayName: null
+    description: 
+    required: true               
+  - name: COMPLIANCE_RATIOS_ENABLED
+    displayName: null
+    description: 
+    required: true               
   - name: CREDIT_TRANSFERS_ENABLED
     displayName: null
     description: enable credittransfer or not
@@ -38,10 +50,6 @@ parameters:
     displayName: null
     description: 
     required: true   
-  - name: COMPLIANCE_REPORT_ENABLED
-    displayName: null
-    description: 
-    required: true               
   - name: ROLES_ENABLED
     displayName: null
     description: 
@@ -55,12 +63,14 @@ objects:
     data:
       features.js: |
         window.zeva_config = {
+          'compliance_report.enabled': ${COMPLIANCE_REPORT_ENABLED},
+          'compliance_calculator.enabled': ${COMPLIANCE_CALCULATOR_ENABLED},
+          'compliance_ratios.enabled': ${COMPLIANCE_RATIOS_ENABLED},
           'credit_transfers.enabled': ${CREDIT_TRANSFERS_ENABLED},
           'credit_transactions.enabled': ${CREDIT_TRANSACTIONS_ENABLED},
           'initiative_agreements.enabled': ${INITIATIVE_AGREEMENTS_ENABLED},
           'model_year_report.enabled': ${MODEL_YEAR_REPORT_ENABLED},
           'purchase_requests.enabled': ${PURCHASE_REQUESTS_ENABLED},
           'notifications.enabled': ${NOTIFICATIONS_ENABLED},
-          'compliance_report.enabled': ${COMPLIANCE_REPORT_ENABLED},
           'roles.enabled': ${ROLES_ENABLED}
         };

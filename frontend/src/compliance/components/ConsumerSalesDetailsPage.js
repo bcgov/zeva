@@ -5,11 +5,19 @@ import Loading from '../../app/components/Loading';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import Button from '../../app/components/Button';
 import { now } from 'moment';
-import history from '../../app/History';
 import ConsumerSalesLDVModalTable from '../components/ConsumerSalesLDVModelTable';
 
 const ConsumerSalesDetailsPage = (props) => {
-  const { user, loading, handleSave, handleChange } = props;
+  const {
+    user,
+    loading,
+    handleSave,
+    handleChange,
+    vehicles,
+    confirmed,
+    previousSales,
+    error,
+  } = props;
 
   const details = {
     consumerSales: {
@@ -25,45 +33,6 @@ const ConsumerSalesDetailsPage = (props) => {
     organization: user.organization,
   };
 
-  let data = [
-    {
-      sales: '452',
-      modelYear: '2019',
-      make: details.organization.name,
-      model: 'NIRO EV',
-      type: 'BEV',
-      range: '385',
-      zevClass: 'A',
-    },
-    {
-      sales: '643',
-      modelYear: '2020',
-      make: details.organization.name,
-      model: 'SOUL EV',
-      type: 'BEV',
-      range: '179',
-      zevClass: 'A',
-    },
-    {
-      sales: '256',
-      modelYear: '2020',
-      make: details.organization.name,
-      model: 'NIRO PLUG-IN',
-      type: 'PHEV',
-      range: '42',
-      zevClass: 'B',
-    },
-    {
-      sales: '123',
-      modelYear: '2021',
-      make: details.organization.name,
-      model: 'OPTIMA PLUG-IN',
-      type: 'PHEV',
-      range: '47',
-      zevClass: 'B',
-    },
-  ];
-
   if (loading) {
     return <Loading />;
   }
@@ -72,17 +41,19 @@ const ConsumerSalesDetailsPage = (props) => {
     <div id="compliance-consumer-sales-details" className="page">
       <div className="row mt-3">
         <div className="col-sm-12">
-          <h2>2020 Model Year Compliance Report</h2>
+          <h2>2020 Model Year Report</h2>
         </div>
       </div>
-      <div className="row">
-        <div className="col-12">
-          <ComplianceReportAlert
-            report={details.consumerSales}
-            type="Consumer Sales"
-          />
+      {confirmed && (
+        <div className="row">
+          <div className="col-12">
+            <ComplianceReportAlert
+              report={details.consumerSales}
+              type="Consumer Sales"
+            />
+          </div>
         </div>
-      </div>
+      )}
       <div className="row mt-1">
         <div className="col-12">
           <div className="p-3 consumer-sales">
@@ -90,71 +61,51 @@ const ConsumerSalesDetailsPage = (props) => {
 
             <div className="enter-ldv-sales mt-2">
               <div className="text-blue">
-                Enter the total light duty vehicle sales for{' '}
-                {details.organization.name} in British Columbia for the 2020
-                model year (ICE & ZEV)
+                Enter the 2020 model year light duty vehicle sales and lease
+                total (ICE & ZEV) in British Columbia for{' '}
+                {details.organization.name}.
               </div>
               <div className="ldv-sales mt-2 p-3">
                 <form onSubmit={(event) => handleSave(event)}>
                   <label className="text-blue mr-4 font-weight-bold">
-                    2020 Model Year LDV Sales
+                    2020 Model Year LDV Sales\Leases
                   </label>
                   <input
                     className="textbox-sales"
                     type="text"
                     onChange={handleChange}
                   ></input>
+                  {error && <span className="text-danger ml-2">2020 Model Year LDV Sales\Leases can't be blank</span>}
                 </form>
               </div>
             </div>
             <div className="confirm-previous-sales mt-2">
               <div className="text-blue">
-                Confirm the previous 3 model year total light duty vehicle sales
-                for {details.organization.name} in British Columbia (ICE & ZEV).
-                Changes to these totals will require supplemental report(s) for
-                previous model year compliance reports.
+                Confirm the previous 3 model year light duty vehicle sales and
+                lease total (ICE & ZEV) in British Columbia for{' '}
+                {details.organization.name}.
               </div>
               <div className="previous-ldv-sales mt-2 p-3">
-                <div className="first-model-year-ldv">
-                  <label className="text-blue mr-4 font-weight-bold">
-                    2019 Model Year LDV Sales:
-                  </label>
-                  <label className="sales-numbers">9,456</label>
-                </div>
-                <div className="second-model-year-ldv">
-                  <label className="text-blue mr-4 font-weight-bold">
-                    2018 Model Year LDV Sales:
-                  </label>
-                  <label className="sales-numbers">8,123</label>
-                </div>
-                <div className="third-model-year-ldv">
-                  <label className="text-blue mr-4 font-weight-bold">
-                    2017 Model Year LDV Sales:
-                  </label>
-                  <label className="sales-numbers">7,789</label>
-                </div>
+                {previousSales.map((yearSale) => (
+                  <div className="model-year-ldv" key={yearSale.id}>
+                    <label className="text-blue mr-4 font-weight-bold">
+                      {yearSale.modelYear} Model Year LDV Sales\Leases:
+                    </label>
+                    <label className="sales-numbers">{yearSale.ldvSales}</label>
+                  </div>
+                ))}
               </div>
               <div className="ldv-zev-models mt-2">
-                <div className="text-blue">
-                  If there are ZEV models missing below that contribute to your
-                  2020 model year compliance report use the{' '}
-                  <label
-                    className="text-primary"
-                    onClick={() => {
-                      history.push('/vehicles/add');
-                    }}
-                  >
-                    {' '}
-                    <u>New Vehicle Model</u>
-                  </label>{' '}
-                  to add them, they will require government validation.
-                </div>
+                <label className="text-blue mr-4 font-weight-bold">
+                  Consumer Sales of Zero-Emission Vehicles
+                </label>
                 <div className="sales-table mt-2">
-                  <ConsumerSalesLDVModalTable data={data} />
+                  <ConsumerSalesLDVModalTable vehicles={vehicles} />
                 </div>
-                <div className="total-ldv-sales font-weight-bold mt-2">
-                  1,474 - total LDV ZEV models sold during the 2020 compliance
-                  period ending September 30,2021.
+                <div className="total-ldv-sales text-blue mt-2">
+                  Pending Sales are VIN applied for in credit applications
+                  awaiting government review. Sales Issued are those VIN already
+                  verified by government as being eligible to earn credits
                 </div>
               </div>
             </div>
@@ -207,5 +158,9 @@ ConsumerSalesDetailsPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   handleSave: PropTypes.func.isRequired,
   handleChange: PropTypes.func.isRequired,
+  vehicles: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  confirmed: PropTypes.bool.isRequired,
+  previousSales: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  error: PropTypes.bool.isRequired
 };
 export default ConsumerSalesDetailsPage;

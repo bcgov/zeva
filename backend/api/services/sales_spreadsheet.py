@@ -49,7 +49,7 @@ def add_vehicle_rows(worksheet, row, vehicles, style):
             current_vehicle_col_width = len(vehicle.model_name)
 
     vehicle_model_col = worksheet.col(2)
-    vehicle_model_col.width = 256 * current_vehicle_col_width
+    vehicle_model_col.width = 256 * (current_vehicle_col_width + 10)
 
 
 def add_instructions_sheet(**kwargs):
@@ -132,6 +132,12 @@ def add_sales_sheet(**kwargs):
     worksheet.write(row, 3, 'VIN', style=BOLD)
     worksheet.write(row, 4, 'Retail Sales Date (yyyy-mm-dd)', style=BOLD)
 
+    vin_col = worksheet.col(3)
+    vin_col.width = 256 * 30  # 30 characters for VIN
+
+    retail_sales_date_col = worksheet.col(4)
+    retail_sales_date_col.width = 256 * 20  # 20 characters for sales date
+
     add_vehicle_rows(worksheet, row, vehicles, EDITABLE)
 
 
@@ -157,7 +163,8 @@ def create_sales_spreadsheet(organization, stream):
     vehicles = Vehicle.objects.filter(
         model_year__in=model_years,
         organization_id=organization.id,
-        validation_status='VALIDATED'
+        validation_status='VALIDATED',
+        is_active=True,
     )
 
     add_instructions_sheet(
@@ -501,6 +508,15 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
             current_vehicle_col_width = len(content.xls_model)
 
     vehicle_model_col = worksheet.col(2)
-    vehicle_model_col.width = 256 * current_vehicle_col_width
+    vehicle_model_col.width = 256 * (current_vehicle_col_width + 10)
+
+    vin_col = worksheet.col(3)
+    vin_col.width = 256 * 30  # 30 characters for VIN
+
+    sales_date_col = worksheet.col(4)
+    sales_date_col.width = 256 * 20  # 20 characters for sales date
+
+    sales_date_col = worksheet.col(5)
+    sales_date_col.width = 256 * 100  # 100 characters for errors
 
     workbook.save(stream)
