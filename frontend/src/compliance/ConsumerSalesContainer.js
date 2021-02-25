@@ -6,6 +6,7 @@ import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ConsumerSalesDetailsPage from './components/ConsumerSalesDetailsPage';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
+import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 
 const ConsumerSalesContainer = (props) => {
   const { keycloak, user } = props;
@@ -13,13 +14,17 @@ const ConsumerSalesContainer = (props) => {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState([]);
   const [salesInput, setSalesInput] = useState('');
+  const [readOnly, setReadOnly] = useState(false);
   const [vehicles, setVehicles] = useState([]);
+  const [assertions, setAssertions] = useState([]);
   const [confirmed, setConfirmed] = useState(false);
+  const [checkboxes, setCheckboxes] = useState([]);
+  const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
   const { id } = useParams();
   let previousSales = [
-     { id:1, modelYear: 2017, ldvSales: 7789 },
-     { id:2, modelYear: 2018, ldvSales: 8123 },
-     { id:3, modelYear: 2019, ldvSales: 9456 },
+    { id: 1, modelYear: 2017, ldvSales: 7789 },
+    { id: 2, modelYear: 2018, ldvSales: 8123 },
+    { id: 3, modelYear: 2019, ldvSales: 9456 },
   ];
 
   const reportStatuses = {
@@ -36,25 +41,46 @@ const ConsumerSalesContainer = (props) => {
       setVehicles(response.data);
       setLoading(false);
     });
+    axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
+      let filteredAsserstions = response.data.filter((data) => data.module == 'consumer_sales');
+      setAssertions(filteredAsserstions);
+    });
   };
 
   const handleChange = (event) => {
     setSalesInput(event.target.value);
   };
 
+  const handleCheckboxClick = (event) => {
+    if (!event.target.checked) {
+      const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
+      setCheckboxes(checked);
+    }
+
+    if (event.target.checked) {
+      const checked = checkboxes.concat(event.target.id);
+      setCheckboxes(checked);
+    }
+  };
+
   const handleSave = () => {
     if (!salesInput) {
       setError(true);
-    }
-    else {
+    } else {
       setError(false);
-      axios.post(ROUTES_COMPLIANCE.VEHICLES, {
+      axios
+        .post(ROUTES_COMPLIANCE.VEHICLES, {
           data: vehicles,
           ldvSales: salesInput,
           modelYearReportId: id,
-          previousSales: previousSales
+          previousSales: previousSales,
+          confirmation: checkboxes
         })
-        .then(() => setConfirmed(true))
+        .then(() => {
+          setConfirmed(true)
+          setDisabledCheckboxes('disabled');
+          setReadOnly(true);
+        })
         .catch((error) => {
           const { response } = error;
           if (response.status === 400) {
@@ -84,6 +110,11 @@ const ConsumerSalesContainer = (props) => {
         confirmed={confirmed}
         previousSales={previousSales}
         error={error}
+        readOnly={readOnly}
+        assertions={assertions}
+        checkboxes={checkboxes}
+        disabledCheckboxes={disabledCheckboxes}
+        handleCheckboxClick={handleCheckboxClick}
       />
     </>
   );

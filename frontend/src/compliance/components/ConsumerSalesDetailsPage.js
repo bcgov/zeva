@@ -5,6 +5,7 @@ import Loading from '../../app/components/Loading';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import Button from '../../app/components/Button';
 import { now } from 'moment';
+import ComplianceReportSignOff from './ComplianceReportSignOff';
 import ConsumerSalesLDVModalTable from '../components/ConsumerSalesLDVModelTable';
 
 const ConsumerSalesDetailsPage = (props) => {
@@ -16,7 +17,12 @@ const ConsumerSalesDetailsPage = (props) => {
     vehicles,
     confirmed,
     previousSales,
+    assertions,
+    checkboxes,
+    readOnly,
+    disabledCheckboxes,
     error,
+    handleCheckboxClick,
   } = props;
 
   const details = {
@@ -74,8 +80,13 @@ const ConsumerSalesDetailsPage = (props) => {
                     className="textbox-sales"
                     type="text"
                     onChange={handleChange}
+                    readOnly={readOnly}
                   ></input>
-                  {error && <span className="text-danger ml-2">2020 Model Year LDV Sales\Leases can't be blank</span>}
+                  {error && (
+                    <span className="text-danger ml-2">
+                      2020 Model Year LDV Sales\Leases can't be blank
+                    </span>
+                  )}
                 </form>
               </div>
             </div>
@@ -114,19 +125,14 @@ const ConsumerSalesDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12 my-3">
-          <div className="px-3">
-            <input id="confirm-sales" name="confirm" type="checkbox" />{' '}
-            <label htmlFor="confirm">
-              I confirm the consumer sales figures are correct.
-            </label>
-          </div>
-          <div className="px-3">
-            <input id="confirm-model-info" name="confirm" type="checkbox" />{' '}
-            <label htmlFor="confirm">
-              I confirm the model year, type and range of each ZEV model sold or
-              leased are correct.
-            </label>
-          </div>
+          <ComplianceReportSignOff
+            assertions={assertions}
+            checkboxes={checkboxes}
+            handleCheckboxClick={handleCheckboxClick}
+            disabledCheckboxes={disabledCheckboxes}
+            user={user}
+            readOnly={readOnly}
+          />
         </div>
       </div>
 
@@ -161,6 +167,11 @@ ConsumerSalesDetailsPage.propTypes = {
   vehicles: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   confirmed: PropTypes.bool.isRequired,
   previousSales: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  error: PropTypes.bool.isRequired
+  error: PropTypes.bool.isRequired,
+  assertions: PropTypes.arrayOf(PropTypes.shape()),
+  checkboxes: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])),
+  handleCheckboxClick: PropTypes.func.isRequired,
+  disabledCheckboxes: PropTypes.string.isRequired,
+  readOnly: PropTypes.bool.isRequired
 };
 export default ConsumerSalesDetailsPage;

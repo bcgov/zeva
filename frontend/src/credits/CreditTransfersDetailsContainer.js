@@ -33,7 +33,8 @@ const CreditTransfersDetailsContainer = (props) => {
       axios.get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id)),
       axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST),
     ]).then(axios.spread((response, assertionsResponse) => {
-      setAssertions(assertionsResponse.data);
+      const filteredAssertions = assertionsResponse.data.filter((data) => data.module == 'credit_transfer');
+      setAssertions(filteredAssertions);
       setSubmission(response.data);
       setSufficientCredit(response.data.sufficientCredits);
 

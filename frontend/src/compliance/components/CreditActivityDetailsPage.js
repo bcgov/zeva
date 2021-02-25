@@ -10,6 +10,7 @@ import CreditBalanceTable from '../../credits/components/CreditBalanceTable';
 import CreditTransactionListTable from '../../credits/components/CreditTransactionListTable';
 import CustomPropTypes from '../../app/utilities/props';
 import ComplianceReportAlert from './ComplianceReportAlert';
+import ComplianceReportSignOff from './ComplianceReportSignOff';
 
 const CreditActivityDetailsPage = (props) => {
   const {
@@ -17,6 +18,9 @@ const CreditActivityDetailsPage = (props) => {
     loading,
     transactions,
     user,
+    assertions,
+    checkboxes,
+    handleCheckboxClick,
   } = props;
 
   const details = {
@@ -87,17 +91,12 @@ const CreditActivityDetailsPage = (props) => {
 
       <div className="row">
         <div className="col-12 my-3">
-          <div className="px-3">
-            <input id="confirm" name="confirm" type="checkbox" /> <label htmlFor="confirm">I confirm the credit balances are correct.</label>
-          </div>
-
-          <div className="px-3">
-            <input id="confirm" name="confirm" type="checkbox" /> <label htmlFor="confirm">I confirm the number, model year, vehicle class and ZEV class of credits issued, transferred or added are correct.</label>
-          </div>
-
-          <div className="px-3">
-            <input id="confirm" name="confirm" type="checkbox" /> <label htmlFor="confirm">I confirm the number, vehicle class and ZEV class of credits debited are correct.</label>
-          </div>
+          <ComplianceReportSignOff
+            assertions={assertions}
+            checkboxes={checkboxes}
+            handleCheckboxClick={handleCheckboxClick}
+            user={user}
+          />
         </div>
       </div>
 
@@ -125,5 +124,8 @@ CreditActivityDetailsPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   transactions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   user: CustomPropTypes.user.isRequired,
+  assertions: PropTypes.arrayOf(PropTypes.shape()),
+  checkboxes: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])),
+  handleCheckboxClick: PropTypes.func.isRequired,
 };
 export default CreditActivityDetailsPage;

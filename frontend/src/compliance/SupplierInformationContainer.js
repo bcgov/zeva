@@ -9,10 +9,15 @@ import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
 import SupplierInformationDetailsPage from './components/SupplierInformationDetailsPage';
+import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 
 const SupplierInformationContainer = (props) => {
   const { keycloak, user } = props;
   const { id } = useParams();
+  const [assertions, setAssertions] = useState([]);
+  const [checkboxes, setCheckboxes] = useState([]);
+  const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
+
   const reportStatuses = {
     assessment: '',
     consumerSales: '',
@@ -47,11 +52,25 @@ const SupplierInformationContainer = (props) => {
     const data = {
       makes,
       modelYear: moment().year(),
+      confirmations: checkboxes,
     };
 
     axios.post(ROUTES_COMPLIANCE.REPORTS, data).then((response) => {
       history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
+      setDisabledCheckboxes('disabled');
     });
+  };
+
+  const handleCheckboxClick = (event) => {
+    if (!event.target.checked) {
+      const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
+      setCheckboxes(checked);
+    }
+
+    if (event.target.checked) {
+      const checked = checkboxes.concat(event.target.id);
+      setCheckboxes(checked);
+    }
   };
 
   const refreshDetails = () => {
@@ -59,6 +78,10 @@ const SupplierInformationContainer = (props) => {
       const { data } = response;
       setMakes([...new Set(data.map((vehicle) => vehicle.make.toUpperCase()))]);
       setLoading(false);
+    });
+    axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
+      const filteredAsserstions = response.data.filter((data) => data.module == 'supplier_information');
+      setAssertions(filteredAsserstions);
     });
   };
 
@@ -83,6 +106,10 @@ const SupplierInformationContainer = (props) => {
         make={make}
         makes={makes}
         user={user}
+        assertions={assertions}
+        checkboxes={checkboxes}
+        handleCheckboxClick={handleCheckboxClick}
+        disabledCheckboxes={disabledCheckboxes}
       />
     </>
   );

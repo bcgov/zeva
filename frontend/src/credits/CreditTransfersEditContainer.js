@@ -191,7 +191,8 @@ const CreditTransfersEditContainer = (props) => {
     ]).then(axios.spread((orgResponse, yearsResponse, assertionsResponse) => {
       setOrganizations(orgResponse.data);
       setYears(yearsResponse.data);
-      setAssertions(assertionsResponse.data);
+      const filteredAssertions = assertionsResponse.data.filter((data) => data.module == 'credit_transfer');
+      setAssertions(filteredAssertions);
     }));
     if (!newTransfer) {
       axios.get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/gi, id)).then((response) => {
