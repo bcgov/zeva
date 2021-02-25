@@ -51,7 +51,7 @@ const CreditTransfersDetailsPage = (props) => {
   });
   const transferComments = submission.history
     .filter((each) => each.comment)
-    .map((comment) => comment.comment);
+    .map((item) => item.comment);
   let modalProps = {};
   switch (modalType) {
     case 'initiating-submit':
@@ -243,6 +243,7 @@ const CreditTransfersDetailsPage = (props) => {
       <CreditTransferSignoff
         assertions={assertions}
         checkboxes={checkboxes}
+        disableCheckboxes={!user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')}
         handleCheckboxClick={handleCheckboxClick}
         user={user}
       />
@@ -333,6 +334,10 @@ const CreditTransfersDetailsPage = (props) => {
       </div>
     </div>
   );
+};
+
+CreditTransfersDetailsPage.defaultProps = {
+  errorMessage: '',
 };
 
 CreditTransfersDetailsPage.propTypes = {
