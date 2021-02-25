@@ -100,7 +100,9 @@ objects:
                   cluster-name: patroni${SUFFIX}
           ports:
             - protocol: TCP
-              port: 5432              
+              port: 5432    
+            - protocol: TCP
+              port: 8008                             
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
@@ -134,7 +136,9 @@ objects:
                   app: nagios
           ports:
             - protocol: TCP
-              port: 5432                     
+              port: 5432
+            - protocol: TCP
+              port: 8008
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:

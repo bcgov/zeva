@@ -39,12 +39,12 @@ const ComplianceCalculatorModelTable = (props) => {
                     <th className="credit-entitlement text-right">Credit Entitlement</th>
                     <th className="estimated-sales">Estimated Annual Sales Total</th>
                     <th className="estimated-credits text-right">Estimated Credits Total</th>
-                    <th />
+                    <th>&nbsp;</th>
                   </tr>
                 </thead>
                 <tbody>
                   {models.map((each) => (
-                    <tr className="mx-2">
+                    <tr className="mx-2" key={each.id}>
                       <td className="text-left">{each.modelYear.name} {each.make} {each.modelName}</td>
                       <td className="text-center">{each.creditClass}</td>
                       <td className="text-right px-1">{each.creditValue}</td>
@@ -61,7 +61,7 @@ const ComplianceCalculatorModelTable = (props) => {
                           }}
                         />
                       </td>
-                      <td className="text-right px-1">{estimatedModelSales[findModelIndex(each)] ? `${estimatedModelSales[findModelIndex(each)].creditClass}-${formatNumeric(estimatedModelSales[findModelIndex(each)].value)}` : ''}</td>
+                      <td className="text-right px-1">{estimatedModelSales[findModelIndex(each)] ? `${formatNumeric(estimatedModelSales[findModelIndex(each)].value)}-${estimatedModelSales[findModelIndex(each)].creditClass}` : ''}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -76,7 +76,13 @@ const ComplianceCalculatorModelTable = (props) => {
 
 ComplianceCalculatorModelTable.propTypes = {
   models: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  estimatedModelSales: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  estimatedModelSales: PropTypes.arrayOf(PropTypes.shape({
+    creditClass: PropTypes.string,
+    value: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+    ]),
+  })).isRequired,
   setEstimatedModelSales: PropTypes.func.isRequired,
 };
 

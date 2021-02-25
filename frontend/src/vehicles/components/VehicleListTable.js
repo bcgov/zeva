@@ -79,7 +79,13 @@ const VehicleListTable = (props) => {
     id: 'zev-type',
     width: 100,
   }, {
-    accessor: (row) => (row.isActive === true ? 'Yes' : 'No'),
+    accessor: (row) => {
+      if (row.validationStatus !== 'VALIDATED') {
+        return '-';
+      }
+
+      return row.isActive === true ? 'Yes' : 'No';
+    },
     className: 'text-center',
     Header: 'Active',
     id: 'is-active',

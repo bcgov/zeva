@@ -11,6 +11,7 @@ import CreditTransferSignoff from './CreditTransfersSignOff';
 import Comment from '../../app/components/Comment';
 import CreditTransfersAlert from './CreditTransfersAlert';
 import Alert from '../../app/components/Alert';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const CreditTransfersForm = (props) => {
   const {
@@ -175,15 +176,18 @@ const CreditTransfersForm = (props) => {
                 <button type="button" className="transfer-add-line my-2" onClick={() => { addRow(); }}>
                   <h4><FontAwesomeIcon icon="plus" /> Add another line</h4>
                 </button>
-                <span className="transfer-total">Total CAD: ${total.toFixed(2)}</span>
-                <CreditTransferSignoff
-                  assertions={assertions}
-                  checkboxes={checkboxes}
-                  disableCheckboxes={unfilledRow || !user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')}
-                  handleCheckboxClick={handleCheckboxClick}
-                  hoverText={hoverText}
-                  user={user}
-                />
+                <span className="transfer-total">Total CAD: $ {formatNumeric(total, 2)}</span>
+                {user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')
+                  && (
+                  <CreditTransferSignoff
+                    assertions={assertions}
+                    checkboxes={checkboxes}
+                    disableCheckboxes={unfilledRow || !user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')}
+                    handleCheckboxClick={handleCheckboxClick}
+                    hoverText={hoverText}
+                    user={user}
+                  />
+                  )}
                 {actionbar}
               </fieldset>
             </div>

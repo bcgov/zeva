@@ -37,7 +37,7 @@ const UploadCreditRequestsContainer = (props) => {
       axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id))
         .then((response) => {
           setSubmission(response.data);
-          setUploadNewExcel(true);
+          setUploadNewExcel(false);
           if (response.data.evidence.length > 0) {
             setEvidenceCheckbox(true);
           }

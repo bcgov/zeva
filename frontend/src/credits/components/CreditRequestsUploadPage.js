@@ -75,20 +75,25 @@ const CreditRequestsUploadPage = (props) => {
             Credits can be issued for active ZEV sales made prior to {icbcDate}.
           </p>
           {submission && submission.id && (
-
-            <div>
-              <input
-                defaultChecked
-                type="checkbox"
-                name="new-sales-upload-checkbox"
-                id="new-sales-upload-checkbox"
-                onChange={(event) => { handleCheckboxChange(event); }}
-                className="m-3"
-              />
-              <span className="text-blue">
-                Upload new sales spreadsheet
-              </span>
-            </div>
+            <>
+              <div className="mt-3 mx-3">
+                <div>Current file: <strong>{submission.filename}</strong></div>
+                <div><em>To replace the current file, please check Upload new file</em></div>
+              </div>
+              <div>
+                <input
+                  defaultChecked={uploadNewExcel}
+                  type="checkbox"
+                  name="new-sales-upload-checkbox"
+                  id="new-sales-upload-checkbox"
+                  onChange={(event) => { handleCheckboxChange(event); }}
+                  className="m-3"
+                />
+                <span className="text-blue">
+                  Upload new file
+                </span>
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -100,7 +105,6 @@ const CreditRequestsUploadPage = (props) => {
           files={files}
           setErrorMessage={setErrorMessage}
           setUploadFiles={setUploadFiles}
-          submission={submission}
         />
       )}
       <div className="row mt-5 mb-2">
