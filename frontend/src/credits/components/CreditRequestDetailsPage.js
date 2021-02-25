@@ -276,7 +276,7 @@ const CreditRequestDetailsPage = (props) => {
               />
               {submission.validationStatus === 'DRAFT'
               && typeof user.hasPermission === 'function'
-              && user.hasPermission('DELETE_SALES')
+              && user.hasPermission('EDIT_SALES')
               && (
                 <Button buttonType="delete" action={() => { setModalType('delete'); setShowModal(true); }} />
               )}
