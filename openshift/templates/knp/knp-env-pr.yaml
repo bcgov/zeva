@@ -156,3 +156,20 @@ objects:
           ports:
             - protocol: TCP
               port: 5432                                   
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-backend-accepts-schemaspy${SUFFIX}
+    spec:
+      ## Allow backend to accept communication from schemaspy
+      podSelector:
+        matchLabels:
+          name: zeva-backend${SUFFIX}
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  name: schemaspy-public${SUFFIX}
+          ports:
+            - protocol: TCP
+              port: 8080
