@@ -29,7 +29,6 @@ class SigningAuthorityAssertionViewSet(
         as_of = datetime.today()
 
         return SigningAuthorityAssertion.objects.filter(
-            module="credit_transfer",
             effective_date__lte=as_of
         ).filter(
             Q(expiration_date__gte=as_of) | Q(expiration_date=None)

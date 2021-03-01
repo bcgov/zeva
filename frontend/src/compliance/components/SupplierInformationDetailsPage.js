@@ -7,6 +7,7 @@ import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
 import CustomPropTypes from '../../app/utilities/props';
 import ComplianceReportAlert from './ComplianceReportAlert';
+import ComplianceReportSignOff from './ComplianceReportSignOff';
 
 const SupplierInformationDetailsPage = (props) => {
   const {
@@ -18,6 +19,10 @@ const SupplierInformationDetailsPage = (props) => {
     make,
     makes,
     user,
+    assertions,
+    checkboxes,
+    disabledCheckboxes,
+    handleCheckboxClick,
   } = props;
 
   const details = {
@@ -140,9 +145,13 @@ const SupplierInformationDetailsPage = (props) => {
 
       <div className="row">
         <div className="col-12 my-3">
-          <div className="px-3">
-            <input id="confirm" name="confirm" type="checkbox" /> <label htmlFor="confirm">I confirm the legal name, address for service, records address, the supplier classification and vehicle makes supplier are correct.</label>
-          </div>
+          <ComplianceReportSignOff
+            assertions={assertions}
+            checkboxes={checkboxes}
+            handleCheckboxClick={handleCheckboxClick}
+            user={user}
+            disabledCheckboxes={disabledCheckboxes}
+          />
         </div>
       </div>
 
@@ -180,5 +189,9 @@ SupplierInformationDetailsPage.propTypes = {
   make: PropTypes.string.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   user: CustomPropTypes.user.isRequired,
+  assertions: PropTypes.arrayOf(PropTypes.shape()),
+  checkboxes: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])),
+  handleCheckboxClick: PropTypes.func.isRequired,
+  disabledCheckboxes:PropTypes.string.isRequired,
 };
 export default SupplierInformationDetailsPage;
