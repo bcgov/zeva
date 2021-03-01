@@ -8,11 +8,15 @@ import Loading from '../../app/components/Loading';
 import CustomPropTypes from '../../app/utilities/props';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued';
+import ComplianceReportSignoff from './ComplianceReportSignOff';
 
 const ComplianceObligationDetailsPage = (props) => {
   const {
     loading,
     user,
+    handleCheckboxClick,
+    assertions,
+    checkboxes,
   } = props;
   const creditsIssuedDetails = {
     creditsIssuedSales:
@@ -218,12 +222,12 @@ const ComplianceObligationDetailsPage = (props) => {
             <table className="col-lg-5 col-sm-12 mr-3">
               <tbody>
                 <tr className="subclass">
-                  <th colSpan="2">
+                  <th colSpan="2" className="text-blue">
                     Ratio Reduction
                   </th>
                 </tr>
                 <tr>
-                  <td>
+                  <td className="text-blue">
                     2020 Model Year LDV Sales\Leases:
                   </td>
                   <td>
@@ -231,7 +235,7 @@ const ComplianceObligationDetailsPage = (props) => {
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td className="text-blue">
                     2020 Compliance Ratio:
                   </td>
                   <td>
@@ -239,7 +243,7 @@ const ComplianceObligationDetailsPage = (props) => {
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td className="text-blue">
                     Large Volume Supplier Class A Ratio
                   </td>
                   <td>
@@ -247,7 +251,7 @@ const ComplianceObligationDetailsPage = (props) => {
                   </td>
                 </tr>
                 <tr className="font-weight-bold">
-                  <td>
+                  <td className="text-blue">
                     Ratio Reduction:
                   </td>
                   <td>
@@ -255,7 +259,7 @@ const ComplianceObligationDetailsPage = (props) => {
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td className="text-blue">
                     &bull; &nbsp; &nbsp; ZEV Class A Debit:
                   </td>
                   <td>
@@ -263,7 +267,7 @@ const ComplianceObligationDetailsPage = (props) => {
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td className="text-blue">
                     &bull; &nbsp; &nbsp; Unspecified ZEV Class Debit:
                   </td>
                   <td>
@@ -321,31 +325,22 @@ const ComplianceObligationDetailsPage = (props) => {
             </table>
           </div>
         </div>
-        <div className="row">
-          <div className="col-12 my-3 text-blue">
-            <div className="px-3">
-              <input id="confirm" name="confirm" type="checkbox" /> <label htmlFor="confirm">I confirm the credit balances are correct.</label>
-            </div>
-
-            <div className="px-3">
-              <input id="confirm" name="confirm" type="checkbox" /> <label htmlFor="confirm">I confirm the number, model year, vehicle class and ZEV class of credits issued, transferred or added are correct.</label>
-            </div>
-
-            <div className="px-3">
-              <input id="confirm" name="confirm" type="checkbox" /> <label htmlFor="confirm">I confirm the number, vehicle class and ZEV class of credits debited are correct.</label>
-            </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-sm-12">
-            <div className="action-bar mt-0">
-              <span className="left-content">
-                <Button buttonType="back" locationRoute="/compliance/reports" />
-              </span>
-              <span className="right-content">
-                <Button buttonType="save" optionalClassname="button primary" action={() => {}} />
-              </span>
-            </div>
+      </div>
+      <ComplianceReportSignoff
+        assertions={assertions}
+        handleCheckboxClick={handleCheckboxClick}
+        user={user}
+        checkboxes={checkboxes}
+      />
+      <div className="row">
+        <div className="col-sm-12">
+          <div className="action-bar mt-0">
+            <span className="left-content">
+              {/* <Button buttonType="back" locationRoute="/compliance/reports" /> */}
+            </span>
+            <span className="right-content">
+              <Button buttonType="save" optionalClassname="button primary" action={() => {}} />
+            </span>
           </div>
         </div>
       </div>
