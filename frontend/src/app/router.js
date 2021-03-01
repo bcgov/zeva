@@ -31,7 +31,7 @@ import ComplianceReportsContainer from '../compliance/ComplianceReportsContainer
 import ComplianceRatiosContainer from '../compliance/ComplianceRatiosContainer';
 import LDVSalesContainer from '../compliance/LDVSalesContainer';
 import SupplierInformationContainer from '../compliance/SupplierInformationContainer';
-import CreditActivityContainer from '../compliance/CreditActivityContainer';
+import ComplianceObligationContainer from '../compliance/ComplianceObligationContainer';
 import ConsumerSalesContainer from '../compliance/ConsumerSalesContainer'
 
 import ErrorHandler from './components/ErrorHandler';
@@ -131,7 +131,7 @@ class Router extends Component {
             <Switch>
               <Route
                 path={ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY}
-                render={() => <CreditActivityContainer keycloak={keycloak} user={user} />}
+                render={() => <ComplianceObligationContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 path={ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION}

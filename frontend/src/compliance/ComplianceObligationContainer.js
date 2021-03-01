@@ -4,10 +4,10 @@ import React, { useEffect, useState } from 'react';
 import ROUTES_CREDITS from '../app/routes/Credits';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
-import CreditActivityDetailsPage from './components/CreditActivityDetailsPage';
+import ComplianceObligationDetailsPage from './components/ComplianceObligationDetailsPage';
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 
-const CreditActivityContainer = (props) => {
+const ComplianceObligationContainer = (props) => {
   const { keycloak, user } = props;
   const reportStatuses = {
     assessment: '',
@@ -61,7 +61,7 @@ const CreditActivityContainer = (props) => {
   return (
     <>
       <ComplianceReportTabs active="credit-activity" reportStatuses={reportStatuses} user={user} />
-      <CreditActivityDetailsPage
+      <ComplianceObligationDetailsPage
         balances={balances}
         loading={loading}
         transactions={creditTransactions}
@@ -74,9 +74,9 @@ const CreditActivityContainer = (props) => {
   );
 };
 
-CreditActivityContainer.propTypes = {
+ComplianceObligationContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 
-export default CreditActivityContainer;
+export default ComplianceObligationContainer;

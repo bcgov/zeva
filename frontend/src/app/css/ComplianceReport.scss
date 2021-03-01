@@ -36,3 +36,41 @@
     width: 15%;
   }
 }
+#compliance-obligation-page {
+  border: 1px solid $border-grey;
+  padding: 2rem;
+
+
+  table {
+    width: 100%;
+    border: 1px solid $border-grey;
+
+    td {
+      padding: 0 1rem 0 1rem;
+      line-height: 35px;
+    }
+    tr {
+      margin-top: 1rem;
+    }
+    .subclass {
+      font-weight: bold;
+      background-color: $default-background-grey;
+    }
+    .large-column {
+      color: $default-text-blue;
+      width: 70%;
+      border-right: 4px solid white;
+    }
+  }
+  #offset-table {
+    input {
+      max-width: 125px;
+      margin-left: 1rem;
+    }
+    td {
+      line-height: 35px;
+      padding-top: 10px;
+      padding-bottom:10px;
+    }
+  }
+}

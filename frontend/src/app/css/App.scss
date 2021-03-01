@@ -289,7 +289,9 @@ p {
     padding: 0;
   }
 }
-
+.text-red {
+  color: $red
+}
 .text-blue {
   color: $default-text-blue;
 
