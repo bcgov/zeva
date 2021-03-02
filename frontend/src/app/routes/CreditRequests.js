@@ -8,6 +8,7 @@ const CREDIT_REQUESTS = {
   LIST: API_BASE_PATH,
   MINIO_URL: `${API_BASE_PATH}/:id/minio_url`,
   NEW: `${API_BASE_PATH}/new`,
+  REASONS: `${API_BASE_PATH}/reasons`,
   TEMPLATE: `${API_BASE_PATH}/template`,
   UNSELECTED: `${API_BASE_PATH}/:id/unselected`,
   UPLOAD: `${API_BASE_PATH}/upload`,

@@ -204,6 +204,14 @@
 
 #sales-details {
   .ReactTable {
+    .rt-thead {
+      background-color: $white;
+    }
+
+    .rt-thead, .rt-tbody {
+      min-width: 1775px !important;
+    }
+
     .-header {
       box-shadow: none;
 
@@ -219,6 +227,11 @@
       .header-group {
         background-color: $white;
         border-color: $white;
+      }
+
+      .header-margin {
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
       }
     }
 

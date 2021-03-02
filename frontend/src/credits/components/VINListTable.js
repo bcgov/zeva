@@ -16,8 +16,11 @@ const VINListTable = (props) => {
     user,
     invalidatedList,
     filtered,
+    handleChangeReason,
     loading,
+    modified,
     pages,
+    reasons,
     refreshContent,
     setFiltered,
     setLoading,
@@ -49,7 +52,7 @@ const VINListTable = (props) => {
 
   const columns = [{
     Header: 'Supplier Information',
-    headerClassName: 'header-group',
+    headerClassName: 'header-group header-margin',
     columns: [{
       accessor: (row) => {
         const { xlsModelYear } = row;
@@ -63,35 +66,39 @@ const VINListTable = (props) => {
       className: 'text-center',
       Header: 'MY',
       id: 'xls_model_year',
+      width: 75,
     }, {
       accessor: 'xlsMake',
       Header: 'Make',
       id: 'xls_make',
+      width: 100,
     }, {
       accessor: 'xlsModel',
       Header: 'Model',
       id: 'xls_model',
+      width: 200,
     }, {
       accessor: (row) => (moment(row.salesDate).format('YYYY-MM-DD') !== 'Invalid date' ? moment(row.salesDate).format('YYYY-MM-DD') : row.salesDate),
       className: 'text-center sales-date',
       filterable: false,
       Header: 'Retail Sale',
       id: 'xls_sale_date',
+      width: 100,
     }],
   }, {
     Header: '',
-    headerClassName: 'header-group',
+    headerClassName: 'header-group header-margin',
     columns: [{
       accessor: 'xlsVin',
       className: 'vin',
       Header: 'VIN',
       headerClassName: 'vin',
       id: 'xls_vin',
-      minWidth: 150,
+      width: 175,
     }],
   }, {
     Header: 'ICBC Registration',
-    headerClassName: 'header-group',
+    headerClassName: 'header-group header-margin',
     columns: [{
       accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.modelYear.name : '-'),
       className: 'icbc-model-year text-center',
@@ -100,6 +107,7 @@ const VINListTable = (props) => {
       Header: 'MY',
       headerClassName: 'icbc-model-year',
       id: 'icbc-model-year',
+      width: 75,
     }, {
       accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.make : '-'),
       className: 'icbc-make',
@@ -107,6 +115,7 @@ const VINListTable = (props) => {
       sortable: false,
       Header: 'Make',
       id: 'icbc-make',
+      width: 100,
     }, {
       accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.modelName : '-'),
       className: 'icbc-model',
@@ -114,10 +123,11 @@ const VINListTable = (props) => {
       sortable: false,
       Header: 'Model',
       id: 'icbc-model',
+      width: 200,
     }],
   }, {
     Header: '',
-    headerClassName: 'header-group',
+    headerClassName: 'header-group header-margin',
     columns: [{
       accessor: (item) => (getErrorCodes(item)),
       className: 'warning text-right',
@@ -125,6 +135,7 @@ const VINListTable = (props) => {
       headerClassName: 'warning',
       id: 'warning',
       sortable: false,
+      width: 150,
     }, {
       accessor: (row) => {
         if (row.warnings && row.warnings.some((warning) => [
@@ -150,6 +161,32 @@ const VINListTable = (props) => {
       Header: 'Validated',
       id: 'validated',
       show: user.isGovernment,
+      width: 100,
+    }, {
+      accessor: (row) => {
+        if (!row.reason && modified.findIndex((id) => id === row.id) < 0) {
+          return false;
+        }
+
+        return (
+          <select
+            defaultValue={row.reason}
+            onChange={(event) => {
+              const { value } = event.target;
+              handleChangeReason(row.id, value);
+            }}
+          >
+            {reasons.map((reason) => (
+              <option key={reason} value={reason}>{reason}</option>
+            ))}
+          </select>
+        );
+      },
+      className: 'reason text-center',
+      filterable: false,
+      Header: 'Reason',
+      id: 'reason',
+      sortable: false,
     }],
   }];
 
@@ -240,14 +277,22 @@ VINListTable.defaultProps = {
 
 VINListTable.propTypes = {
   handleCheckboxClick: PropTypes.func.isRequired,
+  handleChangeReason: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   invalidatedList: PropTypes.arrayOf(PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string,
   ])).isRequired,
-  filtered: PropTypes.arrayOf(PropTypes.object),
+  filtered: PropTypes.arrayOf(PropTypes.shape()),
   loading: PropTypes.bool.isRequired,
+  modified: PropTypes.arrayOf(PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ])).isRequired,
   pages: PropTypes.number.isRequired,
+  reasons: PropTypes.arrayOf(PropTypes.oneOfType([
+    PropTypes.string,
+  ])).isRequired,
   refreshContent: PropTypes.func.isRequired,
   setFiltered: PropTypes.func,
   setLoading: PropTypes.func.isRequired,
