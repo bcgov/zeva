@@ -4,10 +4,10 @@ import React, { useEffect, useState } from 'react';
 import ROUTES_CREDITS from '../app/routes/Credits';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
-import CreditActivityDetailsPage from './components/CreditActivityDetailsPage';
+import ComplianceObligationDetailsPage from './components/ComplianceObligationDetailsPage';
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 
-const CreditActivityContainer = (props) => {
+const ComplianceObligationContainer = (props) => {
   const { keycloak, user } = props;
   const reportStatuses = {
     assessment: '',
@@ -16,8 +16,6 @@ const CreditActivityContainer = (props) => {
     reportSummary: '',
     supplierInformation: '',
   };
-  const [balances, setBalances] = useState([]);
-  const [creditTransactions, setCreditTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [assertions, setAssertions] = useState([]);
   const [checkboxes, setCheckboxes] = useState([]);
@@ -36,20 +34,12 @@ const CreditActivityContainer = (props) => {
 
   const refreshDetails = () => {
     setLoading(true);
-    const balancePromise = axios.get(ROUTES_CREDITS.CREDIT_BALANCES).then((response) => {
-      setBalances(response.data);
-    });
-
-    const listPromise = axios.get(ROUTES_CREDITS.LIST).then((response) => {
-      setCreditTransactions(response.data);
-    });
-
     const listAssertion = axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
-      let filteredAsserstions = response.data.filter((data) => data.module == 'compliance_obligation');
-      setAssertions(filteredAsserstions);
+      const filteredAssertions = response.data.filter((data) => data.module === 'compliance_obligation');
+      setAssertions(filteredAssertions);
     });
 
-    Promise.all([balancePromise, listPromise, listAssertion]).then(() => {
+    Promise.all([listAssertion]).then(() => {
       setLoading(false);
     });
   };
@@ -61,10 +51,8 @@ const CreditActivityContainer = (props) => {
   return (
     <>
       <ComplianceReportTabs active="credit-activity" reportStatuses={reportStatuses} user={user} />
-      <CreditActivityDetailsPage
-        balances={balances}
+      <ComplianceObligationDetailsPage
         loading={loading}
-        transactions={creditTransactions}
         user={user}
         assertions={assertions}
         checkboxes={checkboxes}
@@ -74,9 +62,9 @@ const CreditActivityContainer = (props) => {
   );
 };
 
-CreditActivityContainer.propTypes = {
+ComplianceObligationContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 
-export default CreditActivityContainer;
+export default ComplianceObligationContainer;

@@ -13,7 +13,7 @@ const ComplianceReportSignOff = (props) => {
   } = props;
 
   return (
-    <div id="compliance-sign-off">
+    <div id="compliance-sign-off" className="my-3">
       <ReactTooltip />
       {assertions.map((assertion) => (
         <div key={assertion.id}>
@@ -27,7 +27,7 @@ const ComplianceReportSignOff = (props) => {
               disabled={disabledCheckboxes}
             />
           </div>
-          <label className="d-inline ml-2" htmlFor={assertion.id} id="confirmation-text">
+          <label className="d-inline ml-2 text-blue" htmlFor={assertion.id} id="confirmation-text">
             {assertion.description}
           </label>
         </div>
