@@ -16,6 +16,12 @@ const CreditTransfersDetailsActionBar = (props) => {
     user,
   } = props;
 
+  let submitTooltip = 'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.';
+
+  if (!user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')) {
+    submitTooltip = 'You do not have the permission to submit this transfer.';
+  }
+
   const actionBar = (
     <div className="row">
       <div className="col-sm-12">
@@ -100,17 +106,17 @@ const CreditTransfersDetailsActionBar = (props) => {
             />
             )}
             {transferRole.tradePartner
-            && user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')
             && (
             <Button
               testid="submit-to-gov"
+              buttonTooltip={submitTooltip}
               buttonType="submit"
               action={() => {
                 setModalType('partner-accept');
                 setShowModal(true);
               }}
               optionalText="Submit Notice"
-              disabled={checkboxes.length < assertions.length}
+              disabled={checkboxes.length < assertions.length || !user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')}
             />
             )}
             {transferRole.governmentDirector

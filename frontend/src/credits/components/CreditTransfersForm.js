@@ -39,7 +39,12 @@ const CreditTransfersForm = (props) => {
 
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState({ type: '', buttonText: '', message: '' });
-  const submitTooltip = 'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.';
+  let submitTooltip = 'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.';
+
+  if (!user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')) {
+    submitTooltip = 'You do not have the permission to submit this transfer.';
+  }
+
   const modal = (
     <Modal
       confirmLabel={modalType.buttonText}
@@ -86,7 +91,6 @@ const CreditTransfersForm = (props) => {
               }}
             />
             )}
-            {user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL') && (
             <Button
               buttonType="submit"
               action={() => {
@@ -95,9 +99,8 @@ const CreditTransfersForm = (props) => {
               }}
               optionalText="Submit Notice"
               buttonTooltip={submitTooltip}
-              disabled={checkboxes.length < assertions.length || unfilledRow}
+              disabled={checkboxes.length < assertions.length || unfilledRow || !user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')}
             />
-            )}
           </span>
         </div>
       </div>
@@ -179,7 +182,7 @@ const CreditTransfersForm = (props) => {
                   <CreditTransferSignoff
                     assertions={assertions}
                     checkboxes={checkboxes}
-                    disableCheckboxes={unfilledRow}
+                    disableCheckboxes={unfilledRow || !user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')}
                     handleCheckboxClick={handleCheckboxClick}
                     hoverText={hoverText}
                     user={user}
