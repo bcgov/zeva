@@ -184,6 +184,8 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
       )}
+
+      {!user.isGovernment && (
       <div className="row mb-1">
         <div className="col-sm-12">
           <div className="my-2 px-2 pb-2 address-summary-table">
@@ -248,6 +250,8 @@ const CreditRequestDetailsPage = (props) => {
           </div>
         </div>
       </div>
+      )}
+
       <div className="row mb-2">
         <div className="col-sm-12">
           <ModelListTable
