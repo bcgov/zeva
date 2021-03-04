@@ -18,12 +18,16 @@ from api.models.icbc_registration_data import IcbcRegistrationData
 from api.models.record_of_sale import RecordOfSale
 from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_content import SalesSubmissionContent
+from api.models.sales_submission_content_reason import \
+    SalesSubmissionContentReason
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.permissions.credit_request import CreditRequestPermissions
 from api.serializers.sales_submission import SalesSubmissionSerializer, \
     SalesSubmissionListSerializer, SalesSubmissionSaveSerializer
 from api.serializers.sales_submission_content import \
     SalesSubmissionContentSerializer
+from api.serializers.sales_submission_content_reason import \
+    SalesSubmissionContentReasonSerializer
 from api.services.credit_transaction import award_credits
 from api.services.sales_spreadsheet import create_sales_spreadsheet, \
     ingest_sales_spreadsheet, validate_spreadsheet, \
@@ -369,3 +373,9 @@ class CreditRequestViewset(
             'url': url,
             'minio_object_name': object_name
         })
+
+    @action(detail=False, methods=['get'])
+    def reasons(self, request):
+        reasons = SalesSubmissionContentReason.objects.all()
+
+        return Response(reasons.values_list('reason', flat=True))

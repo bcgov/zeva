@@ -451,6 +451,8 @@ class SalesSubmissionSaveSerializer(
         sales_evidences = validated_data.pop('sales_evidences', [])
         files_to_be_removed = request.data.get('evidence_delete_list', [])
         sales_submission_comment = validated_data.pop('sales_submission_comment', None)
+        reasons = request.data.get('reasons', [])
+
         if sales_submission_comment:
             SalesSubmissionComment.objects.create(
                 create_user=request.user.username,
@@ -526,6 +528,14 @@ class SalesSubmissionSaveSerializer(
                         vin=row.xls_vin,
                         vin_validation_status=VINStatuses.MATCHED,
                     )
+
+        if reasons is not None:
+            for reason in reasons:
+                content = SalesSubmissionContent.objects.get(
+                    id=reason.get('id')
+                )
+                content.reason = reason.get('reason')
+                content.save()
 
         validation_status = validated_data.get('validation_status')
 

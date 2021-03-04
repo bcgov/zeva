@@ -11,7 +11,10 @@ const CreditRequestVINListPage = (props) => {
   const {
     content,
     handleCheckboxClick,
+    handleChangeReason,
     handleSubmit,
+    modified,
+    reasons,
     setContent,
     submission,
     user,
@@ -145,10 +148,13 @@ const CreditRequestVINListPage = (props) => {
           <VINListTable
             filtered={filtered}
             handleCheckboxClick={handleCheckboxClick}
+            handleChangeReason={handleChangeReason}
             invalidatedList={invalidatedList}
             items={content}
             loading={loading}
+            modified={modified}
             pages={pages}
+            reasons={reasons}
             refreshContent={refreshContent}
             setContent={setContent}
             setFiltered={setFiltered}
@@ -175,11 +181,17 @@ CreditRequestVINListPage.defaultProps = {};
 CreditRequestVINListPage.propTypes = {
   content: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
+  handleChangeReason: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   invalidatedList: PropTypes.arrayOf(PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string,
   ])).isRequired,
+  modified: PropTypes.arrayOf(PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ])).isRequired,
+  reasons: PropTypes.arrayOf(PropTypes.string).isRequired,
   setContent: PropTypes.func.isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
