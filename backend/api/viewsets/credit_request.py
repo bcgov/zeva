@@ -8,7 +8,6 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Subquery, Count, Q
 from django.db.models.expressions import RawSQL
 from django.http import HttpResponse, HttpResponseForbidden
-from api.services.minio import minio_put_object
 
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
@@ -29,6 +28,7 @@ from api.serializers.sales_submission_content import \
 from api.serializers.sales_submission_content_reason import \
     SalesSubmissionContentReasonSerializer
 from api.services.credit_transaction import award_credits
+from api.services.minio import minio_put_object
 from api.services.sales_spreadsheet import create_sales_spreadsheet, \
     ingest_sales_spreadsheet, validate_spreadsheet, \
     create_errors_spreadsheet
@@ -223,13 +223,15 @@ class CreditRequestViewset(
                     xls_vin__icontains=submission_filters['xls_vin']
                 )
 
-            if 'warning' in submission_filters:
+            if 'warning' in submission_filters or \
+                    'include_overrides' in submission_filters:
                 duplicate_vins = []
                 awarded_vins = []
                 not_registered = Q(xls_vin__in=[])
                 sale_date = Q(xls_vin__in=[])
                 mismatch_vins = Q(xls_vin__in=[])
                 invalid_date = Q(xls_vin__in=[])
+                overridden_vins = Q(xls_vin__in=[])
 
                 if submission_filters['warning'] == '1' or \
                         '3' in submission_filters['warning']:
@@ -279,13 +281,18 @@ class CreditRequestViewset(
                         (pk,)
                     ))
 
+                if 'include_overrides' in submission_filters and \
+                        submission_filters['include_overrides']:
+                    overridden_vins = Q(reason__isnull=False)
+
                 submission_content = submission_content.filter(
                     Q(xls_vin__in=duplicate_vins) |
                     Q(xls_vin__in=awarded_vins) |
                     not_registered |
                     sale_date |
                     invalid_date |
-                    mismatch_vins
+                    mismatch_vins |
+                    overridden_vins
                 )
 
         if sort_by:

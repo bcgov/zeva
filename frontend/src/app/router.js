@@ -20,6 +20,7 @@ import CreditTransferListContainer from '../credits/CreditTransferListContainer'
 import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContainer';
 import CreditTransfersDetailsContainer from '../credits/CreditTransfersDetailsContainer';
 import CreditRequestVINListContainer from '../credits/CreditRequestVINListContainer';
+import CreditRequestValidatedDetailsContainer from '../credits/CreditRequestValidatedDetailsContainer';
 import UploadCreditRequestContainer from '../credits/UploadCreditRequestContainer';
 import UploadICBCVerificationContainer from '../credits/UploadICBCVerificationContainer';
 import UserEditContainer from '../users/UserEditContainer';
@@ -32,7 +33,7 @@ import ComplianceRatiosContainer from '../compliance/ComplianceRatiosContainer';
 import LDVSalesContainer from '../compliance/LDVSalesContainer';
 import SupplierInformationContainer from '../compliance/SupplierInformationContainer';
 import ComplianceObligationContainer from '../compliance/ComplianceObligationContainer';
-import ConsumerSalesContainer from '../compliance/ConsumerSalesContainer'
+import ConsumerSalesContainer from '../compliance/ConsumerSalesContainer';
 
 import ErrorHandler from './components/ErrorHandler';
 import Loading from './components/Loading';
@@ -291,6 +292,10 @@ class Router extends Component {
                 exact
                 path={ROUTES_CREDIT_REQUESTS.EDIT}
                 render={() => <UploadCreditRequestContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_CREDIT_REQUESTS.VALIDATED_DETAILS}
+                render={() => <CreditRequestValidatedDetailsContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 path={ROUTES_CREDIT_REQUESTS.VALIDATE}
