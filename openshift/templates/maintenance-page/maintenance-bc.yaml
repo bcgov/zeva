@@ -39,7 +39,7 @@ objects:
       type: Git
       contextDir: "openshift-v4/maintenance-page"
       git:
-        uri: https://github.com/bcgov/zeva.git
+        uri: https://github.com/kuanfandevops/zeva.git
         ref: maintenance-page
     strategy:
       dockerStrategy:
