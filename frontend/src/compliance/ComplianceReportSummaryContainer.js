@@ -3,6 +3,7 @@ import { now } from 'moment';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
+import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ComplianceReportSummaryDetailsPage from './components/ComplianceReportSummaryDetailsPage';
@@ -11,6 +12,25 @@ const ComplianceReportSummaryContainer = (props) => {
   const { user } = props;
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
+  const [checkboxes, setCheckboxes] = useState([]);
+  const [complianceRatios, setComplianceRatios] = useState({});
+  const [assertions, setAssertions] = useState([{ id: 0, description: 'On behalf of [insert supplier name], I confirm the information included in this Model Year report is complete and accurate' }]);
+  const year = '2020';
+  const handleCheckboxClick = (event) => {
+    if (!event.target.checked) {
+      const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
+      setCheckboxes(checked);
+    }
+
+    if (event.target.checked) {
+      const checked = checkboxes.concat(event.target.id);
+      setCheckboxes(checked);
+    }
+  };
+  const handleSubmit = (event) => {
+    console.log('submit button clicked!');
+  };
+
   const reportStatuses = {
     assessment: '',
     consumerSales: '',
@@ -80,7 +100,19 @@ const ComplianceReportSummaryContainer = (props) => {
     creditOffset: [
       {
         year: 2019,
-        A: 0,
+        A: -300,
+        B: -100,
+      },
+      {
+        year: 2020,
+        A: -458.71,
+        B: -91.29,
+      },
+    ],
+    provisionalAssessedBalance: [
+      {
+        year: 2019,
+        A: 754.38,
         B: 0,
       },
       {
@@ -92,7 +124,7 @@ const ComplianceReportSummaryContainer = (props) => {
   };
   const supplierInformationDetails = {
     supplierInformation: {
-      makes: ['KIA'],
+      makes: ['TOYOTA'],
       history: [{
         status: 'DRAFT',
         createTimestamp: now(),
@@ -112,6 +144,13 @@ const ComplianceReportSummaryContainer = (props) => {
   };
   const refreshDetails = () => {
     setLoading(true);
+    axios.all([
+      axios.get(ROUTES_COMPLIANCE.RATIOS)]).then(axios.spread((
+      allComplianceRatiosResponse,
+    ) => {
+      setComplianceRatios(allComplianceRatiosResponse.data
+        .filter((each) => each.modelYear === year));
+    }));
     setLoading(false);
   };
 
@@ -127,7 +166,19 @@ const ComplianceReportSummaryContainer = (props) => {
         id={id}
         user={user}
       />
-      <ComplianceReportSummaryDetailsPage creditsIssuedDetails={creditsIssuedDetails} consumerSalesDetails={consumerSalesDetails} supplierInformationDetails={supplierInformationDetails} user={user} loading={loading} handleSubmit={() => { console.log('submit'); }} />
+      <ComplianceReportSummaryDetailsPage
+        complianceRatios={complianceRatios}
+        handleCheckboxClick={handleCheckboxClick}
+        checkboxes={checkboxes}
+        assertions={assertions}
+        creditsIssuedDetails={creditsIssuedDetails}
+        consumerSalesDetails={consumerSalesDetails}
+        supplierInformationDetails={supplierInformationDetails}
+        user={user}
+        loading={loading}
+        handleSubmit={handleSubmit}
+        year="2020"
+      />
 
     </>
   );

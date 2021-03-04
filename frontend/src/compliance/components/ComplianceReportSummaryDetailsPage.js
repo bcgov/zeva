@@ -1,7 +1,7 @@
 /* eslint-disable react/no-array-index-key */
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
@@ -9,22 +9,63 @@ import CustomPropTypes from '../../app/utilities/props';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import ComplianceReportSignOff from './ComplianceReportSignOff';
 import SummaryCreditActivityTable from './SummaryCreditActivityTable';
+import SummarySupplierInfo from './SummarySupplierInfo';
+import SummaryConsumerSalesTable from './SummaryConsumerSalesTable';
+import Modal from '../../app/components/Modal';
 
 const ComplianceReportSummaryDetailsPage = (props) => {
+  const [showModal, setShowModal] = useState(false);
   const {
+    complianceRatios,
+    assertions,
+    checkboxes,
     creditsIssuedDetails,
     user,
     handleSubmit,
     loading,
     supplierInformationDetails,
     consumerSalesDetails,
+    handleCheckboxClick,
+    year,
+
   } = props;
+  const signedInfomation = {
+    supplierInformation: { nameSigned: 'Buzz Collins', dateSigned: '2020-01-01' },
+    consumerSales: { nameSigned: 'Buzz Collins', dateSigned: '2020-02-20' },
+    creditActivity: { nameSigned: 'Buzz Collins', dateSigned: '2020-03-01' },
+  };
 
   if (loading) {
     return <Loading />;
   }
- 
-
+  const signatureInformation = (input) => {
+    const { dateSigned, nameSigned } = input;
+    return (
+      <div className="mt-3">
+        <span className="text-blue">
+          Confirmed by {nameSigned} {dateSigned}
+        </span>
+      </div>
+    );
+  };
+  const modal = (
+    <Modal
+      confirmLabel="Submit"
+      handleCancel={() => { setShowModal(false); }}
+      handleSubmit={() => { setShowModal(false); handleSubmit('SUBMITTED'); }}
+      modalClass="w-75"
+      showModal={showModal}
+      confirmClass="button primary"
+      icon={<FontAwesomeIcon icon="paper-plane" />}
+    >
+      <div>
+        <div><br /><br /></div>
+        <h3 className="d-inline">Submit Model Year Report to the Government of B.C.?
+        </h3>
+        <div><br /><br /></div>
+      </div>
+    </Modal>
+  );
   return (
     <div id="compliance-supplier-information-details" className="page">
       <div className="row mt-3">
@@ -44,87 +85,25 @@ const ComplianceReportSummaryDetailsPage = (props) => {
             <div className="row p3 mt-3">
               <div className="col-lg-6">
                 <div className="compliance-report-summary-grey text-blue">
-                  <h3>Supplier Information</h3>
-                  <div className="mt-3">
-
-                    <h4 className="d-inline">Legal Name: </h4>
-                    <span> {supplierInformationDetails.organization.name} </span>
-                  </div>
-
-                  <div>
-                    <div className="d-block mr-5 mt-3">
-                      <h4>Service Address:</h4>
-                      {supplierInformationDetails.organization.organizationAddress
-                && supplierInformationDetails.organization.organizationAddress.map((address) => (
-                  address.addressType.addressType === 'Service' && (
-                    <div key={address.id}>
-                      {address.representativeName && (
-                        <div> {address.representativeName} </div>
-                      )}
-                      <div> {address.addressLine1} </div>
-                      <div> {address.city} {address.state} {address.country} </div>
-                      <div> {address.postalCode} </div>
-                    </div>
-                  )
-                ))}
-                    </div>
-                    <div className="d-block mt-3">
-                      <h4>Records Address:</h4>
-                      {supplierInformationDetails.organization.organizationAddress
-                && supplierInformationDetails.organization.organizationAddress.map((address) => (
-                  address.addressType.addressType === 'Records' && (
-                    <div key={address.id}>
-                      {address.representativeName && (
-                        <div> {address.representativeName} </div>
-                      )}
-                      <div> {address.addressLine1} </div>
-                      <div> {address.city} {address.state} {address.country} </div>
-                      <div> {address.postalCode} </div>
-                    </div>
-                  )
-                ))}
-                    </div>
-                    <div className="d-block my-3">
-                      <h4>Makes:</h4>
-                      {supplierInformationDetails.supplierInformation.makes.map((each) => `• ${each}`)}
-                    </div>
-                  </div>
-                  Confirmed by Buzz Collins October 12, 2021
+                  <SummarySupplierInfo supplierInformationDetails={supplierInformationDetails} signatureInformation={signatureInformation} signedInfomation={signedInfomation} />
+                  {signatureInformation(signedInfomation.supplierInformation)}
                 </div>
+
                 <div className="mt-4 compliance-report-summary-grey">
                   <h3>Consumer Sales</h3>
-                  <table id="compliance-summary-consumer-sales-table">
-                    <tbody>
-                      <tr>
-                        <td className="text-blue">{consumerSalesDetails.year} Model Year LDV Sales\Leases:</td>
-                        <td className="text-right">{formatNumeric(consumerSalesDetails.ldvSales, 0)}</td>
-                      </tr>
-                      <tr>
-                        <td className="text-blue">{consumerSalesDetails.year} Model Year Issued ZEV Sales\Leases:</td>
-                        <td className="text-right">{formatNumeric(consumerSalesDetails.zevSales, 0)}</td>
-                      </tr>
-                      <tr>
-                        <td className="text-blue">{consumerSalesDetails.year} Model Year Pending ZEV Sales\Leases:</td>
-                        <td className="text-right">{formatNumeric(consumerSalesDetails.pendingZevSales, 0)}</td>
-                      </tr>
-                      <tr>
-                        <td className="text-blue">3 Year Average ({consumerSalesDetails.year - 3}-{consumerSalesDetails.year - 1}) LDV Sales\Leases:</td>
-                        <td className="text-right">{formatNumeric(consumerSalesDetails.averageLdv3Years, 0)}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <div className="text-blue my-3">
-                    <span className="font-weight-bold">Vehicle Supplier Class: </span>
-                    <span className="text-left">{consumerSalesDetails.supplierClass} Volume Supplier</span>
-                  </div>
-                  <span className="text-blue">
-                    Confirmed by Buzz Collins October 12, 2021
-                  </span>
+                  <SummaryConsumerSalesTable consumerSalesDetails={consumerSalesDetails} />
+                  {signatureInformation(signedInfomation.consumerSales)}
                 </div>
               </div>
               <div className="col-lg-6">
                 <div className="compliance-report-summary-grey">
-                  <SummaryCreditActivityTable creditsIssuedDetails={creditsIssuedDetails} />
+                  <SummaryCreditActivityTable
+                    complianceRatios={complianceRatios}
+                    year={year}
+                    consumerSalesDetails={consumerSalesDetails}
+                    creditsIssuedDetails={creditsIssuedDetails}
+                  />
+                  {signatureInformation(signedInfomation.creditActivity)}
                 </div>
               </div>
             </div>
@@ -135,7 +114,12 @@ const ComplianceReportSummaryDetailsPage = (props) => {
 
       <div className="row">
         <div className="col-12 my-3">
-          sign off
+          <ComplianceReportSignOff
+            assertions={assertions}
+            handleCheckboxClick={handleCheckboxClick}
+            user={user}
+            checkboxes={checkboxes}
+          />
         </div>
       </div>
 
@@ -147,16 +131,18 @@ const ComplianceReportSummaryDetailsPage = (props) => {
             </span>
             <span className="right-content">
               <Button
-                buttonType="save"
+                buttonType="submit"
+                disabled={checkboxes.length < assertions.length || !user.hasPermission('SUBMIT_COMPLIANCE_REPORT')}
                 optionalClassname="button primary"
                 action={(event) => {
-                  handleSubmit(event);
+                  setShowModal(true);
                 }}
               />
             </span>
           </div>
         </div>
       </div>
+      {modal}
     </div>
   );
 };

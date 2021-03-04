@@ -1,19 +1,22 @@
 import React from 'react';
 import formatNumeric from '../../app/utilities/formatNumeric';
+import SummarySupplierInfo from './SummarySupplierInfo';
 
 const SummaryCreditActivityTable = (props) => {
-  const { creditsIssuedDetails } = props;
+  const {
+    creditsIssuedDetails, consumerSalesDetails, complianceRatios,
+  } = props;
+  const { year, ldvSales, supplierClass } = consumerSalesDetails;
   const {
     startingBalance, endingBalance,
     creditsIssuedSales, creditsIssuedInitiative, creditsIssuedPurchase,
     creditsTransferredIn, creditsTransferredAway, pendingSales, provisionalBalance,
+    creditOffset, provisionalAssessedBalance,
   } = creditsIssuedDetails;
 
-  const tableSection = (input, title) => {
-    const numberClassname = 'text-right';
+  const tableSection = (input, title, numberClassname = 'text-right') => {
     let aTotal;
     let bTotal;
-
     if (Array.isArray(input)) {
       aTotal = formatNumeric(input.reduce((a, v) => a + v.A, 0), 2);
       bTotal = formatNumeric(input.reduce((a, v) => a + v.B, 0), 2);
@@ -21,13 +24,19 @@ const SummaryCreditActivityTable = (props) => {
       aTotal = input.A;
       bTotal = input.B;
     }
+    if (aTotal == 0.00) {
+      aTotal = 0;
+    }
+    if (bTotal == 0.00) {
+      bTotal = 0;
+    }
     return (
       <>
-        <tr className="subclass">
+        <tr>
           <th className="large-column text-blue">
             {title}
           </th>
-          <td className={numberClassname}>
+          <td className={`${numberClassname} a-class`}>
             {aTotal || 0}
           </td>
           <td className={numberClassname}>
@@ -44,12 +53,12 @@ const SummaryCreditActivityTable = (props) => {
           <th>
             <h3>Credit Activity</h3>
           </th>
-          <th>
+          <th className="text-center a-class">
             <h4>
               A
             </h4>
           </th>
-          <th>
+          <th className="text-center">
             <h4>
               B
             </h4>
@@ -77,7 +86,7 @@ const SummaryCreditActivityTable = (props) => {
           )}
         {Object.keys(creditsTransferredAway).length > 0
           && (
-            tableSection(creditsTransferredAway, 'Transferred Away:')
+            tableSection(creditsTransferredAway, 'Transferred Away:', 'text-red text-right')
           )}
         {tableSection(endingBalance, 'Balance at September 30, 2020:')}
         {Object.keys(pendingSales).length > 0
@@ -88,6 +97,74 @@ const SummaryCreditActivityTable = (props) => {
           && (
             tableSection(provisionalBalance, 'Provisional Credit Balance:')
           )}
+        {Object.keys(creditOffset).length > 0
+          && (
+            tableSection(creditOffset, 'Credit Offset:', 'text-red text-right')
+          )}
+        {Object.keys(provisionalAssessedBalance).length > 0
+          && (
+            tableSection(provisionalAssessedBalance, 'Provisional assessed balance:')
+          )}
+      </tbody>
+      <tbody className="mt-3">
+        <tr>
+          <th>
+            <h3>Obligation Summary</h3>
+          </th>
+        </tr>
+        <tr>
+          <td className="text-blue">
+            {year} Compliance Ratio:
+          </td>
+          <td />
+          <td className="text-right">
+            {complianceRatios.length > 0 && complianceRatios[0].complianceRatio}%
+          </td>
+        </tr>
+        {supplierClass === 'Large' && (
+        <tr>
+          <td className="text-blue">
+            Large Volume Supplier Class A Ratio:
+          </td>
+          <td />
+          <td className="text-right">
+            {complianceRatios.length > 0 && complianceRatios[0].zevClassA}%
+          </td>
+        </tr>
+        )}
+        <tr>
+          <td className="font-weight-bold text-blue">
+            2020 Ratio Reduction:
+          </td>
+          <td />
+          <td className="text-right font-weight-bold">
+            {complianceRatios.length > 0 && (
+              formatNumeric(ldvSales * (complianceRatios[0].complianceRatio / 100), 2))}
+          </td>
+        </tr>
+        <tr>
+          <td className="text-blue">
+            &bull; &nbsp; &nbsp; ZEV Class A Debit:
+          </td>
+          <td />
+          <td className="text-right">
+            {complianceRatios.length > 0 && supplierClass === 'Large' && (
+              formatNumeric(ldvSales * (complianceRatios[0].zevClassA / 100),
+                2))}
+          </td>
+        </tr>
+        <tr>
+          <td className="text-blue">
+            &bull; &nbsp; &nbsp; Unspecified ZEV Class Debit:
+          </td>
+          <td />
+          <td className="text-right">
+            {complianceRatios.length > 0 && formatNumeric((
+              ldvSales * (complianceRatios[0].complianceRatio / 100)
+             - (ldvSales * (complianceRatios[0].zevClassA / 100))),
+            2)}
+          </td>
+        </tr>
       </tbody>
     </table>
   );
