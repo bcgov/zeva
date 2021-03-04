@@ -1,0 +1,21 @@
+.compliance-report-summary-grey {
+    background-color: $default-background-grey;
+    padding: 1rem;
+}
+.summary-page {
+  border: 1px solid $border-grey;
+}
+#compliance-summary-consumer-sales-table {
+
+  width: 100%;
+  tr {
+    line-height: 30px;
+  }
+
+}
+#summary-credit-activity {
+  width: 100%;
+  // th {
+  //   width: 30%;
+  // }
+}
