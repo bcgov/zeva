@@ -99,7 +99,7 @@ objects:
     annotations:
       openshift.io/host.generated: 'true'
   spec:
-    host: maintenance-page-${ENV_NAME}.apps.silver.devops.gov.bc.ca
+    host: zeva-maintenance-page-${ENV_NAME}.apps.silver.devops.gov.bc.ca
     to:
       kind: Service
       name: maintenance-page
