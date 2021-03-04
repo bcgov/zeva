@@ -220,6 +220,10 @@
 
     .ReactTable {
       border: none;
+
+      .rt-thead, .rt-tbody {
+        min-width: 1500px !important;
+      }  
     
       .rt-thead {
         background-color: $white;
