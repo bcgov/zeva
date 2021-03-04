@@ -37,7 +37,7 @@ objects:
     runPolicy: SerialLatestOnly
     source:
       type: Git
-      contextDir: "openshift-v4/maintenance-page"
+      contextDir: "openshift/maintenance-page"
       git:
         uri: https://github.com/kuanfandevops/zeva.git
         ref: maintenance-page
