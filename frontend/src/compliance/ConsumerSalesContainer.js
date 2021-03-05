@@ -20,12 +20,12 @@ const ConsumerSalesContainer = (props) => {
   const [confirmed, setConfirmed] = useState(false);
   const [checkboxes, setCheckboxes] = useState([]);
   const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
+  const [firstYear, setFirstYear] = useState({modelYear:2019,ldvSales:0});
+  const [secondYear, setSecondYear] = useState({modelYear:2018,ldvSales:0});
+  const [thirdYear, setThirdYear] = useState({ modelYear: 2017, ldvSales: 0 });
+  const [avgSales, setAvgSales] = useState(0);
+
   const { id } = useParams();
-  let previousSales = [
-    { id: 1, modelYear: 2017, ldvSales: 7789 },
-    { id: 2, modelYear: 2018, ldvSales: 8123 },
-    { id: 3, modelYear: 2019, ldvSales: 9456 },
-  ];
 
   const reportStatuses = {
     assessment: '',
@@ -42,9 +42,48 @@ const ConsumerSalesContainer = (props) => {
       setLoading(false);
     });
     axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
-      let filteredAsserstions = response.data.filter((data) => data.module == 'consumer_sales');
-      setAssertions(filteredAsserstions);
+      const filteredAssertions = response.data.filter(
+        (data) => data.module === 'consumer_sales'
+      );
+      setAssertions(filteredAssertions);
     });
+  };
+
+  const handleInputChange = (event) => {
+    const { id, value } = event.target;
+    if (id === 'first') {
+      if (value === '') {
+        setFirstYear({ ...firstYear, ldvSales: 0 });
+        averageLdvSales(0, secondYear.ldvSales, thirdYear.ldvSales);
+      } else {
+        setFirstYear({...firstYear, ldvSales: parseInt(value)});
+        averageLdvSales(parseInt(value), secondYear.ldvSales, thirdYear.ldvSales);
+      }
+    }
+    if (id === 'second') {
+      if (value === '') {
+        setSecondYear({ ...secondYear, ldvSales: 0 });
+        averageLdvSales(firstYear.ldvSales, 0, thirdYear.ldvSales);
+      } else {
+        setSecondYear({...secondYear, ldvSales: parseInt(value)});
+        averageLdvSales(firstYear.ldvSales, parseInt(value), thirdYear.ldvSales);
+      }
+    }
+    if (id === 'third') {
+      if (value === '') {
+        setSecondYear({ ...thirdYear, ldvSales: 0 });
+        averageLdvSales(firstYear.ldvSales, secondYear.ldvSales, 0);
+      } else {
+        setThirdYear({...thirdYear, ldvSales: parseInt(value)});
+        averageLdvSales(firstYear.ldvSales, secondYear.ldvSales, parseInt(value));
+      }
+    }
+  };
+
+  const averageLdvSales = (firstYear, secondYear, thirdYear) => {
+    let avg = 0;
+    avg = (firstYear + secondYear + thirdYear) / 3;
+    setAvgSales(Math.round(avg));
   };
 
   const handleChange = (event) => {
@@ -64,20 +103,20 @@ const ConsumerSalesContainer = (props) => {
   };
 
   const handleSave = () => {
+    const previousSalesInfo = [firstYear, secondYear, thirdYear];
     if (!salesInput) {
       setError(true);
     } else {
       setError(false);
-      axios
-        .post(ROUTES_COMPLIANCE.VEHICLES, {
+      axios.post(ROUTES_COMPLIANCE.VEHICLES, {
           data: vehicles,
           ldvSales: salesInput,
           modelYearReportId: id,
-          previousSales: previousSales,
-          confirmation: checkboxes
+          previousSales: previousSalesInfo,
+          confirmation: checkboxes,
         })
         .then(() => {
-          setConfirmed(true)
+          setConfirmed(true);
           setDisabledCheckboxes('disabled');
           setReadOnly(true);
         })
@@ -92,6 +131,7 @@ const ConsumerSalesContainer = (props) => {
 
   useEffect(() => {
     refreshDetails(true);
+    averageLdvSales(firstYear.ldvSales, secondYear.ldvSales, thirdYear.ldvSales);
   }, [keycloak.authenticated]);
 
   return (
@@ -108,13 +148,14 @@ const ConsumerSalesContainer = (props) => {
         handleChange={handleChange}
         vehicles={vehicles}
         confirmed={confirmed}
-        previousSales={previousSales}
         error={error}
         readOnly={readOnly}
         assertions={assertions}
         checkboxes={checkboxes}
         disabledCheckboxes={disabledCheckboxes}
         handleCheckboxClick={handleCheckboxClick}
+        handleInputChange={handleInputChange}
+        avgSales={avgSales}
       />
     </>
   );

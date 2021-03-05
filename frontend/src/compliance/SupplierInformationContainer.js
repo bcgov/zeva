@@ -80,8 +80,8 @@ const SupplierInformationContainer = (props) => {
       setLoading(false);
     });
     axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
-      const filteredAsserstions = response.data.filter((data) => data.module == 'supplier_information');
-      setAssertions(filteredAsserstions);
+      const filteredAssertions = response.data.filter((data) => data.module === 'supplier_information');
+      setAssertions(filteredAssertions);
     });
   };
 
