@@ -61,10 +61,6 @@ const SupplierInformationDetailsPage = (props) => {
               <h4 className="d-inline">Legal Name: </h4>
               <span> {details.organization.name} </span>
             </div>
-            <div className="mt-3">
-              <h4 className="d-inline">Vehicle Supplier Class: </h4>
-              <span> Large Volume Supplier </span>
-            </div>
             <div>
               <div className="d-inline-block mr-5 mt-3">
                 <h4>Service Address</h4>

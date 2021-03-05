@@ -29,6 +29,7 @@ import VehicleEditContainer from '../vehicles/VehicleEditContainer';
 import VehicleListContainer from '../vehicles/VehicleListContainer';
 import ComplianceCalculatorContainer from '../compliance/ComplianceCalculatorContainer';
 import ComplianceReportsContainer from '../compliance/ComplianceReportsContainer';
+import ComplianceReportSummaryContainer from '../compliance/ComplianceReportSummaryContainer';
 import ComplianceRatiosContainer from '../compliance/ComplianceRatiosContainer';
 import LDVSalesContainer from '../compliance/LDVSalesContainer';
 import SupplierInformationContainer from '../compliance/SupplierInformationContainer';
@@ -150,6 +151,13 @@ class Router extends Component {
                 path={ROUTES_COMPLIANCE.CALCULATOR}
                 render={() => ((typeof user.hasPermission === 'function' && user.hasPermission('EDIT_SALES') && !user.isGovernment)
                   ? <ComplianceCalculatorContainer keycloak={keycloak} user={user} /> : (
+                    <ComplianceReportsContainer keycloak={keycloak} user={user} />
+                  ))}
+              />
+              <Route
+                path={ROUTES_COMPLIANCE.REPORT_SUMMARY}
+                render={() => ((typeof user.hasPermission === 'function' && user.hasPermission('EDIT_SALES') && !user.isGovernment)
+                  ? <ComplianceReportSummaryContainer keycloak={keycloak} user={user} /> : (
                     <ComplianceReportsContainer keycloak={keycloak} user={user} />
                   ))}
               />

@@ -28,6 +28,10 @@
   .consumer-sales {
     border: 1px solid $border-grey;
   }
+  .previous-ldv-avg {
+    border: 1px solid $border-grey;
+    height: 94%;
+  }
   .ldv-sales,
   .previous-ldv-sales {
     background-color: $default-background-grey;
