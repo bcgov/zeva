@@ -35,15 +35,13 @@ const CreditRequestValidatedDetailsContainer = (props) => {
 
       const { data: unselected } = unselectedResponse;
       setInvalidatedList(unselected);
-
       setLoading(false);
-    })).finally(() => {
-      if (submission.validationStatus !== 'VALIDATED') {
+      if (submissionData.validationStatus !== 'VALIDATED') {
         throw new Error(
           'Credit Request hasn\'t been validated yet.',
         );
       }
-    });
+    }));
   };
 
   useEffect(() => {
