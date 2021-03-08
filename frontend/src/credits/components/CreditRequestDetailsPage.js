@@ -12,8 +12,11 @@ import download from '../../app/utilities/download';
 import CustomPropTypes from '../../app/utilities/props';
 import ModelListTable from './ModelListTable';
 import CreditRequestSummaryTable from './CreditRequestSummaryTable';
-import Comment from '../../app/components/Comment';
 import getFileSize from '../../app/utilities/getFileSize';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { useParams } from 'react-router-dom';
+import parse from 'html-react-parser';
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -23,14 +26,19 @@ const CreditRequestDetailsPage = (props) => {
     uploadDate,
     user,
   } = props;
+  const { id } = useParams();
   const validatedOnly = submission.validationStatus === 'CHECKED';
   const [showModal, setShowModal] = useState(false);
   const [showReverifyModal, setShowReverifyModal] = useState(false);
   const [modalType, setModalType] = useState('');
   const [comment, setComment] = useState('');
 
-  const serviceAddress = submission.organization.organizationAddress.find((address) => address.addressType.addressType === 'Service');
-  const recordsAddress = submission.organization.organizationAddress.find((address) => address.addressType.addressType === 'Records');
+  const serviceAddress = submission.organization.organizationAddress.find(
+    (address) => address.addressType.addressType === 'Service'
+  );
+  const recordsAddress = submission.organization.organizationAddress.find(
+    (address) => address.addressType.addressType === 'Records'
+  );
 
   const downloadErrors = (e) => {
     const element = e.currentTarget;
@@ -46,6 +54,34 @@ const CreditRequestDetailsPage = (props) => {
   };
 
   let modalProps = {};
+  
+  const modules = {
+    toolbar: [
+      ['bold', 'italic'],
+      [{ list: 'bullet' }, { list: 'ordered' }],
+    ],
+  };
+  const formats = ['bold', 'italic', 'list', 'bullet'];
+
+
+  const handleCommentChange = (content) => {
+    setComment(content);
+  };
+
+  const handleAddComment = () => {
+    const submissionContent = {};
+    if (comment.length > 0) {
+      submissionContent.salesSubmissionComment = { comment };
+    }
+    axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), submissionContent)
+    .then(() => {
+      history.push(ROUTES_CREDIT_REQUESTS.EDIT.replace(':id', id));
+      const refreshed = true;
+      if (refreshed) {
+        history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id));
+      }
+    });
+  };
 
   switch (modalType) {
     case 'submit':
@@ -69,7 +105,7 @@ const CreditRequestDetailsPage = (props) => {
     case 'approve':
       modalProps = {
         confirmLabel: 'Recommend Issuance',
-        handleSubmit: () => { handleSubmit('RECOMMEND_APPROVAL', comment); },
+        handleSubmit: () => { handleSubmit('RECOMMEND_APPROVAL'); },
         buttonClass: 'button primary',
         modalText: 'Recommend issuance of credits?',
       };
@@ -77,7 +113,7 @@ const CreditRequestDetailsPage = (props) => {
     case 'return':
       modalProps = {
         confirmLabel: 'Return to Analyst',
-        handleSubmit: () => { handleSubmit('CHECKED', comment); },
+        handleSubmit: () => { handleSubmit('CHECKED'); },
         buttonClass: 'btn-outline-danger',
         modalText: 'Return submission to analyst?',
       };
@@ -105,8 +141,8 @@ const CreditRequestDetailsPage = (props) => {
         <h3 className="d-inline">{modalProps.modalText}
         </h3>
         <div><br />{comment && (
-        <p>Comment: {comment}</p>
-        )}<br />
+          <p>Comment: {parse(comment)}</p>
+          )}<br />
         </div>
       </div>
     </Modal>
@@ -131,9 +167,7 @@ const CreditRequestDetailsPage = (props) => {
       confirmClass={modalProps.buttonClass}
     >
       <div>
-        <h3>
-          ICBC data has been updated since the application was verified.
-        </h3>
+        <h3>ICBC data has been updated since the application was verified.</h3>
         <h3 className="mt-3">
           Would you like to reset the current validated VINs and re-verify with the new data?
         </h3>
@@ -143,11 +177,11 @@ const CreditRequestDetailsPage = (props) => {
 
   const invalidSubmission = submission.content.some((row) => (!row.vehicle || !row.vehicle.id || row.vehicle.modelName === ''));
   const directorAction = user.isGovernment
-  && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
-  && user.hasPermission('SIGN_SALES');
-  const analystAction = user.isGovernment
-  && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0
-  && user.hasPermission('RECOMMEND_SALES');
+    && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
+    && user.hasPermission('SIGN_SALES');
+    const analystAction = user.isGovernment
+    && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0
+    && user.hasPermission('RECOMMEND_SALES');
   return (
     <div id="credit-request-details" className="page">
       {modal}
@@ -157,32 +191,63 @@ const CreditRequestDetailsPage = (props) => {
           <h2>Application for Credits for Consumer Sales</h2>
         </div>
       </div>
-      {analystAction
-      && submission.icbcCurrentTo
-      && (
-      <div className="row my-1">
-        <div className="col-sm-12">
-          ICBC data current to: {moment(submission.icbcCurrentTo).format('MMM D, YYYY')}
-        </div>
-      </div>
-      )}
-      {submission && submission.history.length > 0 && (
-      <div className="row mb-1">
-        <div className="col-sm-12">
-          <div className="m-0">
-            <CreditRequestAlert
-              isGovernment={user.isGovernment}
-              submission={submission}
-              date={moment(submission.updateTimestamp).format('MMM D, YYYY')}
-              icbcDate={submission.icbcCurrentTo ? moment(submission.icbcCurrentTo).format('MMM D, YYYY') : ''}
-              invalidSubmission={invalidSubmission}
-            />
-            {submission.salesSubmissionComment && user.isGovernment && (
-              <Comment commentArray={submission.salesSubmissionComment} />
-            )}
+      {analystAction && submission.icbcCurrentTo && (
+        <div className="row my-1">
+          <div className="col-sm-12">
+            ICBC data current to:{' '}
+            {moment(submission.icbcCurrentTo).format('MMM D, YYYY')}
           </div>
         </div>
-      </div>
+      )}
+      {submission && submission.history.length > 0 && (
+        <div className="row mb-1">
+          <div className="col-sm-12">
+            <div className="m-0">
+              <CreditRequestAlert
+                isGovernment={user.isGovernment}
+                submission={submission}
+                date={moment(submission.updateTimestamp).format('MMM D, YYYY')}
+                icbcDate={submission.icbcCurrentTo ? moment(submission.icbcCurrentTo).format('MMM D, YYYY') : ''}
+                invalidSubmission={invalidSubmission}
+              />
+              {user.isGovernment && ((submission.salesSubmissionComment) || ((analystAction && validatedOnly) || directorAction) || submission.validationStatus==="ISSUED") && (
+                <div className="comment-box mt-2">
+                  {submission.salesSubmissionComment && user.isGovernment && (
+                    <div className="display-comment" role="alert">
+                      <span>
+                        {submission.salesSubmissionComment.map((each) => (
+                          <div key={typeof each.comment === 'string' ? each.id : each.comment.id}>
+                            <b>{'Comments - '}</b>{each.createUser.displayName},{' '}{moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')} : {parse(each.comment)}
+                            <br />
+                          </div>
+                        ))}
+                      </span>
+                    </div>
+                  )}
+                  {((analystAction && validatedOnly) || directorAction) && (
+                      <div className="text-editor mb-2 mt-2">
+                        <label htmlFor="comment">
+                          <b>{analystAction ? 'Add Comment' : 'Add Comment to analyst if returning submission'}</b>
+                        </label>
+                        <ReactQuill
+                          theme="snow"
+                          modules={modules}
+                          formats={formats}
+                          onChange={handleCommentChange}
+                        ></ReactQuill>
+                       <button
+                          className="button mt-2"
+                          onClick={() => {handleAddComment();}}
+                          type="button"
+                        >Add Comment
+                        </button>
+                      </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
 
       {!user.isGovernment && (
@@ -200,52 +265,60 @@ const CreditRequestDetailsPage = (props) => {
               {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
             </div>
 
-            <CreditRequestSummaryTable submission={submission} user={user} validationStatus={submission.validationStatus} />
+            <CreditRequestSummaryTable
+              submission={submission}
+              user={user}
+              validationStatus={submission.validationStatus}
+            />
             {submission.evidence.length > 0 && (
-            <div className="mt-4">
-              <h3 className="mt-3">
-                Sales Evidence
-              </h3>
-              <div id="sales-edit" className="mt-2 col-8 pl-0">
-                <div className="files px-3">
-                  <div className="row pb-1">
-                    <div className="col-9 header"><h4>Filename</h4></div>
-                    <div className="col-3 size header"><h4>Size</h4></div>
-                    <div className="col-1 actions header" />
-                  </div>
-                  {submission.evidence.map((file) => (
-                    <div className="row py-1" key={file.id}>
-                      <div className="col-9 filename pl-1">
-                        <button
-                          className="link"
-                          onClick={() => {
-                            axios.get(file.url, {
-                              responseType: 'blob',
-                              headers: {
-                                Authorization: null,
-                              },
-                            }).then((response) => {
-                              const objectURL = window.URL.createObjectURL(
-                                new Blob([response.data]),
-                              );
-                              const link = document.createElement('a');
-                              link.href = objectURL;
-                              link.setAttribute('download', file.filename);
-                              document.body.appendChild(link);
-                              link.click();
-                            });
-                          }}
-                          type="button"
-                        >
-                          {file.filename}
-                        </button>
+              <div className="mt-4">
+                <h3 className="mt-3">Sales Evidence</h3>
+                <div id="sales-edit" className="mt-2 col-8 pl-0">
+                  <div className="files px-3">
+                    <div className="row pb-1">
+                      <div className="col-9 header">
+                        <h4>Filename</h4>
                       </div>
-                      <div className="col-3 size">{getFileSize(file.size)}</div>
+                      <div className="col-3 size header">
+                        <h4>Size</h4>
+                      </div>
+                      <div className="col-1 actions header" />
                     </div>
-                  ))}
+                    {submission.evidence.map((file) => (
+                      <div className="row py-1" key={file.id}>
+                        <div className="col-9 filename pl-1">
+                          <button
+                            className="link"
+                            onClick={() => {
+                              axios.get(file.url, {
+                                  responseType: 'blob',
+                                  headers: {
+                                    Authorization: null,
+                                  },
+                                }).then((response) => {
+                                  const objectURL = window.URL.createObjectURL(
+                                    new Blob([response.data]),
+                                  );
+                                  const link = document.createElement('a');
+                                  link.href = objectURL;
+                                  link.setAttribute('download', file.filename);
+                                  document.body.appendChild(link);
+                                  link.click();
+                                });
+                            }}
+                            type="button"
+                          >
+                            {file.filename}
+                          </button>
+                        </div>
+                        <div className="col-3 size">
+                          {getFileSize(file.size)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
             )}
           </div>
         </div>
@@ -260,18 +333,10 @@ const CreditRequestDetailsPage = (props) => {
           />
         </div>
       </div>
-      {user.isGovernment
-      && ((analystAction && validatedOnly) || directorAction)
-      && (
-        <div className="comment-area">
-          <label htmlFor="comment">{analystAction ? 'Comment' : 'Comment to analyst if returning submission'}</label>
-          <textarea name="comment" rows="4" onChange={(event) => { setComment(event.target.value); }} />
-        </div>
-      )}
 
       <div className="row">
         <div className="col-sm-12">
-          <div className="action-bar mt-0">
+          <div className="action-bar mt-1">
             <span className="left-content">
               <Button
                 buttonType="back"
@@ -279,11 +344,17 @@ const CreditRequestDetailsPage = (props) => {
                 locationState={locationState}
               />
               {submission.validationStatus === 'DRAFT'
-              && typeof user.hasPermission === 'function'
-              && user.hasPermission('EDIT_SALES')
-              && (
-                <Button buttonType="delete" action={() => { setModalType('delete'); setShowModal(true); }} />
-              )}
+                && typeof user.hasPermission === 'function'
+                && user.hasPermission('EDIT_SALES')
+                && (
+                  <Button
+                    buttonType="delete"
+                    action={() => {
+                      setModalType('delete');
+                      setShowModal(true);
+                    }}
+                  />
+                )}
               {directorAction && (
                 <button
                   className="button text-danger"
@@ -316,17 +387,17 @@ const CreditRequestDetailsPage = (props) => {
                     {validatedOnly ? 'Re-verify with ICBC Data' : 'Verify with ICBC Data'}
                   </button>
                   {validatedOnly && (
-                  <button
-                    className={validatedOnly ? 'button primary' : 'button'}
-                    key="recommend-approval"
-                    onClick={() => {
-                      setModalType('approve');
-                      setShowModal(true);
-                    }}
-                    type="button"
-                  >
-                    Recommend Issuance
-                  </button>
+                    <button
+                      className={validatedOnly ? 'button primary' : 'button'}
+                      key="recommend-approval"
+                      onClick={() => {
+                        setModalType('approve');
+                        setShowModal(true);
+                      }}
+                      type="button"
+                    >
+                      Recommend Issuance
+                    </button>
                   )}
                 </>
               )}
@@ -356,32 +427,32 @@ const CreditRequestDetailsPage = (props) => {
                     />
                   )}
                   {submission.validationStatus === 'DRAFT'
-                  && typeof user.hasPermission === 'function'
-                  && user.hasPermission('EDIT_SALES')
-                  && (
-                    <button
-                      className="button"
-                      key="edit"
-                      onClick={() => {
-                        const url = ROUTES_CREDIT_REQUESTS.EDIT.replace(/:id/g, submission.id);
-                        history.push(url);
-                      }}
-                      type="button"
-                    >
-                      <FontAwesomeIcon icon="upload" /> Re-upload files
-                    </button>
-                  )}
+                    && typeof user.hasPermission === 'function'
+                    && user.hasPermission('EDIT_SALES')
+                    && (
+                      <button
+                        className="button"
+                        key="edit"
+                        onClick={() => {
+                          const url = ROUTES_CREDIT_REQUESTS.EDIT.replace(/:id/g, submission.id);
+                          history.push(url);
+                        }}
+                        type="button"
+                      >
+                        <FontAwesomeIcon icon="upload" /> Re-upload files
+                      </button>
+                    )}
                   {submission.validationStatus === 'DRAFT'
                   && typeof user.hasPermission === 'function'
                   && user.hasPermission('SUBMIT_SALES')
                   && (
-                    <Button
-                      buttonType="submit"
-                      action={() => { setModalType('submit'); setShowModal(true); }}
-                      disabled={invalidSubmission}
-                      key="submit"
-                    />
-                  )}
+                      <Button
+                        buttonType="submit"
+                        action={() => { setModalType('submit'); setShowModal(true); }}
+                        disabled={invalidSubmission}
+                        key="submit"
+                      />
+                    )}
                 </>
               )}
             </span>
@@ -399,7 +470,10 @@ CreditRequestDetailsPage.defaultProps = {
 
 CreditRequestDetailsPage.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
-  locationState: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.shape()), PropTypes.shape()]),
+  locationState: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.shape()),
+    PropTypes.shape(),
+  ]),
   submission: PropTypes.shape().isRequired,
   uploadDate: PropTypes.string.isRequired,
   user: CustomPropTypes.user.isRequired,
