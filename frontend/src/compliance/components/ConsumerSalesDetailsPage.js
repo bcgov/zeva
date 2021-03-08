@@ -204,7 +204,7 @@ const ConsumerSalesDetailsPage = (props) => {
               <div className="total-ldv-sales text-blue mt-2">
                 Pending Sales are VIN applied for in credit applications
                 awaiting government review. Sales Issued are those VIN already
-                verified by government as being eligible to earn credits
+                verified by government as being eligible to earn credits.
               </div>
             </div>
           </div>
