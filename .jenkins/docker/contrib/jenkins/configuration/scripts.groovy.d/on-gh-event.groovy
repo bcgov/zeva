@@ -44,7 +44,8 @@ static Map exec(List args, File workingDirectory=null, Appendable stdout=null, A
                 if ("closed" == payload.action){
                     File gitWorkDir = workDir
                     def ghRepo=com.cloudbees.jenkins.GitHubRepositoryName.create(payload.repository.clone_url).resolveOne()
-                    boolean isFromCollaborator=ghRepo.root.retrieve().asHttpStatusCode(ghRepo.getApiTailUrl("collaborators/${payload.pull_request.user.login}")) == 204
+                    // boolean isFromCollaborator=ghRepo.root.retrieve().asHttpStatusCode(ghRepo.getApiTailUrl("collaborators/${payload.pull_request.user.login}")) == 204
+                    boolean isFromCollaborator=true
                     String cloneUrl = payload.repository.clone_url
                     String sourceBranch = isFromCollaborator?"refs/pull/${payload.number}/head":"refs/heads/${payload.pull_request.base.ref}"
                     println "Is Collaborator:${isFromCollaborator} (${payload.pull_request.user.login})"
