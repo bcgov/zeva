@@ -338,6 +338,28 @@
 }
 
 #sales-details {
+  .ql-container {
+    height: auto !important;
+  }
+
+  .ql-editor {
+    min-height: 100px !important;
+    max-height: 300px;
+    overflow: hidden;
+    overflow-y: scroll;
+    overflow-x: scroll;
+  }
+  .comment-box {
+    border: 1px solid $border-grey;
+    padding: 1.2rem;  
+  }
+
+  .display-comment {
+    padding: 25px;
+    border-left: 10px solid #38598a;
+    background-color: #f2f2f2;
+  }
+
   .ReactTable {
     .rt-thead {
       background-color: $white;
