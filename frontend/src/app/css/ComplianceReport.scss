@@ -32,6 +32,11 @@
     border: 1px solid $border-grey;
     height: 94%;
   }
+  .textbox-first,
+  .textbox-second,
+  .textbox-third{
+    width: 30%;
+  }
   .ldv-sales,
   .previous-ldv-sales {
     background-color: $default-background-grey;

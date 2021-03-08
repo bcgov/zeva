@@ -123,36 +123,42 @@ const ConsumerSalesDetailsPage = (props) => {
                 <div className="col-6">
                   <div className="previous-ldv-sales mt-2 p-3">
                     <form onSubmit={(event) => handleSave(event)}>
-                      <label className="text-blue mr-4 font-weight-bold">
-                        2019 Model Year LDV Sales\Leases
-                      </label>
-                      <input
-                        className="textbox-first"
-                        type="number"
-                        onChange={handleInputChange}
-                        id="first"
-                        min="0"
-                      ></input>
-                      <label className="text-blue mr-4 font-weight-bold">
-                        2018 Model Year LDV Sales\Leases
-                      </label>
-                      <input
-                        className="textbox-second"
-                        type="number"
-                        onChange={handleInputChange}
-                        id="second"
-                        min="0"
-                      ></input>
-                      <label className="text-blue mr-4 font-weight-bold">
-                        2017 Model Year LDV Sales\Leases
-                      </label>
-                      <input
-                        className="textbox-third"
-                        type="number"
-                        onChange={handleInputChange}
-                        id="third"
-                        min="0"
-                      ></input>
+                      <div className="row ml-1 mb-2">
+                        <label className="text-blue mr-4 font-weight-bold">
+                          2019 Model Year LDV Sales\Leases
+                        </label>
+                        <input
+                          className="textbox-first"
+                          type="number"
+                          onChange={handleInputChange}
+                          id="first"
+                          min="0"
+                        ></input>
+                      </div>
+                      <div className="row ml-1 mb-2">
+                        <label className="text-blue mr-4 font-weight-bold">
+                          2018 Model Year LDV Sales\Leases
+                        </label>
+                        <input
+                          className="textbox-second"
+                          type="number"
+                          onChange={handleInputChange}
+                          id="second"
+                          min="0"
+                        ></input>
+                      </div>
+                      <div className="row ml-1 mb-2">
+                        <label className="text-blue mr-4 font-weight-bold">
+                          2017 Model Year LDV Sales\Leases
+                        </label>
+                        <input
+                          className="textbox-third"
+                          type="number"
+                          onChange={handleInputChange}
+                          id="third"
+                          min="0"
+                        ></input>
+                      </div>
                     </form>
                   </div>
                 </div>
@@ -198,7 +204,7 @@ const ConsumerSalesDetailsPage = (props) => {
               <div className="total-ldv-sales text-blue mt-2">
                 Pending Sales are VIN applied for in credit applications
                 awaiting government review. Sales Issued are those VIN already
-                verified by government as being eligible to earn credits
+                verified by government as being eligible to earn credits.
               </div>
             </div>
           </div>
