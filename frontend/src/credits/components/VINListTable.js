@@ -25,6 +25,7 @@ const VINListTable = (props) => {
     setFiltered,
     setLoading,
     setReactTable,
+    submission,
   } = props;
 
   const getErrorCodes = (item, fields = false) => {
@@ -150,6 +151,7 @@ const VINListTable = (props) => {
               invalidatedList.findIndex((item) => Number(item) === Number(row.id)) < 0
             }
             onChange={(event) => { handleCheckboxClick(event); }}
+            disabled={submission.validationStatus === 'VALIDATED'}
             type="checkbox"
             value={row.id}
           />
@@ -166,6 +168,10 @@ const VINListTable = (props) => {
       accessor: (row) => {
         if (!row.reason && modified.findIndex((id) => id === row.id) < 0) {
           return false;
+        }
+
+        if (row.reason && submission.validationStatus === 'VALIDATED') {
+          return <div className="text-left">{row.reason}</div>;
         }
 
         return (
@@ -273,11 +279,15 @@ const VINListTable = (props) => {
 VINListTable.defaultProps = {
   filtered: undefined,
   setFiltered: undefined,
+  modified: [],
+  reasons: [],
+  handleCheckboxClick: undefined,
+  handleChangeReason: undefined,
 };
 
 VINListTable.propTypes = {
-  handleCheckboxClick: PropTypes.func.isRequired,
-  handleChangeReason: PropTypes.func.isRequired,
+  handleCheckboxClick: PropTypes.func,
+  handleChangeReason: PropTypes.func,
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   invalidatedList: PropTypes.arrayOf(PropTypes.oneOfType([
     PropTypes.number,
@@ -288,15 +298,14 @@ VINListTable.propTypes = {
   modified: PropTypes.arrayOf(PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string,
-  ])).isRequired,
+  ])),
   pages: PropTypes.number.isRequired,
-  reasons: PropTypes.arrayOf(PropTypes.oneOfType([
-    PropTypes.string,
-  ])).isRequired,
+  reasons: PropTypes.arrayOf(PropTypes.string),
   refreshContent: PropTypes.func.isRequired,
   setFiltered: PropTypes.func,
   setLoading: PropTypes.func.isRequired,
   setReactTable: PropTypes.func.isRequired,
+  submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 

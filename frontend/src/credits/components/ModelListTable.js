@@ -15,7 +15,7 @@ const ModelListTable = (props) => {
   const { submission, user } = props;
 
   const columns = [{
-    Header: <AnalystRecommendationHeader />,
+    Header: <AnalystRecommendationHeader id={submission.id} />,
     headerClassName: 'header-group text-left analyst-recommendation',
     columns: getAnalystRecommendationColumns(props),
   }, {
@@ -201,6 +201,7 @@ ModelListTable.propTypes = {
     content: PropTypes.arrayOf(PropTypes.shape()),
     eligible: PropTypes.arrayOf(PropTypes.shape()),
     evidence: PropTypes.arrayOf(PropTypes.shape()),
+    id: PropTypes.number,
     organization: PropTypes.shape(),
     validationStatus: PropTypes.string,
   }).isRequired,
