@@ -29,7 +29,7 @@ module.exports = (settings)=>{
       'VERSION': phases[phase].tag,
       'SLAVE_NAME': 'slave',
       'SLAVE_LABELS': 'build deploy test ui-test',
-      'SLAVE_EXECUTORS': '5',
+      'SLAVE_EXECUTORS': '8',
       'CPU_REQUEST': '500m',
       'CPU_LIMIT': '2',
       'MEMORY_REQUEST': '2Gi',
