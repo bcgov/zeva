@@ -1,6 +1,9 @@
 import axios from 'axios';
 import React, { useState } from 'react';
+import ReactQuill from 'react-quill';
 import PropTypes from 'prop-types';
+import moment from 'moment-timezone';
+import parse from 'html-react-parser';
 
 import Button from '../../app/components/Button';
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
@@ -10,10 +13,12 @@ import VINListTable from './VINListTable';
 const CreditRequestVINListPage = (props) => {
   const {
     content,
+    handleAddComment,
+    handleCommentChange,
+    invalidatedList,
     setContent,
     submission,
     user,
-    invalidatedList,
   } = props;
 
   const [filtered, setFiltered] = useState([]);
@@ -97,6 +102,16 @@ const CreditRequestVINListPage = (props) => {
     </div>
   );
 
+  const analystAction = user.isGovernment
+    && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0
+    && user.hasPermission('RECOMMEND_SALES');
+
+  const validatedOnly = submission.validationStatus === 'CHECKED';
+
+  const directorAction = user.isGovernment
+    && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
+    && user.hasPermission('SIGN_SALES');
+
   return (
     <div id="sales-details" className="page">
       <div className="row">
@@ -144,15 +159,60 @@ const CreditRequestVINListPage = (props) => {
             items={content}
             loading={loading}
             pages={pages}
+            readOnly
             refreshContent={refreshContent}
             setContent={setContent}
             setFiltered={setFiltered}
             setLoading={setLoading}
             setPages={setPages}
             setReactTable={setReactTable}
-            submission={submission}
             user={user}
           />
+        </div>
+      </div>
+
+      <div className="row">
+        <div className="col-sm-12">
+          {user.isGovernment && ((submission.salesSubmissionComment) || ((analystAction && validatedOnly) || directorAction) || submission.validationStatus === 'ISSUED') && (
+            <div className="comment-box mt-2">
+              {submission.salesSubmissionComment && user.isGovernment && (
+                <div className="display-comment" role="alert">
+                  <span>
+                    {submission.salesSubmissionComment.map((each) => (
+                      <div key={typeof each.comment === 'string' ? each.id : each.comment.id}>
+                        <b>{'Comments - '}</b>{each.createUser.displayName},{' '}{moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')} : {parse(each.comment)}
+                        <br />
+                      </div>
+                    ))}
+                  </span>
+                </div>
+              )}
+              {((analystAction && validatedOnly) || directorAction) && (
+              <div className="text-editor mb-2 mt-2">
+                <label htmlFor="comment">
+                  <b>{analystAction ? 'Add Comment' : 'Add Comment to analyst if returning submission'}</b>
+                </label>
+                <ReactQuill
+                  theme="snow"
+                  modules={{
+                    toolbar: [
+                      ['bold', 'italic'],
+                      [{ list: 'bullet' }, { list: 'ordered' }],
+                    ],
+                  }}
+                  formats={['bold', 'italic', 'list', 'bullet']}
+                  onChange={handleCommentChange}
+                />
+                <button
+                  className="button mt-2"
+                  onClick={() => { handleAddComment(); }}
+                  type="button"
+                >Add Comment
+                </button>
+              </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -169,6 +229,8 @@ CreditRequestVINListPage.defaultProps = {};
 
 CreditRequestVINListPage.propTypes = {
   content: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  handleAddComment: PropTypes.func.isRequired,
+  handleCommentChange: PropTypes.func.isRequired,
   invalidatedList: PropTypes.arrayOf(PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string,

@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
 
+import history from '../app/History';
 import Loading from '../app/components/Loading';
 import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
 import CustomPropTypes from '../app/utilities/props';
@@ -18,6 +19,7 @@ const CreditRequestValidatedDetailsContainer = (props) => {
   const { location, match, user } = props;
   const { id } = match.params;
 
+  const [comment, setComment] = useState('');
   const [content, setContent] = useState([]);
   const [submission, setSubmission] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,6 +46,25 @@ const CreditRequestValidatedDetailsContainer = (props) => {
     }));
   };
 
+  const handleCommentChange = (text) => {
+    setComment(text);
+  };
+
+  const handleAddComment = () => {
+    const submissionContent = {};
+    if (comment.length > 0) {
+      submissionContent.salesSubmissionComment = { comment };
+    }
+    axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), submissionContent).then(() => {
+      history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id));
+      const refreshed = true;
+
+      if (refreshed) {
+        history.push(ROUTES_CREDIT_REQUESTS.VALIDATED_DETAILS.replace(':id', id));
+      }
+    });
+  };
+
   useEffect(() => {
     refreshDetails();
   }, [id]);
@@ -55,6 +76,8 @@ const CreditRequestValidatedDetailsContainer = (props) => {
   return (
     <CreditRequestValidatedDetailsPage
       content={content}
+      handleAddComment={handleAddComment}
+      handleCommentChange={handleCommentChange}
       invalidatedList={invalidatedList}
       routeParams={match.params}
       setContent={setContent}

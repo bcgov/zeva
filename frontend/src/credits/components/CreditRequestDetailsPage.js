@@ -1,4 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useParams } from 'react-router-dom';
+import parse from 'html-react-parser';
+import ReactQuill from 'react-quill';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
@@ -13,10 +16,7 @@ import CustomPropTypes from '../../app/utilities/props';
 import ModelListTable from './ModelListTable';
 import CreditRequestSummaryTable from './CreditRequestSummaryTable';
 import getFileSize from '../../app/utilities/getFileSize';
-import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { useParams } from 'react-router-dom';
-import parse from 'html-react-parser';
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -34,10 +34,10 @@ const CreditRequestDetailsPage = (props) => {
   const [comment, setComment] = useState('');
 
   const serviceAddress = submission.organization.organizationAddress.find(
-    (address) => address.addressType.addressType === 'Service'
+    (address) => address.addressType.addressType === 'Service',
   );
   const recordsAddress = submission.organization.organizationAddress.find(
-    (address) => address.addressType.addressType === 'Records'
+    (address) => address.addressType.addressType === 'Records',
   );
 
   const downloadErrors = (e) => {
@@ -54,7 +54,7 @@ const CreditRequestDetailsPage = (props) => {
   };
 
   let modalProps = {};
-  
+
   const modules = {
     toolbar: [
       ['bold', 'italic'],
@@ -62,7 +62,6 @@ const CreditRequestDetailsPage = (props) => {
     ],
   };
   const formats = ['bold', 'italic', 'list', 'bullet'];
-
 
   const handleCommentChange = (content) => {
     setComment(content);
@@ -73,8 +72,7 @@ const CreditRequestDetailsPage = (props) => {
     if (comment.length > 0) {
       submissionContent.salesSubmissionComment = { comment };
     }
-    axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), submissionContent)
-    .then(() => {
+    axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), submissionContent).then(() => {
       history.push(ROUTES_CREDIT_REQUESTS.EDIT.replace(':id', id));
       const refreshed = true;
       if (refreshed) {
@@ -142,7 +140,7 @@ const CreditRequestDetailsPage = (props) => {
         </h3>
         <div><br />{comment && (
           <p>Comment: {parse(comment)}</p>
-          )}<br />
+        )}<br />
         </div>
       </div>
     </Modal>
@@ -179,7 +177,7 @@ const CreditRequestDetailsPage = (props) => {
   const directorAction = user.isGovernment
     && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
     && user.hasPermission('SIGN_SALES');
-    const analystAction = user.isGovernment
+  const analystAction = user.isGovernment
     && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0
     && user.hasPermission('RECOMMEND_SALES');
   return (
@@ -210,7 +208,7 @@ const CreditRequestDetailsPage = (props) => {
                 icbcDate={submission.icbcCurrentTo ? moment(submission.icbcCurrentTo).format('MMM D, YYYY') : ''}
                 invalidSubmission={invalidSubmission}
               />
-              {user.isGovernment && ((submission.salesSubmissionComment) || ((analystAction && validatedOnly) || directorAction) || submission.validationStatus==="ISSUED") && (
+              {user.isGovernment && ((submission.salesSubmissionComment) || ((analystAction && validatedOnly) || directorAction) || submission.validationStatus === 'ISSUED') && (
                 <div className="comment-box mt-2">
                   {submission.salesSubmissionComment && user.isGovernment && (
                     <div className="display-comment" role="alert">
@@ -225,23 +223,23 @@ const CreditRequestDetailsPage = (props) => {
                     </div>
                   )}
                   {((analystAction && validatedOnly) || directorAction) && (
-                      <div className="text-editor mb-2 mt-2">
-                        <label htmlFor="comment">
-                          <b>{analystAction ? 'Add Comment' : 'Add Comment to analyst if returning submission'}</b>
-                        </label>
-                        <ReactQuill
-                          theme="snow"
-                          modules={modules}
-                          formats={formats}
-                          onChange={handleCommentChange}
-                        ></ReactQuill>
-                       <button
-                          className="button mt-2"
-                          onClick={() => {handleAddComment();}}
-                          type="button"
-                        >Add Comment
-                        </button>
-                      </div>
+                  <div className="text-editor mb-2 mt-2">
+                    <label htmlFor="comment">
+                      <b>{analystAction ? 'Add Comment' : 'Add Comment to analyst if returning submission'}</b>
+                    </label>
+                    <ReactQuill
+                      theme="snow"
+                      modules={modules}
+                      formats={formats}
+                      onChange={handleCommentChange}
+                    />
+                    <button
+                      className="button mt-2"
+                      onClick={() => { handleAddComment(); }}
+                      type="button"
+                    >Add Comment
+                    </button>
+                  </div>
                   )}
                 </div>
               )}
@@ -291,20 +289,20 @@ const CreditRequestDetailsPage = (props) => {
                             className="link"
                             onClick={() => {
                               axios.get(file.url, {
-                                  responseType: 'blob',
-                                  headers: {
-                                    Authorization: null,
-                                  },
-                                }).then((response) => {
-                                  const objectURL = window.URL.createObjectURL(
-                                    new Blob([response.data]),
-                                  );
-                                  const link = document.createElement('a');
-                                  link.href = objectURL;
-                                  link.setAttribute('download', file.filename);
-                                  document.body.appendChild(link);
-                                  link.click();
-                                });
+                                responseType: 'blob',
+                                headers: {
+                                  Authorization: null,
+                                },
+                              }).then((response) => {
+                                const objectURL = window.URL.createObjectURL(
+                                  new Blob([response.data]),
+                                );
+                                const link = document.createElement('a');
+                                link.href = objectURL;
+                                link.setAttribute('download', file.filename);
+                                document.body.appendChild(link);
+                                link.click();
+                              });
                             }}
                             type="button"
                           >
@@ -446,13 +444,13 @@ const CreditRequestDetailsPage = (props) => {
                   && typeof user.hasPermission === 'function'
                   && user.hasPermission('SUBMIT_SALES')
                   && (
-                      <Button
-                        buttonType="submit"
-                        action={() => { setModalType('submit'); setShowModal(true); }}
-                        disabled={invalidSubmission}
-                        key="submit"
-                      />
-                    )}
+                    <Button
+                      buttonType="submit"
+                      action={() => { setModalType('submit'); setShowModal(true); }}
+                      disabled={invalidSubmission}
+                      key="submit"
+                    />
+                  )}
                 </>
               )}
             </span>
@@ -465,7 +463,6 @@ const CreditRequestDetailsPage = (props) => {
 
 CreditRequestDetailsPage.defaultProps = {
   locationState: undefined,
-  files: [],
 };
 
 CreditRequestDetailsPage.propTypes = {

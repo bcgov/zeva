@@ -20,12 +20,12 @@ const VINListTable = (props) => {
     loading,
     modified,
     pages,
+    readOnly,
     reasons,
     refreshContent,
     setFiltered,
     setLoading,
     setReactTable,
-    submission,
   } = props;
 
   const getErrorCodes = (item, fields = false) => {
@@ -151,7 +151,7 @@ const VINListTable = (props) => {
               invalidatedList.findIndex((item) => Number(item) === Number(row.id)) < 0
             }
             onChange={(event) => { handleCheckboxClick(event); }}
-            disabled={submission.validationStatus === 'VALIDATED'}
+            disabled={readOnly}
             type="checkbox"
             value={row.id}
           />
@@ -170,7 +170,7 @@ const VINListTable = (props) => {
           return false;
         }
 
-        if (row.reason && submission.validationStatus === 'VALIDATED') {
+        if (row.reason && readOnly) {
           return <div className="text-left">{row.reason}</div>;
         }
 
@@ -280,6 +280,7 @@ VINListTable.defaultProps = {
   filtered: undefined,
   setFiltered: undefined,
   modified: [],
+  readOnly: false,
   reasons: [],
   handleCheckboxClick: undefined,
   handleChangeReason: undefined,
@@ -300,12 +301,12 @@ VINListTable.propTypes = {
     PropTypes.string,
   ])),
   pages: PropTypes.number.isRequired,
+  readOnly: PropTypes.bool,
   reasons: PropTypes.arrayOf(PropTypes.string),
   refreshContent: PropTypes.func.isRequired,
   setFiltered: PropTypes.func,
   setLoading: PropTypes.func.isRequired,
   setReactTable: PropTypes.func.isRequired,
-  submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 
