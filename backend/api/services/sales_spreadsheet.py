@@ -459,6 +459,10 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
 
         error = ''
 
+        if 'ROW_NOT_SELECTED' in content.warnings and content.reason:
+            error += content.reason
+            error += '; '
+
         if 'DUPLICATE_VIN' in content.warnings:
             error += 'Duplicate VIN; '
 
