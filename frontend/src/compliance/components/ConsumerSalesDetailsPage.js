@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../../app/utilities/props';
 import Loading from '../../app/components/Loading';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import Button from '../../app/components/Button';
 import { now } from 'moment';
+import history from '../../app/History';
+import ComplianceReportSignOff from './ComplianceReportSignOff';
 import ConsumerSalesLDVModalTable from '../components/ConsumerSalesLDVModelTable';
 
 const ConsumerSalesDetailsPage = (props) => {
@@ -15,8 +17,14 @@ const ConsumerSalesDetailsPage = (props) => {
     handleChange,
     vehicles,
     confirmed,
-    previousSales,
+    assertions,
+    checkboxes,
+    readOnly,
+    disabledCheckboxes,
     error,
+    handleCheckboxClick,
+    handleInputChange,
+    avgSales,
   } = props;
 
   const details = {
@@ -35,6 +43,24 @@ const ConsumerSalesDetailsPage = (props) => {
 
   if (loading) {
     return <Loading />;
+  }
+
+  const vehicleSupplierClass = (avg) => {
+    let supplierClass = "";
+    let text = "";
+    if (avg < 1000) {
+      supplierClass = "Small Volume Supplier";
+      text = "(under 1,000 total LDV sales)";
+    }
+    else if (avg < 5000) {
+      supplierClass = "Medium Volume Supplier";
+      text = "(under 5,000 total LDV sales)";
+    }
+    else if (avg > 5000) {
+      supplierClass = "Large Volume Supplier";
+      text = "(over 5,000 total LDV sales)";
+    }
+    return [supplierClass, text];
   }
 
   return (
@@ -72,41 +98,113 @@ const ConsumerSalesDetailsPage = (props) => {
                   </label>
                   <input
                     className="textbox-sales"
-                    type="text"
+                    type="number"
                     onChange={handleChange}
+                    readOnly={readOnly}
+                    min="0"
                   ></input>
-                  {error && <span className="text-danger ml-2">2020 Model Year LDV Sales\Leases can't be blank</span>}
+                  {error && (
+                    <small className="text-danger ml-2">
+                      2020 Model Year LDV Sales\Leases can't be blank
+                    </small>
+                  )}
                 </form>
               </div>
             </div>
             <div className="confirm-previous-sales mt-2">
               <div className="text-blue">
-                Confirm the previous 3 model year light duty vehicle sales and
+                Enter the previous 3 model year light duty vehicle sales and
                 lease total (ICE & ZEV) in British Columbia for{' '}
-                {details.organization.name}.
+                {details.organization.name}. If this is your first year
+                supplying light duty vehicles in B.C. you can enter 0 in the
+                input fields.
               </div>
-              <div className="previous-ldv-sales mt-2 p-3">
-                {previousSales.map((yearSale) => (
-                  <div className="model-year-ldv" key={yearSale.id}>
-                    <label className="text-blue mr-4 font-weight-bold">
-                      {yearSale.modelYear} Model Year LDV Sales\Leases:
-                    </label>
-                    <label className="sales-numbers">{yearSale.ldvSales}</label>
+              <div className="row">
+                <div className="col-6">
+                  <div className="previous-ldv-sales mt-2 p-3">
+                    <form onSubmit={(event) => handleSave(event)}>
+                      <div className="row ml-1 mb-2">
+                        <label className="text-blue mr-4 font-weight-bold">
+                          2019 Model Year LDV Sales\Leases
+                        </label>
+                        <input
+                          className="textbox-first"
+                          type="number"
+                          onChange={handleInputChange}
+                          id="first"
+                          min="0"
+                        ></input>
+                      </div>
+                      <div className="row ml-1 mb-2">
+                        <label className="text-blue mr-4 font-weight-bold">
+                          2018 Model Year LDV Sales\Leases
+                        </label>
+                        <input
+                          className="textbox-second"
+                          type="number"
+                          onChange={handleInputChange}
+                          id="second"
+                          min="0"
+                        ></input>
+                      </div>
+                      <div className="row ml-1 mb-2">
+                        <label className="text-blue mr-4 font-weight-bold">
+                          2017 Model Year LDV Sales\Leases
+                        </label>
+                        <input
+                          className="textbox-third"
+                          type="number"
+                          onChange={handleInputChange}
+                          id="third"
+                          min="0"
+                        ></input>
+                      </div>
+                    </form>
                   </div>
-                ))}
+                </div>
+                <div className="offset-1 col-5">
+                  <div className="previous-ldv-avg p-3 mt-2">
+                    <div className="mt-1 row">
+                      <h4 className="col-5 ml-2">3 Year Average LDV Sales:</h4>
+                      <div className="col-5">
+                        <span>{avgSales}</span>
+                      </div>
+                    </div>
+                    <div className="mt-1 row">
+                      <h4 className="col-5 ml-2">Vehicle Supplier Class: </h4>
+                      <div className="col-5">
+                        <span> {vehicleSupplierClass(avgSales)[0]} </span>
+                        <span> {vehicleSupplierClass(avgSales)[1]} </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="ldv-zev-models mt-2">
-                <label className="text-blue mr-4 font-weight-bold">
-                  Consumer Sales of Zero-Emission Vehicles
-                </label>
-                <div className="sales-table mt-2">
-                  <ConsumerSalesLDVModalTable vehicles={vehicles} />
-                </div>
-                <div className="total-ldv-sales text-blue mt-2">
-                  Pending Sales are VIN applied for in credit applications
-                  awaiting government review. Sales Issued are those VIN already
-                  verified by government as being eligible to earn credits
-                </div>
+            </div>
+            <div className="ldv-zev-models mt-2">
+              <label className="text-blue mr-4 font-weight-bold">
+                Consumer Sales of Zero-Emission Vehicles
+              </label>
+              <div className="text-blue mt-2">
+                If you have outstanding 2020 consumer sales to submit you can{' '}
+                <label
+                  className="text-primary"
+                  onClick={() => {
+                    history.push('/credit-requests/new');
+                  }}
+                >
+                  {' '}
+                  <u>enter an application for credits for consumer sales</u>
+                </label>{' '}
+                as part of this model year report.
+              </div>
+              <div className="sales-table mt-2">
+                <ConsumerSalesLDVModalTable vehicles={vehicles} />
+              </div>
+              <div className="total-ldv-sales text-blue mt-2">
+                Pending Sales are VIN applied for in credit applications
+                awaiting government review. Sales Issued are those VIN already
+                verified by government as being eligible to earn credits.
               </div>
             </div>
           </div>
@@ -114,19 +212,14 @@ const ConsumerSalesDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12 my-3">
-          <div className="px-3">
-            <input id="confirm-sales" name="confirm" type="checkbox" />{' '}
-            <label htmlFor="confirm">
-              I confirm the consumer sales figures are correct.
-            </label>
-          </div>
-          <div className="px-3">
-            <input id="confirm-model-info" name="confirm" type="checkbox" />{' '}
-            <label htmlFor="confirm">
-              I confirm the model year, type and range of each ZEV model sold or
-              leased are correct.
-            </label>
-          </div>
+          <ComplianceReportSignOff
+            assertions={assertions}
+            checkboxes={checkboxes}
+            handleCheckboxClick={handleCheckboxClick}
+            disabledCheckboxes={disabledCheckboxes}
+            user={user}
+            readOnly={readOnly}
+          />
         </div>
       </div>
 
@@ -153,6 +246,9 @@ const ConsumerSalesDetailsPage = (props) => {
     </div>
   );
 };
+ConsumerSalesDetailsPage.defaultProps = {
+  avgSales: 0,
+};
 ConsumerSalesDetailsPage.propTypes = {
   user: CustomPropTypes.user.isRequired,
   loading: PropTypes.bool.isRequired,
@@ -160,7 +256,15 @@ ConsumerSalesDetailsPage.propTypes = {
   handleChange: PropTypes.func.isRequired,
   vehicles: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   confirmed: PropTypes.bool.isRequired,
-  previousSales: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  error: PropTypes.bool.isRequired
+  error: PropTypes.bool.isRequired,
+  assertions: PropTypes.arrayOf(PropTypes.shape()),
+  checkboxes: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+  ),
+  handleCheckboxClick: PropTypes.func.isRequired,
+  disabledCheckboxes: PropTypes.string.isRequired,
+  readOnly: PropTypes.bool.isRequired,
+  handleInputChange: PropTypes.func.isRequired,
+  avgSales: PropTypes.number.isRequired,
 };
 export default ConsumerSalesDetailsPage;

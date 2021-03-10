@@ -20,9 +20,9 @@ const FileDropArea = (props) => {
   } = props;
   const removeFile = (removedFile) => {
     const found = files.findIndex((file) => (file === removedFile));
-    const newList = files.splice(found, 1);
+    files.splice(found, 1);
     setErrorMessage('');
-    setUploadFiles([...newList]);
+    setUploadFiles([...files]);
     if (type === 'pdf') {
       const uploadedIds = submission.evidence.map((each) => each.id);
       if (uploadedIds.includes(removedFile.id)) {
@@ -43,29 +43,27 @@ const FileDropArea = (props) => {
           <div className="panel panel-default">
             <div className="content p-3">
               {type === 'excel'
-              && <FileDrop setErrorMessage={setErrorMessage} setFiles={setUploadFiles} maxFiles={1} />}
-              {type === 'pdf'
-          && (
-          <>
-            <FileDropEvidence
-              getExistingFilesCount={() => (submission && submission.evidence ? (submission.evidence.length - evidenceDeleteList.length) : 0)}
-              setErrorMessage={setErrorMessage}
-              files={files}
-              setFiles={setUploadFiles}
-              maxFiles={5}
-              allowedFileTypes="image/png, image/gif, image/jpg,image/jpeg, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            />
-            <div className="form-group mt-4 row">
-              <div className="col-12 text-blue">
-                <div>
-                  <strong>Limit of 5 files</strong>
+                && <FileDrop setErrorMessage={setErrorMessage} setFiles={setUploadFiles} maxFiles={1} />}
+              {type === 'pdf' && (
+              <>
+                <FileDropEvidence
+                  getExistingFilesCount={() => (submission && submission.evidence ? (submission.evidence.length - evidenceDeleteList.length) : 0)}
+                  setErrorMessage={setErrorMessage}
+                  files={files}
+                  setFiles={setUploadFiles}
+                  maxFiles={5}
+                  allowedFileTypes="image/png, image/gif, image/jpg,image/jpeg, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                />
+                <div className="form-group mt-4 row">
+                  <div className="col-12 text-blue">
+                    <div>
+                      <strong>Limit of 5 files</strong>
+                    </div>
+                    <strong>Files</strong> (doc, docx, pdf, jpg, png, gif)
+                  </div>
                 </div>
-                <strong>Files</strong> (doc, docx, pdf, jpg, png, gif)
-              </div>
-            </div>
-          </>
-          )}
-
+              </>
+              )}
             </div>
             {(files.length > 0
             || (type === 'excel' && submission && submission.filename)
@@ -84,7 +82,7 @@ const FileDropArea = (props) => {
               {type === 'pdf' && submission && submission.evidence && submission.evidence
                 .filter((submissionFile) => !evidenceDeleteList.includes(submissionFile.id))
                 .map((submissionFile) => (
-                  <div className="row py-1" key={`submission-${submissionFile.id}`}>
+                  <div className="row py-1" key={`submission-${submissionFile.id}-${submissionFile.filename}`}>
                     <div className="col-8 filename">{submissionFile.filename || submissionFile.name}</div>
                     {!showProgressBars && [
                       <div className="col-3 size">{getFileSize(submissionFile.size)}</div>,
@@ -103,7 +101,7 @@ const FileDropArea = (props) => {
                   </div>
                 ))}
               {files.map((file, index) => (
-                <div className="row py-1" key={`file-${file.id}`}>
+                <div className="row py-1" key={`file-${file.id}-${file.filename}`}>
                   <div className="col-8 filename">{file.filename || file.name}</div>
                   {!showProgressBars && [
                     <div className="col-3 size">{getFileSize(file.size)}</div>,

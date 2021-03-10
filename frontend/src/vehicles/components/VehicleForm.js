@@ -164,7 +164,7 @@ const VehicleForm = (props) => {
                 errorMessage={'range' in errorFields && errorFields.range}
                 handleInputChange={handleInputChange}
                 id="range"
-                label="Electric Range (km)"
+                label="Electric EPA Range (km)"
                 mandatory
                 name="range"
               />

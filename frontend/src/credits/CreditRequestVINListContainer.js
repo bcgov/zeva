@@ -23,6 +23,9 @@ const CreditRequestVINListContainer = (props) => {
   const [submission, setSubmission] = useState([]);
   const [loading, setLoading] = useState(true);
   const [invalidatedList, setInvalidatedList] = useState([]);
+  const [reasons, setReasons] = useState([]);
+  const [modified, setModified] = useState([]);
+  const [reasonList, setReasonList] = useState([]);
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 
@@ -31,15 +34,33 @@ const CreditRequestVINListContainer = (props) => {
       axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
       axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id)),
       axios.get(ROUTES_CREDIT_REQUESTS.UNSELECTED.replace(':id', id), { params: query }),
-    ]).then(axios.spread((submissionResponse, contentResponse, unselectedResponse) => {
+      axios.get(ROUTES_CREDIT_REQUESTS.REASONS),
+    ]).then(axios.spread((submissionResponse, contentResponse, unselectedResponse, reasonsResponse) => {
       const { data: submissionData } = submissionResponse;
       setSubmission(submissionData);
 
       const { data } = contentResponse;
       setContent(data.content);
 
+      data.content.forEach((each) => {
+        const index = reasonList.findIndex((item) => Number(item.id) === Number(each.id));
+
+        if (each.reason && index < 0) {
+          reasonList.push({
+            id: Number(each.id),
+            reason: each.reason,
+          });
+        }
+      });
+
+      setReasonList(reasonList);
+
       const { data: unselected } = unselectedResponse;
       setInvalidatedList(unselected);
+
+      const { data: reasonsData } = reasonsResponse;
+
+      setReasons(reasonsData);
 
       setLoading(false);
     }));
@@ -49,6 +70,21 @@ const CreditRequestVINListContainer = (props) => {
     refreshDetails();
   }, [id]);
 
+  const handleChangeReason = (submissionId, value = false) => {
+    const index = reasonList.findIndex((each) => (Number(each.id) === Number(submissionId)));
+
+    if (index >= 0) {
+      reasonList[index].reason = value;
+    } else {
+      reasonList.push({
+        id: Number(submissionId),
+        reason: value,
+      });
+    }
+
+    setReasonList(reasonList);
+  };
+
   const handleCheckboxClick = (event) => {
     const { value: submissionId, checked } = event.target;
     const newId = Number(submissionId);
@@ -57,6 +93,27 @@ const CreditRequestVINListContainer = (props) => {
     } else {
       setInvalidatedList(invalidatedList.filter((item) => Number(item) !== Number(submissionId)));
     }
+
+    const index = modified.findIndex((item) => Number(item) === Number(submissionId));
+
+    if (index >= 0) {
+      modified.splice(index, 1);
+    } else {
+      modified.push(Number(submissionId));
+
+      const reasonListIndex = reasonList.findIndex((each) => (Number(each.id) === Number(submissionId)));
+
+      if (reasonListIndex < 0) {
+        reasonList.push({
+          id: Number(submissionId),
+          reason: reasons[0],
+        });
+      }
+
+      setReasonList(reasonList);
+    }
+
+    setModified(modified);
   };
 
   const handleSubmit = () => {
@@ -65,6 +122,7 @@ const CreditRequestVINListContainer = (props) => {
     axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), {
       invalidated: invalidatedList,
       validationStatus: 'CHECKED',
+      reasons: reasonList,
     }).then(() => {
       const url = ROUTES_CREDIT_REQUESTS.VALIDATED.replace(/:id/g, submission.id);
 
@@ -80,8 +138,11 @@ const CreditRequestVINListContainer = (props) => {
     <CreditRequestVINListPage
       content={content}
       handleCheckboxClick={handleCheckboxClick}
+      handleChangeReason={handleChangeReason}
       handleSubmit={handleSubmit}
       invalidatedList={invalidatedList}
+      modified={modified}
+      reasons={reasons}
       routeParams={match.params}
       setContent={setContent}
       submission={submission}

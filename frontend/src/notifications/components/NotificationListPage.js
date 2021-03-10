@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
+import Loading from '../../app/components/Loading';
 
 const NotificationListPage = (props) => {
   const {
@@ -11,7 +12,12 @@ const NotificationListPage = (props) => {
     displayList,
     subscribe,
     unsubscribe,
+    loading,
   } = props;
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div id="notification-list">
@@ -61,6 +67,7 @@ NotificationListPage.propTypes = {
   displayList: PropTypes.bool.isRequired,
   subscribe: PropTypes.bool,
   unsubscribe: PropTypes.bool,
+  loading: PropTypes.bool.isRequired,
 };
 
 export default NotificationListPage;

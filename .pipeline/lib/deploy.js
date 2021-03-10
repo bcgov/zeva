@@ -23,16 +23,14 @@ module.exports = settings => {
 
   //create network security policies for internal pod to pod communications
   if(phase === 'dev') {
-    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/nsp/nsp-env.yaml`, {
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/knp/knp-env-pr.yaml`, {
       'param': {
-        'NAME': phases[phase].name,
-        'ENV_NAME': phases[phase].phase,
         'SUFFIX': phases[phase].suffix,
-        'API_VERSION': 'security.devops.gov.bc.ca/v1alpha1'
+        'ENVIRONMENT': phases[phase].phase
       }
     }))
   }
-  
+
   // create configs
   if(phase === 'dev') {
     objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/config/configmap.yaml`, {
@@ -50,22 +48,6 @@ module.exports = settings => {
       }
     }))
   }
-
-  /*** remove minio deployment in pr pipeline, one pre-deployed minio will serve all prs
-   * minio configurations stay in config.js unchanged
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/minio/minio-dc.yaml`, {
-    'param': {
-      'NAME': phases[phase].name,
-      'SUFFIX': phases[phase].suffix,
-      'ENV_NAME': phases[phase].phase,
-      'PVC_SIZE': phases[phase].minioPvcSize,
-      'CPU_REQUEST': phases[phase].minioCpuRequest,
-      'CPU_LIMIT': phases[phase].minioCpuLimit,
-      'MEMORY_REQUEST': phases[phase].minioMemoryRequest,
-      'MEMORY_LIMIT': phases[phase].minioMemoryRequest      
-    }
-  }))
-   */
 
   if(phase === 'dev') {
     //deploy Patroni required secrets
@@ -94,8 +76,7 @@ module.exports = settings => {
       }
     }))
   }
-
-   
+  
   //only deploy rabbitmq secret and configmap
   if(phase === 'dev') {
     objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-secret-configmap-only.yaml`, {
@@ -109,49 +90,25 @@ module.exports = settings => {
     }))
   }
 
-  /** 
-  //deploy rabbitmq, use docker image directly
-  //POST_START_SLEEP is harded coded in the rabbitmq template, replacement was not successful
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
-    'param': {
-      'NAME': phases[phase].name,
-      'ENV_NAME': phases[phase].phase,
-      'SUFFIX': phases[phase].suffix,
-      'NAMESPACE': phases[phase].namespace,
-      'CLUSTER_NAME': 'rabbitmq-cluster',
-      'ISTAG': `image-registry.openshift-image-registry.svc:5000/${phases[phase].namespace}/rabbitmq:3.8.3-management`,
-      'SERVICE_ACCOUNT': 'rabbitmq-discovery',
-      'VOLUME_SIZE': phases[phase].rabbitmqPvcSize,
-      'CPU_REQUEST': phases[phase].rabbitmqCpuRequest,
-      'CPU_LIMIT': phases[phase].rabbitmqCpuLimit,
-      'MEMORY_REQUEST': phases[phase].rabbitmqMemoryRequest,
-      'MEMORY_LIMIT': phases[phase].rabbitmqMemoryLimit,
-      'REPLICA': phases[phase].rabbitmqReplica,
-      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep,
-      'STORAGE_CLASS': phases[phase].storageClass
-    }
-  }))
-  */
-
- //if(phase === 'dev') {
+  if(phase === 'dev') {
     // deploy frontend configmap
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-configmap.yaml`, {
-    'param': {
-      'NAME': phases[phase].name,
-      'SUFFIX': phases[phase].suffix,
-      'COMPLIANCE_REPORT_ENABLED': phases[phase].complianceReportEnabled,
-      'COMPLIANCE_CALCULATOR_ENABLED': phases[phase].complianceCalculatorEnabled,
-      'COMPLIANCE_RATIOS_ENABLED': phases[phase].complianceRatiosEnabled,
-      'CREDIT_TRANSFERS_ENABLED': phases[phase].creditTransfersEnabled,
-      'CREDIT_TRANSACTIONS_ENABLED': phases[phase].creditTransactionsEnabled,
-      'INITIATIVE_AGREEMENTS_ENABLED': phases[phase].initiativeAgreementsEnabled,
-      'MODEL_YEAR_REPORT_ENABLED': phases[phase].modelYearReportEnabled,
-      'PURCHASE_REQUESTS_ENABLED': phases[phase].purchaseRequestsEnabled,
-      'NOTIFICATIONS_ENABLED': phases[phase].notificationsEnabled,
-      'ROLES_ENABLED': phases[phase].rolesEnabled
-    }
-  }))
-  //}
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-configmap.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'SUFFIX': phases[phase].suffix,
+        'COMPLIANCE_REPORT_ENABLED': phases[phase].complianceReportEnabled,
+        'COMPLIANCE_CALCULATOR_ENABLED': phases[phase].complianceCalculatorEnabled,
+        'COMPLIANCE_RATIOS_ENABLED': phases[phase].complianceRatiosEnabled,
+        'CREDIT_TRANSFERS_ENABLED': phases[phase].creditTransfersEnabled,
+        'CREDIT_TRANSACTIONS_ENABLED': phases[phase].creditTransactionsEnabled,
+        'INITIATIVE_AGREEMENTS_ENABLED': phases[phase].initiativeAgreementsEnabled,
+        'MODEL_YEAR_REPORT_ENABLED': phases[phase].modelYearReportEnabled,
+        'PURCHASE_REQUESTS_ENABLED': phases[phase].purchaseRequestsEnabled,
+        'NOTIFICATIONS_ENABLED': phases[phase].notificationsEnabled,
+        'ROLES_ENABLED': phases[phase].rolesEnabled
+      }
+    }))
+  }
 
   // deploy frontend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-dc.yaml`, {
@@ -202,6 +159,46 @@ module.exports = settings => {
       }
     }))
   }
+
+  /** 
+  //deploy rabbitmq, use docker image directly
+  //POST_START_SLEEP is harded coded in the rabbitmq template, replacement was not successful
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/rabbitmq/rabbitmq-cluster-dc.yaml`, {
+    'param': {
+      'NAME': phases[phase].name,
+      'ENV_NAME': phases[phase].phase,
+      'SUFFIX': phases[phase].suffix,
+      'NAMESPACE': phases[phase].namespace,
+      'CLUSTER_NAME': 'rabbitmq-cluster',
+      'ISTAG': `image-registry.openshift-image-registry.svc:5000/${phases[phase].namespace}/rabbitmq:3.8.3-management`,
+      'SERVICE_ACCOUNT': 'rabbitmq-discovery',
+      'VOLUME_SIZE': phases[phase].rabbitmqPvcSize,
+      'CPU_REQUEST': phases[phase].rabbitmqCpuRequest,
+      'CPU_LIMIT': phases[phase].rabbitmqCpuLimit,
+      'MEMORY_REQUEST': phases[phase].rabbitmqMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].rabbitmqMemoryLimit,
+      'REPLICA': phases[phase].rabbitmqReplica,
+      'POST_START_SLEEP': phases[phase].rabbitmqPostStartSleep,
+      'STORAGE_CLASS': phases[phase].storageClass
+    }
+  }))
+  */
+
+  /*** remove minio deployment in pr pipeline, one pre-deployed minio will serve all prs
+   * minio configurations stay in config.js unchanged
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/minio/minio-dc.yaml`, {
+    'param': {
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix,
+      'ENV_NAME': phases[phase].phase,
+      'PVC_SIZE': phases[phase].minioPvcSize,
+      'CPU_REQUEST': phases[phase].minioCpuRequest,
+      'CPU_LIMIT': phases[phase].minioCpuLimit,
+      'MEMORY_REQUEST': phases[phase].minioMemoryRequest,
+      'MEMORY_LIMIT': phases[phase].minioMemoryRequest      
+    }
+  }))
+  */
 
   //add autoacaler
   /*****

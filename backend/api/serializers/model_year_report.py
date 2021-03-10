@@ -4,6 +4,7 @@ from rest_framework.serializers import ModelSerializer, \
     ListField
 
 from api.models.model_year import ModelYear
+from api.models.model_year_report_confirmation import ModelYearReportConfirmation
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_address import ModelYearReportAddress
 from api.models.model_year_report_make import ModelYearReportMake
@@ -65,6 +66,7 @@ class ModelYearReportSaveSerializer(
         organization = request.user.organization
         makes = validated_data.pop('makes')
         model_year = validated_data.pop('model_year')
+        confirmations = request.data.get('confirmations')
 
         report = ModelYearReport.objects.create(
             model_year_id=model_year.id,
@@ -75,6 +77,15 @@ class ModelYearReportSaveSerializer(
             create_user=request.user.username,
             update_user=request.user.username,
         )
+
+        for confirmation in confirmations:
+            ModelYearReportConfirmation.objects.create(
+                create_user=request.user.username,
+                model_year_report=report,
+                has_accepted=True,
+                title=request.user.title,
+                signing_authority_assertion_id=confirmation
+                )
 
         for make in makes:
             ModelYearReportMake.objects.create(

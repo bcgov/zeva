@@ -1,6 +1,6 @@
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from rest_framework.serializers import ModelSerializer, \
-    SerializerMethodField
+    SerializerMethodField, ValidationError
 from django.db.models import Subquery, Count
 from django.db.models.functions import Upper
 
@@ -451,6 +451,23 @@ class SalesSubmissionSaveSerializer(
         sales_evidences = validated_data.pop('sales_evidences', [])
         files_to_be_removed = request.data.get('evidence_delete_list', [])
         sales_submission_comment = validated_data.pop('sales_submission_comment', None)
+        reasons = request.data.get('reasons', [])
+
+        if instance.validation_status != SalesSubmissionStatuses.DRAFT and \
+                not request.user.is_government:
+            raise ValidationError(
+                "Submission cannot be modified when they've been submitted"
+            )
+
+        if invalidated is not None and instance.validation_status in [
+                SalesSubmissionStatuses.RECOMMEND_APPROVAL,
+                SalesSubmissionStatuses.RECOMMEND_REJECTION
+        ]:
+            raise ValidationError(
+                "Cannot make further changes to this submission when "
+                "it's been recommended"
+            )
+
         if sales_submission_comment:
             SalesSubmissionComment.objects.create(
                 create_user=request.user.username,
@@ -526,6 +543,14 @@ class SalesSubmissionSaveSerializer(
                         vin=row.xls_vin,
                         vin_validation_status=VINStatuses.MATCHED,
                     )
+
+        if reasons is not None:
+            for reason in reasons:
+                content = SalesSubmissionContent.objects.get(
+                    id=reason.get('id')
+                )
+                content.reason = reason.get('reason')
+                content.save()
 
         validation_status = validated_data.get('validation_status')
 

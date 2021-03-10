@@ -4,7 +4,13 @@ import CustomPropTypes from '../../app/utilities/props';
 import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceCalculatorDetailsTotals = (props) => {
-  const { complianceNumbers, supplierSize, estimatedModelSales, user } = props;
+  const {
+    complianceNumbers,
+    supplierSize,
+    estimatedModelSales,
+    user,
+  } = props;
+
   return (
     <div className="col-lg-4 col-12 px-3 compliance-calculator-totals m-lg-2">
       <div className="form-group row p-3">
@@ -12,7 +18,7 @@ const ComplianceCalculatorDetailsTotals = (props) => {
           <tbody>
             <tr>
               <td className="font-weight-bold text-blue pt-4">
-                Provisional Compliance Ratio Reduction:
+                Estimated Compliance Ratio Reduction:
               </td>
               <td className="pl-3 font-weight-bold pt-4 text-right">
                 {complianceNumbers.total}
@@ -92,8 +98,12 @@ const ComplianceCalculatorDetailsTotals = (props) => {
 ComplianceCalculatorDetailsTotals.defaultProps = {
 
 };
-ComplianceCalculatorDetailsTotals.propTypes = {
 
+ComplianceCalculatorDetailsTotals.propTypes = {
+  complianceNumbers: PropTypes.shape().isRequired,
+  estimatedModelSales: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  supplierSize: PropTypes.string.isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default ComplianceCalculatorDetailsTotals;

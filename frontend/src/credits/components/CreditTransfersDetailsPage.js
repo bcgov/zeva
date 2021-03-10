@@ -13,6 +13,7 @@ import CreditTransfersDetailsSupplierTable from './CreditTransfersDetailsSupplie
 import Comment from '../../app/components/Comment';
 import CreditTransfersAlert from './CreditTransfersAlert';
 import Alert from '../../app/components/Alert';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const CreditTransfersDetailsPage = (props) => {
   const {
@@ -51,7 +52,7 @@ const CreditTransfersDetailsPage = (props) => {
   });
   const transferComments = submission.history
     .filter((each) => each.comment)
-    .map((comment) => comment.comment);
+    .map((item) => item.comment);
   let modalProps = {};
   switch (modalType) {
     case 'initiating-submit':
@@ -165,9 +166,9 @@ const CreditTransfersDetailsPage = (props) => {
   );
   const transferValue = (
     <div className="text-blue">
-      for a total value of ${(submission.creditTransferContent.reduce(
+      for a total value of $ {formatNumeric(submission.creditTransferContent.reduce(
       (a, v) => a + v.dollarValue * v.creditValue, 0,
-    ).toFixed(2))} Canadian dollars.
+    ), 2)} Canadian dollars.
     </div>
   );
   let latestRescind = false;
@@ -243,6 +244,7 @@ const CreditTransfersDetailsPage = (props) => {
       <CreditTransferSignoff
         assertions={assertions}
         checkboxes={checkboxes}
+        disableCheckboxes={!user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')}
         handleCheckboxClick={handleCheckboxClick}
         user={user}
       />
@@ -333,6 +335,10 @@ const CreditTransfersDetailsPage = (props) => {
       </div>
     </div>
   );
+};
+
+CreditTransfersDetailsPage.defaultProps = {
+  errorMessage: '',
 };
 
 CreditTransfersDetailsPage.propTypes = {

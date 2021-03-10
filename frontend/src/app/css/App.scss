@@ -40,6 +40,7 @@
 /* variables for colours */
 $alert-danger: #721c24;
 $alert-success: #155724;
+$background-light-blue: #CCE5FF;
 $background-danger: #FFF1F2;
 $background-warning: #FFFED2;
 $border-grey: #E0E0E0;
@@ -289,7 +290,9 @@ p {
     padding: 0;
   }
 }
-
+.text-red {
+  color: $red
+}
 .text-blue {
   color: $default-text-blue;
 

@@ -60,6 +60,12 @@ class SalesSubmissionContent(Auditable):
         db_comment="Raw value of the VIN from the spreadsheet",
         db_index=True
     )
+    reason = models.CharField(
+        blank=True,
+        null=True,
+        max_length=255,
+        db_comment="Reason for overriding the initial assessment"
+    )
 
     @property
     def vehicle(self):

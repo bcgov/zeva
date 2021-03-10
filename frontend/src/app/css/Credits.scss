@@ -43,7 +43,7 @@
     text-align: center;
   }
 
-  input[type="date"] {
+  input[type='date'] {
     border-radius: 5px;
     border: 2px solid #616161;
     padding: 10px;
@@ -142,6 +142,28 @@
     margin: 0;
   }
 
+  .ql-container {
+    height: auto !important;
+  }
+
+  .ql-editor {
+    min-height: 100px !important;
+    max-height: 300px;
+    overflow: hidden;
+    overflow-y: scroll;
+    overflow-x: scroll;
+  }
+  .comment-box {
+    border: 1px solid $border-grey;
+    padding: 1.2rem;  
+  }
+
+  .display-comment {
+    padding: 25px;
+    border-left: 10px solid #38598a;
+    background-color: #f2f2f2;
+  }
+
   .table {
     border: 1px solid $border-grey;
     padding: 0.5rem;
@@ -200,10 +222,153 @@
   .sales-upload-blue {
     font-size: 1.1rem;
   }
+
+  .model-list-table {
+    border: 1px solid $react-border;
+    padding: 0.5rem;
+
+    &.bceid-user {
+      border: none;
+      padding: 0;
+
+      .gap-left {
+        margin-left: 0 !important;
+      }
+
+      .analyst-recommendation, .eligible-sales, .eligible-zev-credits, .rt-tfoot {
+        display: none;
+      }
+    }
+
+    .ReactTable {
+      border: none;
+
+      .rt-thead, .rt-tbody {
+        min-width: 1500px !important;
+      }  
+    
+      .rt-thead {
+        background-color: $white;
+        border-bottom: none;
+
+        li {
+          white-space: normal;
+        }
+
+        .sales-upload-blue, .sales-upload-grey {
+          font-size: 1rem;
+        }
+      }
+
+      .-headerGroups {
+        border-bottom: none;
+
+        .header-group {
+          background-color: $default-background-grey;
+          border: none !important;
+          margin-bottom: 1rem;
+
+          &.analyst-recommendation {
+            background-color: $background-light-blue;
+          }
+        }
+      }
+
+      .-header {
+        box-shadow: none;
+
+        .rt-th {
+          border-bottom: 1px solid $react-border;
+          border-top: 1px solid $react-border;
+
+          &.eligible-sales {
+            background-color: $background-light-blue;
+          }
+        }
+      }
+
+      .gap-left {
+        border-left: 1px solid $react-border;
+        margin-left: 1rem;
+      }
+
+      .rt-th, .rt-td {
+        border-bottom: 1px solid $react-border;
+        border-right: 1px solid $react-border;
+      }
+
+      .rt-tfoot {
+        box-shadow: none;
+        margin-top: 0.5rem;
+
+        .credits-applied-for, .sales-submitted {
+          background-color: $default-background-grey;
+          border-top: 1px solid $react-border;
+        }
+
+        .eligible-sales, .eligible-zev-credits {
+          background-color: $background-light-blue;
+          border-top: 1px solid $react-border;
+        }
+
+        .no-footer {
+          display: none;
+        }
+      }
+
+      .rt-tr {
+        &.-odd {
+          background-color: transparent;
+
+          .rt-td {
+            background-color: $default-background-grey;
+          }  
+        }
+
+        &.danger .rt-td {
+          background-color: $background-danger !important;
+        }
+
+        .rt-td:first-child, .rt-th:first-child {
+          border-left: 1px solid $react-border;
+        }
+      }
+    }
+  }
 }
 
 #sales-details {
+  .ql-container {
+    height: auto !important;
+  }
+
+  .ql-editor {
+    min-height: 100px !important;
+    max-height: 300px;
+    overflow: hidden;
+    overflow-y: scroll;
+    overflow-x: scroll;
+  }
+  .comment-box {
+    border: 1px solid $border-grey;
+    padding: 1.2rem;  
+  }
+
+  .display-comment {
+    padding: 25px;
+    border-left: 10px solid #38598a;
+    background-color: #f2f2f2;
+  }
+
   .ReactTable {
+    .rt-thead {
+      background-color: $white;
+    }
+
+    .rt-thead, .rt-tbody {
+      min-width: 1775px !important;
+    }
+
     .-header {
       box-shadow: none;
 
@@ -219,6 +384,11 @@
       .header-group {
         background-color: $white;
         border-color: $white;
+      }
+
+      .header-margin {
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
       }
     }
 
@@ -298,7 +468,7 @@
     text-align: center;
   }
 
-  input[type="date"] {
+  input[type='date'] {
     position: relative;
     padding: 10px;
     margin: 5px 0 0 10px;

@@ -20,6 +20,7 @@ import CreditTransferListContainer from '../credits/CreditTransferListContainer'
 import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContainer';
 import CreditTransfersDetailsContainer from '../credits/CreditTransfersDetailsContainer';
 import CreditRequestVINListContainer from '../credits/CreditRequestVINListContainer';
+import CreditRequestValidatedDetailsContainer from '../credits/CreditRequestValidatedDetailsContainer';
 import UploadCreditRequestContainer from '../credits/UploadCreditRequestContainer';
 import UploadICBCVerificationContainer from '../credits/UploadICBCVerificationContainer';
 import UserEditContainer from '../users/UserEditContainer';
@@ -28,11 +29,12 @@ import VehicleEditContainer from '../vehicles/VehicleEditContainer';
 import VehicleListContainer from '../vehicles/VehicleListContainer';
 import ComplianceCalculatorContainer from '../compliance/ComplianceCalculatorContainer';
 import ComplianceReportsContainer from '../compliance/ComplianceReportsContainer';
+import ComplianceReportSummaryContainer from '../compliance/ComplianceReportSummaryContainer';
 import ComplianceRatiosContainer from '../compliance/ComplianceRatiosContainer';
 import LDVSalesContainer from '../compliance/LDVSalesContainer';
 import SupplierInformationContainer from '../compliance/SupplierInformationContainer';
-import CreditActivityContainer from '../compliance/CreditActivityContainer';
-import ConsumerSalesContainer from '../compliance/ConsumerSalesContainer'
+import ComplianceObligationContainer from '../compliance/ComplianceObligationContainer';
+import ConsumerSalesContainer from '../compliance/ConsumerSalesContainer';
 
 import ErrorHandler from './components/ErrorHandler';
 import Loading from './components/Loading';
@@ -131,7 +133,7 @@ class Router extends Component {
             <Switch>
               <Route
                 path={ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY}
-                render={() => <CreditActivityContainer keycloak={keycloak} user={user} />}
+                render={() => <ComplianceObligationContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 path={ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION}
@@ -149,6 +151,13 @@ class Router extends Component {
                 path={ROUTES_COMPLIANCE.CALCULATOR}
                 render={() => ((typeof user.hasPermission === 'function' && user.hasPermission('EDIT_SALES') && !user.isGovernment)
                   ? <ComplianceCalculatorContainer keycloak={keycloak} user={user} /> : (
+                    <ComplianceReportsContainer keycloak={keycloak} user={user} />
+                  ))}
+              />
+              <Route
+                path={ROUTES_COMPLIANCE.REPORT_SUMMARY}
+                render={() => ((typeof user.hasPermission === 'function' && user.hasPermission('EDIT_SALES') && !user.isGovernment)
+                  ? <ComplianceReportSummaryContainer keycloak={keycloak} user={user} /> : (
                     <ComplianceReportsContainer keycloak={keycloak} user={user} />
                   ))}
               />
@@ -291,6 +300,10 @@ class Router extends Component {
                 exact
                 path={ROUTES_CREDIT_REQUESTS.EDIT}
                 render={() => <UploadCreditRequestContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_CREDIT_REQUESTS.VALIDATED_DETAILS}
+                render={() => <CreditRequestValidatedDetailsContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 path={ROUTES_CREDIT_REQUESTS.VALIDATE}
