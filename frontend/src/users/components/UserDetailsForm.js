@@ -122,6 +122,16 @@ const UserDetailsForm = (props) => {
                     mandatory
                     name="keycloakEmail"
                   />
+                  <TextInput
+                    defaultValue={details.email}
+                    details="the email used to receive notifications, if different from above"
+                    errorMessage={'email' in errorFields && errorFields.email}
+                    handleInputChange={handleInputChange}
+                    id="notificationsEmail"
+                    key="notificationsEmail"
+                    label="Notifications Email"
+                    name="email"
+                  />
                   {accountType === 'BCeID' && (
                     <TextInput
                       defaultValue={details.phone}
