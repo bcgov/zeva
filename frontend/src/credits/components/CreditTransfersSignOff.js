@@ -14,26 +14,29 @@ const CreditTransferSignOff = (props) => {
   } = props;
 
   return (
-    <div id="transfer-sign-off">
-      <ReactTooltip />
-      {assertions.map((assertion) => (
-        <div key={assertion.id}>
-          <div className="d-inline-block align-middle my-2 ml-2 mr-1" data-tip={hoverText}>
-            <input
-              checked={checkboxes.findIndex((checkbox) => (parseInt(checkbox, 10) === parseInt(assertion.id, 10))) >= 0}
-              disabled={disableCheckboxes}
-              id={assertion.id}
-              name="terms"
-              onChange={(event) => { handleCheckboxClick(event); }}
-              type="checkbox"
-            />
+    <>
+      {hoverText && <ReactTooltip /> }
+      <div id="transfer-sign-off" data-tip={hoverText}>
+        {assertions.map((assertion) => (
+          <div key={assertion.id}>
+            <div className="d-inline-block align-middle my-2 ml-2 mr-1">
+              <input
+                checked={checkboxes.findIndex((checkbox) => (parseInt(checkbox, 10) === parseInt(assertion.id, 10))) >= 0}
+                disabled={disableCheckboxes}
+                id={assertion.id}
+                name="terms"
+                onChange={(event) => { handleCheckboxClick(event); }}
+                type="checkbox"
+              />
+            </div>
+            <label className={disableCheckboxes ? 'text-grey' : 'd-inline'} htmlFor={assertion.id} id="transfer-text">
+              {assertion.description.replace(/{user.organization.name}/g, user.organization.name)}
+            </label>
           </div>
-          <label className="d-inline" htmlFor={assertion.id} id="transfer-text">
-            {assertion.description.replace(/{user.organization.name}/g, user.organization.name)}
-          </label>
-        </div>
-      ))}
-    </div>
+
+        ))}
+      </div>
+    </>
   );
 };
 
