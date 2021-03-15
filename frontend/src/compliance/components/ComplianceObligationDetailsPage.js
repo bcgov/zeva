@@ -12,6 +12,7 @@ import ComplianceReportSignoff from './ComplianceReportSignOff';
 
 const ComplianceObligationDetailsPage = (props) => {
   const {
+    reportYear,
     loading,
     user,
     handleCheckboxClick,
@@ -32,17 +33,8 @@ const ComplianceObligationDetailsPage = (props) => {
           B: 347.86,
         },
       ],
-    creditsIssuedInitiative:
-      [{
-        year: 2019,
-        A: 286.54,
-      }],
-    creditsIssuedPurchase: [
-      {
-        year: 2020,
-        A: 100.00,
-      },
-    ],
+    creditsIssuedInitiative: [],
+    creditsIssuedPurchase: [],
     creditsTransferredIn: [
       {
         year: 2020,
@@ -77,7 +69,7 @@ const ComplianceObligationDetailsPage = (props) => {
     <div id="compliance-supplier-information-details" className="page">
       <div className="row mt-3">
         <div className="col-sm-12">
-          <h2>2020 Model Year Report</h2>
+          <h2>{reportYear} Model Year Report</h2>
         </div>
       </div>
       <div className="row">

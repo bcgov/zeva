@@ -19,6 +19,7 @@ const ComplianceObligationContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [assertions, setAssertions] = useState([]);
   const [checkboxes, setCheckboxes] = useState([]);
+  const [reportYear, setReportYear] = useState('2020')
 
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
@@ -39,6 +40,7 @@ const ComplianceObligationContainer = (props) => {
       setAssertions(filteredAssertions);
     });
 
+
     Promise.all([listAssertion]).then(() => {
       setLoading(false);
     });
@@ -52,6 +54,7 @@ const ComplianceObligationContainer = (props) => {
     <>
       <ComplianceReportTabs active="credit-activity" reportStatuses={reportStatuses} user={user} />
       <ComplianceObligationDetailsPage
+        reportYear={reportYear}
         loading={loading}
         user={user}
         assertions={assertions}
