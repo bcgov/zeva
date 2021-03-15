@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from api.serializers.model_year_report_vehicle import ModelYearReportVehicleSerializer, ModelYearReportVehicleSaveSerializer
 
 
-class ModelYearReportVehicleViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
+class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     permission_classes = (permissions.AllowAny,)
     http_method_names = ['get', 'post', 'put', 'patch']
@@ -31,9 +31,10 @@ class ModelYearReportVehicleViewSet(mixins.ListModelMixin, mixins.CreateModelMix
     def create(self, request, *args, **kwargs):
         vehicles = request.data.get('data')
         model_year_report_id = request.data.get('model_year_report_id')
-        model_year_report_ldv_sales = request.data.get('ldv_sales')
+        ldv_sales = request.data.get('ldv_sales')
         previous_sales = request.data.get('previous_sales')
         confirmations = request.data.get('confirmation')
+        supplier_class = request.data.get('supplier_class')
 
         report = ModelYearReport.objects.get(id=model_year_report_id)
 
@@ -43,7 +44,8 @@ class ModelYearReportVehicleViewSet(mixins.ListModelMixin, mixins.CreateModelMix
         model_year_report_update = ModelYearReport.objects.filter(
             id=model_year_report_id
         )
-        model_year_report_update.update(ldv_sales=model_year_report_ldv_sales)
+        model_year_report_update.update(ldv_sales=ldv_sales)
+        model_year_report_update.update(supplier_class=supplier_class)
 
         """ 
         Save/Update vehicle information
