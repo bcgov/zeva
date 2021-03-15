@@ -25,6 +25,7 @@ const ConsumerSalesDetailsPage = (props) => {
     handleCheckboxClick,
     handleInputChange,
     avgSales,
+    vehicleSupplierClass,
   } = props;
 
   const details = {
@@ -45,23 +46,7 @@ const ConsumerSalesDetailsPage = (props) => {
     return <Loading />;
   }
 
-  const vehicleSupplierClass = (avg) => {
-    let supplierClass = "";
-    let text = "";
-    if (avg < 1000) {
-      supplierClass = "Small Volume Supplier";
-      text = "(under 1,000 total LDV sales)";
-    }
-    else if (avg < 5000) {
-      supplierClass = "Medium Volume Supplier";
-      text = "(under 5,000 total LDV sales)";
-    }
-    else if (avg > 5000) {
-      supplierClass = "Large Volume Supplier";
-      text = "(over 5,000 total LDV sales)";
-    }
-    return [supplierClass, text];
-  }
+  
 
   return (
     <div id="compliance-consumer-sales-details" className="page">
@@ -266,5 +251,6 @@ ConsumerSalesDetailsPage.propTypes = {
   readOnly: PropTypes.bool.isRequired,
   handleInputChange: PropTypes.func.isRequired,
   avgSales: PropTypes.number.isRequired,
+  vehicleSupplierClass:PropTypes.func.isRequired,
 };
 export default ConsumerSalesDetailsPage;
