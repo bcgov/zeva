@@ -41,7 +41,7 @@ class ModelYearReportListSerializer(
     class Meta:
         model = ModelYearReport
         fields = (	
-            'model_year', 'validation_status', 'ldv_sales', 'supplier_class',
+            'id','model_year', 'validation_status', 'ldv_sales', 'supplier_class',
             'compliant', 'obligation_total', 'obligation_credits',
         )
 
@@ -72,7 +72,6 @@ class ModelYearReportSaveSerializer(
             model_year_id=model_year.id,
             organization_id=organization.id,
             organization_name=organization.name,
-            supplier_class="M",
             **validated_data,
             create_user=request.user.username,
             update_user=request.user.username,

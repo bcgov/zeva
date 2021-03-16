@@ -9,28 +9,28 @@ const ComplianceReportsTable = (props) => {
   const { user, data } = props;
   
   const columns = [{
-    accessor: (item) => (item.modelYear),
+    accessor: (item) => (item.modelYear.name),
     className: 'text-center',
     Header: 'Model Year',
     headerClassName: 'font-weight-bold ',
     id: 'model-year',
     maxWidth: 260,
   }, {
-    accessor: (item) => (item.status),
+    accessor: (item) => (item.validationStatus),
     className: 'text-center',
     Header: 'Status',
     headerClassName: 'font-weight-bold',
     id: 'status',
     maxWidth: 260,
   }, {
-    accessor: (item) => (item.compliant ? item.compliant : '-'),
+    accessor: (item) => (item.compliant === true ? '-' : ''),
     className: 'text-center',
     Header: 'Compliant',
     headerClassName: 'font-weight-bold',
     id: 'compliant',
     maxWidth: 260,
   }, {
-    accessor: (item) => (item.totalLdvSales ? item.totalLdvSales : '-'),
+    accessor: (item) => (item.ldvSales ? item.ldvSales : '-'),
     className: 'text-center',
     Header: 'Total LDV Sales',
     headerClassName: 'font-weight-bold',
@@ -51,7 +51,7 @@ const ComplianceReportsTable = (props) => {
     id: 'obligation-total',
     maxWidth: 260,
   }, {
-    accessor: (item) => (item.obligationACredits ? item.obligationACredits : '-'),
+    accessor: (item) => (item.obligationCredits ? item.obligationCredits : '-'),
     className: 'text-center',
     Header: 'Obligation A Credits',
     headerClassName: 'font-weight-bold',
@@ -72,8 +72,7 @@ const ComplianceReportsTable = (props) => {
           return {
             onClick: () => {
               const { id, validationStatus } = row.original;
-              //TODO: Add logic to call detail api
-              history.push(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id));
+              history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(/:id/g, id));
             },
             className: 'clickable',
           };
