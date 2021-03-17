@@ -29,7 +29,6 @@ bootstrap:
         min_wal_size: 300MB
         max_wal_size: 1GB
         track_io_timing: on
-        idle_in_transaction_session_timeout: 20s
   initdb:
   - auth-host: md5
   - auth-local: trust
