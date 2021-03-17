@@ -2,13 +2,12 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import ReactQuill from 'react-quill';
 import PropTypes from 'prop-types';
-import moment from 'moment-timezone';
-import parse from 'html-react-parser';
 
 import Button from '../../app/components/Button';
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import CustomPropTypes from '../../app/utilities/props';
 import VINListTable from './VINListTable';
+import DisplayComment from '../../app/components/DisplayComment';
 
 const CreditRequestVINListPage = (props) => {
   const {
@@ -176,16 +175,7 @@ const CreditRequestVINListPage = (props) => {
           {user.isGovernment && ((submission.salesSubmissionComment) || ((analystAction && validatedOnly) || directorAction) || submission.validationStatus === 'ISSUED') && (
             <div className="comment-box mt-2">
               {submission.salesSubmissionComment && user.isGovernment && (
-                <div className="display-comment" role="alert">
-                  <span>
-                    {submission.salesSubmissionComment.map((each) => (
-                      <div key={typeof each.comment === 'string' ? each.id : each.comment.id}>
-                        <b>{'Comments - '}</b>{each.createUser.displayName},{' '}{moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')} : {parse(each.comment)}
-                        <br />
-                      </div>
-                    ))}
-                  </span>
-                </div>
+                <DisplayComment commentArray={submission.salesSubmissionComment} />
               )}
               {((analystAction && validatedOnly) || directorAction) && (
               <div className="text-editor mb-2 mt-2">

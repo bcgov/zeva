@@ -98,11 +98,6 @@
 }
 
 #credit-transfers-details {
-  .display-comment {
-    padding: 25px;
-    border-left: 10px solid #38598a;
-    background-color: #f2f2f2;
-  }
   .status-alert{
     width:91.5%;
   }
@@ -185,12 +180,6 @@
   .comment-box {
     border: 1px solid $border-grey;
     padding: 1.2rem;  
-  }
-
-  .display-comment {
-    padding: 25px;
-    border-left: 10px solid #38598a;
-    background-color: #f2f2f2;
   }
 
   .table {
@@ -381,12 +370,6 @@
   .comment-box {
     border: 1px solid $border-grey;
     padding: 1.2rem;  
-  }
-
-  .display-comment {
-    padding: 25px;
-    border-left: 10px solid #38598a;
-    background-color: #f2f2f2;
   }
 
   .ReactTable {
@@ -599,12 +582,6 @@
       background-color: $primary-yellow;
     }
   }
-}
-
-.display-comment {
-    padding: 25px;
-    border-left: 10px solid #38598a;
-    background-color: #f2f2f2;
 }
 
 .totals {

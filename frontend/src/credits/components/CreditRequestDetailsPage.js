@@ -16,6 +16,7 @@ import CustomPropTypes from '../../app/utilities/props';
 import ModelListTable from './ModelListTable';
 import CreditRequestSummaryTable from './CreditRequestSummaryTable';
 import getFileSize from '../../app/utilities/getFileSize';
+import DisplayComment from '../../app/components/DisplayComment';
 import 'react-quill/dist/quill.snow.css';
 
 const CreditRequestDetailsPage = (props) => {
@@ -211,16 +212,7 @@ const CreditRequestDetailsPage = (props) => {
               {user.isGovernment && ((submission.salesSubmissionComment) || ((analystAction && validatedOnly) || directorAction) || submission.validationStatus === 'ISSUED') && (
                 <div className="comment-box mt-2">
                   {submission.salesSubmissionComment && user.isGovernment && (
-                    <div className="display-comment" role="alert">
-                      <span>
-                        {submission.salesSubmissionComment.map((each) => (
-                          <div key={typeof each.comment === 'string' ? each.id : each.comment.id}>
-                            <b>{'Comments - '}</b>{each.createUser.displayName},{' '}{moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')} : {parse(each.comment)}
-                            <br />
-                          </div>
-                        ))}
-                      </span>
-                    </div>
+                    <DisplayComment commentArray={submission.salesSubmissionComment} />
                   )}
                   {((analystAction && validatedOnly) || directorAction) && (
                   <div className="text-editor mb-2 mt-2">

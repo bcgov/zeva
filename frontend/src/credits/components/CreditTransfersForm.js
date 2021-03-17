@@ -8,11 +8,10 @@ import CustomPropTypes from '../../app/utilities/props';
 import TransferFormRow from './TransferFormRow';
 import FormDropdown from './FormDropdown';
 import CreditTransferSignoff from './CreditTransfersSignOff';
-import parse from 'html-react-parser';
 import CreditTransfersAlert from './CreditTransfersAlert';
 import Alert from '../../app/components/Alert';
 import formatNumeric from '../../app/utilities/formatNumeric';
-import moment from 'moment-timezone';
+import DisplayComment from '../../app/components/DisplayComment';
 
 const CreditTransfersForm = (props) => {
   const {
@@ -139,16 +138,7 @@ const CreditTransfersForm = (props) => {
       )}
       {transferComments.length > 0
       && (
-        <div className="display-comment" role="alert">
-          <span>
-            {transferComments.map((each) => (
-              <div key={typeof each.comment === 'string' ? each.id : each.comment.id}>
-                <b>{'Comments - '}</b>{each.createUser.displayName},{' '}{moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')} : {parse(each.comment)}
-                <br />
-              </div>
-            ))}
-          </span>
-        </div>
+        <DisplayComment commentArray={transferComments} />
       )}
       <div id="form">
         <form onSubmit={handleSave}>

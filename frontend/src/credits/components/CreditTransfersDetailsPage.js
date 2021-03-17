@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import parse from 'html-react-parser';
+import DisplayComment from '../../app/components/DisplayComment';
 import React, { useState, useEffect } from 'react';
 import moment from 'moment-timezone';
 import ReactQuill from 'react-quill';
@@ -189,7 +190,7 @@ const CreditTransfersDetailsPage = (props) => {
       </div>
     </Modal>
   );
-
+  
   const rescindComment = (
     <>
       <label htmlFor="transfer-rescind-comment">
@@ -354,28 +355,10 @@ const CreditTransfersDetailsPage = (props) => {
         && (
         <div className="comment-box mt-2">
           {transferCommentsIDIR.length > 0 && user.isGovernment && (
-            <div className="display-comment" role="alert">
-              <span>
-                {transferCommentsIDIR.map((each) => (
-                  <div key={typeof each.comment === 'string' ? each.id : each.comment.id}>
-                    <b>{'Comments - '}</b>{each.createUser.displayName},{' '}{moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')} : {parse(each.comment)}
-                  <br />
-                  </div>
-                ))}
-              </span>
-            </div>
+            <DisplayComment commentArray={transferCommentsIDIR} />
           )}
           {transferCommentsSupplier.length > 0 && !user.isGovernment && (
-            <div className="display-comment" role="alert">
-              <span>
-                {transferCommentsSupplier.map((each) => (
-                  <div key={typeof each.comment === 'string' ? each.id : each.comment.id}>
-                    <b>{'Comments - '}</b>{each.createUser.displayName},{' '}{moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')} : {parse(each.comment)}
-                  <br />
-                  </div>
-                ))}
-              </span>
-            </div>
+            <DisplayComment commentArray={transferCommentsSupplier} />
           )}
           {(transferRole.governmentAnalyst || transferRole.governmentDirector) &&
             idirCommentSection}
