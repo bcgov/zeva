@@ -120,10 +120,20 @@ class SalesSubmissionListSerializer(
         return history.update_timestamp.date()
 
     def get_total_credits(self, obj):
+        request = self.context.get('request')
+
         total_a = 0
         total_b = 0
 
-        if obj.records.count() > 0:
+        if obj.validation_status in [
+                SalesSubmissionStatuses.VALIDATED,
+                SalesSubmissionStatuses.REJECTED
+        ] or (request.user.is_government and obj.validation_status in [
+                SalesSubmissionStatuses.CHECKED,
+                SalesSubmissionStatuses.RECOMMEND_APPROVAL,
+                SalesSubmissionStatuses.RECOMMEND_REJECTION,
+                SalesSubmissionStatuses.VALIDATED
+        ]):
             for record in obj.get_records_totals_by_vehicles():
                 vehicle = Vehicle.objects.filter(
                     id=record['vehicle_id']
