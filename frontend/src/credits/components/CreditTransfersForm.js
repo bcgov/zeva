@@ -8,10 +8,10 @@ import CustomPropTypes from '../../app/utilities/props';
 import TransferFormRow from './TransferFormRow';
 import FormDropdown from './FormDropdown';
 import CreditTransferSignoff from './CreditTransfersSignOff';
-import Comment from '../../app/components/Comment';
 import CreditTransfersAlert from './CreditTransfersAlert';
 import Alert from '../../app/components/Alert';
 import formatNumeric from '../../app/utilities/formatNumeric';
+import DisplayComment from '../../app/components/DisplayComment';
 
 const CreditTransfersForm = (props) => {
   const {
@@ -138,7 +138,7 @@ const CreditTransfersForm = (props) => {
       )}
       {transferComments.length > 0
       && (
-        <Comment commentArray={transferComments} />
+        <DisplayComment commentArray={transferComments} />
       )}
       <div id="form">
         <form onSubmit={handleSave}>
