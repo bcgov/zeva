@@ -21,6 +21,8 @@ Notes: for Jenkins, build, dev and prod are actually all on tools environment
 
 ### 3.1 Preparation for pipeline
 
+* Create zeva artifactory service account zeva-artifactory-service-account, refer to https://developer.gov.bc.ca/Artifact-Repositories-(Artifactory)
+* Create secret docker-artifactory-secret for docker artifactory
 * openshift/templates/config/README.md [Before triggering pipeline]
 * openshift/templates/keycloak/README.md
 * openshift/templates/backend/README.md [Before triggering pipeline]
