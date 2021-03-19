@@ -4,11 +4,10 @@ import Loading from '../app/components/Loading';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceTabs from '../app/components/ComplianceTabs';
 import ComplianceCalculatorDetailsPage from './components/ComplianceCalculatorDetailsPage';
-import ComplianceCalculatorModelTable from './components/ComplianceCalculatorModelTable';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 
-const LDVSalesContainer = (props) => {
+const ComplianceCalculatorContainer = (props) => {
   const { user } = props;
   const [selectedYearOption, setSelectedYearOption] = useState('--');
   const [supplierSize, setSupplierSize] = useState('');
@@ -89,7 +88,7 @@ const LDVSalesContainer = (props) => {
     </>
   );
 };
-LDVSalesContainer.propTypes = {
+ComplianceCalculatorContainer.propTypes = {
   user: CustomPropTypes.user.isRequired,
 };
-export default LDVSalesContainer;
+export default ComplianceCalculatorContainer;
