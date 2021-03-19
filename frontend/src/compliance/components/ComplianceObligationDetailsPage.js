@@ -12,6 +12,7 @@ import ComplianceReportSignoff from './ComplianceReportSignOff';
 
 const ComplianceObligationDetailsPage = (props) => {
   const {
+    reportDetails,
     reportYear,
     loading,
     user,
@@ -19,36 +20,10 @@ const ComplianceObligationDetailsPage = (props) => {
     assertions,
     checkboxes,
   } = props;
-  const creditsIssuedDetails = {
-    creditsIssuedSales:
-      [
-        {
-          year: 2020,
-          A: 359.12,
-          B: 43.43,
-        },
-        {
-          year: 2019,
-          A: 1367.43,
-          B: 347.86,
-        },
-      ],
-    creditsIssuedInitiative: [],
-    creditsIssuedPurchase: [],
-    creditsTransferredIn: [
-      {
-        year: 2020,
-        A: 200.00,
-      },
-    ],
-    creditsTransferredAway: [
-      {
-        year: 2020,
-        A: -800.00,
-        B: -200.00,
-      },
-    ],
-  };
+  const {
+    priorYearBalance, reportYearBalance, pendingBalance, transactions,
+  } = reportDetails;
+
   const details = {
     creditActivity: {
       history: [{
@@ -82,11 +57,11 @@ const ComplianceObligationDetailsPage = (props) => {
           <h3 className="mb-3">Compliance Obligation and Credit Activity</h3>
         </div>
         <div>
-          <table>
+          <table id="prior-year-balance">
             <tbody>
               <tr className="subclass">
                 <th className="large-column">
-                  Credit Balance at September 30, 2019
+                  Credit Balance at September 30, {priorYearBalance.year}
                 </th>
                 <th className="text-center text-blue">
                   A
@@ -100,24 +75,24 @@ const ComplianceObligationDetailsPage = (props) => {
                   &bull; &nbsp; &nbsp; Total Credit Balance
                 </td>
                 <td className="text-right">
-                  0
+                  {priorYearBalance.a}
                 </td>
                 <td className="text-right">
-                  0
+                  {priorYearBalance.b}
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
         <div className="mt-4">
-          <ComplianceObligationTableCreditsIssued creditsIssuedDetails={creditsIssuedDetails} />
+          <ComplianceObligationTableCreditsIssued transactions={reportDetails.transactions} />
         </div>
         <div className="mt-4">
-          <table>
+          <table id="report-year-balance">
             <tbody>
               <tr className="subclass">
                 <th className="large-column">
-                  Credit Balance at September 30, 2020
+                  Credit Balance at September 30, {reportYear}
                 </th>
                 <th className="text-center text-blue">
                   A
@@ -128,13 +103,13 @@ const ComplianceObligationDetailsPage = (props) => {
               </tr>
               <tr>
                 <td className="text-blue">
-                  &bull; &nbsp; &nbsp; 2020 Credits
+                  {reportYearBalance.year}
                 </td>
                 <td className="text-right">
-                  945.66
+                  {reportYearBalance.a}
                 </td>
                 <td className="text-right">
-                  43.43
+                  {reportYearBalance.b}
                 </td>
               </tr>
               <tr>
@@ -155,15 +130,18 @@ const ComplianceObligationDetailsPage = (props) => {
                 <th> </th>
                 <th> </th>
               </tr>
-              <tr>
-                <td className="text-blue">
-                  &bull; &nbsp; &nbsp; 2020 Credits
-                </td>
-                <td className="text-right">
-                  246.67
-                </td>
-                <td className="text-right"> </td>
-              </tr>
+
+              {pendingBalance.map((each) => (
+                <tr key={each.year}>
+                  <td className="text-blue">
+                    &bull; &nbsp; &nbsp; {each.year}
+                  </td>
+                  <td className="text-right">
+                    {each.a}
+                  </td>
+                  <td className="text-right">{each.b} </td>
+                </tr>
+              ))}
               <tr className="subclass">
                 <th className="large-column">
                   Provisional Credit Balance at September 30, 2020

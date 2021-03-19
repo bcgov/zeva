@@ -118,6 +118,30 @@ class CreditTransactionBalanceSerializer(ModelSerializer):
             'total_value', 'credit_class', 'model_year', 'weight_class',
         )
 
+class CreditTransactionObligationActivitySerializer(ModelSerializer):
+    """
+    Serializer for credit transactions
+    """
+    credit_class = SerializerMethodField()
+    model_year = SerializerMethodField()
+
+    def get_credit_class(self, obj):
+        credit_class = CreditClass.objects.get(id=obj.get('credit_class_id'))
+
+        serializer = CreditClassSerializer(credit_class, read_only=True)
+        return serializer.data
+
+    def get_model_year(self, obj):
+        model_year = ModelYear.objects.get(id=obj.get('model_year_id'))
+
+        serializer = ModelYearSerializer(model_year, read_only=True)
+        return serializer.data
+
+    class Meta:
+        model = CreditTransaction
+        fields = (
+            'total_value', 'credit_class', 'model_year',
+        )
 
 class CreditTransactionSaveSerializer(ModelSerializer):
     """
