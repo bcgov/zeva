@@ -13,6 +13,7 @@ const COMPLIANCE = {
   REPORT_SUMMARY: `${API_BASE_PATH}/reports/:id/summary`,
   REPORT_ASSESSMENT: `${API_BASE_PATH}/reports/:id/assessment`,
   VEHICLES: `${API_BASE_PATH}/vehicle`,
+  REPORT_DETAILS_BY_YEAR: `${API_BASE_PATH}/compliance-activity-details/:year`,
 };
 
 export default COMPLIANCE;
