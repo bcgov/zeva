@@ -188,6 +188,6 @@ SupplierInformationDetailsPage.propTypes = {
   assertions: PropTypes.arrayOf(PropTypes.shape()),
   checkboxes: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])),
   handleCheckboxClick: PropTypes.func.isRequired,
-  disabledCheckboxes:PropTypes.string.isRequired,
+  disabledCheckboxes: PropTypes.string.isRequired,
 };
 export default SupplierInformationDetailsPage;

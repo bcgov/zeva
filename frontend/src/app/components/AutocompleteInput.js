@@ -64,7 +64,6 @@ const AutocompleteInput = (props) => {
     </div>
   );
 
-
   const onChange = (event, { newValue }) => {
     if (event.target.name) {
       handleInputChange(event);
@@ -146,7 +145,6 @@ const AutocompleteInput = (props) => {
   );
 };
 export default AutocompleteInput;
-
 
 AutocompleteInput.defaultProps = {
   defaultValue: '',

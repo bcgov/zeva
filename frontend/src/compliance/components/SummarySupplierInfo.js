@@ -1,9 +1,8 @@
 import React from 'react';
-import formatNumeric from '../../app/utilities/formatNumeric';
 
 const SummarySupplierInfo = (props) => {
   const { supplierInformationDetails } = props;
- const { organization, supplierInformation } = supplierInformationDetails
+  const { organization, supplierInformation } = supplierInformationDetails
   return (
     <>
       <h3>Supplier Information</h3>

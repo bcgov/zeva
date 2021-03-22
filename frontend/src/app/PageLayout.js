@@ -27,9 +27,9 @@ const PageLayout = (props) => {
           {children}
         </div>
       </div>
-      {!user.isGovernment &&
-        (props.location.pathname === '/compliance/calculator' ? (
-          <div id='content'>
+      {!user.isGovernment
+        && (props.location.pathname === '/compliance/calculator' ? (
+          <div id="content">
             All Information is provided for your convenience and guidance only.
             This information does not replace or constitute legal advice, is not
             legally binding, and does not alter any obligations or requirements
@@ -55,6 +55,7 @@ PageLayout.propTypes = {
     PropTypes.node,
   ]),
   keycloak: CustomPropTypes.keycloak.isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default hot(withRouter(PageLayout));

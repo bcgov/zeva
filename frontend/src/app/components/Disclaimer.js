@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 const Disclaimer = () => (
   <div id="content">

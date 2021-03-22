@@ -1,6 +1,5 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceTabs from '../app/components/ComplianceTabs';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
@@ -11,7 +10,16 @@ const ComplianceReportsContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [displayBtn, setDisplayBtn] = useState(true);
-  
+
+  const displayNewReportBtn = (data) => {
+    const d = new Date();
+    const currentYear = d.getFullYear();
+    const draftRecord = data.filter((item) => item.validationStatus === 'DRAFT' && item.modelYear.name == currentYear);
+    if (draftRecord.length > 0) {
+      setDisplayBtn(false);
+    }
+  };
+
   const refreshList = (showLoading) => {
     setLoading(showLoading);
     axios.get(ROUTES_COMPLIANCE.REPORTS).then((response) => {
@@ -19,15 +27,7 @@ const ComplianceReportsContainer = (props) => {
       displayNewReportBtn(response.data)
       setLoading(false);
     });
-  }
-  const displayNewReportBtn = (data) => {
-    let d = new Date();
-    let currentYear = d.getFullYear();
-    let draftRecord = data.filter((item) => item.validationStatus === "DRAFT" && item.modelYear.name == currentYear);
-    if (draftRecord.length > 0) {
-      setDisplayBtn(false)
-    } 
-  }
+  };
 
   useEffect(() => {
     refreshList(true);
