@@ -49,8 +49,10 @@ const ComplianceObligationContainer = (props) => {
     });
     return output;
   };
+
   const refreshDetails = () => {
     setLoading(true);
+    const currentYearBalance = {};
     const listAssertion = axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
       const filteredAssertions = response.data.filter((data) => data.module === 'compliance_obligation');
       setAssertions(filteredAssertions);
@@ -63,6 +65,7 @@ const ComplianceObligationContainer = (props) => {
       const transfersIn = parseCreditTransactions(details.reportYearTransactions.transfersIn);
       const transfersOut = parseCreditTransactions(details.reportYearTransactions.transfersOut);
       const pendingArray = [];
+
       Object.keys(details.pendingBalance).forEach((record) => {
         pendingArray.push({
           year: [record],
@@ -70,17 +73,25 @@ const ComplianceObligationContainer = (props) => {
           b: details.pendingBalance[record].B,
         });
       });
+      creditsIssuedSales.forEach((each) => {
+        currentYearBalance[each.modelYear] = { A: parseFloat(each.A) || 0, B: parseFloat(each.B) || 0};
+      });
+      transfersIn.forEach((each) => {
+        currentYearBalance[each.modelYear].A += parseFloat(each.A) || 0;
+        currentYearBalance[each.modelYear].B += parseFloat(each.B) || 0;
+      });
+      transfersOut.forEach((each) => {
+        currentYearBalance[each.modelYear].A += parseFloat(-each.A) || 0;
+        currentYearBalance[each.modelYear].B += parseFloat(-each.B) || 0;
+      });
+      console.log(pendingArray)
       setReportDetails({
         priorYearBalance: {
           year: details.priorYearBalance.year,
           a: details.priorYearBalance.a,
           b: details.priorYearBalance.b,
         },
-        reportYearBalance: {
-          year: details.reportYearBalance.year,
-          a: details.reportYearBalance.a,
-          b: details.reportYearBalance.b,
-        },
+        reportYearBalance: currentYearBalance,
         pendingBalance: pendingArray,
         transactions: {
           creditsIssuedSales,

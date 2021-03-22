@@ -101,28 +101,19 @@ const ComplianceObligationDetailsPage = (props) => {
                   B
                 </th>
               </tr>
-              <tr>
-                <td className="text-blue">
-                  {reportYearBalance.year}
-                </td>
-                <td className="text-right">
-                  {reportYearBalance.a}
-                </td>
-                <td className="text-right">
-                  {reportYearBalance.b}
-                </td>
-              </tr>
-              <tr>
-                <td className="text-blue">
-                  &bull; &nbsp; &nbsp; 2019 Credits
-                </td>
-                <td className="text-right">
-                  567.43
-                </td>
-                <td className="text-right">
-                  147.86
-                </td>
-              </tr>
+              {Object.keys(reportYearBalance).map((each) => (
+                <tr>
+                  <td className="text-blue">
+                    &bull; &nbsp; &nbsp; {each} Credits
+                  </td>
+                  <td className="text-right">
+                    {reportYearBalance[each].A}
+                  </td>
+                  <td className="text-right">
+                    {reportYearBalance[each].B}
+                  </td>
+                </tr>
+              ))}
               <tr className="subclass">
                 <th className="large-column">
                   Credits Pending for Consumer Sales
