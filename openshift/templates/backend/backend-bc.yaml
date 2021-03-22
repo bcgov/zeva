@@ -95,6 +95,8 @@ objects:
           from:
             kind: ImageStreamTag
             name: python:3.6-1-63
+          forcePull: true
+          noCache: true            
         type: Source
       triggers:
       - imageChange: {}
