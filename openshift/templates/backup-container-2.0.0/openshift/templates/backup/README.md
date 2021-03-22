@@ -2,9 +2,11 @@
 Use backup container release 2.0.0 to run the backup, current folder is backup-container-2.0.0
 1. Request netapp-file-backup storage as backup space
 follow https://github.com/BCDevOps/provision-nfs-apb/blob/master/docs/usage-gui.md to request nfs-backup storage
+
 2. Build patroni-backup image
 oc -n e52f12-tools process -f ./openshift/templates/backup/backup-build.json \
 -p NAME=patroni-backup OUTPUT_IMAGE_TAG=2.0.0 GIT_REF=2.0.0 \
+
 | oc -n e52f12-tools create -f -
 3. add to ./config/backup.conf, 9pm run backup, 10pm run verification
 patroni-master-prod:5432/zeva

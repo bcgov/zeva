@@ -69,7 +69,7 @@ const CreditTransfersDetailsSupplierTable = (props) => {
     }],
   }];
   return (
-    <div className="row mb-4">
+    <div className="row mb-4 mt-2">
       <div className="col-sm-11">
         <div className="form p-4">
           {tableText}

@@ -64,19 +64,19 @@ const CreditTransfersDetailsActionBar = (props) => {
               }}
             />
             )}
-            {transferRole.governmentDirector
-            && (
-            <Button
-              disabled={comment.length === 0}
-              testid="director-reject-transfer"
-              buttonType="reject"
-              optionalText="Reject Transfer"
-              action={() => {
-                setModalType('director-reject');
-                setShowModal(true);
-              }}
-            />
-            )}
+            {transferRole.governmentDirector && (
+                <Button
+                testid="director-return-transfer"
+                buttonType="reject"
+                optionalText="Return to Analyst"
+                action={() => {
+                  setModalType('return');
+                    setShowModal(true);
+                  }}
+                />
+                  
+               
+              )}
           </span>
           <span className="right-content">
             { transferRole.initiatingSupplier
@@ -118,7 +118,20 @@ const CreditTransfersDetailsActionBar = (props) => {
               optionalText="Submit Notice"
               disabled={checkboxes.length < assertions.length || !user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')}
             />
-            )}
+              )}
+            {transferRole.governmentDirector
+            && (
+            <Button
+              disabled={comment.length === 0}
+              testid="director-reject-transfer"
+              buttonType="reject"
+              optionalText="Reject Transfer"
+              action={() => {
+                setModalType('director-reject');
+                setShowModal(true);
+              }}
+            />
+              )}
             {transferRole.governmentDirector
             && (
             <Button
