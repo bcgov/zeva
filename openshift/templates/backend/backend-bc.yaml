@@ -83,7 +83,7 @@ objects:
         sourceStrategy:
           env:
             - name: PIP_INDEX_URL
-              value: https://${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD}@artifacts.developer.gov.bc.ca/artifactory/api/pypi/pypi-remote/simple
+              value: "https://${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD}@artifacts.developer.gov.bc.ca/artifactory/api/pypi/pypi-remote/simple"
             - name: ARTIFACTORY_USER
               valueFrom:
                 secretKeyRef:
