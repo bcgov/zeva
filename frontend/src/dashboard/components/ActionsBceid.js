@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-
 import Loading from '../../app/components/Loading';
 import ActivityBanner from './ActivityBanner';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
