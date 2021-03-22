@@ -52,7 +52,6 @@ const ComplianceObligationContainer = (props) => {
 
   const refreshDetails = () => {
     setLoading(true);
-    const currentYearBalance = {};
     const listAssertion = axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
       const filteredAssertions = response.data.filter((data) => data.module === 'compliance_obligation');
       setAssertions(filteredAssertions);
@@ -64,35 +63,43 @@ const ComplianceObligationContainer = (props) => {
       const creditsIssuedSales = parseCreditTransactions(details.reportYearTransactions.creditsIssuedSales);
       const transfersIn = parseCreditTransactions(details.reportYearTransactions.transfersIn);
       const transfersOut = parseCreditTransactions(details.reportYearTransactions.transfersOut);
-      const pendingArray = [];
-
-      Object.keys(details.pendingBalance).forEach((record) => {
-        pendingArray.push({
-          year: [record],
-          a: details.pendingBalance[record].A,
-          b: details.pendingBalance[record].B,
-        });
-      });
+      const reportYearBalance = {};
       creditsIssuedSales.forEach((each) => {
-        currentYearBalance[each.modelYear] = { A: parseFloat(each.A) || 0, B: parseFloat(each.B) || 0};
+        reportYearBalance[each.modelYear] = {
+          A: parseFloat(each.A) || 0, B: parseFloat(each.B) || 0 };
       });
       transfersIn.forEach((each) => {
-        currentYearBalance[each.modelYear].A += parseFloat(each.A) || 0;
-        currentYearBalance[each.modelYear].B += parseFloat(each.B) || 0;
+        if (!Object.keys(reportYearBalance).includes(each.modelYear)) {
+          reportYearBalance[each.modelYear] = { A: 0, B: 0 };
+        }
+        reportYearBalance[each.modelYear].A += parseFloat(each.A) || 0;
+        reportYearBalance[each.modelYear].B += parseFloat(each.B) || 0;
       });
       transfersOut.forEach((each) => {
-        currentYearBalance[each.modelYear].A += parseFloat(-each.A) || 0;
-        currentYearBalance[each.modelYear].B += parseFloat(-each.B) || 0;
+        if (!Object.keys(reportYearBalance).includes(each.modelYear)) {
+          reportYearBalance[each.modelYear] = { A: 0, B: 0 };
+        }
+        reportYearBalance[each.modelYear].A += parseFloat(-each.A) || 0;
+        reportYearBalance[each.modelYear].B += parseFloat(-each.B) || 0;
       });
-      console.log(pendingArray)
+      const provisionalBalance = {};
+      Object.keys(reportYearBalance).forEach((year) => {
+        provisionalBalance[year] = { A: parseFloat(reportYearBalance[year].A), B: parseFloat(reportYearBalance[year].B) };
+      });
+      Object.keys(details.pendingBalance).forEach((year) => {
+        provisionalBalance[year].A += parseFloat(details.pendingBalance[year].A);
+        provisionalBalance[year].B += parseFloat(details.pendingBalance[year].B);
+      });
+
       setReportDetails({
         priorYearBalance: {
           year: details.priorYearBalance.year,
           a: details.priorYearBalance.a,
           b: details.priorYearBalance.b,
         },
-        reportYearBalance: currentYearBalance,
-        pendingBalance: pendingArray,
+        reportYearBalance,
+        pendingBalance: details.pendingBalance,
+        provisionalBalance,
         transactions: {
           creditsIssuedSales,
           transfersIn,

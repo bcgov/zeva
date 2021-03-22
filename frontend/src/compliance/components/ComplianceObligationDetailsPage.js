@@ -9,6 +9,7 @@ import CustomPropTypes from '../../app/utilities/props';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued';
 import ComplianceReportSignoff from './ComplianceReportSignOff';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceObligationDetailsPage = (props) => {
   const {
@@ -21,7 +22,7 @@ const ComplianceObligationDetailsPage = (props) => {
     checkboxes,
   } = props;
   const {
-    priorYearBalance, reportYearBalance, pendingBalance, transactions,
+    priorYearBalance, reportYearBalance, pendingBalance, transactions, provisionalBalance,
   } = reportDetails;
 
   const details = {
@@ -75,10 +76,10 @@ const ComplianceObligationDetailsPage = (props) => {
                   &bull; &nbsp; &nbsp; Total Credit Balance
                 </td>
                 <td className="text-right">
-                  {priorYearBalance.a}
+                  {/* {priorYearBalance.a} */} 0
                 </td>
                 <td className="text-right">
-                  {priorYearBalance.b}
+                  {/* {priorYearBalance.b} */} 0
                 </td>
               </tr>
             </tbody>
@@ -101,8 +102,16 @@ const ComplianceObligationDetailsPage = (props) => {
                   B
                 </th>
               </tr>
-              {Object.keys(reportYearBalance).map((each) => (
-                <tr>
+              {Object.keys(reportYearBalance).sort((a, b) => {
+                if (a < b) {
+                  return 1;
+                }
+                if (a > b) {
+                  return -1;
+                }
+                return 0;
+              }).map((each) => (
+                <tr key={each}>
                   <td className="text-blue">
                     &bull; &nbsp; &nbsp; {each} Credits
                   </td>
@@ -121,61 +130,66 @@ const ComplianceObligationDetailsPage = (props) => {
                 <th> </th>
                 <th> </th>
               </tr>
-
-              {pendingBalance.map((each) => (
-                <tr key={each.year}>
+              {Object.keys(pendingBalance).sort((a, b) => {
+                if (a < b) {
+                  return 1;
+                }
+                if (a > b) {
+                  return -1;
+                }
+                return 0;
+              }).map((each) => (
+                <tr key={each}>
                   <td className="text-blue">
-                    &bull; &nbsp; &nbsp; {each.year}
+                    &bull; &nbsp; &nbsp; {each} Credits
                   </td>
                   <td className="text-right">
-                    {each.a}
+                    {pendingBalance[each].A}
                   </td>
-                  <td className="text-right">{each.b} </td>
+                  <td className="text-right">{pendingBalance[each].B} </td>
                 </tr>
               ))}
               <tr className="subclass">
                 <th className="large-column">
-                  Provisional Credit Balance at September 30, 2020
+                  Provisional Credit Balance at September 30, {reportYear}
                 </th>
                 <th> </th>
                 <th> </th>
               </tr>
-              <tr>
-                <td className="text-blue">
-                  &bull; &nbsp; &nbsp; 2020 Credits
-                </td>
-                <td className="text-right">
-                  1,192.33
-                </td>
-                <td className="text-right">
-                  43.43
-                </td>
-              </tr>
-              <tr>
-                <td className="text-blue">
-                  &bull; &nbsp; &nbsp; 2019 Credits
-                </td>
-                <td className="text-right">
-                  567.43
-                </td>
-                <td className="text-right">
-                  147.86
-                </td>
-              </tr>
+              {Object.keys(provisionalBalance).sort((a, b) => {
+                if (a < b) {
+                  return 1;
+                }
+                if (a > b) {
+                  return -1;
+                }
+                return 0;
+              }).map((each) => (
+                <tr key={each}>
+                  <td className="text-blue">
+                    &bull; &nbsp; &nbsp; {each} Credits
+                  </td>
+                  <td className="text-right">
+                    {provisionalBalance[each].A}
+                  </td>
+                  <td className="text-right">{provisionalBalance[each].B} </td>
+                </tr>
+              ))}
               <tr>
                 <td className="text-blue font-weight-bold">
                   &bull; &nbsp; &nbsp; Total Provisional Credit Balance:
                 </td>
                 <td className="text-right">
-                  1,759.76
+                  {formatNumeric(Object.keys(provisionalBalance).reduce((a, v) => a + provisionalBalance[v].A, 0), 2)}
                 </td>
                 <td className="text-right">
-                  191.29
+                  {formatNumeric(Object.keys(provisionalBalance).reduce((a, v) => a + provisionalBalance[v].B, 0), 2)}
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
+
         <div className="col-12">
           <h3 className="mt-3">2020 Compliance Ratio Reduction and Credit Offset</h3>
 

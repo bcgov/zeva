@@ -24,7 +24,15 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             {showAandB ? 'B' : ''}
           </th>
         </tr>
-        {input.map((each) => (
+        {input.sort((a, b) => {
+          if (a.modelYear < b.modelYear) {
+            return 1;
+          }
+          if (a.modelYear > b.modelYear) {
+            return -1;
+          }
+          return 0;
+        }).map((each) => (
           <tr key={each.modelYear}>
             <td className="text-blue">
               &bull; &nbsp; &nbsp; {each.modelYear} Credits
