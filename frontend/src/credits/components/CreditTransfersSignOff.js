@@ -12,7 +12,6 @@ const CreditTransferSignOff = (props) => {
     hoverText,
     user,
   } = props;
-
   return (
     <>
       {hoverText && <ReactTooltip /> }

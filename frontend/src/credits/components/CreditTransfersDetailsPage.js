@@ -2,10 +2,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import parse from 'html-react-parser';
-import DisplayComment from '../../app/components/DisplayComment';
 import React, { useState, useEffect } from 'react';
 import moment from 'moment-timezone';
 import ReactQuill from 'react-quill';
+import axios from 'axios';
+import DisplayComment from '../../app/components/DisplayComment';
 import CreditTransferSignoff from './CreditTransfersSignOff';
 import CreditTransfersDetailsActionBar from './CreditTransfersDetailsActionBar';
 import Modal from '../../app/components/Modal';
@@ -17,7 +18,6 @@ import CreditTransfersAlert from './CreditTransfersAlert';
 import Alert from '../../app/components/Alert';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
-import axios from 'axios';
 import 'react-quill/dist/quill.snow.css';
 
 const CreditTransfersDetailsPage = (props) => {
@@ -63,13 +63,13 @@ const CreditTransfersDetailsPage = (props) => {
   const transferCommentsSupplier = submission.history
     .filter((each) => (each.status === 'VALIDATED' || each.status === 'RESCINDED' || each.status === 'SUBMITTED' || each.status === 'DISAPPROVED' || each.status === 'REJECTED' || each.status === 'RESCIND_PRE_APPROVAL') && each.comment)
     .map((item) => item.comment);
-      
+
   const handleCommentChange = (content) => {
     setComment(content);
   };
 
   const handleAddComment = () => {
-    const status = submission.status;
+    const { status } = submission;
     const submissionContent = { status };
     if (comment.length > 0) {
       submissionContent.creditTransferComment = { comment };
@@ -82,7 +82,7 @@ const CreditTransfersDetailsPage = (props) => {
       }
     });
   };
-  
+
   let modalProps = {};
   switch (modalType) {
     case 'initiating-submit':
@@ -190,7 +190,7 @@ const CreditTransfersDetailsPage = (props) => {
       </div>
     </Modal>
   );
-  
+
   const rescindComment = (
     <>
       <label htmlFor="transfer-rescind-comment">
@@ -199,7 +199,7 @@ const CreditTransfersDetailsPage = (props) => {
           please enter a reason to your transfer partner.
         </h4>
       </label>
-      <textarea name="transfer-rescind-comment" className="col-sm-11" rows="3" onChange={(event) => { const commentValue = '<p>' + event.target.value + '</p>'; setComment(commentValue);}} />
+      <textarea name="transfer-rescind-comment" className="col-sm-11" rows="3" onChange={(event) => { const commentValue = `<p>${event.target.value}</p>`; setComment(commentValue); }} />
     </>
   );
   const transferValue = (
@@ -269,7 +269,7 @@ const CreditTransfersDetailsPage = (props) => {
         <h4> Comment to vehicle suppliers (mandatory to Reject, optional to Record)
         </h4>
       </label>
-      <textarea testid="transfer-comment-analyst" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { const commentValue = '<p>' + event.target.value + '</p>'; setComment(commentValue); }} />
+      <textarea testid="transfer-comment-analyst" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { const commentValue = `<p>${event.target.value}</p>`; setComment(commentValue); }} />
     </div>
   );
   const idirCommentSection = (
@@ -309,6 +309,8 @@ const CreditTransfersDetailsPage = (props) => {
         disableCheckboxes={!user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')}
         handleCheckboxClick={handleCheckboxClick}
         user={user}
+        hoverText={user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL') ? '' : 'You do not have permission to check the boxes.'}
+
       />
       <label htmlFor="transfer-comment">
         <h4>
@@ -316,7 +318,7 @@ const CreditTransfersDetailsPage = (props) => {
           &nbsp;{submission.debitFrom.name} and click Reject Notice
         </h4>
       </label>
-      <textarea testid="transfer-comment" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { const commentValue = '<p>' + event.target.value + '</p>'; setComment(commentValue); }} disabled={allChecked} />
+      <textarea testid="transfer-comment" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { const commentValue = `<p>${event.target.value}</p>`; setComment(commentValue); }} disabled={allChecked} />
     </div>
   );
   return (
@@ -334,7 +336,7 @@ const CreditTransfersDetailsPage = (props) => {
           classname="alert-danger"
           message={`${submission.debitFrom.name} has insufficient credits to fulfil this transfer.`}
         />
-      )}
+        )}
       {transferRole.governmentAnalyst && !sufficientCredit
         && (
         <Alert
@@ -342,7 +344,7 @@ const CreditTransfersDetailsPage = (props) => {
           classname="alert-danger"
           message={`${submission.debitFrom.name} has insufficient credits to fulfil ${submission.pending} pending transfer(s).`}
         />
-      )}
+        )}
       {submission.status
         && (
         <CreditTransfersAlert
@@ -350,8 +352,8 @@ const CreditTransfersDetailsPage = (props) => {
           errorMessage={errorMessage}
           submission={submission}
         />
-      )}
-      {((transferCommentsIDIR.length > 0 || transferCommentsSupplier.length > 0) || user.isGovernment) 
+        )}
+      {((transferCommentsIDIR.length > 0 || transferCommentsSupplier.length > 0) || user.isGovernment)
         && (
         <div className="comment-box mt-2">
           {transferCommentsIDIR.length > 0 && user.isGovernment && (
@@ -360,11 +362,11 @@ const CreditTransfersDetailsPage = (props) => {
           {transferCommentsSupplier.length > 0 && !user.isGovernment && (
             <DisplayComment commentArray={transferCommentsSupplier} />
           )}
-          {(transferRole.governmentAnalyst || transferRole.governmentDirector) &&
-            idirCommentSection}
+          {(transferRole.governmentAnalyst || transferRole.governmentDirector)
+            && idirCommentSection}
         </div>
         )}
-      
+
       {transferRole.governmentAnalyst && (
         <CreditTransfersDetailsSupplierTable
           submission={submission}
@@ -403,7 +405,7 @@ const CreditTransfersDetailsPage = (props) => {
                   user={user}
                 />
               </div>
-            )}
+              )}
           </div>
         </div>
       </div>
