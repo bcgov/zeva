@@ -9,7 +9,7 @@ import CustomPropTypes from '../../app/utilities/props';
 import VINListTable from './VINListTable';
 import DisplayComment from '../../app/components/DisplayComment';
 
-const CreditRequestVINListPage = (props) => {
+const CreditRequestValidatedDetailsPage = (props) => {
   const {
     content,
     handleAddComment,
@@ -215,9 +215,9 @@ const CreditRequestVINListPage = (props) => {
   );
 };
 
-CreditRequestVINListPage.defaultProps = {};
+CreditRequestValidatedDetailsPage.defaultProps = {};
 
-CreditRequestVINListPage.propTypes = {
+CreditRequestValidatedDetailsPage.propTypes = {
   content: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleAddComment: PropTypes.func.isRequired,
   handleCommentChange: PropTypes.func.isRequired,
@@ -230,4 +230,4 @@ CreditRequestVINListPage.propTypes = {
   user: CustomPropTypes.user.isRequired,
 };
 
-export default CreditRequestVINListPage;
+export default CreditRequestValidatedDetailsPage;
