@@ -98,6 +98,26 @@
 }
 
 #credit-transfers-details {
+  .status-alert{
+    width:91.5%;
+  }
+  .ql-container {
+    height: auto !important;
+  }
+
+  .ql-editor {
+    min-height: 100px !important;
+    max-height: 300px;
+    overflow: hidden;
+    overflow-y: scroll;
+    overflow-x: scroll;
+  }
+  .comment-box {
+    border: 1px solid $border-grey;
+    width:91.5%;
+    padding: 0.5rem 0.5rem;  
+  }
+
   #alert-warning {
     display: flex;
     flex-direction: row;
@@ -105,6 +125,7 @@
     border: 1px solid #8b1a1a;
     color: #8b1a1a;
     margin: 0.5rem 0;
+    width:91.5%
   }
   .form {
     background-color: $form-background-grey;
@@ -135,6 +156,9 @@
 }
 #transfer-sign-off {
   color: $default-text-blue;
+  .text-grey {
+    color: grey;
+  }
 }
 
 #credit-request-details {
@@ -156,12 +180,6 @@
   .comment-box {
     border: 1px solid $border-grey;
     padding: 1.2rem;  
-  }
-
-  .display-comment {
-    padding: 25px;
-    border-left: 10px solid #38598a;
-    background-color: #f2f2f2;
   }
 
   .table {
@@ -352,12 +370,6 @@
   .comment-box {
     border: 1px solid $border-grey;
     padding: 1.2rem;  
-  }
-
-  .display-comment {
-    padding: 25px;
-    border-left: 10px solid #38598a;
-    background-color: #f2f2f2;
   }
 
   .ReactTable {

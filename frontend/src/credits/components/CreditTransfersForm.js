@@ -8,10 +8,10 @@ import CustomPropTypes from '../../app/utilities/props';
 import TransferFormRow from './TransferFormRow';
 import FormDropdown from './FormDropdown';
 import CreditTransferSignoff from './CreditTransfersSignOff';
-import Comment from '../../app/components/Comment';
 import CreditTransfersAlert from './CreditTransfersAlert';
 import Alert from '../../app/components/Alert';
 import formatNumeric from '../../app/utilities/formatNumeric';
+import DisplayComment from '../../app/components/DisplayComment';
 
 const CreditTransfersForm = (props) => {
   const {
@@ -85,6 +85,7 @@ const CreditTransfersForm = (props) => {
             {user.hasPermission('CREATE_CREDIT_TRANSFERS') && (
             <Button
               disabled={unfilledRow || fields.transferPartner === ''}
+              buttonTooltip={unfilledRow || fields.transferPartner === '' ? 'please fill out all the rows to save' : ''}
               buttonType="save"
               action={() => {
                 handleSave();
@@ -137,7 +138,7 @@ const CreditTransfersForm = (props) => {
       )}
       {transferComments.length > 0
       && (
-        <Comment commentArray={transferComments} />
+        <DisplayComment commentArray={transferComments} />
       )}
       <div id="form">
         <form onSubmit={handleSave}>
@@ -177,17 +178,14 @@ const CreditTransfersForm = (props) => {
                   <h4><FontAwesomeIcon icon="plus" /> Add another line</h4>
                 </button>
                 <span className="transfer-total">Total CAD: $ {formatNumeric(total, 2)}</span>
-                {user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')
-                  && (
-                  <CreditTransferSignoff
-                    assertions={assertions}
-                    checkboxes={checkboxes}
-                    disableCheckboxes={unfilledRow || !user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')}
-                    handleCheckboxClick={handleCheckboxClick}
-                    hoverText={hoverText}
-                    user={user}
-                  />
-                  )}
+                <CreditTransferSignoff
+                  assertions={assertions}
+                  checkboxes={checkboxes}
+                  disableCheckboxes={unfilledRow || !user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')}
+                  handleCheckboxClick={handleCheckboxClick}
+                  hoverText={user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL') ? hoverText : 'You do not have permission to check the boxes.'}
+                  user={user}
+                />
                 {actionbar}
               </fieldset>
             </div>

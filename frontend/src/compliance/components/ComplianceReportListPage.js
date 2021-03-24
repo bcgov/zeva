@@ -24,7 +24,7 @@ const ComplianceReportListPage = (props) => {
           <button
             className="button primary ml-3"
             onClick={() => {
-              history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(/:id/g, 'new'));
+              history.push(ROUTES_COMPLIANCE.NEW);
             }}
             type="button"
           >

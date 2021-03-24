@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment-timezone';
 import { useParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import history from '../app/History';
 
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
@@ -12,7 +13,7 @@ import SupplierInformationDetailsPage from './components/SupplierInformationDeta
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 
 const SupplierInformationContainer = (props) => {
-  const { keycloak, user } = props;
+  const { keycloak, user, newReport } = props;
   const { id } = useParams();
   const [assertions, setAssertions] = useState([]);
   const [checkboxes, setCheckboxes] = useState([]);
@@ -54,11 +55,11 @@ const SupplierInformationContainer = (props) => {
       modelYear: moment().year(),
       confirmations: checkboxes,
     };
-
-    axios.post(ROUTES_COMPLIANCE.REPORTS, data).then((response) => {
-      history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
-      setDisabledCheckboxes('disabled');
-    });
+    
+      axios.post(ROUTES_COMPLIANCE.REPORTS, data).then((response) => {
+        history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
+        setDisabledCheckboxes('disabled');
+      });
   };
 
   const handleCheckboxClick = (event) => {
@@ -118,6 +119,7 @@ const SupplierInformationContainer = (props) => {
 SupplierInformationContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   user: CustomPropTypes.user.isRequired,
+  newReport: PropTypes.bool,
 };
 
 export default SupplierInformationContainer;

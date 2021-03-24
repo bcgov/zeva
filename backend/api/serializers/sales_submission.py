@@ -120,10 +120,19 @@ class SalesSubmissionListSerializer(
         return history.update_timestamp.date()
 
     def get_total_credits(self, obj):
+        request = self.context.get('request')
         total_a = 0
         total_b = 0
 
-        if obj.records.count() > 0:
+        if obj.validation_status in [
+                SalesSubmissionStatuses.VALIDATED,
+                SalesSubmissionStatuses.REJECTED
+        ] or (request.user.is_government and obj.validation_status in [
+                SalesSubmissionStatuses.CHECKED,
+                SalesSubmissionStatuses.RECOMMEND_APPROVAL,
+                SalesSubmissionStatuses.RECOMMEND_REJECTION,
+                SalesSubmissionStatuses.VALIDATED
+        ]):
             for record in obj.get_records_totals_by_vehicles():
                 vehicle = Vehicle.objects.filter(
                     id=record['vehicle_id']
@@ -195,6 +204,56 @@ class SalesSubmissionListSerializer(
         )
 
 
+class SalesSubmissionObligationActivitySerializer(
+        ModelSerializer, EnumSupportSerializerMixin, BaseSerializer
+):
+    total_credits = SerializerMethodField()
+
+    def get_total_credits(self, obj):
+        total_a = 0
+        total_b = 0
+        totals = {}
+
+        
+        for record in obj.get_content_totals_by_vehicles():
+            try:
+                model_year = float(record['xls_model_year'])
+            except ValueError:
+                continue
+            vehicle = Vehicle.objects.filter(
+                make__iexact=record['xls_make'],
+                model_name=record['xls_model'],
+                model_year__name=int(model_year),
+                validation_status=VehicleDefinitionStatuses.VALIDATED,
+            ).first()
+
+            if vehicle:
+                model_year_str = str(int(model_year))
+                if model_year_str not in totals.keys():
+                    totals[model_year_str] = 1
+                    print('totals:', totals.keys())
+                    # print(model_year_str)
+                    # totals[model_year_str] = {vehicle.get_credit_class(): 0}
+                # totals[model_year_str][vehicle.get_credit_class()] += vehicle.get_credit_value() * record['num_vins']
+                # print(totals.keys())
+                # if vehicle.get_credit_class() == 'A':
+                #     total_a += vehicle.get_credit_value() * record['num_vins']
+
+                # if vehicle.get_credit_class() == 'B':
+                #     total_b += vehicle.get_credit_value() * record['num_vins']
+        print(totals)
+        return {
+            'a': round(total_a, 2),
+            'b': round(total_b, 2)
+        }
+
+
+
+    class Meta:
+        model = SalesSubmission
+        fields = (
+             'total_credits',
+        )
 class SalesSubmissionSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
         BaseSerializer

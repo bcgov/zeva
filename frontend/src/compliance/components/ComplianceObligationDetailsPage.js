@@ -9,54 +9,22 @@ import CustomPropTypes from '../../app/utilities/props';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued';
 import ComplianceReportSignoff from './ComplianceReportSignOff';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceObligationDetailsPage = (props) => {
   const {
+    reportDetails,
+    reportYear,
     loading,
     user,
     handleCheckboxClick,
     assertions,
     checkboxes,
   } = props;
-  const creditsIssuedDetails = {
-    creditsIssuedSales:
-      [
-        {
-          year: 2020,
-          A: 359.12,
-          B: 43.43,
-        },
-        {
-          year: 2019,
-          A: 1367.43,
-          B: 347.86,
-        },
-      ],
-    creditsIssuedInitiative:
-      [{
-        year: 2019,
-        A: 286.54,
-      }],
-    creditsIssuedPurchase: [
-      {
-        year: 2020,
-        A: 100.00,
-      },
-    ],
-    creditsTransferredIn: [
-      {
-        year: 2020,
-        A: 200.00,
-      },
-    ],
-    creditsTransferredAway: [
-      {
-        year: 2020,
-        A: -800.00,
-        B: -200.00,
-      },
-    ],
-  };
+  const {
+    priorYearBalance, reportYearBalance, pendingBalance, transactions, provisionalBalance,
+  } = reportDetails;
+
   const details = {
     creditActivity: {
       history: [{
@@ -77,7 +45,7 @@ const ComplianceObligationDetailsPage = (props) => {
     <div id="compliance-supplier-information-details" className="page">
       <div className="row mt-3">
         <div className="col-sm-12">
-          <h2>2020 Model Year Report</h2>
+          <h2>{reportYear} Model Year Report</h2>
         </div>
       </div>
       <div className="row">
@@ -90,11 +58,11 @@ const ComplianceObligationDetailsPage = (props) => {
           <h3 className="mb-3">Compliance Obligation and Credit Activity</h3>
         </div>
         <div>
-          <table>
+          <table id="prior-year-balance">
             <tbody>
               <tr className="subclass">
                 <th className="large-column">
-                  Credit Balance at September 30, 2019
+                  Credit Balance at September 30, {priorYearBalance.year}
                 </th>
                 <th className="text-center text-blue">
                   A
@@ -108,24 +76,24 @@ const ComplianceObligationDetailsPage = (props) => {
                   &bull; &nbsp; &nbsp; Total Credit Balance
                 </td>
                 <td className="text-right">
-                  0
+                  {/* {priorYearBalance.a} */} 0
                 </td>
                 <td className="text-right">
-                  0
+                  {/* {priorYearBalance.b} */} 0
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
         <div className="mt-4">
-          <ComplianceObligationTableCreditsIssued creditsIssuedDetails={creditsIssuedDetails} />
+          <ComplianceObligationTableCreditsIssued transactions={reportDetails.transactions} />
         </div>
         <div className="mt-4">
-          <table>
+          <table id="report-year-balance">
             <tbody>
               <tr className="subclass">
                 <th className="large-column">
-                  Credit Balance at September 30, 2020
+                  Credit Balance at September 30, {reportYear}
                 </th>
                 <th className="text-center text-blue">
                   A
@@ -134,28 +102,27 @@ const ComplianceObligationDetailsPage = (props) => {
                   B
                 </th>
               </tr>
-              <tr>
-                <td className="text-blue">
-                  &bull; &nbsp; &nbsp; 2020 Credits
-                </td>
-                <td className="text-right">
-                  945.66
-                </td>
-                <td className="text-right">
-                  43.43
-                </td>
-              </tr>
-              <tr>
-                <td className="text-blue">
-                  &bull; &nbsp; &nbsp; 2019 Credits
-                </td>
-                <td className="text-right">
-                  567.43
-                </td>
-                <td className="text-right">
-                  147.86
-                </td>
-              </tr>
+              {Object.keys(reportYearBalance).sort((a, b) => {
+                if (a < b) {
+                  return 1;
+                }
+                if (a > b) {
+                  return -1;
+                }
+                return 0;
+              }).map((each) => (
+                <tr key={each}>
+                  <td className="text-blue">
+                    &bull; &nbsp; &nbsp; {each} Credits
+                  </td>
+                  <td className="text-right">
+                    {reportYearBalance[each].A}
+                  </td>
+                  <td className="text-right">
+                    {reportYearBalance[each].B}
+                  </td>
+                </tr>
+              ))}
               <tr className="subclass">
                 <th className="large-column">
                   Credits Pending for Consumer Sales
@@ -163,58 +130,66 @@ const ComplianceObligationDetailsPage = (props) => {
                 <th> </th>
                 <th> </th>
               </tr>
-              <tr>
-                <td className="text-blue">
-                  &bull; &nbsp; &nbsp; 2020 Credits
-                </td>
-                <td className="text-right">
-                  246.67
-                </td>
-                <td className="text-right"> </td>
-              </tr>
+              {Object.keys(pendingBalance).sort((a, b) => {
+                if (a < b) {
+                  return 1;
+                }
+                if (a > b) {
+                  return -1;
+                }
+                return 0;
+              }).map((each) => (
+                <tr key={each}>
+                  <td className="text-blue">
+                    &bull; &nbsp; &nbsp; {each} Credits
+                  </td>
+                  <td className="text-right">
+                    {pendingBalance[each].A}
+                  </td>
+                  <td className="text-right">{pendingBalance[each].B} </td>
+                </tr>
+              ))}
               <tr className="subclass">
                 <th className="large-column">
-                  Provisional Credit Balance at September 30, 2020
+                  Provisional Credit Balance at September 30, {reportYear}
                 </th>
                 <th> </th>
                 <th> </th>
               </tr>
-              <tr>
-                <td className="text-blue">
-                  &bull; &nbsp; &nbsp; 2020 Credits
-                </td>
-                <td className="text-right">
-                  1,192.33
-                </td>
-                <td className="text-right">
-                  43.43
-                </td>
-              </tr>
-              <tr>
-                <td className="text-blue">
-                  &bull; &nbsp; &nbsp; 2019 Credits
-                </td>
-                <td className="text-right">
-                  567.43
-                </td>
-                <td className="text-right">
-                  147.86
-                </td>
-              </tr>
+              {Object.keys(provisionalBalance).sort((a, b) => {
+                if (a < b) {
+                  return 1;
+                }
+                if (a > b) {
+                  return -1;
+                }
+                return 0;
+              }).map((each) => (
+                <tr key={each}>
+                  <td className="text-blue">
+                    &bull; &nbsp; &nbsp; {each} Credits
+                  </td>
+                  <td className="text-right">
+                    {provisionalBalance[each].A}
+                  </td>
+                  <td className="text-right">{provisionalBalance[each].B} </td>
+                </tr>
+              ))}
               <tr>
                 <td className="text-blue font-weight-bold">
                   &bull; &nbsp; &nbsp; Total Provisional Credit Balance:
                 </td>
                 <td className="text-right">
-                  1,759.76
+                  {formatNumeric(Object.keys(provisionalBalance).reduce((a, v) => a + provisionalBalance[v].A, 0), 2)}
                 </td>
                 <td className="text-right">
-                  191.29
+                  {formatNumeric(Object.keys(provisionalBalance).reduce((a, v) => a + provisionalBalance[v].B, 0), 2)}
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
+
         <div className="col-12">
           <h3 className="mt-3">2020 Compliance Ratio Reduction and Credit Offset</h3>
 

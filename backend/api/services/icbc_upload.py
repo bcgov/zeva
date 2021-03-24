@@ -32,7 +32,11 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
         )
         df = df[(df.MODEL_YEAR > 2018)]
         df = df[
-            (df.HYBRID_VEHICLE_FLAG != 'N') | (df.ELECTRIC_VEHICLE_FLAG != 'N')
+            (df.HYBRID_VEHICLE_FLAG != 'N') |
+            (df.ELECTRIC_VEHICLE_FLAG != 'N') |
+            (df.FUEL_TYPE.str.upper() == 'ELECTRIC') |
+            (df.FUEL_TYPE.str.upper() == 'HYDROGEN') |
+            (df.FUEL_TYPE.str.upper() == 'GASOLINEELECTRIC')
         ]
         df['MODEL_YEAR'].fillna(0, inplace=True)
         df['VIN'].fillna(0, inplace=True)

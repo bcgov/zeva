@@ -26,6 +26,8 @@ const ConsumerSalesContainer = (props) => {
   const [avgSales, setAvgSales] = useState(0);
 
   const { id } = useParams();
+  let supplierClass = '';
+  let supplierClassText = '';
 
   const reportStatuses = {
     assessment: '',
@@ -86,6 +88,21 @@ const ConsumerSalesContainer = (props) => {
     setAvgSales(Math.round(avg));
   };
 
+  const vehicleSupplierClass = (avg) => {
+    
+    if (avg < 1000) {
+      supplierClass = 'Small Volume Supplier';
+      supplierClassText = '(under 1,000 total LDV sales)';
+    } else if (avg < 5000) {
+      supplierClass = 'Medium Volume Supplier';
+      supplierClassText = '(under 5,000 total LDV sales)';
+    } else if (avg > 5000) {
+      supplierClass = 'Large Volume Supplier';
+      supplierClassText = '(over 5,000 total LDV sales)';
+    }
+    return [supplierClass, supplierClassText];
+  };
+
   const handleChange = (event) => {
     setSalesInput(event.target.value);
   };
@@ -108,11 +125,13 @@ const ConsumerSalesContainer = (props) => {
       setError(true);
     } else {
       setError(false);
-      axios.post(ROUTES_COMPLIANCE.VEHICLES, {
+      axios
+        .post(ROUTES_COMPLIANCE.VEHICLES, {
           data: vehicles,
           ldvSales: salesInput,
           modelYearReportId: id,
           previousSales: previousSalesInfo,
+          supplierClass: supplierClass.charAt(0),
           confirmation: checkboxes,
         })
         .then(() => {
@@ -156,6 +175,7 @@ const ConsumerSalesContainer = (props) => {
         handleCheckboxClick={handleCheckboxClick}
         handleInputChange={handleInputChange}
         avgSales={avgSales}
+        vehicleSupplierClass={vehicleSupplierClass}
       />
     </>
   );

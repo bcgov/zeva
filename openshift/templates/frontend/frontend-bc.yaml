@@ -75,6 +75,19 @@ objects:
           namespace: e52f12-tools
         pullSecret:
           name: zeva-image-pull-secret
+        forcePull: true
+        noCache: true          
+        env:
+          - name: ARTIFACTORY_USER
+            valueFrom:
+              secretKeyRef:
+                name: artifacts-zeva-artifactory-service-account-xgchey
+                key: username
+          - name: ARTIFACTORY_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: artifacts-zeva-artifactory-service-account-xgchey
+                key: password
       type: Source
     successfulBuildsHistoryLimit: 5
     triggers: []
