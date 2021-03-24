@@ -82,10 +82,21 @@ objects:
       strategy:
         sourceStrategy:
           env:
-          - name: PIP_INDEX_URL
+            - name: ARTIFACTORY_USER
+              valueFrom:
+                secretKeyRef:
+                  name: artifacts-zeva-artifactory-service-account-xgchey
+                  key: username
+            - name: ARTIFACTORY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: artifacts-zeva-artifactory-service-account-xgchey
+                  key: password            
           from:
             kind: ImageStreamTag
             name: python:3.6-1-63
+          forcePull: true
+          noCache: true            
         type: Source
       triggers:
       - imageChange: {}
