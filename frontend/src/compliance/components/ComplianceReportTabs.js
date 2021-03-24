@@ -31,7 +31,7 @@ const ComplianceReportTabs = (props) => {
         className={`nav-item ${(active === 'credit-activity') ? 'active' : ''} ${reportStatuses.creditActivity}`}
         role="presentation"
       >
-        <Link to={ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY}>Compliance Obligation</Link>
+        <Link to={ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(':id', id)}>Compliance Obligation</Link>
       </li>
       <li
         className={`nav-item ${(active === 'summary') ? 'active' : ''} ${reportStatuses.reportSummary}`}
