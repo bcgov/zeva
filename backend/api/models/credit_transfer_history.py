@@ -17,6 +17,8 @@ class CreditTransferHistory(Auditable):
         null=False,
         default=CreditTransferStatuses.DRAFT,
         db_comment="The validation status of this credit transfer. "
+                   "Status remains unchanged if the user is just adding a "
+                   "comment, but will generated a new record anyway."
                    "Valid statuses: {statuses}".format(
                        statuses=[c.name for c in CreditTransferStatuses]
                    )
