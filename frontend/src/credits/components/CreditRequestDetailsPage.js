@@ -6,6 +6,9 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import moment from 'moment-timezone';
+import 'react-quill/dist/quill.snow.css';
+import _ from 'lodash';
+
 import CreditRequestAlert from './CreditRequestAlert';
 import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
@@ -17,7 +20,7 @@ import ModelListTable from './ModelListTable';
 import CreditRequestSummaryTable from './CreditRequestSummaryTable';
 import getFileSize from '../../app/utilities/getFileSize';
 import DisplayComment from '../../app/components/DisplayComment';
-import 'react-quill/dist/quill.snow.css';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -321,6 +324,13 @@ const CreditRequestDetailsPage = (props) => {
             submission={submission}
             user={user}
           />
+        </div>
+      </div>
+
+      <div className="row my-4">
+        <div className="col-sm-12">
+          It is recommended that the Director issue a total of {formatNumeric(_.sumBy(submission.eligible, 'vinCount'), 0)} ZEV credits to{' '}
+          {submission.organization.name} based on {formatNumeric(_.sumBy(submission.content, 'sales'), 0)} eligible ZEV sales.
         </div>
       </div>
 
