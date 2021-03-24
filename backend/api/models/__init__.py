@@ -36,3 +36,5 @@ from . import model_year_report_history, model_year_report_make
 from . import model_year_report_statuses, model_year_report_address
 from . import model_year_report_previous_sales
 from . import model_year_report_vehicle
+from . import model_year_report_credit_offset
+from . import model_year_report_compliance_obligation
