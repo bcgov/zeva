@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceObligationTableCreditsIssued = (props) => {
   const { transactions } = props;
@@ -39,10 +40,10 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               &bull; &nbsp; &nbsp; {each.modelYear} Credits
             </td>
             <td className={numberClassname}>
-              {each.A}
+              {formatNumeric(each.A, 2)}
             </td>
             <td className={numberClassname}>
-              {each.B}
+              {formatNumeric(each.B, 2)}
             </td>
           </tr>
         ))}
