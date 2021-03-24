@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const ComplianceObligationTableCreditsIssued = (props) => {
   const { transactions } = props;
@@ -17,10 +18,10 @@ const ComplianceObligationTableCreditsIssued = (props) => {
           <th className="large-column">
             {title}
           </th>
-          <th className="text-center text-blue">
+          <th className="small-column text-center text-blue">
             {showAandB ? 'A' : ''}
           </th>
-          <th className="text-center text-blue">
+          <th className="small-column text-center text-blue">
             {showAandB ? 'B' : ''}
           </th>
         </tr>
@@ -74,5 +75,12 @@ const ComplianceObligationTableCreditsIssued = (props) => {
       </tbody>
     </table>
   );
+};
+ComplianceObligationTableCreditsIssued.propTypes = {
+  transactions: PropTypes.shape({
+    creditsIssuedSales: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+    transfersIn: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+    transfersOut: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  }).isRequired,
 };
 export default ComplianceObligationTableCreditsIssued;

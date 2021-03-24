@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { now } from 'moment';
 import CustomPropTypes from '../../app/utilities/props';
 import Loading from '../../app/components/Loading';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import Button from '../../app/components/Button';
-import { now } from 'moment';
 import history from '../../app/History';
 import ComplianceReportSignOff from './ComplianceReportSignOff';
-import ConsumerSalesLDVModalTable from '../components/ConsumerSalesLDVModelTable';
+import ConsumerSalesLDVModalTable from './ConsumerSalesLDVModelTable';
 
 const ConsumerSalesDetailsPage = (props) => {
   const {
@@ -45,8 +45,6 @@ const ConsumerSalesDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
-
-  
 
   return (
     <div id="compliance-consumer-sales-details" className="page">
@@ -87,7 +85,7 @@ const ConsumerSalesDetailsPage = (props) => {
                     onChange={handleChange}
                     readOnly={readOnly}
                     min="0"
-                  ></input>
+                  />
                   {error && (
                     <small className="text-danger ml-2">
                       2020 Model Year LDV Sales\Leases can't be blank
@@ -118,7 +116,7 @@ const ConsumerSalesDetailsPage = (props) => {
                           onChange={handleInputChange}
                           id="first"
                           min="0"
-                        ></input>
+                        />
                       </div>
                       <div className="row ml-1 mb-2">
                         <label className="text-blue mr-4 font-weight-bold">
@@ -130,7 +128,7 @@ const ConsumerSalesDetailsPage = (props) => {
                           onChange={handleInputChange}
                           id="second"
                           min="0"
-                        ></input>
+                        />
                       </div>
                       <div className="row ml-1 mb-2">
                         <label className="text-blue mr-4 font-weight-bold">
@@ -142,7 +140,7 @@ const ConsumerSalesDetailsPage = (props) => {
                           onChange={handleInputChange}
                           id="third"
                           min="0"
-                        ></input>
+                        />
                       </div>
                     </form>
                   </div>
@@ -244,13 +242,13 @@ ConsumerSalesDetailsPage.propTypes = {
   error: PropTypes.bool.isRequired,
   assertions: PropTypes.arrayOf(PropTypes.shape()),
   checkboxes: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   ),
   handleCheckboxClick: PropTypes.func.isRequired,
   disabledCheckboxes: PropTypes.string.isRequired,
   readOnly: PropTypes.bool.isRequired,
   handleInputChange: PropTypes.func.isRequired,
   avgSales: PropTypes.number.isRequired,
-  vehicleSupplierClass:PropTypes.func.isRequired,
+  vehicleSupplierClass: PropTypes.func.isRequired,
 };
 export default ConsumerSalesDetailsPage;
