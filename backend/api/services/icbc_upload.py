@@ -70,7 +70,7 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
                         })
                 vehicle_id = vehicle.id
 
-                IcbcRegistrationData.objects.get_or_create(
+                IcbcRegistrationData.objects.update_or_create(
                     vin=icbc_vehicle_vin,
                     defaults={
                         'create_user': requesting_user.username,
