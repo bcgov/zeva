@@ -70,7 +70,7 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
                         })
                 vehicle_id = vehicle.id
 
-                IcbcRegistrationData.objects.update_or_create(
+                (row, created) = IcbcRegistrationData.objects.get_or_create(
                     vin=icbc_vehicle_vin,
                     defaults={
                         'create_user': requesting_user.username,
@@ -78,6 +78,13 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
                         'icbc_vehicle_id': vehicle_id,
                         'icbc_upload_date_id': current_to_date.id
                     })
+
+                if not created and row.icbc_vehicle_id != vehicle_id:
+                    row.icbc_vehicle_id = vehicle_id
+                    row.icbc_upload_date_id = current_to_date.id
+                    row.update_user = requesting_user.username
+                    row.save()
+
         except Exception as e:
             print(e)
 
