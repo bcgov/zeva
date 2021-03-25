@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-
+import { useParams } from 'react-router-dom';
 import ROUTES_CREDITS from '../app/routes/Credits';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
@@ -20,8 +20,11 @@ const ComplianceObligationContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [assertions, setAssertions] = useState([]);
   const [checkboxes, setCheckboxes] = useState([]);
-  const [reportYear, setReportYear] = useState('2021');
+  const [reportYear, setReportYear] = useState('2019');
   const [reportDetails, setReportDetails] = useState({});
+  const [ratios, setRatios] = useState({});
+  const [supplierClassInfo, setSupplierClassInfo] = useState({ sales: 0, class: '' });
+  const { id } = useParams();
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
       const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
@@ -52,21 +55,39 @@ const ComplianceObligationContainer = (props) => {
 
   const refreshDetails = () => {
     setLoading(true);
+    const reportPromise = axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
+      const reportDetailsResponse = response.data;
+      setReportYear(reportDetailsResponse.modelYear.name);
+      const { supplierClass, ldvSales } = reportDetailsResponse;
+      setSupplierClassInfo({ class: supplierClass, ldvSales });
+    });
     const listAssertion = axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
       const filteredAssertions = response.data.filter((data) => data.module === 'compliance_obligation');
       setAssertions(filteredAssertions);
     });
 
+    const ratioPromise = axios.get(ROUTES_COMPLIANCE.RATIOS).then((response) => {
+      const filteredRatio = response.data.filter((data) => data.modelYear === reportYear)[0];
+      setRatios(filteredRatio);
+    });
     const complianceReportDetails = axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS_BY_YEAR
       .replace(':year', reportYear)).then((response) => {
       const details = response.data;
-      const creditsIssuedSales = parseCreditTransactions(details.reportYearTransactions.creditsIssuedSales);
-      const transfersIn = parseCreditTransactions(details.reportYearTransactions.transfersIn);
-      const transfersOut = parseCreditTransactions(details.reportYearTransactions.transfersOut);
+      const creditsIssuedSales = parseCreditTransactions(
+        details.reportYearTransactions.creditsIssuedSales,
+      );
+      const transfersIn = parseCreditTransactions(
+        details.reportYearTransactions.transfersIn,
+      );
+      const transfersOut = parseCreditTransactions(
+        details.reportYearTransactions.transfersOut,
+      );
       const reportYearBalance = {};
       creditsIssuedSales.forEach((each) => {
         reportYearBalance[each.modelYear] = {
-          A: parseFloat(each.A) || 0, B: parseFloat(each.B) || 0 };
+          A: parseFloat(each.A) || 0,
+          B: parseFloat(each.B) || 0,
+        };
       });
       transfersIn.forEach((each) => {
         if (!Object.keys(reportYearBalance).includes(each.modelYear)) {
@@ -108,19 +129,20 @@ const ComplianceObligationContainer = (props) => {
       });
     });
 
-    Promise.all([listAssertion, complianceReportDetails]).then(() => {
+    Promise.all([reportPromise, listAssertion, complianceReportDetails, ratioPromise]).then(() => {
       setLoading(false);
     });
   };
 
   useEffect(() => {
     refreshDetails();
-  }, [keycloak.authenticated]);
+  }, [reportYear]);
 
   return (
     <>
       <ComplianceReportTabs active="credit-activity" reportStatuses={reportStatuses} user={user} />
       <ComplianceObligationDetailsPage
+        ratios={ratios}
         reportDetails={reportDetails}
         reportYear={reportYear}
         loading={loading}
@@ -128,6 +150,7 @@ const ComplianceObligationContainer = (props) => {
         assertions={assertions}
         checkboxes={checkboxes}
         handleCheckboxClick={handleCheckboxClick}
+        supplierClassInfo={supplierClassInfo}
       />
     </>
   );

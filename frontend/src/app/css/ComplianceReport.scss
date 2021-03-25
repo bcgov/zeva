@@ -65,9 +65,12 @@
       font-weight: bold;
       background-color: $default-background-grey;
     }
+    .small-column {
+      width: 15%;
+    }
     .large-column {
       color: $default-text-blue;
-      width: 70%;
+      // width: 70%;
       border-right: 4px solid white;
     }
   }

@@ -13,10 +13,11 @@ from api.serializers.vehicle import ModelYearSerializer
 
 
 class ModelYearReportSerializer(ModelSerializer):
+    model_year = ModelYearSerializer()
     class Meta:
         model = ModelYearReport
         fields = (
-            'organization_name', 'supplier_class', 'ldv_sales',
+            'organization_name', 'supplier_class', 'ldv_sales', 'model_year'
         )
 
 
