@@ -12,6 +12,7 @@ import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceObligationDetailsPage = (props) => {
   const {
+    offsetNumbers,
     supplierClassInfo,
     reportDetails,
     ratios,
@@ -21,6 +22,8 @@ const ComplianceObligationDetailsPage = (props) => {
     handleCheckboxClick,
     assertions,
     checkboxes,
+    handleOffsetChange,
+    handleSave,
   } = props;
   const {
     priorYearBalance, reportYearBalance, pendingBalance, transactions, provisionalBalance,
@@ -283,37 +286,38 @@ const ComplianceObligationDetailsPage = (props) => {
                     B
                   </th>
                 </tr>
-                <tr>
-                  <td>
-                    &bull; &nbsp; &nbsp; {reportYear} Credits
-                  </td>
-                  <td>
-                    <input type="number" />
-                  </td>
-                  <td>
-                    <input type="number" />
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    &bull; &nbsp; &nbsp; 2019 Credits
-                  </td>
-                  <td>
-                    <input type="number" />
-                  </td>
-                  <td>
-                    <input type="number" />
-                  </td>
-                </tr>
+                {offsetNumbers && Object.keys(offsetNumbers).map((year) => (
+                  <tr key={year}>
+                    <td>
+                      &bull; &nbsp; &nbsp; {year} Credits
+                    </td>
+                    <td>
+                      <input
+                        name="A"
+                        id={`${year}-A`}
+                        onChange={(event) => { handleOffsetChange(event); }}
+                        type="number"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        name="B"
+                        id={`${year}-B`}
+                        onChange={(event) => { handleOffsetChange(event); }}
+                        type="number"
+                      />
+                    </td>
+                  </tr>
+                ))}
                 <tr className="subclass">
                   <th className="large-column">
                     <span>
                       Total Offset:
                     </span>
-                    <span className="float-right mr-3"> 21</span>
+                    <span className="float-right mr-3">{formatNumeric(Object.keys(offsetNumbers).reduce((a, v) => a + offsetNumbers[v].A + offsetNumbers[v].B, 0), 2)}</span>
                   </th>
-                  <th className="text-right pr-3">758.71</th>
-                  <th className="text-right pr-3">191.29</th>
+                  <th className="text-right pr-3">{formatNumeric(Object.keys(offsetNumbers).reduce((a, v) => a + offsetNumbers[v].A, 0), 2)}</th>
+                  <th className="text-right pr-3">{formatNumeric(Object.keys(offsetNumbers).reduce((a, v) => a + offsetNumbers[v].B, 0), 2)}</th>
                 </tr>
               </tbody>
             </table>
@@ -333,7 +337,7 @@ const ComplianceObligationDetailsPage = (props) => {
               {/* <Button buttonType="back" locationRoute="/compliance/reports" /> */}
             </span>
             <span className="right-content">
-              <Button buttonType="save" optionalClassname="button primary" action={() => {}} />
+              <Button buttonType="save" optionalClassname="button primary" action={() => {handleSave()}} />
             </span>
           </div>
         </div>

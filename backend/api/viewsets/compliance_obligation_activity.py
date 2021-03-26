@@ -11,7 +11,7 @@ from api.serializers.model_year_report import \
     ModelYearReportSerializer, ModelYearReportListSerializer, \
     ModelYearReportSaveSerializer
 from auditable.views import AuditableMixin
-from api.serializers.compliance_obligation_activity import ComplianceObligationActivityDetailsSerializer
+from api.serializers.compliance_obligation_activity import ComplianceObligationActivityDetailsSerializer, ComplianceObligationActivitySaveSerializer
 from api.serializers.organization import \
     OrganizationSerializer
 class ComplianceObligationActivityViewset(
@@ -27,43 +27,32 @@ class ComplianceObligationActivityViewset(
     http_method_names = ['get', 'post', 'put', 'patch']
 
     serializer_classes = {
+        'create': ComplianceObligationActivitySaveSerializer,
         'default': ComplianceObligationActivityDetailsSerializer,
         'details': ComplianceObligationActivityDetailsSerializer
     }
 
     def get_queryset(self):
         request = self.request
-
         queryset = ModelYearReport.objects.filter(
             organization_id=request.user.organization.id
         )
-
         return queryset
 
     def get_serializer_class(self):
         if self.action in list(self.serializer_classes.keys()):
             return self.serializer_classes[self.action]
-
         return self.serializer_classes['default']
 
 
     @action(detail=False, url_path=r'(?P<year>\d+)')
     @method_decorator(permission_required('VIEW_SALES'))
     def details(self, request, *args, **kwargs):
-        """
-     
-        """
         organization = request.user.organization
-        #call credit transactions and filter by organization
         transactions = CreditTransaction.objects.filter(
         Q(credit_to=organization) | Q(debit_from=organization)
         )
-        
-        #query here for year/cutoff date for prior year
-        #make a variable for output and replace data with that 
         year = kwargs.get('year')
         serializer = ComplianceObligationActivityDetailsSerializer(transactions, context={'request': request, 'kwargs': kwargs})
-
-
 
         return Response(serializer.data)

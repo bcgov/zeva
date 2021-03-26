@@ -17,6 +17,7 @@ const ComplianceObligationContainer = (props) => {
     reportSummary: '',
     supplierInformation: '',
   };
+  const [offsetNumbers, setOffsetNumbers] = useState({});
   const [loading, setLoading] = useState(true);
   const [assertions, setAssertions] = useState([]);
   const [checkboxes, setCheckboxes] = useState([]);
@@ -36,7 +37,31 @@ const ComplianceObligationContainer = (props) => {
       setCheckboxes(checked);
     }
   };
+  const handleOffsetChange = (event) => {
+    const { id, value } = event.target;
+    const year = id.split('-')[0];
+    const creditClass = id.split('-')[1];
+    if (Object.keys(offsetNumbers).includes(year)) {
+      const yearTotal = offsetNumbers[year];
+      const newYearTotal = { ...yearTotal, [creditClass]: parseFloat(value) };
+      setOffsetNumbers({ ...offsetNumbers, [year]: newYearTotal });
+    }
+  };
+  const handleSave = () => {
+    const data = {
+      offset: offsetNumbers,
+      creditActivity: reportDetails,
 
+    };
+    // pass offset numbers
+
+    // pass credit activity numbers
+    axios.post(ROUTES_COMPLIANCE.REPORT_DETAILS_BY_YEAR.replace(':year', reportYear),
+      data).then((response) => {
+      console.log(response);
+      console.log(offsetNumbers);
+    });
+  };
   const parseCreditTransactions = (data) => {
     const output = [];
     data.forEach((element) => {
@@ -72,6 +97,7 @@ const ComplianceObligationContainer = (props) => {
     });
     const complianceReportDetails = axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS_BY_YEAR
       .replace(':year', reportYear)).then((response) => {
+      const yearObject = {};
       const details = response.data;
       const creditsIssuedSales = parseCreditTransactions(
         details.reportYearTransactions.creditsIssuedSales,
@@ -84,12 +110,14 @@ const ComplianceObligationContainer = (props) => {
       );
       const reportYearBalance = {};
       creditsIssuedSales.forEach((each) => {
+        yearObject[each.modelYear] = { A: 0, B: 0 };
         reportYearBalance[each.modelYear] = {
           A: parseFloat(each.A) || 0,
           B: parseFloat(each.B) || 0,
         };
       });
       transfersIn.forEach((each) => {
+        yearObject[each.modelYear] = { A: 0, B: 0 };
         if (!Object.keys(reportYearBalance).includes(each.modelYear)) {
           reportYearBalance[each.modelYear] = { A: 0, B: 0 };
         }
@@ -97,6 +125,7 @@ const ComplianceObligationContainer = (props) => {
         reportYearBalance[each.modelYear].B += parseFloat(each.B) || 0;
       });
       transfersOut.forEach((each) => {
+        yearObject[each.modelYear] = { A: 0, B: 0 };
         if (!Object.keys(reportYearBalance).includes(each.modelYear)) {
           reportYearBalance[each.modelYear] = { A: 0, B: 0 };
         }
@@ -105,13 +134,15 @@ const ComplianceObligationContainer = (props) => {
       });
       const provisionalBalance = {};
       Object.keys(reportYearBalance).forEach((year) => {
+        yearObject[year] = { A: 0, B: 0 };
         provisionalBalance[year] = { A: parseFloat(reportYearBalance[year].A), B: parseFloat(reportYearBalance[year].B) };
       });
       Object.keys(details.pendingBalance).forEach((year) => {
+        yearObject[year] = { A: 0, B: 0 };
         provisionalBalance[year].A += parseFloat(details.pendingBalance[year].A);
         provisionalBalance[year].B += parseFloat(details.pendingBalance[year].B);
       });
-
+      setOffsetNumbers(yearObject);
       setReportDetails({
         priorYearBalance: {
           year: details.priorYearBalance.year,
@@ -142,6 +173,7 @@ const ComplianceObligationContainer = (props) => {
     <>
       <ComplianceReportTabs active="credit-activity" reportStatuses={reportStatuses} user={user} />
       <ComplianceObligationDetailsPage
+        offsetNumbers={offsetNumbers}
         ratios={ratios}
         reportDetails={reportDetails}
         reportYear={reportYear}
@@ -151,6 +183,8 @@ const ComplianceObligationContainer = (props) => {
         checkboxes={checkboxes}
         handleCheckboxClick={handleCheckboxClick}
         supplierClassInfo={supplierClassInfo}
+        handleOffsetChange={handleOffsetChange}
+        handleSave={handleSave}
       />
     </>
   );

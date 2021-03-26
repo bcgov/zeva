@@ -50,6 +50,6 @@ router.register(
     r'compliance/vehicle', ModelYearReportConsumerSalesViewSet, basename='consumer-sales'
 )
 router.register(
-    r'compliance/compliance-activity-details', ComplianceObligationActivityViewset, basename='details'
+    r'compliance/compliance-activity-details', ComplianceObligationActivityViewset, basename='compliance-obligation-activity'
 )
 urlpatterns = router.urls

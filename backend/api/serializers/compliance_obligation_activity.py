@@ -7,6 +7,7 @@ from api.models.account_balance import AccountBalance
 from api.models.vehicle import Vehicle
 from api.models.sales_submission import SalesSubmission
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
+from api.models.model_year_report_compliance_obligation import ModelYearReportComplianceObligation
 from api.models.credit_transaction import CreditTransaction
 from api.serializers.credit_transaction import CreditClassSerializer, CreditTransactionObligationActivitySerializer
 from api.serializers.account_balance import AccountBalanceSerializer
@@ -137,4 +138,23 @@ class ComplianceObligationActivityDetailsSerializer(serializers.ModelSerializer)
         fields = (
             'report_year_balance', 'pending_balance',
             'prior_year_balance', 'report_year_transactions'
+        )
+class ComplianceObligationActivitySaveSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        print('SAVE SERIALIZER')
+        print(validated_data)
+        # number_of_credits = validated_data.get('number_of_credits')
+        # credit_value = validated_data.get('credit_value')
+        # total_value = number_of_credits * credit_value
+
+        # credit_transaction = CreditTransaction.objects.create(
+        #     **validated_data,
+        #     total_value=total_value
+        # )
+        # return credit_transaction
+
+    class Meta:
+        model = ModelYearReportComplianceObligation
+        fields = ('model_year_report', 'model_year',
+        'credit_a_value', 'credit_b_value', 'category'
         )
