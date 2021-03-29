@@ -10,14 +10,20 @@ from api.models.model_year_report_address import ModelYearReportAddress
 from api.models.model_year_report_make import ModelYearReportMake
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.serializers.vehicle import ModelYearSerializer
+from api.serializers.model_year_report_address import ModelYearReportAddressSerializer
+from api.serializers.model_year_report_make import ModelYearReportMakeSerializer
 
 
 class ModelYearReportSerializer(ModelSerializer):
     model_year = ModelYearSerializer()
+    model_year_report_addresses = ModelYearReportAddressSerializer(many=True)
+    makes = ModelYearReportMakeSerializer(many=True)
+
     class Meta:
         model = ModelYearReport
         fields = (
-            'organization_name', 'supplier_class', 'ldv_sales', 'model_year'
+            'organization_name', 'supplier_class', 'ldv_sales', 'model_year',
+            'model_year_report_addresses', 'makes',
         )
 
 

@@ -24,7 +24,7 @@ const ComplianceReportsContainer = (props) => {
     setLoading(showLoading);
     axios.get(ROUTES_COMPLIANCE.REPORTS).then((response) => {
       setData(response.data);
-      displayNewReportBtn(response.data)
+      displayNewReportBtn(response.data);
       setLoading(false);
     });
   };

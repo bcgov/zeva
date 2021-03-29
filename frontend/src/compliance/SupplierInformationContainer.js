@@ -55,11 +55,11 @@ const SupplierInformationContainer = (props) => {
       modelYear: moment().year(),
       confirmations: checkboxes,
     };
-    
-      axios.post(ROUTES_COMPLIANCE.REPORTS, data).then((response) => {
-        history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
-        setDisabledCheckboxes('disabled');
-      });
+
+    axios.post(ROUTES_COMPLIANCE.REPORTS, data).then((response) => {
+      history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
+      setDisabledCheckboxes('disabled');
+    });
   };
 
   const handleCheckboxClick = (event) => {
@@ -75,11 +75,22 @@ const SupplierInformationContainer = (props) => {
   };
 
   const refreshDetails = () => {
-    axios.get(ROUTES_VEHICLES.LIST).then((response) => {
-      const { data } = response;
-      setMakes([...new Set(data.map((vehicle) => vehicle.make.toUpperCase()))]);
-      setLoading(false);
-    });
+    if (id) {
+      axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
+        const { makes: modelYearReportMakes } = response.data;
+        const currentMakes = modelYearReportMakes.map((each) => (each.make));
+        console.error(currentMakes);
+        setMakes(currentMakes);
+        setLoading(false);
+      });
+    } else {
+      axios.get(ROUTES_VEHICLES.LIST).then((response) => {
+        const { data } = response;
+        setMakes([...new Set(data.map((vehicle) => vehicle.make.toUpperCase()))]);
+        setLoading(false);
+      });
+    }
+
     axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
       const filteredAssertions = response.data.filter((data) => data.module === 'supplier_information');
       setAssertions(filteredAssertions);
