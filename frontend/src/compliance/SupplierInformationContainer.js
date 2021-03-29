@@ -2,7 +2,6 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment-timezone';
 import { useParams } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import history from '../app/History';
 
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
@@ -13,11 +12,12 @@ import SupplierInformationDetailsPage from './components/SupplierInformationDeta
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 
 const SupplierInformationContainer = (props) => {
-  const { keycloak, user, newReport } = props;
+  const { keycloak, user } = props;
   const { id } = useParams();
   const [assertions, setAssertions] = useState([]);
   const [checkboxes, setCheckboxes] = useState([]);
   const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
+  const [details, setDetails] = useState({});
 
   const reportStatuses = {
     assessment: '',
@@ -56,10 +56,17 @@ const SupplierInformationContainer = (props) => {
       confirmations: checkboxes,
     };
 
-    axios.post(ROUTES_COMPLIANCE.REPORTS, data).then((response) => {
-      history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
-      setDisabledCheckboxes('disabled');
-    });
+    if (id) {
+      axios.patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data).then((response) => {
+        history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
+        setDisabledCheckboxes('disabled');
+      });
+    } else {
+      axios.post(ROUTES_COMPLIANCE.REPORTS, data).then((response) => {
+        history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
+        setDisabledCheckboxes('disabled');
+      });
+    }
   };
 
   const handleCheckboxClick = (event) => {
@@ -77,16 +84,41 @@ const SupplierInformationContainer = (props) => {
   const refreshDetails = () => {
     if (id) {
       axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
-        const { makes: modelYearReportMakes } = response.data;
+        const {
+          makes: modelYearReportMakes,
+          modelYearReportAddresses,
+          modelYearReportHistory,
+          organizationName,
+          validationStatus,
+          confirmations,
+        } = response.data;
+
         const currentMakes = modelYearReportMakes.map((each) => (each.make));
-        console.error(currentMakes);
+
         setMakes(currentMakes);
+        setDetails({
+          organization: {
+            name: organizationName,
+            organizationAddress: modelYearReportAddresses,
+          },
+          supplierInformation: {
+            history: modelYearReportHistory,
+            validationStatus,
+          },
+        });
+        setCheckboxes(confirmations);
+
         setLoading(false);
       });
     } else {
       axios.get(ROUTES_VEHICLES.LIST).then((response) => {
         const { data } = response;
+
         setMakes([...new Set(data.map((vehicle) => vehicle.make.toUpperCase()))]);
+        setDetails({
+          organization: user.organization,
+        });
+
         setLoading(false);
       });
     }
@@ -122,6 +154,7 @@ const SupplierInformationContainer = (props) => {
         checkboxes={checkboxes}
         handleCheckboxClick={handleCheckboxClick}
         disabledCheckboxes={disabledCheckboxes}
+        details={details}
       />
     </>
   );
@@ -130,7 +163,6 @@ const SupplierInformationContainer = (props) => {
 SupplierInformationContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   user: CustomPropTypes.user.isRequired,
-  newReport: PropTypes.bool,
 };
 
 export default SupplierInformationContainer;

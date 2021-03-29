@@ -10,7 +10,7 @@ const ComplianceReportAlert = (props) => {
   } = props;
 
   const {
-    history, status,
+    history, validationStatus,
   } = report;
 
   let message = '';
@@ -19,12 +19,12 @@ const ComplianceReportAlert = (props) => {
   const icon = 'exclamation-circle';
 
   const statusFilter = (transferStatus) => history
-    .filter((each) => each.status === transferStatus)
+    .filter((each) => each.validationStatus === transferStatus)
     .reverse()[0];
-  const date = moment(statusFilter(status).createTimestamp).format('MMM D, YYYY');
-  const userName = statusFilter(status).createUser.displayName;
+  const date = moment(statusFilter(validationStatus).createTimestamp).format('MMM D, YYYY');
+  const userName = statusFilter(validationStatus).createUser.displayName;
 
-  switch (status) {
+  switch (validationStatus) {
     case 'DRAFT':
       title = 'Draft';
       message = `${type} confirmed ${date} by ${userName}. Model Year Report pending submission to Government of B.C.`;

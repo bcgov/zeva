@@ -10,7 +10,7 @@ class ModelYearReportAddressSerializer(ModelSerializer):
     class Meta:
         model = ModelYearReportAddress
         fields = (
-            'representative_name', 'address_line_1', 'address_line_2',
+            'id', 'representative_name', 'address_line_1', 'address_line_2',
             'address_line_3', 'city', 'postal_code', 'state', 'county',
             'country', 'other', 'address_type',
         )
