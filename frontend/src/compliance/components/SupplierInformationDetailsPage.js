@@ -1,7 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { now } from 'moment';
 
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
@@ -11,6 +10,7 @@ import ComplianceReportSignOff from './ComplianceReportSignOff';
 
 const SupplierInformationDetailsPage = (props) => {
   const {
+    details,
     handleChangeMake,
     handleDeleteMake,
     handleSubmit,
@@ -24,18 +24,6 @@ const SupplierInformationDetailsPage = (props) => {
     disabledCheckboxes,
     handleCheckboxClick,
   } = props;
-
-  const details = {
-    supplierInformation: {
-      history: [{
-        status: 'DRAFT',
-        createTimestamp: now(),
-        createUser: user,
-      }],
-      status: 'DRAFT',
-    },
-    organization: user.organization,
-  };
 
   if (loading) {
     return <Loading />;
@@ -177,6 +165,10 @@ SupplierInformationDetailsPage.defaultProps = {
 };
 
 SupplierInformationDetailsPage.propTypes = {
+  details: PropTypes.shape({
+    organization: PropTypes.shape(),
+    supplierInformation: PropTypes.shape(),
+  }).isRequired,
   handleChangeMake: PropTypes.func.isRequired,
   handleDeleteMake: PropTypes.func.isRequired,
   handleSubmitMake: PropTypes.func.isRequired,
@@ -185,8 +177,10 @@ SupplierInformationDetailsPage.propTypes = {
   make: PropTypes.string.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   user: CustomPropTypes.user.isRequired,
-  assertions: PropTypes.arrayOf(PropTypes.shape()),
-  checkboxes: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])),
+  assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  checkboxes: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  ).isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   disabledCheckboxes: PropTypes.string.isRequired,
 };
