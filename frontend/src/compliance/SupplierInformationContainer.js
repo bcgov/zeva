@@ -56,7 +56,7 @@ const SupplierInformationContainer = (props) => {
       confirmations: checkboxes,
     };
 
-    if (id) {
+    if (id && id !== 'new') {
       axios.patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data).then((response) => {
         history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
         setDisabledCheckboxes('disabled');
@@ -82,7 +82,7 @@ const SupplierInformationContainer = (props) => {
   };
 
   const refreshDetails = () => {
-    if (id) {
+    if (id && id !== 'new') {
       axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
         const {
           makes: modelYearReportMakes,
@@ -93,9 +93,12 @@ const SupplierInformationContainer = (props) => {
           confirmations,
         } = response.data;
 
-        const currentMakes = modelYearReportMakes.map((each) => (each.make));
+        if (modelYearReportMakes) {
+          const currentMakes = modelYearReportMakes.map((each) => (each.make));
 
-        setMakes(currentMakes);
+          setMakes(currentMakes);
+        }
+
         setDetails({
           organization: {
             name: organizationName,

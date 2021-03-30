@@ -232,5 +232,4 @@ class ModelYearReportSaveSerializer(
         model = ModelYearReport
         fields = (
             'id', 'model_year', 'validation_status', 'makes',
-            'organization_name',
         )
