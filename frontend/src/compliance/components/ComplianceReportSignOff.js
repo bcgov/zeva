@@ -9,7 +9,6 @@ const ComplianceReportSignOff = (props) => {
     checkboxes,
     handleCheckboxClick,
     disabledCheckboxes,
-    user,
   } = props;
 
   return (
@@ -39,11 +38,12 @@ const ComplianceReportSignOff = (props) => {
 ComplianceReportSignOff.defaultProps = {
   assertions: [],
   checkboxes: [],
+  disabledCheckboxes: '',
 };
 ComplianceReportSignOff.propTypes = {
   assertions: PropTypes.arrayOf(PropTypes.shape()),
   checkboxes: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   ),
   handleCheckboxClick: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired,

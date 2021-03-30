@@ -4,17 +4,20 @@ from rest_framework.serializers import ModelSerializer, \
     ListField
 
 from api.models.model_year import ModelYear
-from api.models.model_year_report_confirmation import ModelYearReportConfirmation
+from api.models.model_year_report_confirmation import \
+    ModelYearReportConfirmation
 from api.models.model_year_report import ModelYearReport
-from api.models.model_year_report_confirmation import ModelYearReportConfirmation
 from api.models.model_year_report_history import ModelYearReportHistory
 from api.models.model_year_report_address import ModelYearReportAddress
 from api.models.model_year_report_make import ModelYearReportMake
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.models.user_profile import UserProfile
-from api.serializers.model_year_report_address import ModelYearReportAddressSerializer
-from api.serializers.model_year_report_make import ModelYearReportMakeSerializer
-from api.serializers.model_year_report_history import ModelYearReportHistorySerializer
+from api.serializers.model_year_report_address import \
+    ModelYearReportAddressSerializer
+from api.serializers.model_year_report_make import \
+    ModelYearReportMakeSerializer
+from api.serializers.model_year_report_history import \
+    ModelYearReportHistorySerializer
 from api.serializers.user import MemberSerializer
 from api.serializers.vehicle import ModelYearSerializer
 
@@ -159,6 +162,14 @@ class ModelYearReportSaveSerializer(
         makes = validated_data.pop('makes')
         model_year = validated_data.pop('model_year')
         confirmations = request.data.get('confirmations')
+
+        confirmation = ModelYearReportConfirmation.objects.filter(
+            model_year_report=instance,
+            signing_authority_assertion__module="supplier_information"
+        ).first()
+
+        if confirmation:
+            return instance
 
         instance.model_year_id = model_year.id
         instance.organization_name = organization.name

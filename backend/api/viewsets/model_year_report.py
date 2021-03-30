@@ -3,15 +3,18 @@ from rest_framework.response import Response
 from rest_framework import mixins, viewsets
 
 from api.models.model_year_report import ModelYearReport
-from api.models.model_year_report_confirmation import ModelYearReportConfirmation
+from api.models.model_year_report_confirmation import \
+    ModelYearReportConfirmation
 from api.models.model_year_report_history import ModelYearReportHistory
-from api.models.vehicle import Vehicle
+from api.models.model_year_report_make import ModelYearReportMake
 from api.permissions.model_year_report import ModelYearReportPermissions
 from api.serializers.model_year_report import \
     ModelYearReportSerializer, ModelYearReportListSerializer, \
     ModelYearReportSaveSerializer
-from api.serializers.model_year_report_history import ModelYearReportHistorySerializer
-from api.serializers.model_year_report_make import ModelYearReportMakeSerializer
+from api.serializers.model_year_report_history import \
+    ModelYearReportHistorySerializer
+from api.serializers.model_year_report_make import \
+    ModelYearReportMakeSerializer
 from api.serializers.organization import OrganizationSerializer
 from api.serializers.organization_address import OrganizationAddressSerializer
 from auditable.views import AuditableMixin
@@ -69,8 +72,8 @@ class ModelYearReportViewset(
                 request.user.organization
             )
 
-            makes_list = Vehicle.objects.filter(
-                organization_id=request.user.organization_id
+            makes_list = ModelYearReportMake.objects.filter(
+                model_year_report_id=report.id
             ).values('make').distinct()
 
             makes = ModelYearReportMakeSerializer(makes_list, many=True)
@@ -83,7 +86,9 @@ class ModelYearReportViewset(
 
             confirmations = ModelYearReportConfirmation.objects.filter(
                 model_year_report_id=pk
-            ).values_list('signing_authority_assertion_id', flat=True).distinct()
+            ).values_list(
+                'signing_authority_assertion_id', flat=True
+            ).distinct()
 
             return Response({
                 'organization': organization.data,
