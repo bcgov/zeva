@@ -160,26 +160,3 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
             'organization_name': request.user.organization.name,
             'validation_status': report.validation_status.value,
             })
-
-    @action(detail=True)
-    def previouse_sales(self, request, **kwargs):
-        model_year_report_id = kwargs.pop('pk')
-        queryset = ModelYearReportPreviousSales.objects.filter(
-            model_year_report_id=model_year_report_id)
-        serializer = ModelYearReportPreviousSalesSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-    @action(detail=True)
-    def vehicles(self, request, **kwargs):
-        model_year_report_id = kwargs.pop('pk')
-        queryset = ModelYearReportVehicle.objects.filter(
-            model_year_report_id=model_year_report_id)
-        serializer = ModelYearReportVehicleSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-    @action(detail=True)
-    def ldv_sales(self, request, **kwargs):
-        model_year_report_id = kwargs.pop('pk')
-        ldv_sales = ModelYearReport.objects.values_list('ldv_sales', flat=True).get(
-            id=model_year_report_id)
-        return Response({'ldv_sales': ldv_sales})
