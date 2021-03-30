@@ -38,7 +38,7 @@ const SupplierInformationDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          {details && details.supplierInformation && (
+          {details && details.supplierInformation && details.supplierInformation.history && (
             <ComplianceReportAlert report={details.supplierInformation} type="Supplier Information" />
           )}
         </div>
