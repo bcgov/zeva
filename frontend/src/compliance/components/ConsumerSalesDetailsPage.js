@@ -11,6 +11,7 @@ import ConsumerSalesLDVModalTable from './ConsumerSalesLDVModelTable';
 
 const ConsumerSalesDetailsPage = (props) => {
   const {
+    details,
     user,
     loading,
     handleSave,
@@ -19,32 +20,39 @@ const ConsumerSalesDetailsPage = (props) => {
     confirmed,
     assertions,
     checkboxes,
-    readOnly,
     disabledCheckboxes,
     error,
     handleCheckboxClick,
     handleInputChange,
     avgSales,
     vehicleSupplierClass,
+    previousYearsExist,
+    previousYearsList,
+    salesInput,
   } = props;
 
-  const details = {
-    consumerSales: {
-      history: [
-        {
-          status: 'DRAFT',
-          createTimestamp: now(),
-          createUser: user,
-        },
-      ],
-      status: 'DRAFT',
-    },
-    organization: user.organization,
-  };
 
   if (loading) {
     return <Loading />;
   }
+
+  const confirmPreviousSalesText = (
+    <div className="text-blue">
+      Confirm the previous 3 model year light duty vehicle sales and lease
+      totals (ICE & ZEV) in British Columbia for {details.organization.name}.
+      These totals are taken from previous model year reports, changes required
+      to these totals will require a supplemental report
+    </div>
+  );
+
+  const enterPreviousSalesText = (
+    <div className="text-blue">
+      Enter the previous 3 model year light duty vehicle sales and lease total
+      (ICE & ZEV) in British Columbia for {details.organization.name}. If this
+      is your first year supplying light duty vehicles in B.C. you can enter 0
+      in the input fields.
+    </div>
+  );
 
   return (
     <div id="compliance-consumer-sales-details" className="page">
@@ -53,16 +61,14 @@ const ConsumerSalesDetailsPage = (props) => {
           <h2>2020 Model Year Report</h2>
         </div>
       </div>
-      {confirmed && (
         <div className="row">
           <div className="col-12">
-            <ComplianceReportAlert
-              report={details.consumerSales}
-              type="Consumer Sales"
-            />
+            {confirmed && (
+              <ComplianceReportAlert report={details.consumerSales} type="Consumer Sales" />
+            )}
           </div>
         </div>
-      )}
+    
       <div className="row mt-1">
         <div className="col-12">
           <div className="p-3 consumer-sales">
@@ -80,10 +86,10 @@ const ConsumerSalesDetailsPage = (props) => {
                     2020 Model Year LDV Sales\Leases
                   </label>
                   <input
+                    defaultValue={salesInput ? salesInput : 0}
                     className="textbox-sales"
                     type="number"
                     onChange={handleChange}
-                    readOnly={readOnly}
                     min="0"
                   />
                   {error && (
@@ -94,71 +100,86 @@ const ConsumerSalesDetailsPage = (props) => {
                 </form>
               </div>
             </div>
-            <div className="confirm-previous-sales mt-2">
-              <div className="text-blue">
-                Enter the previous 3 model year light duty vehicle sales and
-                lease total (ICE & ZEV) in British Columbia for{' '}
-                {details.organization.name}. If this is your first year
-                supplying light duty vehicles in B.C. you can enter 0 in the
-                input fields.
-              </div>
-              <div className="row">
-                <div className="col-6">
+            <div className="row">
+              {previousYearsExist ? (
+                <div className="col-sm-12">{confirmPreviousSalesText}</div>
+              ) : (
+                <div className="col-sm-12">{enterPreviousSalesText}</div>
+              )}
+            </div>
+            <div className="row">
+              <div className="col-6">
+                {previousYearsExist ? (
                   <div className="previous-ldv-sales mt-2 p-3">
-                    <form onSubmit={(event) => handleSave(event)}>
-                      <div className="row ml-1 mb-2">
+                    {previousYearsList.map((yearSale) => (
+                      <div className="model-year-ldv" key={yearSale.id}>
                         <label className="text-blue mr-4 font-weight-bold">
-                          2019 Model Year LDV Sales\Leases
+                          {yearSale.modelYear} Model Year LDV Sales\Leases:
                         </label>
-                        <input
-                          className="textbox-first"
-                          type="number"
-                          onChange={handleInputChange}
-                          id="first"
-                          min="0"
-                        />
-                      </div>
-                      <div className="row ml-1 mb-2">
-                        <label className="text-blue mr-4 font-weight-bold">
-                          2018 Model Year LDV Sales\Leases
+                        <label className="sales-numbers">
+                          {yearSale.previousSales}
                         </label>
-                        <input
-                          className="textbox-second"
-                          type="number"
-                          onChange={handleInputChange}
-                          id="second"
-                          min="0"
-                        />
                       </div>
-                      <div className="row ml-1 mb-2">
-                        <label className="text-blue mr-4 font-weight-bold">
-                          2017 Model Year LDV Sales\Leases
-                        </label>
-                        <input
-                          className="textbox-third"
-                          type="number"
-                          onChange={handleInputChange}
-                          id="third"
-                          min="0"
-                        />
-                      </div>
-                    </form>
+                    ))}
                   </div>
-                </div>
-                <div className="offset-1 col-5">
-                  <div className="previous-ldv-avg p-3 mt-2">
-                    <div className="mt-1 row">
-                      <h4 className="col-5 ml-2">3 Year Average LDV Sales:</h4>
-                      <div className="col-5">
-                        <span>{avgSales}</span>
-                      </div>
+                ) : (
+                  <div className="confirm-previous-sales mt-2">
+                    <div className="previous-ldv-sales mt-2 p-3">
+                      <form onSubmit={(event) => handleSave(event)}>
+                        <div className="row ml-1 mb-2">
+                          <label className="text-blue mr-4 font-weight-bold">
+                            2019 Model Year LDV Sales\Leases
+                          </label>
+                          <input
+                            className="textbox-first"
+                            type="number"
+                            onChange={handleInputChange}
+                            id="first"
+                            min="0"
+                          />
+                        </div>
+                        <div className="row ml-1 mb-2">
+                          <label className="text-blue mr-4 font-weight-bold">
+                            2018 Model Year LDV Sales\Leases
+                          </label>
+                          <input
+                            className="textbox-second"
+                            type="number"
+                            onChange={handleInputChange}
+                            id="second"
+                            min="0"
+                          />
+                        </div>
+                        <div className="row ml-1 mb-2">
+                          <label className="text-blue mr-4 font-weight-bold">
+                            2017 Model Year LDV Sales\Leases
+                          </label>
+                          <input
+                            className="textbox-third"
+                            type="number"
+                            onChange={handleInputChange}
+                            id="third"
+                            min="0"
+                          />
+                        </div>
+                      </form>
                     </div>
-                    <div className="mt-1 row">
-                      <h4 className="col-5 ml-2">Vehicle Supplier Class: </h4>
-                      <div className="col-5">
-                        <span> {vehicleSupplierClass(avgSales)[0]} </span>
-                        <span> {vehicleSupplierClass(avgSales)[1]} </span>
-                      </div>
+                  </div>
+                )}
+              </div>
+              <div className="col-6">
+                <div className="previous-ldv-avg p-3 mt-2">
+                  <div className="mt-1 row">
+                    <h4 className="col-5 ml-2">3 Year Average LDV Sales:</h4>
+                    <div className="col-5">
+                      <span>{avgSales}</span>
+                    </div>
+                  </div>
+                  <div className="mt-1 row">
+                    <h4 className="col-5 ml-2">Vehicle Supplier Class: </h4>
+                    <div className="col-5">
+                      <span> {vehicleSupplierClass(avgSales)[0]} </span>
+                      <span> {vehicleSupplierClass(avgSales)[1]} </span>
                     </div>
                   </div>
                 </div>
@@ -201,7 +222,6 @@ const ConsumerSalesDetailsPage = (props) => {
             handleCheckboxClick={handleCheckboxClick}
             disabledCheckboxes={disabledCheckboxes}
             user={user}
-            readOnly={readOnly}
           />
         </div>
       </div>
@@ -233,6 +253,10 @@ ConsumerSalesDetailsPage.defaultProps = {
   avgSales: 0,
 };
 ConsumerSalesDetailsPage.propTypes = {
+  details: PropTypes.shape({
+    organization: PropTypes.shape(),
+    consumerSales: PropTypes.shape(),
+  }).isRequired,
   user: CustomPropTypes.user.isRequired,
   loading: PropTypes.bool.isRequired,
   handleSave: PropTypes.func.isRequired,
@@ -242,13 +266,15 @@ ConsumerSalesDetailsPage.propTypes = {
   error: PropTypes.bool.isRequired,
   assertions: PropTypes.arrayOf(PropTypes.shape()),
   checkboxes: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
   ),
   handleCheckboxClick: PropTypes.func.isRequired,
   disabledCheckboxes: PropTypes.string.isRequired,
-  readOnly: PropTypes.bool.isRequired,
   handleInputChange: PropTypes.func.isRequired,
   avgSales: PropTypes.number.isRequired,
   vehicleSupplierClass: PropTypes.func.isRequired,
+  previousYearsExist: PropTypes.bool.isRequired,
+  previousYearsList: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  salesInput: PropTypes.number,
 };
 export default ConsumerSalesDetailsPage;
