@@ -123,13 +123,14 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
         report = get_object_or_404(queryset, pk=pk)
 
         previous_sales = ModelYearReportPreviousSales.objects.filter(
-            model_year_report_id=report.id)
+            model_year_report_id=report.id).order_by('-model_year__name')
         previous_sales_serializer = ModelYearReportPreviousSalesSerializer(
             previous_sales, many=True)
 
         vehicle = ModelYearReportVehicle.objects.filter(
             model_year_report_id=report.id)
-        vehicles_serializer = ModelYearReportVehicleSerializer(vehicle, many=True)
+        vehicles_serializer = ModelYearReportVehicleSerializer(
+            vehicle, many=True)
 
         ldv_sales = ModelYearReport.objects.values_list(
             'ldv_sales', flat=True).get(
