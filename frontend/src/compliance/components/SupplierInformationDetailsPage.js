@@ -23,6 +23,7 @@ const SupplierInformationDetailsPage = (props) => {
     checkboxes,
     disabledCheckboxes,
     handleCheckboxClick,
+    modelYear,
   } = props;
 
   if (loading) {
@@ -33,7 +34,7 @@ const SupplierInformationDetailsPage = (props) => {
     <div id="compliance-supplier-information-details" className="page">
       <div className="row mt-3">
         <div className="col-sm-12">
-          <h2>2020 Model Year Report</h2>
+          <h2>{modelYear} Model Year Report</h2>
         </div>
       </div>
       <div className="row">
@@ -91,7 +92,7 @@ const SupplierInformationDetailsPage = (props) => {
             <div className="mt-4">
               <h4>Light Duty Vehicle Makes</h4>
               <div className="mt-1 mb-2">
-                Enter all the LDV makes {details.organization.name} supplied in British Columbia in the 2020 compliance period ending September 30, 2021.
+                Enter all the LDV makes {details.organization.name} supplied in British Columbia in the {modelYear} compliance period ending September 30, {modelYear + 1}.
               </div>
               <div className="ldv-makes p-3">
                 <form onSubmit={handleSubmitMake}>
@@ -185,5 +186,6 @@ SupplierInformationDetailsPage.propTypes = {
   ).isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   disabledCheckboxes: PropTypes.string.isRequired,
+  modelYear: PropTypes.number.isRequired,
 };
 export default SupplierInformationDetailsPage;

@@ -26,6 +26,10 @@ const ConsumerSalesDetailsPage = (props) => {
     handleInputChange,
     avgSales,
     vehicleSupplierClass,
+    modelYear,
+    firstYear,
+    secondYear,
+    thirdYear,
   } = props;
 
   const details = {
@@ -50,7 +54,7 @@ const ConsumerSalesDetailsPage = (props) => {
     <div id="compliance-consumer-sales-details" className="page">
       <div className="row mt-3">
         <div className="col-sm-12">
-          <h2>2020 Model Year Report</h2>
+          <h2>{modelYear} Model Year Report</h2>
         </div>
       </div>
       {confirmed && (
@@ -70,14 +74,14 @@ const ConsumerSalesDetailsPage = (props) => {
 
             <div className="enter-ldv-sales mt-2">
               <div className="text-blue">
-                Enter the 2020 model year light duty vehicle sales and lease
+                Enter the {modelYear} model year light duty vehicle sales and lease
                 total (ICE & ZEV) in British Columbia for{' '}
                 {details.organization.name}.
               </div>
               <div className="ldv-sales mt-2 p-3">
                 <form onSubmit={(event) => handleSave(event)}>
                   <label className="text-blue mr-4 font-weight-bold">
-                    2020 Model Year LDV Sales\Leases
+                    {modelYear} Model Year LDV Sales\Leases
                   </label>
                   <input
                     className="textbox-sales"
@@ -88,7 +92,7 @@ const ConsumerSalesDetailsPage = (props) => {
                   />
                   {error && (
                     <small className="text-danger ml-2">
-                      2020 Model Year LDV Sales\Leases can't be blank
+                      {modelYear} Model Year LDV Sales\Leases can&apos;t be blank
                     </small>
                   )}
                 </form>
@@ -108,7 +112,7 @@ const ConsumerSalesDetailsPage = (props) => {
                     <form onSubmit={(event) => handleSave(event)}>
                       <div className="row ml-1 mb-2">
                         <label className="text-blue mr-4 font-weight-bold">
-                          2019 Model Year LDV Sales\Leases
+                          {firstYear} Model Year LDV Sales\Leases
                         </label>
                         <input
                           className="textbox-first"
@@ -120,7 +124,7 @@ const ConsumerSalesDetailsPage = (props) => {
                       </div>
                       <div className="row ml-1 mb-2">
                         <label className="text-blue mr-4 font-weight-bold">
-                          2018 Model Year LDV Sales\Leases
+                          {secondYear} Model Year LDV Sales\Leases
                         </label>
                         <input
                           className="textbox-second"
@@ -132,7 +136,7 @@ const ConsumerSalesDetailsPage = (props) => {
                       </div>
                       <div className="row ml-1 mb-2">
                         <label className="text-blue mr-4 font-weight-bold">
-                          2017 Model Year LDV Sales\Leases
+                          {thirdYear} Model Year LDV Sales\Leases
                         </label>
                         <input
                           className="textbox-third"
@@ -169,7 +173,7 @@ const ConsumerSalesDetailsPage = (props) => {
                 Consumer Sales of Zero-Emission Vehicles
               </label>
               <div className="text-blue mt-2">
-                If you have outstanding 2020 consumer sales to submit you can{' '}
+                If you have outstanding {modelYear} consumer sales to submit you can{' '}
                 <label
                   className="text-primary"
                   onClick={() => {
@@ -217,9 +221,7 @@ const ConsumerSalesDetailsPage = (props) => {
                 buttonType="save"
                 optionalClassname="button primary"
                 action={(event) => {
-                  {
-                    handleSave(event);
-                  }
+                  handleSave(event);
                 }}
               />
             </span>
@@ -230,8 +232,11 @@ const ConsumerSalesDetailsPage = (props) => {
   );
 };
 ConsumerSalesDetailsPage.defaultProps = {
+  assertions: [],
   avgSales: 0,
+  checkboxes: [],
 };
+
 ConsumerSalesDetailsPage.propTypes = {
   user: CustomPropTypes.user.isRequired,
   loading: PropTypes.bool.isRequired,
@@ -248,7 +253,11 @@ ConsumerSalesDetailsPage.propTypes = {
   disabledCheckboxes: PropTypes.string.isRequired,
   readOnly: PropTypes.bool.isRequired,
   handleInputChange: PropTypes.func.isRequired,
-  avgSales: PropTypes.number.isRequired,
+  avgSales: PropTypes.number,
   vehicleSupplierClass: PropTypes.func.isRequired,
+  modelYear: PropTypes.number.isRequired,
+  firstYear: PropTypes.number.isRequired,
+  secondYear: PropTypes.number.isRequired,
+  thirdYear: PropTypes.number.isRequired,
 };
 export default ConsumerSalesDetailsPage;
