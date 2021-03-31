@@ -139,11 +139,11 @@ class Router extends Component {
                 render={() => <SupplierInformationContainer keycloak={keycloak} user={user} />}
               />
               <Route
-                  exact
-                  key="route-conpliance-report-new"
-                  path={ROUTES_COMPLIANCE.NEW}
-                  render={() => <SupplierInformationContainer keycloak={keycloak} user={user} newReport />}
-                />,
+                exact
+                key="route-conpliance-report-new"
+                path={ROUTES_COMPLIANCE.NEW}
+                render={() => <SupplierInformationContainer keycloak={keycloak} user={user} newReport />}
+              />,
               <Route
                 path={ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES}
                 render={() => <ConsumerSalesContainer keycloak={keycloak} user={user} />}
