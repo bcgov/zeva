@@ -45,7 +45,7 @@ const ConsumerSalesContainer = (props) => {
       .then((response) => {
         const {
           previousSales,
-          vehicles,
+          vehicleList,
           confirmations,
           organizationName,
           ldvSales,
@@ -61,8 +61,8 @@ const ConsumerSalesContainer = (props) => {
             parseInt(previousSales[2].previousSales)
           );
         }
-        if (vehicles.length > 0) {
-          setVehicles(vehicles);
+        if (vehicleList.length > 0) {
+          setVehicles(vehicleList);
         } else {
           axios.get(ROUTES_VEHICLES.VEHICLES_SALES).then((response) => {
             setVehicles(response.data);
@@ -89,7 +89,7 @@ const ConsumerSalesContainer = (props) => {
         
     });
 
-    const assertions = axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST)
+    const assertionList = axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST)
       .then((response) => {
         const filteredAssertions = response.data.filter(
           (data) => data.module === 'consumer_sales'
@@ -97,7 +97,7 @@ const ConsumerSalesContainer = (props) => {
         setAssertions(filteredAssertions);
       });
 
-    Promise.all([consumerSalesData, assertions]).then(() => {
+    Promise.all([consumerSalesData, assertionList]).then(() => {
       setLoading(false);
     });
   };
@@ -200,7 +200,7 @@ const ConsumerSalesContainer = (props) => {
         })
         .then(() => {
           setConfirmed(true);
-          //setDisabledCheckboxes('disabled');
+          setDisabledCheckboxes('disabled');
         })
         .catch((error) => {
           const { response } = error;

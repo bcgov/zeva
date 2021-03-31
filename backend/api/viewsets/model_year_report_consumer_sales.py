@@ -122,9 +122,6 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
         queryset = self.get_queryset()
         report = get_object_or_404(queryset, pk=pk)
 
-        organization = OrganizationSerializer(
-                request.user.organization)
-
         previous_sales = ModelYearReportPreviousSales.objects.filter(
             model_year_report_id=report.id)
         previous_sales_serializer = ModelYearReportPreviousSalesSerializer(
@@ -153,7 +150,7 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
 
         return Response({
             'previous_sales': previous_sales_serializer.data,
-            'vehicles': vehicles_serializer.data,
+            'vehicle_list': vehicles_serializer.data,
             'ldv_sales': ldv_sales,
             'model_year_report_history': history.data,
             'confirmations': confirmations,
