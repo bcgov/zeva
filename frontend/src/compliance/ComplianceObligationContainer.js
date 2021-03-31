@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import ROUTES_CREDITS from '../app/routes/Credits';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ComplianceObligationDetailsPage from './components/ComplianceObligationDetailsPage';
@@ -9,7 +8,7 @@ import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityA
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 
 const ComplianceObligationContainer = (props) => {
-  const { keycloak, user } = props;
+  const { user } = props;
   const reportStatuses = {
     assessment: '',
     consumerSales: '',
@@ -48,18 +47,36 @@ const ComplianceObligationContainer = (props) => {
     }
   };
   const handleSave = () => {
+    const reportDetailsArray = [];
+    Object.keys(reportDetails).forEach((each) => {
+      Object.keys(reportDetails[each]).forEach((year) => {
+        if (each !== 'transactions') {
+          const a = reportDetails[each][year].A;
+          const b = reportDetails[each][year].B;
+          reportDetailsArray.push({
+            category: each, year, a, b,
+          });
+        } else {
+          const category = year;
+          reportDetails[each][year].forEach((record) => {
+            const A = parseFloat(record.A) || 0;
+            const B = parseFloat(record.B) || 0;
+            reportDetailsArray.push({
+              category, year: record.modelYear, A, B,
+            });
+          });
+        }
+      });
+    });
     const data = {
+      reportId: id,
       offset: offsetNumbers,
-      creditActivity: reportDetails,
+      creditActivity: reportDetailsArray,
 
     };
-    // pass offset numbers
-
-    // pass credit activity numbers
-    axios.post(ROUTES_COMPLIANCE.REPORT_DETAILS_BY_YEAR.replace(':year', reportYear),
-      data).then((response) => {
-      console.log(response);
-      console.log(offsetNumbers);
+    axios.post(ROUTES_COMPLIANCE.OBLIGATION,
+      data).then(() => {
+      // add confirmation !
     });
   };
   const parseCreditTransactions = (data) => {
@@ -143,13 +160,16 @@ const ComplianceObligationContainer = (props) => {
         provisionalBalance[year].B += parseFloat(details.pendingBalance[year].B);
       });
       setOffsetNumbers(yearObject);
+      const priorYear = details.priorYearBalance.year;
+      const creditBalanceStart = {};
+      creditBalanceStart[priorYear] = {
+        year: details.priorYearBalance.year,
+        A: details.priorYearBalance.A,
+        B: details.priorYearBalance.B,
+      };
       setReportDetails({
-        priorYearBalance: {
-          year: details.priorYearBalance.year,
-          a: details.priorYearBalance.a,
-          b: details.priorYearBalance.b,
-        },
-        reportYearBalance,
+        creditBalanceStart,
+        creditBalanceEnd: reportYearBalance,
         pendingBalance: details.pendingBalance,
         provisionalBalance,
         transactions: {
@@ -191,7 +211,6 @@ const ComplianceObligationContainer = (props) => {
 };
 
 ComplianceObligationContainer.propTypes = {
-  keycloak: CustomPropTypes.keycloak.isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 

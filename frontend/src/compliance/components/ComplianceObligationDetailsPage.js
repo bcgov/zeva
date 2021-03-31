@@ -26,7 +26,7 @@ const ComplianceObligationDetailsPage = (props) => {
     handleSave,
   } = props;
   const {
-    priorYearBalance, reportYearBalance, pendingBalance, transactions, provisionalBalance,
+    creditBalanceStart, creditBalanceEnd, pendingBalance, transactions, provisionalBalance,
   } = reportDetails;
   const totalReduction = formatNumeric(
     ((ratios.complianceRatio / 100) * supplierClassInfo.ldvSales),
@@ -77,7 +77,7 @@ const ComplianceObligationDetailsPage = (props) => {
             <tbody>
               <tr className="subclass">
                 <th className="large-column">
-                  Credit Balance at September 30, {priorYearBalance.year}
+                  Credit Balance at September 30, {reportYear - 1}
                 </th>
                 <th className="small-column text-center text-blue">
                   A
@@ -91,10 +91,10 @@ const ComplianceObligationDetailsPage = (props) => {
                   &bull; &nbsp; &nbsp; Total Credit Balance
                 </td>
                 <td className="text-right">
-                  {/* {priorYearBalance.a} */} 0
+                  0
                 </td>
                 <td className="text-right">
-                  {/* {priorYearBalance.b} */} 0
+                  0
                 </td>
               </tr>
             </tbody>
@@ -117,7 +117,7 @@ const ComplianceObligationDetailsPage = (props) => {
                   B
                 </th>
               </tr>
-              {Object.keys(reportYearBalance).sort((a, b) => {
+              {Object.keys(creditBalanceEnd).sort((a, b) => {
                 if (a < b) {
                   return 1;
                 }
@@ -131,10 +131,10 @@ const ComplianceObligationDetailsPage = (props) => {
                     &bull; &nbsp; &nbsp; {each} Credits
                   </td>
                   <td className="text-right">
-                    {reportYearBalance[each].A}
+                    {creditBalanceEnd[each].A}
                   </td>
                   <td className="text-right">
-                    {reportYearBalance[each].B}
+                    {creditBalanceEnd[each].B}
                   </td>
                 </tr>
               ))}
