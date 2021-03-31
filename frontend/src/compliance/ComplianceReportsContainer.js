@@ -11,18 +11,8 @@ const ComplianceReportsContainer = (props) => {
   const { user } = props;
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
-  const [displayBtn, setDisplayBtn] = useState(true);
   const [collapsed, setCollapsed] = useState(true);
   const [availableYears, setAvailableYears] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.YEARS);
-
-  const displayNewReportBtn = (data) => {
-    const d = new Date();
-    const currentYear = d.getFullYear();
-    const draftRecord = data.filter((item) => item.validationStatus === 'DRAFT' && item.modelYear.name == currentYear);
-    if (draftRecord.length > 0) {
-      setDisplayBtn(false);
-    }
-  };
 
   const collapseDropdown = () => {
     setCollapsed(!collapsed);
@@ -40,7 +30,6 @@ const ComplianceReportsContainer = (props) => {
       ));
 
       setAvailableYears(filteredYears);
-      displayNewReportBtn(response.data);
       setLoading(false);
     });
   };
@@ -57,7 +46,6 @@ const ComplianceReportsContainer = (props) => {
         collapsed={collapsed}
         collapseDropdown={collapseDropdown}
         data={data}
-        displayBtn={displayBtn}
         loading={loading}
         user={user}
       />
