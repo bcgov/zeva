@@ -41,8 +41,10 @@ const ConsumerSalesContainer = (props) => {
 
   const refreshDetails = (showLoading) => {
     setLoading(showLoading);
-    const consumerSalesData = axios.get(ROUTES_COMPLIANCE.RETRIEVE_CONSUMER_SALES.replace(':id', id))
-      .then((response) => {
+    axios.all([
+      axios.get(ROUTES_VEHICLES.VEHICLES_SALES),
+      axios.get(ROUTES_COMPLIANCE.RETRIEVE_CONSUMER_SALES.replace(':id', id)),
+    ]).then(axios.spread((vehiclesSales, consumerSalesResponse) => {
         const {
           previousSales,
           vehicleList,
@@ -51,22 +53,22 @@ const ConsumerSalesContainer = (props) => {
           ldvSales,
           modelYearReportHistory,
           validationStatus,
-        } = response.data;
+      } = consumerSalesResponse.data;
+      
         if (previousSales.length === 3) {
           setPreviousYearsExist(true);
-          setPreviousYearsList(response.data.previousSales);
+          setPreviousYearsList(previousSales);
           averageLdvSales(
             parseInt(previousSales[0].previousSales),
             parseInt(previousSales[1].previousSales),
             parseInt(previousSales[2].previousSales)
           );
         }
+      
         if (vehicleList.length > 0) {
           setVehicles(vehicleList);
         } else {
-          axios.get(ROUTES_VEHICLES.VEHICLES_SALES).then((response) => {
-            setVehicles(response.data);
-          });
+          setVehicles(vehiclesSales.data);
         }
         if (ldvSales > 0) {
           setSalesInput(ldvSales);
@@ -86,20 +88,14 @@ const ConsumerSalesContainer = (props) => {
           setConfirmed(true);
           setCheckboxes(confirmations);
         }
-        
-    });
+        setLoading(false);    
+    }));
 
-    const assertionList = axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST)
+    axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST)
       .then((response) => {
-        const filteredAssertions = response.data.filter(
-          (data) => data.module === 'consumer_sales'
-        );
+        const filteredAssertions = response.data.filter((data) => data.module === 'consumer_sales');
         setAssertions(filteredAssertions);
-      });
-
-    Promise.all([consumerSalesData, assertionList]).then(() => {
-      setLoading(false);
-    });
+      });   
   };
 
   const handleInputChange = (event) => {
