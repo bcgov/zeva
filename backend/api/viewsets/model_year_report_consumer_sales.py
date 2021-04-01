@@ -53,7 +53,7 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
         previous_sales = request.data.get('previous_sales')
         confirmations = request.data.get('confirmation')
         supplier_class = request.data.get('supplier_class')
-        previouse_years_exist = request.data.get('previous_years_exist')
+        previous_years_exist = request.data.get('previous_years_exist')
 
         report = ModelYearReport.objects.get(id=model_year_report_id)
 
@@ -85,7 +85,7 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
         """
         Save previous years LDV sales information
         """
-        if not previouse_years_exist:
+        if not previous_years_exist:
             for previous_sale in previous_sales:
                 model_year_report_previous_sale = ModelYearReportPreviousSales.objects.create(
                     previous_sales=previous_sale.get('ldv_sales'),
