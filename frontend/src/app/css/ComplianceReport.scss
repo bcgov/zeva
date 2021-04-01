@@ -1,3 +1,20 @@
+#compliance-report-list {
+  .btn-group a {
+    color: $default-text-black;
+    display: block;
+    text-decoration: none;
+
+    &:hover {
+      background-color: $primary-yellow;
+    }
+  }
+
+  .dropdown-menu {
+    left: unset;
+    right: 0;
+  }
+}
+
 #compliance-supplier-information-details {
   .supplier-information {
     border: 1px solid $border-grey;
