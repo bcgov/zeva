@@ -47,7 +47,7 @@ router.register(
     r'uploads', UploadViewSet, basename='minio'
 )
 router.register(
-    r'compliance/vehicle', ModelYearReportConsumerSalesViewSet, basename='consumer-sales'
+    r'compliance/consumer-sales', ModelYearReportConsumerSalesViewSet, basename='consumer-sales'
 )
 router.register(
     r'compliance/compliance-activity-details', ComplianceObligationActivityViewset, basename='details'

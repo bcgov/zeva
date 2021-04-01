@@ -15,8 +15,7 @@ const ConsumerSalesContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState([]);
-  const [salesInput, setSalesInput] = useState('');
-  const [readOnly, setReadOnly] = useState(false);
+  const [salesInput, setSalesInput] = useState(0);
   const [vehicles, setVehicles] = useState([]);
   const [assertions, setAssertions] = useState([]);
   const [confirmed, setConfirmed] = useState(false);
@@ -27,6 +26,9 @@ const ConsumerSalesContainer = (props) => {
   const [secondYear, setSecondYear] = useState({ modelYear: modelYear - 2, ldvSales: 0 });
   const [thirdYear, setThirdYear] = useState({ modelYear: modelYear - 3, ldvSales: 0 });
   const [avgSales, setAvgSales] = useState(0);
+  const [previousYearsExist, setPreviousYearsExist] = useState(false);
+  const [previousYearsList, setPreviousYearsList] = useState([{}]);
+  const [details, setDetails] = useState({});
 
   const { id } = useParams();
   let supplierClass = '';
@@ -42,16 +44,61 @@ const ConsumerSalesContainer = (props) => {
 
   const refreshDetails = (showLoading) => {
     setLoading(showLoading);
-    axios.get(ROUTES_VEHICLES.VEHICLES_SALES).then((response) => {
-      setVehicles(response.data);
-      setLoading(false);
-    });
-    axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
-      const filteredAssertions = response.data.filter(
-        (data) => data.module === 'consumer_sales',
-      );
-      setAssertions(filteredAssertions);
-    });
+    axios.all([
+      axios.get(ROUTES_VEHICLES.VEHICLES_SALES),
+      axios.get(ROUTES_COMPLIANCE.RETRIEVE_CONSUMER_SALES.replace(':id', id)),
+    ]).then(axios.spread((vehiclesSales, consumerSalesResponse) => {
+        const {
+          previousSales,
+          vehicleList,
+          confirmations,
+          organizationName,
+          ldvSales,
+          modelYearReportHistory,
+          validationStatus,
+      } = consumerSalesResponse.data;
+      
+        if (previousSales.length === 3) {
+          setPreviousYearsExist(true);
+          setPreviousYearsList(previousSales);
+          averageLdvSales(
+            parseInt(previousSales[0].previousSales),
+            parseInt(previousSales[1].previousSales),
+            parseInt(previousSales[2].previousSales)
+          );
+        }
+      
+        if (vehicleList.length > 0) {
+          setVehicles(vehicleList);
+        } else {
+          setVehicles(vehiclesSales.data);
+        }
+        if (ldvSales > 0) {
+          setSalesInput(ldvSales);
+        }
+
+        setDetails({
+          organization: {
+            name: organizationName  
+          },
+          consumerSales: {
+            history: modelYearReportHistory,
+            validationStatus,
+          },
+        });
+
+        if (confirmations.length > 0) {
+          setConfirmed(true);
+          setCheckboxes(confirmations);
+        }
+        setLoading(false);    
+    }));
+
+    axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST)
+      .then((response) => {
+        const filteredAssertions = response.data.filter((data) => data.module === 'consumer_sales');
+        setAssertions(filteredAssertions);
+      });   
 
     if (id && id !== 'new') {
       axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
@@ -123,12 +170,14 @@ const ConsumerSalesContainer = (props) => {
   };
 
   const handleChange = (event) => {
-    setSalesInput(event.target.value);
+    setSalesInput(parseInt(event.target.value));
   };
 
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
-      const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
+      const checked = checkboxes.filter(
+        (each) => Number(each) !== Number(event.target.id)
+      );
       setCheckboxes(checked);
     }
 
@@ -144,19 +193,18 @@ const ConsumerSalesContainer = (props) => {
       setError(true);
     } else {
       setError(false);
-      axios
-        .post(ROUTES_COMPLIANCE.VEHICLES, {
+      axios.post(ROUTES_COMPLIANCE.CONSUMER_SALES, {
           data: vehicles,
           ldvSales: salesInput,
           modelYearReportId: id,
           previousSales: previousSalesInfo,
+          previousYearsExist: previousYearsExist,
           supplierClass: supplierClass.charAt(0),
           confirmation: checkboxes,
         })
         .then(() => {
           setConfirmed(true);
           setDisabledCheckboxes('disabled');
-          setReadOnly(true);
         })
         .catch((error) => {
           const { response } = error;
@@ -169,7 +217,11 @@ const ConsumerSalesContainer = (props) => {
 
   useEffect(() => {
     refreshDetails(true);
-    averageLdvSales(firstYear.ldvSales, secondYear.ldvSales, thirdYear.ldvSales);
+    averageLdvSales(
+      firstYear.ldvSales,
+      secondYear.ldvSales,
+      thirdYear.ldvSales
+    );
   }, [keycloak.authenticated]);
 
   return (
@@ -187,7 +239,6 @@ const ConsumerSalesContainer = (props) => {
         vehicles={vehicles}
         confirmed={confirmed}
         error={error}
-        readOnly={readOnly}
         assertions={assertions}
         checkboxes={checkboxes}
         disabledCheckboxes={disabledCheckboxes}
@@ -195,6 +246,10 @@ const ConsumerSalesContainer = (props) => {
         handleInputChange={handleInputChange}
         avgSales={avgSales}
         vehicleSupplierClass={vehicleSupplierClass}
+        previousYearsExist={previousYearsExist}
+        previousYearsList={previousYearsList}
+        salesInput={salesInput}
+        details={details}
         modelYear={modelYear}
         firstYear={firstYear}
         secondYear={secondYear}

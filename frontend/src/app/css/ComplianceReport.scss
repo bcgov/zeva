@@ -45,17 +45,18 @@
   .consumer-sales {
     border: 1px solid $border-grey;
   }
+  .previous-ldv-sales,
   .previous-ldv-avg {
     border: 1px solid $border-grey;
-    height: 94%;
+    background-color: $default-background-grey;
+    height: 100%;
   }
   .textbox-first,
   .textbox-second,
   .textbox-third{
     width: 30%;
   }
-  .ldv-sales,
-  .previous-ldv-sales {
+  .ldv-sales{
     background-color: $default-background-grey;
   }
   .textbox-sales {
