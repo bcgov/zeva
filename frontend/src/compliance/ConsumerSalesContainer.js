@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+
+import CONFIG from '../app/config';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ConsumerSalesDetailsPage from './components/ConsumerSalesDetailsPage';
@@ -20,9 +22,10 @@ const ConsumerSalesContainer = (props) => {
   const [confirmed, setConfirmed] = useState(false);
   const [checkboxes, setCheckboxes] = useState([]);
   const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
-  const [firstYear, setFirstYear] = useState({modelYear:2019,ldvSales:0});
-  const [secondYear, setSecondYear] = useState({modelYear:2018,ldvSales:0});
-  const [thirdYear, setThirdYear] = useState({ modelYear: 2017, ldvSales: 0 });
+  const [modelYear, setModelYear] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR);
+  const [firstYear, setFirstYear] = useState({ modelYear: modelYear - 1, ldvSales: 0 });
+  const [secondYear, setSecondYear] = useState({ modelYear: modelYear - 2, ldvSales: 0 });
+  const [thirdYear, setThirdYear] = useState({ modelYear: modelYear - 3, ldvSales: 0 });
   const [avgSales, setAvgSales] = useState(0);
 
   const { id } = useParams();
@@ -45,51 +48,67 @@ const ConsumerSalesContainer = (props) => {
     });
     axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
       const filteredAssertions = response.data.filter(
-        (data) => data.module === 'consumer_sales'
+        (data) => data.module === 'consumer_sales',
       );
       setAssertions(filteredAssertions);
     });
+
+    if (id && id !== 'new') {
+      axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
+        const {
+          modelYear: reportModelYear,
+        } = response.data;
+
+        const year = parseInt(reportModelYear, 10);
+
+        setModelYear(year);
+        setFirstYear(year - 1);
+        setSecondYear(year - 2);
+        setThirdYear(year - 3);
+
+        setLoading(false);
+      });
+    }
+  };
+
+  const averageLdvSales = (paramFirstYear, paramSecondYear, paramThirdYear) => {
+    let avg = 0;
+    avg = (paramFirstYear + paramSecondYear + paramThirdYear) / 3;
+    setAvgSales(Math.round(avg));
   };
 
   const handleInputChange = (event) => {
-    const { id, value } = event.target;
-    if (id === 'first') {
+    const { id: inputId, value } = event.target;
+    if (inputId === 'first') {
       if (value === '') {
         setFirstYear({ ...firstYear, ldvSales: 0 });
         averageLdvSales(0, secondYear.ldvSales, thirdYear.ldvSales);
       } else {
-        setFirstYear({...firstYear, ldvSales: parseInt(value)});
-        averageLdvSales(parseInt(value), secondYear.ldvSales, thirdYear.ldvSales);
+        setFirstYear({ ...firstYear, ldvSales: parseInt(value, 10) });
+        averageLdvSales(parseInt(value, 10), secondYear.ldvSales, thirdYear.ldvSales);
       }
     }
-    if (id === 'second') {
+    if (inputId === 'second') {
       if (value === '') {
         setSecondYear({ ...secondYear, ldvSales: 0 });
         averageLdvSales(firstYear.ldvSales, 0, thirdYear.ldvSales);
       } else {
-        setSecondYear({...secondYear, ldvSales: parseInt(value)});
-        averageLdvSales(firstYear.ldvSales, parseInt(value), thirdYear.ldvSales);
+        setSecondYear({ ...secondYear, ldvSales: parseInt(value, 10) });
+        averageLdvSales(firstYear.ldvSales, parseInt(value, 10), thirdYear.ldvSales);
       }
     }
-    if (id === 'third') {
+    if (inputId === 'third') {
       if (value === '') {
         setSecondYear({ ...thirdYear, ldvSales: 0 });
         averageLdvSales(firstYear.ldvSales, secondYear.ldvSales, 0);
       } else {
-        setThirdYear({...thirdYear, ldvSales: parseInt(value)});
-        averageLdvSales(firstYear.ldvSales, secondYear.ldvSales, parseInt(value));
+        setThirdYear({ ...thirdYear, ldvSales: parseInt(value, 10) });
+        averageLdvSales(firstYear.ldvSales, secondYear.ldvSales, parseInt(value, 10));
       }
     }
   };
 
-  const averageLdvSales = (firstYear, secondYear, thirdYear) => {
-    let avg = 0;
-    avg = (firstYear + secondYear + thirdYear) / 3;
-    setAvgSales(Math.round(avg));
-  };
-
   const vehicleSupplierClass = (avg) => {
-    
     if (avg < 1000) {
       supplierClass = 'Small Volume Supplier';
       supplierClassText = '(under 1,000 total LDV sales)';
@@ -176,6 +195,10 @@ const ConsumerSalesContainer = (props) => {
         handleInputChange={handleInputChange}
         avgSales={avgSales}
         vehicleSupplierClass={vehicleSupplierClass}
+        modelYear={modelYear}
+        firstYear={firstYear}
+        secondYear={secondYear}
+        thirdYear={thirdYear}
       />
     </>
   );
