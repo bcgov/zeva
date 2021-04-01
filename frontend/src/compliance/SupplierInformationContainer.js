@@ -1,9 +1,11 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import moment from 'moment-timezone';
+import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
-import history from '../app/History';
+import { withRouter } from 'react-router';
 
+import CONFIG from '../app/config';
+import history from '../app/History';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import CustomPropTypes from '../app/utilities/props';
@@ -11,13 +13,18 @@ import ComplianceReportTabs from './components/ComplianceReportTabs';
 import SupplierInformationDetailsPage from './components/SupplierInformationDetailsPage';
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 
+const qs = require('qs');
+
 const SupplierInformationContainer = (props) => {
-  const { keycloak, user } = props;
+  const { location, keycloak, user } = props;
   const { id } = useParams();
   const [assertions, setAssertions] = useState([]);
   const [checkboxes, setCheckboxes] = useState([]);
   const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
   const [details, setDetails] = useState({});
+  const [modelYear, setModelYear] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR);
+
+  const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 
   const reportStatuses = {
     assessment: '',
@@ -26,6 +33,7 @@ const SupplierInformationContainer = (props) => {
     reportSummary: '',
     supplierInformation: 'draft',
   };
+
   const [loading, setLoading] = useState(true);
   const [makes, setMakes] = useState([]);
   const [make, setMake] = useState('');
@@ -52,7 +60,7 @@ const SupplierInformationContainer = (props) => {
 
     const data = {
       makes,
-      modelYear: moment().year(),
+      modelYear,
       confirmations: checkboxes,
     };
 
@@ -84,6 +92,7 @@ const SupplierInformationContainer = (props) => {
   const refreshDetails = () => {
     if (id && id !== 'new') {
       axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
+
         const {
           makes: modelYearReportMakes,
           modelYearReportAddresses,
@@ -91,7 +100,10 @@ const SupplierInformationContainer = (props) => {
           organizationName,
           validationStatus,
           confirmations,
+          modelYear: reportModelYear,
         } = response.data;
+
+        setModelYear(parseInt(reportModelYear, 10));
 
         if (modelYearReportMakes) {
           const currentMakes = modelYearReportMakes.map((each) => (each.make));
@@ -121,6 +133,10 @@ const SupplierInformationContainer = (props) => {
         setDetails({
           organization: user.organization,
         });
+
+        if (!isNaN(query.year) && id === 'new') {
+          setModelYear(parseInt(query.year, 10));
+        }
 
         setLoading(false);
       });
@@ -152,6 +168,7 @@ const SupplierInformationContainer = (props) => {
         loading={loading}
         make={make}
         makes={makes}
+        modelYear={modelYear}
         user={user}
         assertions={assertions}
         checkboxes={checkboxes}
@@ -165,7 +182,8 @@ const SupplierInformationContainer = (props) => {
 
 SupplierInformationContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
+  location: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 
-export default SupplierInformationContainer;
+export default withRouter(SupplierInformationContainer);

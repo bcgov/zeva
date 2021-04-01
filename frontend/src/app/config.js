@@ -40,6 +40,8 @@ const CONFIG = {
     },
     MODEL_YEAR_REPORT: {
       ENABLED: getConfig('model_year_report.enabled', false),
+      DEFAULT_YEAR: getConfig('model_year_report.default_year', 2020),
+      YEARS: getConfig('model_year_report.years', []),
     },
     NOTIFICATIONS: {
       ENABLED: getConfig('notifications.enabled', false),

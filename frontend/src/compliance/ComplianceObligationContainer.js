@@ -97,91 +97,94 @@ const ComplianceObligationContainer = (props) => {
 
   const refreshDetails = () => {
     setLoading(true);
-    const reportPromise = axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
+
+    axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
       const reportDetailsResponse = response.data;
-      setReportYear(reportDetailsResponse.modelYear.name);
+      setReportYear(reportDetailsResponse.modelYear);
       const { supplierClass, ldvSales } = reportDetailsResponse;
       setSupplierClassInfo({ class: supplierClass, ldvSales });
-    });
-    const listAssertion = axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
-      const filteredAssertions = response.data.filter((data) => data.module === 'compliance_obligation');
-      setAssertions(filteredAssertions);
-    });
 
-    const ratioPromise = axios.get(ROUTES_COMPLIANCE.RATIOS).then((response) => {
-      const filteredRatio = response.data.filter((data) => data.modelYear === reportYear)[0];
-      setRatios(filteredRatio);
-    });
-    const complianceReportDetails = axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS_BY_YEAR
-      .replace(':year', reportYear)).then((response) => {
-      const yearObject = {};
-      const details = response.data;
-      const creditsIssuedSales = parseCreditTransactions(
-        details.reportYearTransactions.creditsIssuedSales,
-      );
-      const transfersIn = parseCreditTransactions(
-        details.reportYearTransactions.transfersIn,
-      );
-      const transfersOut = parseCreditTransactions(
-        details.reportYearTransactions.transfersOut,
-      );
-      const reportYearBalance = {};
-      creditsIssuedSales.forEach((each) => {
-        yearObject[each.modelYear] = { A: 0, B: 0 };
-        reportYearBalance[each.modelYear] = {
-          A: parseFloat(each.A) || 0,
-          B: parseFloat(each.B) || 0,
+      const ratioPromise = axios.get(ROUTES_COMPLIANCE.RATIOS).then((ratioResponse) => {
+        const filteredRatio = ratioResponse.data.filter((data) => data.modelYear === reportDetailsResponse.modelYear)[0];
+        setRatios(filteredRatio);
+      });
+
+      const complianceReportDetails = axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS_BY_YEAR
+        .replace(':year', reportDetailsResponse.modelYear)).then((complianceResponse) => {
+        const yearObject = {};
+        const details = complianceResponse.data;
+        const creditsIssuedSales = parseCreditTransactions(
+          details.reportYearTransactions.creditsIssuedSales,
+        );
+        const transfersIn = parseCreditTransactions(
+          details.reportYearTransactions.transfersIn,
+        );
+        const transfersOut = parseCreditTransactions(
+          details.reportYearTransactions.transfersOut,
+        );
+        const reportYearBalance = {};
+        creditsIssuedSales.forEach((each) => {
+          yearObject[each.modelYear] = { A: 0, B: 0 };
+          reportYearBalance[each.modelYear] = {
+            A: parseFloat(each.A) || 0,
+            B: parseFloat(each.B) || 0,
+          };
+        });
+        transfersIn.forEach((each) => {
+          yearObject[each.modelYear] = { A: 0, B: 0 };
+          if (!Object.keys(reportYearBalance).includes(each.modelYear)) {
+            reportYearBalance[each.modelYear] = { A: 0, B: 0 };
+          }
+          reportYearBalance[each.modelYear].A += parseFloat(each.A) || 0;
+          reportYearBalance[each.modelYear].B += parseFloat(each.B) || 0;
+        });
+        transfersOut.forEach((each) => {
+          yearObject[each.modelYear] = { A: 0, B: 0 };
+          if (!Object.keys(reportYearBalance).includes(each.modelYear)) {
+            reportYearBalance[each.modelYear] = { A: 0, B: 0 };
+          }
+          reportYearBalance[each.modelYear].A += parseFloat(-each.A) || 0;
+          reportYearBalance[each.modelYear].B += parseFloat(-each.B) || 0;
+        });
+        const provisionalBalance = {};
+        Object.keys(reportYearBalance).forEach((year) => {
+          yearObject[year] = { A: 0, B: 0 };
+          provisionalBalance[year] = { A: parseFloat(reportYearBalance[year].A), B: parseFloat(reportYearBalance[year].B) };
+        });
+        Object.keys(details.pendingBalance).forEach((year) => {
+          yearObject[year] = { A: 0, B: 0 };
+          provisionalBalance[year].A += parseFloat(details.pendingBalance[year].A);
+          provisionalBalance[year].B += parseFloat(details.pendingBalance[year].B);
+        });
+        setOffsetNumbers(yearObject);
+        const priorYear = details.priorYearBalance.year;
+        const creditBalanceStart = {};
+        creditBalanceStart[priorYear] = {
+          year: details.priorYearBalance.year,
+          A: details.priorYearBalance.A,
+          B: details.priorYearBalance.B,
         };
-      });
-      transfersIn.forEach((each) => {
-        yearObject[each.modelYear] = { A: 0, B: 0 };
-        if (!Object.keys(reportYearBalance).includes(each.modelYear)) {
-          reportYearBalance[each.modelYear] = { A: 0, B: 0 };
-        }
-        reportYearBalance[each.modelYear].A += parseFloat(each.A) || 0;
-        reportYearBalance[each.modelYear].B += parseFloat(each.B) || 0;
-      });
-      transfersOut.forEach((each) => {
-        yearObject[each.modelYear] = { A: 0, B: 0 };
-        if (!Object.keys(reportYearBalance).includes(each.modelYear)) {
-          reportYearBalance[each.modelYear] = { A: 0, B: 0 };
-        }
-        reportYearBalance[each.modelYear].A += parseFloat(-each.A) || 0;
-        reportYearBalance[each.modelYear].B += parseFloat(-each.B) || 0;
-      });
-      const provisionalBalance = {};
-      Object.keys(reportYearBalance).forEach((year) => {
-        yearObject[year] = { A: 0, B: 0 };
-        provisionalBalance[year] = { A: parseFloat(reportYearBalance[year].A), B: parseFloat(reportYearBalance[year].B) };
-      });
-      Object.keys(details.pendingBalance).forEach((year) => {
-        yearObject[year] = { A: 0, B: 0 };
-        provisionalBalance[year].A += parseFloat(details.pendingBalance[year].A);
-        provisionalBalance[year].B += parseFloat(details.pendingBalance[year].B);
-      });
-      setOffsetNumbers(yearObject);
-      const priorYear = details.priorYearBalance.year;
-      const creditBalanceStart = {};
-      creditBalanceStart[priorYear] = {
-        year: details.priorYearBalance.year,
-        A: details.priorYearBalance.A,
-        B: details.priorYearBalance.B,
-      };
-      setReportDetails({
-        creditBalanceStart,
-        creditBalanceEnd: reportYearBalance,
-        pendingBalance: details.pendingBalance,
-        provisionalBalance,
-        transactions: {
-          creditsIssuedSales,
-          transfersIn,
-          transfersOut,
-        },
-      });
-    });
+        setReportDetails({
+          creditBalanceStart,
+          creditBalanceEnd: reportYearBalance,
+          pendingBalance: details.pendingBalance,
+          provisionalBalance,
+          transactions: {
+            creditsIssuedSales,
+            transfersIn,
+            transfersOut,
+          },
+        });
 
-    Promise.all([reportPromise, listAssertion, complianceReportDetails, ratioPromise]).then(() => {
-      setLoading(false);
+        const listAssertion = axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((assertionResponse) => {
+          const filteredAssertions = assertionResponse.data.filter((data) => data.module === 'compliance_obligation');
+          setAssertions(filteredAssertions);
+        });
+
+        Promise.all([listAssertion, complianceReportDetails, ratioPromise]).then(() => {
+          setLoading(false);
+        });
+      });
     });
   };
 
