@@ -109,11 +109,10 @@ const ConsumerSalesContainer = (props) => {
         const year = parseInt(reportModelYear, 10);
 
         setModelYear(year);
-        setFirstYear(year - 1);
-        setSecondYear(year - 2);
-        setThirdYear(year - 3);
+        setFirstYear({ modelYear: year - 1, ldvSales: 0});
+        setSecondYear({ modelYear: year - 2, ldvSales: 0 });
+        setThirdYear({ modelYear: year - 3, ldvSales: 0 });
 
-        setLoading(false);
       });
     }
   };
@@ -158,13 +157,13 @@ const ConsumerSalesContainer = (props) => {
   const vehicleSupplierClass = (avg) => {
     if (avg < 1000) {
       supplierClass = 'Small Volume Supplier';
-      supplierClassText = '(under 1,000 total LDV sales)';
+      supplierClassText = '(less than 1,000 total LDV sales)';
     } else if (avg < 5000) {
       supplierClass = 'Medium Volume Supplier';
-      supplierClassText = '(under 5,000 total LDV sales)';
+      supplierClassText = '(1,000 to 4,999 total LDV sales)';
     } else if (avg > 5000) {
       supplierClass = 'Large Volume Supplier';
-      supplierClassText = '(over 5,000 total LDV sales)';
+      supplierClassText = '(5,000 or more total LDV sales)';
     }
     return [supplierClass, supplierClassText];
   };
@@ -251,9 +250,9 @@ const ConsumerSalesContainer = (props) => {
         salesInput={salesInput}
         details={details}
         modelYear={modelYear}
-        firstYear={firstYear}
-        secondYear={secondYear}
-        thirdYear={thirdYear}
+        firstYear={firstYear.modelYear}
+        secondYear={secondYear.modelYear}
+        thirdYear={thirdYear.modelYear}
       />
     </>
   );

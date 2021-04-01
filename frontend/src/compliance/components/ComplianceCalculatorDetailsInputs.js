@@ -46,7 +46,7 @@ const ComplianceCalculatorDetailsInputs = (props) => {
             &nbsp; (based on average of previous 3 year total LDV sale):
           </div>
           <div className="pl-lg-5">
-            <span className="text-blue ml-4">Small Volume Supplier (under 1,000 total LDV sales)</span>
+            <span className="text-blue ml-4">Small Volume Supplier (less than 1,000 total LDV sales)</span>
             <br />
             <input
               type="radio"
@@ -55,7 +55,7 @@ const ComplianceCalculatorDetailsInputs = (props) => {
               value="medium"
               onChange={(event) => { handleInputChange(event); }}
             />
-            <span className="text-blue">Medium Volume Supplier (under 5,000 total LDV sales)</span>
+            <span className="text-blue">Medium Volume Supplier (1,000 to 4,999 total LDV sales)</span>
             <br />
             <input
               type="radio"
@@ -64,7 +64,7 @@ const ComplianceCalculatorDetailsInputs = (props) => {
               value="large"
               onChange={(event) => { handleInputChange(event); }}
             />
-            <span className="text-blue">Large Volume Supplier (over 5,000 total LDV sales)</span>
+            <span className="text-blue">Large Volume Supplier (5,000 or more total LDV sales)</span>
           </div>
           <div className="form-group row mb-0">
             <div className="col-xl-6 col-lg-10 col-9 text-blue pl-0">
