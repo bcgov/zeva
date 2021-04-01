@@ -12,6 +12,7 @@ const COMPLIANCE = {
   REPORT_CREDIT_ACTIVITY: `${API_BASE_PATH}/reports/:id/credit-activity`,
   REPORT_SUMMARY: `${API_BASE_PATH}/reports/:id/summary`,
   REPORT_ASSESSMENT: `${API_BASE_PATH}/reports/:id/assessment`,
+  OBLIGATION: `${API_BASE_PATH}/compliance-activity-details`,
   CONSUMER_SALES: `${API_BASE_PATH}/consumer-sales`,
   RETRIEVE_CONSUMER_SALES: `${API_BASE_PATH}/consumer-sales/:id`,
   REPORT_DETAILS_BY_YEAR: `${API_BASE_PATH}/compliance-activity-details/:year`,

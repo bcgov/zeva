@@ -12,6 +12,7 @@ import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceObligationDetailsPage = (props) => {
   const {
+    offsetNumbers,
     supplierClassInfo,
     reportDetails,
     ratios,
@@ -21,9 +22,11 @@ const ComplianceObligationDetailsPage = (props) => {
     handleCheckboxClick,
     assertions,
     checkboxes,
+    handleOffsetChange,
+    handleSave,
   } = props;
   const {
-    priorYearBalance, reportYearBalance, pendingBalance, transactions, provisionalBalance,
+    creditBalanceStart, creditBalanceEnd, pendingBalance, transactions, provisionalBalance,
   } = reportDetails;
   const totalReduction = formatNumeric(
     ((ratios.complianceRatio / 100) * supplierClassInfo.ldvSales),
@@ -62,7 +65,7 @@ const ComplianceObligationDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          <ComplianceReportAlert report={details.creditActivity} type="Credit Activity" />
+          {/* <ComplianceReportAlert report={details.creditActivity} type="Credit Activity" /> */}
         </div>
       </div>
       <div id="compliance-obligation-page">
@@ -74,7 +77,7 @@ const ComplianceObligationDetailsPage = (props) => {
             <tbody>
               <tr className="subclass">
                 <th className="large-column">
-                  Credit Balance at September 30, {priorYearBalance.year}
+                  Credit Balance at September 30, {reportYear - 1}
                 </th>
                 <th className="small-column text-center text-blue">
                   A
@@ -88,10 +91,10 @@ const ComplianceObligationDetailsPage = (props) => {
                   &bull; &nbsp; &nbsp; Total Credit Balance
                 </td>
                 <td className="text-right">
-                  {/* {priorYearBalance.a} */} 0
+                  0
                 </td>
                 <td className="text-right">
-                  {/* {priorYearBalance.b} */} 0
+                  0
                 </td>
               </tr>
             </tbody>
@@ -114,7 +117,7 @@ const ComplianceObligationDetailsPage = (props) => {
                   B
                 </th>
               </tr>
-              {Object.keys(reportYearBalance).sort((a, b) => {
+              {Object.keys(creditBalanceEnd).sort((a, b) => {
                 if (a < b) {
                   return 1;
                 }
@@ -128,10 +131,10 @@ const ComplianceObligationDetailsPage = (props) => {
                     &bull; &nbsp; &nbsp; {each} Credits
                   </td>
                   <td className="text-right">
-                    {reportYearBalance[each].A}
+                    {creditBalanceEnd[each].A}
                   </td>
                   <td className="text-right">
-                    {reportYearBalance[each].B}
+                    {creditBalanceEnd[each].B}
                   </td>
                 </tr>
               ))}
@@ -283,37 +286,38 @@ const ComplianceObligationDetailsPage = (props) => {
                     B
                   </th>
                 </tr>
-                <tr>
-                  <td>
-                    &bull; &nbsp; &nbsp; {reportYear} Credits
-                  </td>
-                  <td>
-                    <input type="number" />
-                  </td>
-                  <td>
-                    <input type="number" />
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    &bull; &nbsp; &nbsp; 2019 Credits
-                  </td>
-                  <td>
-                    <input type="number" />
-                  </td>
-                  <td>
-                    <input type="number" />
-                  </td>
-                </tr>
+                {offsetNumbers && Object.keys(offsetNumbers).map((year) => (
+                  <tr key={year}>
+                    <td>
+                      &bull; &nbsp; &nbsp; {year} Credits
+                    </td>
+                    <td>
+                      <input
+                        name="A"
+                        id={`${year}-A`}
+                        onChange={(event) => { handleOffsetChange(event); }}
+                        type="number"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        name="B"
+                        id={`${year}-B`}
+                        onChange={(event) => { handleOffsetChange(event); }}
+                        type="number"
+                      />
+                    </td>
+                  </tr>
+                ))}
                 <tr className="subclass">
                   <th className="large-column">
                     <span>
                       Total Offset:
                     </span>
-                    <span className="float-right mr-3"> 21</span>
+                    <span className="float-right mr-3">{formatNumeric(Object.keys(offsetNumbers).reduce((a, v) => a + offsetNumbers[v].A + offsetNumbers[v].B, 0), 2)}</span>
                   </th>
-                  <th className="text-right pr-3">758.71</th>
-                  <th className="text-right pr-3">191.29</th>
+                  <th className="text-right pr-3">{formatNumeric(Object.keys(offsetNumbers).reduce((a, v) => a + offsetNumbers[v].A, 0), 2)}</th>
+                  <th className="text-right pr-3">{formatNumeric(Object.keys(offsetNumbers).reduce((a, v) => a + offsetNumbers[v].B, 0), 2)}</th>
                 </tr>
               </tbody>
             </table>
@@ -333,7 +337,7 @@ const ComplianceObligationDetailsPage = (props) => {
               {/* <Button buttonType="back" locationRoute="/compliance/reports" /> */}
             </span>
             <span className="right-content">
-              <Button buttonType="save" optionalClassname="button primary" action={() => {}} />
+              <Button buttonType="save" optionalClassname="button primary" action={() => {handleSave()}} />
             </span>
           </div>
         </div>

@@ -1,20 +1,17 @@
 from datetime import date
 from django.db.models import Sum, Value, Q
 from rest_framework import serializers
-from api.serializers.credit_transaction import CreditTransactionListSerializer, \
-    CreditTransactionBalanceSerializer, CreditTransactionSerializer
+
 from api.models.account_balance import AccountBalance
-from api.models.vehicle import Vehicle
-from api.models.sales_submission import SalesSubmission
-from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.models.credit_transaction import CreditTransaction
-from api.serializers.credit_transaction import CreditClassSerializer, CreditTransactionObligationActivitySerializer
-from api.serializers.account_balance import AccountBalanceSerializer
-from api.serializers.organization import OrganizationSerializer
-from api.serializers.sales_submission import SalesSubmissionListSerializer, SalesSubmissionObligationActivitySerializer
+from api.models.model_year_report_compliance_obligation import ModelYearReportComplianceObligation
+from api.models.sales_submission import SalesSubmission
+from api.models.vehicle import Vehicle
+from api.models.vehicle_statuses import VehicleDefinitionStatuses
+from api.serializers.credit_transaction import CreditTransactionObligationActivitySerializer
+from api.serializers.vehicle import ModelYearSerializer
 
-
-class ComplianceObligationActivityDetailsSerializer(serializers.ModelSerializer):
+class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSerializer):
     """
     """
     prior_year_balance = serializers.SerializerMethodField()
@@ -40,14 +37,14 @@ class ComplianceObligationActivityDetailsSerializer(serializers.ModelSerializer)
         prior_year = report_year-1
         prior_year_balance_a = self.retrieve_balance(prior_year, 1)
         prior_year_balance_b = self.retrieve_balance(prior_year, 2)
-        return {'year': prior_year, 'a': prior_year_balance_a, 'b': prior_year_balance_b}
+        return {'year': prior_year, 'A': prior_year_balance_a, 'B': prior_year_balance_b}
 
     def get_report_year_balance(self, obj, *args, **kwargs):
         kwargs = self.context.get('kwargs')
         report_year = int(kwargs.get('year'))
         report_year_balance_a = self.retrieve_balance(report_year, 1)
         report_year_balance_b = self.retrieve_balance(report_year, 2)   
-        return {'year': report_year, 'a': report_year_balance_a, 'b': report_year_balance_b}
+        return {'year': report_year, 'A': report_year_balance_a, 'B': report_year_balance_b}
 
     def get_report_year_transactions(self, obj, *args, **kwargs):
         request = self.context.get('request')
@@ -135,6 +132,16 @@ class ComplianceObligationActivityDetailsSerializer(serializers.ModelSerializer)
     class Meta:
         model = CreditTransaction
         fields = (
-            'report_year_balance', 'pending_balance',
-            'prior_year_balance', 'report_year_transactions'
+            'report_year_balance', 'pending_balance', 'prior_year_balance', 'report_year_transactions'
         )
+
+class ModelYearReportComplianceObligationSaveSerializer(serializers.ModelSerializer):
+    model_year = ModelYearSerializer()
+
+    def create(self, validated_data):
+        return obj
+
+    class Meta:
+        model = ModelYearReportComplianceObligation
+        fields = ('model_year_report', 'model_year', 'credit_a_value',
+                  'credit_b_value', 'category')
