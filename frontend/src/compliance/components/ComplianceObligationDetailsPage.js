@@ -65,7 +65,7 @@ const ComplianceObligationDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          <ComplianceReportAlert report={details.creditActivity} type="Credit Activity" />
+          {/* <ComplianceReportAlert report={details.creditActivity} type="Credit Activity" /> */}
         </div>
       </div>
       <div id="compliance-obligation-page">

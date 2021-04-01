@@ -132,13 +132,14 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
     class Meta:
         model = CreditTransaction
         fields = (
-            'report_year_balance', 'pending_balance',
-            'prior_year_balance', 'report_year_transactions'
+            'report_year_balance', 'pending_balance', 'prior_year_balance', 'report_year_transactions'
         )
-# class ModelYearReportComplianceObligationSaveSerializer(serializers.ModelSerializer):
-#     model_year = ModelYearSerializer()
-#     def create(self, validated_data):
-#         return obj
+
+class ModelYearReportComplianceObligationSaveSerializer(serializers.ModelSerializer):
+    model_year = ModelYearSerializer()
+
+    def create(self, validated_data):
+        return obj
 
     class Meta:
         model = ModelYearReportComplianceObligation

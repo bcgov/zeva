@@ -17,8 +17,7 @@ from api.serializers.model_year_report import \
     ModelYearReportSerializer, ModelYearReportListSerializer, \
     ModelYearReportSaveSerializer
 from api.serializers.model_year_report_compliance_obligation import \
-    ModelYearReportComplianceObligationDetailsSerializer,  \
-    ModelYearReportComplianceObligationSaveSerializer
+    ModelYearReportComplianceObligationDetailsSerializer
 from api.serializers.organization import \
     OrganizationSerializer
 from api.serializers.vehicle import ModelYearSerializer
