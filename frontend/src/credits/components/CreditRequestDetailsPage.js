@@ -374,7 +374,7 @@ const CreditRequestDetailsPage = (props) => {
                   <button
                     className={validatedOnly ? 'button' : 'button primary'}
                     onClick={() => {
-                      if (validatedOnly && moment(uploadDate).format('YYYYMMDD') >= moment(submission.updateTimestamp).format('YYYYMMDD')) {
+                      if (validatedOnly && moment(uploadDate.updateTimestamp) >= moment(submission.updateTimestamp)) {
                         setShowReverifyModal(true);
                       } else {
                         const url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id);
@@ -474,7 +474,10 @@ CreditRequestDetailsPage.propTypes = {
     PropTypes.shape(),
   ]),
   submission: PropTypes.shape().isRequired,
-  uploadDate: PropTypes.string.isRequired,
+  uploadDate: PropTypes.shape({
+    uploadDate: PropTypes.string,
+    updateTimestamp: PropTypes.string,
+  }).isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 

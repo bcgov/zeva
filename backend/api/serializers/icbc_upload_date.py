@@ -6,4 +6,4 @@ from api.models.icbc_upload_date import IcbcUploadDate
 class IcbcUploadDateSerializer(ModelSerializer):
     class Meta:
         model = IcbcUploadDate
-        fields = ('upload_date',)
+        fields = ('upload_date', 'update_timestamp')

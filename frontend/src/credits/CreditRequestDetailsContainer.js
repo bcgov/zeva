@@ -32,8 +32,8 @@ const CreditRequestDetailsContainer = (props) => {
       axios.get(ROUTES_ICBCVERIFICATION.DATE),
       axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
     ]).then(axios.spread((dateResponse, submissionResponse) => {
-      if (dateResponse.data.uploadDate) {
-        setICBCUploadDate(dateResponse.data.uploadDate);
+      if (dateResponse.data) {
+        setICBCUploadDate(dateResponse.data);
       }
       setSubmission(submissionResponse.data);
       setNonValidated(submissionResponse.data.content
