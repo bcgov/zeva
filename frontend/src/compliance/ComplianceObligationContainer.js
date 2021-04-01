@@ -100,17 +100,17 @@ const ComplianceObligationContainer = (props) => {
 
     axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
       const reportDetailsResponse = response.data;
-      setReportYear(reportDetailsResponse.modelYear);
+      setReportYear(reportDetailsResponse.modelYear.name);
       const { supplierClass, ldvSales } = reportDetailsResponse;
       setSupplierClassInfo({ class: supplierClass, ldvSales });
 
       const ratioPromise = axios.get(ROUTES_COMPLIANCE.RATIOS).then((ratioResponse) => {
-        const filteredRatio = ratioResponse.data.filter((data) => data.modelYear === reportDetailsResponse.modelYear)[0];
+        const filteredRatio = ratioResponse.data.filter((data) => data.modelYear === reportDetailsResponse.modelYear.name)[0];
         setRatios(filteredRatio);
       });
 
       const complianceReportDetails = axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS_BY_YEAR
-        .replace(':year', reportDetailsResponse.modelYear)).then((complianceResponse) => {
+        .replace(':year', reportDetailsResponse.modelYear.name)).then((complianceResponse) => {
         const yearObject = {};
         const details = complianceResponse.data;
         const creditsIssuedSales = parseCreditTransactions(
