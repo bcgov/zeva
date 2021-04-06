@@ -25,6 +25,11 @@ const ComplianceObligationDetailsPage = (props) => {
     handleOffsetChange,
     handleSave,
   } = props;
+
+  if (loading) {
+    return <Loading />;
+  }
+
   const {
     creditBalanceStart, creditBalanceEnd, pendingBalance, transactions, provisionalBalance,
   } = reportDetails;
@@ -51,10 +56,6 @@ const ComplianceObligationDetailsPage = (props) => {
     },
     organization: user.organization,
   };
-
-  if (loading) {
-    return <Loading />;
-  }
 
   return (
     <div id="compliance-supplier-information-details" className="page">

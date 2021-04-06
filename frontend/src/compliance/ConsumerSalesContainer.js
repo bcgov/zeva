@@ -48,57 +48,57 @@ const ConsumerSalesContainer = (props) => {
       axios.get(ROUTES_VEHICLES.VEHICLES_SALES),
       axios.get(ROUTES_COMPLIANCE.RETRIEVE_CONSUMER_SALES.replace(':id', id)),
     ]).then(axios.spread((vehiclesSales, consumerSalesResponse) => {
-        const {
-          previousSales,
-          vehicleList,
-          confirmations,
-          organizationName,
-          ldvSales,
-          modelYearReportHistory,
-          validationStatus,
+      const {
+        previousSales,
+        vehicleList,
+        confirmations,
+        organizationName,
+        ldvSales,
+        modelYearReportHistory,
+        validationStatus,
       } = consumerSalesResponse.data;
-      
-        if (previousSales.length === 3) {
-          setPreviousYearsExist(true);
-          setPreviousYearsList(previousSales);
-          averageLdvSales(
-            parseInt(previousSales[0].previousSales),
-            parseInt(previousSales[1].previousSales),
-            parseInt(previousSales[2].previousSales)
-          );
-        }
-      
-        if (vehicleList.length > 0) {
-          setVehicles(vehicleList);
-        } else {
-          setVehicles(vehiclesSales.data);
-        }
-        if (ldvSales > 0) {
-          setSalesInput(ldvSales);
-        }
 
-        setDetails({
-          organization: {
-            name: organizationName  
-          },
-          consumerSales: {
-            history: modelYearReportHistory,
-            validationStatus,
-          },
-        });
+      if (previousSales.length === 3) {
+        setPreviousYearsExist(true);
+        setPreviousYearsList(previousSales);
+        averageLdvSales(
+          parseInt(previousSales[0].previousSales),
+          parseInt(previousSales[1].previousSales),
+          parseInt(previousSales[2].previousSales)
+        );
+      }
 
-        if (confirmations.length > 0) {
-          setConfirmed(true);
-          setCheckboxes(confirmations);
-        }
-        setLoading(false);    
+      if (vehicleList.length > 0) {
+        setVehicles(vehicleList);
+      } else {
+        setVehicles(vehiclesSales.data);
+      }
+      if (ldvSales > 0) {
+        setSalesInput(ldvSales);
+      }
+
+      setDetails({
+        organization: {
+          name: organizationName,
+        },
+        consumerSales: {
+          history: modelYearReportHistory,
+          validationStatus,
+        },
+      });
+
+      if (confirmations.length > 0) {
+        setConfirmed(true);
+        setCheckboxes(confirmations);
+      }
+      setLoading(false);
     }));
 
     axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST)
       .then((response) => {
         const filteredAssertions = response.data.filter((data) => data.module === 'consumer_sales');
         setAssertions(filteredAssertions);
-      });   
+      });
 
     if (id && id !== 'new') {
       axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
@@ -106,13 +106,12 @@ const ConsumerSalesContainer = (props) => {
           modelYear: reportModelYear,
         } = response.data;
 
-        const year = parseInt(reportModelYear, 10);
+        const year = parseInt(reportModelYear.name, 10);
 
         setModelYear(year);
-        setFirstYear({ modelYear: year - 1, ldvSales: 0});
+        setFirstYear({ modelYear: year - 1, ldvSales: 0 });
         setSecondYear({ modelYear: year - 2, ldvSales: 0 });
         setThirdYear({ modelYear: year - 3, ldvSales: 0 });
-
       });
     }
   };
@@ -169,7 +168,7 @@ const ConsumerSalesContainer = (props) => {
   };
 
   const handleChange = (event) => {
-    setSalesInput(parseInt(event.target.value));
+    setSalesInput(parseInt(event.target.value, 10));
   };
 
   const handleCheckboxClick = (event) => {
@@ -193,24 +192,22 @@ const ConsumerSalesContainer = (props) => {
     } else {
       setError(false);
       axios.post(ROUTES_COMPLIANCE.CONSUMER_SALES, {
-          data: vehicles,
-          ldvSales: salesInput,
-          modelYearReportId: id,
-          previousSales: previousSalesInfo,
-          previousYearsExist: previousYearsExist,
-          supplierClass: supplierClass.charAt(0),
-          confirmation: checkboxes,
-        })
-        .then(() => {
-          setConfirmed(true);
-          setDisabledCheckboxes('disabled');
-        })
-        .catch((error) => {
-          const { response } = error;
-          if (response.status === 400) {
-            setErrorMessage(error.response.data.status);
-          }
-        });
+        data: vehicles,
+        ldvSales: salesInput,
+        modelYearReportId: id,
+        previousSales: previousSalesInfo,
+        previousYearsExist,
+        supplierClass: supplierClass.charAt(0),
+        confirmation: checkboxes,
+      }).then(() => {
+        setConfirmed(true);
+        setDisabledCheckboxes('disabled');
+      }).catch((error) => {
+        const { response } = error;
+        if (response.status === 400) {
+          setErrorMessage(error.response.data.status);
+        }
+      });
     }
   };
 
@@ -219,7 +216,7 @@ const ConsumerSalesContainer = (props) => {
     averageLdvSales(
       firstYear.ldvSales,
       secondYear.ldvSales,
-      thirdYear.ldvSales
+      thirdYear.ldvSales,
     );
   }, [keycloak.authenticated]);
 
@@ -257,7 +254,9 @@ const ConsumerSalesContainer = (props) => {
     </>
   );
 };
+
 ConsumerSalesContainer.propTypes = {
   user: CustomPropTypes.user.isRequired,
 };
+
 export default ConsumerSalesContainer;
