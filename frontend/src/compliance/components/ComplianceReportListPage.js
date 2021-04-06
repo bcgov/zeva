@@ -29,13 +29,13 @@ const ComplianceReportListPage = (props) => {
         <div className="col-md-8 d-flex align-items-end">
           <h2>Model Year Reports</h2>
         </div>
-        {availableYears.length > 0 && (
+        {availableYears.length > 0 && !user.isGovernment && (
           <div className="col-md-4 text-right">
             <div className="btn-group">
               <button
                 className="btn button primary ml-3"
                 onClick={() => {
-                  history.push(ROUTES_COMPLIANCE.NEW);
+                  history.push(`${ROUTES_COMPLIANCE.NEW}?year=${availableYears[0]}`);
                 }}
                 type="button"
               >
