@@ -6,6 +6,9 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import moment from 'moment-timezone';
+import 'react-quill/dist/quill.snow.css';
+import _ from 'lodash';
+
 import CreditRequestAlert from './CreditRequestAlert';
 import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
@@ -17,7 +20,7 @@ import ModelListTable from './ModelListTable';
 import CreditRequestSummaryTable from './CreditRequestSummaryTable';
 import getFileSize from '../../app/utilities/getFileSize';
 import DisplayComment from '../../app/components/DisplayComment';
-import 'react-quill/dist/quill.snow.css';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -174,13 +177,32 @@ const CreditRequestDetailsPage = (props) => {
     </Modal>
   );
 
+  let totalEligibleCredits = 0;
+
+  submission.content.forEach((item) => {
+    const { vehicle } = item;
+
+    if (submission.eligible) {
+      const eligibleSales = submission.eligible.find(
+        (eligible) => (eligible.vehicleId === vehicle.id),
+      );
+
+      if (eligibleSales && vehicle && vehicle.creditValue && vehicle.creditValue !== 0) {
+        totalEligibleCredits += parseFloat(eligibleSales.vinCount * _.round(vehicle.creditValue, 2));
+      }
+    }
+  });
+
   const invalidSubmission = submission.content.some((row) => (!row.vehicle || !row.vehicle.id || row.vehicle.modelName === ''));
+
   const directorAction = user.isGovernment
     && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
     && user.hasPermission('SIGN_SALES');
+
   const analystAction = user.isGovernment
     && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0
     && user.hasPermission('RECOMMEND_SALES');
+
   return (
     <div id="credit-request-details" className="page">
       {modal}
@@ -324,6 +346,16 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
 
+      {['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(submission.validationStatus) >= 0
+      && user.isGovernment && (
+      <div className="row my-4">
+        <div className="col-sm-12">
+          It is recommended that the Director issue a total of {formatNumeric(totalEligibleCredits, 2)} ZEV credits to{' '}
+          {submission.organization.name} based on {formatNumeric(_.sumBy(submission.eligible, 'vinCount'), 0)} eligible ZEV sales.
+        </div>
+      </div>
+      )}
+
       <div className="row">
         <div className="col-sm-12">
           <div className="action-bar mt-1">
@@ -364,7 +396,7 @@ const CreditRequestDetailsPage = (props) => {
                   <button
                     className={validatedOnly ? 'button' : 'button primary'}
                     onClick={() => {
-                      if (validatedOnly && moment(uploadDate).format('YYYYMMDD') >= moment(submission.updateTimestamp).format('YYYYMMDD')) {
+                      if (validatedOnly && moment(uploadDate.updateTimestamp) >= moment(submission.updateTimestamp)) {
                         setShowReverifyModal(true);
                       } else {
                         const url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id);
@@ -464,7 +496,10 @@ CreditRequestDetailsPage.propTypes = {
     PropTypes.shape(),
   ]),
   submission: PropTypes.shape().isRequired,
-  uploadDate: PropTypes.string.isRequired,
+  uploadDate: PropTypes.shape({
+    uploadDate: PropTypes.string,
+    updateTimestamp: PropTypes.string,
+  }).isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 

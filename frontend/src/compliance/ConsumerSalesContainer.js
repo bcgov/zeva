@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+
+import CONFIG from '../app/config';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ConsumerSalesDetailsPage from './components/ConsumerSalesDetailsPage';
@@ -13,17 +15,20 @@ const ConsumerSalesContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState([]);
-  const [salesInput, setSalesInput] = useState('');
-  const [readOnly, setReadOnly] = useState(false);
+  const [salesInput, setSalesInput] = useState(0);
   const [vehicles, setVehicles] = useState([]);
   const [assertions, setAssertions] = useState([]);
   const [confirmed, setConfirmed] = useState(false);
   const [checkboxes, setCheckboxes] = useState([]);
   const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
-  const [firstYear, setFirstYear] = useState({modelYear:2019,ldvSales:0});
-  const [secondYear, setSecondYear] = useState({modelYear:2018,ldvSales:0});
-  const [thirdYear, setThirdYear] = useState({ modelYear: 2017, ldvSales: 0 });
+  const [modelYear, setModelYear] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR);
+  const [firstYear, setFirstYear] = useState({ modelYear: modelYear - 1, ldvSales: 0 });
+  const [secondYear, setSecondYear] = useState({ modelYear: modelYear - 2, ldvSales: 0 });
+  const [thirdYear, setThirdYear] = useState({ modelYear: modelYear - 3, ldvSales: 0 });
   const [avgSales, setAvgSales] = useState(0);
+  const [previousYearsExist, setPreviousYearsExist] = useState(false);
+  const [previousYearsList, setPreviousYearsList] = useState([{}]);
+  const [details, setDetails] = useState({});
 
   const { id } = useParams();
   let supplierClass = '';
@@ -39,77 +44,138 @@ const ConsumerSalesContainer = (props) => {
 
   const refreshDetails = (showLoading) => {
     setLoading(showLoading);
-    axios.get(ROUTES_VEHICLES.VEHICLES_SALES).then((response) => {
-      setVehicles(response.data);
+    axios.all([
+      axios.get(ROUTES_VEHICLES.VEHICLES_SALES),
+      axios.get(ROUTES_COMPLIANCE.RETRIEVE_CONSUMER_SALES.replace(':id', id)),
+    ]).then(axios.spread((vehiclesSales, consumerSalesResponse) => {
+      const {
+        previousSales,
+        vehicleList,
+        confirmations,
+        organizationName,
+        ldvSales,
+        modelYearReportHistory,
+        validationStatus,
+      } = consumerSalesResponse.data;
+
+      if (previousSales.length === 3) {
+        setPreviousYearsExist(true);
+        setPreviousYearsList(previousSales);
+        averageLdvSales(
+          parseInt(previousSales[0].previousSales),
+          parseInt(previousSales[1].previousSales),
+          parseInt(previousSales[2].previousSales)
+        );
+      }
+
+      if (vehicleList.length > 0) {
+        setVehicles(vehicleList);
+      } else {
+        setVehicles(vehiclesSales.data);
+      }
+      if (ldvSales > 0) {
+        setSalesInput(ldvSales);
+      }
+
+      setDetails({
+        organization: {
+          name: organizationName,
+        },
+        consumerSales: {
+          history: modelYearReportHistory,
+          validationStatus,
+        },
+      });
+
+      if (confirmations.length > 0) {
+        setConfirmed(true);
+        setCheckboxes(confirmations);
+      }
       setLoading(false);
-    });
-    axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
-      const filteredAssertions = response.data.filter(
-        (data) => data.module === 'consumer_sales'
-      );
-      setAssertions(filteredAssertions);
-    });
+    }));
+
+    axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST)
+      .then((response) => {
+        const filteredAssertions = response.data.filter((data) => data.module === 'consumer_sales');
+        setAssertions(filteredAssertions);
+      });
+
+    if (id && id !== 'new') {
+      axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
+        const {
+          modelYear: reportModelYear,
+        } = response.data;
+
+        const year = parseInt(reportModelYear.name, 10);
+
+        setModelYear(year);
+        setFirstYear({ modelYear: year - 1, ldvSales: 0 });
+        setSecondYear({ modelYear: year - 2, ldvSales: 0 });
+        setThirdYear({ modelYear: year - 3, ldvSales: 0 });
+      });
+    }
+  };
+
+  const averageLdvSales = (paramFirstYear, paramSecondYear, paramThirdYear) => {
+    let avg = 0;
+    avg = (paramFirstYear + paramSecondYear + paramThirdYear) / 3;
+    setAvgSales(Math.round(avg));
   };
 
   const handleInputChange = (event) => {
-    const { id, value } = event.target;
-    if (id === 'first') {
+    const { id: inputId, value } = event.target;
+    if (inputId === 'first') {
       if (value === '') {
         setFirstYear({ ...firstYear, ldvSales: 0 });
         averageLdvSales(0, secondYear.ldvSales, thirdYear.ldvSales);
       } else {
-        setFirstYear({...firstYear, ldvSales: parseInt(value)});
-        averageLdvSales(parseInt(value), secondYear.ldvSales, thirdYear.ldvSales);
+        setFirstYear({ ...firstYear, ldvSales: parseInt(value, 10) });
+        averageLdvSales(parseInt(value, 10), secondYear.ldvSales, thirdYear.ldvSales);
       }
     }
-    if (id === 'second') {
+    if (inputId === 'second') {
       if (value === '') {
         setSecondYear({ ...secondYear, ldvSales: 0 });
         averageLdvSales(firstYear.ldvSales, 0, thirdYear.ldvSales);
       } else {
-        setSecondYear({...secondYear, ldvSales: parseInt(value)});
-        averageLdvSales(firstYear.ldvSales, parseInt(value), thirdYear.ldvSales);
+        setSecondYear({ ...secondYear, ldvSales: parseInt(value, 10) });
+        averageLdvSales(firstYear.ldvSales, parseInt(value, 10), thirdYear.ldvSales);
       }
     }
-    if (id === 'third') {
+    if (inputId === 'third') {
       if (value === '') {
         setSecondYear({ ...thirdYear, ldvSales: 0 });
         averageLdvSales(firstYear.ldvSales, secondYear.ldvSales, 0);
       } else {
-        setThirdYear({...thirdYear, ldvSales: parseInt(value)});
-        averageLdvSales(firstYear.ldvSales, secondYear.ldvSales, parseInt(value));
+        setThirdYear({ ...thirdYear, ldvSales: parseInt(value, 10) });
+        averageLdvSales(firstYear.ldvSales, secondYear.ldvSales, parseInt(value, 10));
       }
     }
   };
 
-  const averageLdvSales = (firstYear, secondYear, thirdYear) => {
-    let avg = 0;
-    avg = (firstYear + secondYear + thirdYear) / 3;
-    setAvgSales(Math.round(avg));
-  };
-
   const vehicleSupplierClass = (avg) => {
-    
     if (avg < 1000) {
       supplierClass = 'Small Volume Supplier';
-      supplierClassText = '(under 1,000 total LDV sales)';
+      supplierClassText = '(less than 1,000 total LDV sales)';
     } else if (avg < 5000) {
       supplierClass = 'Medium Volume Supplier';
-      supplierClassText = '(under 5,000 total LDV sales)';
+      supplierClassText = '(1,000 to 4,999 total LDV sales)';
     } else if (avg > 5000) {
       supplierClass = 'Large Volume Supplier';
-      supplierClassText = '(over 5,000 total LDV sales)';
+      supplierClassText = '(5,000 or more total LDV sales)';
     }
     return [supplierClass, supplierClassText];
   };
 
   const handleChange = (event) => {
-    setSalesInput(event.target.value);
+    setSalesInput(parseInt(event.target.value, 10));
   };
 
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
-      const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
+      const checked = checkboxes.filter(
+        (each) => Number(each) !== Number(event.target.id)
+      );
       setCheckboxes(checked);
     }
 
@@ -125,32 +191,33 @@ const ConsumerSalesContainer = (props) => {
       setError(true);
     } else {
       setError(false);
-      axios
-        .post(ROUTES_COMPLIANCE.VEHICLES, {
-          data: vehicles,
-          ldvSales: salesInput,
-          modelYearReportId: id,
-          previousSales: previousSalesInfo,
-          supplierClass: supplierClass.charAt(0),
-          confirmation: checkboxes,
-        })
-        .then(() => {
-          setConfirmed(true);
-          setDisabledCheckboxes('disabled');
-          setReadOnly(true);
-        })
-        .catch((error) => {
-          const { response } = error;
-          if (response.status === 400) {
-            setErrorMessage(error.response.data.status);
-          }
-        });
+      axios.post(ROUTES_COMPLIANCE.CONSUMER_SALES, {
+        data: vehicles,
+        ldvSales: salesInput,
+        modelYearReportId: id,
+        previousSales: previousSalesInfo,
+        previousYearsExist,
+        supplierClass: supplierClass.charAt(0),
+        confirmation: checkboxes,
+      }).then(() => {
+        setConfirmed(true);
+        setDisabledCheckboxes('disabled');
+      }).catch((error) => {
+        const { response } = error;
+        if (response.status === 400) {
+          setErrorMessage(error.response.data.status);
+        }
+      });
     }
   };
 
   useEffect(() => {
     refreshDetails(true);
-    averageLdvSales(firstYear.ldvSales, secondYear.ldvSales, thirdYear.ldvSales);
+    averageLdvSales(
+      firstYear.ldvSales,
+      secondYear.ldvSales,
+      thirdYear.ldvSales,
+    );
   }, [keycloak.authenticated]);
 
   return (
@@ -168,7 +235,6 @@ const ConsumerSalesContainer = (props) => {
         vehicles={vehicles}
         confirmed={confirmed}
         error={error}
-        readOnly={readOnly}
         assertions={assertions}
         checkboxes={checkboxes}
         disabledCheckboxes={disabledCheckboxes}
@@ -176,11 +242,21 @@ const ConsumerSalesContainer = (props) => {
         handleInputChange={handleInputChange}
         avgSales={avgSales}
         vehicleSupplierClass={vehicleSupplierClass}
+        previousYearsExist={previousYearsExist}
+        previousYearsList={previousYearsList}
+        salesInput={salesInput}
+        details={details}
+        modelYear={modelYear}
+        firstYear={firstYear.modelYear}
+        secondYear={secondYear.modelYear}
+        thirdYear={thirdYear.modelYear}
       />
     </>
   );
 };
+
 ConsumerSalesContainer.propTypes = {
   user: CustomPropTypes.user.isRequired,
 };
+
 export default ConsumerSalesContainer;

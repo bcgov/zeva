@@ -1,5 +1,4 @@
 /* eslint-disable react/no-array-index-key */
-import moment from 'moment-timezone';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { now } from 'moment';
@@ -13,18 +12,39 @@ import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceObligationDetailsPage = (props) => {
   const {
+    offsetNumbers,
+    supplierClassInfo,
     reportDetails,
+    ratios,
     reportYear,
     loading,
     user,
     handleCheckboxClick,
     assertions,
     checkboxes,
+    handleOffsetChange,
+    handleSave,
   } = props;
-  const {
-    priorYearBalance, reportYearBalance, pendingBalance, transactions, provisionalBalance,
-  } = reportDetails;
 
+  if (loading) {
+    return <Loading />;
+  }
+
+  const {
+    creditBalanceStart, creditBalanceEnd, pendingBalance, transactions, provisionalBalance,
+  } = reportDetails;
+  const totalReduction = formatNumeric(
+    ((ratios.complianceRatio / 100) * supplierClassInfo.ldvSales),
+    2,
+  );
+  const classAReduction = formatNumeric(
+    ((ratios.zevClassA / 100) * supplierClassInfo.ldvSales),
+    2,
+  );
+  const leftoverReduction = formatNumeric(((
+    ratios.complianceRatio / 100) * supplierClassInfo.ldvSales)
+    - ((ratios.zevClassA / 100) * supplierClassInfo.ldvSales),
+  2);
   const details = {
     creditActivity: {
       history: [{
@@ -37,10 +57,6 @@ const ComplianceObligationDetailsPage = (props) => {
     organization: user.organization,
   };
 
-  if (loading) {
-    return <Loading />;
-  }
-
   return (
     <div id="compliance-supplier-information-details" className="page">
       <div className="row mt-3">
@@ -50,24 +66,24 @@ const ComplianceObligationDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          <ComplianceReportAlert report={details.creditActivity} type="Credit Activity" />
+          {/* <ComplianceReportAlert report={details.creditActivity} type="Credit Activity" /> */}
         </div>
       </div>
       <div id="compliance-obligation-page">
         <div className="col-12">
-          <h3 className="mb-3">Compliance Obligation and Credit Activity</h3>
+          <h3 className="mb-2">Compliance Obligation and Credit Activity</h3>
         </div>
         <div>
           <table id="prior-year-balance">
             <tbody>
               <tr className="subclass">
                 <th className="large-column">
-                  Credit Balance at September 30, {priorYearBalance.year}
+                  Credit Balance at September 30, {reportYear - 1}
                 </th>
-                <th className="text-center text-blue">
+                <th className="small-column text-center text-blue">
                   A
                 </th>
-                <th className="text-center text-blue">
+                <th className="small-column text-center text-blue">
                   B
                 </th>
               </tr>
@@ -76,17 +92,17 @@ const ComplianceObligationDetailsPage = (props) => {
                   &bull; &nbsp; &nbsp; Total Credit Balance
                 </td>
                 <td className="text-right">
-                  {/* {priorYearBalance.a} */} 0
+                  0
                 </td>
                 <td className="text-right">
-                  {/* {priorYearBalance.b} */} 0
+                  0
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
         <div className="mt-4">
-          <ComplianceObligationTableCreditsIssued transactions={reportDetails.transactions} />
+          <ComplianceObligationTableCreditsIssued transactions={transactions} />
         </div>
         <div className="mt-4">
           <table id="report-year-balance">
@@ -95,14 +111,14 @@ const ComplianceObligationDetailsPage = (props) => {
                 <th className="large-column">
                   Credit Balance at September 30, {reportYear}
                 </th>
-                <th className="text-center text-blue">
+                <th className="small-column text-center text-blue">
                   A
                 </th>
-                <th className="text-center text-blue">
+                <th className="small-column text-center text-blue">
                   B
                 </th>
               </tr>
-              {Object.keys(reportYearBalance).sort((a, b) => {
+              {Object.keys(creditBalanceEnd).sort((a, b) => {
                 if (a < b) {
                   return 1;
                 }
@@ -116,10 +132,10 @@ const ComplianceObligationDetailsPage = (props) => {
                     &bull; &nbsp; &nbsp; {each} Credits
                   </td>
                   <td className="text-right">
-                    {reportYearBalance[each].A}
+                    {creditBalanceEnd[each].A}
                   </td>
                   <td className="text-right">
-                    {reportYearBalance[each].B}
+                    {creditBalanceEnd[each].B}
                   </td>
                 </tr>
               ))}
@@ -127,8 +143,8 @@ const ComplianceObligationDetailsPage = (props) => {
                 <th className="large-column">
                   Credits Pending for Consumer Sales
                 </th>
-                <th> </th>
-                <th> </th>
+                <th className="small-column"> </th>
+                <th className="small-column"> </th>
               </tr>
               {Object.keys(pendingBalance).sort((a, b) => {
                 if (a < b) {
@@ -153,8 +169,8 @@ const ComplianceObligationDetailsPage = (props) => {
                 <th className="large-column">
                   Provisional Credit Balance at September 30, {reportYear}
                 </th>
-                <th> </th>
-                <th> </th>
+                <th className="small-column"> </th>
+                <th className="small-column"> </th>
               </tr>
               {Object.keys(provisionalBalance).sort((a, b) => {
                 if (a < b) {
@@ -191,7 +207,7 @@ const ComplianceObligationDetailsPage = (props) => {
         </div>
 
         <div className="col-12">
-          <h3 className="mt-3">2020 Compliance Ratio Reduction and Credit Offset</h3>
+          <h3 className="mt-4 mb-2">{reportYear} Compliance Ratio Reduction and Credit Offset</h3>
 
           <div className="row">
             <table className="col-lg-5 col-sm-12 mr-3">
@@ -203,52 +219,59 @@ const ComplianceObligationDetailsPage = (props) => {
                 </tr>
                 <tr>
                   <td className="text-blue">
-                    2020 Model Year LDV Sales\Leases:
+                    {reportYear} Model Year LDV Sales\Leases:
                   </td>
                   <td>
-                    10,000
+                    {supplierClassInfo.ldvSales}
                   </td>
                 </tr>
                 <tr>
                   <td className="text-blue">
-                    2020 Compliance Ratio:
+                    {reportYear} Compliance Ratio:
                   </td>
                   <td>
-                    9.5%
+                    {ratios.complianceRatio}%
                   </td>
                 </tr>
+                {supplierClassInfo.class === 'L' && (
                 <tr>
                   <td className="text-blue">
                     Large Volume Supplier Class A Ratio
                   </td>
                   <td>
-                    6%
+                    {ratios.zevClassA}%
                   </td>
                 </tr>
+                )}
                 <tr className="font-weight-bold">
                   <td className="text-blue">
                     Ratio Reduction:
                   </td>
                   <td>
-                    950.00
+                    {totalReduction }
                   </td>
                 </tr>
-                <tr>
-                  <td className="text-blue">
-                    &bull; &nbsp; &nbsp; ZEV Class A Debit:
-                  </td>
-                  <td>
-                    600.00
-                  </td>
-                </tr>
-                <tr>
-                  <td className="text-blue">
-                    &bull; &nbsp; &nbsp; Unspecified ZEV Class Debit:
-                  </td>
-                  <td>
-                    350.00
-                  </td>
-                </tr>
+                {supplierClassInfo.class === 'L' && (
+                  <>
+                    <tr>
+                      <td className="text-blue">
+                        &bull; &nbsp; &nbsp; ZEV Class A Debit:
+                      </td>
+                      <td>
+                        {classAReduction}
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td className="text-blue">
+                        &bull; &nbsp; &nbsp; Unspecified ZEV Class Debit:
+                      </td>
+                      <td>
+                        {leftoverReduction}
+                      </td>
+                    </tr>
+                  </>
+                )}
               </tbody>
             </table>
             <table className="col-lg-6 col-sm-12" id="offset-table">
@@ -264,37 +287,38 @@ const ComplianceObligationDetailsPage = (props) => {
                     B
                   </th>
                 </tr>
-                <tr>
-                  <td>
-                    &bull; &nbsp; &nbsp; 2020 Credits
-                  </td>
-                  <td>
-                    <input type="number" />
-                  </td>
-                  <td>
-                    <input type="number" />
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    &bull; &nbsp; &nbsp; 2019 Credits
-                  </td>
-                  <td>
-                    <input type="number" />
-                  </td>
-                  <td>
-                    <input type="number" />
-                  </td>
-                </tr>
+                {offsetNumbers && Object.keys(offsetNumbers).map((year) => (
+                  <tr key={year}>
+                    <td>
+                      &bull; &nbsp; &nbsp; {year} Credits
+                    </td>
+                    <td>
+                      <input
+                        name="A"
+                        id={`${year}-A`}
+                        onChange={(event) => { handleOffsetChange(event); }}
+                        type="number"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        name="B"
+                        id={`${year}-B`}
+                        onChange={(event) => { handleOffsetChange(event); }}
+                        type="number"
+                      />
+                    </td>
+                  </tr>
+                ))}
                 <tr className="subclass">
                   <th className="large-column">
                     <span>
                       Total Offset:
                     </span>
-                    <span className="float-right mr-3"> 21</span>
+                    <span className="float-right mr-3">{formatNumeric(Object.keys(offsetNumbers).reduce((a, v) => a + offsetNumbers[v].A + offsetNumbers[v].B, 0), 2)}</span>
                   </th>
-                  <th className="text-right pr-3">758.71</th>
-                  <th className="text-right pr-3">191.29</th>
+                  <th className="text-right pr-3">{formatNumeric(Object.keys(offsetNumbers).reduce((a, v) => a + offsetNumbers[v].A, 0), 2)}</th>
+                  <th className="text-right pr-3">{formatNumeric(Object.keys(offsetNumbers).reduce((a, v) => a + offsetNumbers[v].B, 0), 2)}</th>
                 </tr>
               </tbody>
             </table>
@@ -314,7 +338,7 @@ const ComplianceObligationDetailsPage = (props) => {
               {/* <Button buttonType="back" locationRoute="/compliance/reports" /> */}
             </span>
             <span className="right-content">
-              <Button buttonType="save" optionalClassname="button primary" action={() => {}} />
+              <Button buttonType="save" optionalClassname="button primary" action={() => {handleSave()}} />
             </span>
           </div>
         </div>
@@ -329,5 +353,14 @@ ComplianceObligationDetailsPage.defaultProps = {
 ComplianceObligationDetailsPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired,
+  supplierClassInfo: PropTypes.shape().isRequired,
+  reportDetails: PropTypes.shape().isRequired,
+  ratios: PropTypes.shape().isRequired,
+  reportYear: PropTypes.string.isRequired,
+  handleCheckboxClick: PropTypes.func.isRequired,
+  assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  checkboxes: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  ).isRequired,
 };
 export default ComplianceObligationDetailsPage;

@@ -14,7 +14,7 @@ from .viewsets.model_year_report import ModelYearReportViewset
 from .viewsets.signing_authority_assertion import SigningAuthorityAssertionViewSet
 from .viewsets.upload import UploadViewSet
 from .viewsets.model_year_report_consumer_sales import ModelYearReportConsumerSalesViewSet
-from .viewsets.compliance_obligation_activity import ComplianceObligationActivityViewset
+from .viewsets.model_year_report_compliance_obligation import ModelYearReportComplianceObligationViewset
 
 router = routers.SimpleRouter(trailing_slash=False)
 router.register(r'organizations', OrganizationViewSet, basename='organization')
@@ -47,9 +47,9 @@ router.register(
     r'uploads', UploadViewSet, basename='minio'
 )
 router.register(
-    r'compliance/vehicle', ModelYearReportConsumerSalesViewSet, basename='consumer-sales'
+    r'compliance/consumer-sales', ModelYearReportConsumerSalesViewSet, basename='consumer-sales'
 )
 router.register(
-    r'compliance/compliance-activity-details', ComplianceObligationActivityViewset, basename='details'
+    r'compliance/compliance-activity-details', ModelYearReportComplianceObligationViewset, basename='compliance-obligation-activity'
 )
 urlpatterns = router.urls

@@ -72,5 +72,11 @@ objects:
           'model_year_report.enabled': ${MODEL_YEAR_REPORT_ENABLED},
           'purchase_requests.enabled': ${PURCHASE_REQUESTS_ENABLED},
           'notifications.enabled': ${NOTIFICATIONS_ENABLED},
-          'roles.enabled': ${ROLES_ENABLED}
+          'roles.enabled': ${ROLES_ENABLED},
+          'model_year_report.years': [
+            2020,
+            2021,
+            2022,
+            2023,
+          ]
         };

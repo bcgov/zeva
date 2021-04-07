@@ -1,3 +1,20 @@
+#compliance-report-list {
+  .btn-group a {
+    color: $default-text-black;
+    display: block;
+    text-decoration: none;
+
+    &:hover {
+      background-color: $primary-yellow;
+    }
+  }
+
+  .dropdown-menu {
+    left: unset;
+    right: 0;
+  }
+}
+
 #compliance-supplier-information-details {
   .supplier-information {
     border: 1px solid $border-grey;
@@ -28,17 +45,18 @@
   .consumer-sales {
     border: 1px solid $border-grey;
   }
+  .previous-ldv-sales,
   .previous-ldv-avg {
     border: 1px solid $border-grey;
-    height: 94%;
+    background-color: $default-background-grey;
+    height: 100%;
   }
   .textbox-first,
   .textbox-second,
   .textbox-third{
     width: 30%;
   }
-  .ldv-sales,
-  .previous-ldv-sales {
+  .ldv-sales{
     background-color: $default-background-grey;
   }
   .textbox-sales {
@@ -65,9 +83,12 @@
       font-weight: bold;
       background-color: $default-background-grey;
     }
+    .small-column {
+      width: 15%;
+    }
     .large-column {
       color: $default-text-blue;
-      width: 70%;
+      // width: 70%;
       border-right: 4px solid white;
     }
   }

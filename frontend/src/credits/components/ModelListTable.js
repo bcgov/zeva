@@ -15,7 +15,7 @@ const ModelListTable = (props) => {
   const { submission, user } = props;
 
   const columns = [{
-    Header: <AnalystRecommendationHeader id={submission.id} />,
+    Header: <AnalystRecommendationHeader submission={submission} user={user} />,
     headerClassName: 'header-group text-left analyst-recommendation',
     columns: getAnalystRecommendationColumns(props),
   }, {

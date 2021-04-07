@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceObligationTableCreditsIssued = (props) => {
   const { transactions } = props;
@@ -17,10 +19,10 @@ const ComplianceObligationTableCreditsIssued = (props) => {
           <th className="large-column">
             {title}
           </th>
-          <th className="text-center text-blue">
+          <th className="small-column text-center text-blue">
             {showAandB ? 'A' : ''}
           </th>
-          <th className="text-center text-blue">
+          <th className="small-column text-center text-blue">
             {showAandB ? 'B' : ''}
           </th>
         </tr>
@@ -38,10 +40,10 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               &bull; &nbsp; &nbsp; {each.modelYear} Credits
             </td>
             <td className={numberClassname}>
-              {each.A}
+              {formatNumeric(each.A, 2)}
             </td>
             <td className={numberClassname}>
-              {each.B}
+              {formatNumeric(each.B, 2)}
             </td>
           </tr>
         ))}
@@ -74,5 +76,12 @@ const ComplianceObligationTableCreditsIssued = (props) => {
       </tbody>
     </table>
   );
+};
+ComplianceObligationTableCreditsIssued.propTypes = {
+  transactions: PropTypes.shape({
+    creditsIssuedSales: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+    transfersIn: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+    transfersOut: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  }).isRequired,
 };
 export default ComplianceObligationTableCreditsIssued;

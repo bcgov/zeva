@@ -185,6 +185,7 @@ const VINListTable = (props) => {
             {reasons.map((reason) => (
               <option key={reason} value={reason}>{reason}</option>
             ))}
+            <option value=""> </option>
           </select>
         );
       },

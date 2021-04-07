@@ -1,7 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { now } from 'moment';
 
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
@@ -11,6 +10,7 @@ import ComplianceReportSignOff from './ComplianceReportSignOff';
 
 const SupplierInformationDetailsPage = (props) => {
   const {
+    details,
     handleChangeMake,
     handleDeleteMake,
     handleSubmit,
@@ -23,19 +23,8 @@ const SupplierInformationDetailsPage = (props) => {
     checkboxes,
     disabledCheckboxes,
     handleCheckboxClick,
+    modelYear,
   } = props;
-
-  const details = {
-    supplierInformation: {
-      history: [{
-        status: 'DRAFT',
-        createTimestamp: now(),
-        createUser: user,
-      }],
-      status: 'DRAFT',
-    },
-    organization: user.organization,
-  };
 
   if (loading) {
     return <Loading />;
@@ -45,12 +34,14 @@ const SupplierInformationDetailsPage = (props) => {
     <div id="compliance-supplier-information-details" className="page">
       <div className="row mt-3">
         <div className="col-sm-12">
-          <h2>2020 Model Year Report</h2>
+          <h2>{modelYear} Model Year Report</h2>
         </div>
       </div>
       <div className="row">
         <div className="col-12">
-          <ComplianceReportAlert report={details.supplierInformation} type="Supplier Information" />
+          {details && details.supplierInformation && details.supplierInformation.history && (
+            <ComplianceReportAlert report={details.supplierInformation} type="Supplier Information" />
+          )}
         </div>
       </div>
       <div className="row mt-1">
@@ -101,7 +92,7 @@ const SupplierInformationDetailsPage = (props) => {
             <div className="mt-4">
               <h4>Light Duty Vehicle Makes</h4>
               <div className="mt-1 mb-2">
-                Enter all the LDV makes {details.organization.name} supplied in British Columbia in the 2020 compliance period ending September 30, 2021.
+                Enter all the LDV makes {details.organization.name} supplied in British Columbia in the {modelYear} compliance period ending September 30, {modelYear + 1}.
               </div>
               <div className="ldv-makes p-3">
                 <form onSubmit={handleSubmitMake}>
@@ -177,6 +168,10 @@ SupplierInformationDetailsPage.defaultProps = {
 };
 
 SupplierInformationDetailsPage.propTypes = {
+  details: PropTypes.shape({
+    organization: PropTypes.shape(),
+    supplierInformation: PropTypes.shape(),
+  }).isRequired,
   handleChangeMake: PropTypes.func.isRequired,
   handleDeleteMake: PropTypes.func.isRequired,
   handleSubmitMake: PropTypes.func.isRequired,
@@ -185,9 +180,12 @@ SupplierInformationDetailsPage.propTypes = {
   make: PropTypes.string.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   user: CustomPropTypes.user.isRequired,
-  assertions: PropTypes.arrayOf(PropTypes.shape()),
-  checkboxes: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])),
+  assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  checkboxes: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  ).isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   disabledCheckboxes: PropTypes.string.isRequired,
+  modelYear: PropTypes.number.isRequired,
 };
 export default SupplierInformationDetailsPage;
