@@ -89,6 +89,17 @@ const SupplierInformationContainer = (props) => {
     }
   };
 
+  const handleCancelConfirmation = () => {
+    const data = {
+      delete_confirmations: true,
+    };
+
+    axios.patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data).then((response) => {
+      history.push(ROUTES_COMPLIANCE.REPORTS);
+      history.replace(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
+    });
+  };
+
   const refreshDetails = () => {
     if (id && id !== 'new') {
       axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
@@ -160,6 +171,7 @@ const SupplierInformationContainer = (props) => {
         user={user}
       />
       <SupplierInformationDetailsPage
+        handleCancelConfirmation={handleCancelConfirmation}
         handleChangeMake={handleChangeMake}
         handleDeleteMake={handleDeleteMake}
         handleSubmit={handleSubmit}
