@@ -9,6 +9,7 @@
 
 1. Create base image for frontend
     * oc tag registry.redhat.io/rhel8/nodejs-12:1-45 e52f12-tools/nodejs:12-1-45
+    * oc tag registry.redhat.io/ubi8/nodejs-14:1-28 e52f12-tools/nodejs:14-1-28
 
 ### After pipeline completes
 
