@@ -351,7 +351,7 @@ const CreditRequestDetailsPage = (props) => {
       <div className="row my-4">
         <div className="col-sm-12">
           It is recommended that the Director issue a total of {formatNumeric(totalEligibleCredits, 2)} ZEV credits to{' '}
-          {submission.organization.name} based on {formatNumeric(_.sumBy(submission.content, 'sales'), 0)} eligible ZEV sales.
+          {submission.organization.name} based on {formatNumeric(_.sumBy(submission.eligible, 'vinCount'), 0)} eligible ZEV sales.
         </div>
       </div>
       )}
