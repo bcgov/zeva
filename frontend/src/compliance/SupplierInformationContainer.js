@@ -92,7 +92,6 @@ const SupplierInformationContainer = (props) => {
   const refreshDetails = () => {
     if (id && id !== 'new') {
       axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
-
         const {
           makes: modelYearReportMakes,
           modelYearReportAddresses,
@@ -103,7 +102,7 @@ const SupplierInformationContainer = (props) => {
           modelYear: reportModelYear,
         } = response.data;
 
-        setModelYear(parseInt(reportModelYear, 10));
+        setModelYear(parseInt(reportModelYear.name, 10));
 
         if (modelYearReportMakes) {
           const currentMakes = modelYearReportMakes.map((each) => (each.make));

@@ -17,6 +17,7 @@ from api.serializers.model_year_report_make import \
     ModelYearReportMakeSerializer
 from api.serializers.organization import OrganizationSerializer
 from api.serializers.organization_address import OrganizationAddressSerializer
+from api.serializers.vehicle import ModelYearSerializer
 from auditable.views import AuditableMixin
 
 
@@ -65,6 +66,8 @@ class ModelYearReportViewset(
         ).first()
 
         if not confirmation:
+            model_year = ModelYearSerializer(report.model_year)
+
             addresses = OrganizationAddressSerializer(
                 request.user.organization.organization_address, many=True
             )
@@ -98,7 +101,7 @@ class ModelYearReportViewset(
                 'model_year_report_history': history.data,
                 'validation_status': report.validation_status.value,
                 'supplier_class': report.supplier_class,
-                'model_year': report.model_year.name,
+                'model_year': model_year.data,
                 'create_user': report.create_user,
                 'confirmations': confirmations
             })
