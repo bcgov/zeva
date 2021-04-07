@@ -95,6 +95,8 @@ objects:
           from:
             kind: ImageStreamTag
             name: python:3.6-1-134
+          pullSecret:
+            name: zeva-image-pull-secret            
           forcePull: true
           noCache: true            
         type: Source
