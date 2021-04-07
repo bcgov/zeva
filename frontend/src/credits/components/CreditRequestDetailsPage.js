@@ -177,13 +177,32 @@ const CreditRequestDetailsPage = (props) => {
     </Modal>
   );
 
+  let totalEligibleCredits = 0;
+
+  submission.content.forEach((item) => {
+    const { vehicle } = item;
+
+    if (submission.eligible) {
+      const eligibleSales = submission.eligible.find(
+        (eligible) => (eligible.vehicleId === vehicle.id),
+      );
+
+      if (eligibleSales && vehicle && vehicle.creditValue && vehicle.creditValue !== 0) {
+        totalEligibleCredits += parseFloat(eligibleSales.vinCount * _.round(vehicle.creditValue, 2));
+      }
+    }
+  });
+
   const invalidSubmission = submission.content.some((row) => (!row.vehicle || !row.vehicle.id || row.vehicle.modelName === ''));
+
   const directorAction = user.isGovernment
     && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
     && user.hasPermission('SIGN_SALES');
+
   const analystAction = user.isGovernment
     && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0
     && user.hasPermission('RECOMMEND_SALES');
+
   return (
     <div id="credit-request-details" className="page">
       {modal}
@@ -327,12 +346,15 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
 
+      {['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(submission.validationStatus) >= 0
+      && user.isGovernment && (
       <div className="row my-4">
         <div className="col-sm-12">
-          It is recommended that the Director issue a total of {formatNumeric(_.sumBy(submission.eligible, 'vinCount'), 0)} ZEV credits to{' '}
-          {submission.organization.name} based on {formatNumeric(_.sumBy(submission.content, 'sales'), 0)} eligible ZEV sales.
+          It is recommended that the Director issue a total of {formatNumeric(totalEligibleCredits, 2)} ZEV credits to{' '}
+          {submission.organization.name} based on {formatNumeric(_.sumBy(submission.eligible, 'vinCount'), 0)} eligible ZEV sales.
         </div>
       </div>
+      )}
 
       <div className="row">
         <div className="col-sm-12">
