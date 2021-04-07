@@ -138,32 +138,37 @@ const ComplianceObligationDetailsPage = (props) => {
                   </td>
                 </tr>
               ))}
-              <tr className="subclass">
-                <th className="large-column">
-                  Credits Pending for Consumer Sales
-                </th>
-                <th className="small-column"> </th>
-                <th className="small-column"> </th>
-              </tr>
-              {Object.keys(pendingBalance).sort((a, b) => {
-                if (a < b) {
-                  return 1;
-                }
-                if (a > b) {
-                  return -1;
-                }
-                return 0;
-              }).map((each) => (
-                <tr key={each}>
-                  <td className="text-blue">
-                    &bull; &nbsp; &nbsp; {each} Credits
-                  </td>
-                  <td className="text-right">
-                    {pendingBalance[each].A}
-                  </td>
-                  <td className="text-right">{pendingBalance[each].B} </td>
+              {pendingBalance
+              && (
+              <>
+                <tr className="subclass">
+                  <th className="large-column">
+                    Credits Pending for Consumer Sales
+                  </th>
+                  <th className="small-column"> </th>
+                  <th className="small-column"> </th>
                 </tr>
-              ))}
+                {Object.keys(pendingBalance).sort((a, b) => {
+                  if (a < b) {
+                    return 1;
+                  }
+                  if (a > b) {
+                    return -1;
+                  }
+                  return 0;
+                }).map((each) => (
+                  <tr key={each}>
+                    <td className="text-blue">
+                      &bull; &nbsp; &nbsp; {each} Credits
+                    </td>
+                    <td className="text-right">
+                      {pendingBalance[each].A}
+                    </td>
+                    <td className="text-right">{pendingBalance[each].B} </td>
+                  </tr>
+                ))}
+              </>
+              )}
               <tr className="subclass">
                 <th className="large-column">
                   Provisional Credit Balance at September 30, {reportYear}
@@ -337,7 +342,7 @@ const ComplianceObligationDetailsPage = (props) => {
               {/* <Button buttonType="back" locationRoute="/compliance/reports" /> */}
             </span>
             <span className="right-content">
-              <Button buttonType="save" optionalClassname="button primary" action={() => {handleSave()}} />
+              <Button buttonType="save" optionalClassname="button primary" action={() => { handleSave(); }} />
             </span>
           </div>
         </div>
@@ -347,6 +352,10 @@ const ComplianceObligationDetailsPage = (props) => {
 };
 
 ComplianceObligationDetailsPage.defaultProps = {
+  ratios: {
+    complianceRatio: 0,
+    zevClassA: 0,
+  },
 };
 
 ComplianceObligationDetailsPage.propTypes = {
@@ -354,7 +363,7 @@ ComplianceObligationDetailsPage.propTypes = {
   user: CustomPropTypes.user.isRequired,
   supplierClassInfo: PropTypes.shape().isRequired,
   reportDetails: PropTypes.shape().isRequired,
-  ratios: PropTypes.shape().isRequired,
+  ratios: PropTypes.shape(),
   reportYear: PropTypes.string.isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,

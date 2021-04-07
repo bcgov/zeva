@@ -110,7 +110,7 @@ const ComplianceObligationContainer = (props) => {
       });
 
       const complianceReportDetails = axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS_BY_YEAR
-        .replace(':year', reportDetailsResponse.modelYear.name)).then((complianceResponse) => {
+        .replace(':year', reportDetailsResponse.modelYear)).then((complianceResponse) => {
         const yearObject = {};
         const details = complianceResponse.data;
         const creditsIssuedSales = parseCreditTransactions(
