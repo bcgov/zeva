@@ -39,8 +39,7 @@ def get_email_service_token() -> {}:
                                  auth=HTTPBasicAuth(client_id, client_secret),
                                  headers=header, verify=True)
         if not token_rs.status_code == 200:
-            LOGGER.error("Error: Unexpected response",
-                         token_rs.text.encode('utf8'))
+            LOGGER.error("Error: Unexpected response", token_rs.text.encode('utf8'))
             return
         json_obj = token_rs.json()
         return json_obj
@@ -111,14 +110,12 @@ def send_email(recipient_email: str, email_type: str) -> {}:
     try:
         response = requests.post(url, data=json.dumps(data), headers=headers)
         if not response.status_code == 201:
-            LOGGER.error("Error: Email failed! %s",
-                         response.text.encode('utf8'))
+            LOGGER.error("Error: Email failed! %s", response.text.encode('utf8'))
             return
 
         email_res = response.json()
         if email_res:
-            LOGGER.debug("Email sent successfully!",
-                         email_res['messages'][0]['msgId'])
+            LOGGER.debug("Email sent successfully!", email_res['messages'][0]['msgId'])
             return
     except requests.exceptions.RequestException as e:
         LOGGER.error("Error: {}".format(e))
