@@ -159,6 +159,17 @@ class ModelYearReportSaveSerializer(
     def update(self, instance, validated_data):
         request = self.context.get('request')
         organization = request.user.organization
+
+        delete_confirmations = request.data.get('delete_confirmations', False)
+
+        if delete_confirmations:
+            ModelYearReportConfirmation.objects.filter(
+                model_year_report=instance,
+                signing_authority_assertion__module="supplier_information"
+            ).delete()
+
+            return instance
+
         makes = validated_data.pop('makes')
         model_year = validated_data.pop('model_year')
         confirmations = request.data.get('confirmations')
@@ -211,12 +222,14 @@ class ModelYearReportSaveSerializer(
             )
 
         for confirmation in confirmations:
-            ModelYearReportConfirmation.objects.create(
-                create_user=request.user.username,
+            ModelYearReportConfirmation.objects.update_or_create(
                 model_year_report=instance,
                 has_accepted=True,
                 title=request.user.title,
-                signing_authority_assertion_id=confirmation
+                signing_authority_assertion_id=confirmation,
+                defaults={
+                    'create_user': request.user.username
+                }
             )
 
         ModelYearReportHistory.objects.create(
