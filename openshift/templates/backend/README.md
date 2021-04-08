@@ -11,6 +11,7 @@
 
 1. Create base image used by backend registry.access.redhat.com/rhscl/python-36-rhel7:1-63
     * oc tag registry.access.redhat.com/rhscl/python-36-rhel7:1-63 e52f12-tools/python:3.6-1-63
+    * oc tag registry.access.redhat.com/ubi8/python-36:1-134 e52f12-tools/python:3.6-1-134
 
 2. Create template secret template.django-secret
     * oc process -f django-secret-template.yaml | oc create -f - -n [project namespace]
