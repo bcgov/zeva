@@ -1,9 +1,10 @@
 from datetime import date
 from django.db.models import Sum, Value, Q
 from rest_framework import serializers
-
 from api.models.account_balance import AccountBalance
 from api.models.credit_transaction import CreditTransaction
+from api.models.model_year import ModelYear
+from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_compliance_obligation import ModelYearReportComplianceObligation
 from api.models.sales_submission import SalesSubmission
 from api.models.vehicle import Vehicle
@@ -12,26 +13,32 @@ from api.serializers.credit_transaction import CreditTransactionObligationActivi
 from api.serializers.vehicle import ModelYearSerializer
 
 
-class ModelYearReportComplianceObligationSnapshotSerializer(serializers.ModelSerializer):
-    prior_year_balance = serializers.SerializerMethodField()
-    report_year_balance = serializers.SerializerMethodField()
-    report_year_transactions = serializers.SerializerMethodField()
-    pending_balance = serializers.SerializerMethodField()
+class ModelYearReportComplianceObligationOutputSerializer(serializers.ModelSerializer):
+    model_year = ModelYearSerializer(read_only=True)
+    A = serializers.SerializerMethodField()
+    B = serializers.SerializerMethodField()
 
-    def get_prior_year_balance(self, obj, *args, **kwargs):
-        print("************************************************")
-        print(self)
-        report_id = self.context.get('transactions')
-        print(report_id)
-        print("************************************************")
-        prior_year = ModelYearReportComplianceObligation.objects.get(
+    def get_A(self, obj, *args, **kwargs):
+        return obj.credit_a_value
 
-        )
+    def get_B(self, obj, *args, **kwargs):
+        return obj.credit_b_value
+
     class Meta:
         model = ModelYearReportComplianceObligation
         fields = (
-            'prior_year_balance', 'report_year_transactions',
-            'report_year_balance', 'pending_balance'
+            'model_year', 'A', 'B'
+        )
+
+
+class ModelYearReportComplianceObligationSnapshotSerializer(serializers.ModelSerializer):
+    model_year = ModelYearSerializer(read_only=True)
+
+    class Meta:
+        model = ModelYearReportComplianceObligation
+        fields = (
+            'credit_a_value',  'credit_b_value',
+            'category', 'model_year'
         )
 
 
@@ -56,6 +63,7 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
             return 0
 
     def get_prior_year_balance(self, obj, *args, **kwargs):
+        ## this needs to change to grab to grab values from the prior year snapshot
         kwargs = self.context.get('kwargs')
         report_year = int(kwargs.get('year'))
         prior_year = report_year-1
@@ -64,6 +72,7 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
         return {'year': prior_year, 'A': prior_year_balance_a, 'B': prior_year_balance_b}
 
     def get_report_year_balance(self, obj, *args, **kwargs):
+        ## this is actually being calculated on the frontend and not used
         kwargs = self.context.get('kwargs')
         report_year = int(kwargs.get('year'))
         report_year_balance_a = self.retrieve_balance(report_year, 1)
@@ -158,7 +167,6 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
         fields = (
             'report_year_balance', 'pending_balance', 'prior_year_balance', 'report_year_transactions'
         )
-
 
 class ModelYearReportComplianceObligationSaveSerializer(serializers.ModelSerializer):
     model_year = ModelYearSerializer()

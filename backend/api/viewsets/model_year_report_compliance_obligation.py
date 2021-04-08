@@ -94,10 +94,9 @@ class ModelYearReportComplianceObligationViewset(
         )
         snapshot = ModelYearReportComplianceObligation.objects.filter(
             model_year_report_id=report.id,
-        ).first()
+        ).order_by('-update_timestamp')
         if snapshot:
-            # transactions = snapshot
-            serializer = ModelYearReportComplianceObligationSnapshotSerializer(report.id, context={'request': request, 'kwargs': kwargs})
+            serializer = ModelYearReportComplianceObligationSnapshotSerializer(snapshot, context={'request': request, 'kwargs': kwargs}, many=True)
         else:
             transactions = CreditTransaction.objects.filter(
                 Q(credit_to=organization) | Q(debit_from=organization)

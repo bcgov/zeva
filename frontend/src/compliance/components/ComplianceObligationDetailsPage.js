@@ -140,7 +140,7 @@ const ComplianceObligationDetailsPage = (props) => {
                   </td>
                 </tr>
               ))}
-              {pendingBalance
+              {Object.keys(pendingBalance).length > 0
               && (
               <>
                 <tr className="subclass">
