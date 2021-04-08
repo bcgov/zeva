@@ -11,6 +11,30 @@ from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.serializers.credit_transaction import CreditTransactionObligationActivitySerializer
 from api.serializers.vehicle import ModelYearSerializer
 
+
+class ModelYearReportComplianceObligationSnapshotSerializer(serializers.ModelSerializer):
+    prior_year_balance = serializers.SerializerMethodField()
+    report_year_balance = serializers.SerializerMethodField()
+    report_year_transactions = serializers.SerializerMethodField()
+    pending_balance = serializers.SerializerMethodField()
+
+    def get_prior_year_balance(self, obj, *args, **kwargs):
+        print("************************************************")
+        print(self)
+        report_id = self.context.get('transactions')
+        print(report_id)
+        print("************************************************")
+        prior_year = ModelYearReportComplianceObligation.objects.get(
+
+        )
+    class Meta:
+        model = ModelYearReportComplianceObligation
+        fields = (
+            'prior_year_balance', 'report_year_transactions',
+            'report_year_balance', 'pending_balance'
+        )
+
+
 class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSerializer):
     """
     """
@@ -134,6 +158,7 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
         fields = (
             'report_year_balance', 'pending_balance', 'prior_year_balance', 'report_year_transactions'
         )
+
 
 class ModelYearReportComplianceObligationSaveSerializer(serializers.ModelSerializer):
     model_year = ModelYearSerializer()

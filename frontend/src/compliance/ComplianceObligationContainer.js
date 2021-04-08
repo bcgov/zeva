@@ -23,7 +23,7 @@ const ComplianceObligationContainer = (props) => {
   const [reportYear, setReportYear] = useState('2019');
   const [reportDetails, setReportDetails] = useState({});
   const [ratios, setRatios] = useState({});
-  const [supplierClassInfo, setSupplierClassInfo] = useState({ sales: 0, class: '' });
+  const [supplierClassInfo, setSupplierClassInfo] = useState({ ldvSales: 0, class: '' });
   const { id } = useParams();
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
@@ -110,7 +110,8 @@ const ComplianceObligationContainer = (props) => {
       });
 
       const complianceReportDetails = axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS_BY_YEAR
-        .replace(':year', reportDetailsResponse.modelYear)).then((complianceResponse) => {
+        .replace(':year', reportDetailsResponse.modelYear.name)).then((complianceResponse) => {
+        console.log(complianceResponse.data)
         const yearObject = {};
         const details = complianceResponse.data;
         const creditsIssuedSales = parseCreditTransactions(

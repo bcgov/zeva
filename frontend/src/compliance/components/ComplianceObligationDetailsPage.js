@@ -29,7 +29,6 @@ const ComplianceObligationDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
-
   const {
     creditBalanceStart, creditBalanceEnd, pendingBalance, transactions, provisionalBalance,
   } = reportDetails;
@@ -87,17 +86,19 @@ const ComplianceObligationDetailsPage = (props) => {
                   B
                 </th>
               </tr>
-              <tr>
-                <td className="text-blue">
-                  &bull; &nbsp; &nbsp; Total Credit Balance
-                </td>
-                <td className="text-right">
-                  0
-                </td>
-                <td className="text-right">
-                  0
-                </td>
-              </tr>
+              {Object.keys(creditBalanceStart).map((each) => (
+                <tr>
+                  <td className="text-blue">
+                    &bull; &nbsp; &nbsp; Total Credit Balance
+                  </td>
+                  <td className="text-right">
+                    {creditBalanceStart[each].A}
+                  </td>
+                  <td className="text-right">
+                    {creditBalanceStart[each].B}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -253,7 +254,7 @@ const ComplianceObligationDetailsPage = (props) => {
                     Ratio Reduction:
                   </td>
                   <td>
-                    {totalReduction }
+                    {totalReduction}
                   </td>
                 </tr>
                 {supplierClassInfo.class === 'L' && (

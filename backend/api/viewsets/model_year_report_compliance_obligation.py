@@ -17,7 +17,7 @@ from api.serializers.model_year_report import \
     ModelYearReportSerializer, ModelYearReportListSerializer, \
     ModelYearReportSaveSerializer
 from api.serializers.model_year_report_compliance_obligation import \
-    ModelYearReportComplianceObligationDetailsSerializer
+    ModelYearReportComplianceObligationDetailsSerializer, ModelYearReportComplianceObligationSnapshotSerializer
 from api.serializers.organization import \
     OrganizationSerializer
 from api.serializers.vehicle import ModelYearSerializer
@@ -85,10 +85,23 @@ class ModelYearReportComplianceObligationViewset(
     @method_decorator(permission_required('VIEW_SALES'))
     def details(self, request, *args, **kwargs):
         organization = request.user.organization
-        transactions = CreditTransaction.objects.filter(
-          Q(credit_to=organization) | Q(debit_from=organization)
+        year_kwarg = kwargs.get('year')
+        model_year = ModelYear.objects.get(
+            name=year_kwarg,
         )
-        year = kwargs.get('year')
-        serializer = ModelYearReportComplianceObligationDetailsSerializer(transactions, context={'request': request, 'kwargs': kwargs})
+        report = ModelYearReport.objects.get(
+            model_year_id=model_year.id
+        )
+        snapshot = ModelYearReportComplianceObligation.objects.filter(
+            model_year_report_id=report.id,
+        ).first()
+        if snapshot:
+            # transactions = snapshot
+            serializer = ModelYearReportComplianceObligationSnapshotSerializer(report.id, context={'request': request, 'kwargs': kwargs})
+        else:
+            transactions = CreditTransaction.objects.filter(
+                Q(credit_to=organization) | Q(debit_from=organization)
+            )
+            serializer = ModelYearReportComplianceObligationDetailsSerializer(transactions, context={'request': request, 'kwargs': kwargs})
 
         return Response(serializer.data)
