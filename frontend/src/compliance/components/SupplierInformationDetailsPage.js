@@ -78,6 +78,7 @@ const SupplierInformationDetailsPage = (props) => {
       <div className="row mt-1">
         <div className="col-12">
           <div className="p-3 supplier-information">
+            {!user.isGovernment && (
             <button
               className="btn button primary float-right"
               onClick={() => {
@@ -87,6 +88,7 @@ const SupplierInformationDetailsPage = (props) => {
             >
               Edit
             </button>
+            )}
             <h3>Supplier Information</h3>
             <div className="mt-3">
               <h4 className="d-inline">Legal Name: </h4>
