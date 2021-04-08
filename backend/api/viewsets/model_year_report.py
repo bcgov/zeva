@@ -103,7 +103,8 @@ class ModelYearReportViewset(
                 'supplier_class': report.supplier_class,
                 'model_year': model_year.data,
                 'create_user': report.create_user,
-                'confirmations': confirmations
+                'confirmations': confirmations,
+                'ldv_sales': report.ldv_sales
             })
 
         serializer = ModelYearReportSerializer(report)
