@@ -356,7 +356,12 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       name: email-service
-                      key: CHES_EMAIL_URL                      
+                      key: CHES_EMAIL_URL
+                - name: SENDER_EMAIL
+                  valueFrom:
+                    secretKeyRef:
+                      name: email-service
+                      key: SENDER_EMAIL              
               livenessProbe:
                 failureThreshold: 30
                 tcpSocket:
