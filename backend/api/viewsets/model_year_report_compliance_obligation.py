@@ -17,7 +17,7 @@ from api.serializers.model_year_report import \
     ModelYearReportSerializer, ModelYearReportListSerializer, \
     ModelYearReportSaveSerializer
 from api.serializers.model_year_report_compliance_obligation import \
-    ModelYearReportComplianceObligationDetailsSerializer, ModelYearReportComplianceObligationSnapshotSerializer
+    ModelYearReportComplianceObligationDetailsSerializer, ModelYearReportComplianceObligationSnapshotSerializer, ModelYearReportComplianceObligationOffsetSerializer
 from api.serializers.organization import \
     OrganizationSerializer
 from api.serializers.vehicle import ModelYearSerializer
@@ -96,6 +96,10 @@ class ModelYearReportComplianceObligationViewset(
             model_year_report_id=report.id,
         ).order_by('-update_timestamp')
         if snapshot:
+            offset_snapshot = ModelYearReportCreditOffset.objects.filter(
+                model_year_report_id=report.id,
+            ).order_by('-update_timestamp')
+            offset_serializer = ModelYearReportComplianceObligationOffsetSerializer(offset_snapshot, context={'request': request, 'kwargs': kwargs}, many=True)
             serializer = ModelYearReportComplianceObligationSnapshotSerializer(snapshot, context={'request': request, 'kwargs': kwargs}, many=True)
         else:
             transactions = CreditTransaction.objects.filter(

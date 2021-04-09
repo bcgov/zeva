@@ -12,18 +12,19 @@ import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceObligationDetailsPage = (props) => {
   const {
-    offsetNumbers,
-    supplierClassInfo,
-    reportDetails,
-    ratios,
-    reportYear,
-    loading,
-    user,
-    handleCheckboxClick,
     assertions,
     checkboxes,
+    details,
+    handleCheckboxClick,
     handleOffsetChange,
     handleSave,
+    loading,
+    offsetNumbers,
+    user,
+    ratios,
+    reportDetails,
+    reportYear,
+    supplierClassInfo,
   } = props;
 
   if (loading) {
@@ -44,17 +45,6 @@ const ComplianceObligationDetailsPage = (props) => {
     ratios.complianceRatio / 100) * supplierClassInfo.ldvSales)
     - ((ratios.zevClassA / 100) * supplierClassInfo.ldvSales),
   2);
-  const details = {
-    creditActivity: {
-      history: [{
-        status: 'DRAFT',
-        createTimestamp: now(),
-        createUser: user,
-      }],
-      status: 'DRAFT',
-    },
-    organization: user.organization,
-  };
 
   return (
     <div id="compliance-supplier-information-details" className="page">
@@ -65,7 +55,7 @@ const ComplianceObligationDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          {/* <ComplianceReportAlert report={details.creditActivity} type="Credit Activity" /> */}
+          <ComplianceReportAlert report={details.complianceObligation} type="Compliance Obligation" />
         </div>
       </div>
       <div id="compliance-obligation-page">

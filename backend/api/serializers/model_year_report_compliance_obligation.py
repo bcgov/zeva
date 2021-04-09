@@ -6,6 +6,7 @@ from api.models.credit_transaction import CreditTransaction
 from api.models.model_year import ModelYear
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_compliance_obligation import ModelYearReportComplianceObligation
+from api.models.model_year_report_credit_offset import ModelYearReportCreditOffset
 from api.models.sales_submission import SalesSubmission
 from api.models.vehicle import Vehicle
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
@@ -28,6 +29,17 @@ class ModelYearReportComplianceObligationOutputSerializer(serializers.ModelSeria
         model = ModelYearReportComplianceObligation
         fields = (
             'model_year', 'A', 'B'
+        )
+
+
+class ModelYearReportComplianceObligationOffsetSerializer(serializers.ModelSerializer):
+    model_year = ModelYearSerializer(read_only=True)
+
+    class Meta:
+        model = ModelYearReportCreditOffset
+        fields = (
+            'credit_a_offset_value',  'credit_b_offset_value',
+            'model_year'
         )
 
 

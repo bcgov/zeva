@@ -16,6 +16,8 @@ const ComplianceObligationContainer = (props) => {
     reportSummary: '',
     supplierInformation: '',
   };
+  const [confirmed, setConfirmed] = useState(false);
+  const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
   const [offsetNumbers, setOffsetNumbers] = useState({});
   const [loading, setLoading] = useState(true);
   const [assertions, setAssertions] = useState([]);
@@ -23,11 +25,14 @@ const ComplianceObligationContainer = (props) => {
   const [reportYear, setReportYear] = useState('2019');
   const [reportDetails, setReportDetails] = useState({});
   const [ratios, setRatios] = useState({});
+  const [details, setDetails] = useState({});
   const [supplierClassInfo, setSupplierClassInfo] = useState({ ldvSales: 0, class: '' });
   const { id } = useParams();
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
-      const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
+      const checked = checkboxes.filter(
+        (each) => Number(each) !== Number(event.target.id),
+      );
       setCheckboxes(checked);
     }
 
@@ -72,7 +77,6 @@ const ComplianceObligationContainer = (props) => {
       reportId: id,
       offset: offsetNumbers,
       creditActivity: reportDetailsArray,
-
     };
     axios.post(ROUTES_COMPLIANCE.OBLIGATION,
       data).then(() => {
@@ -101,7 +105,24 @@ const ComplianceObligationContainer = (props) => {
     axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
       const reportDetailsResponse = response.data;
       setReportYear(reportDetailsResponse.modelYear.name);
-      const { supplierClass, ldvSales } = reportDetailsResponse;
+      const {
+        ldvSales,
+        modelYearReportHistory,
+        supplierClass,
+        validationStatus,
+        confirmations,
+      } = reportDetailsResponse;
+      setDetails({
+        complianceObligation: {
+          history: modelYearReportHistory,
+          validationStatus,
+        },
+      });
+
+      if (confirmations.length > 0) {
+        setConfirmed(true);
+        setCheckboxes(confirmations);
+      }
       setSupplierClassInfo({ class: supplierClass, ldvSales });
 
       const ratioPromise = axios.get(ROUTES_COMPLIANCE.RATIOS).then((ratioResponse) => {
@@ -112,8 +133,8 @@ const ComplianceObligationContainer = (props) => {
       const complianceReportDetails = axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS_BY_YEAR
         .replace(':year', reportDetailsResponse.modelYear.name)).then((complianceResponse) => {
         const yearObject = {};
-        const details = complianceResponse.data;
-        if (!details.reportYearTransactions) {
+        const complianceResponseDetails = complianceResponse.data;
+        if (!complianceResponseDetails.reportYearTransactions) {
           // not returning values from database, grab from snapshot instead
           const creditBalanceStart = {};
           const creditBalanceEnd = {};
@@ -122,7 +143,10 @@ const ComplianceObligationContainer = (props) => {
           const transfersIn = [];
           const transfersOut = [];
           const creditsIssuedSales = [];
-          details.forEach((item) => {
+          const offsetNumbers = [];
+          // get offset from backend
+
+          complianceResponseDetails.forEach((item) => {
             if (item.category === 'creditBalanceStart') {
               creditBalanceStart[item.modelYear.name] = { A: item.creditAValue, B: item.creditBValue };
             }
@@ -159,13 +183,13 @@ const ComplianceObligationContainer = (props) => {
           setLoading(false);
         } else {
           const creditsIssuedSales = parseCreditTransactions(
-            details.reportYearTransactions.creditsIssuedSales,
+            complianceResponseDetails.reportYearTransactions.creditsIssuedSales,
           );
           const transfersIn = parseCreditTransactions(
-            details.reportYearTransactions.transfersIn,
+            complianceResponseDetails.reportYearTransactions.transfersIn,
           );
           const transfersOut = parseCreditTransactions(
-            details.reportYearTransactions.transfersOut,
+            complianceResponseDetails.reportYearTransactions.transfersOut,
           );
           const reportYearBalance = {};
           creditsIssuedSales.forEach((each) => {
@@ -196,23 +220,23 @@ const ComplianceObligationContainer = (props) => {
             yearObject[year] = { A: 0, B: 0 };
             provisionalBalance[year] = { A: parseFloat(reportYearBalance[year].A), B: parseFloat(reportYearBalance[year].B) };
           });
-          Object.keys(details.pendingBalance).forEach((year) => {
+          Object.keys(complianceResponseDetails.pendingBalance).forEach((year) => {
             yearObject[year] = { A: 0, B: 0 };
-            provisionalBalance[year].A += parseFloat(details.pendingBalance[year].A);
-            provisionalBalance[year].B += parseFloat(details.pendingBalance[year].B);
+            provisionalBalance[year].A += parseFloat(complianceResponseDetails.pendingBalance[year].A);
+            provisionalBalance[year].B += parseFloat(complianceResponseDetails.pendingBalance[year].B);
           });
           setOffsetNumbers(yearObject);
-          const priorYear = details.priorYearBalance.year;
+          const priorYear = complianceResponseDetails.priorYearBalance.year;
           const creditBalanceStart = {};
           creditBalanceStart[priorYear] = {
-            year: details.priorYearBalance.year,
-            A: details.priorYearBalance.A,
-            B: details.priorYearBalance.B,
+            year: complianceResponseDetails.priorYearBalance.year,
+            A: complianceResponseDetails.priorYearBalance.A,
+            B: complianceResponseDetails.priorYearBalance.B,
           };
           setReportDetails({
             creditBalanceStart,
             creditBalanceEnd: reportYearBalance,
-            pendingBalance: details.pendingBalance,
+            pendingBalance: complianceResponseDetails.pendingBalance,
             provisionalBalance,
             transactions: {
               creditsIssuedSales,
@@ -220,15 +244,14 @@ const ComplianceObligationContainer = (props) => {
               transfersOut,
             },
           });
-
-          const listAssertion = axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((assertionResponse) => {
-            const filteredAssertions = assertionResponse.data.filter((data) => data.module === 'compliance_obligation');
-            setAssertions(filteredAssertions);
-          });
-          Promise.all([listAssertion, complianceReportDetails, ratioPromise]).then(() => {
-            setLoading(false);
-          });
         }
+        const listAssertion = axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((assertionResponse) => {
+          const filteredAssertions = assertionResponse.data.filter((data) => data.module === 'compliance_obligation');
+          setAssertions(filteredAssertions);
+        });
+        Promise.all([listAssertion, complianceReportDetails, ratioPromise]).then(() => {
+          setLoading(false);
+        });
       });
     });
   };
@@ -241,18 +264,21 @@ const ComplianceObligationContainer = (props) => {
     <>
       <ComplianceReportTabs active="credit-activity" reportStatuses={reportStatuses} user={user} />
       <ComplianceObligationDetailsPage
+        assertions={assertions}
+        checkboxes={checkboxes}
+        confirmed={confirmed}
+        details={details}
+        disabledCheckboxes={disabledCheckboxes}
+        handleCheckboxClick={handleCheckboxClick}
+        handleOffsetChange={handleOffsetChange}
+        handleSave={handleSave}
+        loading={loading}
         offsetNumbers={offsetNumbers}
         ratios={ratios}
         reportDetails={reportDetails}
         reportYear={reportYear}
-        loading={loading}
-        user={user}
-        assertions={assertions}
-        checkboxes={checkboxes}
-        handleCheckboxClick={handleCheckboxClick}
         supplierClassInfo={supplierClassInfo}
-        handleOffsetChange={handleOffsetChange}
-        handleSave={handleSave}
+        user={user}
       />
     </>
   );

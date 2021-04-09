@@ -21,11 +21,11 @@ const SupplierInformationDetailsPage = (props) => {
     user,
     assertions,
     checkboxes,
+    confirmed,
     disabledCheckboxes,
     handleCheckboxClick,
     modelYear,
   } = props;
-
   if (loading) {
     return <Loading />;
   }
