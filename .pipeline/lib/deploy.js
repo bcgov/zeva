@@ -91,22 +91,24 @@ module.exports = settings => {
   }
 
   // deploy frontend configmap
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-configmap.yaml`, {
-    'param': {
-      'NAME': phases[phase].name,
-      'SUFFIX': phases[phase].suffix,
-      'COMPLIANCE_REPORT_ENABLED': phases[phase].complianceReportEnabled,
-      'COMPLIANCE_CALCULATOR_ENABLED': phases[phase].complianceCalculatorEnabled,
-      'COMPLIANCE_RATIOS_ENABLED': phases[phase].complianceRatiosEnabled,
-      'CREDIT_TRANSFERS_ENABLED': phases[phase].creditTransfersEnabled,
-      'CREDIT_TRANSACTIONS_ENABLED': phases[phase].creditTransactionsEnabled,
-      'INITIATIVE_AGREEMENTS_ENABLED': phases[phase].initiativeAgreementsEnabled,
-      'MODEL_YEAR_REPORT_ENABLED': phases[phase].modelYearReportEnabled,
-      'PURCHASE_REQUESTS_ENABLED': phases[phase].purchaseRequestsEnabled,
-      'NOTIFICATIONS_ENABLED': phases[phase].notificationsEnabled,
-      'ROLES_ENABLED': phases[phase].rolesEnabled
-    }
-  }))
+  if(phase === 'dev') {
+    objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-configmap.yaml`, {
+      'param': {
+        'NAME': phases[phase].name,
+        'SUFFIX': phases[phase].suffix,
+        'COMPLIANCE_REPORT_ENABLED': phases[phase].complianceReportEnabled,
+        'COMPLIANCE_CALCULATOR_ENABLED': phases[phase].complianceCalculatorEnabled,
+        'COMPLIANCE_RATIOS_ENABLED': phases[phase].complianceRatiosEnabled,
+        'CREDIT_TRANSFERS_ENABLED': phases[phase].creditTransfersEnabled,
+        'CREDIT_TRANSACTIONS_ENABLED': phases[phase].creditTransactionsEnabled,
+        'INITIATIVE_AGREEMENTS_ENABLED': phases[phase].initiativeAgreementsEnabled,
+        'MODEL_YEAR_REPORT_ENABLED': phases[phase].modelYearReportEnabled,
+        'PURCHASE_REQUESTS_ENABLED': phases[phase].purchaseRequestsEnabled,
+        'NOTIFICATIONS_ENABLED': phases[phase].notificationsEnabled,
+        'ROLES_ENABLED': phases[phase].rolesEnabled
+      }
+    }))
+  }
 
   // deploy frontend
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/frontend/frontend-dc.yaml`, {

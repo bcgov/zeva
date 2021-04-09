@@ -1,9 +1,10 @@
 /* eslint-disable react/no-array-index-key */
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
+import Modal from '../../app/components/Modal';
 import CustomPropTypes from '../../app/utilities/props';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import ComplianceReportSignOff from './ComplianceReportSignOff';
@@ -11,6 +12,7 @@ import ComplianceReportSignOff from './ComplianceReportSignOff';
 const SupplierInformationDetailsPage = (props) => {
   const {
     details,
+    handleCancelConfirmation,
     handleChangeMake,
     handleDeleteMake,
     handleSubmit,
@@ -21,14 +23,43 @@ const SupplierInformationDetailsPage = (props) => {
     user,
     assertions,
     checkboxes,
-    confirmed,
-    disabledCheckboxes,
+    disabledCheckboxes: propsDisabledCheckboxes,
     handleCheckboxClick,
     modelYear,
   } = props;
+
+  const [showModal, setShowModal] = useState(false);
+  let disabledCheckboxes = propsDisabledCheckboxes;
+
   if (loading) {
     return <Loading />;
   }
+
+  const modal = (
+    <Modal
+      cancelLabel="No"
+      confirmLabel="Yes"
+      handleCancel={() => { setShowModal(false); }}
+      handleSubmit={() => { setShowModal(false); handleCancelConfirmation(); }}
+      modalClass="w-75"
+      showModal={showModal}
+      confirmClass="button primary"
+    >
+      <div className="my-3">
+        <h3>
+          Do you want to edit this page? This action will allow you to make further changes to{' '}
+          this information, it will also query the database to retrieve any recent updates.{' '}
+          Your previous confirmation will be cleared.
+        </h3>
+      </div>
+    </Modal>
+  );
+
+  assertions.forEach((assertion) => {
+    if (checkboxes.indexOf(assertion.id) >= 0) {
+      disabledCheckboxes = true;
+    }
+  });
 
   return (
     <div id="compliance-supplier-information-details" className="page">
@@ -47,6 +78,17 @@ const SupplierInformationDetailsPage = (props) => {
       <div className="row mt-1">
         <div className="col-12">
           <div className="p-3 supplier-information">
+            {!user.isGovernment && (
+            <button
+              className="btn button primary float-right"
+              onClick={() => {
+                setShowModal(true);
+              }}
+              type="button"
+            >
+              Edit
+            </button>
+            )}
             <h3>Supplier Information</h3>
             <div className="mt-3">
               <h4 className="d-inline">Legal Name: </h4>
@@ -160,6 +202,7 @@ const SupplierInformationDetailsPage = (props) => {
           </div>
         </div>
       </div>
+      {modal}
     </div>
   );
 };
@@ -172,6 +215,7 @@ SupplierInformationDetailsPage.propTypes = {
     organization: PropTypes.shape(),
     supplierInformation: PropTypes.shape(),
   }).isRequired,
+  handleCancelConfirmation: PropTypes.func.isRequired,
   handleChangeMake: PropTypes.func.isRequired,
   handleDeleteMake: PropTypes.func.isRequired,
   handleSubmitMake: PropTypes.func.isRequired,
