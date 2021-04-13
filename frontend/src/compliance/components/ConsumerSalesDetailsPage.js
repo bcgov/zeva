@@ -35,7 +35,6 @@ const ConsumerSalesDetailsPage = (props) => {
     thirdYear,
   } = props;
 
-
   if (loading) {
     return <Loading />;
   }
@@ -65,14 +64,14 @@ const ConsumerSalesDetailsPage = (props) => {
           <h2>{modelYear} Model Year Report</h2>
         </div>
       </div>
-        <div className="row">
-          <div className="col-12">
-            {confirmed && (
-              <ComplianceReportAlert report={details.consumerSales} type="Consumer Sales" />
-            )}
-          </div>
+      <div className="row">
+        <div className="col-12">
+          {confirmed && (
+          <ComplianceReportAlert report={details.consumerSales} type="Consumer Sales" />
+          )}
         </div>
-    
+      </div>
+
       <div className="row mt-1">
         <div className="col-12">
           <div className="p-3 consumer-sales">
@@ -90,7 +89,7 @@ const ConsumerSalesDetailsPage = (props) => {
                     {modelYear} Model Year LDV Sales\Leases
                   </label>
                   <input
-                    defaultValue={salesInput ? salesInput : 0}
+                    defaultValue={salesInput || 0}
                     className="textbox-sales"
                     type="number"
                     onChange={handleChange}
@@ -271,7 +270,7 @@ ConsumerSalesDetailsPage.propTypes = {
   error: PropTypes.bool.isRequired,
   assertions: PropTypes.arrayOf(PropTypes.shape()),
   checkboxes: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   ),
   handleCheckboxClick: PropTypes.func.isRequired,
   disabledCheckboxes: PropTypes.string.isRequired,

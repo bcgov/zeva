@@ -12,24 +12,24 @@ import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceObligationDetailsPage = (props) => {
   const {
-    offsetNumbers,
-    supplierClassInfo,
-    reportDetails,
-    ratios,
-    reportYear,
-    loading,
-    user,
-    handleCheckboxClick,
     assertions,
     checkboxes,
+    details,
+    handleCheckboxClick,
     handleOffsetChange,
     handleSave,
+    loading,
+    offsetNumbers,
+    user,
+    ratios,
+    reportDetails,
+    reportYear,
+    supplierClassInfo,
   } = props;
 
   if (loading) {
     return <Loading />;
   }
-
   const {
     creditBalanceStart, creditBalanceEnd, pendingBalance, transactions, provisionalBalance,
   } = reportDetails;
@@ -45,17 +45,6 @@ const ComplianceObligationDetailsPage = (props) => {
     ratios.complianceRatio / 100) * supplierClassInfo.ldvSales)
     - ((ratios.zevClassA / 100) * supplierClassInfo.ldvSales),
   2);
-  const details = {
-    creditActivity: {
-      history: [{
-        status: 'DRAFT',
-        createTimestamp: now(),
-        createUser: user,
-      }],
-      status: 'DRAFT',
-    },
-    organization: user.organization,
-  };
 
   return (
     <div id="compliance-supplier-information-details" className="page">
@@ -66,7 +55,7 @@ const ComplianceObligationDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          {/* <ComplianceReportAlert report={details.creditActivity} type="Credit Activity" /> */}
+          <ComplianceReportAlert report={details.complianceObligation} type="Compliance Obligation" />
         </div>
       </div>
       <div id="compliance-obligation-page">
@@ -87,17 +76,19 @@ const ComplianceObligationDetailsPage = (props) => {
                   B
                 </th>
               </tr>
-              <tr>
-                <td className="text-blue">
-                  &bull; &nbsp; &nbsp; Total Credit Balance
-                </td>
-                <td className="text-right">
-                  0
-                </td>
-                <td className="text-right">
-                  0
-                </td>
-              </tr>
+              {Object.keys(creditBalanceStart).map((each) => (
+                <tr>
+                  <td className="text-blue">
+                    &bull; &nbsp; &nbsp; Total Credit Balance
+                  </td>
+                  <td className="text-right">
+                    {creditBalanceStart[each].A}
+                  </td>
+                  <td className="text-right">
+                    {creditBalanceStart[each].B}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -139,32 +130,37 @@ const ComplianceObligationDetailsPage = (props) => {
                   </td>
                 </tr>
               ))}
-              <tr className="subclass">
-                <th className="large-column">
-                  Credits Pending for Consumer Sales
-                </th>
-                <th className="small-column"> </th>
-                <th className="small-column"> </th>
-              </tr>
-              {Object.keys(pendingBalance).sort((a, b) => {
-                if (a < b) {
-                  return 1;
-                }
-                if (a > b) {
-                  return -1;
-                }
-                return 0;
-              }).map((each) => (
-                <tr key={each}>
-                  <td className="text-blue">
-                    &bull; &nbsp; &nbsp; {each} Credits
-                  </td>
-                  <td className="text-right">
-                    {pendingBalance[each].A}
-                  </td>
-                  <td className="text-right">{pendingBalance[each].B} </td>
+              {Object.keys(pendingBalance).length > 0
+              && (
+              <>
+                <tr className="subclass">
+                  <th className="large-column">
+                    Credits Pending for Consumer Sales
+                  </th>
+                  <th className="small-column"> </th>
+                  <th className="small-column"> </th>
                 </tr>
-              ))}
+                {Object.keys(pendingBalance).sort((a, b) => {
+                  if (a < b) {
+                    return 1;
+                  }
+                  if (a > b) {
+                    return -1;
+                  }
+                  return 0;
+                }).map((each) => (
+                  <tr key={each}>
+                    <td className="text-blue">
+                      &bull; &nbsp; &nbsp; {each} Credits
+                    </td>
+                    <td className="text-right">
+                      {pendingBalance[each].A}
+                    </td>
+                    <td className="text-right">{pendingBalance[each].B} </td>
+                  </tr>
+                ))}
+              </>
+              )}
               <tr className="subclass">
                 <th className="large-column">
                   Provisional Credit Balance at September 30, {reportYear}
@@ -248,7 +244,7 @@ const ComplianceObligationDetailsPage = (props) => {
                     Ratio Reduction:
                   </td>
                   <td>
-                    {totalReduction }
+                    {totalReduction}
                   </td>
                 </tr>
                 {supplierClassInfo.class === 'L' && (
@@ -338,7 +334,7 @@ const ComplianceObligationDetailsPage = (props) => {
               {/* <Button buttonType="back" locationRoute="/compliance/reports" /> */}
             </span>
             <span className="right-content">
-              <Button buttonType="save" optionalClassname="button primary" action={() => {handleSave()}} />
+              <Button buttonType="save" optionalClassname="button primary" action={() => { handleSave(); }} />
             </span>
           </div>
         </div>
@@ -348,6 +344,10 @@ const ComplianceObligationDetailsPage = (props) => {
 };
 
 ComplianceObligationDetailsPage.defaultProps = {
+  ratios: {
+    complianceRatio: 0,
+    zevClassA: 0,
+  },
 };
 
 ComplianceObligationDetailsPage.propTypes = {
@@ -355,7 +355,7 @@ ComplianceObligationDetailsPage.propTypes = {
   user: CustomPropTypes.user.isRequired,
   supplierClassInfo: PropTypes.shape().isRequired,
   reportDetails: PropTypes.shape().isRequired,
-  ratios: PropTypes.shape().isRequired,
+  ratios: PropTypes.shape(),
   reportYear: PropTypes.string.isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
