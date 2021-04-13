@@ -117,7 +117,7 @@ class ModelYearReportSerializer(ModelSerializer):
             compliance_obligation_status = 'SUBMITTED'
 
         return {
-            'suppler_information': {
+            'supplier_information': {
                 'status': supplier_information_status,
                 'confirmed_by': supplier_information_confirmed_by
             },

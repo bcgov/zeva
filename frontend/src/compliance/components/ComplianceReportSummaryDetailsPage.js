@@ -75,7 +75,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          <ComplianceReportAlert report={supplierInformationDetails.supplierInformation} type="Summary" />
+          {/* <ComplianceReportAlert report={supplierInformationDetails.supplierInformation} type="Summary" /> */}
         </div>
       </div>
       <div className="row mt-1">

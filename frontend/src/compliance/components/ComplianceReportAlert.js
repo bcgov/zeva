@@ -28,14 +28,14 @@ const ComplianceReportAlert = (props) => {
   const date = moment(statusFilter(validationStatus).createTimestamp).format('MMM D, YYYY');
   const userName = statusFilter(validationStatus).createUser.displayName;
 
-  if (status.confirmedBy) {
+  if (status && status.confirmedBy) {
     confirmedBy = {
       date: moment(status.confirmedBy.createTimestamp).format('MMM D, YYYY'),
       user: status.confirmedBy.createUser.displayName,
     };
   }
 
-  switch (status.status) {
+  switch (status && status.status) {
     case 'UNSAVED':
       title = 'Model Year Report Draft';
       message = `${type} unsaved, click Save to proceed to ${next}. The confirmation checkbox must be confirmed to submit the report to government.`;

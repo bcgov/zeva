@@ -27,14 +27,6 @@ const SupplierInformationContainer = (props) => {
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 
-  const reportStatuses = {
-    assessment: '',
-    consumerSales: '',
-    creditActivity: '',
-    reportSummary: '',
-    supplierInformation: 'draft',
-  };
-
   const [loading, setLoading] = useState(true);
   const [makes, setMakes] = useState([]);
   const [make, setMake] = useState('');
@@ -170,7 +162,7 @@ const SupplierInformationContainer = (props) => {
     <>
       <ComplianceReportTabs
         active="supplier-information"
-        reportStatuses={reportStatuses}
+        reportStatuses={statuses}
         id={id}
         user={user}
       />

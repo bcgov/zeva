@@ -29,17 +29,16 @@ const ConsumerSalesContainer = (props) => {
   const [previousYearsExist, setPreviousYearsExist] = useState(false);
   const [previousYearsList, setPreviousYearsList] = useState([{}]);
   const [details, setDetails] = useState({});
+  const [statuses, setStatuses] = useState({});
 
   const { id } = useParams();
   let supplierClass = '';
   let supplierClassText = '';
 
-  const reportStatuses = {
-    assessment: '',
-    consumerSales: 'draft',
-    creditActivity: '',
-    reportSummary: '',
-    supplierInformation: '',
+  const averageLdvSales = (paramFirstYear, paramSecondYear, paramThirdYear) => {
+    let avg = 0;
+    avg = (paramFirstYear + paramSecondYear + paramThirdYear) / 3;
+    setAvgSales(Math.round(avg));
   };
 
   const refreshDetails = (showLoading) => {
@@ -62,9 +61,9 @@ const ConsumerSalesContainer = (props) => {
         setPreviousYearsExist(true);
         setPreviousYearsList(previousSales);
         averageLdvSales(
-          parseInt(previousSales[0].previousSales),
-          parseInt(previousSales[1].previousSales),
-          parseInt(previousSales[2].previousSales)
+          parseInt(previousSales[0].previousSales, 10),
+          parseInt(previousSales[1].previousSales, 10),
+          parseInt(previousSales[2].previousSales, 10)
         );
       }
 
@@ -104,6 +103,7 @@ const ConsumerSalesContainer = (props) => {
       axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
         const {
           modelYear: reportModelYear,
+          statuses: reportStatuses,
         } = response.data;
 
         const year = parseInt(reportModelYear.name, 10);
@@ -112,14 +112,10 @@ const ConsumerSalesContainer = (props) => {
         setFirstYear({ modelYear: year - 1, ldvSales: 0 });
         setSecondYear({ modelYear: year - 2, ldvSales: 0 });
         setThirdYear({ modelYear: year - 3, ldvSales: 0 });
+
+        setStatuses(reportStatuses);
       });
     }
-  };
-
-  const averageLdvSales = (paramFirstYear, paramSecondYear, paramThirdYear) => {
-    let avg = 0;
-    avg = (paramFirstYear + paramSecondYear + paramThirdYear) / 3;
-    setAvgSales(Math.round(avg));
   };
 
   const handleInputChange = (event) => {
@@ -224,7 +220,7 @@ const ConsumerSalesContainer = (props) => {
     <>
       <ComplianceReportTabs
         active="consumer-sales"
-        reportStatuses={reportStatuses}
+        reportStatuses={statuses}
         user={user}
       />
       <ConsumerSalesDetailsPage
@@ -250,12 +246,15 @@ const ConsumerSalesContainer = (props) => {
         firstYear={firstYear.modelYear}
         secondYear={secondYear.modelYear}
         thirdYear={thirdYear.modelYear}
+        statuses={statuses}
+        errorMessage={errorMessage}
       />
     </>
   );
 };
 
 ConsumerSalesContainer.propTypes = {
+  keycloak: CustomPropTypes.keycloak.isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 

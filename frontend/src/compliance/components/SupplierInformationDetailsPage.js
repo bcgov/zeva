@@ -75,7 +75,7 @@ const SupplierInformationDetailsPage = (props) => {
             <ComplianceReportAlert
               next="Consumer Sales"
               report={details.supplierInformation}
-              status={statuses.supplerInformation}
+              status={statuses.supplierInformation}
               type="Supplier Information"
             />
           )}
