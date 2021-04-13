@@ -1,7 +1,8 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
+from django.http import HttpResponse
 from rest_framework import mixins, viewsets
-
+from rest_framework.decorators import action
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_confirmation import \
     ModelYearReportConfirmation
@@ -19,6 +20,7 @@ from api.serializers.organization import OrganizationSerializer
 from api.serializers.organization_address import OrganizationAddressSerializer
 from api.serializers.vehicle import ModelYearSerializer
 from auditable.views import AuditableMixin
+from api.models.model_year_report_statuses import ModelYearReportStatuses
 
 
 class ModelYearReportViewset(
@@ -44,9 +46,14 @@ class ModelYearReportViewset(
     def get_queryset(self):
         request = self.request
 
-        queryset = ModelYearReport.objects.filter(
-            organization_id=request.user.organization.id
-        )
+        if request.user.organization.is_government:
+            queryset = ModelYearReport.objects.exclude(validation_status=(
+                ModelYearReportStatuses.DRAFT
+            ))
+        else:
+            queryset = ModelYearReport.objects.filter(
+                organization_id=request.user.organization.id
+            )
 
         return queryset
 
@@ -110,3 +117,27 @@ class ModelYearReportViewset(
         serializer = ModelYearReportSerializer(report)
 
         return Response(serializer.data)
+
+    @action(detail=False, methods=['patch'])
+    def submission(self, request):
+        validation_status = request.data.get('validation_status')
+        model_year_report_id = request.data.get('model_year_report_id')
+
+        model_year_report_update = ModelYearReport.objects.filter(
+            id=model_year_report_id
+        )
+        if validation_status:
+            model_year_report_update.update(
+                validation_status=validation_status)
+            model_year_report_update.update(update_user=request.user.username)
+
+            ModelYearReportHistory.objects.create(
+                model_year_report_id=model_year_report_id,
+                validation_status=validation_status,
+                update_user=request.user.username,
+                create_user=request.user.username,
+            )
+
+        return HttpResponse(
+            status=201, content="Report Submitted"
+        )

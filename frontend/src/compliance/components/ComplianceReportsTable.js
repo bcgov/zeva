@@ -9,6 +9,14 @@ const ComplianceReportsTable = (props) => {
   const { user, data } = props;
   
   const columns = [{
+    accessor: (item) => (item.organizationName),
+    className: 'text-center',
+    Header: 'Supplier',
+    headerClassName: 'font-weight-bold ',
+    id: 'supplier_name',
+    show: user.isGovernment,
+    maxWidth: 260,
+  }, {
     accessor: (item) => (item.modelYear.name),
     className: 'text-center',
     Header: 'Model Year',
@@ -72,7 +80,9 @@ const ComplianceReportsTable = (props) => {
           return {
             onClick: () => {
               const { id, validationStatus } = row.original;
-              history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(/:id/g, id));
+              if (!user.isGovernment) {
+                history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(/:id/g, id));
+              }
             },
             className: 'clickable',
           };

@@ -71,7 +71,7 @@ const ComplianceReportListPage = (props) => {
           </div>
         )}
       </div>
-      <div className="text-blue mt-4">
+      {!user.isGovernment && (<div className="text-blue mt-4">
         Under section 17 (5) of the ZEV Act a model year report must include for
         the adjustment period ending September 30:
         <ul className="mt-2">
@@ -86,7 +86,7 @@ const ComplianceReportListPage = (props) => {
         included in a submitted credit application prior to completing your
         model year report. Model year reports must be submitted on or before
         October 20.
-      </div>
+      </div>)}
       <div className="row mt-4">
         <div className="col-sm-12">
           <ComplianceReportsTable data={data} user={user} />

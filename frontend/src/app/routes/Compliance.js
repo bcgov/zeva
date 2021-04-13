@@ -16,6 +16,7 @@ const COMPLIANCE = {
   CONSUMER_SALES: `${API_BASE_PATH}/consumer-sales`,
   RETRIEVE_CONSUMER_SALES: `${API_BASE_PATH}/consumer-sales/:id`,
   REPORT_DETAILS_BY_YEAR: `${API_BASE_PATH}/compliance-activity-details/:year`,
+  REPORT_SUBMISSION: `${API_BASE_PATH}/reports/submission`,
 };
 
 export default COMPLIANCE;

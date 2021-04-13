@@ -145,7 +145,7 @@ class ModelYearReportListSerializer(
         ModelSerializer, EnumSupportSerializerMixin
 ):
     model_year = ModelYearSerializer()
-    validation_status = EnumField(ModelYearReportStatuses)
+    validation_status = SerializerMethodField()
     compliant = SerializerMethodField()
     obligation_total = SerializerMethodField()
     obligation_credits = SerializerMethodField()
@@ -159,10 +159,16 @@ class ModelYearReportListSerializer(
     def get_obligation_credits(self, obj):
         return 0
 
+    def get_validation_status(self, obj):
+        request = self.context.get('request')
+        if not request.user.is_government and obj.validation_status is ModelYearReportStatuses.RECOMMENDED:
+            return ModelYearReportStatuses.SUBMITTED.value
+        return obj.get_validation_status_display()
+
     class Meta:
         model = ModelYearReport
         fields = (
-            'id', 'model_year', 'validation_status', 'ldv_sales',
+            'id', 'organization_name', 'model_year', 'validation_status', 'ldv_sales',
             'supplier_class', 'compliant', 'obligation_total',
             'obligation_credits',
         )
