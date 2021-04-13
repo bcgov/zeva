@@ -120,7 +120,6 @@ class ModelYearReportViewset(
 
     @action(detail=False, methods=['patch'])
     def submission(self, request):
-        data = request.data.get('data')
         validation_status = request.data.get('validation_status')
         model_year_report_id = request.data.get('model_year_report_id')
 
