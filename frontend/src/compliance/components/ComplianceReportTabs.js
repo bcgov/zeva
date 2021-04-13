@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 
@@ -16,31 +15,31 @@ const ComplianceReportTabs = (props) => {
       role="tablist"
     >
       <li
-        className={`nav-item ${(active === 'supplier-information') ? 'active' : ''} ${reportStatuses.supplierInformation}`}
+        className={`nav-item ${(active === 'supplier-information') ? 'active' : ''} ${reportStatuses.supplierInformation ? reportStatuses.supplierInformation.status : ''}`}
         role="presentation"
       >
         <Link to={ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', id)}>Supplier Information</Link>
       </li>
       <li
-        className={`nav-item ${(active === 'consumer-sales') ? 'active' : ''} ${reportStatuses.consumerSales}`}
+        className={`nav-item ${(active === 'consumer-sales') ? 'active' : ''} ${reportStatuses.consumerSales ? reportStatuses.consumerSales.status : ''}`}
         role="presentation"
       >
         <Link to={ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id)}>Consumer Sales</Link>
       </li>
       <li
-        className={`nav-item ${(active === 'credit-activity') ? 'active' : ''} ${reportStatuses.creditActivity}`}
+        className={`nav-item ${(active === 'credit-activity') ? 'active' : ''} ${reportStatuses.complianceObligation ? reportStatuses.complianceObligation.status : ''}`}
         role="presentation"
       >
         <Link to={ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(':id', id)}>Compliance Obligation</Link>
       </li>
       <li
-        className={`nav-item ${(active === 'summary') ? 'active' : ''} ${reportStatuses.reportSummary}`}
+        className={`nav-item ${(active === 'summary') ? 'active' : ''} ${reportStatuses.reportSummary ? reportStatuses.reportSummary.status : ''}`}
         role="presentation"
       >
         <Link to={ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id)}>Summary</Link>
       </li>
       <li
-        className={`nav-item ${(active === 'assessment') ? 'active' : ''} ${reportStatuses.assessment}`}
+        className={`nav-item ${(active === 'assessment') ? 'active' : ''} ${reportStatuses.assessment ? reportStatuses.assessment.status : ''}`}
         role="presentation"
       >
         <Link to={ROUTES_COMPLIANCE.REPORT_ASSESSMENT}>Assessment</Link>

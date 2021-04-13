@@ -9,13 +9,7 @@ import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 
 const ComplianceObligationContainer = (props) => {
   const { user } = props;
-  const reportStatuses = {
-    assessment: '',
-    consumerSales: '',
-    creditActivity: 'draft',
-    reportSummary: '',
-    supplierInformation: '',
-  };
+
   const [confirmed, setConfirmed] = useState(false);
   const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
   const [offsetNumbers, setOffsetNumbers] = useState({});
@@ -26,6 +20,7 @@ const ComplianceObligationContainer = (props) => {
   const [reportDetails, setReportDetails] = useState({});
   const [ratios, setRatios] = useState({});
   const [details, setDetails] = useState({});
+  const [statuses, setStatuses] = useState({});
   const [supplierClassInfo, setSupplierClassInfo] = useState({ ldvSales: 0, class: '' });
   const { id } = useParams();
   const handleCheckboxClick = (event) => {
@@ -80,6 +75,7 @@ const ComplianceObligationContainer = (props) => {
     };
     axios.post(ROUTES_COMPLIANCE.OBLIGATION,
       data).then(() => {
+      setDisabledCheckboxes('disabled');
       // add confirmation !
     });
   };
@@ -111,6 +107,7 @@ const ComplianceObligationContainer = (props) => {
         supplierClass,
         validationStatus,
         confirmations,
+        statuses: reportStatuses,
       } = reportDetailsResponse;
       setDetails({
         complianceObligation: {
@@ -123,6 +120,8 @@ const ComplianceObligationContainer = (props) => {
         setConfirmed(true);
         setCheckboxes(confirmations);
       }
+
+      setStatuses(reportStatuses);
       setSupplierClassInfo({ class: supplierClass, ldvSales });
 
       const ratioPromise = axios.get(ROUTES_COMPLIANCE.RATIOS).then((ratioResponse) => {
@@ -262,7 +261,7 @@ const ComplianceObligationContainer = (props) => {
 
   return (
     <>
-      <ComplianceReportTabs active="credit-activity" reportStatuses={reportStatuses} user={user} />
+      <ComplianceReportTabs active="credit-activity" reportStatuses={statuses} user={user} />
       <ComplianceObligationDetailsPage
         assertions={assertions}
         checkboxes={checkboxes}
@@ -279,6 +278,7 @@ const ComplianceObligationContainer = (props) => {
         reportYear={reportYear}
         supplierClassInfo={supplierClassInfo}
         user={user}
+        statuses={statuses}
       />
     </>
   );

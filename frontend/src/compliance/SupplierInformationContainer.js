@@ -23,16 +23,9 @@ const SupplierInformationContainer = (props) => {
   const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
   const [details, setDetails] = useState({});
   const [modelYear, setModelYear] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR);
+  const [statuses, setStatuses] = useState({});
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
-
-  const reportStatuses = {
-    assessment: '',
-    consumerSales: '',
-    creditActivity: '',
-    reportSummary: '',
-    supplierInformation: 'draft',
-  };
 
   const [loading, setLoading] = useState(true);
   const [makes, setMakes] = useState([]);
@@ -109,8 +102,9 @@ const SupplierInformationContainer = (props) => {
           modelYearReportHistory,
           organizationName,
           validationStatus,
-          confirmations,
           modelYear: reportModelYear,
+          confirmations,
+          statuses: reportStatuses,
         } = response.data;
 
         setModelYear(parseInt(reportModelYear.name, 10));
@@ -131,7 +125,9 @@ const SupplierInformationContainer = (props) => {
             validationStatus,
           },
         });
+
         setCheckboxes(confirmations);
+        setStatuses(reportStatuses);
 
         setLoading(false);
       });
@@ -166,7 +162,7 @@ const SupplierInformationContainer = (props) => {
     <>
       <ComplianceReportTabs
         active="supplier-information"
-        reportStatuses={reportStatuses}
+        reportStatuses={statuses}
         id={id}
         user={user}
       />
@@ -186,6 +182,7 @@ const SupplierInformationContainer = (props) => {
         handleCheckboxClick={handleCheckboxClick}
         disabledCheckboxes={disabledCheckboxes}
         details={details}
+        statuses={statuses}
       />
     </>
   );
