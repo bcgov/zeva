@@ -27,8 +27,15 @@ const ComplianceReportSummaryContainer = (props) => {
       setCheckboxes(checked);
     }
   };
-  const handleSubmit = (event) => {
-    console.log('submit button clicked!');
+  const handleSubmit = (status) => {
+    const data = {
+      modelYearReportId: id,
+      validation_status: status,
+    };
+
+    axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then((response) => {
+      console.log('Report Submitted ', response);
+    });
   };
 
   const reportStatuses = {
