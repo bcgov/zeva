@@ -25,6 +25,7 @@ from api.serializers.model_year_report import ModelYearReport
 from api.models.model_year_report_vehicle import ModelYearReportVehicle
 from api.serializers.model_year_report import ModelYearReportSerializer
 from api.serializers.organization import OrganizationSerializer
+from api.models.model_year_report_statuses import ModelYearReportStatuses
 
 
 class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
@@ -113,6 +114,13 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
                 signing_authority_assertion_id=confirmation
             )
             consumer_sales_confirmation.save()
+
+        ModelYearReportHistory.objects.create(
+                model_year_report_id=model_year_report_id,
+                validation_status=ModelYearReportStatuses.DRAFT,
+                update_user=request.user.username,
+                create_user=request.user.username,
+        )
 
         return Response(
            {"status": "saved"}
