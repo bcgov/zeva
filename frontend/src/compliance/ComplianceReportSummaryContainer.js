@@ -2,20 +2,25 @@ import axios from 'axios';
 import { now } from 'moment';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import Loading from '../app/components/Loading';
 import { useParams } from 'react-router-dom';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ComplianceReportSummaryDetailsPage from './components/ComplianceReportSummaryDetailsPage';
+import ROUTES_VEHICLES from '../app/routes/Vehicles';
+import formatNumeric from '../app/utilities/formatNumeric';
 
 const ComplianceReportSummaryContainer = (props) => {
   const { user } = props;
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const [checkboxes, setCheckboxes] = useState([]);
+  const [consumerSalesDetails, setConsumerSalesDetails] = useState({});
   const [complianceRatios, setComplianceRatios] = useState({});
+  const [supplierDetails, setSupplierDetails] = useState({});
+  const [makes, setMakes] = useState({});
   const [assertions, setAssertions] = useState([{ id: 0, description: 'On behalf of [insert supplier name], I confirm the information included in this Model Year report is complete and accurate' }]);
-  const year = '2020';
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
       const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
@@ -129,41 +134,98 @@ const ComplianceReportSummaryContainer = (props) => {
       },
     ],
   };
-  const supplierInformationDetails = {
-    supplierInformation: {
-      makes: ['TOYOTA'],
-      history: [{
-        status: 'DRAFT',
-        createTimestamp: now(),
-        createUser: user,
-      }],
-      status: 'DRAFT',
-    },
-    organization: user.organization,
-  };
-  const consumerSalesDetails = {
-    year: 2020,
-    ldvSales: 10000,
-    zevSales: 1474,
-    pendingZevSales: 114,
-    averageLdv3Years: 7467,
-    supplierClass: 'Large',
-  };
+  // const supplierInformationDetails = {
+  //   supplierInformation: {
+  //     makes: ['TOYOTA'],
+  //     history: [{
+  //       status: 'DRAFT',
+  //       createTimestamp: now(),
+  //       createUser: user,
+  //     }],
+  //     status: 'DRAFT',
+  //   },
+  //   organization: user.organization,
+  // };
   const refreshDetails = () => {
     setLoading(true);
     axios.all([
-      axios.get(ROUTES_COMPLIANCE.RATIOS)]).then(axios.spread((
-      allComplianceRatiosResponse,
+      axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)),
+      axios.get(ROUTES_COMPLIANCE.RATIOS),
+      axios.get(ROUTES_VEHICLES.VEHICLES_SALES),
+      axios.get(ROUTES_COMPLIANCE.RETRIEVE_CONSUMER_SALES.replace(':id', id)),
+    ]).then(axios.spread((
+      reportDetailsResponse, allComplianceRatiosResponse, vehicleSalesResponse, consumerSalesResponse,
     ) => {
+      // SUPPLIER INFORMATION
+      const {
+        makes: modelYearReportMakes,
+        modelYearReportAddresses,
+        modelYearReportHistory,
+        organizationName,
+        validationStatus,
+        confirmations,
+        modelYear: reportModelYear,
+      } = reportDetailsResponse.data;
+      if (modelYearReportMakes) {
+        const currentMakes = modelYearReportMakes.map((each) => (each.make));
+
+        setMakes(currentMakes);
+      }
+      setSupplierDetails({
+        organization: {
+          name: organizationName,
+          organizationAddress: modelYearReportAddresses,
+        },
+        supplierInformation: {
+          history: modelYearReportHistory,
+          validationStatus,
+        },
+      });
+      // CONSUMER SALES
+      let { supplierClass } = reportDetailsResponse.data;
+      if (supplierClass === 'M') {
+        supplierClass = 'Medium';
+      } else if (supplierClass === 'L') {
+        supplierClass = 'Large';
+      } else {
+        supplierClass = 'Small';
+      }
+      const year = reportDetailsResponse.data.modelYear.name;
+      let pendingZevSales = 0;
+      let zevSales = 0;
+      vehicleSalesResponse.data.forEach((vehicle) => {
+        pendingZevSales += vehicle.pendingSales;
+        zevSales += vehicle.salesIssued;
+      });
+      let averageLdv3Years = 0;
+      consumerSalesResponse.data.previousSales.forEach((each) => {
+        averageLdv3Years += parseFloat(each.previousSales);
+      });
+      averageLdv3Years = formatNumeric((averageLdv3Years / 3), 2);
+      // console.log(consumerSalesResponse.data);
+      // console.log(reportDetailsResponse.data);
+      // console.log(vehicleSalesResponse.data);
+      setConsumerSalesDetails({
+        ...consumerSalesDetails,
+        pendingZevSales,
+        zevSales,
+        ldvSales: consumerSalesResponse.data.ldvSales,
+        averageLdv3Years,
+        year,
+        supplierClass,
+      });
       setComplianceRatios(allComplianceRatiosResponse.data
         .filter((each) => each.modelYear === year));
+      setLoading(false);
     }));
-    setLoading(false);
   };
 
   useEffect(() => {
     refreshDetails();
   }, []);
+  if (loading) {
+    return (<Loading />);
+  }
 
   return (
     <>
@@ -180,11 +242,12 @@ const ComplianceReportSummaryContainer = (props) => {
         assertions={assertions}
         creditsIssuedDetails={creditsIssuedDetails}
         consumerSalesDetails={consumerSalesDetails}
-        supplierInformationDetails={supplierInformationDetails}
+        supplierDetails={supplierDetails}
         user={user}
         loading={loading}
         handleSubmit={handleSubmit}
         year="2020"
+        makes={makes}
       />
 
     </>

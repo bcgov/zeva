@@ -23,12 +23,14 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     user,
     handleSubmit,
     loading,
-    supplierInformationDetails,
+    supplierDetails,
     consumerSalesDetails,
     handleCheckboxClick,
     year,
+    makes,
 
   } = props;
+
   const signedInfomation = {
     supplierInformation: { nameSigned: 'Buzz Collins', dateSigned: '2020-01-01' },
     consumerSales: { nameSigned: 'Buzz Collins', dateSigned: '2020-02-20' },
@@ -75,7 +77,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          <ComplianceReportAlert report={supplierInformationDetails.supplierInformation} type="Summary" />
+          {/* <ComplianceReportAlert report={supplierDetails.supplierInformation} type="Summary" /> */}
         </div>
       </div>
       <div className="row mt-1">
@@ -85,7 +87,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
             <div className="row p3 mt-3">
               <div className="col-lg-6">
                 <div className="compliance-report-summary-grey text-blue">
-                  <SummarySupplierInfo supplierInformationDetails={supplierInformationDetails} signatureInformation={signatureInformation} signedInfomation={signedInfomation} />
+                  <SummarySupplierInfo makes={makes} supplierDetails={supplierDetails} signatureInformation={signatureInformation} signedInfomation={signedInfomation} />
                   {signatureInformation(signedInfomation.supplierInformation)}
                 </div>
 

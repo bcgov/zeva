@@ -1,8 +1,9 @@
 import React from 'react';
 
 const SummarySupplierInfo = (props) => {
-  const { supplierInformationDetails } = props;
-  const { organization, supplierInformation } = supplierInformationDetails
+  const { supplierDetails, makes } = props;
+  const { organization, supplierInformation } = supplierDetails;
+  console.log(organization.organizationAddress)
   return (
     <>
       <h3>Supplier Information</h3>
@@ -47,7 +48,7 @@ const SummarySupplierInfo = (props) => {
         </div>
         <div className="d-block my-3">
           <h4>Makes:</h4>
-          {supplierInformation.makes.map((each) => `•  ${each}`)}
+          {makes.map((each) => <div>•{each}</div>)}
         </div>
       </div>
     </>
