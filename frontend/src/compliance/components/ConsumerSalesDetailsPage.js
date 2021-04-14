@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { now } from 'moment';
 import CustomPropTypes from '../../app/utilities/props';
 import Loading from '../../app/components/Loading';
 import ComplianceReportAlert from './ComplianceReportAlert';
@@ -17,10 +16,9 @@ const ConsumerSalesDetailsPage = (props) => {
     handleSave,
     handleChange,
     vehicles,
-    confirmed,
     assertions,
     checkboxes,
-    disabledCheckboxes,
+    disabledCheckboxes: propsDisabledCheckboxes,
     error,
     handleCheckboxClick,
     handleInputChange,
@@ -33,7 +31,10 @@ const ConsumerSalesDetailsPage = (props) => {
     firstYear,
     secondYear,
     thirdYear,
+    statuses,
   } = props;
+
+  let disabledCheckboxes = propsDisabledCheckboxes;
 
   if (loading) {
     return <Loading />;
@@ -57,6 +58,12 @@ const ConsumerSalesDetailsPage = (props) => {
     </div>
   );
 
+  assertions.forEach((assertion) => {
+    if (checkboxes.indexOf(assertion.id) >= 0) {
+      disabledCheckboxes = 'disabled';
+    }
+  });
+
   return (
     <div id="compliance-consumer-sales-details" className="page">
       <div className="row mt-3">
@@ -66,8 +73,13 @@ const ConsumerSalesDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          {confirmed && (
-          <ComplianceReportAlert report={details.consumerSales} type="Consumer Sales" />
+          {details && details.consumerSales && details.consumerSales.history && (
+            <ComplianceReportAlert
+              next="Compliance Obligation"
+              report={details.consumerSales}
+              status={statuses.consumerSales}
+              type="Consumer Sales"
+            />
           )}
         </div>
       </div>
@@ -254,6 +266,7 @@ ConsumerSalesDetailsPage.defaultProps = {
   assertions: [],
   avgSales: 0,
   checkboxes: [],
+  salesInput: null,
 };
 
 ConsumerSalesDetailsPage.propTypes = {
@@ -266,7 +279,6 @@ ConsumerSalesDetailsPage.propTypes = {
   handleSave: PropTypes.func.isRequired,
   handleChange: PropTypes.func.isRequired,
   vehicles: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  confirmed: PropTypes.bool.isRequired,
   error: PropTypes.bool.isRequired,
   assertions: PropTypes.arrayOf(PropTypes.shape()),
   checkboxes: PropTypes.arrayOf(
@@ -284,5 +296,6 @@ ConsumerSalesDetailsPage.propTypes = {
   firstYear: PropTypes.number.isRequired,
   secondYear: PropTypes.number.isRequired,
   thirdYear: PropTypes.number.isRequired,
+  statuses: PropTypes.shape().isRequired,
 };
 export default ConsumerSalesDetailsPage;

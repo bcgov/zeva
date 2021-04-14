@@ -26,6 +26,7 @@ const SupplierInformationDetailsPage = (props) => {
     disabledCheckboxes: propsDisabledCheckboxes,
     handleCheckboxClick,
     modelYear,
+    statuses,
   } = props;
 
   const [showModal, setShowModal] = useState(false);
@@ -57,7 +58,7 @@ const SupplierInformationDetailsPage = (props) => {
 
   assertions.forEach((assertion) => {
     if (checkboxes.indexOf(assertion.id) >= 0) {
-      disabledCheckboxes = true;
+      disabledCheckboxes = 'disabled';
     }
   });
 
@@ -71,7 +72,12 @@ const SupplierInformationDetailsPage = (props) => {
       <div className="row">
         <div className="col-12">
           {details && details.supplierInformation && details.supplierInformation.history && (
-            <ComplianceReportAlert report={details.supplierInformation} type="Supplier Information" />
+            <ComplianceReportAlert
+              next="Consumer Sales"
+              report={details.supplierInformation}
+              status={statuses.supplierInformation}
+              type="Supplier Information"
+            />
           )}
         </div>
       </div>
@@ -231,5 +237,6 @@ SupplierInformationDetailsPage.propTypes = {
   handleCheckboxClick: PropTypes.func.isRequired,
   disabledCheckboxes: PropTypes.string.isRequired,
   modelYear: PropTypes.number.isRequired,
+  statuses: PropTypes.shape().isRequired,
 };
 export default SupplierInformationDetailsPage;

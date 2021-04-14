@@ -2,19 +2,27 @@
   .nav-item {
     padding: 1rem 1.5rem;
 
-    &.draft a {
-      border-bottom-color: $primary-yellow;
+    &.SAVED {
+      a {
+        border-bottom-color: $background-warning;
+      }
+
+      &.active a {
+        border-bottom-color: $primary-yellow;
+      }
     }
 
-    &.submitted a {
-      border-bottom-color: $default-text-blue;
+    &.CONFIRMED {
+      a {
+        border-bottom-color: $background-light-blue;  
+      }
+      
+      &.active a {
+        border-bottom-color: $default-text-blue;
+      }
     }
 
-    &.reviewed a {
-      border-bottom-color: $primary-yellow;
-    }
-
-    &.assessed a {
+    &.ASSESSED a {
       border-bottom-color: $alert-success;
     }
 

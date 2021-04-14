@@ -1,7 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { now } from 'moment';
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
 import CustomPropTypes from '../../app/utilities/props';
@@ -25,11 +24,16 @@ const ComplianceObligationDetailsPage = (props) => {
     reportDetails,
     reportYear,
     supplierClassInfo,
+    statuses,
+    disabledCheckboxes: propsDisabledCheckboxes,
   } = props;
+
+  let disabledCheckboxes = propsDisabledCheckboxes;
 
   if (loading) {
     return <Loading />;
   }
+
   const {
     creditBalanceStart, creditBalanceEnd, pendingBalance, transactions, provisionalBalance,
   } = reportDetails;
@@ -46,6 +50,12 @@ const ComplianceObligationDetailsPage = (props) => {
     - ((ratios.zevClassA / 100) * supplierClassInfo.ldvSales),
   2);
 
+  assertions.forEach((assertion) => {
+    if (checkboxes.indexOf(assertion.id) >= 0) {
+      disabledCheckboxes = 'disabled';
+    }
+  });
+
   return (
     <div id="compliance-supplier-information-details" className="page">
       <div className="row mt-3">
@@ -55,7 +65,14 @@ const ComplianceObligationDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          <ComplianceReportAlert report={details.complianceObligation} type="Compliance Obligation" />
+          {details && details.complianceObligation && details.complianceObligation.history && (
+            <ComplianceReportAlert
+              next="Summary"
+              report={details.complianceObligation}
+              status={statuses.complianceObligation}
+              type="Compliance Obligation"
+            />
+          )}
         </div>
       </div>
       <div id="compliance-obligation-page">
@@ -77,7 +94,7 @@ const ComplianceObligationDetailsPage = (props) => {
                 </th>
               </tr>
               {Object.keys(creditBalanceStart).map((each) => (
-                <tr>
+                <tr key={each}>
                   <td className="text-blue">
                     &bull; &nbsp; &nbsp; Total Credit Balance
                   </td>
@@ -326,6 +343,7 @@ const ComplianceObligationDetailsPage = (props) => {
         handleCheckboxClick={handleCheckboxClick}
         user={user}
         checkboxes={checkboxes}
+        disabledCheckboxes={disabledCheckboxes}
       />
       <div className="row">
         <div className="col-sm-12">
@@ -351,6 +369,10 @@ ComplianceObligationDetailsPage.defaultProps = {
 };
 
 ComplianceObligationDetailsPage.propTypes = {
+  details: PropTypes.shape({
+    organization: PropTypes.shape(),
+    complianceObligation: PropTypes.shape(),
+  }).isRequired,
   loading: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired,
   supplierClassInfo: PropTypes.shape().isRequired,
@@ -362,5 +384,10 @@ ComplianceObligationDetailsPage.propTypes = {
   checkboxes: PropTypes.arrayOf(
     PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   ).isRequired,
+  statuses: PropTypes.shape().isRequired,
+  handleOffsetChange: PropTypes.func.isRequired,
+  handleSave: PropTypes.func.isRequired,
+  offsetNumbers: PropTypes.shape().isRequired,
+  disabledCheckboxes: PropTypes.string.isRequired,
 };
 export default ComplianceObligationDetailsPage;
