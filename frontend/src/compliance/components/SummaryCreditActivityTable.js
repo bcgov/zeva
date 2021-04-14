@@ -4,19 +4,20 @@ import SummarySupplierInfo from './SummarySupplierInfo';
 
 const SummaryCreditActivityTable = (props) => {
   const {
-    creditsIssuedDetails, consumerSalesDetails, complianceRatios,
+    creditActivityDetails, consumerSalesDetails, complianceRatios,
   } = props;
   const { year, ldvSales, supplierClass } = consumerSalesDetails;
+  console.log(creditActivityDetails)
   const {
-    startingBalance, endingBalance,
-    creditsIssuedSales, creditsIssuedInitiative, creditsIssuedPurchase,
-    creditsTransferredIn, creditsTransferredAway, pendingSales, provisionalBalance,
+    creditBalanceStart, creditBalanceEnd, transactions, 
+    pendingBalance, provisionalBalance,
     creditOffset, provisionalAssessedBalance,
-  } = creditsIssuedDetails;
+  } = creditActivityDetails;
 
   const tableSection = (input, title, numberClassname = 'text-right') => {
     let aTotal;
     let bTotal;
+    console.log(input)
     if (Array.isArray(input)) {
       aTotal = formatNumeric(input.reduce((a, v) => a + v.A, 0), 2);
       bTotal = formatNumeric(input.reduce((a, v) => a + v.B, 0), 2);
@@ -67,44 +68,44 @@ const SummaryCreditActivityTable = (props) => {
       </tbody>
       <tbody>
 
-        {tableSection(startingBalance, 'Balance at September 30, 2019:')}
-        {Object.keys(creditsIssuedSales).length > 0
+        {tableSection(creditBalanceStart, 'Balance at September 30, 2019:')}
+        {Object.keys(transactions.creditsIssuedSales).length > 0
           && (
-            tableSection(creditsIssuedSales, 'Consumer ZEV Sales:')
+            tableSection(transactions.creditsIssuedSales, 'Consumer ZEV Sales:')
           )}
-        {Object.keys(creditsIssuedInitiative).length > 0
+        {/* {Object.keys(creditsIssuedInitiative).length > 0
           && (
             tableSection(creditsIssuedInitiative, 'Initiative Agreements:')
-          )}
-        {Object.keys(creditsIssuedPurchase).length > 0
+          )} */}
+        {/* {Object.keys(creditsIssuedPurchase).length > 0
           && (
             tableSection(creditsIssuedPurchase, 'Purchase Agreements:')
-          )}
-        {Object.keys(creditsTransferredIn).length > 0
+          )} */}
+        {Object.keys(transactions.transfersIn).length > 0
           && (
-            tableSection(creditsTransferredIn, 'Transferred In:')
+            tableSection(transactions.transfersIn, 'Transferred In:')
           )}
-        {Object.keys(creditsTransferredAway).length > 0
+        {Object.keys(transactions.transfersOut).length > 0
           && (
-            tableSection(creditsTransferredAway, 'Transferred Away:', 'text-red text-right')
+            tableSection(transactions.transfersOut, 'Transferred Away:', 'text-red text-right')
           )}
-        {tableSection(endingBalance, 'Balance at September 30, 2020:')}
-        {Object.keys(pendingSales).length > 0
+        {tableSection(creditBalanceEnd, 'Balance at September 30, 2020:')}
+        {Object.keys(pendingBalance).length > 0
           && (
-            tableSection(pendingSales, 'Pending for Consumer Sales:')
+            tableSection(pendingBalance, 'Pending for Consumer Sales:')
           )}
         {Object.keys(provisionalBalance).length > 0
           && (
             tableSection(provisionalBalance, 'Provisional Credit Balance:')
           )}
-        {Object.keys(creditOffset).length > 0
+        {/* {Object.keys(creditOffset).length > 0
           && (
             tableSection(creditOffset, 'Credit Offset:', 'text-red text-right')
-          )}
-        {Object.keys(provisionalAssessedBalance).length > 0
+          )} */}
+        {/* {Object.keys(provisionalAssessedBalance).length > 0
           && (
             tableSection(provisionalAssessedBalance, 'Provisional assessed balance:')
-          )}
+          )} */}
       </tbody>
       <tbody className="mt-3">
         <tr>

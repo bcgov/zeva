@@ -19,7 +19,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     complianceRatios,
     assertions,
     checkboxes,
-    creditsIssuedDetails,
+    creditActivityDetails,
     user,
     handleSubmit,
     loading,
@@ -103,7 +103,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
                     complianceRatios={complianceRatios}
                     year={year}
                     consumerSalesDetails={consumerSalesDetails}
-                    creditsIssuedDetails={creditsIssuedDetails}
+                    creditActivityDetails={creditActivityDetails}
                   />
                   {signatureInformation(signedInfomation.creditActivity)}
                 </div>

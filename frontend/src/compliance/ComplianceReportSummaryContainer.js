@@ -20,6 +20,7 @@ const ComplianceReportSummaryContainer = (props) => {
   const [complianceRatios, setComplianceRatios] = useState({});
   const [supplierDetails, setSupplierDetails] = useState({});
   const [makes, setMakes] = useState({});
+  const [creditActivityDetails, setCreditActivityDetails] = useState({})
   const [assertions, setAssertions] = useState([{ id: 0, description: 'On behalf of [insert supplier name], I confirm the information included in this Model Year report is complete and accurate' }]);
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
@@ -50,101 +51,89 @@ const ComplianceReportSummaryContainer = (props) => {
     reportSummary: 'draft',
     supplierInformation: '',
   };
-  const creditsIssuedDetails = {
-    startingBalance: { A: 0, B: 0 },
-    endingBalance: { A: 1513.09, B: 191.29 },
-    creditsIssuedSales:
-      [
-        {
-          year: 2020,
-          A: 359.12,
-          B: 43.43,
-        },
-        {
-          year: 2019,
-          A: 1367.43,
-          B: 347.86,
-        },
-      ],
-    creditsIssuedInitiative:
-      [{
-        year: 2019,
-        A: 286.54,
-      }],
-    creditsIssuedPurchase: [
-      {
-        year: 2020,
-        A: 100.00,
-      },
-    ],
-    creditsTransferredIn: [
-      {
-        year: 2020,
-        A: 200.00,
-      },
-    ],
-    creditsTransferredAway: [
-      {
-        year: 2020,
-        A: -800.00,
-        B: -200.00,
-      },
-    ],
-    pendingSales: [
-      {
-        year: 2020,
-        A: 246.67,
-        B: 0,
-      },
-    ],
-    provisionalBalance: [
-      {
-        year: 2020,
-        A: 1192.33,
-        B: 43.43,
-      },
-      {
-        year: 2019,
-        A: 567.43,
-        B: 147.86,
-      },
-    ],
-    creditOffset: [
-      {
-        year: 2019,
-        A: -300,
-        B: -100,
-      },
-      {
-        year: 2020,
-        A: -458.71,
-        B: -91.29,
-      },
-    ],
-    provisionalAssessedBalance: [
-      {
-        year: 2019,
-        A: 754.38,
-        B: 0,
-      },
-      {
-        year: 2020,
-        A: 0,
-        B: 0,
-      },
-    ],
-  };
-  // const supplierInformationDetails = {
-  //   supplierInformation: {
-  //     makes: ['TOYOTA'],
-  //     history: [{
-  //       status: 'DRAFT',
-  //       createTimestamp: now(),
-  //       createUser: user,
+  // const creditsIssuedDetails = {
+  //   startingBalance: { A: 0, B: 0 },
+  //   endingBalance: { A: 1513.09, B: 191.29 },
+  //   creditsIssuedSales:
+  //     [
+  //       {
+  //         year: 2020,
+  //         A: 359.12,
+  //         B: 43.43,
+  //       },
+  //       {
+  //         year: 2019,
+  //         A: 1367.43,
+  //         B: 347.86,
+  //       },
+  //     ],
+  //   creditsIssuedInitiative:
+  //     [{
+  //       year: 2019,
+  //       A: 286.54,
   //     }],
-  //     status: 'DRAFT',
-  //   },
-  //   organization: user.organization,
+  //   creditsIssuedPurchase: [
+  //     {
+  //       year: 2020,
+  //       A: 100.00,
+  //     },
+  //   ],
+  //   creditsTransferredIn: [
+  //     {
+  //       year: 2020,
+  //       A: 200.00,
+  //     },
+  //   ],
+  //   creditsTransferredAway: [
+  //     {
+  //       year: 2020,
+  //       A: -800.00,
+  //       B: -200.00,
+  //     },
+  //   ],
+  //   pendingSales: [
+  //     {
+  //       year: 2020,
+  //       A: 246.67,
+  //       B: 0,
+  //     },
+  //   ],
+  //   provisionalBalance: [
+  //     {
+  //       year: 2020,
+  //       A: 1192.33,
+  //       B: 43.43,
+  //     },
+  //     {
+  //       year: 2019,
+  //       A: 567.43,
+  //       B: 147.86,
+  //     },
+  //   ],
+  //   creditOffset: [
+  //     {
+  //       year: 2019,
+  //       A: -300,
+  //       B: -100,
+  //     },
+  //     {
+  //       year: 2020,
+  //       A: -458.71,
+  //       B: -91.29,
+  //     },
+  //   ],
+  //   provisionalAssessedBalance: [
+  //     {
+  //       year: 2019,
+  //       A: 754.38,
+  //       B: 0,
+  //     },
+  //     {
+  //       year: 2020,
+  //       A: 0,
+  //       B: 0,
+  //     },
+  //   ],
   // };
   const refreshDetails = () => {
     setLoading(true);
@@ -218,8 +207,50 @@ const ComplianceReportSummaryContainer = (props) => {
       });
       setComplianceRatios(allComplianceRatiosResponse.data
         .filter((each) => each.modelYear === year));
+
       // CREDIT ACTIVITY
-      console.log(creditActivityResponse.data)
+      const creditBalanceStart = {};
+      const creditBalanceEnd = {};
+      const provisionalBalance = {};
+      const pendingBalance = {};
+      const transfersIn = [];
+      const transfersOut = [];
+      const creditsIssuedSales = [];
+      const offsetNumbers = [];
+      creditActivityResponse.data.forEach((item) => {
+        if (item.category === 'creditBalanceStart') {
+          creditBalanceStart[item.modelYear.name] = { A: item.creditAValue, B: item.creditBValue };
+        }
+        if (item.category === 'creditBalanceEnd') {
+          creditBalanceEnd[item.modelYear.name] = { A: item.creditAValue, B: item.creditBValue };
+        }
+        if (item.category === 'provisionalBalance') {
+          provisionalBalance[item.modelYear.name] = { A: parseFloat(item.creditAValue), B: parseFloat(item.creditBValue) };
+        }
+        if (item.category === 'pendingBalance') {
+          pendingBalance[item.modelYear.name] = { A: item.creditAValue, B: item.creditBValue };
+        }
+        if (item.category === 'transfersIn') {
+          transfersIn.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
+        }
+        if (item.category === 'transfersOut') {
+          transfersOut.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
+        }
+        if (item.category === 'creditsIssuedSales') {
+          creditsIssuedSales.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
+        }
+      });
+      setCreditActivityDetails({
+        creditBalanceStart,
+        creditBalanceEnd,
+        pendingBalance,
+        provisionalBalance,
+        transactions: {
+          creditsIssuedSales,
+          transfersIn,
+          transfersOut,
+        },
+      });
       setLoading(false);
     }));
   };
@@ -244,7 +275,7 @@ const ComplianceReportSummaryContainer = (props) => {
         handleCheckboxClick={handleCheckboxClick}
         checkboxes={checkboxes}
         assertions={assertions}
-        creditsIssuedDetails={creditsIssuedDetails}
+        creditActivityDetails={creditActivityDetails}
         consumerSalesDetails={consumerSalesDetails}
         supplierDetails={supplierDetails}
         user={user}
