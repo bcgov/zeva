@@ -153,8 +153,13 @@ const ComplianceReportSummaryContainer = (props) => {
       axios.get(ROUTES_COMPLIANCE.RATIOS),
       axios.get(ROUTES_VEHICLES.VEHICLES_SALES),
       axios.get(ROUTES_COMPLIANCE.RETRIEVE_CONSUMER_SALES.replace(':id', id)),
+      axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)),
     ]).then(axios.spread((
-      reportDetailsResponse, allComplianceRatiosResponse, vehicleSalesResponse, consumerSalesResponse,
+      reportDetailsResponse,
+      allComplianceRatiosResponse,
+      vehicleSalesResponse,
+      consumerSalesResponse,
+      creditActivityResponse,
     ) => {
       // SUPPLIER INFORMATION
       const {
@@ -202,9 +207,6 @@ const ComplianceReportSummaryContainer = (props) => {
         averageLdv3Years += parseFloat(each.previousSales);
       });
       averageLdv3Years = formatNumeric((averageLdv3Years / 3), 2);
-      // console.log(consumerSalesResponse.data);
-      // console.log(reportDetailsResponse.data);
-      // console.log(vehicleSalesResponse.data);
       setConsumerSalesDetails({
         ...consumerSalesDetails,
         pendingZevSales,
@@ -216,6 +218,8 @@ const ComplianceReportSummaryContainer = (props) => {
       });
       setComplianceRatios(allComplianceRatiosResponse.data
         .filter((each) => each.modelYear === year));
+      // CREDIT ACTIVITY
+      console.log(creditActivityResponse.data)
       setLoading(false);
     }));
   };
