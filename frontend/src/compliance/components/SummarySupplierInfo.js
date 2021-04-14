@@ -1,9 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const SummarySupplierInfo = (props) => {
   const { supplierDetails, makes } = props;
-  const { organization, supplierInformation } = supplierDetails;
-  console.log(organization.organizationAddress)
+  const { organization } = supplierDetails;
   return (
     <>
       <h3>Supplier Information</h3>
@@ -48,10 +48,14 @@ const SummarySupplierInfo = (props) => {
         </div>
         <div className="d-block my-3">
           <h4>Makes:</h4>
-          {makes.map((each) => <div>•{each}</div>)}
+          {makes.map((each) => <div key={each}>•{each}</div>)}
         </div>
       </div>
     </>
   );
+};
+SummarySupplierInfo.propTypes = {
+  supplierDetails: PropTypes.shape().isRequired,
+  makes: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 export default SummarySupplierInfo;
