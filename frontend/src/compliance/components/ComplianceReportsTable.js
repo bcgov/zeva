@@ -6,15 +6,15 @@ import history from '../../app/History';
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 
 const ComplianceReportsTable = (props) => {
-  const { user, data } = props;
-  
+  const { user, data, showSupplier } = props;
+
   const columns = [{
     accessor: (item) => (item.organizationName),
     className: 'text-center',
     Header: 'Supplier',
     headerClassName: 'font-weight-bold ',
     id: 'supplier_name',
-    show: user.isGovernment,
+    show: showSupplier,
     maxWidth: 260,
   }, {
     accessor: (item) => (item.modelYear.name),
@@ -65,16 +65,14 @@ const ComplianceReportsTable = (props) => {
     headerClassName: 'font-weight-bold',
     id: 'obligation-a-credits',
     maxWidth: 260,
-  },
-  ];
-
+  }];
 
   return (
     <ReactTable
       className="compliance-reports-table"
       columns={columns}
       data={data}
-      filterable={true}
+      filterable
       getTrProps={(state, row) => {
         if (row && row.original && user) {
           return {
@@ -90,7 +88,7 @@ const ComplianceReportsTable = (props) => {
 
         return {};
       }}
-      />
+    />
   );
 };
 
@@ -99,6 +97,7 @@ ComplianceReportsTable.defaultProps = {};
 ComplianceReportsTable.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   user: CustomPropTypes.user.isRequired,
+  showSupplier: PropTypes.bool.isRequired,
 };
 
 export default ComplianceReportsTable;

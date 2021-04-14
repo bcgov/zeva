@@ -50,6 +50,11 @@ class ModelYearReportViewset(
             queryset = ModelYearReport.objects.exclude(validation_status=(
                 ModelYearReportStatuses.DRAFT
             ))
+
+            organization_id = request.query_params.get('organization_id', None)
+
+            if organization_id:
+                queryset = queryset.filter(organization_id=organization_id)
         else:
             queryset = ModelYearReport.objects.filter(
                 organization_id=request.user.organization.id
