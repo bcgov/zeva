@@ -61,6 +61,16 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
     report_year_balance = serializers.SerializerMethodField()
     report_year_transactions = serializers.SerializerMethodField()
     pending_balance = serializers.SerializerMethodField()
+    
+    def retrieve_year(self, report_id):
+        report = ModelYearReport.objects.get(
+            id=report_id
+        )
+        report_year_obj = ModelYear.objects.get(
+            id=report.model_year_id
+        )
+        report_year = int(report_year_obj.name)
+        return report_year
 
     def retrieve_balance(self, year, credit_type):
         request = self.context.get('request')
@@ -77,7 +87,8 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
     def get_prior_year_balance(self, obj, *args, **kwargs):
         ## this needs to change to grab to grab values from the prior year snapshot
         kwargs = self.context.get('kwargs')
-        report_year = int(kwargs.get('year'))
+        report_id = int(kwargs.get('id'))
+        report_year = self.retrieve_year(report_id)
         prior_year = report_year-1
         prior_year_balance_a = self.retrieve_balance(prior_year, 1)
         prior_year_balance_b = self.retrieve_balance(prior_year, 2)
@@ -86,7 +97,9 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
     def get_report_year_balance(self, obj, *args, **kwargs):
         ## this is actually being calculated on the frontend and not used
         kwargs = self.context.get('kwargs')
-        report_year = int(kwargs.get('year'))
+        report_id = int(kwargs.get('id'))
+        report_year = self.retrieve_year(report_id)
+        
         report_year_balance_a = self.retrieve_balance(report_year, 1)
         report_year_balance_b = self.retrieve_balance(report_year, 2)   
         return {'year': report_year, 'A': report_year_balance_a, 'B': report_year_balance_b}
@@ -94,7 +107,8 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
     def get_report_year_transactions(self, obj, *args, **kwargs):
         request = self.context.get('request')
         kwargs = self.context.get('kwargs')
-        report_year = int(kwargs.get('year'))
+        report_id = int(kwargs.get('id'))
+        report_year = self.retrieve_year(report_id)
         transfers_in = CreditTransaction.objects.filter(
             credit_to=request.user.organization,
             transaction_type__transaction_type='Credit Transfer',
@@ -146,7 +160,8 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
 
     def get_pending_balance(self, obj, *args, **kwargs):
         kwargs = self.context.get('kwargs')
-        report_year = int(kwargs.get('year'))
+        report_id = int(kwargs.get('id'))
+        report_year = self.retrieve_year(report_id)
         request = self.context.get('request')
         pending_sales_submissions = SalesSubmission.objects.filter(
             organization=request.user.organization,

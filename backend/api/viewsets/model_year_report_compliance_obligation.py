@@ -81,16 +81,13 @@ class ModelYearReportComplianceObligationViewset(
             compliance_obj.save()
         return Response(id)
 
-    @action(detail=False, url_path=r'(?P<year>\d+)')
+    @action(detail=False, url_path=r'(?P<id>\d+)')
     @method_decorator(permission_required('VIEW_SALES'))
     def details(self, request, *args, **kwargs):
         organization = request.user.organization
-        year_kwarg = kwargs.get('year')
-        model_year = ModelYear.objects.get(
-            name=year_kwarg,
-        )
+        id = kwargs.get('id')
         report = ModelYearReport.objects.get(
-            model_year_id=model_year.id
+            id=id
         )
         snapshot = ModelYearReportComplianceObligation.objects.filter(
             model_year_report_id=report.id,
