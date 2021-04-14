@@ -77,10 +77,8 @@ const ComplianceReportsTable = (props) => {
         if (row && row.original && user) {
           return {
             onClick: () => {
-              const { id, validationStatus } = row.original;
-              if (!user.isGovernment) {
-                history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(/:id/g, id));
-              }
+              const { id } = row.original;
+              history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(/:id/g, id));
             },
             className: 'clickable',
           };
