@@ -12,6 +12,7 @@ import SummaryCreditActivityTable from './SummaryCreditActivityTable';
 import SummarySupplierInfo from './SummarySupplierInfo';
 import SummaryConsumerSalesTable from './SummaryConsumerSalesTable';
 import Modal from '../../app/components/Modal';
+import moment from 'moment-timezone';
 
 const ComplianceReportSummaryDetailsPage = (props) => {
   const [showModal, setShowModal] = useState(false);
@@ -27,9 +28,9 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     consumerSalesDetails,
     handleCheckboxClick,
     makes,
-
+    confirmationStatuses,
   } = props;
-
+  console.log(confirmationStatuses);
   const signedInfomation = {
     supplierInformation: { nameSigned: 'Buzz Collins', dateSigned: '2020-01-01' },
     consumerSales: { nameSigned: 'Buzz Collins', dateSigned: '2020-02-20' },
@@ -39,13 +40,21 @@ const ComplianceReportSummaryDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
-  const signatureInformation = (input) => {
-    const { dateSigned, nameSigned } = input;
+  const signatureInformation = (input, title) => {
+    const { status, confirmedBy } = input;
+    console.log(input)
     return (
       <div className="mt-3">
-        <span className="text-blue">
-          Confirmed by {nameSigned} {dateSigned}
+        {confirmedBy && (
+          <span className="text-black">
+            {title} confirmed by {confirmedBy.createUser.displayName} {moment(confirmedBy.createTimestamp).format('YYYY-MM-DD h[:]mm a')}
+          </span>
+        )}
+        {status !== 'CONFIRMED' && (
+          <span className="text-red">
+          {title} pending confirmation
         </span>
+        )}
       </div>
     );
   };
@@ -87,13 +96,13 @@ const ComplianceReportSummaryDetailsPage = (props) => {
               <div className="col-lg-6">
                 <div className="compliance-report-summary-grey text-blue">
                   <SummarySupplierInfo makes={makes} supplierDetails={supplierDetails} signatureInformation={signatureInformation} signedInfomation={signedInfomation} />
-                  {signatureInformation(signedInfomation.supplierInformation)}
+                  {signatureInformation(confirmationStatuses.supplierInformation, 'Supplier Information')}
                 </div>
 
                 <div className="mt-4 compliance-report-summary-grey">
                   <h3>Consumer Sales</h3>
                   <SummaryConsumerSalesTable consumerSalesDetails={consumerSalesDetails} />
-                  {signatureInformation(signedInfomation.consumerSales)}
+                  {signatureInformation(confirmationStatuses.consumerSales, 'Consumer Sales')}
                 </div>
               </div>
               <div className="col-lg-6">
@@ -103,7 +112,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
                     consumerSalesDetails={consumerSalesDetails}
                     creditActivityDetails={creditActivityDetails}
                   />
-                  {signatureInformation(signedInfomation.creditActivity)}
+                  {signatureInformation(confirmationStatuses.complianceObligation, 'Compliance Obligation')}
                 </div>
               </div>
             </div>

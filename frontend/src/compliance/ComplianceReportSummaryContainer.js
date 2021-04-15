@@ -2,8 +2,8 @@ import axios from 'axios';
 import { now } from 'moment';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import Loading from '../app/components/Loading';
 import { useParams } from 'react-router-dom';
+import Loading from '../app/components/Loading';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
@@ -20,7 +20,8 @@ const ComplianceReportSummaryContainer = (props) => {
   const [complianceRatios, setComplianceRatios] = useState({});
   const [supplierDetails, setSupplierDetails] = useState({});
   const [makes, setMakes] = useState({});
-  const [creditActivityDetails, setCreditActivityDetails] = useState({})
+  const [confirmationStatuses, setConfirmationStatuses] = useState({});
+  const [creditActivityDetails, setCreditActivityDetails] = useState({});
   const [assertions, setAssertions] = useState([{ id: 0, description: 'On behalf of [insert supplier name], I confirm the information included in this Model Year report is complete and accurate' }]);
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
@@ -66,8 +67,8 @@ const ComplianceReportSummaryContainer = (props) => {
       consumerSalesResponse,
       creditActivityResponse,
     ) => {
-      // SUPPLIER INFORMATION
       const {
+        statuses,
         makes: modelYearReportMakes,
         modelYearReportAddresses,
         modelYearReportHistory,
@@ -76,9 +77,12 @@ const ComplianceReportSummaryContainer = (props) => {
         confirmations,
         modelYear: reportModelYear,
       } = reportDetailsResponse.data;
+      // ALL STATUSES
+      setConfirmationStatuses(statuses);
+
+      // SUPPLIER INFORMATION
       if (modelYearReportMakes) {
         const currentMakes = modelYearReportMakes.map((each) => (each.make));
-
         setMakes(currentMakes);
       }
       setSupplierDetails({
@@ -125,7 +129,7 @@ const ComplianceReportSummaryContainer = (props) => {
         .filter((each) => each.modelYear === year));
 
       // CREDIT ACTIVITY
-      let creditBalanceStart = { year: '', A: 0, B: 0 };
+      const creditBalanceStart = { year: '', A: 0, B: 0 };
       const creditBalanceEnd = { A: 0, B: 0 };
       const provisionalBalance = { A: 0, B: 0 };
       const pendingBalance = { A: 0, B: 0 };
@@ -218,6 +222,7 @@ const ComplianceReportSummaryContainer = (props) => {
         loading={loading}
         handleSubmit={handleSubmit}
         makes={makes}
+        confirmationStatuses={confirmationStatuses}
       />
 
     </>
