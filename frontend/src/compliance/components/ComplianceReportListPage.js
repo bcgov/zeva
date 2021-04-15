@@ -17,6 +17,7 @@ const ComplianceReportListPage = (props) => {
     collapsed,
     collapseDropdown,
     availableYears,
+    showSupplier,
   } = props;
 
   if (loading) {
@@ -71,30 +72,37 @@ const ComplianceReportListPage = (props) => {
           </div>
         )}
       </div>
-      {!user.isGovernment && (<div className="text-blue mt-4">
-        Under section 17 (5) of the ZEV Act a model year report must include for
-        the adjustment period ending September 30:
-        <ul className="mt-2">
-          <li>
-            the number of credits issued or transferred or added to your balance
-          </li>
-          <li>
-            the number of credits offset or transferred away from your balance
-          </li>
-        </ul>
-        Consumer sales of zero-emission vehicles made prior to October 1 must be
-        included in a submitted credit application prior to completing your
-        model year report. Model year reports must be submitted on or before
-        October 20.
-      </div>)}
+      {!user.isGovernment && (
+        <div className="text-blue mt-4">
+          Under section 17 (5) of the ZEV Act a model year report must include for
+          the adjustment period ending September 30:
+          <ul className="mt-2">
+            <li>
+              the number of credits issued or transferred or added to your balance
+            </li>
+            <li>
+              the number of credits offset or transferred away from your balance
+            </li>
+          </ul>
+          Consumer sales of zero-emission vehicles made prior to October 1 must be
+          included in a submitted credit application prior to completing your
+          model year report. Model year reports must be submitted on or before
+          October 20.
+        </div>
+      )}
       <div className="row mt-4">
         <div className="col-sm-12">
-          <ComplianceReportsTable data={data} user={user} />
+          <ComplianceReportsTable data={data} user={user} showSupplier={showSupplier} />
         </div>
       </div>
     </div>
   );
 };
+
+ComplianceReportListPage.defaultProps = {
+  showSupplier: false,
+};
+
 ComplianceReportListPage.propTypes = {
   availableYears: PropTypes.arrayOf(PropTypes.oneOfType([
     PropTypes.number,
@@ -105,5 +113,6 @@ ComplianceReportListPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   collapsed: PropTypes.bool.isRequired,
   collapseDropdown: PropTypes.func.isRequired,
+  showSupplier: PropTypes.bool,
 };
 export default ComplianceReportListPage;

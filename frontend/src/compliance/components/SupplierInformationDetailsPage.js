@@ -31,6 +31,7 @@ const SupplierInformationDetailsPage = (props) => {
 
   const [showModal, setShowModal] = useState(false);
   let disabledCheckboxes = propsDisabledCheckboxes;
+  let disabledInputs = false;
 
   if (loading) {
     return <Loading />;
@@ -62,6 +63,11 @@ const SupplierInformationDetailsPage = (props) => {
     }
   });
 
+  if (['DRAFT'].indexOf(details.supplierInformation.validationStatus) < 0) {
+    disabledCheckboxes = 'disabled';
+    disabledInputs = true;
+  }
+
   return (
     <div id="compliance-supplier-information-details" className="page">
       <div className="row mt-3">
@@ -84,7 +90,7 @@ const SupplierInformationDetailsPage = (props) => {
       <div className="row mt-1">
         <div className="col-12">
           <div className="p-3 supplier-information">
-            {!user.isGovernment && (
+            {!user.isGovernment && !disabledCheckboxes && statuses.supplierInformation.status !== 'UNSAVED' && (
             <button
               className="btn button primary float-right"
               onClick={() => {
@@ -143,22 +149,35 @@ const SupplierInformationDetailsPage = (props) => {
                 Enter all the LDV makes {details.organization.name} supplied in British Columbia in the {modelYear} compliance period ending September 30, {modelYear + 1}.
               </div>
               <div className="ldv-makes p-3">
-                <form onSubmit={handleSubmitMake}>
+                <form disabled={disabledInputs} onSubmit={handleSubmitMake}>
                   <div className="form-row">
                     <div className="col-sm-8 col-xs-12">
-                      <input className="form-control mr-3" onChange={handleChangeMake} type="text" value={make} />
+                      <input
+                        className="form-control mr-3"
+                        disabled={disabledInputs}
+                        onChange={handleChangeMake}
+                        type="text"
+                        value={make}
+                      />
                     </div>
                     <div className="col">
-                      <button className="btn btn-primary" type="submit">Add Make</button>
+                      <button
+                        className="btn btn-primary"
+                        disabled={disabledInputs}
+                        type="submit"
+                      >
+                        Add Make
+                      </button>
                     </div>
                   </div>
                 </form>
 
                 {(makes.length > 0) && (
-                  <div className="list mt-3 p-2">
+                  <div className={`list mt-3 p-2 ${disabledInputs ? 'disabled' : ''}`}>
                     {makes.map((item, index) => (
                       <div className="form-row my-2" key={index}>
                         <div className="col-11">{item}</div>
+                        {!disabledInputs && (
                         <div className="col-1 delete">
                           <button
                             onClick={() => {
@@ -168,6 +187,7 @@ const SupplierInformationDetailsPage = (props) => {
                           >x
                           </button>
                         </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -197,6 +217,7 @@ const SupplierInformationDetailsPage = (props) => {
               <Button buttonType="back" locationRoute="/compliance/reports" />
             </span>
             <span className="right-content">
+              {!disabledInputs && (
               <Button
                 buttonType="save"
                 optionalClassname="button primary"
@@ -204,6 +225,7 @@ const SupplierInformationDetailsPage = (props) => {
                   handleSubmit(event);
                 }}
               />
+              )}
             </span>
           </div>
         </div>

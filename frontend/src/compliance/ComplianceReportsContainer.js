@@ -48,6 +48,7 @@ const ComplianceReportsContainer = (props) => {
         data={data}
         loading={loading}
         user={user}
+        showSupplier={user.isGovernment}
       />
     </>
   );

@@ -1,8 +1,9 @@
 from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
 from django.http import HttpResponse
+from rest_framework.response import Response
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
+
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_confirmation import \
     ModelYearReportConfirmation
@@ -19,8 +20,9 @@ from api.serializers.model_year_report_make import \
 from api.serializers.organization import OrganizationSerializer
 from api.serializers.organization_address import OrganizationAddressSerializer
 from api.serializers.vehicle import ModelYearSerializer
-from auditable.views import AuditableMixin
 from api.models.model_year_report_statuses import ModelYearReportStatuses
+from api.services.model_year_report import get_model_year_report_statuses
+from auditable.views import AuditableMixin
 
 
 class ModelYearReportViewset(
@@ -50,6 +52,11 @@ class ModelYearReportViewset(
             queryset = ModelYearReport.objects.exclude(validation_status=(
                 ModelYearReportStatuses.DRAFT
             ))
+
+            organization_id = request.query_params.get('organization_id', None)
+
+            if organization_id:
+                queryset = queryset.filter(organization_id=organization_id)
         else:
             queryset = ModelYearReport.objects.filter(
                 organization_id=request.user.organization.id
@@ -111,7 +118,8 @@ class ModelYearReportViewset(
                 'model_year': model_year.data,
                 'create_user': report.create_user,
                 'confirmations': confirmations,
-                'ldv_sales': report.ldv_sales
+                'ldv_sales': report.ldv_sales,
+                'statuses': get_model_year_report_statuses(report)
             })
 
         serializer = ModelYearReportSerializer(report)
