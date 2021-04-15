@@ -129,8 +129,8 @@ const ComplianceObligationContainer = (props) => {
         setRatios(filteredRatio);
       });
 
-      const complianceReportDetails = axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS_BY_YEAR
-        .replace(':year', reportDetailsResponse.modelYear.name)).then((complianceResponse) => {
+      const complianceReportDetails = axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID
+        .replace(':id', id)).then((complianceResponse) => {
         const yearObject = {};
         const complianceResponseDetails = complianceResponse.data;
         if (!complianceResponseDetails.reportYearTransactions) {

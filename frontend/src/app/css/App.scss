@@ -300,6 +300,9 @@ p {
     color: rgba(26, 90, 150, 0.5);
   }
 }
+.text-black {
+  color: $default-text-black
+}
 
 .well {
   background-color: $default-background-grey;
