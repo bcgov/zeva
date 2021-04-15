@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import moment from 'moment-timezone';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
@@ -12,7 +13,6 @@ import SummaryCreditActivityTable from './SummaryCreditActivityTable';
 import SummarySupplierInfo from './SummarySupplierInfo';
 import SummaryConsumerSalesTable from './SummaryConsumerSalesTable';
 import Modal from '../../app/components/Modal';
-import moment from 'moment-timezone';
 
 const ComplianceReportSummaryDetailsPage = (props) => {
   const [showModal, setShowModal] = useState(false);
@@ -30,7 +30,6 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     makes,
     confirmationStatuses,
   } = props;
-  console.log(confirmationStatuses);
   const signedInfomation = {
     supplierInformation: { nameSigned: 'Buzz Collins', dateSigned: '2020-01-01' },
     consumerSales: { nameSigned: 'Buzz Collins', dateSigned: '2020-02-20' },
@@ -42,7 +41,6 @@ const ComplianceReportSummaryDetailsPage = (props) => {
   }
   const signatureInformation = (input, title) => {
     const { status, confirmedBy } = input;
-    console.log(input)
     return (
       <div className="mt-3">
         {confirmedBy && (
@@ -52,8 +50,8 @@ const ComplianceReportSummaryDetailsPage = (props) => {
         )}
         {status !== 'CONFIRMED' && (
           <span className="text-red">
-          {title} pending confirmation
-        </span>
+            {title} pending confirmation
+          </span>
         )}
       </div>
     );
