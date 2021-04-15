@@ -51,90 +51,6 @@ const ComplianceReportSummaryContainer = (props) => {
     reportSummary: 'draft',
     supplierInformation: '',
   };
-  // const creditsIssuedDetails = {
-  //   startingBalance: { A: 0, B: 0 },
-  //   endingBalance: { A: 1513.09, B: 191.29 },
-  //   creditsIssuedSales:
-  //     [
-  //       {
-  //         year: 2020,
-  //         A: 359.12,
-  //         B: 43.43,
-  //       },
-  //       {
-  //         year: 2019,
-  //         A: 1367.43,
-  //         B: 347.86,
-  //       },
-  //     ],
-  //   creditsIssuedInitiative:
-  //     [{
-  //       year: 2019,
-  //       A: 286.54,
-  //     }],
-  //   creditsIssuedPurchase: [
-  //     {
-  //       year: 2020,
-  //       A: 100.00,
-  //     },
-  //   ],
-  //   creditsTransferredIn: [
-  //     {
-  //       year: 2020,
-  //       A: 200.00,
-  //     },
-  //   ],
-  //   creditsTransferredAway: [
-  //     {
-  //       year: 2020,
-  //       A: -800.00,
-  //       B: -200.00,
-  //     },
-  //   ],
-  //   pendingSales: [
-  //     {
-  //       year: 2020,
-  //       A: 246.67,
-  //       B: 0,
-  //     },
-  //   ],
-  //   provisionalBalance: [
-  //     {
-  //       year: 2020,
-  //       A: 1192.33,
-  //       B: 43.43,
-  //     },
-  //     {
-  //       year: 2019,
-  //       A: 567.43,
-  //       B: 147.86,
-  //     },
-  //   ],
-  //   creditOffset: [
-  //     {
-  //       year: 2019,
-  //       A: -300,
-  //       B: -100,
-  //     },
-  //     {
-  //       year: 2020,
-  //       A: -458.71,
-  //       B: -91.29,
-  //     },
-  //   ],
-  //   provisionalAssessedBalance: [
-  //     {
-  //       year: 2019,
-  //       A: 754.38,
-  //       B: 0,
-  //     },
-  //     {
-  //       year: 2020,
-  //       A: 0,
-  //       B: 0,
-  //     },
-  //   ],
-  // };
   const refreshDetails = () => {
     setLoading(true);
     axios.all([
@@ -209,35 +125,55 @@ const ComplianceReportSummaryContainer = (props) => {
         .filter((each) => each.modelYear === year));
 
       // CREDIT ACTIVITY
-      const creditBalanceStart = {};
-      const creditBalanceEnd = {};
-      const provisionalBalance = {};
-      const pendingBalance = {};
-      const transfersIn = [];
-      const transfersOut = [];
-      const creditsIssuedSales = [];
-      const offsetNumbers = [];
+      let creditBalanceStart = { year: '', A: 0, B: 0 };
+      const creditBalanceEnd = { A: 0, B: 0 };
+      const provisionalBalance = { A: 0, B: 0 };
+      const pendingBalance = { A: 0, B: 0 };
+      const transfersIn = { A: 0, B: 0 };
+      const transfersOut = { A: 0, B: 0 };
+      const creditsIssuedSales = { A: 0, B: 0 };
+      const offsetNumbers = { A: 0, B: 0 };
       creditActivityResponse.data.forEach((item) => {
         if (item.category === 'creditBalanceStart') {
-          creditBalanceStart[item.modelYear.name] = { A: item.creditAValue, B: item.creditBValue };
+          creditBalanceStart.year = item.modelYear.name;
+          creditBalanceStart.A = item.creditAValue;
+          creditBalanceStart.B = item.creditBValue;
         }
         if (item.category === 'creditBalanceEnd') {
-          creditBalanceEnd[item.modelYear.name] = { A: item.creditAValue, B: item.creditBValue };
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          creditBalanceEnd.A += aValue;
+          creditBalanceEnd.B += bValue;
         }
         if (item.category === 'provisionalBalance') {
-          provisionalBalance[item.modelYear.name] = { A: parseFloat(item.creditAValue), B: parseFloat(item.creditBValue) };
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          provisionalBalance.A += aValue;
+          provisionalBalance.B += bValue;
         }
         if (item.category === 'pendingBalance') {
-          pendingBalance[item.modelYear.name] = { A: item.creditAValue, B: item.creditBValue };
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          pendingBalance.A += aValue;
+          pendingBalance.B += bValue;
         }
         if (item.category === 'transfersIn') {
-          transfersIn.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          transfersIn.A += aValue;
+          transfersIn.B += bValue;
         }
         if (item.category === 'transfersOut') {
-          transfersOut.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          transfersOut.A -= aValue;
+          transfersOut.B -= bValue;
         }
         if (item.category === 'creditsIssuedSales') {
-          creditsIssuedSales.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          creditsIssuedSales.A += aValue;
+          creditsIssuedSales.B += bValue;
         }
       });
       setCreditActivityDetails({
@@ -281,7 +217,6 @@ const ComplianceReportSummaryContainer = (props) => {
         user={user}
         loading={loading}
         handleSubmit={handleSubmit}
-        year="2020"
         makes={makes}
       />
 

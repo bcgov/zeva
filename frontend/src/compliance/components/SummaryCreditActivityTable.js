@@ -1,4 +1,5 @@
 import React from 'react';
+import { object } from 'prop-types';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import SummarySupplierInfo from './SummarySupplierInfo';
 
@@ -7,24 +8,29 @@ const SummaryCreditActivityTable = (props) => {
     creditActivityDetails, consumerSalesDetails, complianceRatios,
   } = props;
   const { year, ldvSales, supplierClass } = consumerSalesDetails;
-  console.log(creditActivityDetails)
   const {
-    creditBalanceStart, creditBalanceEnd, transactions, 
+    creditBalanceStart, creditBalanceEnd, transactions,
     pendingBalance, provisionalBalance,
     creditOffset, provisionalAssessedBalance,
   } = creditActivityDetails;
 
   const tableSection = (input, title, numberClassname = 'text-right') => {
-    let aTotal;
-    let bTotal;
-    console.log(input)
-    if (Array.isArray(input)) {
-      aTotal = formatNumeric(input.reduce((a, v) => a + v.A, 0), 2);
-      bTotal = formatNumeric(input.reduce((a, v) => a + v.B, 0), 2);
-    } else {
-      aTotal = input.A;
-      bTotal = input.B;
-    }
+    let aTotal = formatNumeric(input.A);
+    let bTotal = formatNumeric(input.B);
+
+    // if (Array.isArray(input)) {
+    //   // console.log('array')
+    //   // console.log('title', title, 'input ',input)
+    //   aTotal = formatNumeric(input.reduce((a, v) => a + v.A, 0), 2);
+    //   bTotal = formatNumeric(input.reduce((a, v) => a + v.B, 0), 2);
+    // } else {
+    //   // console.log('not an array')
+    //   // console.log('title', title, 'input ',input)
+    //   Object.keys(input).forEach((each) => {
+    //     aTotal = input[each].A;
+    //     bTotal = input[each].B;
+    //   });
+    // };
     if (aTotal == 0.00) {
       aTotal = 0;
     }
@@ -68,7 +74,7 @@ const SummaryCreditActivityTable = (props) => {
       </tbody>
       <tbody>
 
-        {tableSection(creditBalanceStart, 'Balance at September 30, 2019:')}
+        {tableSection(creditBalanceStart, `Balance at September 30, ${creditBalanceStart.year} :`)}
         {Object.keys(transactions.creditsIssuedSales).length > 0
           && (
             tableSection(transactions.creditsIssuedSales, 'Consumer ZEV Sales:')
@@ -76,8 +82,8 @@ const SummaryCreditActivityTable = (props) => {
         {/* {Object.keys(creditsIssuedInitiative).length > 0
           && (
             tableSection(creditsIssuedInitiative, 'Initiative Agreements:')
-          )} */}
-        {/* {Object.keys(creditsIssuedPurchase).length > 0
+          )}
+        {Object.keys(creditsIssuedPurchase).length > 0
           && (
             tableSection(creditsIssuedPurchase, 'Purchase Agreements:')
           )} */}
@@ -143,6 +149,7 @@ const SummaryCreditActivityTable = (props) => {
               formatNumeric(ldvSales * (complianceRatios[0].complianceRatio / 100), 2))}
           </td>
         </tr>
+        {supplierClass === 'Large' && (
         <tr>
           <td className="text-blue">
             &bull; &nbsp; &nbsp; ZEV Class A Debit:
@@ -154,6 +161,7 @@ const SummaryCreditActivityTable = (props) => {
                 2))}
           </td>
         </tr>
+        )}
         <tr>
           <td className="text-blue">
             &bull; &nbsp; &nbsp; Unspecified ZEV Class Debit:

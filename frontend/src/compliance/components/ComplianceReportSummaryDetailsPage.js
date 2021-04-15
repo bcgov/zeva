@@ -26,7 +26,6 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     supplierDetails,
     consumerSalesDetails,
     handleCheckboxClick,
-    year,
     makes,
 
   } = props;
@@ -72,7 +71,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     <div id="compliance-supplier-information-details" className="page">
       <div className="row mt-3">
         <div className="col-sm-12">
-          <h2>2020 Model Year Report</h2>
+          <h2>{consumerSalesDetails.year} Model Year Report</h2>
         </div>
       </div>
       <div className="row">
@@ -101,7 +100,6 @@ const ComplianceReportSummaryDetailsPage = (props) => {
                 <div className="compliance-report-summary-grey">
                   <SummaryCreditActivityTable
                     complianceRatios={complianceRatios}
-                    year={year}
                     consumerSalesDetails={consumerSalesDetails}
                     creditActivityDetails={creditActivityDetails}
                   />
