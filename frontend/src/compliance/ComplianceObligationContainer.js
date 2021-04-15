@@ -74,6 +74,7 @@ const ComplianceObligationContainer = (props) => {
       let remainingReduction = zevClassACreditReduction - zevClassALastYear;
       if (provisionalBalanceCurrentYearA > 0 && remainingReduction <= provisionalBalanceCurrentYearA) {
         zevClassACurrentYear = remainingReduction;
+      }
       if (provisionalBalanceCurrentYearA > 0 && remainingReduction > provisionalBalanceCurrentYearA) {
          zevClassACurrentYear = remainingReduction - provisionalBalanceCurrentYearA;
       } 
@@ -138,32 +139,32 @@ const ComplianceObligationContainer = (props) => {
         }
         if (remainingUnspecifiedReduction > 0 && balanceA2019 > 0 && balanceA2019 < remainingUnspecifiedReduction) {
           unspecifiedZevClassLastYearA = balanceA2019;
-        } 
+        }
       }
       if (provisionalBalanceLastYearB === 0 && provisionalBalanceLastYearA > 0 && unspecifiedZevClassReduction >= provisionalBalanceLastYearA) {
         unspecifiedZevClassLastYearA = provisionalBalanceLastYearA;
       }
-      console.log('Unspecified reduction A and B 2019',  unspecifiedZevClassLastYearA, unspecifiedZevClassLastYearB);
+      console.log('Unspecified reduction A and B 2019', unspecifiedZevClassLastYearA, unspecifiedZevClassLastYearB);
       // Reduce current year's B credits first then current year's A.
       remainingUnspecifiedReduction = unspecifiedZevClassReduction - (unspecifiedZevClassLastYearA + unspecifiedZevClassLastYearB);
       if (provisionalBalanceCurrentYearB > 0 && provisionalBalanceCurrentYearB >= remainingUnspecifiedReduction) {
         unspecifiedZevClassCurrentYearB = remainingUnspecifiedReduction;
       }
       if (provisionalBalanceCurrentYearB === 0 && provisionalBalanceCurrentYearA > 0 && remainingUnspecifiedReduction >= provisionalBalanceCurrentYearA) {
-          unspecifiedZevClassCurrentYearA = provisionalBalanceCurrentYearA;
+        unspecifiedZevClassCurrentYearA = provisionalBalanceCurrentYearA;
       }
       if (provisionalBalanceCurrentYearB > 0 && provisionalBalanceCurrentYearB < remainingUnspecifiedReduction) {
         unspecifiedZevClassCurrentYearB = provisionalBalanceCurrentYearB;
-        let unspecifieldBalance = unspecifiedZevClassReduction - (unspecifiedZevClassLastYearA + unspecifiedZevClassLastYearB + unspecifiedZevClassCurrentYearB) ;
+        let unspecifieldBalance = unspecifiedZevClassReduction - (unspecifiedZevClassLastYearA + unspecifiedZevClassLastYearB + unspecifiedZevClassCurrentYearB);
         if (unspecifieldBalance > 0 && balanceA2020 > 0 && balanceA2020 >= unspecifieldBalance) {
           unspecifiedZevClassCurrentYearA = unspecifieldBalance;
         }
         if (unspecifieldBalance > 0 && balanceA2020 > 0 && balanceA2020 < unspecifieldBalance) {
-          unspecifiedZevClassCurrentYearA = unspecifieldBalance - provisionalBalanceCurrentYearA;    
-      } 
-      console.log('Unspecified reduction A and B 2020', unspecifiedZevClassCurrentYearA, unspecifiedZevClassCurrentYearB);
+          unspecifiedZevClassCurrentYearA = unspecifieldBalance - provisionalBalanceCurrentYearA;
+        }
+        console.log('Unspecified reduction A and B 2020', unspecifiedZevClassCurrentYearA, unspecifiedZevClassCurrentYearB);
+      }
     }
-  
     totalCombinedReductionCurrentYearA = zevClassACurrentYear + unspecifiedZevClassCurrentYearA;
     totalCombinedReductionCurrentYearB = unspecifiedZevClassCurrentYearB;
     totalReductionLastYearA = zevClassALastYear + unspecifiedZevClassLastYearA;
