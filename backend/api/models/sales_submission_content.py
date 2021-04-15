@@ -117,12 +117,12 @@ class SalesSubmissionContent(Auditable):
 
     @property
     def sales_date(self):
-        try:
-            date_float = float(self.xls_sale_date)
-        except ValueError:
-            return None
-
         if self.xls_date_type == XL_CELL_DATE:
+            try:
+                date_float = float(self.xls_sale_date)
+            except ValueError:
+                return None
+
             try:
                 return xldate.xldate_as_datetime(
                     date_float,
@@ -130,9 +130,10 @@ class SalesSubmissionContent(Auditable):
                 )
             except XLDateError:
                 return None
+
         elif self.xls_date_type == XL_CELL_TEXT:
-            try:
-                return parse(str(date_float), fuzzy=True)
+            try: 
+                return parse(str(self.xls_sale_date), fuzzy=True)
             except ValueError:
                 return None
 
