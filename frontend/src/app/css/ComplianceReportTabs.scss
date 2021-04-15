@@ -2,7 +2,7 @@
   .nav-item {
     padding: 1rem 1.5rem;
 
-    &.SAVED {
+    &.SAVED, &.UNSAVED {
       a {
         border-bottom-color: $background-warning;
       }
@@ -12,7 +12,7 @@
       }
     }
 
-    &.CONFIRMED {
+    &.CONFIRMED, &.SUBMITTED {
       a {
         border-bottom-color: $background-light-blue;  
       }

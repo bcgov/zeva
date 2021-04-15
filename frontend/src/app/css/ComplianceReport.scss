@@ -29,6 +29,10 @@
       width: 100%;
     }
 
+    .disabled {
+      background-color: $form-background-grey !important;
+    }
+
     .list {
       background-color: $white;
       border: 1px solid $border-grey;

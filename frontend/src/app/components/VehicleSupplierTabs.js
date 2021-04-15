@@ -76,6 +76,22 @@ const VehicleSupplierTabs = (props) => {
           </button>
         </li>
       )}
+      {user.hasPermission('VIEW_COMPLIANCE_REPORTS')
+      && (
+        <li
+          className={`nav-item ${(active === 'model-year-reports') ? 'active' : ''}`}
+          role="presentation"
+        >
+          <button
+            onClick={() => {
+              history.push(ROUTES_ORGANIZATIONS.REPORTS.replace(/:id/g, supplierId), locationState);
+            }}
+            type="button"
+          >
+            Model Year Reports
+          </button>
+        </li>
+      )}
     </ul>
   );
 };
