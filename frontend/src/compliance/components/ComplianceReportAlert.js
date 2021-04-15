@@ -25,8 +25,14 @@ const ComplianceReportAlert = (props) => {
   const statusFilter = (transferStatus) => history
     .filter((each) => each.validationStatus === transferStatus)
     .reverse()[0];
-  const date = moment(statusFilter(validationStatus).createTimestamp).format('MMM D, YYYY');
-  const userName = statusFilter(validationStatus).createUser.displayName;
+
+  let date;
+  let userName;
+
+  if (validationStatus && history.length > 0) {
+    date = moment(statusFilter(validationStatus).createTimestamp).format('MMM D, YYYY');
+    userName = statusFilter(validationStatus).createUser.displayName;
+  }
 
   if (status && status.confirmedBy) {
     confirmedBy = {

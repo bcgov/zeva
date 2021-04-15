@@ -23,7 +23,12 @@ const SupplierInformationContainer = (props) => {
   const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
   const [details, setDetails] = useState({});
   const [modelYear, setModelYear] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR);
-  const [statuses, setStatuses] = useState({});
+  const [statuses, setStatuses] = useState({
+    supplierInformation: {
+      status: 'UNSAVED',
+      confirmedBy: null,
+    },
+  });
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 
@@ -138,6 +143,10 @@ const SupplierInformationContainer = (props) => {
         setMakes([...new Set(data.map((vehicle) => vehicle.make.toUpperCase()))]);
         setDetails({
           organization: user.organization,
+          supplierInformation: {
+            history: [],
+            validationStatus: 'DRAFT',
+          },
         });
 
         if (!isNaN(query.year) && id === 'new') {
