@@ -56,6 +56,9 @@ class ModelYearReportComplianceObligationViewset(
         id = request.data.get('report_id')
         offset = request.data.get('offset')
         credit_activity = request.data.get('credit_activity')
+        ModelYearReportCreditOffset.objects.filter(
+            model_year_report_id=id
+        ).delete()
         for year, value in offset.items():
             model_year = ModelYear.objects.get(name=year)
             if value['a'] > 0 or value['b'] > 0:
@@ -66,6 +69,9 @@ class ModelYearReportComplianceObligationViewset(
                     credit_b_offset_value=value['b']
                 )
                 obj.save()
+        ModelYearReportComplianceObligation.objects.filter(
+            model_year_report_id=id
+        ).delete()
         for each in credit_activity:
             category = each['category']
             model_year = ModelYear.objects.get(name=each['year'])
