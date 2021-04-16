@@ -26,6 +26,7 @@ const ComplianceObligationDetailsPage = (props) => {
     supplierClassInfo,
     statuses,
     disabledCheckboxes: propsDisabledCheckboxes,
+    creditReduction,
   } = props;
 
   let disabledCheckboxes = propsDisabledCheckboxes;
@@ -78,6 +79,39 @@ const ComplianceObligationDetailsPage = (props) => {
       <div id="compliance-obligation-page">
         <div className="col-12">
           <h3 className="mb-2">Compliance Obligation and Credit Activity</h3>
+        </div>
+        <div className="col-12 mb-4">
+          <h3 className="mb-2">Credit Reduction</h3>
+          <div className="col-7 text-blue mb-2">
+            Do you want to use ZEV Class A or B credits first for your
+            unspecified ZEV class reduction?
+          </div>
+          <div className="col-3 mb-2">
+            <input
+              type="radio"
+              id="A"
+              onChange={(event) => {
+                creditReduction(event);
+              }}
+              name="creditOption"
+              value="A"
+            />
+            <label className="d-inline" htmlFor="A">
+              A<br />
+            </label>
+            <input
+              type="radio"
+              id="B"
+              onChange={(event) => {
+                creditReduction(event);
+              }}
+              name="creditOption"
+              value="B"
+            />
+            <label className="d-inline" htmlFor="B">
+              B
+            </label>
+          </div>
         </div>
         <div>
           <table id="prior-year-balance">
@@ -389,5 +423,6 @@ ComplianceObligationDetailsPage.propTypes = {
   handleSave: PropTypes.func.isRequired,
   offsetNumbers: PropTypes.shape().isRequired,
   disabledCheckboxes: PropTypes.string.isRequired,
+  creditReduction: PropTypes.func.isRequired,
 };
 export default ComplianceObligationDetailsPage;
