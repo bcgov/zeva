@@ -39,7 +39,7 @@ const ComplianceObligationContainer = (props) => {
   };
 
   const creditReduction = (event) => {
-    const { id: radioId} = event.target;
+    const { id: radioId } = event.target;
     const provisionalBalanceCurrentYearA = 1192.33;
     const provisionalBalanceCurrentYearB = 43.43;
     const provisionalBalanceLastYearA = 567.43;
@@ -68,16 +68,16 @@ const ComplianceObligationContainer = (props) => {
       }
       if (provisionalBalanceLastYearA > 0 && zevClassACreditReduction < provisionalBalanceLastYearA) {
         zevClassALastYear = zevClassACreditReduction;
-      } 
+      }
       console.log('ZEV Class A 2019', -Math.abs(zevClassALastYear));
 
-      let remainingReduction = zevClassACreditReduction - zevClassALastYear;
+      const remainingReduction = zevClassACreditReduction - zevClassALastYear;
       if (provisionalBalanceCurrentYearA > 0 && remainingReduction <= provisionalBalanceCurrentYearA) {
         zevClassACurrentYear = remainingReduction;
       }
       if (provisionalBalanceCurrentYearA > 0 && remainingReduction > provisionalBalanceCurrentYearA) {
-         zevClassACurrentYear = remainingReduction - provisionalBalanceCurrentYearA;
-      } 
+        zevClassACurrentYear = remainingReduction - provisionalBalanceCurrentYearA;
+      }
       console.log('ZEV class A 2020(Nothing to substract)', zevClassACurrentYear);
       balanceA2019 = provisionalBalanceLastYearA - zevClassALastYear;
       balanceA2020 = provisionalBalanceCurrentYearA - zevClassACurrentYear;
@@ -99,11 +99,11 @@ const ComplianceObligationContainer = (props) => {
         }
         if (remainingUnspecifiedReduction > 0 && provisionalBalanceLastYearB > 0 && provisionalBalanceLastYearB < remainingUnspecifiedReduction) {
           unspecifiedZevClassLastYearB = provisionalBalanceLastYearB;
-        } 
+        }
       }
       if (balanceA2019 === 0 && provisionalBalanceLastYearB > 0 && unspecifiedZevClassReduction >= provisionalBalanceLastYearB) {
         unspecifiedZevClassLastYearB = provisionalBalanceLastYearB;
-      } 
+      }
       console.log('Unspecified reduction A and B 2019', unspecifiedZevClassLastYearA, unspecifiedZevClassLastYearB);
       // Reduce current year's A credits first then current year's B.
       remainingUnspecifiedReduction = unspecifiedZevClassReduction - (unspecifiedZevClassLastYearA + unspecifiedZevClassLastYearB);
@@ -115,14 +115,14 @@ const ComplianceObligationContainer = (props) => {
       }
       if (balanceA2020 > 0 && balanceA2020 < remainingUnspecifiedReduction) {
         unspecifiedZevClassCurrentYearA = balanceA2020;
-        let unspecifieldBalance = unspecifiedZevClassReduction - unspecifiedZevClassCurrentYearA;
+        const unspecifieldBalance = unspecifiedZevClassReduction - unspecifiedZevClassCurrentYearA;
         if (unspecifieldBalance > 0 && provisionalBalanceCurrentYearB > 0 && provisionalBalanceCurrentYearB >= unspecifieldBalance) {
           unspecifiedZevClassCurrentYearB = unspecifieldBalance;
         }
         if (unspecifieldBalance > 0 && provisionalBalanceCurrentYearB > 0 && provisionalBalanceCurrentYearB < unspecifieldBalance) {
-           unspecifiedZevClassLastYearB = unspecifieldBalance - provisionalBalanceLastYearB;
-        } 
-      } 
+          unspecifiedZevClassLastYearB = unspecifieldBalance - provisionalBalanceLastYearB;
+        }
+      }
       console.log('Unspecified reduction A and B 2020', unspecifiedZevClassCurrentYearA, unspecifiedZevClassCurrentYearB);
     }
 
@@ -155,7 +155,7 @@ const ComplianceObligationContainer = (props) => {
       }
       if (provisionalBalanceCurrentYearB > 0 && provisionalBalanceCurrentYearB < remainingUnspecifiedReduction) {
         unspecifiedZevClassCurrentYearB = provisionalBalanceCurrentYearB;
-        let unspecifieldBalance = unspecifiedZevClassReduction - (unspecifiedZevClassLastYearA + unspecifiedZevClassLastYearB + unspecifiedZevClassCurrentYearB);
+        const unspecifieldBalance = unspecifiedZevClassReduction - (unspecifiedZevClassLastYearA + unspecifiedZevClassLastYearB + unspecifiedZevClassCurrentYearB);
         if (unspecifieldBalance > 0 && balanceA2020 > 0 && balanceA2020 >= unspecifieldBalance) {
           unspecifiedZevClassCurrentYearA = unspecifieldBalance;
         }
@@ -171,7 +171,7 @@ const ComplianceObligationContainer = (props) => {
     totalReductionLastYearB = unspecifiedZevClassLastYearB;
     console.log('Total Combined Reduction 2020 =', formatNumeric((totalCombinedReductionCurrentYearA), 2), totalCombinedReductionCurrentYearB);
     console.log('Total Combined Reduction 2019 =', totalReductionLastYearA, totalReductionLastYearB);
-  }
+  };
   const handleOffsetChange = (event) => {
     const { id, value } = event.target;
     const year = id.split('-')[0];
@@ -208,6 +208,7 @@ const ComplianceObligationContainer = (props) => {
       reportId: id,
       offset: offsetNumbers,
       creditActivity: reportDetailsArray,
+      confirmations: checkboxes,
     };
     axios.post(ROUTES_COMPLIANCE.OBLIGATION,
       data).then(() => {
@@ -233,7 +234,6 @@ const ComplianceObligationContainer = (props) => {
 
   const refreshDetails = () => {
     setLoading(true);
-
     axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
       const reportDetailsResponse = response.data;
       setReportYear(reportDetailsResponse.modelYear.name);
@@ -254,7 +254,6 @@ const ComplianceObligationContainer = (props) => {
 
       if (confirmations.length > 0) {
         setConfirmed(true);
-        setCheckboxes(confirmations);
       }
 
       setStatuses(reportStatuses);
@@ -383,6 +382,13 @@ const ComplianceObligationContainer = (props) => {
         const listAssertion = axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((assertionResponse) => {
           const filteredAssertions = assertionResponse.data.filter((data) => data.module === 'compliance_obligation');
           setAssertions(filteredAssertions);
+          const confirmedCheckboxes = [];
+          filteredAssertions.forEach((assertion) => {
+            if (confirmations.indexOf(assertion.id) >= 0) {
+              confirmedCheckboxes.push(assertion.id);
+            }
+          });
+          setCheckboxes(confirmedCheckboxes);
         });
         Promise.all([listAssertion, complianceReportDetails, ratioPromise]).then(() => {
           setLoading(false);

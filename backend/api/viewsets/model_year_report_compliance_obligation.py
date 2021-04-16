@@ -9,6 +9,8 @@ from api.decorators.permission import permission_required
 from auditable.views import AuditableMixin
 from api.models.model_year import ModelYear
 from api.models.model_year_report import ModelYearReport
+from api.models.model_year_report_confirmation import \
+    ModelYearReportConfirmation
 from api.models.credit_transaction import CreditTransaction
 from api.models.model_year_report_credit_offset import ModelYearReportCreditOffset
 from api.models.model_year_report_compliance_obligation import ModelYearReportComplianceObligation
@@ -56,6 +58,18 @@ class ModelYearReportComplianceObligationViewset(
         id = request.data.get('report_id')
         offset = request.data.get('offset')
         credit_activity = request.data.get('credit_activity')
+        confirmations = request.data.get('confirmations')
+        for confirmation in confirmations:
+            ModelYearReportConfirmation.objects.create(
+                create_user=request.user.username,
+                model_year_report_id=id,
+                has_accepted=True,
+                title=request.user.title,
+                signing_authority_assertion_id=confirmation
+            )
+        ModelYearReportCreditOffset.objects.filter(
+            model_year_report_id=id
+        ).delete()
         for year, value in offset.items():
             model_year = ModelYear.objects.get(name=year)
             if value['a'] > 0 or value['b'] > 0:
@@ -66,6 +80,9 @@ class ModelYearReportComplianceObligationViewset(
                     credit_b_offset_value=value['b']
                 )
                 obj.save()
+        ModelYearReportComplianceObligation.objects.filter(
+            model_year_report_id=id
+        ).delete()
         for each in credit_activity:
             category = each['category']
             model_year = ModelYear.objects.get(name=each['year'])
@@ -89,10 +106,14 @@ class ModelYearReportComplianceObligationViewset(
         report = ModelYearReport.objects.get(
             id=id
         )
+        confirmation = ModelYearReportConfirmation.objects.filter(
+            model_year_report_id=report.id,
+            signing_authority_assertion__module="compliance_obligation"
+        ).first()
         snapshot = ModelYearReportComplianceObligation.objects.filter(
             model_year_report_id=report.id,
         ).order_by('-update_timestamp')
-        if snapshot:
+        if confirmation and snapshot:
             offset_snapshot = ModelYearReportCreditOffset.objects.filter(
                 model_year_report_id=report.id,
             ).order_by('-update_timestamp')
