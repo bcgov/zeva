@@ -176,9 +176,10 @@ class ModelYearReportSaveSerializer(
         delete_confirmations = request.data.get('delete_confirmations', False)
 
         if delete_confirmations:
+            module = request.data.get('module', None)
             ModelYearReportConfirmation.objects.filter(
                 model_year_report=instance,
-                signing_authority_assertion__module="supplier_information"
+                signing_authority_assertion__module=module
             ).delete()
 
             return instance
