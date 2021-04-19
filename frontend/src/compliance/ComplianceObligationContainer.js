@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ComplianceObligationDetailsPage from './components/ComplianceObligationDetailsPage';
+import history from '../app/History';
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import formatNumeric from '../app/utilities/formatNumeric';
@@ -24,6 +25,19 @@ const ComplianceObligationContainer = (props) => {
   const [statuses, setStatuses] = useState({});
   const [supplierClassInfo, setSupplierClassInfo] = useState({ ldvSales: 0, class: '' });
   const { id } = useParams();
+
+  const handleCancelConfirmation = () => {
+    const data = {
+      delete_confirmations: true,
+      module: 'compliance_obligation',
+    };
+
+    axios.patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data).then((response) => {
+      history.push(ROUTES_COMPLIANCE.REPORTS);
+      history.replace(ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(':id', response.data.id));
+    });
+  };
+
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
       const checked = checkboxes.filter(
@@ -212,8 +226,8 @@ const ComplianceObligationContainer = (props) => {
     };
     axios.post(ROUTES_COMPLIANCE.OBLIGATION,
       data).then(() => {
-      setDisabledCheckboxes('disabled');
-      // add confirmation !
+      history.push(ROUTES_COMPLIANCE.REPORTS);
+      history.replace(ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(':id', id));
     });
   };
   const parseCreditTransactions = (data) => {
@@ -422,6 +436,8 @@ const ComplianceObligationContainer = (props) => {
         user={user}
         statuses={statuses}
         creditReduction={creditReduction}
+        id={id}
+        handleCancelConfirmation={handleCancelConfirmation}
       />
     </>
   );

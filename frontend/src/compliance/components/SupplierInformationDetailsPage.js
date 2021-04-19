@@ -5,7 +5,10 @@ import PropTypes from 'prop-types';
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
 import Modal from '../../app/components/Modal';
+import history from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
+
 import ComplianceReportAlert from './ComplianceReportAlert';
 import ComplianceReportSignOff from './ComplianceReportSignOff';
 
@@ -27,6 +30,7 @@ const SupplierInformationDetailsPage = (props) => {
     handleCheckboxClick,
     modelYear,
     statuses,
+    id,
   } = props;
 
   const [showModal, setShowModal] = useState(false);
@@ -90,7 +94,7 @@ const SupplierInformationDetailsPage = (props) => {
       <div className="row mt-1">
         <div className="col-12">
           <div className="p-3 supplier-information">
-            {!user.isGovernment && !disabledCheckboxes && statuses.supplierInformation.status !== 'UNSAVED' && (
+            {!user.isGovernment && statuses.supplierInformation.status === 'CONFIRMED' && (
             <button
               className="btn button primary float-right"
               onClick={() => {
@@ -217,15 +221,24 @@ const SupplierInformationDetailsPage = (props) => {
               <Button buttonType="back" locationRoute="/compliance/reports" />
             </span>
             <span className="right-content">
-              {!disabledInputs && (
+              <Button
+                buttonType="next"
+                disabled={['UNSAVED'].indexOf(statuses.supplierInformation.status) >= 0}
+                optionalClassname="button"
+                optionalText="Next"
+                action={() => {
+                  history.push(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id));
+                }}
+              />
+
               <Button
                 buttonType="save"
+                disabled={['SAVED', 'UNSAVED'].indexOf(statuses.supplierInformation.status) < 0}
                 optionalClassname="button primary"
                 action={(event) => {
                   handleSubmit(event);
                 }}
               />
-              )}
             </span>
           </div>
         </div>
@@ -248,6 +261,7 @@ SupplierInformationDetailsPage.propTypes = {
   handleDeleteMake: PropTypes.func.isRequired,
   handleSubmitMake: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
+  id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   loading: PropTypes.bool.isRequired,
   make: PropTypes.string.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,

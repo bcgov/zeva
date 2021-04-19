@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
 import CONFIG from '../app/config';
+import history from '../app/History';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ConsumerSalesDetailsPage from './components/ConsumerSalesDetailsPage';
@@ -120,6 +121,18 @@ const ConsumerSalesContainer = (props) => {
     }
   };
 
+  const handleCancelConfirmation = () => {
+    const data = {
+      delete_confirmations: true,
+      module: 'consumer_sales',
+    };
+
+    axios.patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data).then((response) => {
+      history.push(ROUTES_COMPLIANCE.REPORTS);
+      history.replace(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', response.data.id));
+    });
+  };
+
   const handleInputChange = (event) => {
     const { id: inputId, value } = event.target;
     if (inputId === 'first') {
@@ -198,10 +211,13 @@ const ConsumerSalesContainer = (props) => {
         supplierClass: supplierClass.charAt(0),
         confirmation: checkboxes,
       }).then(() => {
-        history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(/:id/gi, id));
-        history.push(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(/:id/gi, id));
-        setConfirmed(true);
-        setDisabledCheckboxes('disabled');
+        history.push(ROUTES_COMPLIANCE.REPORTS);
+        history.replace(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id));
+      }).catch((error) => {
+        const { response } = error;
+        if (response.status === 400) {
+          setErrorMessage(error.response.data.status);
+        }
       });
     }
   };
@@ -247,6 +263,8 @@ const ConsumerSalesContainer = (props) => {
         thirdYear={thirdYear.modelYear}
         statuses={statuses}
         errorMessage={errorMessage}
+        id={id}
+        handleCancelConfirmation={handleCancelConfirmation}
       />
     </>
   );

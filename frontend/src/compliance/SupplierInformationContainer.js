@@ -64,13 +64,13 @@ const SupplierInformationContainer = (props) => {
 
     if (id && id !== 'new') {
       axios.patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data).then((response) => {
-        history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
-        setDisabledCheckboxes('disabled');
+        history.push(ROUTES_COMPLIANCE.REPORTS);
+        history.replace(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
       });
     } else {
       axios.post(ROUTES_COMPLIANCE.REPORTS, data).then((response) => {
-        history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
-        setDisabledCheckboxes('disabled');
+        history.push(ROUTES_COMPLIANCE.REPORTS);
+        history.replace(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
       });
     }
   };
@@ -90,6 +90,7 @@ const SupplierInformationContainer = (props) => {
   const handleCancelConfirmation = () => {
     const data = {
       delete_confirmations: true,
+      module: 'supplier_information',
     };
 
     axios.patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data).then((response) => {
@@ -192,6 +193,7 @@ const SupplierInformationContainer = (props) => {
         disabledCheckboxes={disabledCheckboxes}
         details={details}
         statuses={statuses}
+        id={id}
       />
     </>
   );
