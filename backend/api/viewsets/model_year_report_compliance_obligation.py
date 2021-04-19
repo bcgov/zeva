@@ -1,12 +1,12 @@
-from rest_framework import mixins, viewsets, permissions
+from datetime import date
+from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
-from django.db.models import  Q
-from django.utils.decorators import method_decorator
-from rest_framework.serializers import ModelSerializer, \
-    SlugRelatedField
 from rest_framework.response import Response
-from api.decorators.permission import permission_required
+from django.db.models import Sum
+from django.utils.decorators import method_decorator
+
 from auditable.views import AuditableMixin
+from api.decorators.permission import permission_required
 from api.models.model_year import ModelYear
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_confirmation import \
@@ -14,15 +14,15 @@ from api.models.model_year_report_confirmation import \
 from api.models.credit_transaction import CreditTransaction
 from api.models.model_year_report_credit_offset import ModelYearReportCreditOffset
 from api.models.model_year_report_compliance_obligation import ModelYearReportComplianceObligation
+from api.models.sales_submission import SalesSubmission
+from api.models.vehicle import Vehicle
+from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.permissions.model_year_report import ModelYearReportPermissions
-from api.serializers.model_year_report import \
-    ModelYearReportSerializer, ModelYearReportListSerializer, \
-    ModelYearReportSaveSerializer
 from api.serializers.model_year_report_compliance_obligation import \
     ModelYearReportComplianceObligationDetailsSerializer, ModelYearReportComplianceObligationSnapshotSerializer, ModelYearReportComplianceObligationOffsetSerializer
-from api.serializers.organization import \
-    OrganizationSerializer
-from api.serializers.vehicle import ModelYearSerializer
+from api.serializers.credit_transaction import CreditTransactionObligationActivitySerializer
+from api.services.summary import parse_summary_serializer, retrieve_balance
+
 
 class ModelYearReportComplianceObligationViewset(
         AuditableMixin, viewsets.GenericViewSet,
@@ -117,12 +117,133 @@ class ModelYearReportComplianceObligationViewset(
             offset_snapshot = ModelYearReportCreditOffset.objects.filter(
                 model_year_report_id=report.id,
             ).order_by('-update_timestamp')
-            offset_serializer = ModelYearReportComplianceObligationOffsetSerializer(offset_snapshot, context={'request': request, 'kwargs': kwargs}, many=True)
-            serializer = ModelYearReportComplianceObligationSnapshotSerializer(snapshot, context={'request': request, 'kwargs': kwargs}, many=True)
-        else:
-            transactions = CreditTransaction.objects.filter(
-                Q(credit_to=organization) | Q(debit_from=organization)
+            offset_serializer = ModelYearReportComplianceObligationOffsetSerializer(
+                offset_snapshot, context={'request': request, 'kwargs': kwargs}, many=True
             )
-            serializer = ModelYearReportComplianceObligationDetailsSerializer(transactions, context={'request': request, 'kwargs': kwargs})
+            serializer = ModelYearReportComplianceObligationSnapshotSerializer(
+                snapshot, context={'request': request, 'kwargs': kwargs}, many=True
+            )
+        else:
+            # transactions = CreditTransaction.objects.filter(
+            #     Q(credit_to=organization) | Q(debit_from=organization)
+            # )
+            # serializer = ModelYearReportComplianceObligationDetailsSerializer(
+            #     transactions, context={'request': request, 'kwargs': kwargs}
+            # )
+            report = ModelYearReport.objects.get(
+                id=id
+            )
+            report_year_obj = ModelYear.objects.get(
+                id=report.model_year_id
+            )
+            report_year = int(report_year_obj.name)
+
+            content = []
+
+            transfers_in = CreditTransaction.objects.filter(
+                credit_to=request.user.organization,
+                transaction_type__transaction_type='Credit Transfer',
+                transaction_timestamp__lte=date(report_year, 9, 30),
+                transaction_timestamp__gte=date(report_year-1, 10, 1),
+            ).values(
+                'credit_class_id', 'model_year_id'
+            ).annotate(
+                total_value=Sum('total_value')
+            ).order_by(
+                'credit_class_id', 'model_year_id'
+            )
+
+            transfers_out = CreditTransaction.objects.filter(
+                debit_from=request.user.organization,
+                transaction_type__transaction_type='Credit Transfer',
+                transaction_timestamp__lte=date(report_year, 9, 30),
+                transaction_timestamp__gte=date(report_year-1, 10, 1),
+            ).values(
+                'credit_class_id', 'model_year_id'
+            ).annotate(total_value=Sum(
+                'total_value')
+            ).order_by(
+                'credit_class_id', 'model_year_id'
+            )
+
+            credits_issued_sales = CreditTransaction.objects.filter(
+                credit_to=request.user.organization,
+                transaction_type__transaction_type='Validation',
+                transaction_timestamp__lte=date(report_year, 9, 30),
+                transaction_timestamp__gte=date(report_year-1, 10, 1),
+            ).values(
+                'credit_class_id', 'model_year_id'
+            ).annotate(
+                total_value=Sum('total_value')
+            ).order_by(
+                'credit_class_id', 'model_year_id'
+            )
+
+            transfers_in_serializer = CreditTransactionObligationActivitySerializer(transfers_in, read_only=True, many=True)
+            transfers_out_serializer = CreditTransactionObligationActivitySerializer(transfers_out, read_only=True, many=True)
+            credit_sales_serializer = CreditTransactionObligationActivitySerializer(credits_issued_sales, read_only=True, many=True)
+
+            for transfer_in in transfers_in_serializer.data:
+                parse_summary_serializer(content, transfer_in, 'transfersIn')
+
+            for transfer_out in transfers_out_serializer.data:
+                parse_summary_serializer(content, transfer_out, 'transfersOut')
+
+            for credits_sale in credit_sales_serializer.data:
+                parse_summary_serializer(content, credits_sale, 'creditsSale')
+
+            pending_sales_submissions = SalesSubmission.objects.filter(
+                organization=request.user.organization,
+                validation_status__in=['SUBMITTED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'CHECKED'],
+                submission_date__lte=date(report_year, 9, 30),
+                submission_date__gte=date(report_year-1, 10, 1),
+            )
+            totals = {}
+            for obj in pending_sales_submissions:
+                for record in obj.get_content_totals_by_vehicles():
+                    try:
+                        model_year = float(record['xls_model_year'])
+                    except ValueError:
+                        continue
+                    vehicle = Vehicle.objects.filter(
+                        make__iexact=record['xls_make'],
+                        model_name=record['xls_model'],
+                        model_year__name=int(model_year),
+                        validation_status=VehicleDefinitionStatuses.VALIDATED,
+                    ).first()
+                    if vehicle:
+                        model_year_str = str(int(model_year))
+                        if model_year_str not in totals.keys():
+                            totals[model_year_str] = {'A': 0, 'B': 0}
+                        totals[model_year_str][vehicle.get_credit_class()] += vehicle.get_credit_value() * record['num_vins']
+
+            for key in totals:
+                content.append({
+                    'credit_a_value': totals[key].get('A'),
+                    'credit_b_value': totals[key].get('B'),
+                    'category': 'pendingBalance',
+                    'model_year': key
+                })
+
+            prior_year = report_year-1
+            prior_year_balance_a = retrieve_balance(organization.id, prior_year, 'A')
+            prior_year_balance_b = retrieve_balance(organization.id, prior_year, 'B')
+            content.append({
+                'credit_a_value': prior_year_balance_a,
+                'credit_b_value': prior_year_balance_b,
+                'category': 'creditBalanceStart',
+                'model_year': report_year_obj.name
+            })
+
+            report_year_balance_a = retrieve_balance(organization.id, report_year, 'A')
+            report_year_balance_b = retrieve_balance(organization.id, report_year, 'B')   
+            content.append({
+                'credit_a_value': report_year_balance_a,
+                'credit_b_value': report_year_balance_b,
+                'category': 'creditBalanceEnd',
+                'model_year': report_year_obj.name
+            })
+
+            return Response(content)
 
         return Response(serializer.data)
