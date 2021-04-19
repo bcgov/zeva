@@ -9,7 +9,6 @@ import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ConsumerSalesDetailsPage from './components/ConsumerSalesDetailsPage';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
-import history from '../app/History';
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 
 const ConsumerSalesContainer = (props) => {
