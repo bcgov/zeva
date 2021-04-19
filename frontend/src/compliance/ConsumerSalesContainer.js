@@ -9,6 +9,7 @@ import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ConsumerSalesDetailsPage from './components/ConsumerSalesDetailsPage';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
+import history from '../app/History';
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 
 const ConsumerSalesContainer = (props) => {
@@ -38,7 +39,8 @@ const ConsumerSalesContainer = (props) => {
 
   const averageLdvSales = (paramFirstYear, paramSecondYear, paramThirdYear) => {
     let avg = 0;
-    avg = (paramFirstYear + paramSecondYear + paramThirdYear) / 3;
+    const sum = (paramFirstYear + paramSecondYear + paramThirdYear)
+    avg = sum / 3;
     setAvgSales(Math.round(avg));
   };
 
@@ -153,7 +155,7 @@ const ConsumerSalesContainer = (props) => {
     }
     if (inputId === 'third') {
       if (value === '') {
-        setSecondYear({ ...thirdYear, ldvSales: 0 });
+        setThirdYear({ ...thirdYear, ldvSales: 0 });
         averageLdvSales(firstYear.ldvSales, secondYear.ldvSales, 0);
       } else {
         setThirdYear({ ...thirdYear, ldvSales: parseInt(value, 10) });
