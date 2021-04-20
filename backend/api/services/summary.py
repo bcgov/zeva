@@ -5,32 +5,28 @@ from api.models.account_balance import AccountBalance
 def parse_summary_serializer(lst, serializer_data, category):
     index = 0
     found = False
+    model_year = serializer_data['model_year'].get('name')
+    credit_class = serializer_data['credit_class'].get('credit_class')
+    total_value = serializer_data.get('total_value')
+
     for data in lst:
         index += 1
 
-        if data.model_year == serializer_data['model_year'].get('name') and \
-                data.category == category:
+        if data.get('model_year') == model_year and \
+                data.get('category') == category:
             found = True
-            if serializer_data['credit_class'].get('credit_class') == 'A':
-                lst[index].credit_a_value = serializer_data.get('total_value')
-            elif serializer_data['credit_class'].get('credit_class') == 'B':
-                lst[index].credit_b_value = serializer_data.get('total_value')
+            if credit_class == 'A':
+                lst[index].credit_a_value = total_value
+            elif credit_class == 'B':
+                lst[index].credit_b_value = total_value
 
     if not found:
-        if serializer_data['credit_class'].get('credit_class') == 'A':
-            lst.append({
-                'credit_a_value': serializer_data.get('total_value'),
-                'credit_b_value': 0,
-                'category': category,
-                'model_year': serializer_data['model_year'].get('name')
-            })
-        elif serializer_data['credit_class'].get('credit_class') == 'B':
-            lst.append({
-                'credit_a_value': 0,
-                'credit_b_value': serializer_data.get('total_value'),
-                'category': category,
-                'model_year': serializer_data['model_year'].get('name')
-            })
+        lst.append({
+            'credit_a_value': total_value if credit_class == 'A' else 0,
+            'credit_b_value': total_value if credit_class == 'B' else 0,
+            'category': category,
+            'model_year': model_year
+        })
 
 
 def retrieve_balance(organization_id, year, credit_type):
