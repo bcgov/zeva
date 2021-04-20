@@ -45,10 +45,12 @@ const ConsumerSalesContainer = (props) => {
 
   const refreshDetails = (showLoading) => {
     setLoading(showLoading);
+
     axios.all([
       axios.get(ROUTES_VEHICLES.VEHICLES_SALES),
       axios.get(ROUTES_COMPLIANCE.RETRIEVE_CONSUMER_SALES.replace(':id', id)),
-    ]).then(axios.spread((vehiclesSales, consumerSalesResponse) => {
+      axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)),
+    ]).then(axios.spread((vehiclesSales, consumerSalesResponse, statusesResponse) => {
       const {
         previousSales,
         vehicleList,
@@ -92,32 +94,28 @@ const ConsumerSalesContainer = (props) => {
         setConfirmed(true);
         setCheckboxes(confirmations);
       }
+
+      const {
+        modelYear: reportModelYear,
+        statuses: reportStatuses,
+      } = statusesResponse.data;
+
+      const year = parseInt(reportModelYear.name, 10);
+
+      setModelYear(year);
+      setFirstYear({ modelYear: year - 1, ldvSales: 0 });
+      setSecondYear({ modelYear: year - 2, ldvSales: 0 });
+      setThirdYear({ modelYear: year - 3, ldvSales: 0 });
+
+      setStatuses(reportStatuses);
+
       setLoading(false);
     }));
 
-    axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST)
-      .then((response) => {
-        const filteredAssertions = response.data.filter((data) => data.module === 'consumer_sales');
-        setAssertions(filteredAssertions);
-      });
-
-    if (id && id !== 'new') {
-      axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
-        const {
-          modelYear: reportModelYear,
-          statuses: reportStatuses,
-        } = response.data;
-
-        const year = parseInt(reportModelYear.name, 10);
-
-        setModelYear(year);
-        setFirstYear({ modelYear: year - 1, ldvSales: 0 });
-        setSecondYear({ modelYear: year - 2, ldvSales: 0 });
-        setThirdYear({ modelYear: year - 3, ldvSales: 0 });
-
-        setStatuses(reportStatuses);
-      });
-    }
+    axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
+      const filteredAssertions = response.data.filter((data) => data.module === 'consumer_sales');
+      setAssertions(filteredAssertions);
+    });
   };
 
   const handleCancelConfirmation = () => {
