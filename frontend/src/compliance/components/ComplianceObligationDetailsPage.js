@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
@@ -9,12 +9,16 @@ import ComplianceObligationReduction from './ComplianceObligationReduction';
 import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued';
 import ComplianceReportSignoff from './ComplianceReportSignOff';
 import formatNumeric from '../../app/utilities/formatNumeric';
+import Modal from '../../app/components/Modal';
+import history from '../../app/History';
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 
 const ComplianceObligationDetailsPage = (props) => {
   const {
     assertions,
     checkboxes,
     details,
+    handleCancelConfirmation,
     handleCheckboxClick,
     handleOffsetChange,
     handleSave,
@@ -28,8 +32,10 @@ const ComplianceObligationDetailsPage = (props) => {
     statuses,
     disabledCheckboxes: propsDisabledCheckboxes,
     creditReduction,
+    id,
   } = props;
 
+  const [showModal, setShowModal] = useState(false);
   let disabledCheckboxes = propsDisabledCheckboxes;
 
   if (loading) {
@@ -51,6 +57,26 @@ const ComplianceObligationDetailsPage = (props) => {
     ratios.complianceRatio / 100) * supplierClassInfo.ldvSales)
     - ((ratios.zevClassA / 100) * supplierClassInfo.ldvSales),
   2);
+
+  const modal = (
+    <Modal
+      cancelLabel="No"
+      confirmLabel="Yes"
+      handleCancel={() => { setShowModal(false); }}
+      handleSubmit={() => { setShowModal(false); handleCancelConfirmation(); }}
+      modalClass="w-75"
+      showModal={showModal}
+      confirmClass="button primary"
+    >
+      <div className="my-3">
+        <h3>
+          Do you want to edit this page? This action will allow you to make further changes to{' '}
+          this information, it will also query the database to retrieve any recent updates.{' '}
+          Your previous confirmation will be cleared.
+        </h3>
+      </div>
+    </Modal>
+  );
 
   assertions.forEach((assertion) => {
     if (checkboxes.indexOf(assertion.id) >= 0) {
@@ -79,6 +105,17 @@ const ComplianceObligationDetailsPage = (props) => {
       </div>
       <div id="compliance-obligation-page">
         <div className="col-12">
+          {!user.isGovernment && statuses.complianceObligation.status === 'CONFIRMED' && (
+            <button
+              className="btn button primary float-right"
+              onClick={() => {
+                setShowModal(true);
+              }}
+              type="button"
+            >
+              Edit
+            </button>
+          )}
           <h3 className="mb-2">Compliance Obligation and Credit Activity</h3>
         </div>
         <ComplianceObligationReduction
@@ -330,11 +367,25 @@ const ComplianceObligationDetailsPage = (props) => {
               {/* <Button buttonType="back" locationRoute="/compliance/reports" /> */}
             </span>
             <span className="right-content">
-              <Button buttonType="save" optionalClassname="button primary" action={() => { handleSave(); }} />
+              <Button
+                buttonType="next"
+                optionalClassname="button"
+                optionalText="Next"
+                action={() => {
+                  history.push(ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id));
+                }}
+              />
+              <Button
+                buttonType="save"
+                disabled={['SAVED', 'UNSAVED'].indexOf(statuses.complianceObligation.status) < 0}
+                optionalClassname="button primary"
+                action={() => { handleSave(); }}
+              />
             </span>
           </div>
         </div>
       </div>
+      {modal}
     </div>
   );
 };
@@ -351,6 +402,8 @@ ComplianceObligationDetailsPage.propTypes = {
     organization: PropTypes.shape(),
     complianceObligation: PropTypes.shape(),
   }).isRequired,
+  handleCancelConfirmation: PropTypes.func.isRequired,
+  id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   loading: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired,
   supplierClassInfo: PropTypes.shape().isRequired,

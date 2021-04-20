@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
 import CONFIG from '../app/config';
+import history from '../app/History';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ConsumerSalesDetailsPage from './components/ConsumerSalesDetailsPage';
@@ -37,7 +38,8 @@ const ConsumerSalesContainer = (props) => {
 
   const averageLdvSales = (paramFirstYear, paramSecondYear, paramThirdYear) => {
     let avg = 0;
-    avg = (paramFirstYear + paramSecondYear + paramThirdYear) / 3;
+    const sum = (paramFirstYear + paramSecondYear + paramThirdYear)
+    avg = sum / 3;
     setAvgSales(Math.round(avg));
   };
 
@@ -118,6 +120,18 @@ const ConsumerSalesContainer = (props) => {
     }
   };
 
+  const handleCancelConfirmation = () => {
+    const data = {
+      delete_confirmations: true,
+      module: 'consumer_sales',
+    };
+
+    axios.patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data).then((response) => {
+      history.push(ROUTES_COMPLIANCE.REPORTS);
+      history.replace(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', response.data.id));
+    });
+  };
+
   const handleInputChange = (event) => {
     const { id: inputId, value } = event.target;
     if (inputId === 'first') {
@@ -140,7 +154,7 @@ const ConsumerSalesContainer = (props) => {
     }
     if (inputId === 'third') {
       if (value === '') {
-        setSecondYear({ ...thirdYear, ldvSales: 0 });
+        setThirdYear({ ...thirdYear, ldvSales: 0 });
         averageLdvSales(firstYear.ldvSales, secondYear.ldvSales, 0);
       } else {
         setThirdYear({ ...thirdYear, ldvSales: parseInt(value, 10) });
@@ -196,8 +210,8 @@ const ConsumerSalesContainer = (props) => {
         supplierClass: supplierClass.charAt(0),
         confirmation: checkboxes,
       }).then(() => {
-        setConfirmed(true);
-        setDisabledCheckboxes('disabled');
+        history.push(ROUTES_COMPLIANCE.REPORTS);
+        history.replace(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id));
       }).catch((error) => {
         const { response } = error;
         if (response.status === 400) {
@@ -248,6 +262,8 @@ const ConsumerSalesContainer = (props) => {
         thirdYear={thirdYear.modelYear}
         statuses={statuses}
         errorMessage={errorMessage}
+        id={id}
+        handleCancelConfirmation={handleCancelConfirmation}
       />
     </>
   );
