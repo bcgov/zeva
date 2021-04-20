@@ -5,6 +5,7 @@ import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
 import CustomPropTypes from '../../app/utilities/props';
 import ComplianceReportAlert from './ComplianceReportAlert';
+import ComplianceObligationReduction from './ComplianceObligationReduction';
 import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued';
 import ComplianceReportSignoff from './ComplianceReportSignOff';
 import formatNumeric from '../../app/utilities/formatNumeric';
@@ -80,39 +81,14 @@ const ComplianceObligationDetailsPage = (props) => {
         <div className="col-12">
           <h3 className="mb-2">Compliance Obligation and Credit Activity</h3>
         </div>
-        <div className="col-12 mb-4">
-          <h3 className="mb-2">Credit Reduction</h3>
-          <div className="col-7 text-blue mb-2">
-            Do you want to use ZEV Class A or B credits first for your
-            unspecified ZEV class reduction?
-          </div>
-          <div className="col-3 mb-2">
-            <input
-              type="radio"
-              id="A"
-              onChange={(event) => {
-                creditReduction(event);
-              }}
-              name="creditOption"
-              value="A"
-            />
-            <label className="d-inline" htmlFor="A">
-              A<br />
-            </label>
-            <input
-              type="radio"
-              id="B"
-              onChange={(event) => {
-                creditReduction(event);
-              }}
-              name="creditOption"
-              value="B"
-            />
-            <label className="d-inline" htmlFor="B">
-              B
-            </label>
-          </div>
-        </div>
+        <ComplianceObligationReduction
+          reportYear={reportYear}
+          supplierClassInfo={supplierClassInfo}
+          totalReduction={totalReduction}
+          ratios={ratios}
+          classAReduction={classAReduction}
+          leftoverReduction={leftoverReduction}
+        />
         <div>
           <table id="prior-year-balance">
             <tbody>
@@ -252,75 +228,43 @@ const ComplianceObligationDetailsPage = (props) => {
             </tbody>
           </table>
         </div>
-
+        <div className="col-12 mb-4">
+          <h3 className="mb-2">Credit Reduction</h3>
+          <div className="col-7 text-blue mb-2">
+            Do you want to use ZEV Class A or B credits first for your
+            unspecified ZEV class reduction?
+          </div>
+          <div className="col-3 mb-2">
+            <input
+              type="radio"
+              id="A"
+              onChange={(event) => {
+                creditReduction(event);
+              }}
+              name="creditOption"
+              value="A"
+            />
+            <label className="d-inline" htmlFor="A">
+              A<br />
+            </label>
+            <input
+              type="radio"
+              id="B"
+              onChange={(event) => {
+                creditReduction(event);
+              }}
+              name="creditOption"
+              value="B"
+            />
+            <label className="d-inline" htmlFor="B">
+              B
+            </label>
+          </div>
+        </div>
         <div className="col-12">
           <h3 className="mt-4 mb-2">{reportYear} Compliance Ratio Reduction and Credit Offset</h3>
-
+          
           <div className="row">
-            <table className="col-lg-5 col-sm-12 mr-3">
-              <tbody>
-                <tr className="subclass">
-                  <th colSpan="2" className="text-blue">
-                    Ratio Reduction
-                  </th>
-                </tr>
-                <tr>
-                  <td className="text-blue">
-                    {reportYear} Model Year LDV Sales\Leases:
-                  </td>
-                  <td>
-                    {supplierClassInfo.ldvSales}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="text-blue">
-                    {reportYear} Compliance Ratio:
-                  </td>
-                  <td>
-                    {ratios.complianceRatio}%
-                  </td>
-                </tr>
-                {supplierClassInfo.class === 'L' && (
-                <tr>
-                  <td className="text-blue">
-                    Large Volume Supplier Class A Ratio
-                  </td>
-                  <td>
-                    {ratios.zevClassA}%
-                  </td>
-                </tr>
-                )}
-                <tr className="font-weight-bold">
-                  <td className="text-blue">
-                    Ratio Reduction:
-                  </td>
-                  <td>
-                    {totalReduction}
-                  </td>
-                </tr>
-                {supplierClassInfo.class === 'L' && (
-                  <>
-                    <tr>
-                      <td className="text-blue">
-                        &bull; &nbsp; &nbsp; ZEV Class A Debit:
-                      </td>
-                      <td>
-                        {classAReduction}
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td className="text-blue">
-                        &bull; &nbsp; &nbsp; Unspecified ZEV Class Debit:
-                      </td>
-                      <td>
-                        {leftoverReduction}
-                      </td>
-                    </tr>
-                  </>
-                )}
-              </tbody>
-            </table>
             <table className="col-lg-6 col-sm-12" id="offset-table">
               <tbody>
                 <tr className="subclass">
