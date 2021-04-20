@@ -10,7 +10,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
   return (
     <div className="col-12 mb">
       {/* <h3 className="mt-4 mb-2">{reportYear} Compliance Ratio Reduction and Credit Offset</h3> */}
-      <div className="row mb-3 compliance-reduction-table">
+      <div className="row my-4 compliance-reduction-table">
         <div className="col-lg-6 col-sm-12">
           <table className="mr-3 no-border px-3">
             <tbody>

@@ -116,7 +116,7 @@ const ComplianceObligationDetailsPage = (props) => {
               Edit
             </button>
           )}
-          <h3 className="mb-2">Compliance Obligation and Credit Activity</h3>
+          <h3 className="mb-2">Compliance Obligation</h3>
         </div>
         <ComplianceObligationReduction
           reportYear={reportYear}
@@ -265,48 +265,15 @@ const ComplianceObligationDetailsPage = (props) => {
             </tbody>
           </table>
         </div>
-        <div className="col-12 mb-4">
-          <h3 className="mb-2">Credit Reduction</h3>
-          <div className="col-7 text-blue mb-2">
-            Do you want to use ZEV Class A or B credits first for your
-            unspecified ZEV class reduction?
-          </div>
-          <div className="col-3 mb-2">
-            <input
-              type="radio"
-              id="A"
-              onChange={(event) => {
-                creditReduction(event);
-              }}
-              name="creditOption"
-              value="A"
-            />
-            <label className="d-inline" htmlFor="A">
-              A<br />
-            </label>
-            <input
-              type="radio"
-              id="B"
-              onChange={(event) => {
-                creditReduction(event);
-              }}
-              name="creditOption"
-              value="B"
-            />
-            <label className="d-inline" htmlFor="B">
-              B
-            </label>
-          </div>
-        </div>
         <div className="col-12">
           <h3 className="mt-4 mb-2">{reportYear} Compliance Ratio Reduction and Credit Offset</h3>
-          
+
           <div className="row">
-            <table className="col-lg-6 col-sm-12" id="offset-table">
+            <table className="col-12" id="offset-table">
               <tbody>
                 <tr className="subclass">
                   <th className="large-column">
-                    Credit Offset
+                    Compliance Ratio Credit Reduction
                   </th>
                   <th className="text-center">
                     A
@@ -314,6 +281,33 @@ const ComplianceObligationDetailsPage = (props) => {
                   <th className="text-center">
                     B
                   </th>
+                </tr>
+                <tr>
+                  <td>
+                    Do you want to use ZEV Class A or B credits first for your unspecified ZEV class reduction?
+                  </td>
+                  <td>
+                    <input
+                      type="radio"
+                      id="A"
+                      onChange={(event) => {
+                        creditReduction(event);
+                      }}
+                      name="creditOption"
+                      value="A"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="radio"
+                      id="B"
+                      onChange={(event) => {
+                        creditReduction(event);
+                      }}
+                      name="creditOption"
+                      value="B"
+                    />
+                  </td>
                 </tr>
                 {offsetNumbers && Object.keys(offsetNumbers).map((year) => (
                   <tr key={year}>
@@ -341,7 +335,7 @@ const ComplianceObligationDetailsPage = (props) => {
                 <tr className="subclass">
                   <th className="large-column">
                     <span>
-                      Total Offset:
+                      BALANCE AFTER CREDIT REDUCTION
                     </span>
                     <span className="float-right mr-3">{formatNumeric(Object.keys(offsetNumbers).reduce((a, v) => a + offsetNumbers[v].A + offsetNumbers[v].B, 0), 2)}</span>
                   </th>
