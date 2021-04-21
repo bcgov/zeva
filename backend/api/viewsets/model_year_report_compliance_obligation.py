@@ -222,7 +222,7 @@ class ModelYearReportComplianceObligationViewset(
                     'credit_a_value': totals[key].get('A'),
                     'credit_b_value': totals[key].get('B'),
                     'category': 'pendingBalance',
-                    'model_year': key
+                    'model_year': {'name': key}
                 })
 
             prior_year = report_year-1
@@ -232,7 +232,7 @@ class ModelYearReportComplianceObligationViewset(
                 'credit_a_value': prior_year_balance_a,
                 'credit_b_value': prior_year_balance_b,
                 'category': 'creditBalanceStart',
-                'model_year': report_year_obj.name
+                'model_year': {'name': report_year_obj.name}
             })
 
             report_year_balance_a = retrieve_balance(organization.id, report_year, 'A')
@@ -241,7 +241,7 @@ class ModelYearReportComplianceObligationViewset(
                 'credit_a_value': report_year_balance_a,
                 'credit_b_value': report_year_balance_b,
                 'category': 'creditBalanceEnd',
-                'model_year': report_year_obj.name
+                'model_year': {'name': report_year_obj.name}
             })
 
             return Response(content)

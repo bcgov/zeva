@@ -200,11 +200,15 @@ const ComplianceObligationContainer = (props) => {
     const reportDetailsArray = [];
     Object.keys(reportDetails).forEach((each) => {
       Object.keys(reportDetails[each]).forEach((year) => {
-        if (each !== 'transactions') {
+        if (each !== 'transactions' && each !== 'pendingBalance') {
           const a = reportDetails[each][year].A;
           const b = reportDetails[each][year].B;
           reportDetailsArray.push({
             category: each, year, a, b,
+          });
+        } else if (each === 'pendingBalance') {
+          reportDetailsArray.push({
+            category: each, year: reportDetails[each][year].modelYear, A: reportDetails[each][year].A, B: reportDetails[each][year].B,
           });
         } else {
           const category = year;
@@ -282,117 +286,53 @@ const ComplianceObligationContainer = (props) => {
         .replace(':id', id)).then((complianceResponse) => {
         const yearObject = {};
         const complianceResponseDetails = complianceResponse.data;
-        if (!complianceResponseDetails.reportYearTransactions) {
-          // not returning values from database, grab from snapshot instead
-          const creditBalanceStart = {};
-          const creditBalanceEnd = {};
-          const provisionalBalance = [];
-          const pendingBalance = [];
-          const transfersIn = [];
-          const transfersOut = [];
-          const creditsIssuedSales = [];
-          const offsetNumbers = [];
-          // get offset from backend
+        // if (!complianceResponseDetails.reportYearTransactions) {
+        // not returning values from database, grab from snapshot instead
+        const creditBalanceStart = {};
+        const creditBalanceEnd = {};
+        const provisionalBalance = [];
+        const pendingBalance = [];
+        const transfersIn = [];
+        const transfersOut = [];
+        const creditsIssuedSales = [];
+        const offsetNumbers = [];
+        // get offset from backend
 
-          complianceResponseDetails.forEach((item) => {
-            if (item.category === 'creditBalanceStart') {
-              creditBalanceStart[item.modelYear.name] = { A: item.creditAValue, B: item.creditBValue };
-            }
-            if (item.category === 'creditBalanceEnd') {
-              creditBalanceEnd[item.modelYear.name] = { A: item.creditAValue, B: item.creditBValue };
-            }
-            if (item.category === 'provisionalBalance') {
-              provisionalBalance.push({modelYear: item.modelYear.name, A: parseFloat(item.creditAValue), B: parseFloat(item.creditBValue) });
-            }
-            if (item.category === 'pendingBalance') {
-              pendingBalance.push({modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
-            }
-            if (item.category === 'transfersIn') {
-              transfersIn.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
-            }
-            if (item.category === 'transfersOut') {
-              transfersOut.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
-            }
-            if (item.category === 'creditsIssuedSales') {
-              creditsIssuedSales.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
-            }
-          });
-          setReportDetails({
-            creditBalanceStart,
-            creditBalanceEnd,
-            pendingBalance,
-            provisionalBalance,
-            transactions: {
-              creditsIssuedSales,
-              transfersIn,
-              transfersOut,
-            },
-          });
-          setLoading(false);
-        } else {
-          const creditsIssuedSales = parseCreditTransactions(
-            complianceResponseDetails.reportYearTransactions.creditsIssuedSales,
-          );
-          const transfersIn = parseCreditTransactions(
-            complianceResponseDetails.reportYearTransactions.transfersIn,
-          );
-          const transfersOut = parseCreditTransactions(
-            complianceResponseDetails.reportYearTransactions.transfersOut,
-          );
-          const reportYearBalance = {};
-          creditsIssuedSales.forEach((each) => {
-            yearObject[each.modelYear] = { A: 0, B: 0 };
-            reportYearBalance[each.modelYear] = {
-              A: parseFloat(each.A) || 0,
-              B: parseFloat(each.B) || 0,
-            };
-          });
-          transfersIn.forEach((each) => {
-            yearObject[each.modelYear] = { A: 0, B: 0 };
-            if (!Object.keys(reportYearBalance).includes(each.modelYear)) {
-              reportYearBalance[each.modelYear] = { A: 0, B: 0 };
-            }
-            reportYearBalance[each.modelYear].A += parseFloat(each.A) || 0;
-            reportYearBalance[each.modelYear].B += parseFloat(each.B) || 0;
-          });
-          transfersOut.forEach((each) => {
-            yearObject[each.modelYear] = { A: 0, B: 0 };
-            if (!Object.keys(reportYearBalance).includes(each.modelYear)) {
-              reportYearBalance[each.modelYear] = { A: 0, B: 0 };
-            }
-            reportYearBalance[each.modelYear].A += parseFloat(-each.A) || 0;
-            reportYearBalance[each.modelYear].B += parseFloat(-each.B) || 0;
-          });
-          const provisionalBalance = {};
-          Object.keys(reportYearBalance).forEach((year) => {
-            yearObject[year] = { A: 0, B: 0 };
-            provisionalBalance[year] = { A: parseFloat(reportYearBalance[year].A), B: parseFloat(reportYearBalance[year].B) };
-          });
-          Object.keys(complianceResponseDetails.pendingBalance).forEach((year) => {
-            yearObject[year] = { A: 0, B: 0 };
-            provisionalBalance[year].A += parseFloat(complianceResponseDetails.pendingBalance[year].A);
-            provisionalBalance[year].B += parseFloat(complianceResponseDetails.pendingBalance[year].B);
-          });
-          setOffsetNumbers(yearObject);
-          const priorYear = complianceResponseDetails.priorYearBalance.year;
-          const creditBalanceStart = {};
-          creditBalanceStart[priorYear] = {
-            year: complianceResponseDetails.priorYearBalance.year,
-            A: complianceResponseDetails.priorYearBalance.A,
-            B: complianceResponseDetails.priorYearBalance.B,
-          };
-          setReportDetails({
-            creditBalanceStart,
-            creditBalanceEnd: reportYearBalance,
-            pendingBalance: complianceResponseDetails.pendingBalance,
-            provisionalBalance,
-            transactions: {
-              creditsIssuedSales,
-              transfersIn,
-              transfersOut,
-            },
-          });
-        }
+        complianceResponseDetails.forEach((item) => {
+          if (item.category === 'creditBalanceStart') {
+            creditBalanceStart[item.modelYear.name] = { A: item.creditAValue, B: item.creditBValue };
+          }
+          if (item.category === 'creditBalanceEnd') {
+            creditBalanceEnd[item.modelYear.name] = { A: item.creditAValue, B: item.creditBValue };
+          }
+          if (item.category === 'provisionalBalance') {
+            provisionalBalance.push({ modelYear: item.modelYear.name, A: parseFloat(item.creditAValue), B: parseFloat(item.creditBValue) });
+          }
+          if (item.category === 'pendingBalance') {
+            pendingBalance.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
+          }
+          if (item.category === 'transfersIn') {
+            transfersIn.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
+          }
+          if (item.category === 'transfersOut') {
+            transfersOut.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
+          }
+          if (item.category === 'creditsIssuedSales') {
+            creditsIssuedSales.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
+          }
+        });
+        setReportDetails({
+          creditBalanceStart,
+          creditBalanceEnd,
+          pendingBalance,
+          provisionalBalance,
+          transactions: {
+            creditsIssuedSales,
+            transfersIn,
+            transfersOut,
+          },
+        });
+        setLoading(false);
         const listAssertion = axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((assertionResponse) => {
           const filteredAssertions = assertionResponse.data.filter((data) => data.module === 'compliance_obligation');
           setAssertions(filteredAssertions);
