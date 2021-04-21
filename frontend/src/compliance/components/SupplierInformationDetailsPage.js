@@ -1,16 +1,21 @@
 /* eslint-disable react/no-array-index-key */
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
+import Modal from '../../app/components/Modal';
+import history from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
+
 import ComplianceReportAlert from './ComplianceReportAlert';
 import ComplianceReportSignOff from './ComplianceReportSignOff';
 
 const SupplierInformationDetailsPage = (props) => {
   const {
     details,
+    handleCancelConfirmation,
     handleChangeMake,
     handleDeleteMake,
     handleSubmit,
@@ -21,13 +26,50 @@ const SupplierInformationDetailsPage = (props) => {
     user,
     assertions,
     checkboxes,
-    disabledCheckboxes,
+    disabledCheckboxes: propsDisabledCheckboxes,
     handleCheckboxClick,
     modelYear,
+    statuses,
+    id,
   } = props;
+
+  const [showModal, setShowModal] = useState(false);
+  let disabledCheckboxes = propsDisabledCheckboxes;
+  let disabledInputs = false;
 
   if (loading) {
     return <Loading />;
+  }
+
+  const modal = (
+    <Modal
+      cancelLabel="No"
+      confirmLabel="Yes"
+      handleCancel={() => { setShowModal(false); }}
+      handleSubmit={() => { setShowModal(false); handleCancelConfirmation(); }}
+      modalClass="w-75"
+      showModal={showModal}
+      confirmClass="button primary"
+    >
+      <div className="my-3">
+        <h3>
+          Do you want to edit this page? This action will allow you to make further changes to{' '}
+          this information, it will also query the database to retrieve any recent updates.{' '}
+          Your previous confirmation will be cleared.
+        </h3>
+      </div>
+    </Modal>
+  );
+
+  assertions.forEach((assertion) => {
+    if (checkboxes.indexOf(assertion.id) >= 0) {
+      disabledCheckboxes = 'disabled';
+    }
+  });
+
+  if (['DRAFT'].indexOf(details.supplierInformation.validationStatus) < 0) {
+    disabledCheckboxes = 'disabled';
+    disabledInputs = true;
   }
 
   return (
@@ -40,13 +82,29 @@ const SupplierInformationDetailsPage = (props) => {
       <div className="row">
         <div className="col-12">
           {details && details.supplierInformation && details.supplierInformation.history && (
-            <ComplianceReportAlert report={details.supplierInformation} type="Supplier Information" />
+            <ComplianceReportAlert
+              next="Consumer Sales"
+              report={details.supplierInformation}
+              status={statuses.supplierInformation}
+              type="Supplier Information"
+            />
           )}
         </div>
       </div>
       <div className="row mt-1">
         <div className="col-12">
           <div className="p-3 supplier-information">
+            {!user.isGovernment && statuses.supplierInformation.status === 'CONFIRMED' && (
+            <button
+              className="btn button primary float-right"
+              onClick={() => {
+                setShowModal(true);
+              }}
+              type="button"
+            >
+              Edit
+            </button>
+            )}
             <h3>Supplier Information</h3>
             <div className="mt-3">
               <h4 className="d-inline">Legal Name: </h4>
@@ -95,22 +153,35 @@ const SupplierInformationDetailsPage = (props) => {
                 Enter all the LDV makes {details.organization.name} supplied in British Columbia in the {modelYear} compliance period ending September 30, {modelYear + 1}.
               </div>
               <div className="ldv-makes p-3">
-                <form onSubmit={handleSubmitMake}>
+                <form disabled={disabledInputs} onSubmit={handleSubmitMake}>
                   <div className="form-row">
                     <div className="col-sm-8 col-xs-12">
-                      <input className="form-control mr-3" onChange={handleChangeMake} type="text" value={make} />
+                      <input
+                        className="form-control mr-3"
+                        disabled={disabledInputs}
+                        onChange={handleChangeMake}
+                        type="text"
+                        value={make}
+                      />
                     </div>
                     <div className="col">
-                      <button className="btn btn-primary" type="submit">Add Make</button>
+                      <button
+                        className="btn btn-primary"
+                        disabled={disabledInputs}
+                        type="submit"
+                      >
+                        Add Make
+                      </button>
                     </div>
                   </div>
                 </form>
 
                 {(makes.length > 0) && (
-                  <div className="list mt-3 p-2">
+                  <div className={`list mt-3 p-2 ${disabledInputs ? 'disabled' : ''}`}>
                     {makes.map((item, index) => (
                       <div className="form-row my-2" key={index}>
                         <div className="col-11">{item}</div>
+                        {!disabledInputs && (
                         <div className="col-1 delete">
                           <button
                             onClick={() => {
@@ -120,6 +191,7 @@ const SupplierInformationDetailsPage = (props) => {
                           >x
                           </button>
                         </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -150,7 +222,18 @@ const SupplierInformationDetailsPage = (props) => {
             </span>
             <span className="right-content">
               <Button
+                buttonType="next"
+                disabled={['UNSAVED'].indexOf(statuses.supplierInformation.status) >= 0}
+                optionalClassname="button"
+                optionalText="Next"
+                action={() => {
+                  history.push(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id));
+                }}
+              />
+
+              <Button
                 buttonType="save"
+                disabled={['SAVED', 'UNSAVED'].indexOf(statuses.supplierInformation.status) < 0}
                 optionalClassname="button primary"
                 action={(event) => {
                   handleSubmit(event);
@@ -160,6 +243,7 @@ const SupplierInformationDetailsPage = (props) => {
           </div>
         </div>
       </div>
+      {modal}
     </div>
   );
 };
@@ -172,10 +256,12 @@ SupplierInformationDetailsPage.propTypes = {
     organization: PropTypes.shape(),
     supplierInformation: PropTypes.shape(),
   }).isRequired,
+  handleCancelConfirmation: PropTypes.func.isRequired,
   handleChangeMake: PropTypes.func.isRequired,
   handleDeleteMake: PropTypes.func.isRequired,
   handleSubmitMake: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
+  id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   loading: PropTypes.bool.isRequired,
   make: PropTypes.string.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -187,5 +273,6 @@ SupplierInformationDetailsPage.propTypes = {
   handleCheckboxClick: PropTypes.func.isRequired,
   disabledCheckboxes: PropTypes.string.isRequired,
   modelYear: PropTypes.number.isRequired,
+  statuses: PropTypes.shape().isRequired,
 };
 export default SupplierInformationDetailsPage;

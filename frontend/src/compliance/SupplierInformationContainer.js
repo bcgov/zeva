@@ -23,16 +23,14 @@ const SupplierInformationContainer = (props) => {
   const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
   const [details, setDetails] = useState({});
   const [modelYear, setModelYear] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR);
+  const [statuses, setStatuses] = useState({
+    supplierInformation: {
+      status: 'UNSAVED',
+      confirmedBy: null,
+    },
+  });
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
-
-  const reportStatuses = {
-    assessment: '',
-    consumerSales: '',
-    creditActivity: '',
-    reportSummary: '',
-    supplierInformation: 'draft',
-  };
 
   const [loading, setLoading] = useState(true);
   const [makes, setMakes] = useState([]);
@@ -66,13 +64,13 @@ const SupplierInformationContainer = (props) => {
 
     if (id && id !== 'new') {
       axios.patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data).then((response) => {
-        history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
-        setDisabledCheckboxes('disabled');
+        history.push(ROUTES_COMPLIANCE.REPORTS);
+        history.replace(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
       });
     } else {
       axios.post(ROUTES_COMPLIANCE.REPORTS, data).then((response) => {
-        history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
-        setDisabledCheckboxes('disabled');
+        history.push(ROUTES_COMPLIANCE.REPORTS);
+        history.replace(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
       });
     }
   };
@@ -89,6 +87,18 @@ const SupplierInformationContainer = (props) => {
     }
   };
 
+  const handleCancelConfirmation = () => {
+    const data = {
+      delete_confirmations: true,
+      module: 'supplier_information',
+    };
+
+    axios.patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data).then((response) => {
+      history.push(ROUTES_COMPLIANCE.REPORTS);
+      history.replace(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
+    });
+  };
+
   const refreshDetails = () => {
     if (id && id !== 'new') {
       axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
@@ -98,8 +108,9 @@ const SupplierInformationContainer = (props) => {
           modelYearReportHistory,
           organizationName,
           validationStatus,
-          confirmations,
           modelYear: reportModelYear,
+          confirmations,
+          statuses: reportStatuses,
         } = response.data;
 
         setModelYear(parseInt(reportModelYear.name, 10));
@@ -120,7 +131,9 @@ const SupplierInformationContainer = (props) => {
             validationStatus,
           },
         });
+
         setCheckboxes(confirmations);
+        setStatuses(reportStatuses);
 
         setLoading(false);
       });
@@ -131,6 +144,10 @@ const SupplierInformationContainer = (props) => {
         setMakes([...new Set(data.map((vehicle) => vehicle.make.toUpperCase()))]);
         setDetails({
           organization: user.organization,
+          supplierInformation: {
+            history: [],
+            validationStatus: 'DRAFT',
+          },
         });
 
         if (!isNaN(query.year) && id === 'new') {
@@ -155,11 +172,12 @@ const SupplierInformationContainer = (props) => {
     <>
       <ComplianceReportTabs
         active="supplier-information"
-        reportStatuses={reportStatuses}
+        reportStatuses={statuses}
         id={id}
         user={user}
       />
       <SupplierInformationDetailsPage
+        handleCancelConfirmation={handleCancelConfirmation}
         handleChangeMake={handleChangeMake}
         handleDeleteMake={handleDeleteMake}
         handleSubmit={handleSubmit}
@@ -174,6 +192,8 @@ const SupplierInformationContainer = (props) => {
         handleCheckboxClick={handleCheckboxClick}
         disabledCheckboxes={disabledCheckboxes}
         details={details}
+        statuses={statuses}
+        id={id}
       />
     </>
   );

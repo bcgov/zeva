@@ -1,26 +1,27 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { now } from 'moment';
 import CustomPropTypes from '../../app/utilities/props';
 import Loading from '../../app/components/Loading';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import Button from '../../app/components/Button';
+import Modal from '../../app/components/Modal';
 import history from '../../app/History';
 import ComplianceReportSignOff from './ComplianceReportSignOff';
 import ConsumerSalesLDVModalTable from './ConsumerSalesLDVModelTable';
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 
 const ConsumerSalesDetailsPage = (props) => {
   const {
     details,
+    handleCancelConfirmation,
     user,
     loading,
     handleSave,
     handleChange,
     vehicles,
-    confirmed,
     assertions,
     checkboxes,
-    disabledCheckboxes,
+    disabledCheckboxes: propsDisabledCheckboxes,
     error,
     handleCheckboxClick,
     handleInputChange,
@@ -33,8 +34,12 @@ const ConsumerSalesDetailsPage = (props) => {
     firstYear,
     secondYear,
     thirdYear,
+    statuses,
+    id,
   } = props;
 
+  const [showModal, setShowModal] = useState(false);
+  let disabledCheckboxes = propsDisabledCheckboxes;
 
   if (loading) {
     return <Loading />;
@@ -58,6 +63,32 @@ const ConsumerSalesDetailsPage = (props) => {
     </div>
   );
 
+  const modal = (
+    <Modal
+      cancelLabel="No"
+      confirmLabel="Yes"
+      handleCancel={() => { setShowModal(false); }}
+      handleSubmit={() => { setShowModal(false); handleCancelConfirmation(); }}
+      modalClass="w-75"
+      showModal={showModal}
+      confirmClass="button primary"
+    >
+      <div className="my-3">
+        <h3>
+          Do you want to edit this page? This action will allow you to make further changes to{' '}
+          this information, it will also query the database to retrieve any recent updates.{' '}
+          Your previous confirmation will be cleared.
+        </h3>
+      </div>
+    </Modal>
+  );
+
+  assertions.forEach((assertion) => {
+    if (checkboxes.indexOf(assertion.id) >= 0) {
+      disabledCheckboxes = 'disabled';
+    }
+  });
+
   return (
     <div id="compliance-consumer-sales-details" className="page">
       <div className="row mt-3">
@@ -65,17 +96,33 @@ const ConsumerSalesDetailsPage = (props) => {
           <h2>{modelYear} Model Year Report</h2>
         </div>
       </div>
-        <div className="row">
-          <div className="col-12">
-            {confirmed && (
-              <ComplianceReportAlert report={details.consumerSales} type="Consumer Sales" />
-            )}
-          </div>
+      <div className="row">
+        <div className="col-12">
+          {details && details.consumerSales && details.consumerSales.history && (
+            <ComplianceReportAlert
+              next="Compliance Obligation"
+              report={details.consumerSales}
+              status={statuses.consumerSales}
+              type="Consumer Sales"
+            />
+          )}
         </div>
-    
+      </div>
+
       <div className="row mt-1">
         <div className="col-12">
           <div className="p-3 consumer-sales">
+            {!user.isGovernment && statuses.consumerSales.status === 'CONFIRMED' && (
+            <button
+              className="btn button primary float-right"
+              onClick={() => {
+                setShowModal(true);
+              }}
+              type="button"
+            >
+              Edit
+            </button>
+            )}
             <h3>Consumer Sales</h3>
 
             <div className="enter-ldv-sales mt-2">
@@ -90,7 +137,7 @@ const ConsumerSalesDetailsPage = (props) => {
                     {modelYear} Model Year LDV Sales\Leases
                   </label>
                   <input
-                    defaultValue={salesInput ? salesInput : 0}
+                    defaultValue={salesInput || 0}
                     className="textbox-sales"
                     type="number"
                     onChange={handleChange}
@@ -238,7 +285,17 @@ const ConsumerSalesDetailsPage = (props) => {
             </span>
             <span className="right-content">
               <Button
+                buttonType="next"
+                optionalClassname="button"
+                optionalText="Next"
+                action={() => {
+                  history.push(ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(':id', id));
+                }}
+              />
+
+              <Button
                 buttonType="save"
+                disabled={['SAVED', 'UNSAVED'].indexOf(statuses.consumerSales.status) < 0}
                 optionalClassname="button primary"
                 action={(event) => {
                   handleSave(event);
@@ -248,6 +305,7 @@ const ConsumerSalesDetailsPage = (props) => {
           </div>
         </div>
       </div>
+      {modal}
     </div>
   );
 };
@@ -255,6 +313,7 @@ ConsumerSalesDetailsPage.defaultProps = {
   assertions: [],
   avgSales: 0,
   checkboxes: [],
+  salesInput: null,
 };
 
 ConsumerSalesDetailsPage.propTypes = {
@@ -267,13 +326,14 @@ ConsumerSalesDetailsPage.propTypes = {
   handleSave: PropTypes.func.isRequired,
   handleChange: PropTypes.func.isRequired,
   vehicles: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  confirmed: PropTypes.bool.isRequired,
   error: PropTypes.bool.isRequired,
   assertions: PropTypes.arrayOf(PropTypes.shape()),
   checkboxes: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   ),
+  handleCancelConfirmation: PropTypes.func.isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
+  id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   disabledCheckboxes: PropTypes.string.isRequired,
   handleInputChange: PropTypes.func.isRequired,
   avgSales: PropTypes.number,
@@ -285,5 +345,6 @@ ConsumerSalesDetailsPage.propTypes = {
   firstYear: PropTypes.number.isRequired,
   secondYear: PropTypes.number.isRequired,
   thirdYear: PropTypes.number.isRequired,
+  statuses: PropTypes.shape().isRequired,
 };
 export default ConsumerSalesDetailsPage;

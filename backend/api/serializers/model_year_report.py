@@ -12,6 +12,7 @@ from api.models.model_year_report_address import ModelYearReportAddress
 from api.models.model_year_report_make import ModelYearReportMake
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.models.user_profile import UserProfile
+
 from api.serializers.model_year_report_address import \
     ModelYearReportAddressSerializer
 from api.serializers.model_year_report_make import \
@@ -20,6 +21,7 @@ from api.serializers.model_year_report_history import \
     ModelYearReportHistorySerializer
 from api.serializers.user import MemberSerializer
 from api.serializers.vehicle import ModelYearSerializer
+from api.services.model_year_report import get_model_year_report_statuses
 
 
 class ModelYearReportSerializer(ModelSerializer):
@@ -30,6 +32,7 @@ class ModelYearReportSerializer(ModelSerializer):
     validation_status = EnumField(ModelYearReportStatuses)
     model_year_report_history = ModelYearReportHistorySerializer(many=True)
     confirmations = SerializerMethodField()
+    statuses = SerializerMethodField()
 
     def get_create_user(self, obj):
         user_profile = UserProfile.objects.filter(username=obj.create_user)
@@ -47,12 +50,16 @@ class ModelYearReportSerializer(ModelSerializer):
 
         return confirmations
 
+    def get_statuses(self, obj):
+        return get_model_year_report_statuses(obj)
+
     class Meta:
         model = ModelYearReport
         fields = (
             'organization_name', 'supplier_class', 'ldv_sales', 'model_year',
             'model_year_report_addresses', 'makes', 'validation_status',
-            'create_user', 'model_year_report_history', 'confirmations'
+            'create_user', 'model_year_report_history', 'confirmations',
+            'statuses'
         )
 
 
@@ -60,7 +67,7 @@ class ModelYearReportListSerializer(
         ModelSerializer, EnumSupportSerializerMixin
 ):
     model_year = ModelYearSerializer()
-    validation_status = EnumField(ModelYearReportStatuses)
+    validation_status = SerializerMethodField()
     compliant = SerializerMethodField()
     obligation_total = SerializerMethodField()
     obligation_credits = SerializerMethodField()
@@ -74,10 +81,16 @@ class ModelYearReportListSerializer(
     def get_obligation_credits(self, obj):
         return 0
 
+    def get_validation_status(self, obj):
+        request = self.context.get('request')
+        if not request.user.is_government and obj.validation_status is ModelYearReportStatuses.RECOMMENDED:
+            return ModelYearReportStatuses.SUBMITTED.value
+        return obj.get_validation_status_display()
+
     class Meta:
         model = ModelYearReport
         fields = (
-            'id', 'model_year', 'validation_status', 'ldv_sales',
+            'id', 'organization_name', 'model_year', 'validation_status', 'ldv_sales',
             'supplier_class', 'compliant', 'obligation_total',
             'obligation_credits',
         )
@@ -159,6 +172,18 @@ class ModelYearReportSaveSerializer(
     def update(self, instance, validated_data):
         request = self.context.get('request')
         organization = request.user.organization
+
+        delete_confirmations = request.data.get('delete_confirmations', False)
+
+        if delete_confirmations:
+            module = request.data.get('module', None)
+            ModelYearReportConfirmation.objects.filter(
+                model_year_report=instance,
+                signing_authority_assertion__module=module
+            ).delete()
+
+            return instance
+
         makes = validated_data.pop('makes')
         model_year = validated_data.pop('model_year')
         confirmations = request.data.get('confirmations')
@@ -211,12 +236,14 @@ class ModelYearReportSaveSerializer(
             )
 
         for confirmation in confirmations:
-            ModelYearReportConfirmation.objects.create(
-                create_user=request.user.username,
+            ModelYearReportConfirmation.objects.update_or_create(
                 model_year_report=instance,
                 has_accepted=True,
                 title=request.user.title,
-                signing_authority_assertion_id=confirmation
+                signing_authority_assertion_id=confirmation,
+                defaults={
+                    'create_user': request.user.username
+                }
             )
 
         ModelYearReportHistory.objects.create(

@@ -2,19 +2,33 @@
   .nav-item {
     padding: 1rem 1.5rem;
 
-    &.draft a {
-      border-bottom-color: $primary-yellow;
+    &.SAVED {
+      a {
+        border-bottom-color: $background-warning;
+      }
+
+      &.active a {
+        border-bottom-color: $primary-yellow;
+      }
     }
 
-    &.submitted a {
-      border-bottom-color: $default-text-blue;
+    &.UNSAVED {
+      &.active a {
+        border-bottom-color: $primary-yellow;
+      }
     }
 
-    &.reviewed a {
-      border-bottom-color: $primary-yellow;
+    &.CONFIRMED, &.SUBMITTED {
+      a {
+        border-bottom-color: $background-light-blue;  
+      }
+      
+      &.active a {
+        border-bottom-color: $default-text-blue;
+      }
     }
 
-    &.assessed a {
+    &.ASSESSED a {
       border-bottom-color: $alert-success;
     }
 
@@ -22,6 +36,10 @@
       border-bottom: 1rem transparent solid;
       color: $default-text-black;
       display: block;
+    }
+
+    .disabled {
+      opacity: .3;
     }
   }
 }

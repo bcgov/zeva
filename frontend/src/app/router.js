@@ -12,6 +12,7 @@ import VehicleSupplierCreditTransactionListContainer from '../organizations/Vehi
 import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
 import VehicleSupplierEditContainer from '../organizations/VehicleSupplierEditContainer';
 import VehicleSupplierModelListContainer from '../organizations/VehicleSupplierModelListContainer';
+import VehicleSupplierReportListContainer from '../organizations/VehicleSupplierReportListContainer';
 import VehicleSupplierUserListContainer from '../organizations/VehicleSupplierUserListContainer';
 import CreditsContainer from '../credits/CreditsContainer';
 import CreditRequestListContainer from '../credits/CreditRequestListContainer';
@@ -193,6 +194,10 @@ class Router extends Component {
               <Route
                 path={ROUTES_ORGANIZATIONS.USERS}
                 render={() => <VehicleSupplierUserListContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_ORGANIZATIONS.REPORTS}
+                render={() => <VehicleSupplierReportListContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.VEHICLES}

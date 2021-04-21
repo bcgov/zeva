@@ -3,19 +3,26 @@ import { now } from 'moment';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
+import Loading from '../app/components/Loading';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ComplianceReportSummaryDetailsPage from './components/ComplianceReportSummaryDetailsPage';
+import ROUTES_VEHICLES from '../app/routes/Vehicles';
+import formatNumeric from '../app/utilities/formatNumeric';
 
 const ComplianceReportSummaryContainer = (props) => {
   const { user } = props;
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const [checkboxes, setCheckboxes] = useState([]);
+  const [consumerSalesDetails, setConsumerSalesDetails] = useState({});
   const [complianceRatios, setComplianceRatios] = useState({});
+  const [supplierDetails, setSupplierDetails] = useState({});
+  const [makes, setMakes] = useState({});
+  const [confirmationStatuses, setConfirmationStatuses] = useState({});
+  const [creditActivityDetails, setCreditActivityDetails] = useState({});
   const [assertions, setAssertions] = useState([{ id: 0, description: 'On behalf of [insert supplier name], I confirm the information included in this Model Year report is complete and accurate' }]);
-  const year = '2020';
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
       const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
@@ -27,8 +34,15 @@ const ComplianceReportSummaryContainer = (props) => {
       setCheckboxes(checked);
     }
   };
-  const handleSubmit = (event) => {
-    console.log('submit button clicked!');
+  const handleSubmit = (status) => {
+    const data = {
+      modelYearReportId: id,
+      validation_status: status,
+    };
+
+    axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then((response) => {
+      console.log('Report Submitted ', response);
+    });
   };
 
   const reportStatuses = {
@@ -38,125 +52,155 @@ const ComplianceReportSummaryContainer = (props) => {
     reportSummary: 'draft',
     supplierInformation: '',
   };
-  const creditsIssuedDetails = {
-    startingBalance: { A: 0, B: 0 },
-    endingBalance: { A: 1513.09, B: 191.29 },
-    creditsIssuedSales:
-      [
-        {
-          year: 2020,
-          A: 359.12,
-          B: 43.43,
-        },
-        {
-          year: 2019,
-          A: 1367.43,
-          B: 347.86,
-        },
-      ],
-    creditsIssuedInitiative:
-      [{
-        year: 2019,
-        A: 286.54,
-      }],
-    creditsIssuedPurchase: [
-      {
-        year: 2020,
-        A: 100.00,
-      },
-    ],
-    creditsTransferredIn: [
-      {
-        year: 2020,
-        A: 200.00,
-      },
-    ],
-    creditsTransferredAway: [
-      {
-        year: 2020,
-        A: -800.00,
-        B: -200.00,
-      },
-    ],
-    pendingSales: [
-      {
-        year: 2020,
-        A: 246.67,
-        B: 0,
-      },
-    ],
-    provisionalBalance: [
-      {
-        year: 2020,
-        A: 1192.33,
-        B: 43.43,
-      },
-      {
-        year: 2019,
-        A: 567.43,
-        B: 147.86,
-      },
-    ],
-    creditOffset: [
-      {
-        year: 2019,
-        A: -300,
-        B: -100,
-      },
-      {
-        year: 2020,
-        A: -458.71,
-        B: -91.29,
-      },
-    ],
-    provisionalAssessedBalance: [
-      {
-        year: 2019,
-        A: 754.38,
-        B: 0,
-      },
-      {
-        year: 2020,
-        A: 0,
-        B: 0,
-      },
-    ],
-  };
-  const supplierInformationDetails = {
-    supplierInformation: {
-      makes: ['TOYOTA'],
-      history: [{
-        status: 'DRAFT',
-        createTimestamp: now(),
-        createUser: user,
-      }],
-      status: 'DRAFT',
-    },
-    organization: user.organization,
-  };
-  const consumerSalesDetails = {
-    year: 2020,
-    ldvSales: 10000,
-    zevSales: 1474,
-    pendingZevSales: 114,
-    averageLdv3Years: 7467,
-    supplierClass: 'Large',
-  };
   const refreshDetails = () => {
     setLoading(true);
     axios.all([
-      axios.get(ROUTES_COMPLIANCE.RATIOS)]).then(axios.spread((
+      axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)),
+      axios.get(ROUTES_COMPLIANCE.RATIOS),
+      axios.get(ROUTES_VEHICLES.VEHICLES_SALES),
+      axios.get(ROUTES_COMPLIANCE.RETRIEVE_CONSUMER_SALES.replace(':id', id)),
+      axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)),
+    ]).then(axios.spread((
+      reportDetailsResponse,
       allComplianceRatiosResponse,
+      vehicleSalesResponse,
+      consumerSalesResponse,
+      creditActivityResponse,
     ) => {
+      const {
+        statuses,
+        makes: modelYearReportMakes,
+        modelYearReportAddresses,
+        modelYearReportHistory,
+        organizationName,
+        validationStatus,
+        confirmations,
+        modelYear: reportModelYear,
+      } = reportDetailsResponse.data;
+      // ALL STATUSES
+      setConfirmationStatuses(statuses);
+
+      // SUPPLIER INFORMATION
+      if (modelYearReportMakes) {
+        const currentMakes = modelYearReportMakes.map((each) => (each.make));
+        setMakes(currentMakes);
+      }
+      setSupplierDetails({
+        organization: {
+          name: organizationName,
+          organizationAddress: modelYearReportAddresses,
+        },
+        supplierInformation: {
+          history: modelYearReportHistory,
+          validationStatus,
+        },
+      });
+      // CONSUMER SALES
+      let { supplierClass } = reportDetailsResponse.data;
+      if (supplierClass === 'M') {
+        supplierClass = 'Medium';
+      } else if (supplierClass === 'L') {
+        supplierClass = 'Large';
+      } else {
+        supplierClass = 'Small';
+      }
+      const year = reportDetailsResponse.data.modelYear.name;
+      let pendingZevSales = 0;
+      let zevSales = 0;
+      vehicleSalesResponse.data.forEach((vehicle) => {
+        pendingZevSales += vehicle.pendingSales;
+        zevSales += vehicle.salesIssued;
+      });
+      let averageLdv3Years = 0;
+      consumerSalesResponse.data.previousSales.forEach((each) => {
+        averageLdv3Years += parseFloat(each.previousSales);
+      });
+      averageLdv3Years = formatNumeric((averageLdv3Years / 3), 2);
+      setConsumerSalesDetails({
+        ...consumerSalesDetails,
+        pendingZevSales,
+        zevSales,
+        ldvSales: consumerSalesResponse.data.ldvSales,
+        averageLdv3Years,
+        year,
+        supplierClass,
+      });
       setComplianceRatios(allComplianceRatiosResponse.data
         .filter((each) => each.modelYear === year));
+
+      // CREDIT ACTIVITY
+      const creditBalanceStart = { year: '', A: 0, B: 0 };
+      const creditBalanceEnd = { A: 0, B: 0 };
+      const provisionalBalance = { A: 0, B: 0 };
+      const pendingBalance = { A: 0, B: 0 };
+      const transfersIn = { A: 0, B: 0 };
+      const transfersOut = { A: 0, B: 0 };
+      const creditsIssuedSales = { A: 0, B: 0 };
+      const offsetNumbers = { A: 0, B: 0 };
+      creditActivityResponse.data.forEach((item) => {
+        if (item.category === 'creditBalanceStart') {
+          creditBalanceStart.year = item.modelYear.name;
+          creditBalanceStart.A = item.creditAValue;
+          creditBalanceStart.B = item.creditBValue;
+        }
+        if (item.category === 'creditBalanceEnd') {
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          creditBalanceEnd.A += aValue;
+          creditBalanceEnd.B += bValue;
+        }
+        if (item.category === 'provisionalBalance') {
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          provisionalBalance.A += aValue;
+          provisionalBalance.B += bValue;
+        }
+        if (item.category === 'pendingBalance') {
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          pendingBalance.A += aValue;
+          pendingBalance.B += bValue;
+        }
+        if (item.category === 'transfersIn') {
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          transfersIn.A += aValue;
+          transfersIn.B += bValue;
+        }
+        if (item.category === 'transfersOut') {
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          transfersOut.A -= aValue;
+          transfersOut.B -= bValue;
+        }
+        if (item.category === 'creditsIssuedSales') {
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          creditsIssuedSales.A += aValue;
+          creditsIssuedSales.B += bValue;
+        }
+      });
+      setCreditActivityDetails({
+        creditBalanceStart,
+        creditBalanceEnd,
+        pendingBalance,
+        provisionalBalance,
+        transactions: {
+          creditsIssuedSales,
+          transfersIn,
+          transfersOut,
+        },
+      });
+      setLoading(false);
     }));
-    setLoading(false);
   };
 
   useEffect(() => {
     refreshDetails();
   }, []);
+  if (loading) {
+    return (<Loading />);
+  }
 
   return (
     <>
@@ -171,13 +215,14 @@ const ComplianceReportSummaryContainer = (props) => {
         handleCheckboxClick={handleCheckboxClick}
         checkboxes={checkboxes}
         assertions={assertions}
-        creditsIssuedDetails={creditsIssuedDetails}
+        creditActivityDetails={creditActivityDetails}
         consumerSalesDetails={consumerSalesDetails}
-        supplierInformationDetails={supplierInformationDetails}
+        supplierDetails={supplierDetails}
         user={user}
         loading={loading}
         handleSubmit={handleSubmit}
-        year="2020"
+        makes={makes}
+        confirmationStatuses={confirmationStatuses}
       />
 
     </>

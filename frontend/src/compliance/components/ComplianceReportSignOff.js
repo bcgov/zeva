@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
-import CustomPropTypes from '../../app/utilities/props';
 
 const ComplianceReportSignOff = (props) => {
   const {
@@ -46,8 +45,10 @@ ComplianceReportSignOff.propTypes = {
     PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   ),
   handleCheckboxClick: PropTypes.func.isRequired,
-  user: CustomPropTypes.user.isRequired,
-  disabledCheckboxes: PropTypes.string,
+  disabledCheckboxes: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.string,
+  ]),
 };
 
 export default ComplianceReportSignOff;

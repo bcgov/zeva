@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import moment from 'moment-timezone';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
@@ -19,15 +20,15 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     complianceRatios,
     assertions,
     checkboxes,
-    creditsIssuedDetails,
+    creditActivityDetails,
     user,
     handleSubmit,
     loading,
-    supplierInformationDetails,
+    supplierDetails,
     consumerSalesDetails,
     handleCheckboxClick,
-    year,
-
+    makes,
+    confirmationStatuses,
   } = props;
   const signedInfomation = {
     supplierInformation: { nameSigned: 'Buzz Collins', dateSigned: '2020-01-01' },
@@ -38,13 +39,20 @@ const ComplianceReportSummaryDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
-  const signatureInformation = (input) => {
-    const { dateSigned, nameSigned } = input;
+  const signatureInformation = (input, title) => {
+    const { status, confirmedBy } = input;
     return (
       <div className="mt-3">
-        <span className="text-blue">
-          Confirmed by {nameSigned} {dateSigned}
-        </span>
+        {confirmedBy && (
+          <span className="text-black">
+            {title} confirmed by {confirmedBy.createUser.displayName} {moment(confirmedBy.createTimestamp).format('YYYY-MM-DD h[:]mm a')}
+          </span>
+        )}
+        {status !== 'CONFIRMED' && (
+          <span className="text-red">
+            {title} pending confirmation
+          </span>
+        )}
       </div>
     );
   };
@@ -70,12 +78,12 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     <div id="compliance-supplier-information-details" className="page">
       <div className="row mt-3">
         <div className="col-sm-12">
-          <h2>2020 Model Year Report</h2>
+          <h2>{consumerSalesDetails.year} Model Year Report</h2>
         </div>
       </div>
       <div className="row">
         <div className="col-12">
-          <ComplianceReportAlert report={supplierInformationDetails.supplierInformation} type="Summary" />
+          {/* <ComplianceReportAlert report={supplierInformationDetails.supplierInformation} type="Summary" /> */}
         </div>
       </div>
       <div className="row mt-1">
@@ -85,25 +93,24 @@ const ComplianceReportSummaryDetailsPage = (props) => {
             <div className="row p3 mt-3">
               <div className="col-lg-6">
                 <div className="compliance-report-summary-grey text-blue">
-                  <SummarySupplierInfo supplierInformationDetails={supplierInformationDetails} signatureInformation={signatureInformation} signedInfomation={signedInfomation} />
-                  {signatureInformation(signedInfomation.supplierInformation)}
+                  <SummarySupplierInfo makes={makes} supplierDetails={supplierDetails} signatureInformation={signatureInformation} signedInfomation={signedInfomation} />
+                  {signatureInformation(confirmationStatuses.supplierInformation, 'Supplier Information')}
                 </div>
 
                 <div className="mt-4 compliance-report-summary-grey">
                   <h3>Consumer Sales</h3>
                   <SummaryConsumerSalesTable consumerSalesDetails={consumerSalesDetails} />
-                  {signatureInformation(signedInfomation.consumerSales)}
+                  {signatureInformation(confirmationStatuses.consumerSales, 'Consumer Sales')}
                 </div>
               </div>
               <div className="col-lg-6">
                 <div className="compliance-report-summary-grey">
                   <SummaryCreditActivityTable
                     complianceRatios={complianceRatios}
-                    year={year}
                     consumerSalesDetails={consumerSalesDetails}
-                    creditsIssuedDetails={creditsIssuedDetails}
+                    creditActivityDetails={creditActivityDetails}
                   />
-                  {signatureInformation(signedInfomation.creditActivity)}
+                  {signatureInformation(confirmationStatuses.complianceObligation, 'Compliance Obligation')}
                 </div>
               </div>
             </div>

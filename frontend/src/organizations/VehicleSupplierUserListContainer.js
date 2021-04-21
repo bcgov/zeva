@@ -62,7 +62,7 @@ const VehicleSupplierUserListContainer = (props) => {
 VehicleSupplierUserListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   location: PropTypes.shape().isRequired,
-  user: CustomPropTypes.user.isRequired
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default withRouter(VehicleSupplierUserListContainer);
