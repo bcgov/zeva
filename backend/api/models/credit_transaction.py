@@ -4,6 +4,7 @@ Credit Transaction Model
 from django.db import models
 
 from auditable.models import Auditable
+from api.models.credit_class import CreditClass
 
 
 class CreditTransaction(Auditable):
