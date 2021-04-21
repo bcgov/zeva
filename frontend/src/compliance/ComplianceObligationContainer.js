@@ -286,8 +286,8 @@ const ComplianceObligationContainer = (props) => {
           // not returning values from database, grab from snapshot instead
           const creditBalanceStart = {};
           const creditBalanceEnd = {};
-          const provisionalBalance = {};
-          const pendingBalance = {};
+          const provisionalBalance = [];
+          const pendingBalance = [];
           const transfersIn = [];
           const transfersOut = [];
           const creditsIssuedSales = [];
@@ -302,10 +302,10 @@ const ComplianceObligationContainer = (props) => {
               creditBalanceEnd[item.modelYear.name] = { A: item.creditAValue, B: item.creditBValue };
             }
             if (item.category === 'provisionalBalance') {
-              provisionalBalance[item.modelYear.name] = { A: parseFloat(item.creditAValue), B: parseFloat(item.creditBValue) };
+              provisionalBalance.push({modelYear: item.modelYear.name, A: parseFloat(item.creditAValue), B: parseFloat(item.creditBValue) });
             }
             if (item.category === 'pendingBalance') {
-              pendingBalance[item.modelYear.name] = { A: item.creditAValue, B: item.creditBValue };
+              pendingBalance.push({modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
             }
             if (item.category === 'transfersIn') {
               transfersIn.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
