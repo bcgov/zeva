@@ -281,7 +281,8 @@ const ComplianceObligationContainer = (props) => {
       const complianceReportDetails = axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID
         .replace(':id', id)).then((complianceResponse) => {
         const yearObject = {};
-        const complianceResponseDetails = complianceResponse.data;
+        const complianceResponseDetails = complianceResponse.data.complianceObligation;
+        const { complianceOffset } = complianceResponse.data;
         if (!complianceResponseDetails.reportYearTransactions) {
           // not returning values from database, grab from snapshot instead
           const creditBalanceStart = {};

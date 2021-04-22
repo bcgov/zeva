@@ -41,7 +41,7 @@ class ModelYearReportComplianceObligationOffsetSerializer(serializers.ModelSeria
         model = ModelYearReportCreditOffset
         fields = (
             'credit_a_offset_value',  'credit_b_offset_value',
-            'model_year'
+            'model_year', 'model_year_report'
         )
 
 

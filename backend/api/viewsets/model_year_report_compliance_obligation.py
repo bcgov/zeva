@@ -113,13 +113,16 @@ class ModelYearReportComplianceObligationViewset(
         snapshot = ModelYearReportComplianceObligation.objects.filter(
             model_year_report_id=report.id,
         ).order_by('-update_timestamp')
-        if confirmation and snapshot:
-            offset_snapshot = ModelYearReportCreditOffset.objects.filter(
-                model_year_report_id=report.id,
-            ).order_by('-update_timestamp')
+        offset_snapshot = ModelYearReportCreditOffset.objects.filter(
+            model_year_report_id=report.id,
+        ).order_by('-update_timestamp')
+        compliance_offset = None
+        if offset_snapshot:
             offset_serializer = ModelYearReportComplianceObligationOffsetSerializer(
                 offset_snapshot, context={'request': request, 'kwargs': kwargs}, many=True
             )
+            compliance_offset = offset_serializer.data
+        if confirmation and snapshot:
             serializer = ModelYearReportComplianceObligationSnapshotSerializer(
                 snapshot, context={'request': request, 'kwargs': kwargs}, many=True
             )
@@ -244,6 +247,12 @@ class ModelYearReportComplianceObligationViewset(
                 'model_year': report_year_obj.name
             })
 
-            return Response(content)
+            return Response({
+                'compliance_obligation': content,
+                'compliance_offset': compliance_offset
+            })
 
-        return Response(serializer.data)
+        return Response({
+            'compliance_obligation': serializer.data,
+            'compliance_offset': compliance_offset
+         })
