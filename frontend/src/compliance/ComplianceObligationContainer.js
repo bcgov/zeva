@@ -234,21 +234,6 @@ const ComplianceObligationContainer = (props) => {
       history.replace(ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(':id', id));
     });
   };
-  const parseCreditTransactions = (data) => {
-    const output = [];
-    data.forEach((element) => {
-      const found = output.findIndex((each) => each.modelYear === element.modelYear.name);
-      if (found >= 0) {
-        output[found][element.creditClass.creditClass] = element.totalValue;
-      } else {
-        output.push({
-          modelYear: element.modelYear.name,
-          [element.creditClass.creditClass]: element.totalValue,
-        });
-      }
-    });
-    return output;
-  };
 
   const refreshDetails = () => {
     setLoading(true);
@@ -284,7 +269,6 @@ const ComplianceObligationContainer = (props) => {
 
       const complianceReportDetails = axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID
         .replace(':id', id)).then((complianceResponse) => {
-        const yearObject = {};
         const complianceResponseDetails = complianceResponse.data.complianceObligation;
         const { complianceOffset } = complianceResponse.data;
         const creditBalanceStart = {};
@@ -297,8 +281,13 @@ const ComplianceObligationContainer = (props) => {
         const complianceOffsetNumbers = [];
         if (complianceOffset) {
           complianceOffset.forEach((item) => {
-            complianceOffsetNumbers.push({modelYear: item.modelYear.name, A: parseFloat(item.creditAOffsetValue), B: parseFloat(item.creditAOffsetValue) })
+            complianceOffsetNumbers.push({
+              modelYear: item.modelYear.name,
+              A: parseFloat(item.creditAOffsetValue),
+              B: parseFloat(item.creditAOffsetValue),
+            });
           });
+          setOffsetNumbers(complianceOffsetNumbers);
         }
 
         complianceResponseDetails.forEach((item) => {
@@ -334,7 +323,6 @@ const ComplianceObligationContainer = (props) => {
             transfersIn,
             transfersOut,
           },
-          complianceOffsetNumbers,
         });
         setLoading(false);
         const listAssertion = axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((assertionResponse) => {
