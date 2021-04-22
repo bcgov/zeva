@@ -43,6 +43,7 @@ const ConsumerSalesContainer = (props) => {
       const sum = (paramFirstYear + paramSecondYear + paramThirdYear)
       avg = sum / 3;
       setAvgSales(Math.round(avg));
+      setCalculated(true);
     } else if ((paramFirstYear == 0 || paramSecondYear == 0 || paramThirdYear == 0) && paramCurrentYear) {
       setAvgSales(parseInt(paramCurrentYear, 10));
     } else if ((paramFirstYear == 0 || paramSecondYear == 0 || paramThirdYear == 0) && salesInput) {
@@ -70,36 +71,27 @@ const ConsumerSalesContainer = (props) => {
         validationStatus,
       } = consumerSalesResponse.data;
 
+      if (ldvSales > 0) {
+        setSalesInput(ldvSales);
+      }
+
       if (previousSales.length === 3) {
         setPreviousYearsExist(true);
         setPreviousYearsList(previousSales);
-       
-        if (previousSales[0].previousSales > 0 &&
-          previousSales[1].previousSales > 0 &&
-          previousSales[2].previousSales > 0) {
-          averageLdvSales(
-            parseInt(previousSales[0].previousSales, 10),
-            parseInt(previousSales[1].previousSales, 10),
-            parseInt(previousSales[2].previousSales, 10)
-          );
-          setCalculated(true);
-        }
-        else {
-          if (ldvSales > 0) {
-            setAvgSales(ldvSales)
-          }
-        }
-       
+        averageLdvSales(
+          parseInt(previousSales[0].previousSales, 10),
+          parseInt(previousSales[1].previousSales, 10),
+          parseInt(previousSales[2].previousSales, 10),
+          ldvSales
+        );
+      } else {
+        setAvgSales(ldvSales)
       }
      
-
       if (vehicleList.length > 0) {
         setVehicles(vehicleList);
       } else {
         setVehicles(vehiclesSales.data);
-      }
-      if (ldvSales > 0) {
-        setSalesInput(ldvSales);
       }
 
       setDetails({
