@@ -287,8 +287,6 @@ const ComplianceObligationContainer = (props) => {
         const yearObject = {};
         const complianceResponseDetails = complianceResponse.data.complianceObligation;
         const { complianceOffset } = complianceResponse.data;
-        // if (!complianceResponseDetails.reportYearTransactions) {
-        // not returning values from database, grab from snapshot instead
         const creditBalanceStart = {};
         const creditBalanceEnd = {};
         const provisionalBalance = [];
@@ -296,8 +294,12 @@ const ComplianceObligationContainer = (props) => {
         const transfersIn = [];
         const transfersOut = [];
         const creditsIssuedSales = [];
-        const offsetNumbers = [];
-        // get offset from backend
+        const complianceOffsetNumbers = [];
+        if (complianceOffset) {
+          complianceOffset.forEach((item) => {
+            complianceOffsetNumbers.push({modelYear: item.modelYear.name, A: parseFloat(item.creditAOffsetValue), B: parseFloat(item.creditAOffsetValue) })
+          });
+        }
 
         complianceResponseDetails.forEach((item) => {
           if (item.category === 'creditBalanceStart') {
@@ -332,6 +334,7 @@ const ComplianceObligationContainer = (props) => {
             transfersIn,
             transfersOut,
           },
+          complianceOffsetNumbers,
         });
         setLoading(false);
         const listAssertion = axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((assertionResponse) => {

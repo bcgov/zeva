@@ -47,12 +47,14 @@ const ComplianceObligationAmountsTable = (props) => {
                   )}
                 {supplierClassInfo.class === 'L' && (
                   <>
-                    <td className="text-blue">
-                      {reportYear} Compliance Ratio:
-                    </td>
-                    <td>
-                      {ratios.complianceRatio} %
-                    </td>
+                    <tr>
+                      <td className="text-blue">
+                        {reportYear} Compliance Ratio:
+                      </td>
+                      <td>
+                        {ratios.complianceRatio} %
+                      </td>
+                    </tr>
                     <tr>
                       <td className="text-blue">
                         Large Volume Supplier Class A Ratio:
