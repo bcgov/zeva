@@ -8,7 +8,6 @@ def parse_summary_serializer(lst, serializer_data, category):
     model_year = serializer_data['model_year'].get('name')
     credit_class = serializer_data['credit_class'].get('credit_class')
     total_value = serializer_data.get('total_value')
-
     for data in lst:
         index += 1
 
@@ -16,16 +15,16 @@ def parse_summary_serializer(lst, serializer_data, category):
                 data.get('category') == category:
             found = True
             if credit_class == 'A':
-                lst[index].credit_a_value = total_value
+                lst[index]['credit_a_value'] = total_value
             elif credit_class == 'B':
-                lst[index].credit_b_value = total_value
+                lst[index]['credit_b_value'] = total_value
 
     if not found:
         lst.append({
             'credit_a_value': total_value if credit_class == 'A' else 0,
             'credit_b_value': total_value if credit_class == 'B' else 0,
             'category': category,
-            'model_year': model_year
+            'model_year': {'name': model_year}
         })
 
 
