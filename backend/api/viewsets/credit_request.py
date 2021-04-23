@@ -257,7 +257,18 @@ class CreditRequestViewset(
 
                 if submission_filters['warning'] == '1' or \
                         '5' in submission_filters['warning']:
-                    sale_date = Q(Q(xls_sale_date__lte="43102.0") & ~Q(xls_sale_date=""))
+                    sale_date = Q(
+                        Q(
+                            Q(xls_sale_date__lte="43102.0") &
+                            Q(xls_date_type="3") &
+                            ~Q(xls_sale_date="")
+                        ) |
+                        Q(
+                            Q(xls_sale_date__lte="2018-01-02") &
+                            Q(xls_date_type="1") &
+                            ~Q(xls_sale_date="")
+                        )
+                    )
 
                 if submission_filters['warning'] == '1' or \
                         '6' in submission_filters['warning']:
@@ -356,7 +367,16 @@ class CreditRequestViewset(
                 ~Q(xls_vin__in=Subquery(
                     IcbcRegistrationData.objects.values('vin')
                 )) |
-                Q(xls_sale_date__lte="43102.0")
+                Q(
+                    Q(
+                        Q(xls_sale_date__lte="43102.0") &
+                        Q(xls_date_type="3")
+                    ) |
+                    Q(
+                        Q(xls_sale_date__lte="2018-01-02") &
+                        Q(xls_date_type="1")
+                    )
+                )
             ).values_list('id', flat=True)
         else:
             selected_vins = Subquery(RecordOfSale.objects.filter(

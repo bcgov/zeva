@@ -577,8 +577,13 @@ class SalesSubmissionSaveSerializer(
             ).exclude(
                 xls_vin__in=awarded_vins
             ).exclude(
-                xls_vin__in=duplicate_vins,
-                xls_sale_date__lte="43102.0"
+                xls_vin__in=duplicate_vins
+            ).exclude(
+                xls_sale_date__lte="43102.0",
+                xls_date_type="3"
+            ).exclude(
+                xls_sale_date__lte="2018-01-02",
+                xls_date_type="1"
             )
 
             for row in content:
