@@ -147,7 +147,7 @@ class ModelYearReportViewset(
                 create_user=request.user.username,
             )
         
-        confirmations = ModelYearReportConfirmation.objects.filter(
+        confirmation = ModelYearReportConfirmation.objects.filter(
             model_year_report_id=model_year_report_id,
             signing_authority_assertion__module="compliance_summary"
         ).values_list(
