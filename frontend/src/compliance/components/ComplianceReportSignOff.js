@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
+import CustomPropTypes from '../../app/utilities/props';
 
 const ComplianceReportSignOff = (props) => {
   const {
@@ -8,6 +9,7 @@ const ComplianceReportSignOff = (props) => {
     checkboxes,
     handleCheckboxClick,
     disabledCheckboxes,
+    user,
   } = props;
 
   return (
@@ -26,7 +28,7 @@ const ComplianceReportSignOff = (props) => {
             />
           </div>
           <label className="d-inline ml-2 text-blue" htmlFor={assertion.id} id="confirmation-text">
-            {assertion.description}
+            {assertion.description.replace(/{user.organization.name}/g, user.organization.name)}
           </label>
         </div>
       ))}
@@ -41,6 +43,7 @@ ComplianceReportSignOff.defaultProps = {
 };
 ComplianceReportSignOff.propTypes = {
   assertions: PropTypes.arrayOf(PropTypes.shape()),
+  user: CustomPropTypes.user,
   checkboxes: PropTypes.arrayOf(
     PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   ),

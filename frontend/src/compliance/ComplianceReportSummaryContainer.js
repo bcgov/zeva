@@ -10,6 +10,7 @@ import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ComplianceReportSummaryDetailsPage from './components/ComplianceReportSummaryDetailsPage';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import formatNumeric from '../app/utilities/formatNumeric';
+import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 
 const ComplianceReportSummaryContainer = (props) => {
   const { user } = props;
@@ -22,7 +23,9 @@ const ComplianceReportSummaryContainer = (props) => {
   const [makes, setMakes] = useState({});
   const [confirmationStatuses, setConfirmationStatuses] = useState({});
   const [creditActivityDetails, setCreditActivityDetails] = useState({});
-  const [assertions, setAssertions] = useState([{ id: 0, description: 'On behalf of [insert supplier name], I confirm the information included in this Model Year report is complete and accurate' }]);
+  const [pendingBalanceExist, setPendingBalanceExist] = useState(false);
+  const [assertions, setAssertions] = useState([]);
+  
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
       const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
@@ -38,6 +41,7 @@ const ComplianceReportSummaryContainer = (props) => {
     const data = {
       modelYearReportId: id,
       validation_status: status,
+      confirmation: checkboxes
     };
 
     axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then((response) => {
@@ -160,6 +164,9 @@ const ComplianceReportSummaryContainer = (props) => {
           const bValue = parseFloat(item.creditBValue);
           pendingBalance.A += aValue;
           pendingBalance.B += bValue;
+          if (pendingBalance.A > 0 || pendingBalance.B > 0) {
+            setPendingBalanceExist(true);
+          }
         }
         if (item.category === 'transfersIn') {
           const aValue = parseFloat(item.creditAValue);
@@ -193,6 +200,11 @@ const ComplianceReportSummaryContainer = (props) => {
       });
       setLoading(false);
     }));
+
+    axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
+      const filteredAssertions = response.data.filter((data) => data.module === 'compliance_summary');
+      setAssertions(filteredAssertions);
+    });
   };
 
   useEffect(() => {
@@ -223,6 +235,7 @@ const ComplianceReportSummaryContainer = (props) => {
         handleSubmit={handleSubmit}
         makes={makes}
         confirmationStatuses={confirmationStatuses}
+        pendingBalanceExist={pendingBalanceExist}
       />
 
     </>

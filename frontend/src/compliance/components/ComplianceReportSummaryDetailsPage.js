@@ -29,6 +29,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     handleCheckboxClick,
     makes,
     confirmationStatuses,
+    pendingBalanceExist,
   } = props;
   const signedInfomation = {
     supplierInformation: { nameSigned: 'Buzz Collins', dateSigned: '2020-01-01' },
@@ -56,6 +57,19 @@ const ComplianceReportSummaryDetailsPage = (props) => {
       </div>
     );
   };
+
+  const disableCheckbox = (confirmationStatuses) => {
+    const { supplierInformation, consumerSales, complianceObligation } = confirmationStatuses;
+    if (user.hasPermission('SUBMIT_COMPLIANCE_REPORT') &&
+      supplierInformation.status === "CONFIRMED" &&
+      consumerSales.status === "CONFIRMED" &&
+      complianceObligation.status === "CONFIRMED") {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   const modal = (
     <Modal
       confirmLabel="Submit"
@@ -109,6 +123,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
                     complianceRatios={complianceRatios}
                     consumerSalesDetails={consumerSalesDetails}
                     creditActivityDetails={creditActivityDetails}
+                    pendingBalanceExist={pendingBalanceExist}
                   />
                   {signatureInformation(confirmationStatuses.complianceObligation, 'Compliance Obligation')}
                 </div>
@@ -126,6 +141,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
             handleCheckboxClick={handleCheckboxClick}
             user={user}
             checkboxes={checkboxes}
+            disabledCheckboxes={disableCheckbox(confirmationStatuses)}
           />
         </div>
       </div>
@@ -158,6 +174,6 @@ ComplianceReportSummaryDetailsPage.defaultProps = {
 };
 
 ComplianceReportSummaryDetailsPage.propTypes = {
-
+  pendingBalanceExist: PropTypes.bool.isRequired,
 };
 export default ComplianceReportSummaryDetailsPage;
