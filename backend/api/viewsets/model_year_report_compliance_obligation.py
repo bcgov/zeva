@@ -117,15 +117,18 @@ class ModelYearReportComplianceObligationViewset(
             model_year_report_id=report.id,
         ).order_by('-update_timestamp')
         compliance_offset = None
+        compliance_type = None
         if offset_snapshot:
             offset_serializer = ModelYearReportComplianceObligationOffsetSerializer(
                 offset_snapshot, context={'request': request, 'kwargs': kwargs}, many=True
             )
             compliance_offset = offset_serializer.data
+            
         if confirmation and snapshot:
             serializer = ModelYearReportComplianceObligationSnapshotSerializer(
                 snapshot, context={'request': request, 'kwargs': kwargs}, many=True
             )
+            compliance_type = 'snapshot'
         else:
             # transactions = CreditTransaction.objects.filter(
             #     Q(credit_to=organization) | Q(debit_from=organization)
@@ -246,13 +249,16 @@ class ModelYearReportComplianceObligationViewset(
                 'category': 'creditBalanceEnd',
                 'model_year': {'name': report_year_obj.name}
             })
+            compliance_type = 'current data'
 
             return Response({
                 'compliance_obligation': content,
-                'compliance_offset': compliance_offset
+                'compliance_offset': compliance_offset,
+                'compliance_type': compliance_type
             })
 
         return Response({
             'compliance_obligation': serializer.data,
-            'compliance_offset': compliance_offset
+            'compliance_offset': compliance_offset,
+            'compliance_type': compliance_type
          })

@@ -12,7 +12,6 @@ const ComplianceObligationTableCreditsIssued = (props) => {
   const {
     creditsIssuedSales, transfersIn, transfersOut,
   } = transactions;
-
   const tableSection = (input, title, negativeValue) => {
     let numberClassname = 'text-right';
     if (negativeValue) {
@@ -83,7 +82,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
           && (
             tableSection(creditsIssuedSales, 'Issued for Consumer ZEV Sales')
           )}
-        {Object.keys(creditsIssuedSales).length > 0
+        {Object.keys(pendingBalance).length > 0
           && (
             tableSection(pendingBalance, 'Pending Issuance for Consumer ZEV Sales')
           )}
@@ -103,7 +102,39 @@ const ComplianceObligationTableCreditsIssued = (props) => {
           && (
             tableSection(transfersOut, 'Transferred Away', true)
           )}
-        {tableSection(provisionalBalance, 'PROVISIONAL BALANCE BEFORE CREDIT REDUCTION')}
+        <tr className="subclass">
+          <th className="large-column">
+            PROVISIONAL BALANCE BEFORE CREDIT REDUCTION
+          </th>
+          <th className="small-column text-center text-blue"> </th>
+          <th className="small-column text-center text-blue"> </th>
+        </tr>
+        {Object.keys(pendingBalance).length > 0
+        && (
+
+          Object.keys(provisionalBalance).sort((a, b) => {
+            if (a.modelYear < b.modelYear) {
+              return 1;
+            }
+            if (a.modelYear > b.modelYear) {
+              return -1;
+            }
+            return 0;
+          }).map((each) => (
+            <tr key={each}>
+              <td className="text-blue">
+                &bull; &nbsp; &nbsp; {each} Credits
+              </td>
+              <td className="text-right">
+                {formatNumeric(provisionalBalance[each].A, 2)}
+              </td>
+              <td className="text-right">
+                {formatNumeric(provisionalBalance[each].B, 2)}
+              </td>
+            </tr>
+          ))
+          // tableSection(provisionalBalance, 'PROVISIONAL BALANCE BEFORE CREDIT REDUCTION')
+        )}
       </tbody>
     </table>
   );
