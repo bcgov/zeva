@@ -135,13 +135,13 @@ const ComplianceReportSummaryContainer = (props) => {
       // CREDIT ACTIVITY
       const creditBalanceStart = { year: '', A: 0, B: 0 };
       const creditBalanceEnd = { A: 0, B: 0 };
-      const provisionalBalance = { A: 0, B: 0 };
+      const provisionalBalance = { year: '', A: 0, B: 0 };
       const pendingBalance = { A: 0, B: 0 };
       const transfersIn = { A: 0, B: 0 };
       const transfersOut = { A: 0, B: 0 };
       const creditsIssuedSales = { A: 0, B: 0 };
       const offsetNumbers = { A: 0, B: 0 };
-      creditActivityResponse.data.forEach((item) => {
+      creditActivityResponse.data.complianceObligation.forEach((item) => {
         if (item.category === 'creditBalanceStart') {
           creditBalanceStart.year = item.modelYear.name;
           creditBalanceStart.A = item.creditAValue;
