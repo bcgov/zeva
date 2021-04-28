@@ -135,7 +135,7 @@ const ComplianceReportSummaryContainer = (props) => {
       // CREDIT ACTIVITY
       const creditBalanceStart = { year: '', A: 0, B: 0 };
       const creditBalanceEnd = { A: 0, B: 0 };
-      const provisionalBalance = { year: '', A: 0, B: 0 };
+      const provisionalBalance = {};
       const pendingBalance = { A: 0, B: 0 };
       const transfersIn = { A: 0, B: 0 };
       const transfersOut = { A: 0, B: 0 };
