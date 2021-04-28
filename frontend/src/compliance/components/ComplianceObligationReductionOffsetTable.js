@@ -1,13 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceObligationReductionOffsetTable = (props) => {
   const {
-    offsetNumbers,
     unspecifiedCreditReduction,
     supplierClassInfo,
-    handleOffsetChange,
     zevClassAReduction,
     unspecifiedReductions,
     leftoverReduction,
@@ -163,8 +159,12 @@ const ComplianceObligationReductionOffsetTable = (props) => {
               <td className="text-blue">
                 &bull; &nbsp; &nbsp; {reportYear} Credit
               </td>
-              <td className="text-center">{ creditBalance.A ? creditBalance.A : 0 }</td>
-              <td className="text-center">{ creditBalance.B ? creditBalance.B : 0 }</td>
+              <td className="text-center">
+                {creditBalance.A ? creditBalance.A : 0}
+              </td>
+              <td className="text-center">
+                {creditBalance.B ? creditBalance.B : 0}
+              </td>
             </tr>
           </tbody>
         </table>
