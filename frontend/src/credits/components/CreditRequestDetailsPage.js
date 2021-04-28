@@ -27,13 +27,11 @@ const CreditRequestDetailsPage = (props) => {
     handleSubmit,
     locationState,
     submission,
-    uploadDate,
     user,
   } = props;
   const { id } = useParams();
   const validatedOnly = submission.validationStatus === 'CHECKED';
   const [showModal, setShowModal] = useState(false);
-  const [showReverifyModal, setShowReverifyModal] = useState(false);
   const [modalType, setModalType] = useState('');
   const [comment, setComment] = useState('');
 
@@ -150,33 +148,6 @@ const CreditRequestDetailsPage = (props) => {
     </Modal>
   );
 
-  const reverifyModal = (
-    <Modal
-      cancelLabel="No"
-      confirmLabel="Yes"
-      handleCancel={() => {
-        const url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id);
-
-        history.push(url);
-      }}
-      handleSubmit={() => {
-        let url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id);
-        url += '?reset=Y';
-        history.push(url);
-      }}
-      modalClass="w-75"
-      showModal={showReverifyModal}
-      confirmClass={modalProps.buttonClass}
-    >
-      <div>
-        <h3>ICBC data has been updated since the application was verified.</h3>
-        <h3 className="mt-3">
-          Would you like to reset the current validated VINs and re-verify with the new data?
-        </h3>
-      </div>
-    </Modal>
-  );
-
   let totalEligibleCredits = 0;
 
   submission.content.forEach((item) => {
@@ -206,7 +177,6 @@ const CreditRequestDetailsPage = (props) => {
   return (
     <div id="credit-request-details" className="page">
       {modal}
-      {reverifyModal}
       <div className="row mt-3 mb-2">
         <div className="col-sm-12">
           <h2>Application for Credits for Consumer Sales</h2>
@@ -393,20 +363,29 @@ const CreditRequestDetailsPage = (props) => {
             <span className="right-content">
               {analystAction && (
                 <>
+                  {validatedOnly && (
                   <button
-                    className={validatedOnly ? 'button' : 'button primary'}
+                    className="button"
                     onClick={() => {
-                      if (validatedOnly && moment(uploadDate.updateTimestamp) >= moment(submission.updateTimestamp)) {
-                        setShowReverifyModal(true);
-                      } else {
-                        const url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id);
-
-                        history.push(url);
-                      }
+                      let url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id);
+                      url += '?reset=Y';
+                      history.push(url);
                     }}
                     type="button"
                   >
-                    {validatedOnly ? 'Re-verify with ICBC Data' : 'Verify with ICBC Data'}
+                    Re-verify with ICBC Data
+                  </button>
+                  )}
+                  <button
+                    className={validatedOnly ? 'button' : 'button primary'}
+                    onClick={() => {
+                      const url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id);
+
+                      history.push(url);
+                    }}
+                    type="button"
+                  >
+                    {validatedOnly ? 'Review Details' : 'Verify with ICBC Data'}
                   </button>
                   {validatedOnly && (
                     <button
