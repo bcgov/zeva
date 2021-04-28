@@ -313,8 +313,8 @@ const ComplianceObligationContainer = (props) => {
           if (item.category === 'transfersOut') {
             transfersOut.push({
               modelYear: item.modelYear.name,
-              A: -item.creditAValue,
-              B: -item.creditBValue,
+              A: item.creditAValue,
+              B: item.creditBValue,
             });
           }
           if (item.category === 'creditsIssuedSales') {
