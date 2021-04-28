@@ -122,6 +122,7 @@ class ModelYearReportComplianceObligationViewset(
                 offset_snapshot, context={'request': request, 'kwargs': kwargs}, many=True
             )
             compliance_offset = offset_serializer.data
+            
         if confirmation and snapshot:
             serializer = ModelYearReportComplianceObligationSnapshotSerializer(
                 snapshot, context={'request': request, 'kwargs': kwargs}, many=True

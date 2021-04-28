@@ -273,7 +273,7 @@ const ComplianceObligationContainer = (props) => {
         const { complianceOffset } = complianceResponse.data;
         const creditBalanceStart = {};
         const creditBalanceEnd = {};
-        const provisionalBalance = [];
+        const provisionalBalance = {};
         const pendingBalance = [];
         const transfersIn = [];
         const transfersOut = [];
@@ -292,27 +292,68 @@ const ComplianceObligationContainer = (props) => {
 
         complianceResponseDetails.forEach((item) => {
           if (item.category === 'creditBalanceStart') {
-            creditBalanceStart[item.modelYear.name] = { A: item.creditAValue, B: item.creditBValue };
+            creditBalanceStart[item.modelYear.name] = {
+              A: item.creditAValue,
+              B: item.creditBValue,
+            };
           }
           if (item.category === 'creditBalanceEnd') {
-            creditBalanceEnd[item.modelYear.name] = { A: item.creditAValue, B: item.creditBValue };
-          }
-          if (item.category === 'provisionalBalance') {
-            provisionalBalance.push({ modelYear: item.modelYear.name, A: parseFloat(item.creditAValue), B: parseFloat(item.creditBValue) });
-          }
-          if (item.category === 'pendingBalance') {
-            pendingBalance.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
+            creditBalanceEnd[item.modelYear.name] = {
+              A: item.creditAValue,
+              B: item.creditBValue,
+            };
           }
           if (item.category === 'transfersIn') {
-            transfersIn.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
+            transfersIn.push({
+              modelYear: item.modelYear.name,
+              A: item.creditAValue,
+              B: item.creditBValue,
+            });
           }
           if (item.category === 'transfersOut') {
-            transfersOut.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
+            transfersOut.push({
+              modelYear: item.modelYear.name,
+              A: item.creditAValue,
+              B: item.creditBValue,
+            });
           }
           if (item.category === 'creditsIssuedSales') {
-            creditsIssuedSales.push({ modelYear: item.modelYear.name, A: item.creditAValue, B: item.creditBValue });
+            creditsIssuedSales.push({
+              modelYear: item.modelYear.name,
+              A: item.creditAValue,
+              B: item.creditBValue,
+            });
+          }
+          if (item.category === 'pendingBalance') {
+            pendingBalance.push({
+              modelYear: item.modelYear.name,
+              A: item.creditAValue,
+              B: item.creditBValue,
+            });
           }
         });
+
+        // go through every year in end balance and push to provisional
+        Object.keys(creditBalanceEnd).forEach((item) => {
+          provisionalBalance[item] = {
+            A: creditBalanceEnd[item].A,
+            B: creditBalanceEnd[item].B,
+          };
+        });
+
+        // go through every item in pending and add to total if year already there or create new
+        pendingBalance.forEach((item) => {
+          if (provisionalBalance[item.modelYear]) {
+            provisionalBalance[item.modelYear].A += item.A;
+            provisionalBalance[item.modelYear].B += item.B;
+          } else {
+            provisionalBalance[item.modelYear] = {
+              A: item.A,
+              B: item.B,
+            };
+          }
+        });
+
         setReportDetails({
           creditBalanceStart,
           creditBalanceEnd,
