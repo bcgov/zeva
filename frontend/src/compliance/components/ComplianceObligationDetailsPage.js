@@ -135,6 +135,7 @@ const ComplianceObligationDetailsPage = (props) => {
           creditReduction={creditReduction}
           supplierClassInfo={supplierClassInfo}
           handleOffsetChange={handleOffsetChange}
+          user={user}
         />
       </div>
       <ComplianceReportSignoff

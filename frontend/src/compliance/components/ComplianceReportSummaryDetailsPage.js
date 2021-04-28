@@ -36,12 +36,12 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     consumerSales: { nameSigned: 'Buzz Collins', dateSigned: '2020-02-20' },
     creditActivity: { nameSigned: 'Buzz Collins', dateSigned: '2020-03-01' },
   };
-
   if (loading) {
     return <Loading />;
   }
   const signatureInformation = (input, title) => {
     const { status, confirmedBy } = input;
+
     return (
       <div className="mt-3">
         {confirmedBy && (
@@ -49,7 +49,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
             {title} confirmed by {confirmedBy.createUser.displayName} {moment(confirmedBy.createTimestamp).format('YYYY-MM-DD h[:]mm a')}
           </span>
         )}
-        {status !== 'CONFIRMED' && (
+        {status !== 'CONFIRMED' && status !== 'SUBMITTED' && !confirmedBy && (
           <span className="text-red">
             {title} pending confirmation
           </span>
@@ -60,15 +60,14 @@ const ComplianceReportSummaryDetailsPage = (props) => {
 
   const disableCheckbox = (confirmationStatuses) => {
     const { supplierInformation, consumerSales, complianceObligation } = confirmationStatuses;
-    if (user.hasPermission('SUBMIT_COMPLIANCE_REPORT') &&
-      supplierInformation.status === "CONFIRMED" &&
-      consumerSales.status === "CONFIRMED" &&
-      complianceObligation.status === "CONFIRMED") {
+    if (user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
+      && supplierInformation.status === 'CONFIRMED'
+      && consumerSales.status === 'CONFIRMED'
+      && complianceObligation.status === 'CONFIRMED') {
       return false;
-    } else {
-      return true;
     }
-  }
+    return true;
+  };
 
   const modal = (
     <Modal
@@ -97,7 +96,12 @@ const ComplianceReportSummaryDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          {/* <ComplianceReportAlert report={supplierInformationDetails.supplierInformation} type="Summary" /> */}
+          <ComplianceReportAlert
+            next="Assessment"
+            report={supplierDetails.supplierInformation}
+            status={confirmationStatuses.consumerSales}
+            type="Summary"
+          />
         </div>
       </div>
       <div className="row mt-1">
@@ -153,14 +157,16 @@ const ComplianceReportSummaryDetailsPage = (props) => {
               <Button buttonType="back" locationRoute="/compliance/reports" />
             </span>
             <span className="right-content">
-              <Button
-                buttonType="submit"
-                disabled={checkboxes.length < assertions.length || !user.hasPermission('SUBMIT_COMPLIANCE_REPORT')}
-                optionalClassname="button primary"
-                action={(event) => {
-                  setShowModal(true);
-                }}
-              />
+              {!user.isGovernment && (
+                <Button
+                  buttonType="submit"
+                  disabled={checkboxes.length < assertions.length || !user.hasPermission('SUBMIT_COMPLIANCE_REPORT')}
+                  optionalClassname="button primary"
+                  action={(event) => {
+                    setShowModal(true);
+                  }}
+                />
+              )}
             </span>
           </div>
         </div>

@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useReducer } from 'react';
 import PropTypes from 'prop-types';
 import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceObligationReductionOffsetTable = (props) => {
   const {
-    offsetNumbers, creditReduction, supplierClassInfo, handleOffsetChange,
+    user, offsetNumbers, creditReduction, supplierClassInfo, handleOffsetChange,
   } = props;
 
   return (
@@ -63,6 +63,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
               </td>
               <td className="text-center">
                 <input
+                  disabled={user.isGovernment}
                   type="radio"
                   id="A"
                   onChange={(event) => {
@@ -74,6 +75,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
               </td>
               <td className="text-center">
                 <input
+                  disabled={user.isGovernment}
                   className="text-center"
                   type="radio"
                   id="B"
