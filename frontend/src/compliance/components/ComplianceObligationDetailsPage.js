@@ -159,12 +159,14 @@ const ComplianceObligationDetailsPage = (props) => {
                   history.push(ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id));
                 }}
               />
+              {!user.isGovernment && (
               <Button
                 buttonType="save"
                 disabled={['SAVED', 'UNSAVED'].indexOf(statuses.complianceObligation.status) < 0}
                 optionalClassname="button primary"
                 action={() => { handleSave(); }}
               />
+              )}
             </span>
           </div>
         </div>

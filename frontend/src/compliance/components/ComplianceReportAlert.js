@@ -61,9 +61,9 @@ const ComplianceReportAlert = (props) => {
       break;
 
     case 'SUBMITTED':
-      title = 'Model Year Report Submitted';
-      message = `Model Year Report Submitted ${date} by ${userName} — Consumer Sales confirmed ${confirmedBy.date} by ${confirmedBy.user}`;
-      classname = 'alert-primary';
+      title = 'Submitted';
+      message = `Model Year Report Submitted ${date} by ${userName}. Pending analyst review and director assessment`;
+      classname = 'alert-warning';
       break;
 
     case 'ASSESSED':
