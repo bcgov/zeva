@@ -58,16 +58,15 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     );
   };
 
-  const disableCheckbox = (confirmationStatuses) => {
+  const disableCheckbox = () => {
     const { supplierInformation, consumerSales, complianceObligation } = confirmationStatuses;
     if (user.hasPermission('SUBMIT_COMPLIANCE_REPORT') &&
       supplierInformation.status === "CONFIRMED" &&
       consumerSales.status === "CONFIRMED" &&
       complianceObligation.status === "CONFIRMED") {
       return false;
-    } else {
-      return true;
-    }
+    } 
+      return true; 
   }
 
   const modal = (
@@ -141,7 +140,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
             handleCheckboxClick={handleCheckboxClick}
             user={user}
             checkboxes={checkboxes}
-            disabledCheckboxes={disableCheckbox(confirmationStatuses)}
+            disabledCheckboxes={disableCheckbox()}
           />
         </div>
       </div>
