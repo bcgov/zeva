@@ -20,6 +20,7 @@ const VINListTable = (props) => {
     loading,
     modified,
     pages,
+    query,
     readOnly,
     reasons,
     refreshContent,
@@ -27,6 +28,8 @@ const VINListTable = (props) => {
     setLoading,
     setReactTable,
   } = props;
+
+  const reset = query && query.reset === 'Y';
 
   const getErrorCodes = (item, fields = false) => {
     let errorCodes = '';
@@ -166,7 +169,7 @@ const VINListTable = (props) => {
       width: 100,
     }, {
       accessor: (row) => {
-        if (!row.reason && modified.findIndex((id) => id === row.id) < 0) {
+        if (((row.reason && reset) || !row.reason) && modified.findIndex((id) => id === row.id) < 0) {
           return false;
         }
 
@@ -281,6 +284,7 @@ VINListTable.defaultProps = {
   filtered: undefined,
   setFiltered: undefined,
   modified: [],
+  query: null,
   readOnly: false,
   reasons: [],
   handleCheckboxClick: undefined,
@@ -302,6 +306,7 @@ VINListTable.propTypes = {
     PropTypes.string,
   ])),
   pages: PropTypes.number.isRequired,
+  query: PropTypes.shape(),
   readOnly: PropTypes.bool,
   reasons: PropTypes.arrayOf(PropTypes.string),
   refreshContent: PropTypes.func.isRequired,
