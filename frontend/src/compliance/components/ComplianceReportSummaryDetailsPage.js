@@ -85,6 +85,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
       </div>
     </Modal>
   );
+
   return (
     <div id="compliance-supplier-information-details" className="page">
       <div className="row mt-3">
@@ -94,12 +95,13 @@ const ComplianceReportSummaryDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          <ComplianceReportAlert
-            next="Assessment"
-            report={supplierDetails.supplierInformation}
-            status={confirmationStatuses.consumerSales}
-            type="Summary"
-          />
+          {supplierDetails && supplierDetails.supplierInformation && supplierDetails.supplierInformation.history && (
+            <ComplianceReportAlert
+              report={supplierDetails.supplierInformation}
+              status={confirmationStatuses.reportSummary}
+              type="Report Summary"
+            />
+          )}
         </div>
       </div>
       <div className="row mt-1">

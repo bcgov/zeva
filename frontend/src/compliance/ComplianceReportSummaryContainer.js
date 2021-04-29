@@ -49,13 +49,6 @@ const ComplianceReportSummaryContainer = (props) => {
     });
   };
 
-  const reportStatuses = {
-    assessment: '',
-    consumerSales: '',
-    creditActivity: '',
-    reportSummary: 'draft',
-    supplierInformation: '',
-  };
   const refreshDetails = () => {
     setLoading(true);
     axios.all([
@@ -218,7 +211,7 @@ const ComplianceReportSummaryContainer = (props) => {
     <>
       <ComplianceReportTabs
         active="summary"
-        reportStatuses={reportStatuses}
+        reportStatuses={confirmationStatuses}
         id={id}
         user={user}
       />

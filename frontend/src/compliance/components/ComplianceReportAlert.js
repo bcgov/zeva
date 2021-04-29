@@ -41,6 +41,42 @@ const ComplianceReportAlert = (props) => {
     };
   }
 
+  if (type === 'Report Summary') {
+    switch (status && status.status) {
+      case 'UNSAVED':
+        title = 'Model Year Report Draft';
+        message = 'All previous confirmation checkboxes must be confirmed to submit the report to government. You must have the Signing Authority role to submit the report to government.';
+        classname = 'alert-warning';
+        break;
+
+      case 'SAVED':
+      case 'CONFIRMED':
+        title = 'Model Year Report Draft';
+        message = 'The confirmation checkbox must be confirmed to submit the report to government. You must have the Signing Authority role to submit the report to government.';
+        classname = 'alert-primary';
+        break;
+
+      case 'SUBMITTED':
+        title = 'Model Year Report Submitted';
+        message = `Model Year Report Submitted ${date} by ${userName}`;
+        classname = 'alert-primary';
+        break;
+
+      case 'ASSESSED':
+        title = 'Model Year Report Assessed';
+        message = `Model Year Report Assessed ${date} by the Director — ${type} submitted ${confirmedBy.date} by ${confirmedBy.user}`;
+        classname = 'alert-success';
+        break;
+
+      default:
+        title = '';
+    }
+
+    return (
+      <Alert title={title} icon={icon} classname={classname} message={message} />
+    );
+  }
+
   switch (status && status.status) {
     case 'UNSAVED':
       title = 'Model Year Report Draft';
@@ -68,7 +104,7 @@ const ComplianceReportAlert = (props) => {
 
     case 'ASSESSED':
       title = 'Model Year Report Assessed';
-      message = `Model Year Report Assessed ${date} by the Director — Consumer Sales confirmed ${confirmedBy.date} by ${confirmedBy.user}`;
+      message = `Model Year Report Assessed ${date} by the Director — ${type} confirmed ${confirmedBy.date} by ${confirmedBy.user}`;
       classname = 'alert-success';
       break;
 
@@ -82,13 +118,14 @@ const ComplianceReportAlert = (props) => {
 };
 
 ComplianceReportAlert.defaultProps = {
+  next: '',
 };
 
 ComplianceReportAlert.propTypes = {
   report: PropTypes.shape().isRequired,
   status: PropTypes.shape().isRequired,
   type: PropTypes.string.isRequired,
-  next: PropTypes.string.isRequired,
+  next: PropTypes.string,
 };
 
 export default ComplianceReportAlert;
