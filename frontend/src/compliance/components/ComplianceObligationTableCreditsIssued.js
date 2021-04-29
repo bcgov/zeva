@@ -140,7 +140,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
   );
 };
 ComplianceObligationTableCreditsIssued.propTypes = {
-  reportYear: PropTypes.string.isRequired,
+  reportYear: PropTypes.number.isRequired,
   reportDetails: PropTypes.shape().isRequired,
 };
 export default ComplianceObligationTableCreditsIssued;

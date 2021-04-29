@@ -58,8 +58,9 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     );
   };
 
-  const disableCheckbox = (statuses) => {
-    const { supplierInformation, consumerSales, complianceObligation } = statuses;
+  const disableCheckbox = () => {
+    const { supplierInformation, consumerSales, complianceObligation } = confirmationStatuses;
+
     if (user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
       && supplierInformation.status === 'CONFIRMED'
       && consumerSales.status === 'CONFIRMED'
@@ -148,7 +149,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
             handleCheckboxClick={handleCheckboxClick}
             user={user}
             checkboxes={checkboxes}
-            disabledCheckboxes={disableCheckbox(confirmationStatuses)}
+            disabledCheckboxes={disableCheckbox()}
           />
         </div>
       </div>

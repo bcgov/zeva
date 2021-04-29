@@ -42,13 +42,15 @@ const CreditRequestVINListContainer = (props) => {
       const { data } = contentResponse;
       setContent(data.content);
 
+      const reset = query && query.reset;
+
       data.content.forEach((each) => {
         const index = reasonList.findIndex((item) => Number(item.id) === Number(each.id));
 
         if (each.reason && index < 0) {
           reasonList.push({
             id: Number(each.id),
-            reason: each.reason,
+            reason: reset ? '' : each.reason,
           });
         }
       });
@@ -59,7 +61,6 @@ const CreditRequestVINListContainer = (props) => {
       setInvalidatedList(unselected);
 
       const { data: reasonsData } = reasonsResponse;
-
       setReasons(reasonsData);
 
       setLoading(false);
@@ -142,6 +143,7 @@ const CreditRequestVINListContainer = (props) => {
       handleSubmit={handleSubmit}
       invalidatedList={invalidatedList}
       modified={modified}
+      query={query}
       reasons={reasons}
       routeParams={match.params}
       setContent={setContent}
