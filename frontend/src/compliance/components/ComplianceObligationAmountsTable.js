@@ -95,7 +95,7 @@ const ComplianceObligationAmountsTable = (props) => {
                       &bull; &nbsp; &nbsp; Unspecified ZEV Class Credit Reduction:
                     </td>
                     <td>
-                      {leftoverReduction}
+                      {formatNumeric((leftoverReduction), 2)}
                     </td>
                   </tr>
                 </>
