@@ -25,7 +25,7 @@ const ComplianceReportSummaryContainer = (props) => {
   const [creditActivityDetails, setCreditActivityDetails] = useState({});
   const [pendingBalanceExist, setPendingBalanceExist] = useState(false);
   const [assertions, setAssertions] = useState([]);
-  
+
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
       const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
@@ -49,13 +49,6 @@ const ComplianceReportSummaryContainer = (props) => {
     });
   };
 
-  const reportStatuses = {
-    assessment: '',
-    consumerSales: '',
-    creditActivity: '',
-    reportSummary: 'draft',
-    supplierInformation: '',
-  };
   const refreshDetails = () => {
     setLoading(true);
     axios.all([
@@ -218,7 +211,7 @@ const ComplianceReportSummaryContainer = (props) => {
     <>
       <ComplianceReportTabs
         active="summary"
-        reportStatuses={reportStatuses}
+        reportStatuses={confirmationStatuses}
         id={id}
         user={user}
       />

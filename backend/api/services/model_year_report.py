@@ -5,8 +5,11 @@ from api.models.model_year_report_previous_sales import \
     ModelYearReportPreviousSales
 from api.models.model_year_report_compliance_obligation import \
     ModelYearReportComplianceObligation
+from api.models.user_profile import UserProfile
+
 from api.serializers.model_year_report_confirmation import \
     ModelYearReportConfirmationSerializer
+from api.serializers.user import MemberSerializer
 
 
 def get_model_year_report_statuses(report):
@@ -16,6 +19,8 @@ def get_model_year_report_statuses(report):
     supplier_information_confirmed_by = None
     consumer_sales_confirmed_by = None
     compliance_obligation_confirmed_by = None
+    summary_status = 'UNSAVED'
+    summary_confirmed_by = None
 
     confirmations = ModelYearReportConfirmation.objects.filter(
         model_year_report_id=report.id,
@@ -65,10 +70,26 @@ def get_model_year_report_statuses(report):
             compliance_obligation_status = 'CONFIRMED'
             compliance_obligation_confirmed_by = serializer.data
 
+    if supplier_information_status == 'CONFIRMED' and \
+            consumer_sales_status == 'CONFIRMED' and \
+            compliance_obligation_status == 'CONFIRMED':
+        summary_status = 'SAVED'
+
     if report.validation_status == ModelYearReportStatuses.SUBMITTED:
         supplier_information_status = 'SUBMITTED'
         consumer_sales_status = 'SUBMITTED'
         compliance_obligation_status = 'SUBMITTED'
+        summary_status = 'SUBMITTED'
+
+        user_profile = UserProfile.objects.filter(username=report.update_user)
+
+        if user_profile.exists():
+            serializer = MemberSerializer(user_profile.first(), read_only=True)
+
+            summary_confirmed_by = {
+                'create_timestamp': report.update_timestamp,
+                'create_user': serializer.data
+            }
 
     return {
         'supplier_information': {
@@ -82,5 +103,9 @@ def get_model_year_report_statuses(report):
         'compliance_obligation': {
             'status': compliance_obligation_status,
             'confirmed_by': compliance_obligation_confirmed_by
+        },
+        'report_summary': {
+            'status': summary_status,
+            'confirmed_by': summary_confirmed_by
         }
     }
