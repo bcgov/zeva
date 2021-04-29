@@ -41,10 +41,8 @@ const ComplianceObligationDetailsPage = (props) => {
   const [showModal, setShowModal] = useState(false);
   let disabledCheckboxes = propsDisabledCheckboxes;
 
-  const totalReduction = formatNumeric(
-    ((ratios.complianceRatio / 100) * supplierClassInfo.ldvSales),
-    2,
-  );
+  const totalReduction = ((ratios.complianceRatio / 100) * supplierClassInfo.ldvSales);
+  
   const classAReduction = formatNumeric(
     ((ratios.zevClassA / 100) * supplierClassInfo.ldvSales),
     2,
@@ -139,6 +137,7 @@ const ComplianceObligationDetailsPage = (props) => {
           zevClassAReduction={zevClassAReduction}
           unspecifiedReductions={unspecifiedReductions}
           leftoverReduction={leftoverReduction}
+          totalReduction={totalReduction}
           reportYear={reportYear}
           creditBalance={creditBalance}
         />

@@ -9,6 +9,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
     leftoverReduction,
     reportYear,
     creditBalance,
+    totalReduction,
   } = props;
 
   return (
@@ -73,7 +74,12 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                   type="radio"
                   id="A"
                   onChange={(event) => {
-                    unspecifiedCreditReduction(event, leftoverReduction);
+                    unspecifiedCreditReduction(
+                      event,
+                      supplierClassInfo.class === 'L'
+                        ? leftoverReduction
+                        : totalReduction
+                    );
                   }}
                   name="creditOption"
                   value="A"
@@ -85,7 +91,12 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                   type="radio"
                   id="B"
                   onChange={(event) => {
-                    unspecifiedCreditReduction(event, leftoverReduction);
+                    unspecifiedCreditReduction(
+                      event,
+                      supplierClassInfo.class === 'L'
+                        ? leftoverReduction
+                        : totalReduction
+                    );
                   }}
                   name="creditOption"
                   value="B"
