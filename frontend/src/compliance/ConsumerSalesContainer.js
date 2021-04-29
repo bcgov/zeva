@@ -82,12 +82,12 @@ const ConsumerSalesContainer = (props) => {
           parseInt(previousSales[0].previousSales, 10),
           parseInt(previousSales[1].previousSales, 10),
           parseInt(previousSales[2].previousSales, 10),
-          ldvSales
+          ldvSales,
         );
       } else {
-        setAvgSales(ldvSales)
+        setAvgSales(ldvSales);
       }
-     
+
       if (vehicleList.length > 0) {
         setVehicles(vehicleList);
       } else {

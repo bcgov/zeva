@@ -60,14 +60,16 @@ const ComplianceReportSummaryDetailsPage = (props) => {
 
   const disableCheckbox = () => {
     const { supplierInformation, consumerSales, complianceObligation } = confirmationStatuses;
-    if (user.hasPermission('SUBMIT_COMPLIANCE_REPORT') &&
-      supplierInformation.status === "CONFIRMED" &&
-      consumerSales.status === "CONFIRMED" &&
-      complianceObligation.status === "CONFIRMED") {
+
+    if (user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
+      && supplierInformation.status === 'CONFIRMED'
+      && consumerSales.status === 'CONFIRMED'
+      && complianceObligation.status === 'CONFIRMED') {
       return false;
-    } 
-      return true; 
-  }
+    }
+
+    return true;
+  };
 
   const modal = (
     <Modal
@@ -87,6 +89,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
       </div>
     </Modal>
   );
+
   return (
     <div id="compliance-supplier-information-details" className="page">
       <div className="row mt-3">
@@ -96,7 +99,13 @@ const ComplianceReportSummaryDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          {/* <ComplianceReportAlert report={supplierInformationDetails.supplierInformation} type="Summary" /> */}
+          {supplierDetails && supplierDetails.supplierInformation && supplierDetails.supplierInformation.history && (
+            <ComplianceReportAlert
+              report={supplierDetails.supplierInformation}
+              status={confirmationStatuses.reportSummary}
+              type="Report Summary"
+            />
+          )}
         </div>
       </div>
       <div className="row mt-1">
