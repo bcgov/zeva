@@ -73,7 +73,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
               </td>
               <td className="text-center">
                 <input
-                  disabled={user.isGovernment || statuses.complianceObligation.status === 'SUBMITTED'}
+                  disabled={user.isGovernment || statuses.complianceObligation.status === 'SUBMITTED' || statuses.complianceObligation.status === 'CONFIRMED'}
                   type="radio"
                   id="A"
                   onChange={(event) => {
@@ -90,7 +90,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
               </td>
               <td className="text-center">
                 <input
-                  disabled={user.isGovernment || statuses.complianceObligation.status === 'SUBMITTED'}
+                  disabled={user.isGovernment || statuses.complianceObligation.status === 'SUBMITTED' || statuses.complianceObligation.status === 'CONFIRMED'}
                   className="text-center"
                   type="radio"
                   id="B"
