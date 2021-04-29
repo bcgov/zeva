@@ -11,7 +11,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
     creditBalance,
     totalReduction,
     user,
-    statuses
+    statuses,
   } = props;
 
   return (
@@ -81,7 +81,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                       event,
                       supplierClassInfo.class === 'L'
                         ? leftoverReduction
-                        : totalReduction
+                        : totalReduction,
                     );
                   }}
                   name="creditOption"
@@ -99,7 +99,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                       event,
                       supplierClassInfo.class === 'L'
                         ? leftoverReduction
-                        : totalReduction
+                        : totalReduction,
                     );
                   }}
                   name="creditOption"
@@ -167,8 +167,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
 
             <tr className="subclass">
               <th className="large-column">BALANCE AFTER CREDIT REDUCTION</th>
-              <th></th>
-              <th></th>
+              <th />
+              <th />
             </tr>
             <tr>
               <td className="text-blue">

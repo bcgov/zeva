@@ -25,7 +25,7 @@ const ComplianceReportSummaryContainer = (props) => {
   const [creditActivityDetails, setCreditActivityDetails] = useState({});
   const [pendingBalanceExist, setPendingBalanceExist] = useState(false);
   const [assertions, setAssertions] = useState([]);
-  
+
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
       const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
@@ -41,7 +41,7 @@ const ComplianceReportSummaryContainer = (props) => {
     const data = {
       modelYearReportId: id,
       validation_status: status,
-      confirmation: checkboxes
+      confirmation: checkboxes,
     };
 
     axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then((response) => {
