@@ -40,7 +40,7 @@ const ComplianceObligationAmountsTable = (props) => {
                           Compliance Ratio Credit Reduction:
                         </td>
                         <td>
-                          {totalReduction}
+                          {formatNumeric((totalReduction) , 2)}
                         </td>
                       </tr>
                     </>
@@ -77,7 +77,7 @@ const ComplianceObligationAmountsTable = (props) => {
                     Compliance Ratio Credit Reduction:
                   </td>
                   <td>
-                    {totalReduction}
+                    {formatNumeric((totalReduction),2)}
                   </td>
                 </tr>
                 <>
@@ -95,7 +95,7 @@ const ComplianceObligationAmountsTable = (props) => {
                       &bull; &nbsp; &nbsp; Unspecified ZEV Class Credit Reduction:
                     </td>
                     <td>
-                      {leftoverReduction}
+                      {formatNumeric((leftoverReduction), 2)}
                     </td>
                   </tr>
                 </>

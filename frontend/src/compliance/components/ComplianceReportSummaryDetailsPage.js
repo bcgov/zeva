@@ -3,10 +3,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment-timezone';
-import formatNumeric from '../../app/utilities/formatNumeric';
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
-import CustomPropTypes from '../../app/utilities/props';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import ComplianceReportSignOff from './ComplianceReportSignOff';
 import SummaryCreditActivityTable from './SummaryCreditActivityTable';
@@ -58,7 +56,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     );
   };
 
-  const disableCheckbox = (confirmationStatuses) => {
+  const disableCheckbox = () => {
     const { supplierInformation, consumerSales, complianceObligation } = confirmationStatuses;
     if (user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
       && supplierInformation.status === 'CONFIRMED'
@@ -145,7 +143,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
             handleCheckboxClick={handleCheckboxClick}
             user={user}
             checkboxes={checkboxes}
-            disabledCheckboxes={disableCheckbox(confirmationStatuses)}
+            disabledCheckboxes={disableCheckbox()}
           />
         </div>
       </div>

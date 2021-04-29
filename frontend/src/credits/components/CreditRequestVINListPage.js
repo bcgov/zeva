@@ -14,6 +14,7 @@ const CreditRequestVINListPage = (props) => {
     handleChangeReason,
     handleSubmit,
     modified,
+    query,
     reasons,
     setContent,
     submission,
@@ -154,6 +155,7 @@ const CreditRequestVINListPage = (props) => {
             loading={loading}
             modified={modified}
             pages={pages}
+            query={query}
             reasons={reasons}
             refreshContent={refreshContent}
             setContent={setContent}
@@ -176,7 +178,9 @@ const CreditRequestVINListPage = (props) => {
   );
 };
 
-CreditRequestVINListPage.defaultProps = {};
+CreditRequestVINListPage.defaultProps = {
+  query: null,
+};
 
 CreditRequestVINListPage.propTypes = {
   content: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -191,6 +195,7 @@ CreditRequestVINListPage.propTypes = {
     PropTypes.number,
     PropTypes.string,
   ])).isRequired,
+  query: PropTypes.shape(),
   reasons: PropTypes.arrayOf(PropTypes.string).isRequired,
   setContent: PropTypes.func.isRequired,
   submission: PropTypes.shape().isRequired,
