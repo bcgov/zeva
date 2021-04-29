@@ -78,10 +78,10 @@ const ComplianceObligationContainer = (props) => {
     Object.keys(provisionalBalance).forEach((each) => {
       const modelYear = parseInt(each, 10);
       if (modelYear === reportYear) {
-        provisionalBalanceCurrentYearA = provisionalBalance[each].A;
+        provisionalBalanceCurrentYearA = parseInt(provisionalBalance[each].A, 10);
       }
       if (modelYear === reportYear - 1) {
-        provisionalBalanceLastYearA = provisionalBalance[each].A;
+        provisionalBalanceLastYearA = parseInt(provisionalBalance[each].A, 10);
       }
     });
     
@@ -120,11 +120,13 @@ const ComplianceObligationContainer = (props) => {
         });
       }
   }
-  const unspecifiedCreditReduction = (event, leftoverReduction) => {
+  const unspecifiedCreditReduction = (event, paramReduction) => {
+    console.log(reportYear)
     const { provisionalBalance } = reportDetails;
     const { lastYearABalance, currentYearABalance } = remainingABalance;
     const { id: radioId } = event.target;
-    const unspecifiedZevClassReduction = leftoverReduction;
+    console.log(paramReduction);
+    const unspecifiedZevClassReduction = paramReduction;
     let unspecifiedZevClassCurrentYearA = 0;
     let unspecifiedZevClassCurrentYearB = 0;
     let unspecifiedZevClassLastYearA = 0;
@@ -134,13 +136,13 @@ const ComplianceObligationContainer = (props) => {
     Object.keys(provisionalBalance).forEach((each) => {
       const modelYear = parseInt(each,10);
       if (modelYear === reportYear) {
-        provisionalBalanceCurrentYearA = provisionalBalance[each].A;
-        provisionalBalanceCurrentYearB = provisionalBalance[each].B;
-
+        provisionalBalanceCurrentYearA = parseInt(provisionalBalance[each].A, 10);
+        provisionalBalanceCurrentYearB = parseInt(provisionalBalance[each].B, 10);
+        console.log(provisionalBalanceCurrentYearA);
       }
       if (modelYear === reportYear - 1) {
-        provisionalBalanceLastYearA = provisionalBalance[each].A;
-        provisionalBalanceLastYearB = provisionalBalance[each].B;
+        provisionalBalanceLastYearA = parseInt(provisionalBalance[each].A, 10);
+        provisionalBalanceLastYearB = parseInt(provisionalBalance[each].B, 10);
       }
     });
 
