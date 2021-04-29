@@ -121,11 +121,9 @@ const ComplianceObligationContainer = (props) => {
       }
   }
   const unspecifiedCreditReduction = (event, paramReduction) => {
-    console.log(reportYear)
     const { provisionalBalance } = reportDetails;
     const { lastYearABalance, currentYearABalance } = remainingABalance;
     const { id: radioId } = event.target;
-    console.log(paramReduction);
     const unspecifiedZevClassReduction = paramReduction;
     let unspecifiedZevClassCurrentYearA = 0;
     let unspecifiedZevClassCurrentYearB = 0;
@@ -134,11 +132,10 @@ const ComplianceObligationContainer = (props) => {
     let remainingUnspecifiedReduction = 0;
     
     Object.keys(provisionalBalance).forEach((each) => {
-      const modelYear = parseInt(each,10);
+      const modelYear = parseInt(each, 10);
       if (modelYear === reportYear) {
         provisionalBalanceCurrentYearA = parseInt(provisionalBalance[each].A, 10);
         provisionalBalanceCurrentYearB = parseInt(provisionalBalance[each].B, 10);
-        console.log(provisionalBalanceCurrentYearA);
       }
       if (modelYear === reportYear - 1) {
         provisionalBalanceLastYearA = parseInt(provisionalBalance[each].A, 10);
