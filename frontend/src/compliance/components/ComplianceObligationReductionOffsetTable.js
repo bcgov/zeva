@@ -11,6 +11,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
     creditBalance,
     totalReduction,
     user,
+    statuses
   } = props;
 
   return (
@@ -72,7 +73,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
               </td>
               <td className="text-center">
                 <input
-                  disabled={user.isGovernment}
+                  disabled={user.isGovernment || statuses.complianceObligation.status === 'SUBMITTED'}
                   type="radio"
                   id="A"
                   onChange={(event) => {
@@ -89,7 +90,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
               </td>
               <td className="text-center">
                 <input
-                  disabled={user.isGovernment}
+                  disabled={user.isGovernment || statuses.complianceObligation.status === 'SUBMITTED'}
                   className="text-center"
                   type="radio"
                   id="B"

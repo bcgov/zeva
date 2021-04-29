@@ -40,9 +40,8 @@ const ComplianceObligationDetailsPage = (props) => {
   } = props;
   const [showModal, setShowModal] = useState(false);
   let disabledCheckboxes = propsDisabledCheckboxes;
-
   const totalReduction = ((ratios.complianceRatio / 100) * supplierClassInfo.ldvSales);
-  
+
   const classAReduction = formatNumeric(
     ((ratios.zevClassA / 100) * supplierClassInfo.ldvSales),
     2,
@@ -130,6 +129,7 @@ const ComplianceObligationDetailsPage = (props) => {
         <h3 className="mt-4 mb-2">Credit Reduction</h3>
         You must select your ZEV class credit preference below.
         <ComplianceObligationReductionOffsetTable
+          statuses={statuses}
           offsetNumbers={offsetNumbers}
           unspecifiedCreditReduction={unspecifiedCreditReduction}
           supplierClassInfo={supplierClassInfo}
@@ -205,7 +205,7 @@ ComplianceObligationDetailsPage.propTypes = {
   handleCheckboxClick: PropTypes.func.isRequired,
   assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   checkboxes: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   ).isRequired,
   statuses: PropTypes.shape().isRequired,
   handleOffsetChange: PropTypes.func.isRequired,
