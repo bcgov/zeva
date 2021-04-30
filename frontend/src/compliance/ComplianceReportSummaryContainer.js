@@ -3,6 +3,7 @@ import { now } from 'moment';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
+import CONFIG from '../app/config';
 import Loading from '../app/components/Loading';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import CustomPropTypes from '../app/utilities/props';
@@ -24,6 +25,7 @@ const ComplianceReportSummaryContainer = (props) => {
   const [confirmationStatuses, setConfirmationStatuses] = useState({});
   const [creditActivityDetails, setCreditActivityDetails] = useState({});
   const [pendingBalanceExist, setPendingBalanceExist] = useState(false);
+  const [modelYear, setModelYear] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR);
   const [assertions, setAssertions] = useState([]);
   
   const handleCheckboxClick = (event) => {
@@ -61,13 +63,11 @@ const ComplianceReportSummaryContainer = (props) => {
     axios.all([
       axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)),
       axios.get(ROUTES_COMPLIANCE.RATIOS),
-      axios.get(ROUTES_VEHICLES.VEHICLES_SALES),
       axios.get(ROUTES_COMPLIANCE.RETRIEVE_CONSUMER_SALES.replace(':id', id)),
       axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)),
     ]).then(axios.spread((
       reportDetailsResponse,
       allComplianceRatiosResponse,
-      vehicleSalesResponse,
       consumerSalesResponse,
       creditActivityResponse,
     ) => {
@@ -83,6 +83,10 @@ const ComplianceReportSummaryContainer = (props) => {
       } = reportDetailsResponse.data;
       // ALL STATUSES
       setConfirmationStatuses(statuses);
+
+      const year = parseInt(reportModelYear.name, 10);
+
+      setModelYear(year);
 
       // SUPPLIER INFORMATION
       if (modelYearReportMakes) {
@@ -108,10 +112,10 @@ const ComplianceReportSummaryContainer = (props) => {
       } else {
         supplierClass = 'Small';
       }
-      const year = reportDetailsResponse.data.modelYear.name;
+
       let pendingZevSales = 0;
       let zevSales = 0;
-      vehicleSalesResponse.data.forEach((vehicle) => {
+      consumerSalesResponse.data.vehicleList.forEach((vehicle) => {
         pendingZevSales += vehicle.pendingSales;
         zevSales += vehicle.salesIssued;
       });
@@ -209,7 +213,7 @@ const ComplianceReportSummaryContainer = (props) => {
 
   useEffect(() => {
     refreshDetails();
-  }, []);
+  }, [modelYear]);
   if (loading) {
     return (<Loading />);
   }

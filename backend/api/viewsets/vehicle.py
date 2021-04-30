@@ -5,6 +5,11 @@ from django.utils.decorators import method_decorator
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+import datetime
+
+from django.db.models import Q
+import xlrd
+from api.models.sales_submission import SalesSubmission
 
 from api.decorators.permission import permission_required
 from api.models.vehicle_class import VehicleClass
@@ -18,6 +23,7 @@ from api.serializers.vehicle import ModelYearSerializer, \
     VehicleStatusChangeSerializer, VehicleIsActiveChangeSerializer, \
     VehicleSalesSerializer
 from api.services.minio import minio_put_object
+from api.models.sales_submission_content import SalesSubmissionContent
 from auditable.views import AuditableMixin
 
 
@@ -96,9 +102,43 @@ class VehicleViewSet(
         serializer = VehicleClassSerializer(classes, many=True)
         return Response(serializer.data)
 
-    @action(detail=False)	
-    def vehicles_sales(self, _request):
-        vehicles = self.get_queryset()
+    @action(detail=True)
+    def vehicles_sales(self, _request, *args, **kwargs):
+        report_year = int(kwargs.pop('pk'))
+        organization_id = _request.user.organization.id
+        org_submission = SalesSubmission.objects.filter(
+            organization_id=organization_id)
+        from_date = (report_year-1, 10, 1,)
+        to_date = (report_year, 9, 30,)
+
+        sales_from_date = xlrd.xldate.xldate_from_date_tuple(from_date, 0)
+        sales_to_date = xlrd.xldate.xldate_from_date_tuple(to_date, 0)
+        sales = SalesSubmissionContent.objects.values(
+            'xls_make', 'xls_model', 'xls_model_year'
+        ).filter(
+            Q(Q(
+                Q(xls_sale_date__lte=sales_to_date) &
+                Q(xls_sale_date__gte=sales_from_date) &
+                Q(xls_date_type="3") &
+                ~Q(xls_sale_date="")
+            ) |
+              Q(
+                Q(xls_sale_date__lte=str(report_year) + "-09-30") &
+                Q(xls_sale_date__gte=str(report_year-1) + "-10-01") &
+                Q(xls_date_type="1") &
+                ~Q(xls_sale_date="")
+              )
+            )
+            ).filter(submission__in=org_submission)
+
+        vehicles = Vehicle.objects.none()
+        for sale in sales:
+            model_year = ModelYear.objects.get(name=sale['xls_model_year'][0:4])
+            vehicles |= Vehicle.objects.filter(
+                make=sale['xls_make'],
+                model_name=sale['xls_model'],
+                model_year=model_year)
+
         serializer = VehicleSalesSerializer(vehicles, many=True)
         return Response(serializer.data)
 
@@ -107,7 +147,7 @@ class VehicleViewSet(
         """
         Get the years
         """
-        exclude_years = ['2017','2018']
+        exclude_years = ['2017', '2018']
         years = ModelYear.objects.all().order_by('-name').exclude(name__in=exclude_years)
         serializer = ModelYearSerializer(years, many=True)
         return Response(serializer.data)
