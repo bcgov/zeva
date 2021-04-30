@@ -6,10 +6,10 @@ from api.models.notification import Notification
 
 class UpdateNotifications(OperationalDataScript):
     """
-    Update notifications permission
+    Update notifications name
     """
     is_revertable = False
-    comment = 'Update notifications permission'
+    comment = 'Update notifications name'
 
     def check_run_preconditions(self):
         return True
