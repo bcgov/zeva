@@ -57,7 +57,7 @@ const ConsumerSalesContainer = (props) => {
     setLoading(showLoading);
 
     axios.all([
-      axios.get(ROUTES_VEHICLES.VEHICLES_SALES),
+      axios.get(ROUTES_VEHICLES.VEHICLES_SALES.replace(':id', modelYear)),
       axios.get(ROUTES_COMPLIANCE.RETRIEVE_CONSUMER_SALES.replace(':id', id)),
       axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)),
     ]).then(axios.spread((vehiclesSales, consumerSalesResponse, statusesResponse) => {
@@ -240,7 +240,7 @@ const ConsumerSalesContainer = (props) => {
 
   useEffect(() => {
     refreshDetails(true);
-  }, [keycloak.authenticated]);
+  }, [keycloak.authenticated, modelYear]);
 
   return (
     <>
