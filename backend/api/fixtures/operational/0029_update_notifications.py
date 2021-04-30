@@ -2,7 +2,6 @@ from django.db import transaction
 
 from api.management.data_script import OperationalDataScript
 from api.models.notification import Notification
-from api.models.permission import Permission
 
 
 class UpdateNotifications(OperationalDataScript):
