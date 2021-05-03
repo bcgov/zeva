@@ -158,7 +158,7 @@ class Router extends Component {
               />
               <Route
                 path={ROUTES_COMPLIANCE.REPORT_SUMMARY}
-                render={() => ((typeof user.hasPermission === 'function' && user.hasPermission('EDIT_SALES') && !user.isGovernment)
+                render={() => ((typeof user.hasPermission === 'function' && user.hasPermission('EDIT_SALES'))
                   ? <ComplianceReportSummaryContainer keycloak={keycloak} user={user} /> : (
                     <ComplianceReportsContainer keycloak={keycloak} user={user} />
                   ))}

@@ -10,6 +10,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
     reportYear,
     creditBalance,
     totalReduction,
+    user,
+    statuses,
   } = props;
 
   return (
@@ -71,6 +73,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
               </td>
               <td className="text-center">
                 <input
+                  disabled={user.isGovernment || statuses.complianceObligation.status === 'SUBMITTED' || statuses.complianceObligation.status === 'CONFIRMED'}
                   type="radio"
                   id="A"
                   onChange={(event) => {
@@ -78,7 +81,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                       event,
                       supplierClassInfo.class === 'L'
                         ? leftoverReduction
-                        : totalReduction
+                        : totalReduction,
                     );
                   }}
                   name="creditOption"
@@ -87,6 +90,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
               </td>
               <td className="text-center">
                 <input
+                  disabled={user.isGovernment || statuses.complianceObligation.status === 'SUBMITTED' || statuses.complianceObligation.status === 'CONFIRMED'}
                   className="text-center"
                   type="radio"
                   id="B"
@@ -95,7 +99,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                       event,
                       supplierClassInfo.class === 'L'
                         ? leftoverReduction
-                        : totalReduction
+                        : totalReduction,
                     );
                   }}
                   name="creditOption"
@@ -163,8 +167,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
 
             <tr className="subclass">
               <th className="large-column">BALANCE AFTER CREDIT REDUCTION</th>
-              <th></th>
-              <th></th>
+              <th />
+              <th />
             </tr>
             <tr>
               <td className="text-blue">

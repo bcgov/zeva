@@ -142,6 +142,7 @@ const ConsumerSalesDetailsPage = (props) => {
                     type="number"
                     onChange={handleChange}
                     min="0"
+                    disabled={user.isGovernment}
                   />
                   {error && (
                     <small className="text-danger ml-2">
@@ -292,7 +293,7 @@ const ConsumerSalesDetailsPage = (props) => {
                   history.push(ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(':id', id));
                 }}
               />
-
+              {!user.isGovernment && (
               <Button
                 buttonType="save"
                 disabled={['SAVED', 'UNSAVED'].indexOf(statuses.consumerSales.status) < 0}
@@ -301,6 +302,7 @@ const ConsumerSalesDetailsPage = (props) => {
                   handleSave(event);
                 }}
               />
+              )}
             </span>
           </div>
         </div>

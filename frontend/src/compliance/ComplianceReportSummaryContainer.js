@@ -43,7 +43,7 @@ const ComplianceReportSummaryContainer = (props) => {
     const data = {
       modelYearReportId: id,
       validation_status: status,
-      confirmation: checkboxes
+      confirmation: checkboxes,
     };
 
     axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then((response) => {
@@ -132,7 +132,7 @@ const ComplianceReportSummaryContainer = (props) => {
       // CREDIT ACTIVITY
       const creditBalanceStart = { year: '', A: 0, B: 0 };
       const creditBalanceEnd = { A: 0, B: 0 };
-      const provisionalBalance = { year: '', A: 0, B: 0 };
+      const provisionalBalance = {};
       const pendingBalance = { A: 0, B: 0 };
       const transfersIn = { A: 0, B: 0 };
       const transfersOut = { A: 0, B: 0 };

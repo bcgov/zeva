@@ -3,10 +3,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment-timezone';
-import formatNumeric from '../../app/utilities/formatNumeric';
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
-import CustomPropTypes from '../../app/utilities/props';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import ComplianceReportSignOff from './ComplianceReportSignOff';
 import SummaryCreditActivityTable from './SummaryCreditActivityTable';
@@ -36,12 +34,12 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     consumerSales: { nameSigned: 'Buzz Collins', dateSigned: '2020-02-20' },
     creditActivity: { nameSigned: 'Buzz Collins', dateSigned: '2020-03-01' },
   };
-
   if (loading) {
     return <Loading />;
   }
   const signatureInformation = (input, title) => {
     const { status, confirmedBy } = input;
+
     return (
       <div className="mt-3">
         {confirmedBy && (
@@ -49,7 +47,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
             {title} confirmed by {confirmedBy.createUser.displayName} {moment(confirmedBy.createTimestamp).format('YYYY-MM-DD h[:]mm a')}
           </span>
         )}
-        {status !== 'CONFIRMED' && (
+        {status !== 'CONFIRMED' && status !== 'SUBMITTED' && !confirmedBy && (
           <span className="text-red">
             {title} pending confirmation
           </span>
@@ -60,14 +58,12 @@ const ComplianceReportSummaryDetailsPage = (props) => {
 
   const disableCheckbox = () => {
     const { supplierInformation, consumerSales, complianceObligation } = confirmationStatuses;
-
     if (user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
       && supplierInformation.status === 'CONFIRMED'
       && consumerSales.status === 'CONFIRMED'
       && complianceObligation.status === 'CONFIRMED') {
       return false;
     }
-
     return true;
   };
 
@@ -161,14 +157,16 @@ const ComplianceReportSummaryDetailsPage = (props) => {
               <Button buttonType="back" locationRoute="/compliance/reports" />
             </span>
             <span className="right-content">
-              <Button
-                buttonType="submit"
-                disabled={checkboxes.length < assertions.length || !user.hasPermission('SUBMIT_COMPLIANCE_REPORT')}
-                optionalClassname="button primary"
-                action={(event) => {
-                  setShowModal(true);
-                }}
-              />
+              {!user.isGovernment && (
+                <Button
+                  buttonType="submit"
+                  disabled={checkboxes.length < assertions.length || !user.hasPermission('SUBMIT_COMPLIANCE_REPORT')}
+                  optionalClassname="button primary"
+                  action={(event) => {
+                    setShowModal(true);
+                  }}
+                />
+              )}
             </span>
           </div>
         </div>
