@@ -181,7 +181,7 @@ const ConsumerSalesContainer = (props) => {
     } else if (avg < 5000) {
       supplierClass = 'Medium Volume Supplier';
       supplierClassText = '(1,000 to 4,999 total LDV sales)';
-    } else if (avg > 5000) {
+    } else if (avg >= 5000) {
       supplierClass = 'Large Volume Supplier';
       supplierClassText = '(5,000 or more total LDV sales)';
     }

@@ -194,7 +194,7 @@ class ModelYearReportComplianceObligationViewset(
                 parse_summary_serializer(content, transfer_out, 'transfersOut')
 
             for credits_sale in credit_sales_serializer.data:
-                parse_summary_serializer(content, credits_sale, 'creditsSale')
+                parse_summary_serializer(content, credits_sale, 'creditsIssuedSales')
 
             pending_sales_submissions = SalesSubmission.objects.filter(
                 organization=request.user.organization,
