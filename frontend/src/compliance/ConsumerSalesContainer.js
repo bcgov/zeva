@@ -46,8 +46,10 @@ const ConsumerSalesContainer = (props) => {
       setCalculated(true);
     } else if ((paramFirstYear == 0 || paramSecondYear == 0 || paramThirdYear == 0) && paramCurrentYear) {
       setAvgSales(parseInt(paramCurrentYear, 10));
+      setCalculated(false);
     } else if ((paramFirstYear == 0 || paramSecondYear == 0 || paramThirdYear == 0) && salesInput) {
       setAvgSales(salesInput);
+      setCalculated(false);
     } else {
       setAvgSales(0);
     }
