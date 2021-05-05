@@ -128,9 +128,6 @@ class ModelYearReportViewset(
 
     @action(detail=True)
     def submission_confirmation(self, request, pk=None):
-        queryset = self.get_queryset()
-        report = get_object_or_404(queryset, pk=pk)
-
         confirmation = ModelYearReportConfirmation.objects.filter(
             model_year_report_id=pk,
             signing_authority_assertion__module="compliance_summary"
