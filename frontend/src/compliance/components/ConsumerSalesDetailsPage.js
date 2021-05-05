@@ -142,7 +142,7 @@ const ConsumerSalesDetailsPage = (props) => {
                     type="number"
                     onChange={handleChange}
                     min="0"
-                    disabled={user.isGovernment}
+                    disabled={user.isGovernment || (['SAVED', 'UNSAVED'].indexOf(statuses.consumerSales.status) < 0)}
                   />
                   {error && (
                     <small className="text-danger ml-2">

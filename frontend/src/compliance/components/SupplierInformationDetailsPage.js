@@ -67,7 +67,7 @@ const SupplierInformationDetailsPage = (props) => {
     }
   });
 
-  if (['DRAFT'].indexOf(details.supplierInformation.validationStatus) < 0) {
+  if (['SAVED', 'UNSAVED'].indexOf(statuses.supplierInformation.status) < 0) {
     disabledCheckboxes = 'disabled';
     disabledInputs = true;
   }

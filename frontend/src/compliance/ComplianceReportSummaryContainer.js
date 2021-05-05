@@ -1,15 +1,13 @@
 import axios from 'axios';
-import { now } from 'moment';
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import CONFIG from '../app/config';
+import history from '../app/History';
 import Loading from '../app/components/Loading';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ComplianceReportSummaryDetailsPage from './components/ComplianceReportSummaryDetailsPage';
-import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import formatNumeric from '../app/utilities/formatNumeric';
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 
@@ -30,12 +28,12 @@ const ComplianceReportSummaryContainer = (props) => {
 
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
-      const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
+      const checked = checkboxes.filter((each) => Number(each) !== Number(parseInt(event.target.id,10)));
       setCheckboxes(checked);
     }
 
     if (event.target.checked) {
-      const checked = checkboxes.concat(event.target.id);
+      const checked = checkboxes.concat(parseInt(event.target.id,10));
       setCheckboxes(checked);
     }
   };
@@ -47,7 +45,8 @@ const ComplianceReportSummaryContainer = (props) => {
     };
 
     axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then((response) => {
-      console.log('Report Submitted ', response);
+      history.push(ROUTES_COMPLIANCE.REPORTS);
+      history.replace(ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id));
     });
   };
 
@@ -55,11 +54,13 @@ const ComplianceReportSummaryContainer = (props) => {
     setLoading(true);
     axios.all([
       axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)),
+      axios.get(ROUTES_COMPLIANCE.REPORT_SUMMARY_CONFIRMATION.replace(':id', id)),
       axios.get(ROUTES_COMPLIANCE.RATIOS),
       axios.get(ROUTES_COMPLIANCE.RETRIEVE_CONSUMER_SALES.replace(':id', id)),
       axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)),
     ]).then(axios.spread((
       reportDetailsResponse,
+      summaryConfirmationResponse,
       allComplianceRatiosResponse,
       consumerSalesResponse,
       creditActivityResponse,
@@ -80,6 +81,8 @@ const ComplianceReportSummaryContainer = (props) => {
       const year = parseInt(reportModelYear.name, 10);
 
       setModelYear(year);
+      setCheckboxes(summaryConfirmationResponse.data.confirmation);
+      
 
       // SUPPLIER INFORMATION
       if (modelYearReportMakes) {
