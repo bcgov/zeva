@@ -40,9 +40,8 @@ const ComplianceObligationDetailsPage = (props) => {
   } = props;
   const [showModal, setShowModal] = useState(false);
   let disabledCheckboxes = propsDisabledCheckboxes;
-
   const totalReduction = ((ratios.complianceRatio / 100) * supplierClassInfo.ldvSales);
-  
+
   const classAReduction = formatNumeric(
     ((ratios.zevClassA / 100) * supplierClassInfo.ldvSales),
     2,
@@ -130,10 +129,12 @@ const ComplianceObligationDetailsPage = (props) => {
         <h3 className="mt-4 mb-2">Credit Reduction</h3>
         You must select your ZEV class credit preference below.
         <ComplianceObligationReductionOffsetTable
+          statuses={statuses}
           offsetNumbers={offsetNumbers}
           unspecifiedCreditReduction={unspecifiedCreditReduction}
           supplierClassInfo={supplierClassInfo}
           handleOffsetChange={handleOffsetChange}
+          user={user}
           zevClassAReduction={zevClassAReduction}
           unspecifiedReductions={unspecifiedReductions}
           leftoverReduction={leftoverReduction}
@@ -164,12 +165,14 @@ const ComplianceObligationDetailsPage = (props) => {
                   history.push(ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id));
                 }}
               />
+              {!user.isGovernment && (
               <Button
                 buttonType="save"
                 disabled={['SAVED', 'UNSAVED'].indexOf(statuses.complianceObligation.status) < 0}
                 optionalClassname="button primary"
                 action={() => { handleSave(); }}
               />
+              )}
             </span>
           </div>
         </div>
@@ -202,7 +205,7 @@ ComplianceObligationDetailsPage.propTypes = {
   handleCheckboxClick: PropTypes.func.isRequired,
   assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   checkboxes: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   ).isRequired,
   statuses: PropTypes.shape().isRequired,
   handleOffsetChange: PropTypes.func.isRequired,

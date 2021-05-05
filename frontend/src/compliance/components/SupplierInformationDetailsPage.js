@@ -230,7 +230,7 @@ const SupplierInformationDetailsPage = (props) => {
                   history.push(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id));
                 }}
               />
-
+              {!user.isGovernment && (
               <Button
                 buttonType="save"
                 disabled={['SAVED', 'UNSAVED'].indexOf(statuses.supplierInformation.status) < 0}
@@ -239,6 +239,7 @@ const SupplierInformationDetailsPage = (props) => {
                   handleSubmit(event);
                 }}
               />
+              )}
             </span>
           </div>
         </div>
