@@ -43,7 +43,7 @@ const ComplianceReportSummaryContainer = (props) => {
     const data = {
       modelYearReportId: id,
       validation_status: status,
-      confirmation: checkboxes
+      confirmation: checkboxes,
     };
 
     axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then((response) => {
@@ -127,17 +127,28 @@ const ComplianceReportSummaryContainer = (props) => {
         supplierClass,
       });
       setComplianceRatios(allComplianceRatiosResponse.data
-        .filter((each) => each.modelYear === year));
+        .filter((each) => each.modelYear === year.toString()));
 
       // CREDIT ACTIVITY
       const creditBalanceStart = { year: '', A: 0, B: 0 };
       const creditBalanceEnd = { A: 0, B: 0 };
-      const provisionalBalance = { year: '', A: 0, B: 0 };
+      const provisionalBalanceBeforeOffset = { A: 0, B: 0 };
+      const provisionalBalanceAfterOffset = { A: 0, B: 0 };
       const pendingBalance = { A: 0, B: 0 };
       const transfersIn = { A: 0, B: 0 };
       const transfersOut = { A: 0, B: 0 };
       const creditsIssuedSales = { A: 0, B: 0 };
-      const offsetNumbers = { A: 0, B: 0 };
+      const complianceOffsetNumbers = { A: 0, B: 0 };
+      const { complianceOffset } = creditActivityResponse.data;
+      // OFFSET
+      if (complianceOffset) {
+        complianceOffset.forEach((item) => {
+          complianceOffsetNumbers.A += item.creditAOffsetValue;
+          complianceOffsetNumbers.B += item.creditBOffsetValue;
+          provisionalBalanceAfterOffset.A -= item.creditAOffsetValue;
+          provisionalBalanceAfterOffset.B -= item.creditBOffsetValue;
+        });
+      }
       creditActivityResponse.data.complianceObligation.forEach((item) => {
         if (item.category === 'creditBalanceStart') {
           creditBalanceStart.year = item.modelYear.name;
@@ -149,18 +160,20 @@ const ComplianceReportSummaryContainer = (props) => {
           const bValue = parseFloat(item.creditBValue);
           creditBalanceEnd.A += aValue;
           creditBalanceEnd.B += bValue;
-        }
-        if (item.category === 'provisionalBalance') {
-          const aValue = parseFloat(item.creditAValue);
-          const bValue = parseFloat(item.creditBValue);
-          provisionalBalance.A += aValue;
-          provisionalBalance.B += bValue;
+          provisionalBalanceBeforeOffset.A += aValue;
+          provisionalBalanceBeforeOffset.B += bValue;
+          provisionalBalanceAfterOffset.A += aValue;
+          provisionalBalanceAfterOffset.B += aValue;
         }
         if (item.category === 'pendingBalance') {
           const aValue = parseFloat(item.creditAValue);
           const bValue = parseFloat(item.creditBValue);
           pendingBalance.A += aValue;
           pendingBalance.B += bValue;
+          provisionalBalanceBeforeOffset.A += aValue;
+          provisionalBalanceBeforeOffset.B += bValue;
+          provisionalBalanceAfterOffset.A += aValue;
+          provisionalBalanceAfterOffset.B += bValue;
           if (pendingBalance.A > 0 || pendingBalance.B > 0) {
             setPendingBalanceExist(true);
           }
@@ -185,10 +198,12 @@ const ComplianceReportSummaryContainer = (props) => {
         }
       });
       setCreditActivityDetails({
+        complianceOffsetNumbers,
         creditBalanceStart,
         creditBalanceEnd,
         pendingBalance,
-        provisionalBalance,
+        provisionalBalanceBeforeOffset,
+        provisionalBalanceAfterOffset,
         transactions: {
           creditsIssuedSales,
           transfersIn,
