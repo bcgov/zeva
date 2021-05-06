@@ -34,6 +34,8 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     consumerSales: { nameSigned: 'Buzz Collins', dateSigned: '2020-02-20' },
     creditActivity: { nameSigned: 'Buzz Collins', dateSigned: '2020-03-01' },
   };
+
+  let disableSubmitBtn = true;
   if (loading) {
     return <Loading />;
   }
@@ -66,6 +68,12 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     }
     return true;
   };
+
+  assertions.forEach((assertion) => {
+    if (checkboxes.indexOf(assertion.id) >= 0) {
+      disableSubmitBtn = false;
+    }
+  });
 
   const modal = (
     <Modal
@@ -160,7 +168,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
               {!user.isGovernment && (
                 <Button
                   buttonType="submit"
-                  disabled={checkboxes.length < assertions.length || !user.hasPermission('SUBMIT_COMPLIANCE_REPORT')}
+                  disabled={disableSubmitBtn || confirmationStatuses.reportSummary.status === 'SUBMITTED' || !user.hasPermission('SUBMIT_COMPLIANCE_REPORT')}
                   optionalClassname="button primary"
                   action={(event) => {
                     setShowModal(true);
