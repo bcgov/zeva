@@ -31,23 +31,35 @@ const ConsumerSalesContainer = (props) => {
   const [previousYearsList, setPreviousYearsList] = useState([{}]);
   const [details, setDetails] = useState({});
   const [statuses, setStatuses] = useState({});
+  const [calculated, setCalculated] = useState(false);
 
   const { id } = useParams();
   let supplierClass = '';
   let supplierClassText = '';
 
-  const averageLdvSales = (paramFirstYear, paramSecondYear, paramThirdYear) => {
+  const averageLdvSales = (paramFirstYear, paramSecondYear, paramThirdYear, paramCurrentYear) => {
     let avg = 0;
-    const sum = (paramFirstYear + paramSecondYear + paramThirdYear)
-    avg = sum / 3;
-    setAvgSales(Math.round(avg));
+    if (paramFirstYear > 0 && paramSecondYear > 0 && paramThirdYear > 0) {
+      const sum = (paramFirstYear + paramSecondYear + paramThirdYear)
+      avg = sum / 3;
+      setAvgSales(Math.round(avg));
+      setCalculated(true);
+    } else if ((paramFirstYear == 0 || paramSecondYear == 0 || paramThirdYear == 0) && paramCurrentYear) {
+      setAvgSales(parseInt(paramCurrentYear, 10));
+      setCalculated(false);
+    } else if ((paramFirstYear == 0 || paramSecondYear == 0 || paramThirdYear == 0) && salesInput) {
+      setAvgSales(salesInput);
+      setCalculated(false);
+    } else {
+      setAvgSales(0);
+    }
   };
 
   const refreshDetails = (showLoading) => {
     setLoading(showLoading);
 
     axios.all([
-      axios.get(ROUTES_VEHICLES.VEHICLES_SALES),
+      axios.get(ROUTES_VEHICLES.VEHICLES_SALES.replace(':id', modelYear)),
       axios.get(ROUTES_COMPLIANCE.RETRIEVE_CONSUMER_SALES.replace(':id', id)),
       axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)),
     ]).then(axios.spread((vehiclesSales, consumerSalesResponse, statusesResponse) => {
@@ -61,23 +73,27 @@ const ConsumerSalesContainer = (props) => {
         validationStatus,
       } = consumerSalesResponse.data;
 
+      if (ldvSales > 0) {
+        setSalesInput(ldvSales);
+      }
+
       if (previousSales.length === 3) {
         setPreviousYearsExist(true);
         setPreviousYearsList(previousSales);
         averageLdvSales(
           parseInt(previousSales[0].previousSales, 10),
           parseInt(previousSales[1].previousSales, 10),
-          parseInt(previousSales[2].previousSales, 10)
+          parseInt(previousSales[2].previousSales, 10),
+          ldvSales,
         );
+      } else {
+        setAvgSales(ldvSales);
       }
 
       if (vehicleList.length > 0) {
         setVehicles(vehicleList);
       } else {
         setVehicles(vehiclesSales.data);
-      }
-      if (ldvSales > 0) {
-        setSalesInput(ldvSales);
       }
 
       setDetails({
@@ -103,10 +119,9 @@ const ConsumerSalesContainer = (props) => {
       const year = parseInt(reportModelYear.name, 10);
 
       setModelYear(year);
-      setFirstYear({ modelYear: year - 1, ldvSales: 0 });
-      setSecondYear({ modelYear: year - 2, ldvSales: 0 });
-      setThirdYear({ modelYear: year - 3, ldvSales: 0 });
-
+      setFirstYear({ ...firstYear, modelYear: year - 1 });
+      setSecondYear({ ...secondYear, modelYear: year - 2 });
+      setThirdYear({ ...thirdYear, modelYear: year - 3});
       setStatuses(reportStatuses);
 
       setLoading(false);
@@ -133,7 +148,7 @@ const ConsumerSalesContainer = (props) => {
   const handleInputChange = (event) => {
     const { id: inputId, value } = event.target;
     if (inputId === 'first') {
-      if (value === '') {
+      if (value === '' || value == 0) {
         setFirstYear({ ...firstYear, ldvSales: 0 });
         averageLdvSales(0, secondYear.ldvSales, thirdYear.ldvSales);
       } else {
@@ -142,7 +157,7 @@ const ConsumerSalesContainer = (props) => {
       }
     }
     if (inputId === 'second') {
-      if (value === '') {
+      if (value === '' || value == 0) {
         setSecondYear({ ...secondYear, ldvSales: 0 });
         averageLdvSales(firstYear.ldvSales, 0, thirdYear.ldvSales);
       } else {
@@ -151,7 +166,7 @@ const ConsumerSalesContainer = (props) => {
       }
     }
     if (inputId === 'third') {
-      if (value === '') {
+      if (value === '' || value == 0) {
         setThirdYear({ ...thirdYear, ldvSales: 0 });
         averageLdvSales(firstYear.ldvSales, secondYear.ldvSales, 0);
       } else {
@@ -168,7 +183,7 @@ const ConsumerSalesContainer = (props) => {
     } else if (avg < 5000) {
       supplierClass = 'Medium Volume Supplier';
       supplierClassText = '(1,000 to 4,999 total LDV sales)';
-    } else if (avg > 5000) {
+    } else if (avg >= 5000) {
       supplierClass = 'Large Volume Supplier';
       supplierClassText = '(5,000 or more total LDV sales)';
     }
@@ -177,6 +192,12 @@ const ConsumerSalesContainer = (props) => {
 
   const handleChange = (event) => {
     setSalesInput(parseInt(event.target.value, 10));
+    if (!calculated && event.target.value) {
+      averageLdvSales(firstYear.ldvSales, secondYear.ldvSales, thirdYear.ldvSales, event.target.value);
+    }
+    if (!calculated && !event.target.value) {
+      setAvgSales(0);
+    }
   };
 
   const handleCheckboxClick = (event) => {
@@ -221,12 +242,7 @@ const ConsumerSalesContainer = (props) => {
 
   useEffect(() => {
     refreshDetails(true);
-    averageLdvSales(
-      firstYear.ldvSales,
-      secondYear.ldvSales,
-      thirdYear.ldvSales,
-    );
-  }, [keycloak.authenticated]);
+  }, [keycloak.authenticated, modelYear]);
 
   return (
     <>

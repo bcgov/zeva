@@ -68,10 +68,15 @@
   }
 }
 #compliance-obligation-page {
+
   border: 1px solid $border-grey;
   padding: 2rem;
-
-
+  .no-border {
+    border: none;
+  }
+  .compliance-reduction-table {
+        border: 1px solid $border-grey;
+  }
   table {
     width: 100%;
     border: 1px solid $border-grey;
@@ -93,6 +98,7 @@
     .large-column {
       color: $default-text-blue;
       // width: 70%;
+      padding-left: 1rem;
       border-right: 4px solid white;
     }
   }

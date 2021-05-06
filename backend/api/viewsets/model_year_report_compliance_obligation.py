@@ -113,13 +113,17 @@ class ModelYearReportComplianceObligationViewset(
         snapshot = ModelYearReportComplianceObligation.objects.filter(
             model_year_report_id=report.id,
         ).order_by('-update_timestamp')
-        if confirmation and snapshot:
-            offset_snapshot = ModelYearReportCreditOffset.objects.filter(
-                model_year_report_id=report.id,
-            ).order_by('-update_timestamp')
+        offset_snapshot = ModelYearReportCreditOffset.objects.filter(
+            model_year_report_id=report.id,
+        ).order_by('-update_timestamp')
+        compliance_offset = None
+        if offset_snapshot:
             offset_serializer = ModelYearReportComplianceObligationOffsetSerializer(
                 offset_snapshot, context={'request': request, 'kwargs': kwargs}, many=True
             )
+            compliance_offset = offset_serializer.data
+            
+        if confirmation and snapshot:
             serializer = ModelYearReportComplianceObligationSnapshotSerializer(
                 snapshot, context={'request': request, 'kwargs': kwargs}, many=True
             )
@@ -190,7 +194,7 @@ class ModelYearReportComplianceObligationViewset(
                 parse_summary_serializer(content, transfer_out, 'transfersOut')
 
             for credits_sale in credit_sales_serializer.data:
-                parse_summary_serializer(content, credits_sale, 'creditsSale')
+                parse_summary_serializer(content, credits_sale, 'creditsIssuedSales')
 
             pending_sales_submissions = SalesSubmission.objects.filter(
                 organization=request.user.organization,
@@ -222,7 +226,7 @@ class ModelYearReportComplianceObligationViewset(
                     'credit_a_value': totals[key].get('A'),
                     'credit_b_value': totals[key].get('B'),
                     'category': 'pendingBalance',
-                    'model_year': key
+                    'model_year': {'name': key}
                 })
 
             prior_year = report_year-1
@@ -232,7 +236,7 @@ class ModelYearReportComplianceObligationViewset(
                 'credit_a_value': prior_year_balance_a,
                 'credit_b_value': prior_year_balance_b,
                 'category': 'creditBalanceStart',
-                'model_year': report_year_obj.name
+                'model_year': {'name': report_year_obj.name}
             })
 
             report_year_balance_a = retrieve_balance(organization.id, report_year, 'A')
@@ -241,9 +245,15 @@ class ModelYearReportComplianceObligationViewset(
                 'credit_a_value': report_year_balance_a,
                 'credit_b_value': report_year_balance_b,
                 'category': 'creditBalanceEnd',
-                'model_year': report_year_obj.name
+                'model_year': {'name': report_year_obj.name}
             })
 
-            return Response(content)
+            return Response({
+                'compliance_obligation': content,
+                'compliance_offset': compliance_offset
+            })
 
-        return Response(serializer.data)
+        return Response({
+            'compliance_obligation': serializer.data,
+            'compliance_offset': compliance_offset
+         })

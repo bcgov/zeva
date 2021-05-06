@@ -16,6 +16,7 @@ const COMPLIANCE = {
   CONSUMER_SALES: `${API_BASE_PATH}/consumer-sales`,
   RETRIEVE_CONSUMER_SALES: `${API_BASE_PATH}/consumer-sales/:id`,
   REPORT_COMPLIANCE_DETAILS_BY_ID: `${API_BASE_PATH}/compliance-activity-details/:id`,
+  REPORT_SUMMARY_CONFIRMATION: `${API_BASE_PATH}/reports/:id/submission_confirmation`,
   REPORT_SUBMISSION: `${API_BASE_PATH}/reports/submission`,
 };
 

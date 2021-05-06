@@ -67,7 +67,7 @@ const SupplierInformationDetailsPage = (props) => {
     }
   });
 
-  if (['DRAFT'].indexOf(details.supplierInformation.validationStatus) < 0) {
+  if (['SAVED', 'UNSAVED'].indexOf(statuses.supplierInformation.status) < 0) {
     disabledCheckboxes = 'disabled';
     disabledInputs = true;
   }
@@ -230,7 +230,7 @@ const SupplierInformationDetailsPage = (props) => {
                   history.push(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id));
                 }}
               />
-
+              {!user.isGovernment && (
               <Button
                 buttonType="save"
                 disabled={['SAVED', 'UNSAVED'].indexOf(statuses.supplierInformation.status) < 0}
@@ -239,6 +239,7 @@ const SupplierInformationDetailsPage = (props) => {
                   handleSubmit(event);
                 }}
               />
+              )}
             </span>
           </div>
         </div>

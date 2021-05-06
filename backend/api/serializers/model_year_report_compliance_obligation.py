@@ -41,7 +41,7 @@ class ModelYearReportComplianceObligationOffsetSerializer(serializers.ModelSeria
         model = ModelYearReportCreditOffset
         fields = (
             'credit_a_offset_value',  'credit_b_offset_value',
-            'model_year'
+            'model_year', 'model_year_report'
         )
 
 
@@ -96,15 +96,15 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
         prior_year_balance_b = self.retrieve_balance(prior_year, 2)
         return {'year': prior_year, 'A': prior_year_balance_a, 'B': prior_year_balance_b}
 
-    def get_report_year_balance(self, obj, *args, **kwargs):
-        ## this is actually being calculated on the frontend and not used
-        kwargs = self.context.get('kwargs')
-        report_id = int(kwargs.get('id'))
-        report_year = self.retrieve_year(report_id)
+    # def get_report_year_balance(self, obj, *args, **kwargs):
+    #     ## this is actually being calculated on the frontend and not used
+    #     kwargs = self.context.get('kwargs')
+    #     report_id = int(kwargs.get('id'))
+    #     report_year = self.retrieve_year(report_id)
         
-        report_year_balance_a = self.retrieve_balance(report_year, 1)
-        report_year_balance_b = self.retrieve_balance(report_year, 2)   
-        return {'year': report_year, 'A': report_year_balance_a, 'B': report_year_balance_b}
+    #     report_year_balance_a = self.retrieve_balance(report_year, 1)
+    #     report_year_balance_b = self.retrieve_balance(report_year, 2)   
+    #     return {'year': report_year, 'A': report_year_balance_a, 'B': report_year_balance_b}
 
     def get_report_year_transactions(self, obj, *args, **kwargs):
         request = self.context.get('request')
