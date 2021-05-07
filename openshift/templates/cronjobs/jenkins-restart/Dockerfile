@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM docker-remote.artifacts.developer.gov.bc.ca/debian:jessie
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install vim net-tools curl nano -y
 RUN ln -fs /usr/share/zoneinfo/Canada/Pacific /etc/localtime \
