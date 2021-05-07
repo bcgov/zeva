@@ -1,0 +1,54 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: nagios-bc
+parameters:
+  - name: ENV_NAME
+    description: test or prod
+    value: test
+    required: true
+objects:
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      annotations:
+        description: Keeps track of changes in the image
+      creationTimestamp: null
+      name: jenkins-restart
+    spec:
+      lookupPolicy:
+        local: false
+  - apiVersion: build.openshift.io/v1
+    kind: BuildConfig
+    metadata:
+      creationTimestamp: null
+      name: jenkins-restart
+    spec:
+      failedBuildsHistoryLimit: 5
+      nodeSelector: null
+      output:
+        to:
+          kind: ImageStreamTag
+          name: jenkins-restart:latest
+          namespace: e52f12-${ENV_NAME}
+      postCommit: {}
+      resources: {}
+      runPolicy: Serial
+      source:
+        contextDir: openshift/templates/cronjobs/jenkins-restart
+        git:
+          ref: jenins-cron-1.26.0
+          uri: https://github.com/kuanfandevops/zeva.git
+        type: Git
+      strategy:
+        dockerStrategy:
+          pullSecret:
+            name: artifactory-docker-pull-secret
+          forcePull: true
+          noCache: true
+        type: Docker
+      successfulBuildsHistoryLimit: 5
+      triggers: []
+    status:
+      lastVersion: 0
