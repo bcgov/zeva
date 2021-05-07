@@ -1,0 +1,184 @@
+/* eslint-disable react/no-array-index-key */
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+
+import Button from '../../app/components/Button';
+import Loading from '../../app/components/Loading';
+import Modal from '../../app/components/Modal';
+import history from '../../app/History';
+import CustomPropTypes from '../../app/utilities/props';
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
+
+import ComplianceReportAlert from './ComplianceReportAlert';
+
+const AssessmentDetailsPage = (props) => {
+  const {
+    details,
+    loading,
+    make,
+    makes,
+    user,
+    modelYear,
+    statuses,
+    id,
+  } = props;
+
+  const [showModal, setShowModal] = useState(false);
+  const disabledInputs = false;
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  const modal = (
+    <Modal
+      cancelLabel="No"
+      confirmLabel="Yes"
+      handleCancel={() => { setShowModal(false); }}
+      handleSubmit={() => { setShowModal(false); handleCancelConfirmation(); }}
+      modalClass="w-75"
+      showModal={showModal}
+      confirmClass="button primary"
+    >
+      <div className="my-3">
+        <h3>
+          Do you want to edit this page? This action will allow you to make further changes to{' '}
+          this information, it will also query the database to retrieve any recent updates.{' '}
+          Your previous confirmation will be cleared.
+        </h3>
+      </div>
+    </Modal>
+  );
+
+  return (
+    <div id="assessment-details" className="page">
+      <div className="row mt-3">
+        <div className="col-sm-12">
+          <h2>{modelYear} Model Year Report</h2>
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-12">
+          {/* {details && details.supplierInformation && details.supplierInformation.history && (
+            <ComplianceReportAlert
+              next="Consumer Sales"
+              report={details.assessment}
+              status={statuses.assessment}
+              type="Supplier Information"
+            />
+          )} */}
+        </div>
+        <div className="row mt-1">
+          <div className="col-12">
+            <div className="p-3 supplier-information">
+              {/* {user.isGovernment && statuses.supplierInformation.status === 'CONFIRMED' && (
+              <button
+                className="btn button primary float-right"
+                onClick={() => {
+                  setShowModal(true);
+                }}
+                type="button"
+              >
+                Edit
+              </button>
+              )} */}
+              <h3>Supplier Information</h3>
+              <div className="mt-3">
+                <h4 className="d-inline">Legal Name: </h4>
+                <span> {details.organization.name} </span>
+              </div>
+              <div>
+                <div className="d-inline-block mr-5 mt-3">
+                  <h4>Service Address</h4>
+                  {details.organization.organizationAddress
+                && details.organization.organizationAddress.map((address) => (
+                  address.addressType.addressType === 'Service' && (
+                    <div key={address.id}>
+                      {address.representativeName && (
+                        <div> {address.representativeName} </div>
+                      )}
+                      <div> {address.addressLine1} </div>
+                      <div> {address.city} {address.state} {address.country} </div>
+                      <div> {address.postalCode} </div>
+                    </div>
+                  )
+                ))}
+                </div>
+                <div className="d-inline-block mt-3">
+                  <h4>Records Address</h4>
+                  {details.organization.organizationAddress
+                && details.organization.organizationAddress.map((address) => (
+                  address.addressType.addressType === 'Records' && (
+                    <div key={address.id}>
+                      {address.representativeName && (
+                        <div> {address.representativeName} </div>
+                      )}
+                      <div> {address.addressLine1} </div>
+                      <div> {address.city} {address.state} {address.country} </div>
+                      <div> {address.postalCode} </div>
+                    </div>
+                  )
+                ))}
+                </div>
+                <div className="d-block mt-3">
+                  If there is an error in any of the information above, please contact: <a href="mailto:ZEVRegulation@gov.bc.ca">ZEVRegulation@gov.bc.ca</a>
+                </div>
+              </div>
+              <div className="mt-4">
+                <h4>Light Duty Vehicle Makes</h4>
+                {(makes.length > 0) && (
+                <div className={`list mt-3 p-2 ${disabledInputs ? 'disabled' : ''}`}>
+                  {makes.map((item, index) => (
+                    <div className="form-row my-2" key={index}>
+                      <div className="col-11">{item}</div>
+                    </div>
+                  ))}
+                </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="row">
+        <div className="col-sm-12">
+          <div className="action-bar mt-0">
+            <span className="left-content">
+              {/* <Button buttonType="back" locationRoute="/compliance/reports" /> */}
+            </span>
+            <span className="right-content">
+              <Button
+                buttonType="submit"
+                optionalClassname="button primary"
+                optionalText="Recommend Assessment"
+                action={() => {
+                  console.log('submit!');
+                }}
+              />
+            </span>
+          </div>
+        </div>
+        {modal}
+      </div>
+    </div>
+  );
+};
+
+AssessmentDetailsPage.defaultProps = {
+};
+
+AssessmentDetailsPage.propTypes = {
+  details: PropTypes.shape({
+    organization: PropTypes.shape(),
+    supplierInformation: PropTypes.shape(),
+  }).isRequired,
+  id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+  loading: PropTypes.bool.isRequired,
+  make: PropTypes.string.isRequired,
+  makes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  user: CustomPropTypes.user.isRequired,
+  modelYear: PropTypes.number.isRequired,
+  statuses: PropTypes.shape().isRequired,
+};
+export default AssessmentDetailsPage;
