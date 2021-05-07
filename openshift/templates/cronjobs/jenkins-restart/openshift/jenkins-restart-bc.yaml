@@ -37,12 +37,10 @@ objects:
           uri: https://github.com/kuanfandevops/zeva.git
         type: Git
       strategy:
+        type: Docker
         dockerStrategy:
           pullSecret:
             name: artifactory-docker-pull-secret
-          forcePull: true
-          noCache: true
-        type: Docker
       successfulBuildsHistoryLimit: 5
       triggers: []
     status:
