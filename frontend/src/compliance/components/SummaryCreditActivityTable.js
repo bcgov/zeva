@@ -145,7 +145,7 @@ const SummaryCreditActivityTable = (props) => {
       <tbody>
         {tableSection(
           creditBalanceStart,
-          `Balance at end of September 30, ${year - 1} :`,
+          `Balance at end of September 30, ${year} :`,
         )}
         {/* {tableSection(
           creditBalanceStart,

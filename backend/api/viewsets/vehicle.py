@@ -108,8 +108,21 @@ class VehicleViewSet(
         organization_id = _request.user.organization.id
         org_submission = SalesSubmission.objects.filter(
             organization_id=organization_id)
-        from_date = (report_year-1, 10, 1,)
-        to_date = (report_year, 9, 30,)
+        from_date = None
+        to_date = None
+        from_date_str = None
+        to_date_str = None
+
+        if report_year == 2020:
+            from_date = (2018, 1, 2,)
+            to_date = (report_year + 1, 9, 30,)
+            from_date_str = "2018-01-02"
+            to_date_str = str(report_year + 1) + "-09-30"
+        else:
+            from_date = (report_year, 10, 1,)
+            to_date = (report_year + 1, 9, 30,)
+            from_date_str = str(report_year) + "-10-01"
+            to_date_str = str(report_year+1) + "-09-30"
 
         sales_from_date = xlrd.xldate.xldate_from_date_tuple(from_date, 0)
         sales_to_date = xlrd.xldate.xldate_from_date_tuple(to_date, 0)
@@ -123,8 +136,8 @@ class VehicleViewSet(
                 ~Q(xls_sale_date="")
             ) |
               Q(
-                Q(xls_sale_date__lte=str(report_year) + "-09-30") &
-                Q(xls_sale_date__gte=str(report_year-1) + "-10-01") &
+                Q(xls_sale_date__lte=to_date_str) &
+                Q(xls_sale_date__gte=from_date_str) &
                 Q(xls_date_type="1") &
                 ~Q(xls_sale_date="")
               )

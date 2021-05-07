@@ -141,14 +141,23 @@ class ModelYearReportComplianceObligationViewset(
                 id=report.model_year_id
             )
             report_year = int(report_year_obj.name)
+            from_date = None
+            to_date = None
+
+            if report_year == 2020:
+                from_date = date(2018, 1, 2,)
+                to_date = date(report_year + 1, 9, 30,)
+            else:
+                from_date = date(report_year, 10, 1,)
+                to_date = date(report_year + 1, 9, 30,)
 
             content = []
 
             transfers_in = CreditTransaction.objects.filter(
                 credit_to=request.user.organization,
                 transaction_type__transaction_type='Credit Transfer',
-                transaction_timestamp__lte=date(report_year, 9, 30),
-                transaction_timestamp__gte=date(report_year-1, 10, 1),
+                transaction_timestamp__lte=to_date,
+                transaction_timestamp__gte=from_date,
             ).values(
                 'credit_class_id', 'model_year_id'
             ).annotate(
@@ -160,8 +169,8 @@ class ModelYearReportComplianceObligationViewset(
             transfers_out = CreditTransaction.objects.filter(
                 debit_from=request.user.organization,
                 transaction_type__transaction_type='Credit Transfer',
-                transaction_timestamp__lte=date(report_year, 9, 30),
-                transaction_timestamp__gte=date(report_year-1, 10, 1),
+                transaction_timestamp__lte=to_date,
+                transaction_timestamp__gte=from_date,
             ).values(
                 'credit_class_id', 'model_year_id'
             ).annotate(total_value=Sum(
@@ -173,8 +182,8 @@ class ModelYearReportComplianceObligationViewset(
             credits_issued_sales = CreditTransaction.objects.filter(
                 credit_to=request.user.organization,
                 transaction_type__transaction_type='Validation',
-                transaction_timestamp__lte=date(report_year, 9, 30),
-                transaction_timestamp__gte=date(report_year-1, 10, 1),
+                transaction_timestamp__lte=to_date,
+                transaction_timestamp__gte=from_date,
             ).values(
                 'credit_class_id', 'model_year_id'
             ).annotate(
@@ -199,9 +208,10 @@ class ModelYearReportComplianceObligationViewset(
             pending_sales_submissions = SalesSubmission.objects.filter(
                 organization=request.user.organization,
                 validation_status__in=['SUBMITTED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'CHECKED'],
-                submission_date__lte=date(report_year, 9, 30),
-                submission_date__gte=date(report_year-1, 10, 1),
+                submission_date__lte=to_date,
+                submission_date__gte=from_date,
             )
+
             totals = {}
             for obj in pending_sales_submissions:
                 for record in obj.get_content_totals_by_vehicles():
