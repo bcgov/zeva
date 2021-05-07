@@ -2,12 +2,7 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: nagios-bc
-parameters:
-  - name: ENV_NAME
-    description: test or prod
-    value: test
-    required: true
+  name: jenkins-restart-bc
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
@@ -31,7 +26,7 @@ objects:
         to:
           kind: ImageStreamTag
           name: jenkins-restart:latest
-          namespace: e52f12-${ENV_NAME}
+          namespace: e52f12-tools
       postCommit: {}
       resources: {}
       runPolicy: Serial
