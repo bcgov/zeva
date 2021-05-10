@@ -103,8 +103,9 @@ const ComplianceObligationContainer = (props) => {
         const creditDeficit = (remainingReduction - provisionalBalanceCurrentYearA);
         console.log('credit deficit', creditDeficit);
       }
+
       setZevClassAReduction({
-        lastYearA: formatNumeric((lastYearReduction), 2),
+        lastYearA: lastYearReduction,
         currentYearA: currentYearReduction,
       });
       setRemainingABalance({
@@ -198,16 +199,16 @@ const ComplianceObligationContainer = (props) => {
           unspecifiedZevClassLastYearA = lastYearABalance;
         }
       }
-      if (provisionalBalanceLastYearB === 0 && provisionalBalanceLastYearA > 0 && unspecifiedZevClassReduction >= provisionalBalanceLastYearA) {
-        unspecifiedZevClassLastYearA = provisionalBalanceLastYearA;
+      if (provisionalBalanceLastYearB === 0 && lastYearABalance >= 0 && unspecifiedZevClassReduction >= lastYearABalance) {
+        unspecifiedZevClassLastYearA = lastYearABalance;
       }
       // Reduce current year's B credits first then current year's A.
       remainingUnspecifiedReduction = unspecifiedZevClassReduction - (unspecifiedZevClassLastYearA + unspecifiedZevClassLastYearB);
       if (provisionalBalanceCurrentYearB > 0 && provisionalBalanceCurrentYearB >= remainingUnspecifiedReduction) {
         unspecifiedZevClassCurrentYearB = remainingUnspecifiedReduction;
       }
-      if (provisionalBalanceCurrentYearB === 0 && provisionalBalanceCurrentYearA > 0 && remainingUnspecifiedReduction >= provisionalBalanceCurrentYearA) {
-        unspecifiedZevClassCurrentYearA = provisionalBalanceCurrentYearA;
+      if (provisionalBalanceCurrentYearB === 0 && currentYearABalance >= 0 && remainingUnspecifiedReduction >= currentYearABalance) {
+        unspecifiedZevClassCurrentYearA = currentYearABalance;
       }
       if (provisionalBalanceCurrentYearB > 0 && provisionalBalanceCurrentYearB < remainingUnspecifiedReduction) {
         unspecifiedZevClassCurrentYearB = provisionalBalanceCurrentYearB;
@@ -216,7 +217,7 @@ const ComplianceObligationContainer = (props) => {
           unspecifiedZevClassCurrentYearA = unspecifieldBalance;
         }
         if (unspecifieldBalance > 0 && currentYearABalance > 0 && currentYearABalance < unspecifieldBalance) {
-          unspecifiedZevClassCurrentYearA = unspecifieldBalance - provisionalBalanceCurrentYearA;
+          unspecifiedZevClassCurrentYearA = unspecifieldBalance - currentYearABalance;
         }
       }
     }
