@@ -88,6 +88,7 @@ const ComplianceObligationContainer = (props) => {
     if (supplierClass === 'L') {
       let lastYearReduction = 0;
       let currentYearReduction = 0;
+
       // Perform ZEV Class A reduction first for older year then current year.
       if (provisionalBalanceLastYearA > 0 && zevClassACreditReduction >= provisionalBalanceLastYearA) {
         lastYearReduction = provisionalBalanceLastYearA;
@@ -95,11 +96,13 @@ const ComplianceObligationContainer = (props) => {
       if (provisionalBalanceLastYearA > 0 && zevClassACreditReduction < provisionalBalanceLastYearA) {
         lastYearReduction = zevClassACreditReduction;
       }
+
       const remainingReduction = zevClassACreditReduction - lastYearReduction;
+
       if (provisionalBalanceCurrentYearA > 0 && remainingReduction <= provisionalBalanceCurrentYearA) {
         currentYearReduction = remainingReduction;
       }
-      if (provisionalBalanceCurrentYearA > 0 && remainingReduction > provisionalBalanceCurrentYearA) {
+      if (provisionalBalanceCurrentYearA >= 0 && remainingReduction > provisionalBalanceCurrentYearA) {
         currentYearReduction = provisionalBalanceCurrentYearA;
         creditADeficit = (remainingReduction - provisionalBalanceCurrentYearA);
       }
