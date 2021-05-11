@@ -17,10 +17,8 @@ class ModelYearReportPreviousSales(Auditable):
         on_delete=models.PROTECT,
         null=False
     )
-    previous_sales = models.DecimalField(
+    previous_sales = models.IntegerField(
         blank=False,
-        decimal_places=2,
-        max_digits=20,
         db_comment="Containes the previous years LDV sales/leases data based on model year."
     )
     model_year_report = models.ForeignKey(
