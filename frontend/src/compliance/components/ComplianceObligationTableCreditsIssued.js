@@ -71,10 +71,10 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               &bull; &nbsp; &nbsp; Total Credit Balance
             </td>
             <td className="text-right">
-              {creditBalanceStart[each].A}
+              {formatNumeric(creditBalanceStart[each].A)}
             </td>
             <td className="text-right">
-              {creditBalanceStart[each].B}
+              {formatNumeric(creditBalanceStart[each].B)}
             </td>
           </tr>
         ))}

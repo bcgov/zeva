@@ -77,7 +77,7 @@ const ComplianceObligationAmountsTable = (props) => {
                     Compliance Ratio Credit Reduction:
                   </td>
                   <td>
-                    {formatNumeric((totalReduction),2)}
+                    {formatNumeric((totalReduction), 2)}
                   </td>
                 </tr>
                 <>
@@ -86,7 +86,7 @@ const ComplianceObligationAmountsTable = (props) => {
                       &bull; &nbsp; &nbsp; ZEV Class A Credit Reduction:
                     </td>
                     <td>
-                      {classAReduction}
+                      {formatNumeric(classAReduction, 2)}
                     </td>
                   </tr>
 

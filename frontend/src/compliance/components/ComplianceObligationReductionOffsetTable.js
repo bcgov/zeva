@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 import CustomPropTypes from '../../app/utilities/props';
 
@@ -66,8 +67,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                   <th className="large-column">
                     Compliance Ratio Credit Reduction
                   </th>
-                  <th className="text-center">A</th>
-                  <th className="text-center">B</th>
+                  <th className="text-center small-column">A</th>
+                  <th className="text-center small-column">B</th>
                 </tr>
               )}
               <tr>
@@ -117,30 +118,30 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     <td className="text-blue">
                       &bull; &nbsp; &nbsp; {reportYear} Credits
                     </td>
-                    <td className="text-center text-red">
-                      {unspecifiedReductions.currentYearA
+                    <td className="text-right text-red">
+                      {formatNumeric(unspecifiedReductions.currentYearA
                         ? -unspecifiedReductions.currentYearA
-                        : 0}
+                        : 0)}
                     </td>
-                    <td className="text-center text-red">
-                      {unspecifiedReductions.currentYearB
+                    <td className="text-right text-red">
+                      {formatNumeric(unspecifiedReductions.currentYearB
                         ? -unspecifiedReductions.currentYearB
-                        : 0}
+                        : 0)}
                     </td>
                   </tr>
                   <tr>
                     <td className="text-blue">
                       &bull; &nbsp; &nbsp; {reportYear - 1} Credits
                     </td>
-                    <td className="text-center text-red">
-                      {unspecifiedReductions.lastYearA
+                    <td className="text-right text-red">
+                      {formatNumeric(unspecifiedReductions.lastYearA
                         ? -unspecifiedReductions.lastYearA
-                        : 0}
+                        : 0)}
                     </td>
-                    <td className="text-center text-red">
-                      {unspecifiedReductions.lastYearB
+                    <td className="text-right text-red">
+                      {formatNumeric(unspecifiedReductions.lastYearB
                         ? -unspecifiedReductions.lastYearB
-                        : 0}
+                        : 0)}
                     </td>
                   </tr>
                 </>
@@ -173,7 +174,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
         </div>
       </div>
 
-      {((creditBalance.A && creditBalance.A > 0) || (creditBalance.B && creditBalance.B > 0)) && (
+      {((creditBalance.A > 0) || (creditBalance.B > 0)) && (
       <div className="col-12 mt-3">
         <div className="row">
           <table className="col-12">
@@ -187,11 +188,11 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                 <td className="text-blue">
                   &bull; &nbsp; &nbsp; {reportYear} Credit
                 </td>
-                <td className="text-center">
-                  {creditBalance.A ? creditBalance.A : 0}
+                <td className="text-right">
+                  {formatNumeric(creditBalance.A ? creditBalance.A : 0)}
                 </td>
-                <td className="text-center">
-                  {creditBalance.B ? creditBalance.B : 0}
+                <td className="text-right">
+                  {formatNumeric(creditBalance.B ? creditBalance.B : 0)}
                 </td>
               </tr>
             </tbody>
@@ -212,8 +213,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
               </tr>
               <tr>
                 <td>Credit Deficit</td>
-                <td className="text-center">{creditBalance.creditADeficit}</td>
-                <td className="text-center">{creditBalance.unspecifiedCreditDeficit}</td>
+                <td className="text-right">{formatNumeric(creditBalance.creditADeficit)}</td>
+                <td className="text-right">{formatNumeric(creditBalance.unspecifiedCreditDeficit)}</td>
               </tr>
             </tbody>
           </table>
