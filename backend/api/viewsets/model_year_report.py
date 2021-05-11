@@ -126,11 +126,22 @@ class ModelYearReportViewset(
 
         return Response(serializer.data)
 
+    @action(detail=True)
+    def submission_confirmation(self, request, pk=None):
+        confirmation = ModelYearReportConfirmation.objects.filter(
+            model_year_report_id=pk,
+            signing_authority_assertion__module="compliance_summary"
+        ).values_list(
+                'signing_authority_assertion_id', flat=True
+        )
+
+        return Response({'confirmation': confirmation})
+
     @action(detail=False, methods=['patch'])
     def submission(self, request):
         validation_status = request.data.get('validation_status')
         model_year_report_id = request.data.get('model_year_report_id')
-        confirmation = request.data.get('confirmation')
+        confirmations = request.data.get('confirmation')
 
         model_year_report_update = ModelYearReport.objects.filter(
             id=model_year_report_id
@@ -153,6 +164,16 @@ class ModelYearReportViewset(
         ).values_list(
             'signing_authority_assertion_id', flat=True
         ).distinct()
+
+        for confirmation in confirmations:
+            summary_confirmation = ModelYearReportConfirmation.objects.create(
+                create_user=request.user.username,
+                model_year_report_id=model_year_report_id,
+                has_accepted=True,
+                title=request.user.title,
+                signing_authority_assertion_id=confirmation
+            )
+            summary_confirmation.save()
 
         return HttpResponse(
             status=201, content="Report Submitted"

@@ -14,11 +14,11 @@ const SummaryCreditActivityTable = (props) => {
     creditBalanceEnd,
     transactions,
     pendingBalance,
-    provisionalBalance,
-    creditOffset,
+    provisionalBalanceBeforeOffset,
+    provisionalBalanceAfterOffset,
+    complianceOffsetNumbers,
     provisionalAssessedBalance,
   } = creditActivityDetails;
-
   const tableSection = (input, title, numberClassname = 'text-right') => {
     let aTotal = formatNumeric(input.A);
     let bTotal = formatNumeric(input.B);
@@ -89,10 +89,10 @@ const SummaryCreditActivityTable = (props) => {
           </td>
           <td />
           <td className="text-right font-weight-bold">
-            {complianceRatios.length > 0 &&
-              formatNumeric(
+            {complianceRatios.length > 0
+              && formatNumeric(
                 ldvSales * (complianceRatios[0].complianceRatio / 100),
-                2
+                2,
               )}
           </td>
         </tr>
@@ -103,11 +103,11 @@ const SummaryCreditActivityTable = (props) => {
             </td>
             <td />
             <td className="text-right">
-              {complianceRatios.length > 0 &&
-                supplierClass === 'Large' &&
-                formatNumeric(
+              {complianceRatios.length > 0
+                && supplierClass === 'Large'
+                && formatNumeric(
                   ldvSales * (complianceRatios[0].zevClassA / 100),
-                  2
+                  2,
                 )}
             </td>
           </tr>
@@ -143,14 +143,14 @@ const SummaryCreditActivityTable = (props) => {
       <tbody>
         {tableSection(
           creditBalanceStart,
-          `Balance at end of September 30, ${year - 1} :`,
+          `Balance at end of September 30, ${year} :`,
         )}
         {/* {tableSection(
           creditBalanceStart,
           `Balance at September 30, ${creditBalanceStart.year} :`
         )} */}
-        {Object.keys(transactions.creditsIssuedSales).length > 0 &&
-          tableSection(transactions.creditsIssuedSales, 'Consumer ZEV Sales:')}
+        {Object.keys(transactions.creditsIssuedSales).length > 0
+          && tableSection(transactions.creditsIssuedSales, 'Consumer ZEV Sales:')}
         {Object.keys(pendingBalance).length > 0
           && tableSection(pendingBalance, 'Pending for Consumer Sales:')}
         {/* {Object.keys(creditsIssuedInitiative).length > 0
@@ -170,10 +170,6 @@ const SummaryCreditActivityTable = (props) => {
             'text-red text-right',
           )}
 
-        {/* {Object.keys(creditOffset).length > 0
-          && (
-            tableSection(creditOffset, 'Credit Offset:', 'text-red text-right')
-          )} */}
         {/* {Object.keys(provisionalAssessedBalance).length > 0
           && (
             tableSection(provisionalAssessedBalance, 'Provisional assessed balance:')
@@ -185,18 +181,23 @@ const SummaryCreditActivityTable = (props) => {
           <th>
             <h3>Credit Reduction:</h3>
           </th>
-          <th className="text-right a-class">
-            <h4 className="text-credit-reduction">formatNumeric(0)</h4>
-          </th>
-          <th className="text-right">
-            <h4 className="text-credit-reduction">formatNumeric(0)</h4>
-          </th>
+          {Object.keys(complianceOffsetNumbers).length > 0
+          && (
+            <>
+              <th className="text-right a-class">
+                <h4 className="text-credit-reduction">{formatNumeric(complianceOffsetNumbers.A, 2)}</h4>
+              </th>
+              <th className="text-right">
+                <h4 className="text-credit-reduction">{formatNumeric(complianceOffsetNumbers.B, 2)}</h4>
+              </th>
+            </>
+          )}
         </tr>
       </tbody>
       <tbody>
-        {Object.keys(provisionalBalance).length > 0
+        {Object.keys(provisionalBalanceAfterOffset).length > 0
           && tableSection(
-            provisionalBalance,
+            provisionalBalanceAfterOffset,
             pendingBalanceExist
               ? 'Provisional Balance after Credit Reduction:'
               : 'Balance after Credit Reduction:',

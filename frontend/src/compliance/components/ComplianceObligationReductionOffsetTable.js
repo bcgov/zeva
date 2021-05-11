@@ -36,22 +36,22 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                       &bull; &nbsp; &nbsp; {reportYear} Credits
                     </td>
                     <td className="text-center text-red">
-                      {zevClassAReduction.currentYearA
+                      {formatNumeric(zevClassAReduction.currentYearA
                         ? -zevClassAReduction.currentYearA
-                        : 0}
+                        : 0)}
                     </td>
-                    <td className="text-center">0</td>
+                    <td className="text-center">formatNumeric(0)</td>
                   </tr>
                   <tr>
                     <td className="text-blue">
                       &bull; &nbsp; &nbsp; {reportYear - 1} Credits
                     </td>
                     <td className="text-center text-red">
-                      {zevClassAReduction.lastYearA
+                      {formatNumeric(zevClassAReduction.lastYearA
                         ? -zevClassAReduction.lastYearA
-                        : 0}
+                        : 0)}
                     </td>
-                    <td className="text-center">0</td>
+                    <td className="text-center">formatNumeric(0)</td>
                   </tr>
                   <tr className="subclass">
                     <th className="large-column">

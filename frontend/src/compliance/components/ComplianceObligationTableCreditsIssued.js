@@ -56,7 +56,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
       <tbody>
         <tr className="subclass">
           <th className="large-column">
-            BALANCE AT END OF SEPT. 30,  {reportYear - 1}
+            BALANCE AT END OF SEPT. 30,  {reportYear}
           </th>
           <th className="small-column text-center text-blue">
             A
@@ -71,10 +71,10 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               &bull; &nbsp; &nbsp; Total Credit Balance
             </td>
             <td className="text-right">
-              {formatNumeric(creditBalanceStart[each].A)}
+              {creditBalanceStart[each].A}
             </td>
             <td className="text-right">
-              {formatNumeric(creditBalanceStart[each].B)}
+              {creditBalanceStart[each].B}
             </td>
           </tr>
         ))}
