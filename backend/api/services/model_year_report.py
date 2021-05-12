@@ -21,6 +21,8 @@ def get_model_year_report_statuses(report):
     compliance_obligation_confirmed_by = None
     summary_status = 'UNSAVED'
     summary_confirmed_by = None
+    assessment_status = 'UNSAVED'
+    assessment_confirmed_by = None
 
     confirmations = ModelYearReportConfirmation.objects.filter(
         model_year_report_id=report.id,
@@ -80,11 +82,17 @@ def get_model_year_report_statuses(report):
         consumer_sales_status = 'SUBMITTED'
         compliance_obligation_status = 'SUBMITTED'
         summary_status = 'SUBMITTED'
+        assessment_status = 'SUBMITTED'
 
         user_profile = UserProfile.objects.filter(username=report.update_user)
 
         if user_profile.exists():
             serializer = MemberSerializer(user_profile.first(), read_only=True)
+            
+            assessment_confirmed_by = {
+                'create_timestamp': report.update_timestamp,
+                'create_user': serializer.data
+            }
 
             summary_confirmed_by = {
                 'create_timestamp': report.update_timestamp,
@@ -107,5 +115,9 @@ def get_model_year_report_statuses(report):
         'report_summary': {
             'status': summary_status,
             'confirmed_by': summary_confirmed_by
+        },
+        'assessment': {
+            'status': assessment_status,
+            'confirmed_by': assessment_confirmed_by
         }
     }

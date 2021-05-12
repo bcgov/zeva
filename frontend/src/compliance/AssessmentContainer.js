@@ -53,6 +53,10 @@ const AssessmentContainer = (props) => {
         }
 
         setDetails({
+          assessment: {
+            history: modelYearReportHistory,
+            validationStatus,
+          },
           organization: {
             name: organizationName,
             organizationAddress: modelYearReportAddresses,

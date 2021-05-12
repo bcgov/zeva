@@ -59,14 +59,14 @@ const AssessmentDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          {/* {details && details.supplierInformation && details.supplierInformation.history && (
+          {details && details.supplierInformation && details.supplierInformation.history && (
             <ComplianceReportAlert
-              next="Consumer Sales"
+              next=""
               report={details.assessment}
               status={statuses.assessment}
-              type="Supplier Information"
+              type="Assessment"
             />
-          )} */}
+          )}
         </div>
         <div className="row mt-1">
           <div className="col-12">
