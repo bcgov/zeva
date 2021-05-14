@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { withRouter } from 'react-router';
-
+import Loading from '../app/components/Loading';
 import CONFIG from '../app/config';
 import history from '../app/History';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
@@ -20,6 +20,7 @@ const AssessmentContainer = (props) => {
   const { id } = useParams();
   const [ratios, setRatios] = useState({});
   const [details, setDetails] = useState({});
+  const [offsetNumbers, setOffsetNumbers] = useState({});
   const [modelYear, setModelYear] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR);
   const [loading, setLoading] = useState(true);
   const [makes, setMakes] = useState([]);
@@ -41,7 +42,8 @@ const AssessmentContainer = (props) => {
       axios.all([
         axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)),
         axios.get(ROUTES_COMPLIANCE.RATIOS),
-        axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id))
+        axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)),
+        
       ])
         .then(axios.spread((response, ratioResponse, creditActivityResponse) => {
           let supplierClass;
@@ -87,60 +89,90 @@ const AssessmentContainer = (props) => {
             },
           });
           // CREDIT ACTIVITY
-          const creditBalanceStart = { year: '', A: 0, B: 0 };
-          const creditBalanceEnd = { A: 0, B: 0 };
-          const provisionalBalance = {};
-          const pendingBalance = { A: 0, B: 0 };
-          const transfersIn = { A: 0, B: 0 };
-          const transfersOut = { A: 0, B: 0 };
-          const creditsIssuedSales = { A: 0, B: 0 };
-          const offsetNumbers = { A: 0, B: 0 };
-          creditActivityResponse.data.complianceObligation.forEach((item) => {
+          const complianceResponseDetails = creditActivityResponse.data.complianceObligation;
+          const { complianceOffset } = creditActivityResponse.data;
+          const creditBalanceStart = {};
+          const creditBalanceEnd = {};
+          const provisionalBalance = [];
+          const pendingBalance = [];
+          const transfersIn = [];
+          const transfersOut = [];
+          const creditsIssuedSales = [];
+          const complianceOffsetNumbers = [];
+          if (complianceOffset) {
+            complianceOffset.forEach((item) => {
+              complianceOffsetNumbers.push({
+                modelYear: item.modelYear.name,
+                A: parseFloat(item.creditAOffsetValue),
+                B: parseFloat(item.creditAOffsetValue),
+              });
+            });
+            setOffsetNumbers(complianceOffsetNumbers);
+          }
+          complianceResponseDetails.forEach((item) => {
             if (item.category === 'creditBalanceStart') {
-              creditBalanceStart.year = item.modelYear.name;
-              creditBalanceStart.A = item.creditAValue;
-              creditBalanceStart.B = item.creditBValue;
+              creditBalanceStart[item.modelYear.name] = {
+                A: item.creditAValue,
+                B: item.creditBValue,
+              };
             }
             if (item.category === 'creditBalanceEnd') {
-              const aValue = parseFloat(item.creditAValue);
-              const bValue = parseFloat(item.creditBValue);
-              creditBalanceEnd.A += aValue;
-              creditBalanceEnd.B += bValue;
-            }
-            if (item.category === 'provisionalBalance') {
-              const aValue = parseFloat(item.creditAValue);
-              const bValue = parseFloat(item.creditBValue);
-              provisionalBalance.A += aValue;
-              provisionalBalance.B += bValue;
-            }
-            if (item.category === 'pendingBalance') {
-              const aValue = parseFloat(item.creditAValue);
-              const bValue = parseFloat(item.creditBValue);
-              pendingBalance.A += aValue;
-              pendingBalance.B += bValue;
-              if (pendingBalance.A > 0 || pendingBalance.B > 0) {
-                setPendingBalanceExist(true);
-              }
+              creditBalanceEnd[item.modelYear.name] = {
+                A: item.creditAValue,
+                B: item.creditBValue,
+              };
             }
             if (item.category === 'transfersIn') {
-              const aValue = parseFloat(item.creditAValue);
-              const bValue = parseFloat(item.creditBValue);
-              transfersIn.A += aValue;
-              transfersIn.B += bValue;
+              transfersIn.push({
+                modelYear: item.modelYear.name,
+                A: item.creditAValue,
+                B: item.creditBValue,
+              });
             }
             if (item.category === 'transfersOut') {
-              const aValue = parseFloat(item.creditAValue);
-              const bValue = parseFloat(item.creditBValue);
-              transfersOut.A -= aValue;
-              transfersOut.B -= bValue;
+              transfersOut.push({
+                modelYear: item.modelYear.name,
+                A: item.creditAValue,
+                B: item.creditBValue,
+              });
             }
             if (item.category === 'creditsIssuedSales') {
-              const aValue = parseFloat(item.creditAValue);
-              const bValue = parseFloat(item.creditBValue);
-              creditsIssuedSales.A += aValue;
-              creditsIssuedSales.B += bValue;
+              creditsIssuedSales.push({
+                modelYear: item.modelYear.name,
+                A: item.creditAValue,
+                B: item.creditBValue,
+              });
+            }
+            if (item.category === 'pendingBalance') {
+              pendingBalance.push({
+                modelYear: item.modelYear.name,
+                A: item.creditAValue,
+                B: item.creditBValue,
+              });
             }
           });
+
+          // go through every year in end balance and push to provisional
+          Object.keys(creditBalanceEnd).forEach((item) => {
+            provisionalBalance[item] = {
+              A: creditBalanceEnd[item].A,
+              B: creditBalanceEnd[item].B,
+            };
+          });
+
+          // go through every item in pending and add to total if year already there or create new
+          pendingBalance.forEach((item) => {
+            if (provisionalBalance[item.modelYear]) {
+              provisionalBalance[item.modelYear].A += item.A;
+              provisionalBalance[item.modelYear].B += item.B;
+            } else {
+              provisionalBalance[item.modelYear] = {
+                A: item.A,
+                B: item.B,
+              };
+            }
+          });
+
           setCreditActivityDetails({
             creditBalanceStart,
             creditBalanceEnd,
@@ -160,7 +192,9 @@ const AssessmentContainer = (props) => {
   useEffect(() => {
     refreshDetails();
   }, [keycloak.authenticated]);
-
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <>
       <ComplianceReportTabs
@@ -183,6 +217,7 @@ const AssessmentContainer = (props) => {
         ratios={ratios}
         supplierClassInfo={supplierClassInfo}
         creditActivityDetails={creditActivityDetails}
+        offsetNumbers={offsetNumbers}
       />
     </>
   );

@@ -11,6 +11,8 @@ import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import ComplianceObligationAmountsTable from './ComplianceObligationAmountsTable';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import formatNumeric from '../../app/utilities/formatNumeric';
+import TableSection from './TableSection';
+import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable';
 
 const AssessmentDetailsPage = (props) => {
   const {
@@ -25,14 +27,19 @@ const AssessmentDetailsPage = (props) => {
     handleAddComment,
     handleCommentChange,
     ratios,
-    creditActivityDetails
+    creditActivityDetails,
+    offsetNumbers,
   } = props;
 
+  const {
+    creditBalanceStart, pendingBalance, transactions, provisionalBalance,
+  } = creditActivityDetails;
+  const {
+    creditsIssuedSales, transfersIn, transfersOut,
+  } = transactions;
   const [showModal, setShowModal] = useState(false);
   const disabledInputs = false;
-  console.log(statuses);
-  console.log(details);
-  console.log(creditActivityDetails);
+
   if (loading) {
     return <Loading />;
   }
@@ -181,7 +188,6 @@ const AssessmentDetailsPage = (props) => {
               <p className="d-inline ml-2">{details.class} Volume Supplier</p>
             </div>
             <div id="assessment-obligation-amounts">
-
               <ComplianceObligationAmountsTable
                 page="assessment"
                 reportYear={modelYear}
@@ -193,7 +199,218 @@ const AssessmentDetailsPage = (props) => {
               />
             </div>
             <div className="my-3 grey-border-area">
-              hi
+              <table>
+                <tbody>
+                  <tr className="subclass">
+                    <th className="large-column">
+                      BALANCE AT END OF SEPT. 30,  {modelYear}
+                    </th>
+                    <th className="small-column text-center text-blue">
+                      A
+                    </th>
+                    <th className="small-column text-center text-blue">
+                      B
+                    </th>
+                  </tr>
+                  <tr key="start">
+                    <td className="text-blue" />
+                    <td className="text-right">
+                      {creditBalanceStart.A}
+                    </td>
+                    <td className="text-right">
+                      {creditBalanceStart.B}
+                    </td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+            <h3>
+              Credit Activity
+            </h3>
+            <div className="my-3 grey-border-area">
+              <table>
+                <tbody>
+                  {Object.keys(creditsIssuedSales).length > 0
+                  && (
+                    <TableSection
+                      input={creditsIssuedSales}
+                      title="Issued for Consumer ZEV Sales"
+                      negativeValue={false}
+                    />
+                  )}
+                  {/* {Object.keys(creditsIssuedInitiative).length > 0
+                  && (
+                    <TableSection
+                      input={creditsIssuedInitiative}
+                      title="Issued from Initiative Agreements"
+                      negativeValue={false}
+                    />
+
+                  )}
+                  {Object.keys(creditsIssuedPurchase).length > 0
+                  && (
+                    <TableSection
+                      input={creditsIssuedPurchase}
+                      title="Issued from Purchase Agreements"
+                      negativeValue={false}
+                    />
+                  )} */}
+                  {Object.keys(transfersIn).length > 0
+                  && (
+                  <TableSection
+                    input={transfersIn}
+                    title="Transferred In"
+                    negativeValue={false}
+                  />
+
+                  )}
+                  {Object.keys(transfersOut).length > 0
+                && (
+                  <TableSection
+                    input={transfersOut}
+                    title="Transferred Away"
+                    negativeValue={false}
+                  />
+                )}
+                </tbody>
+              </table>
+            </div>
+            <div className="my-3 grey-border-area">
+              <table>
+                <tbody>
+                  <tr className="subclass">
+                    <th className="large-column">
+                      BALANCE BEFORE CREDIT REDUCTION
+                    </th>
+                    <th className="small-column text-center text-blue"> </th>
+                    <th className="small-column text-center text-blue"> </th>
+                  </tr>
+                  {Object.keys(pendingBalance).length > 0
+              && (
+
+                Object.keys(provisionalBalance).sort((a, b) => {
+                  if (a.modelYear < b.modelYear) {
+                    return 1;
+                  }
+                  if (a.modelYear > b.modelYear) {
+                    return -1;
+                  }
+                  return 0;
+                }).map((each) => (
+                  <tr key={each}>
+                    <td className="text-blue">
+                      &bull; &nbsp; &nbsp; {each} Credits
+                    </td>
+                    <td className="text-right">
+                      {formatNumeric(provisionalBalance[each].A, 2)}
+                    </td>
+                    <td className="text-right">
+                      {formatNumeric(provisionalBalance[each].B, 2)}
+                    </td>
+                  </tr>
+                ))
+              )}
+                </tbody>
+              </table>
+            </div>
+            <h3>
+              Credit Reduction
+            </h3>
+            <div className="my-3 grey-border-area">
+              <table>
+                <tbody>
+                  <tr className="subclass">
+                    <th className="large-column">
+                      ZEV Class A Credit Reduction
+                    </th>
+                    <th className="small-column text-center text-blue">
+                      A
+                    </th>
+                    <th className="small-column text-center text-blue">
+                      B
+                    </th>
+                  </tr>
+                  <tr key="start">
+                    <td className="text-blue">&bull; &nbsp; &nbsp; 2019 Credits:</td>
+                    <td className="text-right text-red">
+                      -567.43
+                    </td>
+                    <td className="text-right">
+                      0
+                    </td>
+                  </tr>
+                  <tr className="subclass">
+                    <th className="large-column">
+                      Unspecified ZEV Class Credit Reduction
+                    </th>
+                    <th className="small-column text-center text-blue" />
+                    <th className="small-column text-center text-blue" />
+                  </tr>
+                  <tr>
+                    <td>
+                      Do you want to use ZEV Class A or B credits first for your unspecified ZEV class reduction?
+                    </td>
+
+                    <td className="text-center">
+                      <input type="radio" />
+                    </td>
+
+                    <td className="text-center">
+                      <input checked type="radio" />
+                    </td>
+                  </tr>
+                  <tr key="start">
+                    <td className="text-blue">&bull; &nbsp; &nbsp; 2019 Credits:</td>
+                    <td className="text-right">
+                      0
+                    </td>
+                    <td className="text-right text-red">
+                      147.86
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              {/* <ComplianceObligationReductionOffsetTable
+                statuses={statuses}
+                offsetNumbers={offsetNumbers}
+                // unspecifiedCreditReduction={unspecifiedCreditReduction}
+                supplierClassInfo={}
+                // handleOffsetChange={handleOffsetChange}
+                user={user}
+                zevClassAReduction={zevClassAReduction}
+                unspecifiedReductions={unspecifiedReductions}
+                leftoverReduction={leftoverReduction}
+                totalReduction={totalReduction}
+                reportYear={modelYear}
+                creditBalance={creditBalance}
+              /> */}
+            </div>
+            <div className="my-3 grey-border-area">
+              <table>
+                <tbody>
+                  <tr className="subclass">
+                    <th className="large-column">
+                      ASSESSED BALANCE AT END OF SEPT. 30, {modelYear + 1}
+                    </th>
+                    <th className="small-column text-center text-blue">
+                      A
+                    </th>
+                    <th className="small-column text-center text-blue">
+                      B
+                    </th>
+                  </tr>
+                  <tr key="start">
+                    <td className="text-blue">&bull; &nbsp; &nbsp; 2020 Credits:</td>
+                    <td className="text-right">
+                      977.76
+                    </td>
+                    <td className="text-right">
+                      0
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -261,6 +478,30 @@ const AssessmentDetailsPage = (props) => {
                   <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
                 </div>
               </label>
+
+              <div className="mt-3 text-editor">
+                <label htmlFor="comment">
+                  <b>Assessment Message to the Supplier:</b>
+                </label>
+                <ReactQuill
+                  theme="snow"
+                  modules={{
+                    toolbar: [
+                      ['bold', 'italic'],
+                      [{ list: 'bullet' }, { list: 'ordered' }],
+                    ],
+                  }}
+                  formats={['bold', 'italic', 'list', 'bullet']}
+                  onChange={handleCommentChange}
+                />
+                <button
+                  className="button mt-2"
+                  onClick={() => { console.log('need a seperate function for the supplier message!'); }}
+                  type="button"
+                >Add/Update Message
+                </button>
+              </div>
+
             </div>
           </div>
         </div>
