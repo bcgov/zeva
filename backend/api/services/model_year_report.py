@@ -21,6 +21,8 @@ def get_model_year_report_statuses(report):
     compliance_obligation_confirmed_by = None
     summary_status = 'UNSAVED'
     summary_confirmed_by = None
+    assessment_status = 'UNSAVED'
+    assessment_confirmed_by = None
 
     confirmations = ModelYearReportConfirmation.objects.filter(
         model_year_report_id=report.id,
@@ -107,5 +109,9 @@ def get_model_year_report_statuses(report):
         'report_summary': {
             'status': summary_status,
             'confirmed_by': summary_confirmed_by
+        },
+        'assessment': {
+            'status': assessment_status,
+            'confirmed_by': assessment_confirmed_by
         }
     }

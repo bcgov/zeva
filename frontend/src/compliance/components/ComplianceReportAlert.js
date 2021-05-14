@@ -76,7 +76,25 @@ const ComplianceReportAlert = (props) => {
       <Alert title={title} icon={icon} classname={classname} message={message} />
     );
   }
-
+  if (type === 'Assessment') {
+    switch (status && status.status) {
+      case 'UNSAVED':
+        title = 'Submitted';
+        message = ` Model year report signed and submitted ${date} by ${userName}. Pending analyst review and Director assessment.`;
+        classname = 'alert-warning';
+        break;
+      case 'SUBMITTED':
+        title = 'Submitted';
+        message = ` Model year report signed and submitted ${date} by ${userName}. Pending analyst review and Director assessment.`;
+        classname = 'alert-warning';
+        break;
+      default:
+        title = '';
+    }
+    return (
+      <Alert title={title} icon={icon} classname={classname} message={message} />
+    );
+  }
   switch (status && status.status) {
     case 'UNSAVED':
       title = 'Model Year Report Draft';
