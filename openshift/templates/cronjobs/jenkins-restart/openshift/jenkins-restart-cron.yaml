@@ -1,5 +1,5 @@
 spec:
-  schedule: 10 * * * *
+  schedule: 0 20 * * *
   concurrencyPolicy: Allow
   suspend: false
   jobTemplate:
