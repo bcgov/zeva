@@ -1,3 +1,50 @@
+#assessment-details {
+  .text-grey {
+    color: grey;
+  }
+  table {
+    width: 100%;
+    td {
+      padding: 0 1rem 0 1rem;
+      line-height: 35px;
+    }
+    tr {
+      margin-top: 1rem;
+    }
+    .subclass {
+      font-weight: bold;
+      background-color: $default-background-grey;
+    }
+    .small-column {
+      width: 15%;
+    }
+    .large-column {
+      color: $default-text-blue;
+      padding-left: 1rem;
+      border-right: 4px solid white;
+    }
+  }
+  .grey-border-area {
+    border: 1px solid $border-grey;
+    padding: 1rem 1rem; 
+  }
+  .ql-container {
+    height: auto !important;
+  }
+
+  .ql-editor {
+    min-height: 150px !important;
+    max-height: 300px;
+    overflow: hidden;
+    overflow-y: scroll;
+    overflow-x: scroll;
+  }
+  .comment-box {
+    border: 1px solid $border-grey;
+    width:100%;
+    padding: 0.5rem 0.5rem;  
+  }
+}
 #compliance-report-list {
   .btn-group a {
     color: $default-text-black;
@@ -68,7 +115,6 @@
   }
 }
 #compliance-obligation-page {
-
   border: 1px solid $border-grey;
   padding: 2rem;
   .no-border {
