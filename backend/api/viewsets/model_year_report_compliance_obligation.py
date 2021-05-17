@@ -108,8 +108,8 @@ class ModelYearReportComplianceObligationViewset(
     @method_decorator(permission_required('VIEW_SALES'))
     def details(self, request, *args, **kwargs):
         issued_credits = []
-        obj_a = {}
-        obj_b = {}
+        obj_a = None
+        obj_b = None
 
         organization = request.user.organization
         id = kwargs.get('id')
@@ -219,11 +219,11 @@ class ModelYearReportComplianceObligationViewset(
                 if credits_sale['credit_class'].get('credit_class') == 'B':
                     obj_b = {'model_year': credits_sale['model_year']['name'], 'A': 0, 'B': credits_sale['total_value']}
                     issued_credits.append(obj_b)
-
-            if obj_a['model_year'] == obj_b['model_year']:
-                issued_credits.append({'model_year': obj_a['model_year'], 'A': obj_a['A'], 'B': obj_b['B']})
-                issued_credits.remove({'model_year': obj_a['model_year'], 'A': obj_a['A'], 'B': 0})
-                issued_credits.remove({'model_year': obj_b['model_year'], 'A': 0, 'B': obj_b['B']})
+            if obj_a and obj_b:
+                if obj_a['model_year'] == obj_b['model_year']:
+                    issued_credits.append({'model_year': obj_a['model_year'], 'A': obj_a['A'], 'B': obj_b['B']})
+                    issued_credits.remove({'model_year': obj_a['model_year'], 'A': obj_a['A'], 'B': 0})
+                    issued_credits.remove({'model_year': obj_b['model_year'], 'A': 0, 'B': obj_b['B']})
                 
             content.append({"issued_credits": issued_credits, 'category': 'creditsIssuedSales'})
 
