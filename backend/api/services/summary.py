@@ -43,7 +43,7 @@ def retrieve_balance(organization_id, year, credit_type):
     return 0
 
 
-def get_prior_year_balance(organization_id, year, credit_type):
+def get_current_year_balance(organization_id, year, credit_type):
     total_issued = 0
     total_transfers_in = 0
     total_transfers_out = 0
@@ -51,11 +51,11 @@ def get_prior_year_balance(organization_id, year, credit_type):
     to_date = None
 
     if year == 2020:
-        from_date = date(2017, 1, 2,)
-        to_date = date(year, 9, 30,)
+        from_date = date(2018, 1, 2,)
+        to_date = date(year + 1, 9, 30,)
     else:
-        from_date = date(year-1, 10, 1,)
-        to_date = date(year, 9, 30,)
+        from_date = date(year, 10, 1,)
+        to_date = date(year + 1, 9, 30,)
 
     issued_credits = CreditTransaction.objects.filter(
                 credit_to_id=organization_id,
