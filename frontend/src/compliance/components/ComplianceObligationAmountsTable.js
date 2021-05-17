@@ -4,14 +4,13 @@ import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceObligationAmountsTable = (props) => {
   const {
-    reportYear, supplierClassInfo, totalReduction, ratios, classAReduction, leftoverReduction,
+    reportYear, supplierClassInfo, totalReduction, ratios, classAReduction, leftoverReduction, page,
   } = props;
 
   return (
     <div className="mt-4">
       <h3 className="mb-2">Compliance Obligation</h3>
-      <div className="col-12">
-        {/* <h3 className="mt-4 mb-2">{reportYear} Compliance Ratio Reduction and Credit Offset</h3> */}
+      <div className={page==="assessment"? "col-12 grey-border-area":"col-12"}>
         <div className="row mb-4 compliance-reduction-table">
           <div className="col-lg-6 col-sm-12">
             <table className="mr-3 no-border px-3">
@@ -40,12 +39,12 @@ const ComplianceObligationAmountsTable = (props) => {
                           Compliance Ratio Credit Reduction:
                         </td>
                         <td>
-                          {formatNumeric((totalReduction) , 2)}
+                          {formatNumeric((totalReduction), 2)}
                         </td>
                       </tr>
                     </>
                   )}
-                {supplierClassInfo.class === 'L' && (
+                {(supplierClassInfo.class === 'L' || supplierClassInfo.class === 'Large') && (
                   <>
                     <tr>
                       <td className="text-blue">
@@ -68,7 +67,7 @@ const ComplianceObligationAmountsTable = (props) => {
               </tbody>
             </table>
           </div>
-          {supplierClassInfo.class === 'L' && (
+          {(supplierClassInfo.class === 'L' || supplierClassInfo.class === 'Large') && (
           <div className="col-lg-6 col-sm-12 ">
             <table className="mr-3 no-border">
               <tbody>
