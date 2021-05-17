@@ -1,7 +1,6 @@
 import React from 'react';
-import { object } from 'prop-types';
+import PropTypes from 'prop-types';
 import formatNumeric from '../../app/utilities/formatNumeric';
-import SummarySupplierInfo from './SummarySupplierInfo';
 
 const SummaryCreditActivityTable = (props) => {
   const {
@@ -13,13 +12,10 @@ const SummaryCreditActivityTable = (props) => {
   const { year, ldvSales, supplierClass } = consumerSalesDetails;
   const {
     creditBalanceStart,
-    creditBalanceEnd,
     transactions,
     pendingBalance,
-    provisionalBalanceBeforeOffset,
     provisionalBalanceAfterOffset,
     complianceOffsetNumbers,
-    provisionalAssessedBalance,
   } = creditActivityDetails;
   const tableSection = (input, title, numberClassname = 'text-right') => {
     let aTotal = formatNumeric(input.A);
@@ -208,4 +204,15 @@ const SummaryCreditActivityTable = (props) => {
     </table>
   );
 };
+
+SummaryCreditActivityTable.defaultProps = {
+};
+
+SummaryCreditActivityTable.propTypes = {
+  complianceRatios: PropTypes.shape().isRequired,
+  consumerSalesDetails: PropTypes.shape().isRequired,
+  creditActivityDetails: PropTypes.shape().isRequired,
+  pendingBalanceExist: PropTypes.bool.isRequired,
+};
+
 export default SummaryCreditActivityTable;

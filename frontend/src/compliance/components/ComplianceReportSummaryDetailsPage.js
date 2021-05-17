@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment-timezone';
+
+import CustomPropTypes from '../../app/utilities/props';
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
 import ComplianceReportAlert from './ComplianceReportAlert';
@@ -170,7 +172,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
                   buttonType="submit"
                   disabled={disableSubmitBtn || confirmationStatuses.reportSummary.status === 'SUBMITTED' || !user.hasPermission('SUBMIT_COMPLIANCE_REPORT')}
                   optionalClassname="button primary"
-                  action={(event) => {
+                  action={() => {
                     setShowModal(true);
                   }}
                 />
@@ -188,6 +190,19 @@ ComplianceReportSummaryDetailsPage.defaultProps = {
 };
 
 ComplianceReportSummaryDetailsPage.propTypes = {
+  assertions: PropTypes.arrayOf().isRequired,
+  checkboxes: PropTypes.arrayOf().isRequired,
+  complianceRatios: PropTypes.shape().isRequired,
+  confirmationStatuses: PropTypes.shape().isRequired,
+  consumerSalesDetails: PropTypes.shape().isRequired,
+  creditActivityDetails: PropTypes.shape().isRequired,
+  handleCheckboxClick: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  makes: PropTypes.shape().isRequired,
   pendingBalanceExist: PropTypes.bool.isRequired,
+  supplierDetails: PropTypes.shape().isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
+
 export default ComplianceReportSummaryDetailsPage;

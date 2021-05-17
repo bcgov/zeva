@@ -82,7 +82,6 @@ const ComplianceReportSummaryContainer = (props) => {
 
       setModelYear(year);
       setCheckboxes(summaryConfirmationResponse.data.confirmation);
-      
 
       // SUPPLIER INFORMATION
       if (modelYearReportMakes) {
