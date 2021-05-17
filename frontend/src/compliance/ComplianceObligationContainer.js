@@ -381,10 +381,12 @@ const ComplianceObligationContainer = (props) => {
           });
         }
         if (item.category === 'creditsIssuedSales') {
-          creditsIssuedSales.push({
-            modelYear: item.modelYear.name,
-            A: item.creditAValue,
-            B: item.creditBValue,
+          item.issuedCredits.forEach((each) => {
+            creditsIssuedSales.push({
+              modelYear: each.modelYear,
+              A: each.A,
+              B: each.B,
+            });
           });
         }
         if (item.category === 'pendingBalance') {
