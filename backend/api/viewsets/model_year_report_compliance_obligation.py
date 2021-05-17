@@ -12,16 +12,22 @@ from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_confirmation import \
     ModelYearReportConfirmation
 from api.models.credit_transaction import CreditTransaction
-from api.models.model_year_report_credit_offset import ModelYearReportCreditOffset
-from api.models.model_year_report_compliance_obligation import ModelYearReportComplianceObligation
+from api.models.model_year_report_credit_offset import \
+    ModelYearReportCreditOffset
+from api.models.model_year_report_compliance_obligation import \
+    ModelYearReportComplianceObligation
 from api.models.sales_submission import SalesSubmission
 from api.models.vehicle import Vehicle
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from api.permissions.model_year_report import ModelYearReportPermissions
 from api.serializers.model_year_report_compliance_obligation import \
-    ModelYearReportComplianceObligationDetailsSerializer, ModelYearReportComplianceObligationSnapshotSerializer, ModelYearReportComplianceObligationOffsetSerializer
-from api.serializers.credit_transaction import CreditTransactionObligationActivitySerializer
-from api.services.summary import parse_summary_serializer, retrieve_balance
+    ModelYearReportComplianceObligationDetailsSerializer, \
+    ModelYearReportComplianceObligationSnapshotSerializer, \
+    ModelYearReportComplianceObligationOffsetSerializer
+from api.serializers.credit_transaction import \
+    CreditTransactionObligationActivitySerializer
+from api.services.summary import parse_summary_serializer, retrieve_balance, \
+    get_current_year_balance
 
 
 class ModelYearReportComplianceObligationViewset(
@@ -126,7 +132,7 @@ class ModelYearReportComplianceObligationViewset(
                 offset_snapshot, context={'request': request, 'kwargs': kwargs}, many=True
             )
             compliance_offset = offset_serializer.data
-            
+
         if confirmation and snapshot:
             serializer = ModelYearReportComplianceObligationSnapshotSerializer(
                 snapshot, context={'request': request, 'kwargs': kwargs}, many=True
@@ -255,9 +261,23 @@ class ModelYearReportComplianceObligationViewset(
                     'model_year': {'name': key}
                 })
 
-            prior_year = report_year-1
-            prior_year_balance_a = retrieve_balance(organization.id, prior_year, 'A')
-            prior_year_balance_b = retrieve_balance(organization.id, prior_year, 'B')
+            prior_year = report_year - 1
+            try:
+                previous_report = ModelYearReport.objects.values_list('id', flat=True).get(
+                        model_year__name=str(prior_year))
+            except ModelYearReport.DoesNotExist:
+                previous_report = None
+
+            if previous_report:
+                prior_year_balance_a = ModelYearReportComplianceObligation.objects.values_list('credit_a_value', flat=True).filter(
+                        model_year_report_id=previous_report).filter(category='creditBalanceEnd')
+                
+                prior_year_balance_b = ModelYearReportComplianceObligation.objects.values_list('credit_b_value', flat=True).filter(
+                        model_year_report_id=previous_report).filter(category='creditBalanceEnd')
+            else:
+                prior_year_balance_a = 0
+                prior_year_balance_b = 0
+
             content.append({
                 'credit_a_value': prior_year_balance_a,
                 'credit_b_value': prior_year_balance_b,
@@ -265,8 +285,8 @@ class ModelYearReportComplianceObligationViewset(
                 'model_year': {'name': report_year_obj.name}
             })
 
-            report_year_balance_a = retrieve_balance(organization.id, report_year, 'A')
-            report_year_balance_b = retrieve_balance(organization.id, report_year, 'B')   
+            report_year_balance_a = get_current_year_balance(organization.id, report_year, 'A')
+            report_year_balance_b = get_current_year_balance(organization.id, report_year, 'B')
             content.append({
                 'credit_a_value': report_year_balance_a,
                 'credit_b_value': report_year_balance_b,
