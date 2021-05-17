@@ -16,6 +16,7 @@ from api.models.model_year_report_previous_sales import \
     ModelYearReportPreviousSales
 from rest_framework.response import Response
 from api.permissions.model_year_report import ModelYearReportPermissions
+from django.db.models import Q
 
 from api.serializers.model_year_report_vehicle import \
     ModelYearReportVehicleSerializer, ModelYearReportVehicleSaveSerializer
@@ -129,9 +130,46 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
     def retrieve(self, request, pk):
         queryset = self.get_queryset()
         report = get_object_or_404(queryset, pk=pk)
+        previous_sales_test = []
+        ldv_sales_sum = 0
+        avg_sale = 0
 
         previous_sales = ModelYearReportPreviousSales.objects.filter(
             model_year_report_id=report.id).order_by('-model_year__name')
+        # Not complete logic, need more work
+        try:
+            if previous_sales.count() != 3:
+                report_year = ModelYearReport.objects.values_list('model_year__name', flat=True).get(
+                    id=report.id)
+                previous_year = int(report_year)-1
+                previous_report = ModelYearReport.objects.values_list('id', flat=True).get(
+                    model_year__name=str(previous_year))
+
+                if previous_report:
+                    ldv_sales_first = ModelYearReport.objects.values_list('ldv_sales', flat=True).get(id=previous_report)
+
+                    ldv_sales_second = ModelYearReportPreviousSales.objects.values_list(
+                        'previous_sales', flat=True).get(
+                            Q(model_year_report_id=previous_report) &
+                            Q(model_year__name=previous_year-1))
+
+                    ldv_sales_third = ModelYearReportPreviousSales.objects.values_list(
+                        'previous_sales', flat=True).get(
+                            Q(model_year_report_id=previous_report) &
+                            Q(model_year__name=previous_year-2))
+
+                    previous_sales_test.append({'model_year': previous_year, 'ldv_sales': ldv_sales_first})
+                    previous_sales_test.append({'model_year': previous_year-1, 'ldv_sales': ldv_sales_second})
+                    previous_sales_test.append({'model_year': previous_year-2, 'ldv_sales': ldv_sales_third})
+                    avg_sale = (ldv_sales_first + ldv_sales_second + ldv_sales_third) / 3
+                avg_sale = 0
+            else:
+                for sale in previous_sales:
+                    ldv_sales_sum += sale.previous_sales
+                avg_sale = ldv_sales_sum / 3
+        except Exception:
+            pass
+
         previous_sales_serializer = ModelYearReportPreviousSalesSerializer(
             previous_sales, many=True)
 
@@ -156,7 +194,6 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
         ).values_list(
             'signing_authority_assertion_id', flat=True
         ).distinct()
-
         return Response({
             'previous_sales': previous_sales_serializer.data,
             'vehicle_list': vehicles_serializer.data,
@@ -165,4 +202,5 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
             'confirmations': confirmations,
             'organization_name': request.user.organization.name,
             'validation_status': report.validation_status.value,
+            'average_sales': avg_sale
             })
