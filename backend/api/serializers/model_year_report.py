@@ -28,7 +28,7 @@ class ModelYearReportSerializer(ModelSerializer):
     create_user = SerializerMethodField()
     model_year = ModelYearSerializer()
     model_year_report_addresses = ModelYearReportAddressSerializer(many=True)
-    makes = ModelYearReportMakeSerializer(many=True)
+    makes = SerializerMethodField()
     validation_status = EnumField(ModelYearReportStatuses)
     model_year_report_history = ModelYearReportHistorySerializer(many=True)
     confirmations = SerializerMethodField()
@@ -49,6 +49,22 @@ class ModelYearReportSerializer(ModelSerializer):
         ).values_list('signing_authority_assertion_id', flat=True).distinct()
 
         return confirmations
+
+    def get_makes(self, obj):
+        request = self.context.get('request')
+
+        makes = ModelYearReportMake.objects.filter(
+            model_year_report_id=obj.id
+        )
+
+        if not request.user.is_government:
+            makes = makes.filter(
+                from_gov=False
+            )
+
+        serializer = ModelYearReportMakeSerializer(makes, many=True)
+
+        return serializer.data
 
     def get_statuses(self, obj):
         return get_model_year_report_statuses(obj)

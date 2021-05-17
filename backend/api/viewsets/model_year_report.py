@@ -4,11 +4,17 @@ from rest_framework.response import Response
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 
+from api.models.credit_class import CreditClass
+from api.models.model_year import ModelYear
 from api.models.model_year_report import ModelYearReport
+from api.models.model_year_report_adjustment import ModelYearReportAdjustment
 from api.models.model_year_report_confirmation import \
     ModelYearReportConfirmation
 from api.models.model_year_report_history import ModelYearReportHistory
 from api.models.model_year_report_make import ModelYearReportMake
+from api.models.model_year_report_previous_sales import \
+    ModelYearReportPreviousSales
+from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.permissions.model_year_report import ModelYearReportPermissions
 from api.serializers.model_year_report import \
     ModelYearReportSerializer, ModelYearReportListSerializer, \
@@ -20,7 +26,6 @@ from api.serializers.model_year_report_make import \
 from api.serializers.organization import OrganizationSerializer
 from api.serializers.organization_address import OrganizationAddressSerializer
 from api.serializers.vehicle import ModelYearSerializer
-from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.services.model_year_report import get_model_year_report_statuses
 from auditable.views import AuditableMixin
 
@@ -90,7 +95,8 @@ class ModelYearReportViewset(
             )
 
             makes_list = ModelYearReportMake.objects.filter(
-                model_year_report_id=report.id
+                model_year_report_id=report.id,
+                from_gov=False
             ).values('make').distinct()
 
             makes = ModelYearReportMakeSerializer(makes_list, many=True)
@@ -122,7 +128,7 @@ class ModelYearReportViewset(
                 'statuses': get_model_year_report_statuses(report)
             })
 
-        serializer = ModelYearReportSerializer(report)
+        serializer = ModelYearReportSerializer(report, context={'request': request})
 
         return Response(serializer.data)
 
@@ -171,3 +177,80 @@ class ModelYearReportViewset(
         return HttpResponse(
             status=201, content="Report Submitted"
         )
+
+    @action(detail=True, methods=['patch'])
+    def assessment(self, request, pk):
+        if not request.user.is_government:
+            return HttpResponse(
+                status=403, content=None
+            )
+
+        makes = request.data.get('makes', None)
+
+        report = get_object_or_404(ModelYearReport, pk=pk)
+
+        if makes and isinstance(makes, list):
+            for make in makes:
+                found = report.makes.filter(
+                    make__iexact=make
+                )
+
+                if not found:
+                    ModelYearReportMake.objects.create(
+                        model_year_report=report,
+                        make=make,
+                        create_user=request.user.username,
+                        update_user=request.user.username,
+                        from_gov=True
+                    )
+
+        sales = request.data.get('sales', None)
+
+        if sales:
+            for key, value in sales.items():
+                model_year = ModelYear.objects.filter(
+                    name=key
+                ).first()
+
+                if model_year:
+                    ModelYearReportPreviousSales.objects.update_or_create(
+                        model_year_id=model_year.id,
+                        model_year_report=report,
+                        from_gov=True,
+                        defaults={
+                            'previous_sales': value,
+                            'create_user': request.user.username,
+                            'update_user': request.user.username
+                        }
+                    )
+
+        adjustments = request.data.get('adjusments', None)
+
+        if adjustments and isinstance(adjustments, list):
+            for adjustment in adjustments:
+                model_year = ModelYear.objects.filter(
+                    name=adjustment.model_year
+                ).first()
+
+                credit_class = CreditClass.objects.filter(
+                    credit_class=adjustment.credit_class
+                ).first()
+
+                is_reduction = False
+
+                if adjustment.type == 'Reduction':
+                    is_reduction = True
+
+                if model_year and credit_class and adjustment.quantity:
+                    ModelYearReportAdjustment.objects.create(
+                        credit_class_id=credit_class.id,
+                        model_year_id=model_year.id,
+                        number_of_credits=adjustment.quantity,
+                        is_reduction=is_reduction,
+                    )
+
+        report = get_object_or_404(ModelYearReport, pk=pk)
+
+        serializer = ModelYearReportSerializer(report, context={'request': request})
+
+        return Response(serializer.data)

@@ -35,6 +35,7 @@ import ComplianceRatiosContainer from '../compliance/ComplianceRatiosContainer';
 import SupplierInformationContainer from '../compliance/SupplierInformationContainer';
 import ComplianceObligationContainer from '../compliance/ComplianceObligationContainer';
 import ConsumerSalesContainer from '../compliance/ConsumerSalesContainer';
+import ComplianceReportAssessmentContainer from '../compliance/ComplianceReportAssessmentContainer';
 
 import ErrorHandler from './components/ErrorHandler';
 import Loading from './components/Loading';
@@ -138,6 +139,10 @@ class Router extends Component {
               <Route
                 path={ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION}
                 render={() => <SupplierInformationContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_COMPLIANCE.REPORT_ASSESSMENT}
+                render={() => <ComplianceReportAssessmentContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact
