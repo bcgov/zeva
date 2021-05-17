@@ -19,13 +19,17 @@ class ModelYearReportPreviousSales(Auditable):
     )
     previous_sales = models.IntegerField(
         blank=False,
-        db_comment="Containes the previous years LDV sales/leases data based on model year."
+        db_comment="Contains the previous years LDV sales/leases data based on model year."
     )
     model_year_report = models.ForeignKey(
         'ModelYearReport',
         related_name=None,
         on_delete=models.PROTECT,
         null=False
+    )
+    from_gov = models.BooleanField(
+        default=False,
+        db_comment="Flag. True if this edit came from a government user."
     )
 
     class Meta:
