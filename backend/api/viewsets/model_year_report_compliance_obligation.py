@@ -262,17 +262,17 @@ class ModelYearReportComplianceObligationViewset(
 
             prior_year = report_year - 1
             try:
-                previous_report = ModelYearReport.objects.values_list('id', flat=True).get(
-                        model_year__name=str(prior_year))
+                previous_report = ModelYearReport.objects.values_list('id', flat=True).filter(
+                        model_year__name=str(prior_year)).get(organization_name=organization.name)
             except ModelYearReport.DoesNotExist:
                 previous_report = None
 
             if previous_report:
                 prior_year_balance_a = ModelYearReportComplianceObligation.objects.values_list('credit_a_value', flat=True).filter(
-                        model_year_report_id=previous_report).filter(category='creditBalanceEnd')
+                        model_year_report_id=previous_report).get(category='creditBalanceEnd')
                 
                 prior_year_balance_b = ModelYearReportComplianceObligation.objects.values_list('credit_b_value', flat=True).filter(
-                        model_year_report_id=previous_report).filter(category='creditBalanceEnd')
+                        model_year_report_id=previous_report).get(category='creditBalanceEnd')
             else:
                 prior_year_balance_a = 0
                 prior_year_balance_b = 0
