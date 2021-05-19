@@ -1,14 +1,14 @@
 """
-Model Year Report Previous Sales
+Model Year Report LDV Sales
 """
 from django.db import models
 
 from auditable.models import Auditable
 
 
-class ModelYearReportPreviousSales(Auditable):
+class ModelYearReportLDVSales(Auditable):
     """
-    Table to store previous years LDV Sales/Leases
+    Table to store LDV Sales/Leases by year
     """
 
     model_year = models.ForeignKey(
@@ -17,9 +17,9 @@ class ModelYearReportPreviousSales(Auditable):
         on_delete=models.PROTECT,
         null=False
     )
-    previous_sales = models.IntegerField(
+    ldv_sales = models.IntegerField(
         blank=False,
-        db_comment="Contains the previous years LDV sales/leases data based on model year."
+        db_comment="Contains the LDV sales/leases data based on model year."
     )
     model_year_report = models.ForeignKey(
         'ModelYearReport',
@@ -33,6 +33,6 @@ class ModelYearReportPreviousSales(Auditable):
     )
 
     class Meta:
-        db_table = "model_year_report_previous_sales"
+        db_table = "model_year_report_ldv_sales"
 
-    db_table_comment = "Table to store previous years LDV Sales/Leases"
+    db_table_comment = "Table to store LDV Sales/Leases by year"

@@ -1,32 +1,27 @@
-from rest_framework import mixins, viewsets, permissions, status
+from rest_framework import mixins, viewsets
+from rest_framework.response import Response
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
+
 from api.models.model_year_report_vehicle import ModelYearReportVehicle
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_confirmation import \
     ModelYearReportConfirmation
 from api.models.model_year_report_history import ModelYearReportHistory
-from api.models.vehicle import Vehicle
+from api.models.model_year import ModelYear
+from api.models.model_year_report_ldv_sales import \
+    ModelYearReportLDVSales
+from api.models.model_year_report_statuses import ModelYearReportStatuses
+
+from api.permissions.model_year_report import ModelYearReportPermissions
+
 from api.serializers.model_year_report_history import \
     ModelYearReportHistorySerializer
-from rest_framework.decorators import action
-from api.models.model_year import ModelYear
-from api.models.model_year_report_confirmation import \
-    ModelYearReportConfirmation
-from api.models.model_year_report_previous_sales import \
-    ModelYearReportPreviousSales
-from rest_framework.response import Response
-from api.permissions.model_year_report import ModelYearReportPermissions
-from django.db.models import Q
-
 from api.serializers.model_year_report_vehicle import \
     ModelYearReportVehicleSerializer, ModelYearReportVehicleSaveSerializer
-from api.serializers.model_year_report_previous_sales import \
-    ModelYearReportPreviousSalesSerializer
-from api.serializers.model_year_report import ModelYearReport
-from api.models.model_year_report_vehicle import ModelYearReportVehicle
+from api.serializers.model_year_report_ldv_sales import \
+    ModelYearReportLDVSalesSerializer
 from api.serializers.model_year_report import ModelYearReportSerializer
-from api.serializers.organization import OrganizationSerializer
-from api.models.model_year_report_statuses import ModelYearReportStatuses
 
 
 class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
@@ -65,8 +60,13 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
         model_year_report_update = ModelYearReport.objects.filter(
             id=model_year_report_id
         )
-        model_year_report_update.update(ldv_sales=ldv_sales)
         model_year_report_update.update(supplier_class=supplier_class)
+
+        ModelYearReportLDVSales.objects.create(
+            ldv_sales=ldv_sales,
+            model_year_id=report.model_year_id,
+            model_year_report_id=model_year_report_id
+        )
 
         """
         Save/Update vehicle information
@@ -89,8 +89,8 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
         """
         if not previous_years_exist:
             for previous_sale in previous_sales:
-                model_year_report_previous_sale = ModelYearReportPreviousSales.objects.create(
-                    previous_sales=previous_sale.get('ldv_sales'),
+                model_year_report_previous_sale = ModelYearReportLDVSales.objects.create(
+                    ldv_sales=previous_sale.get('ldv_sales'),
                     model_year=ModelYear.objects.get(name=previous_sale.get('model_year')),
                     model_year_report=report
                 )
@@ -134,8 +134,10 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
         ldv_sales_sum = 0
         avg_sale = 0
 
-        previous_sales = ModelYearReportPreviousSales.objects.filter(
-            model_year_report_id=report.id).order_by('-model_year__name')
+        previous_sales = ModelYearReportLDVSales.objects.filter(
+            model_year_report_id=report.id,
+            model_year__name__lt=report.model_year.name
+        ).order_by('-model_year__name')
         # Not complete logic, need more work
         try:
             if previous_sales.count() != 3:
@@ -148,13 +150,13 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
                 if previous_report:
                     ldv_sales_first = ModelYearReport.objects.values_list('ldv_sales', flat=True).get(id=previous_report)
 
-                    ldv_sales_second = ModelYearReportPreviousSales.objects.values_list(
-                        'previous_sales', flat=True).get(
+                    ldv_sales_second = ModelYearReportLDVSales.objects.values_list(
+                        'ldv_sales', flat=True).get(
                             Q(model_year_report_id=previous_report) &
                             Q(model_year__name=previous_year-1))
 
-                    ldv_sales_third = ModelYearReportPreviousSales.objects.values_list(
-                        'previous_sales', flat=True).get(
+                    ldv_sales_third = ModelYearReportLDVSales.objects.values_list(
+                        'ldv_sales', flat=True).get(
                             Q(model_year_report_id=previous_report) &
                             Q(model_year__name=previous_year-2))
 
@@ -170,7 +172,7 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
         except Exception:
             pass
 
-        previous_sales_serializer = ModelYearReportPreviousSalesSerializer(
+        previous_sales_serializer = ModelYearReportLDVSalesSerializer(
             previous_sales, many=True)
 
         vehicle = ModelYearReportVehicle.objects.filter(
@@ -178,9 +180,15 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
         vehicles_serializer = ModelYearReportVehicleSerializer(
             vehicle, many=True)
 
-        ldv_sales = ModelYearReport.objects.values_list(
-            'ldv_sales', flat=True).get(
-            id=report.id)
+        ldv_sales = None
+
+        report_ldv_sales = ModelYearReportLDVSales.objects.filter(
+            model_year_id=report.model_year_id,
+            model_year_report_id=report.id
+        ).first()
+
+        if report_ldv_sales:
+            ldv_sales = report_ldv_sales.ldv_sales
 
         history_list = ModelYearReportHistory.objects.filter(
                 model_year_report_id=pk

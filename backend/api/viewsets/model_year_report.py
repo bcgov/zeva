@@ -12,8 +12,8 @@ from api.models.model_year_report_confirmation import \
     ModelYearReportConfirmation
 from api.models.model_year_report_history import ModelYearReportHistory
 from api.models.model_year_report_make import ModelYearReportMake
-from api.models.model_year_report_previous_sales import \
-    ModelYearReportPreviousSales
+from api.models.model_year_report_ldv_sales import \
+    ModelYearReportLDVSales
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.permissions.model_year_report import ModelYearReportPermissions
 from api.serializers.model_year_report import \
@@ -220,12 +220,12 @@ class ModelYearReportViewset(
                 ).first()
 
                 if model_year:
-                    ModelYearReportPreviousSales.objects.update_or_create(
+                    ModelYearReportLDVSales.objects.update_or_create(
                         model_year_id=model_year.id,
                         model_year_report=report,
                         from_gov=True,
                         defaults={
-                            'previous_sales': value,
+                            'ldv_sales': value,
                             'create_user': request.user.username,
                             'update_user': request.user.username
                         }
