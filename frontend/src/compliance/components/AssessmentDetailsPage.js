@@ -13,6 +13,7 @@ import ComplianceReportAlert from './ComplianceReportAlert';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import TableSection from './TableSection';
 import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable';
+import CommentInput from '../../app/components/CommentInput';
 
 const AssessmentDetailsPage = (props) => {
   const {
@@ -90,30 +91,13 @@ const AssessmentDetailsPage = (props) => {
             />
             )}
           </div>
-
           <div className="grey-border-area p-4 comment-box mt-2">
-            <div className="text-editor">
-              <label htmlFor="comment">
-                <b>Add comment to director:</b>
-              </label>
-              <ReactQuill
-                theme="snow"
-                modules={{
-                  toolbar: [
-                    ['bold', 'italic'],
-                    [{ list: 'bullet' }, { list: 'ordered' }],
-                  ],
-                }}
-                formats={['bold', 'italic', 'list', 'bullet']}
-                onChange={handleCommentChange}
-              />
-              <button
-                className="button mt-2"
-                onClick={() => { handleAddComment(); }}
-                type="button"
-              >Add Comment
-              </button>
-            </div>
+            <CommentInput
+              handleAddComment={() => { console.log('comment add'); }}
+              handleCommentChange={() => { console.log('comment change'); }}
+              title="Add comment to director: "
+              buttonText="Add Comment"
+            />
           </div>
         </div>
       </div>
@@ -420,15 +404,15 @@ const AssessmentDetailsPage = (props) => {
         <div className="col-12">
           <div className="grey-border-area comment-box p-4 mt-2">
             <div>
-
               <input
                 className="mr-3"
                 type="radio"
-                id="complied"
+                id="complied-radio"
+                name="assessment"
                 onChange={(event) => {
                   console.log('radio checked');
                 }}
-                name="complied"
+
               />
               <label className="d-inline" htmlFor="complied">
                 {details.organization.name} has complied with section 10 (2) of the Zero-Emission
@@ -439,11 +423,12 @@ const AssessmentDetailsPage = (props) => {
               <input
                 className="mr-3"
                 type="radio"
-                id="not-complied"
+                id="not-complied-radio"
+                name="assessment"
                 onChange={(event) => {
                   console.log('radio checked');
                 }}
-                name="not-complied"
+
               />
               <label className="d-inline" htmlFor="not-complied">
                 {details.organization.name} has not complied with section 10 (2) of the Zero-Emission
@@ -459,17 +444,16 @@ const AssessmentDetailsPage = (props) => {
                 className="mr-3"
                 type="radio"
                 id="penalty-radio"
+                name="assessment"
                 onChange={(event) => {
                   console.log('radio checked');
                 }}
-                name="penalty-radio"
               />
               <label className="d-inline" htmlFor="penalty-radio">
                 Section 10 (3) applies and {details.organization.name} is subject to an automatic
                 administrative penalty As per section 26 of the Act the amount of the administrative
                 penalty is:
                 <div>
-
                   <input
                     type="text"
                     className="ml-4 mr-1"
@@ -478,30 +462,12 @@ const AssessmentDetailsPage = (props) => {
                   <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
                 </div>
               </label>
-
-              <div className="mt-3 text-editor">
-                <label htmlFor="comment">
-                  <b>Assessment Message to the Supplier:</b>
-                </label>
-                <ReactQuill
-                  theme="snow"
-                  modules={{
-                    toolbar: [
-                      ['bold', 'italic'],
-                      [{ list: 'bullet' }, { list: 'ordered' }],
-                    ],
-                  }}
-                  formats={['bold', 'italic', 'list', 'bullet']}
-                  onChange={handleCommentChange}
-                />
-                <button
-                  className="button mt-2"
-                  onClick={() => { console.log('need a seperate function for the supplier message!'); }}
-                  type="button"
-                >Add/Update Message
-                </button>
-              </div>
-
+              <CommentInput
+                handleAddComment={() => { console.log('comment add'); }}
+                handleCommentChange={() => { console.log('comment change'); }}
+                title="Assessment Message to the Supplier: "
+                buttonText="Add/Update Message"
+              />
             </div>
           </div>
         </div>
