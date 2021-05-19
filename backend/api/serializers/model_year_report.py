@@ -87,6 +87,10 @@ class ModelYearReportListSerializer(
     compliant = SerializerMethodField()
     obligation_total = SerializerMethodField()
     obligation_credits = SerializerMethodField()
+    ldv_sales = SerializerMethodField()
+
+    def get_ldv_sales(self, obj):
+        return obj.ldv_sales
 
     def get_compliant(self, obj):
         return True

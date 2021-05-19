@@ -169,7 +169,7 @@ const ConsumerSalesDetailsPage = (props) => {
                           {yearSale.modelYear} Model Year LDV Sales\Leases:
                         </label>
                         <label className="sales-numbers">
-                          {yearSale.previousSales}
+                          {yearSale.ldvSales}
                         </label>
                       </div>
                     ))}

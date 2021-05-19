@@ -81,9 +81,9 @@ const ConsumerSalesContainer = (props) => {
         setPreviousYearsExist(true);
         setPreviousYearsList(previousSales);
         averageLdvSales(
-          parseInt(previousSales[0].previousSales, 10),
-          parseInt(previousSales[1].previousSales, 10),
-          parseInt(previousSales[2].previousSales, 10),
+          parseInt(previousSales[0].ldvSales, 10),
+          parseInt(previousSales[1].ldvSales, 10),
+          parseInt(previousSales[2].ldvSales, 10),
           ldvSales,
         );
       } else {

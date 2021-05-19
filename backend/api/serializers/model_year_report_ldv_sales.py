@@ -1,13 +1,12 @@
 from rest_framework.serializers import ModelSerializer, SlugRelatedField
 from api.serializers.model_year_report import ModelYearReportSerializer
-from api.serializers.vehicle import ModelYearSerializer
 from api.models.model_year import ModelYear
 
-from api.models.model_year_report_previous_sales import \
-     ModelYearReportPreviousSales
+from api.models.model_year_report_ldv_sales import \
+     ModelYearReportLDVSales
 
 
-class ModelYearReportPreviousSalesSerializer(ModelSerializer):
+class ModelYearReportLDVSalesSerializer(ModelSerializer):
     model_year = SlugRelatedField(
         slug_field='name',
         queryset=ModelYear.objects.all()
@@ -15,7 +14,7 @@ class ModelYearReportPreviousSalesSerializer(ModelSerializer):
     model_year_report = ModelYearReportSerializer
 
     class Meta:
-        model = ModelYearReportPreviousSales
+        model = ModelYearReportLDVSales
         fields = (
-            'id', 'previous_sales', 'model_year',
+            'id', 'ldv_sales', 'model_year',
         )
