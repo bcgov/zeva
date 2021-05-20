@@ -17,9 +17,9 @@ class ModelYearReportAssessment(Auditable):
         null=False,
         on_delete=models.PROTECT
     )
-    radio_selection = models.ForeignKey(
-        'ModelYearReportAssessmentRadioDescriptions',
-        related_name='assessment_radio_description',
+    model_year_report_assessment_description = models.ForeignKey(
+        'ModelYearReportAssessmentDescriptions',
+        related_name='+',
         null=False,
         on_delete=models.PROTECT
     )
