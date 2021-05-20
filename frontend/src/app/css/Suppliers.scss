@@ -1,11 +1,39 @@
 #vehicle-supplier-details {
   h4 {
     color: $default-text-blue;
-    margin-top: 2vh;
   }
+
   .supplier-text {
     color: $default-text-blue;
     font-size:large;
+  }
+
+  .ldv-sales {
+    border: 1px solid $border-grey;
+    display: inline-block;
+    padding: 0.5rem;
+
+    > .row {
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    .header-bg {
+      background-color: $default-background-grey;
+
+      > * {
+        padding: 0.5rem;
+      }
+    }
+
+    .model-year, .sales {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .model-year {
+      min-width: 200px;
+    }
   }
 }
 

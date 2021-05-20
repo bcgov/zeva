@@ -7,6 +7,7 @@ import React from 'react';
 import ReactTable from '../../app/components/ReactTable';
 import history from '../../app/History';
 import formatNumeric from '../../app/utilities/formatNumeric';
+import VehicleSupplierClass from './VehicleSupplierClass';
 
 const OrganizationsTable = (props) => {
   const columns = [{
@@ -15,7 +16,7 @@ const OrganizationsTable = (props) => {
     Header: 'Company Name',
   },
   {
-    accessor: () => '',
+    accessor: (item) => (<VehicleSupplierClass supplierClass={item.supplierClass} />),
     className: 'col-class',
     Header: 'Class',
     id: 'class',
