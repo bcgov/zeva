@@ -36,7 +36,7 @@ const ComplianceReportTabs = (props) => {
           <span className="disabled">Consumer Sales</span>
         )}
         {!disableOtherTabs && (
-          <Link to={ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id)}>Consumer Sales</Link>
+          <Link to={ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id)}>Consumer ZEV Sales</Link>
         )}
       </li>
       <li

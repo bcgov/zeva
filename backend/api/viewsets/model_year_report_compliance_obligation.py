@@ -269,13 +269,13 @@ class ModelYearReportComplianceObligationViewset(
             if previous_report:
                 prior_year_balance_a = ModelYearReportComplianceObligation.objects.values_list('credit_a_value', flat=True).filter(
                         model_year_report_id=previous_report).filter(category='creditBalanceEnd').first()
-                
+
                 prior_year_balance_b = ModelYearReportComplianceObligation.objects.values_list('credit_b_value', flat=True).filter(
                         model_year_report_id=previous_report).filter(category='creditBalanceEnd').first()
 
             content.append({
-                'credit_a_value': prior_year_balance_a,
-                'credit_b_value': prior_year_balance_b,
+                'credit_a_value': prior_year_balance_a if prior_year_balance_a else 0,
+                'credit_b_value': prior_year_balance_b if prior_year_balance_b else 0,
                 'category': 'creditBalanceStart',
                 'model_year': {'name': report_year_obj.name}
             })
