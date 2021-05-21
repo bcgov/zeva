@@ -40,7 +40,7 @@ objects:
         type: Docker
         dockerStrategy:
           pullSecret:
-            name: artifactory-docker-pull-secret
+            name: docker-artifactory-secret
       successfulBuildsHistoryLimit: 5
       triggers: []
     status:
