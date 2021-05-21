@@ -24,15 +24,16 @@ class ModelYearReportAssessment(Auditable):
         on_delete=models.PROTECT
     )
     penalty = models.DecimalField(
+        null=True,
         max_digits=20,
         decimal_places=2,
         db_comment='amount of administrative penalty'
     )
 
     class Meta:
-        db_table = 'model_year_report_assessment_comment'
+        db_table = 'model_year_report_assessment'
         ordering = ['create_timestamp']
 
     db_table_comment = \
-        "Contains comments made about the Model Year Assessment" \
-        "from analyst to director and from analyst to supplier"
+        "Contains Model Year Assessment description as selected" \
+        "by analyst and penalty amount if applicable"

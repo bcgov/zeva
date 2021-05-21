@@ -5,7 +5,7 @@ import ReactQuill from 'react-quill';
 
 const CommentInput = (props) => {
   const {
-    handleAddComment, handleCommentChange, title, buttonText,
+    handleAddComment, handleCommentChange, title, buttonText, defaultComment
   } = props;
   return (
 
@@ -14,6 +14,7 @@ const CommentInput = (props) => {
         <b>{title}</b>
       </label>
       <ReactQuill
+        defaultValue={defaultComment ? defaultComment.comment : ''}
         theme="snow"
         modules={{
           toolbar: [

@@ -14,6 +14,7 @@ import formatNumeric from '../../app/utilities/formatNumeric';
 import TableSection from './TableSection';
 import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable';
 import CommentInput from '../../app/components/CommentInput';
+import DisplayComment from '../../app/components/DisplayComment';
 
 const AssessmentDetailsPage = (props) => {
   const {
@@ -25,11 +26,13 @@ const AssessmentDetailsPage = (props) => {
     modelYear,
     statuses,
     id,
-    handleAddComment,
-    handleCommentChange,
     ratios,
+    handleAddBceidComment,
+    handleAddIdirComment,
     creditActivityDetails,
     offsetNumbers,
+    handleCommentChangeBceid,
+    handleCommentChangeIdir,
   } = props;
 
   const {
@@ -92,9 +95,14 @@ const AssessmentDetailsPage = (props) => {
             )}
           </div>
           <div className="grey-border-area p-4 comment-box mt-2">
+            {details.idirComment && user.isGovernment && (
+            <DisplayComment
+              commentArray={details.idirComment}
+            />
+            )}
             <CommentInput
-              handleAddComment={() => { console.log('comment add'); }}
-              handleCommentChange={() => { console.log('comment change'); }}
+              handleAddComment={handleAddIdirComment}
+              handleCommentChange={handleCommentChangeIdir}
               title="Add comment to director: "
               buttonText="Add Comment"
             />
@@ -196,7 +204,7 @@ const AssessmentDetailsPage = (props) => {
                       B
                     </th>
                   </tr>
-                  <tr key="start">
+                  <tr key="balance-start">
                     <td className="text-blue" />
                     <td className="text-right">
                       {creditBalanceStart.A}
@@ -315,7 +323,7 @@ const AssessmentDetailsPage = (props) => {
                       B
                     </th>
                   </tr>
-                  <tr key="start">
+                  <tr key="reduction">
                     <td className="text-blue">&bull; &nbsp; &nbsp; 2019 Credits:</td>
                     <td className="text-right text-red">
                       -567.43
@@ -344,7 +352,7 @@ const AssessmentDetailsPage = (props) => {
                       <input checked type="radio" />
                     </td>
                   </tr>
-                  <tr key="start">
+                  <tr key="reduction-start">
                     <td className="text-blue">&bull; &nbsp; &nbsp; 2019 Credits:</td>
                     <td className="text-right">
                       0
@@ -463,8 +471,9 @@ const AssessmentDetailsPage = (props) => {
                 </div>
               </label>
               <CommentInput
-                handleAddComment={() => { console.log('comment add'); }}
-                handleCommentChange={() => { console.log('comment change'); }}
+                defaultComment={details.bceidComment}
+                handleAddComment={handleAddBceidComment}
+                handleCommentChange={handleCommentChangeBceid}
                 title="Assessment Message to the Supplier: "
                 buttonText="Add/Update Message"
               />

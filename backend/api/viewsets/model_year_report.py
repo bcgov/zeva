@@ -26,6 +26,8 @@ from api.serializers.model_year_report_make import \
 from api.serializers.organization import OrganizationSerializer
 from api.serializers.organization_address import OrganizationAddressSerializer
 from api.serializers.vehicle import ModelYearSerializer
+from api.serializers.model_year_report_assessment import ModelYearReportAssessmentSerializer
+from api.models.model_year_report_assessment_comment import ModelYearReportAssessmentComment
 from api.services.model_year_report import get_model_year_report_statuses
 from auditable.views import AuditableMixin
 
@@ -186,7 +188,7 @@ class ModelYearReportViewset(
         )
 
     @action(detail=True, methods=['patch'])
-    def assessment(self, request, pk):
+    def assessment_patch(self, request, pk):
         if not request.user.is_government:
             return HttpResponse(
                 status=403, content=None
@@ -260,4 +262,33 @@ class ModelYearReportViewset(
 
         serializer = ModelYearReportSerializer(report, context={'request': request})
 
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post', 'patch'])
+    def comment_save(self, request, pk):
+        comment = request.data.get('comment')
+        director = request.data.get('director')
+        if comment:
+            ModelYearReportAssessmentComment.objects.create(
+                model_year_report_id=pk,
+                comment=comment,
+                to_director=director,
+                create_user=request.user.username,
+                update_user=request.user.username,
+            )
+        report = get_object_or_404(ModelYearReport, pk=pk)
+
+        serializer = ModelYearReportSerializer(report, context={'request': request})
+
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def assessment(self, request, pk):
+        if not request.user.is_government:
+            return HttpResponse(
+                status=403, content=None
+            )
+
+        report = get_object_or_404(ModelYearReport, pk=pk)
+        serializer = ModelYearReportAssessmentSerializer(report)
         return Response(serializer.data)

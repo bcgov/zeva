@@ -25,6 +25,8 @@ const AssessmentContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [makes, setMakes] = useState([]);
   const [make, setMake] = useState('');
+  const [bceidComment, setBceidComment] = useState('');
+  const [idirComment, setIdirComment] = useState([]);
   const [pendingBalanceExist, setPendingBalanceExist] = useState(false);
   const [creditActivityDetails, setCreditActivityDetails] = useState({});
   const [supplierClassInfo, setSupplierClassInfo] = useState({ ldvSales: 0, class: '' });
@@ -34,8 +36,23 @@ const AssessmentContainer = (props) => {
       confirmedBy: null,
     },
   });
-  const handleAddComment = () => {
-    console.log('add logic here!');
+  const handleCommentChangeIdir = (text) => {
+    setIdirComment(text);
+  };
+  const handleCommentChangeBceid = (text) => {
+    setBceidComment(text);
+  };
+  const handleAddBceidComment = () => {
+    const comment = { comment: bceidComment, director: false };
+    axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
+      history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+    });
+  };
+  const handleAddIdirComment = () => {
+    const comment = { comment: idirComment, director: true };
+    axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
+      history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+    });
   };
   const refreshDetails = () => {
     if (id) {
@@ -43,9 +60,18 @@ const AssessmentContainer = (props) => {
         axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)),
         axios.get(ROUTES_COMPLIANCE.RATIOS),
         axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)),
-        
+        axios.get(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)),
       ])
-        .then(axios.spread((response, ratioResponse, creditActivityResponse) => {
+        .then(axios.spread((response, ratioResponse, creditActivityResponse, assessmentResponse) => {
+          const idirCommentArrayResponse = [];
+          let bceidCommentResponse = {};
+          assessmentResponse.data.assessmentComment.forEach((item) => {
+            if (item.toDirector === true) {
+              idirCommentArrayResponse.push(item);
+            } else {
+              bceidCommentResponse = item;
+            }
+          });
           let supplierClass;
           if (response.data.supplierClass === 'L') {
             supplierClass = 'Large';
@@ -73,6 +99,8 @@ const AssessmentContainer = (props) => {
             setMakes(currentMakes);
           }
           setDetails({
+            bceidComment: bceidCommentResponse,
+            idirComment: idirCommentArrayResponse,
             ldvSales,
             class: supplierClass,
             assessment: {
@@ -212,8 +240,10 @@ const AssessmentContainer = (props) => {
         details={details}
         statuses={statuses}
         id={id}
-        handleAddComment={handleAddComment}
-        handleCommentChange={handleAddComment}
+        handleAddBceidComment={handleAddBceidComment}
+        handleAddIdirComment={handleAddIdirComment}
+        handleCommentChangeIdir={handleCommentChangeIdir}
+        handleCommentChangeBceid={handleCommentChangeBceid}
         ratios={ratios}
         supplierClassInfo={supplierClassInfo}
         creditActivityDetails={creditActivityDetails}
