@@ -39,3 +39,4 @@ from . import model_year_report_vehicle
 from . import model_year_report_credit_offset
 from . import model_year_report_compliance_obligation
 from . import model_year_report_adjustment
+from . import organization_ldv_sales

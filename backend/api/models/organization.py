@@ -6,6 +6,7 @@ from auditable.models import Auditable
 from .account_balance import AccountBalance
 from .credit_class import CreditClass
 from .organization_address import OrganizationAddress
+from .organization_ldv_sales import OrganizationLDVSales
 from .user_profile import UserProfile
 from ..managers.organization import OrganizationManager
 
@@ -85,6 +86,49 @@ class Organization(Auditable):
         ).order_by('-effective_date', '-update_timestamp')
 
         return data
+
+    @property
+    def ldv_sales(self):
+        sales = OrganizationLDVSales.objects.filter(organization_id=self.id)
+
+        return sales
+
+    def get_current_class(self, year=None):
+        # The logic below means that if we're past october, the past year
+        # should count the current yer
+        if not year:
+            year = date.today().year
+
+            if date.today().month < 10:
+                year -= 1
+
+        rows = OrganizationLDVSales.objects.filter(
+            organization_id=self.id,
+            model_year__name__lte=year
+        ).order_by(
+            '-model_year__name'
+        )[:3]
+
+        avg_sales = 0
+
+        if rows.count() < 3:
+            return None
+
+        for row in rows:
+            avg_sales += row.ldv_sales
+
+        avg_sales = avg_sales / 3
+
+        if avg_sales < 1000:
+            return 'S'
+        if avg_sales >= 5000:
+            return 'L'
+
+        return 'M'
+
+    @property
+    def supplier_class(self):
+        return self.get_current_class()
 
     class Meta:
         db_table = 'organization'
