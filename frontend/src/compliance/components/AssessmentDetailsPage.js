@@ -13,22 +13,25 @@ import ComplianceReportAlert from './ComplianceReportAlert';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import TableSection from './TableSection';
 import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable';
+import CommentInput from '../../app/components/CommentInput';
+import DisplayComment from '../../app/components/DisplayComment';
 
 const AssessmentDetailsPage = (props) => {
   const {
-    details,
-    loading,
-    make,
-    makes,
-    user,
-    modelYear,
-    statuses,
-    id,
-    handleAddComment,
-    handleCommentChange,
-    ratios,
     creditActivityDetails,
-    offsetNumbers,
+    details,
+    id,
+    handleAddBceidComment,
+    handleAddIdirComment,
+    handleCommentChangeBceid,
+    handleCommentChangeIdir,
+    loading,
+    makes,
+    modelYear,
+    radioDescriptions,
+    ratios,
+    statuses,
+    user,
   } = props;
 
   const {
@@ -90,30 +93,18 @@ const AssessmentDetailsPage = (props) => {
             />
             )}
           </div>
-
           <div className="grey-border-area p-4 comment-box mt-2">
-            <div className="text-editor">
-              <label htmlFor="comment">
-                <b>Add comment to director:</b>
-              </label>
-              <ReactQuill
-                theme="snow"
-                modules={{
-                  toolbar: [
-                    ['bold', 'italic'],
-                    [{ list: 'bullet' }, { list: 'ordered' }],
-                  ],
-                }}
-                formats={['bold', 'italic', 'list', 'bullet']}
-                onChange={handleCommentChange}
-              />
-              <button
-                className="button mt-2"
-                onClick={() => { handleAddComment(); }}
-                type="button"
-              >Add Comment
-              </button>
-            </div>
+            {details.idirComment && user.isGovernment && (
+            <DisplayComment
+              commentArray={details.idirComment}
+            />
+            )}
+            <CommentInput
+              handleAddComment={handleAddIdirComment}
+              handleCommentChange={handleCommentChangeIdir}
+              title="Add comment to director: "
+              buttonText="Add Comment"
+            />
           </div>
         </div>
       </div>
@@ -212,7 +203,7 @@ const AssessmentDetailsPage = (props) => {
                       B
                     </th>
                   </tr>
-                  <tr key="start">
+                  <tr key="balance-start">
                     <td className="text-blue" />
                     <td className="text-right">
                       {creditBalanceStart.A}
@@ -331,7 +322,7 @@ const AssessmentDetailsPage = (props) => {
                       B
                     </th>
                   </tr>
-                  <tr key="start">
+                  <tr key="reduction">
                     <td className="text-blue">&bull; &nbsp; &nbsp; 2019 Credits:</td>
                     <td className="text-right text-red">
                       -567.43
@@ -360,7 +351,7 @@ const AssessmentDetailsPage = (props) => {
                       <input checked type="radio" />
                     </td>
                   </tr>
-                  <tr key="start">
+                  <tr key="reduction-start">
                     <td className="text-blue">&bull; &nbsp; &nbsp; 2019 Credits:</td>
                     <td className="text-right">
                       0
@@ -420,37 +411,33 @@ const AssessmentDetailsPage = (props) => {
         <div className="col-12">
           <div className="grey-border-area comment-box p-4 mt-2">
             <div>
-
               <input
                 className="mr-3"
                 type="radio"
-                id="complied"
+                id="complied-radio"
+                name="assessment"
                 onChange={(event) => {
                   console.log('radio checked');
                 }}
-                name="complied"
+
               />
               <label className="d-inline" htmlFor="complied">
-                {details.organization.name} has complied with section 10 (2) of the Zero-Emission
-                Vehicles Act for the 2020 adjustment period.
+    
               </label>
             </div>
             <div className="mt-3">
               <input
                 className="mr-3"
                 type="radio"
-                id="not-complied"
+                id="not-complied-radio"
+                name="assessment"
                 onChange={(event) => {
                   console.log('radio checked');
                 }}
-                name="not-complied"
+
               />
               <label className="d-inline" htmlFor="not-complied">
-                {details.organization.name} has not complied with section 10 (2) of the Zero-Emission
-                Vehicles Act for the 2020 adjustment period. Section 10 (3) does not apply
-                as {details.organization.name} did not have a balance at the end of the compliance date
-                for the previous model year that contained less than zero ZEV units of the same vehicle
-                class and any ZEV class.
+
               </label>
             </div>
             <div className="mt-3">
@@ -459,17 +446,14 @@ const AssessmentDetailsPage = (props) => {
                 className="mr-3"
                 type="radio"
                 id="penalty-radio"
+                name="assessment"
                 onChange={(event) => {
                   console.log('radio checked');
                 }}
-                name="penalty-radio"
               />
               <label className="d-inline" htmlFor="penalty-radio">
-                Section 10 (3) applies and {details.organization.name} is subject to an automatic
-                administrative penalty As per section 26 of the Act the amount of the administrative
-                penalty is:
-                <div>
 
+                <div>
                   <input
                     type="text"
                     className="ml-4 mr-1"
@@ -478,30 +462,13 @@ const AssessmentDetailsPage = (props) => {
                   <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
                 </div>
               </label>
-
-              <div className="mt-3 text-editor">
-                <label htmlFor="comment">
-                  <b>Assessment Message to the Supplier:</b>
-                </label>
-                <ReactQuill
-                  theme="snow"
-                  modules={{
-                    toolbar: [
-                      ['bold', 'italic'],
-                      [{ list: 'bullet' }, { list: 'ordered' }],
-                    ],
-                  }}
-                  formats={['bold', 'italic', 'list', 'bullet']}
-                  onChange={handleCommentChange}
-                />
-                <button
-                  className="button mt-2"
-                  onClick={() => { console.log('need a seperate function for the supplier message!'); }}
-                  type="button"
-                >Add/Update Message
-                </button>
-              </div>
-
+              <CommentInput
+                defaultComment={details.bceidComment}
+                handleAddComment={handleAddBceidComment}
+                handleCommentChange={handleCommentChangeBceid}
+                title="Assessment Message to the Supplier: "
+                buttonText="Add/Update Message"
+              />
             </div>
           </div>
         </div>
@@ -542,7 +509,6 @@ AssessmentDetailsPage.propTypes = {
   }).isRequired,
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   loading: PropTypes.bool.isRequired,
-  make: PropTypes.string.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   user: CustomPropTypes.user.isRequired,
   modelYear: PropTypes.number.isRequired,

@@ -144,6 +144,7 @@ class CreditTransactionObligationActivitySerializer(ModelSerializer):
             'total_value', 'credit_class', 'model_year',
         )
 
+
 class CreditTransactionSaveSerializer(ModelSerializer):
     """
     Serializer for credit transactions

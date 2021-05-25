@@ -12,12 +12,14 @@ const COMPLIANCE = {
   REPORT_CREDIT_ACTIVITY: `${API_BASE_PATH}/reports/:id/credit-activity`,
   REPORT_SUMMARY: `${API_BASE_PATH}/reports/:id/summary`,
   REPORT_ASSESSMENT: `${API_BASE_PATH}/reports/:id/assessment`,
+  REPORT_ASSESSMENT_SAVE: `${API_BASE_PATH}/reports/:id/assessment_patch`,
   OBLIGATION: `${API_BASE_PATH}/compliance-activity-details`,
   CONSUMER_SALES: `${API_BASE_PATH}/consumer-sales`,
   RETRIEVE_CONSUMER_SALES: `${API_BASE_PATH}/consumer-sales/:id`,
   REPORT_COMPLIANCE_DETAILS_BY_ID: `${API_BASE_PATH}/compliance-activity-details/:id`,
   REPORT_SUMMARY_CONFIRMATION: `${API_BASE_PATH}/reports/:id/submission_confirmation`,
   REPORT_SUBMISSION: `${API_BASE_PATH}/reports/submission`,
+  ASSESSMENT_COMMENT_SAVE: `${API_BASE_PATH}/reports/:id/comment_save`,
 };
 
 export default COMPLIANCE;

@@ -73,7 +73,7 @@ const ComplianceReportAssessmentContainer = (props) => {
       adjustments,
     };
 
-    axios.patch(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id), data);
+    axios.patch(ROUTES_COMPLIANCE.REPORT_ASSESSMENT_SAVE.replace(/:id/g, id), data);
   };
 
   const refreshDetails = () => {

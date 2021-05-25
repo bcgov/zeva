@@ -7,7 +7,6 @@ const TableSection = (props) => {
   if (negativeValue) {
     numberClassname += ' text-red';
   }
-  console.log(input)
   return (
     <>
       <tr className="subclass">
