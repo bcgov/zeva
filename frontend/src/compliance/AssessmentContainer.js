@@ -30,6 +30,8 @@ const AssessmentContainer = (props) => {
   const [pendingBalanceExist, setPendingBalanceExist] = useState(false);
   const [creditActivityDetails, setCreditActivityDetails] = useState({});
   const [supplierClassInfo, setSupplierClassInfo] = useState({ ldvSales: 0, class: '' });
+  const [radioSelection, setRadioSelection] = useState('');
+  const [radioDescriptions, setRadioDescriptions] = useState([]);
   const [statuses, setStatuses] = useState({
     assessment: {
       status: 'UNSAVED',
@@ -232,22 +234,20 @@ const AssessmentContainer = (props) => {
         user={user}
       />
       <AssessmentDetailsPage
-        loading={loading}
-        make={make}
-        makes={makes}
-        modelYear={modelYear}
-        user={user}
+        creditActivityDetails={creditActivityDetails}
         details={details}
-        statuses={statuses}
         id={id}
         handleAddBceidComment={handleAddBceidComment}
         handleAddIdirComment={handleAddIdirComment}
         handleCommentChangeIdir={handleCommentChangeIdir}
         handleCommentChangeBceid={handleCommentChangeBceid}
+        loading={loading}
+        makes={makes}
+        modelYear={modelYear}
+        radioDescriptions={radioDescriptions}
         ratios={ratios}
-        supplierClassInfo={supplierClassInfo}
-        creditActivityDetails={creditActivityDetails}
-        offsetNumbers={offsetNumbers}
+        statuses={statuses}
+        user={user}
       />
     </>
   );

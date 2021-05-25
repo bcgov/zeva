@@ -18,21 +18,20 @@ import DisplayComment from '../../app/components/DisplayComment';
 
 const AssessmentDetailsPage = (props) => {
   const {
+    creditActivityDetails,
     details,
-    loading,
-    make,
-    makes,
-    user,
-    modelYear,
-    statuses,
     id,
-    ratios,
     handleAddBceidComment,
     handleAddIdirComment,
-    creditActivityDetails,
-    offsetNumbers,
     handleCommentChangeBceid,
     handleCommentChangeIdir,
+    loading,
+    makes,
+    modelYear,
+    radioDescriptions,
+    ratios,
+    statuses,
+    user,
   } = props;
 
   const {
@@ -423,8 +422,7 @@ const AssessmentDetailsPage = (props) => {
 
               />
               <label className="d-inline" htmlFor="complied">
-                {details.organization.name} has complied with section 10 (2) of the Zero-Emission
-                Vehicles Act for the 2020 adjustment period.
+    
               </label>
             </div>
             <div className="mt-3">
@@ -439,11 +437,7 @@ const AssessmentDetailsPage = (props) => {
 
               />
               <label className="d-inline" htmlFor="not-complied">
-                {details.organization.name} has not complied with section 10 (2) of the Zero-Emission
-                Vehicles Act for the 2020 adjustment period. Section 10 (3) does not apply
-                as {details.organization.name} did not have a balance at the end of the compliance date
-                for the previous model year that contained less than zero ZEV units of the same vehicle
-                class and any ZEV class.
+
               </label>
             </div>
             <div className="mt-3">
@@ -458,9 +452,7 @@ const AssessmentDetailsPage = (props) => {
                 }}
               />
               <label className="d-inline" htmlFor="penalty-radio">
-                Section 10 (3) applies and {details.organization.name} is subject to an automatic
-                administrative penalty As per section 26 of the Act the amount of the administrative
-                penalty is:
+
                 <div>
                   <input
                     type="text"
@@ -517,7 +509,6 @@ AssessmentDetailsPage.propTypes = {
   }).isRequired,
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   loading: PropTypes.bool.isRequired,
-  make: PropTypes.string.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   user: CustomPropTypes.user.isRequired,
   modelYear: PropTypes.number.isRequired,
