@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { withRouter } from 'react-router';
 
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
+import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import CustomPropTypes from '../app/utilities/props';
 import VehicleSupplierDetailsPage from './components/VehicleSupplierDetailsPage';
 import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs';
@@ -23,13 +24,23 @@ const VehicleSupplierDetailsContainer = (props) => {
   const [display, setDisplay] = useState({});
   const { keycloak, location, user } = props;
   const { state: locationState } = location;
+  const [modelYears, setModelYears] = useState([]);
+  const [fields, setFields] = useState({});
+  const [ldvSales, setLDVSales] = useState([]);
 
   const refreshDetails = () => {
     setLoading(true);
 
-    axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
+    Promise.all([
+      axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)),
+      axios.get(ROUTES_VEHICLES.YEARS),
+    ]).then(([response, yearsResponse]) => {
       setDetails(response.data);
       setDisplay(response.data);
+      setModelYears(yearsResponse.data);
+
+      const { ldvSales: responseLDVSales } = response.data;
+      setLDVSales(responseLDVSales);
 
       setLoading(false);
     });
@@ -53,6 +64,32 @@ const VehicleSupplierDetailsContainer = (props) => {
         </button>
       );
     }
+
+    return false;
+  };
+
+  const handleInputChange = (event) => {
+    const { value, name } = event.target;
+
+    setFields({
+      ...fields,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    axios.put(ROUTES_ORGANIZATIONS.LDV_SALES.replace(/:id/gi, id), {
+      ...fields,
+    }).then((response) => {
+      setLDVSales(response.data);
+
+      setFields({
+        modelYear: '',
+        ldvSales: '',
+      });
+    });
   };
 
   return (
@@ -61,10 +98,16 @@ const VehicleSupplierDetailsContainer = (props) => {
       <VehicleSupplierTabs locationState={locationState} supplierId={details.id} active="supplier-info" user={user} />
       <VehicleSupplierDetailsPage
         details={details}
+        ldvSales={ldvSales}
         loading={loading}
         locationState={locationState}
         editButton={editButton()}
         user={user}
+        modelYears={modelYears}
+        handleInputChange={handleInputChange}
+        handleSubmit={handleSubmit}
+        selectedModelYear={fields.modelYear}
+        inputLDVSales={fields.ldvSales}
       />
     </div>
   );

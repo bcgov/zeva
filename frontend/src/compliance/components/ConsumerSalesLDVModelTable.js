@@ -10,7 +10,7 @@ const ConsumerSalesLDVModalTable = (props) => {
     {
       accessor: (item) => item.pendingSales,
       className: 'text-center',
-      Header: 'Pending Sales',
+      Header: '*Sales Submitted',
       headerClassName: 'font-weight-bold ',
       id: 'pending-sales',
       maxWidth: 200,

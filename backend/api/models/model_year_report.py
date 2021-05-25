@@ -7,6 +7,7 @@ from enumfields import EnumField
 from auditable.models import Auditable
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.models.model_year_report_make import ModelYearReportMake
+from api.models.model_year_report_ldv_sales import ModelYearReportLDVSales
 
 
 class ModelYearReport(Auditable):
@@ -48,10 +49,6 @@ class ModelYearReport(Auditable):
                        statuses=[c.name for c in ModelYearReportStatuses]
                    )
     )
-    ldv_sales = models.IntegerField(
-        null=True,
-        db_comment="Contains the LDV Sales/Leases information for model year"
-    )
 
     @property
     def makes(self):
@@ -60,6 +57,18 @@ class ModelYearReport(Auditable):
         )
 
         return data
+
+    @property
+    def ldv_sales(self):
+        row = ModelYearReportLDVSales.objects.filter(
+            model_year_id=self.model_year_id,
+            model_year_report_id=self.id
+        ).first()
+
+        if row:
+            return row.ldv_sales
+
+        return None
 
     class Meta:
         db_table = 'model_year_report'

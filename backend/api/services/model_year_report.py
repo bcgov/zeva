@@ -1,11 +1,12 @@
 from api.models.model_year_report_confirmation import \
     ModelYearReportConfirmation
 from api.models.model_year_report_statuses import ModelYearReportStatuses
-from api.models.model_year_report_previous_sales import \
-    ModelYearReportPreviousSales
+from api.models.model_year_report_ldv_sales import \
+    ModelYearReportLDVSales
 from api.models.model_year_report_compliance_obligation import \
     ModelYearReportComplianceObligation
 from api.models.user_profile import UserProfile
+from api.models.model_year_report_vehicle import ModelYearReportVehicle
 
 from api.serializers.model_year_report_confirmation import \
     ModelYearReportConfirmationSerializer
@@ -38,11 +39,12 @@ def get_model_year_report_statuses(report):
         # so there shouldn't be a chance where we have a report
         # and supplier information is not saved
         supplier_information_status = 'SAVED'
-        previous_sales = ModelYearReportPreviousSales.objects.filter(
+
+        vehicles = ModelYearReportVehicle.objects.filter(
             model_year_report_id=report.id
         )
 
-        if previous_sales:
+        if vehicles:
             consumer_sales_status = 'SAVED'
 
         obligation = ModelYearReportComplianceObligation.objects.filter(

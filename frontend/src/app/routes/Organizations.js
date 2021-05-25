@@ -4,6 +4,7 @@ const ORGANIZATIONS = {
   ADD_USER: `${API_BASE_PATH}/:id/users/add`,
   DETAILS: `${API_BASE_PATH}/:id`,
   EDIT: `${API_BASE_PATH}/:id/edit`,
+  LDV_SALES: `${API_BASE_PATH}/:id/ldv_sales`,
   LIST: `${API_BASE_PATH}`,
   MINE: `${API_BASE_PATH}/mine`,
   MINE_ADD_USER: `${API_BASE_PATH}/mine/add`,

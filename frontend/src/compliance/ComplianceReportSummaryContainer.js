@@ -116,7 +116,7 @@ const ComplianceReportSummaryContainer = (props) => {
       });
       let averageLdv3Years = 0;
       consumerSalesResponse.data.previousSales.forEach((each) => {
-        averageLdv3Years += parseFloat(each.previousSales);
+        averageLdv3Years += parseFloat(each.ldvSales);
       });
       averageLdv3Years = formatNumeric((averageLdv3Years / 3), 2);
       setConsumerSalesDetails({
