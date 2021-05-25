@@ -121,12 +121,12 @@ const ComplianceReportSummaryDetailsPage = (props) => {
             <div className="row p3 mt-3">
               <div className="col-lg-6">
                 <div className="compliance-report-summary-grey text-blue">
-                  <SummarySupplierInfo makes={makes} supplierDetails={supplierDetails} signatureInformation={signatureInformation} signedInfomation={signedInfomation} />
+                  <SummarySupplierInfo makes={makes} creditActivityDetails={creditActivityDetails} supplierDetails={supplierDetails} signatureInformation={signatureInformation} signedInfomation={signedInfomation} />
                   {signatureInformation(confirmationStatuses.supplierInformation, 'Supplier Information')}
                 </div>
 
                 <div className="mt-4 compliance-report-summary-grey">
-                  <h3>Consumer Sales</h3>
+                  <h3>Consumer ZEV Sales</h3>
                   <SummaryConsumerSalesTable consumerSalesDetails={consumerSalesDetails} />
                   {signatureInformation(confirmationStatuses.consumerSales, 'Consumer Sales')}
                 </div>
@@ -190,16 +190,18 @@ ComplianceReportSummaryDetailsPage.defaultProps = {
 };
 
 ComplianceReportSummaryDetailsPage.propTypes = {
-  assertions: PropTypes.arrayOf().isRequired,
-  checkboxes: PropTypes.arrayOf().isRequired,
-  complianceRatios: PropTypes.shape().isRequired,
+  assertions: PropTypes.arrayOf(PropTypes.shape()),
+  checkboxes: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+  ),
+  complianceRatios: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   confirmationStatuses: PropTypes.shape().isRequired,
   consumerSalesDetails: PropTypes.shape().isRequired,
   creditActivityDetails: PropTypes.shape().isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  makes: PropTypes.shape().isRequired,
+  makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   pendingBalanceExist: PropTypes.bool.isRequired,
   supplierDetails: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
