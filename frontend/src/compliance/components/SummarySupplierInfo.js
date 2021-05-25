@@ -46,6 +46,14 @@ const SummarySupplierInfo = (props) => {
     )
   ))}
         </div>
+        <div className="mt-3">
+          <h4 className="d-inline">Vehicle Supplier Class:</h4>
+          <span> Large Volume Supplier </span>
+        </div>
+        <div className="mt-0">
+          <div className="d-inline">3 Year Average(2017-2019) LDV Sales\Leases:</div>
+          <span className='text-black'> 7,467 </span>
+        </div>
         <div className="d-block my-3">
           <h4>Makes:</h4>
           {makes.map((each) => <div key={each}>•{each}</div>)}

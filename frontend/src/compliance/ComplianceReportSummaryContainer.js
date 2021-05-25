@@ -99,14 +99,14 @@ const ComplianceReportSummaryContainer = (props) => {
         },
       });
       // CONSUMER SALES
-      let { supplierClass } = reportDetailsResponse.data;
-      if (supplierClass === 'M') {
-        supplierClass = 'Medium';
-      } else if (supplierClass === 'L') {
-        supplierClass = 'Large';
-      } else {
-        supplierClass = 'Small';
-      }
+      // let { supplierClass } = reportDetailsResponse.data;
+      // if (supplierClass === 'M') {
+      //   supplierClass = 'Medium';
+      // } else if (supplierClass === 'L') {
+      //   supplierClass = 'Large';
+      // } else {
+      //   supplierClass = 'Small';
+      // }
 
       let pendingZevSales = 0;
       let zevSales = 0;
@@ -114,19 +114,19 @@ const ComplianceReportSummaryContainer = (props) => {
         pendingZevSales += vehicle.pendingSales;
         zevSales += vehicle.salesIssued;
       });
-      let averageLdv3Years = 0;
-      consumerSalesResponse.data.previousSales.forEach((each) => {
-        averageLdv3Years += parseFloat(each.ldvSales);
-      });
-      averageLdv3Years = formatNumeric((averageLdv3Years / 3), 2);
+      // let averageLdv3Years = 0;
+      // consumerSalesResponse.data.previousSales.forEach((each) => {
+      //   averageLdv3Years += parseFloat(each.ldvSales);
+      // });
+      // averageLdv3Years = formatNumeric((averageLdv3Years / 3), 2);
       setConsumerSalesDetails({
         ...consumerSalesDetails,
         pendingZevSales,
         zevSales,
-        ldvSales: consumerSalesResponse.data.ldvSales,
-        averageLdv3Years,
+        // ldvSales: consumerSalesResponse.data.ldvSales,
+        // averageLdv3Years,
         year,
-        supplierClass,
+        //supplierClass,
       });
       setComplianceRatios(allComplianceRatiosResponse.data
         .filter((each) => each.modelYear === year.toString()));
@@ -206,6 +206,8 @@ const ComplianceReportSummaryContainer = (props) => {
         pendingBalance,
         provisionalBalanceBeforeOffset,
         provisionalBalanceAfterOffset,
+        ldvSales: 200,
+          //creditActivityResponse.data.ldvSales,
         transactions: {
           creditsIssuedSales,
           transfersIn,
