@@ -68,7 +68,7 @@ class ModelYearReportAssessmentSerializer(
         ).order_by('-create_timestamp')
 
         if not assessment_comment:
-            return None
+            return []
         serializer = ModelYearReportAssessmentCommentSerializer(
             assessment_comment, read_only=True, many=True
         )
