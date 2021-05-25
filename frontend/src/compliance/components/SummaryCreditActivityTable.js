@@ -9,14 +9,15 @@ const SummaryCreditActivityTable = (props) => {
     complianceRatios,
     pendingBalanceExist,
   } = props;
-  const { year, supplierClass } = consumerSalesDetails;
+  const { year } = consumerSalesDetails;
   const {
     creditBalanceStart,
     transactions,
     pendingBalance,
     provisionalBalanceAfterOffset,
     complianceOffsetNumbers,
-    ldvSales
+    ldvSales,
+    supplierClass,
   } = creditActivityDetails;
   const tableSection = (input, title, numberClassname = 'text-right') => {
     let aTotal = formatNumeric(input.A);

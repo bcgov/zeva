@@ -99,14 +99,14 @@ const ComplianceReportSummaryContainer = (props) => {
         },
       });
       // CONSUMER SALES
-      // let { supplierClass } = reportDetailsResponse.data;
-      // if (supplierClass === 'M') {
-      //   supplierClass = 'Medium';
-      // } else if (supplierClass === 'L') {
-      //   supplierClass = 'Large';
-      // } else {
-      //   supplierClass = 'Small';
-      // }
+      let { supplierClass } = reportDetailsResponse.data;
+      if (supplierClass === 'M') {
+        supplierClass = 'Medium Volume Supplier';
+      } else if (supplierClass === 'L') {
+        supplierClass = 'Large Volume Supplier';
+      } else {
+        supplierClass = 'Small Volume Supplier';
+      }
 
       let pendingZevSales = 0;
       let zevSales = 0;
@@ -114,19 +114,12 @@ const ComplianceReportSummaryContainer = (props) => {
         pendingZevSales += vehicle.pendingSales;
         zevSales += vehicle.salesIssued;
       });
-      // let averageLdv3Years = 0;
-      // consumerSalesResponse.data.previousSales.forEach((each) => {
-      //   averageLdv3Years += parseFloat(each.ldvSales);
-      // });
-      // averageLdv3Years = formatNumeric((averageLdv3Years / 3), 2);
+    
       setConsumerSalesDetails({
         ...consumerSalesDetails,
         pendingZevSales,
         zevSales,
-        // ldvSales: consumerSalesResponse.data.ldvSales,
-        // averageLdv3Years,
         year,
-        //supplierClass,
       });
       setComplianceRatios(allComplianceRatiosResponse.data
         .filter((each) => each.modelYear === year.toString()));
@@ -206,7 +199,8 @@ const ComplianceReportSummaryContainer = (props) => {
         pendingBalance,
         provisionalBalanceBeforeOffset,
         provisionalBalanceAfterOffset,
-        ldvSales: 200,
+        supplierClass,
+        ldvSales: 2000,
           //creditActivityResponse.data.ldvSales,
         transactions: {
           creditsIssuedSales,

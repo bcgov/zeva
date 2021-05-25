@@ -121,7 +121,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
             <div className="row p3 mt-3">
               <div className="col-lg-6">
                 <div className="compliance-report-summary-grey text-blue">
-                  <SummarySupplierInfo makes={makes} supplierDetails={supplierDetails} signatureInformation={signatureInformation} signedInfomation={signedInfomation} />
+                  <SummarySupplierInfo makes={makes} creditActivityDetails={creditActivityDetails} supplierDetails={supplierDetails} signatureInformation={signatureInformation} signedInfomation={signedInfomation} />
                   {signatureInformation(confirmationStatuses.supplierInformation, 'Supplier Information')}
                 </div>
 
