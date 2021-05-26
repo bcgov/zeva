@@ -10,8 +10,8 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { withRouter } from 'react-router';
 
+import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
-import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import CustomPropTypes from '../app/utilities/props';
 import VehicleSupplierDetailsPage from './components/VehicleSupplierDetailsPage';
 import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs';
@@ -33,7 +33,7 @@ const VehicleSupplierDetailsContainer = (props) => {
 
     Promise.all([
       axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)),
-      axios.get(ROUTES_VEHICLES.YEARS),
+      axios.get(ROUTES_COMPLIANCE.YEARS),
     ]).then(([response, yearsResponse]) => {
       setDetails(response.data);
       setDisplay(response.data);

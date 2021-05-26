@@ -7,6 +7,8 @@ from .account_balance import AccountBalance
 from .credit_class import CreditClass
 from .organization_address import OrganizationAddress
 from .organization_ldv_sales import OrganizationLDVSales
+from .model_year_report import ModelYearReport
+from .model_year_report_statuses import ModelYearReportStatuses
 from .user_profile import UserProfile
 from ..managers.organization import OrganizationManager
 
@@ -88,6 +90,22 @@ class Organization(Auditable):
         return data
 
     @property
+    def has_submitted_report(self):
+        reports = ModelYearReport.objects.filter(
+            organization_id=self.id,
+            validation_status__in=[
+                ModelYearReportStatuses.SUBMITTED,
+                ModelYearReportStatuses.RECOMMENDED,
+                ModelYearReportStatuses.ASSESSED,
+            ]
+        )
+
+        if reports.count() > 0:
+            return True
+
+        return False
+
+    @property
     def ldv_sales(self):
         sales = OrganizationLDVSales.objects.filter(organization_id=self.id)
 
@@ -105,8 +123,8 @@ class Organization(Auditable):
         rows = OrganizationLDVSales.objects.filter(
             organization_id=self.id,
             model_year__name__lte=year
-        ).order_by(
-            '-model_year__name'
+        ).values_list(
+            'ldv_sales', flat=True
         )[:3]
 
         avg_sales = 0
@@ -114,10 +132,7 @@ class Organization(Auditable):
         if rows.count() < 3:
             return None
 
-        for row in rows:
-            avg_sales += row.ldv_sales
-
-        avg_sales = avg_sales / 3
+        avg_sales = sum(list(rows)) / 3
 
         if avg_sales < 1000:
             return 'S'
