@@ -12,7 +12,6 @@ from api.models.model_year_report_address import ModelYearReportAddress
 from api.models.model_year_report_make import ModelYearReportMake
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.models.user_profile import UserProfile
-
 from api.serializers.model_year_report_address import \
     ModelYearReportAddressSerializer
 from api.serializers.model_year_report_make import \
@@ -23,7 +22,6 @@ from api.serializers.user import MemberSerializer
 from api.serializers.vehicle import ModelYearSerializer
 from api.services.model_year_report import get_model_year_report_statuses
 
-
 class ModelYearReportSerializer(ModelSerializer):
     create_user = SerializerMethodField()
     model_year = ModelYearSerializer()
@@ -33,6 +31,7 @@ class ModelYearReportSerializer(ModelSerializer):
     model_year_report_history = ModelYearReportHistorySerializer(many=True)
     confirmations = SerializerMethodField()
     statuses = SerializerMethodField()
+
 
     def get_create_user(self, obj):
         user_profile = UserProfile.objects.filter(username=obj.create_user)
