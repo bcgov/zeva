@@ -20,6 +20,7 @@ const COMPLIANCE = {
   REPORT_SUMMARY_CONFIRMATION: `${API_BASE_PATH}/reports/:id/submission_confirmation`,
   REPORT_SUBMISSION: `${API_BASE_PATH}/reports/submission`,
   ASSESSMENT_COMMENT_SAVE: `${API_BASE_PATH}/reports/:id/comment_save`,
+  YEARS: `${API_BASE_PATH}/reports/years`,
 };
 
 export default COMPLIANCE;
