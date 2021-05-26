@@ -31,6 +31,7 @@ const SupplierInformationDetailsPage = (props) => {
     modelYear,
     statuses,
     id,
+    previousYearsList,
   } = props;
 
   const [showModal, setShowModal] = useState(false);
@@ -145,7 +146,7 @@ const SupplierInformationDetailsPage = (props) => {
               </div>
               <div className="mt-1 row">
                 <div className="col-6">
-                  <div>
+                  <div className="mt-2">
                     <h4 className="d-inline">Vehicle Supplier Class: </h4>
                     <span> Volume Supplier () </span>
                   </div>
@@ -156,8 +157,19 @@ const SupplierInformationDetailsPage = (props) => {
                 </div>
                 <div className="col-6">
                   <div className="supplier-information p-3">
-
-                    sales/leases
+                    <div className="previous-ldv-sales mt-2 p-3">
+                      {previousYearsList.map((yearSale) => (
+                        <div className="model-year-ldv" key={yearSale.id}>
+                          <label className="text-blue mr-4 font-weight-bold">
+                            {yearSale.modelYear} Model Year LDV Sales\Leases:
+                          </label>
+                          <label className="sales-numbers">
+                            test
+                            {/* {yearSale.previousSales} */}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>

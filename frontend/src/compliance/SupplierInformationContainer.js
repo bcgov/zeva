@@ -22,6 +22,7 @@ const SupplierInformationContainer = (props) => {
   const [checkboxes, setCheckboxes] = useState([]);
   const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
   const [details, setDetails] = useState({});
+  const [previousYearsList, setPreviousYearsList] = useState([{}]);
   const [modelYear, setModelYear] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR);
   const [statuses, setStatuses] = useState({
     supplierInformation: {
@@ -112,7 +113,7 @@ const SupplierInformationContainer = (props) => {
           confirmations,
           statuses: reportStatuses,
         } = response.data;
-
+        setPreviousYearsList([{ id: 0, previousSales: 323, modelYear: 2020 }]);
         setModelYear(parseInt(reportModelYear.name, 10));
 
         if (modelYearReportMakes) {
@@ -194,6 +195,7 @@ const SupplierInformationContainer = (props) => {
         details={details}
         statuses={statuses}
         id={id}
+        previousYearsList={previousYearsList}
       />
     </>
   );
