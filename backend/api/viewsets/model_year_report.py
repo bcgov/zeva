@@ -292,3 +292,12 @@ class ModelYearReportViewset(
         report = get_object_or_404(ModelYearReport, pk=pk)
         serializer = ModelYearReportAssessmentSerializer(report)
         return Response(serializer.data)
+
+    @action(detail=False)
+    def years(self, _request):
+        """
+        Get the years
+        """
+        years = ModelYear.objects.all().order_by('-name')
+        serializer = ModelYearSerializer(years, many=True)
+        return Response(serializer.data)
