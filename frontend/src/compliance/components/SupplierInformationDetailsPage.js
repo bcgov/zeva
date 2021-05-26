@@ -143,6 +143,24 @@ const SupplierInformationDetailsPage = (props) => {
                   )
                 ))}
               </div>
+              <div className="mt-1 row">
+                <div className="col-6">
+                  <div>
+                    <h4 className="d-inline">Vehicle Supplier Class: </h4>
+                    <span> Volume Supplier () </span>
+                  </div>
+                  <div className="mt-2">
+                    <h4 className="d-inline">3 Year Average LDV Sales: </h4>
+                    <span> Volume Supplier () </span>
+                  </div>
+                </div>
+                <div className="col-6">
+                  <div className="supplier-information p-3">
+
+                    sales/leases
+                  </div>
+                </div>
+              </div>
               <div className="d-block mt-3">
                 If there is an error in any of the information above, please contact: <a href="mailto:ZEVRegulation@gov.bc.ca">ZEVRegulation@gov.bc.ca</a>
               </div>
