@@ -115,7 +115,7 @@ const AssessmentDetailsPage = (props) => {
               <button
                 className="btn button primary float-right"
                 onClick={() => {
-                  setShowModal(true);
+                  history.push(ROUTES_COMPLIANCE.ASSESSMENT_EDIT.replace(':id',id));
                 }}
                 type="button"
               >
