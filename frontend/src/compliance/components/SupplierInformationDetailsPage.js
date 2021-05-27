@@ -145,17 +145,25 @@ const SupplierInformationDetailsPage = (props) => {
                 ))}
               </div>
               <div className="mt-1 row">
-                <div className="col-6">
-                  <div className="mt-2">
-                    <h4 className="d-inline">Vehicle Supplier Class: </h4>
-                    <span> Volume Supplier () </span>
+                <div className="col-sm-12 col-md-6">
+                  <div className="mt-2 row">
+                    <span className="col-4">
+                      <h4 className="d-inline">Vehicle Supplier Class: </h4>
+                    </span>
+                    <span className="col-6">
+                      <b>{details.organization.supplierClassString.class} Volume Supplier</b>
+                      <br />
+                      {details.organization.supplierClassString.secondaryText}
+                    </span>
                   </div>
-                  <div className="mt-2">
-                    <h4 className="d-inline">3 Year Average LDV Sales: </h4>
-                    <span> Volume Supplier () </span>
+                  <div className="mt-2 row">
+                    <span className="col-4">
+                      <h4 className="d-inline">3 Year Average LDV Sales: </h4>
+                    </span>
+                    <span className="col-6">{details.organization.ldvSales}</span>
                   </div>
                 </div>
-                <div className="col-6">
+                <div className="col-sm-12 col-md-6">
                   <div className="supplier-information p-3">
                     <div className="previous-ldv-sales mt-2 p-3">
                       {previousYearsList.map((yearSale) => (

@@ -104,6 +104,8 @@ const SupplierInformationContainer = (props) => {
     if (id && id !== 'new') {
       axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
         const {
+          ldvSales,
+          supplierClass,
           makes: modelYearReportMakes,
           modelYearReportAddresses,
           modelYearReportHistory,
@@ -121,9 +123,28 @@ const SupplierInformationContainer = (props) => {
 
           setMakes(currentMakes);
         }
+        let supplierClassString = {};
 
+        if (supplierClass === 'L') {
+          supplierClassString = {
+            class: 'Large',
+            secondaryText: '(5,000 or more total LDV sales)',
+          };
+        } else if (supplierClass === 'M') {
+          supplierClassString = {
+            class: 'Medium',
+            secondaryText: '(1,000 to 4,999 total LDV sales)',
+          };
+        } else if (supplierClass === 'S') {
+          supplierClassString = {
+            class: 'Small',
+            secondaryText: '(less than  1,000 total LDV sales)',
+          };
+        }
         setDetails({
           organization: {
+            ldvSales,
+            supplierClassString,
             name: organizationName,
             organizationAddress: modelYearReportAddresses,
           },
