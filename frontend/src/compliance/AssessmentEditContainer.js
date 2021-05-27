@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import CustomPropTypes from '../app/utilities/props';
 import { withRouter } from 'react-router';
+
+import CustomPropTypes from '../app/utilities/props';
 import AssessmentEditPage from './components/AssessmentEditPage';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
@@ -17,7 +18,7 @@ const AssessmentEditContainer = (props) => {
   const [supplierMakes, setSupplierMakes] = useState([]);
   const [make, setMake] = useState('');
   const [modelYear, setModelYear] = useState(
-    CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR
+    CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR,
   );
   const { user, keycloak } = props;
   const [statuses, setStatuses] = useState({
@@ -26,10 +27,19 @@ const AssessmentEditContainer = (props) => {
       confirmedBy: null,
     },
   });
+  const [sales, setSales] = useState({});
+  const [ratios, setRatios] = useState({});
 
   const handleChangeMake = (event) => {
     const { value } = event.target;
     setMake(value.toUpperCase());
+  };
+
+  const handleChangeSale = (year, value) => {
+    setSales({
+      ...sales,
+      [year]: value,
+    });
   };
 
   const handleDeleteMake = (index) => {
@@ -50,18 +60,22 @@ const AssessmentEditContainer = (props) => {
 
     const data = {
       makes,
+      sales,
     };
 
     axios.patch(
       ROUTES_COMPLIANCE.REPORT_ASSESSMENT_SAVE.replace(/:id/g, id),
-      data
+      data,
     );
   };
 
   const refreshDetails = () => {
-    axios
-      .get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id))
-      .then((response) => {
+    const detailsPromise = axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id));
+
+    const ratiosPromise = axios.get(ROUTES_COMPLIANCE.RATIOS);
+
+    Promise.all([detailsPromise, ratiosPromise])
+      .then(([response, ratiosResponse]) => {
         const {
           makes: modelYearReportMakes,
           modelYear: reportModelYear,
@@ -70,6 +84,9 @@ const AssessmentEditContainer = (props) => {
           modelYearReportAddresses,
           organizationName,
           validationStatus,
+          ldvSales,
+          supplierClass,
+          ldvSalesUpdated,
         } = response.data;
         const year = parseInt(reportModelYear.name, 10);
 
@@ -87,6 +104,7 @@ const AssessmentEditContainer = (props) => {
             history: modelYearReportHistory,
             validationStatus,
           },
+          ldvSales,
           organization: {
             name: organizationName,
             organizationAddress: modelYearReportAddresses,
@@ -95,8 +113,15 @@ const AssessmentEditContainer = (props) => {
             history: modelYearReportHistory,
             validationStatus,
           },
+          supplierClass,
         });
 
+        setSales({
+          [year]: ldvSalesUpdated,
+        });
+
+        const filteredRatio = ratiosResponse.data.filter((data) => data.modelYear === year.toString())[0];
+        setRatios(filteredRatio);
         setLoading(false);
       });
   };
@@ -125,10 +150,13 @@ const AssessmentEditContainer = (props) => {
         makes={makes}
         details={details}
         handleChangeMake={handleChangeMake}
+        handleChangeSale={handleChangeSale}
         handleDeleteMake={handleDeleteMake}
         handleSubmitMake={handleSubmitMake}
         make={make}
         handleSubmit={handleSubmit}
+        ratios={ratios}
+        sales={sales}
         supplierMakes={supplierMakes}
       />
     </>
