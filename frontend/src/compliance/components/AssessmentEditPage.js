@@ -8,7 +8,6 @@ import AssessmentSupplierInformationMakes from './AssessmentSupplierInformationM
 const AssessmentEditPage = (props) => {
   const {
     details,
-    id,
     loading,
     makes,
     make,
@@ -109,7 +108,6 @@ AssessmentEditPage.propTypes = {
     organization: PropTypes.shape(),
     supplierInformation: PropTypes.shape(),
   }).isRequired,
-  id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   loading: PropTypes.bool.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   supplierMakes: PropTypes.arrayOf(PropTypes.string).isRequired,

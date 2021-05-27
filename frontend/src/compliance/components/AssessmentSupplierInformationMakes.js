@@ -5,11 +5,9 @@ import CustomPropTypes from '../../app/utilities/props';
 const AssessmentSupplierInformationMakes = (props) => {
   const {
     details,
-    loading,
     makes,
     make,
     modelYear,
-    user,
     handleChangeMake,
     handleDeleteMake,
     handleSubmitMake,
@@ -101,10 +99,8 @@ AssessmentSupplierInformationMakes.propTypes = {
     organization: PropTypes.shape(),
     supplierInformation: PropTypes.shape(),
   }).isRequired,
-  loading: PropTypes.bool.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   supplierMakes: PropTypes.arrayOf(PropTypes.string).isRequired,
-  user: CustomPropTypes.user.isRequired,
   modelYear: PropTypes.number.isRequired,
   handleChangeMake: PropTypes.func.isRequired,
   handleDeleteMake: PropTypes.func.isRequired,

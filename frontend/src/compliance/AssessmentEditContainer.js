@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import CustomPropTypes from '../app/utilities/props';
 import { withRouter } from 'react-router';
 import AssessmentEditPage from './components/AssessmentEditPage';
@@ -103,7 +102,7 @@ const AssessmentEditContainer = (props) => {
   };
 
   useEffect(() => {
-    refreshDetails(true);
+    refreshDetails();
   }, [keycloak.authenticated]);
 
   if (loading) {
