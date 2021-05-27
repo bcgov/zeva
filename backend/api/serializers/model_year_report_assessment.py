@@ -10,7 +10,14 @@ from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_assessment import ModelYearReportAssessment
 from api.models.model_year_report_assessment_comment import ModelYearReportAssessmentComment
 from api.serializers.model_year_report_assessment_comment import ModelYearReportAssessmentCommentSerializer
+from api.models.model_year_report_assessment_descriptions import ModelYearReportAssessmentDescriptions
 
+class ModelYearReportAssessmentDescriptionsSerializer(ModelSerializer):
+    class Meta:
+        model = ModelYearReportAssessmentDescriptions
+        fields = (
+            'id', 'description', 'display_order'
+        )
 
 
 class ModelYearReportAssessmentSaveSerializer(
@@ -50,6 +57,16 @@ class ModelYearReportAssessmentSerializer(
 ):
     assessment_comment = SerializerMethodField()
     assessment = SerializerMethodField()
+    descriptions = SerializerMethodField()
+
+    def get_descriptions(self, obj):
+        descriptions = ModelYearReportAssessmentDescriptions.objects.filter()
+        serializer = ModelYearReportAssessmentDescriptionsSerializer(
+            descriptions,
+            read_only=True,
+            many=True,
+            )
+        return serializer.data
 
     def get_assessment(self, obj):
         assessment = ModelYearReportAssessment.objects.filter(
@@ -78,5 +95,5 @@ class ModelYearReportAssessmentSerializer(
         model = ModelYearReport
         fields = (
             'id', 'assessment_comment',
-            'assessment'
+            'assessment', 'descriptions'
         )

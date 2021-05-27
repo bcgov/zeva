@@ -28,7 +28,10 @@ const AssessmentDetailsPage = (props) => {
     loading,
     makes,
     modelYear,
+    radioSelection,
     radioDescriptions,
+    setPenalty,
+    setRadioSelection,
     ratios,
     statuses,
     user,
@@ -42,7 +45,23 @@ const AssessmentDetailsPage = (props) => {
   } = transactions;
   const [showModal, setShowModal] = useState(false);
   const disabledInputs = false;
-
+  const showDescription = (each) => (
+    <div className="mb-3">
+      <input
+        className="mr-3"
+        type="radio"
+        name="assessment"
+        onChange={(event) => {
+          setRadioSelection(each.id);
+        }}
+      />
+      <label className="d-inline text-blue" htmlFor="complied">
+        {each.description
+          .replace(/{user.organization.name}/g, details.organization.name)
+          .replace(/{modelYear}/g, modelYear)}
+      </label>
+    </div>
+  );
   if (loading) {
     return <Loading />;
   }
@@ -73,7 +92,6 @@ const AssessmentDetailsPage = (props) => {
       </div>
     </Modal>
   );
-
   return (
     <div id="assessment-details" className="page">
       <div className="row mt-3">
@@ -94,7 +112,7 @@ const AssessmentDetailsPage = (props) => {
             )}
           </div>
           <div className="grey-border-area p-4 comment-box mt-2">
-            {details.idirComment && user.isGovernment && (
+            {details.idirComment && details.idirComment.length > 0 && user.isGovernment && (
             <DisplayComment
               commentArray={details.idirComment}
             />
@@ -115,7 +133,7 @@ const AssessmentDetailsPage = (props) => {
               <button
                 className="btn button primary float-right"
                 onClick={() => {
-                  setShowModal(true);
+                  history.push(ROUTES_COMPLIANCE.ASSESSMENT_EDIT.replace(':id',id));
                 }}
                 type="button"
               >
@@ -411,48 +429,19 @@ const AssessmentDetailsPage = (props) => {
         <div className="col-12">
           <div className="grey-border-area comment-box p-4 mt-2">
             <div>
-              <input
-                className="mr-3"
-                type="radio"
-                id="complied-radio"
-                name="assessment"
-                onChange={(event) => {
-                  console.log('radio checked');
-                }}
-
-              />
-              <label className="d-inline" htmlFor="complied">
-    
-              </label>
-            </div>
-            <div className="mt-3">
-              <input
-                className="mr-3"
-                type="radio"
-                id="not-complied-radio"
-                name="assessment"
-                onChange={(event) => {
-                  console.log('radio checked');
-                }}
-
-              />
-              <label className="d-inline" htmlFor="not-complied">
-
-              </label>
-            </div>
-            <div className="mt-3">
-
-              <input
-                className="mr-3"
-                type="radio"
-                id="penalty-radio"
-                name="assessment"
-                onChange={(event) => {
-                  console.log('radio checked');
-                }}
-              />
+              {radioDescriptions.map((each) => (
+                (each.displayOrder === 0)
+                && showDescription(each)
+              ))}
+              <div className="text-blue mt-3 ml-3 mb-1">
+                &nbsp;&nbsp; {details.organization.name} has not complied with section 10 (2) of the
+                Zero-Emission Vehicles Act for the {modelYear} adjustment period.
+              </div>
+              {radioDescriptions.map((each) => (
+                (each.displayOrder > 0)
+               && showDescription(each)
+              ))}
               <label className="d-inline" htmlFor="penalty-radio">
-
                 <div>
                   <input
                     type="text"

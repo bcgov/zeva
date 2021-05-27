@@ -6,6 +6,7 @@ const COMPLIANCE = {
   REPORTS: `${API_BASE_PATH}/reports`,
   RATIOS: `${API_BASE_PATH}/ratios`,
   NEW: `${API_BASE_PATH}/reports/new/supplier-information`,
+  ASSESSMENT_EDIT: `${API_BASE_PATH}/report/:id/assessment/edit`,
   REPORT_DETAILS: `${API_BASE_PATH}/reports/:id`,
   REPORT_SUPPLIER_INFORMATION: `${API_BASE_PATH}/reports/:id/supplier-information`,
   REPORT_CONSUMER_SALES: `${API_BASE_PATH}/reports/:id/consumer-sales`,
