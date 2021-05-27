@@ -22,6 +22,7 @@ const COMPLIANCE = {
   REPORT_SUBMISSION: `${API_BASE_PATH}/reports/submission`,
   ASSESSMENT_COMMENT_SAVE: `${API_BASE_PATH}/reports/:id/comment_save`,
   YEARS: `${API_BASE_PATH}/reports/years`,
+  MAKES: `${API_BASE_PATH}/reports/:id/makes`,
 };
 
 export default COMPLIANCE;

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { withRouter } from 'react-router';
+import history from '../app/History';
 
 import CustomPropTypes from '../app/utilities/props';
 import AssessmentEditPage from './components/AssessmentEditPage';
@@ -55,7 +56,6 @@ const AssessmentEditContainer = (props) => {
   };
 
   const handleSubmit = (event) => {
-    console.log('what is happening?');
     event.preventDefault();
 
     const data = {
@@ -65,17 +65,22 @@ const AssessmentEditContainer = (props) => {
 
     axios.patch(
       ROUTES_COMPLIANCE.REPORT_ASSESSMENT_SAVE.replace(/:id/g, id),
-      data,
-    );
+      data).then(() => {
+        history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id));
+      });
   };
 
   const refreshDetails = () => {
-    const detailsPromise = axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id));
+    const detailsPromise = axios.get(
+      ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)
+    );
 
     const ratiosPromise = axios.get(ROUTES_COMPLIANCE.RATIOS);
 
-    Promise.all([detailsPromise, ratiosPromise])
-      .then(([response, ratiosResponse]) => {
+    const makesPromise = axios.get(ROUTES_COMPLIANCE.MAKES.replace(/:id/g, id));
+
+    Promise.all([detailsPromise, ratiosPromise, makesPromise]).then(
+      ([response, ratiosResponse, makesResponse]) => {
         const {
           makes: modelYearReportMakes,
           modelYear: reportModelYear,
@@ -90,13 +95,16 @@ const AssessmentEditContainer = (props) => {
         } = response.data;
         const year = parseInt(reportModelYear.name, 10);
 
+        const { supplierMakes, govMakes } = makesResponse.data;
+
         setModelYear(year);
         setStatuses(reportStatuses);
-        if (modelYearReportMakes) {
-          const currentMakes = modelYearReportMakes.map((each) => each.make);
 
-          setMakes(currentMakes);
-          setSupplierMakes(currentMakes);
+        if (modelYearReportMakes) {
+          const supplierCurrentMakes = supplierMakes.map((each) => each.make);
+          const analystMakes = govMakes.map((each) => each.make);
+          setMakes(analystMakes);
+          setSupplierMakes(supplierCurrentMakes);
         }
 
         setDetails({
@@ -121,10 +129,13 @@ const AssessmentEditContainer = (props) => {
           [year]: ldvSalesUpdated,
         });
 
-        const filteredRatio = ratiosResponse.data.filter((data) => data.modelYear === year.toString())[0];
+        const filteredRatio = ratiosResponse.data.filter(
+          (data) => data.modelYear === year.toString()
+        )[0];
         setRatios(filteredRatio);
         setLoading(false);
-      });
+      }
+    );
   };
 
   useEffect(() => {
