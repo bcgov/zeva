@@ -8,6 +8,7 @@ from api.models.model_year_report_confirmation import \
     ModelYearReportConfirmation
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_history import ModelYearReportHistory
+from api.models.model_year_report_ldv_sales import ModelYearReportLDVSales
 from api.models.model_year_report_address import ModelYearReportAddress
 from api.models.model_year_report_make import ModelYearReportMake
 from api.models.model_year_report_statuses import ModelYearReportStatuses
@@ -22,6 +23,7 @@ from api.serializers.user import MemberSerializer
 from api.serializers.vehicle import ModelYearSerializer
 from api.services.model_year_report import get_model_year_report_statuses
 
+
 class ModelYearReportSerializer(ModelSerializer):
     create_user = SerializerMethodField()
     model_year = ModelYearSerializer()
@@ -31,7 +33,7 @@ class ModelYearReportSerializer(ModelSerializer):
     model_year_report_history = ModelYearReportHistorySerializer(many=True)
     confirmations = SerializerMethodField()
     statuses = SerializerMethodField()
-
+    ldv_sales_updated = SerializerMethodField()
 
     def get_create_user(self, obj):
         user_profile = UserProfile.objects.filter(username=obj.create_user)
@@ -48,6 +50,14 @@ class ModelYearReportSerializer(ModelSerializer):
         ).values_list('signing_authority_assertion_id', flat=True).distinct()
 
         return confirmations
+
+    def get_ldv_sales_updated(self, obj):
+        request = self.context.get('request')
+
+        if request.user.is_government:
+            return obj.get_ldv_sales(from_gov=True) or obj.ldv_sales
+
+        return obj.ldv_sales
 
     def get_makes(self, obj):
         request = self.context.get('request')
@@ -74,7 +84,7 @@ class ModelYearReportSerializer(ModelSerializer):
             'organization_name', 'supplier_class', 'ldv_sales', 'model_year',
             'model_year_report_addresses', 'makes', 'validation_status',
             'create_user', 'model_year_report_history', 'confirmations',
-            'statuses'
+            'statuses', 'ldv_sales_updated',
         )
 
 

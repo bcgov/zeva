@@ -114,7 +114,7 @@ const ComplianceReportSummaryContainer = (props) => {
         pendingZevSales += vehicle.pendingSales;
         zevSales += vehicle.salesIssued;
       });
-    
+
       setConsumerSalesDetails({
         ...consumerSalesDetails,
         pendingZevSales,
