@@ -105,6 +105,7 @@ const AssessmentEditContainer = (props) => {
             validationStatus,
           },
           ldvSales,
+
           organization: {
             name: organizationName,
             organizationAddress: modelYearReportAddresses,
