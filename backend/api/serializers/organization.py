@@ -37,12 +37,14 @@ class OrganizationSerializer(serializers.ModelSerializer):
         if date.today().month < 10:
             year -= 1
 
-        sales = obj.ldv_sales.filter(model_year__name__lte=year)[:3]
+        sales = obj.ldv_sales.filter(model_year__name__lte=year).values_list(
+            'ldv_sales', flat=True
+        )[:3]
 
         if sales.count() < 3:
             return None
 
-        return sales / 3
+        return sum(list(sales)) / 3
 
     class Meta:
         model = Organization
@@ -50,6 +52,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
             'id', 'name', 'create_timestamp', 'organization_address',
             'balance', 'is_active', 'short_name', 'is_government',
             'supplier_class', 'avg_ldv_sales', 'ldv_sales',
+            'has_submitted_report',
         )
 
 

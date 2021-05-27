@@ -1,9 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import CustomPropTypes from '../../app/utilities/props';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import Button from '../../app/components/Button';
+import Loading from '../../app/components/Loading';
 import AssessmentSupplierInformationMakes from './AssessmentSupplierInformationMakes';
+import ConsumerLDVSales from './ConsumerLDVSales';
+import getTotalReduction from '../../app/utilities/getTotalReduction';
+import getClassACredits from '../../app/utilities/getClassAReduction';
+import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClassReduction';
 
 const AssessmentEditPage = (props) => {
   const {
@@ -15,15 +21,22 @@ const AssessmentEditPage = (props) => {
     statuses,
     user,
     handleChangeMake,
+    handleChangeSale,
     handleDeleteMake,
     handleSubmitMake,
     handleSubmit,
+    ratios,
+    sales,
     supplierMakes,
   } = props;
 
   if (loading) {
     return <Loading />;
   }
+
+  const totalReduction = getTotalReduction(details.ldvSales, ratios.complianceRatio);
+  const classAReduction = getClassACredits(details.ldvSales, ratios.zevClassA, details.supplierClass);
+  const leftoverReduction = getUnspecifiedClassReduction(totalReduction, classAReduction);
 
   const actionbar = (
     <div className="row">
@@ -53,16 +66,16 @@ const AssessmentEditPage = (props) => {
       <div className="row mt-3">
         <div className="col-12">
           <div className="m-0">
-            {details &&
-              details.supplierInformation &&
-              details.supplierInformation.history && (
+            {details
+              && details.supplierInformation
+              && details.supplierInformation.history && (
                 <ComplianceReportAlert
                   next=""
                   report={details.assessment}
                   status={statuses.assessment}
                   type="Assessment"
                 />
-              )}
+            )}
           </div>
         </div>
       </div>
@@ -92,7 +105,19 @@ const AssessmentEditPage = (props) => {
             </div>
             <div className="consumer-ldv-sales mt-2">
               <h3>Consumer LDV Sales</h3>
-              <div className="mt-2 p-3 grey-border-area p-4">Test</div>
+              <div className="mt-2 grey-border-area">
+                <ConsumerLDVSales
+                  classAReduction={classAReduction}
+                  currentSales={details.ldvSales}
+                  handleChangeSale={handleChangeSale}
+                  leftoverReduction={leftoverReduction}
+                  modelYear={modelYear}
+                  ratios={ratios}
+                  supplierClass={details.supplierClass}
+                  totalReduction={totalReduction}
+                  updatedSales={sales[modelYear]}
+                />
+              </div>
             </div>
           </div>
           {actionbar}
@@ -105,7 +130,9 @@ AssessmentEditPage.defaultProps = {};
 
 AssessmentEditPage.propTypes = {
   details: PropTypes.shape({
+    ldvSales: PropTypes.number,
     organization: PropTypes.shape(),
+    supplierClass: PropTypes.string,
     supplierInformation: PropTypes.shape(),
   }).isRequired,
   loading: PropTypes.bool.isRequired,
@@ -115,9 +142,12 @@ AssessmentEditPage.propTypes = {
   modelYear: PropTypes.number.isRequired,
   statuses: PropTypes.shape().isRequired,
   handleChangeMake: PropTypes.func.isRequired,
+  handleChangeSale: PropTypes.func.isRequired,
   handleDeleteMake: PropTypes.func.isRequired,
   handleSubmitMake: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   make: PropTypes.string.isRequired,
+  sales: PropTypes.shape().isRequired,
+  ratios: PropTypes.shape().isRequired,
 };
 export default AssessmentEditPage;

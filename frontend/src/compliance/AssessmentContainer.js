@@ -31,13 +31,15 @@ const AssessmentContainer = (props) => {
   const [creditActivityDetails, setCreditActivityDetails] = useState({});
   const [supplierClassInfo, setSupplierClassInfo] = useState({ ldvSales: 0, class: '' });
   const [radioSelection, setRadioSelection] = useState('');
-  const [radioDescriptions, setRadioDescriptions] = useState([]);
+  const [penalty, setPenalty] = useState(0);
+  const [radioDescriptions, setRadioDescriptions] = useState([{id:0, description: 'test'},]);
   const [statuses, setStatuses] = useState({
     assessment: {
       status: 'UNSAVED',
       confirmedBy: null,
     },
   });
+
   const handleCommentChangeIdir = (text) => {
     setIdirComment(text);
   };
@@ -64,9 +66,11 @@ const AssessmentContainer = (props) => {
         axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)),
         axios.get(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)),
       ])
-        .then(axios.spread((response, ratioResponse, creditActivityResponse, assessmentResponse) => {
+        .then(axios.spread((reportDetailsResponse, ratioResponse, creditActivityResponse, assessmentResponse) => {
           const idirCommentArrayResponse = [];
           let bceidCommentResponse = {};
+          const assessmentDescriptions = assessmentResponse.data.descriptions;
+          setRadioDescriptions(assessmentDescriptions);
           assessmentResponse.data.assessmentComment.forEach((item) => {
             if (item.toDirector === true) {
               idirCommentArrayResponse.push(item);
@@ -75,14 +79,15 @@ const AssessmentContainer = (props) => {
             }
           });
           let supplierClass;
-          if (response.data.supplierClass === 'L') {
+          if (reportDetailsResponse.data.supplierClass === 'L') {
             supplierClass = 'Large';
-          } else if (response.data.supplierClass === 'M') {
+          } else if (reportDetailsResponse.data.supplierClass === 'M') {
             supplierClass = 'Medium';
-          } else if (response.data.supplierClass === 'S') {
+          } else if (reportDetailsResponse.data.supplierClass === 'S') {
             supplierClass = 'Small';
           }
           const {
+
             makes: modelYearReportMakes,
             modelYearReportAddresses,
             modelYearReportHistory,
@@ -92,7 +97,7 @@ const AssessmentContainer = (props) => {
             confirmations,
             statuses: reportStatuses,
             ldvSales,
-          } = response.data;
+          } = reportDetailsResponse.data;
 
           const filteredRatio = ratioResponse.data.filter((data) => data.modelYear === modelYear.toString())[0];
           setRatios(filteredRatio);
@@ -245,7 +250,10 @@ const AssessmentContainer = (props) => {
         makes={makes}
         modelYear={modelYear}
         radioDescriptions={radioDescriptions}
+        radioSelection={radioSelection}
+        setRadioSelection={setRadioSelection}
         ratios={ratios}
+        setPenalty={setPenalty}
         statuses={statuses}
         user={user}
       />

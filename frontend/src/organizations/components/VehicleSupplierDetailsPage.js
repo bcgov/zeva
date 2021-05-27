@@ -6,6 +6,7 @@ import Loading from '../../app/components/Loading';
 import CustomPropTypes from '../../app/utilities/props';
 import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
 import VehicleSupplierClass from './VehicleSupplierClass';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const VehicleSupplierDetailsPage = (props) => {
   const {
@@ -88,13 +89,19 @@ const VehicleSupplierDetailsPage = (props) => {
 
           <div className="mt-3">
             <h4 className="d-inline">3 Year Average LDV Sales: </h4>
-            <span> <VehicleSupplierClass supplierClass={details.supplierClass} /> </span>
+            <span> {formatNumeric(Math.round(details.avgLdvSales), 0)} </span>
           </div>
 
           <div className="mt-3">
-            <div className="mb-2">Enter the previous 3 year LDV sales total to determine vehicle supplier class.</div>
+            {!details.hasSubmittedReport && (
+              <div className="mb-2">Enter the previous 3 year LDV sales total to determine vehicle supplier class.</div>
+            )}
+            {details.hasSubmittedReport && (
+            <h4 className="d-inline">Previous 3 Year LDV Sales: </h4>
+            )}
             <form onSubmit={handleSubmit}>
               <div className="ldv-sales">
+                {!details.hasSubmittedReport && (
                 <div className="header-bg">
                   <div className="d-inline-block">
                     <select
@@ -128,6 +135,8 @@ const VehicleSupplierDetailsPage = (props) => {
                     </button>
                   </div>
                 </div>
+                )}
+
                 <ul className="mb-0 mt-3">
                   {ldvSales.map((sale) => (
                     <li key={sale.id}>
@@ -135,7 +144,7 @@ const VehicleSupplierDetailsPage = (props) => {
                         {sale.modelYear} Model Year:
                       </div>
                       <div className="sales">
-                        {sale.ldvSales}
+                        {formatNumeric(sale.ldvSales, 0)}
                       </div>
                     </li>
                   ))}
@@ -175,6 +184,7 @@ VehicleSupplierDetailsPage.defaultProps = {
 
 VehicleSupplierDetailsPage.propTypes = {
   details: CustomPropTypes.organizationDetails.isRequired,
+  editButton: PropTypes.func.isRequired,
   ldvSales: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),
