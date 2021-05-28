@@ -135,6 +135,28 @@ class ModelYearReportViewset(
         return Response(serializer.data)
 
     @action(detail=True)
+    def makes(self, request, pk=None):
+        queryset = self.get_queryset()
+        report = get_object_or_404(queryset, pk=pk)
+        supplier_makes_list = ModelYearReportMake.objects.filter(
+                model_year_report_id=report.id,
+                from_gov=False
+            ).values('make').distinct()
+
+        supplier_makes = ModelYearReportMakeSerializer(supplier_makes_list, many=True)
+        gov_makes_list = ModelYearReportMake.objects.filter(
+                model_year_report_id=report.id,
+                from_gov=True
+            ).values('make').distinct()
+
+        gov_makes = ModelYearReportMakeSerializer(gov_makes_list, many=True)
+        return Response({
+            'supplier_makes': supplier_makes.data,
+            'gov_makes': gov_makes.data
+        })
+
+
+    @action(detail=True)
     def submission_confirmation(self, request, pk=None):
         confirmation = ModelYearReportConfirmation.objects.filter(
             model_year_report_id=pk,
@@ -195,7 +217,10 @@ class ModelYearReportViewset(
             )
 
         makes = request.data.get('makes', None)
-
+        makes_delete = ModelYearReportMake.objects.filter(
+                from_gov=True
+            )
+        makes_delete.delete()
         report = get_object_or_404(ModelYearReport, pk=pk)
 
         if makes and isinstance(makes, list):
