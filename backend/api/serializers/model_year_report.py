@@ -106,7 +106,7 @@ class ModelYearReportSerializer(ModelSerializer):
     class Meta:
         model = ModelYearReport
         fields = (
-            'organization_name', 'supplier_class', 'model_year',
+            'organization_name', 'supplier_class', 'ldv_sales', 'model_year',
             'model_year_report_addresses', 'makes', 'validation_status',
             'create_user', 'model_year_report_history', 'confirmations',
             'statuses', 'ldv_sales_updated','statuses', 

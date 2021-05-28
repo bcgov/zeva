@@ -121,6 +121,7 @@ const ComplianceObligationDetailsPage = (props) => {
           leftoverReduction={leftoverReduction}
           sales={sales}
           handleChangeSales={handleChangeSales}
+          statuses={statuses}
         />
         <div className="mt-4">
           <h3 className="mb-2">Credit Activity</h3>
@@ -220,7 +221,7 @@ ComplianceObligationDetailsPage.propTypes = {
   zevClassAReduction: PropTypes.shape().isRequired,
   unspecifiedReductions: PropTypes.shape().isRequired,
   creditBalance: PropTypes.shape().isRequired,
-  sales: PropTypes.number.isRequired,
+  sales: PropTypes.number,
   handleChangeSales: PropTypes.func.isRequired,
 };
 export default ComplianceObligationDetailsPage;

@@ -35,6 +35,7 @@ const AssessmentDetailsPage = (props) => {
     ratios,
     statuses,
     user,
+    sales,
   } = props;
 
   const {
@@ -206,6 +207,8 @@ const AssessmentDetailsPage = (props) => {
                 ratios={ratios}
                 classAReduction={classAReduction}
                 leftoverReduction={leftoverReduction}
+                statuses={statuses}
+                sales={sales}
               />
             </div>
             <div className="my-3 grey-border-area">
@@ -504,5 +507,6 @@ AssessmentDetailsPage.propTypes = {
   user: CustomPropTypes.user.isRequired,
   modelYear: PropTypes.number.isRequired,
   statuses: PropTypes.shape().isRequired,
+  sales: PropTypes.number.isRequired,
 };
 export default AssessmentDetailsPage;

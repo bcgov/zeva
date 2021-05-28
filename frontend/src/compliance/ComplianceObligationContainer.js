@@ -291,6 +291,7 @@ const ComplianceObligationContainer = (props) => {
     });
     const data = {
       reportId: id,
+      sales: sales,
       offset: offsetNumbers,
       creditActivity: reportDetailsArray,
       confirmations: checkboxes,
