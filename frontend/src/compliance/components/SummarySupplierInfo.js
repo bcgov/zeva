@@ -53,7 +53,7 @@ const SummarySupplierInfo = (props) => {
         </div>
         <div className="mt-0">
           <div className="d-inline">3 Year Average(2017-2019) LDV Sales\Leases:</div>
-          <span className='text-black'> {ldvSales} </span>
+          <span className='text-black'> {organization.avgLdvSales} </span>
         </div>
         <div className="d-block my-3">
           <h4>Makes:</h4>

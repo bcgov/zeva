@@ -22,15 +22,15 @@ const ConsumerLDVSales = (props) => {
     <>
       <div className="row">
         <div className="col-6" />
-        <div className="col-3">
+        <div className="col-3 text-blue font-weight-bold">
           Supplier Information
         </div>
-        <div className="col-3">
+        <div className="col-3 text-blue font-weight-bold">
           Analyst Adjustment
         </div>
       </div>
-      <div className="row">
-        <div className="col-6">
+      <div className="row mt-3">
+        <div className="col-6 text-blue">
           {modelYear} Model Year LDV Sales\Leases:
         </div>
         <div className="col-3">
@@ -41,7 +41,7 @@ const ConsumerLDVSales = (props) => {
         </div>
       </div>
       <div className="row">
-        <div className="col-6">
+        <div className="col-6 text-blue">
           Compliance Ratio Credit Reduction:
         </div>
         <div className="col-3">
@@ -52,7 +52,7 @@ const ConsumerLDVSales = (props) => {
         </div>
       </div>
       <div className="row">
-        <div className="col-6">
+        <div className="col-6 text-blue">
           ZEV Class A Credit Reduction:
         </div>
         <div className="col-3">
@@ -63,7 +63,7 @@ const ConsumerLDVSales = (props) => {
         </div>
       </div>
       <div className="row">
-        <div className="col-6">
+        <div className="col-6 text-blue">
           Unspecified ZEV Class Credit Reduction:
         </div>
         <div className="col-3">
