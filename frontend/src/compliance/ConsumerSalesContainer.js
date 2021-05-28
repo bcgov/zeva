@@ -40,7 +40,6 @@ const ConsumerSalesContainer = (props) => {
         validationStatus,
       } = consumerSalesResponse.data;
 
-
       if (vehicleList.length > 0) {
         setVehicles(vehicleList);
       }
@@ -94,7 +93,7 @@ const ConsumerSalesContainer = (props) => {
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
       const checked = checkboxes.filter(
-        (each) => Number(each) !== Number(event.target.id)
+        (each) => Number(each) !== Number(event.target.id),
       );
       setCheckboxes(checked);
     }
@@ -106,21 +105,20 @@ const ConsumerSalesContainer = (props) => {
   };
 
   const handleSave = () => {
-      axios.post(ROUTES_COMPLIANCE.CONSUMER_SALES, {
-        data: vehicles,
-        modelYearReportId: id,
-        confirmation: checkboxes,
-      }).then(() => {
-        history.push(ROUTES_COMPLIANCE.REPORTS);
-        history.replace(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id));
-      }).catch((error) => {
-        const { response } = error;
-        if (response.status === 400) {
-          setErrorMessage(error.response.data.status);
-        }
-      });
-    }
-  
+    axios.post(ROUTES_COMPLIANCE.CONSUMER_SALES, {
+      data: vehicles,
+      modelYearReportId: id,
+      confirmation: checkboxes,
+    }).then(() => {
+      history.push(ROUTES_COMPLIANCE.REPORTS);
+      history.replace(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id));
+    }).catch((error) => {
+      const { response } = error;
+      if (response.status === 400) {
+        setErrorMessage(error.response.data.status);
+      }
+    });
+  };
 
   useEffect(() => {
     refreshDetails(true);
