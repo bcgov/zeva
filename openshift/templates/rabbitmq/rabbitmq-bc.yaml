@@ -59,8 +59,10 @@ objects:
                 secretKeyRef:
                   name: zeva-rabbitmq-${ENV_NAME}
                   key: ZEVA_PASSWORD
-          forcePull: false
+          forcePull: true
           noCache: true
+          pullSecret:
+            name: docker-artifactory-secret
           imageOptimizationPolicy: SkipLayers
       output:
         to:

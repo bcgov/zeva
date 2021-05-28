@@ -22,12 +22,12 @@ objects:
       name: minio
       creationTimestamp:
       labels:
-        shared: 'true'
+        shared: "true"
     spec:
       lookupPolicy:
         local: false
     status:
-      dockerImageRepository: ''
+      dockerImageRepository: ""
   - apiVersion: build.openshift.io/v1
     kind: BuildConfig
     metadata:
