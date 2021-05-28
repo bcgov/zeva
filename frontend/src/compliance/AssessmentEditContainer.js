@@ -95,14 +95,14 @@ const AssessmentEditContainer = (props) => {
         } = response.data;
         const year = parseInt(reportModelYear.name, 10);
 
-        const { supplierMakes, govMakes } = makesResponse.data;
+        const { supplierMakeslist, govMakeslist } = makesResponse.data;
 
         setModelYear(year);
         setStatuses(reportStatuses);
 
         if (modelYearReportMakes) {
-          const supplierCurrentMakes = supplierMakes.map((each) => each.make);
-          const analystMakes = govMakes.map((each) => each.make);
+          const supplierCurrentMakes = supplierMakeslist.map((each) => each.make);
+          const analystMakes = govMakeslist.map((each) => each.make);
           setMakes(analystMakes);
           setSupplierMakes(supplierCurrentMakes);
         }
