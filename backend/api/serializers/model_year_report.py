@@ -27,6 +27,7 @@ from api.services.model_year_report import get_model_year_report_statuses
 
 
 class ModelYearReportSerializer(ModelSerializer):
+
     create_user = SerializerMethodField()
     model_year = ModelYearSerializer()
     model_year_report_addresses = ModelYearReportAddressSerializer(many=True)
@@ -48,7 +49,8 @@ class ModelYearReportSerializer(ModelSerializer):
 
     def get_avg_sales(self, obj):
         rows = ModelYearReportLDVSales.objects.filter(
-            model_year_report_id=obj.id
+            model_year_report_id=obj.id,
+            from_gov=False
         ).values_list(
             'ldv_sales', flat=True
         )[:3]

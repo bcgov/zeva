@@ -173,7 +173,7 @@ const SupplierInformationContainer = (props) => {
       axios.get(ROUTES_VEHICLES.LIST).then((response) => {
         const { data } = response;
         const previousSales = user.organization.ldvSales
-        const supplierClassString = getClassDescriptions(user.organization.supplierClass)
+        const supplierClassString = getClassDescriptions(user.organization.supplierClass);
         setMakes([...new Set(data.map((vehicle) => vehicle.make.toUpperCase()))]);
         setDetails({
           supplierClassString,

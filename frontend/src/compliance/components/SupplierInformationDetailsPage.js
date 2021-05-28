@@ -159,14 +159,14 @@ const SupplierInformationDetailsPage = (props) => {
                     <span className="col-4">
                       <h4 className="d-inline">3 Year Average LDV Sales: </h4>
                     </span>
-                    <span className="col-6">{FormatNumeric(details.organization.avgLdvSales, 0)}</span>
+                    <span className="col-6">{FormatNumeric(details.organization.avgLdvSales)}</span>
                   </div>
                 </div>
                 <div className="col-sm-12 col-md-5">
                   <div className="supplier-information p-3">
                     {details.organization.ldvSales
                     && (
-                    <div className="previous-ldv-sales mt-2 p-3">
+                    <div className="previous-ldv-sales mt-2 p-2">
                       {details.organization.ldvSales.map((yearSale) => (
                         <div className="model-year-ldv" key={yearSale.id}>
                           <label className="text-blue mr-4 font-weight-bold">
