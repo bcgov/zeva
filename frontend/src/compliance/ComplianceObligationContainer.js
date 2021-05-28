@@ -25,6 +25,7 @@ const ComplianceObligationContainer = (props) => {
   const [details, setDetails] = useState({});
   const [statuses, setStatuses] = useState({});
   const [supplierClassInfo, setSupplierClassInfo] = useState({ ldvSales: 0, class: '' });
+  const [sales, setSales] = useState(0);
   const { id } = useParams();
   const [remainingABalance, setRemainingABalance] = useState({
     lastYearABalance: 0,
@@ -57,6 +58,11 @@ const ComplianceObligationContainer = (props) => {
       history.push(ROUTES_COMPLIANCE.REPORTS);
       history.replace(ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(':id', response.data.id));
     });
+  };
+
+  const handleChangeSales = (event) => {
+    const { value } = event.target;
+    setSales(value);
   };
 
   const handleCheckboxClick = (event) => {
@@ -327,6 +333,7 @@ const ComplianceObligationContainer = (props) => {
 
       setStatuses(reportStatuses);
       setSupplierClassInfo({ class: supplierClass, ldvSales });
+      setSales(ldvSales);
 
       const filteredRatio = ratioResponse.data.filter((data) => data.modelYear === modelYear.name)[0];
       setRatios(filteredRatio);
@@ -478,6 +485,8 @@ const ComplianceObligationContainer = (props) => {
         zevClassAReduction={zevClassAReduction}
         unspecifiedReductions={unspecifiedReductions}
         creditBalance={creditBalance}
+        sales={sales}
+        handleChangeSales={handleChangeSales}
       />
     </>
   );
