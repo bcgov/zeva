@@ -248,6 +248,7 @@ const ComplianceReportSummaryContainer = (props) => {
         makes={makes}
         confirmationStatuses={confirmationStatuses}
         pendingBalanceExist={pendingBalanceExist}
+        modelYear={modelYear}
       />
 
     </>

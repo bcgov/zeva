@@ -30,6 +30,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     makes,
     confirmationStatuses,
     pendingBalanceExist,
+    modelYear,
   } = props;
   const signedInfomation = {
     supplierInformation: { nameSigned: 'Buzz Collins', dateSigned: '2020-01-01' },
@@ -121,7 +122,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
             <div className="row p3 mt-3">
               <div className="col-lg-6">
                 <div className="compliance-report-summary-grey text-blue">
-                  <SummarySupplierInfo makes={makes} creditActivityDetails={creditActivityDetails} supplierDetails={supplierDetails} signatureInformation={signatureInformation} signedInfomation={signedInfomation} />
+                  <SummarySupplierInfo makes={makes} modelYear={modelYear}creditActivityDetails={creditActivityDetails} supplierDetails={supplierDetails} signatureInformation={signatureInformation} signedInfomation={signedInfomation} />
                   {signatureInformation(confirmationStatuses.supplierInformation, 'Supplier Information')}
                 </div>
 
@@ -205,6 +206,7 @@ ComplianceReportSummaryDetailsPage.propTypes = {
   pendingBalanceExist: PropTypes.bool.isRequired,
   supplierDetails: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
+  modelYear: PropTypes.number.isRequired
 };
 
 export default ComplianceReportSummaryDetailsPage;
