@@ -1,11 +1,11 @@
 from django.utils.decorators import method_decorator
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from api.decorators.permission import permission_required
 from api.models.organization import Organization
+from api.models.organization_ldv_sales import OrganizationLDVSales
 from api.models.sales_submission import SalesSubmission
 from api.serializers.credit_transaction import CreditTransactionListSerializer, \
     CreditTransactionBalanceSerializer
@@ -14,6 +14,8 @@ from api.serializers.sales_submission import SalesSubmissionListSerializer
 from api.serializers.organization import \
     OrganizationSerializer, OrganizationWithMembersSerializer, \
     OrganizationSaveSerializer
+from api.serializers.organization_ldv_sales import \
+    OrganizationLDVSalesSerializer
 from api.services.credit_transaction import aggregate_credit_balance_details, \
     aggregate_transactions_by_submission
 from api.permissions.organization import OrganizationPermissions
@@ -40,6 +42,7 @@ class OrganizationViewSet(
         'partial_update': OrganizationSaveSerializer,
         'sales': SalesSubmissionListSerializer,
         'users': OrganizationWithMembersSerializer,
+        'ldv_sales': OrganizationLDVSalesSerializer,
     }
 
     def get_queryset(self):
@@ -147,4 +150,27 @@ class OrganizationViewSet(
         transactions = aggregate_transactions_by_submission(pk)
 
         serializer = CreditTransactionListSerializer(transactions, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['patch', 'put'])
+    @method_decorator(permission_required('VIEW_SALES'))
+    def ldv_sales(self, request, pk=None):
+        if not request.user.is_government:
+            return Response(None)
+
+        organization = self.get_object()
+        serializer = OrganizationLDVSalesSerializer(
+            data=request.data,
+            context={
+                'organization': organization,
+                'request': request
+            }
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        ldv_sales = OrganizationLDVSales.objects.filter(organization_id=pk)
+
+        serializer = OrganizationLDVSalesSerializer(ldv_sales, many=True)
+
         return Response(serializer.data)

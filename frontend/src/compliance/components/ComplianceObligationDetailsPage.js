@@ -37,17 +37,19 @@ const ComplianceObligationDetailsPage = (props) => {
     zevClassAReduction,
     unspecifiedReductions,
     creditBalance,
+    sales,
+    handleChangeSales,
   } = props;
   const [showModal, setShowModal] = useState(false);
   let disabledCheckboxes = propsDisabledCheckboxes;
-  const totalReduction = ((ratios.complianceRatio / 100) * supplierClassInfo.ldvSales);
+  const totalReduction = ((ratios.complianceRatio / 100) * sales);
 
   const classAReduction = formatNumeric(
-    ((ratios.zevClassA / 100) * supplierClassInfo.ldvSales),
+    ((ratios.zevClassA / 100) * sales),
     2,
   );
-  const leftoverReduction = ((ratios.complianceRatio / 100) * supplierClassInfo.ldvSales)
-    - ((ratios.zevClassA / 100) * supplierClassInfo.ldvSales);
+  const leftoverReduction = ((ratios.complianceRatio / 100) * sales)
+    - ((ratios.zevClassA / 100) * sales);
 
   const modal = (
     <Modal
@@ -117,6 +119,8 @@ const ComplianceObligationDetailsPage = (props) => {
           ratios={ratios}
           classAReduction={classAReduction}
           leftoverReduction={leftoverReduction}
+          sales={sales}
+          handleChangeSales={handleChangeSales}
         />
         <div className="mt-4">
           <h3 className="mb-2">Credit Activity</h3>
@@ -216,5 +220,7 @@ ComplianceObligationDetailsPage.propTypes = {
   zevClassAReduction: PropTypes.shape().isRequired,
   unspecifiedReductions: PropTypes.shape().isRequired,
   creditBalance: PropTypes.shape().isRequired,
+  sales: PropTypes.number.isRequired,
+  handleChangeSales: PropTypes.func.isRequired,
 };
 export default ComplianceObligationDetailsPage;

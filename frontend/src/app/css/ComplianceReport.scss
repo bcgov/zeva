@@ -1,3 +1,28 @@
+#assessment-edit {
+  .grey-border-area {
+    border: 1px solid $border-grey;
+    padding: 1rem 1rem;
+  }
+  table {
+    width: 100%;
+    td {
+      padding: 0 1rem 0 1rem;
+      line-height: 35px;
+    }
+    tr {
+      margin-top: 1rem;
+    }
+    .small-column {
+      color: $default-text-blue;
+      width: 15%;
+    }
+    .large-column {
+      color: $default-text-blue;
+      padding-left: 1rem;
+      width: 20%;
+    }
+  }
+}
 #assessment-details {
   .text-grey {
     color: grey;
@@ -26,7 +51,7 @@
   }
   .grey-border-area {
     border: 1px solid $border-grey;
-    padding: 1rem 1rem; 
+    padding: 1rem 1rem;
   }
   .ql-container {
     height: auto !important;
@@ -41,8 +66,8 @@
   }
   .comment-box {
     border: 1px solid $border-grey;
-    width:100%;
-    padding: 0.5rem 0.5rem;  
+    width: 100%;
+    padding: 0.5rem 0.5rem;
   }
 }
 #compliance-report-list {
@@ -62,7 +87,8 @@
   }
 }
 
-#compliance-supplier-information-details {
+#compliance-supplier-information-details,
+#assessment-edit {
   .supplier-information {
     border: 1px solid $border-grey;
   }
@@ -104,10 +130,10 @@
   }
   .textbox-first,
   .textbox-second,
-  .textbox-third{
+  .textbox-third {
     width: 30%;
   }
-  .ldv-sales{
+  .ldv-sales {
     background-color: $default-background-grey;
   }
   .textbox-sales {
@@ -115,14 +141,13 @@
   }
 }
 #compliance-obligation-page {
-
   border: 1px solid $border-grey;
   padding: 2rem;
   .no-border {
     border: none;
   }
   .compliance-reduction-table {
-        border: 1px solid $border-grey;
+    border: 1px solid $border-grey;
   }
   table {
     width: 100%;
@@ -157,7 +182,7 @@
     td {
       line-height: 35px;
       padding-top: 10px;
-      padding-bottom:10px;
+      padding-bottom: 10px;
     }
   }
 }

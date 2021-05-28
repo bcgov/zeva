@@ -26,6 +26,8 @@ from api.serializers.model_year_report_make import \
 from api.serializers.organization import OrganizationSerializer
 from api.serializers.organization_address import OrganizationAddressSerializer
 from api.serializers.vehicle import ModelYearSerializer
+from api.serializers.model_year_report_assessment import ModelYearReportAssessmentSerializer
+from api.models.model_year_report_assessment_comment import ModelYearReportAssessmentComment
 from api.services.model_year_report import get_model_year_report_statuses
 from auditable.views import AuditableMixin
 
@@ -133,6 +135,28 @@ class ModelYearReportViewset(
         return Response(serializer.data)
 
     @action(detail=True)
+    def makes(self, request, pk=None):
+        queryset = self.get_queryset()
+        report = get_object_or_404(queryset, pk=pk)
+        supplier_makes_list = ModelYearReportMake.objects.filter(
+                model_year_report_id=report.id,
+                from_gov=False
+            ).values('make').distinct()
+
+        supplier_makes = ModelYearReportMakeSerializer(supplier_makes_list, many=True)
+        gov_makes_list = ModelYearReportMake.objects.filter(
+                model_year_report_id=report.id,
+                from_gov=True
+            ).values('make').distinct()
+
+        gov_makes = ModelYearReportMakeSerializer(gov_makes_list, many=True)
+        return Response({
+            'supplier_makes': supplier_makes.data,
+            'gov_makes': gov_makes.data
+        })
+
+
+    @action(detail=True)
     def submission_confirmation(self, request, pk=None):
         confirmation = ModelYearReportConfirmation.objects.filter(
             model_year_report_id=pk,
@@ -186,14 +210,17 @@ class ModelYearReportViewset(
         )
 
     @action(detail=True, methods=['patch'])
-    def assessment(self, request, pk):
+    def assessment_patch(self, request, pk):
         if not request.user.is_government:
             return HttpResponse(
                 status=403, content=None
             )
 
         makes = request.data.get('makes', None)
-
+        makes_delete = ModelYearReportMake.objects.filter(
+                from_gov=True
+            )
+        makes_delete.delete()
         report = get_object_or_404(ModelYearReport, pk=pk)
 
         if makes and isinstance(makes, list):
@@ -260,4 +287,42 @@ class ModelYearReportViewset(
 
         serializer = ModelYearReportSerializer(report, context={'request': request})
 
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post', 'patch'])
+    def comment_save(self, request, pk):
+        comment = request.data.get('comment')
+        director = request.data.get('director')
+        if comment:
+            ModelYearReportAssessmentComment.objects.create(
+                model_year_report_id=pk,
+                comment=comment,
+                to_director=director,
+                create_user=request.user.username,
+                update_user=request.user.username,
+            )
+        report = get_object_or_404(ModelYearReport, pk=pk)
+
+        serializer = ModelYearReportSerializer(report, context={'request': request})
+
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def assessment(self, request, pk):
+        if not request.user.is_government:
+            return HttpResponse(
+                status=403, content=None
+            )
+
+        report = get_object_or_404(ModelYearReport, pk=pk)
+        serializer = ModelYearReportAssessmentSerializer(report)
+        return Response(serializer.data)
+
+    @action(detail=False)
+    def years(self, _request):
+        """
+        Get the years
+        """
+        years = ModelYear.objects.all().order_by('-name')
+        serializer = ModelYearSerializer(years, many=True)
         return Response(serializer.data)

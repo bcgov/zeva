@@ -25,17 +25,38 @@ const AssessmentContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [makes, setMakes] = useState([]);
   const [make, setMake] = useState('');
+  const [bceidComment, setBceidComment] = useState('');
+  const [idirComment, setIdirComment] = useState([]);
   const [pendingBalanceExist, setPendingBalanceExist] = useState(false);
   const [creditActivityDetails, setCreditActivityDetails] = useState({});
   const [supplierClassInfo, setSupplierClassInfo] = useState({ ldvSales: 0, class: '' });
+  const [radioSelection, setRadioSelection] = useState('');
+  const [penalty, setPenalty] = useState(0);
+  const [radioDescriptions, setRadioDescriptions] = useState([{id:0, description: 'test'},]);
   const [statuses, setStatuses] = useState({
     assessment: {
       status: 'UNSAVED',
       confirmedBy: null,
     },
   });
-  const handleAddComment = () => {
-    console.log('add logic here!');
+
+  const handleCommentChangeIdir = (text) => {
+    setIdirComment(text);
+  };
+  const handleCommentChangeBceid = (text) => {
+    setBceidComment(text);
+  };
+  const handleAddBceidComment = () => {
+    const comment = { comment: bceidComment, director: false };
+    axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
+      history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+    });
+  };
+  const handleAddIdirComment = () => {
+    const comment = { comment: idirComment, director: true };
+    axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
+      history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+    });
   };
   const refreshDetails = () => {
     if (id) {
@@ -43,18 +64,30 @@ const AssessmentContainer = (props) => {
         axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)),
         axios.get(ROUTES_COMPLIANCE.RATIOS),
         axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)),
-        
+        axios.get(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)),
       ])
-        .then(axios.spread((response, ratioResponse, creditActivityResponse) => {
+        .then(axios.spread((reportDetailsResponse, ratioResponse, creditActivityResponse, assessmentResponse) => {
+          const idirCommentArrayResponse = [];
+          let bceidCommentResponse = {};
+          const assessmentDescriptions = assessmentResponse.data.descriptions;
+          setRadioDescriptions(assessmentDescriptions);
+          assessmentResponse.data.assessmentComment.forEach((item) => {
+            if (item.toDirector === true) {
+              idirCommentArrayResponse.push(item);
+            } else {
+              bceidCommentResponse = item;
+            }
+          });
           let supplierClass;
-          if (response.data.supplierClass === 'L') {
+          if (reportDetailsResponse.data.supplierClass === 'L') {
             supplierClass = 'Large';
-          } else if (response.data.supplierClass === 'M') {
+          } else if (reportDetailsResponse.data.supplierClass === 'M') {
             supplierClass = 'Medium';
-          } else if (response.data.supplierClass === 'S') {
+          } else if (reportDetailsResponse.data.supplierClass === 'S') {
             supplierClass = 'Small';
           }
           const {
+
             makes: modelYearReportMakes,
             modelYearReportAddresses,
             modelYearReportHistory,
@@ -64,7 +97,7 @@ const AssessmentContainer = (props) => {
             confirmations,
             statuses: reportStatuses,
             ldvSales,
-          } = response.data;
+          } = reportDetailsResponse.data;
 
           const filteredRatio = ratioResponse.data.filter((data) => data.modelYear === modelYear.toString())[0];
           setRatios(filteredRatio);
@@ -73,6 +106,8 @@ const AssessmentContainer = (props) => {
             setMakes(currentMakes);
           }
           setDetails({
+            bceidComment: bceidCommentResponse,
+            idirComment: idirCommentArrayResponse,
             ldvSales,
             class: supplierClass,
             assessment: {
@@ -204,20 +239,23 @@ const AssessmentContainer = (props) => {
         user={user}
       />
       <AssessmentDetailsPage
+        creditActivityDetails={creditActivityDetails}
+        details={details}
+        id={id}
+        handleAddBceidComment={handleAddBceidComment}
+        handleAddIdirComment={handleAddIdirComment}
+        handleCommentChangeIdir={handleCommentChangeIdir}
+        handleCommentChangeBceid={handleCommentChangeBceid}
         loading={loading}
-        make={make}
         makes={makes}
         modelYear={modelYear}
-        user={user}
-        details={details}
-        statuses={statuses}
-        id={id}
-        handleAddComment={handleAddComment}
-        handleCommentChange={handleAddComment}
+        radioDescriptions={radioDescriptions}
+        radioSelection={radioSelection}
+        setRadioSelection={setRadioSelection}
         ratios={ratios}
-        supplierClassInfo={supplierClassInfo}
-        creditActivityDetails={creditActivityDetails}
-        offsetNumbers={offsetNumbers}
+        setPenalty={setPenalty}
+        statuses={statuses}
+        user={user}
       />
     </>
   );

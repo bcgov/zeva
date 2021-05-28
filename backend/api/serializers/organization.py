@@ -2,9 +2,11 @@ from datetime import date
 from rest_framework import serializers
 
 from api.models.organization import Organization
+from api.models.organization_address import OrganizationAddress
 from api.serializers.organization_address import \
     OrganizationAddressSerializer, OrganizationAddressSaveSerializer
-from api.models.organization_address import OrganizationAddress
+from api.serializers.organization_ldv_sales import \
+    OrganizationLDVSalesSerializer
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -13,6 +15,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
     Loads most of the fields and the balance for the Supplier
     """
     organization_address = serializers.SerializerMethodField()
+    avg_ldv_sales = serializers.SerializerMethodField()
+    ldv_sales = OrganizationLDVSalesSerializer(many=True)
 
     def get_organization_address(self, obj):
         """
@@ -27,11 +31,28 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
         return serializer.data
 
+    def get_avg_ldv_sales(self, obj):
+        year = date.today().year
+
+        if date.today().month < 10:
+            year -= 1
+
+        sales = obj.ldv_sales.filter(model_year__name__lte=year).values_list(
+            'ldv_sales', flat=True
+        )[:3]
+
+        if sales.count() < 3:
+            return None
+
+        return sum(list(sales)) / 3
+
     class Meta:
         model = Organization
         fields = (
             'id', 'name', 'create_timestamp', 'organization_address',
             'balance', 'is_active', 'short_name', 'is_government',
+            'supplier_class', 'avg_ldv_sales', 'ldv_sales',
+            'has_submitted_report',
         )
 
 

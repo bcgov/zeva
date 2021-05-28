@@ -29,7 +29,8 @@ objects:
       output:
         to:
           kind: ImageStreamTag
-          name: "bcgov-jenkins-basic:v2-20210520"
+          name: bcgov-jenkins-basic:v2-20210520
+      postCommit: {}
       resources:
         limits:
           cpu: "2"
