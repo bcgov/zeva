@@ -25,20 +25,11 @@ objects:
       creationTimestamp: null
       name: bcgov-jenkins-basic
     spec:
-<<<<<<< HEAD
-=======
-      failedBuildsHistoryLimit: 2
->>>>>>> 51e5c0e487eca1673daece5b1a89264a8e5b9c13
       nodeSelector: null
       output:
         to:
           kind: ImageStreamTag
-<<<<<<< HEAD
           name: "bcgov-jenkins-basic:v2-20210520"
-=======
-          name: bcgov-jenkins-basic:v2-20210520
-      postCommit: {}
->>>>>>> 51e5c0e487eca1673daece5b1a89264a8e5b9c13
       resources:
         limits:
           cpu: "2"
@@ -46,7 +37,6 @@ objects:
         requests:
           cpu: "1"
           memory: 2Gi
-<<<<<<< HEAD
       successfulBuildsHistoryLimit: 5
       failedBuildsHistoryLimit: 2
       strategy:
@@ -64,24 +54,5 @@ objects:
       triggers:
         - type: ConfigChange
       runPolicy: SerialLatestOnly
-=======
-      runPolicy: SerialLatestOnly
-      source:
-        contextDir: cicd/jenkins-basic/docker
-        git:
-          ref: kuan-version
-          uri: https://github.com/kuanfandevops/openshift-components.git
-        type: Git
-      strategy:
-        from:
-          kind: DockerImage
-          name: registry.redhat.io/ubi8/ubi:8.2
-        type: Docker
-      successfulBuildsHistoryLimit: 5
-      triggers:
-        - imageChange: {}
-          type: ImageChange
-        - type: ConfigChange
->>>>>>> 51e5c0e487eca1673daece5b1a89264a8e5b9c13
     status:
       lastVersion: 0
