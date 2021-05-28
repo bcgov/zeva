@@ -16,7 +16,7 @@ const AssessmentEditContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [details, setDetails] = useState({});
   const [makes, setMakes] = useState([]);
-  const [supplierMakes, setSupplierMakes] = useState([]);
+  const [supplierMakesList, setSupplierMakesList] = useState([]);
   const [make, setMake] = useState('');
   const [modelYear, setModelYear] = useState(
     CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR,
@@ -95,16 +95,16 @@ const AssessmentEditContainer = (props) => {
         } = response.data;
         const year = parseInt(reportModelYear.name, 10);
 
-        const { supplierMakeslist, govMakeslist } = makesResponse.data;
+        const { supplierMakes, govMakes} = makesResponse.data;
 
         setModelYear(year);
         setStatuses(reportStatuses);
 
         if (modelYearReportMakes) {
-          const supplierCurrentMakes = supplierMakeslist.map((each) => each.make);
-          const analystMakes = govMakeslist.map((each) => each.make);
+          const supplierCurrentMakes = supplierMakes.map((each) => each.make);
+          const analystMakes = govMakes.map((each) => each.make);
           setMakes(analystMakes);
-          setSupplierMakes(supplierCurrentMakes);
+          setSupplierMakesList(supplierCurrentMakes);
         }
 
         setDetails({
@@ -169,7 +169,7 @@ const AssessmentEditContainer = (props) => {
         handleSubmit={handleSubmit}
         ratios={ratios}
         sales={sales}
-        supplierMakes={supplierMakes}
+        supplierMakes={supplierMakesList}
       />
     </>
   );
