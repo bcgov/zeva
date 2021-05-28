@@ -25,13 +25,11 @@ objects:
       creationTimestamp: null
       name: bcgov-jenkins-basic
     spec:
-      failedBuildsHistoryLimit: 2
       nodeSelector: null
       output:
         to:
           kind: ImageStreamTag
-          name: bcgov-jenkins-basic:v2-20210520
-      postCommit: {}
+          name: "bcgov-jenkins-basic:v2-20210520"
       resources:
         limits:
           cpu: "2"
@@ -39,22 +37,22 @@ objects:
         requests:
           cpu: "1"
           memory: 2Gi
-      runPolicy: SerialLatestOnly
-      source:
-        contextDir: cicd/jenkins-basic/docker
-        git:
-          ref: kuan-version
-          uri: https://github.com/kuanfandevops/openshift-components.git
-        type: Git
-      strategy:
-        from:
-          kind: DockerImage
-          name: registry.redhat.io/ubi8/ubi:8.2
-        type: Docker
       successfulBuildsHistoryLimit: 5
+      failedBuildsHistoryLimit: 2
+      strategy:
+        type: Docker
+        dockerStrategy:
+          pullSecret:
+            name: redhat-artifactory-secret
+      postCommit: {}
+      source:
+        type: Git
+        git:
+          uri: "https://github.com/kuanfandevops/openshift-components.git"
+          ref: kuan-version
+        contextDir: cicd/jenkins-basic/docker
       triggers:
-        - imageChange: {}
-          type: ImageChange
         - type: ConfigChange
+      runPolicy: SerialLatestOnly
     status:
       lastVersion: 0

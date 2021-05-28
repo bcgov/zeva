@@ -19,8 +19,7 @@ from api.serializers.model_year_report_history import \
     ModelYearReportHistorySerializer
 from api.serializers.model_year_report_vehicle import \
     ModelYearReportVehicleSerializer, ModelYearReportVehicleSaveSerializer
-from api.serializers.model_year_report_ldv_sales import \
-    ModelYearReportLDVSalesSerializer
+
 from api.serializers.model_year_report import ModelYearReportSerializer
 from api.serializers.vehicle import ModelYearSerializer
 from api.services.vehicle import vehicles_sales
