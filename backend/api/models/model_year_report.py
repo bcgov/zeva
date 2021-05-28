@@ -60,9 +60,13 @@ class ModelYearReport(Auditable):
 
     @property
     def ldv_sales(self):
+        return self.get_ldv_sales(from_gov=False)
+
+    def get_ldv_sales(self, from_gov=False):
         row = ModelYearReportLDVSales.objects.filter(
             model_year_id=self.model_year_id,
-            model_year_report_id=self.id
+            model_year_report_id=self.id,
+            from_gov=from_gov
         ).first()
 
         if row:

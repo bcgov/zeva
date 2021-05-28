@@ -39,6 +39,7 @@ const AssessmentContainer = (props) => {
       confirmedBy: null,
     },
   });
+
   const handleCommentChangeIdir = (text) => {
     setIdirComment(text);
   };

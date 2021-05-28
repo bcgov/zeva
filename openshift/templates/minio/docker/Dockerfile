@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/rhel7/rhel
+FROM to-be-replaced-by-buildconfig
 
 RUN useradd -d /opt/minio -g root minio
 

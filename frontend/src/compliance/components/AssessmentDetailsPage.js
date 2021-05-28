@@ -92,6 +92,7 @@ const AssessmentDetailsPage = (props) => {
       </div>
     </Modal>
   );
+
   return (
     <div id="assessment-details" className="page">
       <div className="row mt-3">
@@ -410,7 +411,7 @@ const AssessmentDetailsPage = (props) => {
                     </th>
                   </tr>
                   <tr key="start">
-                    <td className="text-blue">&bull; &nbsp; &nbsp; 2020 Credits:</td>
+                    <td className="text-blue">&bull; &nbsp; &nbsp; {modelYear} Credits:</td>
                     <td className="text-right">
                       977.76
                     </td>
@@ -424,6 +425,7 @@ const AssessmentDetailsPage = (props) => {
           </div>
         </div>
       </div>
+
       <h3 className="mt-4 mb-1">Analyst Recommended Director Assessment</h3>
       <div className="row mb-3">
         <div className="col-12">

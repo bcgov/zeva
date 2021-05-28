@@ -8,6 +8,7 @@ from api.models.model_year_report_confirmation import \
     ModelYearReportConfirmation
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_history import ModelYearReportHistory
+from api.models.model_year_report_ldv_sales import ModelYearReportLDVSales
 from api.models.model_year_report_address import ModelYearReportAddress
 from api.models.model_year_report_make import ModelYearReportMake
 from api.models.model_year_report_statuses import ModelYearReportStatuses
@@ -34,6 +35,7 @@ class ModelYearReportSerializer(ModelSerializer):
     model_year_report_history = ModelYearReportHistorySerializer(many=True)
     confirmations = SerializerMethodField()
     statuses = SerializerMethodField()
+    ldv_sales_updated = SerializerMethodField()
     ldv_sales_previous = SerializerMethodField()
     avg_sales = SerializerMethodField()
 
@@ -56,6 +58,7 @@ class ModelYearReportSerializer(ModelSerializer):
             return None
         avg_sales = sum(list(rows)) / 3
         return avg_sales
+    ldv_sales_updated = SerializerMethodField()
 
     def get_create_user(self, obj):
         user_profile = UserProfile.objects.filter(username=obj.create_user)
@@ -72,6 +75,14 @@ class ModelYearReportSerializer(ModelSerializer):
         ).values_list('signing_authority_assertion_id', flat=True).distinct()
 
         return confirmations
+
+    def get_ldv_sales_updated(self, obj):
+        request = self.context.get('request')
+
+        if request.user.is_government:
+            return obj.get_ldv_sales(from_gov=True) or obj.ldv_sales
+
+        return obj.ldv_sales
 
     def get_makes(self, obj):
         request = self.context.get('request')
@@ -98,7 +109,8 @@ class ModelYearReportSerializer(ModelSerializer):
             'organization_name', 'supplier_class', 'model_year',
             'model_year_report_addresses', 'makes', 'validation_status',
             'create_user', 'model_year_report_history', 'confirmations',
-            'statuses', 'ldv_sales_previous', 'avg_sales'
+            'statuses', 'ldv_sales_updated','statuses', 
+            'ldv_sales_previous', 'avg_sales'
         )
 
 
