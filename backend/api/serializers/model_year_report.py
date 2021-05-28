@@ -55,7 +55,13 @@ class ModelYearReportSerializer(ModelSerializer):
 
         avg_sales = 0
         if rows.count() < 3:
-            return None
+            row = ModelYearReportLDVSales.objects.filter(
+                model_year_report_id=obj.id,
+            ).first()
+            if row:
+                return row.ldv_sales
+            else:
+                return None
         avg_sales = sum(list(rows)) / 3
         return avg_sales
     ldv_sales_updated = SerializerMethodField()
@@ -109,7 +115,7 @@ class ModelYearReportSerializer(ModelSerializer):
             'organization_name', 'supplier_class', 'model_year',
             'model_year_report_addresses', 'makes', 'validation_status',
             'create_user', 'model_year_report_history', 'confirmations',
-            'statuses', 'ldv_sales_updated','statuses', 
+            'statuses', 'ldv_sales_updated', 'statuses',
             'ldv_sales_previous', 'avg_sales'
         )
 

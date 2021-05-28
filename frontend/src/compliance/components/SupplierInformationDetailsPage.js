@@ -159,7 +159,7 @@ const SupplierInformationDetailsPage = (props) => {
                     <span className="col-4">
                       <h4 className="d-inline">3 Year Average LDV Sales: </h4>
                     </span>
-                    <span className="col-6">{FormatNumeric(details.organization.avgLdvSales)}</span>
+                    <span className="col-6">{FormatNumeric(details.organization.avgLdvSales, 0)}</span>
                   </div>
                 </div>
                 <div className="col-sm-12 col-md-5">
