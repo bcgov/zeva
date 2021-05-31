@@ -32,7 +32,8 @@ const AssessmentContainer = (props) => {
   const [supplierClassInfo, setSupplierClassInfo] = useState({ ldvSales: 0, class: '' });
   const [radioSelection, setRadioSelection] = useState('');
   const [penalty, setPenalty] = useState(0);
-  const [radioDescriptions, setRadioDescriptions] = useState([{id:0, description: 'test'},]);
+  const [radioDescriptions, setRadioDescriptions] = useState([{ id: 0, description: 'test' },]);
+  const [sales, setSales] = useState(0);
   const [statuses, setStatuses] = useState({
     assessment: {
       status: 'UNSAVED',
@@ -105,6 +106,9 @@ const AssessmentContainer = (props) => {
             const currentMakes = modelYearReportMakes.map((each) => (each.make));
             setMakes(currentMakes);
           }
+
+          setStatuses(reportStatuses);
+          setSales(ldvSales);
           setDetails({
             bceidComment: bceidCommentResponse,
             idirComment: idirCommentArrayResponse,
@@ -256,6 +260,7 @@ const AssessmentContainer = (props) => {
         setPenalty={setPenalty}
         statuses={statuses}
         user={user}
+        sales={sales}
       />
     </>
   );

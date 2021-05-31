@@ -110,7 +110,7 @@ const SupplierInformationContainer = (props) => {
       };
     }
     return supplierClassString;
-  }
+  };
 
   const handleCancelConfirmation = () => {
     const data = {
@@ -149,7 +149,6 @@ const SupplierInformationContainer = (props) => {
           setMakes(currentMakes);
         }
         const supplierClassString = getClassDescriptions(supplierClass);
-
         setDetails({
           supplierClassString,
           organization: {
@@ -175,6 +174,7 @@ const SupplierInformationContainer = (props) => {
         const previousSales = user.organization.ldvSales;
         const supplierClassString = getClassDescriptions(user.organization.supplierClass);
         setMakes([...new Set(data.map((vehicle) => vehicle.make.toUpperCase()))]);
+
         setDetails({
           supplierClassString,
           organization: user.organization,

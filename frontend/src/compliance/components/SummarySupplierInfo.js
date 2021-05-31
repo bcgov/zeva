@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const SummarySupplierInfo = (props) => {
-  const { supplierDetails, makes, creditActivityDetails } = props;
+  const { supplierDetails, makes, creditActivityDetails, modelYear } = props;
   const { supplierClass , ldvSales } = creditActivityDetails;
   const { organization } = supplierDetails;
   return (
@@ -52,8 +52,8 @@ const SummarySupplierInfo = (props) => {
           <span> {supplierClass} </span>
         </div>
         <div className="mt-0">
-          <div className="d-inline">3 Year Average(2017-2019) LDV Sales\Leases:</div>
-          <span className='text-black'> {ldvSales} </span>
+          <div className="d-inline">3 Year Average({ modelYear-3}-{modelYear-1}) LDV Sales\Leases:</div>
+          <span className='text-black'> {organization.avgLdvSales} </span>
         </div>
         <div className="d-block my-3">
           <h4>Makes:</h4>
@@ -67,5 +67,6 @@ SummarySupplierInfo.propTypes = {
   supplierDetails: PropTypes.shape().isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   creditActivityDetails: PropTypes.shape().isRequired,
+  modelYear:PropTypes.number.isRequired,
 };
 export default SummarySupplierInfo;

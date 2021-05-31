@@ -28,6 +28,8 @@ from api.serializers.credit_transaction import \
     CreditTransactionObligationActivitySerializer
 from api.services.summary import parse_summary_serializer, retrieve_balance, \
     get_current_year_balance
+from api.models.model_year_report_ldv_sales import \
+    ModelYearReportLDVSales
 
 
 class ModelYearReportComplianceObligationViewset(
@@ -65,6 +67,25 @@ class ModelYearReportComplianceObligationViewset(
         offset = request.data.get('offset')
         credit_activity = request.data.get('credit_activity')
         confirmations = request.data.get('confirmations')
+        sales = request.data.get('sales', None)
+
+        if sales:
+            model_year = ModelYearReport.objects.values_list(
+                'model_year_id', flat=True
+            ).filter(id=id).first()
+
+            if model_year:
+                ModelYearReportLDVSales.objects.update_or_create(
+                    model_year_id=model_year,
+                    model_year_report_id=id,
+                    from_gov=False,
+                    defaults={
+                        'ldv_sales': sales,
+                        'create_user': request.user.username,
+                        'update_user': request.user.username
+                    }
+                    )
+
         for confirmation in confirmations:
             ModelYearReportConfirmation.objects.create(
                 create_user=request.user.username,

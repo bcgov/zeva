@@ -66,6 +66,7 @@ const ComplianceReportSummaryContainer = (props) => {
       creditActivityResponse,
     ) => {
       const {
+        avgSales,
         statuses,
         makes: modelYearReportMakes,
         modelYearReportAddresses,
@@ -74,6 +75,7 @@ const ComplianceReportSummaryContainer = (props) => {
         validationStatus,
         confirmations,
         modelYear: reportModelYear,
+        ldvSales,
       } = reportDetailsResponse.data;
       // ALL STATUSES
       setConfirmationStatuses(statuses);
@@ -91,6 +93,7 @@ const ComplianceReportSummaryContainer = (props) => {
       setSupplierDetails({
         organization: {
           name: organizationName,
+          avgLdvSales: avgSales,
           organizationAddress: modelYearReportAddresses,
         },
         supplierInformation: {
@@ -200,8 +203,7 @@ const ComplianceReportSummaryContainer = (props) => {
         provisionalBalanceBeforeOffset,
         provisionalBalanceAfterOffset,
         supplierClass,
-        ldvSales: 2000,
-          //creditActivityResponse.data.ldvSales,
+        ldvSales,
         transactions: {
           creditsIssuedSales,
           transfersIn,
@@ -246,6 +248,7 @@ const ComplianceReportSummaryContainer = (props) => {
         makes={makes}
         confirmationStatuses={confirmationStatuses}
         pendingBalanceExist={pendingBalanceExist}
+        modelYear={modelYear}
       />
 
     </>
