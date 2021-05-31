@@ -79,41 +79,6 @@ const ComplianceObligationAmountsTable = (props) => {
               </tbody>
             </table>
           </div>
-          {(supplierClassInfo.class === 'L' || supplierClassInfo.class === 'Large') && (
-          <div className="col-lg-6 col-sm-12 ">
-            <table className="mr-3 no-border">
-              <tbody>
-                <tr className="font-weight-bold">
-                  <td className="text-blue">
-                    Compliance Ratio Credit Reduction:
-                  </td>
-                  <td>
-                    {formatNumeric((totalReduction), 2)}
-                  </td>
-                </tr>
-                <>
-                  <tr>
-                    <td className="text-blue">
-                      &bull; &nbsp; &nbsp; ZEV Class A Credit Reduction:
-                    </td>
-                    <td>
-                      {formatNumeric(classAReduction, 2)}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td className="text-blue">
-                      &bull; &nbsp; &nbsp; Unspecified ZEV Class Credit Reduction:
-                    </td>
-                    <td>
-                      {formatNumeric((leftoverReduction), 2)}
-                    </td>
-                  </tr>
-                </>
-              </tbody>
-            </table>
-          </div>
-          )}
         </div>
       </div>
     </div>

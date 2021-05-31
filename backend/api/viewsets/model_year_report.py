@@ -3,7 +3,6 @@ from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
-from django.db.models import Q
 from api.models.credit_class import CreditClass
 from api.models.model_year import ModelYear
 from api.models.model_year_report import ModelYearReport
@@ -122,15 +121,22 @@ class ModelYearReportViewset(
             ldv_sales_previous = OrganizationLDVSalesSerializer(
                 ldv_sales_previous_list, many=True)
 
+            avg_sales = 0
+
+            if len(ldv_sales_previous_list) > 0:
+                avg_sales = sum(
+                    ldv_sales_previous_list.values_list('ldv_sales', flat=True)
+                ) / len(ldv_sales_previous_list)
+
             return Response({
-                'avg_sales': (sum(ldv_sales_previous_list.values_list('ldv_sales', flat=True)))/len(ldv_sales_previous_list),
+                'avg_sales': avg_sales,
                 'organization': organization.data,
                 'organization_name': request.user.organization.name,
                 'model_year_report_addresses': addresses.data,
                 'makes': makes.data,
                 'model_year_report_history': history.data,
                 'validation_status': report.validation_status.value,
-                'supplier_class': report.supplier_class,
+                'supplier_class': org.supplier_class,
                 'model_year': model_year.data,
                 'create_user': report.create_user,
                 'confirmations': confirmations,
