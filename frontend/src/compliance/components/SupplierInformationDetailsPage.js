@@ -32,7 +32,6 @@ const SupplierInformationDetailsPage = (props) => {
     statuses,
     id,
     previousYearsList,
-    avgSales,
   } = props;
   const [showModal, setShowModal] = useState(false);
   let disabledCheckboxes = propsDisabledCheckboxes;

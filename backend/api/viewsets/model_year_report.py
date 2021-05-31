@@ -115,18 +115,13 @@ class ModelYearReportViewset(
                 'signing_authority_assertion_id', flat=True
             ).distinct()
 
-            ldv_sales_previous_list = OrganizationLDVSales.objects.filter(
-                Q(organization=request.user.organization) &
-                Q(model_year__name__in=[
-                    str(model_year_int - 1),
-                    str(model_year_int - 2),
-                    str(model_year_int - 3)
-                    ])
-            )
+            org = request.user.organization
+            ldv_sales_previous_list = org.get_ldv_sales(year=model_year_int)
             ldv_sales_previous = OrganizationLDVSalesSerializer(
                 ldv_sales_previous_list, many=True)
 
             return Response({
+                'avg_sales': (sum(ldv_sales_previous_list.values_list('ldv_sales', flat=True)))/len(ldv_sales_previous_list),
                 'organization': organization.data,
                 'organization_name': request.user.organization.name,
                 'model_year_report_addresses': addresses.data,

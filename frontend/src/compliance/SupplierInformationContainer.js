@@ -149,7 +149,7 @@ const SupplierInformationContainer = (props) => {
           setMakes(currentMakes);
         }
         const supplierClassString = getClassDescriptions(supplierClass);
-        console.log(ldvSalesPrevious)
+
         setDetails({
           supplierClassString,
           organization: {
@@ -172,7 +172,7 @@ const SupplierInformationContainer = (props) => {
     } else {
       axios.get(ROUTES_VEHICLES.LIST).then((response) => {
         const { data } = response;
-        const previousSales = user.organization.ldvSales
+        const previousSales = user.organization.ldvSales;
         const supplierClassString = getClassDescriptions(user.organization.supplierClass);
         setMakes([...new Set(data.map((vehicle) => vehicle.make.toUpperCase()))]);
         setDetails({

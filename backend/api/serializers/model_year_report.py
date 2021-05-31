@@ -66,7 +66,6 @@ class ModelYearReportSerializer(ModelSerializer):
                 return None
         avg_sales = sum(list(rows)) / 3
         return avg_sales
-    ldv_sales_updated = SerializerMethodField()
 
     def get_create_user(self, obj):
         user_profile = UserProfile.objects.filter(username=obj.create_user)
