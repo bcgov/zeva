@@ -111,6 +111,16 @@ class Organization(Auditable):
 
         return sales
 
+    def get_ldv_sales(self, year):
+        sales = self.ldv_sales.filter(
+            model_year__name__in=[
+                str(year - 1),
+                str(year - 2),
+                str(year - 3)
+            ]
+        )
+        return sales
+
     def get_current_class(self, year=None):
         # The logic below means that if we're past october, the past year
         # should count the current yer

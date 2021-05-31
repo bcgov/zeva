@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
-
+from django.db.models import Q
 from api.models.credit_class import CreditClass
 from api.models.model_year import ModelYear
 from api.models.model_year_report import ModelYearReport
@@ -30,6 +30,8 @@ from api.serializers.model_year_report_assessment import ModelYearReportAssessme
 from api.models.model_year_report_assessment_comment import ModelYearReportAssessmentComment
 from api.services.model_year_report import get_model_year_report_statuses
 from auditable.views import AuditableMixin
+from api.models.organization_ldv_sales import OrganizationLDVSales
+from api.serializers.organization_ldv_sales import OrganizationLDVSalesSerializer
 
 
 class ModelYearReportViewset(
@@ -85,10 +87,10 @@ class ModelYearReportViewset(
             model_year_report_id=pk,
             signing_authority_assertion__module="supplier_information"
         ).first()
-
         if not confirmation:
             model_year = ModelYearSerializer(report.model_year)
-
+            model_year_int = int(model_year.data['name'])
+           
             addresses = OrganizationAddressSerializer(
                 request.user.organization.organization_address, many=True
             )
@@ -115,7 +117,13 @@ class ModelYearReportViewset(
                 'signing_authority_assertion_id', flat=True
             ).distinct()
 
+            org = request.user.organization
+            ldv_sales_previous_list = org.get_ldv_sales(year=model_year_int)
+            ldv_sales_previous = OrganizationLDVSalesSerializer(
+                ldv_sales_previous_list, many=True)
+
             return Response({
+                'avg_sales': (sum(ldv_sales_previous_list.values_list('ldv_sales', flat=True)))/len(ldv_sales_previous_list),
                 'organization': organization.data,
                 'organization_name': request.user.organization.name,
                 'model_year_report_addresses': addresses.data,
@@ -127,7 +135,8 @@ class ModelYearReportViewset(
                 'create_user': report.create_user,
                 'confirmations': confirmations,
                 'ldv_sales': report.ldv_sales,
-                'statuses': get_model_year_report_statuses(report)
+                'statuses': get_model_year_report_statuses(report),
+                'ldv_sales_previous': ldv_sales_previous.data
             })
 
         serializer = ModelYearReportSerializer(report, context={'request': request})

@@ -31,8 +31,6 @@ const SupplierInformationDetailsPage = (props) => {
     modelYear,
     statuses,
     id,
-    previousYearsList,
-    avgSales,
   } = props;
   const [showModal, setShowModal] = useState(false);
   let disabledCheckboxes = propsDisabledCheckboxes;
@@ -166,7 +164,7 @@ const SupplierInformationDetailsPage = (props) => {
                   <div className="supplier-information p-3">
                     {details.organization.ldvSales
                     && (
-                    <div className="previous-ldv-sales mt-2 p-3">
+                    <div className="previous-ldv-sales mt-2 p-2">
                       {details.organization.ldvSales.map((yearSale) => (
                         <div className="model-year-ldv" key={yearSale.id}>
                           <label className="text-blue mr-4 font-weight-bold">

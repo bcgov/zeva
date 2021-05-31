@@ -22,7 +22,6 @@ const SupplierInformationContainer = (props) => {
   const [checkboxes, setCheckboxes] = useState([]);
   const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
   const [details, setDetails] = useState({});
-  const [previousYearsList, setPreviousYearsList] = useState([{}]);
   const [modelYear, setModelYear] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR);
   const [statuses, setStatuses] = useState({
     supplierInformation: {
@@ -110,7 +109,7 @@ const SupplierInformationContainer = (props) => {
       };
     }
     return supplierClassString;
-  }
+  };
 
   const handleCancelConfirmation = () => {
     const data = {
@@ -140,7 +139,6 @@ const SupplierInformationContainer = (props) => {
           confirmations,
           statuses: reportStatuses,
         } = response.data;
-        setPreviousYearsList([{ id: 0, previousSales: 323, modelYear: 2020 }]);
         setModelYear(parseInt(reportModelYear.name, 10));
 
         if (modelYearReportMakes) {
@@ -149,7 +147,6 @@ const SupplierInformationContainer = (props) => {
           setMakes(currentMakes);
         }
         const supplierClassString = getClassDescriptions(supplierClass);
-        console.log(ldvSalesPrevious)
         setDetails({
           supplierClassString,
           organization: {
@@ -172,18 +169,31 @@ const SupplierInformationContainer = (props) => {
     } else {
       axios.get(ROUTES_VEHICLES.LIST).then((response) => {
         const { data } = response;
-        const previousSales = user.organization.ldvSales
-        const supplierClassString = getClassDescriptions(user.organization.supplierClass)
+        // const previousSales = user.organization.ldvSales;
+        const supplierClassString = getClassDescriptions(user.organization.supplierClass);
         setMakes([...new Set(data.map((vehicle) => vehicle.make.toUpperCase()))]);
+        const yearTemp = parseInt(query.year, 10);
+        const yearsArray = [(yearTemp - 1).toString(), (yearTemp - 2).toString(), (yearTemp - 3).toString()];
+        const previousSales = user.organization.ldvSales
+          .filter((each) => {
+            if (yearsArray.includes(each.modelYear.toString())) {
+              return each;
+            }
+          });
+        const newOrg = {
+          ldvSales: previousSales,
+          avgLdvSales: user.organization.avgLdvSales,
+          organizationAddress: user.organizationAddress,
+          name: user.organization.name,
+        };
         setDetails({
+          organization: newOrg,
           supplierClassString,
-          organization: user.organization,
           supplierInformation: {
             history: [],
             validationStatus: 'DRAFT',
           },
         });
-
         if (!isNaN(query.year) && id === 'new') {
           setModelYear(parseInt(query.year, 10));
         }
@@ -228,7 +238,6 @@ const SupplierInformationContainer = (props) => {
         details={details}
         statuses={statuses}
         id={id}
-        previousYearsList={previousYearsList}
       />
     </>
   );

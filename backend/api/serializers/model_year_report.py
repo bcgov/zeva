@@ -27,6 +27,7 @@ from api.services.model_year_report import get_model_year_report_statuses
 
 
 class ModelYearReportSerializer(ModelSerializer):
+
     create_user = SerializerMethodField()
     model_year = ModelYearSerializer()
     model_year_report_addresses = ModelYearReportAddressSerializer(many=True)
@@ -48,17 +49,23 @@ class ModelYearReportSerializer(ModelSerializer):
 
     def get_avg_sales(self, obj):
         rows = ModelYearReportLDVSales.objects.filter(
-            model_year_report_id=obj.id
+            model_year_report_id=obj.id,
+            from_gov=False
         ).values_list(
             'ldv_sales', flat=True
         )[:3]
 
         avg_sales = 0
         if rows.count() < 3:
-            return None
+            row = ModelYearReportLDVSales.objects.filter(
+                model_year_report_id=obj.id,
+            ).first()
+            if row:
+                return row.ldv_sales
+            else:
+                return None
         avg_sales = sum(list(rows)) / 3
         return avg_sales
-    ldv_sales_updated = SerializerMethodField()
 
     def get_create_user(self, obj):
         user_profile = UserProfile.objects.filter(username=obj.create_user)
@@ -106,10 +113,10 @@ class ModelYearReportSerializer(ModelSerializer):
     class Meta:
         model = ModelYearReport
         fields = (
-            'organization_name', 'supplier_class', 'ldv_sales', 'model_year',
+            'organization_name', 'supplier_class', 'model_year',
             'model_year_report_addresses', 'makes', 'validation_status',
             'create_user', 'model_year_report_history', 'confirmations',
-            'statuses', 'ldv_sales_updated','statuses', 
+            'statuses', 'ldv_sales_updated', 'statuses',
             'ldv_sales_previous', 'avg_sales'
         )
 
