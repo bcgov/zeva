@@ -31,7 +31,7 @@ class ModelYearReport(Auditable):
     supplier_class = models.CharField(
         db_comment="Supplier Class: S - Small, M - Medium, L - Large",
         max_length=1,
-        null=False
+        null=True
     )
     model_year = models.ForeignKey(
         'ModelYear',
