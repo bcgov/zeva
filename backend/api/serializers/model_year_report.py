@@ -41,8 +41,14 @@ class ModelYearReportSerializer(ModelSerializer):
     avg_sales = SerializerMethodField()
 
     def get_ldv_sales_previous(self, obj):
+        year = int(obj.model_year.name)
         ldv_sales = ModelYearReportLDVSales.objects.filter(
-            model_year_report=obj
+            model_year_report=obj,
+            model_year__name__in=[
+                str(year - 1),
+                str(year - 2),
+                str(year - 3)
+            ]
         )
         serializer = ModelYearReportLDVSalesSerializer(ldv_sales, many=True)
         return serializer.data
