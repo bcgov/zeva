@@ -146,12 +146,13 @@ const SupplierInformationContainer = (props) => {
 
           setMakes(currentMakes);
         }
+        const ldvSales = ldvSalesPrevious.sort((a, b) => ((a.modelYear < b.modelYear) ? 1 : -1));
         const supplierClassString = getClassDescriptions(supplierClass);
         setDetails({
           supplierClassString,
           organization: {
             avgLdvSales: avgSales,
-            ldvSales: ldvSalesPrevious,
+            ldvSales,
             name: organizationName,
             organizationAddress: modelYearReportAddresses,
           },
@@ -180,6 +181,7 @@ const SupplierInformationContainer = (props) => {
               return each;
             }
           });
+        previousSales.sort((a, b) => ((a.modelYear < b.modelYear) ? 1 : -1));
         const newOrg = {
           ldvSales: previousSales,
           avgLdvSales: user.organization.avgLdvSales,
