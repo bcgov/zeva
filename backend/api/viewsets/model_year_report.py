@@ -273,8 +273,7 @@ class ModelYearReportViewset(
                         }
                     )
 
-        adjustments = request.data.get('adjusments', None)
-
+        adjustments = request.data.get('adjustments', None)
         if adjustments and isinstance(adjustments, list):
             for adjustment in adjustments:
                 model_year = ModelYear.objects.filter(
