@@ -169,7 +169,9 @@ class OrganizationViewSet(
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        ldv_sales = OrganizationLDVSales.objects.filter(organization_id=pk)
+        ldv_sales = OrganizationLDVSales.objects.filter(
+            organization_id=pk
+        ).order_by('-model_year__name')
 
         serializer = OrganizationLDVSalesSerializer(ldv_sales, many=True)
 
