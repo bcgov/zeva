@@ -82,13 +82,9 @@ const VehicleSupplierDetailsContainer = (props) => {
 
     axios.put(ROUTES_ORGANIZATIONS.LDV_SALES.replace(/:id/gi, id), {
       ...fields,
-    }).then((response) => {
-      setLDVSales(response.data);
-
-      setFields({
-        modelYear: '',
-        ldvSales: '',
-      });
+    }).then(() => {
+      History.push(ROUTES_ORGANIZATIONS.LIST);
+      History.replace(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));
     });
   };
 
