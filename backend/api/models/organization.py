@@ -130,11 +130,7 @@ class Organization(Auditable):
             if date.today().month < 10:
                 year -= 1
 
-        sales = self.ldv_sales.filter(model_year__name__in=[
-            str(year),
-            str(year - 1),
-            str(year - 2)
-        ]).values_list(
+        sales = self.ldv_sales.filter(model_year__name__lte=year).values_list(
             'ldv_sales', flat=True
         )[:3]
 
