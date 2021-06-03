@@ -47,7 +47,7 @@ const AssessmentDetailsPage = (props) => {
   const [showModal, setShowModal] = useState(false);
   const disabledInputs = false;
   const showDescription = (each) => (
-    <div className="mb-3">
+    <div className="mb-3" key={each.id}>
       <input
         className="mr-3"
         type="radio"
@@ -114,6 +114,28 @@ const AssessmentDetailsPage = (props) => {
             )}
           </div>
           <div className="grey-border-area p-4 comment-box mt-2">
+            {details.changelog.ldvChanges && (
+              Object.keys(details.changelog.makesAdditions)
+              || details.changelog.ldvChanges > 0
+            )
+           && (
+           <>
+             <h3>Assessment Adjustments</h3>
+             <div className="text-blue">
+               The analyst made the following adjustments:
+               {details.changelog.makesAdditions
+               && (
+               <ul>
+                 {details.changelog.makesAdditions.map((addition) => (
+                   <li key={addition.make}>added Make: {addition.make}</li>
+                 ))}
+                 {/* {details.analystChanges.ldvChanges.map((change) => ( */}
+                 <li>changed the {details.changelog.ldvChanges.year} Model Year LDV Sales\Leases total from {formatNumeric(details.changelog.ldvChanges.notFromGov, 0)} to {formatNumeric(details.changelog.ldvChanges.fromGov, 0)}</li>
+               </ul>
+               )}
+             </div>
+           </>
+           )}
             {details.idirComment && details.idirComment.length > 0 && user.isGovernment && (
             <DisplayComment
               commentArray={details.idirComment}
@@ -135,7 +157,7 @@ const AssessmentDetailsPage = (props) => {
               <button
                 className="btn button primary float-right"
                 onClick={() => {
-                  history.push(ROUTES_COMPLIANCE.ASSESSMENT_EDIT.replace(':id',id));
+                  history.push(ROUTES_COMPLIANCE.ASSESSMENT_EDIT.replace(':id', id));
                 }}
                 type="button"
               >
@@ -147,7 +169,7 @@ const AssessmentDetailsPage = (props) => {
               <h3> {details.organization.name} </h3>
             </div>
             <div>
-              <div className="d-inline-block mr-5 mt-3 col-5">
+              <div className="d-inline-block mr-5 mt-3 col-5 text-blue">
                 <h4>Service Address</h4>
                 {details.organization.organizationAddress
                 && details.organization.organizationAddress.map((address) => (
@@ -163,7 +185,7 @@ const AssessmentDetailsPage = (props) => {
                   )
                 ))}
               </div>
-              <div className="d-inline-block mt-3 col-xs-12 col-sm-5">
+              <div className="d-inline-block mt-3 col-xs-12 col-sm-5 text-blue">
                 <h4>Records Address</h4>
                 {details.organization.organizationAddress
                 && details.organization.organizationAddress.map((address) => (
@@ -507,6 +529,6 @@ AssessmentDetailsPage.propTypes = {
   user: CustomPropTypes.user.isRequired,
   modelYear: PropTypes.number.isRequired,
   statuses: PropTypes.shape().isRequired,
-  sales: PropTypes.number.isRequired,
+  sales: PropTypes.number,
 };
 export default AssessmentDetailsPage;

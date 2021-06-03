@@ -39,6 +39,7 @@ class ModelYearReportSerializer(ModelSerializer):
     ldv_sales_updated = SerializerMethodField()
     ldv_sales_previous = SerializerMethodField()
     avg_sales = SerializerMethodField()
+    changelog = SerializerMethodField()
 
     def get_ldv_sales_previous(self, obj):
         year = int(obj.model_year.name)
@@ -97,6 +98,22 @@ class ModelYearReportSerializer(ModelSerializer):
 
         return obj.ldv_sales
 
+    def get_changelog(self, obj):
+        request = self.context.get('request')
+        if request.user.is_government:
+            from_gov_sales = obj.get_ldv_sales_with_year(from_gov=True)
+            if from_gov_sales:
+                not_gov_sales = obj.get_ldv_sales_with_year(from_gov=False)
+                sales_changes = {'from_gov': from_gov_sales['sales'], 'not_from_gov': not_gov_sales['sales'], 'year': from_gov_sales['year']}
+
+            gov_makes = ModelYearReportMake.objects.filter(
+                model_year_report_id=obj.id,
+                from_gov=True
+            )
+            gov_makes_additions_serializer = ModelYearReportMakeSerializer(gov_makes, many=True)
+            return {'makes_additions': gov_makes_additions_serializer.data, 'ldv_changes': sales_changes}
+        return obj.ldv_sales
+
     def get_makes(self, obj):
         request = self.context.get('request')
 
@@ -123,7 +140,7 @@ class ModelYearReportSerializer(ModelSerializer):
             'model_year_report_addresses', 'makes', 'validation_status',
             'create_user', 'model_year_report_history', 'confirmations',
             'statuses', 'ldv_sales_updated', 'statuses',
-            'ldv_sales_previous', 'avg_sales'
+            'ldv_sales_previous', 'avg_sales', 'changelog'
         )
 
 
@@ -197,6 +214,7 @@ class ModelYearReportSaveSerializer(
             supplier_class=request.user.organization.supplier_class
         )
         for each in ldv_sales:
+
             ModelYearReportLDVSales.objects.create(
                 model_year=each.model_year,
                 ldv_sales=each.ldv_sales,
@@ -245,6 +263,7 @@ class ModelYearReportSaveSerializer(
         return report
 
     def update(self, instance, validated_data):
+
         request = self.context.get('request')
         organization = request.user.organization
 
