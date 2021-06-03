@@ -26,6 +26,7 @@ from api.services.model_year_report import get_model_year_report_statuses
 
 
 class ModelYearReportSerializer(ModelSerializer):
+
     create_user = SerializerMethodField()
     model_year = ModelYearSerializer()
     model_year_report_addresses = ModelYearReportAddressSerializer(many=True)

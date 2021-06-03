@@ -26,7 +26,10 @@ const ComplianceObligationContainer = (props) => {
   const [statuses, setStatuses] = useState({});
   const [supplierClassInfo, setSupplierClassInfo] = useState({ ldvSales: 0, class: '' });
   const [sales, setSales] = useState(0);
+<<<<<<< HEAD
   const [creditReductionSelection, setCreditReductionSelection] = useState(null);
+=======
+>>>>>>> release-1.27.0
   const { id } = useParams();
   const [remainingABalance, setRemainingABalance] = useState({
     lastYearABalance: 0,
@@ -403,7 +406,10 @@ const ComplianceObligationContainer = (props) => {
       if (provisionalBalanceCurrentYearB >= 0 && provisionalBalanceCurrentYearB >= remainingUnspecifiedReduction) {
         unspecifiedZevClassCurrentYearB = remainingUnspecifiedReduction;
       }
+<<<<<<< HEAD
 
+=======
+>>>>>>> release-1.27.0
       if (provisionalBalanceCurrentYearB === 0 && currentYearABalance >= 0 && remainingUnspecifiedReduction >= currentYearABalance) {
         unspecifiedZevClassCurrentYearA = currentYearABalance;
       }
@@ -528,7 +534,12 @@ const ComplianceObligationContainer = (props) => {
 
     const data = {
       reportId: id,
+<<<<<<< HEAD
       sales,
+=======
+      sales: sales,
+      offset: offsetNumbers,
+>>>>>>> release-1.27.0
       creditActivity: reportDetailsArray,
       confirmations: checkboxes,
       creditReductionSelection,
@@ -737,7 +748,10 @@ const ComplianceObligationContainer = (props) => {
         creditBalance={creditBalance}
         sales={sales}
         handleChangeSales={handleChangeSales}
+<<<<<<< HEAD
         creditReductionSelection={creditReductionSelection}
+=======
+>>>>>>> release-1.27.0
       />
     </>
   );
