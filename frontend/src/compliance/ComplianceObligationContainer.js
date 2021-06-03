@@ -403,10 +403,6 @@ const ComplianceObligationContainer = (props) => {
       if (provisionalBalanceCurrentYearB >= 0 && provisionalBalanceCurrentYearB >= remainingUnspecifiedReduction) {
         unspecifiedZevClassCurrentYearB = remainingUnspecifiedReduction;
       }
-<<<<<<< HEAD
-
-=======
->>>>>>> release-1.27.0
       if (provisionalBalanceCurrentYearB === 0 && currentYearABalance >= 0 && remainingUnspecifiedReduction >= currentYearABalance) {
         unspecifiedZevClassCurrentYearA = currentYearABalance;
       }
@@ -531,12 +527,7 @@ const ComplianceObligationContainer = (props) => {
 
     const data = {
       reportId: id,
-<<<<<<< HEAD
       sales,
-=======
-      sales: sales,
-      offset: offsetNumbers,
->>>>>>> release-1.27.0
       creditActivity: reportDetailsArray,
       confirmations: checkboxes,
       creditReductionSelection,
@@ -745,10 +736,7 @@ const ComplianceObligationContainer = (props) => {
         creditBalance={creditBalance}
         sales={sales}
         handleChangeSales={handleChangeSales}
-<<<<<<< HEAD
         creditReductionSelection={creditReductionSelection}
-=======
->>>>>>> release-1.27.0
       />
     </>
   );
