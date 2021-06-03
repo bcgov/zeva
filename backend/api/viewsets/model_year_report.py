@@ -256,7 +256,6 @@ class ModelYearReportViewset(
         sales = request.data.get('sales', None)
 
         if sales:
-
             for key, value in sales.items():
                 model_year = ModelYear.objects.filter(
                     name=key
@@ -267,7 +266,7 @@ class ModelYearReportViewset(
                         model_year_report=report,
                         from_gov=True,
                         defaults={
-                            'ldv_sales': value['sales'],
+                            'ldv_sales': value,
                             'create_user': request.user.username,
                             'update_user': request.user.username
                         }

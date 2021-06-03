@@ -214,7 +214,6 @@ class ModelYearReportSaveSerializer(
             supplier_class=request.user.organization.supplier_class
         )
         for each in ldv_sales:
-
             ModelYearReportLDVSales.objects.create(
                 model_year=each.model_year,
                 ldv_sales=each.ldv_sales,

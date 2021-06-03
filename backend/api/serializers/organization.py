@@ -32,19 +32,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_avg_ldv_sales(self, obj):
-        year = date.today().year
-
-        if date.today().month < 10:
-            year -= 1
-
-        sales = obj.ldv_sales.filter(model_year__name__lte=year).values_list(
-            'ldv_sales', flat=True
-        )[:3]
-
-        if sales.count() < 3:
-            return None
-
-        return sum(list(sales)) / 3
+        return obj.get_avg_ldv_sales()
 
     class Meta:
         model = Organization
@@ -83,6 +71,10 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
     Loads most of the fields and the balance for the Supplier
     """
     organization_address = OrganizationAddressSaveSerializer(allow_null=True, many=True)
+    avg_ldv_sales = serializers.SerializerMethodField()
+
+    def get_avg_ldv_sales(self, obj):
+        return obj.get_avg_ldv_sales()
 
     def create(self, validated_data):
         request = self.context.get('request')
@@ -146,6 +138,8 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'name', 'organization_address', 'create_timestamp',
             'balance', 'is_active', 'short_name', 'create_user', 'update_user',
+            'is_government', 'supplier_class', 'avg_ldv_sales', 'ldv_sales',
+            'has_submitted_report',
         )
         extra_kwargs = {
             'name': {
