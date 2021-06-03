@@ -12,7 +12,6 @@ from api.models.model_year_report_ldv_sales import ModelYearReportLDVSales
 from api.models.model_year_report_address import ModelYearReportAddress
 from api.models.model_year_report_make import ModelYearReportMake
 from api.models.model_year_report_statuses import ModelYearReportStatuses
-from api.models.model_year_report_ldv_sales import ModelYearReportLDVSales
 from api.serializers.model_year_report_ldv_sales import ModelYearReportLDVSalesSerializer
 from api.models.user_profile import UserProfile
 from api.serializers.model_year_report_address import \
@@ -27,7 +26,6 @@ from api.services.model_year_report import get_model_year_report_statuses
 
 
 class ModelYearReportSerializer(ModelSerializer):
-
     create_user = SerializerMethodField()
     model_year = ModelYearSerializer()
     model_year_report_addresses = ModelYearReportAddressSerializer(many=True)
@@ -36,7 +34,7 @@ class ModelYearReportSerializer(ModelSerializer):
     model_year_report_history = ModelYearReportHistorySerializer(many=True)
     confirmations = SerializerMethodField()
     statuses = SerializerMethodField()
-    ldv_sales_updated = SerializerMethodField()
+    ldv_sales = SerializerMethodField()
     ldv_sales_previous = SerializerMethodField()
     avg_sales = SerializerMethodField()
 
@@ -89,7 +87,7 @@ class ModelYearReportSerializer(ModelSerializer):
 
         return confirmations
 
-    def get_ldv_sales_updated(self, obj):
+    def get_ldv_sales(self, obj):
         request = self.context.get('request')
 
         if request.user.is_government:
@@ -122,8 +120,8 @@ class ModelYearReportSerializer(ModelSerializer):
             'organization_name', 'supplier_class', 'model_year',
             'model_year_report_addresses', 'makes', 'validation_status',
             'create_user', 'model_year_report_history', 'confirmations',
-            'statuses', 'ldv_sales_updated', 'statuses',
-            'ldv_sales_previous', 'avg_sales'
+            'statuses', 'ldv_sales', 'statuses', 'ldv_sales_previous',
+            'avg_sales', 'credit_reduction_selection'
         )
 
 
