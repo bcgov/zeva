@@ -8,7 +8,7 @@ import Modal from '../../app/components/Modal';
 import history from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
-
+import FormatNumeric from '../../app/utilities/formatNumeric';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import ComplianceReportSignOff from './ComplianceReportSignOff';
 
@@ -32,11 +32,9 @@ const SupplierInformationDetailsPage = (props) => {
     statuses,
     id,
   } = props;
-
   const [showModal, setShowModal] = useState(false);
   let disabledCheckboxes = propsDisabledCheckboxes;
   let disabledInputs = false;
-
   if (loading) {
     return <Loading />;
   }
@@ -142,6 +140,45 @@ const SupplierInformationDetailsPage = (props) => {
                     </div>
                   )
                 ))}
+              </div>
+              <div className="mt-1 row">
+                <div className="col-sm-12 col-md-6">
+                  <div className="mt-2 row">
+                    <span className="col-4">
+                      <h4 className="d-inline">Vehicle Supplier Class: </h4>
+                    </span>
+                    <span className="col-6">
+                      <b>{details.supplierClassString.class} Volume Supplier</b>
+                      <br />
+                      {details.supplierClassString.secondaryText}
+                    </span>
+                  </div>
+                  <div className="mt-2 row">
+                    <span className="col-4">
+                      <h4 className="d-inline">3 Year Average LDV Sales: </h4>
+                    </span>
+                    <span className="col-6">{FormatNumeric(details.organization.avgLdvSales)}</span>
+                  </div>
+                </div>
+                <div className="col-sm-12 col-md-5">
+                  <div className="supplier-information p-3">
+                    {details.organization.ldvSales
+                    && (
+                    <div className="previous-ldv-sales mt-2 p-2">
+                      {details.organization.ldvSales.map((yearSale) => (
+                        <div className="model-year-ldv" key={yearSale.id}>
+                          <label className="text-blue mr-4 font-weight-bold">
+                            {yearSale.modelYear} Model Year LDV Sales\Leases:
+                          </label>
+                          <label className="sales-numbers">
+                            {yearSale.ldvSales}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                    )}
+                  </div>
+                </div>
               </div>
               <div className="d-block mt-3">
                 If there is an error in any of the information above, please contact: <a href="mailto:ZEVRegulation@gov.bc.ca">ZEVRegulation@gov.bc.ca</a>

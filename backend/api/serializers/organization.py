@@ -2,9 +2,11 @@ from datetime import date
 from rest_framework import serializers
 
 from api.models.organization import Organization
+from api.models.organization_address import OrganizationAddress
 from api.serializers.organization_address import \
     OrganizationAddressSerializer, OrganizationAddressSaveSerializer
-from api.models.organization_address import OrganizationAddress
+from api.serializers.organization_ldv_sales import \
+    OrganizationLDVSalesSerializer
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -13,6 +15,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
     Loads most of the fields and the balance for the Supplier
     """
     organization_address = serializers.SerializerMethodField()
+    avg_ldv_sales = serializers.SerializerMethodField()
+    ldv_sales = OrganizationLDVSalesSerializer(many=True)
 
     def get_organization_address(self, obj):
         """
@@ -27,11 +31,16 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
         return serializer.data
 
+    def get_avg_ldv_sales(self, obj):
+        return obj.get_avg_ldv_sales()
+
     class Meta:
         model = Organization
         fields = (
             'id', 'name', 'create_timestamp', 'organization_address',
             'balance', 'is_active', 'short_name', 'is_government',
+            'supplier_class', 'avg_ldv_sales', 'ldv_sales',
+            'has_submitted_report',
         )
 
 
@@ -62,6 +71,10 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
     Loads most of the fields and the balance for the Supplier
     """
     organization_address = OrganizationAddressSaveSerializer(allow_null=True, many=True)
+    avg_ldv_sales = serializers.SerializerMethodField()
+
+    def get_avg_ldv_sales(self, obj):
+        return obj.get_avg_ldv_sales()
 
     def create(self, validated_data):
         request = self.context.get('request')
@@ -125,6 +138,8 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'name', 'organization_address', 'create_timestamp',
             'balance', 'is_active', 'short_name', 'create_user', 'update_user',
+            'is_government', 'supplier_class', 'avg_ldv_sales', 'ldv_sales',
+            'has_submitted_report',
         )
         extra_kwargs = {
             'name': {

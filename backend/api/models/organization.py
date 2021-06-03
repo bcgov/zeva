@@ -6,6 +6,9 @@ from auditable.models import Auditable
 from .account_balance import AccountBalance
 from .credit_class import CreditClass
 from .organization_address import OrganizationAddress
+from .organization_ldv_sales import OrganizationLDVSales
+from .model_year_report import ModelYearReport
+from .model_year_report_statuses import ModelYearReportStatuses
 from .user_profile import UserProfile
 from ..managers.organization import OrganizationManager
 
@@ -85,6 +88,86 @@ class Organization(Auditable):
         ).order_by('-effective_date', '-update_timestamp')
 
         return data
+
+    @property
+    def has_submitted_report(self):
+        reports = ModelYearReport.objects.filter(
+            organization_id=self.id,
+            validation_status__in=[
+                ModelYearReportStatuses.SUBMITTED,
+                ModelYearReportStatuses.RECOMMENDED,
+                ModelYearReportStatuses.ASSESSED,
+            ]
+        )
+
+        if reports.count() > 0:
+            return True
+
+        return False
+
+    @property
+    def ldv_sales(self):
+        sales = OrganizationLDVSales.objects.filter(
+            organization_id=self.id
+        ).order_by('-model_year__name')
+
+        return sales
+
+    def get_ldv_sales(self, year):
+        sales = self.ldv_sales.filter(
+            model_year__name__in=[
+                str(year - 1),
+                str(year - 2),
+                str(year - 3)
+            ]
+        )
+        return sales
+
+    def get_avg_ldv_sales(self, year=None):
+        if not year:
+            year = date.today().year
+
+            if date.today().month < 10:
+                year -= 1
+
+        sales = self.ldv_sales.filter(model_year__name__lte=year).values_list(
+            'ldv_sales', flat=True
+        )[:3]
+
+        if sales.count() < 3:
+            sales = self.ldv_sales.filter(model_year__name=year).values_list(
+                'ldv_sales', flat=True
+            )[:1]
+
+            if not sales:
+                return None
+
+        return sum(list(sales)) / len(sales)
+
+    def get_current_class(self, year=None):
+        # The logic below means that if we're past october, the past year
+        # should count the current yer
+        if not year:
+            year = date.today().year
+
+            if date.today().month < 10:
+                year -= 1
+
+        avg_sales = self.get_avg_ldv_sales(year)
+
+        if not avg_sales:
+            avg_sales = 0
+
+        if avg_sales < 1000:
+            return 'S'
+        if avg_sales >= 5000:
+            return 'L'
+
+        return 'M'
+
+    @property
+    def supplier_class(self):
+        return self.get_current_class()
 
     class Meta:
         db_table = 'organization'

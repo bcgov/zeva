@@ -56,7 +56,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
       <tbody>
         <tr className="subclass">
           <th className="large-column">
-            BALANCE AT END OF SEPT. 30,  {reportYear - 1}
+            BALANCE AT END OF SEPT. 30,  {reportYear}
           </th>
           <th className="small-column text-center text-blue">
             A

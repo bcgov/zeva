@@ -25,6 +25,7 @@ const ComplianceObligationContainer = (props) => {
   const [details, setDetails] = useState({});
   const [statuses, setStatuses] = useState({});
   const [supplierClassInfo, setSupplierClassInfo] = useState({ ldvSales: 0, class: '' });
+  const [sales, setSales] = useState(0);
   const { id } = useParams();
   const [remainingABalance, setRemainingABalance] = useState({
     lastYearABalance: 0,
@@ -45,6 +46,7 @@ const ComplianceObligationContainer = (props) => {
   let provisionalBalanceCurrentYearB = 0;
   let provisionalBalanceLastYearA = 0;
   let provisionalBalanceLastYearB = 0;
+  let creditADeficit = 0;
 
   const handleCancelConfirmation = () => {
     const data = {
@@ -56,6 +58,11 @@ const ComplianceObligationContainer = (props) => {
       history.push(ROUTES_COMPLIANCE.REPORTS);
       history.replace(ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(':id', response.data.id));
     });
+  };
+
+  const handleChangeSales = (event) => {
+    const { value } = event.target;
+    setSales(value);
   };
 
   const handleCheckboxClick = (event) => {
@@ -87,6 +94,7 @@ const ComplianceObligationContainer = (props) => {
     if (supplierClass === 'L') {
       let lastYearReduction = 0;
       let currentYearReduction = 0;
+
       // Perform ZEV Class A reduction first for older year then current year.
       if (provisionalBalanceLastYearA > 0 && zevClassACreditReduction >= provisionalBalanceLastYearA) {
         lastYearReduction = provisionalBalanceLastYearA;
@@ -94,14 +102,15 @@ const ComplianceObligationContainer = (props) => {
       if (provisionalBalanceLastYearA > 0 && zevClassACreditReduction < provisionalBalanceLastYearA) {
         lastYearReduction = zevClassACreditReduction;
       }
+
       const remainingReduction = zevClassACreditReduction - lastYearReduction;
+
       if (provisionalBalanceCurrentYearA > 0 && remainingReduction <= provisionalBalanceCurrentYearA) {
         currentYearReduction = remainingReduction;
       }
-      if (provisionalBalanceCurrentYearA > 0 && remainingReduction > provisionalBalanceCurrentYearA) {
+      if (provisionalBalanceCurrentYearA >= 0 && remainingReduction > provisionalBalanceCurrentYearA) {
         currentYearReduction = provisionalBalanceCurrentYearA;
-        const creditDeficit = (remainingReduction - provisionalBalanceCurrentYearA);
-        console.log('credit deficit', creditDeficit);
+        creditADeficit = (remainingReduction - provisionalBalanceCurrentYearA);
       }
       setZevClassAReduction({
         lastYearA: formatNumeric((lastYearReduction), 2),
@@ -110,17 +119,19 @@ const ComplianceObligationContainer = (props) => {
       setRemainingABalance({
         lastYearABalance: provisionalBalanceLastYearA - lastYearReduction,
         currentYearABalance: provisionalBalanceCurrentYearA - currentYearReduction,
+        creditADeficit,
       });
     } else {
       setRemainingABalance({
         lastYearABalance: provisionalBalanceLastYearA,
         currentYearABalance: provisionalBalanceCurrentYearA,
+        creditADeficit,
       });
     }
   };
   const unspecifiedCreditReduction = (event, paramReduction) => {
     const { provisionalBalance } = reportDetails;
-    const { lastYearABalance, currentYearABalance } = remainingABalance;
+    const { lastYearABalance, currentYearABalance, creditADeficit } = remainingABalance;
     const { id: radioId } = event.target;
     const unspecifiedZevClassReduction = paramReduction;
     let unspecifiedZevClassCurrentYearA = 0;
@@ -128,6 +139,7 @@ const ComplianceObligationContainer = (props) => {
     let unspecifiedZevClassLastYearA = 0;
     let unspecifiedZevClassLastYearB = 0;
     let remainingUnspecifiedReduction = 0;
+    let unspecifiedCreditDeficit = 0;
 
     Object.keys(provisionalBalance).forEach((each) => {
       const modelYear = parseInt(each, 10);
@@ -167,8 +179,7 @@ const ComplianceObligationContainer = (props) => {
       if (currentYearABalance === 0 && provisionalBalanceCurrentYearB > 0 && remainingUnspecifiedReduction >= provisionalBalanceCurrentYearB) {
         unspecifiedZevClassCurrentYearB = provisionalBalanceCurrentYearB;
         if (remainingUnspecifiedReduction > provisionalBalanceCurrentYearB) {
-          const creditDeficit = remainingUnspecifiedReduction - provisionalBalanceCurrentYearB;
-          console.log('credit deficit', creditDeficit);
+          unspecifiedCreditDeficit = remainingUnspecifiedReduction - provisionalBalanceCurrentYearB;
         }
       }
       if (currentYearABalance > 0 && currentYearABalance < remainingUnspecifiedReduction) {
@@ -198,16 +209,16 @@ const ComplianceObligationContainer = (props) => {
           unspecifiedZevClassLastYearA = lastYearABalance;
         }
       }
-      if (provisionalBalanceLastYearB === 0 && provisionalBalanceLastYearA > 0 && unspecifiedZevClassReduction >= provisionalBalanceLastYearA) {
-        unspecifiedZevClassLastYearA = provisionalBalanceLastYearA;
+      if (provisionalBalanceLastYearB === 0 && lastYearABalance >= 0 && unspecifiedZevClassReduction >= lastYearABalance) {
+        unspecifiedZevClassLastYearA = lastYearABalance;
       }
       // Reduce current year's B credits first then current year's A.
       remainingUnspecifiedReduction = unspecifiedZevClassReduction - (unspecifiedZevClassLastYearA + unspecifiedZevClassLastYearB);
       if (provisionalBalanceCurrentYearB > 0 && provisionalBalanceCurrentYearB >= remainingUnspecifiedReduction) {
         unspecifiedZevClassCurrentYearB = remainingUnspecifiedReduction;
       }
-      if (provisionalBalanceCurrentYearB === 0 && provisionalBalanceCurrentYearA > 0 && remainingUnspecifiedReduction >= provisionalBalanceCurrentYearA) {
-        unspecifiedZevClassCurrentYearA = provisionalBalanceCurrentYearA;
+      if (provisionalBalanceCurrentYearB === 0 && currentYearABalance >= 0 && remainingUnspecifiedReduction >= currentYearABalance) {
+        unspecifiedZevClassCurrentYearA = currentYearABalance;
       }
       if (provisionalBalanceCurrentYearB > 0 && provisionalBalanceCurrentYearB < remainingUnspecifiedReduction) {
         unspecifiedZevClassCurrentYearB = provisionalBalanceCurrentYearB;
@@ -216,7 +227,7 @@ const ComplianceObligationContainer = (props) => {
           unspecifiedZevClassCurrentYearA = unspecifieldBalance;
         }
         if (unspecifieldBalance > 0 && currentYearABalance > 0 && currentYearABalance < unspecifieldBalance) {
-          unspecifiedZevClassCurrentYearA = unspecifieldBalance - provisionalBalanceCurrentYearA;
+          unspecifiedZevClassCurrentYearA = unspecifieldBalance - currentYearABalance;
         }
       }
     }
@@ -226,8 +237,7 @@ const ComplianceObligationContainer = (props) => {
         + unspecifiedZevClassCurrentYearB
         + unspecifiedZevClassCurrentYearA);
     if (ratioBalance > 0) {
-      const creditDeficit = ratioBalance;
-      console.log('credit deficit is', creditDeficit);
+      unspecifiedCreditDeficit = ratioBalance;
     }
     setUnspecifiedReductions({
       currentYearA: unspecifiedZevClassCurrentYearA,
@@ -238,6 +248,8 @@ const ComplianceObligationContainer = (props) => {
     setCreditBalance({
       A: (currentYearABalance - unspecifiedZevClassCurrentYearA),
       B: (provisionalBalanceCurrentYearB - (unspecifiedZevClassCurrentYearB)),
+      creditADeficit,
+      unspecifiedCreditDeficit,
     });
   };
 
@@ -279,6 +291,7 @@ const ComplianceObligationContainer = (props) => {
     });
     const data = {
       reportId: id,
+      sales: sales,
       offset: offsetNumbers,
       creditActivity: reportDetailsArray,
       confirmations: checkboxes,
@@ -321,6 +334,7 @@ const ComplianceObligationContainer = (props) => {
 
       setStatuses(reportStatuses);
       setSupplierClassInfo({ class: supplierClass, ldvSales });
+      setSales(ldvSales);
 
       const filteredRatio = ratioResponse.data.filter((data) => data.modelYear === modelYear.name)[0];
       setRatios(filteredRatio);
@@ -346,6 +360,7 @@ const ComplianceObligationContainer = (props) => {
         });
         setOffsetNumbers(complianceOffsetNumbers);
       }
+
       complianceResponseDetails.forEach((item) => {
         if (item.category === 'creditBalanceStart') {
           creditBalanceStart[item.modelYear.name] = {
@@ -374,10 +389,12 @@ const ComplianceObligationContainer = (props) => {
           });
         }
         if (item.category === 'creditsIssuedSales') {
-          creditsIssuedSales.push({
-            modelYear: item.modelYear.name,
-            A: item.creditAValue,
-            B: item.creditBValue,
+          item.issuedCredits.forEach((each) => {
+            creditsIssuedSales.push({
+              modelYear: each.modelYear,
+              A: each.A,
+              B: each.B,
+            });
           });
         }
         if (item.category === 'pendingBalance') {
@@ -469,6 +486,8 @@ const ComplianceObligationContainer = (props) => {
         zevClassAReduction={zevClassAReduction}
         unspecifiedReductions={unspecifiedReductions}
         creditBalance={creditBalance}
+        sales={sales}
+        handleChangeSales={handleChangeSales}
       />
     </>
   );

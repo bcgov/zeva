@@ -3,6 +3,14 @@ import logging
 from api.models.vehicle_change_history import VehicleChangeHistory
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
 from django.core.exceptions import PermissionDenied
+from api.models.sales_submission_content import SalesSubmissionContent
+from django.db.models import Q
+import xlrd
+from rest_framework.response import Response
+import datetime
+from api.models.sales_submission import SalesSubmission
+from api.models.model_year import ModelYear
+from api.models.vehicle import Vehicle
 
 
 def change_status(user, vehicle, new_status):
@@ -25,3 +33,54 @@ def change_status(user, vehicle, new_status):
         )
         vehicle.validation_status = new_status
         vehicle.save()
+
+
+def vehicles_sales(model_year, organization):
+    report_year = int(model_year.data['name'])
+    org_submission = SalesSubmission.objects.filter(
+        organization_id=organization)
+    from_date = None
+    to_date = None
+    from_date_str = None
+    to_date_str = None
+
+    if report_year == 2020:
+        from_date = (2018, 1, 2,)
+        to_date = (report_year + 1, 9, 30,)
+        from_date_str = "2018-01-02"
+        to_date_str = str(report_year + 1) + "-09-30"
+    else:
+        from_date = (report_year, 10, 1,)
+        to_date = (report_year + 1, 9, 30,)
+        from_date_str = str(report_year) + "-10-01"
+        to_date_str = str(report_year+1) + "-09-30"
+
+    sales_from_date = xlrd.xldate.xldate_from_date_tuple(from_date, 0)
+    sales_to_date = xlrd.xldate.xldate_from_date_tuple(to_date, 0)
+    sales = SalesSubmissionContent.objects.values(
+        'xls_make', 'xls_model', 'xls_model_year'
+    ).filter(
+        Q(Q(
+            Q(xls_sale_date__lte=sales_to_date) &
+            Q(xls_sale_date__gte=sales_from_date) &
+            Q(xls_date_type="3") &
+            ~Q(xls_sale_date="")
+        ) |
+         Q(
+            Q(xls_sale_date__lte=to_date_str) &
+            Q(xls_sale_date__gte=from_date_str) &
+            Q(xls_date_type="1") &
+            ~Q(xls_sale_date="")
+            )
+        )
+        ).filter(submission__in=org_submission)
+
+    vehicles = Vehicle.objects.none()
+    for sale in sales:
+        model_year = ModelYear.objects.get(name=sale['xls_model_year'][0:4])
+        vehicles |= Vehicle.objects.filter(
+            make=sale['xls_make'],
+            model_name=sale['xls_model'],
+            model_year=model_year)
+
+    return vehicles

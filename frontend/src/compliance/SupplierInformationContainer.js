@@ -57,6 +57,9 @@ const SupplierInformationContainer = (props) => {
     event.preventDefault();
 
     const data = {
+      class: user.organization.supplierClass,
+      averageLdvSales: details.organization.avgLdvSales,
+      previousLdvSales: details.organization.ldvSales,
       makes,
       modelYear,
       confirmations: checkboxes,
@@ -87,6 +90,27 @@ const SupplierInformationContainer = (props) => {
     }
   };
 
+  const getClassDescriptions = (supplierClass) => {
+    let supplierClassString = {};
+    if (supplierClass === 'L') {
+      supplierClassString = {
+        class: 'Large',
+        secondaryText: '(5,000 or more total LDV sales)',
+      };
+    } else if (supplierClass === 'M') {
+      supplierClassString = {
+        class: 'Medium',
+        secondaryText: '(1,000 to 4,999 total LDV sales)',
+      };
+    } else if (supplierClass === 'S') {
+      supplierClassString = {
+        class: 'Small',
+        secondaryText: '(less than  1,000 total LDV sales)',
+      };
+    }
+    return supplierClassString;
+  };
+
   const handleCancelConfirmation = () => {
     const data = {
       delete_confirmations: true,
@@ -103,6 +127,9 @@ const SupplierInformationContainer = (props) => {
     if (id && id !== 'new') {
       axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
         const {
+          avgSales,
+          ldvSalesPrevious,
+          supplierClass,
           makes: modelYearReportMakes,
           modelYearReportAddresses,
           modelYearReportHistory,
@@ -112,7 +139,6 @@ const SupplierInformationContainer = (props) => {
           confirmations,
           statuses: reportStatuses,
         } = response.data;
-
         setModelYear(parseInt(reportModelYear.name, 10));
 
         if (modelYearReportMakes) {
@@ -120,9 +146,13 @@ const SupplierInformationContainer = (props) => {
 
           setMakes(currentMakes);
         }
-
+        const ldvSales = ldvSalesPrevious.sort((a, b) => ((a.modelYear < b.modelYear) ? 1 : -1));
+        const supplierClassString = getClassDescriptions(supplierClass);
         setDetails({
+          supplierClassString,
           organization: {
+            avgLdvSales: avgSales,
+            ldvSales,
             name: organizationName,
             organizationAddress: modelYearReportAddresses,
           },
@@ -140,16 +170,32 @@ const SupplierInformationContainer = (props) => {
     } else {
       axios.get(ROUTES_VEHICLES.LIST).then((response) => {
         const { data } = response;
-
+        // const previousSales = user.organization.ldvSales;
+        const supplierClassString = getClassDescriptions(user.organization.supplierClass);
         setMakes([...new Set(data.map((vehicle) => vehicle.make.toUpperCase()))]);
+        const yearTemp = parseInt(query.year, 10);
+        const yearsArray = [(yearTemp - 1).toString(), (yearTemp - 2).toString(), (yearTemp - 3).toString()];
+        const previousSales = user.organization.ldvSales
+          .filter((each) => {
+            if (yearsArray.includes(each.modelYear.toString())) {
+              return each;
+            }
+          });
+        previousSales.sort((a, b) => ((a.modelYear < b.modelYear) ? 1 : -1));
+        const newOrg = {
+          ldvSales: previousSales,
+          avgLdvSales: user.organization.avgLdvSales,
+          organizationAddress: user.organizationAddress,
+          name: user.organization.name,
+        };
         setDetails({
-          organization: user.organization,
+          organization: newOrg,
+          supplierClassString,
           supplierInformation: {
             history: [],
             validationStatus: 'DRAFT',
           },
         });
-
         if (!isNaN(query.year) && id === 'new') {
           setModelYear(parseInt(query.year, 10));
         }

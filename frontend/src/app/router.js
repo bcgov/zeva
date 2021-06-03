@@ -32,9 +32,12 @@ import ComplianceCalculatorContainer from '../compliance/ComplianceCalculatorCon
 import ComplianceReportsContainer from '../compliance/ComplianceReportsContainer';
 import ComplianceReportSummaryContainer from '../compliance/ComplianceReportSummaryContainer';
 import ComplianceRatiosContainer from '../compliance/ComplianceRatiosContainer';
+import AssessmentContainer from '../compliance/AssessmentContainer';
+import AssessmentEditContainer from '../compliance/AssessmentEditContainer';
 import SupplierInformationContainer from '../compliance/SupplierInformationContainer';
 import ComplianceObligationContainer from '../compliance/ComplianceObligationContainer';
 import ConsumerSalesContainer from '../compliance/ConsumerSalesContainer';
+import ComplianceReportAssessmentContainer from '../compliance/ComplianceReportAssessmentContainer';
 
 import ErrorHandler from './components/ErrorHandler';
 import Loading from './components/Loading';
@@ -132,12 +135,24 @@ class Router extends Component {
           <ErrorHandler statusCode={statusCode}>
             <Switch>
               <Route
+                path={ROUTES_COMPLIANCE.REPORT_ASSESSMENT}
+                render={() => <AssessmentContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_COMPLIANCE.ASSESSMENT_EDIT}
+                render={() => <AssessmentEditContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
                 path={ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY}
                 render={() => <ComplianceObligationContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 path={ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION}
                 render={() => <SupplierInformationContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_COMPLIANCE.REPORT_ASSESSMENT}
+                render={() => <ComplianceReportAssessmentContainer keycloak={keycloak} user={user} />}
               />
               <Route
                 exact

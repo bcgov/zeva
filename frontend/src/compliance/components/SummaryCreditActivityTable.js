@@ -1,7 +1,6 @@
 import React from 'react';
-import { object } from 'prop-types';
+import PropTypes from 'prop-types';
 import formatNumeric from '../../app/utilities/formatNumeric';
-import SummarySupplierInfo from './SummarySupplierInfo';
 
 const SummaryCreditActivityTable = (props) => {
   const {
@@ -10,16 +9,15 @@ const SummaryCreditActivityTable = (props) => {
     complianceRatios,
     pendingBalanceExist,
   } = props;
-  const { year, ldvSales, supplierClass } = consumerSalesDetails;
+  const { year } = consumerSalesDetails;
   const {
     creditBalanceStart,
-    creditBalanceEnd,
     transactions,
     pendingBalance,
-    provisionalBalanceBeforeOffset,
     provisionalBalanceAfterOffset,
     complianceOffsetNumbers,
-    provisionalAssessedBalance,
+    ldvSales,
+    supplierClass,
   } = creditActivityDetails;
   const tableSection = (input, title, numberClassname = 'text-right') => {
     let aTotal = formatNumeric(input.A);
@@ -67,6 +65,11 @@ const SummaryCreditActivityTable = (props) => {
           <th>
             <h3>Compliance Obligation</h3>
           </th>
+        </tr>
+        <tr>
+          <td className="font-weight-bold text-blue">{year} Model Year LDV Sales\Leases:</td>
+          <td/>
+          <td className="text-right font-weight-bold">{ldvSales}</td>
         </tr>
         <tr>
           <td className="text-blue">{year} Compliance Ratio:</td>
@@ -145,7 +148,7 @@ const SummaryCreditActivityTable = (props) => {
       <tbody>
         {tableSection(
           creditBalanceStart,
-          `Balance at end of September 30, ${year - 1} :`,
+          `Balance at end of September 30, ${year} :`,
         )}
         {/* {tableSection(
           creditBalanceStart,
@@ -187,10 +190,14 @@ const SummaryCreditActivityTable = (props) => {
           && (
             <>
               <th className="text-right a-class">
-                <h4 className="text-credit-reduction">{formatNumeric(complianceOffsetNumbers.A, 2)}</h4>
+                <h4 className="text-credit-reduction">
+                  {formatNumeric(complianceOffsetNumbers.A, 2)}
+                </h4>
               </th>
               <th className="text-right">
-                <h4 className="text-credit-reduction">{formatNumeric(complianceOffsetNumbers.B, 2)}</h4>
+                <h4 className="text-credit-reduction">
+                  {formatNumeric(complianceOffsetNumbers.B, 2)}
+                </h4>
               </th>
             </>
           )}
@@ -208,4 +215,15 @@ const SummaryCreditActivityTable = (props) => {
     </table>
   );
 };
+
+SummaryCreditActivityTable.defaultProps = {
+};
+
+SummaryCreditActivityTable.propTypes = {
+  complianceRatios: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  consumerSalesDetails: PropTypes.shape().isRequired,
+  creditActivityDetails: PropTypes.shape().isRequired,
+  pendingBalanceExist: PropTypes.bool.isRequired,
+};
+
 export default SummaryCreditActivityTable;

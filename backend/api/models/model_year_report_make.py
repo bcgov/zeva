@@ -27,6 +27,10 @@ class ModelYearReportMake(Auditable):
         null=False,
         max_length=250
     )
+    from_gov = models.BooleanField(
+        default=False,
+        db_comment="Flag. True if this edit came from a government user."
+    )
 
     class Meta:
         db_table = 'model_year_report_make'

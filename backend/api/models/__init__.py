@@ -34,7 +34,11 @@ from . import compliance_ratio
 from . import model_year_report, model_year_report_confirmation
 from . import model_year_report_history, model_year_report_make
 from . import model_year_report_statuses, model_year_report_address
-from . import model_year_report_previous_sales
+from . import model_year_report_ldv_sales
 from . import model_year_report_vehicle
 from . import model_year_report_credit_offset
 from . import model_year_report_compliance_obligation
+from . import model_year_report_adjustment
+from . import model_year_report_assessment
+from . import model_year_report_assessment_comment
+from . import model_year_report_assessment_descriptions

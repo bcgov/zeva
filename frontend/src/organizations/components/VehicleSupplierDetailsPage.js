@@ -5,10 +5,21 @@ import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
 import CustomPropTypes from '../../app/utilities/props';
 import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
+import VehicleSupplierClass from './VehicleSupplierClass';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const VehicleSupplierDetailsPage = (props) => {
   const {
-    details, loading, editButton, locationState,
+    details,
+    editButton,
+    handleInputChange,
+    handleSubmit,
+    inputLDVSales,
+    ldvSales,
+    loading,
+    locationState,
+    modelYears,
+    selectedModelYear,
   } = props;
   const { organizationAddress } = details;
 
@@ -18,27 +29,129 @@ const VehicleSupplierDetailsPage = (props) => {
 
   return (
     <div id="vehicle-supplier-details" className="page">
-      <div className="row mt-2">
-        <div className="col-sm-10">
-          <h3>Status</h3>
-          <p className="supplier-text">
-            {(details.isActive) ? 'Actively supplying vehicles in British Columbia' : 'Not actively supplying vehicles in British Columbia'}
-          </p>
-          {organizationAddress && organizationAddress.map((each) => ([
-            <h3 className="mt-3" key={`${each.id}-header`}>{each.addressType ? each.addressType.addressType : ''} Address</h3>,
-            <div className="organization-address" key={each.id}>
-              <div className="supplier-text">
-                {(each.addressType.addressType === 'Service') ? each.representativeName : ''}
-                {each.addressLine1 && <div>{each.addressLine1}</div>}
-                {each.addressLine2 && <div>{each.addressLine2}</div>}
-                {each.addressLine3 && <div>{each.addressLine3}</div>}
-                <div>{each.city} {each.state} {each.country}</div>
-                {each.postalCode && <div>{each.postalCode}</div>}
+      <div className="row mt-3">
+        <div className="col">
+          <h2 className="mb-2">Vehicle Supplier Information</h2>
+          <div className="mt-3">
+            <h4 className="d-inline">Legal Name: </h4>
+            <span> {details.name} </span>
+          </div>
+
+          <div className="mt-3">
+            <h4 className="d-inline">Common Name: </h4>
+            <span> {details.shortName} </span>
+          </div>
+
+          <div className="mt-3">
+            <h4 className="d-inline">Status: </h4>
+            <span> {(details.isActive) ? 'Actively supplying vehicles in British Columbia' : 'Not actively supplying vehicles in British Columbia'} </span>
+          </div>
+
+          <div>
+            <div className="d-inline-block mr-5 mt-3">
+              <h4>Service Address</h4>
+              {organizationAddress
+              && organizationAddress.map((address) => (
+                address.addressType.addressType === 'Service' && (
+                  <div key={address.id}>
+                    {address.representativeName && (
+                      <div> {address.representativeName} </div>
+                    )}
+                    <div> {address.addressLine1} </div>
+                    <div> {address.city} {address.state} {address.country} </div>
+                    <div> {address.postalCode} </div>
+                  </div>
+                )
+              ))}
+            </div>
+            <div className="d-inline-block mt-3">
+              <h4>Records Address</h4>
+              {organizationAddress
+              && organizationAddress.map((address) => (
+                address.addressType.addressType === 'Records' && (
+                  <div key={address.id}>
+                    {address.representativeName && (
+                      <div> {address.representativeName} </div>
+                    )}
+                    <div> {address.addressLine1} </div>
+                    <div> {address.city} {address.state} {address.country} </div>
+                    <div> {address.postalCode} </div>
+                  </div>
+                )
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-3">
+            <h4 className="d-inline">Vehicle Supplier Class: </h4>
+            <span> <VehicleSupplierClass supplierClass={details.supplierClass} /> </span>
+          </div>
+
+          <div className="mt-3">
+            <h4 className="d-inline">3 Year Average LDV Sales: </h4>
+            <span> {formatNumeric(Math.round(details.avgLdvSales), 0)} </span>
+          </div>
+
+          <div className="mt-3">
+            {!details.hasSubmittedReport && (
+              <div className="mb-2">Enter the previous 3 year LDV sales total to determine vehicle supplier class.</div>
+            )}
+            {details.hasSubmittedReport && (
+            <h4 className="d-inline">Previous 3 Year LDV Sales: </h4>
+            )}
+            <form onSubmit={handleSubmit}>
+              <div className="ldv-sales">
+                {!details.hasSubmittedReport && (
+                <div className="header-bg">
+                  <div className="d-inline-block">
+                    <select
+                      className="form-control"
+                      id="model-year"
+                      name="modelYear"
+                      onChange={handleInputChange}
+                      value={selectedModelYear}
+                    >
+                      <option> </option>
+                      {modelYears.map((modelYear) => (
+                        <option key={modelYear.name} value={modelYear.name}>{modelYear.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="d-inline-block">
+                    <input
+                      className="form-control"
+                      name="ldvSales"
+                      onChange={handleInputChange}
+                      type="text"
+                      value={inputLDVSales}
+                    />
+                  </div>
+                  <div className="d-inline-block">
+                    <button
+                      className="btn button primary"
+                      type="submit"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+                )}
+
+                <ul className="mb-0 mt-3">
+                  {ldvSales.map((sale) => (
+                    <li key={sale.id}>
+                      <div className="model-year">
+                        {sale.modelYear} Model Year:
+                      </div>
+                      <div className="sales">
+                        {formatNumeric(sale.ldvSales, 0)}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </div>,
-          ]))}
-          <h3 className="mt-3">Credit Balance</h3>
-          <p className="supplier-text">A-{details.balance.A} — B-{details.balance.B}</p>
+            </form>
+          </div>
         </div>
         <div className="col-sm-2">
           {editButton}
@@ -64,13 +177,28 @@ const VehicleSupplierDetailsPage = (props) => {
 };
 
 VehicleSupplierDetailsPage.defaultProps = {
+  inputLDVSales: '',
   locationState: undefined,
+  selectedModelYear: '',
 };
 
 VehicleSupplierDetailsPage.propTypes = {
   details: CustomPropTypes.organizationDetails.isRequired,
+  editButton: PropTypes.func.isRequired,
+  ldvSales: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),
+  modelYears: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  handleInputChange: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  inputLDVSales: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
+  selectedModelYear: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
 };
 
 export default VehicleSupplierDetailsPage;

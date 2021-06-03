@@ -5,11 +5,12 @@ import { Link, useParams } from 'react-router-dom';
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 
 const ComplianceReportTabs = (props) => {
-  const { active, reportStatuses } = props;
+  const { active, reportStatuses, user } = props;
   const { id } = useParams();
 
   const disableOtherTabs = reportStatuses.supplierInformation && reportStatuses.supplierInformation.status === 'UNSAVED';
-
+  const disableAssessment = (reportStatuses.reportSummary && reportStatuses.reportSummary.status !== 'SUBMITTED')
+    || (reportStatuses.assessment && reportStatuses.assessment.status === 'SUBMITTED' && !user.isGovernment);
   return (
     <ul
       className="nav nav-pills nav-justified compliance-report-tabs"
@@ -35,7 +36,7 @@ const ComplianceReportTabs = (props) => {
           <span className="disabled">Consumer Sales</span>
         )}
         {!disableOtherTabs && (
-          <Link to={ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id)}>Consumer Sales</Link>
+          <Link to={ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id)}>Consumer ZEV Sales</Link>
         )}
       </li>
       <li
@@ -79,11 +80,11 @@ const ComplianceReportTabs = (props) => {
         }
         role="presentation"
       >
-        {disableOtherTabs && (
+        {(disableOtherTabs || disableAssessment) && (
           <span className="disabled">Assessment</span>
         )}
-        {!disableOtherTabs && (
-          <Link to={ROUTES_COMPLIANCE.REPORT_ASSESSMENT}>Assessment</Link>
+        {!disableOtherTabs && !disableAssessment && (
+          <Link to={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)}>Assessment</Link>
         )}
       </li>
     </ul>
