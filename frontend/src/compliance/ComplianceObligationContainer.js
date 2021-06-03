@@ -26,10 +26,7 @@ const ComplianceObligationContainer = (props) => {
   const [statuses, setStatuses] = useState({});
   const [supplierClassInfo, setSupplierClassInfo] = useState({ ldvSales: 0, class: '' });
   const [sales, setSales] = useState(0);
-<<<<<<< HEAD
   const [creditReductionSelection, setCreditReductionSelection] = useState(null);
-=======
->>>>>>> release-1.27.0
   const { id } = useParams();
   const [remainingABalance, setRemainingABalance] = useState({
     lastYearABalance: 0,
