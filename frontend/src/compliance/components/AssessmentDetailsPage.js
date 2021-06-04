@@ -37,7 +37,7 @@ const AssessmentDetailsPage = (props) => {
     user,
     sales,
   } = props;
-  console.log(details)
+  console.log(details);
   const {
     creditBalanceStart, pendingBalance, transactions, provisionalBalance,
   } = creditActivityDetails;
@@ -156,6 +156,17 @@ const AssessmentDetailsPage = (props) => {
       <div className="row mt-3">
         <div className="col-12">
           <div className="p-3 grey-border-area p-4">
+            {!user.isGovernment && statuses.assessment.status === 'ASSESSED' && (
+              <button
+                className="btn button primary float-right"
+                onClick={() => {
+                  console.log('create supplemental');
+                }}
+                type="button"
+              >
+                Create Supplemental Report
+              </button>
+            )}
             {user.isGovernment && (statuses.assessment.status === 'SUBMITTED' || statuses.assessment.status === 'UNSAVED') && (
               <button
                 className="btn button primary float-right"
