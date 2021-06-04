@@ -122,6 +122,8 @@ const ComplianceObligationDetailsPage = (props) => {
           sales={sales}
           handleChangeSales={handleChangeSales}
           statuses={statuses}
+          user={user}
+          page="obligation"
         />
         <div className="mt-4">
           <h3 className="mb-2">Credit Activity</h3>

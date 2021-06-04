@@ -322,11 +322,6 @@ class ModelYearReportViewset(
 
     @action(detail=True, methods=['get'])
     def assessment(self, request, pk):
-        if not request.user.is_government:
-            return HttpResponse(
-                status=403, content=None
-            )
-
         report = get_object_or_404(ModelYearReport, pk=pk)
         serializer = ModelYearReportAssessmentSerializer(report)
         return Response(serializer.data)

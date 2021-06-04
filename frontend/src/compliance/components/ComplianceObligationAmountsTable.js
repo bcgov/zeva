@@ -17,8 +17,9 @@ const ComplianceObligationAmountsTable = (props) => {
     handleChangeSales,
     sales,
     statuses,
+    user,
   } = props;
-
+  console.log(sales);
   return (
     <div className="mt-4">
       <h3 className="mb-2">Compliance Obligation</h3>
@@ -28,16 +29,22 @@ const ComplianceObligationAmountsTable = (props) => {
             <table className="mr-3 no-border px-3">
               <tbody>
                 <tr className="ldv-sales ">
-                  <td className="text-blue " colSpan="3">
-                    {reportYear} Model Year LDV Consumer Sales\Leases Total:
+                  <td className="text-blue " colSpan={page === 'obligation' ? '3' : '1'}>
+                    {reportYear} Model Year LDV Sales:
                   </td>
                   <td>
+                    {page === 'obligation'
+                    && (
                     <input
                       className="form-control"
                       type="text"
                       onChange={handleChangeSales}
                       value={sales}
-                      disabled={['SAVED', 'UNSAVED'].indexOf(statuses.complianceObligation.status) < 0} />
+                      disabled={['SAVED', 'UNSAVED'].indexOf(statuses.complianceObligation.status) < 0}
+                    />
+                    )}
+                    {page === 'assessment'
+                    && (sales || 0)}
                   </td>
                 </tr>
                 <tr>
