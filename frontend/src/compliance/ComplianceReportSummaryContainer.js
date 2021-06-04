@@ -75,7 +75,6 @@ const ComplianceReportSummaryContainer = (props) => {
         validationStatus,
         confirmations,
         modelYear: reportModelYear,
-        ldvSales,
       } = reportDetailsResponse.data;
       // ALL STATUSES
       setConfirmationStatuses(statuses);
@@ -102,13 +101,17 @@ const ComplianceReportSummaryContainer = (props) => {
         },
       });
       // CONSUMER SALES
+      let supplierClassText = '';
       let { supplierClass } = reportDetailsResponse.data;
       if (supplierClass === 'M') {
-        supplierClass = 'Medium Volume Supplier';
+        supplierClass = 'Medium';
+        supplierClassText = 'Medium Volume Supplier';
       } else if (supplierClass === 'L') {
-        supplierClass = 'Large Volume Supplier';
+        supplierClass = 'Large';
+        supplierClassText = 'Large Volume Supplier';
       } else {
-        supplierClass = 'Small Volume Supplier';
+        supplierClass = 'Small';
+        supplierClassText = 'Small Volume Supplier';
       }
 
       let pendingZevSales = 0;
@@ -137,7 +140,7 @@ const ComplianceReportSummaryContainer = (props) => {
       const transfersOut = { A: 0, B: 0 };
       const creditsIssuedSales = { A: 0, B: 0 };
       const complianceOffsetNumbers = { A: 0, B: 0 };
-      const { complianceOffset } = creditActivityResponse.data;
+      const { complianceOffset, ldvSales} = creditActivityResponse.data;
       // OFFSET
       if (complianceOffset) {
         complianceOffset.forEach((item) => {
@@ -203,6 +206,7 @@ const ComplianceReportSummaryContainer = (props) => {
         provisionalBalanceBeforeOffset,
         provisionalBalanceAfterOffset,
         supplierClass,
+        supplierClassText,
         ldvSales,
         transactions: {
           creditsIssuedSales,
