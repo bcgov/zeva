@@ -1,12 +1,10 @@
 from datetime import date
-from django.db.models import Sum, Value, Q
+from django.db.models import Sum, Value
 from rest_framework import serializers
 from api.models.account_balance import AccountBalance
 from api.models.credit_transaction import CreditTransaction
 from api.models.model_year import ModelYear
 from api.models.model_year_report import ModelYearReport
-from api.models.model_year_report_confirmation import \
-    ModelYearReportConfirmation
 from api.models.model_year_report_compliance_obligation import ModelYearReportComplianceObligation
 from api.models.model_year_report_credit_offset import ModelYearReportCreditOffset
 from api.models.sales_submission import SalesSubmission
