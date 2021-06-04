@@ -26,14 +26,15 @@
       }
     }
 
-    .model-year, .sales {
+    .model-year, .sales, .delete {
       display: inline-block;
       vertical-align: middle;
     }
-
-    .model-year {
-      min-width: 200px;
-    }
+    .delete button {
+      background-color: transparent;
+      border: none;
+      color: $red;
+      }
   }
 }
 
