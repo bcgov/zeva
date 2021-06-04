@@ -388,11 +388,11 @@ const AssessmentDetailsPage = (props) => {
                     </td>
 
                     <td className="text-center">
-                      <input type="radio" />
+                      <input type="radio" name="reduction" readOnly />
                     </td>
 
                     <td className="text-center">
-                      <input checked type="radio" />
+                      <input checked type="radio" name="reduction" readOnly />
                     </td>
                   </tr>
                   <tr key="reduction-start">
