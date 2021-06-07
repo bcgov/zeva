@@ -49,6 +49,12 @@ class ModelYearReport(Auditable):
                        statuses=[c.name for c in ModelYearReportStatuses]
                    )
     )
+    credit_reduction_selection = models.CharField(
+        db_comment="Which ZEV credit class to use first for unspecified "
+                   "reductions. (A or B)",
+        max_length=1,
+        null=True
+    )
 
     @property
     def makes(self):
