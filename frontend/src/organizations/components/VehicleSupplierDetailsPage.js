@@ -20,6 +20,7 @@ const VehicleSupplierDetailsPage = (props) => {
     locationState,
     modelYears,
     selectedModelYear,
+    handleDeleteSale,
   } = props;
   const { organizationAddress } = details;
 
@@ -139,13 +140,23 @@ const VehicleSupplierDetailsPage = (props) => {
 
                 <ul className="mb-0 mt-3">
                   {ldvSales.map((sale) => (
-                    <li key={sale.id}>
-                      <div className="model-year">
+                    <li className="form-row my-2" key={sale.id}>
+                      <div className="col-5 model-year">
                         {sale.modelYear} Model Year:
                       </div>
-                      <div className="sales">
+                      <div className="col-6 sales">
                         {formatNumeric(sale.ldvSales, 0)}
                       </div>
+                      <div className="col-1 delete">
+                          <button
+                            onClick={() => {
+                              handleDeleteSale(sale);
+                            }}
+                            type="button"
+                          >
+                            x
+                          </button>
+                        </div>
                     </li>
                   ))}
                 </ul>

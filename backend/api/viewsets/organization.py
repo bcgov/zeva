@@ -155,19 +155,24 @@ class OrganizationViewSet(
     @action(detail=True, methods=['patch', 'put'])
     @method_decorator(permission_required('VIEW_SALES'))
     def ldv_sales(self, request, pk=None):
+        delete_id = request.data.get('id', None)
         if not request.user.is_government:
             return Response(None)
 
         organization = self.get_object()
-        serializer = OrganizationLDVSalesSerializer(
-            data=request.data,
-            context={
-                'organization': organization,
-                'request': request
-            }
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        if delete_id:
+            sale = OrganizationLDVSales.objects.filter(id=delete_id).first()
+            sale.delete()
+        else:
+            serializer = OrganizationLDVSalesSerializer(
+                data=request.data,
+                context={
+                    'organization': organization,
+                    'request': request
+                }
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
 
         ldv_sales = OrganizationLDVSales.objects.filter(
             organization_id=pk
