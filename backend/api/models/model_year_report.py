@@ -74,10 +74,18 @@ class ModelYearReport(Auditable):
             model_year_report_id=self.id,
             from_gov=from_gov
         ).first()
-
         if row:
             return row.ldv_sales
-
+        return None
+        
+    def get_ldv_sales_with_year(self, from_gov=False):
+        row = ModelYearReportLDVSales.objects.filter(
+            model_year_id=self.model_year_id,
+            model_year_report_id=self.id,
+            from_gov=from_gov
+        ).first()
+        if row:
+            return {'sales': row.ldv_sales, 'year': row.model_year.name}
         return None
 
     class Meta:

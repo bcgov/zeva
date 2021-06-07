@@ -32,7 +32,7 @@ const AssessmentContainer = (props) => {
   const [supplierClassInfo, setSupplierClassInfo] = useState({ ldvSales: 0, class: '' });
   const [radioSelection, setRadioSelection] = useState('');
   const [penalty, setPenalty] = useState(0);
-  const [radioDescriptions, setRadioDescriptions] = useState([{ id: 0, description: 'test' },]);
+  const [radioDescriptions, setRadioDescriptions] = useState([{ id: 0, description: 'test' }]);
   const [sales, setSales] = useState(0);
   const [statuses, setStatuses] = useState({
     assessment: {
@@ -88,7 +88,6 @@ const AssessmentContainer = (props) => {
             supplierClass = 'Small';
           }
           const {
-
             makes: modelYearReportMakes,
             modelYearReportAddresses,
             modelYearReportHistory,
@@ -98,18 +97,27 @@ const AssessmentContainer = (props) => {
             confirmations,
             statuses: reportStatuses,
             ldvSales,
+            ldvSalesUpdated,
+            changelog
           } = reportDetailsResponse.data;
-
           const filteredRatio = ratioResponse.data.filter((data) => data.modelYear === modelYear.toString())[0];
           setRatios(filteredRatio);
+          const makesChanges = {
+            additions: [],
+            // deletions: [],
+            // edits: []
+          };
           if (modelYearReportMakes) {
             const currentMakes = modelYearReportMakes.map((each) => (each.make));
+            const makesAdditions = modelYearReportMakes.filter((each) => (each.fromGov));
+            makesChanges.additions = makesAdditions;
             setMakes(currentMakes);
           }
 
           setStatuses(reportStatuses);
           setSales(ldvSales);
           setDetails({
+            changelog,
             bceidComment: bceidCommentResponse,
             idirComment: idirCommentArrayResponse,
             ldvSales,
