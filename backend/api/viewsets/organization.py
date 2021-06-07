@@ -155,7 +155,7 @@ class OrganizationViewSet(
     @action(detail=True, methods=['patch', 'put'])
     @method_decorator(permission_required('VIEW_SALES'))
     def ldv_sales(self, request, pk=None):
-        id = request.data.get('id')
+        id = request.data.get('id', None)
         if not request.user.is_government:
             return Response(None)
 
