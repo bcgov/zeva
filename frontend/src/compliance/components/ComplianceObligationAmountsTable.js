@@ -59,7 +59,7 @@ const ComplianceObligationAmountsTable = (props) => {
                 <tr>
                   <td className="text-blue">Large Volume Supplier Class A Ratio:</td>
                   <td>{ratios.zevClassA} %</td>
-                  <td className="text-blue">ZEV Class A Credit Reduction:</td>
+                  <td className="text-blue">&bull; ZEV Class A Credit Reduction:</td>
                   <td>
                     {getClassAReduction(
                       sales,
@@ -71,7 +71,7 @@ const ComplianceObligationAmountsTable = (props) => {
                 )}
                 <tr>
                   <td colSpan="2" />
-                  <td className="text-blue">Unspecified ZEV Class Credit Reduction:</td>
+                  <td className="text-blue">&bull; Unspecified ZEV Class Credit Reduction:</td>
                   <td>
                     {getUnspecifiedClassReduction(
                       getTotalReduction(sales, ratios.complianceRatio),
