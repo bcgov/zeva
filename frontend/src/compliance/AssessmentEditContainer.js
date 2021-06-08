@@ -64,15 +64,15 @@ const AssessmentEditContainer = (props) => {
     };
 
     axios.patch(
-      ROUTES_COMPLIANCE.REPORT_ASSESSMENT_SAVE.replace(/:id/g, id),
-      data).then(() => {
-        history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id));
-      });
+      ROUTES_COMPLIANCE.REPORT_ASSESSMENT_SAVE.replace(/:id/g, id), data,
+    ).then(() => {
+      history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id));
+    });
   };
 
   const refreshDetails = () => {
     const detailsPromise = axios.get(
-      ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)
+      ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id),
     );
 
     const ratiosPromise = axios.get(ROUTES_COMPLIANCE.RATIOS);
@@ -91,11 +91,10 @@ const AssessmentEditContainer = (props) => {
           validationStatus,
           ldvSales,
           supplierClass,
-          ldvSalesUpdated,
         } = response.data;
         const year = parseInt(reportModelYear.name, 10);
 
-        const { supplierMakes, govMakes} = makesResponse.data;
+        const { supplierMakes, govMakes } = makesResponse.data;
 
         setModelYear(year);
         setStatuses(reportStatuses);
@@ -126,15 +125,15 @@ const AssessmentEditContainer = (props) => {
         });
 
         setSales({
-          [year]: ldvSalesUpdated,
+          [year]: ldvSales,
         });
 
         const filteredRatio = ratiosResponse.data.filter(
-          (data) => data.modelYear === year.toString()
+          (data) => data.modelYear === year.toString(),
         )[0];
         setRatios(filteredRatio);
         setLoading(false);
-      }
+      },
     );
   };
 

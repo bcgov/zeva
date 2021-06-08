@@ -77,6 +77,17 @@ const VehicleSupplierDetailsContainer = (props) => {
     });
   };
 
+  const handleDeleteSale = (sale) => {
+    axios
+      .put(ROUTES_ORGANIZATIONS.LDV_SALES.replace(/:id/gi, id), {
+        id: sale.id
+      })
+      .then(() => {
+        History.push(ROUTES_ORGANIZATIONS.LIST);
+        History.replace(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));
+      });
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -104,6 +115,7 @@ const VehicleSupplierDetailsContainer = (props) => {
         handleSubmit={handleSubmit}
         selectedModelYear={fields.modelYear}
         inputLDVSales={fields.ldvSales}
+        handleDeleteSale={handleDeleteSale}
       />
     </div>
   );
