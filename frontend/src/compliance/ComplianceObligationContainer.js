@@ -626,7 +626,7 @@ const ComplianceObligationContainer = (props) => {
             B: item.creditBValue,
           });
         }
-        if (item.category === 'creditsIssuedSales') {
+        if (item.category === 'creditsIssuedSales' && item.issuedCredits) {
           item.issuedCredits.forEach((each) => {
             creditsIssuedSales.push({
               modelYear: each.modelYear,
