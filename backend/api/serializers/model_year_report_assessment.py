@@ -71,12 +71,19 @@ class ModelYearReportAssessmentSerializer(
     def get_assessment(self, obj):
         assessment = ModelYearReportAssessment.objects.filter(
             model_year_report=obj
-        )
+        ).first()
         if not assessment:
-            return None
+            return {
+                'decision': None,
+                'penalty': None
+            }
+        description_serializer = ModelYearReportAssessmentDescriptionsSerializer(
+            assessment.model_year_report_assessment_description,
+            read_only=True,
+            )
         return {
-            'description': assessment.description,
-            'pentalty': assessment.penalty
+            'decision': description_serializer.data['description'],
+            'penalty': assessment.penalty
         }
 
     def get_assessment_comment(self, obj):
