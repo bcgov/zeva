@@ -38,6 +38,7 @@ class ModelYearReportSerializer(ModelSerializer):
     ldv_sales = SerializerMethodField()
     ldv_sales_previous = SerializerMethodField()
     avg_sales = SerializerMethodField()
+    changelog = SerializerMethodField()
 
     def get_ldv_sales_previous(self, obj):
         year = int(obj.model_year.name)
@@ -96,6 +97,22 @@ class ModelYearReportSerializer(ModelSerializer):
 
         return obj.ldv_sales
 
+    def get_changelog(self, obj):
+        request = self.context.get('request')
+        if request.user.is_government:
+            from_gov_sales = obj.get_ldv_sales_with_year(from_gov=True)
+            if from_gov_sales:
+                not_gov_sales = obj.get_ldv_sales_with_year(from_gov=False)
+                sales_changes = {'from_gov': from_gov_sales['sales'], 'not_from_gov': not_gov_sales['sales'], 'year': from_gov_sales['year']}
+
+            gov_makes = ModelYearReportMake.objects.filter(
+                model_year_report_id=obj.id,
+                from_gov=True
+            )
+            gov_makes_additions_serializer = ModelYearReportMakeSerializer(gov_makes, many=True)
+            return {'makes_additions': gov_makes_additions_serializer.data, 'ldv_changes': sales_changes}
+        return obj.ldv_sales
+
     def get_makes(self, obj):
         request = self.context.get('request')
 
@@ -121,8 +138,8 @@ class ModelYearReportSerializer(ModelSerializer):
             'organization_name', 'supplier_class', 'model_year',
             'model_year_report_addresses', 'makes', 'validation_status',
             'create_user', 'model_year_report_history', 'confirmations',
-            'statuses', 'ldv_sales', 'statuses', 'ldv_sales_previous',
-            'avg_sales', 'credit_reduction_selection'
+            'statuses', 'ldv_sales', 'ldv_sales_previous', 'avg_sales',
+            'credit_reduction_selection', 'changelog'
         )
 
 
@@ -244,6 +261,7 @@ class ModelYearReportSaveSerializer(
         return report
 
     def update(self, instance, validated_data):
+
         request = self.context.get('request')
         organization = request.user.organization
 

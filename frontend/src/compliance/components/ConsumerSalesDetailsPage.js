@@ -97,12 +97,11 @@ const ConsumerSalesDetailsPage = (props) => {
               )}
             <div className="ldv-zev-models mt-2">
               <label className="text-blue mr-4 font-weight-bold">
-                Zero-Emission Vehicles Sales (Oct. 1, {modelYear} - Sept 30,{' '}
-                {modelYear + 1})
+                {modelYear} Model Year Zero-Emission Vehicles Sales
               </label>
               <div className="text-blue mt-2">
-                If you have ZEV sales or leases that occurred between Oct. 1,{' '}
-                {modelYear} and Sept 30, {modelYear + 1} that you haven&apos;t
+                If you have { modelYear } model year ZEV sales or leases that occurred before Oct. 1,{' '}
+                {modelYear + 1} that you haven&apos;t
                 applied for credits you must{' '}
                 <label
                   className="text-primary"

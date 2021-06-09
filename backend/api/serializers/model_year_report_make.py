@@ -7,5 +7,5 @@ class ModelYearReportMakeSerializer(ModelSerializer):
     class Meta:
         model = ModelYearReportMake
         fields = (
-            'make',
+            'make', 'from_gov'
         )
