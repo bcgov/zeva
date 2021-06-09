@@ -541,7 +541,6 @@ const ComplianceObligationContainer = (props) => {
       axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)),
     ]).then(axios.spread((reportDetailsResponse, ratioResponse, complianceResponse) => {
       const {
-        ldvSales,
         modelYearReportHistory,
         supplierClass,
         validationStatus,
@@ -564,15 +563,16 @@ const ComplianceObligationContainer = (props) => {
       }
 
       setStatuses(reportStatuses);
-      setSupplierClassInfo({ class: supplierClass, ldvSales });
-      setSales(ldvSales);
+      
 
       const filteredRatio = ratioResponse.data.filter((data) => data.modelYear === modelYear.name)[0];
       setRatios(filteredRatio);
       const classAReduction = ((filteredRatio.zevClassA / 100) * ldvSales);
 
       const complianceResponseDetails = complianceResponse.data.complianceObligation;
-      const { complianceOffset } = complianceResponse.data;
+      const { complianceOffset, ldvSales } = complianceResponse.data;
+      setSupplierClassInfo({ class: supplierClass, ldvSales });
+      setSales(ldvSales);
       const creditBalanceStart = {};
       const creditBalanceEnd = {};
       const provisionalBalance = [];
@@ -621,12 +621,18 @@ const ComplianceObligationContainer = (props) => {
         }
         if (item.category === 'creditsIssuedSales' && item.issuedCredits) {
           item.issuedCredits.forEach((each) => {
-            creditsIssuedSales.push({
-              modelYear: each.modelYear,
-              A: each.A,
-              B: each.B,
+              creditsIssuedSales.push({
+                modelYear: each.modelYear,
+                A: each.A,
+                B: each.B,
+              });
             });
-          });
+          } else {
+            creditsIssuedSales.push({
+              modelYear: item.modelYear.name,
+              A: item.creditAValue,
+              B: item.creditBValue,
+            });
         }
         if (item.category === 'pendingBalance') {
           pendingBalance.push({
