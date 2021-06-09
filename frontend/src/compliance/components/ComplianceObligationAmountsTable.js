@@ -17,8 +17,8 @@ const ComplianceObligationAmountsTable = (props) => {
     handleChangeSales,
     sales,
     statuses,
+    user,
   } = props;
-
   return (
     <div className="mt-4">
       <h3 className="mb-2">Compliance Obligation</h3>
@@ -28,16 +28,22 @@ const ComplianceObligationAmountsTable = (props) => {
             <table className="mr-3 no-border px-3">
               <tbody>
                 <tr className="ldv-sales ">
-                  <td className="text-blue " colSpan="3">
-                    {reportYear} Model Year LDV Consumer Sales\Leases Total:
+                  <td className="text-blue " colSpan={page === 'obligation' ? '3' : '1'}>
+                    {reportYear} Model Year LDV Sales:
                   </td>
                   <td>
+                    {page === 'obligation'
+                    && (
                     <input
                       className="form-control"
                       type="text"
                       onChange={handleChangeSales}
                       value={sales}
-                      disabled={['SAVED', 'UNSAVED'].indexOf(statuses.complianceObligation.status) < 0} />
+                      disabled={['SAVED', 'UNSAVED'].indexOf(statuses.complianceObligation.status) < 0}
+                    />
+                    )}
+                    {page === 'assessment'
+                    && (sales || 0)}
                   </td>
                 </tr>
                 <tr>
@@ -52,7 +58,7 @@ const ComplianceObligationAmountsTable = (props) => {
                 <tr>
                   <td className="text-blue">Large Volume Supplier Class A Ratio:</td>
                   <td>{ratios.zevClassA} %</td>
-                  <td className="text-blue">ZEV Class A Credit Reduction:</td>
+                  <td className="text-blue">&bull; ZEV Class A Credit Reduction:</td>
                   <td>
                     {getClassAReduction(
                       sales,
@@ -64,7 +70,7 @@ const ComplianceObligationAmountsTable = (props) => {
                 )}
                 <tr>
                   <td colSpan="2" />
-                  <td className="text-blue">Unspecified ZEV Class Credit Reduction:</td>
+                  <td className="text-blue">&bull; Unspecified ZEV Class Credit Reduction:</td>
                   <td>
                     {getUnspecifiedClassReduction(
                       getTotalReduction(sales, ratios.complianceRatio),

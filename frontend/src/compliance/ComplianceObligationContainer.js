@@ -357,7 +357,7 @@ const ComplianceObligationContainer = (props) => {
       }
       // Reduce current year's A credits first then current year's B.
       remainingUnspecifiedReduction = unspecifiedZevClassReduction - (unspecifiedZevClassLastYearA + unspecifiedZevClassLastYearB);
-      console.error(remainingUnspecifiedReduction);
+
       if (currentYearABalance > 0 && currentYearABalance >= remainingUnspecifiedReduction) {
         unspecifiedZevClassCurrentYearA = remainingUnspecifiedReduction;
       }
@@ -505,13 +505,6 @@ const ComplianceObligationContainer = (props) => {
     });
 
     reportDetailsArray.push({
-      category: 'UnspecifiedClassCreditReduction',
-      year: reportYear - 1,
-      a: unspecifiedReductions.lastYearA,
-      b: unspecifiedReductions.lastYearB,
-    });
-
-    reportDetailsArray.push({
       category: 'ProvisionalBalanceAfterCreditReduction',
       year: reportYear,
       a: creditBalance.A,
@@ -626,10 +619,8 @@ const ComplianceObligationContainer = (props) => {
             B: item.creditBValue,
           });
         }
-        if (item.category === 'creditsIssuedSales') {
-          console.log(item.issuedCredits)
-          if (item.issuedCredits) {
-            item.issuedCredits.forEach((each) => {
+        if (item.category === 'creditsIssuedSales' && item.issuedCredits) {
+          item.issuedCredits.forEach((each) => {
               creditsIssuedSales.push({
                 modelYear: each.modelYear,
                 A: each.A,
@@ -642,7 +633,6 @@ const ComplianceObligationContainer = (props) => {
               A: item.creditAValue,
               B: item.creditBValue,
             });
-          }
         }
         if (item.category === 'pendingBalance') {
           pendingBalance.push({

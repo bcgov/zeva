@@ -15,6 +15,7 @@ import TableSection from './TableSection';
 import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable';
 import CommentInput from '../../app/components/CommentInput';
 import DisplayComment from '../../app/components/DisplayComment';
+import parse from 'html-react-parser';
 
 const AssessmentDetailsPage = (props) => {
   const {
@@ -37,7 +38,7 @@ const AssessmentDetailsPage = (props) => {
     user,
     sales,
   } = props;
-
+  console.log(details);
   const {
     creditBalanceStart, pendingBalance, transactions, provisionalBalance,
   } = creditActivityDetails;
@@ -113,6 +114,8 @@ const AssessmentDetailsPage = (props) => {
             />
             )}
           </div>
+          {user.isGovernment
+          && (
           <div className="grey-border-area p-4 comment-box mt-2">
             {details.changelog.ldvChanges && (
               Object.keys(details.changelog.makesAdditions)
@@ -148,11 +151,23 @@ const AssessmentDetailsPage = (props) => {
               buttonText="Add Comment"
             />
           </div>
+          )}
         </div>
       </div>
       <div className="row mt-3">
         <div className="col-12">
           <div className="p-3 grey-border-area p-4">
+            {!user.isGovernment && statuses.assessment.status === 'ASSESSED' && (
+              <button
+                className="btn button primary float-right"
+                onClick={() => {
+                  console.log('create supplemental');
+                }}
+                type="button"
+              >
+                Create Supplemental Report
+              </button>
+            )}
             {user.isGovernment && (statuses.assessment.status === 'SUBMITTED' || statuses.assessment.status === 'UNSAVED') && (
               <button
                 className="btn button primary float-right"
@@ -250,10 +265,10 @@ const AssessmentDetailsPage = (props) => {
                   <tr key="balance-start">
                     <td className="text-blue" />
                     <td className="text-right">
-                      {creditBalanceStart.A}
+                      {creditBalanceStart.A || 0}
                     </td>
                     <td className="text-right">
-                      {creditBalanceStart.B}
+                      {creditBalanceStart.B || 0}
                     </td>
                   </tr>
 
@@ -382,19 +397,22 @@ const AssessmentDetailsPage = (props) => {
                     <th className="small-column text-center text-blue" />
                     <th className="small-column text-center text-blue" />
                   </tr>
-                  <tr>
-                    <td>
-                      Do you want to use ZEV Class A or B credits first for your unspecified ZEV class reduction?
-                    </td>
+                  {user.isGovernment
+                  && (
+                    <tr>
+                      <td>
+                        Do you want to use ZEV Class A or B credits first for your unspecified ZEV class reduction?
+                      </td>
 
-                    <td className="text-center">
-                      <input type="radio" />
-                    </td>
+                      <td className="text-center">
+                        <input type="radio" name="reduction" readOnly />
+                      </td>
 
-                    <td className="text-center">
-                      <input checked type="radio" />
-                    </td>
-                  </tr>
+                      <td className="text-center">
+                        <input checked type="radio" name="reduction" readOnly />
+                      </td>
+                    </tr>
+                  )}
                   <tr key="reduction-start">
                     <td className="text-blue">&bull; &nbsp; &nbsp; 2019 Credits:</td>
                     <td className="text-right">
@@ -450,45 +468,66 @@ const AssessmentDetailsPage = (props) => {
           </div>
         </div>
       </div>
-
-      <h3 className="mt-4 mb-1">Analyst Recommended Director Assessment</h3>
-      <div className="row mb-3">
-        <div className="col-12">
-          <div className="grey-border-area comment-box p-4 mt-2">
-            <div>
-              {radioDescriptions.map((each) => (
-                (each.displayOrder === 0)
-                && showDescription(each)
-              ))}
-              <div className="text-blue mt-3 ml-3 mb-1">
-                &nbsp;&nbsp; {details.organization.name} has not complied with section 10 (2) of the
-                Zero-Emission Vehicles Act for the {modelYear} adjustment period.
-              </div>
-              {radioDescriptions.map((each) => (
-                (each.displayOrder > 0)
-               && showDescription(each)
-              ))}
-              <label className="d-inline" htmlFor="penalty-radio">
-                <div>
-                  <input
-                    type="text"
-                    className="ml-4 mr-1"
-                    name="penalty-amount"
-                  />
-                  <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
+      {!user.isGovernment
+        && (
+          <>
+            <h3 className="mt-4 mb-1">Director Assessment</h3>
+            <div className="row mb-3">
+              <div className="col-12">
+                <div className="grey-border-area comment-box p-4 mt-2">
+                  <div className="text-blue">
+                    {details.assessment && (<div>The Director has assessed that {details.assessment.decision.replace(/{user.organization.name}/g, user.organization.name)} ${details.assessment.penalty} CAD</div>)}
+                    {details.bceidComment && 
+                    <div className="mt-2">{parse(details.bceidComment.comment)}</div>}
+                  </div>
                 </div>
-              </label>
-              <CommentInput
-                defaultComment={details.bceidComment}
-                handleAddComment={handleAddBceidComment}
-                handleCommentChange={handleCommentChangeBceid}
-                title="Assessment Message to the Supplier: "
-                buttonText="Add/Update Message"
-              />
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </>
+        )}
+      {user.isGovernment
+          && (
+            <>
+              <h3 className="mt-4 mb-1">Analyst Recommended Director Assessment</h3>
+              <div className="row mb-3">
+                <div className="col-12">
+                  <div className="grey-border-area comment-box p-4 mt-2">
+                    <div>
+                      {radioDescriptions.map((each) => (
+                        (each.displayOrder === 0)
+                && showDescription(each)
+                      ))}
+                      <div className="text-blue mt-3 ml-3 mb-1">
+                        &nbsp;&nbsp; {details.organization.name} has not complied with section 10 (2) of the
+                        Zero-Emission Vehicles Act for the {modelYear} adjustment period.
+                      </div>
+                      {radioDescriptions.map((each) => (
+                        (each.displayOrder > 0)
+               && showDescription(each)
+                      ))}
+                      <label className="d-inline" htmlFor="penalty-radio">
+                        <div>
+                          <input
+                            type="text"
+                            className="ml-4 mr-1"
+                            name="penalty-amount"
+                          />
+                          <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
+                        </div>
+                      </label>
+                      <CommentInput
+                        defaultComment={details.bceidComment}
+                        handleAddComment={handleAddBceidComment}
+                        handleCommentChange={handleCommentChangeBceid}
+                        title="Assessment Message to the Supplier: "
+                        buttonText="Add/Update Message"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
       <div className="row">
         <div className="col-sm-12">

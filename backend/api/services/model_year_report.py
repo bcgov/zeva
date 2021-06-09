@@ -94,6 +94,16 @@ def get_model_year_report_statuses(report):
                 'create_timestamp': report.update_timestamp,
                 'create_user': serializer.data
             }
+    if report.validation_status == ModelYearReportStatuses.ASSESSED:
+        assessment_status = 'ASSESSED'
+        user_profile = UserProfile.objects.filter(username=report.update_user)
+        if user_profile.exists():
+            serializer = MemberSerializer(user_profile.first(), read_only=True)
+
+            assessment_confirmed_by = {
+                'create_timestamp': report.update_timestamp,
+                'create_user': serializer.data
+            }
 
     return {
         'supplier_information': {

@@ -101,6 +101,7 @@ class ModelYearReportSerializer(ModelSerializer):
         request = self.context.get('request')
         if request.user.is_government:
             from_gov_sales = obj.get_ldv_sales_with_year(from_gov=True)
+            sales_changes = ''
             if from_gov_sales:
                 not_gov_sales = obj.get_ldv_sales_with_year(from_gov=False)
                 sales_changes = {'from_gov': from_gov_sales['sales'], 'not_from_gov': not_gov_sales['sales'], 'year': from_gov_sales['year']}

@@ -7,10 +7,11 @@ import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 const ComplianceReportTabs = (props) => {
   const { active, reportStatuses, user } = props;
   const { id } = useParams();
-
   const disableOtherTabs = reportStatuses.supplierInformation && reportStatuses.supplierInformation.status === 'UNSAVED';
-  const disableAssessment = (reportStatuses.reportSummary && reportStatuses.reportSummary.status !== 'SUBMITTED')
-    || (reportStatuses.assessment && reportStatuses.assessment.status === 'SUBMITTED' && !user.isGovernment);
+  const disableAssessment = (reportStatuses.reportSummary && (
+    reportStatuses.reportSummary.status !== 'SUBMITTED' && reportStatuses.assessment.status !== 'ASSESSED'
+  ) && user.isGovernment)
+    || (reportStatuses.assessment && reportStatuses.assessment.status !== 'ASSESSED' && !user.isGovernment);
   return (
     <ul
       className="nav nav-pills nav-justified compliance-report-tabs"

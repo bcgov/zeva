@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from rest_framework.response import Response
@@ -142,7 +143,8 @@ class ModelYearReportViewset(
                 'confirmations': confirmations,
                 'ldv_sales': report.ldv_sales,
                 'statuses': get_model_year_report_statuses(report),
-                'ldv_sales_previous': ldv_sales_previous.data
+                'ldv_sales_previous': ldv_sales_previous.data,
+                'credit_reduction_selection': report.credit_reduction_selection
             })
 
         serializer = ModelYearReportSerializer(report, context={'request': request})
@@ -276,24 +278,27 @@ class ModelYearReportViewset(
         if adjustments and isinstance(adjustments, list):
             for adjustment in adjustments:
                 model_year = ModelYear.objects.filter(
-                    name=adjustment.model_year
+                    name=adjustment.get('model_year')
                 ).first()
 
                 credit_class = CreditClass.objects.filter(
-                    credit_class=adjustment.credit_class
+                    credit_class=adjustment.get('credit_class')
                 ).first()
 
                 is_reduction = False
 
-                if adjustment.type == 'Reduction':
+                if adjustment.get('type') == 'Reduction':
                     is_reduction = True
 
-                if model_year and credit_class and adjustment.quantity:
+                if model_year and credit_class and adjustment.get('quantity'):
                     ModelYearReportAdjustment.objects.create(
                         credit_class_id=credit_class.id,
                         model_year_id=model_year.id,
-                        number_of_credits=adjustment.quantity,
+                        number_of_credits=adjustment.get('quantity'),
                         is_reduction=is_reduction,
+                        model_year_report=report,
+                        create_user=request.user.username,
+                        update_user=request.user.username,
                     )
 
         report = get_object_or_404(ModelYearReport, pk=pk)
@@ -322,13 +327,14 @@ class ModelYearReportViewset(
 
     @action(detail=True, methods=['get'])
     def assessment(self, request, pk):
-        if not request.user.is_government:
+
+
+        report = get_object_or_404(ModelYearReport, pk=pk)
+        serializer = ModelYearReportAssessmentSerializer(report, context={'request': request})
+        if not request.user.is_government and report.validation_status is not ModelYearReportStatuses.ASSESSED:
             return HttpResponse(
                 status=403, content=None
             )
-
-        report = get_object_or_404(ModelYearReport, pk=pk)
-        serializer = ModelYearReportAssessmentSerializer(report)
         return Response(serializer.data)
 
     @action(detail=False)

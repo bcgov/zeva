@@ -14,7 +14,6 @@ const ComplianceReportAlert = (props) => {
   const {
     history, validationStatus,
   } = report;
-
   let message = '';
   let title;
   let classname;
@@ -87,6 +86,11 @@ const ComplianceReportAlert = (props) => {
         title = 'Submitted';
         message = ` Model year report signed and submitted ${date} by ${userName}. Pending analyst review and Director assessment.`;
         classname = 'alert-warning';
+        break;
+      case 'ASSESSED':
+        title = 'Assessed';
+        message = `Model Year Report Assessed ${date} by the Director`;
+        classname = 'alert-success';
         break;
       default:
         title = '';
