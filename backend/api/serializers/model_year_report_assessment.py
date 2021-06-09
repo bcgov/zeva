@@ -87,10 +87,15 @@ class ModelYearReportAssessmentSerializer(
         }
 
     def get_assessment_comment(self, obj):
+        request = self.context.get('request')
         assessment_comment = ModelYearReportAssessmentComment.objects.filter(
             model_year_report=obj
         ).order_by('-create_timestamp')
-
+        if not request.user.is_government:
+            assessment_comment = ModelYearReportAssessmentComment.objects.filter(
+                model_year_report=obj,
+                to_director=False
+            ).order_by('-create_timestamp')
         if not assessment_comment:
             return []
         serializer = ModelYearReportAssessmentCommentSerializer(

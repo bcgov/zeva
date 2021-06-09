@@ -325,7 +325,7 @@ class ModelYearReportViewset(
 
 
         report = get_object_or_404(ModelYearReport, pk=pk)
-        serializer = ModelYearReportAssessmentSerializer(report)
+        serializer = ModelYearReportAssessmentSerializer(report, context={'request': request})
         if not request.user.is_government and report.validation_status is not ModelYearReportStatuses.ASSESSED:
             return HttpResponse(
                 status=403, content=None
