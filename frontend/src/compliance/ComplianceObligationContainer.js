@@ -357,7 +357,7 @@ const ComplianceObligationContainer = (props) => {
       }
       // Reduce current year's A credits first then current year's B.
       remainingUnspecifiedReduction = unspecifiedZevClassReduction - (unspecifiedZevClassLastYearA + unspecifiedZevClassLastYearB);
-      console.error(remainingUnspecifiedReduction);
+
       if (currentYearABalance > 0 && currentYearABalance >= remainingUnspecifiedReduction) {
         unspecifiedZevClassCurrentYearA = remainingUnspecifiedReduction;
       }
@@ -497,13 +497,6 @@ const ComplianceObligationContainer = (props) => {
     });
 
     // unspecified balance previous year
-    reportDetailsArray.push({
-      category: 'UnspecifiedClassCreditReduction',
-      year: reportYear - 1,
-      a: unspecifiedReductions.lastYearA,
-      b: unspecifiedReductions.lastYearB,
-    });
-
     reportDetailsArray.push({
       category: 'UnspecifiedClassCreditReduction',
       year: reportYear - 1,
