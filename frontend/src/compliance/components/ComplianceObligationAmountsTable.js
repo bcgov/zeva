@@ -19,7 +19,6 @@ const ComplianceObligationAmountsTable = (props) => {
     statuses,
     user,
   } = props;
-  console.log(sales);
   return (
     <div className="mt-4">
       <h3 className="mb-2">Compliance Obligation</h3>

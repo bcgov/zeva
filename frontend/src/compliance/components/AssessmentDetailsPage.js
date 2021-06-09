@@ -15,6 +15,7 @@ import TableSection from './TableSection';
 import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable';
 import CommentInput from '../../app/components/CommentInput';
 import DisplayComment from '../../app/components/DisplayComment';
+import parse from 'html-react-parser';
 
 const AssessmentDetailsPage = (props) => {
   const {
@@ -264,10 +265,10 @@ const AssessmentDetailsPage = (props) => {
                   <tr key="balance-start">
                     <td className="text-blue" />
                     <td className="text-right">
-                      {creditBalanceStart.A}
+                      {creditBalanceStart.A || 0}
                     </td>
                     <td className="text-right">
-                      {creditBalanceStart.B}
+                      {creditBalanceStart.B || 0}
                     </td>
                   </tr>
 
@@ -467,6 +468,23 @@ const AssessmentDetailsPage = (props) => {
           </div>
         </div>
       </div>
+      {!user.isGovernment
+        && (
+          <>
+            <h3 className="mt-4 mb-1">Director Assessment</h3>
+            <div className="row mb-3">
+              <div className="col-12">
+                <div className="grey-border-area comment-box p-4 mt-2">
+                  <div className="text-blue">
+                    {details.assessment && (<div>The Director has assessed that {details.assessment.decision.replace(/{user.organization.name}/g, user.organization.name)} ${details.assessment.penalty} CAD</div>)}
+                    {details.bceidComment && 
+                    <div className="mt-2">{parse(details.bceidComment.comment)}</div>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       {user.isGovernment
           && (
             <>

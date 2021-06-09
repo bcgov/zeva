@@ -14,7 +14,6 @@ const ComplianceReportAlert = (props) => {
   const {
     history, validationStatus,
   } = report;
-  console.log(validationStatus);
   let message = '';
   let title;
   let classname;

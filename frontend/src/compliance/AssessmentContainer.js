@@ -70,7 +70,10 @@ const AssessmentContainer = (props) => {
         .then(axios.spread((reportDetailsResponse, ratioResponse, creditActivityResponse, assessmentResponse) => {
           const idirCommentArrayResponse = [];
           let bceidCommentResponse = {};
-          const assessmentDescriptions = assessmentResponse.data.descriptions;
+          const {
+            assessment: { penalty, decision },
+            descriptions: assessmentDescriptions,
+          } = assessmentResponse.data;
           setRadioDescriptions(assessmentDescriptions);
           assessmentResponse.data.assessmentComment.forEach((item) => {
             if (item.toDirector === true) {
@@ -79,6 +82,7 @@ const AssessmentContainer = (props) => {
               bceidCommentResponse = item;
             }
           });
+
           let supplierClass;
           if (reportDetailsResponse.data.supplierClass === 'L') {
             supplierClass = 'Large';
@@ -98,7 +102,7 @@ const AssessmentContainer = (props) => {
             statuses: reportStatuses,
             ldvSales,
             ldvSalesUpdated,
-            changelog
+            changelog,
           } = reportDetailsResponse.data;
           const filteredRatio = ratioResponse.data.filter((data) => data.modelYear === modelYear.toString())[0];
           setRatios(filteredRatio);
@@ -113,7 +117,6 @@ const AssessmentContainer = (props) => {
             makesChanges.additions = makesAdditions;
             setMakes(currentMakes);
           }
-
           setStatuses(reportStatuses);
           setSales(ldvSales);
           setDetails({
@@ -123,6 +126,8 @@ const AssessmentContainer = (props) => {
             ldvSales,
             class: supplierClass,
             assessment: {
+              penalty,
+              decision,
               history: modelYearReportHistory,
               validationStatus,
             },
