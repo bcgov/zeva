@@ -111,6 +111,7 @@ class ModelYearReportComplianceObligationViewset(
                 )
             compliance_obj.save()
 
+        print(credit_reduction_selection)
         if credit_reduction_selection:
             report = ModelYearReport.objects.get(
                 id=id

@@ -8,6 +8,7 @@ import CustomPropTypes from '../app/utilities/props';
 import AssessmentEditPage from './components/AssessmentEditPage';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
+import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import Loading from '../app/components/Loading';
 import CONFIG from '../app/config';
 
@@ -30,6 +31,30 @@ const AssessmentEditContainer = (props) => {
   });
   const [sales, setSales] = useState({});
   const [ratios, setRatios] = useState({});
+  const [years, setYears] = useState([]);
+  const [adjustments, setAdjustments] = useState([]);
+
+  const addAdjustment = () => {
+    adjustments.push({
+      creditClass: 'A',
+      creditValue: 0,
+      quantity: 0,
+      type: 'Allocation',
+    });
+
+    setAdjustments([...adjustments]);
+  };
+
+  const handleChangeAdjustment = (value, property, index) => {
+    adjustments[index][property] = value;
+
+    setAdjustments([...adjustments]);
+  };
+
+  const handleDeleteAdjustment = (index) => {
+    adjustments.splice(index, 1);
+    setAdjustments([...adjustments]);
+  };
 
   const handleChangeMake = (event) => {
     const { value } = event.target;
@@ -58,9 +83,12 @@ const AssessmentEditContainer = (props) => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
+    console.error(adjustments);
+
     const data = {
       makes,
       sales,
+      adjustments,
     };
 
     axios.patch(
@@ -79,8 +107,10 @@ const AssessmentEditContainer = (props) => {
 
     const makesPromise = axios.get(ROUTES_COMPLIANCE.MAKES.replace(/:id/g, id));
 
-    Promise.all([detailsPromise, ratiosPromise, makesPromise]).then(
-      ([response, ratiosResponse, makesResponse]) => {
+    const yearsPromise = axios.get(ROUTES_VEHICLES.YEARS);
+
+    Promise.all([detailsPromise, ratiosPromise, makesPromise, yearsPromise]).then(
+      ([response, ratiosResponse, makesResponse, yearsResponse]) => {
         const {
           makes: modelYearReportMakes,
           modelYear: reportModelYear,
@@ -132,6 +162,9 @@ const AssessmentEditContainer = (props) => {
           (data) => data.modelYear === year.toString(),
         )[0];
         setRatios(filteredRatio);
+
+        setYears(yearsResponse.data);
+
         setLoading(false);
       },
     );
@@ -169,6 +202,11 @@ const AssessmentEditContainer = (props) => {
         ratios={ratios}
         sales={sales}
         supplierMakes={supplierMakesList}
+        years={years}
+        adjustments={adjustments}
+        addAdjustment={addAdjustment}
+        handleChangeAdjustment={handleChangeAdjustment}
+        handleDeleteAdjustment={handleDeleteAdjustment}
       />
     </>
   );
