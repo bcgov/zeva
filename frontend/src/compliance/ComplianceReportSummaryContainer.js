@@ -142,8 +142,6 @@ const ComplianceReportSummaryContainer = (props) => {
       const transfersOut = { A: 0, B: 0 };
       const creditsIssuedSales = { A: 0, B: 0 };
       const complianceOffsetNumbers = { A: 0, B: 0 };
-      const unspecifiedClassCreditReduction = [];
-      const classAReduction = [];
       const totalCreditReduction = { A: 0, B: 0 };
       const { complianceOffset, ldvSales} = creditActivityResponse.data;
       // OFFSET
@@ -174,22 +172,12 @@ const ComplianceReportSummaryContainer = (props) => {
         if (item.category === "UnspecifiedClassCreditReduction") {
           const aValue = parseFloat(item.creditAValue);
           const bValue = parseFloat(item.creditBValue);
-         unspecifiedClassCreditReduction.push({
-           modelYear: item.modelYear.name,
-           A: aValue,
-           B: bValue,
-         });
           totalCreditReduction.A += aValue;
           totalCreditReduction.B +=bValue
         }
         if (item.category === 'ClassAReduction') {
-           const aValue = parseFloat(item.creditAValue);
-           const bValue = parseFloat(item.creditBValue);
-           classAReduction.push({
-             modelYear: item.modelYear.name,
-             A: aValue,
-             B: bValue,
-           });
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
           totalCreditReduction.A += aValue;
           totalCreditReduction.B += bValue;
          }
