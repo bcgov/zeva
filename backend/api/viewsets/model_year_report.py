@@ -206,13 +206,6 @@ class ModelYearReportViewset(
             )
         
         if confirmations:
-            # confirmation = ModelYearReportConfirmation.objects.filter(
-            #     model_year_report_id=model_year_report_id,
-            #     signing_authority_assertion__module="compliance_summary"
-            # ).values_list(
-            #     'signing_authority_assertion_id', flat=True
-            # ).distinct()
-
             for confirmation in confirmations:
                 summary_confirmation = ModelYearReportConfirmation.objects.create(
                     create_user=request.user.username,
