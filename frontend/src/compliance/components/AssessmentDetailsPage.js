@@ -1,6 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import parse from 'html-react-parser';
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
 import history from '../../app/History';
@@ -13,7 +14,6 @@ import TableSection from './TableSection';
 import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable';
 import CommentInput from '../../app/components/CommentInput';
 import DisplayComment from '../../app/components/DisplayComment';
-import parse from 'html-react-parser';
 
 const AssessmentDetailsPage = (props) => {
   const {
@@ -37,21 +37,30 @@ const AssessmentDetailsPage = (props) => {
     sales,
     handleSubmit,
   } = props;
-  console.log(details);
   const {
     creditBalanceStart, pendingBalance, transactions, provisionalBalance,
   } = creditActivityDetails;
   const {
     creditsIssuedSales, transfersIn, transfersOut,
   } = transactions;
+  const directorAction = user.isGovernment
+  && ['RECOMMENDED'].indexOf(details.assessment.validationStatus) >= 0
+  && user.hasPermission('SIGN_COMPLIANCE_REPORT');
+
+  const analystAction = user.isGovernment
+  && ['SUBMITTED'].indexOf(details.assessment.validationStatus) >= 0
+  && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
+
   const [showModal, setShowModal] = useState(false);
   const disabledInputs = false;
   const showDescription = (each) => (
     <div className="mb-3" key={each.id}>
       <input
+        defaultChecked={details.assessment.decision === each.description}
         className="mr-3"
         type="radio"
         name="assessment"
+        disabled={directorAction || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0}
         onChange={(event) => {
           setRadioSelection(each.id);
         }}
@@ -126,7 +135,7 @@ const AssessmentDetailsPage = (props) => {
             <CommentInput
               handleAddComment={handleAddIdirComment}
               handleCommentChange={handleCommentChangeIdir}
-              title="Add comment to director: "
+              title={analystAction? "Add comment to director: ": "Add comment to the analyst" }
               buttonText="Add Comment"
             />
           </div>
@@ -384,11 +393,11 @@ const AssessmentDetailsPage = (props) => {
                       </td>
 
                       <td className="text-center">
-                        <input type="radio" name="reduction" readOnly />
+                        <input type="radio" name="reduction" readOnly disabled={directorAction || analystAction}/>
                       </td>
 
                       <td className="text-center">
-                        <input checked type="radio" name="reduction" readOnly />
+                        <input checked type="radio" name="reduction" readOnly disabled={directorAction || analystAction} />
                       </td>
                     </tr>
                   )}
@@ -456,8 +465,8 @@ const AssessmentDetailsPage = (props) => {
                 <div className="grey-border-area comment-box p-4 mt-2">
                   <div className="text-blue">
                     {details.assessment && (<div>The Director has assessed that {details.assessment.decision.replace(/{user.organization.name}/g, user.organization.name)} ${details.assessment.penalty} CAD</div>)}
-                    {details.bceidComment && 
-                    <div className="mt-2">{parse(details.bceidComment.comment)}</div>}
+                    {details.bceidComment
+                    && <div className="mt-2">{parse(details.bceidComment.comment)}</div>}
                   </div>
                 </div>
               </div>
@@ -487,8 +496,10 @@ const AssessmentDetailsPage = (props) => {
                       <label className="d-inline" htmlFor="penalty-radio">
                         <div>
                           <input
+                            disabled={directorAction || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0}
                             type="text"
                             className="ml-4 mr-1"
+                            value={details.assessment.penalty}
                             name="penalty-amount"
                           />
                           <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
@@ -511,9 +522,35 @@ const AssessmentDetailsPage = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <div className="action-bar mt-0">
+            {directorAction
+          && (
+          <>
             <span className="left-content">
-              {/* <Button buttonType="back" locationRoute="/compliance/reports" /> */}
+              <button
+                className="button text-danger"
+                onClick={() => {
+                  handleSubmit('SUBMITTED');
+                }}
+                type="button"
+              >
+                Return to Analyst
+              </button>
             </span>
+
+            <span className="right-content">
+              <Button
+                buttonType="submit"
+                optionalClassname="button primary"
+                optionalText="Issue Assessment"
+                action={() => {
+                  handleSubmit('ASSESSED');
+                }}
+              />
+            </span>
+          </>
+          )}
+            {analystAction
+            && (
             <span className="right-content">
               <Button
                 buttonType="submit"
@@ -524,6 +561,7 @@ const AssessmentDetailsPage = (props) => {
                 }}
               />
             </span>
+            )}
           </div>
         </div>
       </div>
