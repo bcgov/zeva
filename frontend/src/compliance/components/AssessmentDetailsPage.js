@@ -38,6 +38,7 @@ const AssessmentDetailsPage = (props) => {
     handleSubmit,
   } = props;
   console.log(details);
+  
   const {
     creditBalanceStart, pendingBalance, transactions, provisionalBalance,
   } = creditActivityDetails;
@@ -63,6 +64,17 @@ const AssessmentDetailsPage = (props) => {
       </label>
     </div>
   );
+   let disabledRecommendBtn = false;
+
+   const pendingSalesExist = () => {
+     if (Object.keys(pendingBalance).length > 0) {
+       pendingBalance.forEach((each) => {
+         if (parseInt(each.A) > 0 || parseInt(each.B) > 0) {
+           disabledRecommendBtn = true;
+         }
+       });
+     }
+   };
   if (loading) {
     return <Loading />;
   }
@@ -76,6 +88,7 @@ const AssessmentDetailsPage = (props) => {
 
   return (
     <div id="assessment-details" className="page">
+      {pendingSalesExist()}
       <div className="row mt-3">
         <div className="col-sm-12">
           <h2>{modelYear} Model Year Report</h2>
@@ -519,6 +532,7 @@ const AssessmentDetailsPage = (props) => {
                 buttonType="submit"
                 optionalClassname="button primary"
                 optionalText="Recommend Assessment"
+                disabled={disabledRecommendBtn}
                 action={() => {
                   handleSubmit('RECOMMENDED');
                 }}
@@ -527,7 +541,6 @@ const AssessmentDetailsPage = (props) => {
           </div>
         </div>
       </div>
-
     </div>
   );
 };
