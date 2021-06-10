@@ -44,6 +44,19 @@ const AssessmentContainer = (props) => {
   const handleCommentChangeIdir = (text) => {
     setIdirComment(text);
   };
+
+  const handleSubmit = (status) => {
+    const data = {
+      modelYearReportId: id,
+      validation_status: status,
+    };
+
+    axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then((response) => {
+      history.push(ROUTES_COMPLIANCE.REPORTS);
+      history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+    });
+  };
+
   const handleCommentChangeBceid = (text) => {
     setBceidComment(text);
   };
@@ -274,6 +287,7 @@ const AssessmentContainer = (props) => {
         statuses={statuses}
         user={user}
         sales={sales}
+        handleSubmit={handleSubmit}
       />
     </>
   );

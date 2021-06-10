@@ -188,7 +188,7 @@ class ModelYearReportViewset(
     def submission(self, request):
         validation_status = request.data.get('validation_status')
         model_year_report_id = request.data.get('model_year_report_id')
-        confirmations = request.data.get('confirmation')
+        confirmations = request.data.get('confirmation', None)
 
         model_year_report_update = ModelYearReport.objects.filter(
             id=model_year_report_id
@@ -205,22 +205,16 @@ class ModelYearReportViewset(
                 create_user=request.user.username,
             )
         
-        confirmation = ModelYearReportConfirmation.objects.filter(
-            model_year_report_id=model_year_report_id,
-            signing_authority_assertion__module="compliance_summary"
-        ).values_list(
-            'signing_authority_assertion_id', flat=True
-        ).distinct()
-
-        for confirmation in confirmations:
-            summary_confirmation = ModelYearReportConfirmation.objects.create(
-                create_user=request.user.username,
-                model_year_report_id=model_year_report_id,
-                has_accepted=True,
-                title=request.user.title,
-                signing_authority_assertion_id=confirmation
-            )
-            summary_confirmation.save()
+        if confirmations:
+            for confirmation in confirmations:
+                summary_confirmation = ModelYearReportConfirmation.objects.create(
+                    create_user=request.user.username,
+                    model_year_report_id=model_year_report_id,
+                    has_accepted=True,
+                    title=request.user.title,
+                    signing_authority_assertion_id=confirmation
+                )
+                summary_confirmation.save()
 
         return HttpResponse(
             status=201, content="Report Submitted"
