@@ -37,7 +37,6 @@ const AssessmentEditContainer = (props) => {
   const addAdjustment = () => {
     adjustments.push({
       creditClass: 'A',
-      creditValue: 0,
       quantity: 0,
       type: 'Allocation',
     });
@@ -83,8 +82,6 @@ const AssessmentEditContainer = (props) => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    console.error(adjustments);
-
     const data = {
       makes,
       sales,
@@ -121,6 +118,7 @@ const AssessmentEditContainer = (props) => {
           validationStatus,
           ldvSales,
           supplierClass,
+          adjustments: adjustmentsData,
         } = response.data;
         const year = parseInt(reportModelYear.name, 10);
 
@@ -128,6 +126,18 @@ const AssessmentEditContainer = (props) => {
 
         setModelYear(year);
         setStatuses(reportStatuses);
+
+        const adjustmentArr = [];
+
+        adjustmentsData.forEach((each) => {
+          adjustmentArr.push({
+            creditClass: each.creditClass,
+            modelYear: each.modelYear,
+            quantity: each.numberOfCredits,
+            type: each.isReduction ? 'Reduction' : 'Allocation',
+          });
+        });
+        setAdjustments(adjustmentArr);
 
         if (modelYearReportMakes) {
           const supplierCurrentMakes = supplierMakes.map((each) => each.make);
