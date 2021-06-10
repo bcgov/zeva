@@ -135,7 +135,7 @@ const AssessmentDetailsPage = (props) => {
             <CommentInput
               handleAddComment={handleAddIdirComment}
               handleCommentChange={handleCommentChangeIdir}
-              title="Add comment to director: "
+              title={analystAction? "Add comment to director: ": "Add comment to the analyst" }
               buttonText="Add Comment"
             />
           </div>
@@ -393,11 +393,11 @@ const AssessmentDetailsPage = (props) => {
                       </td>
 
                       <td className="text-center">
-                        <input type="radio" name="reduction" readOnly />
+                        <input type="radio" name="reduction" readOnly disabled={directorAction || analystAction}/>
                       </td>
 
                       <td className="text-center">
-                        <input checked type="radio" name="reduction" readOnly />
+                        <input checked type="radio" name="reduction" readOnly disabled={directorAction || analystAction} />
                       </td>
                     </tr>
                   )}
