@@ -20,13 +20,14 @@ from api.serializers.model_year_report_make import \
     ModelYearReportMakeSerializer
 from api.serializers.model_year_report_history import \
     ModelYearReportHistorySerializer
+from api.serializers.model_year_report_adjustment import \
+    ModelYearReportAdjustmentSerializer
 from api.serializers.user import MemberSerializer
 from api.serializers.vehicle import ModelYearSerializer
 from api.services.model_year_report import get_model_year_report_statuses
 
 
 class ModelYearReportSerializer(ModelSerializer):
-
     create_user = SerializerMethodField()
     model_year = ModelYearSerializer()
     model_year_report_addresses = ModelYearReportAddressSerializer(many=True)
@@ -39,6 +40,7 @@ class ModelYearReportSerializer(ModelSerializer):
     ldv_sales_previous = SerializerMethodField()
     avg_sales = SerializerMethodField()
     changelog = SerializerMethodField()
+    adjustments = ModelYearReportAdjustmentSerializer(many=True)
 
     def get_ldv_sales_previous(self, obj):
         year = int(obj.model_year.name)
@@ -140,7 +142,7 @@ class ModelYearReportSerializer(ModelSerializer):
             'model_year_report_addresses', 'makes', 'validation_status',
             'create_user', 'model_year_report_history', 'confirmations',
             'statuses', 'ldv_sales', 'ldv_sales_previous', 'avg_sales',
-            'credit_reduction_selection', 'changelog'
+            'credit_reduction_selection', 'changelog', 'adjustments',
         )
 
 

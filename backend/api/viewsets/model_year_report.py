@@ -276,6 +276,10 @@ class ModelYearReportViewset(
 
         adjustments = request.data.get('adjustments', None)
         if adjustments and isinstance(adjustments, list):
+            ModelYearReportAdjustment.objects.filter(
+                model_year_report=report
+            ).delete()
+
             for adjustment in adjustments:
                 model_year = ModelYear.objects.filter(
                     name=adjustment.get('model_year')
@@ -327,8 +331,6 @@ class ModelYearReportViewset(
 
     @action(detail=True, methods=['get'])
     def assessment(self, request, pk):
-
-
         report = get_object_or_404(ModelYearReport, pk=pk)
         serializer = ModelYearReportAssessmentSerializer(report, context={'request': request})
         if not request.user.is_government and report.validation_status is not ModelYearReportStatuses.ASSESSED:
