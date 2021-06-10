@@ -626,13 +626,7 @@ const ComplianceObligationContainer = (props) => {
                 A: each.A,
                 B: each.B,
               });
-            });
-          } else {
-            creditsIssuedSales.push({
-              modelYear: item.modelYear.name,
-              A: item.creditAValue,
-              B: item.creditBValue,
-            });
+          });
         }
         if (item.category === 'pendingBalance') {
           pendingBalance.push({
