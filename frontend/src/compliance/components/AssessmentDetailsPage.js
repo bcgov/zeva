@@ -37,6 +37,7 @@ const AssessmentDetailsPage = (props) => {
     statuses,
     user,
     sales,
+    handleSubmit,
   } = props;
   console.log(details);
   const {
@@ -75,25 +76,25 @@ const AssessmentDetailsPage = (props) => {
   const leftoverReduction = ((ratios.complianceRatio / 100) * details.ldvSales)
   - ((ratios.zevClassA / 100) * details.ldvSales);
 
-  const modal = (
-    <Modal
-      cancelLabel="No"
-      confirmLabel="Yes"
-      handleCancel={() => { setShowModal(false); }}
-      handleSubmit={() => { setShowModal(false); handleCancelConfirmation(); }}
-      modalClass="w-75"
-      showModal={showModal}
-      confirmClass="button primary"
-    >
-      <div className="my-3">
-        <h3>
-          Do you want to edit this page? This action will allow you to make further changes to{' '}
-          this information, it will also query the database to retrieve any recent updates.{' '}
-          Your previous confirmation will be cleared.
-        </h3>
-      </div>
-    </Modal>
-  );
+  // const modal = (
+  //   <Modal
+  //     cancelLabel="No"
+  //     confirmLabel="Yes"
+  //     handleCancel={() => { setShowModal(false); }}
+  //     handleSubmit={() => { setShowModal(false); handleCancelConfirmation(); }}
+  //     modalClass="w-75"
+  //     showModal={showModal}
+  //     confirmClass="button primary"
+  //   >
+  //     <div className="my-3">
+  //       <h3>
+  //         Do you want to edit this page? This action will allow you to make further changes to{' '}
+  //         this information, it will also query the database to retrieve any recent updates.{' '}
+  //         Your previous confirmation will be cleared.
+  //       </h3>
+  //     </div>
+  //   </Modal>
+  // );
 
   return (
     <div id="assessment-details" className="page">
@@ -541,13 +542,13 @@ const AssessmentDetailsPage = (props) => {
                 optionalClassname="button primary"
                 optionalText="Recommend Assessment"
                 action={() => {
-                  console.log('submit!');
+                  handleSubmit('RECOMMENDED');
                 }}
               />
             </span>
           </div>
         </div>
-        {modal}
+        {/* {modal} */}
       </div>
 
     </div>
@@ -569,5 +570,6 @@ AssessmentDetailsPage.propTypes = {
   modelYear: PropTypes.number.isRequired,
   statuses: PropTypes.shape().isRequired,
   sales: PropTypes.number,
+  handleSubmit: PropTypes.func.isRequired,
 };
 export default AssessmentDetailsPage;
