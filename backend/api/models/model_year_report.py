@@ -5,6 +5,7 @@ from django.db import models
 from enumfields import EnumField
 
 from auditable.models import Auditable
+from api.models.model_year_report_adjustment import ModelYearReportAdjustment
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.models.model_year_report_make import ModelYearReportMake
 from api.models.model_year_report_ldv_sales import ModelYearReportLDVSales
@@ -67,6 +68,14 @@ class ModelYearReport(Auditable):
     @property
     def ldv_sales(self):
         return self.get_ldv_sales(from_gov=False)
+
+    @property
+    def adjustments(self):
+        data = ModelYearReportAdjustment.objects.filter(
+            model_year_report_id=self.id
+        )
+
+        return data
 
     def get_ldv_sales(self, from_gov=False):
         row = ModelYearReportLDVSales.objects.filter(
