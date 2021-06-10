@@ -75,7 +75,6 @@ const ComplianceReportSummaryContainer = (props) => {
         validationStatus,
         confirmations,
         modelYear: reportModelYear,
-        ldvSales,
       } = reportDetailsResponse.data;
       // ALL STATUSES
       setConfirmationStatuses(statuses);
@@ -102,13 +101,17 @@ const ComplianceReportSummaryContainer = (props) => {
         },
       });
       // CONSUMER SALES
+      let supplierClassText = '';
       let { supplierClass } = reportDetailsResponse.data;
       if (supplierClass === 'M') {
-        supplierClass = 'Medium Volume Supplier';
+        supplierClass = 'Medium';
+        supplierClassText = 'Medium Volume Supplier';
       } else if (supplierClass === 'L') {
-        supplierClass = 'Large Volume Supplier';
+        supplierClass = 'Large';
+        supplierClassText = 'Large Volume Supplier';
       } else {
-        supplierClass = 'Small Volume Supplier';
+        supplierClass = 'Small';
+        supplierClassText = 'Small Volume Supplier';
       }
 
       let pendingZevSales = 0;
@@ -133,11 +136,14 @@ const ComplianceReportSummaryContainer = (props) => {
       const provisionalBalanceBeforeOffset = { A: 0, B: 0 };
       const provisionalBalanceAfterOffset = { A: 0, B: 0 };
       const pendingBalance = { A: 0, B: 0 };
+      const creditDeficit = { A: 0, B: 0 };
+      const provisionalBalanceAfterCreditReduction = { A: 0, B: 0 };
       const transfersIn = { A: 0, B: 0 };
       const transfersOut = { A: 0, B: 0 };
       const creditsIssuedSales = { A: 0, B: 0 };
       const complianceOffsetNumbers = { A: 0, B: 0 };
-      const { complianceOffset } = creditActivityResponse.data;
+      const totalCreditReduction = { A: 0, B: 0 };
+      const { complianceOffset, ldvSales} = creditActivityResponse.data;
       // OFFSET
       if (complianceOffset) {
         complianceOffset.forEach((item) => {
@@ -163,15 +169,31 @@ const ComplianceReportSummaryContainer = (props) => {
           provisionalBalanceAfterOffset.A += aValue;
           provisionalBalanceAfterOffset.B += aValue;
         }
+        if (item.category === "UnspecifiedClassCreditReduction") {
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          totalCreditReduction.A += aValue;
+          totalCreditReduction.B +=bValue
+        }
+        if (item.category === 'ClassAReduction') {
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          totalCreditReduction.A += aValue;
+          totalCreditReduction.B += bValue;
+         }
+        if (item.category === 'CreditDeficit') {
+          creditDeficit.A = item.creditAValue;
+          creditDeficit.B = item.creditBValue;
+        }
+        if (item.category === 'ProvisionalBalanceAfterCreditReduction') {
+          provisionalBalanceAfterCreditReduction.A = item.creditAValue;
+          provisionalBalanceAfterCreditReduction.B = item.creditBValue;
+        }
         if (item.category === 'pendingBalance') {
           const aValue = parseFloat(item.creditAValue);
           const bValue = parseFloat(item.creditBValue);
           pendingBalance.A += aValue;
           pendingBalance.B += bValue;
-          provisionalBalanceBeforeOffset.A += aValue;
-          provisionalBalanceBeforeOffset.B += bValue;
-          provisionalBalanceAfterOffset.A += aValue;
-          provisionalBalanceAfterOffset.B += bValue;
           if (pendingBalance.A > 0 || pendingBalance.B > 0) {
             setPendingBalanceExist(true);
           }
@@ -202,7 +224,11 @@ const ComplianceReportSummaryContainer = (props) => {
         pendingBalance,
         provisionalBalanceBeforeOffset,
         provisionalBalanceAfterOffset,
+        provisionalBalanceAfterCreditReduction,
         supplierClass,
+        supplierClassText,
+        creditDeficit,
+        totalCreditReduction,
         ldvSales,
         transactions: {
           creditsIssuedSales,
