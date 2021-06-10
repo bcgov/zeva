@@ -155,12 +155,6 @@ class ModelYearReportComplianceObligationViewset(
                 snapshot, context={'request': request, 'kwargs': kwargs}, many=True
             )
         else:
-            # transactions = CreditTransaction.objects.filter(
-            #     Q(credit_to=organization) | Q(debit_from=organization)
-            # )
-            # serializer = ModelYearReportComplianceObligationDetailsSerializer(
-            #     transactions, context={'request': request, 'kwargs': kwargs}
-            # )
             report = ModelYearReport.objects.get(
                 id=id
             )
@@ -308,10 +302,12 @@ class ModelYearReportComplianceObligationViewset(
 
             return Response({
                 'compliance_obligation': content,
-                'compliance_offset': compliance_offset
+                'compliance_offset': compliance_offset,
+                'ldv_sales': report.ldv_sales
             })
 
         return Response({
             'compliance_obligation': serializer.data,
-            'compliance_offset': compliance_offset
+            'compliance_offset': compliance_offset,
+            'ldv_sales': report.ldv_sales
          })
