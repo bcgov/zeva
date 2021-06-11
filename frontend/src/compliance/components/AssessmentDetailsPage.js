@@ -43,6 +43,7 @@ const AssessmentDetailsPage = (props) => {
   const {
     creditsIssuedSales, transfersIn, transfersOut,
   } = transactions;
+  console.log(details)
   const directorAction = user.isGovernment
   && ['RECOMMENDED'].indexOf(details.assessment.validationStatus) >= 0
   && user.hasPermission('SIGN_COMPLIANCE_REPORT');
@@ -264,7 +265,7 @@ const AssessmentDetailsPage = (props) => {
                       B
                     </th>
                   </tr>
-                  <tr key="balance-start">
+                  <tr key="balance-start" className={details.assessment.inCompliance? '': 'not-in-compliance'}>
                     <td className="text-blue" />
                     <td className="text-right">
                       {creditBalanceStart.A || 0}
@@ -455,7 +456,7 @@ const AssessmentDetailsPage = (props) => {
                       B
                     </th>
                   </tr>
-                  <tr key="start">
+                  <tr key="start" className={details.assessment.inCompliance? '': 'not-in-compliance'}>
                     <td className="text-blue">&bull; &nbsp; &nbsp; {modelYear} Credits:</td>
                     <td className="text-right">
                       977.76
@@ -478,7 +479,7 @@ const AssessmentDetailsPage = (props) => {
               <div className="col-12">
                 <div className="grey-border-area comment-box p-4 mt-2">
                   <div className="text-blue">
-                    {details.assessment && (<div>The Director has assessed that {details.assessment.decision.replace(/{user.organization.name}/g, user.organization.name)} ${details.assessment.penalty} CAD</div>)}
+                    {details.assessment && (<div>The Director has assessed that {details.assessment.decision.replace(/{user.organization.name}/g, user.organization.name)} ${details.assessment.assessmentPenalty} CAD</div>)}
                     {details.bceidComment
                     && <div className="mt-2">{parse(details.bceidComment.comment)}</div>}
                   </div>
@@ -513,7 +514,7 @@ const AssessmentDetailsPage = (props) => {
                             disabled={directorAction || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0}
                             type="text"
                             className="ml-4 mr-1"
-                            value={details.assessment.penalty}
+                            value={details.assessment.assessmentPenalty}
                             name="penalty-amount"
                           />
                           <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>

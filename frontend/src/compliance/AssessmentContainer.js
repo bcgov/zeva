@@ -84,7 +84,9 @@ const AssessmentContainer = (props) => {
           const idirCommentArrayResponse = [];
           let bceidCommentResponse = {};
           const {
-            assessment: { penalty, decision },
+            assessment: {
+              penalty: assessmentPenalty, decision, deficit, inCompliance,
+            },
             descriptions: assessmentDescriptions,
           } = assessmentResponse.data;
           setRadioDescriptions(assessmentDescriptions);
@@ -139,7 +141,7 @@ const AssessmentContainer = (props) => {
             ldvSales,
             class: supplierClass,
             assessment: {
-              penalty,
+              assessmentPenalty: assessmentPenalty,
               decision,
               history: modelYearReportHistory,
               validationStatus,
