@@ -72,6 +72,19 @@ const AssessmentDetailsPage = (props) => {
       </label>
     </div>
   );
+  let disabledRecommendBtn = false;
+  let recommendTooltip = ""
+
+   const pendingSalesExist = () => {
+     if (Object.keys(pendingBalance).length > 0) {
+       pendingBalance.forEach((each) => {
+         if (parseInt(each.A) > 0 || parseInt(each.B) > 0) {
+           disabledRecommendBtn = true;
+           recommendTooltip = "There are some pending credit applications, please edit/referesh consumer zev sales to fetch the latest data";
+         }
+       });
+     }
+   };
   if (loading) {
     return <Loading />;
   }
@@ -85,6 +98,7 @@ const AssessmentDetailsPage = (props) => {
 
   return (
     <div id="assessment-details" className="page">
+      {pendingSalesExist()}
       <div className="row mt-3">
         <div className="col-sm-12">
           <h2>{modelYear} Model Year Report</h2>
@@ -553,9 +567,11 @@ const AssessmentDetailsPage = (props) => {
             && (
             <span className="right-content">
               <Button
+                buttonTooltip={recommendTooltip}
                 buttonType="submit"
                 optionalClassname="button primary"
                 optionalText="Recommend Assessment"
+                disabled={disabledRecommendBtn}
                 action={() => {
                   handleSubmit('RECOMMENDED');
                 }}
@@ -565,7 +581,6 @@ const AssessmentDetailsPage = (props) => {
           </div>
         </div>
       </div>
-
     </div>
   );
 };

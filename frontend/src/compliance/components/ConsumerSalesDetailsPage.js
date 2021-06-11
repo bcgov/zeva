@@ -53,6 +53,16 @@ const ConsumerSalesDetailsPage = (props) => {
       </div>
     </Modal>
   );
+  let enableEditBtnForAnalyst = false;
+  const pendingSalesExist = () => {
+    if (Object.keys(vehicles).length > 0) {
+      vehicles.forEach((each) => {
+        if (each.pendingSales > 0) {
+          enableEditBtnForAnalyst = true;
+        }
+      })
+    }
+  }
 
   assertions.forEach((assertion) => {
     if (checkboxes.indexOf(assertion.id) >= 0) {
@@ -62,6 +72,7 @@ const ConsumerSalesDetailsPage = (props) => {
 
   return (
     <div id="compliance-consumer-sales-details" className="page">
+      {pendingSalesExist()}
       <div className="row mt-3">
         <div className="col-sm-12">
           <h2>{modelYear} Model Year Report</h2>
@@ -84,7 +95,9 @@ const ConsumerSalesDetailsPage = (props) => {
       <div className="row mt-1">
         <div className="col-12">
           <div className="p-3 consumer-sales">
-            {!user.isGovernment && statuses.consumerSales.status === 'CONFIRMED' && (
+            {(!user.isGovernment ||
+              (user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && enableEditBtnForAnalyst)) &&
+              statuses.consumerSales.status === 'CONFIRMED' && (
                 <button
                   className="btn button primary float-right"
                   onClick={() => {
@@ -100,8 +113,8 @@ const ConsumerSalesDetailsPage = (props) => {
                 {modelYear} Model Year Zero-Emission Vehicles Sales
               </label>
               <div className="text-blue mt-2">
-                If you have { modelYear } model year ZEV sales or leases that occurred before Oct. 1,{' '}
-                {modelYear + 1} that you haven&apos;t
+                If you have { modelYear}  model year ZEV sales or leases that
+                occurred before Oct. 1, {modelYear + 1} that you haven&apos;t
                 applied for credits you must{' '}
                 <label
                   className="text-primary"
