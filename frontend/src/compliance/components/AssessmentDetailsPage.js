@@ -456,7 +456,7 @@ const AssessmentDetailsPage = (props) => {
           </div>
         </div>
       </div>
-      {!user.isGovernment
+      {!user.isGovernment && details.assessment.decision
         && (
           <>
             <h3 className="mt-4 mb-1">Director Assessment</h3>
