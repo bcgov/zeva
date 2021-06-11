@@ -85,7 +85,7 @@ const AssessmentContainer = (props) => {
           let bceidCommentResponse = {};
           const {
             assessment: {
-              penalty: assessmentPenalty, decision, deficit, inCompliance,
+              penalty: assessmentPenalty, decision, deficit, inCompliance
             },
             descriptions: assessmentDescriptions,
           } = assessmentResponse.data;
@@ -143,6 +143,7 @@ const AssessmentContainer = (props) => {
             assessment: {
               assessmentPenalty: assessmentPenalty,
               decision,
+              deficit,
               history: modelYearReportHistory,
               validationStatus,
             },

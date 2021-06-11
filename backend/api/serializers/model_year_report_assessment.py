@@ -5,13 +5,15 @@ from rest_framework.serializers import ModelSerializer, \
     ListField
 from api.models.account_balance import AccountBalance
 from api.models.credit_transaction import CreditTransaction
-from api.models.model_year import ModelYear
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_assessment import ModelYearReportAssessment
 from api.models.model_year_report_assessment_comment import ModelYearReportAssessmentComment
 from api.serializers.model_year_report_assessment_comment import ModelYearReportAssessmentCommentSerializer
 from api.models.model_year_report_assessment_descriptions import ModelYearReportAssessmentDescriptions
 from api.models.model_year_report_compliance_obligation import ModelYearReportComplianceObligation
+from api.serializers.vehicle import ModelYearSerializer
+from api.models.model_year import ModelYear
+
 
 class ModelYearReportAssessmentDescriptionsSerializer(ModelSerializer):
     class Meta:
@@ -78,24 +80,49 @@ class ModelYearReportAssessmentSerializer(
                 'decision': None,
                 'penalty': None
             }
+        in_compliance = True
+        report = ModelYearReport.objects.get(
+            id=obj.id
+        )
+        report_year_obj = ModelYear.objects.get(
+            id=report.model_year_id
+        )
+        report_year_int = int(report_year_obj.name)
+        prior_year_int = report_year_int - 1
+        prior_year_report = ModelYearReport.objects.get(
+            ## fix this ######
+            model_year_id=25
+            ##################
+
+        )
+        prior_year = {'model_year': str(prior_year_int), 'a': 0, 'b': 0}
+        report_year = {'model_year': str(report_year_int), 'a': 0, 'b': 0}
         description_serializer = ModelYearReportAssessmentDescriptionsSerializer(
             assessment.model_year_report_assessment_description,
             read_only=True,
             )
-        deficit = ModelYearReportComplianceObligation.objects.filter(
+        deficit_report_year = ModelYearReportComplianceObligation.objects.filter(
             model_year_report_id=obj,
             category='CreditDeficit'
         ).first()
-        in_compliance = True
-        deficit_value = {'a': 0, 'b': 0}
 
-        if deficit:
-            deficit_value = {'a': deficit.credit_a_value, 'b': deficit.credit_b_value}
+        if deficit_report_year:
+            report_year = {'model_year': report_year, 'a': deficit_report_year.credit_a_value, 'b': deficit_report_year.credit_b_value}
             in_compliance = False
+        
+        deficit_prior_year = ModelYearReportComplianceObligation.objects.filter(
+            model_year_report_id=prior_year_report,
+            category='CreditDeficit'
+        ).first()
+        if deficit_prior_year:
+            in_compliance = False
+            prior_year = {'model_year': prior_year, 'a': deficit_prior_year.credit_a_value, 'b': deficit_prior_year.credit_b_value}
+
+        deficit_values = {'prior': prior_year, 'report': report_year}
         return {
             'decision': description_serializer.data['description'],
             'penalty': assessment.penalty,
-            'deficit': deficit_value,
+            'deficit': deficit_values,
             'in_compliance': in_compliance
         }
 

@@ -43,7 +43,7 @@ const AssessmentDetailsPage = (props) => {
   const {
     creditsIssuedSales, transfersIn, transfersOut,
   } = transactions;
-  console.log(details)
+  console.log(details);
   const directorAction = user.isGovernment
   && ['RECOMMENDED'].indexOf(details.assessment.validationStatus) >= 0
   && user.hasPermission('SIGN_COMPLIANCE_REPORT');
@@ -74,18 +74,18 @@ const AssessmentDetailsPage = (props) => {
     </div>
   );
   let disabledRecommendBtn = false;
-  let recommendTooltip = ""
+  let recommendTooltip = '';
 
-   const pendingSalesExist = () => {
-     if (Object.keys(pendingBalance).length > 0) {
-       pendingBalance.forEach((each) => {
-         if (parseInt(each.A) > 0 || parseInt(each.B) > 0) {
-           disabledRecommendBtn = true;
-           recommendTooltip = "There are some pending credit applications, please edit/referesh consumer zev sales to fetch the latest data";
-         }
-       });
-     }
-   };
+  const pendingSalesExist = () => {
+    if (Object.keys(pendingBalance).length > 0) {
+      pendingBalance.forEach((each) => {
+        if (parseInt(each.A) > 0 || parseInt(each.B) > 0) {
+          disabledRecommendBtn = true;
+          recommendTooltip = 'There are some pending credit applications, please edit/referesh consumer zev sales to fetch the latest data';
+        }
+      });
+    }
+  };
   if (loading) {
     return <Loading />;
   }
@@ -150,7 +150,7 @@ const AssessmentDetailsPage = (props) => {
             <CommentInput
               handleAddComment={handleAddIdirComment}
               handleCommentChange={handleCommentChangeIdir}
-              title={analystAction? "Add comment to director: ": "Add comment to the analyst" }
+              title={analystAction ? 'Add comment to director: ' : 'Add comment to the analyst'}
               buttonText="Add Comment"
             />
           </div>
@@ -265,7 +265,7 @@ const AssessmentDetailsPage = (props) => {
                       B
                     </th>
                   </tr>
-                  <tr key="balance-start" className={details.assessment.inCompliance? '': 'not-in-compliance'}>
+                  <tr key="balance-start" className={details.assessment.inCompliance ? '' : 'not-in-compliance'}>
                     <td className="text-blue" />
                     <td className="text-right">
                       {creditBalanceStart.A || 0}
@@ -408,7 +408,7 @@ const AssessmentDetailsPage = (props) => {
                       </td>
 
                       <td className="text-center">
-                        <input type="radio" name="reduction" readOnly disabled={directorAction || analystAction}/>
+                        <input type="radio" name="reduction" readOnly disabled={directorAction || analystAction} />
                       </td>
 
                       <td className="text-center">
@@ -456,14 +456,30 @@ const AssessmentDetailsPage = (props) => {
                       B
                     </th>
                   </tr>
-                  <tr key="start" className={details.assessment.inCompliance? '': 'not-in-compliance'}>
+                  <tr key="start" className={details.assessment.inCompliance ? '' : 'not-in-compliance'}>
                     <td className="text-blue">&bull; &nbsp; &nbsp; {modelYear} Credits:</td>
-                    <td className="text-right">
-                      977.76
-                    </td>
-                    <td className="text-right">
-                      0
-                    </td>
+                    {details.assessment.inCompliance
+                    && (
+                    <>
+                      <td className="text-right">
+                        977.67
+                      </td>
+                      <td className="text-right">
+                        0
+                      </td>
+                    </>
+                    )}
+                    {!details.assessment.inCompliance
+                    && (
+                    <>
+                      <td className="text-right">
+                        ()
+                      </td>
+                      <td className="text-right">
+                        ()
+                      </td>
+                    </>
+                    )}
                   </tr>
                 </tbody>
               </table>
