@@ -11,6 +11,7 @@ from api.models.model_year_report_assessment import ModelYearReportAssessment
 from api.models.model_year_report_assessment_comment import ModelYearReportAssessmentComment
 from api.serializers.model_year_report_assessment_comment import ModelYearReportAssessmentCommentSerializer
 from api.models.model_year_report_assessment_descriptions import ModelYearReportAssessmentDescriptions
+from api.models.model_year_report_compliance_obligation import ModelYearReportComplianceObligation
 
 class ModelYearReportAssessmentDescriptionsSerializer(ModelSerializer):
     class Meta:
@@ -81,15 +82,28 @@ class ModelYearReportAssessmentSerializer(
             assessment.model_year_report_assessment_description,
             read_only=True,
             )
+        deficit = ModelYearReportComplianceObligation.objects.filter(
+            model_year_report_id=obj,
+            category='CreditDeficit'
+        ).first()
+        in_compliance = True
+        deficit_value = {'a': 0, 'b': 0}
+
+        if deficit:
+            deficit_value = {'a': deficit.credit_a_value, 'b': deficit.credit_b_value}
+            in_compliance = False
         return {
             'decision': description_serializer.data['description'],
-            'penalty': assessment.penalty
+            'penalty': assessment.penalty,
+            'deficit': deficit_value,
+            'in_compliance': in_compliance
         }
 
     def get_assessment_comment(self, obj):
         request = self.context.get('request')
         assessment_comment = ModelYearReportAssessmentComment.objects.filter(
             model_year_report=obj
+            
         ).order_by('-create_timestamp')
         if not request.user.is_government:
             assessment_comment = ModelYearReportAssessmentComment.objects.filter(
