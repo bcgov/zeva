@@ -130,7 +130,9 @@ class Organization(Auditable):
             if date.today().month < 10:
                 year -= 1
 
-        sales = self.ldv_sales.filter(model_year__name__lte=year).values_list(
+        sales = self.ldv_sales.filter(
+            model_year__name__lte=year
+        ).values_list(
             'ldv_sales', flat=True
         )[:3]
 
@@ -144,7 +146,7 @@ class Organization(Auditable):
 
         return sum(list(sales)) / len(sales)
 
-    def get_current_class(self, year=None):
+    def get_current_class(self, year=None, avg_sales=None):
         # The logic below means that if we're past october, the past year
         # should count the current yer
         if not year:
@@ -153,7 +155,8 @@ class Organization(Auditable):
             if date.today().month < 10:
                 year -= 1
 
-        avg_sales = self.get_avg_ldv_sales(year)
+        if not avg_sales:
+            avg_sales = self.get_avg_ldv_sales(year)
 
         if not avg_sales:
             avg_sales = 0

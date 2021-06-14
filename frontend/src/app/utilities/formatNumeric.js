@@ -8,6 +8,8 @@ const formatNumeric = (value, decimals = 2) => {
 
   if (decimals > 0) {
     newValue = newValue.toFixed(decimals);
+  } else if (decimals === 0) {
+    newValue = Math.round(newValue);
   }
 
   if (typeof newValue === 'number') {
