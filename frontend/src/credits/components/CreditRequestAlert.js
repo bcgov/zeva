@@ -68,9 +68,9 @@ const CreditRequestAlert = (props) => {
       classname = 'alert-success';
       icon = 'check-circle';
       if (isGovernment || excelUploadMessage === '') {
-        message = `CA-${id} Credits issued ${moment(statusFilter('VALIDATED').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('VALIDATED').createUser.displayName}.`;
+        message = `CA-${id} issued ${moment(statusFilter('VALIDATED').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('VALIDATED').createUser.displayName}.`;
       } else {
-        message = `CA-${id} Credits issued ${moment(statusFilter('VALIDATED').createTimestamp).format('MMM D, YYYY')} by Government of B.C.`;
+        message = `CA-${id} issued ${moment(statusFilter('VALIDATED').createTimestamp).format('MMM D, YYYY')} by Government of B.C.`;
         historyMessage = `${excelUploadMessage}. Application submitted to Government of B.C. ${moment(statusFilter('SUBMITTED').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('SUBMITTED').createUser.displayName}`;
       }
       break;

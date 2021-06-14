@@ -80,7 +80,7 @@ const AssessmentDetailsPage = (props) => {
        pendingBalance.forEach((each) => {
          if (parseInt(each.A) > 0 || parseInt(each.B) > 0) {
            disabledRecommendBtn = true;
-           recommendTooltip = "There are some pending credit applications, please edit/referesh consumer zev sales to fetch the latest data";
+           recommendTooltip = "There are credit applications that must be issued prior to recommending this assessment.";
          }
        });
      }
