@@ -8,7 +8,6 @@ import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ComplianceReportSummaryDetailsPage from './components/ComplianceReportSummaryDetailsPage';
-import formatNumeric from '../app/utilities/formatNumeric';
 import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
 
 const ComplianceReportSummaryContainer = (props) => {
@@ -169,18 +168,18 @@ const ComplianceReportSummaryContainer = (props) => {
           provisionalBalanceAfterOffset.A += aValue;
           provisionalBalanceAfterOffset.B += aValue;
         }
-        if (item.category === "UnspecifiedClassCreditReduction") {
+        if (item.category === 'UnspecifiedClassCreditReduction') {
           const aValue = parseFloat(item.creditAValue);
           const bValue = parseFloat(item.creditBValue);
           totalCreditReduction.A += aValue;
-          totalCreditReduction.B +=bValue
+          totalCreditReduction.B += bValue;
         }
         if (item.category === 'ClassAReduction') {
           const aValue = parseFloat(item.creditAValue);
           const bValue = parseFloat(item.creditBValue);
           totalCreditReduction.A += aValue;
           totalCreditReduction.B += bValue;
-         }
+        }
         if (item.category === 'CreditDeficit') {
           creditDeficit.A = item.creditAValue;
           creditDeficit.B = item.creditBValue;
