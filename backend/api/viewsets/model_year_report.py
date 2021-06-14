@@ -208,11 +208,15 @@ class ModelYearReportViewset(
             ## check for if validation status is recommended
             if validation_status == 'RECOMMENDED':
                 ## do "update or create" to create the assessment object
+                description = request.data.get('description')
+                penalty = request.data.get('penalty')
                 ModelYearReportAssessment.objects.update_or_create(
                     model_year_report_id=model_year_report_id,
-                    update_user=request.user.username,
-                    model_year_report_assessment_description=request.assessment_description,
-                    penalty=request.assessment_penalty
+                    defaults={
+                        'update_user': request.user.username,
+                        'model_year_report_assessment_description_id': description,
+                        'penalty': penalty
+                    }
 
                 )
 

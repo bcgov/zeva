@@ -27,15 +27,16 @@ const AssessmentDetailsPage = (props) => {
     loading,
     makes,
     modelYear,
-    radioSelection,
     radioDescriptions,
-    setPenalty,
     setRadioSelection,
     ratios,
     statuses,
     user,
     sales,
     handleSubmit,
+    directorAction,
+    analystAction,
+    setDetails,
   } = props;
   const {
     creditBalanceStart, pendingBalance, transactions, provisionalBalance,
@@ -43,27 +44,22 @@ const AssessmentDetailsPage = (props) => {
   const {
     creditsIssuedSales, transfersIn, transfersOut,
   } = transactions;
-  console.log(details);
-  const directorAction = user.isGovernment
-  && ['RECOMMENDED'].indexOf(details.assessment.validationStatus) >= 0
-  && user.hasPermission('SIGN_COMPLIANCE_REPORT');
-
-  const analystAction = user.isGovernment
-  && ['SUBMITTED'].indexOf(details.assessment.validationStatus) >= 0
-  && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
-
   const [showModal, setShowModal] = useState(false);
   const disabledInputs = false;
   const showDescription = (each) => (
     <div className="mb-3" key={each.id}>
       <input
-        defaultChecked={details.assessment.decision === each.description}
+        defaultChecked={details.assessment.decision.description === each.description}
         className="mr-3"
         type="radio"
         name="assessment"
         disabled={directorAction || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0}
         onChange={(event) => {
-          setRadioSelection(each.id);
+          // const newAssessment = details.assessment
+          setDetails({
+            ...details,
+            assessment: { ...details.assessment, decision: { description: each.description, id: each.id } },
+          });
         }}
       />
       <label className="d-inline text-blue" htmlFor="complied">
@@ -495,7 +491,7 @@ const AssessmentDetailsPage = (props) => {
               <div className="col-12">
                 <div className="grey-border-area comment-box p-4 mt-2">
                   <div className="text-blue">
-                    {details.assessment && (<div>The Director has assessed that {details.assessment.decision.replace(/{user.organization.name}/g, user.organization.name)} ${details.assessment.assessmentPenalty} CAD</div>)}
+                    {details.assessment && (<div>The Director has assessed that {details.assessment.decision.description.replace(/{user.organization.name}/g, user.organization.name)} ${details.assessment.assessmentPenalty} CAD</div>)}
                     {details.bceidComment
                     && <div className="mt-2">{parse(details.bceidComment.comment)}</div>}
                   </div>
@@ -530,8 +526,14 @@ const AssessmentDetailsPage = (props) => {
                             disabled={directorAction || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0}
                             type="text"
                             className="ml-4 mr-1"
-                            value={details.assessment.assessmentPenalty}
+                            defaultValue={details.assessment.assessmentPenalty}
                             name="penalty-amount"
+                            onChange={(e) => {
+                              setDetails({
+                                ...details,
+                                assessment: { ...details.assessment, assessmentPenalty: e.target.value },
+                              });
+                            }}
                           />
                           <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
                         </div>

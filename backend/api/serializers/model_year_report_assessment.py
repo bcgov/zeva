@@ -75,10 +75,9 @@ class ModelYearReportAssessmentSerializer(
         assessment = ModelYearReportAssessment.objects.filter(
             model_year_report=obj
         ).first()
-        print(assessment)
         if not assessment:
             return {
-                'decision': None,
+                'decision': {'id': None, 'description': None},
                 'penalty': None
             }
         in_compliance = True
@@ -96,15 +95,13 @@ class ModelYearReportAssessmentSerializer(
         prior_year_report = ModelYearReport.objects.filter(
             model_year__name=str(prior_year_int)
         ).first()
-        print(prior_year_report)
         if prior_year_report:
             ## get the assessment for the prior year report
             prior_year_assessment = ModelYearReportAssessment.objects.filter(
                 model_year_report_id=prior_year_report.id
             )
-            print(prior_year_assessment)
-        prior_year = {'model_year': str(prior_year_int), 'a': 0, 'b': 0}
-        report_year = {'model_year': str(report_year_int), 'a': 0, 'b': 0}
+        prior_year = str(prior_year_int)
+        report_year =str(report_year_int)
         description_serializer = ModelYearReportAssessmentDescriptionsSerializer(
             assessment.model_year_report_assessment_description,
             read_only=True,
@@ -128,7 +125,7 @@ class ModelYearReportAssessmentSerializer(
 
         deficit_values = {'prior': prior_year, 'report': report_year}
         return {
-            'decision': description_serializer.data['description'],
+            'decision': {'description': description_serializer.data['description'], 'id':description_serializer.data['id'] },
             'penalty': assessment.penalty,
             'deficit': deficit_values,
             'in_compliance': in_compliance
