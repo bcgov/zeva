@@ -104,43 +104,55 @@ const SupplierInformationDetailsPage = (props) => {
             </button>
             )}
             <h3>Supplier Information</h3>
-            <div className="mt-3">
-              <h4 className="d-inline">Legal Name: </h4>
-              <span> {details.organization.name} </span>
+            <div className="mt-3 row">
+              <div className="col-sm-12 col-md-6">
+                <div className="row">
+                  <span className="col-4">
+                    <h4 className="d-inline">Legal Name: </h4>
+                  </span>
+                  <span className="col-6">
+                    {details.organization.name}
+                  </span>
+                </div>
+              </div>
             </div>
             <div>
-              <div className="d-inline-block mr-5 mt-3">
-                <h4>Service Address</h4>
-                {details.organization.organizationAddress
-                && details.organization.organizationAddress.map((address) => (
-                  address.addressType.addressType === 'Service' && (
-                    <div key={address.id}>
-                      {address.representativeName && (
-                        <div> {address.representativeName} </div>
-                      )}
-                      <div> {address.addressLine1} </div>
-                      <div> {address.city} {address.state} {address.country} </div>
-                      <div> {address.postalCode} </div>
-                    </div>
-                  )
-                ))}
-              </div>
-              <div className="d-inline-block mt-3">
-                <h4>Records Address</h4>
-                {details.organization.organizationAddress
-                && details.organization.organizationAddress.map((address) => (
-                  address.addressType.addressType === 'Records' && (
-                    <div key={address.id}>
-                      {address.representativeName && (
-                        <div> {address.representativeName} </div>
-                      )}
-                      <div> {address.addressLine1} </div>
-                      <div> {address.city} {address.state} {address.country} </div>
-                      <div> {address.postalCode} </div>
-                    </div>
-                  )
-                ))}
-              </div>
+              {details.organization.organizationAddress
+              && details.organization.organizationAddress.length > 0 && (
+                <>
+                  <div className="d-inline-block mr-5 mt-3 align-top">
+                    <h4>Service Address</h4>
+                    {details.organization.organizationAddress.map((address) => (
+                      address.addressType.addressType === 'Service' && (
+                        <div key={address.id}>
+                          {address.representativeName && (
+                            <div> {address.representativeName} </div>
+                          )}
+                          <div> {address.addressLine1} </div>
+                          <div> {address.city} {address.state} {address.country} </div>
+                          <div> {address.postalCode} </div>
+                        </div>
+                      )
+                    ))}
+                  </div>
+
+                  <div className="d-inline-block mt-3 align-top">
+                    <h4>Records Address</h4>
+                    {details.organization.organizationAddress.map((address) => (
+                      address.addressType.addressType === 'Records' && (
+                        <div key={address.id}>
+                          {address.representativeName && (
+                            <div> {address.representativeName} </div>
+                          )}
+                          <div> {address.addressLine1} </div>
+                          <div> {address.city} {address.state} {address.country} </div>
+                          <div> {address.postalCode} </div>
+                        </div>
+                      )
+                    ))}
+                  </div>
+                </>
+              )}
               <div className="mt-1 row">
                 <div className="col-sm-12 col-md-6">
                   <div className="mt-2 row">
@@ -157,28 +169,27 @@ const SupplierInformationDetailsPage = (props) => {
                     <span className="col-4">
                       <h4 className="d-inline">3 Year Average LDV Sales: </h4>
                     </span>
-                    <span className="col-6">{FormatNumeric(details.organization.avgLdvSales)}</span>
+                    <span className="col-6">{FormatNumeric(details.organization.avgLdvSales, 0)}</span>
                   </div>
                 </div>
+                {details.organization.ldvSales && details.organization.ldvSales.length > 0 && (
                 <div className="col-sm-12 col-md-5">
-                  <div className="supplier-information p-3">
-                    {details.organization.ldvSales
-                    && (
-                    <div className="previous-ldv-sales mt-2 p-2">
+                  <div className="supplier-information d-inline-block">
+                    <div className="previous-ldv-sales d-flex flex-column mt-2 px-3 py-1">
                       {details.organization.ldvSales.map((yearSale) => (
                         <div className="model-year-ldv" key={yearSale.id}>
                           <label className="text-blue mr-4 font-weight-bold">
                             {yearSale.modelYear} Model Year LDV Sales\Leases:
                           </label>
                           <label className="sales-numbers">
-                            {yearSale.ldvSales}
+                            {FormatNumeric(yearSale.ldvSales, 0)}
                           </label>
                         </div>
                       ))}
                     </div>
-                    )}
                   </div>
                 </div>
+                )}
               </div>
               <div className="d-block mt-3">
                 If there is an error in any of the information above, please contact: <a href="mailto:ZEVRegulation@gov.bc.ca">ZEVRegulation@gov.bc.ca</a>
