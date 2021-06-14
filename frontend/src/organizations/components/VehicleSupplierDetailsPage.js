@@ -48,8 +48,8 @@ const VehicleSupplierDetailsPage = (props) => {
             <span> {(details.isActive) ? 'Actively supplying vehicles in British Columbia' : 'Not actively supplying vehicles in British Columbia'} </span>
           </div>
 
-          <div>
-            <div className="d-inline-block mr-5 mt-3">
+          <div className="row">
+            <div className="d-inline-block col-5 mr-5 mt-3">
               <h4>Service Address</h4>
               {organizationAddress
               && organizationAddress.map((address) => (
@@ -65,7 +65,7 @@ const VehicleSupplierDetailsPage = (props) => {
                 )
               ))}
             </div>
-            <div className="d-inline-block mt-3">
+            <div className="d-inline-block col-5 mt-3">
               <h4>Records Address</h4>
               {organizationAddress
               && organizationAddress.map((address) => (
@@ -147,7 +147,8 @@ const VehicleSupplierDetailsPage = (props) => {
                       <div className="col-6 sales">
                         {formatNumeric(sale.ldvSales, 0)}
                       </div>
-                      <div className="col-1 delete">
+                      {!details.hasSubmittedReport && (
+                        <div className="col-1 delete">
                           <button
                             onClick={() => {
                               handleDeleteSale(sale);
@@ -156,7 +157,7 @@ const VehicleSupplierDetailsPage = (props) => {
                           >
                             x
                           </button>
-                        </div>
+                        </div>)}
                     </li>
                   ))}
                 </ul>
