@@ -75,26 +75,34 @@ class ModelYearReportAssessmentSerializer(
         assessment = ModelYearReportAssessment.objects.filter(
             model_year_report=obj
         ).first()
+        print(assessment)
         if not assessment:
             return {
                 'decision': None,
                 'penalty': None
             }
         in_compliance = True
+        ##get the report
         report = ModelYearReport.objects.get(
             id=obj.id
         )
+        ##get the report year 
         report_year_obj = ModelYear.objects.get(
             id=report.model_year_id
         )
         report_year_int = int(report_year_obj.name)
         prior_year_int = report_year_int - 1
-        prior_year_report = ModelYearReport.objects.get(
-            ## fix this ######
-            model_year_id=25
-            ##################
-
-        )
+        ## try to get the report for the prior year (we just need id so we can grab assessment)
+        prior_year_report = ModelYearReport.objects.filter(
+            model_year__name=str(prior_year_int)
+        ).first()
+        print(prior_year_report)
+        if prior_year_report:
+            ## get the assessment for the prior year report
+            prior_year_assessment = ModelYearReportAssessment.objects.filter(
+                model_year_report_id=prior_year_report.id
+            )
+            print(prior_year_assessment)
         prior_year = {'model_year': str(prior_year_int), 'a': 0, 'b': 0}
         report_year = {'model_year': str(report_year_int), 'a': 0, 'b': 0}
         description_serializer = ModelYearReportAssessmentDescriptionsSerializer(
