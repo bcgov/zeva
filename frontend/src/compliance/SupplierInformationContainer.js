@@ -181,9 +181,9 @@ const SupplierInformationContainer = (props) => {
               return each;
             }
           });
-        previousSales.sort((a, b) => ((a.modelYear < b.modelYear) ? 1 : -1));
+        previousSales.sort((a, b) => ((a.modelYear > b.modelYear) ? 1 : -1));
         const newOrg = {
-          ldvSales: previousSales,
+          ldvSales: previousSales.length >= 3 ? previousSales : [],
           avgLdvSales: user.organization.avgLdvSales,
           organizationAddress: user.organizationAddress,
           name: user.organization.name,
