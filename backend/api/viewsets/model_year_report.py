@@ -28,6 +28,7 @@ from api.serializers.organization_address import OrganizationAddressSerializer
 from api.serializers.vehicle import ModelYearSerializer
 from api.serializers.model_year_report_assessment import ModelYearReportAssessmentSerializer
 from api.models.model_year_report_assessment_comment import ModelYearReportAssessmentComment
+from api.models.model_year_report_assessment import ModelYearReportAssessment
 from api.services.model_year_report import get_model_year_report_statuses
 from auditable.views import AuditableMixin
 from api.models.organization_ldv_sales import OrganizationLDVSales
@@ -204,6 +205,18 @@ class ModelYearReportViewset(
                 update_user=request.user.username,
                 create_user=request.user.username,
             )
+            ## check for if validation status is recommended
+            if validation_status == 'RECOMMENDED':
+                ## do "update or create" to create the assessment object
+                ModelYearReportAssessment.objects.update_or_create(
+                    model_year_report_id=model_year_report_id,
+                    update_user=request.user.username,
+                    model_year_report_assessment_description=request.assessment_description,
+                    penalty=request.assessment_penalty
+
+                )
+
+
         
         if confirmations:
             for confirmation in confirmations:
