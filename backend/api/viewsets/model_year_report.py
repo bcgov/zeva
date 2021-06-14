@@ -187,7 +187,6 @@ class ModelYearReportViewset(
             'gov_makes': gov_makes.data
         })
 
-
     @action(detail=True)
     def submission_confirmation(self, request, pk=None):
         confirmation = ModelYearReportConfirmation.objects.filter(

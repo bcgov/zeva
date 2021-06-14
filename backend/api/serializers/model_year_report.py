@@ -218,11 +218,16 @@ class ModelYearReportSaveSerializer(
             supplier_class=request.user.organization.supplier_class
         )
         for each in ldv_sales:
-            ModelYearReportLDVSales.objects.create(
-                model_year=each.get('model_year'),
-                ldv_sales=each.get('ldv_sales'),
-                model_year_report_id=report.id
-            )
+            model_year = ModelYear.objects.filter(
+                name=each.get('model_year')
+            ).first()
+
+            if model_year:
+                ModelYearReportLDVSales.objects.create(
+                    model_year=model_year,
+                    ldv_sales=each.get('ldv_sales'),
+                    model_year_report_id=report.id
+                )
         for confirmation in confirmations:
             ModelYearReportConfirmation.objects.create(
                 create_user=request.user.username,
@@ -266,7 +271,6 @@ class ModelYearReportSaveSerializer(
         return report
 
     def update(self, instance, validated_data):
-
         request = self.context.get('request')
         organization = request.user.organization
 
@@ -352,6 +356,12 @@ class ModelYearReportSaveSerializer(
                         ldv_sales=each.get('ldv_sales'),
                         model_year_report_id=instance.id
                     )
+
+        if instance.get_avg_sales():
+            instance.supplier_class = request.user.organization.get_current_class(
+                avg_sales=instance.get_avg_sales()
+            )
+            instance.save()
 
         for confirmation in confirmations:
             ModelYearReportConfirmation.objects.update_or_create(
