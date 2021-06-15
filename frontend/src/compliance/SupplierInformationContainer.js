@@ -59,7 +59,7 @@ const SupplierInformationContainer = (props) => {
     const data = {
       class: user.organization.supplierClass,
       averageLdvSales: details.organization.avgLdvSales,
-      previousLdvSales: details.organization.ldvSales,
+      ldvSales: details.organization.ldvSales,
       makes,
       modelYear,
       confirmations: checkboxes,
@@ -146,7 +146,7 @@ const SupplierInformationContainer = (props) => {
 
           setMakes(currentMakes);
         }
-        const ldvSales = ldvSalesPrevious.sort((a, b) => ((a.modelYear < b.modelYear) ? 1 : -1));
+        const ldvSales = ldvSalesPrevious.sort((a, b) => ((a.modelYear > b.modelYear) ? 1 : -1));
         const supplierClassString = getClassDescriptions(supplierClass);
         setDetails({
           supplierClassString,
@@ -181,9 +181,9 @@ const SupplierInformationContainer = (props) => {
               return each;
             }
           });
-        previousSales.sort((a, b) => ((a.modelYear < b.modelYear) ? 1 : -1));
+        previousSales.sort((a, b) => ((a.modelYear > b.modelYear) ? 1 : -1));
         const newOrg = {
-          ldvSales: previousSales,
+          ldvSales: previousSales.length >= 3 ? previousSales : [],
           avgLdvSales: user.organization.avgLdvSales,
           organizationAddress: user.organizationAddress,
           name: user.organization.name,

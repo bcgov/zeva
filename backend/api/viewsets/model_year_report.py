@@ -1,4 +1,3 @@
-import json
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from rest_framework.response import Response
@@ -26,13 +25,16 @@ from api.serializers.model_year_report_make import \
 from api.serializers.organization import OrganizationSerializer
 from api.serializers.organization_address import OrganizationAddressSerializer
 from api.serializers.vehicle import ModelYearSerializer
-from api.serializers.model_year_report_assessment import ModelYearReportAssessmentSerializer
-from api.models.model_year_report_assessment_comment import ModelYearReportAssessmentComment
-from api.models.model_year_report_assessment import ModelYearReportAssessment
+from api.serializers.model_year_report_assessment import \
+    ModelYearReportAssessmentSerializer
+from api.models.model_year_report_assessment_comment import \
+    ModelYearReportAssessmentComment
+from api.models.model_year_report_assessment import \
+    ModelYearReportAssessment
 from api.services.model_year_report import get_model_year_report_statuses
+from api.serializers.organization_ldv_sales import \
+    OrganizationLDVSalesSerializer
 from auditable.views import AuditableMixin
-from api.models.organization_ldv_sales import OrganizationLDVSales
-from api.serializers.organization_ldv_sales import OrganizationLDVSalesSerializer
 
 
 class ModelYearReportViewset(
@@ -88,6 +90,7 @@ class ModelYearReportViewset(
             model_year_report_id=pk,
             signing_authority_assertion__module="supplier_information"
         ).first()
+
         if not confirmation:
             model_year = ModelYearSerializer(report.model_year)
             model_year_int = int(model_year.data['name'])
@@ -119,16 +122,26 @@ class ModelYearReportViewset(
             ).distinct()
 
             org = request.user.organization
+
+            avg_sales = org.get_avg_ldv_sales(year=model_year_int)
+
             ldv_sales_previous_list = org.get_ldv_sales(year=model_year_int)
             ldv_sales_previous = OrganizationLDVSalesSerializer(
                 ldv_sales_previous_list, many=True)
 
-            avg_sales = 0
+            # if this is empty that means we don't have enough ldv_sales to
+            # get the average. our avg_sales at this point should be from the
+            # current report ldv_sales
+            if not avg_sales:
+                report_ldv_sales = ModelYearReportLDVSales.objects.filter(
+                    model_year_report_id=pk,
+                    model_year__name=model_year_int
+                ).order_by('-update_timestamp').first()
 
-            if len(ldv_sales_previous_list) > 0:
-                avg_sales = sum(
-                    ldv_sales_previous_list.values_list('ldv_sales', flat=True)
-                ) / len(ldv_sales_previous_list)
+                if report_ldv_sales:
+                    avg_sales = report_ldv_sales.ldv_sales
+
+                ldv_sales_previous = None
 
             return Response({
                 'avg_sales': avg_sales,
@@ -138,17 +151,20 @@ class ModelYearReportViewset(
                 'makes': makes.data,
                 'model_year_report_history': history.data,
                 'validation_status': report.validation_status.value,
-                'supplier_class': org.supplier_class,
+                'supplier_class': org.get_current_class(avg_sales=avg_sales),
                 'model_year': model_year.data,
                 'create_user': report.create_user,
                 'confirmations': confirmations,
                 'ldv_sales': report.ldv_sales,
                 'statuses': get_model_year_report_statuses(report),
-                'ldv_sales_previous': ldv_sales_previous.data,
+                'ldv_sales_previous': ldv_sales_previous.data
+                if ldv_sales_previous else [],
                 'credit_reduction_selection': report.credit_reduction_selection
             })
 
-        serializer = ModelYearReportSerializer(report, context={'request': request})
+        serializer = ModelYearReportSerializer(
+            report, context={'request': request}
+        )
 
         return Response(serializer.data)
 
@@ -172,7 +188,6 @@ class ModelYearReportViewset(
             'supplier_makes': supplier_makes.data,
             'gov_makes': gov_makes.data
         })
-
 
     @action(detail=True)
     def submission_confirmation(self, request, pk=None):

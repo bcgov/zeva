@@ -77,7 +77,7 @@ const AssessmentDetailsPage = (props) => {
       pendingBalance.forEach((each) => {
         if (parseInt(each.A) > 0 || parseInt(each.B) > 0) {
           disabledRecommendBtn = true;
-          recommendTooltip = 'There are some pending credit applications, please edit/referesh consumer zev sales to fetch the latest data';
+          recommendTooltip = 'There are credit applications that must be issued prior to recommending this assessment.';
         }
       });
     }
@@ -491,7 +491,7 @@ const AssessmentDetailsPage = (props) => {
                     )}
                   {!details.assessment.inCompliance.report
                     && (
-                    <tr key="start" className='not-in-compliance'>
+                    <tr key="start" className="not-in-compliance">
                       <td className="text-blue">&bull; &nbsp; &nbsp; Credit Deficit:</td>
                       <td className="text-right">
                         ({details.assessment.deficit.report.a})
