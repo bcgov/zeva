@@ -131,10 +131,6 @@ const AssessmentContainer = (props) => {
           }
           setStatuses(reportStatuses);
           setSales(ldvSales);
-
-          // setRadioSelection({
-          //   description: decision.description,
-          //   id: decision.id });
           setDetails({
             changelog,
             bceidComment: bceidCommentResponse,
