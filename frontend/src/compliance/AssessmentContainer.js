@@ -142,6 +142,7 @@ const AssessmentContainer = (props) => {
             ldvSales,
             class: supplierClass,
             assessment: {
+              inCompliance,
               assessmentPenalty,
               decision,
               deficit,

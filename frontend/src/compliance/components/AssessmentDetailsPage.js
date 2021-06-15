@@ -261,15 +261,35 @@ const AssessmentDetailsPage = (props) => {
                       B
                     </th>
                   </tr>
-                  <tr key="balance-start" className={details.assessment.inCompliance ? '' : 'not-in-compliance'}>
-                    <td className="text-blue" />
-                    <td className="text-right">
-                      {creditBalanceStart.A || 0}
-                    </td>
-                    <td className="text-right">
-                      {creditBalanceStart.B || 0}
-                    </td>
-                  </tr>
+
+                  {details.assessment.inCompliance.prior
+                    && (
+                      <>
+                        {Object.keys(creditActivityDetails.creditBalanceStart).map((each) => (
+                          <tr key="balance-start">
+                            <td className="text-blue">&bull; &nbsp; &nbsp; {each} Credits:</td>
+                            <td className="text-right">
+                              {creditActivityDetails.creditBalanceStart[each].A || 0}
+                            </td>
+                            <td className="text-right">
+                              {creditActivityDetails.creditBalanceStart[each].B || 0}
+                            </td>
+                          </tr>
+                        ))}
+                      </>
+                    )}
+                  {!details.assessment.inCompliance.prior
+                    && (
+                    <tr key="balance-start" className="not-in-compliance">
+                      <td className="text-blue">&bull; &nbsp; &nbsp; Credit Deficit:</td>
+                      <td className="text-right">
+                        ({details.assessment.deficit.prior.a})
+                      </td>
+                      <td className="text-right">
+                        ({details.assessment.deficit.prior.b})
+                      </td>
+                    </tr>
+                    )}
 
                 </tbody>
               </table>
@@ -452,31 +472,35 @@ const AssessmentDetailsPage = (props) => {
                       B
                     </th>
                   </tr>
-                  <tr key="start" className={details.assessment.inCompliance ? '' : 'not-in-compliance'}>
-                    <td className="text-blue">&bull; &nbsp; &nbsp; {modelYear} Credits:</td>
-                    {details.assessment.inCompliance
+                  {details.assessment.inCompliance.report
                     && (
-                    <>
-                      <td className="text-right">
-                        977.67
-                      </td>
-                      <td className="text-right">
-                        0
-                      </td>
-                    </>
+                      <tr key="start">
+                        {Object.keys(creditActivityDetails.creditBalanceEnd).map((each) => (
+                          <>
+                            <td className="text-blue">&bull; &nbsp; &nbsp; {each} Credits:</td>
+                            <td className="text-right">
+                              {creditActivityDetails.creditBalanceEnd[each].A || 0}
+                            </td>
+                            <td className="text-right">
+                              {creditActivityDetails.creditBalanceEnd[each].B || 0}
+                            </td>
+                          </>
+                        ))}
+                      </tr>
+
                     )}
-                    {!details.assessment.inCompliance
+                  {!details.assessment.inCompliance.report
                     && (
-                    <>
+                    <tr key="start" className='not-in-compliance'>
+                      <td className="text-blue">&bull; &nbsp; &nbsp; Credit Deficit:</td>
                       <td className="text-right">
-                        ()
+                        ({details.assessment.deficit.report.a})
                       </td>
                       <td className="text-right">
-                        ()
+                        ({details.assessment.deficit.report.b})
                       </td>
-                    </>
+                    </tr>
                     )}
-                  </tr>
                 </tbody>
               </table>
             </div>

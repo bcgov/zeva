@@ -80,7 +80,7 @@ class ModelYearReportAssessmentSerializer(
                 'decision': {'id': None, 'description': None},
                 'penalty': None
             }
-        in_compliance = True
+        in_compliance = {'report': True, 'prior': True}
         ##get the report
         report = ModelYearReport.objects.get(
             id=obj.id
@@ -101,7 +101,7 @@ class ModelYearReportAssessmentSerializer(
                 model_year_report_id=prior_year_report.id
             )
         prior_year = str(prior_year_int)
-        report_year =str(report_year_int)
+        report_year = str(report_year_int)
         description_serializer = ModelYearReportAssessmentDescriptionsSerializer(
             assessment.model_year_report_assessment_description,
             read_only=True,
@@ -113,14 +113,14 @@ class ModelYearReportAssessmentSerializer(
 
         if deficit_report_year:
             report_year = {'model_year': report_year, 'a': deficit_report_year.credit_a_value, 'b': deficit_report_year.credit_b_value}
-            in_compliance = False
+            in_compliance['report'] = False
         
         deficit_prior_year = ModelYearReportComplianceObligation.objects.filter(
             model_year_report_id=prior_year_report,
             category='CreditDeficit'
         ).first()
         if deficit_prior_year:
-            in_compliance = False
+            in_compliance['prior'] = False
             prior_year = {'model_year': prior_year, 'a': deficit_prior_year.credit_a_value, 'b': deficit_prior_year.credit_b_value}
 
         deficit_values = {'prior': prior_year, 'report': report_year}
