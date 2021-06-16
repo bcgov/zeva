@@ -41,6 +41,7 @@ const AssessmentDetailsPage = (props) => {
   const {
     creditBalanceStart, pendingBalance, transactions, provisionalBalance,
   } = creditActivityDetails;
+  const assessmentDecision = details.assessment.decision && details.assessment.decision.description? details.assessment.decision.description.replace(/{user.organization.name}/g, user.organization.name): ''
   const {
     creditsIssuedSales, transfersIn, transfersOut,
   } = transactions;
@@ -62,11 +63,14 @@ const AssessmentDetailsPage = (props) => {
           });
         }}
       />
+      {each.description
+      && (
       <label className="d-inline text-blue" htmlFor="complied">
         {each.description
           .replace(/{user.organization.name}/g, details.organization.name)
           .replace(/{modelYear}/g, modelYear)}
       </label>
+      )}
     </div>
   );
   let disabledRecommendBtn = false;
@@ -443,20 +447,6 @@ const AssessmentDetailsPage = (props) => {
                   </tr>
                 </tbody>
               </table>
-              {/* <ComplianceObligationReductionOffsetTable
-                statuses={statuses}
-                offsetNumbers={offsetNumbers}
-                // unspecifiedCreditReduction={unspecifiedCreditReduction}
-                supplierClassInfo={}
-                // handleOffsetChange={handleOffsetChange}
-                user={user}
-                zevClassAReduction={zevClassAReduction}
-                unspecifiedReductions={unspecifiedReductions}
-                leftoverReduction={leftoverReduction}
-                totalReduction={totalReduction}
-                reportYear={modelYear}
-                creditBalance={creditBalance}
-              /> */}
             </div>
             <div className="my-3 grey-border-area">
               <table>
@@ -515,7 +505,7 @@ const AssessmentDetailsPage = (props) => {
               <div className="col-12">
                 <div className="grey-border-area comment-box p-4 mt-2">
                   <div className="text-blue">
-                    {details.assessment && (<div>The Director has assessed that {details.assessment.decision.description.replace(/{user.organization.name}/g, user.organization.name)} ${details.assessment.assessmentPenalty} CAD</div>)}
+                    {details.assessment && (<div>The Director has assessed that {assessmentDecision} ${details.assessment.assessmentPenalty} CAD</div>)}
                     {details.bceidComment
                     && <div className="mt-2">{parse(details.bceidComment.comment)}</div>}
                   </div>
