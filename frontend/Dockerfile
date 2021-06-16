@@ -1,8 +1,9 @@
-FROM node:8-jessie
-RUN mkdir /app
-WORKDIR /app
-COPY . .
-RUN rm package-lock.json && \
-    npm install && \
-    npm rebuild node-sass
-CMD npm run production
+FROM node:14.16.1
+
+WORKDIR /web
+COPY . /web/
+
+RUN npm install --force
+
+EXPOSE 3000
+EXPOSE 8080
