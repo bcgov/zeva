@@ -1,8 +1,7 @@
-FROM python:3.7-stretch
-ENV PYTHONUNBUFFERED 1
-RUN mkdir /app
-WORKDIR /app
-ADD requirements.txt .
+FROM python:3.7.6
+
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /api
+COPY requirements.txt /api/
 RUN pip install -r requirements.txt
-ADD . .
-CMD python3 manage.py migrate && python3 manage.py createcachetable && python3 manage.py runserver 0.0.0.0:10102
