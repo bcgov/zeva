@@ -91,17 +91,17 @@ class ModelYearReportAssessmentSerializer(
         report_year_deficit = {'model_year': report_year_str, 'a': 0, 'b': 0}
 
         ## try to get the report for the prior year as well as the compliance obligation (deficit)
-        prior_year_report = ModelYearReport.objects.filter(
+        prior_year_report_obj = ModelYearReport.objects.filter(
             model_year__name=prior_year_str
         ).first()
-        deficit_prior_year = ModelYearReportComplianceObligation.objects.filter(
-            model_year_report_id=prior_year_report,
+        deficit_prior_year_obj = ModelYearReportComplianceObligation.objects.filter(
+            model_year_report_id=prior_year_report_obj,
             category='CreditDeficit'
         ).first()
-        if deficit_prior_year:
+        if deficit_prior_year_obj:
             in_compliance['prior'] = False
-            prior_year_deficit['a'] = deficit_prior_year.credit_a_value
-            prior_year_deficit['b'] = deficit_prior_year.credit_b_value
+            prior_year_deficit['a'] = deficit_prior_year_obj.credit_a_value
+            prior_year_deficit['b'] = deficit_prior_year_obj.credit_b_value
 
         deficit_report_year = ModelYearReportComplianceObligation.objects.filter(
             model_year_report_id=obj,
