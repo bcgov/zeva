@@ -429,7 +429,7 @@ class VehicleSalesSerializer(
             xls_model__iexact=instance.model_name,
             xls_model_year=str(instance.model_year.name) + '.0',
             submission__validation_status__in=[
-                "SUBMITTED", "RECOMMEND_APPROVAL", "RECOMMEND_REJECTION",
+                "SUBMITTED", "RECOMMEND_APPROVAL", "RECOMMEND_REJECTION", "CHECKED",
             ]
         ).count()
 
