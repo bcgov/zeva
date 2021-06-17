@@ -27,15 +27,16 @@ const AssessmentDetailsPage = (props) => {
     loading,
     makes,
     modelYear,
-    radioSelection,
     radioDescriptions,
-    setPenalty,
     setRadioSelection,
     ratios,
     statuses,
     user,
     sales,
     handleSubmit,
+    directorAction,
+    analystAction,
+    setDetails,
   } = props;
   const {
     creditBalanceStart, pendingBalance, transactions, provisionalBalance,
@@ -43,26 +44,22 @@ const AssessmentDetailsPage = (props) => {
   const {
     creditsIssuedSales, transfersIn, transfersOut,
   } = transactions;
-  const directorAction = user.isGovernment
-  && ['RECOMMENDED'].indexOf(details.assessment.validationStatus) >= 0
-  && user.hasPermission('SIGN_COMPLIANCE_REPORT');
-
-  const analystAction = user.isGovernment
-  && ['SUBMITTED'].indexOf(details.assessment.validationStatus) >= 0
-  && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
-
   const [showModal, setShowModal] = useState(false);
   const disabledInputs = false;
   const showDescription = (each) => (
     <div className="mb-3" key={each.id}>
       <input
-        defaultChecked={details.assessment.decision === each.description}
+        defaultChecked={details.assessment.decision.description === each.description}
         className="mr-3"
         type="radio"
         name="assessment"
         disabled={directorAction || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0}
         onChange={(event) => {
-          setRadioSelection(each.id);
+          // const newAssessment = details.assessment
+          setDetails({
+            ...details,
+            assessment: { ...details.assessment, decision: { description: each.description, id: each.id } },
+          });
         }}
       />
       <label className="d-inline text-blue" htmlFor="complied">
@@ -73,18 +70,18 @@ const AssessmentDetailsPage = (props) => {
     </div>
   );
   let disabledRecommendBtn = false;
-  let recommendTooltip = ""
+  let recommendTooltip = '';
 
-   const pendingSalesExist = () => {
-     if (Object.keys(pendingBalance).length > 0) {
-       pendingBalance.forEach((each) => {
-         if (parseInt(each.A) > 0 || parseInt(each.B) > 0) {
-           disabledRecommendBtn = true;
-           recommendTooltip = "There are credit applications that must be issued prior to recommending this assessment.";
-         }
-       });
-     }
-   };
+  const pendingSalesExist = () => {
+    if (Object.keys(pendingBalance).length > 0) {
+      pendingBalance.forEach((each) => {
+        if (parseInt(each.A) > 0 || parseInt(each.B) > 0) {
+          disabledRecommendBtn = true;
+          recommendTooltip = 'There are credit applications that must be issued prior to recommending this assessment.';
+        }
+      });
+    }
+  };
   if (loading) {
     return <Loading />;
   }
@@ -149,7 +146,7 @@ const AssessmentDetailsPage = (props) => {
             <CommentInput
               handleAddComment={handleAddIdirComment}
               handleCommentChange={handleCommentChangeIdir}
-              title={analystAction? "Add comment to director: ": "Add comment to the analyst" }
+              title={analystAction ? 'Add comment to director: ' : 'Add comment to the analyst'}
               buttonText="Add Comment"
             />
           </div>
@@ -264,15 +261,35 @@ const AssessmentDetailsPage = (props) => {
                       B
                     </th>
                   </tr>
-                  <tr key="balance-start">
-                    <td className="text-blue" />
-                    <td className="text-right">
-                      {creditBalanceStart.A || 0}
-                    </td>
-                    <td className="text-right">
-                      {creditBalanceStart.B || 0}
-                    </td>
-                  </tr>
+
+                  {details.assessment.inCompliance.prior
+                    && (
+                      <>
+                        {Object.keys(creditActivityDetails.creditBalanceStart).map((each) => (
+                          <tr key="balance-start">
+                            <td className="text-blue">&bull; &nbsp; &nbsp; {each} Credits:</td>
+                            <td className="text-right">
+                              {creditActivityDetails.creditBalanceStart[each].A || 0}
+                            </td>
+                            <td className="text-right">
+                              {creditActivityDetails.creditBalanceStart[each].B || 0}
+                            </td>
+                          </tr>
+                        ))}
+                      </>
+                    )}
+                  {!details.assessment.inCompliance.prior
+                    && (
+                    <tr key="balance-start" className="not-in-compliance">
+                      <td className="text-blue">&bull; &nbsp; &nbsp; Credit Deficit:</td>
+                      <td className="text-right">
+                        ({details.assessment.deficit.prior.a})
+                      </td>
+                      <td className="text-right">
+                        ({details.assessment.deficit.prior.b})
+                      </td>
+                    </tr>
+                    )}
 
                 </tbody>
               </table>
@@ -407,7 +424,7 @@ const AssessmentDetailsPage = (props) => {
                       </td>
 
                       <td className="text-center">
-                        <input type="radio" name="reduction" readOnly disabled={directorAction || analystAction}/>
+                        <input type="radio" name="reduction" readOnly disabled={directorAction || analystAction} />
                       </td>
 
                       <td className="text-center">
@@ -455,22 +472,42 @@ const AssessmentDetailsPage = (props) => {
                       B
                     </th>
                   </tr>
-                  <tr key="start">
-                    <td className="text-blue">&bull; &nbsp; &nbsp; {modelYear} Credits:</td>
-                    <td className="text-right">
-                      977.76
-                    </td>
-                    <td className="text-right">
-                      0
-                    </td>
-                  </tr>
+                  {details.assessment.inCompliance.report
+                    && (
+                      <tr key="start">
+                        {Object.keys(creditActivityDetails.creditBalanceEnd).map((each) => (
+                          <>
+                            <td className="text-blue">&bull; &nbsp; &nbsp; {each} Credits:</td>
+                            <td className="text-right">
+                              {creditActivityDetails.creditBalanceEnd[each].A || 0}
+                            </td>
+                            <td className="text-right">
+                              {creditActivityDetails.creditBalanceEnd[each].B || 0}
+                            </td>
+                          </>
+                        ))}
+                      </tr>
+
+                    )}
+                  {!details.assessment.inCompliance.report
+                    && (
+                    <tr key="start" className="not-in-compliance">
+                      <td className="text-blue">&bull; &nbsp; &nbsp; Credit Deficit:</td>
+                      <td className="text-right">
+                        ({details.assessment.deficit.report.a})
+                      </td>
+                      <td className="text-right">
+                        ({details.assessment.deficit.report.b})
+                      </td>
+                    </tr>
+                    )}
                 </tbody>
               </table>
             </div>
           </div>
         </div>
       </div>
-      {!user.isGovernment
+      {!user.isGovernment && details.assessment.decision
         && (
           <>
             <h3 className="mt-4 mb-1">Director Assessment</h3>
@@ -478,7 +515,7 @@ const AssessmentDetailsPage = (props) => {
               <div className="col-12">
                 <div className="grey-border-area comment-box p-4 mt-2">
                   <div className="text-blue">
-                    {details.assessment && (<div>The Director has assessed that {details.assessment.decision.replace(/{user.organization.name}/g, user.organization.name)} ${details.assessment.penalty} CAD</div>)}
+                    {details.assessment && (<div>The Director has assessed that {details.assessment.decision.description.replace(/{user.organization.name}/g, user.organization.name)} ${details.assessment.assessmentPenalty} CAD</div>)}
                     {details.bceidComment
                     && <div className="mt-2">{parse(details.bceidComment.comment)}</div>}
                   </div>
@@ -513,8 +550,14 @@ const AssessmentDetailsPage = (props) => {
                             disabled={directorAction || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0}
                             type="text"
                             className="ml-4 mr-1"
-                            value={details.assessment.penalty}
+                            defaultValue={details.assessment.assessmentPenalty}
                             name="penalty-amount"
+                            onChange={(e) => {
+                              setDetails({
+                                ...details,
+                                assessment: { ...details.assessment, assessmentPenalty: e.target.value },
+                              });
+                            }}
                           />
                           <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
                         </div>

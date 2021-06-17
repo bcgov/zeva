@@ -30,8 +30,6 @@ const AssessmentContainer = (props) => {
   const [pendingBalanceExist, setPendingBalanceExist] = useState(false);
   const [creditActivityDetails, setCreditActivityDetails] = useState({});
   const [supplierClassInfo, setSupplierClassInfo] = useState({ ldvSales: 0, class: '' });
-  const [radioSelection, setRadioSelection] = useState('');
-  const [penalty, setPenalty] = useState(0);
   const [radioDescriptions, setRadioDescriptions] = useState([{ id: 0, description: 'test' }]);
   const [sales, setSales] = useState(0);
   const [statuses, setStatuses] = useState({
@@ -41,16 +39,15 @@ const AssessmentContainer = (props) => {
     },
   });
 
-  const handleCommentChangeIdir = (text) => {
-    setIdirComment(text);
-  };
-
   const handleSubmit = (status) => {
     const data = {
       modelYearReportId: id,
       validation_status: status,
     };
-
+    if (analystAction) {
+      data.penalty = details.assessment.assessmentPenalty;
+      data.description = details.assessment.decision.id;
+    }
     axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then((response) => {
       history.push(ROUTES_COMPLIANCE.REPORTS);
       history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
@@ -84,7 +81,9 @@ const AssessmentContainer = (props) => {
           const idirCommentArrayResponse = [];
           let bceidCommentResponse = {};
           const {
-            assessment: { penalty, decision },
+            assessment: {
+              penalty: assessmentPenalty, decision, deficit, inCompliance,
+            },
             descriptions: assessmentDescriptions,
           } = assessmentResponse.data;
           setRadioDescriptions(assessmentDescriptions);
@@ -139,8 +138,10 @@ const AssessmentContainer = (props) => {
             ldvSales,
             class: supplierClass,
             assessment: {
-              penalty,
+              inCompliance,
+              assessmentPenalty,
               decision,
+              deficit,
               history: modelYearReportHistory,
               validationStatus,
             },
@@ -260,6 +261,16 @@ const AssessmentContainer = (props) => {
   if (loading) {
     return <Loading />;
   }
+  const directorAction = user.isGovernment
+  && ['RECOMMENDED'].indexOf(details.assessment.validationStatus) >= 0
+  && user.hasPermission('SIGN_COMPLIANCE_REPORT');
+
+  const analystAction = user.isGovernment
+  && ['SUBMITTED'].indexOf(details.assessment.validationStatus) >= 0
+  && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
+  const handleCommentChangeIdir = (text) => {
+    setIdirComment(text);
+  };
   return (
     <>
       <ComplianceReportTabs
@@ -280,14 +291,14 @@ const AssessmentContainer = (props) => {
         makes={makes}
         modelYear={modelYear}
         radioDescriptions={radioDescriptions}
-        radioSelection={radioSelection}
-        setRadioSelection={setRadioSelection}
         ratios={ratios}
-        setPenalty={setPenalty}
         statuses={statuses}
         user={user}
         sales={sales}
         handleSubmit={handleSubmit}
+        directorAction={directorAction}
+        analystAction={analystAction}
+        setDetails={setDetails}
       />
     </>
   );

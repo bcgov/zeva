@@ -1,0 +1,83 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  keycloak:
+    build: ./keycloak
+    hostname: "keycloak"
+    ports:
+      - 8888:8080
+      - 8443:8443
+    expose:
+      - 8888
+      - 8443
+  api:
+    build: ./backend
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py load_ops_data --directory api/fixtures/operational/
+             python manage.py load_ops_data --directory api/fixtures/test/
+             python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - backend.env
+      - minio.env
+      - rabbitmq.env
+    volumes:
+      - ./backend:/api
+    ports:
+      - 8000:8000
+    depends_on:
+      db:
+        condition: service_healthy
+  mailslurper:
+    build: ./mailslurper
+    ports:
+      - 2500:2500
+      - 8081:8081
+      - 8085:8085
+  minio:
+    image: minio/minio
+    hostname: "minio"
+    volumes:
+      - ./minio/minio_files:/minio_files
+    env_file:
+      - minio.env
+    command: "minio server /minio_files"
+    ports:
+      - 9000:9000
+  rabbitmq:
+    image: rabbitmq:3.7-management
+    hostname: "rabbitmq"
+    environment:
+      - RABBITMQ_DEFAULT_USER=rabbitmq
+      - RABBITMQ_DEFAULT_PASS=rabbitmq
+      - RABBITMQ_DEFAULT_VHOST=/zeva
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error}]
+    ports:
+      - 15672:15672
+      - 5672:5672
+  web:
+    build: ./frontend
+    command: >
+      sh -c "npm install --force &&
+             npm start"
+    env_file:
+      - frontend.env
+      - rabbitmq.env
+    volumes:
+      - ./frontend:/web
+    depends_on:
+      - rabbitmq
+    ports:
+      - 3000:3000
+      - 8080:8080

@@ -29,6 +29,8 @@ from api.serializers.model_year_report_assessment import \
     ModelYearReportAssessmentSerializer
 from api.models.model_year_report_assessment_comment import \
     ModelYearReportAssessmentComment
+from api.models.model_year_report_assessment import \
+    ModelYearReportAssessment
 from api.services.model_year_report import get_model_year_report_statuses
 from api.serializers.organization_ldv_sales import \
     OrganizationLDVSalesSerializer
@@ -187,7 +189,6 @@ class ModelYearReportViewset(
             'gov_makes': gov_makes.data
         })
 
-
     @action(detail=True)
     def submission_confirmation(self, request, pk=None):
         confirmation = ModelYearReportConfirmation.objects.filter(
@@ -219,6 +220,22 @@ class ModelYearReportViewset(
                 update_user=request.user.username,
                 create_user=request.user.username,
             )
+            ## check for if validation status is recommended
+            if validation_status == 'RECOMMENDED':
+                ## do "update or create" to create the assessment object
+                description = request.data.get('description')
+                penalty = request.data.get('penalty')
+                ModelYearReportAssessment.objects.update_or_create(
+                    model_year_report_id=model_year_report_id,
+                    defaults={
+                        'update_user': request.user.username,
+                        'model_year_report_assessment_description_id': description,
+                        'penalty': penalty
+                    }
+
+                )
+
+
         
         if confirmations:
             for confirmation in confirmations:

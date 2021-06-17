@@ -77,6 +77,25 @@ class ModelYearReport(Auditable):
 
         return data
 
+    def get_avg_sales(self):
+        avg_sales = self.organization.get_avg_ldv_sales(
+            year=self.model_year.name
+        )
+
+        # if this is empty that means we don't have enough ldv_sales to
+        # get the average. our avg_sales at this point should be from the
+        # current report ldv_sales
+        if not avg_sales:
+            report_ldv_sales = ModelYearReportLDVSales.objects.filter(
+                model_year_report_id=self.id,
+                model_year_id=self.model_year_id
+            ).order_by('-update_timestamp').first()
+
+            if report_ldv_sales:
+                avg_sales = report_ldv_sales.ldv_sales
+
+        return avg_sales
+
     def get_ldv_sales(self, from_gov=False):
         row = ModelYearReportLDVSales.objects.filter(
             model_year_id=self.model_year_id,

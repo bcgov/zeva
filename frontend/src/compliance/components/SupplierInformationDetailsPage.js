@@ -304,6 +304,7 @@ SupplierInformationDetailsPage.propTypes = {
   details: PropTypes.shape({
     organization: PropTypes.shape(),
     supplierInformation: PropTypes.shape(),
+    supplierClassString: PropTypes.shape(),
   }).isRequired,
   handleCancelConfirmation: PropTypes.func.isRequired,
   handleChangeMake: PropTypes.func.isRequired,
