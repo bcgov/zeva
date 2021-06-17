@@ -79,7 +79,7 @@ const ComplianceObligationDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
-  console.error(reportDetails);
+
   return (
     <div id="compliance-supplier-information-details" className="page">
       <div className="row mt-3">
