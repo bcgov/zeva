@@ -5,12 +5,15 @@ from rest_framework.serializers import ModelSerializer, \
     ListField
 from api.models.account_balance import AccountBalance
 from api.models.credit_transaction import CreditTransaction
-from api.models.model_year import ModelYear
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_assessment import ModelYearReportAssessment
 from api.models.model_year_report_assessment_comment import ModelYearReportAssessmentComment
 from api.serializers.model_year_report_assessment_comment import ModelYearReportAssessmentCommentSerializer
 from api.models.model_year_report_assessment_descriptions import ModelYearReportAssessmentDescriptions
+from api.models.model_year_report_compliance_obligation import ModelYearReportComplianceObligation
+from api.serializers.vehicle import ModelYearSerializer
+from api.models.model_year import ModelYear
+
 
 class ModelYearReportAssessmentDescriptionsSerializer(ModelSerializer):
     class Meta:
@@ -71,19 +74,76 @@ class ModelYearReportAssessmentSerializer(
     def get_assessment(self, obj):
         assessment = ModelYearReportAssessment.objects.filter(
             model_year_report=obj
+        ).first()            
+        in_compliance = {'report': True, 'prior': True}
+        ##get the report
+        report = ModelYearReport.objects.get(
+            id=obj.id
         )
+        ##get the report year 
+        report_year_obj = ModelYear.objects.get(
+            id=report.model_year_id
+        )
+        # report_year_int = int(report_year_obj.name)
+        report_year_str = report_year_obj.name
+        prior_year_str = str(int(report_year_str) - 1)
+        prior_year_deficit = {'model_year': prior_year_str, 'a': 0, 'b': 0}
+        report_year_deficit = {'model_year': report_year_str, 'a': 0, 'b': 0}
+
+        ## try to get the report for the prior year as well as the compliance obligation (deficit)
+        prior_year_report_obj = ModelYearReport.objects.filter(
+            model_year__name=prior_year_str
+        ).first()
+        deficit_prior_year_obj = ModelYearReportComplianceObligation.objects.filter(
+            model_year_report_id=prior_year_report_obj,
+            category='CreditDeficit'
+        ).first()
+        if deficit_prior_year_obj:
+            in_compliance['prior'] = False
+            prior_year_deficit['a'] = deficit_prior_year_obj.credit_a_value
+            prior_year_deficit['b'] = deficit_prior_year_obj.credit_b_value
+
+        deficit_report_year = ModelYearReportComplianceObligation.objects.filter(
+            model_year_report_id=obj,
+            category='CreditDeficit'
+        ).first()
+
+        if deficit_report_year:
+            in_compliance['report'] = False
+            report_year_deficit['a'] = deficit_report_year.credit_a_value
+            report_year_deficit['b'] = deficit_report_year.credit_b_value
+        deficit_values = {'prior': prior_year_deficit, 'report': report_year_deficit}
+
         if not assessment:
-            return None
+            return {
+                'decision': {'id': None, 'description': None},
+                'penalty': None,
+                'in_compliance': in_compliance,
+                'deficit': deficit_values,
+            }
+        description_serializer = ModelYearReportAssessmentDescriptionsSerializer(
+            assessment.model_year_report_assessment_description,
+            read_only=True,
+            )
+       
         return {
-            'description': assessment.description,
-            'pentalty': assessment.penalty
+            'decision': {'description': description_serializer.data['description'], 'id': description_serializer.data['id'] },
+            'penalty': assessment.penalty,
+            'deficit': deficit_values,
+            'in_compliance': in_compliance
         }
 
     def get_assessment_comment(self, obj):
+        request = self.context.get('request')
         assessment_comment = ModelYearReportAssessmentComment.objects.filter(
             model_year_report=obj
+            
         ).order_by('-create_timestamp')
-
+        if not request.user.is_government:
+            assessment_comment = ModelYearReportAssessmentComment.objects.filter(
+                model_year_report=obj,
+                to_director=False
+            ).order_by('-create_timestamp')
         if not assessment_comment:
             return []
         serializer = ModelYearReportAssessmentCommentSerializer(

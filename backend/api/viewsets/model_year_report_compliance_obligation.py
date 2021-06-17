@@ -64,10 +64,10 @@ class ModelYearReportComplianceObligationViewset(
 
     def create(self, request, *args, **kwargs):
         id = request.data.get('report_id')
-        offset = request.data.get('offset')
         credit_activity = request.data.get('credit_activity')
         confirmations = request.data.get('confirmations')
         sales = request.data.get('sales', None)
+        credit_reduction_selection = request.data.get('credit_reduction_selection', None)
 
         if sales:
             model_year = ModelYearReport.objects.values_list(
@@ -84,7 +84,7 @@ class ModelYearReportComplianceObligationViewset(
                         'create_user': request.user.username,
                         'update_user': request.user.username
                     }
-                    )
+                )
 
         for confirmation in confirmations:
             ModelYearReportConfirmation.objects.create(
@@ -94,19 +94,6 @@ class ModelYearReportComplianceObligationViewset(
                 title=request.user.title,
                 signing_authority_assertion_id=confirmation
             )
-        ModelYearReportCreditOffset.objects.filter(
-            model_year_report_id=id
-        ).delete()
-        for year, value in offset.items():
-            model_year = ModelYear.objects.get(name=year)
-            if value['a'] > 0 or value['b'] > 0:
-                obj = ModelYearReportCreditOffset.objects.create(
-                    model_year_report_id=id,
-                    model_year=model_year,
-                    credit_a_offset_value=value['a'],
-                    credit_b_offset_value=value['b']
-                )
-                obj.save()
         ModelYearReportComplianceObligation.objects.filter(
             model_year_report_id=id
         ).delete()
@@ -123,6 +110,15 @@ class ModelYearReportComplianceObligationViewset(
                     credit_b_value=b
                 )
             compliance_obj.save()
+
+        if credit_reduction_selection:
+            report = ModelYearReport.objects.get(
+                id=id
+            )
+
+            report.credit_reduction_selection = credit_reduction_selection
+            report.save()
+
         return Response(id)
 
     @action(detail=False, url_path=r'(?P<id>\d+)')
@@ -159,12 +155,6 @@ class ModelYearReportComplianceObligationViewset(
                 snapshot, context={'request': request, 'kwargs': kwargs}, many=True
             )
         else:
-            # transactions = CreditTransaction.objects.filter(
-            #     Q(credit_to=organization) | Q(debit_from=organization)
-            # )
-            # serializer = ModelYearReportComplianceObligationDetailsSerializer(
-            #     transactions, context={'request': request, 'kwargs': kwargs}
-            # )
             report = ModelYearReport.objects.get(
                 id=id
             )
@@ -312,10 +302,12 @@ class ModelYearReportComplianceObligationViewset(
 
             return Response({
                 'compliance_obligation': content,
-                'compliance_offset': compliance_offset
+                'compliance_offset': compliance_offset,
+                'ldv_sales': report.ldv_sales
             })
 
         return Response({
             'compliance_obligation': serializer.data,
-            'compliance_offset': compliance_offset
+            'compliance_offset': compliance_offset,
+            'ldv_sales': report.ldv_sales
          })

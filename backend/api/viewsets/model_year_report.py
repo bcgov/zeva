@@ -25,12 +25,16 @@ from api.serializers.model_year_report_make import \
 from api.serializers.organization import OrganizationSerializer
 from api.serializers.organization_address import OrganizationAddressSerializer
 from api.serializers.vehicle import ModelYearSerializer
-from api.serializers.model_year_report_assessment import ModelYearReportAssessmentSerializer
-from api.models.model_year_report_assessment_comment import ModelYearReportAssessmentComment
+from api.serializers.model_year_report_assessment import \
+    ModelYearReportAssessmentSerializer
+from api.models.model_year_report_assessment_comment import \
+    ModelYearReportAssessmentComment
+from api.models.model_year_report_assessment import \
+    ModelYearReportAssessment
 from api.services.model_year_report import get_model_year_report_statuses
+from api.serializers.organization_ldv_sales import \
+    OrganizationLDVSalesSerializer
 from auditable.views import AuditableMixin
-from api.models.organization_ldv_sales import OrganizationLDVSales
-from api.serializers.organization_ldv_sales import OrganizationLDVSalesSerializer
 
 
 class ModelYearReportViewset(
@@ -86,6 +90,7 @@ class ModelYearReportViewset(
             model_year_report_id=pk,
             signing_authority_assertion__module="supplier_information"
         ).first()
+
         if not confirmation:
             model_year = ModelYearSerializer(report.model_year)
             model_year_int = int(model_year.data['name'])
@@ -117,16 +122,26 @@ class ModelYearReportViewset(
             ).distinct()
 
             org = request.user.organization
+
+            avg_sales = org.get_avg_ldv_sales(year=model_year_int)
+
             ldv_sales_previous_list = org.get_ldv_sales(year=model_year_int)
             ldv_sales_previous = OrganizationLDVSalesSerializer(
                 ldv_sales_previous_list, many=True)
 
-            avg_sales = 0
+            # if this is empty that means we don't have enough ldv_sales to
+            # get the average. our avg_sales at this point should be from the
+            # current report ldv_sales
+            if not avg_sales:
+                report_ldv_sales = ModelYearReportLDVSales.objects.filter(
+                    model_year_report_id=pk,
+                    model_year__name=model_year_int
+                ).order_by('-update_timestamp').first()
 
-            if len(ldv_sales_previous_list) > 0:
-                avg_sales = sum(
-                    ldv_sales_previous_list.values_list('ldv_sales', flat=True)
-                ) / len(ldv_sales_previous_list)
+                if report_ldv_sales:
+                    avg_sales = report_ldv_sales.ldv_sales
+
+                ldv_sales_previous = None
 
             return Response({
                 'avg_sales': avg_sales,
@@ -136,16 +151,20 @@ class ModelYearReportViewset(
                 'makes': makes.data,
                 'model_year_report_history': history.data,
                 'validation_status': report.validation_status.value,
-                'supplier_class': org.supplier_class,
+                'supplier_class': org.get_current_class(avg_sales=avg_sales),
                 'model_year': model_year.data,
                 'create_user': report.create_user,
                 'confirmations': confirmations,
                 'ldv_sales': report.ldv_sales,
                 'statuses': get_model_year_report_statuses(report),
                 'ldv_sales_previous': ldv_sales_previous.data
+                if ldv_sales_previous else [],
+                'credit_reduction_selection': report.credit_reduction_selection
             })
 
-        serializer = ModelYearReportSerializer(report, context={'request': request})
+        serializer = ModelYearReportSerializer(
+            report, context={'request': request}
+        )
 
         return Response(serializer.data)
 
@@ -170,7 +189,6 @@ class ModelYearReportViewset(
             'gov_makes': gov_makes.data
         })
 
-
     @action(detail=True)
     def submission_confirmation(self, request, pk=None):
         confirmation = ModelYearReportConfirmation.objects.filter(
@@ -186,7 +204,7 @@ class ModelYearReportViewset(
     def submission(self, request):
         validation_status = request.data.get('validation_status')
         model_year_report_id = request.data.get('model_year_report_id')
-        confirmations = request.data.get('confirmation')
+        confirmations = request.data.get('confirmation', None)
 
         model_year_report_update = ModelYearReport.objects.filter(
             id=model_year_report_id
@@ -202,23 +220,33 @@ class ModelYearReportViewset(
                 update_user=request.user.username,
                 create_user=request.user.username,
             )
-        
-        confirmation = ModelYearReportConfirmation.objects.filter(
-            model_year_report_id=model_year_report_id,
-            signing_authority_assertion__module="compliance_summary"
-        ).values_list(
-            'signing_authority_assertion_id', flat=True
-        ).distinct()
+            ## check for if validation status is recommended
+            if validation_status == 'RECOMMENDED':
+                ## do "update or create" to create the assessment object
+                description = request.data.get('description')
+                penalty = request.data.get('penalty')
+                ModelYearReportAssessment.objects.update_or_create(
+                    model_year_report_id=model_year_report_id,
+                    defaults={
+                        'update_user': request.user.username,
+                        'model_year_report_assessment_description_id': description,
+                        'penalty': penalty
+                    }
 
-        for confirmation in confirmations:
-            summary_confirmation = ModelYearReportConfirmation.objects.create(
-                create_user=request.user.username,
-                model_year_report_id=model_year_report_id,
-                has_accepted=True,
-                title=request.user.title,
-                signing_authority_assertion_id=confirmation
-            )
-            summary_confirmation.save()
+                )
+
+
+        
+        if confirmations:
+            for confirmation in confirmations:
+                summary_confirmation = ModelYearReportConfirmation.objects.create(
+                    create_user=request.user.username,
+                    model_year_report_id=model_year_report_id,
+                    has_accepted=True,
+                    title=request.user.title,
+                    signing_authority_assertion_id=confirmation
+                )
+                summary_confirmation.save()
 
         return HttpResponse(
             status=201, content="Report Submitted"
@@ -260,7 +288,6 @@ class ModelYearReportViewset(
                 model_year = ModelYear.objects.filter(
                     name=key
                 ).first()
-
                 if model_year:
                     ModelYearReportLDVSales.objects.update_or_create(
                         model_year_id=model_year.id,
@@ -273,29 +300,35 @@ class ModelYearReportViewset(
                         }
                     )
 
-        adjustments = request.data.get('adjusments', None)
-
+        adjustments = request.data.get('adjustments', None)
         if adjustments and isinstance(adjustments, list):
+            ModelYearReportAdjustment.objects.filter(
+                model_year_report=report
+            ).delete()
+
             for adjustment in adjustments:
                 model_year = ModelYear.objects.filter(
-                    name=adjustment.model_year
+                    name=adjustment.get('model_year')
                 ).first()
 
                 credit_class = CreditClass.objects.filter(
-                    credit_class=adjustment.credit_class
+                    credit_class=adjustment.get('credit_class')
                 ).first()
 
                 is_reduction = False
 
-                if adjustment.type == 'Reduction':
+                if adjustment.get('type') == 'Reduction':
                     is_reduction = True
 
-                if model_year and credit_class and adjustment.quantity:
+                if model_year and credit_class and adjustment.get('quantity'):
                     ModelYearReportAdjustment.objects.create(
                         credit_class_id=credit_class.id,
                         model_year_id=model_year.id,
-                        number_of_credits=adjustment.quantity,
+                        number_of_credits=adjustment.get('quantity'),
                         is_reduction=is_reduction,
+                        model_year_report=report,
+                        create_user=request.user.username,
+                        update_user=request.user.username,
                     )
 
         report = get_object_or_404(ModelYearReport, pk=pk)
@@ -324,13 +357,12 @@ class ModelYearReportViewset(
 
     @action(detail=True, methods=['get'])
     def assessment(self, request, pk):
-        if not request.user.is_government:
+        report = get_object_or_404(ModelYearReport, pk=pk)
+        serializer = ModelYearReportAssessmentSerializer(report, context={'request': request})
+        if not request.user.is_government and report.validation_status is not ModelYearReportStatuses.ASSESSED:
             return HttpResponse(
                 status=403, content=None
             )
-
-        report = get_object_or_404(ModelYearReport, pk=pk)
-        serializer = ModelYearReportAssessmentSerializer(report)
         return Response(serializer.data)
 
     @action(detail=False)

@@ -5,6 +5,7 @@ from django.db import models
 from enumfields import EnumField
 
 from auditable.models import Auditable
+from api.models.model_year_report_adjustment import ModelYearReportAdjustment
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.models.model_year_report_make import ModelYearReportMake
 from api.models.model_year_report_ldv_sales import ModelYearReportLDVSales
@@ -49,6 +50,12 @@ class ModelYearReport(Auditable):
                        statuses=[c.name for c in ModelYearReportStatuses]
                    )
     )
+    credit_reduction_selection = models.CharField(
+        db_comment="Which ZEV credit class to use first for unspecified "
+                   "reductions. (A or B)",
+        max_length=1,
+        null=True
+    )
 
     @property
     def makes(self):
@@ -62,16 +69,51 @@ class ModelYearReport(Auditable):
     def ldv_sales(self):
         return self.get_ldv_sales(from_gov=False)
 
+    @property
+    def adjustments(self):
+        data = ModelYearReportAdjustment.objects.filter(
+            model_year_report_id=self.id
+        )
+
+        return data
+
+    def get_avg_sales(self):
+        avg_sales = self.organization.get_avg_ldv_sales(
+            year=self.model_year.name
+        )
+
+        # if this is empty that means we don't have enough ldv_sales to
+        # get the average. our avg_sales at this point should be from the
+        # current report ldv_sales
+        if not avg_sales:
+            report_ldv_sales = ModelYearReportLDVSales.objects.filter(
+                model_year_report_id=self.id,
+                model_year_id=self.model_year_id
+            ).order_by('-update_timestamp').first()
+
+            if report_ldv_sales:
+                avg_sales = report_ldv_sales.ldv_sales
+
+        return avg_sales
+
     def get_ldv_sales(self, from_gov=False):
         row = ModelYearReportLDVSales.objects.filter(
             model_year_id=self.model_year_id,
             model_year_report_id=self.id,
             from_gov=from_gov
         ).first()
-
         if row:
             return row.ldv_sales
-
+        return None
+        
+    def get_ldv_sales_with_year(self, from_gov=False):
+        row = ModelYearReportLDVSales.objects.filter(
+            model_year_id=self.model_year_id,
+            model_year_report_id=self.id,
+            from_gov=from_gov
+        ).first()
+        if row:
+            return {'sales': row.ldv_sales, 'year': row.model_year.name}
         return None
 
     class Meta:

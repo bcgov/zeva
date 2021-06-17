@@ -21,7 +21,6 @@ const ComplianceObligationDetailsPage = (props) => {
     details,
     handleCancelConfirmation,
     handleCheckboxClick,
-    handleOffsetChange,
     handleSave,
     loading,
     offsetNumbers,
@@ -39,6 +38,7 @@ const ComplianceObligationDetailsPage = (props) => {
     creditBalance,
     sales,
     handleChangeSales,
+    creditReductionSelection,
   } = props;
   const [showModal, setShowModal] = useState(false);
   let disabledCheckboxes = propsDisabledCheckboxes;
@@ -122,6 +122,8 @@ const ComplianceObligationDetailsPage = (props) => {
           sales={sales}
           handleChangeSales={handleChangeSales}
           statuses={statuses}
+          user={user}
+          page="obligation"
         />
         <div className="mt-4">
           <h3 className="mb-2">Credit Activity</h3>
@@ -138,7 +140,6 @@ const ComplianceObligationDetailsPage = (props) => {
           offsetNumbers={offsetNumbers}
           unspecifiedCreditReduction={unspecifiedCreditReduction}
           supplierClassInfo={supplierClassInfo}
-          handleOffsetChange={handleOffsetChange}
           user={user}
           zevClassAReduction={zevClassAReduction}
           unspecifiedReductions={unspecifiedReductions}
@@ -146,6 +147,7 @@ const ComplianceObligationDetailsPage = (props) => {
           totalReduction={totalReduction}
           reportYear={reportYear}
           creditBalance={creditBalance}
+          creditReductionSelection={creditReductionSelection}
         />
       </div>
       <ComplianceReportSignoff
@@ -192,6 +194,7 @@ ComplianceObligationDetailsPage.defaultProps = {
     complianceRatio: 0,
     zevClassA: 0,
   },
+  creditReductionSelection: null,
 };
 
 ComplianceObligationDetailsPage.propTypes = {
@@ -213,7 +216,7 @@ ComplianceObligationDetailsPage.propTypes = {
     PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   ).isRequired,
   statuses: PropTypes.shape().isRequired,
-  handleOffsetChange: PropTypes.func.isRequired,
+  // handleOffsetChange: PropTypes.func.isRequired,
   handleSave: PropTypes.func.isRequired,
   offsetNumbers: PropTypes.shape().isRequired,
   disabledCheckboxes: PropTypes.string.isRequired,
@@ -223,5 +226,6 @@ ComplianceObligationDetailsPage.propTypes = {
   creditBalance: PropTypes.shape().isRequired,
   sales: PropTypes.number,
   handleChangeSales: PropTypes.func.isRequired,
+  creditReductionSelection: PropTypes.string,
 };
 export default ComplianceObligationDetailsPage;

@@ -20,6 +20,7 @@ const VehicleSupplierDetailsPage = (props) => {
     locationState,
     modelYears,
     selectedModelYear,
+    handleDeleteSale,
   } = props;
   const { organizationAddress } = details;
 
@@ -47,8 +48,8 @@ const VehicleSupplierDetailsPage = (props) => {
             <span> {(details.isActive) ? 'Actively supplying vehicles in British Columbia' : 'Not actively supplying vehicles in British Columbia'} </span>
           </div>
 
-          <div>
-            <div className="d-inline-block mr-5 mt-3">
+          <div className="row">
+            <div className="d-inline-block col-5 mr-5 mt-3">
               <h4>Service Address</h4>
               {organizationAddress
               && organizationAddress.map((address) => (
@@ -64,7 +65,7 @@ const VehicleSupplierDetailsPage = (props) => {
                 )
               ))}
             </div>
-            <div className="d-inline-block mt-3">
+            <div className="d-inline-block col-5 mt-3">
               <h4>Records Address</h4>
               {organizationAddress
               && organizationAddress.map((address) => (
@@ -139,13 +140,24 @@ const VehicleSupplierDetailsPage = (props) => {
 
                 <ul className="mb-0 mt-3">
                   {ldvSales.map((sale) => (
-                    <li key={sale.id}>
-                      <div className="model-year">
+                    <li className="form-row my-2" key={sale.id}>
+                      <div className="col-5 model-year">
                         {sale.modelYear} Model Year:
                       </div>
-                      <div className="sales">
+                      <div className="col-6 sales">
                         {formatNumeric(sale.ldvSales, 0)}
                       </div>
+                      {!details.hasSubmittedReport && (
+                        <div className="col-1 delete">
+                          <button
+                            onClick={() => {
+                              handleDeleteSale(sale);
+                            }}
+                            type="button"
+                          >
+                            x
+                          </button>
+                        </div>)}
                     </li>
                   ))}
                 </ul>

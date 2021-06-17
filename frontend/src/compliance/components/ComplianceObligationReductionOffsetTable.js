@@ -16,6 +16,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
     totalReduction,
     user,
     statuses,
+    creditReductionSelection,
   } = props;
 
   return (
@@ -78,6 +79,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                 </td>
                 <td className="text-center">
                   <input
+                    checked={creditReductionSelection === 'A'}
                     disabled={user.isGovernment || statuses.complianceObligation.status === 'SUBMITTED' || statuses.complianceObligation.status === 'CONFIRMED'}
                     type="radio"
                     id="A"
@@ -95,6 +97,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                 </td>
                 <td className="text-center">
                   <input
+                    checked={creditReductionSelection === 'B'}
                     disabled={user.isGovernment || statuses.complianceObligation.status === 'SUBMITTED' || statuses.complianceObligation.status === 'CONFIRMED'}
                     className="text-center"
                     type="radio"
@@ -146,29 +149,6 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                   </tr>
                 </>
               )}
-              {/* {offsetNumbers && Object.keys(offsetNumbers).map((year) => (
-                <tr key={year}>
-                  <td>
-                    &bull; &nbsp; &nbsp; {year} Credits
-                  </td>
-                  <td className="text-center">
-                    <input
-                      name="A"
-                      id={`${year}-A`}
-                      onChange={(event) => { handleOffsetChange(event); }}
-                      type="number"
-                    />
-                  </td>
-                  <td className="text-center">
-                    <input
-                      name="B"
-                      id={`${year}-B`}
-                      onChange={(event) => { handleOffsetChange(event); }}
-                      type="number"
-                    />
-                  </td>
-                </tr>
-              ))} */}
             </tbody>
           </table>
         </div>

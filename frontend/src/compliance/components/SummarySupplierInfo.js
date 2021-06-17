@@ -1,9 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const SummarySupplierInfo = (props) => {
-  const { supplierDetails, makes, creditActivityDetails, modelYear } = props;
-  const { supplierClass , ldvSales } = creditActivityDetails;
+  const {
+    supplierDetails,
+    makes,
+    creditActivityDetails,
+    modelYear,
+  } = props;
+  const { supplierClassText } = creditActivityDetails;
   const { organization } = supplierDetails;
   return (
     <>
@@ -49,11 +55,11 @@ const SummarySupplierInfo = (props) => {
         </div>
         <div className="mt-3">
           <h4 className="d-inline">Vehicle Supplier Class:</h4>
-          <span> {supplierClass} </span>
+          <span> {supplierClassText} </span>
         </div>
         <div className="mt-0">
           <div className="d-inline">3 Year Average({ modelYear-3}-{modelYear-1}) LDV Sales\Leases:</div>
-          <span className='text-black'> {organization.avgLdvSales} </span>
+          <span className="text-black"> {formatNumeric(organization.avgLdvSales,2)} </span>
         </div>
         <div className="d-block my-3">
           <h4>Makes:</h4>

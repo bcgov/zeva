@@ -22,8 +22,27 @@
       width: 20%;
     }
   }
+
+  .assessment-credit-adjustment {
+    .form-group {
+      background-color: $default-background-grey;
+      padding: 1rem;
+
+      label {
+        color: $default-text-blue;
+        margin-bottom: 0;
+      }
+
+      input[type=radio] {
+        margin-right: 0.5rem;
+      }
+    }
+  }
 }
 #assessment-details {
+  .not-in-compliance {
+    background-color: #f2dede;
+  }
   .text-grey {
     color: grey;
   }

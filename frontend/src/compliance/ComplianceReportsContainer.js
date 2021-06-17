@@ -22,18 +22,15 @@ const ComplianceReportsContainer = (props) => {
     setLoading(showLoading);
     axios.get(ROUTES_COMPLIANCE.REPORTS).then((response) => {
       setData(response.data);
-
       const filteredYears = availableYears.filter((year) => (
         response.data.findIndex(
           (item) => parseInt(item.modelYear.name, 10) === parseInt(year, 10),
         ) < 0
       ));
-
       setAvailableYears(filteredYears);
       setLoading(false);
     });
   };
-
   useEffect(() => {
     refreshList(true);
   }, []);

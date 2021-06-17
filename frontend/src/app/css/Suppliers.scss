@@ -11,7 +11,7 @@
   .ldv-sales {
     border: 1px solid $border-grey;
     display: inline-block;
-    padding: 0.5rem;
+    min-width: 500px;
 
     > .row {
       margin-left: 0;
@@ -26,14 +26,15 @@
       }
     }
 
-    .model-year, .sales {
+    .model-year, .sales, .delete {
       display: inline-block;
       vertical-align: middle;
     }
-
-    .model-year {
-      min-width: 200px;
-    }
+    .delete button {
+      background-color: transparent;
+      border: none;
+      color: $red;
+      }
   }
 }
 

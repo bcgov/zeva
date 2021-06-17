@@ -71,10 +71,6 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
     Loads most of the fields and the balance for the Supplier
     """
     organization_address = OrganizationAddressSaveSerializer(allow_null=True, many=True)
-    avg_ldv_sales = serializers.SerializerMethodField()
-
-    def get_avg_ldv_sales(self, obj):
-        return obj.get_avg_ldv_sales()
 
     def create(self, validated_data):
         request = self.context.get('request')
@@ -138,7 +134,7 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'name', 'organization_address', 'create_timestamp',
             'balance', 'is_active', 'short_name', 'create_user', 'update_user',
-            'is_government', 'supplier_class', 'avg_ldv_sales', 'ldv_sales',
+            'is_government', 'supplier_class', 'ldv_sales',
             'has_submitted_report',
         )
         extra_kwargs = {

@@ -8,6 +8,7 @@ import CustomPropTypes from '../app/utilities/props';
 import AssessmentEditPage from './components/AssessmentEditPage';
 import ComplianceReportTabs from './components/ComplianceReportTabs';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
+import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import Loading from '../app/components/Loading';
 import CONFIG from '../app/config';
 
@@ -30,6 +31,29 @@ const AssessmentEditContainer = (props) => {
   });
   const [sales, setSales] = useState({});
   const [ratios, setRatios] = useState({});
+  const [years, setYears] = useState([]);
+  const [adjustments, setAdjustments] = useState([]);
+
+  const addAdjustment = () => {
+    adjustments.push({
+      creditClass: 'A',
+      quantity: 0,
+      type: 'Allocation',
+    });
+
+    setAdjustments([...adjustments]);
+  };
+
+  const handleChangeAdjustment = (value, property, index) => {
+    adjustments[index][property] = value;
+
+    setAdjustments([...adjustments]);
+  };
+
+  const handleDeleteAdjustment = (index) => {
+    adjustments.splice(index, 1);
+    setAdjustments([...adjustments]);
+  };
 
   const handleChangeMake = (event) => {
     const { value } = event.target;
@@ -61,26 +85,29 @@ const AssessmentEditContainer = (props) => {
     const data = {
       makes,
       sales,
+      adjustments,
     };
 
     axios.patch(
-      ROUTES_COMPLIANCE.REPORT_ASSESSMENT_SAVE.replace(/:id/g, id),
-      data).then(() => {
-        history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id));
-      });
+      ROUTES_COMPLIANCE.REPORT_ASSESSMENT_SAVE.replace(/:id/g, id), data,
+    ).then(() => {
+      history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id));
+    });
   };
 
   const refreshDetails = () => {
     const detailsPromise = axios.get(
-      ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)
+      ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id),
     );
 
     const ratiosPromise = axios.get(ROUTES_COMPLIANCE.RATIOS);
 
     const makesPromise = axios.get(ROUTES_COMPLIANCE.MAKES.replace(/:id/g, id));
 
-    Promise.all([detailsPromise, ratiosPromise, makesPromise]).then(
-      ([response, ratiosResponse, makesResponse]) => {
+    const yearsPromise = axios.get(ROUTES_VEHICLES.YEARS);
+
+    Promise.all([detailsPromise, ratiosPromise, makesPromise, yearsPromise]).then(
+      ([response, ratiosResponse, makesResponse, yearsResponse]) => {
         const {
           makes: modelYearReportMakes,
           modelYear: reportModelYear,
@@ -91,14 +118,26 @@ const AssessmentEditContainer = (props) => {
           validationStatus,
           ldvSales,
           supplierClass,
-          ldvSalesUpdated,
+          adjustments: adjustmentsData,
         } = response.data;
         const year = parseInt(reportModelYear.name, 10);
 
-        const { supplierMakes, govMakes} = makesResponse.data;
+        const { supplierMakes, govMakes } = makesResponse.data;
 
         setModelYear(year);
         setStatuses(reportStatuses);
+
+        const adjustmentArr = [];
+
+        adjustmentsData.forEach((each) => {
+          adjustmentArr.push({
+            creditClass: each.creditClass,
+            modelYear: each.modelYear,
+            quantity: each.numberOfCredits,
+            type: each.isReduction ? 'Reduction' : 'Allocation',
+          });
+        });
+        setAdjustments(adjustmentArr);
 
         if (modelYearReportMakes) {
           const supplierCurrentMakes = supplierMakes.map((each) => each.make);
@@ -126,15 +165,18 @@ const AssessmentEditContainer = (props) => {
         });
 
         setSales({
-          [year]: ldvSalesUpdated,
+          [year]: ldvSales,
         });
 
         const filteredRatio = ratiosResponse.data.filter(
-          (data) => data.modelYear === year.toString()
+          (data) => data.modelYear === year.toString(),
         )[0];
         setRatios(filteredRatio);
+
+        setYears(yearsResponse.data);
+
         setLoading(false);
-      }
+      },
     );
   };
 
@@ -170,6 +212,11 @@ const AssessmentEditContainer = (props) => {
         ratios={ratios}
         sales={sales}
         supplierMakes={supplierMakesList}
+        years={years}
+        adjustments={adjustments}
+        addAdjustment={addAdjustment}
+        handleChangeAdjustment={handleChangeAdjustment}
+        handleDeleteAdjustment={handleDeleteAdjustment}
       />
     </>
   );

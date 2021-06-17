@@ -30,9 +30,7 @@ const AssessmentContainer = (props) => {
   const [pendingBalanceExist, setPendingBalanceExist] = useState(false);
   const [creditActivityDetails, setCreditActivityDetails] = useState({});
   const [supplierClassInfo, setSupplierClassInfo] = useState({ ldvSales: 0, class: '' });
-  const [radioSelection, setRadioSelection] = useState('');
-  const [penalty, setPenalty] = useState(0);
-  const [radioDescriptions, setRadioDescriptions] = useState([{ id: 0, description: 'test' },]);
+  const [radioDescriptions, setRadioDescriptions] = useState([{ id: 0, description: 'test' }]);
   const [sales, setSales] = useState(0);
   const [statuses, setStatuses] = useState({
     assessment: {
@@ -40,10 +38,21 @@ const AssessmentContainer = (props) => {
       confirmedBy: null,
     },
   });
-
-  const handleCommentChangeIdir = (text) => {
-    setIdirComment(text);
+  const handleSubmit = (status) => {
+    const data = {
+      modelYearReportId: id,
+      validation_status: status,
+    };
+    if (analystAction) {
+      data.penalty = details.assessment.assessmentPenalty;
+      data.description = details.assessment.decision.id;
+    }
+    axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then((response) => {
+      history.push(ROUTES_COMPLIANCE.REPORTS);
+      history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+    });
   };
+
   const handleCommentChangeBceid = (text) => {
     setBceidComment(text);
   };
@@ -70,7 +79,12 @@ const AssessmentContainer = (props) => {
         .then(axios.spread((reportDetailsResponse, ratioResponse, creditActivityResponse, assessmentResponse) => {
           const idirCommentArrayResponse = [];
           let bceidCommentResponse = {};
-          const assessmentDescriptions = assessmentResponse.data.descriptions;
+          const {
+            assessment: {
+              penalty: assessmentPenalty, decision, deficit, inCompliance,
+            },
+            descriptions: assessmentDescriptions,
+          } = assessmentResponse.data;
           setRadioDescriptions(assessmentDescriptions);
           assessmentResponse.data.assessmentComment.forEach((item) => {
             if (item.toDirector === true) {
@@ -79,6 +93,7 @@ const AssessmentContainer = (props) => {
               bceidCommentResponse = item;
             }
           });
+
           let supplierClass;
           if (reportDetailsResponse.data.supplierClass === 'L') {
             supplierClass = 'Large';
@@ -88,7 +103,6 @@ const AssessmentContainer = (props) => {
             supplierClass = 'Small';
           }
           const {
-
             makes: modelYearReportMakes,
             modelYearReportAddresses,
             modelYearReportHistory,
@@ -98,23 +112,36 @@ const AssessmentContainer = (props) => {
             confirmations,
             statuses: reportStatuses,
             ldvSales,
+            ldvSalesUpdated,
+            changelog,
           } = reportDetailsResponse.data;
-
+          setModelYear(parseInt(reportModelYear.name, 10));
           const filteredRatio = ratioResponse.data.filter((data) => data.modelYear === modelYear.toString())[0];
           setRatios(filteredRatio);
+          const makesChanges = {
+            additions: [],
+            // deletions: [],
+            // edits: []
+          };
           if (modelYearReportMakes) {
             const currentMakes = modelYearReportMakes.map((each) => (each.make));
+            const makesAdditions = modelYearReportMakes.filter((each) => (each.fromGov));
+            makesChanges.additions = makesAdditions;
             setMakes(currentMakes);
           }
-
           setStatuses(reportStatuses);
           setSales(ldvSales);
           setDetails({
+            changelog,
             bceidComment: bceidCommentResponse,
             idirComment: idirCommentArrayResponse,
             ldvSales,
             class: supplierClass,
             assessment: {
+              inCompliance,
+              assessmentPenalty,
+              decision,
+              deficit,
               history: modelYearReportHistory,
               validationStatus,
             },
@@ -234,6 +261,16 @@ const AssessmentContainer = (props) => {
   if (loading) {
     return <Loading />;
   }
+  const directorAction = user.isGovernment
+  && ['RECOMMENDED'].indexOf(details.assessment.validationStatus) >= 0
+  && user.hasPermission('SIGN_COMPLIANCE_REPORT');
+
+  const analystAction = user.isGovernment
+  && ['SUBMITTED'].indexOf(details.assessment.validationStatus) >= 0
+  && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
+  const handleCommentChangeIdir = (text) => {
+    setIdirComment(text);
+  };
   return (
     <>
       <ComplianceReportTabs
@@ -254,13 +291,14 @@ const AssessmentContainer = (props) => {
         makes={makes}
         modelYear={modelYear}
         radioDescriptions={radioDescriptions}
-        radioSelection={radioSelection}
-        setRadioSelection={setRadioSelection}
         ratios={ratios}
-        setPenalty={setPenalty}
         statuses={statuses}
         user={user}
         sales={sales}
+        handleSubmit={handleSubmit}
+        directorAction={directorAction}
+        analystAction={analystAction}
+        setDetails={setDetails}
       />
     </>
   );
