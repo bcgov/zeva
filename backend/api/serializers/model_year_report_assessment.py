@@ -74,12 +74,7 @@ class ModelYearReportAssessmentSerializer(
     def get_assessment(self, obj):
         assessment = ModelYearReportAssessment.objects.filter(
             model_year_report=obj
-        ).first()
-        if not assessment:
-            return {
-                'decision': {'id': None, 'description': None},
-                'penalty': None
-            }
+        ).first()            
         in_compliance = {'report': True, 'prior': True}
         ##get the report
         report = ModelYearReport.objects.get(
@@ -89,43 +84,50 @@ class ModelYearReportAssessmentSerializer(
         report_year_obj = ModelYear.objects.get(
             id=report.model_year_id
         )
-        report_year_int = int(report_year_obj.name)
-        prior_year_int = report_year_int - 1
-        ## try to get the report for the prior year (we just need id so we can grab assessment)
-        prior_year_report = ModelYearReport.objects.filter(
-            model_year__name=str(prior_year_int)
-        ).first()
-        if prior_year_report:
-            ## get the assessment for the prior year report
-            prior_year_assessment = ModelYearReportAssessment.objects.filter(
-                model_year_report_id=prior_year_report.id
-            )
-        prior_year = str(prior_year_int)
-        report_year = str(report_year_int)
-        description_serializer = ModelYearReportAssessmentDescriptionsSerializer(
-            assessment.model_year_report_assessment_description,
-            read_only=True,
-            )
-        deficit_report_year = ModelYearReportComplianceObligation.objects.filter(
-            model_year_report_id=obj,
-            category='CreditDeficit'
-        ).first()
+        # report_year_int = int(report_year_obj.name)
+        report_year_str = report_year_obj.name
+        prior_year_str = str(int(report_year_str) - 1)
+        prior_year_deficit = {'model_year': prior_year_str, 'a': 0, 'b': 0}
+        report_year_deficit = {'model_year': report_year_str, 'a': 0, 'b': 0}
 
-        if deficit_report_year:
-            report_year = {'model_year': report_year, 'a': deficit_report_year.credit_a_value, 'b': deficit_report_year.credit_b_value}
-            in_compliance['report'] = False
-        
+        ## try to get the report for the prior year as well as the compliance obligation (deficit)
+        prior_year_report = ModelYearReport.objects.filter(
+            model_year__name=prior_year_str
+        ).first()
         deficit_prior_year = ModelYearReportComplianceObligation.objects.filter(
             model_year_report_id=prior_year_report,
             category='CreditDeficit'
         ).first()
         if deficit_prior_year:
             in_compliance['prior'] = False
-            prior_year = {'model_year': prior_year, 'a': deficit_prior_year.credit_a_value, 'b': deficit_prior_year.credit_b_value}
+            prior_year_deficit['a'] = deficit_prior_year.credit_a_value
+            prior_year_deficit['b'] = deficit_prior_year.credit_b_value
 
-        deficit_values = {'prior': prior_year, 'report': report_year}
+        deficit_report_year = ModelYearReportComplianceObligation.objects.filter(
+            model_year_report_id=obj,
+            category='CreditDeficit'
+        ).first()
+
+        if deficit_report_year:
+            in_compliance['report'] = False
+            report_year_deficit['a'] = deficit_report_year.credit_a_value
+            report_year_deficit['b'] = deficit_report_year.credit_b_value
+        deficit_values = {'prior': prior_year_deficit, 'report': report_year_deficit}
+
+        if not assessment:
+            return {
+                'decision': {'id': None, 'description': None},
+                'penalty': None,
+                'in_compliance': in_compliance,
+                'deficit': deficit_values,
+            }
+        description_serializer = ModelYearReportAssessmentDescriptionsSerializer(
+            assessment.model_year_report_assessment_description,
+            read_only=True,
+            )
+       
         return {
-            'decision': {'description': description_serializer.data['description'], 'id':description_serializer.data['id'] },
+            'decision': {'description': description_serializer.data['description'], 'id': description_serializer.data['id'] },
             'penalty': assessment.penalty,
             'deficit': deficit_values,
             'in_compliance': in_compliance
