@@ -28,20 +28,9 @@ const ComplianceObligationReductionOffsetTable = (props) => {
               {supplierClassInfo.class === 'L' && (
                 <>
                   <tr className="subclass">
-                    <th className="large-column">ZEV Class A Credit Reduction</th>
+                    <th className="large-column text-uppercase">ZEV Class A Credit Reduction</th>
                     <th className="small-column text-center text-blue">A</th>
                     <th className="small-column text-center text-blue">B</th>
-                  </tr>
-                  <tr>
-                    <td className="text-blue">
-                      &bull; &nbsp; &nbsp; {reportYear} Credits
-                    </td>
-                    <td className="text-right text-red">
-                      {formatNumeric(zevClassAReduction.currentYearA
-                        ? -zevClassAReduction.currentYearA
-                        : 0)}
-                    </td>
-                    <td className="text-right">{formatNumeric(0)}</td>
                   </tr>
                   <tr>
                     <td className="text-blue">
@@ -54,8 +43,19 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     </td>
                     <td className="text-right">{formatNumeric(0)}</td>
                   </tr>
+                  <tr>
+                    <td className="text-blue">
+                      &bull; &nbsp; &nbsp; {reportYear} Credits
+                    </td>
+                    <td className="text-right text-red">
+                      {formatNumeric(zevClassAReduction.currentYearA
+                        ? -zevClassAReduction.currentYearA
+                        : 0)}
+                    </td>
+                    <td className="text-right">{formatNumeric(0)}</td>
+                  </tr>
                   <tr className="subclass">
-                    <th className="large-column">
+                    <th className="large-column text-uppercase">
                       Unspecified ZEV Class Credit Reduction
                     </th>
                     <th className="text-center">A</th>
@@ -65,7 +65,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
               )}
               {supplierClassInfo.class !== 'L' && (
                 <tr className="subclass">
-                  <th className="large-column">
+                  <th className="large-column text-uppercase">
                     Compliance Ratio Credit Reduction
                   </th>
                   <th className="text-center small-column">A</th>
@@ -119,21 +119,6 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                 <>
                   <tr>
                     <td className="text-blue">
-                      &bull; &nbsp; &nbsp; {reportYear} Credits
-                    </td>
-                    <td className="text-right text-red">
-                      {formatNumeric(unspecifiedReductions.currentYearA
-                        ? -unspecifiedReductions.currentYearA
-                        : 0)}
-                    </td>
-                    <td className="text-right text-red">
-                      {formatNumeric(unspecifiedReductions.currentYearB
-                        ? -unspecifiedReductions.currentYearB
-                        : 0)}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="text-blue">
                       &bull; &nbsp; &nbsp; {reportYear - 1} Credits
                     </td>
                     <td className="text-right text-red">
@@ -144,6 +129,21 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     <td className="text-right text-red">
                       {formatNumeric(unspecifiedReductions.lastYearB
                         ? -unspecifiedReductions.lastYearB
+                        : 0)}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="text-blue">
+                      &bull; &nbsp; &nbsp; {reportYear} Credits
+                    </td>
+                    <td className="text-right text-red">
+                      {formatNumeric(unspecifiedReductions.currentYearA
+                        ? -unspecifiedReductions.currentYearA
+                        : 0)}
+                    </td>
+                    <td className="text-right text-red">
+                      {formatNumeric(unspecifiedReductions.currentYearB
+                        ? -unspecifiedReductions.currentYearB
                         : 0)}
                     </td>
                   </tr>

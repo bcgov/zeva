@@ -79,6 +79,7 @@ const ComplianceObligationDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
+  console.error(reportDetails);
   return (
     <div id="compliance-supplier-information-details" className="page">
       <div className="row mt-3">
@@ -126,11 +127,9 @@ const ComplianceObligationDetailsPage = (props) => {
           page="obligation"
         />
         <div className="mt-4">
-          <h3 className="mb-2">Credit Activity</h3>
           <ComplianceObligationTableCreditsIssued
             reportYear={reportYear}
             reportDetails={reportDetails}
-
           />
         </div>
         <h3 className="mt-4 mb-2">Credit Reduction</h3>
