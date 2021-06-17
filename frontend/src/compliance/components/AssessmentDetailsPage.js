@@ -41,6 +41,7 @@ const AssessmentDetailsPage = (props) => {
   const {
     creditBalanceStart, pendingBalance, transactions, provisionalBalance,
   } = creditActivityDetails;
+  const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, user.organization.name) : '';
   const {
     creditsIssuedSales, transfersIn, transfersOut,
   } = transactions;
@@ -55,18 +56,20 @@ const AssessmentDetailsPage = (props) => {
         name="assessment"
         disabled={directorAction || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0}
         onChange={(event) => {
-          // const newAssessment = details.assessment
           setDetails({
             ...details,
             assessment: { ...details.assessment, decision: { description: each.description, id: each.id } },
           });
         }}
       />
+      {each.description
+      && (
       <label className="d-inline text-blue" htmlFor="complied">
         {each.description
           .replace(/{user.organization.name}/g, details.organization.name)
           .replace(/{modelYear}/g, modelYear)}
       </label>
+      )}
     </div>
   );
   let disabledRecommendBtn = false;
@@ -247,6 +250,7 @@ const AssessmentDetailsPage = (props) => {
                 sales={sales}
               />
             </div>
+
             <div className="my-3 grey-border-area">
               <table>
                 <tbody>
@@ -262,7 +266,7 @@ const AssessmentDetailsPage = (props) => {
                     </th>
                   </tr>
 
-                  {details.assessment.inCompliance.prior
+                  {details.assessment.inCompliance && details.assessment.inCompliance.prior
                     && (
                       <>
                         {Object.keys(creditActivityDetails.creditBalanceStart).map((each) => (
@@ -278,7 +282,7 @@ const AssessmentDetailsPage = (props) => {
                         ))}
                       </>
                     )}
-                  {!details.assessment.inCompliance.prior
+                  {details.assessment.inCompliance && !details.assessment.inCompliance.prior
                     && (
                     <tr key="balance-start" className="not-in-compliance">
                       <td className="text-blue">&bull; &nbsp; &nbsp; Credit Deficit:</td>
@@ -294,13 +298,16 @@ const AssessmentDetailsPage = (props) => {
                 </tbody>
               </table>
             </div>
-            <h3>
-              Credit Activity
-            </h3>
-            <div className="my-3 grey-border-area">
-              <table>
-                <tbody>
-                  {Object.keys(creditsIssuedSales).length > 0
+
+            {(creditsIssuedSales || transfersIn || transfersOut) && (
+            <>
+              <h3>
+                Credit Activity
+              </h3>
+              <div className="my-3 grey-border-area">
+                <table>
+                  <tbody>
+                    {Object.keys(creditsIssuedSales).length > 0
                   && (
                     <TableSection
                       input={creditsIssuedSales}
@@ -308,7 +315,7 @@ const AssessmentDetailsPage = (props) => {
                       negativeValue={false}
                     />
                   )}
-                  {/* {Object.keys(creditsIssuedInitiative).length > 0
+                    {/* {Object.keys(creditsIssuedInitiative).length > 0
                   && (
                     <TableSection
                       input={creditsIssuedInitiative}
@@ -325,7 +332,7 @@ const AssessmentDetailsPage = (props) => {
                       negativeValue={false}
                     />
                   )} */}
-                  {Object.keys(transfersIn).length > 0
+                    {Object.keys(transfersIn).length > 0
                   && (
                   <TableSection
                     input={transfersIn}
@@ -334,7 +341,7 @@ const AssessmentDetailsPage = (props) => {
                   />
 
                   )}
-                  {Object.keys(transfersOut).length > 0
+                    {Object.keys(transfersOut).length > 0
                 && (
                   <TableSection
                     input={transfersOut}
@@ -342,9 +349,11 @@ const AssessmentDetailsPage = (props) => {
                     negativeValue={false}
                   />
                 )}
-                </tbody>
-              </table>
-            </div>
+                  </tbody>
+                </table>
+              </div>
+            </>
+            )}
             <div className="my-3 grey-border-area">
               <table>
                 <tbody>
@@ -443,20 +452,6 @@ const AssessmentDetailsPage = (props) => {
                   </tr>
                 </tbody>
               </table>
-              {/* <ComplianceObligationReductionOffsetTable
-                statuses={statuses}
-                offsetNumbers={offsetNumbers}
-                // unspecifiedCreditReduction={unspecifiedCreditReduction}
-                supplierClassInfo={}
-                // handleOffsetChange={handleOffsetChange}
-                user={user}
-                zevClassAReduction={zevClassAReduction}
-                unspecifiedReductions={unspecifiedReductions}
-                leftoverReduction={leftoverReduction}
-                totalReduction={totalReduction}
-                reportYear={modelYear}
-                creditBalance={creditBalance}
-              /> */}
             </div>
             <div className="my-3 grey-border-area">
               <table>
@@ -472,7 +467,7 @@ const AssessmentDetailsPage = (props) => {
                       B
                     </th>
                   </tr>
-                  {details.assessment.inCompliance.report
+                  {details.assessment.inCompliance && details.assessment.inCompliance.report
                     && (
                       <tr key="start">
                         {Object.keys(creditActivityDetails.creditBalanceEnd).map((each) => (
@@ -489,7 +484,7 @@ const AssessmentDetailsPage = (props) => {
                       </tr>
 
                     )}
-                  {!details.assessment.inCompliance.report
+                  {details.assessment.inCompliance && !details.assessment.inCompliance.report
                     && (
                     <tr key="start" className="not-in-compliance">
                       <td className="text-blue">&bull; &nbsp; &nbsp; Credit Deficit:</td>
@@ -507,7 +502,7 @@ const AssessmentDetailsPage = (props) => {
           </div>
         </div>
       </div>
-      {!user.isGovernment && details.assessment.decision
+      {!user.isGovernment && details.assessment && details.assessment.decision && details.assessment.decision.description
         && (
           <>
             <h3 className="mt-4 mb-1">Director Assessment</h3>
@@ -515,7 +510,7 @@ const AssessmentDetailsPage = (props) => {
               <div className="col-12">
                 <div className="grey-border-area comment-box p-4 mt-2">
                   <div className="text-blue">
-                    {details.assessment && (<div>The Director has assessed that {details.assessment.decision.description.replace(/{user.organization.name}/g, user.organization.name)} ${details.assessment.assessmentPenalty} CAD</div>)}
+                    <div>The Director has assessed that {assessmentDecision} ${details.assessment.assessmentPenalty} CAD</div>
                     {details.bceidComment
                     && <div className="mt-2">{parse(details.bceidComment.comment)}</div>}
                   </div>
