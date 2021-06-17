@@ -38,7 +38,6 @@ const AssessmentContainer = (props) => {
       confirmedBy: null,
     },
   });
-
   const handleSubmit = (status) => {
     const data = {
       modelYearReportId: id,
@@ -116,6 +115,7 @@ const AssessmentContainer = (props) => {
             ldvSalesUpdated,
             changelog,
           } = reportDetailsResponse.data;
+          setModelYear(parseInt(reportModelYear.name, 10));
           const filteredRatio = ratioResponse.data.filter((data) => data.modelYear === modelYear.toString())[0];
           setRatios(filteredRatio);
           const makesChanges = {
