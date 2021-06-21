@@ -36,7 +36,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     <td className="text-blue">
                       &bull; &nbsp; &nbsp; {reportYear - 1} Credits
                     </td>
-                    <td className="text-right text-red">
+                    <td className={`text-right ${zevClassAReduction.lastYearA > 0 ? 'text-red' : ''}`}>
                       {formatNumeric(zevClassAReduction.lastYearA
                         ? -zevClassAReduction.lastYearA
                         : 0)}
@@ -47,7 +47,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     <td className="text-blue">
                       &bull; &nbsp; &nbsp; {reportYear} Credits
                     </td>
-                    <td className="text-right text-red">
+                    <td className={`text-right ${zevClassAReduction.currentYearA > 0 ? 'text-red' : ''}`}>
                       {formatNumeric(zevClassAReduction.currentYearA
                         ? -zevClassAReduction.currentYearA
                         : 0)}
@@ -121,12 +121,12 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     <td className="text-blue">
                       &bull; &nbsp; &nbsp; {reportYear - 1} Credits
                     </td>
-                    <td className="text-right text-red">
+                    <td className={`text-right ${unspecifiedReductions.lastYearA > 0 ? 'text-red' : ''}`}>
                       {formatNumeric(unspecifiedReductions.lastYearA
                         ? -unspecifiedReductions.lastYearA
                         : 0)}
                     </td>
-                    <td className="text-right text-red">
+                    <td className={`text-right ${unspecifiedReductions.lastYearB > 0 ? 'text-red' : ''}`}>
                       {formatNumeric(unspecifiedReductions.lastYearB
                         ? -unspecifiedReductions.lastYearB
                         : 0)}
@@ -136,12 +136,12 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     <td className="text-blue">
                       &bull; &nbsp; &nbsp; {reportYear} Credits
                     </td>
-                    <td className="text-right text-red">
+                    <td className={`text-right ${unspecifiedReductions.currentYearA > 0 ? 'text-red' : ''}`}>
                       {formatNumeric(unspecifiedReductions.currentYearA
                         ? -unspecifiedReductions.currentYearA
                         : 0)}
                     </td>
-                    <td className="text-right text-red">
+                    <td className={`text-right ${unspecifiedReductions.currentYearB > 0 ? 'text-red' : ''}`}>
                       {formatNumeric(unspecifiedReductions.currentYearB
                         ? -unspecifiedReductions.currentYearB
                         : 0)}
@@ -205,8 +205,13 @@ const ComplianceObligationReductionOffsetTable = (props) => {
   );
 };
 
+ComplianceObligationReductionOffsetTable.defaultProps = {
+  creditReductionSelection: null,
+};
+
 ComplianceObligationReductionOffsetTable.propTypes = {
   creditBalance: PropTypes.shape().isRequired,
+  creditReductionSelection: PropTypes.string,
   leftoverReduction: PropTypes.number.isRequired,
   reportYear: PropTypes.number.isRequired,
   statuses: PropTypes.shape().isRequired,
