@@ -563,15 +563,15 @@ const ComplianceObligationContainer = (props) => {
       }
 
       setStatuses(reportStatuses);
-      
 
       const filteredRatio = ratioResponse.data.filter((data) => data.modelYear === modelYear.name)[0];
       setRatios(filteredRatio);
-      const classAReduction = ((filteredRatio.zevClassA / 100) * ldvSales);
-
+ 
       const complianceResponseDetails = complianceResponse.data.complianceObligation;
       const { complianceOffset, ldvSales } = complianceResponse.data;
       setSupplierClassInfo({ class: supplierClass, ldvSales });
+      const classAReduction = ((filteredRatio.zevClassA / 100) * ldvSales);
+
       setSales(ldvSales);
       const creditBalanceStart = {};
       const creditBalanceEnd = {};
@@ -621,11 +621,11 @@ const ComplianceObligationContainer = (props) => {
         }
         if (item.category === 'creditsIssuedSales' && item.issuedCredits) {
           item.issuedCredits.forEach((each) => {
-              creditsIssuedSales.push({
-                modelYear: each.modelYear,
-                A: each.A,
-                B: each.B,
-              });
+            creditsIssuedSales.push({
+              modelYear: each.modelYear,
+              A: each.A,
+              B: each.B,
+            });
           });
         }
         if (item.category === 'pendingBalance') {
@@ -640,16 +640,16 @@ const ComplianceObligationContainer = (props) => {
       // go through every year in end balance and push to provisional
       Object.keys(creditBalanceEnd).forEach((item) => {
         provisionalBalance[item] = {
-          A: creditBalanceEnd[item].A,
-          B: creditBalanceEnd[item].B,
+          A: Number(creditBalanceEnd[item].A),
+          B: Number(creditBalanceEnd[item].B),
         };
       });
 
       // go through every item in pending and add to total if year already there or create new
       pendingBalance.forEach((item) => {
         if (provisionalBalance[item.modelYear]) {
-          provisionalBalance[item.modelYear].A += item.A;
-          provisionalBalance[item.modelYear].B += item.B;
+          provisionalBalance[item.modelYear].A += Number(item.A);
+          provisionalBalance[item.modelYear].B += Number(item.B);
         } else {
           provisionalBalance[item.modelYear] = {
             A: item.A,
