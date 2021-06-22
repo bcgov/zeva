@@ -52,11 +52,11 @@ const ComplianceReportSummaryContainer = (props) => {
   const refreshDetails = () => {
     setLoading(true);
     axios.all([
-      axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)),
+      axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), {params:{summary: true}}),
       axios.get(ROUTES_COMPLIANCE.REPORT_SUMMARY_CONFIRMATION.replace(':id', id)),
       axios.get(ROUTES_COMPLIANCE.RATIOS),
-      axios.get(ROUTES_COMPLIANCE.RETRIEVE_CONSUMER_SALES.replace(':id', id)),
-      axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)),
+      axios.get(ROUTES_COMPLIANCE.RETRIEVE_CONSUMER_SALES.replace(':id', id),{params:{summary: true}}),
+      axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id), {params:{summary: true}}),
     ]).then(axios.spread((
       reportDetailsResponse,
       summaryConfirmationResponse,
@@ -74,6 +74,7 @@ const ComplianceReportSummaryContainer = (props) => {
         validationStatus,
         confirmations,
         modelYear: reportModelYear,
+        updateTimestamp,
       } = reportDetailsResponse.data;
       // ALL STATUSES
       setConfirmationStatuses(statuses);
@@ -96,6 +97,7 @@ const ComplianceReportSummaryContainer = (props) => {
         },
         supplierInformation: {
           history: modelYearReportHistory,
+          updateTimestamp,
           validationStatus,
         },
       });
@@ -115,15 +117,19 @@ const ComplianceReportSummaryContainer = (props) => {
 
       let pendingZevSales = 0;
       let zevSales = 0;
+      let updateTimestampConsumerSales;
       consumerSalesResponse.data.vehicleList.forEach((vehicle) => {
         pendingZevSales += vehicle.pendingSales;
         zevSales += vehicle.salesIssued;
+        updateTimestampConsumerSales = vehicle.updateTimestamp;
       });
+
 
       setConsumerSalesDetails({
         ...consumerSalesDetails,
         pendingZevSales,
         zevSales,
+        updateTimestampConsumerSales,
         year,
       });
       setComplianceRatios(allComplianceRatiosResponse.data
@@ -152,7 +158,9 @@ const ComplianceReportSummaryContainer = (props) => {
           provisionalBalanceAfterOffset.B -= item.creditBOffsetValue;
         });
       }
+      let timestampCreditActivity;
       creditActivityResponse.data.complianceObligation.forEach((item) => {
+        timestampCreditActivity = item.updateTimestamp;
         if (item.category === 'creditBalanceStart') {
           creditBalanceStart.year = item.modelYear.name;
           creditBalanceStart.A = item.creditAValue;
@@ -218,6 +226,7 @@ const ComplianceReportSummaryContainer = (props) => {
       });
       setCreditActivityDetails({
         complianceOffsetNumbers,
+        timestampCreditActivity,
         creditBalanceStart,
         creditBalanceEnd,
         pendingBalance,
