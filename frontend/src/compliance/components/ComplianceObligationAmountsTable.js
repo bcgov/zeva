@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import formatNumeric from '../../app/utilities/formatNumeric';
 import getTotalReduction from '../../app/utilities/getTotalReduction';
 import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClassReduction';
 import getClassAReduction from '../../app/utilities/getClassAReduction';
@@ -9,15 +8,11 @@ const ComplianceObligationAmountsTable = (props) => {
   const {
     reportYear,
     supplierClassInfo,
-    totalReduction,
     ratios,
-    classAReduction,
-    leftoverReduction,
     page,
     handleChangeSales,
     sales,
     statuses,
-    user,
   } = props;
   return (
     <div className="mt-4">
@@ -91,6 +86,18 @@ const ComplianceObligationAmountsTable = (props) => {
   );
 };
 ComplianceObligationAmountsTable.propTypes = {
+  handleChangeSales: PropTypes.func.isRequired,
+  page: PropTypes.string.isRequired,
+  reportYear: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]).isRequired,
+  ratios: PropTypes.shape().isRequired,
+  sales: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]).isRequired,
   statuses: PropTypes.shape().isRequired,
+  supplierClassInfo: PropTypes.shape().isRequired,
 };
 export default ComplianceObligationAmountsTable;

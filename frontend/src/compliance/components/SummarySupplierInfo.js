@@ -63,7 +63,7 @@ const SummarySupplierInfo = (props) => {
         </div>
         <div className="d-block my-3">
           <h4>Makes:</h4>
-          {makes.map((each) => <div key={each}>•{each}</div>)}
+            {makes.map((each) => <div className="text-blue" key={each}>&bull; &nbsp; &nbsp; {each}</div>)}
         </div>
       </div>
     </>

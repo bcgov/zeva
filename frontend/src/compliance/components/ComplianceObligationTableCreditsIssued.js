@@ -20,7 +20,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
     return (
       <>
         <tr className="subclass">
-          <th className="large-column">
+          <th className="large-column text-uppercase">
             {title}
           </th>
           <th> </th>
@@ -28,10 +28,10 @@ const ComplianceObligationTableCreditsIssued = (props) => {
 
         </tr>
         {input.sort((a, b) => {
-          if (a.modelYear < b.modelYear) {
+          if (a.modelYear > b.modelYear) {
             return 1;
           }
-          if (a.modelYear > b.modelYear) {
+          if (a.modelYear < b.modelYear) {
             return -1;
           }
           return 0;
@@ -52,91 +52,104 @@ const ComplianceObligationTableCreditsIssued = (props) => {
     );
   };
   return (
-    <table>
-      <tbody>
-        <tr className="subclass">
-          <th className="large-column">
-            BALANCE AT END OF SEPT. 30,  {reportYear}
-          </th>
-          <th className="small-column text-center text-blue">
-            A
-          </th>
-          <th className="small-column text-center text-blue">
-            B
-          </th>
-        </tr>
-        {Object.keys(creditBalanceStart).map((each) => (
-          <tr key={each}>
-            <td className="text-blue">
-              &bull; &nbsp; &nbsp; Total Credit Balance
-            </td>
-            <td className="text-right">
-              {creditBalanceStart[each].A}
-            </td>
-            <td className="text-right">
-              {creditBalanceStart[each].B}
-            </td>
+    <>
+      <table>
+        <tbody>
+          <tr className="subclass">
+            <th className="large-column">
+              CREDIT BALANCE AT END OF SEPT. 30,  {reportYear}
+            </th>
+            <th className="small-column text-center text-blue">
+              A
+            </th>
+            <th className="small-column text-center text-blue">
+              B
+            </th>
           </tr>
-        ))}
-        {Object.keys(creditsIssuedSales).length > 0
-          && (
-            tableSection(creditsIssuedSales, 'Issued for Consumer ZEV Sales')
-          )}
-        {Object.keys(pendingBalance).length > 0
-          && (
-            tableSection(pendingBalance, 'Pending Issuance for Consumer ZEV Sales')
-          )}
-        {/* {Object.keys(creditsIssuedInitiative).length > 0
-          && (
-            tableSection(creditsIssuedInitiative, 'Issued from Initiative Agreements')
-          )}
-        {Object.keys(creditsIssuedPurchase).length > 0
-          && (
-            tableSection(creditsIssuedPurchase, 'Issued from Purchase Agreements')
-          )} */}
-        {Object.keys(transfersIn).length > 0
-          && (
-            tableSection(transfersIn, 'Transferred In')
-          )}
-        {Object.keys(transfersOut).length > 0
-          && (
-            tableSection(transfersOut, 'Transferred Away', true)
-          )}
-        <tr className="subclass">
-          <th className="large-column">
-            PROVISIONAL BALANCE BEFORE CREDIT REDUCTION
-          </th>
-          <th className="small-column text-center text-blue"> </th>
-          <th className="small-column text-center text-blue"> </th>
-        </tr>
-        {Object.keys(pendingBalance).length > 0
-        && (
-
-          Object.keys(provisionalBalance).sort((a, b) => {
-            if (a.modelYear < b.modelYear) {
-              return 1;
-            }
-            if (a.modelYear > b.modelYear) {
-              return -1;
-            }
-            return 0;
-          }).map((each) => (
+          {Object.keys(creditBalanceStart).map((each) => (
             <tr key={each}>
               <td className="text-blue">
-                &bull; &nbsp; &nbsp; {each} Credits
+                &bull; &nbsp; &nbsp; Total Credit Balance
               </td>
               <td className="text-right">
-                {formatNumeric(provisionalBalance[each].A, 2)}
+                {creditBalanceStart[each].A}
               </td>
               <td className="text-right">
-                {formatNumeric(provisionalBalance[each].B, 2)}
+                {creditBalanceStart[each].B}
               </td>
             </tr>
-          ))
-          // tableSection(provisionalBalance, 'PROVISIONAL BALANCE BEFORE CREDIT REDUCTION')
-        )}
-      </tbody>
-    </table>
+          ))}
+        </tbody>
+      </table>
+
+      <h3 className="mt-4 mb-2">Credit Activity</h3>
+      <table>
+        <tbody>
+          {Object.keys(creditsIssuedSales).length > 0
+            && (
+              tableSection(creditsIssuedSales, 'Issued for Consumer ZEV Sales')
+            )}
+          {Object.keys(pendingBalance).length > 0
+            && (
+              tableSection(pendingBalance, 'Pending Issuance for Consumer ZEV Sales')
+            )}
+          {/* {Object.keys(creditsIssuedInitiative).length > 0
+            && (
+              tableSection(creditsIssuedInitiative, 'Issued from Initiative Agreements')
+            )}
+          {Object.keys(creditsIssuedPurchase).length > 0
+            && (
+              tableSection(creditsIssuedPurchase, 'Issued from Purchase Agreements')
+            )} */}
+          {Object.keys(transfersIn).length > 0
+            && (
+              tableSection(transfersIn, 'Transferred In')
+            )}
+          {Object.keys(transfersOut).length > 0
+            && (
+              tableSection(transfersOut, 'Transferred Away', true)
+            )}
+        </tbody>
+      </table>
+
+      <table className="mt-4">
+        <tbody>
+          <tr className="subclass">
+            <th className="large-column">
+              PROVISIONAL BALANCE BEFORE CREDIT REDUCTION
+            </th>
+            <th className="small-column text-center text-blue"> </th>
+            <th className="small-column text-center text-blue"> </th>
+          </tr>
+          {Object.keys(pendingBalance).length > 0
+          && (
+
+            Object.keys(provisionalBalance).sort((a, b) => {
+              if (a.modelYear < b.modelYear) {
+                return 1;
+              }
+              if (a.modelYear > b.modelYear) {
+                return -1;
+              }
+              return 0;
+            }).map((each) => (
+              <tr key={each}>
+                <td className="text-blue">
+                  &bull; &nbsp; &nbsp; {each} Credits
+                </td>
+                <td className="text-right">
+                  {formatNumeric(provisionalBalance[each].A, 2)}
+                </td>
+                <td className="text-right">
+                  {formatNumeric(provisionalBalance[each].B, 2)}
+                </td>
+              </tr>
+            ))
+            // tableSection(provisionalBalance, 'PROVISIONAL BALANCE BEFORE CREDIT REDUCTION')
+          )}
+        </tbody>
+      </table>
+    </>
   );
 };
 ComplianceObligationTableCreditsIssued.propTypes = {
