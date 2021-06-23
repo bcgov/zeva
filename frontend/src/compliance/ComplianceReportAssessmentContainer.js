@@ -17,6 +17,7 @@ const ComplianceReportAssessmentContainer = (props) => {
     2019: 2000,
   });
   const today = new Date();
+  console.error('nyan');
 
   const [adjustments, setAdjustments] = useState([{
     creditClass: 'A',

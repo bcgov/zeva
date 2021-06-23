@@ -250,12 +250,7 @@ const AssessmentEditPage = (props) => {
 AssessmentEditPage.defaultProps = {};
 
 AssessmentEditPage.propTypes = {
-  details: PropTypes.shape({
-    ldvSales: PropTypes.number,
-    organization: PropTypes.shape(),
-    supplierClass: PropTypes.string,
-    supplierInformation: PropTypes.shape(),
-  }).isRequired,
+  details: PropTypes.shape().isRequired,
   loading: PropTypes.bool.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   supplierMakes: PropTypes.arrayOf(PropTypes.string).isRequired,

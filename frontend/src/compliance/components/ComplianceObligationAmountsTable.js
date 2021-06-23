@@ -15,15 +15,15 @@ const ComplianceObligationAmountsTable = (props) => {
     statuses,
   } = props;
   return (
-    <div className="mt-4">
+    <div>
       <h3 className="mb-2">Compliance Obligation</h3>
-      <div className={page === 'assessment' ? 'col-12 grey-border-area' : 'col-12'}>
-        <div className="row mb-4 compliance-reduction-table">
+      <div className="compliance-reduction-table">
+        <div className="row mb-4 ">
           <div className="col-12">
-            <table className="mr-3 no-border px-3">
+            <table className="no-border">
               <tbody>
                 <tr className="ldv-sales ">
-                  <td className="text-blue " colSpan={page === 'obligation' ? '3' : '1'}>
+                  <td className="text-blue" colSpan="3">
                     {reportYear} Model Year LDV Sales:
                   </td>
                   <td>
@@ -85,8 +85,13 @@ const ComplianceObligationAmountsTable = (props) => {
     </div>
   );
 };
+
+ComplianceObligationAmountsTable.defaultProps = {
+  handleChangeSales: () => {},
+};
+
 ComplianceObligationAmountsTable.propTypes = {
-  handleChangeSales: PropTypes.func.isRequired,
+  handleChangeSales: PropTypes.func,
   page: PropTypes.string.isRequired,
   reportYear: PropTypes.oneOfType([
     PropTypes.string,
