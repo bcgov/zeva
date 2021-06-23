@@ -61,6 +61,23 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     );
   };
 
+  const savedInformation = (timeStamp, input, title) => {
+    const { status } = input;
+    return (
+      <div className="mt-3">
+        {status == 'SAVED' && (< span className="text-black">
+        {title} was last saved on {moment(timeStamp).format('YYYY-MM-DD h[:]mm a')}
+          </span>
+    )}
+        {status == 'UNSAVED' && (
+          <span className="text-red">
+            {title} has not been saved yet, please go to the {title} section and save first.
+          </span>
+        )}
+      </div>
+    );
+  };
+
   const disableCheckbox = () => {
     const { supplierInformation, consumerSales, complianceObligation } = confirmationStatuses;
     if (user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
@@ -122,13 +139,15 @@ const ComplianceReportSummaryDetailsPage = (props) => {
             <div className="row p3 mt-3">
               <div className="col-lg-6">
                 <div className="compliance-report-summary-grey text-blue">
-                  <SummarySupplierInfo makes={makes} modelYear={modelYear}creditActivityDetails={creditActivityDetails} supplierDetails={supplierDetails} signatureInformation={signatureInformation} signedInfomation={signedInfomation} />
+                  <SummarySupplierInfo makes={makes} modelYear={modelYear} creditActivityDetails={creditActivityDetails} supplierDetails={supplierDetails} signatureInformation={signatureInformation} signedInfomation={signedInfomation} />
+                  {savedInformation(supplierDetails.supplierInformation.updateTimestamp, confirmationStatuses.supplierInformation, 'Supplier Information')}
                   {signatureInformation(confirmationStatuses.supplierInformation, 'Supplier Information')}
                 </div>
 
                 <div className="mt-4 compliance-report-summary-grey">
                   <h3>Consumer ZEV Sales</h3>
                   <SummaryConsumerSalesTable consumerSalesDetails={consumerSalesDetails} />
+                  {savedInformation(consumerSalesDetails.updateTimestampConsumerSales ,confirmationStatuses.consumerSales, 'Consumer Sales')}
                   {signatureInformation(confirmationStatuses.consumerSales, 'Consumer Sales')}
                 </div>
               </div>
@@ -140,6 +159,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
                     creditActivityDetails={creditActivityDetails}
                     pendingBalanceExist={pendingBalanceExist}
                   />
+                  {savedInformation(creditActivityDetails.timestampCreditActivity, confirmationStatuses.complianceObligation, 'Compliance Obligation')}
                   {signatureInformation(confirmationStatuses.complianceObligation, 'Compliance Obligation')}
                 </div>
               </div>

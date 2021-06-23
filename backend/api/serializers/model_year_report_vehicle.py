@@ -28,7 +28,7 @@ class ModelYearReportVehicleSerializer(ModelSerializer):
         model = ModelYearReportVehicle
         fields = (
             'id', 'pending_sales', 'sales_issued', 'make', 'model_name',
-            'range', 'zev_class', 'model_year', 'vehicle_zev_type',
+            'range', 'zev_class', 'model_year', 'vehicle_zev_type','update_timestamp',
         )
 
 

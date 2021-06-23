@@ -85,13 +85,15 @@ class ModelYearReportViewset(
     def retrieve(self, request, pk=None):
         queryset = self.get_queryset()
         report = get_object_or_404(queryset, pk=pk)
+        summary_param = request.GET.get('summary', None)
+        summary = True if summary_param == "true" else None
 
         confirmation = ModelYearReportConfirmation.objects.filter(
             model_year_report_id=pk,
             signing_authority_assertion__module="supplier_information"
         ).first()
 
-        if not confirmation:
+        if not confirmation and not summary:
             model_year = ModelYearSerializer(report.model_year)
             model_year_int = int(model_year.data['name'])
            
@@ -161,7 +163,6 @@ class ModelYearReportViewset(
                 if ldv_sales_previous else [],
                 'credit_reduction_selection': report.credit_reduction_selection
             })
-
         serializer = ModelYearReportSerializer(
             report, context={'request': request}
         )
