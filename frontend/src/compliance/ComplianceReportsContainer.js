@@ -22,6 +22,17 @@ const ComplianceReportsContainer = (props) => {
     setLoading(showLoading);
     axios.get(ROUTES_COMPLIANCE.REPORTS).then((response) => {
       setData(response.data);
+      console.log(response.data);
+      const allRecords = [];
+      response.data.forEach((record) => {
+        const status = record.validationStatus;
+        const year = record.modelYear.name;
+        allRecords.push({ year: status });
+      });
+
+    //sort records by year
+    //if validation status exists but is not assessed for one year
+    // do not add any further years to filtered years/available years
       const filteredYears = availableYears.filter((year) => (
         response.data.findIndex(
           (item) => parseInt(item.modelYear.name, 10) === parseInt(year, 10),
