@@ -12,6 +12,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
   keycloak:
     build: ./keycloak
     hostname: "keycloak"
@@ -81,3 +83,5 @@ services:
     ports:
       - 3000:3000
       - 8080:8080
+volumes:
+  postgres-data:
