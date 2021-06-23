@@ -161,7 +161,8 @@
 }
 #compliance-obligation-page {
   border: 1px solid $border-grey;
-  padding: 2rem;
+  padding: 1rem;
+
   .no-border {
     border: none;
   }
@@ -172,7 +173,6 @@
     background-color: $default-background-grey;
   }
   .compliance-reduction-table {
-    padding-top: 1rem;
     border: 1px solid $border-grey;
   }
   table {

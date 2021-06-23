@@ -23,7 +23,6 @@ const ComplianceObligationDetailsPage = (props) => {
     handleCheckboxClick,
     handleSave,
     loading,
-    offsetNumbers,
     user,
     ratios,
     reportDetails,
@@ -136,7 +135,6 @@ const ComplianceObligationDetailsPage = (props) => {
         You must select your ZEV class credit preference below.
         <ComplianceObligationReductionOffsetTable
           statuses={statuses}
-          offsetNumbers={offsetNumbers}
           unspecifiedCreditReduction={unspecifiedCreditReduction}
           supplierClassInfo={supplierClassInfo}
           user={user}
@@ -194,6 +192,7 @@ ComplianceObligationDetailsPage.defaultProps = {
     zevClassA: 0,
   },
   creditReductionSelection: null,
+  sales: 0,
 };
 
 ComplianceObligationDetailsPage.propTypes = {
@@ -217,7 +216,6 @@ ComplianceObligationDetailsPage.propTypes = {
   statuses: PropTypes.shape().isRequired,
   // handleOffsetChange: PropTypes.func.isRequired,
   handleSave: PropTypes.func.isRequired,
-  offsetNumbers: PropTypes.shape().isRequired,
   disabledCheckboxes: PropTypes.string.isRequired,
   unspecifiedCreditReduction: PropTypes.func.isRequired,
   zevClassAReduction: PropTypes.shape().isRequired,
