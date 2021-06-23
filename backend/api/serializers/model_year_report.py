@@ -145,6 +145,7 @@ class ModelYearReportSerializer(ModelSerializer):
             'create_user', 'model_year_report_history', 'confirmations',
             'statuses', 'ldv_sales', 'ldv_sales_previous', 'avg_sales',
             'credit_reduction_selection', 'changelog', 'adjustments',
+            'update_timestamp',
         )
 
 

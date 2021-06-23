@@ -124,6 +124,9 @@ class ModelYearReportComplianceObligationViewset(
     @action(detail=False, url_path=r'(?P<id>\d+)')
     @method_decorator(permission_required('VIEW_SALES'))
     def details(self, request, *args, **kwargs):
+        summary_param = request.GET.get('summary', None)
+        summary = True if summary_param == "true" else None
+
         issued_credits = []
         obj_a = None
         obj_b = None
@@ -155,11 +158,7 @@ class ModelYearReportComplianceObligationViewset(
         if is_assessment:
             organization = report.organization
 
-        if confirmation and snapshot and not is_assessment:
-            serializer = ModelYearReportComplianceObligationSnapshotSerializer(
-                snapshot, context={'request': request, 'kwargs': kwargs}, many=True
-            )
-        else:
+        if (not confirmation and not snapshot and not summary) or is_assessment:
             report = ModelYearReport.objects.get(
                 id=id
             )
@@ -318,6 +317,10 @@ class ModelYearReportComplianceObligationViewset(
                 'compliance_offset': compliance_offset,
                 'ldv_sales': report.ldv_sales
             })
+        else:
+            serializer = ModelYearReportComplianceObligationSnapshotSerializer(
+                snapshot, context={'request': request, 'kwargs': kwargs}, many=True
+            )
 
         return Response({
             'compliance_obligation': serializer.data,
