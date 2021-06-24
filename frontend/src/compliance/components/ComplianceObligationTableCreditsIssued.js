@@ -122,7 +122,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             <th className="small-column text-center text-blue"> </th>
             <th className="small-column text-center text-blue"> </th>
           </tr>
-          {Object.keys(pendingBalance).length > 0
+          {Object.keys(provisionalBalance).length > 0
           && (
 
             Object.keys(provisionalBalance).sort((a, b) => {

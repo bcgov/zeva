@@ -16,7 +16,6 @@ const ComplianceObligationAmountsTable = (props) => {
   } = props;
   return (
     <div>
-      <h3 className="mb-2">Compliance Obligation</h3>
       <div className="compliance-reduction-table">
         <div className="row mb-4 ">
           <div className="col-12">
