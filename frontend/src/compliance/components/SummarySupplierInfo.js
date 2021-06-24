@@ -58,12 +58,12 @@ const SummarySupplierInfo = (props) => {
           <span> {supplierClassText} </span>
         </div>
         <div className="mt-0">
-          <div className="d-inline">3 Year Average({ modelYear-3}-{modelYear-1}) LDV Sales\Leases:</div>
-          <span className="text-black"> {formatNumeric(organization.avgLdvSales,2)} </span>
+          <div className="d-inline">3 Year Average ({ modelYear - 3}-{modelYear - 1}) LDV Sales\Leases:</div>
+          <span className="text-black"> {formatNumeric(organization.avgLdvSales, 0)} </span>
         </div>
         <div className="d-block my-3">
           <h4>Makes:</h4>
-            {makes.map((each) => <div className="text-blue" key={each}>&bull; &nbsp; &nbsp; {each}</div>)}
+          {makes.map((each) => <div className="text-blue" key={each}>&bull; &nbsp; &nbsp; {each}</div>)}
         </div>
       </div>
     </>
