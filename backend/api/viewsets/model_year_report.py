@@ -31,7 +31,8 @@ from api.models.model_year_report_assessment_comment import \
     ModelYearReportAssessmentComment
 from api.models.model_year_report_assessment import \
     ModelYearReportAssessment
-from api.services.model_year_report import get_model_year_report_statuses
+from api.services.model_year_report import \
+    get_model_year_report_statuses, adjust_credits
 from api.serializers.organization_ldv_sales import \
     OrganizationLDVSalesSerializer
 from auditable.views import AuditableMixin
@@ -235,8 +236,9 @@ class ModelYearReportViewset(
 
                 )
 
+            if validation_status == 'ASSESSED':
+                adjust_credits(model_year_report_id, request)
 
-        
         if confirmations:
             for confirmation in confirmations:
                 summary_confirmation = ModelYearReportConfirmation.objects.create(

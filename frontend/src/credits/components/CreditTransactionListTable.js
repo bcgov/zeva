@@ -41,6 +41,8 @@ const CreditTransactionListTable = (props) => {
         return 'CA';
       case 'credit transfer':
         return 'CT';
+      case 'reduction':
+        return 'CR';
       default:
         return transactionType;
     }
