@@ -107,6 +107,10 @@ def get_model_year_report_statuses(report):
             }
             
     if report.validation_status == ModelYearReportStatuses.ASSESSED:
+        supplier_information_status = 'ASSESSED'
+        consumer_sales_status = 'ASSESSED'
+        compliance_obligation_status = 'ASSESSED'
+        summary_status = 'ASSESSED'
         assessment_status = 'ASSESSED'
         user_profile = UserProfile.objects.filter(username=report.update_user)
         if user_profile.exists():

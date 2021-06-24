@@ -378,7 +378,7 @@ const ComplianceObligationContainer = (props) => {
         }
         if (item.category === 'creditsIssuedSales') {
           creditsIssuedSales.push({
-            modelYear: item.modelYear.name,
+            modelYear: typeof item.modelYear === 'string' ? item.modelYear : item.modelYear.name,
             A: item.creditAValue,
             B: item.creditBValue,
           });
