@@ -377,11 +377,21 @@ const ComplianceObligationContainer = (props) => {
           });
         }
         if (item.category === 'creditsIssuedSales') {
-          creditsIssuedSales.push({
-            modelYear: typeof item.modelYear === 'string' ? item.modelYear : item.modelYear.name,
-            A: item.creditAValue,
-            B: item.creditBValue,
-          });
+          if (item.issuedCredits) {
+            item.issuedCredits.forEach((each) => {
+              creditsIssuedSales.push({
+                modelYear: each.modelYear,
+                A: each.A,
+                B: each.B,
+              });
+            });
+          } else {
+            creditsIssuedSales.push({
+              modelYear: typeof item.modelYear === 'string' ? item.modelYear : item.modelYear.name,
+              A: item.creditAValue,
+              B: item.creditBValue,
+            });
+          }
         }
         if (item.category === 'pendingBalance') {
           pendingBalance.push({
