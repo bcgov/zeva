@@ -40,6 +40,7 @@
 /* variables for colours */
 $alert-danger: #721c24;
 $alert-success: #155724;
+$background-light-green: #D4EDDA;
 $background-light-blue: #CCE5FF;
 $background-danger: #FFF1F2;
 $background-warning: #FFFED2;
@@ -202,6 +203,10 @@ p {
   &.text-danger {
     border-color: $red;
   }
+}
+
+.clear {
+  clear: both;
 }
 
 .link {

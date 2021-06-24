@@ -6,6 +6,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
   const {
     reportDetails, reportYear,
   } = props;
+
   const {
     creditBalanceStart, pendingBalance, transactions, provisionalBalance,
   } = reportDetails;
@@ -23,8 +24,8 @@ const ComplianceObligationTableCreditsIssued = (props) => {
           <th className="large-column text-uppercase">
             {title}
           </th>
-          <th> </th>
-          <th> </th>
+          <th className="small-column"> </th>
+          <th className="small-column"> </th>
 
         </tr>
         {input.sort((a, b) => {
@@ -121,7 +122,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             <th className="small-column text-center text-blue"> </th>
             <th className="small-column text-center text-blue"> </th>
           </tr>
-          {Object.keys(pendingBalance).length > 0
+          {Object.keys(provisionalBalance).length > 0
           && (
 
             Object.keys(provisionalBalance).sort((a, b) => {
@@ -145,7 +146,6 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                 </td>
               </tr>
             ))
-            // tableSection(provisionalBalance, 'PROVISIONAL BALANCE BEFORE CREDIT REDUCTION')
           )}
         </tbody>
       </table>

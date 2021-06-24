@@ -10,8 +10,8 @@ import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import ComplianceObligationAmountsTable from './ComplianceObligationAmountsTable';
 import ComplianceReportAlert from './ComplianceReportAlert';
 import formatNumeric from '../../app/utilities/formatNumeric';
-import TableSection from './TableSection';
 import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable';
+import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued';
 import CommentInput from '../../app/components/CommentInput';
 import DisplayComment from '../../app/components/DisplayComment';
 
@@ -41,6 +41,7 @@ const AssessmentDetailsPage = (props) => {
   const {
     creditBalanceStart, pendingBalance, transactions, provisionalBalance,
   } = creditActivityDetails;
+
   const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, user.organization.name) : '';
   const {
     creditsIssuedSales, transfersIn, transfersOut,
@@ -96,6 +97,17 @@ const AssessmentDetailsPage = (props) => {
   const leftoverReduction = ((ratios.complianceRatio / 100) * details.ldvSales)
   - ((ratios.zevClassA / 100) * details.ldvSales);
 
+  const getClassDescriptions = (supplierClass) => {
+    switch (supplierClass) {
+      case 'L':
+        return 'Large';
+      case 'M':
+        return 'Medium';
+      default:
+        return 'Small';
+    }
+  };
+
   return (
     <div id="assessment-details" className="page">
       {pendingSalesExist()}
@@ -118,7 +130,7 @@ const AssessmentDetailsPage = (props) => {
           </div>
           {user.isGovernment
           && (
-          <div className="grey-border-area p-4 comment-box mt-2">
+          <div className="grey-border-area p-3 comment-box mt-2">
             {details.changelog.ldvChanges && (
               Object.keys(details.changelog.makesAdditions)
               || details.changelog.ldvChanges > 0
@@ -158,7 +170,7 @@ const AssessmentDetailsPage = (props) => {
       </div>
       <div className="row mt-3">
         <div className="col-12">
-          <div className="p-3 grey-border-area p-4">
+          <div id="compliance-obligation-page">
             {!user.isGovernment && statuses.assessment.status === 'ASSESSED' && (
               <button
                 className="btn button primary float-right"
@@ -185,11 +197,11 @@ const AssessmentDetailsPage = (props) => {
             <div className="mt-3">
               <h3> {details.organization.name} </h3>
             </div>
+            {details.organization.organizationAddress && details.organization.organizationAddress.length > 0 && (
             <div>
               <div className="d-inline-block mr-5 mt-3 col-5 text-blue">
                 <h4>Service Address</h4>
-                {details.organization.organizationAddress
-                && details.organization.organizationAddress.map((address) => (
+                {details.organization.organizationAddress.map((address) => (
                   address.addressType.addressType === 'Service' && (
                     <div key={address.id}>
                       {address.representativeName && (
@@ -204,8 +216,7 @@ const AssessmentDetailsPage = (props) => {
               </div>
               <div className="d-inline-block mt-3 col-xs-12 col-sm-5 text-blue">
                 <h4>Records Address</h4>
-                {details.organization.organizationAddress
-                && details.organization.organizationAddress.map((address) => (
+                {details.organization.organizationAddress.map((address) => (
                   address.addressType.addressType === 'Records' && (
                     <div key={address.id}>
                       {address.representativeName && (
@@ -219,6 +230,7 @@ const AssessmentDetailsPage = (props) => {
                 ))}
               </div>
             </div>
+            )}
             <div className="mt-4">
               <h4>Light Duty Vehicle Makes:</h4>
               {(makes.length > 0) && (
@@ -235,9 +247,10 @@ const AssessmentDetailsPage = (props) => {
                 </div>
               )}
               <h4 className="d-inline">Vehicle Supplier Class:</h4>
-              <p className="d-inline ml-2">{details.class} Volume Supplier</p>
+              <p className="d-inline ml-2">{getClassDescriptions(details.class)} Volume Supplier</p>
             </div>
-            <div id="assessment-obligation-amounts">
+
+            <div className="mt-4">
               <ComplianceObligationAmountsTable
                 page="assessment"
                 reportYear={modelYear}
@@ -251,254 +264,28 @@ const AssessmentDetailsPage = (props) => {
               />
             </div>
 
-            <div className="my-3 grey-border-area">
-              <table>
-                <tbody>
-                  <tr className="subclass">
-                    <th className="large-column">
-                      BALANCE AT END OF SEPT. 30,  {modelYear}
-                    </th>
-                    <th className="small-column text-center text-blue">
-                      A
-                    </th>
-                    <th className="small-column text-center text-blue">
-                      B
-                    </th>
-                  </tr>
-
-                  {details.assessment.inCompliance && details.assessment.inCompliance.prior
-                    && (
-                      <>
-                        {Object.keys(creditActivityDetails.creditBalanceStart).map((each) => (
-                          <tr key="balance-start">
-                            <td className="text-blue">&bull; &nbsp; &nbsp; {each} Credits:</td>
-                            <td className="text-right">
-                              {creditActivityDetails.creditBalanceStart[each].A || 0}
-                            </td>
-                            <td className="text-right">
-                              {creditActivityDetails.creditBalanceStart[each].B || 0}
-                            </td>
-                          </tr>
-                        ))}
-                      </>
-                    )}
-                  {details.assessment.inCompliance && !details.assessment.inCompliance.prior
-                    && (
-                    <tr key="balance-start" className="not-in-compliance">
-                      <td className="text-blue">&bull; &nbsp; &nbsp; Credit Deficit:</td>
-                      <td className="text-right">
-                        ({details.assessment.deficit.prior.a})
-                      </td>
-                      <td className="text-right">
-                        ({details.assessment.deficit.prior.b})
-                      </td>
-                    </tr>
-                    )}
-
-                </tbody>
-              </table>
+            <div className="mt-4">
+              <ComplianceObligationTableCreditsIssued
+                reportYear={modelYear}
+                reportDetails={creditActivityDetails}
+              />
             </div>
 
-            {(creditsIssuedSales || transfersIn || transfersOut) && (
-            <>
-              <h3>
-                Credit Activity
-              </h3>
-              <div className="my-3 grey-border-area">
-                <table>
-                  <tbody>
-                    {Object.keys(creditsIssuedSales).length > 0
-                  && (
-                    <TableSection
-                      input={creditsIssuedSales}
-                      title="Issued for Consumer ZEV Sales"
-                      negativeValue={false}
-                    />
-                  )}
-                    {/* {Object.keys(creditsIssuedInitiative).length > 0
-                  && (
-                    <TableSection
-                      input={creditsIssuedInitiative}
-                      title="Issued from Initiative Agreements"
-                      negativeValue={false}
-                    />
+            <h3 className="mt-4 mb-2">Credit Reduction</h3>
 
-                  )}
-                  {Object.keys(creditsIssuedPurchase).length > 0
-                  && (
-                    <TableSection
-                      input={creditsIssuedPurchase}
-                      title="Issued from Purchase Agreements"
-                      negativeValue={false}
-                    />
-                  )} */}
-                    {Object.keys(transfersIn).length > 0
-                  && (
-                  <TableSection
-                    input={transfersIn}
-                    title="Transferred In"
-                    negativeValue={false}
-                  />
-
-                  )}
-                    {Object.keys(transfersOut).length > 0
-                && (
-                  <TableSection
-                    input={transfersOut}
-                    title="Transferred Away"
-                    negativeValue={false}
-                  />
-                )}
-                  </tbody>
-                </table>
-              </div>
-            </>
-            )}
-            <div className="my-3 grey-border-area">
-              <table>
-                <tbody>
-                  <tr className="subclass">
-                    <th className="large-column">
-                      BALANCE BEFORE CREDIT REDUCTION
-                    </th>
-                    <th className="small-column text-center text-blue"> </th>
-                    <th className="small-column text-center text-blue"> </th>
-                  </tr>
-                  {Object.keys(pendingBalance).length > 0
-              && (
-
-                Object.keys(provisionalBalance).sort((a, b) => {
-                  if (a.modelYear < b.modelYear) {
-                    return 1;
-                  }
-                  if (a.modelYear > b.modelYear) {
-                    return -1;
-                  }
-                  return 0;
-                }).map((each) => (
-                  <tr key={each}>
-                    <td className="text-blue">
-                      &bull; &nbsp; &nbsp; {each} Credits
-                    </td>
-                    <td className="text-right">
-                      {formatNumeric(provisionalBalance[each].A, 2)}
-                    </td>
-                    <td className="text-right">
-                      {formatNumeric(provisionalBalance[each].B, 2)}
-                    </td>
-                  </tr>
-                ))
-              )}
-                </tbody>
-              </table>
-            </div>
-            <h3>
-              Credit Reduction
-            </h3>
-            <div className="my-3 grey-border-area">
-              <table>
-                <tbody>
-                  <tr className="subclass">
-                    <th className="large-column">
-                      ZEV Class A Credit Reduction
-                    </th>
-                    <th className="small-column text-center text-blue">
-                      A
-                    </th>
-                    <th className="small-column text-center text-blue">
-                      B
-                    </th>
-                  </tr>
-                  <tr key="reduction">
-                    <td className="text-blue">&bull; &nbsp; &nbsp; 2019 Credits:</td>
-                    <td className="text-right text-red">
-                      -567.43
-                    </td>
-                    <td className="text-right">
-                      0
-                    </td>
-                  </tr>
-                  <tr className="subclass">
-                    <th className="large-column">
-                      Unspecified ZEV Class Credit Reduction
-                    </th>
-                    <th className="small-column text-center text-blue" />
-                    <th className="small-column text-center text-blue" />
-                  </tr>
-                  {user.isGovernment
-                  && (
-                    <tr>
-                      <td>
-                        Do you want to use ZEV Class A or B credits first for your unspecified ZEV class reduction?
-                      </td>
-
-                      <td className="text-center">
-                        <input type="radio" name="reduction" readOnly disabled={directorAction || analystAction} />
-                      </td>
-
-                      <td className="text-center">
-                        <input checked type="radio" name="reduction" readOnly disabled={directorAction || analystAction} />
-                      </td>
-                    </tr>
-                  )}
-                  <tr key="reduction-start">
-                    <td className="text-blue">&bull; &nbsp; &nbsp; 2019 Credits:</td>
-                    <td className="text-right">
-                      0
-                    </td>
-                    <td className="text-right text-red">
-                      147.86
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className="my-3 grey-border-area">
-              <table>
-                <tbody>
-                  <tr className="subclass">
-                    <th className="large-column">
-                      ASSESSED BALANCE AT END OF SEPT. 30, {modelYear + 1}
-                    </th>
-                    <th className="small-column text-center text-blue">
-                      A
-                    </th>
-                    <th className="small-column text-center text-blue">
-                      B
-                    </th>
-                  </tr>
-                  {details.assessment.inCompliance && details.assessment.inCompliance.report
-                    && (
-                      <tr key="start">
-                        {Object.keys(creditActivityDetails.creditBalanceEnd).map((each) => (
-                          <>
-                            <td className="text-blue">&bull; &nbsp; &nbsp; {each} Credits:</td>
-                            <td className="text-right">
-                              {creditActivityDetails.creditBalanceEnd[each].A || 0}
-                            </td>
-                            <td className="text-right">
-                              {creditActivityDetails.creditBalanceEnd[each].B || 0}
-                            </td>
-                          </>
-                        ))}
-                      </tr>
-
-                    )}
-                  {details.assessment.inCompliance && !details.assessment.inCompliance.report
-                    && (
-                    <tr key="start" className="not-in-compliance">
-                      <td className="text-blue">&bull; &nbsp; &nbsp; Credit Deficit:</td>
-                      <td className="text-right">
-                        ({details.assessment.deficit.report.a})
-                      </td>
-                      <td className="text-right">
-                        ({details.assessment.deficit.report.b})
-                      </td>
-                    </tr>
-                    )}
-                </tbody>
-              </table>
-            </div>
+            <ComplianceObligationReductionOffsetTable
+              statuses={statuses}
+              unspecifiedCreditReduction={() => {}}
+              supplierClassInfo={details}
+              user={user}
+              zevClassAReduction={creditActivityDetails.zevClassAReduction}
+              unspecifiedReductions={creditActivityDetails.unspecifiedReductions}
+              leftoverReduction={leftoverReduction}
+              totalReduction={totalReduction}
+              reportYear={modelYear}
+              creditBalance={creditActivityDetails.creditBalance}
+              creditReductionSelection={details.creditReductionSelection}
+            />
           </div>
         </div>
       </div>
@@ -508,10 +295,10 @@ const AssessmentDetailsPage = (props) => {
             <h3 className="mt-4 mb-1">Director Assessment</h3>
             <div className="row mb-3">
               <div className="col-12">
-                <div className="grey-border-area comment-box p-4 mt-2">
+                <div className="grey-border-area comment-box p-3 mt-2">
                   <div className="text-blue">
                     <div>The Director has assessed that {assessmentDecision} ${details.assessment.assessmentPenalty} CAD</div>
-                    {details.bceidComment
+                    {details.bceidComment && details.bceidComment.comment
                     && <div className="mt-2">{parse(details.bceidComment.comment)}</div>}
                   </div>
                 </div>
@@ -525,7 +312,7 @@ const AssessmentDetailsPage = (props) => {
               <h3 className="mt-4 mb-1">Analyst Recommended Director Assessment</h3>
               <div className="row mb-3">
                 <div className="col-12">
-                  <div className="grey-border-area comment-box p-4 mt-2">
+                  <div className="grey-border-area comment-box p-3 mt-2">
                     <div>
                       {radioDescriptions.map((each) => (
                         (each.displayOrder === 0)
@@ -574,47 +361,48 @@ const AssessmentDetailsPage = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <div className="action-bar mt-0">
-            {directorAction
-          && (
-          <>
-            <span className="left-content">
-              <button
-                className="button text-danger"
-                onClick={() => {
-                  handleSubmit('SUBMITTED');
-                }}
-                type="button"
-              >
-                Return to Analyst
-              </button>
-            </span>
+            {directorAction && (
+            <>
+              <span className="left-content">
+                <button
+                  className="button text-danger"
+                  onClick={() => {
+                    handleSubmit('SUBMITTED');
+                  }}
+                  type="button"
+                >
+                  Return to Analyst
+                </button>
+              </span>
 
-            <span className="right-content">
-              <Button
-                buttonType="submit"
-                optionalClassname="button primary"
-                optionalText="Issue Assessment"
-                action={() => {
-                  handleSubmit('ASSESSED');
-                }}
-              />
-            </span>
-          </>
-          )}
-            {analystAction
-            && (
-            <span className="right-content">
-              <Button
-                buttonTooltip={recommendTooltip}
-                buttonType="submit"
-                optionalClassname="button primary"
-                optionalText="Recommend Assessment"
-                disabled={disabledRecommendBtn}
-                action={() => {
-                  handleSubmit('RECOMMENDED');
-                }}
-              />
-            </span>
+              <span className="right-content">
+                <Button
+                  buttonType="submit"
+                  optionalClassname="button primary"
+                  optionalText="Issue Assessment"
+                  action={() => {
+                    handleSubmit('ASSESSED');
+                  }}
+                />
+              </span>
+            </>
+            )}
+            {analystAction && (
+              <>
+                <span className="left-content" />
+                <span className="right-content">
+                  <Button
+                    buttonTooltip={recommendTooltip}
+                    buttonType="submit"
+                    optionalClassname="button primary"
+                    optionalText="Recommend Assessment"
+                    disabled={disabledRecommendBtn}
+                    action={() => {
+                      handleSubmit('RECOMMENDED');
+                    }}
+                  />
+                </span>
+              </>
             )}
           </div>
         </div>
@@ -624,13 +412,12 @@ const AssessmentDetailsPage = (props) => {
 };
 
 AssessmentDetailsPage.defaultProps = {
+  sales: 0,
 };
 
 AssessmentDetailsPage.propTypes = {
-  details: PropTypes.shape({
-    organization: PropTypes.shape(),
-    supplierInformation: PropTypes.shape(),
-  }).isRequired,
+  creditActivityDetails: PropTypes.shape().isRequired,
+  details: PropTypes.shape().isRequired,
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   loading: PropTypes.bool.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,

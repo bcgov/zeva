@@ -153,7 +153,12 @@ class ModelYearReportComplianceObligationViewset(
             )
             compliance_offset = offset_serializer.data
 
-        if not confirmation and not snapshot and not summary:
+        is_assessment = request.GET.get('assessment') == 'True' and request.user.is_government
+
+        if is_assessment:
+            organization = report.organization
+
+        if (not confirmation and not snapshot and not summary) or is_assessment:
             report = ModelYearReport.objects.get(
                 id=id
             )
@@ -174,7 +179,7 @@ class ModelYearReportComplianceObligationViewset(
             content = []
 
             transfers_in = CreditTransaction.objects.filter(
-                credit_to=request.user.organization,
+                credit_to=organization,
                 transaction_type__transaction_type='Credit Transfer',
                 transaction_timestamp__lte=to_date,
                 transaction_timestamp__gte=from_date,
@@ -187,7 +192,7 @@ class ModelYearReportComplianceObligationViewset(
             )
 
             transfers_out = CreditTransaction.objects.filter(
-                debit_from=request.user.organization,
+                debit_from=organization,
                 transaction_type__transaction_type='Credit Transfer',
                 transaction_timestamp__lte=to_date,
                 transaction_timestamp__gte=from_date,
@@ -200,7 +205,7 @@ class ModelYearReportComplianceObligationViewset(
             )
 
             credits_issued_sales = CreditTransaction.objects.filter(
-                credit_to=request.user.organization,
+                credit_to=organization,
                 transaction_type__transaction_type='Validation',
                 transaction_timestamp__lte=to_date,
                 transaction_timestamp__gte=from_date,
@@ -237,7 +242,7 @@ class ModelYearReportComplianceObligationViewset(
             content.append({"issued_credits": issued_credits, 'category': 'creditsIssuedSales'})
 
             pending_sales_submissions = SalesSubmission.objects.filter(
-                organization=request.user.organization,
+                organization=organization,
                 validation_status__in=['SUBMITTED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'CHECKED'],
                 submission_date__lte=to_date,
                 submission_date__gte=from_date,
@@ -269,6 +274,7 @@ class ModelYearReportComplianceObligationViewset(
                     'category': 'pendingBalance',
                     'model_year': {'name': key}
                 })
+
             previous_report = None
             prior_year_balance_a = 0
             prior_year_balance_b = 0
@@ -299,8 +305,15 @@ class ModelYearReportComplianceObligationViewset(
                 'model_year': {'name': report_year_obj.name}
             })
 
+            serializer = ModelYearReportComplianceObligationSnapshotSerializer(
+                report.get_credit_reductions(prior_year), context={
+                    'request': request,
+                    'kwargs': kwargs
+                }, many=True
+            )
+
             return Response({
-                'compliance_obligation': content,
+                'compliance_obligation': content + serializer.data,
                 'compliance_offset': compliance_offset,
                 'ldv_sales': report.ldv_sales
             })

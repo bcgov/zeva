@@ -23,7 +23,6 @@ const ComplianceObligationDetailsPage = (props) => {
     handleCheckboxClick,
     handleSave,
     loading,
-    offsetNumbers,
     user,
     ratios,
     reportDetails,
@@ -100,10 +99,10 @@ const ComplianceObligationDetailsPage = (props) => {
         </div>
       </div>
       <div id="compliance-obligation-page">
-        <div className="col-12">
+        <div>
           {!user.isGovernment && statuses.complianceObligation.status === 'CONFIRMED' && (
             <button
-              className="btn button primary float-right"
+              className="btn button primary float-right mb-2"
               onClick={() => {
                 setShowModal(true);
               }}
@@ -112,20 +111,23 @@ const ComplianceObligationDetailsPage = (props) => {
               Edit
             </button>
           )}
+          <h3 className="mb-2">Compliance Obligation</h3>
         </div>
-        <ComplianceObligationAmountsTable
-          reportYear={reportYear}
-          supplierClassInfo={supplierClassInfo}
-          totalReduction={totalReduction}
-          ratios={ratios}
-          classAReduction={classAReduction}
-          leftoverReduction={leftoverReduction}
-          sales={sales}
-          handleChangeSales={handleChangeSales}
-          statuses={statuses}
-          user={user}
-          page="obligation"
-        />
+        <div className="clear">
+          <ComplianceObligationAmountsTable
+            reportYear={reportYear}
+            supplierClassInfo={supplierClassInfo}
+            totalReduction={totalReduction}
+            ratios={ratios}
+            classAReduction={classAReduction}
+            leftoverReduction={leftoverReduction}
+            sales={sales}
+            handleChangeSales={handleChangeSales}
+            statuses={statuses}
+            user={user}
+            page="obligation"
+          />
+        </div>
         <div className="mt-4">
           <ComplianceObligationTableCreditsIssued
             reportYear={reportYear}
@@ -136,7 +138,6 @@ const ComplianceObligationDetailsPage = (props) => {
         You must select your ZEV class credit preference below.
         <ComplianceObligationReductionOffsetTable
           statuses={statuses}
-          offsetNumbers={offsetNumbers}
           unspecifiedCreditReduction={unspecifiedCreditReduction}
           supplierClassInfo={supplierClassInfo}
           user={user}
@@ -194,6 +195,7 @@ ComplianceObligationDetailsPage.defaultProps = {
     zevClassA: 0,
   },
   creditReductionSelection: null,
+  sales: 0,
 };
 
 ComplianceObligationDetailsPage.propTypes = {
@@ -217,7 +219,6 @@ ComplianceObligationDetailsPage.propTypes = {
   statuses: PropTypes.shape().isRequired,
   // handleOffsetChange: PropTypes.func.isRequired,
   handleSave: PropTypes.func.isRequired,
-  offsetNumbers: PropTypes.shape().isRequired,
   disabledCheckboxes: PropTypes.string.isRequired,
   unspecifiedCreditReduction: PropTypes.func.isRequired,
   zevClassAReduction: PropTypes.shape().isRequired,

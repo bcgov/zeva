@@ -9,6 +9,8 @@ from api.models.model_year_report_adjustment import ModelYearReportAdjustment
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.models.model_year_report_make import ModelYearReportMake
 from api.models.model_year_report_ldv_sales import ModelYearReportLDVSales
+from api.models.model_year_report_compliance_obligation import \
+    ModelYearReportComplianceObligation
 
 
 class ModelYearReport(Auditable):
@@ -114,6 +116,21 @@ class ModelYearReport(Auditable):
         ).first()
         if row:
             return {'sales': row.ldv_sales, 'year': row.model_year.name}
+        return None
+
+    def get_credit_reductions(self, year):
+        data = ModelYearReportComplianceObligation.objects.filter(
+            model_year_report_id=self.id,
+            model_year__name=year,
+            category__in=[
+                'ClassAReduction', 'UnspecifiedClassCreditReduction',
+                'CreditDeficit', 'ProvisionalBalanceAfterCreditReduction'
+            ]
+        )
+
+        if data:
+            return data
+
         return None
 
     class Meta:
