@@ -12,6 +12,7 @@ const ComplianceReportTabs = (props) => {
     reportStatuses.reportSummary.status !== 'SUBMITTED' && reportStatuses.assessment.status !== 'ASSESSED'
   ) && user.isGovernment)
     || (reportStatuses.assessment && reportStatuses.assessment.status !== 'ASSESSED' && !user.isGovernment);
+
   return (
     <ul
       className="nav nav-pills nav-justified compliance-report-tabs"
@@ -77,6 +78,7 @@ const ComplianceReportTabs = (props) => {
           `nav-item
           ${(active === 'assessment') ? ' active ' : ' '}
           ${reportStatuses.assessment ? reportStatuses.assessment.status : ''}
+          ${reportStatuses.assessment && reportStatuses.assessment.status === 'UNSAVED' ? 'SAVED' : ''}
           `
         }
         role="presentation"
@@ -105,6 +107,7 @@ ComplianceReportTabs.defaultProps = {
 ComplianceReportTabs.propTypes = {
   active: PropTypes.string.isRequired,
   reportStatuses: PropTypes.shape(),
+  user: PropTypes.shape().isRequired,
 };
 
 export default ComplianceReportTabs;

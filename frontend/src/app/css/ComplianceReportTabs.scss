@@ -28,8 +28,14 @@
       }
     }
 
-    &.ASSESSED a {
-      border-bottom-color: $alert-success;
+    &.ASSESSED {
+      a {
+        border-bottom-color: $background-light-green;
+      }
+
+      &.active a {
+        border-bottom-color: $alert-success;
+      }
     }
 
     a {

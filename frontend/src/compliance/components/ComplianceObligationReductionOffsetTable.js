@@ -80,7 +80,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                 <td className="text-center">
                   <input
                     checked={creditReductionSelection === 'A'}
-                    disabled={user.isGovernment || statuses.complianceObligation.status === 'SUBMITTED' || statuses.complianceObligation.status === 'CONFIRMED'}
+                    disabled={user.isGovernment || ['SUBMITTED', 'CONFIRMED', 'ASSESSED'].indexOf(statuses.complianceObligation.status) >= 0}
                     type="radio"
                     id="A"
                     onChange={(event) => {
@@ -98,7 +98,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                 <td className="text-center">
                   <input
                     checked={creditReductionSelection === 'B'}
-                    disabled={user.isGovernment || statuses.complianceObligation.status === 'SUBMITTED' || statuses.complianceObligation.status === 'CONFIRMED'}
+                    disabled={user.isGovernment || ['SUBMITTED', 'CONFIRMED', 'ASSESSED'].indexOf(statuses.complianceObligation.status) >= 0}
                     className="text-center"
                     type="radio"
                     id="B"

@@ -199,13 +199,21 @@ const AssessmentContainer = (props) => {
               });
             }
             if (item.category === 'creditsIssuedSales') {
-              item.issuedCredits.forEach((each) => {
-                creditsIssuedSales.push({
-                  modelYear: each.modelYear,
-                  A: each.A,
-                  B: each.B,
+              if (item.issuedCredits) {
+                item.issuedCredits.forEach((each) => {
+                  creditsIssuedSales.push({
+                    modelYear: each.modelYear,
+                    A: each.A,
+                    B: each.B,
+                  });
                 });
-              });
+              } else {
+                creditsIssuedSales.push({
+                  modelYear: item.modelYear.name,
+                  A: item.creditAValue,
+                  B: item.creditBValue,
+                });
+              }
             }
             if (item.category === 'pendingBalance') {
               pendingBalance.push({
