@@ -24,6 +24,8 @@ const CreditTransactionListTable = (props) => {
     switch (transactionType.toLowerCase()) {
       case 'validation':
         return 'Credit Application';
+      case 'reduction':
+        return 'Model Year Report Credit Reduction';
       default:
         return transactionType;
     }
