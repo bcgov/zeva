@@ -82,6 +82,7 @@ const ComplianceObligationContainer = (props) => {
 
   const unspecifiedCreditReduction = (event, paramReduction) => {
     const { provisionalBalance } = reportDetails;
+
     const { lastYearABalance, currentYearABalance, creditADeficit } = remainingABalance;
     const { id: radioId } = event.target;
 
@@ -171,8 +172,14 @@ const ComplianceObligationContainer = (props) => {
       if (provisionalBalanceCurrentYearB >= 0 && provisionalBalanceCurrentYearB >= remainingUnspecifiedReduction) {
         unspecifiedZevClassCurrentYearB = remainingUnspecifiedReduction;
       }
-      if (provisionalBalanceCurrentYearB === 0 && currentYearABalance >= 0 && remainingUnspecifiedReduction >= currentYearABalance) {
+
+      if (provisionalBalanceCurrentYearB === 0 && currentYearABalance >= 0 && currentYearABalance >= remainingUnspecifiedReduction) {
+        unspecifiedZevClassCurrentYearA = remainingUnspecifiedReduction;
+      }
+
+      if (provisionalBalanceCurrentYearB === 0 && currentYearABalance >= 0 && remainingUnspecifiedReduction > currentYearABalance) {
         unspecifiedZevClassCurrentYearA = currentYearABalance;
+        remainingUnspecifiedReduction -= unspecifiedZevClassCurrentYearA;
       }
 
       if (provisionalBalanceCurrentYearB > 0 && provisionalBalanceCurrentYearB < remainingUnspecifiedReduction) {
@@ -207,7 +214,7 @@ const ComplianceObligationContainer = (props) => {
 
     setCreditBalance({
       A: (currentYearABalance - unspecifiedZevClassCurrentYearA),
-      B: (provisionalBalanceCurrentYearB - (unspecifiedZevClassCurrentYearB)),
+      B: (provisionalBalanceCurrentYearB - unspecifiedZevClassCurrentYearB),
       creditADeficit,
       unspecifiedCreditDeficit,
     });
@@ -343,7 +350,7 @@ const ComplianceObligationContainer = (props) => {
       setSales(ldvSales);
       const creditBalanceStart = {};
       const creditBalanceEnd = {};
-      const provisionalBalance = [];
+      const provisionalBalance = {};
       const pendingBalance = [];
       const transfersIn = [];
       const transfersOut = [];
@@ -444,6 +451,7 @@ const ComplianceObligationContainer = (props) => {
       if (creditAReduction.zevClassACreditReduction) {
         setZevClassAReduction(creditAReduction.zevClassACreditReduction);
       }
+
       setRemainingABalance(creditAReduction.remainingABalance);
 
       const creditReduction = calculateCreditReduction(

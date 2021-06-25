@@ -17,7 +17,7 @@ const SummarySupplierInfo = (props) => {
       <div className="mt-3">
 
         <h4 className="d-inline">Legal Name: </h4>
-        <span> {organization.name} </span>
+        <span className="text-black"> {organization.name} </span>
       </div>
 
       <div>
@@ -28,11 +28,11 @@ const SummarySupplierInfo = (props) => {
     address.addressType.addressType === 'Service' && (
       <div key={address.id}>
         {address.representativeName && (
-          <div> {address.representativeName} </div>
+          <div className="text-black"> {address.representativeName} </div>
         )}
-        <div> {address.addressLine1} </div>
-        <div> {address.city} {address.state} {address.country} </div>
-        <div> {address.postalCode} </div>
+        <div className="text-black"> {address.addressLine1} </div>
+        <div className="text-black"> {address.city} {address.state} {address.country} </div>
+        <div className="text-black"> {address.postalCode} </div>
       </div>
     )
   ))}
@@ -44,26 +44,26 @@ const SummarySupplierInfo = (props) => {
     address.addressType.addressType === 'Records' && (
       <div key={address.id}>
         {address.representativeName && (
-          <div> {address.representativeName} </div>
+          <div className="text-black"> {address.representativeName} </div>
         )}
-        <div> {address.addressLine1} </div>
-        <div> {address.city} {address.state} {address.country} </div>
-        <div> {address.postalCode} </div>
+        <div className="text-black"> {address.addressLine1} </div>
+        <div className="text-black"> {address.city} {address.state} {address.country} </div>
+        <div className="text-black"> {address.postalCode} </div>
       </div>
     )
   ))}
         </div>
         <div className="mt-3">
           <h4 className="d-inline">Vehicle Supplier Class:</h4>
-          <span> {supplierClassText} </span>
+          <span className="text-black"> {supplierClassText} </span>
         </div>
-        <div className="mt-0">
-          <div className="d-inline">3 Year Average ({ modelYear - 3}-{modelYear - 1}) LDV Sales\Leases:</div>
+        <div className="mt-3">
+          <div className="d-inline font-weight-bold">3 Year Average ({ modelYear - 3}-{modelYear - 1}) LDV Sales\Leases:</div>
           <span className="text-black"> {formatNumeric(organization.avgLdvSales, 0)} </span>
         </div>
         <div className="d-block my-3">
           <h4>Makes:</h4>
-          {makes.map((each) => <div className="text-blue" key={each}>&bull; &nbsp; &nbsp; {each}</div>)}
+          {makes.map((each) => <div className="text-black" key={each}>&bull; &nbsp; &nbsp; {each}</div>)}
         </div>
       </div>
     </>
@@ -73,6 +73,6 @@ SummarySupplierInfo.propTypes = {
   supplierDetails: PropTypes.shape().isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   creditActivityDetails: PropTypes.shape().isRequired,
-  modelYear:PropTypes.number.isRequired,
+  modelYear: PropTypes.number.isRequired,
 };
 export default SummarySupplierInfo;

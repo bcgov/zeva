@@ -224,7 +224,10 @@ ComplianceObligationDetailsPage.propTypes = {
   zevClassAReduction: PropTypes.shape().isRequired,
   unspecifiedReductions: PropTypes.shape().isRequired,
   creditBalance: PropTypes.shape().isRequired,
-  sales: PropTypes.number,
+  sales: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]),
   handleChangeSales: PropTypes.func.isRequired,
   creditReductionSelection: PropTypes.string,
 };
