@@ -39,6 +39,7 @@ const AssessmentContainer = (props) => {
     const data = {
       modelYearReportId: id,
       validation_status: status,
+      modelYear: modelYear
     };
     if (analystAction) {
       data.penalty = details.assessment.assessmentPenalty;
