@@ -41,7 +41,7 @@ class CreditTransactionSerializer(ModelSerializer):
         fields = (
             'credit_value', 'credit_to', 'debit_from', 'transaction_timestamp',
             'credit_class', 'transaction_type', 'id', 'number_of_credits',
-            'total_value',
+            'total_value', 'model_year_id'
         )
 
 
@@ -53,6 +53,7 @@ class CreditTransactionListSerializer(ModelSerializer):
     foreign_key = SerializerMethodField()
     total_value = SerializerMethodField()
     transaction_type = SerializerMethodField()
+    model_year = SerializerMethodField()
 
     def get_credit_class(self, obj):
         credit_class = CreditClass.objects.get(id=obj.get('credit_class_id'))
@@ -78,11 +79,17 @@ class CreditTransactionListSerializer(ModelSerializer):
         )
         return serializer.data
 
+    def get_model_year(self, obj):
+        model_year = ModelYear.objects.get(id=obj.get('model_year_id'))
+
+        serializer = ModelYearSerializer(model_year, read_only=True)
+        return serializer.data
+
     class Meta:
         model = CreditTransaction
         fields = (
             'credit_class', 'foreign_key', 'total_value',
-            'transaction_timestamp', 'transaction_type',
+            'transaction_timestamp', 'transaction_type', 'model_year'
         )
 
 

@@ -138,7 +138,7 @@ def aggregate_transactions_by_submission(organization):
     transactions = CreditTransaction.objects.filter(
         Q(credit_to=organization) | Q(debit_from=organization)
     ).values(
-        'credit_class_id', 'transaction_type_id'
+        'credit_class_id', 'transaction_type_id', 'model_year_id'
     ).annotate(
         credit=balance_credits,
         debit=balance_debits,
