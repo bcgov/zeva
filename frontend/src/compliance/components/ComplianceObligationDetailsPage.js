@@ -38,6 +38,7 @@ const ComplianceObligationDetailsPage = (props) => {
     sales,
     handleChangeSales,
     creditReductionSelection,
+    pendingBalanceExist,
   } = props;
   const [showModal, setShowModal] = useState(false);
   let disabledCheckboxes = propsDisabledCheckboxes;
@@ -130,6 +131,7 @@ const ComplianceObligationDetailsPage = (props) => {
         </div>
         <div className="mt-4">
           <ComplianceObligationTableCreditsIssued
+            pendingBalanceExist={pendingBalanceExist}
             reportYear={reportYear}
             reportDetails={reportDetails}
           />
