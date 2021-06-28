@@ -19,13 +19,14 @@ const CreditTransactionListTable = (props) => {
     if (!item.transactionType) {
       return false;
     }
-
+    
     const { transactionType } = item.transactionType;
+    const { name } = item.modelYear;
     switch (transactionType.toLowerCase()) {
       case 'validation':
         return 'Credit Application';
       case 'reduction':
-        return 'Model Year Report Credit Reduction';
+        return  name + ' Model Year Report Credit Reduction';
       default:
         return transactionType;
     }
@@ -99,6 +100,7 @@ const CreditTransactionListTable = (props) => {
         displayTotalB: totalB,
         foreignKey: item.foreignKey,
         transactionTimestamp: item.transactionTimestamp,
+        modelYear: item.modelYear,
         transactionType: item.transactionType,
       });
     }
