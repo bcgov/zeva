@@ -117,7 +117,7 @@ const ConsumerSalesDetailsPage = (props) => {
                 occurred before Oct. 1, {modelYear + 1} that you haven&apos;t
                 applied for credits you must{' '}
                 <label
-                  className="text-primary"
+                  className="text-primary credit-request-link"
                   onClick={() => {
                     history.push('/credit-requests/new');
                   }}
