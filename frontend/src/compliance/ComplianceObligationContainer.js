@@ -24,6 +24,7 @@ const ComplianceObligationContainer = (props) => {
   const [ratios, setRatios] = useState({});
   const [details, setDetails] = useState({});
   const [statuses, setStatuses] = useState({});
+  const [pendingBalanceExist, setPendingBalanceExist] = useState(false);
   const [supplierClassInfo, setSupplierClassInfo] = useState({ ldvSales: 0, class: '' });
   const [sales, setSales] = useState(0);
   const [creditReductionSelection, setCreditReductionSelection] = useState(null);
@@ -401,6 +402,9 @@ const ComplianceObligationContainer = (props) => {
           }
         }
         if (item.category === 'pendingBalance') {
+          if (item.creditAValue > 0 || item.creditBValue > 0) {
+            setPendingBalanceExist(true);
+          }
           pendingBalance.push({
             modelYear: item.modelYear.name,
             A: item.creditAValue,
@@ -517,6 +521,7 @@ const ComplianceObligationContainer = (props) => {
         sales={sales}
         handleChangeSales={handleChangeSales}
         creditReductionSelection={creditReductionSelection}
+        pendingBalanceExist={pendingBalanceExist}
       />
     </>
   );

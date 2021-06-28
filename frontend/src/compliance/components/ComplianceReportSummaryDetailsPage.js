@@ -189,7 +189,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
               <Button buttonType="back" locationRoute="/compliance/reports" />
             </span>
             <span className="right-content">
-              {!user.isGovernment && (
+              {!user.isGovernment && confirmationStatuses.assessment.status !== 'ASSESSED' && (
                 <Button
                   buttonType="submit"
                   disabled={disableSubmitBtn || confirmationStatuses.reportSummary.status === 'SUBMITTED' || !user.hasPermission('SUBMIT_COMPLIANCE_REPORT')}

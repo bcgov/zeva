@@ -4,7 +4,7 @@ import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceObligationTableCreditsIssued = (props) => {
   const {
-    reportDetails, reportYear,
+    reportDetails, reportYear, pendingBalanceExist
   } = props;
 
   const {
@@ -133,7 +133,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
         <tbody>
           <tr className="subclass">
             <th className="large-column">
-              Provisional Balance Before Credit Reduction
+              {pendingBalanceExist ? 'Provisional Balance Before Credit Reduction' : 'Balance Before Credit Reduction'}
             </th>
             <th className="small-column text-center text-blue">A</th>
             <th className="small-column text-center text-blue">B</th>
