@@ -10,6 +10,7 @@ const SummaryCreditActivityTable = (props) => {
     pendingBalanceExist,
   } = props;
   const { year } = consumerSalesDetails;
+
   const {
     creditBalanceStart,
     transactions,
@@ -20,32 +21,29 @@ const SummaryCreditActivityTable = (props) => {
     creditDeficit,
     provisionalBalanceAfterCreditReduction,
   } = creditActivityDetails;
-  const tableSection = (input, title, numberClassname = 'text-right') => {
-    let aTotal = formatNumeric(input.A);
-    let bTotal = formatNumeric(input.B);
 
-    if (aTotal == 0.00) {
-      aTotal = 0;
-    }
-    if (bTotal == 0.00) {
-      bTotal = 0;
-    }
-    return (
-      <>
-        <tr>
-          <th className="large-column text-blue">
-            {title}
-          </th>
-          <td className={`${numberClassname} a-class`}>
-            {aTotal || 0}
-          </td>
-          <td className={numberClassname}>
-            {bTotal || 0}
-          </td>
-        </tr>
-      </>
-    );
-  };
+  const tableSection = (input, title, numberClassname = 'text-right') => (
+    <tr>
+      <th className="large-column text-blue">
+        {title}
+      </th>
+      <td className={`${numberClassname} a-class`}>
+        {title === 'Credit Deficit:' && input.A > 0 ? (
+          <span>({formatNumeric(input.A)})</span>
+        ) : (
+          <span className={input.A < 0 ? 'text-red' : ''}>{formatNumeric(input.A) || 0.00}</span>
+        )}
+      </td>
+      <td className={numberClassname}>
+        {title === 'Credit Deficit:' && input.B > 0 ? (
+          <span>({formatNumeric(input.B)})</span>
+        ) : (
+          <span className={input.B < 0 ? 'text-red' : ''}>{formatNumeric(input.B) || 0.00}</span>
+        )}
+      </td>
+    </tr>
+  );
+
   return (
     <table id="summary-credit-activity">
       <tbody>
@@ -84,10 +82,10 @@ const SummaryCreditActivityTable = (props) => {
           </td>
           <td />
           <td className="text-right font-weight-bold">
-            {complianceRatios.length > 0 &&
-              formatNumeric(
+            {complianceRatios.length > 0
+              && formatNumeric(
                 ldvSales * (complianceRatios[0].complianceRatio / 100),
-                2
+                2,
               )}
           </td>
         </tr>
@@ -98,11 +96,11 @@ const SummaryCreditActivityTable = (props) => {
             </td>
             <td />
             <td className="text-right">
-              {complianceRatios.length > 0 &&
-                supplierClass === 'Large' &&
-                formatNumeric(
+              {complianceRatios.length > 0
+                && supplierClass === 'Large'
+                && formatNumeric(
                   ldvSales * (complianceRatios[0].zevClassA / 100),
-                  2
+                  2,
                 )}
             </td>
           </tr>
@@ -113,11 +111,11 @@ const SummaryCreditActivityTable = (props) => {
           </td>
           <td />
           <td className="text-right">
-            {complianceRatios.length > 0 &&
-              formatNumeric(
-                ldvSales * (complianceRatios[0].complianceRatio / 100) -
-                  ldvSales * (complianceRatios[0].zevClassA / 100),
-                2
+            {complianceRatios.length > 0
+              && formatNumeric(
+                ldvSales * (complianceRatios[0].complianceRatio / 100)
+                  - ldvSales * (complianceRatios[0].zevClassA / 100),
+                2,
               )}
           </td>
         </tr>
@@ -138,12 +136,12 @@ const SummaryCreditActivityTable = (props) => {
       <tbody>
         {tableSection(
           creditBalanceStart,
-          `Balance at end of September 30, ${year} :`
+          `Balance at end of September 30, ${year} :`,
         )}
-        {Object.keys(transactions.creditsIssuedSales).length > 0 &&
-          tableSection(transactions.creditsIssuedSales, 'Consumer ZEV Sales:')}
-        {Object.keys(pendingBalance).length > 0 &&
-          tableSection(pendingBalance, 'Pending for Consumer Sales:')}
+        {Object.keys(transactions.creditsIssuedSales).length > 0
+          && tableSection(transactions.creditsIssuedSales, 'Consumer ZEV Sales:')}
+        {Object.keys(pendingBalance).length > 0
+          && tableSection(pendingBalance, 'Pending for Consumer Sales:')}
         {/* {Object.keys(creditsIssuedInitiative).length > 0
           && (
             tableSection(creditsIssuedInitiative, 'Initiative Agreements:')
@@ -152,36 +150,36 @@ const SummaryCreditActivityTable = (props) => {
           && (
             tableSection(creditsIssuedPurchase, 'Purchase Agreements:')
           )} */}
-        {Object.keys(transactions.transfersIn).length > 0 &&
-          tableSection(transactions.transfersIn, 'Transferred In:')}
-        {Object.keys(transactions.transfersOut).length > 0 &&
-          tableSection(
+        {Object.keys(transactions.transfersIn).length > 0
+          && tableSection(transactions.transfersIn, 'Transferred In:')}
+        {Object.keys(transactions.transfersOut).length > 0
+          && tableSection(
             transactions.transfersOut,
             'Transferred Away:',
-            'text-red text-right'
+            'text-right',
           )}
 
         {/* {Object.keys(provisionalAssessedBalance).length > 0
           && (
             tableSection(provisionalAssessedBalance, 'Provisional assessed balance:')
           )} */}
-        {Object.keys(totalCreditReduction).length > 0 &&
-          tableSection(
+        {Object.keys(totalCreditReduction).length > 0
+          && tableSection(
             totalCreditReduction,
             'Credit Reduction:',
-            'text-red text-right'
+            'text-right',
           )}
-        {Object.keys(creditDeficit).length > 0 &&
-          (creditDeficit.A > 0 || creditDeficit.B > 0) &&
-          tableSection(creditDeficit, 'Credit Deficit:')}
-        {Object.keys(provisionalBalanceAfterCreditReduction).length > 0 &&
-          creditDeficit.A <= 0 &&
-          creditDeficit.B <= 0 &&
-          tableSection(
+        {Object.keys(creditDeficit).length > 0
+          && (creditDeficit.A > 0 || creditDeficit.B > 0)
+          && tableSection(creditDeficit, 'Credit Deficit:')}
+        {Object.keys(provisionalBalanceAfterCreditReduction).length > 0
+          && creditDeficit.A <= 0
+          && creditDeficit.B <= 0
+          && tableSection(
             provisionalBalanceAfterCreditReduction,
             pendingBalanceExist
               ? 'Provisional Balance after Credit Reduction:'
-              : 'Balance after Credit Reduction:'
+              : 'Balance after Credit Reduction:',
           )}
       </tbody>
     </table>

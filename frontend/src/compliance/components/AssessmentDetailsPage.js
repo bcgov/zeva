@@ -89,6 +89,7 @@ const AssessmentDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
+
   const totalReduction = ((ratios.complianceRatio / 100) * details.ldvSales);
   const classAReduction = formatNumeric(
     ((ratios.zevClassA / 100) * details.ldvSales),

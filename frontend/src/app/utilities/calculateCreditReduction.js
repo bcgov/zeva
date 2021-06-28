@@ -17,6 +17,7 @@ const calculateCreditReduction = (
     }
   });
   let lastYearABalance = 0;
+  let lastYearBBalance = 0;
   let currentYearABalance = 0;
   let tempCreditADeficit = 0;
 
@@ -185,6 +186,17 @@ const calculateCreditReduction = (
         unspecifiedZevClassCurrentYearA = unspecifieldBalance - currentYearABalance;
       }
     }
+
+    if (provisionalBalanceCurrentYearB === 0) {
+      if (currentYearABalance >= 0 && currentYearABalance >= remainingUnspecifiedReduction) {
+        unspecifiedZevClassCurrentYearA = remainingUnspecifiedReduction;
+      }
+
+      if (currentYearABalance >= 0 && remainingUnspecifiedReduction > currentYearABalance) {
+        unspecifiedZevClassCurrentYearA = currentYearABalance;
+        remainingUnspecifiedReduction -= unspecifiedZevClassCurrentYearA;
+      }
+    }
   }
 
   const ratioBalance = unspecifiedZevClassReduction
@@ -206,6 +218,8 @@ const calculateCreditReduction = (
   const creditBalance = {
     A: (currentYearABalance - unspecifiedZevClassCurrentYearA),
     B: (provisionalBalanceCurrentYearB - (unspecifiedZevClassCurrentYearB)),
+    lastYearA: lastYearABalance - unspecifiedZevClassLastYearA,
+    lastYearB: provisionalBalanceLastYearB - unspecifiedZevClassLastYearB,
     creditADeficit: tempCreditADeficit,
     unspecifiedCreditDeficit,
   };

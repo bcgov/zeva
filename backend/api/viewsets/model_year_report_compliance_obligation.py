@@ -98,6 +98,7 @@ class ModelYearReportComplianceObligationViewset(
             model_year_report_id=id
         ).delete()
         for each in credit_activity:
+            print(each)
             category = each['category']
             model_year = ModelYear.objects.get(name=each['year'])
             a = each['a']
@@ -158,7 +159,7 @@ class ModelYearReportComplianceObligationViewset(
         if is_assessment:
             organization = report.organization
 
-        if (not confirmation and not snapshot and not summary) or is_assessment:
+        if (not confirmation and not summary) or is_assessment or not snapshot:
             report = ModelYearReport.objects.get(
                 id=id
             )
@@ -298,11 +299,22 @@ class ModelYearReportComplianceObligationViewset(
 
             report_year_balance_a = get_current_year_balance(organization.id, report_year, 'A')
             report_year_balance_b = get_current_year_balance(organization.id, report_year, 'B')
+
+            prior_year_activity_balance_a = get_current_year_balance(organization.id, prior_year, 'A')
+            prior_year_activity_balance_b = get_current_year_balance(organization.id, prior_year, 'B')
+
             content.append({
                 'credit_a_value': report_year_balance_a,
                 'credit_b_value': report_year_balance_b,
                 'category': 'creditBalanceEnd',
                 'model_year': {'name': report_year_obj.name}
+            })
+
+            content.append({
+                'credit_a_value': prior_year_balance_a + prior_year_activity_balance_a,
+                'credit_b_value': prior_year_balance_b + prior_year_activity_balance_b,
+                'category': 'creditBalanceEnd',
+                'model_year': {'name': prior_year}
             })
 
             serializer = ModelYearReportComplianceObligationSnapshotSerializer(
