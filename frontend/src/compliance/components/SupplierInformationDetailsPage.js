@@ -104,19 +104,19 @@ const SupplierInformationDetailsPage = (props) => {
             </button>
             )}
             <h3>Supplier Information</h3>
-            <div className="mt-3 row">
-              <div className="col-sm-12 col-md-6">
-                <div className="row">
-                  <span className="col-4 p-0">
-                    <h4 className="d-inline">Legal Name: </h4>
-                  </span>
-                  <span className="col-6">{details.organization.name}</span>
+            <div className="clear">
+              <div className="mt-3 row">
+                <div className="col-sm-12 col-md-6">
+                  <div className="mt-2 row">
+                    <span className="col-4">
+                      <h4 className="d-inline">Legal Name: </h4>
+                    </span>
+                    <span className="col-6">{details.organization.name}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div>
-              {details.organization.organizationAddress &&
-                details.organization.organizationAddress.length > 0 && (
+              {details.organization.organizationAddress
+                && details.organization.organizationAddress.length > 0 && (
                   <>
                     <div className="mt-3 row">
                       <div className="col-sm-12 col-md-6">
@@ -125,19 +125,18 @@ const SupplierInformationDetailsPage = (props) => {
                             <h4 className="d-inline">Service Address:</h4>
                           </div>
                           {details.organization.organizationAddress.map(
-                            (address) =>
-                              address.addressType.addressType === 'Service' && (
-                                <div className="col-7" key={address.id}>
-                                  {address.representativeName && (
-                                    <div> {address.representativeName} </div>
-                                  )}
-                                  {address.addressLine1}{' '}
-                                  {address.city}{' '}
-                                  {address.state}{' '}
-                                  {address.country}{' '}
-                                  {address.postalCode}
-                                </div>
-                              )
+                            (address) => address.addressType.addressType === 'Service' && (
+                              <div className="col-7" key={address.id}>
+                                {address.representativeName && (
+                                  <div> {address.representativeName} </div>
+                                )}
+                                {address.addressLine1}{' '}
+                                {address.city}{' '}
+                                {address.state}{' '}
+                                {address.country}{' '}
+                                {address.postalCode}
+                              </div>
+                            ),
                           )}
                         </div>
                       </div>
@@ -149,26 +148,25 @@ const SupplierInformationDetailsPage = (props) => {
                           <div className="col-4">
                             <h4 className="d-inline">Records Address</h4>
                           </div>
-                            {details.organization.organizationAddress.map(
-                              (address) =>
-                                address.addressType.addressType === 'Records' && (
-                                  <div className="col-7" key={address.id}>
-                                    {address.representativeName && (
-                                      <div> {address.representativeName} </div>
-                                    )}
-                                    {address.addressLine1} {' '}
-                                    {address.city}{' '}
-                                    {address.state}{' '}
-                                    {address.country}{' '}
-                                    {address.postalCode}
-                                  </div>
-                                )
-                            )}
+                          {details.organization.organizationAddress.map(
+                            (address) => address.addressType.addressType === 'Records' && (
+                              <div className="col-7" key={address.id}>
+                                {address.representativeName && (
+                                  <div> {address.representativeName} </div>
+                                )}
+                                {address.addressLine1} {' '}
+                                {address.city}{' '}
+                                {address.state}{' '}
+                                {address.country}{' '}
+                                {address.postalCode}
+                              </div>
+                            ),
+                          )}
                         </div>
                       </div>
                     </div>
                   </>
-                )}
+              )}
               <div className="mt-1 row">
                 <div className="col-sm-12 col-md-6">
                   <div className="mt-2 row">
@@ -206,7 +204,7 @@ const SupplierInformationDetailsPage = (props) => {
                         </div>
                       </div>
                     </div>
-                  )}
+                )}
               </div>
               <div className="d-block mt-3">
                 If there is an error in any of the information above, please

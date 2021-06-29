@@ -17,7 +17,6 @@ const calculateCreditReduction = (
     }
   });
   let lastYearABalance = 0;
-  let lastYearBBalance = 0;
   let currentYearABalance = 0;
   let tempCreditADeficit = 0;
 
@@ -86,18 +85,22 @@ const calculateCreditReduction = (
     if (lastYearABalance > 0 && lastYearABalance >= unspecifiedZevClassReduction) {
       unspecifiedZevClassLastYearA = unspecifiedZevClassReduction;
     }
+
     if (lastYearABalance > 0 && lastYearABalance < unspecifiedZevClassReduction) {
       unspecifiedZevClassLastYearA = lastYearABalance;
       remainingUnspecifiedReduction = unspecifiedZevClassReduction - unspecifiedZevClassLastYearA;
-      if (remainingUnspecifiedReduction > 0 && provisionalBalanceLastYearB > 0
-        && provisionalBalanceLastYearB >= remainingUnspecifiedReduction) {
-        unspecifiedZevClassLastYearB = remainingUnspecifiedReduction;
-      }
-      if (remainingUnspecifiedReduction > 0 && provisionalBalanceLastYearB > 0
-        && provisionalBalanceLastYearB < remainingUnspecifiedReduction) {
-        unspecifiedZevClassLastYearB = provisionalBalanceLastYearB;
+
+      if (remainingUnspecifiedReduction > 0 && provisionalBalanceLastYearB > 0) {
+        if (provisionalBalanceLastYearB >= remainingUnspecifiedReduction) {
+          unspecifiedZevClassLastYearB = remainingUnspecifiedReduction;
+        }
+
+        if (provisionalBalanceLastYearB < remainingUnspecifiedReduction) {
+          unspecifiedZevClassLastYearB = provisionalBalanceLastYearB;
+        }
       }
     }
+
     if (lastYearABalance === 0 && provisionalBalanceLastYearB > 0
       && unspecifiedZevClassReduction >= provisionalBalanceLastYearB) {
       unspecifiedZevClassLastYearB = provisionalBalanceLastYearB;
@@ -109,50 +112,60 @@ const calculateCreditReduction = (
     if (currentYearABalance > 0 && currentYearABalance >= remainingUnspecifiedReduction) {
       unspecifiedZevClassCurrentYearA = remainingUnspecifiedReduction;
     }
+
     if (currentYearABalance === 0 && provisionalBalanceCurrentYearB > 0
       && remainingUnspecifiedReduction >= provisionalBalanceCurrentYearB) {
       unspecifiedZevClassCurrentYearB = provisionalBalanceCurrentYearB;
+
       if (remainingUnspecifiedReduction > provisionalBalanceCurrentYearB) {
         unspecifiedCreditDeficit = remainingUnspecifiedReduction - provisionalBalanceCurrentYearB;
       }
     }
+
     if (currentYearABalance > 0 && currentYearABalance < remainingUnspecifiedReduction) {
       unspecifiedZevClassCurrentYearA = currentYearABalance;
       const unspecifieldBalance = unspecifiedZevClassReduction - unspecifiedZevClassCurrentYearA;
-      if (unspecifieldBalance > 0 && provisionalBalanceCurrentYearB > 0
-        && provisionalBalanceCurrentYearB >= unspecifieldBalance) {
-        unspecifiedZevClassCurrentYearB = unspecifieldBalance;
-      }
-      if (unspecifieldBalance > 0 && provisionalBalanceCurrentYearB > 0
-        && provisionalBalanceCurrentYearB < unspecifieldBalance) {
-        unspecifiedZevClassLastYearB = unspecifieldBalance - provisionalBalanceLastYearB;
+
+      if (unspecifieldBalance > 0 && provisionalBalanceCurrentYearB > 0) {
+        if (provisionalBalanceCurrentYearB >= unspecifieldBalance) {
+          unspecifiedZevClassCurrentYearB = unspecifieldBalance;
+        }
+
+        if (provisionalBalanceCurrentYearB < unspecifieldBalance) {
+          unspecifiedZevClassLastYearB = unspecifieldBalance - provisionalBalanceLastYearB;
+        }
       }
     }
   }
 
   if (radioId === 'B') {
     // Reduce older year's B credits first then older year's A.
-    if (provisionalBalanceLastYearB > 0
-      && provisionalBalanceLastYearB >= unspecifiedZevClassReduction) {
-      unspecifiedZevClassLastYearB = unspecifiedZevClassReduction;
-    }
-    if (provisionalBalanceLastYearB > 0
-      && provisionalBalanceLastYearB < unspecifiedZevClassReduction) {
-      unspecifiedZevClassLastYearB = provisionalBalanceLastYearB;
-      remainingUnspecifiedReduction = unspecifiedZevClassReduction - unspecifiedZevClassLastYearB;
-      if (remainingUnspecifiedReduction > 0
-        && lastYearABalance > 0 && lastYearABalance >= remainingUnspecifiedReduction) {
-        unspecifiedZevClassLastYearA = remainingUnspecifiedReduction;
+    if (provisionalBalanceLastYearB > 0) {
+      if (provisionalBalanceLastYearB >= unspecifiedZevClassReduction) {
+        unspecifiedZevClassLastYearB = unspecifiedZevClassReduction;
       }
-      if (remainingUnspecifiedReduction > 0
-        && lastYearABalance > 0 && lastYearABalance < remainingUnspecifiedReduction) {
-        unspecifiedZevClassLastYearA = lastYearABalance;
+
+      if (provisionalBalanceLastYearB < unspecifiedZevClassReduction) {
+        unspecifiedZevClassLastYearB = provisionalBalanceLastYearB;
+        remainingUnspecifiedReduction = unspecifiedZevClassReduction - unspecifiedZevClassLastYearB;
+
+        if (remainingUnspecifiedReduction > 0
+          && lastYearABalance > 0 && lastYearABalance >= remainingUnspecifiedReduction) {
+          unspecifiedZevClassLastYearA = remainingUnspecifiedReduction;
+        }
+
+        if (remainingUnspecifiedReduction > 0
+          && lastYearABalance > 0 && lastYearABalance < remainingUnspecifiedReduction) {
+          unspecifiedZevClassLastYearA = lastYearABalance;
+        }
       }
     }
+
     if (provisionalBalanceLastYearB === 0
       && lastYearABalance >= 0 && unspecifiedZevClassReduction >= lastYearABalance) {
       unspecifiedZevClassLastYearA = lastYearABalance;
     }
+
     // Reduce current year's B credits first then current year's A.
     remainingUnspecifiedReduction = unspecifiedZevClassReduction
       - (unspecifiedZevClassLastYearA + unspecifiedZevClassLastYearB);
@@ -162,9 +175,17 @@ const calculateCreditReduction = (
       unspecifiedZevClassCurrentYearB = remainingUnspecifiedReduction;
     }
 
-    if (provisionalBalanceCurrentYearB === 0
-      && currentYearABalance >= 0 && remainingUnspecifiedReduction >= currentYearABalance) {
-      unspecifiedZevClassCurrentYearA = currentYearABalance;
+    if (provisionalBalanceCurrentYearB === 0) {
+      if (currentYearABalance >= 0) {
+        if (currentYearABalance >= remainingUnspecifiedReduction) {
+          unspecifiedZevClassCurrentYearA = remainingUnspecifiedReduction;
+        }
+
+        if (remainingUnspecifiedReduction >= currentYearABalance) {
+          unspecifiedZevClassCurrentYearA = currentYearABalance;
+          remainingUnspecifiedReduction -= unspecifiedZevClassCurrentYearA;
+        }
+      }
     }
 
     if (provisionalBalanceCurrentYearB > 0
@@ -176,25 +197,14 @@ const calculateCreditReduction = (
         + unspecifiedZevClassCurrentYearB
       );
 
-      if (unspecifieldBalance > 0
-        && currentYearABalance > 0 && currentYearABalance >= unspecifieldBalance) {
-        unspecifiedZevClassCurrentYearA = unspecifieldBalance;
-      }
+      if (unspecifieldBalance > 0 && currentYearABalance > 0) {
+        if (currentYearABalance >= unspecifieldBalance) {
+          unspecifiedZevClassCurrentYearA = unspecifieldBalance;
+        }
 
-      if (unspecifieldBalance > 0
-        && currentYearABalance > 0 && currentYearABalance < unspecifieldBalance) {
-        unspecifiedZevClassCurrentYearA = unspecifieldBalance - currentYearABalance;
-      }
-    }
-
-    if (provisionalBalanceCurrentYearB === 0) {
-      if (currentYearABalance >= 0 && currentYearABalance >= remainingUnspecifiedReduction) {
-        unspecifiedZevClassCurrentYearA = remainingUnspecifiedReduction;
-      }
-
-      if (currentYearABalance >= 0 && remainingUnspecifiedReduction > currentYearABalance) {
-        unspecifiedZevClassCurrentYearA = currentYearABalance;
-        remainingUnspecifiedReduction -= unspecifiedZevClassCurrentYearA;
+        if (currentYearABalance < unspecifieldBalance) {
+          unspecifiedZevClassCurrentYearA = unspecifieldBalance - currentYearABalance;
+        }
       }
     }
   }
