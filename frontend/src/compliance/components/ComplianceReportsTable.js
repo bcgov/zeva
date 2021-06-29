@@ -10,18 +10,19 @@ const ComplianceReportsTable = (props) => {
 
   const supplierClass = (paramClass) => {
     if (paramClass === 'L') {
-      return 'Large'
+      return 'Large';
     }
-    else if (paramClass === 'M') {
+
+    if (paramClass === 'M') {
       return 'Medium';
     }
-    else if (paramClass === 'S') {
+
+    if (paramClass === 'S') {
       return 'Small';
     }
-    else {
-      return '-';
-    }
-  }
+
+    return '-';
+  };
 
   const columns = [{
     accessor: (item) => (item.organizationName),
@@ -54,7 +55,7 @@ const ComplianceReportsTable = (props) => {
     maxWidth: 260,
   }, {
     accessor: (item) => (item.ldvSales ? item.ldvSales : '-'),
-    className: 'text-center',
+    className: 'text-right px-3',
     Header: 'Total LDV Sales',
     headerClassName: 'font-weight-bold',
     id: 'total-ldv-sales',
