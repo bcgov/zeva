@@ -46,7 +46,13 @@ const ComplianceReportsContainer = (props) => {
         });
         let filteredYears = [];
         const mostRecentCompleted = completedYears.pop();
-        const nextYear = parseInt(mostRecentCompleted, 10) + 1;
+
+        let nextYear = new Date().getFullYear();
+
+        if (mostRecentCompleted) {
+          nextYear = Number(mostRecentCompleted) + 1;
+        }
+
         if (availableYears.length > 0) {
         // show only the next year if all previous reports have been assessed
           filteredYears = availableYears.filter((year) => (
