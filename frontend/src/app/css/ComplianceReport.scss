@@ -141,6 +141,9 @@
   .consumer-sales {
     border: 1px solid $border-grey;
   }
+  .credit-request-link{
+    cursor: pointer;
+  }
   .previous-ldv-sales,
   .previous-ldv-avg {
     border: 1px solid $border-grey;
@@ -166,6 +169,17 @@
   .no-border {
     border: none;
   }
+
+  .credit-selection {
+    input[type=radio] {
+      margin-left: 3px;
+    }
+
+    td {
+      background-color: $background-warning;
+    }
+  }
+
   .ldv-sales {
     height: 50px;
     line-height: 30px;

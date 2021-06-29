@@ -5,15 +5,15 @@ import ReactQuill from 'react-quill';
 
 const CommentInput = (props) => {
   const {
-    handleAddComment, handleCommentChange, title, buttonText, defaultComment
+    handleAddComment, handleCommentChange, title, buttonText, defaultComment, disable,
   } = props;
   return (
-
     <div className="text-editor">
       <label htmlFor="comment">
         <b>{title}</b>
       </label>
       <ReactQuill
+        readOnly={disable}
         defaultValue={defaultComment ? defaultComment.comment : ''}
         theme="snow"
         modules={{
@@ -25,12 +25,15 @@ const CommentInput = (props) => {
         formats={['bold', 'italic', 'list', 'bullet']}
         onChange={handleCommentChange}
       />
+      {!disable
+      && (
       <button
         className="button mt-2"
         onClick={() => { handleAddComment(); }}
         type="button"
       >{buttonText}
       </button>
+      )}
     </div>
   );
 };

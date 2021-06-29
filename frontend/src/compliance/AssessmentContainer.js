@@ -39,6 +39,7 @@ const AssessmentContainer = (props) => {
     const data = {
       modelYearReportId: id,
       validation_status: status,
+      modelYear: modelYear
     };
     if (analystAction) {
       data.penalty = details.assessment.assessmentPenalty;
@@ -105,8 +106,9 @@ const AssessmentContainer = (props) => {
             changelog,
             creditReductionSelection,
           } = reportDetailsResponse.data;
-          setModelYear(parseInt(reportModelYear.name, 10));
-          const filteredRatio = ratioResponse.data.filter((data) => data.modelYear === modelYear.toString())[0];
+          setModelYear(Number(reportModelYear.name));
+
+          const filteredRatio = ratioResponse.data.filter((data) => data.modelYear === reportModelYear.name.toString())[0];
           setRatios(filteredRatio);
           const makesChanges = {
             additions: [],

@@ -65,11 +65,12 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     const { status } = input;
     return (
       <div className="mt-3">
-        {status == 'SAVED' && (< span className="text-black">
-        {title} was last saved on {moment(timeStamp).format('YYYY-MM-DD h[:]mm a')}
+        {status === 'SAVED' && (
+          <span className="text-black">
+            {title} was last saved on {moment(timeStamp).format('YYYY-MM-DD h[:]mm a')}
           </span>
-    )}
-        {status == 'UNSAVED' && (
+        )}
+        {status === 'UNSAVED' && (
           <span className="text-red">
             {title} has not been saved yet, please go to the {title} section and save first.
           </span>
@@ -188,7 +189,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
               <Button buttonType="back" locationRoute="/compliance/reports" />
             </span>
             <span className="right-content">
-              {!user.isGovernment && (
+              {!user.isGovernment && confirmationStatuses.assessment.status !== 'ASSESSED' && (
                 <Button
                   buttonType="submit"
                   disabled={disableSubmitBtn || confirmationStatuses.reportSummary.status === 'SUBMITTED' || !user.hasPermission('SUBMIT_COMPLIANCE_REPORT')}

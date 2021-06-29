@@ -127,13 +127,18 @@ def aggregate_transactions_by_submission(organization):
         ), then=F(
             'credit_transfer_credit_transaction__credit_transfer_id'
         )),
+        When(transaction_type=CreditTransactionType.objects.get(
+            transaction_type="Reduction"
+        ), then=F(
+            'model_year_report_credit_transaction__model_year_report_id'
+        )),
         default=Value(None)
     )
 
     transactions = CreditTransaction.objects.filter(
         Q(credit_to=organization) | Q(debit_from=organization)
     ).values(
-        'credit_class_id', 'transaction_type_id'
+        'credit_class_id', 'transaction_type_id', 'model_year_id'
     ).annotate(
         credit=balance_credits,
         debit=balance_debits,

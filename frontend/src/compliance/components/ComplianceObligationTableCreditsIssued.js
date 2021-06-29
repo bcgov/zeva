@@ -4,7 +4,7 @@ import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceObligationTableCreditsIssued = (props) => {
   const {
-    reportDetails, reportYear,
+    reportDetails, reportYear, pendingBalanceExist
   } = props;
 
   const {
@@ -21,11 +21,11 @@ const ComplianceObligationTableCreditsIssued = (props) => {
     return (
       <>
         <tr className="subclass">
-          <th className="large-column text-uppercase">
+          <th className="large-column">
             {title}
           </th>
-          <th className="small-column"> </th>
-          <th className="small-column"> </th>
+          <th className="small-column text-center text-blue">A</th>
+          <th className="small-column text-center text-blue">B</th>
 
         </tr>
         {input.sort((a, b) => {
@@ -41,12 +41,25 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             <td className="text-blue">
               &bull; &nbsp; &nbsp; {each.modelYear} Credits
             </td>
-            <td className={numberClassname}>
-              {formatNumeric(each.A, 2)}
-            </td>
-            <td className={numberClassname}>
-              {formatNumeric(each.B, 2)}
-            </td>
+            {title === 'Transferred Away' ? (
+              <>
+                <td className={`${numberClassname} ${Number(each.A) > 0 ? 'text-red' : ''}`}>
+                 {-formatNumeric(each.A, 2)}
+                </td>
+                <td className={`${numberClassname} ${Number(each.B) > 0 ? 'text-red' : ''}`}>
+                  {-formatNumeric(each.B, 2)}
+                </td>
+              </>
+            ) : (
+              <>
+                <td className={`${numberClassname} ${Number(each.A) < 0 ? 'text-red' : ''}`}>
+                  {formatNumeric(each.A, 2)}
+                </td>
+                <td className={`${numberClassname} ${Number(each.B) < 0 ? 'text-red' : ''}`}>
+                  {formatNumeric(each.B, 2)}
+                </td>
+              </>
+            )}
           </tr>
         ))}
       </>
@@ -70,7 +83,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
           {Object.keys(creditBalanceStart).map((each) => (
             <tr key={each}>
               <td className="text-blue">
-                &bull; &nbsp; &nbsp; Total Credit Balance
+                &bull; &nbsp; &nbsp; Credits
               </td>
               <td className="text-right">
                 {creditBalanceStart[each].A}
@@ -84,7 +97,9 @@ const ComplianceObligationTableCreditsIssued = (props) => {
       </table>
 
       <h3 className="mt-4 mb-2">Credit Activity</h3>
-      <table>
+      {(Object.keys(creditsIssuedSales).length > 0 || Object.keys(pendingBalance).length > 0
+      || Object.keys(transfersIn).length > 0 || Object.keys(transfersOut).length > 0) && (
+      <table className="mb-4">
         <tbody>
           {Object.keys(creditsIssuedSales).length > 0
             && (
@@ -108,21 +123,22 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             )}
           {Object.keys(transfersOut).length > 0
             && (
-              tableSection(transfersOut, 'Transferred Away', true)
+              tableSection(transfersOut, 'Transferred Away')
             )}
         </tbody>
       </table>
+      )}
 
-      <table className="mt-4">
+      <table>
         <tbody>
           <tr className="subclass">
             <th className="large-column">
-              PROVISIONAL BALANCE BEFORE CREDIT REDUCTION
+              {pendingBalanceExist ? 'Provisional Balance Before Credit Reduction' : 'Balance Before Credit Reduction'}
             </th>
-            <th className="small-column text-center text-blue"> </th>
-            <th className="small-column text-center text-blue"> </th>
+            <th className="small-column text-center text-blue">A</th>
+            <th className="small-column text-center text-blue">B</th>
           </tr>
-          {Object.keys(pendingBalance).length > 0
+          {Object.keys(provisionalBalance).length > 0
           && (
 
             Object.keys(provisionalBalance).sort((a, b) => {

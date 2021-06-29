@@ -53,6 +53,9 @@ const ComplianceReportAlert = (props) => {
         title = 'Model Year Report Draft';
         message = 'The confirmation checkbox must be confirmed to submit the report to government. You must have the Signing Authority role to submit the report to government.';
         classname = 'alert-primary';
+        if (type === 'Report Summary') {
+          classname = 'alert-warning';
+        }
         break;
 
       case 'SUBMITTED':

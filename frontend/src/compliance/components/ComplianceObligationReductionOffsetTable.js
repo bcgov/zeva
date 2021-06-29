@@ -28,7 +28,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
               {supplierClassInfo.class === 'L' && (
                 <>
                   <tr className="subclass">
-                    <th className="large-column text-uppercase">ZEV Class A Credit Reduction</th>
+                    <th className="large-column">ZEV Class A Credit Reduction</th>
                     <th className="small-column text-center text-blue">A</th>
                     <th className="small-column text-center text-blue">B</th>
                   </tr>
@@ -55,7 +55,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     <td className="text-right">{formatNumeric(0)}</td>
                   </tr>
                   <tr className="subclass">
-                    <th className="large-column text-uppercase">
+                    <th className="large-column">
                       Unspecified ZEV Class Credit Reduction
                     </th>
                     <th className="text-center">A</th>
@@ -65,14 +65,14 @@ const ComplianceObligationReductionOffsetTable = (props) => {
               )}
               {supplierClassInfo.class !== 'L' && (
                 <tr className="subclass">
-                  <th className="large-column text-uppercase">
+                  <th className="large-column">
                     Compliance Ratio Credit Reduction
                   </th>
                   <th className="text-center small-column">A</th>
                   <th className="text-center small-column">B</th>
                 </tr>
               )}
-              <tr>
+              <tr className="credit-selection">
                 <td>
                   Do you want to use ZEV Class A or B credits first for your
                   unspecified ZEV class reduction?
@@ -160,7 +160,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
           <table className="col-12">
             <tbody>
               <tr className="subclass">
-                <th className="large-column">PROVISIONAL BALANCE AFTER CREDIT REDUCTION</th>
+                <th className="large-column">Provisional Balance after Credit Reduction</th>
                 <th className="small-column text-center text-blue">A</th>
                 <th className="small-column text-center text-blue">B</th>
               </tr>
@@ -193,8 +193,22 @@ const ComplianceObligationReductionOffsetTable = (props) => {
               </tr>
               <tr>
                 <td>Credit Deficit</td>
-                <td className="text-right">{formatNumeric(creditBalance.creditADeficit)}</td>
-                <td className="text-right">{formatNumeric(creditBalance.unspecifiedCreditDeficit)}</td>
+                <td className="text-right">
+                  {Number(creditBalance.creditADeficit) > 0 && (
+                    <span>({formatNumeric(creditBalance.creditADeficit)})</span>
+                  )}
+                  {Number(creditBalance.creditADeficit) <= 0 && (
+                    <span>{formatNumeric(creditBalance.creditADeficit)}</span>
+                  )}
+                </td>
+                <td className="text-right">
+                  {Number(creditBalance.unspecifiedCreditDeficit) > 0 && (
+                    <span>({formatNumeric(creditBalance.unspecifiedCreditDeficit)})</span>
+                  )}
+                  {Number(creditBalance.unspecifiedCreditDeficit) <= 0 && (
+                    <span>{formatNumeric(creditBalance.unspecifiedCreditDeficit)}</span>
+                  )}
+                </td>
               </tr>
             </tbody>
           </table>

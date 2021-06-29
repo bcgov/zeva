@@ -42,7 +42,7 @@ const AssessmentDetailsPage = (props) => {
     creditBalanceStart, pendingBalance, transactions, provisionalBalance,
   } = creditActivityDetails;
 
-  const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, user.organization.name) : '';
+  const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, user.organization.name).replace(/{modelYear}/g, modelYear) : '';
   const {
     creditsIssuedSales, transfersIn, transfersOut,
   } = transactions;
@@ -89,6 +89,7 @@ const AssessmentDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
+
   const totalReduction = ((ratios.complianceRatio / 100) * details.ldvSales);
   const classAReduction = formatNumeric(
     ((ratios.zevClassA / 100) * details.ldvSales),
@@ -297,7 +298,9 @@ const AssessmentDetailsPage = (props) => {
               <div className="col-12">
                 <div className="grey-border-area comment-box p-3 mt-2">
                   <div className="text-blue">
-                    <div>The Director has assessed that {assessmentDecision} ${details.assessment.assessmentPenalty} CAD</div>
+                    <div>The Director has assessed that {assessmentDecision} {details.assessment.assessmentPenalty
+                    && `$${details.assessment.assessmentPenalty} CAD`}
+                    </div>
                     {details.bceidComment && details.bceidComment.comment
                     && <div className="mt-2">{parse(details.bceidComment.comment)}</div>}
                   </div>
@@ -345,6 +348,7 @@ const AssessmentDetailsPage = (props) => {
                         </div>
                       </label>
                       <CommentInput
+                        disable={details.assessment.validationStatus === 'ASSESSED'}
                         defaultComment={details.bceidComment}
                         handleAddComment={handleAddBceidComment}
                         handleCommentChange={handleCommentChangeBceid}

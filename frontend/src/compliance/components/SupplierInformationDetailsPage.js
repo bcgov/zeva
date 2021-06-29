@@ -107,52 +107,68 @@ const SupplierInformationDetailsPage = (props) => {
             <div className="mt-3 row">
               <div className="col-sm-12 col-md-6">
                 <div className="row">
-                  <span className="col-4">
+                  <span className="col-4 p-0">
                     <h4 className="d-inline">Legal Name: </h4>
                   </span>
-                  <span className="col-6">
-                    {details.organization.name}
-                  </span>
+                  <span className="col-6">{details.organization.name}</span>
                 </div>
               </div>
             </div>
             <div>
-              {details.organization.organizationAddress
-              && details.organization.organizationAddress.length > 0 && (
-                <>
-                  <div className="d-inline-block mr-5 mt-3 align-top">
-                    <h4>Service Address</h4>
-                    {details.organization.organizationAddress.map((address) => (
-                      address.addressType.addressType === 'Service' && (
-                        <div key={address.id}>
-                          {address.representativeName && (
-                            <div> {address.representativeName} </div>
+              {details.organization.organizationAddress &&
+                details.organization.organizationAddress.length > 0 && (
+                  <>
+                    <div className="mt-3 row">
+                      <div className="col-sm-12 col-md-6">
+                        <div className="row">
+                          <div className="col-4">
+                            <h4 className="d-inline">Service Address:</h4>
+                          </div>
+                          {details.organization.organizationAddress.map(
+                            (address) =>
+                              address.addressType.addressType === 'Service' && (
+                                <div className="col-7" key={address.id}>
+                                  {address.representativeName && (
+                                    <div> {address.representativeName} </div>
+                                  )}
+                                  {address.addressLine1}{' '}
+                                  {address.city}{' '}
+                                  {address.state}{' '}
+                                  {address.country}{' '}
+                                  {address.postalCode}
+                                </div>
+                              )
                           )}
-                          <div> {address.addressLine1} </div>
-                          <div> {address.city} {address.state} {address.country} </div>
-                          <div> {address.postalCode} </div>
                         </div>
-                      )
-                    ))}
-                  </div>
+                      </div>
+                    </div>
 
-                  <div className="d-inline-block mt-3 align-top">
-                    <h4>Records Address</h4>
-                    {details.organization.organizationAddress.map((address) => (
-                      address.addressType.addressType === 'Records' && (
-                        <div key={address.id}>
-                          {address.representativeName && (
-                            <div> {address.representativeName} </div>
-                          )}
-                          <div> {address.addressLine1} </div>
-                          <div> {address.city} {address.state} {address.country} </div>
-                          <div> {address.postalCode} </div>
+                    <div className="mt-3 row">
+                      <div className="col-sm-12 col-md-6">
+                        <div className="row">
+                          <div className="col-4">
+                            <h4 className="d-inline">Records Address</h4>
+                          </div>
+                            {details.organization.organizationAddress.map(
+                              (address) =>
+                                address.addressType.addressType === 'Records' && (
+                                  <div className="col-7" key={address.id}>
+                                    {address.representativeName && (
+                                      <div> {address.representativeName} </div>
+                                    )}
+                                    {address.addressLine1} {' '}
+                                    {address.city}{' '}
+                                    {address.state}{' '}
+                                    {address.country}{' '}
+                                    {address.postalCode}
+                                  </div>
+                                )
+                            )}
                         </div>
-                      )
-                    ))}
-                  </div>
-                </>
-              )}
+                      </div>
+                    </div>
+                  </>
+                )}
               <div className="mt-1 row">
                 <div className="col-sm-12 col-md-6">
                   <div className="mt-2 row">
@@ -172,33 +188,40 @@ const SupplierInformationDetailsPage = (props) => {
                     <span className="col-6">{FormatNumeric(details.organization.avgLdvSales, 0)}</span>
                   </div>
                 </div>
-                {details.organization.ldvSales && details.organization.ldvSales.length > 0 && (
-                <div className="col-sm-12 col-md-5">
-                  <div className="supplier-information d-inline-block">
-                    <div className="previous-ldv-sales d-flex flex-column mt-2 px-3 py-1">
-                      {details.organization.ldvSales.map((yearSale) => (
-                        <div className="model-year-ldv" key={yearSale.id}>
-                          <label className="text-blue mr-4 font-weight-bold">
-                            {yearSale.modelYear} Model Year LDV Sales\Leases:
-                          </label>
-                          <label className="sales-numbers">
-                            {FormatNumeric(yearSale.ldvSales, 0)}
-                          </label>
+                {details.organization.ldvSales &&
+                  details.organization.ldvSales.length > 0 && (
+                    <div className="col-sm-12 col-md-5">
+                      <div className="supplier-information d-inline-block">
+                        <div className="previous-ldv-sales d-flex flex-column mt-2 px-3 py-1">
+                          {details.organization.ldvSales.map((yearSale) => (
+                            <div className="model-year-ldv" key={yearSale.id}>
+                              <label className="text-blue mr-4 font-weight-bold">
+                                {yearSale.modelYear} Model Year LDV Sales\Leases:
+                              </label>
+                              <label className="sales-numbers">
+                                {FormatNumeric(yearSale.ldvSales, 0)}
+                              </label>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      </div>
                     </div>
-                  </div>
-                </div>
-                )}
+                  )}
               </div>
               <div className="d-block mt-3">
-                If there is an error in any of the information above, please contact: <a href="mailto:ZEVRegulation@gov.bc.ca">ZEVRegulation@gov.bc.ca</a>
+                If there is an error in any of the information above, please
+                contact:{' '}
+                <a href="mailto:ZEVRegulation@gov.bc.ca">
+                  ZEVRegulation@gov.bc.ca
+                </a>
               </div>
             </div>
             <div className="mt-4">
               <h4>Light Duty Vehicle Makes</h4>
               <div className="mt-1 mb-2">
-                Enter all the LDV makes {details.organization.name} supplied in British Columbia in the {modelYear} compliance period ending September 30, {modelYear + 1}.
+                Enter all the LDV makes {details.organization.name} supplied in
+                British Columbia in the {modelYear} compliance period ending
+                September 30, {modelYear + 1}.
               </div>
               <div className="ldv-makes p-3">
                 <form disabled={disabledInputs} onSubmit={handleSubmitMake}>
@@ -224,21 +247,26 @@ const SupplierInformationDetailsPage = (props) => {
                   </div>
                 </form>
 
-                {(makes.length > 0) && (
-                  <div className={`list mt-3 p-2 ${disabledInputs ? 'disabled' : ''}`}>
+                {makes.length > 0 && (
+                  <div
+                    className={`list mt-3 p-2 ${
+                      disabledInputs ? 'disabled' : ''
+                    }`}
+                  >
                     {makes.map((item, index) => (
                       <div className="form-row my-2" key={index}>
                         <div className="col-11">{item}</div>
                         {!disabledInputs && (
-                        <div className="col-1 delete">
-                          <button
-                            onClick={() => {
-                              handleDeleteMake(index);
-                            }}
-                            type="button"
-                          >x
-                          </button>
-                        </div>
+                          <div className="col-1 delete">
+                            <button
+                              onClick={() => {
+                                handleDeleteMake(index);
+                              }}
+                              type="button"
+                            >
+                              x
+                            </button>
+                          </div>
                         )}
                       </div>
                     ))}
@@ -271,22 +299,30 @@ const SupplierInformationDetailsPage = (props) => {
             <span className="right-content">
               <Button
                 buttonType="next"
-                disabled={['UNSAVED'].indexOf(statuses.supplierInformation.status) >= 0}
+                disabled={
+                  ['UNSAVED'].indexOf(statuses.supplierInformation.status) >= 0
+                }
                 optionalClassname="button"
                 optionalText="Next"
                 action={() => {
-                  history.push(ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id));
+                  history.push(
+                    ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id)
+                  );
                 }}
               />
               {!user.isGovernment && (
-              <Button
-                buttonType="save"
-                disabled={['SAVED', 'UNSAVED'].indexOf(statuses.supplierInformation.status) < 0}
-                optionalClassname="button primary"
-                action={(event) => {
-                  handleSubmit(event);
-                }}
-              />
+                <Button
+                  buttonType="save"
+                  disabled={
+                    ['SAVED', 'UNSAVED'].indexOf(
+                      statuses.supplierInformation.status
+                    ) < 0
+                  }
+                  optionalClassname="button primary"
+                  action={(event) => {
+                    handleSubmit(event);
+                  }}
+                />
               )}
             </span>
           </div>

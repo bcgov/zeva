@@ -38,6 +38,7 @@ const ComplianceObligationDetailsPage = (props) => {
     sales,
     handleChangeSales,
     creditReductionSelection,
+    pendingBalanceExist,
   } = props;
   const [showModal, setShowModal] = useState(false);
   let disabledCheckboxes = propsDisabledCheckboxes;
@@ -99,10 +100,10 @@ const ComplianceObligationDetailsPage = (props) => {
         </div>
       </div>
       <div id="compliance-obligation-page">
-        <div className="col-12">
+        <div>
           {!user.isGovernment && statuses.complianceObligation.status === 'CONFIRMED' && (
             <button
-              className="btn button primary float-right"
+              className="btn button primary float-right mb-2"
               onClick={() => {
                 setShowModal(true);
               }}
@@ -111,22 +112,26 @@ const ComplianceObligationDetailsPage = (props) => {
               Edit
             </button>
           )}
+          <h3 className="mb-2">Compliance Obligation</h3>
         </div>
-        <ComplianceObligationAmountsTable
-          reportYear={reportYear}
-          supplierClassInfo={supplierClassInfo}
-          totalReduction={totalReduction}
-          ratios={ratios}
-          classAReduction={classAReduction}
-          leftoverReduction={leftoverReduction}
-          sales={sales}
-          handleChangeSales={handleChangeSales}
-          statuses={statuses}
-          user={user}
-          page="obligation"
-        />
+        <div className="clear">
+          <ComplianceObligationAmountsTable
+            reportYear={reportYear}
+            supplierClassInfo={supplierClassInfo}
+            totalReduction={totalReduction}
+            ratios={ratios}
+            classAReduction={classAReduction}
+            leftoverReduction={leftoverReduction}
+            sales={sales}
+            handleChangeSales={handleChangeSales}
+            statuses={statuses}
+            user={user}
+            page="obligation"
+          />
+        </div>
         <div className="mt-4">
           <ComplianceObligationTableCreditsIssued
+            pendingBalanceExist={pendingBalanceExist}
             reportYear={reportYear}
             reportDetails={reportDetails}
           />
@@ -221,7 +226,10 @@ ComplianceObligationDetailsPage.propTypes = {
   zevClassAReduction: PropTypes.shape().isRequired,
   unspecifiedReductions: PropTypes.shape().isRequired,
   creditBalance: PropTypes.shape().isRequired,
-  sales: PropTypes.number,
+  sales: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]),
   handleChangeSales: PropTypes.func.isRequired,
   creditReductionSelection: PropTypes.string,
 };
