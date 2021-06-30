@@ -41,7 +41,6 @@ const AssessmentDetailsPage = (props) => {
   const {
     creditBalanceStart, pendingBalance, transactions, provisionalBalance,
   } = creditActivityDetails;
-
   const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, user.organization.name).replace(/{modelYear}/g, modelYear) : '';
   const {
     creditsIssuedSales, transfersIn, transfersOut,
@@ -131,11 +130,16 @@ const AssessmentDetailsPage = (props) => {
           </div>
           {user.isGovernment
           && (
-          <div className="grey-border-area p-3 comment-box mt-2">
-            {details.changelog.ldvChanges && (
-              Object.keys(details.changelog.makesAdditions)
+            <>
+              {(details.changelog.ldvChanges
+              || details.idirComment.length > 0
+              || statuses.assessment.status !== 'ASSESSED')
+              && (
+              <div className="grey-border-area p-3 comment-box mt-2">
+                {details.changelog.ldvChanges && (
+                  Object.keys(details.changelog.makesAdditions)
               || details.changelog.ldvChanges > 0
-            )
+                )
            && (
            <>
              <h3>Assessment Adjustments</h3>
@@ -154,18 +158,23 @@ const AssessmentDetailsPage = (props) => {
              </div>
            </>
            )}
-            {details.idirComment && details.idirComment.length > 0 && user.isGovernment && (
-            <DisplayComment
-              commentArray={details.idirComment}
-            />
-            )}
+                {details.idirComment && details.idirComment.length > 0 && user.isGovernment && (
+                <DisplayComment
+                  commentArray={details.idirComment}
+                />
+                )}
+                {statuses.assessment.status !== 'ASSESSED'
+            && (
             <CommentInput
               handleAddComment={handleAddIdirComment}
               handleCommentChange={handleCommentChangeIdir}
               title={analystAction ? 'Add comment to director: ' : 'Add comment to the analyst'}
               buttonText="Add Comment"
             />
-          </div>
+            )}
+              </div>
+              )}
+            </>
           )}
         </div>
       </div>
