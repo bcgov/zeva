@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import getTotalReduction from '../../app/utilities/getTotalReduction';
 import getClassAReduction from '../../app/utilities/getClassAReduction';
 import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClassReduction';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ConsumerLDVSales = (props) => {
   const {
@@ -67,13 +68,13 @@ const ConsumerLDVSales = (props) => {
           Unspecified ZEV Class Credit Reduction:
         </div>
         <div className="col-3">
-          {leftoverReduction}
+          {formatNumeric(leftoverReduction, 2)}
         </div>
         <div className="col-3">
-          {getUnspecifiedClassReduction(
+          {formatNumeric(getUnspecifiedClassReduction(
             getTotalReduction(updatedSales, ratios.complianceRatio),
             getClassAReduction(updatedSales, ratios.zevClassA, supplierClass),
-          )}
+          ), 2)}
         </div>
       </div>
     </>

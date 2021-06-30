@@ -1,13 +1,11 @@
-import formatNumeric from './formatNumeric';
-
 const getTotalReduction = (ldvSales, complianceRatio) => {
   if (!ldvSales || isNaN(ldvSales)) {
-    return formatNumeric(0, 2);
+    return 0;
   }
 
   const totalReduction = ldvSales * (complianceRatio / 100);
 
-  return formatNumeric(totalReduction, 2);
+  return totalReduction;
 };
 
 export default getTotalReduction;

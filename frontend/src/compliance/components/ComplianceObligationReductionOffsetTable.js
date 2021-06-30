@@ -6,17 +6,16 @@ import CustomPropTypes from '../../app/utilities/props';
 
 const ComplianceObligationReductionOffsetTable = (props) => {
   const {
-    unspecifiedCreditReduction,
-    supplierClassInfo,
+    handleUnspecifiedCreditReduction,
+    supplierClass,
     zevClassAReduction,
-    unspecifiedReductions,
-    leftoverReduction,
     reportYear,
     creditBalance,
-    totalReduction,
     user,
     statuses,
     creditReductionSelection,
+    classAReductions,
+    unspecifiedReductions,
   } = props;
 
   return (
@@ -25,14 +24,27 @@ const ComplianceObligationReductionOffsetTable = (props) => {
         <div className="row">
           <table className="col-12">
             <tbody>
-              {supplierClassInfo.class === 'L' && (
+              {supplierClass === 'L' && (
                 <>
                   <tr className="subclass">
                     <th className="large-column">ZEV Class A Credit Reduction</th>
                     <th className="small-column text-center text-blue">A</th>
                     <th className="small-column text-center text-blue">B</th>
                   </tr>
-                  <tr>
+                  {classAReductions && classAReductions.map((reduction) => (
+                    <tr>
+                      <td className="text-blue">
+                        &bull; &nbsp; &nbsp; {reduction.modelYear} Credits
+                      </td>
+                      <td className={`text-right ${reduction.value > 0 ? 'text-red' : ''}`}>
+                        {formatNumeric(reduction.value
+                          ? -reduction.value
+                          : 0)}
+                      </td>
+                      <td className="text-right">{formatNumeric(0)}</td>
+                    </tr>
+                  ))}
+                  {/* <tr>
                     <td className="text-blue">
                       &bull; &nbsp; &nbsp; {reportYear - 1} Credits
                     </td>
@@ -42,8 +54,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                         : 0)}
                     </td>
                     <td className="text-right">{formatNumeric(0)}</td>
-                  </tr>
-                  <tr>
+                  </tr> */}
+                  {/* <tr>
                     <td className="text-blue">
                       &bull; &nbsp; &nbsp; {reportYear} Credits
                     </td>
@@ -53,7 +65,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                         : 0)}
                     </td>
                     <td className="text-right">{formatNumeric(0)}</td>
-                  </tr>
+                  </tr> */}
                   <tr className="subclass">
                     <th className="large-column">
                       Unspecified ZEV Class Credit Reduction
@@ -63,7 +75,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                   </tr>
                 </>
               )}
-              {supplierClassInfo.class !== 'L' && (
+              {supplierClass !== 'L' && (
                 <tr className="subclass">
                   <th className="large-column">
                     Compliance Ratio Credit Reduction
@@ -84,12 +96,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     type="radio"
                     id="A"
                     onChange={(event) => {
-                      unspecifiedCreditReduction(
-                        event,
-                        supplierClassInfo.class === 'L'
-                          ? leftoverReduction
-                          : totalReduction,
-                      );
+                      const { id: radioId } = event.target;
+                      handleUnspecifiedCreditReduction(radioId);
                     }}
                     name="creditOption"
                     value="A"
@@ -103,19 +111,28 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     type="radio"
                     id="B"
                     onChange={(event) => {
-                      unspecifiedCreditReduction(
-                        event,
-                        supplierClassInfo.class === 'L'
-                          ? leftoverReduction
-                          : totalReduction,
-                      );
+                      const { id: radioId } = event.target;
+                      handleUnspecifiedCreditReduction(radioId);
                     }}
                     name="creditOption"
                     value="B"
                   />
                 </td>
               </tr>
-              {unspecifiedReductions && (
+              {unspecifiedReductions && unspecifiedReductions.map((reduction) => (
+                <tr>
+                  <td className="text-blue">
+                    &bull; &nbsp; &nbsp; {reduction.modelYear} Credits
+                  </td>
+                  <td className={`text-right ${reduction.value > 0 ? 'text-red' : ''}`}>
+                    {formatNumeric(reduction.value
+                      ? -reduction.value
+                      : 0)}
+                  </td>
+                  <td className="text-right">{formatNumeric(0)}</td>
+                </tr>
+              ))}
+              {/* {unspecifiedReductions && (
                 <>
                   <tr>
                     <td className="text-blue">
@@ -148,7 +165,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     </td>
                   </tr>
                 </>
-              )}
+              )} */}
             </tbody>
           </table>
         </div>
@@ -226,15 +243,14 @@ ComplianceObligationReductionOffsetTable.defaultProps = {
 ComplianceObligationReductionOffsetTable.propTypes = {
   creditBalance: PropTypes.shape().isRequired,
   creditReductionSelection: PropTypes.string,
-  leftoverReduction: PropTypes.number.isRequired,
   reportYear: PropTypes.number.isRequired,
   statuses: PropTypes.shape().isRequired,
-  supplierClassInfo: PropTypes.shape().isRequired,
-  totalReduction: PropTypes.number.isRequired,
-  unspecifiedCreditReduction: PropTypes.func.isRequired,
-  unspecifiedReductions: PropTypes.shape().isRequired,
+  supplierClass: PropTypes.string.isRequired,
+  handleUnspecifiedCreditReduction: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired,
   zevClassAReduction: PropTypes.shape().isRequired,
+  classAReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  unspecifiedReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 };
 
 export default ComplianceObligationReductionOffsetTable;
