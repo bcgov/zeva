@@ -31,14 +31,20 @@ const SummaryCreditActivityTable = (props) => {
         {title === 'Credit Deficit:' && input.A > 0 ? (
           <span>({formatNumeric(input.A)})</span>
         ) : (
-          <span className={input.A < 0 ? 'text-red' : ''}>{formatNumeric(input.A) || 0.00}</span>
+          <span className={(input.A < 0 || (input.A !== 0 && title === 'Credit Reduction:')) ? 'text-red' : ''}>
+            {title === 'Credit Reduction:' && input.A > 0 && '-'}
+            {formatNumeric(input.A) || 0.00}
+          </span>
         )}
       </td>
       <td className={numberClassname}>
         {title === 'Credit Deficit:' && input.B > 0 ? (
           <span>({formatNumeric(input.B)})</span>
         ) : (
-          <span className={input.B < 0 ? 'text-red' : ''}>{formatNumeric(input.B) || 0.00}</span>
+          <span className={(input.B < 0 || (input.B !== 0 && title === 'Credit Reduction:')) ? 'text-red' : ''}>
+            {title === 'Credit Reduction:' && input.B > 0 && '-'}
+            {formatNumeric(input.B) || 0.00}
+          </span>
         )}
       </td>
     </tr>
