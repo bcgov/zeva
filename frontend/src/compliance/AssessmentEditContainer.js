@@ -171,6 +171,7 @@ const AssessmentEditContainer = (props) => {
         const filteredRatio = ratiosResponse.data.filter(
           (data) => data.modelYear === year.toString(),
         )[0];
+        console.error(filteredRatio);
         setRatios(filteredRatio);
 
         setYears(yearsResponse.data);

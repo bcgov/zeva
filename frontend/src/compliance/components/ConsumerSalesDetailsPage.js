@@ -88,7 +88,7 @@ const ConsumerSalesDetailsPage = (props) => {
                 status={statuses.consumerSales}
                 type="Consumer ZEV Sales"
               />
-            )}
+          )}
         </div>
       </div>
 
@@ -107,7 +107,7 @@ const ConsumerSalesDetailsPage = (props) => {
                 >
                   Edit
                 </button>
-              )}
+            )}
             <div className="ldv-zev-models mt-2">
               <label className="text-blue mr-4 font-weight-bold">
                 {modelYear} Model Year Zero-Emission Vehicles Sales
@@ -116,15 +116,16 @@ const ConsumerSalesDetailsPage = (props) => {
                 If you have { modelYear}  model year ZEV sales or leases that
                 occurred before Oct. 1, {modelYear + 1} that you haven&apos;t
                 applied for credits you must{' '}
-                <label
-                  className="text-primary"
+                <button
+                  className="text-primary credit-request-link"
                   onClick={() => {
                     history.push('/credit-requests/new');
                   }}
+                  type="button"
                 >
                   {' '}
-                  <u>enter an Application for Credits for Consumer sales</u>
-                </label>{' '}
+                  <u>enter an application for credits for consumer sales</u>
+                </button>{' '}
                 before submitting this model year report.
               </div>
               <div className="total-ldv-sales mt-2 mb-2">

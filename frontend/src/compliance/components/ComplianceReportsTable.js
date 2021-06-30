@@ -8,6 +8,22 @@ import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 const ComplianceReportsTable = (props) => {
   const { user, data, showSupplier } = props;
 
+  const supplierClass = (paramClass) => {
+    if (paramClass === 'L') {
+      return 'Large';
+    }
+
+    if (paramClass === 'M') {
+      return 'Medium';
+    }
+
+    if (paramClass === 'S') {
+      return 'Small';
+    }
+
+    return '-';
+  };
+
   const columns = [{
     accessor: (item) => (item.organizationName),
     className: 'text-center',
@@ -39,13 +55,13 @@ const ComplianceReportsTable = (props) => {
     maxWidth: 260,
   }, {
     accessor: (item) => (item.ldvSales ? item.ldvSales : '-'),
-    className: 'text-center',
+    className: 'text-right px-3',
     Header: 'Total LDV Sales',
     headerClassName: 'font-weight-bold',
     id: 'total-ldv-sales',
     maxWidth: 260,
   }, {
-    accessor: (item) => (item.supplierClass ? item.supplierClass : '-'),
+    accessor: (item) => (supplierClass(item.supplierClass)),
     className: 'text-center',
     Header: 'Supplier Class',
     headerClassName: 'font-weight-bold',

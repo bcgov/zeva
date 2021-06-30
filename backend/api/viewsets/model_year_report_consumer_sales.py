@@ -105,6 +105,8 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
         report = get_object_or_404(queryset, pk=pk)
         model_year = ModelYearSerializer(report.model_year)
         organization = request.user.organization.id
+        summary_param = request.GET.get('summary', None)
+        summary = True if summary_param == "true" else None
         confirmation = ModelYearReportConfirmation.objects.filter(
             model_year_report_id=pk,
             signing_authority_assertion__module="consumer_sales"
@@ -112,16 +114,16 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
             'signing_authority_assertion_id', flat=True
         ).distinct()
 
-        if confirmation:
+        if not confirmation and not summary:
+            vehicle = vehicles_sales(model_year, organization)
+            vehicles_serializer = VehicleSalesSerializer(vehicle, many=True)
+
+        else:
             vehicle = ModelYearReportVehicle.objects.filter(
                 model_year_report_id=report.id)
             vehicles_serializer = ModelYearReportVehicleSerializer(
                 vehicle, many=True)
-
-        else:
-            vehicle = vehicles_sales(model_year, organization)
-            vehicles_serializer = VehicleSalesSerializer(vehicle, many=True)
-
+            
         vehicles = vehicles_serializer.data
 
         history_list = ModelYearReportHistory.objects.filter(

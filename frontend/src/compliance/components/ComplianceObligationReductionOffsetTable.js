@@ -34,22 +34,22 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                   </tr>
                   <tr>
                     <td className="text-blue">
-                      &bull; &nbsp; &nbsp; {reportYear} Credits
+                      &bull; &nbsp; &nbsp; {reportYear - 1} Credits
                     </td>
-                    <td className="text-right text-red">
-                      {formatNumeric(zevClassAReduction.currentYearA
-                        ? -zevClassAReduction.currentYearA
+                    <td className={`text-right ${zevClassAReduction.lastYearA > 0 ? 'text-red' : ''}`}>
+                      {formatNumeric(zevClassAReduction.lastYearA
+                        ? -zevClassAReduction.lastYearA
                         : 0)}
                     </td>
                     <td className="text-right">{formatNumeric(0)}</td>
                   </tr>
                   <tr>
                     <td className="text-blue">
-                      &bull; &nbsp; &nbsp; {reportYear - 1} Credits
+                      &bull; &nbsp; &nbsp; {reportYear} Credits
                     </td>
-                    <td className="text-right text-red">
-                      {formatNumeric(zevClassAReduction.lastYearA
-                        ? -zevClassAReduction.lastYearA
+                    <td className={`text-right ${zevClassAReduction.currentYearA > 0 ? 'text-red' : ''}`}>
+                      {formatNumeric(zevClassAReduction.currentYearA
+                        ? -zevClassAReduction.currentYearA
                         : 0)}
                     </td>
                     <td className="text-right">{formatNumeric(0)}</td>
@@ -72,7 +72,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                   <th className="text-center small-column">B</th>
                 </tr>
               )}
-              <tr>
+              <tr className="credit-selection">
                 <td>
                   Do you want to use ZEV Class A or B credits first for your
                   unspecified ZEV class reduction?
@@ -80,7 +80,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                 <td className="text-center">
                   <input
                     checked={creditReductionSelection === 'A'}
-                    disabled={user.isGovernment || statuses.complianceObligation.status === 'SUBMITTED' || statuses.complianceObligation.status === 'CONFIRMED'}
+                    disabled={user.isGovernment || ['SUBMITTED', 'CONFIRMED', 'ASSESSED'].indexOf(statuses.complianceObligation.status) >= 0}
                     type="radio"
                     id="A"
                     onChange={(event) => {
@@ -98,7 +98,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                 <td className="text-center">
                   <input
                     checked={creditReductionSelection === 'B'}
-                    disabled={user.isGovernment || statuses.complianceObligation.status === 'SUBMITTED' || statuses.complianceObligation.status === 'CONFIRMED'}
+                    disabled={user.isGovernment || ['SUBMITTED', 'CONFIRMED', 'ASSESSED'].indexOf(statuses.complianceObligation.status) >= 0}
                     className="text-center"
                     type="radio"
                     id="B"
@@ -119,31 +119,31 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                 <>
                   <tr>
                     <td className="text-blue">
-                      &bull; &nbsp; &nbsp; {reportYear} Credits
+                      &bull; &nbsp; &nbsp; {reportYear - 1} Credits
                     </td>
-                    <td className="text-right text-red">
-                      {formatNumeric(unspecifiedReductions.currentYearA
-                        ? -unspecifiedReductions.currentYearA
+                    <td className={`text-right ${unspecifiedReductions.lastYearA > 0 ? 'text-red' : ''}`}>
+                      {formatNumeric(unspecifiedReductions.lastYearA
+                        ? -unspecifiedReductions.lastYearA
                         : 0)}
                     </td>
-                    <td className="text-right text-red">
-                      {formatNumeric(unspecifiedReductions.currentYearB
-                        ? -unspecifiedReductions.currentYearB
+                    <td className={`text-right ${unspecifiedReductions.lastYearB > 0 ? 'text-red' : ''}`}>
+                      {formatNumeric(unspecifiedReductions.lastYearB
+                        ? -unspecifiedReductions.lastYearB
                         : 0)}
                     </td>
                   </tr>
                   <tr>
                     <td className="text-blue">
-                      &bull; &nbsp; &nbsp; {reportYear - 1} Credits
+                      &bull; &nbsp; &nbsp; {reportYear} Credits
                     </td>
-                    <td className="text-right text-red">
-                      {formatNumeric(unspecifiedReductions.lastYearA
-                        ? -unspecifiedReductions.lastYearA
+                    <td className={`text-right ${unspecifiedReductions.currentYearA > 0 ? 'text-red' : ''}`}>
+                      {formatNumeric(unspecifiedReductions.currentYearA
+                        ? -unspecifiedReductions.currentYearA
                         : 0)}
                     </td>
-                    <td className="text-right text-red">
-                      {formatNumeric(unspecifiedReductions.lastYearB
-                        ? -unspecifiedReductions.lastYearB
+                    <td className={`text-right ${unspecifiedReductions.currentYearB > 0 ? 'text-red' : ''}`}>
+                      {formatNumeric(unspecifiedReductions.currentYearB
+                        ? -unspecifiedReductions.currentYearB
                         : 0)}
                     </td>
                   </tr>
@@ -160,7 +160,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
           <table className="col-12">
             <tbody>
               <tr className="subclass">
-                <th className="large-column">PROVISIONAL BALANCE AFTER CREDIT REDUCTION</th>
+                <th className="large-column">Provisional Balance after Credit Reduction</th>
                 <th className="small-column text-center text-blue">A</th>
                 <th className="small-column text-center text-blue">B</th>
               </tr>
@@ -193,8 +193,22 @@ const ComplianceObligationReductionOffsetTable = (props) => {
               </tr>
               <tr>
                 <td>Credit Deficit</td>
-                <td className="text-right">{formatNumeric(creditBalance.creditADeficit)}</td>
-                <td className="text-right">{formatNumeric(creditBalance.unspecifiedCreditDeficit)}</td>
+                <td className="text-right">
+                  {Number(creditBalance.creditADeficit) > 0 && (
+                    <span>({formatNumeric(creditBalance.creditADeficit)})</span>
+                  )}
+                  {Number(creditBalance.creditADeficit) <= 0 && (
+                    <span>{formatNumeric(creditBalance.creditADeficit)}</span>
+                  )}
+                </td>
+                <td className="text-right">
+                  {Number(creditBalance.unspecifiedCreditDeficit) > 0 && (
+                    <span>({formatNumeric(creditBalance.unspecifiedCreditDeficit)})</span>
+                  )}
+                  {Number(creditBalance.unspecifiedCreditDeficit) <= 0 && (
+                    <span>{formatNumeric(creditBalance.unspecifiedCreditDeficit)}</span>
+                  )}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -205,8 +219,13 @@ const ComplianceObligationReductionOffsetTable = (props) => {
   );
 };
 
+ComplianceObligationReductionOffsetTable.defaultProps = {
+  creditReductionSelection: null,
+};
+
 ComplianceObligationReductionOffsetTable.propTypes = {
   creditBalance: PropTypes.shape().isRequired,
+  creditReductionSelection: PropTypes.string,
   leftoverReduction: PropTypes.number.isRequired,
   reportYear: PropTypes.number.isRequired,
   statuses: PropTypes.shape().isRequired,

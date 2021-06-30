@@ -141,6 +141,13 @@
   .consumer-sales {
     border: 1px solid $border-grey;
   }
+  .credit-request-link{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+  }
   .previous-ldv-sales,
   .previous-ldv-avg {
     border: 1px solid $border-grey;
@@ -161,10 +168,22 @@
 }
 #compliance-obligation-page {
   border: 1px solid $border-grey;
-  padding: 2rem;
+  padding: 1rem;
+
   .no-border {
     border: none;
   }
+
+  .credit-selection {
+    input[type=radio] {
+      margin-left: 3px;
+    }
+
+    td {
+      background-color: $background-warning;
+    }
+  }
+
   .ldv-sales {
     height: 50px;
     line-height: 30px;
@@ -172,7 +191,6 @@
     background-color: $default-background-grey;
   }
   .compliance-reduction-table {
-    padding-top: 1rem;
     border: 1px solid $border-grey;
   }
   table {

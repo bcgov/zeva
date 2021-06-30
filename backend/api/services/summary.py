@@ -75,35 +75,35 @@ def get_current_year_balance(organization_id, year, credit_type):
         total_issued += c['total_value']
 
     transfers_in = CreditTransaction.objects.filter(
-                credit_to_id=organization_id,
-                transaction_type__transaction_type='Credit Transfer',
-                transaction_timestamp__lte=to_date,
-                transaction_timestamp__gte=from_date,
-                credit_class__credit_class=credit_type
-            ).values(
-                'credit_class_id', 'model_year_id'
-            ).annotate(
-                total_value=Sum('total_value')
-            ).order_by(
-                'credit_class_id', 'model_year_id'
-            )
+        credit_to_id=organization_id,
+        transaction_type__transaction_type='Credit Transfer',
+        transaction_timestamp__lte=to_date,
+        transaction_timestamp__gte=from_date,
+        credit_class__credit_class=credit_type
+    ).values(
+        'credit_class_id', 'model_year_id'
+    ).annotate(
+        total_value=Sum('total_value')
+    ).order_by(
+        'credit_class_id', 'model_year_id'
+    )
     if transfers_in:
         for t in transfers_in:
             total_transfers_in += t['total_value']
 
     transfers_out = CreditTransaction.objects.filter(
-                debit_from_id=organization_id,
-                transaction_type__transaction_type='Credit Transfer',
-                transaction_timestamp__lte=to_date,
-                transaction_timestamp__gte=from_date,
-                credit_class__credit_class=credit_type
-            ).values(
-                'credit_class_id', 'model_year_id'
-            ).annotate(total_value=Sum(
-                'total_value')
-            ).order_by(
-                'credit_class_id', 'model_year_id'
-            )
+        debit_from_id=organization_id,
+        transaction_type__transaction_type='Credit Transfer',
+        transaction_timestamp__lte=to_date,
+        transaction_timestamp__gte=from_date,
+        credit_class__credit_class=credit_type
+    ).values(
+        'credit_class_id', 'model_year_id'
+    ).annotate(total_value=Sum(
+        'total_value')
+    ).order_by(
+        'credit_class_id', 'model_year_id'
+    )
 
     if transfers_out:
         for t in transfers_out:
