@@ -299,8 +299,8 @@ const AssessmentDetailsPage = (props) => {
           </div>
         </div>
       </div>
-      {!user.isGovernment && details.assessment && details.assessment.decision && details.assessment.decision.description
-        && (
+      {(details.assessment && details.assessment.decision && details.assessment.decision.description)
+        && (!user.isGovernment || (user.isGovernment && statuses.assessment.status === 'ASSESSED')) && (
           <>
             <h3 className="mt-4 mb-1">Director Assessment</h3>
             <div className="row mb-3">
@@ -317,8 +317,8 @@ const AssessmentDetailsPage = (props) => {
               </div>
             </div>
           </>
-        )}
-      {user.isGovernment
+      )}
+      {user.isGovernment && statuses.assessment.status !== 'ASSESSED'
           && (
             <>
               <h3 className="mt-4 mb-1">Analyst Recommended Director Assessment</h3>
@@ -370,35 +370,35 @@ const AssessmentDetailsPage = (props) => {
               </div>
             </>
           )}
-
+      {(directorAction || analystAction) && (
       <div className="row">
         <div className="col-sm-12">
           <div className="action-bar mt-0">
             {directorAction && (
-            <>
-              <span className="left-content">
-                <button
-                  className="button text-danger"
-                  onClick={() => {
-                    handleSubmit('SUBMITTED');
-                  }}
-                  type="button"
-                >
-                  Return to Analyst
-                </button>
-              </span>
+              <>
+                <span className="left-content">
+                  <button
+                    className="button text-danger"
+                    onClick={() => {
+                      handleSubmit('SUBMITTED');
+                    }}
+                    type="button"
+                  >
+                    Return to Analyst
+                  </button>
+                </span>
 
-              <span className="right-content">
-                <Button
-                  buttonType="submit"
-                  optionalClassname="button primary"
-                  optionalText="Issue Assessment"
-                  action={() => {
-                    handleSubmit('ASSESSED');
-                  }}
-                />
-              </span>
-            </>
+                <span className="right-content">
+                  <Button
+                    buttonType="submit"
+                    optionalClassname="button primary"
+                    optionalText="Issue Assessment"
+                    action={() => {
+                      handleSubmit('ASSESSED');
+                    }}
+                  />
+                </span>
+              </>
             )}
             {analystAction && (
               <>
@@ -420,6 +420,7 @@ const AssessmentDetailsPage = (props) => {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 };
