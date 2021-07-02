@@ -25,7 +25,7 @@ const CommentInput = (props) => {
         formats={['bold', 'italic', 'list', 'bullet']}
         onChange={handleCommentChange}
       />
-      {!disable
+      {!disable && buttonText
       && (
       <button
         className="button mt-2"
