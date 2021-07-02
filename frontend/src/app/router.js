@@ -37,6 +37,7 @@ import AssessmentEditContainer from '../compliance/AssessmentEditContainer';
 import SupplierInformationContainer from '../compliance/SupplierInformationContainer';
 import ComplianceObligationContainer from '../compliance/ComplianceObligationContainer';
 import ConsumerSalesContainer from '../compliance/ConsumerSalesContainer';
+import CreditAgreementsEditContainer from '../creditagreements/CreditAgreementsEditContainer';
 
 import ErrorHandler from './components/ErrorHandler';
 import Loading from './components/Loading';
@@ -53,6 +54,7 @@ import ROUTES_NOTIFICATIONS from './routes/Notifications';
 import ROUTES_USERS from './routes/Users';
 import ROUTES_VEHICLES from './routes/Vehicles';
 import ROUTES_COMPLIANCE from './routes/Compliance';
+import ROUTES_CREDIT_AGREEMENTS from './routes/CreditAgreements';
 
 class Router extends Component {
   constructor(props) {
@@ -331,7 +333,11 @@ class Router extends Component {
                 path={ROUTES_CREDIT_REQUESTS.LIST}
                 render={() => <CreditRequestListContainer keycloak={keycloak} user={user} />}
               />
-
+              <Route
+                exact
+                path={ROUTES_CREDIT_AGREEMENTS.NEW}
+                render={() => (user.isGovernment ? <CreditAgreementsEditContainer keycloak={keycloak} user={user} /> : <></>)}
+              />
               <Route
                 exact
                 path="/"
