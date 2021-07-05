@@ -4,15 +4,17 @@ import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceObligationTableCreditsIssued = (props) => {
   const {
-    reportDetails, reportYear, pendingBalanceExist
+    reportDetails, reportYear, pendingBalanceExist,
   } = props;
 
   const {
     creditBalanceStart, pendingBalance, transactions, provisionalBalance,
   } = reportDetails;
+
   const {
     creditsIssuedSales, transfersIn, transfersOut,
   } = transactions;
+
   const tableSection = (input, title, negativeValue) => {
     let numberClassname = 'text-right';
     if (negativeValue) {
@@ -86,10 +88,10 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                 &bull; &nbsp; &nbsp; Credits
               </td>
               <td className="text-right">
-                {creditBalanceStart[each].A}
+                {formatNumeric(creditBalanceStart[each].A, 2)}
               </td>
               <td className="text-right">
-                {creditBalanceStart[each].B}
+                {formatNumeric(creditBalanceStart[each].B, 2)}
               </td>
             </tr>
           ))}
@@ -139,36 +141,34 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             <th className="small-column text-center text-blue">B</th>
           </tr>
           {Object.keys(provisionalBalance).length > 0
-          && (
-
-            Object.keys(provisionalBalance).sort((a, b) => {
-              if (a.modelYear < b.modelYear) {
-                return 1;
-              }
-              if (a.modelYear > b.modelYear) {
-                return -1;
-              }
-              return 0;
-            }).map((each) => (
-              <tr key={each}>
-                <td className="text-blue">
-                  &bull; &nbsp; &nbsp; {each} Credits
-                </td>
-                <td className="text-right">
-                  {formatNumeric(provisionalBalance[each].A, 2)}
-                </td>
-                <td className="text-right">
-                  {formatNumeric(provisionalBalance[each].B, 2)}
-                </td>
-              </tr>
-            ))
-          )}
+          && Object.keys(provisionalBalance).sort((a, b) => {
+            if (a.modelYear < b.modelYear) {
+              return 1;
+            }
+            if (a.modelYear > b.modelYear) {
+              return -1;
+            }
+            return 0;
+          }).map((each) => ((provisionalBalance[each].A > 0 || provisionalBalance[each].B > 0) && (
+            <tr key={each}>
+              <td className="text-blue">
+                &bull; &nbsp; &nbsp; {each} Credits
+              </td>
+              <td className="text-right">
+                {formatNumeric(provisionalBalance[each].A, 2)}
+              </td>
+              <td className="text-right">
+                {formatNumeric(provisionalBalance[each].B, 2)}
+              </td>
+            </tr>
+          )))}
         </tbody>
       </table>
     </>
   );
 };
 ComplianceObligationTableCreditsIssued.propTypes = {
+  pendingBalanceExist: PropTypes.bool.isRequired,
   reportYear: PropTypes.number.isRequired,
   reportDetails: PropTypes.shape().isRequired,
 };

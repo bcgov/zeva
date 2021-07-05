@@ -18,32 +18,32 @@ const ComplianceObligationDetailsPage = (props) => {
   const {
     assertions,
     checkboxes,
+    classAReductions,
+    creditReductionSelection,
+    deductions,
     details,
     handleCancelConfirmation,
+    handleChangeSales,
     handleCheckboxClick,
     handleSave,
+    handleUnspecifiedCreditReduction,
+    id,
     loading,
-    user,
+    pendingBalanceExist,
     ratios,
     reportDetails,
     reportYear,
-    supplierClass,
-    statuses,
-    disabledCheckboxes: propsDisabledCheckboxes,
-    handleUnspecifiedCreditReduction,
-    id,
-    zevClassAReduction,
-    creditBalance,
     sales,
-    handleChangeSales,
-    creditReductionSelection,
-    pendingBalanceExist,
-    classAReductions,
-    unspecifiedReductions,
+    statuses,
+    supplierClass,
     totalReduction,
+    unspecifiedReductions,
+    updatedBalances,
+    user,
   } = props;
+
   const [showModal, setShowModal] = useState(false);
-  let disabledCheckboxes = propsDisabledCheckboxes;
+  let disabledCheckboxes = '';
 
   const modal = (
     <Modal
@@ -132,23 +132,21 @@ const ComplianceObligationDetailsPage = (props) => {
         <h3 className="mt-4 mb-2">Credit Reduction</h3>
         You must select your ZEV class credit preference below.
         <ComplianceObligationReductionOffsetTable
-          statuses={statuses}
-          handleUnspecifiedCreditReduction={handleUnspecifiedCreditReduction}
-          supplierClass={supplierClass}
-          user={user}
-          classAReductions={classAReductions}
-          unspecifiedReductions={unspecifiedReductions}
-          reportYear={reportYear}
-          creditBalance={creditBalance}
           creditReductionSelection={creditReductionSelection}
+          deductions={deductions}
+          handleUnspecifiedCreditReduction={handleUnspecifiedCreditReduction}
+          statuses={statuses}
+          supplierClass={supplierClass}
+          updatedBalances={updatedBalances}
+          user={user}
         />
       </div>
       <ComplianceReportSignoff
         assertions={assertions}
-        handleCheckboxClick={handleCheckboxClick}
-        user={user}
         checkboxes={checkboxes}
         disabledCheckboxes={disabledCheckboxes}
+        handleCheckboxClick={handleCheckboxClick}
+        user={user}
       />
       <div className="row">
         <div className="col-sm-12">
@@ -192,37 +190,37 @@ ComplianceObligationDetailsPage.defaultProps = {
 };
 
 ComplianceObligationDetailsPage.propTypes = {
+  assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  checkboxes: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  ).isRequired,
+  classAReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  creditReductionSelection: PropTypes.string,
+  deductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   details: PropTypes.shape({
     organization: PropTypes.shape(),
     complianceObligation: PropTypes.shape(),
   }).isRequired,
   handleCancelConfirmation: PropTypes.func.isRequired,
+  handleChangeSales: PropTypes.func.isRequired,
+  handleCheckboxClick: PropTypes.func.isRequired,
+  handleSave: PropTypes.func.isRequired,
+  handleUnspecifiedCreditReduction: PropTypes.func.isRequired,
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   loading: PropTypes.bool.isRequired,
-  user: CustomPropTypes.user.isRequired,
-  supplierClass: PropTypes.string.isRequired,
-  reportDetails: PropTypes.shape().isRequired,
+  pendingBalanceExist: PropTypes.bool.isRequired,
   ratios: PropTypes.shape(),
+  reportDetails: PropTypes.shape().isRequired,
   reportYear: PropTypes.number.isRequired,
-  handleCheckboxClick: PropTypes.func.isRequired,
-  assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  checkboxes: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  ).isRequired,
-  statuses: PropTypes.shape().isRequired,
-  // handleOffsetChange: PropTypes.func.isRequired,
-  handleSave: PropTypes.func.isRequired,
-  disabledCheckboxes: PropTypes.string.isRequired,
-  handleUnspecifiedCreditReduction: PropTypes.func.isRequired,
-  zevClassAReduction: PropTypes.shape().isRequired,
-  unspecifiedReductions: PropTypes.shape().isRequired,
-  creditBalance: PropTypes.shape().isRequired,
   sales: PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string,
   ]),
-  handleChangeSales: PropTypes.func.isRequired,
-  creditReductionSelection: PropTypes.string,
+  statuses: PropTypes.shape().isRequired,
+  supplierClass: PropTypes.string.isRequired,
   totalReduction: PropTypes.number.isRequired,
+  unspecifiedReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  updatedBalances: PropTypes.shape().isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 export default ComplianceObligationDetailsPage;

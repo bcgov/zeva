@@ -16,26 +16,25 @@ import getUnspecifiedClassReduction from '../app/utilities/getUnspecifiedClassRe
 const ComplianceObligationContainer = (props) => {
   const { user } = props;
 
-  const [confirmed, setConfirmed] = useState(false);
-  const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
-  const [loading, setLoading] = useState(true);
   const [assertions, setAssertions] = useState([]);
-  const [checkboxes, setCheckboxes] = useState([]);
-  const [reportYear, setReportYear] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR);
-  const [reportDetails, setReportDetails] = useState({});
-  const [ratios, setRatios] = useState({});
-  const [details, setDetails] = useState({});
-  const [statuses, setStatuses] = useState({});
   const [balances, setBalances] = useState([]);
-  const [pendingBalanceExist, setPendingBalanceExist] = useState(false);
-  const [supplierClass, setSupplierClass] = useState('S');
-  const [sales, setSales] = useState(0);
-  const [creditReductionSelection, setCreditReductionSelection] = useState(null);
-  const { id } = useParams();
+  const [checkboxes, setCheckboxes] = useState([]);
   const [classAReductions, setClassAReductions] = useState([]);
-  const [unspecifiedReductions, setUnspecifiedReductions] = useState([]);
-  const [creditBalance, setCreditBalance] = useState({ A: 0, B: 0 });
+  const [creditReductionSelection, setCreditReductionSelection] = useState(null);
+  const [deductions, setDeductions] = useState([]);
+  const [details, setDetails] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [pendingBalanceExist, setPendingBalanceExist] = useState(false);
+  const [ratios, setRatios] = useState({});
+  const [reportDetails, setReportDetails] = useState({});
+  const [reportYear, setReportYear] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR);
+  const [sales, setSales] = useState(0);
+  const [statuses, setStatuses] = useState({});
+  const [supplierClass, setSupplierClass] = useState('S');
   const [totalReduction, setTotalReduction] = useState(0);
+  const [unspecifiedReductions, setUnspecifiedReductions] = useState([]);
+  const [updatedBalances, setUpdatedBalances] = useState({});
+  const { id } = useParams();
 
   const handleCancelConfirmation = () => {
     const data = {
@@ -56,19 +55,39 @@ const ComplianceObligationContainer = (props) => {
     if (!isNaN(Number(value))) {
       const tempTotalReduction = getTotalReduction(Number(value), ratios.complianceRatio);
       const classAReduction = getClassAReduction(Number(value), ratios.zevClassA, supplierClass);
-      const leftoverReduction = getUnspecifiedClassReduction(Number(tempTotalReduction), Number(classAReduction));
-
-      setClassAReductions([{
-        modelYear: Number(reportYear),
-        value: Number(classAReduction),
-      }]);
-
-      setUnspecifiedReductions([{
-        modelYear: Number(reportYear),
-        value: Number(leftoverReduction),
-      }]);
+      const leftoverReduction = getUnspecifiedClassReduction(
+        Number(tempTotalReduction), Number(classAReduction),
+      );
 
       setTotalReduction(tempTotalReduction);
+
+      const tempClassAReductions = [{
+        modelYear: Number(reportYear),
+        value: Number(classAReduction),
+      }];
+      setClassAReductions(tempClassAReductions);
+
+      const tempUnspecifiedReductions = [{
+        modelYear: Number(reportYear),
+        value: Number(leftoverReduction),
+      }];
+      setUnspecifiedReductions(tempUnspecifiedReductions);
+
+      if (creditReductionSelection) {
+        const creditReduction = calculateCreditReduction(
+          balances,
+          tempClassAReductions,
+          tempUnspecifiedReductions,
+          creditReductionSelection,
+        );
+
+        setDeductions(creditReduction.deductions);
+
+        setUpdatedBalances({
+          balances: creditReduction.balances,
+          deficits: creditReduction.deficits,
+        });
+      }
     }
   };
 
@@ -96,11 +115,12 @@ const ComplianceObligationContainer = (props) => {
       radioId,
     );
 
-    console.error(creditReduction);
+    setDeductions(creditReduction.deductions);
 
-    // setZevClassAReduction(result.zevClassAReduction);
-    // setUnspecifiedReductions(result.unspecifiedReductions);
-    // setCreditBalance(result.creditBalance);
+    setUpdatedBalances({
+      balances: creditReduction.balances,
+      deficits: creditReduction.deficits,
+    });
   };
 
   const handleSave = () => {
@@ -129,6 +149,55 @@ const ComplianceObligationContainer = (props) => {
         }
       });
     });
+
+    if (deductions) {
+      // zev class A reductions
+      deductions.filter((deduction) => deduction.type === 'classAReduction').forEach((deduction) => {
+        reportDetailsArray.push({
+          category: 'ClassAReduction',
+          year: deduction.modelYear,
+          a: deduction.creditA,
+          b: deduction.creditB,
+        });
+      });
+
+      // unspecified reductions
+      deductions.filter((deduction) => deduction.type === 'unspecifiedReduction').forEach((deduction) => {
+        reportDetailsArray.push({
+          category: 'UnspecifiedClassCreditReduction',
+          year: deduction.modelYear,
+          a: deduction.creditA,
+          b: deduction.creditB,
+        });
+      });
+    }
+
+    if (updatedBalances) {
+      // provincial balance after reductions
+      if (updatedBalances.balances.length > 0) {
+        updatedBalances.balances.forEach((balance) => {
+          reportDetailsArray.push({
+            category: 'ProvisionalBalanceAfterCreditReduction',
+            year: balance.modelYear,
+            a: balance.creditA || 0,
+            b: balance.creditB || 0,
+          });
+        });
+      }
+
+      // deficits
+      if (updatedBalances.deficits.length > 0) {
+        updatedBalances.deficits.forEach((balance) => {
+          reportDetailsArray.push({
+            category: 'CreditDeficit',
+            year: balance.modelYear,
+            a: balance.creditA || 0,
+            b: balance.creditB || 0,
+          });
+        });
+      }
+    }
+    
 
     // zev class A reductions current year
     // reportDetailsArray.push({
@@ -162,19 +231,19 @@ const ComplianceObligationContainer = (props) => {
     //   b: unspecifiedReductions.lastYearB,
     // });
 
-    reportDetailsArray.push({
-      category: 'ProvisionalBalanceAfterCreditReduction',
-      year: reportYear,
-      a: creditBalance.A,
-      b: creditBalance.B,
-    });
+    // reportDetailsArray.push({
+    //   category: 'ProvisionalBalanceAfterCreditReduction',
+    //   year: reportYear,
+    //   a: creditBalance.A,
+    //   b: creditBalance.B,
+    // });
 
-    reportDetailsArray.push({
-      category: 'CreditDeficit',
-      year: reportYear,
-      a: creditBalance.creditADeficit,
-      b: creditBalance.unspecifiedCreditDeficit,
-    });
+    // reportDetailsArray.push({
+    //   category: 'CreditDeficit',
+    //   year: reportYear,
+    //   a: creditBalance.creditADeficit,
+    //   b: creditBalance.unspecifiedCreditDeficit,
+    // });
 
     const data = {
       reportId: id,
@@ -200,9 +269,9 @@ const ComplianceObligationContainer = (props) => {
     ]).then(axios.spread((reportDetailsResponse, ratioResponse, complianceResponse) => {
       const {
         confirmations,
+        creditReductionSelection: radioSelection,
         modelYear,
         modelYearReportHistory,
-        radioSelection,
         statuses: reportStatuses,
         supplierClass: tempSupplierClass,
         validationStatus,
@@ -222,10 +291,6 @@ const ComplianceObligationContainer = (props) => {
       const currentReportYear = Number(modelYear.name);
       setReportYear(currentReportYear);
 
-      if (confirmations.length > 0) {
-        setConfirmed(true);
-      }
-
       setStatuses(reportStatuses);
 
       const filteredRatios = ratioResponse.data.find(
@@ -236,7 +301,6 @@ const ComplianceObligationContainer = (props) => {
       const complianceResponseDetails = complianceResponse.data.complianceObligation;
       const { ldvSales } = complianceResponse.data;
 
-      // setSupplierClassInfo({ class: supplierClass, ldvSales });
       setSales(Number(ldvSales));
 
       const creditBalanceStart = {};
@@ -248,49 +312,57 @@ const ComplianceObligationContainer = (props) => {
       const creditsIssuedSales = [];
 
       complianceResponseDetails.forEach((item) => {
+        let endingBalanceA = 0;
+        let endingBalanceB = 0;
+
+        if (creditBalanceEnd[item.modelYear.name]) {
+          endingBalanceA = creditBalanceEnd[item.modelYear.name].A;
+          endingBalanceB = creditBalanceEnd[item.modelYear.name].B;
+        }
+
         if (item.category === 'creditBalanceStart') {
           creditBalanceStart[item.modelYear.name] = {
             A: item.creditAValue,
             B: item.creditBValue,
           };
+
+          endingBalanceA += Number(item.creditAValue);
+          endingBalanceB += Number(item.creditBValue);
         }
-        if (item.category === 'creditBalanceEnd') {
-          creditBalanceEnd[item.modelYear.name] = {
-            A: item.creditAValue,
-            B: item.creditBValue,
-          };
-        }
+
         if (item.category === 'transfersIn') {
           transfersIn.push({
             modelYear: item.modelYear.name,
             A: item.creditAValue,
             B: item.creditBValue,
           });
+
+          endingBalanceA += Number(item.creditAValue);
+          endingBalanceB += Number(item.creditBValue);
         }
+
         if (item.category === 'transfersOut') {
           transfersOut.push({
             modelYear: item.modelYear.name,
             A: item.creditAValue,
             B: item.creditBValue,
           });
+
+          endingBalanceA -= Number(item.creditAValue);
+          endingBalanceB -= Number(item.creditBValue);
         }
+
         if (item.category === 'creditsIssuedSales') {
-          if (item.issuedCredits) {
-            item.issuedCredits.forEach((each) => {
-              creditsIssuedSales.push({
-                modelYear: each.modelYear,
-                A: each.A,
-                B: each.B,
-              });
-            });
-          } else {
-            creditsIssuedSales.push({
-              modelYear: typeof item.modelYear === 'string' ? item.modelYear : item.modelYear.name,
-              A: item.creditAValue,
-              B: item.creditBValue,
-            });
-          }
+          creditsIssuedSales.push({
+            modelYear: item.modelYear.name,
+            A: item.creditAValue,
+            B: item.creditBValue,
+          });
+
+          endingBalanceA += item.creditAValue;
+          endingBalanceB += item.creditBValue;
         }
+
         if (item.category === 'pendingBalance') {
           if (item.creditAValue > 0 || item.creditBValue > 0) {
             setPendingBalanceExist(true);
@@ -300,7 +372,15 @@ const ComplianceObligationContainer = (props) => {
             A: item.creditAValue,
             B: item.creditBValue,
           });
+
+          endingBalanceA += item.creditAValue;
+          endingBalanceB += item.creditBValue;
         }
+
+        creditBalanceEnd[item.modelYear.name] = {
+          A: endingBalanceA,
+          B: endingBalanceB,
+        };
       });
 
       // go through every year in end balance and push to provisional
@@ -336,15 +416,6 @@ const ComplianceObligationContainer = (props) => {
         },
       });
 
-      // const creditAReduction = calculateCreditAReduction(
-      //   supplierClass, classAReduction, provisionalBalance, Number(modelYear.name),
-      // );
-
-      // if (creditAReduction.zevClassACreditReduction) {
-      //   setZevClassAReduction(creditAReduction.zevClassACreditReduction);
-      // }
-
-      // setRemainingABalance(creditAReduction.remainingABalance);
       const tempTotalReduction = getTotalReduction(ldvSales, filteredRatios.complianceRatio);
       const classAReduction = getClassAReduction(ldvSales, filteredRatios.zevClassA, supplierClass);
       const leftoverReduction = getUnspecifiedClassReduction(tempTotalReduction, classAReduction);
@@ -381,12 +452,12 @@ const ComplianceObligationContainer = (props) => {
         radioSelection,
       );
 
-      // if (creditReduction.zevClassAReduction) {
-      //   setZevClassAReduction(creditReduction.zevClassAReduction);
-      // }
-      // setUnspecifiedReductions(creditReduction.unspecifiedReductions);
+      setDeductions(creditReduction.deductions);
 
-      setCreditBalance(creditReduction.creditBalance);
+      setUpdatedBalances({
+        balances: creditReduction.balances,
+        deficits: creditReduction.deficits,
+      });
 
       axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((assertionResponse) => {
         const filteredAssertions = assertionResponse.data.filter((data) => data.module === 'compliance_obligation');
@@ -413,32 +484,28 @@ const ComplianceObligationContainer = (props) => {
       <ComplianceObligationDetailsPage
         assertions={assertions}
         checkboxes={checkboxes}
-        confirmed={confirmed}
+        classAReductions={classAReductions}
+        creditReductionSelection={creditReductionSelection}
+        deductions={deductions}
         details={details}
-        disabledCheckboxes={disabledCheckboxes}
+        handleCancelConfirmation={handleCancelConfirmation}
+        handleChangeSales={handleChangeSales}
         handleCheckboxClick={handleCheckboxClick}
         handleSave={handleSave}
+        handleUnspecifiedCreditReduction={handleUnspecifiedCreditReduction}
+        id={id}
         loading={loading}
+        pendingBalanceExist={pendingBalanceExist}
         ratios={ratios}
         reportDetails={reportDetails}
         reportYear={reportYear}
-        supplierClass={supplierClass}
-        user={user}
-        statuses={statuses}
-        handleUnspecifiedCreditReduction={handleUnspecifiedCreditReduction}
-        id={id}
-        handleCancelConfirmation={handleCancelConfirmation}
-        zevClassAReduction={{
-          currentYearA: classAReductions.length > 0 ? classAReductions[0].value : 0,
-        }}
-        creditBalance={creditBalance}
         sales={sales}
-        handleChangeSales={handleChangeSales}
-        creditReductionSelection={creditReductionSelection}
-        pendingBalanceExist={pendingBalanceExist}
-        classAReductions={classAReductions}
-        unspecifiedReductions={unspecifiedReductions}
+        statuses={statuses}
+        supplierClass={supplierClass}
         totalReduction={totalReduction}
+        unspecifiedReductions={unspecifiedReductions}
+        updatedBalances={updatedBalances}
+        user={user}
       />
     </>
   );

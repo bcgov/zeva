@@ -186,8 +186,8 @@ const SupplierInformationDetailsPage = (props) => {
                     <span className="col-6">{FormatNumeric(details.organization.avgLdvSales, 0)}</span>
                   </div>
                 </div>
-                {details.organization.ldvSales &&
-                  details.organization.ldvSales.length > 0 && (
+                {details.organization.ldvSales
+                  && details.organization.ldvSales.length > 0 && (
                     <div className="col-sm-12 col-md-5">
                       <div className="supplier-information d-inline-block">
                         <div className="previous-ldv-sales d-flex flex-column mt-2 px-3 py-1">
@@ -304,7 +304,7 @@ const SupplierInformationDetailsPage = (props) => {
                 optionalText="Next"
                 action={() => {
                   history.push(
-                    ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id)
+                    ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id),
                   );
                 }}
               />
@@ -313,7 +313,7 @@ const SupplierInformationDetailsPage = (props) => {
                   buttonType="save"
                   disabled={
                     ['SAVED', 'UNSAVED'].indexOf(
-                      statuses.supplierInformation.status
+                      statuses.supplierInformation.status,
                     ) < 0
                   }
                   optionalClassname="button primary"
