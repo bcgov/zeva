@@ -2,6 +2,7 @@ from datetime import date
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.http import HttpResponse
 from django.db.models import Sum
 from django.utils.decorators import method_decorator
 
@@ -47,7 +48,6 @@ class ModelYearReportComplianceObligationViewset(
     serializer_classes = {
         'default': ModelYearReportComplianceObligationDetailsSerializer,
         'details': ModelYearReportComplianceObligationDetailsSerializer,
-        # 'create': ModelYearReportComplianceObligationSaveSerializer
     }
 
     def get_queryset(self):
@@ -121,6 +121,33 @@ class ModelYearReportComplianceObligationViewset(
             report.save()
 
         return Response(id)
+
+    @action(detail=False, methods=['patch'])
+    def update_obligation(self, request):
+        id = request.data.get('report_id')
+        credit_activity = request.data.get('credit_activity')
+        records = ModelYearReportComplianceObligation.objects.filter(model_year_report_id=id,from_gov=True)
+        if records:
+            records.delete()
+        for each in credit_activity:
+            print('hello Test Test Test!', each)
+            category = each['category']
+            model_year = ModelYear.objects.get(name=each['year'])
+            a = each['a']
+            b = each['b']
+            compliance_obj = ModelYearReportComplianceObligation.objects.create(
+                    model_year_report_id=id,
+                    model_year=model_year,
+                    category=category,
+                    credit_a_value=a,
+                    credit_b_value=b,
+                    from_gov=True
+                )
+            compliance_obj.save()
+
+        return HttpResponse(
+            status=201, content="Record Updated"
+        )
 
     @action(detail=False, url_path=r'(?P<id>\d+)')
     @method_decorator(permission_required('VIEW_SALES'))
