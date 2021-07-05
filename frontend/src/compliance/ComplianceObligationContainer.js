@@ -197,53 +197,6 @@ const ComplianceObligationContainer = (props) => {
         });
       }
     }
-    
-
-    // zev class A reductions current year
-    // reportDetailsArray.push({
-    //   category: 'ClassAReduction',
-    //   year: reportYear,
-    //   a: zevClassAReduction.currentYearA,
-    //   b: 0,
-    // });
-
-    // // zev class A reductions previous year
-    // reportDetailsArray.push({
-    //   category: 'ClassAReduction',
-    //   year: reportYear - 1,
-    //   a: zevClassAReduction.lastYearA,
-    //   b: 0,
-    // });
-
-    // unspecified balance current year
-    // reportDetailsArray.push({
-    //   category: 'UnspecifiedClassCreditReduction',
-    //   year: reportYear,
-    //   a: unspecifiedReductions.currentYearA,
-    //   b: unspecifiedReductions.currentYearB,
-    // });
-
-    // unspecified balance previous year
-    // reportDetailsArray.push({
-    //   category: 'UnspecifiedClassCreditReduction',
-    //   year: reportYear - 1,
-    //   a: unspecifiedReductions.lastYearA,
-    //   b: unspecifiedReductions.lastYearB,
-    // });
-
-    // reportDetailsArray.push({
-    //   category: 'ProvisionalBalanceAfterCreditReduction',
-    //   year: reportYear,
-    //   a: creditBalance.A,
-    //   b: creditBalance.B,
-    // });
-
-    // reportDetailsArray.push({
-    //   category: 'CreditDeficit',
-    //   year: reportYear,
-    //   a: creditBalance.creditADeficit,
-    //   b: creditBalance.unspecifiedCreditDeficit,
-    // });
 
     const data = {
       reportId: id,
