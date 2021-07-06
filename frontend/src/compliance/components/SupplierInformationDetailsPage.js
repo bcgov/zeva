@@ -223,6 +223,8 @@ const SupplierInformationDetailsPage = (props) => {
               </div>
               <div className="ldv-makes p-3">
                 <form disabled={disabledInputs} onSubmit={handleSubmitMake}>
+                  {statuses.assessment.status !== 'ASSESSED'
+                  && (
                   <div className="form-row">
                     <div className="col-sm-8 col-xs-12">
                       <input
@@ -235,7 +237,7 @@ const SupplierInformationDetailsPage = (props) => {
                     </div>
                     <div className="col">
                       <button
-                        className="btn btn-primary"
+                        className="btn btn-primary mb-3"
                         disabled={disabledInputs}
                         type="submit"
                       >
@@ -243,6 +245,7 @@ const SupplierInformationDetailsPage = (props) => {
                       </button>
                     </div>
                   </div>
+                  )}
                 </form>
 
                 {makes.length > 0 && (

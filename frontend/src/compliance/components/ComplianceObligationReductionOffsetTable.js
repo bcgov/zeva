@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import formatNumeric from '../../app/utilities/formatNumeric';
 
 import CustomPropTypes from '../../app/utilities/props';
@@ -75,6 +76,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                   unspecified ZEV class reduction?
                 </td>
                 <td className="text-center">
+                  {statuses.assessment.status !== 'ASSESSED'
+                  && (
                   <input
                     checked={creditReductionSelection === 'A'}
                     disabled={user.isGovernment || ['SUBMITTED', 'CONFIRMED', 'ASSESSED'].indexOf(statuses.complianceObligation.status) >= 0}
@@ -87,8 +90,13 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     name="creditOption"
                     value="A"
                   />
+                  )}
+                  {statuses.assessment.status === 'ASSESSED' && creditReductionSelection === 'A'
+                  && <FontAwesomeIcon icon="check" />}
                 </td>
                 <td className="text-center">
+                  {statuses.assessment.status !== 'ASSESSED'
+                  && (
                   <input
                     checked={creditReductionSelection === 'B'}
                     disabled={user.isGovernment || ['SUBMITTED', 'CONFIRMED', 'ASSESSED'].indexOf(statuses.complianceObligation.status) >= 0}
@@ -102,6 +110,9 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     name="creditOption"
                     value="B"
                   />
+                  )}
+                  {statuses.assessment.status === 'ASSESSED' && creditReductionSelection === 'B'
+                  && <FontAwesomeIcon icon="check" />}
                 </td>
               </tr>
               {deductions && deductions.filter(
