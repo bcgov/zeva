@@ -250,7 +250,7 @@ const SupplierInformationDetailsPage = (props) => {
 
                 {makes.length > 0 && (
                   <div
-                    className={`list p-2 ${
+                    className={`list mt-3 p-2 ${
                       disabledInputs ? 'disabled' : ''
                     }`}
                   >
