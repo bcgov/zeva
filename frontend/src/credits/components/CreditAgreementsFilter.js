@@ -25,10 +25,7 @@ const CreditAgreementsFilter = (props) => {
     
     const handleChange = (event) => {
         const { id, value } = event.target;
-        console.log(id);
-        console.log(value);
         let newFiltered = [...filtered];
-        console.log(newFiltered);
         newFiltered = newFiltered.filter((each) => (each.id !== id));
         setFiltered([...newFiltered, { id, value }]);
     };      
