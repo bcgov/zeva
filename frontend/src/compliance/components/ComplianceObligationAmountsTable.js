@@ -26,7 +26,7 @@ const ComplianceObligationAmountsTable = (props) => {
                     {reportYear} Model Year LDV Sales:
                   </td>
                   <td>
-                    {page === 'obligation'
+                    {page === 'obligation' && statuses.assessment.status !== 'ASSESSED'
                     && (
                     <input
                       className="form-control"
@@ -35,8 +35,8 @@ const ComplianceObligationAmountsTable = (props) => {
                       value={sales}
                       disabled={['SAVED', 'UNSAVED'].indexOf(statuses.complianceObligation.status) < 0}
                     />
-                    )}
-                    {page === 'assessment'
+                    )}             
+                    {(page === 'assessment' || (page === 'obligation' && statuses.assessment.status === 'ASSESSED'))
                     && (sales || 0)}
                   </td>
                 </tr>
