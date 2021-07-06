@@ -63,13 +63,13 @@ const calculateCreditReduction = (
 
       if (balance.creditA >= remainingReduction) {
         deduction.creditA = remainingReduction;
-        remainingReduction = 0;
 
         updatedBalances.push({
           modelYear: balance.modelYear,
           creditA: balance.creditA - remainingReduction,
           creditB: balance.creditB,
         });
+        remainingReduction = 0;
       } else { // if balance is less than the reduction value
         deduction.creditA = balance.creditA;
         remainingReduction -= balance.creditA;

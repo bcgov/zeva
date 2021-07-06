@@ -370,38 +370,40 @@ const ComplianceObligationContainer = (props) => {
       });
 
       const tempTotalReduction = getTotalReduction(ldvSales, filteredRatios.complianceRatio);
-      const classAReduction = getClassAReduction(ldvSales, filteredRatios.zevClassA, supplierClass);
+      const classAReduction = getClassAReduction(ldvSales, filteredRatios.zevClassA, tempSupplierClass);
       const leftoverReduction = getUnspecifiedClassReduction(tempTotalReduction, classAReduction);
       setTotalReduction(tempTotalReduction);
 
+      const tempBalances = [];
+
       Object.keys(provisionalBalance).forEach((year) => {
         const { A: creditA, B: creditB } = provisionalBalance[year];
-        balances.push({
+        tempBalances.push({
           modelYear: Number(year),
           creditA,
           creditB,
         });
       });
 
-      setBalances([...balances]);
+      setBalances(tempBalances);
 
-      classAReductions.push({
+      const tempClassAReductions = [{
         modelYear: Number(modelYear.name),
         value: Number(classAReduction),
-      });
+      }];
 
-      unspecifiedReductions.push({
+      const tempUnspecifiedReductions = [{
         modelYear: Number(modelYear.name),
         value: Number(leftoverReduction),
-      });
+      }];
 
-      setClassAReductions([...classAReductions]);
-      setUnspecifiedReductions([...unspecifiedReductions]);
+      setClassAReductions(tempClassAReductions);
+      setUnspecifiedReductions(tempUnspecifiedReductions);
 
       const creditReduction = calculateCreditReduction(
-        balances,
-        classAReductions,
-        unspecifiedReductions,
+        tempBalances,
+        tempClassAReductions,
+        tempUnspecifiedReductions,
         radioSelection,
       );
 

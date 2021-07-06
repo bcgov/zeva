@@ -104,8 +104,10 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                   />
                 </td>
               </tr>
-              {deductions && deductions.filter((deduction) => deduction.type === 'unspecifiedReduction').map((deduction) => (
-                ((deduction.creditA > 0 || deduction.creditB > 0) && (
+              {deductions && deductions.filter(
+                (deduction) => deduction.type === 'unspecifiedReduction'
+                && (deduction.creditA > 0 || deduction.creditB > 0),
+              ).map((deduction) => (
                 <tr key={deduction.modelYear}>
                   <td className="text-blue">
                     &bull; &nbsp; &nbsp; {deduction.modelYear} Credits
@@ -127,14 +129,17 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     )}
                   </td>
                 </tr>
-                ))
               ))}
             </tbody>
           </table>
         </div>
       </div>
 
-      {updatedBalances && updatedBalances.balances && updatedBalances.deficits.length <= 0 && (
+      {updatedBalances && updatedBalances.balances
+      && updatedBalances.balances.filter(
+        (balance) => balance.creditA > 0 || balance.creditB > 0,
+      ).length > 0
+      && (
         <div className="col-12 mt-3">
           <div className="row">
             <table className="col-12">
@@ -144,7 +149,9 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                   <th className="small-column text-center text-blue">A</th>
                   <th className="small-column text-center text-blue">B</th>
                 </tr>
-                {updatedBalances.balances.map((balance) => (
+                {updatedBalances.balances.filter(
+                  (balance) => balance.creditA > 0 || balance.creditB > 0,
+                ).map((balance) => (
                   <tr key={balance.modelYear}>
                     <td className="text-blue">
                       &bull; &nbsp; &nbsp; {balance.modelYear} Credit
