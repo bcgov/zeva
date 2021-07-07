@@ -276,51 +276,98 @@ const AssessmentContainer = (props) => {
         });
       });
 
-      // zev class A reductions current year
-      reportDetailsArray.push({
-        category: 'ClassAReduction',
-        year: reportYear,
-        a: creditDetails.zevClassAReduction.currentYearA,
-        b: 0,
-      });
+      if (deductions) {
+        // zev class A reductions
+        deductions.filter((deduction) => deduction.type === 'classAReduction').forEach((deduction) => {
+          reportDetailsArray.push({
+            category: 'ClassAReduction',
+            year: deduction.modelYear,
+            a: deduction.creditA,
+            b: deduction.creditB,
+          });
+        });
 
-      // zev class A reductions previous year
-      reportDetailsArray.push({
-        category: 'ClassAReduction',
-        year: reportYear - 1,
-        a: creditDetails.zevClassAReduction.lastYearA,
-        b: 0,
-      });
+        // unspecified reductions
+        deductions.filter((deduction) => deduction.type === 'unspecifiedReduction').forEach((deduction) => {
+          reportDetailsArray.push({
+            category: 'UnspecifiedClassCreditReduction',
+            year: deduction.modelYear,
+            a: deduction.creditA,
+            b: deduction.creditB,
+          });
+        });
+      }
 
-      // unspecified balance current year
-      reportDetailsArray.push({
-        category: 'UnspecifiedClassCreditReduction',
-        year: reportYear,
-        a: creditDetails.unspecifiedReductions.currentYearA,
-        b: creditDetails.unspecifiedReductions.currentYearB,
-      });
+      // // zev class A reductions current year
+      // reportDetailsArray.push({
+      //   category: 'ClassAReduction',
+      //   year: reportYear,
+      //   a: creditDetails.zevClassAReduction.currentYearA,
+      //   b: 0,
+      // });
 
-      // unspecified balance previous year
-      reportDetailsArray.push({
-        category: 'UnspecifiedClassCreditReduction',
-        year: reportYear - 1,
-        a: creditDetails.unspecifiedReductions.lastYearA,
-        b: creditDetails.unspecifiedReductions.lastYearB,
-      });
+      // // zev class A reductions previous year
+      // reportDetailsArray.push({
+      //   category: 'ClassAReduction',
+      //   year: reportYear - 1,
+      //   a: creditDetails.zevClassAReduction.lastYearA,
+      //   b: 0,
+      // });
 
-      reportDetailsArray.push({
-        category: 'ProvisionalBalanceAfterCreditReduction',
-        year: reportYear,
-        a: creditDetails.creditBalance.A,
-        b: creditDetails.creditBalance.B,
-      });
+      // // unspecified balance current year
+      // reportDetailsArray.push({
+      //   category: 'UnspecifiedClassCreditReduction',
+      //   year: reportYear,
+      //   a: creditDetails.unspecifiedReductions.currentYearA,
+      //   b: creditDetails.unspecifiedReductions.currentYearB,
+      // });
 
-      reportDetailsArray.push({
-        category: 'CreditDeficit',
-        year: reportYear,
-        a: creditDetails.creditBalance.creditADeficit,
-        b: creditDetails.creditBalance.unspecifiedCreditDeficit,
-      });
+      // // unspecified balance previous year
+      // reportDetailsArray.push({
+      //   category: 'UnspecifiedClassCreditReduction',
+      //   year: reportYear - 1,
+      //   a: creditDetails.unspecifiedReductions.lastYearA,
+      //   b: creditDetails.unspecifiedReductions.lastYearB,
+      // });
+
+      // reportDetailsArray.push({
+      //   category: 'ProvisionalBalanceAfterCreditReduction',
+      //   year: reportYear,
+      //   a: creditDetails.creditBalance.A,
+      //   b: creditDetails.creditBalance.B,
+      // });
+
+      // reportDetailsArray.push({
+      //   category: 'CreditDeficit',
+      //   year: reportYear,
+      //   a: creditDetails.creditBalance.creditADeficit,
+      //   b: creditDetails.creditBalance.unspecifiedCreditDeficit,
+      // });
+      if (updatedBalances) {
+        // provincial balance after reductions
+        if (updatedBalances.balances.length > 0) {
+          updatedBalances.balances.forEach((balance) => {
+            reportDetailsArray.push({
+              category: 'ProvisionalBalanceAfterCreditReduction',
+              year: balance.modelYear,
+              a: balance.creditA || 0,
+              b: balance.creditB || 0,
+            });
+          });
+        }
+
+        // deficits
+        if (updatedBalances.deficits.length > 0) {
+          updatedBalances.deficits.forEach((balance) => {
+            reportDetailsArray.push({
+              category: 'CreditDeficit',
+              year: balance.modelYear,
+              a: balance.creditA || 0,
+              b: balance.creditB || 0,
+            });
+          });
+        }
+      }
 
       const ObligationData = {
         reportId: id,
