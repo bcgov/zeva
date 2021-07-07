@@ -18,6 +18,7 @@ import CreditsContainer from '../credits/CreditsContainer';
 import CreditRequestListContainer from '../credits/CreditRequestListContainer';
 import CreditTransfersEditContainer from '../credits/CreditTransfersEditContainer';
 import CreditTransferListContainer from '../credits/CreditTransferListContainer';
+import CreditAgreementListContainer from '../credits/CreditAgreementListContainer';
 import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContainer';
 import CreditTransfersDetailsContainer from '../credits/CreditTransfersDetailsContainer';
 import CreditRequestVINListContainer from '../credits/CreditRequestVINListContainer';
@@ -47,6 +48,7 @@ import History from './History';
 import PageLayout from './PageLayout';
 import ROUTES_CREDIT_REQUESTS from './routes/CreditRequests';
 import ROUTES_CREDIT_TRANSFERS from './routes/CreditTransfers';
+import ROUTES_CREDIT_AGREEMENTS from './routes/CreditAgreements';
 import ROUTES_CREDITS from './routes/Credits';
 import ROUTES_ORGANIZATIONS from './routes/Organizations';
 import ROUTES_NOTIFICATIONS from './routes/Notifications';
@@ -296,6 +298,14 @@ class Router extends Component {
                   render={() => (
                     <CreditTransfersDetailsContainer keycloak={keycloak} user={user} />
                   )}
+                />,
+              ])}
+              {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED && ([
+                <Route
+                  exact
+                  key="route-credit-agreements-list"
+                  path={ROUTES_CREDIT_AGREEMENTS.LIST}
+                  render={() => <CreditAgreementListContainer keycloak={keycloak} user={user} />}
                 />,
               ])}
               <Route
