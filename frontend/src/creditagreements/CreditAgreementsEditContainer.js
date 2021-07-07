@@ -7,13 +7,22 @@ import CreditAgreementsForm from './components/CreditAgreementsForm';
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import Loading from '../app/components/Loading';
 import { upload } from '../app/utilities/upload';
+import ROUTES_VEHICLES from '../app/routes/Vehicles';
+import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 
 const CreditAgreementsEditContainer = (props) => {
   const { keycloak, user } = props;
   const { id } = useParams();
   const [bceidComment, setBceidComment] = useState('');
   const [idirComment, setIdirComment] = useState([]);
-  const [creditLines, setCreditLines] = useState([]);
+  const [creditLines, setCreditLines] = useState([{
+    creditClass: 'A',
+    modelYear: '-',
+    quantity: 0,
+  }]);
+  const [years, setYears] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
+  const [transactionTypes, setTransactionTypes] = useState([]);
   //   const [files, setFiles] = useState([]);
   //   const [loading, setLoading] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -47,17 +56,40 @@ const CreditAgreementsEditContainer = (props) => {
   const addLine = () => {
     creditLines.push({
       creditClass: 'A',
-      modelYear: '2020',
+      modelYear: '-',
       quantity: 0,
     });
 
     setCreditLines([...creditLines]);
   };
+  const handleChangeLine = (value, property, index) => {
+    creditLines[index][property] = value;
+    setCreditLines([...creditLines]);
+  };
+  const handleChangeDetails = (value, property) => {
+    setAgreementDetails({ ...agreementDetails, [property]: value });
+  };
   const handleSubmit = () => {
-    console.log('submit!');
+    const data = { agreementDetails, creditLines, bceidComment };
+    // ADD POST TO BACKEND HERE
   };
   const refreshDetails = () => {
-    setLoading(false);
+    const yearsPromise = axios.get(ROUTES_VEHICLES.YEARS);
+    const supplierPromise = axios.get(ROUTES_ORGANIZATIONS.LIST);
+    Promise.all([yearsPromise, supplierPromise]).then(
+      ([yearsResponse, supplierResponse]) => {
+        setYears(yearsResponse.data);
+        setSuppliers(supplierResponse.data);
+        setTransactionTypes([
+          { id: 1, name: 'Initiative Agreement' },
+          { id: 2, name: 'Purchase Agreement' },
+          { id: 3, name: 'Administrative Credit Allocation' },
+          { id: 4, name: 'Administrative Credit Reduction' },
+          { id: 5, name: 'Automatic Administrative Penalty' },
+        ]);
+        setLoading(false);
+      },
+    );
   };
   useEffect(() => {
     refreshDetails();
@@ -88,6 +120,11 @@ const CreditAgreementsEditContainer = (props) => {
       handleSubmit={handleSubmit}
       addLine={addLine}
       creditLines={creditLines}
+      years={years}
+      handleChangeLine={handleChangeLine}
+      handleChangeDetails={handleChangeDetails}
+      suppliers={suppliers}
+      transactionTypes={transactionTypes}
     />,
   ]);
 };

@@ -9,28 +9,33 @@ import formatNumeric from '../../app/utilities/formatNumeric';
 import DisplayComment from '../../app/components/DisplayComment';
 import CommentInput from '../../app/components/CommentInput';
 import FileDropArea from '../../app/components/FileDropArea';
+import FormDropdown from '../../credits/components/FormDropdown';
+import TextInput from '../../app/components/TextInput';
 
 const CreditAgreementsForm = (props) => {
   const {
-    user,
-    id,
     agreementDetails,
-    bceidComment,
-    setBciedComment,
-    idirComment,
-    setIdirComment,
     analystAction,
-    handleCommentChangeIdir,
-    handleAddIdirComment,
+    creditLines,
+    id,
+    user,
+    bceidComment,
     files,
-    setUploadFiles,
-    errorMessage,
-    setErrorMessage,
-    upload,
+    idirComment,
+    handleAddIdirComment,
+    handleChangeDetails,
+    handleChangeLine,
+    handleCommentChangeIdir,
     handleCommentChangeBceid,
     handleSubmit,
+    errorMessage,
+    setErrorMessage,
+    setUploadFiles,
+    upload,
     addLine,
-    creditLines,
+    suppliers,
+    transactionTypes,
+    years,
   } = props;
   return (
     <div id="credit-agreements-form" className="page">
@@ -41,7 +46,7 @@ const CreditAgreementsForm = (props) => {
       </div>
       {user.isGovernment
           && (
-          <div>
+          <div className="assessment-credit-adjustment">
             <div className="grey-border-area p-3 comment-box mt-2" id="comment-input">
               {agreementDetails.idirComment && agreementDetails.idirComment.length > 0 && (
               <DisplayComment
@@ -84,22 +89,125 @@ const CreditAgreementsForm = (props) => {
               </div>
             </div>
             <div className="grey-border-area p-3 mt-4">
+              <div className="credit-agreement-form-row">
+                <FormDropdown
+                  dropdownData={suppliers}
+                  dropdownName="Vehicle Supplier"
+                  handleInputChange={(event) => {
+                    handleChangeDetails(event.target.value, 'vehicleSupplier');
+                  }}
+                  fieldName="vehicleSupplier"
+                  accessor={(supplier) => supplier.name}
+                  selectedOption={agreementDetails.vehicleSupplier || '--'}
+                  labelClassname="d-inline-block col-2"
+                  inputClassname="d-inline-block agreement-input"
+                  rowClassname=""
+                />
+              </div>
+              <div className="credit-agreement-form-row">
+                <FormDropdown
+                  dropdownData={transactionTypes}
+                  dropdownName="Transaction Type"
+                  handleInputChange={(event) => {
+                    handleChangeDetails(event.target.value, 'transactionType');
+                  }}
+                  fieldName="transactionType"
+                  accessor={(transactionType) => transactionType.name}
+                  selectedOption={agreementDetails.transactionType || '--'}
+                  labelClassname="d-inline-block col-2"
+                  inputClassname="d-inline-block agreement-input"
+                  rowClassname=""
+                />
+              </div>
+              <div className="credit-agreement-form-row">
+                <TextInput
+                  label="Agreement ID (optional)"
+                  id="agreementID"
+                  name="quantity"
+                  defaultValue={agreementDetails.agreementID}
+                  handleInputChange={(event) => {
+                    handleChangeDetails(event.target.value, 'agreementID');
+                  }}
+                  labelSize="d-inline-block col-sm-2"
+                  inputSize="d-inline-block align-middle agreement-input"
+                  rowSize=""
+                  mandatory
+                />
+              </div>
+              <div className="credit-agreement-form-row">
+                <label
+                  htmlFor="transaction-date"
+                  className="d-inline-block col-2"
+                >Transaction Date
+                </label>
+                <input
+                  className="d-inline-block"
+                  type="date"
+                  id="transaction-date"
+                  name="transaction-date"
+                  onChange={(event) => {
+                    handleChangeDetails(event.target.value, 'transactionDate');
+                  }}
+                />
+
+              </div>
+
               {creditLines && creditLines.map((creditLine, index) => (
                 <div className="credit-agreement-form-row" key={index}>
                   <div className="d-inline-block align-middle mr-5 text-blue">
                     Credits
                   </div>
                   <div className="d-inline-block align-middle mr-5">
-                    <div className="mb-2">
-                      <input
-                        id={`adjustment-type-${index}-credit-type`}
-                        name={`adjustment-type-${index}`}
-                        type="radio"
-                        value="Allocation"
-                        onChange={(event) => console.log('hi')}
-                      />
+                    <div className="mb-2 d-flex flex-column">
+                      <div>
+                        <input
+                          id={`agreement-${index}-credit-type-A`}
+                          name={`agreement-${index}`}
+                          type="radio"
+                          value="A"
+                          onChange={(event) => { handleChangeLine(event.target.value, 'creditClass', index); }}
+                        />
+                        <label className="ml-2" htmlFor={`agreement-${index}-credit-type-A`}>A credits</label>
+                      </div>
+                      <div>
+                        <input
+                          id={`agreement-${index}-credit-type-B`}
+                          name={`agreement-${index}`}
+                          type="radio"
+                          value="B"
+                          onChange={(event) => { handleChangeLine(event.target.value, 'creditClass', index); }}
+                        />
+                        <label className="ml-2" htmlFor={`agreement-${index}-credit-type-B`}>B credits</label>
+                      </div>
                     </div>
                   </div>
+                  <FormDropdown
+                    dropdownData={years}
+                    dropdownName="model year"
+                    handleInputChange={(event) => {
+                      handleChangeLine(event.target.value, 'modelYear', index);
+                    }}
+                    fieldName="modelYear"
+                    accessor={(year) => year.name}
+                    selectedOption={creditLine.modelYear || '--'}
+                    labelClassname="mr-2 d-inline-block"
+                    inputClassname="d-inline-block"
+                    rowClassname="mr-5 d-inline-block align-middle"
+                  />
+                  <TextInput
+                    label="quantity of credits"
+                    id="quantityOfCredits"
+                    name="quantity"
+                    defaultValue={creditLine.quantity}
+                    handleInputChange={(event) => {
+                      handleChangeLine(event.target.value, 'quantity', index);
+                    }}
+                    labelSize="mr-2 col-form-label d-inline-block align-middle"
+                    inputSize="d-inline-block align-middle transfer-input-width"
+                    mandatory
+                    rowSize="mr-5 d-inline-block align-middle"
+                    num
+                  />
                 </div>
               ))}
               <button type="button" className="transfer-add-line my-2" onClick={() => { addLine(); }}>

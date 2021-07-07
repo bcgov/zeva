@@ -3,10 +3,27 @@
   border: 1px solid $border-grey;
   padding: 1rem 1rem;
   }
-.credit-agreement-form-row {
-  background-color: $default-background-grey;
-  padding: 1rem;
-  margin: 1rem 0 1rem 0;
+@media(min-width:496px){
+  .agreement-input {
+    width: 300px !important;
+  }
+}
+#credit-agreements-form {
+  .credit-agreement-form-row {
+    background-color: $default-background-grey;
+    padding: 1rem;
+    margin: 1rem 0 1rem 0;
+  }
+  label {
+    font-weight: bold;
+    color: $default-text-blue;
+    margin-bottom: 0;
+    margin-right: 2rem;
+  }
+
+  input[type=radio] {
+    margin-right: 0.5rem;
+  }
 }
 #assessment-edit {
   table {

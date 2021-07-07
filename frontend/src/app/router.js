@@ -56,7 +56,6 @@ import ROUTES_NOTIFICATIONS from './routes/Notifications';
 import ROUTES_USERS from './routes/Users';
 import ROUTES_VEHICLES from './routes/Vehicles';
 import ROUTES_COMPLIANCE from './routes/Compliance';
-import ROUTES_CREDIT_AGREEMENTS from './routes/CreditAgreements';
 
 class Router extends Component {
   constructor(props) {
