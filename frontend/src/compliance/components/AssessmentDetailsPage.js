@@ -41,7 +41,6 @@ const AssessmentDetailsPage = (props) => {
   const {
     creditBalanceStart, pendingBalance, transactions, provisionalBalance,
   } = creditActivityDetails;
-
   const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, user.organization.name).replace(/{modelYear}/g, modelYear) : '';
   const {
     creditsIssuedSales, transfersIn, transfersOut,
@@ -131,11 +130,16 @@ const AssessmentDetailsPage = (props) => {
           </div>
           {user.isGovernment
           && (
-          <div className="grey-border-area p-3 comment-box mt-2">
-            {details.changelog.ldvChanges && (
-              Object.keys(details.changelog.makesAdditions)
+            <>
+              {(details.changelog.ldvChanges
+              || details.idirComment.length > 0
+              || statuses.assessment.status !== 'ASSESSED')
+              && (
+              <div className="grey-border-area p-3 comment-box mt-2">
+                {details.changelog.ldvChanges && (
+                  Object.keys(details.changelog.makesAdditions)
               || details.changelog.ldvChanges > 0
-            )
+                )
            && (
            <>
              <h3>Assessment Adjustments</h3>
@@ -154,18 +158,23 @@ const AssessmentDetailsPage = (props) => {
              </div>
            </>
            )}
-            {details.idirComment && details.idirComment.length > 0 && user.isGovernment && (
-            <DisplayComment
-              commentArray={details.idirComment}
-            />
-            )}
+                {details.idirComment && details.idirComment.length > 0 && user.isGovernment && (
+                <DisplayComment
+                  commentArray={details.idirComment}
+                />
+                )}
+                {statuses.assessment.status !== 'ASSESSED'
+            && (
             <CommentInput
               handleAddComment={handleAddIdirComment}
               handleCommentChange={handleCommentChangeIdir}
               title={analystAction ? 'Add comment to director: ' : 'Add comment to the analyst'}
               buttonText="Add Comment"
             />
-          </div>
+            )}
+              </div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -290,8 +299,8 @@ const AssessmentDetailsPage = (props) => {
           </div>
         </div>
       </div>
-      {!user.isGovernment && details.assessment && details.assessment.decision && details.assessment.decision.description
-        && (
+      {(details.assessment && details.assessment.decision && details.assessment.decision.description)
+        && (!user.isGovernment || (user.isGovernment && statuses.assessment.status === 'ASSESSED')) && (
           <>
             <h3 className="mt-4 mb-1">Director Assessment</h3>
             <div className="row mb-3">
@@ -308,8 +317,8 @@ const AssessmentDetailsPage = (props) => {
               </div>
             </div>
           </>
-        )}
-      {user.isGovernment
+      )}
+      {user.isGovernment && statuses.assessment.status !== 'ASSESSED'
           && (
             <>
               <h3 className="mt-4 mb-1">Analyst Recommended Director Assessment</h3>
@@ -361,35 +370,35 @@ const AssessmentDetailsPage = (props) => {
               </div>
             </>
           )}
-
+      {(directorAction || analystAction) && (
       <div className="row">
         <div className="col-sm-12">
           <div className="action-bar mt-0">
             {directorAction && (
-            <>
-              <span className="left-content">
-                <button
-                  className="button text-danger"
-                  onClick={() => {
-                    handleSubmit('SUBMITTED');
-                  }}
-                  type="button"
-                >
-                  Return to Analyst
-                </button>
-              </span>
+              <>
+                <span className="left-content">
+                  <button
+                    className="button text-danger"
+                    onClick={() => {
+                      handleSubmit('SUBMITTED');
+                    }}
+                    type="button"
+                  >
+                    Return to Analyst
+                  </button>
+                </span>
 
-              <span className="right-content">
-                <Button
-                  buttonType="submit"
-                  optionalClassname="button primary"
-                  optionalText="Issue Assessment"
-                  action={() => {
-                    handleSubmit('ASSESSED');
-                  }}
-                />
-              </span>
-            </>
+                <span className="right-content">
+                  <Button
+                    buttonType="submit"
+                    optionalClassname="button primary"
+                    optionalText="Issue Assessment"
+                    action={() => {
+                      handleSubmit('ASSESSED');
+                    }}
+                  />
+                </span>
+              </>
             )}
             {analystAction && (
               <>
@@ -411,6 +420,7 @@ const AssessmentDetailsPage = (props) => {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 };
