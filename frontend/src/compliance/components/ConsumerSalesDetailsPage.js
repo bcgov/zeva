@@ -60,9 +60,9 @@ const ConsumerSalesDetailsPage = (props) => {
         if (each.pendingSales > 0) {
           enableEditBtnForAnalyst = true;
         }
-      })
+      });
     }
-  }
+  };
 
   assertions.forEach((assertion) => {
     if (checkboxes.indexOf(assertion.id) >= 0) {
@@ -80,14 +80,14 @@ const ConsumerSalesDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          {details && details.consumerSales &&
-            details.consumerSales.history && (
-              <ComplianceReportAlert
-                next="Compliance Obligation"
-                report={details.consumerSales}
-                status={statuses.consumerSales}
-                type="Consumer ZEV Sales"
-              />
+          {details && details.consumerSales
+          && details.consumerSales.history && (
+            <ComplianceReportAlert
+              next="Compliance Obligation"
+              report={details.consumerSales}
+              status={statuses.consumerSales}
+              type="Consumer ZEV Sales"
+            />
           )}
         </div>
       </div>
@@ -95,18 +95,18 @@ const ConsumerSalesDetailsPage = (props) => {
       <div className="row mt-1">
         <div className="col-12">
           <div className="p-3 consumer-sales">
-            {(!user.isGovernment ||
-              (user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && enableEditBtnForAnalyst)) &&
-              statuses.consumerSales.status === 'CONFIRMED' && (
-                <button
-                  className="btn button primary float-right"
-                  onClick={() => {
-                    setShowModal(true);
-                  }}
-                  type="button"
-                >
-                  Edit
-                </button>
+            {(!user.isGovernment
+            || (user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && enableEditBtnForAnalyst))
+            && statuses.consumerSales.status === 'CONFIRMED' && (
+              <button
+                className="btn button primary float-right"
+                onClick={() => {
+                  setShowModal(true);
+                }}
+                type="button"
+              >
+                Edit
+              </button>
             )}
             <div className="ldv-zev-models mt-2">
               <label className="text-blue mr-4 font-weight-bold">
@@ -165,7 +165,7 @@ const ConsumerSalesDetailsPage = (props) => {
                 optionalText="Next"
                 action={() => {
                   history.push(
-                    ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(':id', id)
+                    ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(':id', id),
                   );
                 }}
               />
@@ -174,7 +174,7 @@ const ConsumerSalesDetailsPage = (props) => {
                   buttonType="save"
                   disabled={
                     ['SAVED', 'UNSAVED'].indexOf(
-                      statuses.consumerSales.status
+                      statuses.consumerSales.status,
                     ) < 0
                   }
                   optionalClassname="button primary"

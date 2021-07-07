@@ -148,7 +148,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
                 <div className="mt-4 compliance-report-summary-grey">
                   <h3>Consumer ZEV Sales</h3>
                   <SummaryConsumerSalesTable consumerSalesDetails={consumerSalesDetails} />
-                  {savedInformation(consumerSalesDetails.updateTimestampConsumerSales ,confirmationStatuses.consumerSales, 'Consumer Sales')}
+                  {savedInformation(consumerSalesDetails.updateTimestampConsumerSales, confirmationStatuses.consumerSales, 'Consumer Sales')}
                   {signatureInformation(confirmationStatuses.consumerSales, 'Consumer Sales')}
                 </div>
               </div>
@@ -212,10 +212,10 @@ ComplianceReportSummaryDetailsPage.defaultProps = {
 };
 
 ComplianceReportSummaryDetailsPage.propTypes = {
-  assertions: PropTypes.arrayOf(PropTypes.shape()),
+  assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   checkboxes: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-  ),
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  ).isRequired,
   complianceRatios: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   confirmationStatuses: PropTypes.shape().isRequired,
   consumerSalesDetails: PropTypes.shape().isRequired,
@@ -227,7 +227,7 @@ ComplianceReportSummaryDetailsPage.propTypes = {
   pendingBalanceExist: PropTypes.bool.isRequired,
   supplierDetails: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
-  modelYear: PropTypes.number.isRequired
+  modelYear: PropTypes.number.isRequired,
 };
 
 export default ComplianceReportSummaryDetailsPage;

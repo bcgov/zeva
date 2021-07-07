@@ -17,14 +17,14 @@ def parse_summary_serializer(lst, serializer_data, category):
                 data.get('category') == category:
             found = True
             if credit_class == 'A':
-                lst[index]['credit_a_value'] = total_value
+                lst[index]['credit_a_value'] = float(total_value)
             elif credit_class == 'B':
-                lst[index]['credit_b_value'] = total_value
+                lst[index]['credit_b_value'] = float(total_value)
 
     if not found:
         lst.append({
-            'credit_a_value': total_value if credit_class == 'A' else 0,
-            'credit_b_value': total_value if credit_class == 'B' else 0,
+            'credit_a_value': float(total_value) if credit_class == 'A' else 0,
+            'credit_b_value': float(total_value) if credit_class == 'B' else 0,
             'category': category,
             'model_year': {'name': model_year}
         })
