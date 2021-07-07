@@ -49,6 +49,7 @@ const CreditAgreementsEditContainer = (props) => {
   const handleAddIdirComment = () => {
     const comment = { comment: idirComment, director: true };
     console.log('comment added!: ', idirComment);
+    //add route for posting idir comment!!!
     // axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
     //   history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
     // });
@@ -80,6 +81,7 @@ const CreditAgreementsEditContainer = (props) => {
       ([yearsResponse, supplierResponse]) => {
         setYears(yearsResponse.data);
         setSuppliers(supplierResponse.data);
+        //this needs to be retrieved from backend!!
         setTransactionTypes([
           { id: 1, name: 'Initiative Agreement' },
           { id: 2, name: 'Purchase Agreement' },
