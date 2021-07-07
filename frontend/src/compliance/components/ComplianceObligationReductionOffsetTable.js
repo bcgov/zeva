@@ -223,12 +223,13 @@ const ComplianceObligationReductionOffsetTable = (props) => {
 
 ComplianceObligationReductionOffsetTable.defaultProps = {
   creditReductionSelection: null,
+  handleUnspecifiedCreditReduction: () => {},
 };
 
 ComplianceObligationReductionOffsetTable.propTypes = {
   creditReductionSelection: PropTypes.string,
   deductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  handleUnspecifiedCreditReduction: PropTypes.func.isRequired,
+  handleUnspecifiedCreditReduction: PropTypes.func,
   statuses: PropTypes.shape().isRequired,
   supplierClass: PropTypes.string.isRequired,
   updatedBalances: PropTypes.shape().isRequired,

@@ -46,7 +46,7 @@ const ComplianceObligationAmountsTable = (props) => {
                       value={sales}
                       disabled={['SAVED', 'UNSAVED'].indexOf(statuses.complianceObligation.status) < 0}
                     />
-                    )}             
+                    )}
                     {(page === 'assessment' || (page === 'obligation' && statuses.assessment.status === 'ASSESSED'))
                     && (sales || 0)}
                   </td>

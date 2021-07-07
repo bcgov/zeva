@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import parse from 'html-react-parser';
 import Button from '../../app/components/Button';
@@ -26,10 +26,8 @@ const AssessmentDetailsPage = (props) => {
     handleCommentChangeIdir,
     loading,
     makes,
-    modelYear,
+    reportYear,
     radioDescriptions,
-    setRadioSelection,
-    ratios,
     statuses,
     user,
     sales,
@@ -37,15 +35,17 @@ const AssessmentDetailsPage = (props) => {
     directorAction,
     analystAction,
     setDetails,
+    classAReductions,
+    ratios,
+    pendingBalanceExist,
+    supplierClass,
+    totalReduction,
+    unspecifiedReductions,
+    deductions,
+    updatedBalances,
   } = props;
-  const {
-    creditBalanceStart, pendingBalance, transactions, provisionalBalance,
-  } = creditActivityDetails;
-  const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, user.organization.name).replace(/{modelYear}/g, modelYear) : '';
-  const {
-    creditsIssuedSales, transfersIn, transfersOut,
-  } = transactions;
-  const [showModal, setShowModal] = useState(false);
+
+  const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, user.organization.name).replace(/{modelYear}/g, reportYear) : '';
   const disabledInputs = false;
   const showDescription = (each) => (
     <div className="mb-3" key={each.id}>
@@ -55,10 +55,16 @@ const AssessmentDetailsPage = (props) => {
         type="radio"
         name="assessment"
         disabled={directorAction || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0}
-        onChange={(event) => {
+        onChange={() => {
           setDetails({
             ...details,
-            assessment: { ...details.assessment, decision: { description: each.description, id: each.id } },
+            assessment: {
+              ...details.assessment,
+              decision: {
+                description: each.description,
+                id: each.id,
+              },
+            },
           });
         }}
       />
@@ -67,7 +73,7 @@ const AssessmentDetailsPage = (props) => {
       <label className="d-inline text-blue" htmlFor="complied">
         {each.description
           .replace(/{user.organization.name}/g, details.organization.name)
-          .replace(/{modelYear}/g, modelYear)}
+          .replace(/{modelYear}/g, reportYear)}
       </label>
       )}
     </div>
@@ -76,29 +82,17 @@ const AssessmentDetailsPage = (props) => {
   let recommendTooltip = '';
 
   const pendingSalesExist = () => {
-    if (Object.keys(pendingBalance).length > 0) {
-      pendingBalance.forEach((each) => {
-        if (parseInt(each.A) > 0 || parseInt(each.B) > 0) {
-          disabledRecommendBtn = true;
-          recommendTooltip = 'There are credit applications that must be issued prior to recommending this assessment.';
-        }
-      });
+    if (pendingBalanceExist) {
+      disabledRecommendBtn = true;
+      recommendTooltip = 'There are credit applications that must be issued prior to recommending this assessment.';
     }
   };
   if (loading) {
     return <Loading />;
   }
 
-  const totalReduction = ((ratios.complianceRatio / 100) * details.ldvSales);
-  const classAReduction = formatNumeric(
-    ((ratios.zevClassA / 100) * details.ldvSales),
-    2,
-  );
-  const leftoverReduction = ((ratios.complianceRatio / 100) * details.ldvSales)
-  - ((ratios.zevClassA / 100) * details.ldvSales);
-
-  const getClassDescriptions = (supplierClass) => {
-    switch (supplierClass) {
+  const getClassDescriptions = (_supplierClass) => {
+    switch (_supplierClass) {
       case 'L':
         return 'Large';
       case 'M':
@@ -113,7 +107,7 @@ const AssessmentDetailsPage = (props) => {
       {pendingSalesExist()}
       <div className="row mt-3">
         <div className="col-sm-12">
-          <h2>{modelYear} Model Year Report</h2>
+          <h2>{reportYear} Model Year Report</h2>
         </div>
       </div>
       <div className="row mt-3">
@@ -207,7 +201,8 @@ const AssessmentDetailsPage = (props) => {
             <div className="mt-3">
               <h3> {details.organization.name} </h3>
             </div>
-            {details.organization.organizationAddress && details.organization.organizationAddress.length > 0 && (
+            {details.organization.organizationAddress
+            && details.organization.organizationAddress.length > 0 && (
             <div>
               <div className="d-inline-block mr-5 mt-3 col-5 text-blue">
                 <h4>Service Address</h4>
@@ -257,26 +252,27 @@ const AssessmentDetailsPage = (props) => {
                 </div>
               )}
               <h4 className="d-inline">Vehicle Supplier Class:</h4>
-              <p className="d-inline ml-2">{getClassDescriptions(details.class)} Volume Supplier</p>
+              <p className="d-inline ml-2">{getClassDescriptions(supplierClass)} Volume Supplier</p>
             </div>
 
             <div className="mt-4">
               <ComplianceObligationAmountsTable
+                classAReductions={classAReductions}
                 page="assessment"
-                reportYear={modelYear}
-                supplierClassInfo={details}
-                totalReduction={totalReduction}
                 ratios={ratios}
-                classAReduction={classAReduction}
-                leftoverReduction={leftoverReduction}
-                statuses={statuses}
+                reportYear={reportYear}
                 sales={sales}
+                statuses={statuses}
+                supplierClass={supplierClass}
+                totalReduction={totalReduction}
+                unspecifiedReductions={unspecifiedReductions}
               />
             </div>
 
             <div className="mt-4">
               <ComplianceObligationTableCreditsIssued
-                reportYear={modelYear}
+                pendingBalanceExist={pendingBalanceExist}
+                reportYear={reportYear}
                 reportDetails={creditActivityDetails}
               />
             </div>
@@ -284,22 +280,18 @@ const AssessmentDetailsPage = (props) => {
             <h3 className="mt-4 mb-2">Credit Reduction</h3>
 
             <ComplianceObligationReductionOffsetTable
-              statuses={statuses}
-              unspecifiedCreditReduction={() => {}}
-              supplierClassInfo={details}
-              user={user}
-              zevClassAReduction={creditActivityDetails.zevClassAReduction}
-              unspecifiedReductions={creditActivityDetails.unspecifiedReductions}
-              leftoverReduction={leftoverReduction}
-              totalReduction={totalReduction}
-              reportYear={modelYear}
-              creditBalance={creditActivityDetails.creditBalance}
               creditReductionSelection={details.creditReductionSelection}
+              deductions={deductions}
+              statuses={statuses}
+              supplierClass={supplierClass}
+              updatedBalances={updatedBalances}
+              user={user}
             />
           </div>
         </div>
       </div>
-      {(details.assessment && details.assessment.decision && details.assessment.decision.description)
+      {(details.assessment && details.assessment.decision
+        && details.assessment.decision.description)
         && (!user.isGovernment || (user.isGovernment && statuses.assessment.status === 'ASSESSED')) && (
           <>
             <h3 className="mt-4 mb-1">Director Assessment</h3>
@@ -332,7 +324,7 @@ const AssessmentDetailsPage = (props) => {
                       ))}
                       <div className="text-blue mt-3 ml-3 mb-1">
                         &nbsp;&nbsp; {details.organization.name} has not complied with section 10 (2) of the
-                        Zero-Emission Vehicles Act for the {modelYear} adjustment period.
+                        Zero-Emission Vehicles Act for the {reportYear} adjustment period.
                       </div>
                       {radioDescriptions.map((each) => (
                         (each.displayOrder > 0)
@@ -349,7 +341,10 @@ const AssessmentDetailsPage = (props) => {
                             onChange={(e) => {
                               setDetails({
                                 ...details,
-                                assessment: { ...details.assessment, assessmentPenalty: e.target.value },
+                                assessment: {
+                                  ...details.assessment,
+                                  assessmentPenalty: e.target.value,
+                                },
                               });
                             }}
                           />
@@ -436,9 +431,25 @@ AssessmentDetailsPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   user: CustomPropTypes.user.isRequired,
-  modelYear: PropTypes.number.isRequired,
+  reportYear: PropTypes.number.isRequired,
   statuses: PropTypes.shape().isRequired,
   sales: PropTypes.number,
   handleSubmit: PropTypes.func.isRequired,
+  directorAction: PropTypes.bool.isRequired,
+  analystAction: PropTypes.bool.isRequired,
+  handleAddBceidComment: PropTypes.func.isRequired,
+  handleAddIdirComment: PropTypes.func.isRequired,
+  handleCommentChangeBceid: PropTypes.func.isRequired,
+  handleCommentChangeIdir: PropTypes.func.isRequired,
+  radioDescriptions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  setDetails: PropTypes.func.isRequired,
+  classAReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  ratios: PropTypes.shape().isRequired,
+  pendingBalanceExist: PropTypes.bool.isRequired,
+  supplierClass: PropTypes.string.isRequired,
+  totalReduction: PropTypes.number.isRequired,
+  unspecifiedReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  deductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  updatedBalances: PropTypes.shape().isRequired,
 };
 export default AssessmentDetailsPage;
