@@ -1,8 +1,13 @@
 
-  .grey-border-area {
-    border: 1px solid $border-grey;
-    padding: 1rem 1rem;
+.grey-border-area {
+  border: 1px solid $border-grey;
+  padding: 1rem 1rem;
   }
+.credit-agreement-form-row {
+  background-color: $default-background-grey;
+  padding: 1rem;
+  margin: 1rem 0 1rem 0;
+}
 #assessment-edit {
   table {
     width: 100%;

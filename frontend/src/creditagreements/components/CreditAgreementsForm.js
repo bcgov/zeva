@@ -29,6 +29,8 @@ const CreditAgreementsForm = (props) => {
     upload,
     handleCommentChangeBceid,
     handleSubmit,
+    addLine,
+    creditLines,
   } = props;
   return (
     <div id="credit-agreements-form" className="page">
@@ -55,35 +57,63 @@ const CreditAgreementsForm = (props) => {
                 />
               </div>
             </div>
-            <div className="col-12">
-              <FileDropArea
-                wholePageWidth
-                type="pdf"
-                errorMessage={errorMessage}
-                files={files}
-                setErrorMessage={setErrorMessage}
-                setUploadFiles={setUploadFiles}
-              />
+            <div className="mt-4">
+              <h4>Agreement Attachments (optional)</h4>
+              <div className="grey-border-area p-3 mt-1">
+                <div className="col-12">
+                  <FileDropArea
+                    wholePageWidth
+                    type="pdf"
+                    errorMessage={errorMessage}
+                    files={files}
+                    setErrorMessage={setErrorMessage}
+                    setUploadFiles={setUploadFiles}
+                  />
+                </div>
+
+                <div className="d-flex flex-row-reverse">
+                  <button
+                    disabled={files.length === 0}
+                    className="button primary"
+                    onClick={() => upload()}
+                    type="button"
+                  >
+                    <FontAwesomeIcon icon="upload" /> Upload
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="action-bar">
-              <span className="left-content" />
-              <span className="right-content">
-                <button
-                  disabled={files.length === 0}
-                  className="button primary"
-                  onClick={() => upload()}
-                  type="button"
-                >
-                  <FontAwesomeIcon icon="upload" /> Upload
-                </button>
-              </span>
+            <div className="grey-border-area p-3 mt-4">
+              {creditLines && creditLines.map((creditLine, index) => (
+                <div className="credit-agreement-form-row" key={index}>
+                  <div className="d-inline-block align-middle mr-5 text-blue">
+                    Credits
+                  </div>
+                  <div className="d-inline-block align-middle mr-5">
+                    <div className="mb-2">
+                      <input
+                        id={`adjustment-type-${index}-credit-type`}
+                        name={`adjustment-type-${index}`}
+                        type="radio"
+                        value="Allocation"
+                        onChange={(event) => console.log('hi')}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <button type="button" className="transfer-add-line my-2" onClick={() => { addLine(); }}>
+                <h4><FontAwesomeIcon icon="plus" /> Add another line</h4>
+              </button>
             </div>
-            <div id="comment-input">
-              <CommentInput
-                defaultComment={agreementDetails.bceidComment}
-                handleCommentChange={handleCommentChangeBceid}
-                title="Message to the Supplier: "
-              />
+            <div className="grey-border-area p-3 comment-box mt-4" id="comment-input">
+              <div id="comment-input">
+                <CommentInput
+                  defaultComment={agreementDetails.bceidComment}
+                  handleCommentChange={handleCommentChangeBceid}
+                  title="Message to the Supplier: "
+                />
+              </div>
             </div>
           </div>
 

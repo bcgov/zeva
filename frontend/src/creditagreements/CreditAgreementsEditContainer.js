@@ -13,6 +13,7 @@ const CreditAgreementsEditContainer = (props) => {
   const { id } = useParams();
   const [bceidComment, setBceidComment] = useState('');
   const [idirComment, setIdirComment] = useState([]);
+  const [creditLines, setCreditLines] = useState([]);
   //   const [files, setFiles] = useState([]);
   //   const [loading, setLoading] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -43,8 +44,17 @@ const CreditAgreementsEditContainer = (props) => {
     //   history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
     // });
   };
+  const addLine = () => {
+    creditLines.push({
+      creditClass: 'A',
+      modelYear: '2020',
+      quantity: 0,
+    });
+
+    setCreditLines([...creditLines]);
+  };
   const handleSubmit = () => {
-      console.log('submit!');
+    console.log('submit!');
   };
   const refreshDetails = () => {
     setLoading(false);
@@ -76,6 +86,8 @@ const CreditAgreementsEditContainer = (props) => {
       upload={upload}
       handleCommentChangeBceid={handleCommentChangeBceid}
       handleSubmit={handleSubmit}
+      addLine={addLine}
+      creditLines={creditLines}
     />,
   ]);
 };
