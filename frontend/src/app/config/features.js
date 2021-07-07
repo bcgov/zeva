@@ -4,6 +4,7 @@ window.zeva_config = {
   'compliance_ratios.enabled': true,
   'credit_transfers.enabled': true,
   'credit_transactions.enabled': true,
+  'credit_agreements.enabled': true,
   'initiative_agreements.enabled': false,
   'model_year_report.enabled': true,
   'notifications.enabled': true,
