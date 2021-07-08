@@ -9,6 +9,7 @@ import Loading from '../app/components/Loading';
 import { upload } from '../app/utilities/upload';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
+import ROUTES_CREDIT_AGREEMENTS from '../app/routes/CreditAgreements';
 
 const CreditAgreementsEditContainer = (props) => {
   const { keycloak, user } = props;
@@ -23,8 +24,6 @@ const CreditAgreementsEditContainer = (props) => {
   const [years, setYears] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const [transactionTypes, setTransactionTypes] = useState([]);
-  //   const [files, setFiles] = useState([]);
-  //   const [loading, setLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [agreementDetails, setAgreementDetails] = useState({
     idirComment: [{
@@ -35,8 +34,8 @@ const CreditAgreementsEditContainer = (props) => {
     }],
     bceidComment: [],
   });
-  const [evidenceFiles, setEvidenceFiles] = useState([]);
   const [files, setFiles] = useState([]);
+
   const [errorMessage, setErrorMessage] = useState(null);
   const analystAction = user.isGovernment
   && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
@@ -53,6 +52,47 @@ const CreditAgreementsEditContainer = (props) => {
     // axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
     //   history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
     // });
+  };
+
+  const handleUpload = (paramId) => {
+    const promises = [];
+    // setShowProgressBars(true);
+
+    files.forEach((file, index) => {
+      promises.push(new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const blob = reader.result;
+
+          axios.get(ROUTES_CREDIT_AGREEMENTS.MINIO_URL.replace(/:id/gi, paramId)).then((response) => {
+            const { url: uploadUrl, minioObjectName } = response.data;
+            axios.put(uploadUrl, blob, {
+              headers: {
+                Authorization: null,
+              },
+              onUploadProgress: (progressEvent) => {
+                // updateProgressBars(progressEvent, index);
+
+                if (progressEvent.loaded >= progressEvent.total) {
+                  resolve({
+                    filename: file.name,
+                    mimeType: file.type,
+                    minioObjectName,
+                    size: file.size,
+                  });
+                }
+              },
+            }).catch(() => {
+              reject();
+            });
+          });
+        };
+
+        reader.readAsArrayBuffer(file);
+      }));
+    });
+
+    return promises;
   };
   const addLine = () => {
     creditLines.push({
@@ -117,7 +157,7 @@ const CreditAgreementsEditContainer = (props) => {
       setErrorMessage={setErrorMessage}
       errorMessage={errorMessage}
       files={files}
-      upload={upload}
+      upload={handleUpload}
       handleCommentChangeBceid={handleCommentChangeBceid}
       handleSubmit={handleSubmit}
       addLine={addLine}
