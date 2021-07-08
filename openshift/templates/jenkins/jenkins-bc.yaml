@@ -43,7 +43,7 @@ objects:
         type: Docker
         dockerStrategy:
           pullSecret:
-            name: redhat-artifactory-secret
+            name: docker-artifactory-secret
       postCommit: {}
       source:
         type: Git
