@@ -91,11 +91,11 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     value="A"
                   />
                   )}
-                  {statuses.assessment.status === 'ASSESSED' && creditReductionSelection === 'A'
+                  {statuses && statuses.assessment && statuses.assessment.status === 'ASSESSED' && creditReductionSelection === 'A'
                   && <FontAwesomeIcon icon="check" />}
                 </td>
                 <td className="text-center">
-                  {statuses.assessment.status !== 'ASSESSED'
+                  {statuses && statuses.assessment && statuses.assessment.status !== 'ASSESSED'
                   && (
                   <input
                     checked={creditReductionSelection === 'B'}
@@ -111,7 +111,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     value="B"
                   />
                   )}
-                  {statuses.assessment.status === 'ASSESSED' && creditReductionSelection === 'B'
+                  {statuses && statuses.assessment && statuses.assessment.status === 'ASSESSED'
+                  && creditReductionSelection === 'B'
                   && <FontAwesomeIcon icon="check" />}
                 </td>
               </tr>

@@ -223,7 +223,7 @@ const SupplierInformationDetailsPage = (props) => {
               </div>
               <div className="ldv-makes p-3">
                 <form disabled={disabledInputs} onSubmit={handleSubmitMake}>
-                  {statuses.assessment.status !== 'ASSESSED'
+                  {statuses && statuses.assessment && statuses.assessment.status !== 'ASSESSED'
                   && (
                   <div className="form-row">
                     <div className="col-sm-8 col-xs-12">
