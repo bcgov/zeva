@@ -7,17 +7,13 @@ import CustomPropTypes from '../../app/utilities/props';
 
 const ComplianceObligationReductionOffsetTable = (props) => {
   const {
-    unspecifiedCreditReduction,
-    supplierClassInfo,
-    zevClassAReduction,
-    unspecifiedReductions,
-    leftoverReduction,
-    reportYear,
-    creditBalance,
-    totalReduction,
-    user,
-    statuses,
     creditReductionSelection,
+    deductions,
+    handleUnspecifiedCreditReduction,
+    statuses,
+    supplierClass,
+    updatedBalances,
+    user,
   } = props;
 
   return (
@@ -26,35 +22,36 @@ const ComplianceObligationReductionOffsetTable = (props) => {
         <div className="row">
           <table className="col-12">
             <tbody>
-              {supplierClassInfo.class === 'L' && (
+              {supplierClass === 'L' && (
                 <>
                   <tr className="subclass">
                     <th className="large-column">ZEV Class A Credit Reduction</th>
                     <th className="small-column text-center text-blue">A</th>
                     <th className="small-column text-center text-blue">B</th>
                   </tr>
-                  <tr>
-                    <td className="text-blue">
-                      &bull; &nbsp; &nbsp; {reportYear - 1} Credits
-                    </td>
-                    <td className={`text-right ${zevClassAReduction.lastYearA > 0 ? 'text-red' : ''}`}>
-                      {formatNumeric(zevClassAReduction.lastYearA
-                        ? -zevClassAReduction.lastYearA
-                        : 0)}
-                    </td>
-                    <td className="text-right">{formatNumeric(0)}</td>
-                  </tr>
-                  <tr>
-                    <td className="text-blue">
-                      &bull; &nbsp; &nbsp; {reportYear} Credits
-                    </td>
-                    <td className={`text-right ${zevClassAReduction.currentYearA > 0 ? 'text-red' : ''}`}>
-                      {formatNumeric(zevClassAReduction.currentYearA
-                        ? -zevClassAReduction.currentYearA
-                        : 0)}
-                    </td>
-                    <td className="text-right">{formatNumeric(0)}</td>
-                  </tr>
+                  {deductions && deductions.filter((deduction) => deduction.type === 'classAReduction').map((deduction) => (
+                    <tr key={deduction.modelYear}>
+                      <td className="text-blue">
+                        &bull; &nbsp; &nbsp; {deduction.modelYear} Credits
+                      </td>
+                      <td className="text-right">
+                        {deduction.creditA > 0 && (
+                          <span className="text-red">-{formatNumeric(deduction.creditA, 2)}</span>
+                        )}
+                        {!deduction.creditA && (
+                          <span>0.00</span>
+                        )}
+                      </td>
+                      <td className="text-right">
+                        {deduction.creditB > 0 && (
+                          <span className="text-red">-{formatNumeric(deduction.creditB, 2)}</span>
+                        )}
+                        {!deduction.creditB && (
+                          <span>0.00</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
                   <tr className="subclass">
                     <th className="large-column">
                       Unspecified ZEV Class Credit Reduction
@@ -64,7 +61,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                   </tr>
                 </>
               )}
-              {supplierClassInfo.class !== 'L' && (
+              {supplierClass !== 'L' && (
                 <tr className="subclass">
                   <th className="large-column">
                     Compliance Ratio Credit Reduction
@@ -87,12 +84,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     type="radio"
                     id="A"
                     onChange={(event) => {
-                      unspecifiedCreditReduction(
-                        event,
-                        supplierClassInfo.class === 'L'
-                          ? leftoverReduction
-                          : totalReduction,
-                      );
+                      const { id: radioId } = event.target;
+                      handleUnspecifiedCreditReduction(radioId);
                     }}
                     name="creditOption"
                     value="A"
@@ -111,12 +104,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     type="radio"
                     id="B"
                     onChange={(event) => {
-                      unspecifiedCreditReduction(
-                        event,
-                        supplierClassInfo.class === 'L'
-                          ? leftoverReduction
-                          : totalReduction,
-                      );
+                      const { id: radioId } = event.target;
+                      handleUnspecifiedCreditReduction(radioId);
                     }}
                     name="creditOption"
                     value="B"
@@ -126,105 +115,107 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                   && <FontAwesomeIcon icon="check" />}
                 </td>
               </tr>
-              {unspecifiedReductions && (
-                <>
-                  <tr>
-                    <td className="text-blue">
-                      &bull; &nbsp; &nbsp; {reportYear - 1} Credits
-                    </td>
-                    <td className={`text-right ${unspecifiedReductions.lastYearA > 0 ? 'text-red' : ''}`}>
-                      {formatNumeric(unspecifiedReductions.lastYearA
-                        ? -unspecifiedReductions.lastYearA
-                        : 0)}
-                    </td>
-                    <td className={`text-right ${unspecifiedReductions.lastYearB > 0 ? 'text-red' : ''}`}>
-                      {formatNumeric(unspecifiedReductions.lastYearB
-                        ? -unspecifiedReductions.lastYearB
-                        : 0)}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="text-blue">
-                      &bull; &nbsp; &nbsp; {reportYear} Credits
-                    </td>
-                    <td className={`text-right ${unspecifiedReductions.currentYearA > 0 ? 'text-red' : ''}`}>
-                      {formatNumeric(unspecifiedReductions.currentYearA
-                        ? -unspecifiedReductions.currentYearA
-                        : 0)}
-                    </td>
-                    <td className={`text-right ${unspecifiedReductions.currentYearB > 0 ? 'text-red' : ''}`}>
-                      {formatNumeric(unspecifiedReductions.currentYearB
-                        ? -unspecifiedReductions.currentYearB
-                        : 0)}
-                    </td>
-                  </tr>
-                </>
-              )}
+              {deductions && deductions.filter(
+                (deduction) => deduction.type === 'unspecifiedReduction'
+                && (deduction.creditA > 0 || deduction.creditB > 0),
+              ).map((deduction) => (
+                <tr key={deduction.modelYear}>
+                  <td className="text-blue">
+                    &bull; &nbsp; &nbsp; {deduction.modelYear} Credits
+                  </td>
+                  <td className="text-right">
+                    {deduction.creditA > 0 && (
+                      <span className="text-red">-{formatNumeric(deduction.creditA, 2)}</span>
+                    )}
+                    {!deduction.creditA && (
+                      <span>0.00</span>
+                    )}
+                  </td>
+                  <td className="text-right">
+                    {deduction.creditB > 0 && (
+                      <span className="text-red">-{formatNumeric(deduction.creditB, 2)}</span>
+                    )}
+                    {!deduction.creditB && (
+                      <span>0.00</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
 
-      {((creditBalance.A > 0) || (creditBalance.B > 0)) && (
-      <div className="col-12 mt-3">
-        <div className="row">
-          <table className="col-12">
-            <tbody>
-              <tr className="subclass">
-                <th className="large-column">Provisional Balance after Credit Reduction</th>
-                <th className="small-column text-center text-blue">A</th>
-                <th className="small-column text-center text-blue">B</th>
-              </tr>
-              <tr>
-                <td className="text-blue">
-                  &bull; &nbsp; &nbsp; {reportYear} Credit
-                </td>
-                <td className="text-right">
-                  {formatNumeric(creditBalance.A ? creditBalance.A : 0)}
-                </td>
-                <td className="text-right">
-                  {formatNumeric(creditBalance.B ? creditBalance.B : 0)}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      {updatedBalances && updatedBalances.balances
+      && updatedBalances.balances.filter(
+        (balance) => balance.creditA > 0 || balance.creditB > 0,
+      ).length > 0
+      && (
+        <div className="col-12 mt-3">
+          <div className="row">
+            <table className="col-12">
+              <tbody>
+                <tr className="subclass">
+                  <th className="large-column">Provisional Balance after Credit Reduction</th>
+                  <th className="small-column text-center text-blue">A</th>
+                  <th className="small-column text-center text-blue">B</th>
+                </tr>
+                {updatedBalances.balances.filter(
+                  (balance) => balance.creditA > 0 || balance.creditB > 0,
+                ).map((balance) => (
+                  <tr key={balance.modelYear}>
+                    <td className="text-blue">
+                      &bull; &nbsp; &nbsp; {balance.modelYear} Credit
+                    </td>
+                    <td className="text-right">
+                      {formatNumeric(balance.creditA ? balance.creditA : 0)}
+                    </td>
+                    <td className="text-right">
+                      {formatNumeric(balance.creditB ? balance.creditB : 0)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
       )}
 
-      {(creditBalance.creditADeficit > 0 || creditBalance.unspecifiedCreditDeficit > 0) && (
-      <div className="col-12 mt-3">
-        <div className="row">
-          <table className="col-12">
-            <tbody>
-              <tr className="subclass">
-                <th className="large-column">BALANCE AFTER CREDIT REDUCTION</th>
-                <th className="small-column text-center text-blue">A</th>
-                <th className="small-column text-center text-blue">Unspecified</th>
-              </tr>
-              <tr>
-                <td>Credit Deficit</td>
-                <td className="text-right">
-                  {Number(creditBalance.creditADeficit) > 0 && (
-                    <span>({formatNumeric(creditBalance.creditADeficit)})</span>
-                  )}
-                  {Number(creditBalance.creditADeficit) <= 0 && (
-                    <span>{formatNumeric(creditBalance.creditADeficit)}</span>
-                  )}
-                </td>
-                <td className="text-right">
-                  {Number(creditBalance.unspecifiedCreditDeficit) > 0 && (
-                    <span>({formatNumeric(creditBalance.unspecifiedCreditDeficit)})</span>
-                  )}
-                  {Number(creditBalance.unspecifiedCreditDeficit) <= 0 && (
-                    <span>{formatNumeric(creditBalance.unspecifiedCreditDeficit)}</span>
-                  )}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      {updatedBalances && updatedBalances.deficits.length > 0 && (
+        <div className="col-12 mt-3">
+          <div className="row">
+            <table className="col-12">
+              <tbody>
+                <tr className="subclass">
+                  <th className="large-column">BALANCE AFTER CREDIT REDUCTION</th>
+                  <th className="small-column text-center text-blue">A</th>
+                  <th className="small-column text-center text-blue">Unspecified</th>
+                </tr>
+                {updatedBalances.deficits.map((deficit) => (
+                  <tr key={deficit.modelYear}>
+                    <td className="text-blue">&bull; &nbsp; &nbsp; {deficit.modelYear} Credit Deficit</td>
+                    <td className="text-right">
+                      {Number(deficit.creditA) > 0 && (
+                        <span>({formatNumeric(deficit.creditA)})</span>
+                      )}
+                      {!deficit.creditA && (
+                        <span>0.00</span>
+                      )}
+                    </td>
+                    <td className="text-right">
+                      {Number(deficit.creditB) > 0 && (
+                        <span>({formatNumeric(deficit.creditB)})</span>
+                      )}
+                      {!deficit.creditB && (
+                        <span>0.00</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
       )}
     </>
   );
@@ -232,20 +223,17 @@ const ComplianceObligationReductionOffsetTable = (props) => {
 
 ComplianceObligationReductionOffsetTable.defaultProps = {
   creditReductionSelection: null,
+  handleUnspecifiedCreditReduction: () => {},
 };
 
 ComplianceObligationReductionOffsetTable.propTypes = {
-  creditBalance: PropTypes.shape().isRequired,
   creditReductionSelection: PropTypes.string,
-  leftoverReduction: PropTypes.number.isRequired,
-  reportYear: PropTypes.number.isRequired,
+  deductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  handleUnspecifiedCreditReduction: PropTypes.func,
   statuses: PropTypes.shape().isRequired,
-  supplierClassInfo: PropTypes.shape().isRequired,
-  totalReduction: PropTypes.number.isRequired,
-  unspecifiedCreditReduction: PropTypes.func.isRequired,
-  unspecifiedReductions: PropTypes.shape().isRequired,
+  supplierClass: PropTypes.string.isRequired,
+  updatedBalances: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
-  zevClassAReduction: PropTypes.shape().isRequired,
 };
 
 export default ComplianceObligationReductionOffsetTable;

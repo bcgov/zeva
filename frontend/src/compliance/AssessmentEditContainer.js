@@ -168,10 +168,10 @@ const AssessmentEditContainer = (props) => {
           [year]: ldvSales,
         });
 
-        const filteredRatio = ratiosResponse.data.filter(
+        const filteredRatio = ratiosResponse.data.find(
           (data) => data.modelYear === year.toString(),
-        )[0];
-        console.error(filteredRatio);
+        );
+
         setRatios(filteredRatio);
 
         setYears(yearsResponse.data);

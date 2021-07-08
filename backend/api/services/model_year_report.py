@@ -1,6 +1,6 @@
-from django.db import transaction
 from decimal import Decimal
 from datetime import date
+
 from api.models.model_year_report_confirmation import \
     ModelYearReportConfirmation
 from api.models.model_year_report_statuses import ModelYearReportStatuses
@@ -12,6 +12,7 @@ from api.models.model_year_report_compliance_obligation import \
     ModelYearReportComplianceObligation
 from api.models.user_profile import UserProfile
 from api.models.model_year_report_vehicle import ModelYearReportVehicle
+from api.models.organization_deficits import OrganizationDeficits
 from api.models.organization_ldv_sales import OrganizationLDVSales
 from api.serializers.model_year_report_confirmation import \
     ModelYearReportConfirmationSerializer
@@ -117,7 +118,7 @@ def get_model_year_report_statuses(report):
                 'create_timestamp': report.update_timestamp,
                 'create_user': serializer.data
             }
-            
+
     if report.validation_status == ModelYearReportStatuses.ASSESSED:
         supplier_information_status = 'ASSESSED'
         consumer_sales_status = 'ASSESSED'
@@ -166,28 +167,32 @@ def adjust_credits(id, request):
     credit_list = {}
     credit_class_a = CreditClass.objects.get(credit_class='A')
     credit_class_b = CreditClass.objects.get(credit_class='B')
-    model_year_id = ModelYear.objects.values_list("id", flat=True).filter(
+    model_year_id = ModelYear.objects.values_list('id', flat=True).filter(
         name=str(model_year)).first()
     model_year_previous_id = ModelYear.objects.values_list(
-        "id", flat=True).filter(
-        name=str(model_year-1)).first()
+        'id', flat=True
+    ).filter(
+        name=str(model_year-1)
+    ).first()
 
     organization_id = ModelYearReport.objects.values_list(
         'organization_id', flat=True).filter(
             id=id).first()
     ldv_sales = ModelYearReportLDVSales.objects.values_list(
-        'ldv_sales', flat=True).filter(
+        'ldv_sales', flat=True
+    ).filter(
         model_year_id=model_year_id,
         model_year_report_id=id,
-        from_gov=True).first()
+        from_gov=True
+    ).first()
 
     OrganizationLDVSales.objects.update_or_create(
         organization_id=organization_id,
-        ldv_sales=ldv_sales,
         model_year_id=model_year_id,
         defaults={
-                'update_user': request.user.username
-            }
+            'ldv_sales': ldv_sales,
+            'update_user': request.user.username
+        }
     )
     obligation_current_year = ModelYearReportComplianceObligation.objects.filter(
         model_year_report_id=id,
@@ -202,34 +207,42 @@ def adjust_credits(id, request):
     for i in obligation_current_year:
         class_a_current += int(i.credit_a_value)
         class_b_current += int(i.credit_b_value)
-    credit_list[model_year_id] = {credit_class_a: class_a_current,
-                                  credit_class_b: class_b_current}
+
+    credit_list[model_year_id] = {
+        credit_class_a: class_a_current,
+        credit_class_b: class_b_current
+    }
+
     for i in obligation_last_year:
         class_a_last += int(i.credit_a_value)
         class_b_last += int(i.credit_b_value)
-    credit_list[model_year_previous_id] = {credit_class_a: class_a_last,
-                                           credit_class_b: class_b_last}
+
+    credit_list[model_year_previous_id] = {
+        credit_class_a: class_a_last,
+        credit_class_b: class_b_last
+    }
 
     for year, item in credit_list.items():
         for credit_class, credit_value in item.items():
             if credit_value > 0:
                 total_value = 1 * credit_value
                 added_transaction = CreditTransaction.objects.create(
-                        create_user=request.user.username,
-                        credit_class=credit_class,
-                        debit_from=Organization.objects.get(
-                            id=organization_id),
-                        model_year_id=year,
-                        number_of_credits=1,
-                        credit_value=credit_value,
-                        transaction_type=CreditTransactionType.objects.get(
-                            transaction_type="Reduction"
-                        ),
-                        total_value=total_value,
-                        update_user=request.user.username,
-                        weight_class=WeightClass.objects.get(
-                            weight_class_code='LDV')
-                    )
+                    create_user=request.user.username,
+                    credit_class=credit_class,
+                    debit_from=Organization.objects.get(
+                        id=organization_id
+                    ),
+                    model_year_id=year,
+                    number_of_credits=1,
+                    credit_value=credit_value,
+                    transaction_type=CreditTransactionType.objects.get(
+                        transaction_type="Reduction"
+                    ),
+                    total_value=total_value,
+                    update_user=request.user.username,
+                    weight_class=WeightClass.objects.get(
+                        weight_class_code='LDV')
+                )
 
                 ModelYearReportCreditTransaction.objects.create(
                     model_year_report_id=id,
@@ -257,3 +270,49 @@ def adjust_credits(id, request):
                     credit_transaction=added_transaction,
                     organization_id=organization_id
                 )
+
+    deficits = ModelYearReportComplianceObligation.objects.filter(
+        model_year_report_id=id,
+        category='CreditDeficit'
+    )
+
+    for deficit in deficits:
+        credit_class = CreditClass.objects.get(credit_class='A')
+
+        if deficit.credit_a_value > 0:
+            OrganizationDeficits.objects.update_or_create(
+                credit_class=credit_class,
+                organization_id=organization_id,
+                model_year_id=model_year_id,
+                defaults={
+                    'credit_value': deficit.credit_a_value,
+                    'create_user': request.user.username,
+                    'update_user': request.user.username
+                }
+            )
+        else:
+            OrganizationDeficits.objects.filter(
+                credit_class=credit_class,
+                organization_id=organization_id,
+                model_year_id=model_year_id
+            ).delete()
+
+        credit_class = CreditClass.objects.get(credit_class='B')
+
+        if deficit.credit_b_value > 0:
+            OrganizationDeficits.objects.update_or_create(
+                credit_class=credit_class,
+                organization_id=organization_id,
+                model_year_id=model_year_id,
+                defaults={
+                    'credit_value': deficit.credit_b_value,
+                    'create_user': request.user.username,
+                    'update_user': request.user.username
+                }
+            )
+        else:
+            OrganizationDeficits.objects.filter(
+                credit_class=credit_class,
+                organization_id=organization_id,
+                model_year_id=model_year_id
+            ).delete()

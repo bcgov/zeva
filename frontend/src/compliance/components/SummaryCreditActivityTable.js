@@ -165,10 +165,6 @@ const SummaryCreditActivityTable = (props) => {
             'text-right',
           )}
 
-        {/* {Object.keys(provisionalAssessedBalance).length > 0
-          && (
-            tableSection(provisionalAssessedBalance, 'Provisional assessed balance:')
-          )} */}
         {Object.keys(totalCreditReduction).length > 0
           && tableSection(
             totalCreditReduction,
