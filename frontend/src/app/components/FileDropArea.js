@@ -17,6 +17,7 @@ const FileDropArea = (props) => {
     showProgressBars,
     submission,
     type,
+    wholePageWidth,
   } = props;
   const removeFile = (removedFile) => {
     const found = files.findIndex((file) => (file === removedFile));
@@ -33,7 +34,7 @@ const FileDropArea = (props) => {
 
   return (
     <div className="row">
-      <div className="col-md-12 col-lg-9 col-xl-6">
+      <div className={wholePageWidth ? 'col-12' : 'col-md-12 col-lg-9 col-xl-6'}>
         <div className="bordered">
           {errorMessage && (
           <div className="alert alert-danger mb-2" role="alert">
@@ -154,6 +155,7 @@ FileDropArea.defaultProps = {
   showProgressBars: false,
   submission: {},
   setEvidenceDeleteList: () => {},
+  wholePageWidth: false,
 };
 
 FileDropArea.propTypes = {
@@ -167,6 +169,7 @@ FileDropArea.propTypes = {
   showProgressBars: PropTypes.bool,
   submission: PropTypes.shape(),
   type: PropTypes.string.isRequired,
+  wholePageWidth: PropTypes.bool,
 };
 
 export default FileDropArea;
