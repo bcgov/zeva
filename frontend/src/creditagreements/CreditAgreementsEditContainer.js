@@ -16,7 +16,7 @@ const CreditAgreementsEditContainer = (props) => {
   const { id } = useParams();
   const [bceidComment, setBceidComment] = useState('');
   const [idirComment, setIdirComment] = useState([]);
-  const [creditLines, setCreditLines] = useState([{
+  const [creditRows, setCreditRows] = useState([{
     creditClass: 'A',
     modelYear: '-',
     quantity: 0,
@@ -53,7 +53,6 @@ const CreditAgreementsEditContainer = (props) => {
     //   history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
     // });
   };
-
   const handleUpload = (paramId) => {
     const promises = [];
     // setShowProgressBars(true);
@@ -94,24 +93,29 @@ const CreditAgreementsEditContainer = (props) => {
 
     return promises;
   };
-  const addLine = () => {
-    creditLines.push({
+  const addRow = () => {
+    creditRows.push({
       creditClass: 'A',
       modelYear: '-',
       quantity: 0,
     });
 
-    setCreditLines([...creditLines]);
+    setCreditRows([...creditRows]);
   };
-  const handleChangeLine = (value, property, index) => {
-    creditLines[index][property] = value;
-    setCreditLines([...creditLines]);
+  const handleDeleteRow = (index) => {
+    creditRows.splice(index, 1);
+    setCreditRows([...creditRows]);
   };
+  const handleChangeRow = (value, property, index) => {
+    creditRows[index][property] = value;
+    setCreditRows([...creditRows]);
+  };
+
   const handleChangeDetails = (value, property) => {
     setAgreementDetails({ ...agreementDetails, [property]: value });
   };
   const handleSubmit = () => {
-    const data = { agreementDetails, creditLines, bceidComment };
+    const data = { agreementDetails, creditRows, bceidComment };
     // ADD POST TO BACKEND HERE
   };
   const refreshDetails = () => {
@@ -160,13 +164,14 @@ const CreditAgreementsEditContainer = (props) => {
       upload={handleUpload}
       handleCommentChangeBceid={handleCommentChangeBceid}
       handleSubmit={handleSubmit}
-      addLine={addLine}
-      creditLines={creditLines}
+      addRow={addRow}
+      creditRows={creditRows}
       years={years}
-      handleChangeLine={handleChangeLine}
+      handleChangeRow={handleChangeRow}
       handleChangeDetails={handleChangeDetails}
       suppliers={suppliers}
       transactionTypes={transactionTypes}
+      handleDeleteRow={handleDeleteRow}
     />,
   ]);
 };

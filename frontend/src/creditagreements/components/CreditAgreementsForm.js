@@ -18,7 +18,7 @@ const CreditAgreementsForm = (props) => {
   const {
     agreementDetails,
     analystAction,
-    creditLines,
+    creditRows,
     id,
     user,
     bceidComment,
@@ -26,7 +26,7 @@ const CreditAgreementsForm = (props) => {
     idirComment,
     handleAddIdirComment,
     handleChangeDetails,
-    handleChangeLine,
+    handleChangeRow,
     handleCommentChangeIdir,
     handleCommentChangeBceid,
     handleSubmit,
@@ -34,10 +34,11 @@ const CreditAgreementsForm = (props) => {
     setErrorMessage,
     setUploadFiles,
     upload,
-    addLine,
+    addRow,
     suppliers,
     transactionTypes,
     years,
+    handleDeleteRow,
   } = props;
   console.log(files);
   return (
@@ -224,7 +225,7 @@ const CreditAgreementsForm = (props) => {
 
               </div>
 
-              {creditLines && creditLines.map((creditLine, index) => (
+              {creditRows && creditRows.map((creditRow, index) => (
                 <div className="credit-agreement-form-row" key={index}>
                   <div className="d-inline-block align-middle mr-5 text-blue">
                     Credits
@@ -237,7 +238,7 @@ const CreditAgreementsForm = (props) => {
                           name={`agreement-${index}`}
                           type="radio"
                           value="A"
-                          onChange={(event) => { handleChangeLine(event.target.value, 'creditClass', index); }}
+                          onChange={(event) => { handleChangeRow(event.target.value, 'creditClass', index); }}
                         />
                         <label className="ml-2" htmlFor={`agreement-${index}-credit-type-A`}>A credits</label>
                       </div>
@@ -247,7 +248,7 @@ const CreditAgreementsForm = (props) => {
                           name={`agreement-${index}`}
                           type="radio"
                           value="B"
-                          onChange={(event) => { handleChangeLine(event.target.value, 'creditClass', index); }}
+                          onChange={(event) => { handleChangeRow(event.target.value, 'creditClass', index); }}
                         />
                         <label className="ml-2" htmlFor={`agreement-${index}-credit-type-B`}>B credits</label>
                       </div>
@@ -257,11 +258,11 @@ const CreditAgreementsForm = (props) => {
                     dropdownData={years}
                     dropdownName="model year"
                     handleInputChange={(event) => {
-                      handleChangeLine(event.target.value, 'modelYear', index);
+                      handleChangeRow(event.target.value, 'modelYear', index);
                     }}
                     fieldName="modelYear"
                     accessor={(year) => year.name}
-                    selectedOption={creditLine.modelYear || '--'}
+                    selectedOption={creditRow.modelYear || '--'}
                     labelClassname="mr-2 d-inline-block"
                     inputClassname="d-inline-block"
                     rowClassname="mr-5 d-inline-block align-middle"
@@ -270,9 +271,9 @@ const CreditAgreementsForm = (props) => {
                     label="quantity of credits"
                     id="quantityOfCredits"
                     name="quantity"
-                    defaultValue={creditLine.quantity}
+                    defaultValue={creditRow.quantity}
                     handleInputChange={(event) => {
-                      handleChangeLine(event.target.value, 'quantity', index);
+                      handleChangeRow(event.target.value, 'quantity', index);
                     }}
                     labelSize="mr-2 col-form-label d-inline-block align-middle"
                     inputSize="d-inline-block align-middle transfer-input-width"
@@ -280,9 +281,18 @@ const CreditAgreementsForm = (props) => {
                     rowSize="mr-5 d-inline-block align-middle"
                     num
                   />
+                  <button
+                    type="button"
+                    className="transfer-row-x"
+                    onClick={() => {
+                      handleDeleteRow(index);
+                    }}
+                  >
+                    <FontAwesomeIcon icon="times" />
+                  </button>
                 </div>
               ))}
-              <button type="button" className="transfer-add-line my-2" onClick={() => { addLine(); }}>
+              <button type="button" className="transfer-add-line my-2" onClick={() => { addRow(); }}>
                 <h4><FontAwesomeIcon icon="plus" /> Add another line</h4>
               </button>
             </div>
