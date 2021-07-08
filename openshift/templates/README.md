@@ -4,7 +4,7 @@
 
 - Follow the instructions in openshift/templates/nsp/README.md
 - Follow the instructions in https://developer.gov.bc.ca/Artifact-Repositories-(Artifactory) to setup artifactory required secrets.
-  Currently there are two artifactories are being used for registry.redhat.io and docker-remote.artifacts.developer.gov.bc.ca
+  Currently there are two artifactories are being used for registry.redhat.io and artifacts.developer.gov.bc.ca/docker-remote
 
 ## 2. Jenkins setup on tools project
 

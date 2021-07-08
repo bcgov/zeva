@@ -1,4 +1,4 @@
-FROM docker-remote.artifacts.developer.gov.bc.ca/rabbitmq:3.8.3-management
+FROM artifacts.developer.gov.bc.ca/docker-remote/rabbitmq:3.8.3-management
 RUN apt-get update
 RUN apt-get install -y gettext-base vim
 RUN chgrp -R root /var/log/rabbitmq && \
