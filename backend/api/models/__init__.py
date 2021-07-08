@@ -44,3 +44,7 @@ from . import model_year_report_assessment_comment
 from . import model_year_report_assessment_descriptions
 from . import model_year_report_credit_transaction
 from . import organization_deficits
+from . import credit_agreement
+from . import credit_agreement_attachment
+from . import credit_agreement_comment
+from . import credit_agreement_content, credit_agreement_history
