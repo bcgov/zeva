@@ -15,6 +15,26 @@ class CreditAgreementSerializer(ModelSerializer):
             'id', 'organization', 'effective_date', 'transaction_type',
         )
 
+class CreditAgreementSaveSerializer(ModelSerializer):
+    def create(self, validated_data):
+        request = self.context.get('request')
+        organization = request.user.organization
+        obj = CreditAgreement.objects.create(
+            **validated_data
+        )
+        ## for transaction type use slug related field
+
+        ## for status use enum field (vehicle save serializer)
+
+        return obj
+
+    class Meta:
+        model = CreditAgreement
+        fields = (
+            'create_timestamp', 'organization',  'effective_date', 'id',
+            'update_user',
+        )
+
 
 class CreditAgreementListSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
@@ -33,7 +53,9 @@ class CreditAgreementListSerializer(
     class Meta:
         model = CreditAgreement
         fields = (
-            'create_timestamp', 'organization',  'effective_date', 
-            'transaction_type', 'credit_agreement_content','id', 
+            'create_timestamp', 'organization',  'effective_date',
+            'transaction_type', 'credit_agreement_content', 'id',
             'status', 'update_user', 'history',
         )
+
+
