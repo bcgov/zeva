@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import history from '../../app/History';
+import getOptions from '../../app/utilities/getOptions';
+import handleFilterChange from '../../app/utilities/handleFilterChange';
 
 const CreditAgreementsFilter = (props) => {
   const {
@@ -11,24 +13,8 @@ const CreditAgreementsFilter = (props) => {
     setFiltered,
   } = props;
 
-  const getOptions = (inputObj, displayField) => {
-    const uniqueArr = [...new Set(inputObj.map((eachAgreement) => {
-      if (typeof eachAgreement[displayField] === 'string') {
-        return eachAgreement[displayField];
-      }
-
-      return eachAgreement[displayField].shortName || eachAgreement[displayField].name;
-    }))];
-    return uniqueArr.sort().map((each) => (
-      <option key={each}>{each}</option>
-    ));
-  };
-
   const handleChange = (event) => {
-    const { id, value } = event.target;
-    let newFiltered = [...filtered];
-    newFiltered = newFiltered.filter((each) => (each.id !== id));
-    setFiltered([...newFiltered, { id, value }]);
+    setFiltered(handleFilterChange(event, filtered));
   };
 
   return (
