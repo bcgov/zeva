@@ -1,29 +1,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import getOptions from '../../app/utilities/getOptions';
+import handleFilterChange from '../../app/utilities/handleFilterChange';
 
 const ActionBarGov = (props) => {
   const {
     vehicles, handleClear, filtered, setFiltered, showOrganization,
   } = props;
 
-  const getOptions = (inputObj, displayField) => {
-    const uniqueArr = [...new Set(inputObj.map((eachVehicle) => {
-      if (typeof eachVehicle[displayField] === 'string') {
-        return eachVehicle[displayField];
-      }
-
-      return eachVehicle[displayField].shortName || eachVehicle[displayField].name;
-    }))];
-    return uniqueArr.sort().map((each) => (
-      <option key={each}>{each}</option>
-    ));
-  };
-
   const handleChange = (event) => {
-    const { id, value } = event.target;
-    let newFiltered = [...filtered];
-    newFiltered = newFiltered.filter((each) => (each.id !== id));
-    setFiltered([...newFiltered, { id, value }]);
+    setFiltered(handleFilterChange(event, filtered));
   };
 
   return (
