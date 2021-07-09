@@ -2,15 +2,17 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReactTooltip from 'react-tooltip';
+import axios from 'axios';
 import Button from '../../app/components/Button';
 import Modal from '../../app/components/Modal';
 import Alert from '../../app/components/Alert';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import DisplayComment from '../../app/components/DisplayComment';
 import CommentInput from '../../app/components/CommentInput';
-import FileDropArea from '../../app/components/FileDropArea';
+import ExcelFileDrop from '../../app/components/FileDrop';
 import FormDropdown from '../../credits/components/FormDropdown';
 import TextInput from '../../app/components/TextInput';
+import getFileSize from '../../app/utilities/getFileSize';
 
 const CreditAgreementsForm = (props) => {
   const {
@@ -38,6 +40,7 @@ const CreditAgreementsForm = (props) => {
     years,
     handleDeleteRow,
   } = props;
+  console.log(files);
   return (
     <div id="credit-agreements-form" className="page">
       <div className="row mt-3 mb-2">
@@ -67,26 +70,95 @@ const CreditAgreementsForm = (props) => {
               <h4>Agreement Attachments (optional)</h4>
               <div className="grey-border-area p-3 mt-1">
                 <div className="col-12">
-                  <FileDropArea
-                    wholePageWidth
-                    type="pdf"
-                    errorMessage={errorMessage}
-                    files={files}
-                    setErrorMessage={setErrorMessage}
-                    setUploadFiles={setUploadFiles}
+                  <ExcelFileDrop
+                    setFiles={setUploadFiles}
+                    maxFiles={5}
                   />
                 </div>
 
-                <div className="d-flex flex-row-reverse">
+                <div className="col-12 text-right pt-3">
                   <button
                     disabled={files.length === 0}
                     className="button primary"
-                    onClick={() => upload()}
+                    onClick={() => { console.log(files); upload(); }}
                     type="button"
                   >
                     <FontAwesomeIcon icon="upload" /> Upload
                   </button>
                 </div>
+                <div className="form-group mt-4 row">
+                  <div className="col-12 text-blue">
+                    <strong>Files</strong> (doc, docx, xls, xlsx, pdf, jpg, png)
+                  </div>
+                </div>
+                {(files.length > 0 || (agreementDetails.attachments && agreementDetails.attachments.length > 0)) && (
+                  <div className="form-group uploader-files mt-3">
+                    <div className="row">
+                      <div className="col-8 filename header">Filename</div>
+                      <div className="col-3 size header">Size</div>
+                      <div className="col-1 actions header" />
+                    </div>
+                    {agreementDetails.attachments && agreementDetails.attachments.map((attachment) => (
+                      <div className="row" key={attachment.id}>
+                        <div className="col-8 filename">
+                          <button
+                            className="link"
+                            onClick={() => {
+                              axios.get(attachment.url, {
+                                responseType: 'blob',
+                                headers: {
+                                  Authorization: null,
+                                },
+                              }).then((response) => {
+                                const objectURL = window.URL.createObjectURL(
+                                  new Blob([response.data]),
+                                );
+                                const link = document.createElement('a');
+                                link.href = objectURL;
+                                link.setAttribute('download', attachment.filename);
+                                document.body.appendChild(link);
+                                link.click();
+                              });
+                            }}
+                            type="button"
+                          >
+                            {attachment.filename}
+                          </button>
+                        </div>
+                        <div className="col-3 size">{getFileSize(attachment.size)}</div>
+                        <div className="col-1 actions">
+                          <button
+                            className="delete"
+                            onClick={() => {
+                              console.log('delete');
+                            }}
+                            type="button"
+                          >
+                            <FontAwesomeIcon icon="trash" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    {files.map((file, index) => (
+                      <div className="row" key={file.name}>
+                        <div className="col-8 filename">{file.name}</div>
+                        <div className="col-3 size" key="size">{getFileSize(file.size)}</div>
+                        <div className="col-1 actions" key="actions">
+                          <button
+                            className="delete"
+                            onClick={() => {
+                              console.log('delete');
+                            }}
+                            type="button"
+                          >
+                            <FontAwesomeIcon icon="trash" />
+                          </button>
+                        </div>
+
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
             <div className="grey-border-area p-3 mt-4">
