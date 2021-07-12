@@ -70,14 +70,12 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
       if (item.creditAValue > 0 || item.creditBValue > 0) {
         pendingBalanceExist = true;
       }
+
       pendingBalance.push({
         modelYear: item.modelYear.name,
         A: Number(item.creditAValue),
         B: Number(item.creditBValue),
       });
-
-      endingBalanceA += Number(item.creditAValue);
-      endingBalanceB += Number(item.creditBValue);
     }
 
     creditBalanceEnd[item.modelYear.name] = {
