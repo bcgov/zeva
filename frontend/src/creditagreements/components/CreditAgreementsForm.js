@@ -75,17 +75,6 @@ const CreditAgreementsForm = (props) => {
                     maxFiles={5}
                   />
                 </div>
-
-                <div className="col-12 text-right pt-3">
-                  <button
-                    disabled={files.length === 0}
-                    className="button primary"
-                    onClick={() => { console.log(files); upload(); }}
-                    type="button"
-                  >
-                    <FontAwesomeIcon icon="upload" /> Upload
-                  </button>
-                </div>
                 <div className="form-group mt-4 row">
                   <div className="col-12 text-blue">
                     <strong>Files</strong> (doc, docx, xls, xlsx, pdf, jpg, png)
