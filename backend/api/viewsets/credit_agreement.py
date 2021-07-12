@@ -21,9 +21,9 @@ class CreditAgreementViewSet(
     http_method_names = ['get', 'post', 'put', 'patch']
     queryset = CreditAgreement.objects.all()
     serializer_classes = {
-        'default': CreditAgreementListSerializer,
+        'default': CreditAgreementSerializer,
         'create': CreditAgreementSaveSerializer,
-
+        'partial_update': CreditAgreementSaveSerializer,
     }
 
     def get_serializer_class(self):

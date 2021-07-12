@@ -56,7 +56,6 @@ const CreditAgreementsEditContainer = (props) => {
   const handleUpload = (paramId) => {
     const promises = [];
     // setShowProgressBars(true);
-
     files.forEach((file, index) => {
       promises.push(new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -116,10 +115,24 @@ const CreditAgreementsEditContainer = (props) => {
   };
   const handleSubmit = () => {
     const data = { organization: agreementDetails.vehicleSupplier, agreementDetails };
-    axios.post(ROUTES_CREDIT_AGREEMENTS.LIST, data).then(
+    axios.post(ROUTES_CREDIT_AGREEMENTS.LIST, data).then((response) => {
       // after agreement is created, then post the content using the id from the response
-      () => { console.log('!'); },
-    );
+      const { id: agreementId } = response.data;
+      const uploadPromises = handleUpload(agreementId);
+      Promise.all(uploadPromises).then((attachments) => {
+        const patchData = {};
+        if (attachments.length > 0) {
+          patchData.agreementAttachments = attachments;
+        }
+        axios.patch(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId), {
+          ...patchData,
+        }).then(() => {
+            console.log('SUCCESS! no details page built yet');
+
+        //   history.push(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId));
+        });
+      });
+    });
   };
   const refreshDetails = () => {
     const yearsPromise = axios.get(ROUTES_VEHICLES.YEARS);
