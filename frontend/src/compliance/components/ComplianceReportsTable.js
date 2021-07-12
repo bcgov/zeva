@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+
 import ReactTable from '../../app/components/ReactTable';
 import CustomPropTypes from '../../app/utilities/props';
 import history from '../../app/History';
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceReportsTable = (props) => {
   const { user, data, showSupplier } = props;
@@ -54,7 +56,7 @@ const ComplianceReportsTable = (props) => {
     id: 'compliant',
     maxWidth: 260,
   }, {
-    accessor: (item) => (item.ldvSales ? item.ldvSales : '-'),
+    accessor: (item) => (item.ldvSales ? formatNumeric(item.ldvSales, 0) : '-'),
     className: 'text-right px-3',
     Header: 'Total LDV Sales',
     headerClassName: 'font-weight-bold',
