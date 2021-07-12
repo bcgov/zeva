@@ -46,10 +46,10 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             {title === 'Transferred Away' ? (
               <>
                 <td className={`${numberClassname} ${Number(each.A) > 0 ? 'text-red' : ''}`}>
-                  {-formatNumeric(each.A, 2)}
+                  {formatNumeric(each.A * -1, 2)}
                 </td>
                 <td className={`${numberClassname} ${Number(each.B) > 0 ? 'text-red' : ''}`}>
-                  {-formatNumeric(each.B, 2)}
+                  {formatNumeric(each.B * -1, 2)}
                 </td>
               </>
             ) : (

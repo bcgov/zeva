@@ -63,7 +63,7 @@ const SummaryCreditActivityTable = (props) => {
             {year} Model Year LDV Sales\Leases:
           </td>
           <td />
-          <td className="text-right font-weight-bold">{ldvSales}</td>
+          <td className="text-right font-weight-bold">{formatNumeric(ldvSales, 0)}</td>
         </tr>
         <tr>
           <td className="text-blue">{year} Compliance Ratio:</td>
