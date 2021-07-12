@@ -27,9 +27,7 @@ class CreditAgreementViewSet(
     }
 
     def get_serializer_class(self):
-        print("action: ", self.action)
         if self.action in list(self.serializer_classes.keys()):
-            print(self.serializer_classes[self.action])
             return self.serializer_classes[self.action]
 
         return self.serializer_classes['default']

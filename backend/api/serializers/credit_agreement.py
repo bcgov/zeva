@@ -28,10 +28,9 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
 
     def create(self, validated_data):
         request = self.context.get('request')
-        organization = request.user.organization
         agreement_details = request.data.get('agreement_details')
         transaction_type = agreement_details.get('transaction_type')
-        obj = CreditAgreement.osbjects.create(
+        obj = CreditAgreement.objects.create(
             transaction_type=transaction_type,
             **validated_data
         )
