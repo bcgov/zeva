@@ -40,7 +40,6 @@ const CreditAgreementsForm = (props) => {
     years,
     handleDeleteRow,
   } = props;
-  console.log(files);
   return (
     <div id="credit-agreements-form" className="page">
       <div className="row mt-3 mb-2">
