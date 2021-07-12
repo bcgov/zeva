@@ -151,11 +151,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
               ))}
             </tbody>
           </table>
-          {user && !user.isGovernment &&
-            updatedBalances &&
-            updatedBalances.deficits.length > 0 &&
-            statuses && statuses.assessment &&
-            (statuses.assessment.status === 'SAVED' || statuses.assessment.status === 'UNSAVED') && (
+          {updatedBalances &&
+            updatedBalances.deficits.length > 0 && (
             <div className='mt-2'>
             By selecting the ZEV Class {radioSalected} credit preference your
             unspecified credit deficit will be offset automatically using ZEV Class {' '}
