@@ -421,6 +421,7 @@ const AssessmentDetailsPage = (props) => {
 };
 
 AssessmentDetailsPage.defaultProps = {
+  pendingBalanceExist: false,
   sales: 0,
 };
 
@@ -445,7 +446,7 @@ AssessmentDetailsPage.propTypes = {
   setDetails: PropTypes.func.isRequired,
   classAReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   ratios: PropTypes.shape().isRequired,
-  pendingBalanceExist: PropTypes.bool.isRequired,
+  pendingBalanceExist: PropTypes.bool,
   supplierClass: PropTypes.string.isRequired,
   totalReduction: PropTypes.number.isRequired,
   unspecifiedReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,

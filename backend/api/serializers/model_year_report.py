@@ -96,7 +96,13 @@ class ModelYearReportSerializer(ModelSerializer):
     def get_ldv_sales(self, obj):
         request = self.context.get('request')
 
-        if request.user.is_government:
+        is_assessed = (
+            (request.user.organization_id == obj.organization_id and
+             obj.validation_status == ModelYearReportStatuses.ASSESSED) or
+            request.user.is_government
+        )
+
+        if is_assessed:
             return obj.get_ldv_sales(from_gov=True) or obj.ldv_sales
 
         return obj.ldv_sales
@@ -187,7 +193,7 @@ class ModelYearReportListSerializer(
 
 
 class ModelYearReportSaveSerializer(
-    ModelSerializer, EnumSupportSerializerMixin
+        ModelSerializer, EnumSupportSerializerMixin
 ):
     model_year = SlugRelatedField(
         slug_field='name',

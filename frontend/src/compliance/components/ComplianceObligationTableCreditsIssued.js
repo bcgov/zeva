@@ -167,8 +167,13 @@ const ComplianceObligationTableCreditsIssued = (props) => {
     </>
   );
 };
+
+ComplianceObligationTableCreditsIssued.defaultProps = {
+  pendingBalanceExist: false,
+};
+
 ComplianceObligationTableCreditsIssued.propTypes = {
-  pendingBalanceExist: PropTypes.bool.isRequired,
+  pendingBalanceExist: PropTypes.bool,
   reportYear: PropTypes.number.isRequired,
   reportDetails: PropTypes.shape().isRequired,
 };

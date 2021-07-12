@@ -50,11 +50,17 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
     }
 
     if (item.category === 'creditsIssuedSales') {
-      creditsIssuedSales.push({
-        modelYear: item.modelYear.name,
-        A: item.creditAValue,
-        B: item.creditBValue,
-      });
+      const index = creditsIssuedSales.findIndex((each) => each.modelYear === item.modelYear.name);
+      if (index >= 0) {
+        creditsIssuedSales[index].A += item.creditAValue;
+        creditsIssuedSales[index].B += item.creditBValue;
+      } else {
+        creditsIssuedSales.push({
+          modelYear: item.modelYear.name,
+          A: item.creditAValue,
+          B: item.creditBValue,
+        });
+      }
 
       endingBalanceA += item.creditAValue;
       endingBalanceB += item.creditBValue;

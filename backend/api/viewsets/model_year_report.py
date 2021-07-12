@@ -164,6 +164,7 @@ class ModelYearReportViewset(
                 if ldv_sales_previous else [],
                 'credit_reduction_selection': report.credit_reduction_selection
             })
+
         serializer = ModelYearReportSerializer(
             report, context={'request': request}
         )

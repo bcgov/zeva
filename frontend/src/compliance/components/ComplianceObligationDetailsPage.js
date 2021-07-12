@@ -181,11 +181,12 @@ const ComplianceObligationDetailsPage = (props) => {
 };
 
 ComplianceObligationDetailsPage.defaultProps = {
+  creditReductionSelection: null,
+  pendingBalanceExist: false,
   ratios: {
     complianceRatio: 0,
     zevClassA: 0,
   },
-  creditReductionSelection: null,
   sales: 0,
 };
 
@@ -208,7 +209,7 @@ ComplianceObligationDetailsPage.propTypes = {
   handleUnspecifiedCreditReduction: PropTypes.func.isRequired,
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   loading: PropTypes.bool.isRequired,
-  pendingBalanceExist: PropTypes.bool.isRequired,
+  pendingBalanceExist: PropTypes.bool,
   ratios: PropTypes.shape(),
   reportDetails: PropTypes.shape().isRequired,
   reportYear: PropTypes.number.isRequired,

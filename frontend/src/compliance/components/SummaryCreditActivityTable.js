@@ -189,13 +189,14 @@ const SummaryCreditActivityTable = (props) => {
 };
 
 SummaryCreditActivityTable.defaultProps = {
+  pendingBalanceExist: false,
 };
 
 SummaryCreditActivityTable.propTypes = {
   complianceRatios: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   consumerSalesDetails: PropTypes.shape().isRequired,
   creditActivityDetails: PropTypes.shape().isRequired,
-  pendingBalanceExist: PropTypes.bool.isRequired,
+  pendingBalanceExist: PropTypes.bool,
 };
 
 export default SummaryCreditActivityTable;

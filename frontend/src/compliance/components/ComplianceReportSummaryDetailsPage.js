@@ -209,6 +209,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
 };
 
 ComplianceReportSummaryDetailsPage.defaultProps = {
+  pendingBalanceExist: false,
 };
 
 ComplianceReportSummaryDetailsPage.propTypes = {
@@ -224,7 +225,7 @@ ComplianceReportSummaryDetailsPage.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
-  pendingBalanceExist: PropTypes.bool.isRequired,
+  pendingBalanceExist: PropTypes.bool,
   supplierDetails: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
   modelYear: PropTypes.number.isRequired,

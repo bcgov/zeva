@@ -89,7 +89,7 @@ class CreditTransactionListSerializer(ModelSerializer):
         model = CreditTransaction
         fields = (
             'credit_class', 'foreign_key', 'total_value',
-            'transaction_timestamp', 'transaction_type', 'model_year'
+            'transaction_timestamp', 'transaction_type', 'model_year',
         )
 
 

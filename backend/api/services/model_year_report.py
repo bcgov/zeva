@@ -160,20 +160,10 @@ def get_model_year_report_statuses(report):
 
 def adjust_credits(id, request):
     model_year = request.data.get('model_year')
-    class_a_current = 0
-    class_b_current = 0
-    class_a_last = 0
-    class_b_last = 0
-    credit_list = {}
     credit_class_a = CreditClass.objects.get(credit_class='A')
     credit_class_b = CreditClass.objects.get(credit_class='B')
     model_year_id = ModelYear.objects.values_list('id', flat=True).filter(
         name=str(model_year)).first()
-    model_year_previous_id = ModelYear.objects.values_list(
-        'id', flat=True
-    ).filter(
-        name=str(model_year-1)
-    ).first()
 
     organization_id = ModelYearReport.objects.values_list(
         'organization_id', flat=True).filter(
@@ -194,82 +184,95 @@ def adjust_credits(id, request):
             'update_user': request.user.username
         }
     )
-    obligation_current_year = ModelYearReportComplianceObligation.objects.filter(
+
+    weight_class = WeightClass.objects.get(weight_class_code='LDV')
+
+    credit_reductions = {}
+
+    # order by timestamp is important as this is a way for us to check if there are
+    # overrides
+    reductions = ModelYearReportComplianceObligation.objects.filter(
         model_year_report_id=id,
         category__in=['ClassAReduction', 'UnspecifiedClassCreditReduction'],
-        model_year_id=model_year_id
-    )
-    obligation_last_year = ModelYearReportComplianceObligation.objects.filter(
-        model_year_report_id=id,
-        category__in=['ClassAReduction', 'UnspecifiedClassCreditReduction'],
-        model_year_id=model_year_previous_id
-    )
-    for i in obligation_current_year:
-        class_a_current += int(i.credit_a_value)
-        class_b_current += int(i.credit_b_value)
+    ).order_by('model_year__name', 'update_timestamp')
 
-    credit_list[model_year_id] = {
-        credit_class_a: class_a_current,
-        credit_class_b: class_b_current
-    }
+    for reduction in reductions:
+        category = reduction.category
 
-    for i in obligation_last_year:
-        class_a_last += int(i.credit_a_value)
-        class_b_last += int(i.credit_b_value)
+        credit_reductions[reduction.model_year_id] = {
+            category: {
+                credit_class_a: reduction.credit_a_value,
+                credit_class_b: reduction.credit_b_value
+            }
+        }
 
-    credit_list[model_year_previous_id] = {
-        credit_class_a: class_a_last,
-        credit_class_b: class_b_last
-    }
+    total_a_value = 0
+    total_b_value = 0
 
-    for year, item in credit_list.items():
-        for credit_class, credit_value in item.items():
-            if credit_value > 0:
-                total_value = 1 * credit_value
-                added_transaction = CreditTransaction.objects.create(
-                    create_user=request.user.username,
-                    credit_class=credit_class,
-                    debit_from=Organization.objects.get(
-                        id=organization_id
-                    ),
-                    model_year_id=year,
-                    number_of_credits=1,
-                    credit_value=credit_value,
-                    transaction_type=CreditTransactionType.objects.get(
-                        transaction_type="Reduction"
-                    ),
-                    total_value=total_value,
-                    update_user=request.user.username,
-                    weight_class=WeightClass.objects.get(
-                        weight_class_code='LDV')
-                )
+    for year, item in credit_reductions.items():
+        for category, values in item.items():
+            for credit_class, credit_value in values.items():
+                if credit_value > 0:
+                    added_transaction = CreditTransaction.objects.create(
+                        create_user=request.user.username,
+                        credit_class=credit_class,
+                        debit_from=Organization.objects.get(
+                            id=organization_id
+                        ),
+                        model_year_id=year,
+                        number_of_credits=1,
+                        credit_value=credit_value,
+                        transaction_type=CreditTransactionType.objects.get(
+                            transaction_type="Reduction"
+                        ),
+                        total_value=credit_value,
+                        update_user=request.user.username,
+                        weight_class=weight_class
+                    )
 
-                ModelYearReportCreditTransaction.objects.create(
-                    model_year_report_id=id,
-                    credit_transaction_id=added_transaction.id
-                )
+                    if credit_class.credit_class == 'A':
+                        total_a_value += credit_value
+                    elif credit_class.credit_class == 'B':
+                        total_b_value += credit_value
 
-                current_balance = AccountBalance.objects.filter(
-                    credit_class=credit_class,
-                    organization_id=organization_id,
-                    expiration_date=None
-                ).order_by('-id').first()
+                    ModelYearReportCreditTransaction.objects.create(
+                        model_year_report_id=id,
+                        credit_transaction_id=added_transaction.id
+                    )
 
-                if current_balance:
-                    new_balance = Decimal(current_balance.balance) -\
-                        Decimal(total_value)
-                    current_balance.expiration_date = date.today()
-                    current_balance.save()
-                else:
-                    new_balance = 0 - total_value
+    balance_changes = [{
+        'credit_class': credit_class_a,
+        'credit_value': total_a_value
+    }, {
+        'credit_class': credit_class_b,
+        'credit_value': total_b_value
+    }]
 
-                AccountBalance.objects.create(
-                    balance=new_balance,
-                    effective_date=date.today(),
-                    credit_class=credit_class,
-                    credit_transaction=added_transaction,
-                    organization_id=organization_id
-                )
+    for balance_change in balance_changes:
+        credit_class = balance_change.get('credit_class')
+        credit_value = Decimal(balance_change.get('credit_value'))
+
+        current_balance = AccountBalance.objects.filter(
+            credit_class=credit_class,
+            organization_id=organization_id,
+            expiration_date=None
+        ).order_by('-id').first()
+
+        if current_balance:
+            new_balance = Decimal(current_balance.balance) -\
+                credit_value
+            current_balance.expiration_date = date.today()
+            current_balance.save()
+        else:
+            new_balance = 0 - credit_value
+
+        AccountBalance.objects.create(
+            balance=new_balance,
+            effective_date=date.today(),
+            credit_class=credit_class,
+            credit_transaction=added_transaction,
+            organization_id=organization_id
+        )
 
     deficits = ModelYearReportComplianceObligation.objects.filter(
         model_year_report_id=id,
