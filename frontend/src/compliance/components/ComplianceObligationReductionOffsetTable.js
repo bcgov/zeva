@@ -15,6 +15,11 @@ const ComplianceObligationReductionOffsetTable = (props) => {
     updatedBalances,
     user,
   } = props;
+  let radioSalected = creditReductionSelection;
+
+  const radioSelection = (radioId) => {
+    radioSalected = radioId;
+  };
 
   return (
     <>
@@ -86,6 +91,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     onChange={(event) => {
                       const { id: radioId } = event.target;
                       handleUnspecifiedCreditReduction(radioId);
+                      radioSelection(radioId);
                     }}
                     name="creditOption"
                     value="A"
@@ -106,6 +112,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     onChange={(event) => {
                       const { id: radioId } = event.target;
                       handleUnspecifiedCreditReduction(radioId);
+                      radioSelection(radioId);
                     }}
                     name="creditOption"
                     value="B"
@@ -140,10 +147,20 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                       <span>0.00</span>
                     )}
                   </td>
-                </tr>
+                </tr> 
               ))}
             </tbody>
           </table>
+          {user && !user.isGovernment &&
+            updatedBalances &&
+            updatedBalances.deficits.length > 0 &&
+            statuses && statuses.assessment &&
+            (statuses.assessment.status === 'SAVED' || statuses.assessment.status === 'UNSAVED') && (
+            <div className='mt-2'>
+            By selecting the ZEV Class {radioSalected} credit preference your
+            unspecified credit deficit will be offset automatically using ZEV Class {' '}
+            {radioSalected} credits in the next adjustment period if the grace year applies.
+          </div>)}
         </div>
       </div>
 
