@@ -19,14 +19,19 @@ const CreditTransactionListTable = (props) => {
     if (!item.transactionType) {
       return false;
     }
-    
+
     const { transactionType } = item.transactionType;
     const { name } = item.modelYear;
+
     switch (transactionType.toLowerCase()) {
       case 'validation':
         return 'Credit Application';
       case 'reduction':
-        return  name + ' Model Year Report Credit Reduction';
+        if (item.transactionType.transactionType === 'Reduction' && !item.foreignKey) {
+          return 'Administrative Credit Reduction';
+        }
+
+        return `${name} Model Year Report Credit Reduction`;
       default:
         return transactionType;
     }
@@ -110,7 +115,13 @@ const CreditTransactionListTable = (props) => {
     Header: '',
     headerClassName: 'header-group',
     columns: [{
-      accessor: (item) => (`${abbreviateTransactionType(item)}-${item.foreignKey}`),
+      accessor: (item) => {
+        if (item.transactionType.transactionType === 'Reduction' && !item.foreignKey) {
+          return 'AR';
+        }
+
+        return `${abbreviateTransactionType(item)}-${item.foreignKey}`;
+      },
       className: 'text-center',
       Header: 'Transaction ID',
       id: 'id',

@@ -185,9 +185,10 @@ const SupplierInformationContainer = (props) => {
         const newOrg = {
           ldvSales: previousSales.length >= 3 ? previousSales : [],
           avgLdvSales: user.organization.avgLdvSales,
-          organizationAddress: user.organizationAddress,
+          organizationAddress: user.organization.organizationAddress,
           name: user.organization.name,
         };
+
         setDetails({
           organization: newOrg,
           supplierClassString,
@@ -223,23 +224,23 @@ const SupplierInformationContainer = (props) => {
         user={user}
       />
       <SupplierInformationDetailsPage
+        assertions={assertions}
+        checkboxes={checkboxes}
+        details={details}
+        disabledCheckboxes={disabledCheckboxes}
         handleCancelConfirmation={handleCancelConfirmation}
         handleChangeMake={handleChangeMake}
+        handleCheckboxClick={handleCheckboxClick}
         handleDeleteMake={handleDeleteMake}
         handleSubmit={handleSubmit}
         handleSubmitMake={handleSubmitMake}
+        id={id}
         loading={loading}
         make={make}
         makes={makes}
         modelYear={modelYear}
-        user={user}
-        assertions={assertions}
-        checkboxes={checkboxes}
-        handleCheckboxClick={handleCheckboxClick}
-        disabledCheckboxes={disabledCheckboxes}
-        details={details}
         statuses={statuses}
-        id={id}
+        user={user}
       />
     </>
   );

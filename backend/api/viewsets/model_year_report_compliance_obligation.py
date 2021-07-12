@@ -15,6 +15,8 @@ from api.models.model_year_report_confirmation import \
 from api.models.credit_transaction import CreditTransaction
 from api.models.model_year_report_credit_offset import \
     ModelYearReportCreditOffset
+from api.models.model_year_report_statuses import \
+    ModelYearReportStatuses
 from api.models.model_year_report_compliance_obligation import \
     ModelYearReportComplianceObligation
 from api.models.sales_submission import SalesSubmission
@@ -133,17 +135,16 @@ class ModelYearReportComplianceObligationViewset(
         if records:
             records.delete()
         for each in credit_activity:
-            print('hello Test Test Test!', each)
             category = each['category']
             model_year = ModelYear.objects.get(name=each['year'])
-            a = each['a']
-            b = each['b']
+            credit_a_value = each['a']
+            credit_b_value = each['b']
             compliance_obj = ModelYearReportComplianceObligation.objects.create(
                 model_year_report_id=id,
                 model_year=model_year,
                 category=category,
-                credit_a_value=a,
-                credit_b_value=b,
+                credit_a_value=credit_a_value,
+                credit_b_value=credit_b_value,
                 from_gov=True
             )
             compliance_obj.save()
@@ -177,11 +178,17 @@ class ModelYearReportComplianceObligationViewset(
         compliance_offset = None
         if offset_snapshot:
             offset_serializer = ModelYearReportComplianceObligationOffsetSerializer(
-                offset_snapshot, context={'request': request, 'kwargs': kwargs}, many=True
+                offset_snapshot,
+                context={'request': request, 'kwargs': kwargs},
+                many=True
             )
             compliance_offset = offset_serializer.data
 
-        is_assessment = request.GET.get('assessment') == 'True' and request.user.is_government
+        is_assessment = request.GET.get('assessment') == 'True' and (
+            (request.user.organization_id == report.organization_id and
+             report.validation_status == ModelYearReportStatuses.ASSESSED) or
+            request.user.is_government
+        )
 
         if is_assessment:
             organization = report.organization

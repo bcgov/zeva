@@ -13,14 +13,14 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
     let endingBalanceB = 0;
 
     if (creditBalanceEnd[item.modelYear.name]) {
-      endingBalanceA = creditBalanceEnd[item.modelYear.name].A;
-      endingBalanceB = creditBalanceEnd[item.modelYear.name].B;
+      endingBalanceA = Number(creditBalanceEnd[item.modelYear.name].A);
+      endingBalanceB = Number(creditBalanceEnd[item.modelYear.name].B);
     }
 
     if (item.category === 'creditBalanceStart') {
       creditBalanceStart[item.modelYear.name] = {
-        A: item.creditAValue,
-        B: item.creditBValue,
+        A: Number(item.creditAValue),
+        B: Number(item.creditBValue),
       };
 
       endingBalanceA += Number(item.creditAValue);
@@ -30,8 +30,8 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
     if (item.category === 'transfersIn') {
       transfersIn.push({
         modelYear: item.modelYear.name,
-        A: item.creditAValue,
-        B: item.creditBValue,
+        A: Number(item.creditAValue),
+        B: Number(item.creditBValue),
       });
 
       endingBalanceA += Number(item.creditAValue);
@@ -41,8 +41,8 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
     if (item.category === 'transfersOut') {
       transfersOut.push({
         modelYear: item.modelYear.name,
-        A: item.creditAValue,
-        B: item.creditBValue,
+        A: Number(item.creditAValue),
+        B: Number(item.creditBValue),
       });
 
       endingBalanceA -= Number(item.creditAValue);
@@ -50,33 +50,37 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
     }
 
     if (item.category === 'creditsIssuedSales') {
-      creditsIssuedSales.push({
-        modelYear: item.modelYear.name,
-        A: item.creditAValue,
-        B: item.creditBValue,
-      });
+      const index = creditsIssuedSales.findIndex((each) => each.modelYear === item.modelYear.name);
+      if (index >= 0) {
+        creditsIssuedSales[index].A += Number(item.creditAValue);
+        creditsIssuedSales[index].B += Number(item.creditBValue);
+      } else {
+        creditsIssuedSales.push({
+          modelYear: item.modelYear.name,
+          A: Number(item.creditAValue),
+          B: Number(item.creditBValue),
+        });
+      }
 
-      endingBalanceA += item.creditAValue;
-      endingBalanceB += item.creditBValue;
+      endingBalanceA += Number(item.creditAValue);
+      endingBalanceB += Number(item.creditBValue);
     }
 
     if (item.category === 'pendingBalance') {
       if (item.creditAValue > 0 || item.creditBValue > 0) {
         pendingBalanceExist = true;
       }
+
       pendingBalance.push({
         modelYear: item.modelYear.name,
-        A: item.creditAValue,
-        B: item.creditBValue,
+        A: Number(item.creditAValue),
+        B: Number(item.creditBValue),
       });
-
-      endingBalanceA += item.creditAValue;
-      endingBalanceB += item.creditBValue;
     }
 
     creditBalanceEnd[item.modelYear.name] = {
-      A: endingBalanceA,
-      B: endingBalanceB,
+      A: Number(endingBalanceA),
+      B: Number(endingBalanceB),
     };
   });
 

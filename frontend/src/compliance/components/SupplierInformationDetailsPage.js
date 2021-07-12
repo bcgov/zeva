@@ -223,8 +223,10 @@ const SupplierInformationDetailsPage = (props) => {
               </div>
               <div className="ldv-makes p-3">
                 <form disabled={disabledInputs} onSubmit={handleSubmitMake}>
-                  {statuses && statuses.assessment && statuses.assessment.status !== 'ASSESSED'
-                  && (
+                  {statuses && (
+                    (statuses.assessment && statuses.assessment.status !== 'ASSESSED')
+                    || !statuses.assessment
+                  ) && (
                   <div className="form-row">
                     <div className="col-sm-8 col-xs-12">
                       <input
@@ -250,7 +252,7 @@ const SupplierInformationDetailsPage = (props) => {
 
                 {makes.length > 0 && (
                   <div
-                    className={`list mt-3 p-2 ${
+                    className={`list p-2 ${
                       disabledInputs ? 'disabled' : ''
                     }`}
                   >
