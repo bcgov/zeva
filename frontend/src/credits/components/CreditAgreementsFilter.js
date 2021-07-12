@@ -7,6 +7,7 @@ import handleFilterChange from '../../app/utilities/handleFilterChange';
 
 const CreditAgreementsFilter = (props) => {
   const {
+    user,
     items,
     handleClear,
     filtered,
@@ -46,6 +47,8 @@ const CreditAgreementsFilter = (props) => {
         >
           Clear Filters
         </button>
+        {user.isGovernment
+        && (
         <button
           className="button primary"
           type="button"
@@ -55,6 +58,7 @@ const CreditAgreementsFilter = (props) => {
         >
           <FontAwesomeIcon icon="plus" /> New Transaction
         </button>
+        )}
       </span>
     </div>
   );

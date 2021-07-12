@@ -170,7 +170,7 @@ const CreditAgreementsForm = (props) => {
                     handleChangeDetails(event.target.value, 'vehicleSupplier');
                   }}
                   fieldName="vehicleSupplier"
-                  accessor={(supplier) => supplier.name}
+                  accessor={(supplier) => supplier.id}
                   selectedOption={agreementDetails.vehicleSupplier || '--'}
                   labelClassname="d-inline-block col-2"
                   inputClassname="d-inline-block agreement-input"

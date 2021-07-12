@@ -48,7 +48,7 @@ const CreditAgreementsEditContainer = (props) => {
   const handleAddIdirComment = () => {
     const comment = { comment: idirComment, director: true };
     console.log('comment added!: ', idirComment);
-    //add route for posting idir comment!!!
+    // add route for posting idir comment!!!
     // axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
     //   history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
     // });
@@ -115,8 +115,11 @@ const CreditAgreementsEditContainer = (props) => {
     setAgreementDetails({ ...agreementDetails, [property]: value });
   };
   const handleSubmit = () => {
-    const data = { agreementDetails, creditRows, bceidComment };
-    // ADD POST TO BACKEND HERE
+    const data = { organization: agreementDetails.vehicleSupplier, agreementDetails };
+    axios.post(ROUTES_CREDIT_AGREEMENTS.LIST, data).then(
+      // after agreement is created, then post the content using the id from the response
+      () => { console.log('!'); },
+    );
   };
   const refreshDetails = () => {
     const yearsPromise = axios.get(ROUTES_VEHICLES.YEARS);
@@ -125,7 +128,7 @@ const CreditAgreementsEditContainer = (props) => {
       ([yearsResponse, supplierResponse]) => {
         setYears(yearsResponse.data);
         setSuppliers(supplierResponse.data);
-        //this needs to be retrieved from backend!!
+        // this needs to be retrieved from backend!!
         setTransactionTypes([
           { id: 1, name: 'Initiative Agreement' },
           { id: 2, name: 'Purchase Agreement' },
