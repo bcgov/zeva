@@ -40,7 +40,6 @@ const CreditAgreementsForm = (props) => {
     years,
     handleDeleteRow,
   } = props;
-  console.log(files);
   return (
     <div id="credit-agreements-form" className="page">
       <div className="row mt-3 mb-2">
@@ -74,17 +73,6 @@ const CreditAgreementsForm = (props) => {
                     setFiles={setUploadFiles}
                     maxFiles={5}
                   />
-                </div>
-
-                <div className="col-12 text-right pt-3">
-                  <button
-                    disabled={files.length === 0}
-                    className="button primary"
-                    onClick={() => { console.log(files); upload(); }}
-                    type="button"
-                  >
-                    <FontAwesomeIcon icon="upload" /> Upload
-                  </button>
                 </div>
                 <div className="form-group mt-4 row">
                   <div className="col-12 text-blue">
