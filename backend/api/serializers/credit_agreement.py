@@ -1,10 +1,11 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, SlugRelatedField
 from .organization import OrganizationSerializer
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from api.models.credit_agreement import CreditAgreement
 from api.serializers.credit_agreement_content import \
     CreditAgreementContentSerializer
-
+from api.models.credit_agreement_statuses import CreditAgreementStatuses
+from api.models.credit_agreement_transaction_types import CreditAgreementTransactionTypes
 
 class CreditAgreementSerializer(ModelSerializer):
     organization = OrganizationSerializer(read_only=True)
@@ -15,24 +16,32 @@ class CreditAgreementSerializer(ModelSerializer):
             'id', 'organization', 'effective_date', 'transaction_type',
         )
 
-class CreditAgreementSaveSerializer(ModelSerializer):
+class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin):
+    status = EnumField(
+        CreditAgreementStatuses,
+        required=False
+    )
+    transaction_type = EnumField(
+        CreditAgreementTransactionTypes,
+        required=False
+    )
+
     def create(self, validated_data):
         request = self.context.get('request')
         organization = request.user.organization
-        obj = CreditAgreement.objects.create(
+        agreement_details = request.data.get('agreement_details')
+        transaction_type = agreement_details.get('transaction_type')
+        obj = CreditAgreement.osbjects.create(
+            transaction_type=transaction_type,
             **validated_data
         )
-        ## for transaction type use slug related field
-
-        ## for status use enum field (vehicle save serializer)
-
         return obj
 
     class Meta:
         model = CreditAgreement
         fields = (
             'create_timestamp', 'organization',  'effective_date', 'id',
-            'update_user',
+            'update_user', 'status', 'transaction_type'
         )
 
 

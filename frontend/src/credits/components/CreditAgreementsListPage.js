@@ -32,15 +32,17 @@ const CreditAgreementsListPage = (props) => {
       </div>
       <div className="row">
         <div className="col-lg-12 text-right content">
-          <CreditAgreementsFilter 
+          <CreditAgreementsFilter
             items={creditAgreements}
             filtered={filtered}
             handleClear={handleClear}
-            setFiltered={setFiltered} />
+            setFiltered={setFiltered}
+            user={user}
+          />
         </div>
       </div>
       <div className="row mt-3">
-        <label></label>
+        <label />
       </div>
       <div className="row">
         <div className="col-md-12">
@@ -56,7 +58,6 @@ const CreditAgreementsListPage = (props) => {
   );
 };
 
-
 CreditAgreementsListPage.defaultProps = {
   filtered: undefined,
   setFiltered: undefined,
@@ -70,6 +71,5 @@ CreditAgreementsListPage.propTypes = {
   setFiltered: PropTypes.func,
   user: CustomPropTypes.user.isRequired,
 };
-
 
 export default CreditAgreementsListPage;
