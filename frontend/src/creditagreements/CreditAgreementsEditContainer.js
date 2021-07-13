@@ -39,19 +39,22 @@ const CreditAgreementsEditContainer = (props) => {
   const [errorMessage, setErrorMessage] = useState(null);
   const analystAction = user.isGovernment
   && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
-  const handleCommentChangeIdir = (text) => {
-    setIdirComment(text);
+  const handleCommentChangeIdir = (content, delta, source, editor) => {
+    setIdirComment(editor.getText());
+    //tbd, once the comment is set to idirComment, 
+    //the comment string in ReactQuill needs to be cleared
   };
   const handleCommentChangeBceid = (text) => {
     setBceidComment(text);
   };
   const handleAddIdirComment = () => {
-    const comment = { comment: idirComment, director: true };
-    console.log('comment added!: ', idirComment);
-    // add route for posting idir comment!!!
-    // axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
-    //   history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
-    // });
+    //need to find a way to create id, it can't be duplicated
+    const newIdirCommentArray = [...agreementDetails.idirComment, {
+      id: 2,
+      createUser: { displayName: 'kuan' },
+      comment: idirComment,
+      createTimestamp: '01-01-2021',}];
+    setAgreementDetails({...agreementDetails, idirComment: newIdirCommentArray})
   };
   const handleUpload = (paramId) => {
     const promises = [];
