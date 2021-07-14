@@ -6,6 +6,7 @@ from auditable.models import Auditable
 from .account_balance import AccountBalance
 from .credit_class import CreditClass
 from .organization_address import OrganizationAddress
+from .organization_deficits import OrganizationDeficits
 from .organization_ldv_sales import OrganizationLDVSales
 from .model_year_report import ModelYearReport
 from .model_year_report_statuses import ModelYearReportStatuses
@@ -171,6 +172,14 @@ class Organization(Auditable):
     @property
     def supplier_class(self):
         return self.get_current_class()
+
+    @property
+    def deficits(self):
+        records = OrganizationDeficits.objects.filter(
+            organization_id=self.id
+        ).order_by('model_year__name')
+
+        return records
 
     class Meta:
         db_table = 'organization'

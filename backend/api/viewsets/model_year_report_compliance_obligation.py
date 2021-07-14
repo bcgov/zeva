@@ -33,6 +33,7 @@ from api.services.summary import parse_summary_serializer, \
     get_current_year_balance
 from api.models.model_year_report_ldv_sales import \
     ModelYearReportLDVSales
+from api.serializers.organization_deficit import OrganizationDeficitsSerializer
 
 
 class ModelYearReportComplianceObligationViewset(
@@ -360,18 +361,24 @@ class ModelYearReportComplianceObligationViewset(
                 }, many=True
             )
 
+            deficits = OrganizationDeficitsSerializer(organization.deficits, many=True)
+
             return Response({
                 'compliance_obligation': content + serializer.data,
                 'compliance_offset': compliance_offset,
-                'ldv_sales': report.ldv_sales
+                'ldv_sales': report.ldv_sales,
+                'deficits': deficits.data
             })
         else:
             serializer = ModelYearReportComplianceObligationSnapshotSerializer(
                 snapshot, context={'request': request, 'kwargs': kwargs}, many=True
             )
 
+        deficits = OrganizationDeficitsSerializer(organization.deficits, many=True)
+
         return Response({
             'compliance_obligation': serializer.data,
             'compliance_offset': compliance_offset,
-            'ldv_sales': report.ldv_sales
+            'ldv_sales': report.ldv_sales,
+            'deficits': deficits.data
         })

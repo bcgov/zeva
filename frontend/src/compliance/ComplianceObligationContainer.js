@@ -24,6 +24,8 @@ const ComplianceObligationContainer = (props) => {
   const [creditReductionSelection, setCreditReductionSelection] = useState(null);
   const [deductions, setDeductions] = useState([]);
   const [details, setDetails] = useState({});
+  const [existingADeductions, setExistingADeductions] = useState([]);
+  const [existingUnspecifiedDeductions, setExistingUnspecifiedDeductions] = useState({});
   const [loading, setLoading] = useState(true);
   const [pendingBalanceExist, setPendingBalanceExist] = useState(false);
   const [ratios, setRatios] = useState({});
@@ -51,6 +53,11 @@ const ComplianceObligationContainer = (props) => {
 
   const handleChangeSales = (event) => {
     const { value } = event.target;
+
+    if (value.length > 10) {
+      return false;
+    }
+
     setSales(Number(value));
 
     if (!isNaN(Number(value))) {
@@ -62,17 +69,20 @@ const ComplianceObligationContainer = (props) => {
 
       setTotalReduction(tempTotalReduction);
 
-      const tempClassAReductions = [{
-        modelYear: Number(reportYear),
-        value: Number(classAReduction),
-      }];
-      setClassAReductions(tempClassAReductions);
+      setClassAReductions([
+        ...existingADeductions, {
+          modelYear: Number(reportYear),
+          value: Number(classAReduction),
+        },
+      ]);
 
-      const tempUnspecifiedReductions = [{
-        modelYear: Number(reportYear),
-        value: Number(leftoverReduction),
-      }];
-      setUnspecifiedReductions(tempUnspecifiedReductions);
+
+      setUnspecifiedReductions([
+        ...existingUnspecifiedDeductions, {
+          modelYear: Number(reportYear),
+          value: Number(leftoverReduction),
+        },
+      ]);
 
       if (creditReductionSelection) {
         const creditReduction = calculateCreditReduction(
@@ -253,6 +263,7 @@ const ComplianceObligationContainer = (props) => {
       setRatios(filteredRatios);
 
       const complianceResponseDetails = complianceResponse.data.complianceObligation;
+      const { deficits } = complianceResponse.data;
       const { ldvSales } = complianceResponse.data;
 
       setSales(Number(ldvSales));
@@ -300,15 +311,35 @@ const ComplianceObligationContainer = (props) => {
 
       setBalances(tempBalances);
 
-      const tempClassAReductions = [{
+      const tempClassAReductions = [];
+      const tempUnspecifiedReductions = [];
+
+      deficits.forEach((deficit) => {
+        if (deficit.creditClass.creditClass === 'A') {
+          tempClassAReductions.push({
+            modelYear: Number(deficit.modelYear.name),
+            value: Number(deficit.creditValue),
+          });
+        } else if (deficit.creditClass.creditClass === 'B') {
+          tempUnspecifiedReductions.push({
+            modelYear: Number(deficit.modelYear.name),
+            value: Number(deficit.creditValue),
+          });
+        }
+      });
+
+      setExistingADeductions([...tempClassAReductions]);
+      setExistingUnspecifiedDeductions([...tempUnspecifiedReductions]);
+
+      tempClassAReductions.push({
         modelYear: Number(modelYear.name),
         value: Number(classAReduction),
-      }];
+      });
 
-      const tempUnspecifiedReductions = [{
+      tempUnspecifiedReductions.push({
         modelYear: Number(modelYear.name),
         value: Number(leftoverReduction),
-      }];
+      });
 
       setClassAReductions(tempClassAReductions);
       setUnspecifiedReductions(tempUnspecifiedReductions);

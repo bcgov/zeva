@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import formatNumeric from '../../app/utilities/formatNumeric';
+import TextInput from '../../app/components/TextInput';
 
 const ComplianceObligationAmountsTable = (props) => {
   const {
@@ -41,10 +42,10 @@ const ComplianceObligationAmountsTable = (props) => {
                     && (
                     <input
                       className="form-control"
-                      type="text"
-                      onChange={handleChangeSales}
-                      value={sales}
                       disabled={['SAVED', 'UNSAVED'].indexOf(statuses.complianceObligation.status) < 0}
+                      onChange={handleChangeSales}
+                      type="number"
+                      value={sales}
                     />
                     )}
                     {(page === 'assessment' || (page === 'obligation' && statuses.assessment.status === 'ASSESSED'))
