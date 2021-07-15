@@ -129,18 +129,14 @@ const CreditAgreementsEditContainer = (props) => {
   const refreshDetails = () => {
     const yearsPromise = axios.get(ROUTES_VEHICLES.YEARS);
     const supplierPromise = axios.get(ROUTES_ORGANIZATIONS.LIST);
-    Promise.all([yearsPromise, supplierPromise]).then(
-      ([yearsResponse, supplierResponse]) => {
+    const typesPromise = axios.get(ROUTES_CREDIT_AGREEMENTS.TRANSACTION_TYPES);
+    Promise.all([yearsPromise, supplierPromise, typesPromise]).then(
+      ([yearsResponse, supplierResponse, typesResponse]) => {
         setYears(yearsResponse.data);
         setSuppliers(supplierResponse.data);
         // this needs to be retrieved from backend!!
-        setTransactionTypes([
-          { id: 1, name: 'Initiative Agreement' },
-          { id: 2, name: 'Purchase Agreement' },
-          { id: 3, name: 'Administrative Credit Allocation' },
-          { id: 4, name: 'Administrative Credit Reduction' },
-          { id: 5, name: 'Automatic Administrative Penalty' },
-        ]);
+        setTransactionTypes(typesResponse.data.map((each) => ({ name: each })));
+
         setLoading(false);
       },
     );
