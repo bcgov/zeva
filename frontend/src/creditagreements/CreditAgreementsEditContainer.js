@@ -25,15 +25,7 @@ const CreditAgreementsEditContainer = (props) => {
   const [suppliers, setSuppliers] = useState([]);
   const [transactionTypes, setTransactionTypes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [agreementDetails, setAgreementDetails] = useState({
-    idirComment: [{
-      id: 1,
-      createUser: { displayName: 'emily' },
-      comment: 'test',
-      createTimestamp: '01-01-2021',
-    }],
-    bceidComment: [],
-  });
+  const [agreementDetails, setAgreementDetails] = useState({});
   const [files, setFiles] = useState([]);
 
   const [errorMessage, setErrorMessage] = useState(null);
