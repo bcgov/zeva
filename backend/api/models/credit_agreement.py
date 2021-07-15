@@ -33,6 +33,13 @@ class CreditAgreement(Auditable):
                        statuses=[c.name for c in CreditAgreementStatuses]
                    )
     )
+    optional_agreement_id = models.CharField(
+        blank=True,
+        db_comment="Optional Agreement ID, not a foreign key",
+        max_length=20,
+        null=True,
+        unique=False
+    )
     effective_date = models.DateField(
         blank=True,
         null=True,

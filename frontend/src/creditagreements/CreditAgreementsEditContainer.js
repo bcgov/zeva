@@ -25,15 +25,7 @@ const CreditAgreementsEditContainer = (props) => {
   const [suppliers, setSuppliers] = useState([]);
   const [transactionTypes, setTransactionTypes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [agreementDetails, setAgreementDetails] = useState({
-    idirComment: [{
-      id: 1,
-      createUser: { displayName: 'emily' },
-      comment: 'test',
-      createTimestamp: '01-01-2021',
-    }],
-    bceidComment: [],
-  });
+  const [agreementDetails, setAgreementDetails] = useState({});
   const [files, setFiles] = useState([]);
 
   const [errorMessage, setErrorMessage] = useState(null);
@@ -114,7 +106,7 @@ const CreditAgreementsEditContainer = (props) => {
     setAgreementDetails({ ...agreementDetails, [property]: value });
   };
   const handleSubmit = () => {
-    const data = { organization: agreementDetails.vehicleSupplier, agreementDetails };
+    const data = { organization: agreementDetails.vehicleSupplier, agreementDetails, bceidComment };
     axios.post(ROUTES_CREDIT_AGREEMENTS.LIST, data).then((response) => {
       // after agreement is created, then post the content using the id from the response
       const { id: agreementId } = response.data;

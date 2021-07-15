@@ -2,14 +2,16 @@ from rest_framework.serializers import ModelSerializer, SerializerMethodField, S
 from .organization import OrganizationSerializer
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from api.models.credit_agreement import CreditAgreement
-from api.serializers.credit_agreement_content import \
-    CreditAgreementContentSerializer
+from api.models.credit_agreement_comment import CreditAgreementComment
+from api.models.credit_agreement_attachment import CreditAgreementAttachment
 from api.models.credit_agreement_statuses import CreditAgreementStatuses
 from api.models.credit_agreement_transaction_types import CreditAgreementTransactionTypes
 from api.models.user_profile import UserProfile
 from api.serializers.user import MemberSerializer
 from api.serializers.credit_agreement_attachment import CreditAgreementAttachmentSerializer
-from api.models.credit_agreement_attachment import CreditAgreementAttachment
+from api.serializers.credit_agreement_comment import CreditAgreementCommentSerializer
+from api.serializers.credit_agreement_content import \
+    CreditAgreementContentSerializer
 
 class CreditAgreementBaseSerializer:
     def get_update_user(self, obj):
@@ -24,11 +26,25 @@ class CreditAgreementBaseSerializer:
 
 class CreditAgreementSerializer(ModelSerializer, CreditAgreementBaseSerializer):
     organization = OrganizationSerializer(read_only=True)
+    comments = SerializerMethodField()
+
+    def get_comments(self, obj):
+        agreement_comment = CreditAgreementComment.objects.filter(
+            credit_agreement=obj
+        ).order_by('-create_timestamp')
+
+        if agreement_comment.exists():
+            serializer = CreditAgreementCommentSerializer(
+                agreement_comment, read_only=True, many=True
+            )
+            return serializer.data
+
+        return None
 
     class Meta:
         model = CreditAgreement
         fields = (
-            'id', 'organization', 'effective_date', 'transaction_type',
+            'id', 'organization', 'effective_date', 'transaction_type', 'comments'
         )
 
 
@@ -58,11 +74,21 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
     def create(self, validated_data):
         request = self.context.get('request')
         agreement_details = request.data.get('agreement_details')
+        bceid_comment = request.data.pop('bceid_comment')
         transaction_type = agreement_details.get('transaction_type')
+        optional_agreement_id = agreement_details.pop('optional_agreement_id')
         obj = CreditAgreement.objects.create(
             transaction_type=transaction_type,
+            optional_agreement_id=optional_agreement_id,
             **validated_data
         )
+        if bceid_comment:
+            comment = CreditAgreementComment.objects.create(
+                create_user=request.user.username,
+                credit_agreement=obj,
+                comment=bceid_comment,
+                to_director=False,
+            )
         return obj
 
     def update(self, instance, validated_data):
