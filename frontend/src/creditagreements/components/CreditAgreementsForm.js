@@ -192,7 +192,6 @@ const CreditAgreementsForm = (props) => {
                   labelSize="d-inline-block col-sm-2"
                   inputSize="d-inline-block align-middle agreement-input"
                   rowSize=""
-                  mandatory
                 />
               </div>
               <div className="credit-agreement-form-row">
