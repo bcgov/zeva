@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.models.credit_agreement import CreditAgreement
+from api.models.credit_agreement_transaction_types import CreditAgreementTransactionTypes
 from api.serializers.credit_agreement import CreditAgreementSerializer, \
     CreditAgreementListSerializer, CreditAgreementSaveSerializer
 from api.services.minio import minio_put_object
@@ -41,3 +42,12 @@ class CreditAgreementViewSet(
             'url': url,
             'minio_object_name': object_name
         })
+
+    @action(detail=False, methods=['get'])
+    def transaction_types(self, request):
+        types_list = []
+
+        for data in CreditAgreementTransactionTypes:
+            types_list.append(data.value)
+
+        return Response(types_list)
