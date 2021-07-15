@@ -183,11 +183,11 @@ const CreditAgreementsForm = (props) => {
               <div className="credit-agreement-form-row">
                 <TextInput
                   label="Agreement ID (optional)"
-                  id="agreementID"
-                  name="quantity"
-                  defaultValue={agreementDetails.agreementID}
+                  id="optionalAgreementID"
+                  name="optionalAgreementID"
+                  defaultValue={agreementDetails.optionalAgreementID}
                   handleInputChange={(event) => {
-                    handleChangeDetails(event.target.value, 'agreementID');
+                    handleChangeDetails(event.target.value, 'optionalAgreementID');
                   }}
                   labelSize="d-inline-block col-sm-2"
                   inputSize="d-inline-block align-middle agreement-input"

@@ -114,7 +114,7 @@ const CreditAgreementsEditContainer = (props) => {
     setAgreementDetails({ ...agreementDetails, [property]: value });
   };
   const handleSubmit = () => {
-    const data = { organization: agreementDetails.vehicleSupplier, agreementDetails };
+    const data = { organization: agreementDetails.vehicleSupplier, agreementDetails, bceidComment };
     axios.post(ROUTES_CREDIT_AGREEMENTS.LIST, data).then((response) => {
       // after agreement is created, then post the content using the id from the response
       const { id: agreementId } = response.data;

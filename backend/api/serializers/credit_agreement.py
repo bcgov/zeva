@@ -10,6 +10,8 @@ from api.models.user_profile import UserProfile
 from api.serializers.user import MemberSerializer
 from api.serializers.credit_agreement_attachment import CreditAgreementAttachmentSerializer
 from api.models.credit_agreement_attachment import CreditAgreementAttachment
+from api.serializers.credit_agreement_comment import CreditAgreementComment
+
 
 class CreditAgreementBaseSerializer:
     def get_update_user(self, obj):
@@ -58,11 +60,21 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
     def create(self, validated_data):
         request = self.context.get('request')
         agreement_details = request.data.get('agreement_details')
+        bceid_comment = request.data.pop('bceid_comment')
         transaction_type = agreement_details.get('transaction_type')
+        optional_agreement_id = agreement_details.pop('optional_agreement_id')
         obj = CreditAgreement.objects.create(
             transaction_type=transaction_type,
+            optional_agreement_id=optional_agreement_id,
             **validated_data
         )
+        if bceid_comment:
+            comment = CreditAgreementComment.objects.create(
+                create_user=request.user.username,
+                credit_agreement=obj,
+                comment=bceid_comment,
+                to_director=False,
+            )
         return obj
 
     def update(self, instance, validated_data):
