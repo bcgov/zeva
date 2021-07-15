@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
@@ -15,6 +15,7 @@ const ActionsIdir = (props) => {
   if (loading) {
     return <Loading />;
   }
+  console.log(activityCount)
   return (
     <div id="actions" className="dashboard-card">
       <div className="content">
@@ -129,6 +130,18 @@ const ActionsIdir = (props) => {
             regularText="no current activity"
             linkTo={ROUTES_CREDIT_TRANSFERS.LIST}
           />
+        )}
+        {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
+        && activityCount.reportsAnalyst > 0
+        && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')
+        && (
+        <ActivityBanner
+          colour="yellow"
+          icon="exchange-alt"
+          boldText="Model Year Report"
+          regularText={`${activityCount.reportsAnalyst} require analyst/engineer review`}
+          linkTo={`${ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION}?status=Submitted`}
+        />
         )}
       </div>
     </div>

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Loading from '../../app/components/Loading';
 import ActivityBanner from './ActivityBanner';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 import CONFIG from '../../app/config';
@@ -194,6 +195,18 @@ const ActionsBceid = (props) => {
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersRejected} rejected by Government of B.C.`}
           linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Rejected By Government`}
+        />
+        )}
+        {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
+        && activityCount.reportsDraft > 0
+        && user.hasPermission('VIEW_COMPLIANCE_REPORTS')
+        && (
+        <ActivityBanner
+          colour="yellow"
+          icon="exchange-alt"
+          boldText="Model Year Report"
+          regularText={`${activityCount.reportsDraft} awaiting submission`}
+          linkTo={`${ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION}?status=Draft`}
         />
         )}
       </div>

@@ -11,6 +11,7 @@ import DashboardPage from './components/DashboardPage';
 import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import ROUTES_CREDIT_TRANSFERS from '../app/routes/CreditTransfers';
+import ROUTES_DASHBOARD from '../app/routes/Dashboard';
 
 const DashboardContainer = (props) => {
   const { user } = props;
@@ -29,6 +30,11 @@ const DashboardContainer = (props) => {
     transfersRecorded: 0,
     transfersRejectedByPartner: 0,
     transfersRejected: 0,
+    reportsDraft: 0,
+    reportsSubmitted: 0,
+    reportsAnalyst: 0,
+    reportsAssessed: 0,
+    reportsRecommended: 0,
   });
 
   const [loading, setLoading] = useState(true);
@@ -111,6 +117,22 @@ const DashboardContainer = (props) => {
       }
     })
   );
+  const getModelYearReports = () => (
+    axios.get(ROUTES_DASHBOARD.LIST).then((dashboardResponse) => {
+      if (!user.isGovernment) {
+        const reportsDraft = dashboardResponse.data.filter((report) => report.modelYearReportValidationStatus === 'DRAFT');
+        const reportsSubmitted = dashboardResponse.data.filter((report) => report.modelYearReportValidationStatus === 'SUBMITTED');
+        activityCount = {...activityCount,
+          reportsDraft: reportsDraft.length,
+          reportsSubmitted: reportsSubmitted.length}
+      } else {
+        const reportsAnalyst = dashboardResponse.data.filter((report) => report.modelYearReportValidationStatus === 'SUBMITTED');
+        activityCount = { ...activityCount,
+          reportsAnalyst: reportsAnalyst.length }
+      }
+      console.log(dashboardResponse.data);
+    })
+  );
 
   const getCreditTransfers = () => (
     axios.get(ROUTES_CREDIT_TRANSFERS.LIST).then((transfersResponse) => {
@@ -159,7 +181,7 @@ const DashboardContainer = (props) => {
 
   const refreshList = () => {
     const promises = [];
-
+    promises.push(getModelYearReports())
     if (user.hasPermission('VIEW_SALES')) {
       promises.push(getCreditRequests());
     }

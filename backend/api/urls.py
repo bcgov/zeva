@@ -16,6 +16,7 @@ from .viewsets.upload import UploadViewSet
 from .viewsets.model_year_report_consumer_sales import ModelYearReportConsumerSalesViewSet
 from .viewsets.model_year_report_compliance_obligation import ModelYearReportComplianceObligationViewset
 from .viewsets.credit_agreement import CreditAgreementViewSet
+from .viewsets.dashboard import DashboardViewset
 
 
 router = routers.SimpleRouter(trailing_slash=False)
@@ -56,6 +57,9 @@ router.register(
 )
 router.register(
     r'credit-agreements', CreditAgreementViewSet, basename='credit-agreement'
+)
+router.register(
+    r'dashboard/list', DashboardViewset, basename='list'
 )
 
 urlpatterns = router.urls
