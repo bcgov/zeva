@@ -18,7 +18,7 @@ import CreditsContainer from '../credits/CreditsContainer';
 import CreditRequestListContainer from '../credits/CreditRequestListContainer';
 import CreditTransfersEditContainer from '../credits/CreditTransfersEditContainer';
 import CreditTransferListContainer from '../credits/CreditTransferListContainer';
-import CreditAgreementListContainer from '../credits/CreditAgreementListContainer';
+import CreditAgreementListContainer from '../creditagreements/CreditAgreementListContainer';
 import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContainer';
 import CreditTransfersDetailsContainer from '../credits/CreditTransfersDetailsContainer';
 import CreditRequestVINListContainer from '../credits/CreditRequestVINListContainer';
