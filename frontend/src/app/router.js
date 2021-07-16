@@ -39,6 +39,7 @@ import SupplierInformationContainer from '../compliance/SupplierInformationConta
 import ComplianceObligationContainer from '../compliance/ComplianceObligationContainer';
 import ConsumerSalesContainer from '../compliance/ConsumerSalesContainer';
 import CreditAgreementsEditContainer from '../creditagreements/CreditAgreementsEditContainer';
+import CreditAgreementsDetailsContainer from '../creditagreements/CreditAgreementsDetailsContainer';
 
 import ErrorHandler from './components/ErrorHandler';
 import Loading from './components/Loading';
@@ -301,14 +302,6 @@ class Router extends Component {
                   )}
                 />,
               ])}
-              {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED && ([
-                <Route
-                  exact
-                  key="route-credit-agreements-list"
-                  path={ROUTES_CREDIT_AGREEMENTS.LIST}
-                  render={() => <CreditAgreementListContainer keycloak={keycloak} user={user} />}
-                />,
-              ])}
               <Route
                 exact
                 path={ROUTES_CREDIT_REQUESTS.NEW}
@@ -342,11 +335,26 @@ class Router extends Component {
                 path={ROUTES_CREDIT_REQUESTS.LIST}
                 render={() => <CreditRequestListContainer keycloak={keycloak} user={user} />}
               />
-              <Route
-                exact
-                path={ROUTES_CREDIT_AGREEMENTS.NEW}
-                render={() => (user.isGovernment ? <CreditAgreementsEditContainer keycloak={keycloak} user={user} /> : <></>)}
-              />
+              {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED && ([
+                <Route
+                  exact
+                  key="route-credit-agreements-list"
+                  path={ROUTES_CREDIT_AGREEMENTS.LIST}
+                  render={() => <CreditAgreementListContainer keycloak={keycloak} user={user} />}
+                />,
+                <Route
+                  exact
+                  key="route-credit-agreements-new"
+                  path={ROUTES_CREDIT_AGREEMENTS.NEW}
+                  render={() => (user.isGovernment ? <CreditAgreementsEditContainer keycloak={keycloak} user={user} /> : <></>)}
+                />,
+                <Route
+                  exact
+                  key="route-credit-agreements-details"
+                  path={ROUTES_CREDIT_AGREEMENTS.DETAILS}
+                  render={() => <CreditAgreementsDetailsContainer keycloak={keycloak} user={user} />}
+                />
+              ])}
               <Route
                 exact
                 path="/"
