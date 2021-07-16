@@ -199,14 +199,38 @@ const ActionsBceid = (props) => {
         )}
         {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
         && activityCount.reportsDraft > 0
-        && user.hasPermission('VIEW_COMPLIANCE_REPORTS')
+        && user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
         && (
         <ActivityBanner
           colour="yellow"
           icon="exchange-alt"
           boldText="Model Year Report"
           regularText={`${activityCount.reportsDraft} awaiting submission`}
-          linkTo={`${ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION}?status=Draft`}
+          linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Draft`}
+        />
+        )}
+        {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
+        && activityCount.reportsSubmitted > 0
+        && user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
+        && (
+        <ActivityBanner
+          colour="blue"
+          icon="exchange-alt"
+          boldText="Model Year Report"
+          regularText={`${activityCount.reportsSubmitted} awaiting government assessment`}
+          linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Submitted`}
+        />
+        )}
+        {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
+        && activityCount.reportsAssessed > 0
+        && user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
+        && (
+        <ActivityBanner
+          colour="green"
+          icon="exchange-alt"
+          boldText="Model Year Report"
+          regularText={`${activityCount.reportsAssessed} assessed by government`}
+          linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Assessed`}
         />
         )}
       </div>

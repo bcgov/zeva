@@ -15,7 +15,7 @@ const ActionsIdir = (props) => {
   if (loading) {
     return <Loading />;
   }
-  console.log(activityCount)
+  console.log(activityCount);
   return (
     <div id="actions" className="dashboard-card">
       <div className="content">
@@ -137,10 +137,36 @@ const ActionsIdir = (props) => {
         && (
         <ActivityBanner
           colour="yellow"
-          icon="exchange-alt"
-          boldText="Model Year Report"
+          icon="file-alt"
+          boldText="Model Year Reports"
           regularText={`${activityCount.reportsAnalyst} require analyst/engineer review`}
-          linkTo={`${ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION}?status=Submitted`}
+          linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Submitted`}
+        />
+        )}
+        {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
+        && ((user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')
+        && activityCount.reportsAnalyst === 0)
+        || (!user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && activityCount.reportsDirector === 0)
+        )
+        && (
+        <ActivityBanner
+          colour="green"
+          icon="file-alt"
+          boldText="Model Year Reports"
+          regularText="no current activity"
+          linkTo={ROUTES_COMPLIANCE.REPORTS}
+        />
+        )}
+        {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
+        && user.hasPermission('SIGN_COMPLIANCE_REPORT')
+        && activityCount.reportsDirector > 0
+        && (
+        <ActivityBanner
+          colour="blue"
+          icon="file-alt"
+          boldText="Model Year Reports"
+          regularText={`${activityCount.reportsAnalyst} recommended for director action`}
+          linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Recommended`}
         />
         )}
       </div>

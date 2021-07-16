@@ -1,25 +1,39 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-
+import { withRouter } from 'react-router';
 import CONFIG from '../app/config';
 import CustomPropTypes from '../app/utilities/props';
 import ComplianceTabs from '../app/components/ComplianceTabs';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import ComplianceReportListPage from './components/ComplianceReportListPage';
 
+const qs = require('qs');
+
 const ComplianceReportsContainer = (props) => {
-  const { user } = props;
+  const { location, user } = props;
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [collapsed, setCollapsed] = useState(true);
+  const [filtered, setFiltered] = useState([]);
   const [availableYears, setAvailableYears] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.YEARS);
+
+  const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 
   const collapseDropdown = () => {
     setCollapsed(!collapsed);
   };
 
   const refreshList = (showLoading) => {
+
     setLoading(showLoading);
+    const queryFilter = [];
+    Object.entries(query).forEach(([key, value]) => {
+      queryFilter.push({ id: key, value });
+    });
+    setFiltered([...filtered, ...queryFilter]);
+    if (location.state) {
+      setFiltered([...filtered, ...location.state]);
+    }
     axios.get(ROUTES_COMPLIANCE.REPORTS).then((response) => {
       setData(response.data);
       // if the user is a supplier, figure out which years to allow them to create reports for
@@ -103,6 +117,8 @@ const ComplianceReportsContainer = (props) => {
         loading={loading}
         user={user}
         showSupplier={user.isGovernment}
+        filtered={filtered}
+        setFiltered={setFiltered}
       />
     </>
   );
@@ -110,4 +126,4 @@ const ComplianceReportsContainer = (props) => {
 ComplianceReportsContainer.propTypes = {
   user: CustomPropTypes.user.isRequired,
 };
-export default ComplianceReportsContainer;
+export default withRouter(ComplianceReportsContainer);

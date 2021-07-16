@@ -119,18 +119,21 @@ const DashboardContainer = (props) => {
   );
   const getModelYearReports = () => (
     axios.get(ROUTES_DASHBOARD.LIST).then((dashboardResponse) => {
+
       if (!user.isGovernment) {
         const reportsDraft = dashboardResponse.data.filter((report) => report.modelYearReportValidationStatus === 'DRAFT');
         const reportsSubmitted = dashboardResponse.data.filter((report) => report.modelYearReportValidationStatus === 'SUBMITTED');
+        const reportsAssessed = dashboardResponse.data.filter((report) => report.modelYearReportValidationStatus === 'ASSESSED');
         activityCount = {...activityCount,
           reportsDraft: reportsDraft.length,
-          reportsSubmitted: reportsSubmitted.length}
+          reportsSubmitted: reportsSubmitted.length,
+          reportsAssessed: reportsAssessed.length,
+        };
       } else {
         const reportsAnalyst = dashboardResponse.data.filter((report) => report.modelYearReportValidationStatus === 'SUBMITTED');
         activityCount = { ...activityCount,
           reportsAnalyst: reportsAnalyst.length }
       }
-      console.log(dashboardResponse.data);
     })
   );
 
