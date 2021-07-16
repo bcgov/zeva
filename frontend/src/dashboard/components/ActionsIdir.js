@@ -15,7 +15,6 @@ const ActionsIdir = (props) => {
   if (loading) {
     return <Loading />;
   }
-  console.log(activityCount);
   return (
     <div id="actions" className="dashboard-card">
       <div className="content">
