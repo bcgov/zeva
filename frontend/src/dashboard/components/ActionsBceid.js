@@ -203,7 +203,7 @@ const ActionsBceid = (props) => {
         && (
         <ActivityBanner
           colour="yellow"
-          icon="exchange-alt"
+          icon="file-alt"
           boldText="Model Year Report"
           regularText={`${activityCount.reportsDraft} awaiting submission`}
           linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Draft`}
@@ -215,7 +215,7 @@ const ActionsBceid = (props) => {
         && (
         <ActivityBanner
           colour="blue"
-          icon="exchange-alt"
+          icon="file-alt"
           boldText="Model Year Report"
           regularText={`${activityCount.reportsSubmitted} awaiting government assessment`}
           linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Submitted`}
@@ -227,7 +227,7 @@ const ActionsBceid = (props) => {
         && (
         <ActivityBanner
           colour="green"
-          icon="exchange-alt"
+          icon="file-alt"
           boldText="Model Year Report"
           regularText={`${activityCount.reportsAssessed} assessed by government`}
           linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Assessed`}
