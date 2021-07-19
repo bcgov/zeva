@@ -121,7 +121,7 @@ const CreditAgreementsEditContainer = (props) => {
         }).then(() => {
             console.log('SUCCESS! no details page built yet');
 
-        //   history.push(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId));
+        history.push(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId));
         });
       });
     });
