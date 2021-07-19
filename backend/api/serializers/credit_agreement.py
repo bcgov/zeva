@@ -1,5 +1,5 @@
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
-from rest_framework.serializers import ModelSerializer, SerializerMethodField, SlugRelatedField
 
 from api.models.credit_agreement import CreditAgreement
 from api.models.credit_agreement_attachment import CreditAgreementAttachment
@@ -31,6 +31,8 @@ class CreditAgreementBaseSerializer:
 
 class CreditAgreementSerializer(ModelSerializer, CreditAgreementBaseSerializer):
     organization = OrganizationSerializer(read_only=True)
+    transaction_type = EnumField(CreditAgreementTransactionTypes)
+    status = EnumField(CreditAgreementStatuses)
     comments = SerializerMethodField()
 
     def get_comments(self, obj):
@@ -49,7 +51,9 @@ class CreditAgreementSerializer(ModelSerializer, CreditAgreementBaseSerializer):
     class Meta:
         model = CreditAgreement
         fields = (
-            'id', 'organization', 'effective_date', 'transaction_type', 'comments'
+            'id', 'organization', 'effective_date', 'status',
+            'transaction_type', 'comments', 'optional_agreement_id', 
+            'update_timestamp',
         )
 
 
@@ -88,7 +92,7 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
             **validated_data
         )
         if bceid_comment:
-            comment = CreditAgreementComment.objects.create(
+            CreditAgreementComment.objects.create(
                 create_user=request.user.username,
                 credit_agreement=obj,
                 comment=bceid_comment,
@@ -167,9 +171,6 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
 
         instance.update_user = request.user.username
         instance.save()
-
-        if status:
-            notifications_zev_model(instance, status)
 
         return instance
 

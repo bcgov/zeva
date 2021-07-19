@@ -50,7 +50,7 @@ const CreditAgreementsForm = (props) => {
       {user.isGovernment
           && (
           <div className="assessment-credit-adjustment">
-            <div className="grey-border-area p-3 comment-box mt-2" id="comment-input">
+            {/* <div className="grey-border-area p-3 comment-box mt-2" id="comment-input">
               {agreementDetails.idirComment && agreementDetails.idirComment.length > 0 && (
               <DisplayComment
                 commentArray={agreementDetails.idirComment}
@@ -64,7 +64,7 @@ const CreditAgreementsForm = (props) => {
                   buttonText="Add Comment"
                 />
               </div>
-            </div>
+            </div> */}
             <div className="mt-4">
               <h4>Agreement Attachments (optional)</h4>
               <div className="grey-border-area p-3 mt-1">
@@ -329,9 +329,9 @@ const CreditAgreementsForm = (props) => {
               <span className="left-content" />
               <span className="right-content">
                 <Button
-                  buttonType="submit"
+                  buttonType="save"
                   optionalClassname="button primary"
-                  optionalText="Submit to Director"
+                  optionalText="Save"
                   action={() => {
                     handleSubmit('');
                   }}
