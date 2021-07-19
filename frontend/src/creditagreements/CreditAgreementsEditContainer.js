@@ -106,7 +106,12 @@ const CreditAgreementsEditContainer = (props) => {
     setAgreementDetails({ ...agreementDetails, [property]: value });
   };
   const handleSubmit = () => {
-    const data = { organization: agreementDetails.vehicleSupplier, agreementDetails, bceidComment };
+    const data = {
+      organization: agreementDetails.vehicleSupplier,
+      agreementDetails,
+      bceidComment,
+      content: creditRows,
+    };
     axios.post(ROUTES_CREDIT_AGREEMENTS.LIST, data).then((response) => {
       // after agreement is created, then post the content using the id from the response
       const { id: agreementId } = response.data;
@@ -119,7 +124,7 @@ const CreditAgreementsEditContainer = (props) => {
         axios.patch(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId), {
           ...patchData,
         }).then(() => {
-            console.log('SUCCESS! no details page built yet');
+          console.log('SUCCESS! no details page built yet');
 
         //   history.push(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId));
         });
