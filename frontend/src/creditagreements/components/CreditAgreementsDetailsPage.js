@@ -32,10 +32,10 @@ const CreditAgreementsDetailsPage = (props) => {
           />
         </div>
       </div>
-      {user.isGovernment && (<div className="row mt-3 mb-2">
+      {user && user.isGovernment && (<div className="row mt-3 mb-2">
         <div className="col-sm-12">
           <div className="grey-border-area p-3 comment-box mt-2" id="comment-input">
-            {details.comments && details.comments.length > 0 && (
+            {details && details.comments && details.comments.length > 0 && (
               <DisplayComment commentArray={[details.comments]} />
             )}
             <div>
@@ -54,7 +54,7 @@ const CreditAgreementsDetailsPage = (props) => {
         </div>
       </div>)}
       <div className="credit-agreements-details grey-border-area">
-        {user.isGovernment && (<div className="row">
+        {user && user.isGovernment && (<div className="row">
           <span className="col-3">
             <h4 className="d-inline">Supplier: </h4>
           </span>
@@ -127,6 +127,11 @@ const CreditAgreementsDetailsPage = (props) => {
 
 CreditAgreementsDetailsPage.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  details: PropTypes.shape({}).isRequired,
+  analystAction: PropTypes.bool.isRequired,
+  handleAddIdirComment: PropTypes.func.isRequired,
+  handleCommentChangeIdir: PropTypes.func.isRequired,
+
 };
 
 export default CreditAgreementsDetailsPage;
