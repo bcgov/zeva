@@ -15,7 +15,7 @@ from api.serializers.credit_agreement import CreditAgreementSerializer, \
     CreditAgreementListSerializer, CreditAgreementSaveSerializer
 from api.services.minio import minio_put_object
 from auditable.views import AuditableMixin
-
+from api.models.credit_agreement_statuses import CreditAgreementStatuses
 
 class CreditAgreementViewSet(
     AuditableMixin, viewsets.GenericViewSet, mixins.CreateModelMixin,
@@ -29,6 +29,23 @@ class CreditAgreementViewSet(
         'create': CreditAgreementSaveSerializer,
         'partial_update': CreditAgreementSaveSerializer,
     }
+    
+    def get_queryset(self):
+        request = self.request
+        if request.user.is_government:
+            queryset = CreditAgreement.objects.exclude(status__in=[
+                CreditAgreementStatuses.DELETED,
+            ])
+        else:
+            queryset = CreditAgreement.objects.filter(
+                (Q(organization_id=request.user.organization.id) &
+                    Q(status__in=[
+                        CreditAgreementStatuses.ISSUED,
+                        
+                        ])) |
+                Q(debit_from_id=request.user.organization.id)
+                ).exclude(status__in=[CreditTransferStatuses.DELETED])
+        return queryset
 
     def get_serializer_class(self):
         if self.action in list(self.serializer_classes.keys()):
