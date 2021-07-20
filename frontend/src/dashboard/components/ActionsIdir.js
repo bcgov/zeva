@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
@@ -129,6 +129,44 @@ const ActionsIdir = (props) => {
             regularText="no current activity"
             linkTo={ROUTES_CREDIT_TRANSFERS.LIST}
           />
+        )}
+        {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
+        && activityCount.reportsAnalyst > 0
+        && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')
+        && (
+        <ActivityBanner
+          colour="yellow"
+          icon="file-alt"
+          boldText="Model Year Reports"
+          regularText={`${activityCount.reportsAnalyst} require analyst/engineer review`}
+          linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Submitted`}
+        />
+        )}
+        {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
+        && ((user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')
+        && activityCount.reportsAnalyst === 0)
+        || (!user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && activityCount.reportsDirector === 0)
+        )
+        && (
+        <ActivityBanner
+          colour="green"
+          icon="file-alt"
+          boldText="Model Year Reports"
+          regularText="no current activity"
+          linkTo={ROUTES_COMPLIANCE.REPORTS}
+        />
+        )}
+        {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
+        && user.hasPermission('SIGN_COMPLIANCE_REPORT')
+        && activityCount.reportsDirector > 0
+        && (
+        <ActivityBanner
+          colour="blue"
+          icon="file-alt"
+          boldText="Model Year Reports"
+          regularText={`${activityCount.reportsAnalyst} recommended for director action`}
+          linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Recommended`}
+        />
         )}
       </div>
     </div>

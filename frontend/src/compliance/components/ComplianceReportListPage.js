@@ -18,6 +18,8 @@ const ComplianceReportListPage = (props) => {
     collapseDropdown,
     availableYears,
     showSupplier,
+    filtered,
+    setFiltered,
   } = props;
 
   if (loading) {
@@ -92,7 +94,13 @@ const ComplianceReportListPage = (props) => {
       )}
       <div className="row mt-4">
         <div className="col-sm-12">
-          <ComplianceReportsTable data={data} user={user} showSupplier={showSupplier} />
+          <ComplianceReportsTable
+            data={data}
+            user={user}
+            showSupplier={showSupplier}
+            filtered={filtered}
+            setFiltered={setFiltered}
+          />
         </div>
       </div>
     </div>
