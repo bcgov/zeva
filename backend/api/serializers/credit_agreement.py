@@ -98,10 +98,7 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
         agreement_details = request.data.get('agreement_details')
         bceid_comment = request.data.pop('bceid_comment')
         transaction_type = agreement_details.get('transaction_type')
-        try:
-            optional_agreement_id = agreement_details['optional_agreement_id']
-        except KeyError:
-            optional_agreement_id = ''
+        optional_agreement_id = agreement_details.get('optional_agreement_id')
         obj = CreditAgreement.objects.create(
             transaction_type=transaction_type,
             optional_agreement_id=optional_agreement_id,
