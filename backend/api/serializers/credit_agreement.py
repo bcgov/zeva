@@ -16,7 +16,7 @@ from api.serializers.credit_agreement_comment import CreditAgreementCommentSeria
 from api.serializers.credit_agreement_content import \
     CreditAgreementContentSerializer
 from .organization import OrganizationSerializer
-
+from api.models.credit_agreement_history import CreditAgreementHistory
 
 class CreditAgreementBaseSerializer:
     def get_update_user(self, obj):
@@ -98,7 +98,7 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
         agreement_details = request.data.get('agreement_details')
         bceid_comment = request.data.pop('bceid_comment')
         transaction_type = agreement_details.get('transaction_type')
-        optional_agreement_id = agreement_details.pop('optional_agreement_id')
+        optional_agreement_id = agreement_details.get('optional_agreement_id')
         obj = CreditAgreement.objects.create(
             transaction_type=transaction_type,
             optional_agreement_id=optional_agreement_id,
@@ -111,7 +111,12 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
                 comment=bceid_comment,
                 to_director=False,
             )
-
+        history = CreditAgreementHistory.objects.create(
+                credit_agreement=obj,
+                status=obj.status,
+                update_user=request.user.username,
+                create_user=request.user.username
+            )
         adjustments = request.data.get('content', None)
         if adjustments and isinstance(adjustments, list):
             CreditAgreementContent.objects.filter(
@@ -140,12 +145,26 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
         return obj
 
     def update(self, instance, validated_data):
-        status = validated_data.get('validation_status')
         request = self.context.get('request')
         agreement_attachments = validated_data.pop('agreement_attachments', [])
         files_to_be_removed = request.data.get('delete_files', [])
         credit_agreement_comment = validated_data.pop('agreement_comment', None)
+        status = request.data.get('validation_status')
 
+        if status and (
+            status != 'DELETED' or (
+                status == 'DELETED' and instance.status == 'DRAFT')
+                ):
+            history = CreditAgreementHistory.objects.create(
+                credit_agreement=instance,
+                status=status,
+                update_user=request.user.username,
+                create_user=request.user.username
+            )
+            instance.status = status
+            instance.save()
+            history.save()
+        
         if credit_agreement_comment:
             CreditAgreementComment.objects.create(
                 create_user=request.user.username,

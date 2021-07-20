@@ -2,12 +2,12 @@ import React from 'react';
 import axios from 'axios';
 import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
+import parse from 'html-react-parser';
 import Button from '../../app/components/Button';
 import CreditAgreementsAlert from './CreditAgreementsAlert';
 import CreditAgreementsDetailsTable from './CreditAgreementsDetailsTable';
 import DisplayComment from '../../app/components/DisplayComment';
 import CommentInput from '../../app/components/CommentInput';
-import parse from 'html-react-parser';
 
 const CreditAgreementsDetailsPage = (props) => {
   const {
@@ -17,8 +17,9 @@ const CreditAgreementsDetailsPage = (props) => {
     handleCommentChangeIdir,
     analystAction,
     details,
+    handleDelete,
   } = props;
-
+console.log(details)
   return (
     <div id="credit-agreements-detail-page" className="page">
       <div className="row mt-3 mb-2">
@@ -41,11 +42,11 @@ const CreditAgreementsDetailsPage = (props) => {
               className="grey-border-area p-3 comment-box mt-2"
               id="comment-input"
             >
-              {details &&
-                details.filteredIdirComments &&
-                details.filteredIdirComments.length > 0 && (
+              {details
+                && details.filteredIdirComments
+                && details.filteredIdirComments.length > 0 && (
                   <DisplayComment commentArray={details.filteredIdirComments} />
-                )}
+              )}
               <div>
                 <CommentInput
                   handleAddComment={handleAddIdirComment}
@@ -92,36 +93,36 @@ const CreditAgreementsDetailsPage = (props) => {
           <div className="col-5 filename">
             {details.attachments && details.attachments.length > 0
               ? details.attachments.map((attachment) => (
-                  <div className="row" key={attachment.id}>
-                    <div className="col-9 file">
-                      <button
-                        className="link"
-                        onClick={() => {
-                          axios
-                            .get(attachment.url, {
-                              responseType: 'blob',
-                              headers: {
-                                Authorization: null,
-                              },
-                            })
-                            .then((response) => {
-                              const objectURL = window.URL.createObjectURL(
-                                new Blob([response.data])
-                              );
-                              const link = document.createElement('a');
-                              link.href = objectURL;
-                              link.setAttribute('download',attachment.filename);
-                              document.body.appendChild(link);
-                              link.click();
-                            });
-                        }}
-                        type="button"
-                      >
-                        {attachment.filename}
-                      </button>
-                    </div>
+                <div className="row" key={attachment.id}>
+                  <div className="col-9 file">
+                    <button
+                      className="link"
+                      onClick={() => {
+                        axios
+                          .get(attachment.url, {
+                            responseType: 'blob',
+                            headers: {
+                              Authorization: null,
+                            },
+                          })
+                          .then((response) => {
+                            const objectURL = window.URL.createObjectURL(
+                              new Blob([response.data]),
+                            );
+                            const link = document.createElement('a');
+                            link.href = objectURL;
+                            link.setAttribute('download', attachment.filename);
+                            document.body.appendChild(link);
+                            link.click();
+                          });
+                      }}
+                      type="button"
+                    >
+                      {attachment.filename}
+                    </button>
                   </div>
-                ))
+                </div>
+              ))
               : ' - '}
           </div>
         </div>
@@ -131,20 +132,20 @@ const CreditAgreementsDetailsPage = (props) => {
             <h4 className="d-inline">Message from the Director: </h4>
           </span>
           <span className="col-5">
-            {details &&
-            details.filteredBceidComments &&
-            details.filteredBceidComments.length > 0
+            {details
+            && details.filteredBceidComments
+            && details.filteredBceidComments.length > 0
               ? parse(details.filteredBceidComments[0].comment)
               : 'no comment'}
           </span>
         </div>
         <div className="row mt-2">
-          <span className="col-3"></span>
+          <span className="col-3" />
           <span className="col-5">
-            {details && details.creditAgreementContent &&
-              details.creditAgreementContent.length > 0 && (
+            {details && details.creditAgreementContent
+              && details.creditAgreementContent.length > 0 && (
                 <CreditAgreementsDetailsTable items={details.creditAgreementContent} />
-              )}
+            )}
           </span>
         </div>
       </div>
@@ -154,11 +155,14 @@ const CreditAgreementsDetailsPage = (props) => {
             {analystAction && (
               <>
                 <span className="left-content">
+                  {details.status === 'DRAFT'
+                  && (
                   <Button
                     buttonType="delete"
                     optionalText="Delete"
-                    action={() => {}}
+                    action={() => { handleDelete(); }}
                   />
+                  )}
                 </span>
                 <span className="right-content">
                   <Button

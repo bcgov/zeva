@@ -33,7 +33,7 @@ const CreditAgreementsEditContainer = (props) => {
   const handleCommentChangeBceid = (text) => {
     setBceidComment(text);
   };
- 
+
   const handleUpload = (paramId) => {
     const promises = [];
     // setShowProgressBars(true);
@@ -113,7 +113,7 @@ const CreditAgreementsEditContainer = (props) => {
         axios.patch(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId), {
           ...patchData,
         }).then(() => {
-            history.push(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId));
+          history.push(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId));
         });
       });
     });
