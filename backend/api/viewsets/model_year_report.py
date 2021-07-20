@@ -3,10 +3,8 @@ from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
-from api.models.credit_class import CreditClass
 from api.models.model_year import ModelYear
 from api.models.model_year_report import ModelYearReport
-from api.models.model_year_report_adjustment import ModelYearReportAdjustment
 from api.models.model_year_report_confirmation import \
     ModelYearReportConfirmation
 from api.models.model_year_report_history import ModelYearReportHistory
@@ -302,37 +300,6 @@ class ModelYearReportViewset(
                             'create_user': request.user.username,
                             'update_user': request.user.username
                         }
-                    )
-
-        adjustments = request.data.get('adjustments', None)
-        if adjustments and isinstance(adjustments, list):
-            ModelYearReportAdjustment.objects.filter(
-                model_year_report=report
-            ).delete()
-
-            for adjustment in adjustments:
-                model_year = ModelYear.objects.filter(
-                    name=adjustment.get('model_year')
-                ).first()
-
-                credit_class = CreditClass.objects.filter(
-                    credit_class=adjustment.get('credit_class')
-                ).first()
-
-                is_reduction = False
-
-                if adjustment.get('type') == 'Reduction':
-                    is_reduction = True
-
-                if model_year and credit_class and adjustment.get('quantity'):
-                    ModelYearReportAdjustment.objects.create(
-                        credit_class_id=credit_class.id,
-                        model_year_id=model_year.id,
-                        number_of_credits=adjustment.get('quantity'),
-                        is_reduction=is_reduction,
-                        model_year_report=report,
-                        create_user=request.user.username,
-                        update_user=request.user.username,
                     )
 
         report = get_object_or_404(ModelYearReport, pk=pk)
