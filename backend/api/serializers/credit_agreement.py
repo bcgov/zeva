@@ -1,18 +1,22 @@
-from rest_framework import serializers
-from rest_framework.serializers import ModelSerializer, SerializerMethodField, SlugRelatedField
-from .organization import OrganizationSerializer
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
+
 from api.models.credit_agreement import CreditAgreement
-from api.models.credit_agreement_comment import CreditAgreementComment
 from api.models.credit_agreement_attachment import CreditAgreementAttachment
+from api.models.credit_agreement_comment import CreditAgreementComment
+from api.models.credit_agreement_content import CreditAgreementContent
 from api.models.credit_agreement_statuses import CreditAgreementStatuses
 from api.models.credit_agreement_transaction_types import CreditAgreementTransactionTypes
+from api.models.credit_class import CreditClass
+from api.models.model_year import ModelYear
 from api.models.user_profile import UserProfile
 from api.serializers.user import MemberSerializer
 from api.serializers.credit_agreement_attachment import CreditAgreementAttachmentSerializer
 from api.serializers.credit_agreement_comment import CreditAgreementCommentSerializer
 from api.serializers.credit_agreement_content import \
     CreditAgreementContentSerializer
+from .organization import OrganizationSerializer
+
 
 class CreditAgreementBaseSerializer:
     def get_update_user(self, obj):
@@ -94,6 +98,32 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
                 comment=bceid_comment,
                 to_director=False,
             )
+
+        adjustments = request.data.get('content', None)
+        if adjustments and isinstance(adjustments, list):
+            CreditAgreementContent.objects.filter(
+                credit_agreement=obj
+            ).delete()
+
+            for adjustment in adjustments:
+                model_year = ModelYear.objects.filter(
+                    name=adjustment.get('model_year')
+                ).first()
+
+                credit_class = CreditClass.objects.filter(
+                    credit_class=adjustment.get('credit_class')
+                ).first()
+
+                if model_year and credit_class and adjustment.get('quantity'):
+                    CreditAgreementContent.objects.create(
+                        credit_class_id=credit_class.id,
+                        model_year_id=model_year.id,
+                        number_of_credits=adjustment.get('quantity'),
+                        credit_agreement=obj,
+                        create_user=request.user.username,
+                        update_user=request.user.username,
+                    )
+
         return obj
 
     def update(self, instance, validated_data):
@@ -173,5 +203,3 @@ class CreditAgreementListSerializer(
             'transaction_type', 'credit_agreement_content', 'id',
             'status', 'update_user', 'history',
         )
-
-
