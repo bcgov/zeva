@@ -8,7 +8,7 @@ import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceReportsTable = (props) => {
-  const { user, data, showSupplier } = props;
+  const { user, data, showSupplier, filtered, setFiltered } = props;
 
   const supplierClass = (paramClass) => {
     if (paramClass === 'L') {
@@ -91,6 +91,8 @@ const ComplianceReportsTable = (props) => {
       columns={columns}
       data={data}
       filterable
+      filtered={filtered}
+      setFiltered={setFiltered}
       getTrProps={(state, row) => {
         if (row && row.original && user) {
           return {
