@@ -32,8 +32,12 @@ class CreditAgreementBaseSerializer:
 class CreditAgreementSerializer(ModelSerializer, CreditAgreementBaseSerializer):
     organization = OrganizationSerializer(read_only=True)
     transaction_type = EnumField(CreditAgreementTransactionTypes)
+    credit_agreement_content = CreditAgreementContentSerializer(
+        many=True, read_only=True
+    )
     status = EnumField(CreditAgreementStatuses)
     comments = SerializerMethodField()
+    attachments = SerializerMethodField()
 
     def get_comments(self, obj):
         agreement_comment = CreditAgreementComment.objects.filter(
@@ -48,12 +52,21 @@ class CreditAgreementSerializer(ModelSerializer, CreditAgreementBaseSerializer):
 
         return None
 
+    def get_attachments(self, instance):
+        attachments = CreditAgreementAttachment.objects.filter(
+            credit_agreement_id=instance.id,
+            is_removed=False)
+
+        serializer = CreditAgreementAttachmentSerializer(attachments, many=True)
+
+        return serializer.data
+
     class Meta:
         model = CreditAgreement
         fields = (
             'id', 'organization', 'effective_date', 'status',
             'transaction_type', 'comments', 'optional_agreement_id', 
-            'update_timestamp',
+            'update_timestamp', 'attachments','credit_agreement_content'
         )
 
 

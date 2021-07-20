@@ -10,7 +10,7 @@ const CreditAgreementsDetailsTable = (props) => {
     {
       Header: 'Quantity',
       headerClassName: 'header-group font-weight-bold',
-      accessor: (item) => formatNumeric(item.creditValue),
+      accessor: (item) => formatNumeric(item.numberOfCredits),
       id: 'credit-quantity',
       className: 'text-center',
     },
