@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import CreditAgreementsDetailsPage from './components/CreditAgreementsDetailsPage';
 import Loading from '../app/components/Loading';
 import ROUTES_CREDIT_AGREEMENTS from '../app/routes/CreditAgreements';
 import CustomPropTypes from '../app/utilities/props';
-import axios from 'axios';
 import history from '../app/History';
 
 const CreditAgreementsDetailsContainer = (props) => {
@@ -13,15 +13,12 @@ const CreditAgreementsDetailsContainer = (props) => {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [details, setDetails] = useState({});
-  const analystAction =
-    user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
+  const analystAction = user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
 
   const items = [
     { numberOfCredits: '50', modelYear: '2021', creditClass: 'A' },
     { numberOfCredits: '100', modelYear: '2021', creditClass: 'B' },
   ];
-
- 
 
   const handleCommentChangeIdir = (text) => {
     setIdirComment(text);
@@ -32,6 +29,14 @@ const CreditAgreementsDetailsContainer = (props) => {
       .then(() => {
         history.push(ROUTES_CREDIT_AGREEMENTS.LIST);
         history.replace(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id));
+      });
+  };
+  const handleDelete = () => {
+    console.log('delete')
+    axios.patch(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id),
+      { validationStatus: 'DELETED' })
+      .then(() => {
+        history.push(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id));
       });
   };
   const refreshDetails = () => {
@@ -52,13 +57,13 @@ const CreditAgreementsDetailsContainer = (props) => {
         let filteredBceidComments;
         if (comments && comments.length > 0) {
           filteredIdirComments = comments.filter(
-            (data) => data.toDirector === true
+            (data) => data.toDirector === true,
           );
           filteredBceidComments = comments.filter(
-            (data) => data.toDirector === false
+            (data) => data.toDirector === false,
           );
         }
-        
+
         setDetails({
           filteredIdirComments,
           filteredBceidComments,
@@ -72,12 +77,11 @@ const CreditAgreementsDetailsContainer = (props) => {
           creditAgreementContent,
         });
         setLoading(false);
-      }
-      );
+      });
     } else {
-      //This logic is just to avoid errors when looking at bceid display page as there is no list of agreement transactions/ids.
-      //Remove this logic once we have list of transactions(including agreement id) for bceid user so that the details are coming from database 
-      //instead of static values. This work will be part of ZEVA-639.
+      // This logic is just to avoid errors when looking at bceid display page as there is no list of agreement transactions/ids.
+      // Remove this logic once we have list of transactions(including agreement id) for bceid user so that the details are coming from database
+      // instead of static values. This work will be part of ZEVA-639.
       setDetails({
         filteredIdirComments: [],
         filteredBceidComments: [],
@@ -92,16 +96,14 @@ const CreditAgreementsDetailsContainer = (props) => {
       });
       setLoading(false);
     }
-    
-    
   };
 
   useEffect(() => {
     refreshDetails();
   }, [keycloak.authenticated]);
-   if (loading) {
-     return <Loading />;
-   }
+  if (loading) {
+    return <Loading />;
+  }
 
   return [
     <CreditAgreementsDetailsPage
@@ -112,6 +114,7 @@ const CreditAgreementsDetailsContainer = (props) => {
       handleAddIdirComment={handleAddIdirComment}
       handleCommentChangeIdir={handleCommentChangeIdir}
       details={details}
+      handleDelete={handleDelete}
     />,
   ];
 };

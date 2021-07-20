@@ -6,3 +6,4 @@ class CreditAgreementStatuses(Enum):
     DRAFT = 'DRAFT'
     RECOMMENDED = 'RECOMMENDED'
     ISSUED = 'ISSUED'
+    DELETED = 'DELETED'
