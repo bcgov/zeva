@@ -32,28 +32,6 @@ const AssessmentEditContainer = (props) => {
   const [sales, setSales] = useState({});
   const [ratios, setRatios] = useState({});
   const [years, setYears] = useState([]);
-  const [adjustments, setAdjustments] = useState([]);
-
-  const addAdjustment = () => {
-    adjustments.push({
-      creditClass: 'A',
-      quantity: 0,
-      type: 'Allocation',
-    });
-
-    setAdjustments([...adjustments]);
-  };
-
-  const handleChangeAdjustment = (value, property, index) => {
-    adjustments[index][property] = value;
-
-    setAdjustments([...adjustments]);
-  };
-
-  const handleDeleteAdjustment = (index) => {
-    adjustments.splice(index, 1);
-    setAdjustments([...adjustments]);
-  };
 
   const handleChangeMake = (event) => {
     const { value } = event.target;
@@ -85,7 +63,6 @@ const AssessmentEditContainer = (props) => {
     const data = {
       makes,
       sales,
-      adjustments,
     };
 
     axios.patch(
@@ -118,7 +95,6 @@ const AssessmentEditContainer = (props) => {
           validationStatus,
           ldvSales,
           supplierClass,
-          adjustments: adjustmentsData,
         } = response.data;
         const year = parseInt(reportModelYear.name, 10);
 
@@ -126,18 +102,6 @@ const AssessmentEditContainer = (props) => {
 
         setModelYear(year);
         setStatuses(reportStatuses);
-
-        const adjustmentArr = [];
-
-        adjustmentsData.forEach((each) => {
-          adjustmentArr.push({
-            creditClass: each.creditClass,
-            modelYear: each.modelYear,
-            quantity: each.numberOfCredits,
-            type: each.isReduction ? 'Reduction' : 'Allocation',
-          });
-        });
-        setAdjustments(adjustmentArr);
 
         if (modelYearReportMakes) {
           const supplierCurrentMakes = supplierMakes.map((each) => each.make);
@@ -214,10 +178,6 @@ const AssessmentEditContainer = (props) => {
         sales={sales}
         supplierMakes={supplierMakesList}
         years={years}
-        adjustments={adjustments}
-        addAdjustment={addAdjustment}
-        handleChangeAdjustment={handleChangeAdjustment}
-        handleDeleteAdjustment={handleDeleteAdjustment}
       />
     </>
   );
