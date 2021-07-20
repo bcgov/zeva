@@ -36,7 +36,7 @@ const CreditAgreementsDetailsContainer = (props) => {
     axios.patch(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id),
       { validationStatus: 'DELETED' })
       .then(() => {
-        history.push(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id));
+        history.push(ROUTES_CREDIT_AGREEMENTS.LIST);
       });
   };
   const refreshDetails = () => {

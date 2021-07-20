@@ -19,7 +19,7 @@ const CreditAgreementsDetailsPage = (props) => {
     details,
     handleDelete,
   } = props;
-
+console.log(details)
   return (
     <div id="credit-agreements-detail-page" className="page">
       <div className="row mt-3 mb-2">
@@ -155,11 +155,14 @@ const CreditAgreementsDetailsPage = (props) => {
             {analystAction && (
               <>
                 <span className="left-content">
+                  {details.status === 'DRAFT'
+                  && (
                   <Button
                     buttonType="delete"
                     optionalText="Delete"
                     action={() => { handleDelete(); }}
                   />
+                  )}
                 </span>
                 <span className="right-content">
                   <Button
