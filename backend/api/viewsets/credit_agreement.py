@@ -43,7 +43,7 @@ class CreditAgreementViewSet(
                         CreditAgreementStatuses.ISSUED,
                         
                         ])) |
-                Q(debit_from_id=request.user.organization.id)
+                Q(organization_id=request.user.organization.id)
                 ).exclude(status__in=[CreditTransferStatuses.DELETED])
         return queryset
 
