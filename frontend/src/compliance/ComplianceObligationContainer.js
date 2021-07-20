@@ -69,20 +69,23 @@ const ComplianceObligationContainer = (props) => {
 
       setTotalReduction(tempTotalReduction);
 
-      setClassAReductions([
+      const tempClassAReductions = [
         ...existingADeductions, {
           modelYear: Number(reportYear),
           value: Number(classAReduction),
         },
-      ]);
+      ];
 
+      setClassAReductions(tempClassAReductions);
 
-      setUnspecifiedReductions([
+      const tempUnspecifiedReductions = [
         ...existingUnspecifiedDeductions, {
           modelYear: Number(reportYear),
           value: Number(leftoverReduction),
         },
-      ]);
+      ];
+
+      setUnspecifiedReductions(tempUnspecifiedReductions);
 
       if (creditReductionSelection) {
         const creditReduction = calculateCreditReduction(

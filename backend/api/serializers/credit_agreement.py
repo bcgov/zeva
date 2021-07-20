@@ -206,7 +206,7 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
     class Meta:
         model = CreditAgreement
         fields = (
-            'create_timestamp', 'organization',  'effective_date', 'id',
+            'create_timestamp', 'organization', 'effective_date', 'id',
             'update_user', 'status', 'transaction_type', 'agreement_attachments'
         )
 
@@ -228,7 +228,7 @@ class CreditAgreementListSerializer(
     class Meta:
         model = CreditAgreement
         fields = (
-            'create_timestamp', 'organization',  'effective_date',
+            'create_timestamp', 'organization', 'effective_date',
             'transaction_type', 'credit_agreement_content', 'id',
             'status', 'update_user', 'history',
         )
