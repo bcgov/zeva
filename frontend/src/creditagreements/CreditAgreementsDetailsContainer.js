@@ -5,6 +5,7 @@ import Loading from '../app/components/Loading';
 import ROUTES_CREDIT_AGREEMENTS from '../app/routes/CreditAgreements';
 import CustomPropTypes from '../app/utilities/props';
 import axios from 'axios';
+import history from '../app/History';
 
 const CreditAgreementsDetailsContainer = (props) => {
   const { keycloak, user } = props;
@@ -16,8 +17,8 @@ const CreditAgreementsDetailsContainer = (props) => {
     user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
 
   const items = [
-    { creditValue: '50', modelYear: '2021', creditClass: 'A' },
-    { creditValue: '100', modelYear: '2021', creditClass: 'B' },
+    { numberOfCredits: '50', modelYear: '2021', creditClass: 'A' },
+    { numberOfCredits: '100', modelYear: '2021', creditClass: 'B' },
   ];
 
  
@@ -27,16 +28,11 @@ const CreditAgreementsDetailsContainer = (props) => {
   };
   const handleAddIdirComment = () => {
     const comment = { comment: idirComment, director: true };
-    console.log('comment added!: ', idirComment);
-    // add route for posting idir comment!!!
-    // axios
-    //   .post(
-    //     ROUTES_CREDIT_AGREEMENTS.ASSESSMENT_COMMENT_SAVE.replace(':id', id),
-    //     comment
-    //   )
-    //   .then(() => {
-    //     history.push(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id));
-    //   });
+    axios.post(ROUTES_CREDIT_AGREEMENTS.COMMENT_SAVE.replace(':id', id), comment)
+      .then(() => {
+        history.push(ROUTES_CREDIT_AGREEMENTS.LIST);
+        history.replace(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id));
+      });
   };
   const refreshDetails = () => {
     if (id > 0) {
@@ -48,17 +44,32 @@ const CreditAgreementsDetailsContainer = (props) => {
           organization,
           transactionType,
           status,
-          updateTimestamp
+          updateTimestamp,
+          attachments,
+          creditAgreementContent,
         } = response.data;
-
+        let filteredIdirComments;
+        let filteredBceidComments;
+        if (comments && comments.length > 0) {
+          filteredIdirComments = comments.filter(
+            (data) => data.toDirector === true
+          );
+          filteredBceidComments = comments.filter(
+            (data) => data.toDirector === false
+          );
+        }
+        
         setDetails({
-          comments,
+          filteredIdirComments,
+          filteredBceidComments,
           effectiveDate,
           optionalAgreementId,
           organization,
           transactionType,
           status,
           updateTimestamp,
+          attachments,
+          creditAgreementContent,
         });
         setLoading(false);
       }
@@ -68,13 +79,16 @@ const CreditAgreementsDetailsContainer = (props) => {
       //Remove this logic once we have list of transactions(including agreement id) for bceid user so that the details are coming from database 
       //instead of static values. This work will be part of ZEVA-639.
       setDetails({
-        comments: null,
+        filteredIdirComments: [],
+        filteredBceidComments: [],
         effectiveDate: '2021-07-18',
         optionalAgreementId: '65652',
         organization: { name: 'TESLA' },
         transactionType: 'Initiative Agreement',
         status: 'ISSUED',
         updateTimestamp: '2021-07-18 16:30:34',
+        attachment: null,
+        creditAgreementContent: items,
       });
       setLoading(false);
     }

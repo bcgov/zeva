@@ -15,7 +15,6 @@ const CreditAgreementsEditContainer = (props) => {
   const { keycloak, user } = props;
   const { id } = useParams();
   const [bceidComment, setBceidComment] = useState('');
-  const [idirComment, setIdirComment] = useState([]);
   const [creditRows, setCreditRows] = useState([{
     creditClass: 'A',
     modelYear: '-',
@@ -31,20 +30,10 @@ const CreditAgreementsEditContainer = (props) => {
   const [errorMessage, setErrorMessage] = useState(null);
   const analystAction = user.isGovernment
   && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
-  const handleCommentChangeIdir = (text) => {
-    setIdirComment(text);
-  };
   const handleCommentChangeBceid = (text) => {
     setBceidComment(text);
   };
-  const handleAddIdirComment = () => {
-    const comment = { comment: idirComment, director: true };
-    console.log('comment added!: ', idirComment);
-    // add route for posting idir comment!!!
-    // axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
-    //   history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
-    // });
-  };
+ 
   const handleUpload = (paramId) => {
     const promises = [];
     // setShowProgressBars(true);
@@ -124,9 +113,7 @@ const CreditAgreementsEditContainer = (props) => {
         axios.patch(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId), {
           ...patchData,
         }).then(() => {
-          console.log('SUCCESS! no details page built yet');
-
-        history.push(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId));
+            history.push(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId));
         });
       });
     });
@@ -161,11 +148,7 @@ const CreditAgreementsEditContainer = (props) => {
       agreementDetails={agreementDetails}
       bceidComment={bceidComment}
       setBciedComment={setBceidComment}
-      idirComment={idirComment}
-      setIdirComment={setIdirComment}
       analystAction={analystAction}
-      handleCommentChangeIdir={handleCommentChangeIdir}
-      handleAddIdirComment={handleAddIdirComment}
       setUploadFiles={setFiles}
       setErrorMessage={setErrorMessage}
       errorMessage={errorMessage}

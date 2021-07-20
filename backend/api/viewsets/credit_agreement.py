@@ -7,7 +7,10 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.models.credit_agreement import CreditAgreement
-from api.models.credit_agreement_transaction_types import CreditAgreementTransactionTypes
+from api.models.credit_agreement_transaction_types import \
+    CreditAgreementTransactionTypes
+from api.models.credit_agreement_comment import \
+    CreditAgreementComment
 from api.serializers.credit_agreement import CreditAgreementSerializer, \
     CreditAgreementListSerializer, CreditAgreementSaveSerializer
 from api.services.minio import minio_put_object
@@ -51,3 +54,18 @@ class CreditAgreementViewSet(
             types_list.append(data.value)
 
         return Response(types_list)
+
+    @action(detail=True, methods=['post', 'patch'])
+    def comment_save(self, request, pk):
+        comment = request.data.get('comment')
+        director = request.data.get('director')
+        if comment:
+            credit_comment = CreditAgreementComment.objects.create(
+                credit_agreement_id=pk,
+                comment=comment,
+                to_director=director,
+                create_user=request.user.username,
+                update_user=request.user.username,
+            )
+            credit_comment.save()
+        return Response({'saved': True, "id": credit_comment.id})

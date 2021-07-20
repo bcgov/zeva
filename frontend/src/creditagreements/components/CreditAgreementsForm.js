@@ -23,11 +23,8 @@ const CreditAgreementsForm = (props) => {
     user,
     bceidComment,
     files,
-    idirComment,
-    handleAddIdirComment,
     handleChangeDetails,
     handleChangeRow,
-    handleCommentChangeIdir,
     handleCommentChangeBceid,
     handleSubmit,
     errorMessage,
@@ -50,21 +47,6 @@ const CreditAgreementsForm = (props) => {
       {user.isGovernment
           && (
           <div className="assessment-credit-adjustment">
-            {/* <div className="grey-border-area p-3 comment-box mt-2" id="comment-input">
-              {agreementDetails.idirComment && agreementDetails.idirComment.length > 0 && (
-              <DisplayComment
-                commentArray={agreementDetails.idirComment}
-              />
-              )}
-              <div>
-                <CommentInput
-                  handleAddComment={handleAddIdirComment}
-                  handleCommentChange={handleCommentChangeIdir}
-                  title={analystAction ? 'Add comment to director: ' : 'Add comment to the analyst'}
-                  buttonText="Add Comment"
-                />
-              </div>
-            </div> */}
             <div className="mt-4">
               <h4>Agreement Attachments (optional)</h4>
               <div className="grey-border-area p-3 mt-1">
