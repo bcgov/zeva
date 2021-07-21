@@ -14,7 +14,7 @@ class CreditTransactionType(Auditable):
     transaction_type = models.CharField(
         blank=False,
         db_comment="Transaction Type (eg Trade, Reduction, Grant)",
-        max_length=20,
+        max_length=50,
         null=False,
         unique=True
     )
