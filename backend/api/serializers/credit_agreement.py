@@ -150,10 +150,9 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
         files_to_be_removed = request.data.get('delete_files', [])
         credit_agreement_comment = validated_data.pop('agreement_comment', None)
         status = request.data.get('validation_status')
-
         if status and (
             status != 'DELETED' or (
-                status == 'DELETED' and instance.status == 'DRAFT')
+                status == 'DELETED' and instance.status == CreditAgreementStatuses.DRAFT)
                 ):
             history = CreditAgreementHistory.objects.create(
                 credit_agreement=instance,

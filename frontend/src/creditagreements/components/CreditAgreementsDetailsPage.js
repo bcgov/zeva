@@ -17,9 +17,8 @@ const CreditAgreementsDetailsPage = (props) => {
     handleCommentChangeIdir,
     analystAction,
     details,
-    handleDelete,
+    handleSubmit,
   } = props;
-console.log(details)
   return (
     <div id="credit-agreements-detail-page" className="page">
       <div className="row mt-3 mb-2">
@@ -160,7 +159,7 @@ console.log(details)
                   <Button
                     buttonType="delete"
                     optionalText="Delete"
-                    action={() => { handleDelete(); }}
+                    action={() => { handleSubmit('DELETED'); }}
                   />
                   )}
                 </span>
@@ -174,7 +173,7 @@ console.log(details)
                     buttonType="submit"
                     optionalClassname="button primary"
                     optionalText="Submit to Director"
-                    action={() => {}}
+                    action={() => { handleSubmit('RECOMMENDED'); }}
                   />
                 </span>
               </>
