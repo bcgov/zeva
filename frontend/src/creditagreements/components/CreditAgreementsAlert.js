@@ -25,8 +25,8 @@ const CreditAgreementsAlert = (props) => {
 
     case 'RECOMMENDED':
       title = 'Recommended';
-      message = `${type} recommended for issuance, ${date} by ${user}.`;
-      classname = 'alert-warning';
+      message = `recommended for issuance, ${date} by ${user}.`;
+      classname = 'alert-primary';
       break;
 
     case 'ISSUED':

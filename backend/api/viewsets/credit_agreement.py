@@ -43,8 +43,8 @@ class CreditAgreementViewSet(
                         CreditAgreementStatuses.ISSUED,
                         
                         ])) |
-                Q(debit_from_id=request.user.organization.id)
-                ).exclude(status__in=[CreditTransferStatuses.DELETED])
+                Q(organization_id=request.user.organization.id)
+                ).exclude(status__in=[CreditAgreementStatuses.DELETED])
         return queryset
 
     def get_serializer_class(self):
