@@ -47,12 +47,7 @@ const AssessmentContainer = (props) => {
   const handleCommentChangeBceid = (text) => {
     setBceidComment(text);
   };
-  const handleAddBceidComment = () => {
-    const comment = { comment: bceidComment, director: false };
-    axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
-      history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
-    });
-  };
+
   const handleAddIdirComment = () => {
     const comment = { comment: idirComment, director: true };
     axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
@@ -246,151 +241,122 @@ const AssessmentContainer = (props) => {
   && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
 
   const handleSubmit = (status) => {
-    if (changedValue && status === 'RECOMMENDED') {
-      const reportDetailsArray = [];
-      Object.keys(creditDetails).forEach((each) => {
-        Object.keys(creditDetails[each]).forEach((year) => {
-          if (each !== 'transactions' && each !== 'pendingBalance') {
-            const a = creditDetails[each][year].A;
-            const b = creditDetails[each][year].B;
-            reportDetailsArray.push({
-              category: each, year, a, b,
-            });
-          } else if (each === 'pendingBalance') {
-            reportDetailsArray.push({
-              category: each,
-              year: creditDetails[each][year].modelYear,
-              A: creditDetails[each][year].A,
-              B: creditDetails[each][year].B,
-            });
-          } else {
-            const category = year;
-            creditDetails[each][year].forEach((record) => {
-              const A = parseFloat(record.A) || 0;
-              const B = parseFloat(record.B) || 0;
+    const comment = { comment: bceidComment, director: false };
+
+    axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
+      if (changedValue && status === 'RECOMMENDED') {
+        const reportDetailsArray = [];
+        Object.keys(creditDetails).forEach((each) => {
+          Object.keys(creditDetails[each]).forEach((year) => {
+            if (each !== 'transactions' && each !== 'pendingBalance') {
+              const a = creditDetails[each][year].A;
+              const b = creditDetails[each][year].B;
               reportDetailsArray.push({
-                category, year: record.modelYear, A, B,
+                category: each, year, a, b,
+              });
+            } else if (each === 'pendingBalance') {
+              reportDetailsArray.push({
+                category: each,
+                year: creditDetails[each][year].modelYear,
+                A: creditDetails[each][year].A,
+                B: creditDetails[each][year].B,
+              });
+            } else {
+              const category = year;
+              creditDetails[each][year].forEach((record) => {
+                const A = parseFloat(record.A) || 0;
+                const B = parseFloat(record.B) || 0;
+                reportDetailsArray.push({
+                  category, year: record.modelYear, A, B,
+                });
+              });
+            }
+          });
+        });
+
+        if (deductions) {
+          // zev class A reductions
+          deductions.filter((deduction) => deduction.type === 'classAReduction').forEach((deduction) => {
+            reportDetailsArray.push({
+              category: 'ClassAReduction',
+              year: deduction.modelYear,
+              a: deduction.creditA,
+              b: deduction.creditB,
+            });
+          });
+
+          // unspecified reductions
+          deductions.filter((deduction) => deduction.type === 'unspecifiedReduction').forEach((deduction) => {
+            reportDetailsArray.push({
+              category: 'UnspecifiedClassCreditReduction',
+              year: deduction.modelYear,
+              a: deduction.creditA,
+              b: deduction.creditB,
+            });
+          });
+        }
+
+        if (updatedBalances) {
+          // provincial balance after reductions
+          if (updatedBalances.balances.length > 0) {
+            updatedBalances.balances.forEach((balance) => {
+              reportDetailsArray.push({
+                category: 'ProvisionalBalanceAfterCreditReduction',
+                year: balance.modelYear,
+                a: balance.creditA || 0,
+                b: balance.creditB || 0,
               });
             });
           }
-        });
-      });
 
-      if (deductions) {
-        // zev class A reductions
-        deductions.filter((deduction) => deduction.type === 'classAReduction').forEach((deduction) => {
-          reportDetailsArray.push({
-            category: 'ClassAReduction',
-            year: deduction.modelYear,
-            a: deduction.creditA,
-            b: deduction.creditB,
-          });
-        });
-
-        // unspecified reductions
-        deductions.filter((deduction) => deduction.type === 'unspecifiedReduction').forEach((deduction) => {
-          reportDetailsArray.push({
-            category: 'UnspecifiedClassCreditReduction',
-            year: deduction.modelYear,
-            a: deduction.creditA,
-            b: deduction.creditB,
-          });
-        });
-      }
-
-      // // zev class A reductions current year
-      // reportDetailsArray.push({
-      //   category: 'ClassAReduction',
-      //   year: reportYear,
-      //   a: creditDetails.zevClassAReduction.currentYearA,
-      //   b: 0,
-      // });
-
-      // // zev class A reductions previous year
-      // reportDetailsArray.push({
-      //   category: 'ClassAReduction',
-      //   year: reportYear - 1,
-      //   a: creditDetails.zevClassAReduction.lastYearA,
-      //   b: 0,
-      // });
-
-      // // unspecified balance current year
-      // reportDetailsArray.push({
-      //   category: 'UnspecifiedClassCreditReduction',
-      //   year: reportYear,
-      //   a: creditDetails.unspecifiedReductions.currentYearA,
-      //   b: creditDetails.unspecifiedReductions.currentYearB,
-      // });
-
-      // // unspecified balance previous year
-      // reportDetailsArray.push({
-      //   category: 'UnspecifiedClassCreditReduction',
-      //   year: reportYear - 1,
-      //   a: creditDetails.unspecifiedReductions.lastYearA,
-      //   b: creditDetails.unspecifiedReductions.lastYearB,
-      // });
-
-      // reportDetailsArray.push({
-      //   category: 'ProvisionalBalanceAfterCreditReduction',
-      //   year: reportYear,
-      //   a: creditDetails.creditBalance.A,
-      //   b: creditDetails.creditBalance.B,
-      // });
-
-      // reportDetailsArray.push({
-      //   category: 'CreditDeficit',
-      //   year: reportYear,
-      //   a: creditDetails.creditBalance.creditADeficit,
-      //   b: creditDetails.creditBalance.unspecifiedCreditDeficit,
-      // });
-      if (updatedBalances) {
-        // provincial balance after reductions
-        if (updatedBalances.balances.length > 0) {
-          updatedBalances.balances.forEach((balance) => {
-            reportDetailsArray.push({
-              category: 'ProvisionalBalanceAfterCreditReduction',
-              year: balance.modelYear,
-              a: balance.creditA || 0,
-              b: balance.creditB || 0,
+          // deficits
+          if (updatedBalances.deficits.length > 0) {
+            updatedBalances.deficits.forEach((balance) => {
+              reportDetailsArray.push({
+                category: 'CreditDeficit',
+                year: balance.modelYear,
+                a: balance.creditA || 0,
+                b: balance.creditB || 0,
+              });
             });
-          });
+          }
         }
 
-        // deficits
-        if (updatedBalances.deficits.length > 0) {
-          updatedBalances.deficits.forEach((balance) => {
-            reportDetailsArray.push({
-              category: 'CreditDeficit',
-              year: balance.modelYear,
-              a: balance.creditA || 0,
-              b: balance.creditB || 0,
-            });
-          });
-        }
+        const ObligationData = {
+          reportId: id,
+          creditActivity: reportDetailsArray,
+        };
+
+        axios.patch(ROUTES_COMPLIANCE.OBLIGATION_SAVE, ObligationData);
       }
 
-      const ObligationData = {
-        reportId: id,
-        creditActivity: reportDetailsArray,
+      const data = {
+        modelYearReportId: id,
+        validation_status: status,
+        modelYear: reportYear,
       };
 
-      axios.patch(ROUTES_COMPLIANCE.OBLIGATION_SAVE, ObligationData);
-    }
+      if (analystAction) {
+        data.penalty = details.assessment.assessmentPenalty;
+        data.description = details.assessment.decision.id;
+      }
 
-    const data = {
-      modelYearReportId: id,
-      validation_status: status,
-      modelYear: reportYear,
-    };
+      axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then(() => {
+        history.push(ROUTES_COMPLIANCE.REPORTS);
+        history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+      });
+    });
+  };
 
-    if (analystAction) {
-      data.penalty = details.assessment.assessmentPenalty;
-      data.description = details.assessment.decision.id;
-    }
-
-    axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then(() => {
-      history.push(ROUTES_COMPLIANCE.REPORTS);
-      history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+  const handleAddBceidComment = () => {
+    const comment = { comment: bceidComment, director: false };
+    axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
+      if (directorAction) {
+        history.push(ROUTES_COMPLIANCE.REPORTS);
+        history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+      } else {
+        handleSubmit('SUBMITTED');
+      }
     });
   };
 

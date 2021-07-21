@@ -81,12 +81,17 @@ const AssessmentDetailsPage = (props) => {
   let disabledRecommendBtn = false;
   let recommendTooltip = '';
 
-  const pendingSalesExist = () => {
-    if (pendingBalanceExist) {
-      disabledRecommendBtn = true;
-      recommendTooltip = 'There are credit applications that must be issued prior to recommending this assessment.';
-    }
-  };
+  if (!assessmentDecision) {
+    disabledRecommendBtn = true;
+    recommendTooltip = 'Please select an Analyst Recommendation before recommending this assessment.';
+  }
+
+
+  if (pendingBalanceExist) {
+    disabledRecommendBtn = true;
+    recommendTooltip = 'There are credit applications that must be issued prior to recommending this assessment.';
+  }
+
   if (loading) {
     return <Loading />;
   }
@@ -104,7 +109,6 @@ const AssessmentDetailsPage = (props) => {
 
   return (
     <div id="assessment-details" className="page">
-      {pendingSalesExist()}
       <div className="row mt-3">
         <div className="col-sm-12">
           <h2>{reportYear} Model Year Report</h2>
@@ -311,111 +315,116 @@ const AssessmentDetailsPage = (props) => {
           </>
       )}
       {user.isGovernment && statuses.assessment.status !== 'ASSESSED'
-          && (
-            <>
-              <h3 className="mt-4 mb-1">Analyst Recommended Director Assessment</h3>
-              <div className="row mb-3">
-                <div className="col-12">
-                  <div className="grey-border-area comment-box p-3 mt-2">
-                    <div>
-                      {radioDescriptions.map((each) => (
-                        (each.displayOrder === 0)
-                && showDescription(each)
-                      ))}
-                      <div className="text-blue mt-3 ml-3 mb-1">
-                        &nbsp;&nbsp; {details.organization.name} has not complied with section 10 (2) of the
-                        Zero-Emission Vehicles Act for the {reportYear} adjustment period.
-                      </div>
-                      {radioDescriptions.map((each) => (
-                        (each.displayOrder > 0)
-               && showDescription(each)
-                      ))}
-                      <label className="d-inline" htmlFor="penalty-radio">
-                        <div>
-                          <input
-                            disabled={directorAction || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0}
-                            type="text"
-                            className="ml-4 mr-1"
-                            defaultValue={details.assessment.assessmentPenalty}
-                            name="penalty-amount"
-                            onChange={(e) => {
-                              setDetails({
-                                ...details,
-                                assessment: {
-                                  ...details.assessment,
-                                  assessmentPenalty: e.target.value,
-                                },
-                              });
-                            }}
-                          />
-                          <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
-                        </div>
-                      </label>
-                      <CommentInput
-                        disable={details.assessment.validationStatus === 'ASSESSED'}
-                        defaultComment={details.bceidComment}
-                        handleAddComment={handleAddBceidComment}
-                        handleCommentChange={handleCommentChangeBceid}
-                        title="Assessment Message to the Supplier: "
-                        buttonText="Add/Update Message"
-                      />
-                    </div>
+      && (
+        <>
+          <h3 className="mt-4 mb-1">Analyst Recommended Director Assessment</h3>
+          <div className="row mb-3">
+            <div className="col-12">
+              <div className="grey-border-area comment-box p-3 mt-2">
+                <div>
+                  {radioDescriptions.map((each) => (
+                    (each.displayOrder === 0)
+            && showDescription(each)
+                  ))}
+                  <div className="text-blue mt-3 ml-3 mb-1">
+                    &nbsp;&nbsp; {details.organization.name} has not complied with section 10 (2) of the
+                    Zero-Emission Vehicles Act for the {reportYear} adjustment period.
                   </div>
+                  {radioDescriptions.map((each) => (
+                    (each.displayOrder > 0)
+            && showDescription(each)
+                  ))}
+                  <label className="d-inline" htmlFor="penalty-radio">
+                    <div>
+                      <input
+                        disabled={directorAction || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0}
+                        type="text"
+                        className="ml-4 mr-1"
+                        defaultValue={details.assessment.assessmentPenalty}
+                        name="penalty-amount"
+                        onChange={(e) => {
+                          setDetails({
+                            ...details,
+                            assessment: {
+                              ...details.assessment,
+                              assessmentPenalty: e.target.value,
+                            },
+                          });
+                        }}
+                      />
+                      <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
+                    </div>
+                  </label>
+                  <CommentInput
+                    disable={details.assessment.validationStatus === 'ASSESSED'}
+                    defaultComment={details.bceidComment}
+                    handleAddComment={handleAddBceidComment}
+                    handleCommentChange={handleCommentChangeBceid}
+                    title="Assessment Message to the Supplier: "
+                  />
                 </div>
               </div>
-            </>
-          )}
-      {(directorAction || analystAction) && (
+            </div>
+          </div>
+        </>
+      )}
+
       <div className="row">
         <div className="col-sm-12">
           <div className="action-bar mt-0">
-            {directorAction && (
-              <>
-                <span className="left-content">
-                  <button
-                    className="button text-danger"
-                    onClick={() => {
-                      handleSubmit('SUBMITTED');
-                    }}
-                    type="button"
-                  >
-                    Return to Analyst
-                  </button>
-                </span>
+            <span className="left-content">
+              <Button buttonType="back" locationRoute="/compliance/reports" />
 
-                <span className="right-content">
-                  <Button
-                    buttonType="submit"
-                    optionalClassname="button primary"
-                    optionalText="Issue Assessment"
-                    action={() => {
-                      handleSubmit('ASSESSED');
-                    }}
-                  />
-                </span>
-              </>
-            )}
-            {analystAction && (
-              <>
-                <span className="left-content" />
-                <span className="right-content">
-                  <Button
-                    buttonTooltip={recommendTooltip}
-                    buttonType="submit"
-                    optionalClassname="button primary"
-                    optionalText="Recommend Assessment"
-                    disabled={disabledRecommendBtn}
-                    action={() => {
-                      handleSubmit('RECOMMENDED');
-                    }}
-                  />
-                </span>
-              </>
-            )}
+              {directorAction && (
+                <button
+                  className="button text-danger"
+                  onClick={() => {
+                    handleSubmit('SUBMITTED');
+                  }}
+                  type="button"
+                >
+                  Return to Analyst
+                </button>
+              )}
+            </span>
+
+            <span className="right-content">
+              {(directorAction || analystAction) && (
+                <Button
+                  buttonTooltip={recommendTooltip}
+                  buttonType="button"
+                  optionalClassname="button"
+                  optionalText="Save"
+                  disabled={disabledRecommendBtn}
+                  action={handleAddBceidComment}
+                />
+              )}
+              {analystAction && (
+                <Button
+                  buttonTooltip={recommendTooltip}
+                  buttonType="submit"
+                  optionalClassname="button primary"
+                  optionalText="Recommend Assessment"
+                  disabled={disabledRecommendBtn}
+                  action={() => {
+                    handleSubmit('RECOMMENDED');
+                  }}
+                />
+              )}
+              {directorAction && (
+                <Button
+                  buttonType="submit"
+                  optionalClassname="button primary"
+                  optionalText="Issue Assessment"
+                  action={() => {
+                    handleSubmit('ASSESSED');
+                  }}
+                />
+              )}
+            </span>
           </div>
         </div>
       </div>
-      )}
     </div>
   );
 };

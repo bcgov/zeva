@@ -152,7 +152,7 @@ const ComplianceObligationDetailsPage = (props) => {
         <div className="col-sm-12">
           <div className="action-bar mt-0">
             <span className="left-content">
-              {/* <Button buttonType="back" locationRoute="/compliance/reports" /> */}
+              <Button buttonType="back" locationRoute="/compliance/reports" />
             </span>
             <span className="right-content">
               <Button
