@@ -23,6 +23,13 @@ const CreditAgreementsDetailsContainer = (props) => {
   const handleCommentChangeIdir = (text) => {
     setIdirComment(text);
   };
+  const handleSubmit = (status) => {
+    axios.patch(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id),
+      { validationStatus: status })
+      .then(() => {
+        history.push(ROUTES_CREDIT_AGREEMENTS.LIST);
+      });
+  };
   const handleAddIdirComment = () => {
     const comment = { comment: idirComment, director: true };
     axios.post(ROUTES_CREDIT_AGREEMENTS.COMMENT_SAVE.replace(':id', id), comment)
@@ -31,14 +38,7 @@ const CreditAgreementsDetailsContainer = (props) => {
         history.replace(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id));
       });
   };
-  const handleDelete = () => {
-    console.log('delete')
-    axios.patch(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id),
-      { validationStatus: 'DELETED' })
-      .then(() => {
-        history.push(ROUTES_CREDIT_AGREEMENTS.LIST);
-      });
-  };
+
   const refreshDetails = () => {
     if (id > 0) {
       axios.get(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id)).then((response) => {
@@ -114,7 +114,7 @@ const CreditAgreementsDetailsContainer = (props) => {
       handleAddIdirComment={handleAddIdirComment}
       handleCommentChangeIdir={handleCommentChangeIdir}
       details={details}
-      handleDelete={handleDelete}
+      handleSubmit={handleSubmit}
     />,
   ];
 };
