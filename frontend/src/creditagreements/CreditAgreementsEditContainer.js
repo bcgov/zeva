@@ -29,7 +29,7 @@ const CreditAgreementsEditContainer = (props) => {
 
   const [errorMessage, setErrorMessage] = useState(null);
   const analystAction = user.isGovernment
-  && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
+    && user.hasPermission('RECOMMEND_INITIATIVE_AGREEMENTS');
   const handleCommentChangeBceid = (text) => {
     setBceidComment(text);
   };
