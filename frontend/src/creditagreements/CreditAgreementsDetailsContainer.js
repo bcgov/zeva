@@ -17,11 +17,6 @@ const CreditAgreementsDetailsContainer = (props) => {
   const directorAction = user.isGovernment && user.hasPermission('SIGN_INITIATIVE_AGREEMENTS');
   const analystAction = user.isGovernment && user.hasPermission('RECOMMEND_INITIATIVE_AGREEMENTS');
 
-  const items = [
-    { numberOfCredits: '50', modelYear: '2021', creditClass: 'A' },
-    { numberOfCredits: '100', modelYear: '2021', creditClass: 'B' },
-  ];
-
   const handleCommentChangeIdir = (text) => {
     setIdirComment(text);
   };
@@ -52,7 +47,6 @@ const CreditAgreementsDetailsContainer = (props) => {
   };
 
   const refreshDetails = () => {
-    if (id > 0) {
       axios.get(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id)).then((response) => {
         const {
           comments,
@@ -90,24 +84,6 @@ const CreditAgreementsDetailsContainer = (props) => {
         });
         setLoading(false);
       });
-    } else {
-      // This logic is just to avoid errors when looking at bceid display page as there is no list of agreement transactions/ids.
-      // Remove this logic once we have list of transactions(including agreement id) for bceid user so that the details are coming from database
-      // instead of static values. This work will be part of ZEVA-639.
-      setDetails({
-        filteredIdirComments: [],
-        filteredBceidComments: [],
-        effectiveDate: '2021-07-18',
-        optionalAgreementId: '65652',
-        organization: { name: 'TESLA' },
-        transactionType: 'Initiative Agreement',
-        status: 'ISSUED',
-        updateTimestamp: '2021-07-18 16:30:34',
-        attachment: null,
-        creditAgreementContent: items,
-      });
-      setLoading(false);
-    }
   };
 
   useEffect(() => {
