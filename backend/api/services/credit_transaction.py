@@ -177,6 +177,20 @@ def aggregate_transactions_by_submission(organization):
         debit_from=organization
     )), Value(0))
 
+    detail_transaction_type = Case(
+        When(transaction_type=CreditTransactionType.objects.get(
+            transaction_type="Credit Adjustment Reduction"
+        ), then=F(
+            'credit_agreement_credit_transaction__credit_agreement__transaction_type'
+        )),
+        When(transaction_type=CreditTransactionType.objects.get(
+            transaction_type="Credit Adjustment Validation"
+        ), then=F(
+            'credit_agreement_credit_transaction__credit_agreement__transaction_type'
+        )),
+        default=Value(None)
+    )
+
     foreign_key = Case(
         When(transaction_type=CreditTransactionType.objects.get(
             transaction_type="Validation"
@@ -218,7 +232,8 @@ def aggregate_transactions_by_submission(organization):
         debit=balance_debits,
         foreign_key=foreign_key,
         total_value=F('credit') - F('debit'),
-        transaction_timestamp=Max('transaction_timestamp')
+        transaction_timestamp=Max('transaction_timestamp'),
+        detail_transaction_type=detail_transaction_type
     ).order_by(
         'credit_class_id', 'transaction_type_id'
     )
