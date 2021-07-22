@@ -12,9 +12,8 @@ const ComplianceObligationTableCreditsIssued = (props) => {
   } = reportDetails;
 
   const {
-    creditsIssuedSales, transfersIn, transfersOut,
+    creditsIssuedSales, transfersIn, transfersOut, adjustmentsValidation, adjustmentsReduction,
   } = transactions;
-
   const tableSection = (input, title, negativeValue) => {
     let numberClassname = 'text-right';
     if (negativeValue) {
@@ -43,7 +42,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             <td className="text-blue">
               &bull; &nbsp; &nbsp; {each.modelYear} Credits
             </td>
-            {title === 'Transferred Away' ? (
+            {title === 'Transferred Away' || title === 'Reduced from Credit Agreements' ? (
               <>
                 <td className={`${numberClassname} ${Number(each.A) > 0 ? 'text-red' : ''}`}>
                   {formatNumeric(each.A * -1, 2)}
@@ -100,7 +99,8 @@ const ComplianceObligationTableCreditsIssued = (props) => {
 
       <h3 className="mt-4 mb-2">Credit Activity</h3>
       {(Object.keys(creditsIssuedSales).length > 0 || Object.keys(pendingBalance).length > 0
-      || Object.keys(transfersIn).length > 0 || Object.keys(transfersOut).length > 0) && (
+      || Object.keys(transfersIn).length > 0 || Object.keys(transfersOut).length > 0
+      || Object.keys(adjustmentsValidation).length > 0 || Object.keys(adjustmentsReduction).length > 0) && (
       <table className="mb-4">
         <tbody>
           {Object.keys(creditsIssuedSales).length > 0
@@ -119,6 +119,15 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             && (
               tableSection(creditsIssuedPurchase, 'Issued from Purchase Agreements')
             )} */}
+
+          {Object.keys(adjustmentsValidation).length > 0
+            && (
+              tableSection(adjustmentsValidation, 'Issued from Credit Agreements')
+            )}
+          {Object.keys(adjustmentsReduction).length > 0
+            && (
+              tableSection(adjustmentsReduction, 'Reduced from Credit Agreements')
+            )}
           {Object.keys(transfersIn).length > 0
             && (
               tableSection(transfersIn, 'Transferred In')

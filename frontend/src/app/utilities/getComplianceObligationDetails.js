@@ -6,6 +6,8 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
   const transfersIn = [];
   const transfersOut = [];
   const creditsIssuedSales = [];
+  const adjustmentsValidation = [];
+  const adjustmentsReduction = [];
   let pendingBalanceExist = false;
 
   complianceResponseDetails.forEach((item) => {
@@ -45,6 +47,25 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
         B: Number(item.creditBValue),
       });
 
+      endingBalanceA -= Number(item.creditAValue);
+      endingBalanceB -= Number(item.creditBValue);
+    }
+    if (item.category === 'adjustmentsValidation') {
+      adjustmentsValidation.push({
+        modelYear: item.modelYear.name,
+        A: Number(item.creditAValue),
+        B: Number(item.creditBValue),
+      });
+      endingBalanceA += Number(item.creditAValue);
+      endingBalanceB += Number(item.creditBValue);
+    }
+
+    if (item.category === 'adjustmentsReduction') {
+      adjustmentsReduction.push({
+        modelYear: item.modelYear.name,
+        A: Number(item.creditAValue),
+        B: Number(item.creditBValue),
+      });
       endingBalanceA -= Number(item.creditAValue);
       endingBalanceB -= Number(item.creditBValue);
     }
@@ -114,6 +135,8 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
     provisionalBalance,
     transfersIn,
     transfersOut,
+    adjustmentsValidation,
+    adjustmentsReduction,
   };
 };
 
