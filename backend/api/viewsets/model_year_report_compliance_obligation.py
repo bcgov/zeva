@@ -214,30 +214,7 @@ class ModelYearReportComplianceObligationViewset(
                 to_date = date(report_year + 1, 9, 30,)
 
             content = []
-            adjustments_validation = CreditTransaction.objects.filter(
-                credit_to=request.user.organization,
-                transaction_type__transaction_type='Credit Adjustment Validation',
-                transaction_timestamp__lte=date(report_year, 9, 30),
-                transaction_timestamp__gte=date(report_year-1, 10, 1),
-            ).values(
-                'credit_class_id', 'model_year_id'
-            ).annotate(
-                total_value=Sum('total_value')
-            ).order_by(
-                'credit_class_id', 'model_year_id'
-            )
-            adjustments_reduction = CreditTransaction.objects.filter(
-                credit_to=request.user.organization,
-                transaction_type__transaction_type='Credit Adjustment Reduction',
-                transaction_timestamp__lte=date(report_year, 9, 30),
-                transaction_timestamp__gte=date(report_year-1, 10, 1),
-            ).values(
-                'credit_class_id', 'model_year_id'
-            ).annotate(
-                total_value=Sum('total_value')
-            ).order_by(
-                'credit_class_id', 'model_year_id'
-            )
+            
             transfers_in = CreditTransaction.objects.filter(
                 credit_to=organization,
                 transaction_type__transaction_type='Credit Transfer',
@@ -277,9 +254,9 @@ class ModelYearReportComplianceObligationViewset(
             )
             purchase_agreements = CreditTransaction.objects.filter(
                 credit_to=organization,
-                transaction_type__transaction_type='Purchase Agreement',
-                transaction_timestamp__lte=to_date,
-                transaction_timestamp__gte=from_date,
+                credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.PURCHASE_AGREEMENT,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=date(report_year, 9, 30),
+                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=date(report_year-1, 10, 1),
             ).values(
                 'credit_class_id', 'model_year_id'
             ).annotate(
@@ -287,7 +264,42 @@ class ModelYearReportComplianceObligationViewset(
             ).order_by(
                'credit_class_id', 'model_year_id'
             )
-
+            administrative_credit_alloction = CreditTransaction.objects.filter(
+                credit_to=organization,
+                credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.ADMINISTRATIVE_CREDIT_ALLOCATION,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=date(report_year, 9, 30),
+                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=date(report_year-1, 10, 1),
+            ).values(
+                'credit_class_id', 'model_year_id'
+            ).annotate(
+                total_value=Sum('total_value')
+            ).order_by(
+               'credit_class_id', 'model_year_id'
+            )
+            administrative_credit_reduction = CreditTransaction.objects.filter(
+                debit_from=organization,
+                credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.ADMINISTRATIVE_CREDIT_REDUCTION,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=date(report_year, 9, 30),
+                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=date(report_year-1, 10, 1),
+            ).values(
+                'credit_class_id', 'model_year_id'
+            ).annotate(
+                total_value=Sum('total_value')
+            ).order_by(
+               'credit_class_id', 'model_year_id'
+            )
+            automatic_administrative_penalty = CreditTransaction.objects.filter(
+                credit_to=organization,
+                credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.AUTOMATIC_ADMINISTRATIVE_PENALTY,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=date(report_year, 9, 30),
+                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=date(report_year-1, 10, 1),
+            ).values(
+                'credit_class_id', 'model_year_id'
+            ).annotate(
+                total_value=Sum('total_value')
+            ).order_by(
+               'credit_class_id', 'model_year_id'
+            )
             credits_issued_sales = CreditTransaction.objects.filter(
                 credit_to=organization,
                 transaction_type__transaction_type='Validation',
@@ -300,11 +312,11 @@ class ModelYearReportComplianceObligationViewset(
             ).order_by(
                 'credit_class_id', 'model_year_id'
             )
-            print(initative_agreements)
             purchase_agreements_serializer = CreditTransactionObligationActivitySerializer(purchase_agreements, read_only=True, many=True)
             initiative_agreements_serializer = CreditTransactionObligationActivitySerializer(initative_agreements, read_only=True, many=True)
-            ##  'Administrative Credit Allocation' 'Administrative Credit Reduction' 'Automatic Administrative Penalty'
-            
+            adminitrative_alloction_serializer = CreditTransactionObligationActivitySerializer(administrative_credit_alloction, read_only=True, many=True)
+            administrative_reduction_serializer = CreditTransactionObligationActivitySerializer(administrative_credit_reduction, read_only=True, many=True)
+            automatic_penalty_serializer = CreditTransactionObligationActivitySerializer(automatic_administrative_penalty, read_only=True, many=True)
             
             transfers_in_serializer = CreditTransactionObligationActivitySerializer(transfers_in, read_only=True, many=True)
             transfers_out_serializer = CreditTransactionObligationActivitySerializer(transfers_out, read_only=True, many=True)
@@ -314,8 +326,16 @@ class ModelYearReportComplianceObligationViewset(
                 parse_summary_serializer(content, purchase_agreement, 'purchaseAgreement')
 
             for initative_agreement in initiative_agreements_serializer.data:
-                parse_summary_serializer(content, initative_agreement, 'initativeAgreement')
+                parse_summary_serializer(content, initative_agreement, 'initiativeAgreement')
+            
+            for adminitrative_alloction in adminitrative_alloction_serializer.data:
+                parse_summary_serializer(content, adminitrative_alloction, 'administrativeAllocation')
 
+            for administrative_reduction in administrative_reduction_serializer.data:
+                parse_summary_serializer(content, administrative_reduction, 'administrativeReduction')
+
+            for automatic_penalty in automatic_penalty_serializer.data:
+                parse_summary_serializer(content, automatic_penalty, 'automaticAdministrativePenalty')
 
             for transfer_in in transfers_in_serializer.data:
                 parse_summary_serializer(content, transfer_in, 'transfersIn')
