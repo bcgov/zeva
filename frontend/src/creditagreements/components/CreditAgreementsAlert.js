@@ -7,13 +7,28 @@ const CreditAgreementsAlert = (props) => {
     status,
     date,
     user,
-    isGovernment
+    isGovernment,
+    id,
+    transactionType,
   } = props;
 
   let message = '';
   let title;
   let classname;
   let icon = 'exclamation-circle';
+  let transaction = '';
+
+  if (transactionType === 'Automatic Administrative Penalty') {
+    transaction = 'AP';
+  } else if (transactionType === 'Purchase Agreement') {
+    transaction = 'PA';
+  } else if (transactionType === 'Administrative Credit Allocation') {
+    transaction = 'AA';
+  } else if (transactionType === 'Administrative Credit Reduction') {
+    transaction = 'AR';
+  } else {
+    transaction = 'IA';
+  }
 
 
   switch (status) {
@@ -34,9 +49,9 @@ const CreditAgreementsAlert = (props) => {
       classname = 'alert-success';
       icon = 'check-circle';
       if (isGovernment) {
-        message = `IA-41 issued ${date} by the Director`;
+        message = `${transaction}-${id} issued ${date} by the Director`;
       } else {
-        message = `IA-41 issued ${date} by the Government of B.C.`;
+        message = `${transaction}-${id} issued ${date} by the Government of B.C.`;
       }
       break;
 
@@ -56,6 +71,8 @@ CreditAgreementsAlert.propTypes = {
   date: PropTypes.string,
   user: PropTypes.string,
   status: PropTypes.string,
+  transactionType: PropTypes.string,
+  id: PropTypes.string,
 };
 
 export default CreditAgreementsAlert;
