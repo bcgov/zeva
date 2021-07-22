@@ -34,7 +34,8 @@ from api.services.summary import parse_summary_serializer, \
 from api.models.model_year_report_ldv_sales import \
     ModelYearReportLDVSales
 from api.serializers.organization_deficit import OrganizationDeficitsSerializer
-
+from api.models.credit_agreement_credit_transaction import CreditAgreementCreditTransaction
+from api.models.credit_agreement_transaction_types import CreditAgreementTransactionTypes
 
 class ModelYearReportComplianceObligationViewset(
         AuditableMixin, viewsets.GenericViewSet,
@@ -262,6 +263,30 @@ class ModelYearReportComplianceObligationViewset(
             ).order_by(
                 'credit_class_id', 'model_year_id'
             )
+            initative_agreements = CreditTransaction.objects.filter(
+                credit_to=organization,
+                credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.INITIATIVE_AGREEMENT,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=date(report_year, 9, 30),
+                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=date(report_year-1, 10, 1),
+            ).values(
+                'credit_class_id', 'model_year_id'
+            ).annotate(
+                total_value=Sum('total_value')
+            ).order_by(
+               'credit_class_id', 'model_year_id'
+            )
+            purchase_agreements = CreditTransaction.objects.filter(
+                credit_to=organization,
+                transaction_type__transaction_type='Purchase Agreement',
+                transaction_timestamp__lte=to_date,
+                transaction_timestamp__gte=from_date,
+            ).values(
+                'credit_class_id', 'model_year_id'
+            ).annotate(
+                total_value=Sum('total_value')
+            ).order_by(
+               'credit_class_id', 'model_year_id'
+            )
 
             credits_issued_sales = CreditTransaction.objects.filter(
                 credit_to=organization,
@@ -275,17 +300,22 @@ class ModelYearReportComplianceObligationViewset(
             ).order_by(
                 'credit_class_id', 'model_year_id'
             )
-            adjustments_validation_serializer = CreditTransactionObligationActivitySerializer(adjustments_validation, read_only=True, many=True)
-            adjustments_reduction_serializer = CreditTransactionObligationActivitySerializer(adjustments_reduction, read_only=True, many=True)
+            print(initative_agreements)
+            purchase_agreements_serializer = CreditTransactionObligationActivitySerializer(purchase_agreements, read_only=True, many=True)
+            initiative_agreements_serializer = CreditTransactionObligationActivitySerializer(initative_agreements, read_only=True, many=True)
+            ##  'Administrative Credit Allocation' 'Administrative Credit Reduction' 'Automatic Administrative Penalty'
+            
+            
             transfers_in_serializer = CreditTransactionObligationActivitySerializer(transfers_in, read_only=True, many=True)
             transfers_out_serializer = CreditTransactionObligationActivitySerializer(transfers_out, read_only=True, many=True)
             credit_sales_serializer = CreditTransactionObligationActivitySerializer(credits_issued_sales, read_only=True, many=True)
 
-            for adjustment_validation in adjustments_validation_serializer.data:
-                parse_summary_serializer(content, adjustment_validation, 'adjustmentsValidation')
+            for purchase_agreement in purchase_agreements_serializer.data:
+                parse_summary_serializer(content, purchase_agreement, 'purchaseAgreement')
 
-            for adjustment_reduction in adjustments_reduction_serializer.data:
-                parse_summary_serializer(content, adjustment_reduction, 'adjustmentsReduction')
+            for initative_agreement in initiative_agreements_serializer.data:
+                parse_summary_serializer(content, initative_agreement, 'initativeAgreement')
+
 
             for transfer_in in transfers_in_serializer.data:
                 parse_summary_serializer(content, transfer_in, 'transfersIn')
