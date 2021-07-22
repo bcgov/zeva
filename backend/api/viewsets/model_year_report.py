@@ -206,11 +206,17 @@ class ModelYearReportViewset(
         validation_status = request.data.get('validation_status')
         model_year_report_id = request.data.get('model_year_report_id')
         confirmations = request.data.get('confirmation', None)
+        description = request.data.get('description')
 
         model_year_report_update = ModelYearReport.objects.filter(
             id=model_year_report_id
         )
         if validation_status:
+            if validation_status == 'RECOMMENDED' and not description:
+                return HttpResponse(
+                    status=400, content="Recommendation is required"
+                )
+
             model_year_report_update.update(
                 validation_status=validation_status)
             model_year_report_update.update(update_user=request.user.username)
@@ -221,10 +227,11 @@ class ModelYearReportViewset(
                 update_user=request.user.username,
                 create_user=request.user.username,
             )
-            ## check for if validation status is recommended
-            if validation_status == 'RECOMMENDED':
-                ## do "update or create" to create the assessment object
-                description = request.data.get('description')
+
+            # check for if validation status is recommended
+            if validation_status == 'RECOMMENDED' or \
+                    (validation_status == 'SUBMITTED' and description):
+                # do "update or create" to create the assessment object
                 penalty = request.data.get('penalty')
                 ModelYearReportAssessment.objects.update_or_create(
                     model_year_report_id=model_year_report_id,
@@ -233,7 +240,6 @@ class ModelYearReportViewset(
                         'model_year_report_assessment_description_id': description,
                         'penalty': penalty
                     }
-
                 )
 
             if validation_status == 'ASSESSED':
@@ -312,7 +318,7 @@ class ModelYearReportViewset(
     def comment_save(self, request, pk):
         comment = request.data.get('comment')
         director = request.data.get('director')
-        if comment:
+        if comment and director:
             ModelYearReportAssessmentComment.objects.create(
                 model_year_report_id=pk,
                 comment=comment,
@@ -320,6 +326,17 @@ class ModelYearReportViewset(
                 create_user=request.user.username,
                 update_user=request.user.username,
             )
+        elif comment and not director:
+            ModelYearReportAssessmentComment.objects.update_or_create(
+                model_year_report_id=pk,
+                to_director=director,
+                defaults={
+                    'comment': comment,
+                    'create_user': request.user.username,
+                    'update_user': request.user.username,
+                }
+            )
+
         report = get_object_or_404(ModelYearReport, pk=pk)
 
         serializer = ModelYearReportSerializer(report, context={'request': request})

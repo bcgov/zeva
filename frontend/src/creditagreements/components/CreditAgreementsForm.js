@@ -280,32 +280,6 @@ const CreditAgreementsForm = (props) => {
       <div className="row">
         <div className="col-sm-12">
           <div className="action-bar mt-0">
-            {/* {directorAction && (
-            <>
-              <span className="left-content">
-                <button
-                  className="button text-danger"
-                  onClick={() => {
-                    handleSubmit('SUBMITTED');
-                  }}
-                  type="button"
-                >
-                  Return to Analyst
-                </button>
-              </span>
-
-              <span className="right-content">
-                <Button
-                  buttonType="submit"
-                  optionalClassname="button primary"
-                  optionalText="Issue Assessment"
-                  action={() => {
-                    handleSubmit('ASSESSED');
-                  }}
-                />
-              </span>
-            </>
-            )} */}
             {analystAction && (
             <>
               <span className="left-content" />

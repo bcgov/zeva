@@ -48,3 +48,4 @@ from . import credit_agreement
 from . import credit_agreement_attachment
 from . import credit_agreement_comment
 from . import credit_agreement_content, credit_agreement_history
+from . import credit_agreement_credit_transaction

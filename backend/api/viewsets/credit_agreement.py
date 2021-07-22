@@ -1,6 +1,7 @@
 import uuid
 
 from django.utils.decorators import method_decorator
+from django.db.models import Q
 
 from rest_framework import mixins, viewsets, permissions
 from rest_framework.decorators import action
@@ -9,13 +10,17 @@ from rest_framework.response import Response
 from api.models.credit_agreement import CreditAgreement
 from api.models.credit_agreement_transaction_types import \
     CreditAgreementTransactionTypes
+from api.models.credit_agreement_statuses import \
+    CreditAgreementStatuses
 from api.models.credit_agreement_comment import \
     CreditAgreementComment
 from api.serializers.credit_agreement import CreditAgreementSerializer, \
     CreditAgreementListSerializer, CreditAgreementSaveSerializer
 from api.services.minio import minio_put_object
+from api.services.credit_agreement import adjust_credits
 from auditable.views import AuditableMixin
 from api.models.credit_agreement_statuses import CreditAgreementStatuses
+
 
 class CreditAgreementViewSet(
     AuditableMixin, viewsets.GenericViewSet, mixins.CreateModelMixin,
@@ -27,9 +32,10 @@ class CreditAgreementViewSet(
     serializer_classes = {
         'default': CreditAgreementSerializer,
         'create': CreditAgreementSaveSerializer,
+        'update': CreditAgreementSaveSerializer,
         'partial_update': CreditAgreementSaveSerializer,
     }
-    
+
     def get_queryset(self):
         request = self.request
         if request.user.is_government:
@@ -52,6 +58,11 @@ class CreditAgreementViewSet(
             return self.serializer_classes[self.action]
 
         return self.serializer_classes['default']
+
+    def perform_update(self, serializer, *args, **kwargs):
+        agreement = serializer.save()
+        if agreement.status == CreditAgreementStatuses.ISSUED:
+            adjust_credits(agreement)
 
     @action(detail=True, methods=['get'])
     def minio_url(self, request, pk=None):
@@ -76,13 +87,23 @@ class CreditAgreementViewSet(
     def comment_save(self, request, pk):
         comment = request.data.get('comment')
         director = request.data.get('director')
+        
         if comment:
-            credit_comment = CreditAgreementComment.objects.create(
-                credit_agreement_id=pk,
-                comment=comment,
-                to_director=director,
-                create_user=request.user.username,
-                update_user=request.user.username,
-            )
-            credit_comment.save()
-        return Response({'saved': True, "id": credit_comment.id})
+            if director:
+                CreditAgreementComment.objects.create(
+                    credit_agreement_id=pk,
+                    comment=comment,
+                    to_director=director,
+                    create_user=request.user.username,
+                    update_user=request.user.username,
+                )
+            else:
+                CreditAgreementComment.objects.update_or_create(
+                    credit_agreement_id=pk,
+                    comment=comment,
+                    to_director=director,
+                    create_user=request.user.username,
+                    update_user=request.user.username,
+                )
+        return Response({'saved': True})
+    

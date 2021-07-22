@@ -185,6 +185,16 @@ def aggregate_transactions_by_submission(organization):
         ), then=F(
             'credit_transfer_credit_transaction__credit_transfer_id'
         )),
+        When(transaction_type=CreditTransactionType.objects.get(
+            transaction_type="Credit Adjustment Validation"
+        ), then=F(
+            'credit_agreement_credit_transaction__credit_agreement_id'
+        )),
+        When(transaction_type=CreditTransactionType.objects.get(
+            transaction_type="Credit Adjustment Reduction"
+        ), then=F(
+            'credit_agreement_credit_transaction__credit_agreement_id'
+        )),
         When(
             transaction_type=CreditTransactionType.objects.get(
                 transaction_type="Reduction"
@@ -272,6 +282,8 @@ def validate_transfer(transfer):
             else:
                 credit_total_no_years[credit_type] += credit_value
             if model_year not in credit_total:
+                credit_total[model_year] = {credit_type: credit_value}
+            elif credit_type not in credit_total[model_year]:
                 credit_total[model_year] = {credit_type: credit_value}
             else:
                 credit_total[model_year][credit_type] += credit_value

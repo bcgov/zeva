@@ -41,14 +41,16 @@ const CreditTransactionTabs = (props) => {
         <Link to={ROUTES_CREDIT_TRANSFERS.LIST}>Credit Transfers</Link>
       </li>
       )}
-      {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED && (
+      {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED
+      && typeof user.hasPermission === 'function'
+      && user.hasPermission('VIEW_INITIATIVE_AGREEMENTS') && user.isGovernment && (
         <li
           className={`nav-item ${(active === 'credit-agreements') ? 'active' : ''}`}
           role="presentation"
         >
           <Link to={ROUTES_CREDIT_AGREEMENTS.LIST}>Credit Agreements</Link>
         </li>
-        )}      
+      )}
       {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_ICBC_DATA') && user.isGovernment && (
       <li
         className={`nav-item ${(active === 'icbc-update') ? 'active' : ''}`}

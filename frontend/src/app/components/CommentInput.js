@@ -1,11 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment-timezone';
 import ReactQuill from 'react-quill';
 
 const CommentInput = (props) => {
   const {
-    handleAddComment, handleCommentChange, title, buttonText, defaultComment, disable,
+    handleAddComment,
+    handleCommentChange,
+    title,
+    buttonText,
+    defaultComment,
+    disable,
   } = props;
   return (
     <div className="text-editor">
@@ -39,7 +43,15 @@ const CommentInput = (props) => {
 };
 
 CommentInput.defaultProps = {
+  buttonText: null,
+  disable: false,
 };
 CommentInput.propTypes = {
+  handleAddComment: PropTypes.func,
+  handleCommentChange: PropTypes.func.isRequired,
+  defaultComment: PropTypes.shape(),
+  buttonText: PropTypes.string,
+  title: PropTypes.string.isRequired,
+  disable: PropTypes.bool,
 };
 export default CommentInput;

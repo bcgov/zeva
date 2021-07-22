@@ -12,7 +12,7 @@
       }
     }
 
-    &.UNSAVED {
+    &.UNSAVED, &.RECOMMENDED {
       &.active a {
         border-bottom-color: $primary-yellow;
       }
