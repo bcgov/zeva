@@ -132,7 +132,6 @@ class CreditTransactionObligationActivitySerializer(ModelSerializer):
     """
     credit_class = SerializerMethodField()
     model_year = SerializerMethodField()
-
     def get_credit_class(self, obj):
         credit_class = CreditClass.objects.get(id=obj.get('credit_class_id'))
 

@@ -213,7 +213,30 @@ class ModelYearReportComplianceObligationViewset(
                 to_date = date(report_year + 1, 9, 30,)
 
             content = []
-
+            adjustments_validation = CreditTransaction.objects.filter(
+                credit_to=request.user.organization,
+                transaction_type__transaction_type='Credit Adjustment Validation',
+                transaction_timestamp__lte=date(report_year, 9, 30),
+                transaction_timestamp__gte=date(report_year-1, 10, 1),
+            ).values(
+                'credit_class_id', 'model_year_id'
+            ).annotate(
+                total_value=Sum('total_value')
+            ).order_by(
+                'credit_class_id', 'model_year_id'
+            )
+            adjustments_reduction = CreditTransaction.objects.filter(
+                credit_to=request.user.organization,
+                transaction_type__transaction_type='Credit Adjustment Reduction',
+                transaction_timestamp__lte=date(report_year, 9, 30),
+                transaction_timestamp__gte=date(report_year-1, 10, 1),
+            ).values(
+                'credit_class_id', 'model_year_id'
+            ).annotate(
+                total_value=Sum('total_value')
+            ).order_by(
+                'credit_class_id', 'model_year_id'
+            )
             transfers_in = CreditTransaction.objects.filter(
                 credit_to=organization,
                 transaction_type__transaction_type='Credit Transfer',
@@ -252,10 +275,17 @@ class ModelYearReportComplianceObligationViewset(
             ).order_by(
                 'credit_class_id', 'model_year_id'
             )
-
+            adjustments_validation_serializer = CreditTransactionObligationActivitySerializer(adjustments_validation, read_only=True, many=True)
+            adjustments_reduction_serializer = CreditTransactionObligationActivitySerializer(adjustments_reduction, read_only=True, many=True)
             transfers_in_serializer = CreditTransactionObligationActivitySerializer(transfers_in, read_only=True, many=True)
             transfers_out_serializer = CreditTransactionObligationActivitySerializer(transfers_out, read_only=True, many=True)
             credit_sales_serializer = CreditTransactionObligationActivitySerializer(credits_issued_sales, read_only=True, many=True)
+
+            for adjustment_validation in adjustments_validation_serializer.data:
+                parse_summary_serializer(content, adjustment_validation, 'adjustmentsValidation')
+
+            for adjustment_reduction in adjustments_reduction_serializer.data:
+                parse_summary_serializer(content, adjustment_reduction, 'adjustmentsReduction')
 
             for transfer_in in transfers_in_serializer.data:
                 parse_summary_serializer(content, transfer_in, 'transfersIn')
