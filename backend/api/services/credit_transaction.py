@@ -185,6 +185,16 @@ def aggregate_transactions_by_submission(organization):
         ), then=F(
             'credit_transfer_credit_transaction__credit_transfer_id'
         )),
+        When(transaction_type=CreditTransactionType.objects.get(
+            transaction_type="Credit Adjustment Validation"
+        ), then=F(
+            'credit_agreement_credit_transaction__credit_agreement_id'
+        )),
+        When(transaction_type=CreditTransactionType.objects.get(
+            transaction_type="Credit Adjustment Reduction"
+        ), then=F(
+            'credit_agreement_credit_transaction__credit_agreement_id'
+        )),
         When(
             transaction_type=CreditTransactionType.objects.get(
                 transaction_type="Reduction"

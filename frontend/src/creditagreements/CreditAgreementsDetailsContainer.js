@@ -10,10 +10,12 @@ import history from '../app/History';
 const CreditAgreementsDetailsContainer = (props) => {
   const { keycloak, user } = props;
   const [idirComment, setIdirComment] = useState([]);
+  const [bceidComment, setBceidComment] = useState([]);
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [details, setDetails] = useState({});
-  const analystAction = user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
+  const directorAction = user.isGovernment && user.hasPermission('SIGN_INITIATIVE_AGREEMENTS');
+  const analystAction = user.isGovernment && user.hasPermission('RECOMMEND_INITIATIVE_AGREEMENTS');
 
   const items = [
     { numberOfCredits: '50', modelYear: '2021', creditClass: 'A' },
@@ -23,15 +25,25 @@ const CreditAgreementsDetailsContainer = (props) => {
   const handleCommentChangeIdir = (text) => {
     setIdirComment(text);
   };
+  const handleCommentChangeBceid = (text) => {
+    setBceidComment(text);
+  };
   const handleSubmit = (status) => {
     axios.patch(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id),
       { validationStatus: status })
       .then(() => {
         history.push(ROUTES_CREDIT_AGREEMENTS.LIST);
+        history.replace(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id));
       });
   };
-  const handleAddIdirComment = () => {
-    const comment = { comment: idirComment, director: true };
+  const handleAddComment = (commentType) => {
+    let comment = {}
+    if (commentType === 'bceidComment') {
+      comment = { comment: bceidComment, director: false };
+    } else {
+       comment = { comment: idirComment, director: true };
+    }
+      
     axios.post(ROUTES_CREDIT_AGREEMENTS.COMMENT_SAVE.replace(':id', id), comment)
       .then(() => {
         history.push(ROUTES_CREDIT_AGREEMENTS.LIST);
@@ -109,10 +121,11 @@ const CreditAgreementsDetailsContainer = (props) => {
     <CreditAgreementsDetailsPage
       id={id}
       user={user}
-      items={items}
       analystAction={analystAction}
-      handleAddIdirComment={handleAddIdirComment}
+      directorAction={directorAction}
+      handleAddComment={handleAddComment}
       handleCommentChangeIdir={handleCommentChangeIdir}
+      handleCommentChangeBceid={handleCommentChangeBceid}
       details={details}
       handleSubmit={handleSubmit}
     />,
