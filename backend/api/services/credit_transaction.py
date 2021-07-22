@@ -422,13 +422,14 @@ def validate_transfer(transfer):
                 organization_id=each_supplier.id
             )
 
-    new_account_balance = AccountBalance.objects.filter(
-        organization_id=self.id,
-        expiration_date=None
-    ).order_by('-id').first()
-
     for year, v in credit_total.items():
         for credit_class, credit_value in v.items():
+            new_account_balance = AccountBalance.objects.filter(
+                organization_id=self.id,
+                expiration_date=None,
+                credit_class_id=credit_class
+            ).order_by('-id').first()
+
             adjust_deficits(
                 organization_id=transfer.credit_to.id,
                 model_year_id=model_year,
