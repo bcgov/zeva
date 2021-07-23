@@ -216,36 +216,14 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
 class CreditAgreementListSerializer(
         ModelSerializer, EnumSupportSerializerMixin, CreditAgreementBaseSerializer
 ):
-    # history = SerializerMethodField()
+
     organization = OrganizationSerializer()
     credit_agreement_content = CreditAgreementContentSerializer(
         many=True, read_only=True
     )
-    status = SerializerMethodField()
-    update_user = SerializerMethodField()
-
-    def get_status(self, obj):
-        return obj.get_status_display()
-
-    class Meta:
-        model = CreditAgreement
-        fields = (
-            'create_timestamp', 'organization', 'effective_date',
-            'transaction_type', 'credit_agreement_content', 'id',
-            'status', 'update_user', 'history',
-        )
-
-class CreditAgreementReadSerializer(
-        ModelSerializer, EnumSupportSerializerMixin, CreditAgreementBaseSerializer
-):
-
-
-    organization = OrganizationSerializer()
     status = EnumField(CreditAgreementStatuses)
+    update_user = SerializerMethodField()
     transaction_type = SerializerMethodField()
-    credit_agreement_content = CreditAgreementContentSerializer(
-        many=True, read_only=True
-    )
 
     def get_transaction_type(self, obj):
         return obj.get_transaction_type_display()
@@ -253,5 +231,7 @@ class CreditAgreementReadSerializer(
     class Meta:
         model = CreditAgreement
         fields = (
-            'id', 'status','transaction_type','effective_date','organization','credit_agreement_content',
+            'create_timestamp', 'organization', 'effective_date',
+            'transaction_type', 'credit_agreement_content', 'id',
+            'status', 'update_user',
         )
