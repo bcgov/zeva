@@ -102,7 +102,6 @@ class ModelYearReportComplianceObligationViewset(
             model_year_report_id=id
         ).delete()
         for each in credit_activity:
-            print(each)
             category = each['category']
             model_year = ModelYear.objects.get(name=each['year'])
             a = each['a']
