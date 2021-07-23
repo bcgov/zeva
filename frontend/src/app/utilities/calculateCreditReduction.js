@@ -32,7 +32,7 @@ const reduceFromBalance = (balance, creditType, paramRemainingReduction) => {
 const calculateCreditReduction = (
   argBalances, classAReductions, unspecifiedReductions, radioId,
 ) => {
-  const balances = argBalances.map((each) => ({ ...each })); // clone the balances array
+  let balances = argBalances.map((each) => ({ ...each })); // clone the balances array
 
   balances.sort((a, b) => {
     if (a.modelYear < b.modelYear) {
@@ -102,6 +102,10 @@ const calculateCreditReduction = (
   });
 
   remainingReduction = 0;
+
+  if (updatedBalances.length > 0) {
+    balances = updatedBalances.map((each) => ({ ...each }));
+  }
 
   unspecifiedReductions.forEach((reduction) => {
     remainingReduction = reduction.value;

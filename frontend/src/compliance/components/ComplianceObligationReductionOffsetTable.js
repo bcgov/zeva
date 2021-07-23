@@ -210,8 +210,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                 </tr>
                 {updatedBalances.deficits.map((deficit) => (
                   <tr key={deficit.modelYear}>
-                    <td className="text-blue">&bull; &nbsp; &nbsp; {deficit.modelYear} Credit Deficit</td>
-                    <td className="text-right">
+                    <td className="text-blue background-danger">&bull; &nbsp; &nbsp; Credit Deficit</td>
+                    <td className="text-right background-danger">
                       {Number(deficit.creditA) > 0 && (
                         <span>({formatNumeric(deficit.creditA)})</span>
                       )}
@@ -219,7 +219,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                         <span>0.00</span>
                       )}
                     </td>
-                    <td className="text-right">
+                    <td className="text-right background-danger">
                       {Number(deficit.creditB) > 0 && (
                         <span>({formatNumeric(deficit.creditB)})</span>
                       )}
