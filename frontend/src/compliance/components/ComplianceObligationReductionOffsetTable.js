@@ -35,6 +35,9 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                       <th className="small-column text-center text-blue">A</th>
                       <th className="small-column text-center text-blue">B</th>
                     </tr>
+                    {deductions.length == 0 &&
+                      <tr><td>&nbsp;</td></tr>
+                    }
                     {deductions.filter((deduction) => deduction.type === 'classAReduction').map((deduction) => (
                       <tr key={deduction.modelYear}>
                         <td className="text-blue">
