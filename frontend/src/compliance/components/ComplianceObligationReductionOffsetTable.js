@@ -29,13 +29,16 @@ const ComplianceObligationReductionOffsetTable = (props) => {
           {deductions && (
             <table className="col-12">
               <tbody>
-                {supplierClass === 'L' && (
+                {supplierClass === 'L'
+                && (
                   <>
-                    <tr className="subclass">
-                      <th className="large-column">ZEV Class A Credit Reduction</th>
-                      <th className="small-column text-center text-blue">A</th>
-                      <th className="small-column text-center text-blue">B</th>
-                    </tr>
+                    {deductions.filter((deduction) => deduction.type === 'classAReduction').length > 0 && (
+                      <tr className="subclass">
+                        <th className="large-column">ZEV Class A Credit Reduction</th>
+                        <th className="small-column text-center text-blue">A</th>
+                        <th className="small-column text-center text-blue">B</th>
+                      </tr>
+                    )}
                     {deductions.filter((deduction) => deduction.type === 'classAReduction').map((deduction) => (
                       <tr key={deduction.modelYear}>
                         <td className="text-blue">
@@ -63,8 +66,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                       <th className="large-column">
                         Unspecified ZEV Class Credit Reduction
                       </th>
-                      <th className="text-center">A</th>
-                      <th className="text-center">B</th>
+                      <th className="small-column text-center text-blue">A</th>
+                      <th className="small-column text-center text-blue">B</th>
                     </tr>
                   </>
                 )}
