@@ -119,7 +119,6 @@ class CreditAgreementViewSet(
         """
         Get all the organizations
         """
-        print("we are in credit_agreement.py list method")
         creditAgreements = self.get_queryset()
 
         serializer = self.get_serializer(creditAgreements, many=True)

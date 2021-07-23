@@ -248,7 +248,6 @@ class CreditAgreementReadSerializer(
     )
 
     def get_transaction_type(self, obj):
-        print("In credit_agreement.py CreditAgreementReadSerializer get_transaction_type")
         return obj.get_transaction_type_display()
 
     class Meta:
