@@ -173,7 +173,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
             <table className="col-12">
               <tbody>
                 <tr className="subclass">
-                  <th className="large-column">Provisional Balance after Credit Reduction</th>
+                  <th className="large-column">PROVISIONAL BALANCE AFTER CREDIT REDUCTION</th>
                   <th className="small-column text-center text-blue">A</th>
                   <th className="small-column text-center text-blue">B</th>
                 </tr>
