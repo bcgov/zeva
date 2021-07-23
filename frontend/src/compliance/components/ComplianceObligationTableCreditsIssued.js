@@ -99,19 +99,11 @@ const ComplianceObligationTableCreditsIssued = (props) => {
       <h3 className="mt-4 mb-2">Credit Activity</h3>
       {(Object.keys(creditsIssuedSales).length > 0 || Object.keys(pendingBalance).length > 0
       || Object.keys(transfersIn).length > 0 || Object.keys(transfersOut).length > 0
-<<<<<<< HEAD
       || (initiativeAgreement && Object.keys(initiativeAgreement).length > 0)
       || (purchaseAgreement && Object.keys(purchaseAgreement).length > 0)
       || (administrativeAllocation && Object.keys(administrativeAllocation).length > 0)
       || (administrativeReduction && Object.keys(administrativeReduction).length > 0)
       || (automaticAdministrativePenalty && Object.keys(automaticAdministrativePenalty).length > 0))
-=======
-      || Object.keys(initiativeAgreement).length > 0
-      || Object.keys(purchaseAgreement).length > 0
-      || Object.keys(administrativeAllocation).length > 0
-      || Object.keys(administrativeReduction).length > 0
-      || Object.keys(automaticAdministrativePenalty).length > 0)
->>>>>>> release-1.29.0
       && (
       <table className="mb-4">
         <tbody>
