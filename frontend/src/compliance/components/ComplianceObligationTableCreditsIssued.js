@@ -10,11 +10,9 @@ const ComplianceObligationTableCreditsIssued = (props) => {
   const {
     creditBalanceStart, pendingBalance, transactions, provisionalBalance,
   } = reportDetails;
-
   const {
-    creditsIssuedSales, transfersIn, transfersOut,
+    creditsIssuedSales, transfersIn, transfersOut, initiativeAgreement, purchaseAgreement, administrativeAllocation, administrativeReduction, automaticAdministrativePenalty,
   } = transactions;
-
   const tableSection = (input, title, negativeValue) => {
     let numberClassname = 'text-right';
     if (negativeValue) {
@@ -43,7 +41,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             <td className="text-blue">
               &bull; &nbsp; &nbsp; {each.modelYear} Credits
             </td>
-            {title === 'Transferred Away' ? (
+            {title === 'Transferred Away' || title === 'Reduced from Administrative Reduction' ? (
               <>
                 <td className={`${numberClassname} ${Number(each.A) > 0 ? 'text-red' : ''}`}>
                   {formatNumeric(each.A * -1, 2)}
@@ -100,9 +98,20 @@ const ComplianceObligationTableCreditsIssued = (props) => {
 
       <h3 className="mt-4 mb-2">Credit Activity</h3>
       {(Object.keys(creditsIssuedSales).length > 0 || Object.keys(pendingBalance).length > 0
-      || Object.keys(transfersIn).length > 0 || Object.keys(transfersOut).length > 0) && (
+      || Object.keys(transfersIn).length > 0 || Object.keys(transfersOut).length > 0
+      || Object.keys(initiativeAgreement).length > 0
+      || Object.keys(purchaseAgreement).length > 0
+      || Object.keys(administrativeAllocation).length > 0
+      || Object.keys(administrativeReduction).length > 0
+      || Object.keys(automaticAdministrativePenalty).length > 0)
+      && (
       <table className="mb-4">
         <tbody>
+          {automaticAdministrativePenalty && Object.keys(automaticAdministrativePenalty).length > 0
+            && (
+              tableSection(automaticAdministrativePenalty, 'Automatic Administrative Penalty')
+            )}
+
           {Object.keys(creditsIssuedSales).length > 0
             && (
               tableSection(creditsIssuedSales, 'Issued for Consumer ZEV Sales')
@@ -111,18 +120,28 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             && (
               tableSection(pendingBalance, 'Pending Issuance for Consumer ZEV Sales')
             )}
-          {/* {Object.keys(creditsIssuedInitiative).length > 0
+
+          {initiativeAgreement && Object.keys(initiativeAgreement).length > 0
             && (
-              tableSection(creditsIssuedInitiative, 'Issued from Initiative Agreements')
+              tableSection(initiativeAgreement, 'Issued from Initiative Agreements')
             )}
-          {Object.keys(creditsIssuedPurchase).length > 0
+          {purchaseAgreement && Object.keys(purchaseAgreement).length > 0
             && (
-              tableSection(creditsIssuedPurchase, 'Issued from Purchase Agreements')
-            )} */}
+              tableSection(purchaseAgreement, 'Issued from Purchase Agreements')
+            )}
+          {administrativeAllocation && Object.keys(administrativeAllocation).length > 0
+            && (
+              tableSection(administrativeAllocation, 'Administrative Credit Allocation')
+            )}
           {Object.keys(transfersIn).length > 0
             && (
               tableSection(transfersIn, 'Transferred In')
             )}
+          {administrativeReduction && Object.keys(administrativeReduction).length > 0
+            && (
+              tableSection(administrativeReduction, 'Administrative Credit Reduction')
+            )}
+
           {Object.keys(transfersOut).length > 0
             && (
               tableSection(transfersOut, 'Transferred Away')
