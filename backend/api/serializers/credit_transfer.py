@@ -1,6 +1,8 @@
+from decimal import Decimal
 from django.core.exceptions import PermissionDenied
 from enumfields.drf import EnumField, EnumSupportSerializerMixin
 from rest_framework.serializers import ModelSerializer, SerializerMethodField, ValidationError
+
 from api.models.credit_transfer import CreditTransfer
 from api.models.credit_transfer_comment import CreditTransferComment
 from api.models.credit_transfer_content import CreditTransferContent
@@ -9,7 +11,6 @@ from api.models.credit_transfer_statuses import CreditTransferStatuses
 from api.models.credit_class import CreditClass
 from api.models.model_year import ModelYear
 from api.models.weight_class import WeightClass
-from api.models.organization import Organization
 from api.models.signing_authority_confirmation import \
     SigningAuthorityConfirmation
 from api.models.user_profile import UserProfile
@@ -19,11 +20,8 @@ from api.serializers.credit_transfer_content import \
     CreditTransferContentSerializer, CreditTransferContentSaveSerializer
 from api.serializers.user import MemberSerializer, UserSerializer
 from api.serializers.organization import OrganizationSerializer
-from api.models.organization import Organization
-from api.services.credit_transfer import aggregate_credit_transfer_details
 from api.services.credit_transaction import calculate_insufficient_credits
 from api.services.send_email import notifications_credit_transfers
-from decimal import Decimal
 
 
 class CreditTransferBaseSerializer:
@@ -110,8 +108,8 @@ class CreditTransferListSerializer(
     def get_status(self, obj):
         request = self.context.get('request')
         if not request.user.is_government and obj.status in [
-            CreditTransferStatuses.RECOMMEND_REJECTION,
-            CreditTransferStatuses.RECOMMEND_APPROVAL
+                CreditTransferStatuses.RECOMMEND_REJECTION,
+                CreditTransferStatuses.RECOMMEND_APPROVAL
         ]:
             return CreditTransferStatuses.APPROVED.value
         return obj.get_status_display()
@@ -146,15 +144,15 @@ class CreditTransferSerializer(
             pending_transfers = CreditTransfer.objects.filter(
                 debit_from=obj.debit_from.id,
                 status__in=[
-                            CreditTransferStatuses.SUBMITTED,
-                            CreditTransferStatuses.APPROVED,
-                            CreditTransferStatuses.RECOMMEND_APPROVAL,
-                            CreditTransferStatuses.RECOMMEND_REJECTION,
-                            ])
+                    CreditTransferStatuses.SUBMITTED,
+                    CreditTransferStatuses.APPROVED,
+                    CreditTransferStatuses.RECOMMEND_APPROVAL,
+                    CreditTransferStatuses.RECOMMEND_REJECTION,
+                ])
             return pending_transfers.count()
         return ''
-     
-    def get_sufficient_credits(self, obj):
+
+    def get_sufficient_credits(self, _obj):
         has_credits = True
         request = self.context.get('request')
         if request.user.is_government:
@@ -168,7 +166,7 @@ class CreditTransferSerializer(
                 content_count += 1
                 request_year = each.model_year.id
                 request_credit_class = each.credit_class.id
-                request_value = each.credit_value
+
                 request_weight = 1
                 for record in supplier_balance:
                     if request_weight == record['weight_class_id']:
@@ -184,8 +182,8 @@ class CreditTransferSerializer(
     def get_status(self, obj):
         request = self.context.get('request')
         if not request.user.is_government and obj.status in [
-            CreditTransferStatuses.RECOMMEND_REJECTION,
-            CreditTransferStatuses.RECOMMEND_APPROVAL
+                CreditTransferStatuses.RECOMMEND_REJECTION,
+                CreditTransferStatuses.RECOMMEND_APPROVAL
         ]:
             return CreditTransferStatuses.APPROVED.value
         return obj.get_status_display()
