@@ -117,7 +117,7 @@ class CreditAgreementViewSet(
 
     def list(self, request):
         """
-        Get all the organizations
+        Get all the credit agreements
         """
         creditAgreements = self.get_queryset()
 
