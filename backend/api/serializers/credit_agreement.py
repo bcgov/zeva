@@ -223,10 +223,7 @@ class CreditAgreementListSerializer(
     )
     status = EnumField(CreditAgreementStatuses)
     update_user = SerializerMethodField()
-    transaction_type = SerializerMethodField()
-
-    def get_transaction_type(self, obj):
-        return obj.get_transaction_type_display()
+    transaction_type = EnumField(CreditAgreementTransactionTypes)
 
     class Meta:
         model = CreditAgreement
