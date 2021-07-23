@@ -11,7 +11,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
     creditBalanceStart, pendingBalance, transactions, provisionalBalance,
   } = reportDetails;
   const {
-    creditsIssuedSales, transfersIn, transfersOut, initiativeAgreement, purchaseAgreement, administrativeAllocation, administrativeReduction, automaticAdministrativePenalty
+    creditsIssuedSales, transfersIn, transfersOut, initiativeAgreement, purchaseAgreement, administrativeAllocation, administrativeReduction, automaticAdministrativePenalty,
   } = transactions;
   const tableSection = (input, title, negativeValue) => {
     let numberClassname = 'text-right';
@@ -107,6 +107,11 @@ const ComplianceObligationTableCreditsIssued = (props) => {
       && (
       <table className="mb-4">
         <tbody>
+          {automaticAdministrativePenalty && Object.keys(automaticAdministrativePenalty).length > 0
+            && (
+              tableSection(automaticAdministrativePenalty, 'Automatic Administrative Penalty')
+            )}
+
           {Object.keys(creditsIssuedSales).length > 0
             && (
               tableSection(creditsIssuedSales, 'Issued for Consumer ZEV Sales')
@@ -126,20 +131,17 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             )}
           {administrativeAllocation && Object.keys(administrativeAllocation).length > 0
             && (
-              tableSection(administrativeAllocation, 'Issued from Administrative Allocation')
-            )}
-          {administrativeReduction && Object.keys(administrativeReduction).length > 0
-            && (
-              tableSection(administrativeReduction, 'Reduced from Administrative Reduction')
-            )}
-          {automaticAdministrativePenalty && Object.keys(automaticAdministrativePenalty).length > 0
-            && (
-              tableSection(automaticAdministrativePenalty, 'Automatic Administrative Penalty')
+              tableSection(administrativeAllocation, 'Administrative Credit Allocation')
             )}
           {Object.keys(transfersIn).length > 0
             && (
               tableSection(transfersIn, 'Transferred In')
             )}
+          {administrativeReduction && Object.keys(administrativeReduction).length > 0
+            && (
+              tableSection(administrativeReduction, 'Administrative Credit Reduction')
+            )}
+
           {Object.keys(transfersOut).length > 0
             && (
               tableSection(transfersOut, 'Transferred Away')
