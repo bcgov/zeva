@@ -23,77 +23,118 @@ from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.services.credit_transfer import aggregate_credit_transfer_details
 
 
-def adjust_deficits(
-        organization_id,
-        model_year_id,
-        credit_class,
-        weight_class,
-        update_user,
-        account_balance_obj,
-        current_balance
-):
+def aggregate_credit_balance_details(organization):
+    balance_credits = Coalesce(Sum('total_value', filter=Q(
+        credit_to=organization
+    )), Value(0))
+
+    balance_debits = Coalesce(Sum('total_value', filter=Q(
+        debit_from=organization
+    )), Value(0))
+
+    balance = CreditTransaction.objects.filter(
+        Q(credit_to=organization) | Q(debit_from=organization)
+    ).values(
+        'model_year_id', 'credit_class_id', 'weight_class_id'
+    ).annotate(
+        credit=balance_credits,
+        debit=balance_debits,
+        total_value=F('credit') - F('debit')
+    ).order_by('model_year_id', 'credit_class_id', 'weight_class_id')
+
+    return balance
+
+
+def adjust_deficits(organization):
     """
     the following code automatically reduces their awarded credits
     if they have any deficits in their account
     only reduce the deficits relating to the credit class
-    they selected to reduce first from the report
+    they selected to reduce first from the latest report
     """
     model_year_report = ModelYearReport.objects.filter(
-        organization_id=organization_id,
+        organization_id=organization.id,
         validation_status=ModelYearReportStatuses.ASSESSED
     ).order_by('-model_year__name').first()
 
-    if model_year_report:
-        selection = model_year_report.credit_reduction_selection
+    if not model_year_report:
+        return False
 
-        if current_balance > 0 and \
-                selection == credit_class.credit_class:
-            remaining_balance = current_balance
-            amount_to_reduce = 0
-            credit_transaction = None
+    selected_credit_class = CreditClass.objects.filter(
+        credit_class=model_year_report.credit_reduction_selection
+    ).first()
 
-            deficits = OrganizationDeficits.objects.filter(
-                organization_id=organization_id,
-                credit_class_id=credit_class.id
-            ).order_by('model_year__name')
+    reduction_type = CreditTransactionType.objects.get(
+        transaction_type="Reduction"
+    )
 
-            for deficit in deficits:
-                if remaining_balance > 0:
-                    if remaining_balance > deficit.credit_value:
-                        amount_to_reduce = deficit.credit_value
-                        remaining_balance -= deficit.credit_value
-                    else:
-                        amount_to_reduce = remaining_balance
-                        remaining_balance = 0
+    balances = aggregate_credit_balance_details(organization)
+    balances = balances.filter(
+        credit_class_id=selected_credit_class.id
+    )
 
-                    credit_transaction = CreditTransaction.objects.create(
-                        create_user=update_user,
-                        credit_class_id=credit_class.id,
-                        debit_from_id=organization_id,
-                        model_year_id=model_year_id,
-                        number_of_credits=1,
-                        credit_value=amount_to_reduce,
-                        transaction_type=CreditTransactionType.objects.get(
-                            transaction_type="Reduction"
-                        ),
-                        total_value=amount_to_reduce,
-                        update_user=update_user,
-                        weight_class=weight_class
-                    )
+    credit_transaction = None
+    total_current_reduction = 0
 
-                    deficit.credit_value -= amount_to_reduce
-                    deficit.save()
+    for balance in balances:
+        remaining_balance = balance.get('total_value')
 
-            account_balance_obj.expiration_date = date.today()
-            account_balance_obj.save()
+        if remaining_balance <= 0:
+            continue
 
-            AccountBalance.objects.create(
-                balance=remaining_balance,
-                effective_date=date.today(),
-                credit_class_id=credit_class.id,
-                credit_transaction=credit_transaction,
-                organization_id=organization_id
-            )
+        amount_to_reduce = 0
+        credit_transaction = None
+
+        deficits = OrganizationDeficits.objects.filter(
+            organization_id=organization.id,
+            credit_class_id=selected_credit_class.id
+        ).order_by('model_year__name')
+
+        for deficit in deficits:
+            if remaining_balance > 0:
+                if remaining_balance > deficit.credit_value:
+                    amount_to_reduce = deficit.credit_value
+                    remaining_balance -= deficit.credit_value
+                else:
+                    amount_to_reduce = remaining_balance
+                    remaining_balance = 0
+
+                credit_transaction = CreditTransaction.objects.create(
+                    create_user="SYSTEM",
+                    credit_class_id=selected_credit_class.id,
+                    debit_from_id=organization.id,
+                    model_year_id=balance.get('model_year_id'),
+                    number_of_credits=1,
+                    credit_value=amount_to_reduce,
+                    transaction_type=reduction_type,
+                    total_value=amount_to_reduce,
+                    update_user="SYSTEM",
+                    weight_class_id=balance.get('weight_class_id')
+                )
+
+                deficit.credit_value -= amount_to_reduce
+                deficit.save()
+                total_current_reduction += amount_to_reduce
+
+    if credit_transaction:
+        current_account_balance = AccountBalance.objects.filter(
+            organization_id=organization.id,
+            expiration_date=None,
+            credit_class_id=selected_credit_class.id
+        ).order_by('-id').first()
+
+        new_balance = current_account_balance.balance - total_current_reduction
+
+        current_account_balance.expiration_date = date.today()
+        current_account_balance.save()
+
+        AccountBalance.objects.create(
+            balance=new_balance,
+            effective_date=date.today(),
+            credit_class_id=selected_credit_class.id,
+            credit_transaction=credit_transaction,
+            organization_id=organization.id
+        )
 
     return True
 
@@ -151,7 +192,7 @@ def award_credits(submission):
             else:
                 new_balance = total_value
 
-            new_account_balance = AccountBalance.objects.create(
+            AccountBalance.objects.create(
                 balance=new_balance,
                 effective_date=date.today(),
                 credit_class=vehicle_credit_class,
@@ -159,91 +200,7 @@ def award_credits(submission):
                 organization_id=submission.organization.id
             )
 
-            adjust_deficits(
-                organization_id=submission.organization.id,
-                model_year_id=vehicle.model_year.id,
-                credit_class=vehicle_credit_class,
-                weight_class=weight_class,
-                update_user=submission.update_user,
-                account_balance_obj=new_account_balance,
-                current_balance=new_balance
-            )
-            # model_year_report = ModelYearReport.objects.filter(
-            #     organization_id=submission.organization.id
-            # ).order_by('-model_year__name').first()
-
-            # selection = model_year_report.credit_reduction_selection
-
-            # if new_balance > 0 and \
-            #         selection == vehicle_credit_class.credit_class:
-            #     remaining_balance = new_balance
-            #     amount_to_reduce = 0
-            #     credit_transaction = None
-
-            #     deficits = OrganizationDeficits.objects.filter(
-            #         organization_id=submission.organization.id,
-            #         credit_class_id=vehicle_credit_class.id
-            #     ).order_by('model_year__name')
-
-            #     for deficit in deficits:
-            #         if remaining_balance > 0:
-            #             if remaining_balance > deficit.credit_value:
-            #                 amount_to_reduce = deficit.credit_value
-            #                 remaining_balance -= deficit.credit_value
-            #             else:
-            #                 amount_to_reduce = remaining_balance
-            #                 remaining_balance = 0
-
-            #             credit_transaction = CreditTransaction.objects.create(
-            #                 create_user=submission.update_user,
-            #                 credit_class=vehicle_credit_class,
-            #                 debit_from_id=submission.organization.id,
-            #                 model_year_id=vehicle.model_year.id,
-            #                 number_of_credits=1,
-            #                 credit_value=amount_to_reduce,
-            #                 transaction_type=CreditTransactionType.objects.get(
-            #                     transaction_type="Reduction"
-            #                 ),
-            #                 total_value=amount_to_reduce,
-            #                 update_user=submission.update_user,
-            #                 weight_class=weight_class
-            #             )
-
-            #             deficit.credit_value -= amount_to_reduce
-            #             deficit.save()
-
-            #     new_account_balance.expiration_date = date.today()
-            #     new_account_balance.save()
-
-            #     AccountBalance.objects.create(
-            #         balance=remaining_balance,
-            #         effective_date=date.today(),
-            #         credit_class=vehicle_credit_class,
-            #         credit_transaction=credit_transaction,
-            #         organization_id=submission.organization.id
-            #     )
-
-
-def aggregate_credit_balance_details(organization):
-    balance_credits = Coalesce(Sum('total_value', filter=Q(
-        credit_to=organization
-    )), Value(0))
-
-    balance_debits = Coalesce(Sum('total_value', filter=Q(
-        debit_from=organization
-    )), Value(0))
-
-    balance = CreditTransaction.objects.filter(
-        Q(credit_to=organization) | Q(debit_from=organization)
-    ).values(
-        'model_year_id', 'credit_class_id', 'weight_class_id'
-    ).annotate(
-        credit=balance_credits,
-        debit=balance_debits,
-        total_value=F('credit') - F('debit')
-    ).order_by('model_year_id', 'credit_class_id', 'weight_class_id')
-
-    return balance
+            adjust_deficits(submission.organization)
 
 
 def aggregate_transactions_by_submission(organization):
@@ -331,12 +288,14 @@ def calculate_insufficient_credits(org_id):
             ).first()
         if pending:
             total_balance = balance['total_value'] + pending['credit_value']
-            update_list = { "model_year_id": balance['model_year_id'],
-                            "credit_class_id": balance['credit_class_id'],
-                            "weight_class_id": balance['weight_class_id'],
-                            "credit": balance['credit'],
-                            "debit": balance['debit'],
-                            "total_value": total_balance}
+            update_list = {
+                "model_year_id": balance['model_year_id'],
+                "credit_class_id": balance['credit_class_id'],
+                "weight_class_id": balance['weight_class_id'],
+                "credit": balance['credit'],
+                "debit": balance['debit'],
+                "total_value": total_balance
+            }
             issued_balances_list[index] = update_list
     return issued_balances_list
 
@@ -362,9 +321,11 @@ def validate_transfer(transfer):
         weight_type = each.weight_class.id
         # check if supplier has enough for this transfer
         for record in supplier_totals:
-            if (record['model_year_id'] == model_year and record[
-                'credit_class_id'] == credit_type
-                    and record['weight_class_id'] == weight_type):
+            if (
+                    record['model_year_id'] == model_year and
+                    record['credit_class_id'] == credit_type and
+                    record['weight_class_id'] == weight_type
+            ):
                 found = True
                 record['total_value'] -= credit_value
                 if record['total_value'] < 0:
@@ -458,14 +419,4 @@ def validate_transfer(transfer):
                 credit_class_id=credit_class
             ).order_by('-id').first()
 
-            adjust_deficits(
-                organization_id=transfer.credit_to.id,
-                model_year_id=model_year,
-                credit_class=CreditClass.objects.get(
-                    id=credit_class
-                ),
-                weight_class=weight_class,
-                update_user=transfer.update_user,
-                account_balance_obj=new_account_balance,
-                current_balance=new_account_balance.balance
-            )
+            adjust_deficits(transfer.credit_to)
