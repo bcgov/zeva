@@ -10,6 +10,7 @@ import ReactTable from '../../app/components/ReactTable';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import history from '../../app/History';
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
+import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements';
 import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 import ROUTES_CREDITS from '../../app/routes/Credits';
 
@@ -19,18 +20,21 @@ const CreditTransactionListTable = (props) => {
     if (!item.transactionType) {
       return false;
     }
-
     const { transactionType } = item.transactionType;
     const { name } = item.modelYear;
 
     switch (transactionType.toLowerCase()) {
       case 'validation':
         return 'Credit Application';
-      case 'reduction':
-        if (item.transactionType.transactionType === 'Reduction' && !item.foreignKey) {
-          return 'Administrative Credit Reduction';
+      case 'credit adjustment validation':
+        if (item.detailTransactionType) {
+          return item.detailTransactionType;
+        } {
+          return 'Initiative Agreement'
         }
-
+      case 'credit adjustment reduction':
+          return 'Administrative Credit Reduction';
+      case 'reduction':
         return `${name} Model Year Report Credit Reduction`;
       default:
         return transactionType;
@@ -49,6 +53,20 @@ const CreditTransactionListTable = (props) => {
         return 'CA';
       case 'credit transfer':
         return 'CT';
+      case 'credit adjustment validation':
+        if (item.detailTransactionType === 'Automatic Administrative Penalty') {
+          return 'AP';
+        } else if (item.detailTransactionType === 'Purchase Agreement') {
+          return 'PA';
+        } else if (item.detailTransactionType === 'Administrative Credit Allocation') {
+          return 'AA';
+        } else {
+          return 'IA';
+        }
+      case 'credit adjustment reduction':
+        if (item.detailTransactionType === 'Administrative Credit Reduction') {
+          return 'AR';
+        }
       case 'reduction':
         return 'CR';
       default:
@@ -107,6 +125,7 @@ const CreditTransactionListTable = (props) => {
         transactionTimestamp: item.transactionTimestamp,
         modelYear: item.modelYear,
         transactionType: item.transactionType,
+        detailTransactionType: item.detailTransactionType,
       });
     }
   });
@@ -227,6 +246,18 @@ const CreditTransactionListTable = (props) => {
                 case 'validation':
                   history.push(
                     ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/g, item.foreignKey),
+                    { href: ROUTES_CREDITS.LIST },
+                  );
+                  break;
+                case 'credit adjustment validation':
+                  history.push(
+                    ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/g, item.foreignKey),
+                    { href: ROUTES_CREDITS.LIST },
+                  );
+                  break;
+                case 'credit adjustment reduction':
+                  history.push(
+                    ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/g, item.foreignKey),
                     { href: ROUTES_CREDITS.LIST },
                   );
                   break;
