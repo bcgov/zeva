@@ -135,6 +135,7 @@ const ComplianceObligationDetailsPage = (props) => {
           creditReductionSelection={creditReductionSelection}
           deductions={deductions}
           handleUnspecifiedCreditReduction={handleUnspecifiedCreditReduction}
+          pendingBalanceExist={pendingBalanceExist}
           statuses={statuses}
           supplierClass={supplierClass}
           updatedBalances={updatedBalances}

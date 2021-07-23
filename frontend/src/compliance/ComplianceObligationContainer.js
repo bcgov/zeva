@@ -276,13 +276,14 @@ const ComplianceObligationContainer = (props) => {
         creditBalanceStart,
         creditsIssuedSales,
         pendingBalance,
-        tempPendingBalanceExist,
         provisionalBalance,
         transfersIn,
         transfersOut,
       } = getComplianceObligationDetails(complianceResponseDetails);
 
-      setPendingBalanceExist(tempPendingBalanceExist);
+      if (pendingBalance.length > 0) {
+        setPendingBalanceExist(true);
+      }
 
       setReportDetails({
         creditBalanceStart,

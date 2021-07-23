@@ -10,6 +10,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
     creditReductionSelection,
     deductions,
     handleUnspecifiedCreditReduction,
+    pendingBalanceExist,
     statuses,
     supplierClass,
     updatedBalances,
@@ -163,21 +164,27 @@ const ComplianceObligationReductionOffsetTable = (props) => {
         </div>
       </div>
 
-      {updatedBalances && updatedBalances.balances
-      && updatedBalances.balances.filter(
-        (balance) => balance.creditA > 0 || balance.creditB > 0,
-      ).length > 0
-      && (
+      {updatedBalances && (
         <div className="col-12 mt-3">
           <div className="row">
             <table className="col-12">
               <tbody>
                 <tr className="subclass">
-                  <th className="large-column">Provisional Balance after Credit Reduction</th>
+                  <th className="large-column">
+                    {pendingBalanceExist ? 'PROVISIONAL ' : ''}
+                    BALANCE AFTER CREDIT REDUCTION
+                  </th>
                   <th className="small-column text-center text-blue">A</th>
-                  <th className="small-column text-center text-blue">B</th>
+                  <th className="small-column text-center text-blue">
+                    {
+                      updatedBalances.deficits.filter(
+                        (deficit) => (deficit.creditB > 0),
+                      ).length > 0 ? 'Unspecified' : 'B'
+                    }
+                  </th>
                 </tr>
-                {updatedBalances.balances.filter(
+                {updatedBalances.balances
+                && updatedBalances.balances.filter(
                   (balance) => balance.creditA > 0 || balance.creditB > 0,
                 ).map((balance) => (
                   <tr key={balance.modelYear}>
@@ -192,22 +199,6 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {updatedBalances && updatedBalances.deficits.length > 0 && (
-        <div className="col-12 mt-3">
-          <div className="row">
-            <table className="col-12">
-              <tbody>
-                <tr className="subclass">
-                  <th className="large-column">BALANCE AFTER CREDIT REDUCTION</th>
-                  <th className="small-column text-center text-blue">A</th>
-                  <th className="small-column text-center text-blue">Unspecified</th>
-                </tr>
                 {updatedBalances.deficits.map((deficit) => (
                   <tr key={deficit.modelYear}>
                     <td className="text-blue background-danger">&bull; &nbsp; &nbsp; Credit Deficit</td>
@@ -240,6 +231,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
 
 ComplianceObligationReductionOffsetTable.defaultProps = {
   creditReductionSelection: null,
+  pendingBalanceExist: false,
   handleUnspecifiedCreditReduction: () => {},
 };
 
@@ -247,6 +239,7 @@ ComplianceObligationReductionOffsetTable.propTypes = {
   creditReductionSelection: PropTypes.string,
   deductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleUnspecifiedCreditReduction: PropTypes.func,
+  pendingBalanceExist: PropTypes.bool,
   statuses: PropTypes.shape().isRequired,
   supplierClass: PropTypes.string.isRequired,
   updatedBalances: PropTypes.shape().isRequired,
