@@ -10,7 +10,6 @@ const ComplianceObligationTableCreditsIssued = (props) => {
   const {
     creditBalanceStart, pendingBalance, transactions, provisionalBalance,
   } = reportDetails;
-  console.log(reportDetails)
   const {
     creditsIssuedSales, transfersIn, transfersOut, initiativeAgreement, purchaseAgreement, administrativeAllocation, administrativeReduction, automaticAdministrativePenalty
   } = transactions;
@@ -117,23 +116,23 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               tableSection(pendingBalance, 'Pending Issuance for Consumer ZEV Sales')
             )}
 
-          {Object.keys(initiativeAgreement).length > 0
+          {initiativeAgreement && Object.keys(initiativeAgreement).length > 0
             && (
               tableSection(initiativeAgreement, 'Issued from Initiative Agreements')
             )}
-          {Object.keys(purchaseAgreement).length > 0
+          {purchaseAgreement && Object.keys(purchaseAgreement).length > 0
             && (
               tableSection(purchaseAgreement, 'Issued from Purchase Agreements')
             )}
-          {Object.keys(administrativeAllocation).length > 0
+          {administrativeAllocation && Object.keys(administrativeAllocation).length > 0
             && (
               tableSection(administrativeAllocation, 'Issued from Administrative Allocation')
             )}
-          {Object.keys(administrativeReduction).length > 0
+          {administrativeReduction && Object.keys(administrativeReduction).length > 0
             && (
               tableSection(administrativeReduction, 'Reduced from Administrative Reduction')
             )}
-          {Object.keys(automaticAdministrativePenalty).length > 0
+          {automaticAdministrativePenalty && Object.keys(automaticAdministrativePenalty).length > 0
             && (
               tableSection(automaticAdministrativePenalty, 'Automatic Administrative Penalty')
             )}
