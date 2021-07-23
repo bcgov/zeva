@@ -234,3 +234,25 @@ class CreditAgreementListSerializer(
             'transaction_type', 'credit_agreement_content', 'id',
             'status', 'update_user', 'history',
         )
+
+class CreditAgreementReadSerializer(
+        ModelSerializer, EnumSupportSerializerMixin, CreditAgreementBaseSerializer
+):
+
+
+    organization = OrganizationSerializer()
+    status = EnumField(CreditAgreementStatuses)
+    transaction_type = SerializerMethodField()
+    credit_agreement_content = CreditAgreementContentSerializer(
+        many=True, read_only=True
+    )
+
+    def get_transaction_type(self, obj):
+        print("In credit_agreement.py CreditAgreementReadSerializer get_transaction_type")
+        return obj.get_transaction_type_display()
+
+    class Meta:
+        model = CreditAgreement
+        fields = (
+            'id', 'status','transaction_type','effective_date','organization','credit_agreement_content',
+        )

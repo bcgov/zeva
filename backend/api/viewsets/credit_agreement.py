@@ -15,7 +15,7 @@ from api.models.credit_agreement_statuses import \
 from api.models.credit_agreement_comment import \
     CreditAgreementComment
 from api.serializers.credit_agreement import CreditAgreementSerializer, \
-    CreditAgreementListSerializer, CreditAgreementSaveSerializer
+    CreditAgreementListSerializer, CreditAgreementReadSerializer, CreditAgreementSaveSerializer
 from api.services.minio import minio_put_object
 from api.services.credit_agreement import adjust_credits
 from auditable.views import AuditableMixin
@@ -34,6 +34,7 @@ class CreditAgreementViewSet(
         'create': CreditAgreementSaveSerializer,
         'update': CreditAgreementSaveSerializer,
         'partial_update': CreditAgreementSaveSerializer,
+        'list': CreditAgreementReadSerializer,
     }
 
     def get_queryset(self):
@@ -106,4 +107,20 @@ class CreditAgreementViewSet(
                     update_user=request.user.username,
                 )
         return Response({'saved': True})
-    
+
+    def get_queryset(self):
+        request = self.request
+
+        queryset = CreditAgreement.objects.all()
+
+        return queryset
+
+    def list(self, request):
+        """
+        Get all the organizations
+        """
+        print("we are in credit_agreement.py list method")
+        creditAgreements = self.get_queryset()
+
+        serializer = self.get_serializer(creditAgreements, many=True)
+        return Response(serializer.data)

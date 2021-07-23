@@ -17,6 +17,16 @@ const CreditAgreementsFilter = (props) => {
   const handleChange = (event) => {
     setFiltered(handleFilterChange(event, filtered));
   };
+  const getSupplierOptions = (inputObj) => {
+    const uniqueArr = [...new Set(
+      inputObj.map((eachItem) => {
+        return eachItem.organization.name;
+      })
+    )]
+    return uniqueArr.sort().map((each) => (
+      <option key={each}>{each}</option>
+    ));
+  }
 
   return (
     <div className="action-bar p-2 justify-content-end action-bar-background">
@@ -29,7 +39,7 @@ const CreditAgreementsFilter = (props) => {
           value={filtered.length > 0 && filtered.findIndex((arr) => (arr.id === 'col-supplier')) >= 0 ? filtered[filtered.findIndex((arr) => (arr.id === 'col-supplier'))].value : ''}
         >
           <option value=""> </option>
-          {getOptions(items, 'supplier')}
+          {getSupplierOptions(items)}
         </select>
         <select
           className="form-control"
