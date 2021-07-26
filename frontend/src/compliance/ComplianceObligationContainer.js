@@ -274,7 +274,6 @@ const ComplianceObligationContainer = (props) => {
         creditBalanceStart,
         creditsIssuedSales,
         pendingBalance,
-        tempPendingBalanceExist,
         provisionalBalance,
         transfersIn,
         transfersOut,
@@ -282,10 +281,10 @@ const ComplianceObligationContainer = (props) => {
         purchaseAgreement,
         administrativeAllocation,
         administrativeReduction,
-        automaticAdministrativePenalty
+        automaticAdministrativePenalty,
       } = getComplianceObligationDetails(complianceResponseDetails);
-    
-      if (pendingBalance) {
+
+      if (pendingBalance && pendingBalance.length > 0) {
         setPendingBalanceExist(true);
       }
 

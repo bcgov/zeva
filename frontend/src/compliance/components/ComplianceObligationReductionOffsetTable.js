@@ -10,16 +10,12 @@ const ComplianceObligationReductionOffsetTable = (props) => {
     creditReductionSelection,
     deductions,
     handleUnspecifiedCreditReduction,
+    pendingBalanceExist,
     statuses,
     supplierClass,
     updatedBalances,
     user,
   } = props;
-  let radioSelected = creditReductionSelection;
-
-  const radioSelection = (radioId) => {
-    radioSelected = radioId;
-  };
 
   return (
     <>
@@ -28,16 +24,16 @@ const ComplianceObligationReductionOffsetTable = (props) => {
           {deductions && (
             <table className="col-12">
               <tbody>
-                {supplierClass === 'L' && (
+                {supplierClass === 'L'
+                && (
                   <>
-                    <tr className="subclass">
-                      <th className="large-column">ZEV Class A Credit Reduction</th>
-                      <th className="small-column text-center text-blue">A</th>
-                      <th className="small-column text-center text-blue">B</th>
-                    </tr>
-                    {deductions.length == 0 &&
-                      <tr><td>&nbsp;</td></tr>
-                    }
+                    {deductions.filter((deduction) => deduction.type === 'classAReduction').length > 0 && (
+                      <tr className="subclass">
+                        <th className="large-column">ZEV Class A Credit Reduction</th>
+                        <th className="small-column text-center text-blue">A</th>
+                        <th className="small-column text-center text-blue">B</th>
+                      </tr>
+                    )}
                     {deductions.filter((deduction) => deduction.type === 'classAReduction').map((deduction) => (
                       <tr key={deduction.modelYear}>
                         <td className="text-blue">
@@ -65,8 +61,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                       <th className="large-column">
                         Unspecified ZEV Class Credit Reduction
                       </th>
-                      <th className="text-center">A</th>
-                      <th className="text-center">B</th>
+                      <th className="small-column text-center text-blue">A</th>
+                      <th className="small-column text-center text-blue">B</th>
                     </tr>
                   </>
                 )}
@@ -95,7 +91,6 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                       onChange={(event) => {
                         const { id: radioId } = event.target;
                         handleUnspecifiedCreditReduction(radioId);
-                        radioSelection(radioId);
                       }}
                       name="creditOption"
                       value="A"
@@ -116,7 +111,6 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                       onChange={(event) => {
                         const { id: radioId } = event.target;
                         handleUnspecifiedCreditReduction(radioId);
-                        radioSelection(radioId);
                       }}
                       name="creditOption"
                       value="B"
@@ -158,29 +152,35 @@ const ComplianceObligationReductionOffsetTable = (props) => {
           )}
           {updatedBalances && updatedBalances.deficits.length > 0 && (
             <div className="mt-2">
-              By selecting the ZEV Class {radioSelected} credit preference your {' '}
+              By selecting the ZEV Class {creditReductionSelection} credit preference your {' '}
               unspecified credit deficit will be offset automatically using ZEV Class {' '}
-              {radioSelected} credits in the next adjustment period if the grace year applies.
+              {creditReductionSelection} credits in the next adjustment period if the grace year applies.
             </div>
           )}
         </div>
       </div>
 
-      {updatedBalances && updatedBalances.balances
-      && updatedBalances.balances.filter(
-        (balance) => balance.creditA > 0 || balance.creditB > 0,
-      ).length > 0
-      && (
+      {updatedBalances && (
         <div className="col-12 mt-3">
           <div className="row">
             <table className="col-12">
               <tbody>
                 <tr className="subclass">
-                  <th className="large-column">PROVISIONAL BALANCE AFTER CREDIT REDUCTION</th>
+                  <th className="large-column">
+                    {pendingBalanceExist ? 'PROVISIONAL ' : ''}
+                    BALANCE AFTER CREDIT REDUCTION
+                  </th>
                   <th className="small-column text-center text-blue">A</th>
-                  <th className="small-column text-center text-blue">B</th>
+                  <th className="small-column text-center text-blue">
+                    {
+                      updatedBalances.deficits.filter(
+                        (deficit) => (deficit.creditB > 0),
+                      ).length > 0 ? 'Unspecified' : 'B'
+                    }
+                  </th>
                 </tr>
-                {updatedBalances.balances.filter(
+                {updatedBalances.balances
+                && updatedBalances.balances.filter(
                   (balance) => balance.creditA > 0 || balance.creditB > 0,
                 ).map((balance) => (
                   <tr key={balance.modelYear}>
@@ -195,26 +195,10 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {updatedBalances && updatedBalances.deficits.length > 0 && (
-        <div className="col-12 mt-3">
-          <div className="row">
-            <table className="col-12">
-              <tbody>
-                <tr className="subclass">
-                  <th className="large-column">BALANCE AFTER CREDIT REDUCTION</th>
-                  <th className="small-column text-center text-blue">A</th>
-                  <th className="small-column text-center text-blue">Unspecified</th>
-                </tr>
                 {updatedBalances.deficits.map((deficit) => (
                   <tr key={deficit.modelYear}>
-                    <td className="text-blue">&bull; &nbsp; &nbsp; {deficit.modelYear} Credit Deficit</td>
-                    <td className="text-right">
+                    <td className="text-blue background-danger">&bull; &nbsp; &nbsp; Credit Deficit</td>
+                    <td className="text-right background-danger">
                       {Number(deficit.creditA) > 0 && (
                         <span>({formatNumeric(deficit.creditA)})</span>
                       )}
@@ -222,7 +206,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                         <span>0.00</span>
                       )}
                     </td>
-                    <td className="text-right">
+                    <td className="text-right background-danger">
                       {Number(deficit.creditB) > 0 && (
                         <span>({formatNumeric(deficit.creditB)})</span>
                       )}
@@ -243,6 +227,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
 
 ComplianceObligationReductionOffsetTable.defaultProps = {
   creditReductionSelection: null,
+  pendingBalanceExist: false,
   handleUnspecifiedCreditReduction: () => {},
 };
 
@@ -250,6 +235,7 @@ ComplianceObligationReductionOffsetTable.propTypes = {
   creditReductionSelection: PropTypes.string,
   deductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleUnspecifiedCreditReduction: PropTypes.func,
+  pendingBalanceExist: PropTypes.bool,
   statuses: PropTypes.shape().isRequired,
   supplierClass: PropTypes.string.isRequired,
   updatedBalances: PropTypes.shape().isRequired,

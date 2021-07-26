@@ -286,6 +286,7 @@ const AssessmentDetailsPage = (props) => {
             <ComplianceObligationReductionOffsetTable
               creditReductionSelection={details.creditReductionSelection}
               deductions={deductions}
+              pendingBalanceExist={pendingBalanceExist}
               statuses={statuses}
               supplierClass={supplierClass}
               updatedBalances={updatedBalances}

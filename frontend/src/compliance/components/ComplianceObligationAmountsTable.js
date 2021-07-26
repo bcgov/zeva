@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import formatNumeric from '../../app/utilities/formatNumeric';
-import TextInput from '../../app/components/TextInput';
 
 const ComplianceObligationAmountsTable = (props) => {
   const {
