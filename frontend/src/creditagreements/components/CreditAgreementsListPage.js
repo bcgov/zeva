@@ -40,10 +40,10 @@ const CreditAgreementsListPage = (props) => {
       <div className="row mt-4">
         <div className="col-md-12">
           <CreditAgreementsListTable
-            items={creditAgreements}
-            user={user}
             filtered={filtered}
+            items={creditAgreements}
             setFiltered={setFiltered}
+            user={user}
           />
         </div>
       </div>
