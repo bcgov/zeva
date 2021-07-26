@@ -337,7 +337,6 @@ class ModelYearReportComplianceObligationViewset(
             for automatic_penalty in automatic_penalty_serializer.data:
                 parse_summary_serializer(content, automatic_penalty, 'automaticAdministrativePenalty')
 
-            print('nyan')
             for transfer_in in transfers_in_serializer.data:
                 parse_summary_serializer(content, transfer_in, 'transfersIn')
 
