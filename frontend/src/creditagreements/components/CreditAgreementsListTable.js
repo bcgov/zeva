@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTable from '../../app/components/ReactTable';
 import CustomPropTypes from '../../app/utilities/props';
+import history from '../../app/History';
+import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements';
 const CreditAgreementsListTable = (props) => {
 
   const { items, user, filtered, setFiltered } = props;
@@ -17,60 +19,44 @@ const CreditAgreementsListTable = (props) => {
           console.log('TransactionID here');
           let transactionInitial = '';
           switch (row.transactionType) {
-            case 'INITIATIVE_AGREEMENT':
+            case 'Initiative Agreement':
               transactionInitial = 'IA';
               break;
-            case 'PURCHASE_AGREEMENT':
+            case 'Purchase Agreement':
               transactionInitial = 'PA';
               break;
-            case 'ADMINISTRATIVE_CREDIT_ALLOCATION':
+            case 'Administrative Credit Allocation':
               transactionInitial = 'AA';
               break;              
-            case 'ADMINISTRATIVE_CREDIT_REDUCTION':
+            case 'Administrative Credit Reduction':
               transactionInitial = 'AR';
               break;                
-            case 'AUTOMATIC_ADMINISTRATIVE_PENALTY':
+            case 'Automatic Administrative Penalty':
               transactionInitial = 'AP';
               break;  
           }
           return transactionInitial.concat('-', row.id);
         },
-        id: 'col-transactionId'
+        id: 'col-transactionId',
+        className: 'text-center'
     },
     {
         Header: 'Transaction Type',
-        accessor: (row) => {
-          let transactionType = '';
-          switch (row.transactionType) {
-            case 'INITIATIVE_AGREEMENT':
-              transactionType = 'Initiative Agreement';
-              break;
-            case 'PURCHASE_AGREEMENT':
-              transactionType = 'Purchase Agreement';
-              break;
-            case 'ADMINISTRATIVE_CREDIT_ALLOCATION':
-              transactionType = 'Administrative Allocation';
-              break;              
-            case 'ADMINISTRATIVE_CREDIT_REDUCTION':
-              transactionType = 'Administrative Reduction';
-              break;                
-            case 'AUTOMATIC_ADMINISTRATIVE_PENALTY':
-              transactionType = 'Administrative Penalty';
-              break;  
-          }
-          return transactionType;
-        },
-        id: 'col-transactionType'
+        accessor: (row) => row.transactionType,
+        id: 'col-transactionType',
+        className: 'text-center'
     },
     {
         Header: 'Transaction Date',
         accessor: 'effectiveDate',
-        id: 'col-transactionDate'
+        id: 'col-transactionDate',
+        className: 'text-center'
     },
     {
         Header: 'Supplier',
         accessor: (row) => row.organization.name,
-        id: 'col-supplier'
+        id: 'col-supplier',
+        className: 'text-center'
     },
     {
       Header: 'A-Credits',
@@ -102,8 +88,20 @@ const CreditAgreementsListTable = (props) => {
     },        
     {
       Header: 'Status',
-      accessor: 'status',
-      id: 'col-status'
+      accessor: (row) => {
+        switch (row.status) {
+          case 'DRAFT':
+            return 'Draft';
+          case 'RECOMMENDED':
+            return 'Recommended';
+          case 'ISSUED':
+            return 'Issued';
+          case 'DELETED':
+            return 'Deleted';
+        }
+      },
+      id: 'col-status',
+      className: 'text-center'
     }    
   ]
 
@@ -113,6 +111,17 @@ const CreditAgreementsListTable = (props) => {
       data={items}
       filtered={filtered}
       setFiltered={setFiltered}      
+      getTrProps={(state, row) => {
+        if (row && row.original) {
+          return {
+            onClick: () => {
+              const { id } = row.original;
+              history.push(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/g, id), filtered);
+            },
+            className: 'clickable',
+          };
+        }
+      }}
     />
   );
 };
