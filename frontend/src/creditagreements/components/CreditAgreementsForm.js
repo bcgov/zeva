@@ -37,6 +37,12 @@ const CreditAgreementsForm = (props) => {
     years,
     handleDeleteRow,
   } = props;
+  const removeFile = (removedFile) => {
+    const found = files.findIndex((file) => (file === removedFile));
+    files.splice(found, 1);
+    setUploadFiles([...files]);
+  };
+
   return (
     <div id="credit-agreements-form" className="page">
       <div className="row mt-3 mb-2">
@@ -117,7 +123,7 @@ const CreditAgreementsForm = (props) => {
                           <button
                             className="delete"
                             onClick={() => {
-                              console.log('delete');
+                              removeFile(file);
                             }}
                             type="button"
                           >
