@@ -22,6 +22,10 @@ from api.models.model_year_report_compliance_obligation import \
 from api.models.sales_submission import SalesSubmission
 from api.models.vehicle import Vehicle
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
+from api.models.credit_agreement_transaction_types import \
+    CreditAgreementTransactionTypes
+from api.models.model_year_report_ldv_sales import \
+    ModelYearReportLDVSales
 from api.permissions.model_year_report import ModelYearReportPermissions
 from api.serializers.model_year_report_compliance_obligation import \
     ModelYearReportComplianceObligationDetailsSerializer, \
@@ -29,13 +33,10 @@ from api.serializers.model_year_report_compliance_obligation import \
     ModelYearReportComplianceObligationOffsetSerializer
 from api.serializers.credit_transaction import \
     CreditTransactionObligationActivitySerializer
+from api.serializers.organization_deficit import OrganizationDeficitsSerializer
 from api.services.summary import parse_summary_serializer, \
     get_current_year_balance
-from api.models.model_year_report_ldv_sales import \
-    ModelYearReportLDVSales
-from api.serializers.organization_deficit import OrganizationDeficitsSerializer
-from api.models.credit_agreement_credit_transaction import CreditAgreementCreditTransaction
-from api.models.credit_agreement_transaction_types import CreditAgreementTransactionTypes
+
 
 class ModelYearReportComplianceObligationViewset(
         AuditableMixin, viewsets.GenericViewSet,
