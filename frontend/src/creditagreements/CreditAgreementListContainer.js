@@ -25,63 +25,6 @@ const CreditAgreementListContainer = (props) => {
     setFiltered([]);
   };
 
-  const fakeData = [
-    {
-      transactionId: 'IA-12',
-      transactionType: 'Initiative Agreement',
-      transactionDate: '2021-03-11',
-      supplier: 'TESLA',
-      aCredits: 400,
-      bCredits: 0, 
-      status: 'draft'
-    },
-    {
-      transactionId: 'PA-16',
-      transactionType: 'Purchase Agreement',
-      transactionDate: '2020-02-21',
-      supplier: 'GM',
-      aCredits: 100,
-      bCredits: 10, 
-      status: 'Recommended'
-    },
-    {
-      transactionId: 'AR-33',
-      transactionType: 'Administrative Reduction',
-      transactionDate: '2019-02-19',
-      supplier: 'KIA',
-      aCredits: 600,
-      bCredits: 190, 
-      status: 'Issued'
-    },
-    {
-      transactionId: 'AP-31',
-      transactionType: 'Automatic Penalty',
-      transactionDate: '2021-01-01',
-      supplier: 'HYUNDAI',
-      aCredits: 1400,
-      bCredits: 180, 
-      status: 'Issued'
-    },
-    {
-      transactionId: 'AP-33',
-      transactionType: 'Automatic Penalty',
-      transactionDate: '2021-05-05',
-      supplier: 'HYUNDAI',
-      aCredits: 1000,
-      bCredits: 490, 
-      status: 'Issued'
-    },    
-    {
-      transactionId: 'IA-17',
-      transactionType: 'Initiative Agreement',
-      transactionDate: '2021-04-19',
-      supplier: 'VW',
-      aCredits: 200,
-      bCredits: 10, 
-      status: 'Recommended'
-    },                
-  ];
-
   const refreshList = (showLoading) => {
     setLoading(showLoading);
     const queryFilter = [];
@@ -90,13 +33,10 @@ const CreditAgreementListContainer = (props) => {
     });
     setFiltered([...filtered, ...queryFilter]);
     
-    //the below commented request to backend api needs to be opened
-    //fill in some sample data for now
-    //axios.get(ROUTES_CREDIT_AGREEMENTS.LIST).then((response) => {
-        //setCreditAgreements(response.data);
-        setCreditAgreements(fakeData);
-        setLoading(false);
-    //});
+    axios.get(ROUTES_CREDIT_AGREEMENTS.LIST).then((response) => {
+      setCreditAgreements(response.data);
+      setLoading(false);
+    });
   };
 
   useEffect(() => {
