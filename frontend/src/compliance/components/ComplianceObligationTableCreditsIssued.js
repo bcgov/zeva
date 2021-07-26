@@ -154,7 +154,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
         <tbody>
           <tr className="subclass">
             <th className="large-column">
-              {pendingBalanceExist ? 'Provisional Balance Before Credit Reduction' : 'Balance Before Credit Reduction'}
+              {pendingBalanceExist ? 'PROVISIONAL BALANCE BEFORE CREDIT REDUCTION' : 'BALANCE BEFORE CREDIT REDUCTION'}
             </th>
             <th className="small-column text-center text-blue">A</th>
             <th className="small-column text-center text-blue">B</th>

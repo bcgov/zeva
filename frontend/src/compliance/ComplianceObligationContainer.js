@@ -87,21 +87,19 @@ const ComplianceObligationContainer = (props) => {
 
       setUnspecifiedReductions(tempUnspecifiedReductions);
 
-      if (creditReductionSelection) {
-        const creditReduction = calculateCreditReduction(
-          balances,
-          tempClassAReductions,
-          tempUnspecifiedReductions,
-          creditReductionSelection,
-        );
+      const creditReduction = calculateCreditReduction(
+        balances,
+        tempClassAReductions,
+        tempUnspecifiedReductions,
+        creditReductionSelection,
+      );
 
-        setDeductions(creditReduction.deductions);
+      setDeductions(creditReduction.deductions);
 
-        setUpdatedBalances({
-          balances: creditReduction.balances,
-          deficits: creditReduction.deficits,
-        });
-      }
+      setUpdatedBalances({
+        balances: creditReduction.balances,
+        deficits: creditReduction.deficits,
+      });
     }
   };
 
@@ -286,8 +284,10 @@ const ComplianceObligationContainer = (props) => {
         administrativeReduction,
         automaticAdministrativePenalty
       } = getComplianceObligationDetails(complianceResponseDetails);
-
-      setPendingBalanceExist(tempPendingBalanceExist);
+    
+      if (pendingBalance) {
+        setPendingBalanceExist(true);
+      }
 
       setReportDetails({
         creditBalanceStart,
