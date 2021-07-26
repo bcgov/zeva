@@ -5,7 +5,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
-
 import withReferenceData from '../app/utilities/with_reference_data';
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import ROUTES_CREDIT_AGREEMENTS from '../app/routes/CreditAgreements';
@@ -32,7 +31,6 @@ const CreditAgreementListContainer = (props) => {
       queryFilter.push({ id: key, value });
     });
     setFiltered([...filtered, ...queryFilter]);
-    
     axios.get(ROUTES_CREDIT_AGREEMENTS.LIST).then((response) => {
       setCreditAgreements(response.data);
       setLoading(false);

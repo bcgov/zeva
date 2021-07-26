@@ -6,7 +6,6 @@ import history from '../app/History';
 import CreditAgreementsForm from './components/CreditAgreementsForm';
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
 import Loading from '../app/components/Loading';
-import { upload } from '../app/utilities/upload';
 import ROUTES_VEHICLES from '../app/routes/Vehicles';
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
 import ROUTES_CREDIT_AGREEMENTS from '../app/routes/CreditAgreements';

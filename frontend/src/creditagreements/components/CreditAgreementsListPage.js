@@ -1,11 +1,7 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import Loading from '../../app/components/Loading';
-import history from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
-import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements';
 import CreditAgreementsListTable from './CreditAgreementsListTable';
 import CreditAgreementsFilter from './CreditAgreementsFilter';
 
@@ -41,10 +37,7 @@ const CreditAgreementsListPage = (props) => {
           />
         </div>
       </div>
-      <div className="row mt-3">
-        <label />
-      </div>
-      <div className="row">
+      <div className="row mt-4">
         <div className="col-md-12">
           <CreditAgreementsListTable
             filtered={filtered}
