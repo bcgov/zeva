@@ -32,13 +32,13 @@ const CreditAgreementsDetailsContainer = (props) => {
       });
   };
   const handleAddComment = (commentType) => {
-    let comment = {}
+    let comment = {};
     if (commentType === 'bceidComment') {
       comment = { comment: bceidComment, director: false };
     } else {
-       comment = { comment: idirComment, director: true };
+      comment = { comment: idirComment, director: true };
     }
-      
+
     axios.post(ROUTES_CREDIT_AGREEMENTS.COMMENT_SAVE.replace(':id', id), comment)
       .then(() => {
         history.push(ROUTES_CREDIT_AGREEMENTS.LIST);
@@ -47,43 +47,43 @@ const CreditAgreementsDetailsContainer = (props) => {
   };
 
   const refreshDetails = () => {
-      axios.get(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id)).then((response) => {
-        const {
-          comments,
-          effectiveDate,
-          optionalAgreementId,
-          organization,
-          transactionType,
-          status,
-          updateTimestamp,
-          attachments,
-          creditAgreementContent,
-        } = response.data;
-        let filteredIdirComments;
-        let filteredBceidComments;
-        if (comments && comments.length > 0) {
-          filteredIdirComments = comments.filter(
-            (data) => data.toDirector === true,
-          );
-          filteredBceidComments = comments.filter(
-            (data) => data.toDirector === false,
-          );
-        }
+    axios.get(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id)).then((response) => {
+      const {
+        comments,
+        effectiveDate,
+        optionalAgreementId,
+        organization,
+        transactionType,
+        status,
+        updateTimestamp,
+        attachments,
+        creditAgreementContent,
+      } = response.data;
+      let filteredIdirComments;
+      let filteredBceidComments;
+      if (comments && comments.length > 0) {
+        filteredIdirComments = comments.filter(
+          (data) => data.toDirector === true,
+        );
+        filteredBceidComments = comments.filter(
+          (data) => data.toDirector === false,
+        );
+      }
 
-        setDetails({
-          filteredIdirComments,
-          filteredBceidComments,
-          effectiveDate,
-          optionalAgreementId,
-          organization,
-          transactionType,
-          status,
-          updateTimestamp,
-          attachments,
-          creditAgreementContent,
-        });
-        setLoading(false);
+      setDetails({
+        filteredIdirComments,
+        filteredBceidComments,
+        effectiveDate,
+        optionalAgreementId,
+        organization,
+        transactionType,
+        status,
+        updateTimestamp,
+        attachments,
+        creditAgreementContent,
       });
+      setLoading(false);
+    });
   };
 
   useEffect(() => {
