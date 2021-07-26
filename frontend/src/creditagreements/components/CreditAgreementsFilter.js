@@ -19,14 +19,12 @@ const CreditAgreementsFilter = (props) => {
   };
   const getSupplierOptions = (inputObj) => {
     const uniqueArr = [...new Set(
-      inputObj.map((eachItem) => {
-        return eachItem.organization.name;
-      })
-    )]
+      inputObj.map((eachItem) => eachItem.organization.name),
+    )];
     return uniqueArr.sort().map((each) => (
       <option key={each}>{each}</option>
     ));
-  }
+  };
 
   return (
     <div className="action-bar p-2 justify-content-end action-bar-background">

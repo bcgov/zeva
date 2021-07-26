@@ -65,14 +65,16 @@ const CreditAgreementsAlert = (props) => {
 };
 
 CreditAgreementsAlert.defaultProps = {
+  isGovernment: false,
 };
 
 CreditAgreementsAlert.propTypes = {
-  date: PropTypes.string,
-  user: PropTypes.string,
-  status: PropTypes.string,
-  transactionType: PropTypes.string,
-  id: PropTypes.string,
+  date: PropTypes.string.isRequired,
+  user: PropTypes.string.isRequired,
+  status: PropTypes.string.isRequired,
+  transactionType: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  isGovernment: PropTypes.bool,
 };
 
 export default CreditAgreementsAlert;

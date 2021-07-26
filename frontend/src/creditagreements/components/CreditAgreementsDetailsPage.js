@@ -45,11 +45,11 @@ const CreditAgreementsDetailsPage = (props) => {
               className="grey-border-area p-3 comment-box mt-2"
               id="comment-input"
             >
-              {details &&
-                details.filteredIdirComments &&
-                details.filteredIdirComments.length > 0 && (
+              {details
+                && details.filteredIdirComments
+                && details.filteredIdirComments.length > 0 && (
                   <DisplayComment commentArray={details.filteredIdirComments} />
-                )}
+              )}
               <div>
                 <CommentInput
                   handleAddComment={handleAddComment}
@@ -96,36 +96,36 @@ const CreditAgreementsDetailsPage = (props) => {
           <div className="col-5 filename">
             {details.attachments && details.attachments.length > 0
               ? details.attachments.map((attachment) => (
-                  <div className="row" key={attachment.id}>
-                    <div className="col-9 file">
-                      <button
-                        className="link"
-                        onClick={() => {
-                          axios
-                            .get(attachment.url, {
-                              responseType: 'blob',
-                              headers: {
-                                Authorization: null,
-                              },
-                            })
-                            .then((response) => {
-                              const objectURL = window.URL.createObjectURL(
-                                new Blob([response.data])
-                              );
-                              const link = document.createElement('a');
-                              link.href = objectURL;
-                              link.setAttribute('download', attachment.filename);
-                              document.body.appendChild(link);
-                              link.click();
-                            });
-                        }}
-                        type="button"
-                      >
-                        {attachment.filename}
-                      </button>
-                    </div>
+                <div className="row" key={attachment.id}>
+                  <div className="col-9 file">
+                    <button
+                      className="link"
+                      onClick={() => {
+                        axios
+                          .get(attachment.url, {
+                            responseType: 'blob',
+                            headers: {
+                              Authorization: null,
+                            },
+                          })
+                          .then((response) => {
+                            const objectURL = window.URL.createObjectURL(
+                              new Blob([response.data]),
+                            );
+                            const link = document.createElement('a');
+                            link.href = objectURL;
+                            link.setAttribute('download', attachment.filename);
+                            document.body.appendChild(link);
+                            link.click();
+                          });
+                      }}
+                      type="button"
+                    >
+                      {attachment.filename}
+                    </button>
                   </div>
-                ))
+                </div>
+              ))
               : ' - '}
           </div>
         </div>
@@ -135,9 +135,9 @@ const CreditAgreementsDetailsPage = (props) => {
             <h4 className="d-inline">Message from the Director: </h4>
           </span>
           <span className="col-5">
-            {details &&
-            details.filteredBceidComments &&
-            details.filteredBceidComments.length > 0
+            {details
+            && details.filteredBceidComments
+            && details.filteredBceidComments.length > 0
               ? parse(details.filteredBceidComments[0].comment)
               : 'no comment'}
           </span>
@@ -145,13 +145,13 @@ const CreditAgreementsDetailsPage = (props) => {
         <div className="row mt-2">
           <span className="col-3" />
           <span className="col-5">
-            {details &&
-              details.creditAgreementContent &&
-              details.creditAgreementContent.length > 0 && (
+            {details
+              && details.creditAgreementContent
+              && details.creditAgreementContent.length > 0 && (
                 <CreditAgreementsDetailsTable
                   items={details.creditAgreementContent}
                 />
-              )}
+            )}
           </span>
         </div>
       </div>
@@ -160,9 +160,9 @@ const CreditAgreementsDetailsPage = (props) => {
           <div id="comment-input">
             <CommentInput
               defaultComment={
-                details &&
-                details.filteredBceidComments &&
-                details.filteredBceidComments.length > 0
+                details
+                && details.filteredBceidComments
+                && details.filteredBceidComments.length > 0
                   ? details.filteredBceidComments[0]
                   : {}
               }
@@ -253,7 +253,7 @@ CreditAgreementsDetailsPage.propTypes = {
   handleAddComment: PropTypes.func.isRequired,
   handleCommentChangeIdir: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-  id: PropTypes.string,
+  id: PropTypes.string.isRequired,
 };
 
 export default CreditAgreementsDetailsPage;
