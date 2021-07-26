@@ -144,33 +144,25 @@ const SummaryCreditActivityTable = (props) => {
           creditBalanceStart,
           `Balance at end of September 30, ${year} :`,
         )}
+        {Object.keys(transactions.administrativeAllocation).length > 0
+          && tableSection(transactions.automaticAdministrativePenalty, 'Automatic Administrative Penalty:')}
         {Object.keys(transactions.creditsIssuedSales).length > 0
           && tableSection(transactions.creditsIssuedSales, 'Consumer ZEV Sales:')}
         {Object.keys(pendingBalance).length > 0
           && tableSection(pendingBalance, 'Pending for Consumer Sales:')}
-        {/* {Object.keys(creditsIssuedInitiative).length > 0
-          && (
-            tableSection(creditsIssuedInitiative, 'Initiative Agreements:')
-          )}
-        {Object.keys(creditsIssuedPurchase).length > 0
-          && (
-            tableSection(creditsIssuedPurchase, 'Purchase Agreements:')
-          )} */}
+        {Object.keys(transactions.initiativeAgreement).length > 0
+          && tableSection(transactions.initiativeAgreement, 'Initiative Agreements:')}
+        {Object.keys(transactions.purchaseAgreement).length > 0
+          && tableSection(transactions.purchaseAgreement, 'Purchase Agreements:')}
+        {Object.keys(transactions.administrativeAllocation).length > 0
+          && tableSection(transactions.administrativeAllocation, 'Administrative Credit Allocation:')}
         {Object.keys(transactions.transfersIn).length > 0
           && tableSection(transactions.transfersIn, 'Transferred In:')}
+        {Object.keys(transactions.administrativeReduction).length > 0
+          && tableSection(transactions.administrativeReduction, 'Administrative Credit Reduction:')}
         {Object.keys(transactions.transfersOut).length > 0
-          && tableSection(
-            transactions.transfersOut,
-            'Transferred Away:',
-            'text-right',
-          )}
-
-        {Object.keys(totalCreditReduction).length > 0
-          && tableSection(
-            totalCreditReduction,
-            'Credit Reduction:',
-            'text-right',
-          )}
+          && tableSection(transactions.transfersOut, 'Transferred Away:')}
+        {Object.keys(totalCreditReduction).length > 0 && tableSection(totalCreditReduction, 'Credit Reduction:')}
         {Object.keys(creditDeficit).length > 0
           && (creditDeficit.A > 0 || creditDeficit.B > 0)
           && tableSection(creditDeficit, 'Credit Deficit:')}

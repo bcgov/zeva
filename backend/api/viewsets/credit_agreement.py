@@ -34,6 +34,7 @@ class CreditAgreementViewSet(
         'create': CreditAgreementSaveSerializer,
         'update': CreditAgreementSaveSerializer,
         'partial_update': CreditAgreementSaveSerializer,
+        'list': CreditAgreementListSerializer,
     }
 
     def get_queryset(self):
@@ -106,4 +107,19 @@ class CreditAgreementViewSet(
                     update_user=request.user.username,
                 )
         return Response({'saved': True})
-    
+
+    def get_queryset(self):
+        request = self.request
+
+        queryset = CreditAgreement.objects.all()
+
+        return queryset
+
+    def list(self, request):
+        """
+        Get all the credit agreements
+        """
+        creditAgreements = self.get_queryset()
+
+        serializer = self.get_serializer(creditAgreements, many=True)
+        return Response(serializer.data)

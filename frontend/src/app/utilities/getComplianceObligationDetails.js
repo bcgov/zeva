@@ -6,6 +6,11 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
   const transfersIn = [];
   const transfersOut = [];
   const creditsIssuedSales = [];
+  const initiativeAgreement = [];
+  const purchaseAgreement = [];
+  const administrativeAllocation = [];
+  const administrativeReduction = [];
+  const automaticAdministrativePenalty = [];
   let pendingBalanceExist = false;
 
   complianceResponseDetails.forEach((item) => {
@@ -47,6 +52,52 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
 
       endingBalanceA -= Number(item.creditAValue);
       endingBalanceB -= Number(item.creditBValue);
+    }
+    if (item.category === 'initiativeAgreement') {
+      initiativeAgreement.push({
+        modelYear: item.modelYear.name,
+        A: Number(item.creditAValue),
+        B: Number(item.creditBValue),
+      });
+      endingBalanceA += Number(item.creditAValue);
+      endingBalanceB += Number(item.creditBValue);
+    }
+
+    if (item.category === 'purchaseAgreement') {
+      purchaseAgreement.push({
+        modelYear: item.modelYear.name,
+        A: Number(item.creditAValue),
+        B: Number(item.creditBValue),
+      });
+      endingBalanceA += Number(item.creditAValue);
+      endingBalanceB += Number(item.creditBValue);
+    }
+    if (item.category === 'administrativeAllocation') {
+      administrativeAllocation.push({
+        modelYear: item.modelYear.name,
+        A: Number(item.creditAValue),
+        B: Number(item.creditBValue),
+      });
+      endingBalanceA += Number(item.creditAValue);
+      endingBalanceB += Number(item.creditBValue);
+    }
+    if (item.category === 'administrativeReduction') {
+      administrativeReduction.push({
+        modelYear: item.modelYear.name,
+        A: Number(item.creditAValue),
+        B: Number(item.creditBValue),
+      });
+      endingBalanceA -= Number(item.creditAValue);
+      endingBalanceB -= Number(item.creditBValue);
+    }
+    if (item.category === 'automaticAdministrativePenalty') {
+      automaticAdministrativePenalty.push({
+        modelYear: item.modelYear.name,
+        A: Number(item.creditAValue),
+        B: Number(item.creditBValue),
+      });
+      endingBalanceA += Number(item.creditAValue);
+      endingBalanceB += Number(item.creditBValue);
     }
 
     if (item.category === 'creditsIssuedSales') {
@@ -114,6 +165,11 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
     provisionalBalance,
     transfersIn,
     transfersOut,
+    initiativeAgreement,
+    purchaseAgreement,
+    administrativeAllocation,
+    administrativeReduction,
+    automaticAdministrativePenalty,
   };
 };
 

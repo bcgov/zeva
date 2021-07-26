@@ -87,21 +87,19 @@ const ComplianceObligationContainer = (props) => {
 
       setUnspecifiedReductions(tempUnspecifiedReductions);
 
-      if (creditReductionSelection) {
-        const creditReduction = calculateCreditReduction(
-          balances,
-          tempClassAReductions,
-          tempUnspecifiedReductions,
-          creditReductionSelection,
-        );
+      const creditReduction = calculateCreditReduction(
+        balances,
+        tempClassAReductions,
+        tempUnspecifiedReductions,
+        creditReductionSelection,
+      );
 
-        setDeductions(creditReduction.deductions);
+      setDeductions(creditReduction.deductions);
 
-        setUpdatedBalances({
-          balances: creditReduction.balances,
-          deficits: creditReduction.deficits,
-        });
-      }
+      setUpdatedBalances({
+        balances: creditReduction.balances,
+        deficits: creditReduction.deficits,
+      });
     }
   };
 
@@ -279,9 +277,14 @@ const ComplianceObligationContainer = (props) => {
         provisionalBalance,
         transfersIn,
         transfersOut,
+        initiativeAgreement,
+        purchaseAgreement,
+        administrativeAllocation,
+        administrativeReduction,
+        automaticAdministrativePenalty,
       } = getComplianceObligationDetails(complianceResponseDetails);
 
-      if (pendingBalance.length > 0) {
+      if (pendingBalance && pendingBalance.length > 0) {
         setPendingBalanceExist(true);
       }
 
@@ -294,6 +297,11 @@ const ComplianceObligationContainer = (props) => {
           creditsIssuedSales,
           transfersIn,
           transfersOut,
+          initiativeAgreement,
+          purchaseAgreement,
+          administrativeAllocation,
+          administrativeReduction,
+          automaticAdministrativePenalty,
         },
       });
 

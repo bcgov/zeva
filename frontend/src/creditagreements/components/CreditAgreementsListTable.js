@@ -12,37 +12,94 @@ const CreditAgreementsListTable = (props) => {
 
   const COLUMNS = [
     {
-        Header: 'Transaction Id',
-        accessor: 'transactionId',
+        Header: 'Transaction ID',
+        accessor: (row) => {
+          console.log('TransactionID here');
+          let transactionInitial = '';
+          switch (row.transactionType) {
+            case 'INITIATIVE_AGREEMENT':
+              transactionInitial = 'IA';
+              break;
+            case 'PURCHASE_AGREEMENT':
+              transactionInitial = 'PA';
+              break;
+            case 'ADMINISTRATIVE_CREDIT_ALLOCATION':
+              transactionInitial = 'AA';
+              break;              
+            case 'ADMINISTRATIVE_CREDIT_REDUCTION':
+              transactionInitial = 'AR';
+              break;                
+            case 'AUTOMATIC_ADMINISTRATIVE_PENALTY':
+              transactionInitial = 'AP';
+              break;  
+          }
+          return transactionInitial.concat('-', row.id);
+        },
         id: 'col-transactionId'
     },
     {
         Header: 'Transaction Type',
-        accessor: 'transactionType',
+        accessor: (row) => {
+          let transactionType = '';
+          switch (row.transactionType) {
+            case 'INITIATIVE_AGREEMENT':
+              transactionType = 'Initiative Agreement';
+              break;
+            case 'PURCHASE_AGREEMENT':
+              transactionType = 'Purchase Agreement';
+              break;
+            case 'ADMINISTRATIVE_CREDIT_ALLOCATION':
+              transactionType = 'Administrative Allocation';
+              break;              
+            case 'ADMINISTRATIVE_CREDIT_REDUCTION':
+              transactionType = 'Administrative Reduction';
+              break;                
+            case 'AUTOMATIC_ADMINISTRATIVE_PENALTY':
+              transactionType = 'Administrative Penalty';
+              break;  
+          }
+          return transactionType;
+        },
         id: 'col-transactionType'
     },
     {
         Header: 'Transaction Date',
-        accessor: 'transactionDate',
+        accessor: 'effectiveDate',
         id: 'col-transactionDate'
     },
     {
         Header: 'Supplier',
-        accessor: 'supplier',
+        accessor: (row) => row.organization.name,
         id: 'col-supplier'
     },
     {
-        Header: 'A-Credits',
-        accessor: 'aCredits',
-        id: 'col-aCredits',
-        className: 'text-right'
-    },
+      Header: 'A-Credits',
+      accessor: (row) => {
+        let aCredits = 0;
+        row.creditAgreementContent.forEach( (eachContent) => {
+          if (eachContent.creditClass === 'A') {
+            aCredits += eachContent.numberOfCredits;
+          }
+        })
+        return aCredits;
+      },
+      id: 'col-aCredits',
+      className: 'text-right'
+    },    
     {
-        Header: 'B-Credits',
-        accessor: 'bCredits',
-        id: 'col-bCredits',
-        className: 'text-right'
-    },
+      Header: 'B-Credits',
+      accessor: (row) => {
+        let bCredits = 0;
+        row.creditAgreementContent.forEach( (eachContent) => {
+          if (eachContent.creditClass === 'B') {
+            bCredits += eachContent.numberOfCredits;
+          }
+        })
+        return bCredits;
+      },
+      id: 'col-bCredits',
+      className: 'text-right'
+    },        
     {
       Header: 'Status',
       accessor: 'status',

@@ -140,7 +140,7 @@ const CreditAgreementsEditContainer = (props) => {
     return <Loading />;
   }
   return ([
-    <CreditTransactionTabs active="credit-transfers" key="tabs" user={user} />,
+    <CreditTransactionTabs active="credit-agreements" key="tabs" user={user} />,
     <CreditAgreementsForm
       id={id}
       user={user}

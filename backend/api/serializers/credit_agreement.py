@@ -216,21 +216,19 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
 class CreditAgreementListSerializer(
         ModelSerializer, EnumSupportSerializerMixin, CreditAgreementBaseSerializer
 ):
-    # history = SerializerMethodField()
+
     organization = OrganizationSerializer()
     credit_agreement_content = CreditAgreementContentSerializer(
         many=True, read_only=True
     )
-    status = SerializerMethodField()
+    status = EnumField(CreditAgreementStatuses)
     update_user = SerializerMethodField()
-
-    def get_status(self, obj):
-        return obj.get_status_display()
+    transaction_type = EnumField(CreditAgreementTransactionTypes)
 
     class Meta:
         model = CreditAgreement
         fields = (
             'create_timestamp', 'organization', 'effective_date',
             'transaction_type', 'credit_agreement_content', 'id',
-            'status', 'update_user', 'history',
+            'status', 'update_user',
         )
