@@ -145,11 +145,17 @@ const ComplianceReportSummaryContainer = (props) => {
       const transfersOut = { A: 0, B: 0 };
       const creditsIssuedSales = { A: 0, B: 0 };
       const totalCreditReduction = { A: 0, B: 0 };
+      const initiativeAgreement = { A: 0, B: 0 };
+      const purchaseAgreement = { A: 0, B: 0 };
+      const administrativeAllocation = { A: 0, B: 0 };
+      const administrativeReduction = { A: 0, B: 0 };
+      const automaticAdministrativePenalty = { A: 0, B: 0 };
       const { ldvSales } = creditActivityResponse.data;
 
       let timestampCreditActivity;
       creditActivityResponse.data.complianceObligation.forEach((item) => {
         timestampCreditActivity = item.updateTimestamp;
+
         if (item.category === 'creditBalanceStart') {
           creditBalanceStart.year = item.modelYear.name;
           creditBalanceStart.A = item.creditAValue;
@@ -203,6 +209,36 @@ const ComplianceReportSummaryContainer = (props) => {
           transfersIn.A += aValue;
           transfersIn.B += bValue;
         }
+        if (item.category === 'initiativeAgreement') {
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          initiativeAgreement.A += aValue;
+          initiativeAgreement.B += bValue;
+        }
+        if (item.category === 'purchaseAgreement') {
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          purchaseAgreement.A += aValue;
+          purchaseAgreement.B += bValue;
+        }
+        if (item.category === 'administrativeAllocation') {
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          administrativeAllocation.A += aValue;
+          administrativeAllocation.B += bValue;
+        }
+        if (item.category === 'administrativeReduction') {
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          administrativeReduction.A -= aValue;
+          administrativeReduction.B -= bValue;
+        }
+        if (item.category === 'automaticAdministrativePenalty') {
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          automaticAdministrativePenalty.A += aValue;
+          automaticAdministrativePenalty.B += bValue;
+        }
 
         if (item.category === 'transfersOut') {
           const aValue = parseFloat(item.creditAValue);
@@ -238,6 +274,11 @@ const ComplianceReportSummaryContainer = (props) => {
           creditsIssuedSales,
           transfersIn,
           transfersOut,
+          initiativeAgreement,
+          purchaseAgreement,
+          administrativeReduction,
+          administrativeAllocation,
+          automaticAdministrativePenalty,
         },
       });
       setLoading(false);
