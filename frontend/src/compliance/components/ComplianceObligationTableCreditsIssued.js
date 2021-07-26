@@ -25,8 +25,6 @@ const ComplianceObligationTableCreditsIssued = (props) => {
     transfersOut,
   } = transactions;
 
-  console.error(transactions);
-
   const tableSection = (input, title, negativeValue) => {
     let numberClassname = 'text-right';
 
