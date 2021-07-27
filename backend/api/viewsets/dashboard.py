@@ -7,7 +7,6 @@ from api.models.model_year_report import ModelYearReport
 from api.serializers.dashboard import DashboardListSerializer
 from auditable.views import AuditableMixin
 from api.models.model_year_report_statuses import ModelYearReportStatuses
-from django.db.models import Q
 
 
 class DashboardViewset(
@@ -30,17 +29,9 @@ class DashboardViewset(
             ])
         else:
             queryset = ModelYearReport.objects.filter(
-                (Q(organization_name=request.user.organization.name) &
-                    Q(validation_status__in=[
-                        ModelYearReportStatuses.SUBMITTED,
-                        ModelYearReportStatuses.RECOMMENDED,
-                        ModelYearReportStatuses.ASSESSED,
-                        ]))
-                )
+                organization_id=request.user.organization.id
+            )
         return queryset
-    
-    
-    
 
     serializer_classes = {
         'default': DashboardListSerializer,
