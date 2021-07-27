@@ -139,7 +139,6 @@ const ComplianceReportSummaryContainer = (props) => {
       const provisionalBalanceBeforeOffset = { A: 0, B: 0 };
       const provisionalBalanceAfterOffset = { A: 0, B: 0 };
       const pendingBalance = { A: 0, B: 0 };
-      const creditDeficit = { A: 0, B: 0 };
       const provisionalBalanceAfterCreditReduction = { A: 0, B: 0 };
       const transfersIn = { A: 0, B: 0 };
       const transfersOut = { A: 0, B: 0 };
@@ -185,11 +184,6 @@ const ComplianceReportSummaryContainer = (props) => {
           const bValue = parseFloat(item.creditBValue);
           totalCreditReduction.A += aValue;
           totalCreditReduction.B += bValue;
-        }
-
-        if (item.category === 'CreditDeficit') {
-          creditDeficit.A = item.creditAValue;
-          creditDeficit.B = item.creditBValue;
         }
 
         if (item.category === 'pendingBalance') {
@@ -254,8 +248,19 @@ const ComplianceReportSummaryContainer = (props) => {
           creditsIssuedSales.B += bValue;
         }
 
-        provisionalBalanceAfterCreditReduction.A = provisionalBalanceAfterOffset.A - totalCreditReduction.A;
-        provisionalBalanceAfterCreditReduction.B = provisionalBalanceAfterOffset.B - totalCreditReduction.B;
+        if (item.category === 'ProvisionalBalanceAfterCreditReduction') {
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          provisionalBalanceAfterCreditReduction.A += aValue;
+          provisionalBalanceAfterCreditReduction.B += bValue;
+        }
+
+        if (item.category === 'CreditDeficit') {
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          provisionalBalanceAfterCreditReduction.A -= aValue;
+          provisionalBalanceAfterCreditReduction.B -= bValue;
+        }
       });
       setCreditActivityDetails({
         timestampCreditActivity,
@@ -267,7 +272,6 @@ const ComplianceReportSummaryContainer = (props) => {
         provisionalBalanceAfterCreditReduction,
         supplierClass,
         supplierClassText,
-        creditDeficit,
         totalCreditReduction,
         ldvSales,
         transactions: {
@@ -321,7 +325,6 @@ const ComplianceReportSummaryContainer = (props) => {
         pendingBalanceExist={pendingBalanceExist}
         modelYear={modelYear}
       />
-
     </>
   );
 };
