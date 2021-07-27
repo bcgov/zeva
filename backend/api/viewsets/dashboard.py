@@ -6,6 +6,7 @@ from api.permissions.user import UserPermissions
 from api.models.model_year_report import ModelYearReport
 from api.serializers.dashboard import DashboardListSerializer
 from auditable.views import AuditableMixin
+from api.models.model_year_report_statuses import ModelYearReportStatuses
 
 
 class DashboardViewset(
@@ -19,7 +20,18 @@ class DashboardViewset(
     """
     permission_classes = (UserPermissions,)
     http_method_names = ['get']
-    queryset = ModelYearReport.objects.all()
+    
+    def get_queryset(self):
+        request = self.request
+        if request.user.is_government:
+            queryset = ModelYearReport.objects.exclude(validation_status__in=[
+                ModelYearReportStatuses.DRAFT,
+            ])
+        else:
+            queryset = ModelYearReport.objects.filter(
+                organization_id=request.user.organization.id
+            )
+        return queryset
 
     serializer_classes = {
         'default': DashboardListSerializer,
