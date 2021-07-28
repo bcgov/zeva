@@ -344,6 +344,12 @@ class Router extends Component {
                 />,
                 <Route
                   exact
+                  key="route-credit-agreements-edit"
+                  path={ROUTES_CREDIT_AGREEMENTS.EDIT}
+                  render={() => <CreditAgreementsEditContainer keycloak={keycloak} user={user} />}
+                />,
+                <Route
+                  exact
                   key="route-credit-agreements-new"
                   path={ROUTES_CREDIT_AGREEMENTS.NEW}
                   render={() => (user.isGovernment ? <CreditAgreementsEditContainer keycloak={keycloak} user={user} /> : <></>)}
@@ -353,7 +359,7 @@ class Router extends Component {
                   key="route-credit-agreements-details"
                   path={ROUTES_CREDIT_AGREEMENTS.DETAILS}
                   render={() => <CreditAgreementsDetailsContainer keycloak={keycloak} user={user} />}
-                />
+                />,
               ])}
               <Route
                 exact

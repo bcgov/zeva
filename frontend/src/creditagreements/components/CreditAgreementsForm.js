@@ -1,41 +1,33 @@
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ReactTooltip from 'react-tooltip';
-import axios from 'axios';
+
 import Button from '../../app/components/Button';
-import Modal from '../../app/components/Modal';
-import Alert from '../../app/components/Alert';
-import formatNumeric from '../../app/utilities/formatNumeric';
-import DisplayComment from '../../app/components/DisplayComment';
 import CommentInput from '../../app/components/CommentInput';
 import ExcelFileDrop from '../../app/components/FileDrop';
 import FormDropdown from '../../credits/components/FormDropdown';
 import TextInput from '../../app/components/TextInput';
 import getFileSize from '../../app/utilities/getFileSize';
+import CustomPropTypes from '../../app/utilities/props';
 
 const CreditAgreementsForm = (props) => {
   const {
+    addRow,
     agreementDetails,
     analystAction,
     creditRows,
-    id,
-    user,
-    bceidComment,
     files,
     handleChangeDetails,
     handleChangeRow,
     handleCommentChangeBceid,
+    handleDeleteRow,
     handleSubmit,
-    errorMessage,
-    setErrorMessage,
     setUploadFiles,
-    upload,
-    addRow,
     suppliers,
     transactionTypes,
+    user,
     years,
-    handleDeleteRow,
   } = props;
   const removeFile = (removedFile) => {
     const found = files.findIndex((file) => (file === removedFile));
@@ -196,6 +188,7 @@ const CreditAgreementsForm = (props) => {
                   onChange={(event) => {
                     handleChangeDetails(event.target.value, 'transactionDate');
                   }}
+                  value={agreementDetails.transactionDate}
                 />
 
               </div>
@@ -306,6 +299,24 @@ const CreditAgreementsForm = (props) => {
       </div>
     </div>
   );
+};
+
+CreditAgreementsForm.propTypes = {
+  addRow: PropTypes.func.isRequired,
+  agreementDetails: PropTypes.shape().isRequired,
+  analystAction: PropTypes.bool.isRequired,
+  creditRows: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  files: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  handleChangeDetails: PropTypes.func.isRequired,
+  handleChangeRow: PropTypes.func.isRequired,
+  handleCommentChangeBceid: PropTypes.func.isRequired,
+  handleDeleteRow: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  setUploadFiles: PropTypes.func.isRequired,
+  suppliers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  transactionTypes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  user: CustomPropTypes.user.isRequired,
+  years: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 };
 
 export default CreditAgreementsForm;
