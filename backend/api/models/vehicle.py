@@ -116,6 +116,9 @@ class Vehicle(Auditable):
         if credit_class == 'A':
             credit = (self.range * 0.006214) + 0.5
 
+            if credit > 4:
+                credit = 4
+
         if credit_class == 'B':
             credit = (self.range * 0.006214) + 0.3
 
@@ -123,8 +126,10 @@ class Vehicle(Auditable):
                 self.has_passed_us_06_test is True:
                 credit += 0.2
 
-        if credit > 4:
-            credit = 4
+            if not self.has_passed_us_06_test and credit > 1.1:
+                credit = 1.1
+            elif self.has_passed_us_06_test and credit > 1.3:
+                credit = 1.3
 
         return round(credit, 2)
 
