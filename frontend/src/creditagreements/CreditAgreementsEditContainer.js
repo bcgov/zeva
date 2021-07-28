@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import PropTypes from 'prop-types';
+
 import history from '../app/History';
 import CreditAgreementsForm from './components/CreditAgreementsForm';
 import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
@@ -93,6 +93,7 @@ const CreditAgreementsEditContainer = (props) => {
   const handleChangeDetails = (value, property) => {
     setAgreementDetails({ ...agreementDetails, [property]: value });
   };
+
   const handleSubmit = () => {
     const data = {
       organization: agreementDetails.vehicleSupplier,
@@ -115,18 +116,41 @@ const CreditAgreementsEditContainer = (props) => {
           history.push(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId));
         });
       });
+    }).catch((e) => {
+      setErrorMessage(e);
     });
   };
   const refreshDetails = () => {
-    const yearsPromise = axios.get(ROUTES_VEHICLES.YEARS);
-    const supplierPromise = axios.get(ROUTES_ORGANIZATIONS.LIST);
-    const typesPromise = axios.get(ROUTES_CREDIT_AGREEMENTS.TRANSACTION_TYPES);
-    Promise.all([yearsPromise, supplierPromise, typesPromise]).then(
-      ([yearsResponse, supplierResponse, typesResponse]) => {
+    const promises = [
+      axios.get(ROUTES_VEHICLES.YEARS),
+      axios.get(ROUTES_ORGANIZATIONS.LIST),
+      axios.get(ROUTES_CREDIT_AGREEMENTS.TRANSACTION_TYPES),
+    ];
+
+    if (id) {
+      promises.push(axios.get(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id)));
+    }
+
+    Promise.all(promises).then(
+      ([yearsResponse, supplierResponse, typesResponse, detailsResponse]) => {
         setYears(yearsResponse.data);
         setSuppliers(supplierResponse.data);
-        // this needs to be retrieved from backend!!
         setTransactionTypes(typesResponse.data.map((each) => ({ name: each })));
+
+        if (detailsResponse && detailsResponse.status === 200) {
+          const {
+            effectiveDate: transactionDate,
+            optionalAgreementId: optionalAgreementID,
+            organization,
+            transactionType,
+          } = detailsResponse.data;
+          setAgreementDetails({
+            optionalAgreementID,
+            transactionDate,
+            transactionType,
+            vehicleSupplier: organization ? organization.id : 0,
+          });
+        }
 
         setLoading(false);
       },
@@ -141,28 +165,23 @@ const CreditAgreementsEditContainer = (props) => {
   return ([
     <CreditTransactionTabs active="credit-agreements" key="tabs" user={user} />,
     <CreditAgreementsForm
-      id={id}
-      user={user}
-      key="form"
+      addRow={addRow}
       agreementDetails={agreementDetails}
-      bceidComment={bceidComment}
-      setBciedComment={setBceidComment}
       analystAction={analystAction}
-      setUploadFiles={setFiles}
-      setErrorMessage={setErrorMessage}
+      creditRows={creditRows}
       errorMessage={errorMessage}
       files={files}
-      upload={handleUpload}
-      handleCommentChangeBceid={handleCommentChangeBceid}
-      handleSubmit={handleSubmit}
-      addRow={addRow}
-      creditRows={creditRows}
-      years={years}
-      handleChangeRow={handleChangeRow}
       handleChangeDetails={handleChangeDetails}
+      handleChangeRow={handleChangeRow}
+      handleCommentChangeBceid={handleCommentChangeBceid}
+      handleDeleteRow={handleDeleteRow}
+      handleSubmit={handleSubmit}
+      key="form"
+      setUploadFiles={setFiles}
       suppliers={suppliers}
       transactionTypes={transactionTypes}
-      handleDeleteRow={handleDeleteRow}
+      user={user}
+      years={years}
     />,
   ]);
 };

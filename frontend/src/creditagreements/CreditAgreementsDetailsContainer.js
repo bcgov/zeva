@@ -93,7 +93,7 @@ const CreditAgreementsDetailsContainer = (props) => {
     return <Loading />;
   }
 
-  return [
+  return (
     <CreditAgreementsDetailsPage
       id={id}
       user={user}
@@ -104,11 +104,11 @@ const CreditAgreementsDetailsContainer = (props) => {
       handleCommentChangeBceid={handleCommentChangeBceid}
       details={details}
       handleSubmit={handleSubmit}
-    />,
-  ];
+    />
+  );
 };
 
-CreditAgreementsDetailsContainer.prototype = {
+CreditAgreementsDetailsContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   user: CustomPropTypes.user.isRequired,
 };

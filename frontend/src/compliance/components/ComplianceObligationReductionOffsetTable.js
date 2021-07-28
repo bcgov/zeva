@@ -185,7 +185,7 @@ const ComplianceObligationReductionOffsetTable = (props) => {
                 ).map((balance) => (
                   <tr key={balance.modelYear}>
                     <td className="text-blue">
-                      &bull; &nbsp; &nbsp; {balance.modelYear} Credit
+                      &bull; &nbsp; &nbsp; {balance.modelYear} Credits
                     </td>
                     <td className="text-right">
                       {formatNumeric(balance.creditA ? balance.creditA : 0)}

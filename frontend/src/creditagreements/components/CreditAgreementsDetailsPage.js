@@ -3,23 +3,26 @@ import axios from 'axios';
 import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
 import parse from 'html-react-parser';
+
 import Button from '../../app/components/Button';
 import CreditAgreementsAlert from './CreditAgreementsAlert';
 import CreditAgreementsDetailsTable from './CreditAgreementsDetailsTable';
 import DisplayComment from '../../app/components/DisplayComment';
 import CommentInput from '../../app/components/CommentInput';
 
+import CustomPropTypes from '../../app/utilities/props';
+
 const CreditAgreementsDetailsPage = (props) => {
   const {
-    user,
-    handleAddComment,
-    handleCommentChangeIdir,
     analystAction,
-    directorAction,
-    handleCommentChangeBceid,
     details,
+    directorAction,
+    handleAddComment,
+    handleCommentChangeBceid,
+    handleCommentChangeIdir,
     handleSubmit,
     id,
+    user,
   } = props;
   return (
     <div id="credit-agreements-detail-page" className="page">
@@ -178,6 +181,8 @@ const CreditAgreementsDetailsPage = (props) => {
             {directorAction && details.status === 'RECOMMENDED' && (
               <>
                 <span className="left-content">
+                  <Button buttonType="back" locationRoute="/credit-agreements" />
+
                   <button
                     className="button text-danger"
                     onClick={() => {
@@ -192,7 +197,7 @@ const CreditAgreementsDetailsPage = (props) => {
                 <span className="right-content">
                   <Button
                     buttonType="save"
-                    optionalClassname="button primary"
+                    optionalClassname="button"
                     optionalText="Save"
                     action={() => {
                       handleAddComment('bceidComment');
@@ -247,13 +252,26 @@ const CreditAgreementsDetailsPage = (props) => {
 };
 
 CreditAgreementsDetailsPage.propTypes = {
-  details: PropTypes.shape({}).isRequired,
+  details: PropTypes.shape({
+    attachments: PropTypes.arrayOf(PropTypes.shape()),
+    creditAgreementContent: PropTypes.arrayOf(PropTypes.shape()),
+    effectiveDate: PropTypes.string,
+    filteredBceidComments: PropTypes.arrayOf(PropTypes.shape()),
+    filteredIdirComments: PropTypes.arrayOf(PropTypes.shape()),
+    optionalAgreementId: PropTypes.string,
+    organization: PropTypes.shape(),
+    status: PropTypes.string,
+    transactionType: PropTypes.string,
+    updateTimestamp: PropTypes.string,
+  }).isRequired,
   analystAction: PropTypes.bool.isRequired,
   directorAction: PropTypes.bool.isRequired,
   handleAddComment: PropTypes.func.isRequired,
+  handleCommentChangeBceid: PropTypes.func.isRequired,
   handleCommentChangeIdir: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   id: PropTypes.string.isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default CreditAgreementsDetailsPage;

@@ -86,7 +86,6 @@ const AssessmentDetailsPage = (props) => {
     recommendTooltip = 'Please select an Analyst Recommendation before recommending this assessment.';
   }
 
-
   if (pendingBalanceExist) {
     disabledRecommendBtn = true;
     recommendTooltip = 'There are credit applications that must be issued prior to recommending this assessment.';
