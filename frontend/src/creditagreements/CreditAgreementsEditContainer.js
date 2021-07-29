@@ -139,14 +139,14 @@ const CreditAgreementsEditContainer = (props) => {
 
         if (detailsResponse && detailsResponse.status === 200) {
           const {
-            effectiveDate: transactionDate,
+            effectiveDate,
             optionalAgreementId: optionalAgreementID,
             organization,
             transactionType,
           } = detailsResponse.data;
           setAgreementDetails({
+            effectiveDate,
             optionalAgreementID,
-            transactionDate,
             transactionType,
             vehicleSupplier: organization ? organization.id : 0,
           });
