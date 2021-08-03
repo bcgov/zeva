@@ -157,7 +157,8 @@ const VehicleSupplierDetailsPage = (props) => {
                           >
                             x
                           </button>
-                        </div>)}
+                        </div>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -196,11 +197,12 @@ VehicleSupplierDetailsPage.defaultProps = {
 
 VehicleSupplierDetailsPage.propTypes = {
   details: CustomPropTypes.organizationDetails.isRequired,
-  editButton: PropTypes.func.isRequired,
+  editButton: PropTypes.shape().isRequired,
   ldvSales: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),
   modelYears: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  handleDeleteSale: PropTypes.func.isRequired,
   handleInputChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   inputLDVSales: PropTypes.oneOfType([

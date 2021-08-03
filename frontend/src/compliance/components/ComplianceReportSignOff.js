@@ -27,7 +27,7 @@ const ComplianceReportSignOff = (props) => {
               disabled={disabledCheckboxes}
             />
           </div>
-          <label className="d-inline ml-2 text-blue" htmlFor={assertion.id} id="confirmation-text">
+          <label className={`d-inline ml-2 text-blue ${disabledCheckboxes ? '' : 'clickable'}`} htmlFor={assertion.id} id="confirmation-text">
             {assertion.description.replace(/{user.organization.name}/g, user.organization.name)}
           </label>
         </div>
