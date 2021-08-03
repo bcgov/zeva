@@ -1,4 +1,5 @@
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
 import CONFIG from '../app/config';
@@ -13,18 +14,12 @@ const ComplianceReportsContainer = (props) => {
   const { location, user } = props;
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
-  const [collapsed, setCollapsed] = useState(true);
   const [filtered, setFiltered] = useState([]);
   const [availableYears, setAvailableYears] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.YEARS);
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 
-  const collapseDropdown = () => {
-    setCollapsed(!collapsed);
-  };
-
   const refreshList = (showLoading) => {
-
     setLoading(showLoading);
     const queryFilter = [];
     Object.entries(query).forEach(([key, value]) => {
@@ -111,19 +106,18 @@ const ComplianceReportsContainer = (props) => {
       <ComplianceTabs active="reports" user={user} />
       <ComplianceReportListPage
         availableYears={availableYears}
-        collapsed={collapsed}
-        collapseDropdown={collapseDropdown}
         data={data}
-        loading={loading}
-        user={user}
-        showSupplier={user.isGovernment}
         filtered={filtered}
+        loading={loading}
         setFiltered={setFiltered}
+        showSupplier={user.isGovernment}
+        user={user}
       />
     </>
   );
 };
 ComplianceReportsContainer.propTypes = {
+  location: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 export default withRouter(ComplianceReportsContainer);
