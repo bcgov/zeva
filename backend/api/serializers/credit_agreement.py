@@ -18,6 +18,7 @@ from api.serializers.credit_agreement_content import \
 from .organization import OrganizationSerializer
 from api.models.credit_agreement_history import CreditAgreementHistory
 
+
 class CreditAgreementBaseSerializer:
     def get_update_user(self, obj):
         user_profile = UserProfile.objects.filter(username=obj.update_user)
@@ -99,9 +100,12 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
         bceid_comment = request.data.pop('bceid_comment')
         transaction_type = agreement_details.get('transaction_type')
         optional_agreement_id = agreement_details.get('optional_agreement_id')
+        effective_date = agreement_details.get('effective_date')
+
         obj = CreditAgreement.objects.create(
             transaction_type=transaction_type,
             optional_agreement_id=optional_agreement_id,
+            effective_date=effective_date,
             **validated_data
         )
         if bceid_comment:

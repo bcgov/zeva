@@ -186,9 +186,9 @@ const CreditAgreementsForm = (props) => {
                   id="transaction-date"
                   name="transaction-date"
                   onChange={(event) => {
-                    handleChangeDetails(event.target.value, 'transactionDate');
+                    handleChangeDetails(event.target.value, 'effectiveDate');
                   }}
-                  value={agreementDetails.transactionDate}
+                  value={agreementDetails.effectiveDate}
                 />
 
               </div>
