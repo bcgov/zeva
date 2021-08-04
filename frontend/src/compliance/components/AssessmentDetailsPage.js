@@ -216,6 +216,7 @@ const AssessmentDetailsPage = (props) => {
                         <div> {address.representativeName} </div>
                       )}
                       <div> {address.addressLine1} </div>
+                      <div> {address.addressLine2} </div>
                       <div> {address.city} {address.state} {address.country} </div>
                       <div> {address.postalCode} </div>
                     </div>
@@ -231,6 +232,7 @@ const AssessmentDetailsPage = (props) => {
                         <div> {address.representativeName} </div>
                       )}
                       <div> {address.addressLine1} </div>
+                      <div> {address.addressLine2} </div>
                       <div> {address.city} {address.state} {address.country} </div>
                       <div> {address.postalCode} </div>
                     </div>
@@ -296,7 +298,7 @@ const AssessmentDetailsPage = (props) => {
       </div>
       {(details.assessment && details.assessment.decision
         && details.assessment.decision.description)
-        && (!user.isGovernment || (user.isGovernment && statuses.assessment.status === 'ASSESSED')) && (
+        && (!user.isGovernment || (user.isGovernment && ['ASSESSED', 'RECOMMENDED'].indexOf(statuses.assessment.status) >= 0)) && (
           <>
             <h3 className="mt-4 mb-1">Director Assessment</h3>
             <div className="row mb-3">
@@ -314,7 +316,7 @@ const AssessmentDetailsPage = (props) => {
             </div>
           </>
       )}
-      {user.isGovernment && statuses.assessment.status !== 'ASSESSED'
+      {user.isGovernment && ['ASSESSED', 'RECOMMENDED'].indexOf(statuses.assessment.status) < 0
       && (
         <>
           <h3 className="mt-4 mb-1">Analyst Recommended Director Assessment</h3>
@@ -337,7 +339,11 @@ const AssessmentDetailsPage = (props) => {
                   <label className="d-inline" htmlFor="penalty-radio">
                     <div>
                       <input
-                        disabled={directorAction || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0}
+                        disabled={
+                          directorAction
+                          || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0
+                          || assessmentDecision.indexOf('Section 10 (3) applies') < 0
+                        }
                         type="text"
                         className="ml-4 mr-1"
                         defaultValue={details.assessment.assessmentPenalty}

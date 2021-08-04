@@ -18,10 +18,10 @@ const creditApplicationHeader = (props) => {
           {submission.organization.name}
         </h4>
         <h5 className="d-inline-block sales-upload-grey my-2">Service address: </h5>
-        {serviceAddress && <h5 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h5>}
+        {serviceAddress && <h5 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.addressLine2} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h5>}
         <br />
         <h5 className="d-inline-block sales-upload-grey">Records address: </h5>
-        {recordsAddress && <h5 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h5>}
+        {recordsAddress && <h5 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.addressLine2} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h5>}
         {submission.evidence.length > 0 && (
           <>
             <h3 className="mt-3">

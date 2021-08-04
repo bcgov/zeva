@@ -31,6 +31,7 @@ const SummarySupplierInfo = (props) => {
           <div className="text-black"> {address.representativeName} </div>
         )}
         <div className="text-black"> {address.addressLine1} </div>
+        <div className="text-black"> {address.addressLine2} </div>
         <div className="text-black"> {address.city} {address.state} {address.country} </div>
         <div className="text-black"> {address.postalCode} </div>
       </div>
@@ -47,6 +48,7 @@ const SummarySupplierInfo = (props) => {
           <div className="text-black"> {address.representativeName} </div>
         )}
         <div className="text-black"> {address.addressLine1} </div>
+        <div className="text-black"> {address.addressLine2} </div>
         <div className="text-black"> {address.city} {address.state} {address.country} </div>
         <div className="text-black"> {address.postalCode} </div>
       </div>

@@ -23,6 +23,7 @@ const UserSettings = (props) => {
             address.addressType.addressType === 'Records' && (
               <dl key={address.id}>
                 <dd>{address.addressLine1}</dd>
+                <dd>{address.addressLine2}</dd>
                 <dt />
                 <dd>
                   <span> {address.city} </span>

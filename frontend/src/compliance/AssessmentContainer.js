@@ -51,7 +51,8 @@ const AssessmentContainer = (props) => {
   const handleAddIdirComment = () => {
     const comment = { comment: idirComment, director: true };
     axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
-      history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+      history.push(ROUTES_COMPLIANCE.REPORTS);
+      history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
     });
   };
   const refreshDetails = () => {

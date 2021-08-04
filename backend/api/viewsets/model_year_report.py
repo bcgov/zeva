@@ -322,20 +322,27 @@ class ModelYearReportViewset(
             ModelYearReportAssessmentComment.objects.create(
                 model_year_report_id=pk,
                 comment=comment,
-                to_director=director,
+                to_director=True,
                 create_user=request.user.username,
                 update_user=request.user.username,
             )
         elif comment and not director:
-            ModelYearReportAssessmentComment.objects.update_or_create(
+            assessment_comment = ModelYearReportAssessmentComment.objects.filter(
                 model_year_report_id=pk,
-                to_director=director,
-                defaults={
-                    'comment': comment,
-                    'create_user': request.user.username,
-                    'update_user': request.user.username,
-                }
-            )
+                to_director=False
+            ).order_by('-update_timestamp').first()
+
+            if assessment_comment:
+                assessment_comment.comment = comment
+                assessment_comment.update_user = request.user.username
+            else:
+                ModelYearReportAssessmentComment.objects.create(
+                    model_year_report_id=pk,
+                    to_director=False,
+                    comment=comment,
+                    create_user=request.user.username,
+                    update_user=request.user.username
+                )
 
         report = get_object_or_404(ModelYearReport, pk=pk)
 

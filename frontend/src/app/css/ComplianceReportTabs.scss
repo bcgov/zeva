@@ -12,13 +12,13 @@
       }
     }
 
-    &.UNSAVED, &.RECOMMENDED {
+    &.UNSAVED {
       &.active a {
         border-bottom-color: $primary-yellow;
       }
     }
 
-    &.CONFIRMED, &.SUBMITTED {
+    &.CONFIRMED, &.SUBMITTED, &.RECOMMENDED {
       a {
         border-bottom-color: $background-light-blue;  
       }

@@ -59,6 +59,7 @@ const VehicleSupplierDetailsPage = (props) => {
                       <div> {address.representativeName} </div>
                     )}
                     <div> {address.addressLine1} </div>
+                    <div> {address.addressLine2} </div>
                     <div> {address.city} {address.state} {address.country} </div>
                     <div> {address.postalCode} </div>
                   </div>
@@ -75,6 +76,7 @@ const VehicleSupplierDetailsPage = (props) => {
                       <div> {address.representativeName} </div>
                     )}
                     <div> {address.addressLine1} </div>
+                    <div> {address.addressLine2} </div>
                     <div> {address.city} {address.state} {address.country} </div>
                     <div> {address.postalCode} </div>
                   </div>

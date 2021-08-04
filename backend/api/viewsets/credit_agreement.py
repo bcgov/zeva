@@ -108,18 +108,11 @@ class CreditAgreementViewSet(
                 )
         return Response({'saved': True})
 
-    def get_queryset(self):
-        request = self.request
-
-        queryset = CreditAgreement.objects.all()
-
-        return queryset
-
     def list(self, request):
         """
         Get all the credit agreements
         """
-        creditAgreements = self.get_queryset()
+        credit_agreements = self.get_queryset()
 
-        serializer = self.get_serializer(creditAgreements, many=True)
+        serializer = self.get_serializer(credit_agreements, many=True)
         return Response(serializer.data)
