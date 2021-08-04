@@ -17,6 +17,7 @@ from api.serializers.credit_agreement_content import \
     CreditAgreementContentSerializer
 from .organization import OrganizationSerializer
 from api.models.credit_agreement_history import CreditAgreementHistory
+from api.services.minio import minio_remove_object
 
 
 class CreditAgreementBaseSerializer:
@@ -150,10 +151,13 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
 
     def update(self, instance, validated_data):
         request = self.context.get('request')
+        agreement_details = request.data.get('agreement_details', None)
         agreement_attachments = validated_data.pop('agreement_attachments', [])
         files_to_be_removed = request.data.get('delete_files', [])
-        credit_agreement_comment = validated_data.pop('agreement_comment', None)
         status = request.data.get('validation_status')
+        credit_agreement_comment = validated_data.pop('agreement_comment', None)
+        bceid_comment = request.data.get('bceid_comment')
+
         if status and (
             status != 'DELETED' or (
                 status == 'DELETED' and instance.status == CreditAgreementStatuses.DRAFT)
@@ -167,13 +171,38 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
             instance.status = status
             instance.save()
             history.save()
-        
+
         if credit_agreement_comment:
             CreditAgreementComment.objects.create(
                 create_user=request.user.username,
                 credit_agreement=instance,
-                comment=agreement_comment.get('comment')
+                comment=credit_agreement_comment.get('comment')
             )
+
+        if bceid_comment:
+            credit_agreement_comment = CreditAgreementComment.objects.filter(
+                credit_agreement=instance,
+                to_director=False
+            ).order_by('-update_timestamp').first()
+
+            if credit_agreement_comment:
+                credit_agreement_comment.comment = bceid_comment
+                credit_agreement_comment.update_user = request.user.username
+                credit_agreement_comment.save()
+            else:
+                CreditAgreementComment.objects.create(
+                    credit_agreement=instance,
+                    to_director=False,
+                    create_user=request.user.username,
+                    comment=bceid_comment
+                )
+
+        CreditAgreementHistory.objects.create(
+            credit_agreement=instance,
+            status=instance.status,
+            update_user=request.user.username,
+            create_user=request.user.username
+        )
 
         for attachment in agreement_attachments:
             CreditAgreementAttachment.objects.create(
@@ -195,14 +224,38 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
                 attachment.update_user = request.user.username
                 attachment.save()
 
-        for data in validated_data:
-            setattr(instance, data, validated_data[data])
+        adjustments = request.data.get('content', None)
+        if adjustments and isinstance(adjustments, list):
+            CreditAgreementContent.objects.filter(
+                credit_agreement=instance
+            ).delete()
 
-            if data == 'make':
-                make = validated_data[data]
-                make = " ".join(make.upper().split())
+            for adjustment in adjustments:
+                model_year = ModelYear.objects.filter(
+                    name=adjustment.get('model_year')
+                ).first()
 
-                setattr(instance, data, make)
+                credit_class = CreditClass.objects.filter(
+                    credit_class=adjustment.get('credit_class')
+                ).first()
+
+                if model_year and credit_class and adjustment.get('quantity'):
+                    CreditAgreementContent.objects.create(
+                        credit_class_id=credit_class.id,
+                        model_year_id=model_year.id,
+                        number_of_credits=adjustment.get('quantity'),
+                        credit_agreement=instance,
+                        create_user=request.user.username,
+                        update_user=request.user.username,
+                    )
+
+        if agreement_details:
+            transaction_type = agreement_details.get('transaction_type')
+            optional_agreement_id = agreement_details.get('optional_agreement_id')
+            effective_date = agreement_details.get('effective_date')
+            instance.transaction_type = transaction_type
+            instance.effective_date = effective_date
+            instance.optional_agreement_id = optional_agreement_id
 
         instance.update_user = request.user.username
         instance.save()
