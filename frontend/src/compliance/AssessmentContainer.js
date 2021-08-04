@@ -362,12 +362,8 @@ const AssessmentContainer = (props) => {
   const handleAddBceidComment = () => {
     const comment = { comment: bceidComment, director: false };
     axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
-      if (directorAction) {
-        history.push(ROUTES_COMPLIANCE.REPORTS);
-        history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
-      } else {
-        handleSubmit('SUBMITTED');
-      }
+      history.push(ROUTES_COMPLIANCE.REPORTS);
+      history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
     });
   };
 
