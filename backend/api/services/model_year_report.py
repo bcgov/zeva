@@ -119,6 +119,17 @@ def get_model_year_report_statuses(report):
                 'create_user': serializer.data
             }
 
+    if report.validation_status == ModelYearReportStatuses.RETURNED:
+        assessment_status = 'RETURNED'
+        user_profile = UserProfile.objects.filter(username=report.update_user)
+        if user_profile.exists():
+            serializer = MemberSerializer(user_profile.first(), read_only=True)
+
+            assessment_confirmed_by = {
+                'create_timestamp': report.update_timestamp,
+                'create_user': serializer.data
+            }
+
     if report.validation_status == ModelYearReportStatuses.ASSESSED:
         supplier_information_status = 'ASSESSED'
         consumer_sales_status = 'ASSESSED'
