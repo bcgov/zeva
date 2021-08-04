@@ -15,6 +15,7 @@ const OrganizationDetails = (props) => {
           {details.organizationAddress && (
             <dl>
               <dd>{details.organizationAddress.addressLine1}</dd>
+              <dd>{details.organizationAddress.addressLine2}</dd>
               <dt />
               <dd>
                 <span> {details.organizationAddress.city} </span>

@@ -131,6 +131,7 @@ const SupplierInformationDetailsPage = (props) => {
                                   <div> {address.representativeName} </div>
                                 )}
                                 {address.addressLine1}{' '}
+                                {address.addressLine2}{' '}
                                 {address.city}{' '}
                                 {address.state}{' '}
                                 {address.country}{' '}
@@ -155,6 +156,7 @@ const SupplierInformationDetailsPage = (props) => {
                                   <div> {address.representativeName} </div>
                                 )}
                                 {address.addressLine1} {' '}
+                                {address.addressLine2} {' '}
                                 {address.city}{' '}
                                 {address.state}{' '}
                                 {address.country}{' '}

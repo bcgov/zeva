@@ -62,6 +62,7 @@ const ComplianceReportTabs = (props) => {
           `nav-item
           ${(active === 'summary') ? ' active ' : ' '}
           ${reportStatuses.reportSummary ? reportStatuses.reportSummary.status : ''}
+          ${reportStatuses.assessment ? reportStatuses.assessment.status : ''}
           `
       }
         role="presentation"

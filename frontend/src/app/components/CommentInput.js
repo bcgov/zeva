@@ -44,10 +44,11 @@ const CommentInput = (props) => {
 
 CommentInput.defaultProps = {
   buttonText: null,
+  defaultComment: null,
   disable: false,
 };
 CommentInput.propTypes = {
-  handleAddComment: PropTypes.func,
+  handleAddComment: PropTypes.func.isRequired,
   handleCommentChange: PropTypes.func.isRequired,
   defaultComment: PropTypes.shape(),
   buttonText: PropTypes.string,
