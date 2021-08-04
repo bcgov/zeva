@@ -25,6 +25,7 @@ const CreditAgreementsEditContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [agreementDetails, setAgreementDetails] = useState({});
   const [files, setFiles] = useState([]);
+  const [deleteFiles, setDeleteFiles] = useState([]);
 
   const [errorMessage, setErrorMessage] = useState(null);
   const analystAction = user.isGovernment
@@ -94,6 +95,17 @@ const CreditAgreementsEditContainer = (props) => {
     setAgreementDetails({ ...agreementDetails, [property]: value });
   };
 
+  const saveAgreement = (data) => {
+    if (id) {
+      return axios.patch(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, id), {
+        ...data,
+        deleteFiles,
+      });
+    }
+
+    return axios.post(ROUTES_CREDIT_AGREEMENTS.LIST, data);
+  };
+
   const handleSubmit = () => {
     const data = {
       organization: agreementDetails.vehicleSupplier,
@@ -101,7 +113,8 @@ const CreditAgreementsEditContainer = (props) => {
       bceidComment,
       content: creditRows,
     };
-    axios.post(ROUTES_CREDIT_AGREEMENTS.LIST, data).then((response) => {
+
+    saveAgreement(data).then((response) => {
       // after agreement is created, then post the content using the id from the response
       const { id: agreementId } = response.data;
       const uploadPromises = handleUpload(agreementId);
@@ -139,12 +152,22 @@ const CreditAgreementsEditContainer = (props) => {
 
         if (detailsResponse && detailsResponse.status === 200) {
           const {
+            attachments,
+            creditAgreementContent,
             effectiveDate,
             optionalAgreementId: optionalAgreementID,
             organization,
             transactionType,
           } = detailsResponse.data;
+
+          setCreditRows([
+            ...creditAgreementContent.map(
+              (each) => ({ ...each, quantity: each.numberOfCredits }),
+            ),
+          ]);
+
           setAgreementDetails({
+            attachments,
             effectiveDate,
             optionalAgreementID,
             transactionType,
@@ -169,6 +192,7 @@ const CreditAgreementsEditContainer = (props) => {
       agreementDetails={agreementDetails}
       analystAction={analystAction}
       creditRows={creditRows}
+      deleteFiles={deleteFiles}
       errorMessage={errorMessage}
       files={files}
       handleChangeDetails={handleChangeDetails}
@@ -176,7 +200,9 @@ const CreditAgreementsEditContainer = (props) => {
       handleCommentChangeBceid={handleCommentChangeBceid}
       handleDeleteRow={handleDeleteRow}
       handleSubmit={handleSubmit}
+      id={id}
       key="form"
+      setDeleteFiles={setDeleteFiles}
       setUploadFiles={setFiles}
       suppliers={suppliers}
       transactionTypes={transactionTypes}
