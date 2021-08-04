@@ -7,3 +7,4 @@ class CreditAgreementStatuses(Enum):
     RECOMMENDED = 'RECOMMENDED'
     ISSUED = 'ISSUED'
     DELETED = 'DELETED'
+    RETURNED = 'RETURNED'

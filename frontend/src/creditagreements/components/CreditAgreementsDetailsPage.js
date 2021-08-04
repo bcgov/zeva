@@ -186,7 +186,7 @@ const CreditAgreementsDetailsPage = (props) => {
                   <button
                     className="button text-danger"
                     onClick={() => {
-                      handleSubmit('DRAFT');
+                      handleSubmit('RETURNED');
                     }}
                     type="button"
                   >
@@ -214,18 +214,17 @@ const CreditAgreementsDetailsPage = (props) => {
                 </span>
               </>
             )}
-            {analystAction && details.status === 'DRAFT' && (
+            {analystAction && (
+              details.status === 'DRAFT' || details.status === 'RETURNED') && (
               <>
                 <span className="left-content">
-                  {details.status === 'DRAFT' && (
-                    <Button
-                      buttonType="delete"
-                      optionalText="Delete"
-                      action={() => {
-                        handleSubmit('DELETED');
-                      }}
-                    />
-                  )}
+                  <Button
+                    buttonType="delete"
+                    optionalText="Delete"
+                    action={() => {
+                      handleSubmit('DELETED');
+                    }}
+                  />
                 </span>
                 <span className="right-content">
                   <Button
