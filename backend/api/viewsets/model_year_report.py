@@ -339,6 +339,7 @@ class ModelYearReportViewset(
             if assessment_comment:
                 assessment_comment.comment = comment
                 assessment_comment.update_user = request.user.username
+                assessment_comment.save()
             else:
                 ModelYearReportAssessmentComment.objects.create(
                     model_year_report_id=pk,

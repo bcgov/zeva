@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import CustomPropTypes from '../../app/utilities/props';
 import ComplianceReportAlert from './ComplianceReportAlert';
@@ -11,8 +10,6 @@ import ConsumerLDVSales from './ConsumerLDVSales';
 import getTotalReduction from '../../app/utilities/getTotalReduction';
 import getClassACredits from '../../app/utilities/getClassAReduction';
 import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClassReduction';
-import TextInput from '../../app/components/TextInput';
-import FormDropdown from '../../credits/components/FormDropdown';
 
 const AssessmentEditPage = (props) => {
   const {
