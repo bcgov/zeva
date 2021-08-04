@@ -176,7 +176,9 @@ class ModelYearReportListSerializer(
 
     def get_validation_status(self, obj):
         request = self.context.get('request')
-        if not request.user.is_government and obj.validation_status is ModelYearReportStatuses.RECOMMENDED:
+        if not request.user.is_government and obj.validation_status in [
+            ModelYearReportStatuses.RECOMMENDED,
+            ModelYearReportStatuses.RETURNED]:
             return ModelYearReportStatuses.SUBMITTED.value
         return obj.get_validation_status_display()
 

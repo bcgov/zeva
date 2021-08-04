@@ -247,7 +247,7 @@ const AssessmentContainer = (props) => {
   && user.hasPermission('SIGN_COMPLIANCE_REPORT');
 
   const analystAction = user.isGovernment
-  && ['SUBMITTED'].indexOf(details.assessment.validationStatus) >= 0
+  && ['SUBMITTED','RETURNED'].indexOf(details.assessment.validationStatus) >= 0
   && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
 
   const handleSubmit = (status) => {

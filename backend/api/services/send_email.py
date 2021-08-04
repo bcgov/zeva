@@ -10,7 +10,9 @@ from api.models.user_profile import UserProfile
 from api.models.notification import Notification
 from api.models.credit_transfer_statuses import CreditTransferStatuses
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
+from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
+from api.models.credit_agreement_statuses import CreditAgreementStatuses
 from api.models.notification_subscription import NotificationSubscription
 from api.models.organization import Organization
 import requests
@@ -170,6 +172,45 @@ def notifications_credit_transfers(transfer: object):
     if notifications:
         subscribed_users(notifications, transfer, request_type, email_type)
 
+def notifications_model_year_report(validation_status, request):
+    request_type = 'model_year_report'
+    email_type = '<b>model year report update</b>'
+    notifications = None
+    if validation_status == 'ASSESSED':
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            Q(notification_code='MODEL_YEAR_REPORT_ASSESSED_SUPPLIER') |
+            Q(notification_code='MODEL_YEAR_REPORT_ASSESSED_GOVT'))
+    elif validation_status == 'SUBMITTED':
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            notification_code='MODEL_YEAR_REPORT_SUBMITTED') 
+    elif validation_status == 'RECOMMENDED':
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            notification_code='MODEL_YEAR_REPORT_RECOMMENDED') 
+    elif validation_status == 'RETURNED':
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            notification_code='MODEL_YEAR_REPORT_RETURNED') 
+
+    if notifications:
+        subscribed_users(notifications, request, request_type, email_type)
+
+def notifications_credit_agreement(agreement: object):
+    request_type = 'credit_agreement'
+    email_type = '<b>credit agreement update</b>'
+    validation_status = agreement.status
+    notifications = None
+    if validation_status == CreditAgreementStatuses.ISSUED:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            Q(notification_code='CREDIT_AGREEMENT_ISSUED_SUPPLIER') |
+            Q(notification_code='CREDIT_AGREEMENT_ISSUED_GOVT'))
+    elif validation_status == CreditAgreementStatuses.RECOMMENDED:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            notification_code='CREDIT_AGREEMENT_RECOMMENDED') 
+    elif validation_status == CreditAgreementStatuses.RETURNED:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            notification_code='CREDIT_AGREEMENT_RETURNED_WITH_COMMENT') 
+
+    if notifications:
+        subscribed_users(notifications, agreement, request_type, email_type)
 
 def notifications_credit_application(submission: object):
     request_type = 'credit_application'
@@ -241,12 +282,12 @@ def subscribed_users(notifications: list, request: object, request_type: str, em
                                            govt_org.id]) &
                     Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=request.update_user)
 
-            elif request_type == 'credit_application' or 'zev_model':
+            else:
                 user_email = UserProfile.objects.values_list('email', flat=True).filter(
                     Q(organization_id__in=[request.organization,
                                            govt_org.id]) &
                     Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=request.update_user)
-
+                    
             if user_email:
                 send_email(list(user_email), email_type)
     except Exception as e:

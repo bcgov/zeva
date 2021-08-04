@@ -95,6 +95,11 @@ const ComplianceReportAlert = (props) => {
         message = `Model Year Report recommended ${date} by ${userName}, pending Director assessment. Signed and submitted ${confirmedBy.date} by ${confirmedBy.user}`;
         classname = 'alert-primary';
         break;
+      case 'RETURNED':
+        title = 'Returned';
+        message = `Model Year Report returned ${date} by Director, Pending analyst review and Director assessment. Signed and submitted ${confirmedBy.date} by ${confirmedBy.user}`;
+        classname = 'alert-primary';
+        break;
       case 'ASSESSED':
         title = 'Assessed';
         message = `Model Year Report Assessed ${date} by the Director`;

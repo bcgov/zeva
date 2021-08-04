@@ -379,7 +379,7 @@ const AssessmentDetailsPage = (props) => {
                 <button
                   className="button text-danger"
                   onClick={() => {
-                    handleSubmit('SUBMITTED');
+                    handleSubmit('RETURNED');
                   }}
                   type="button"
                 >

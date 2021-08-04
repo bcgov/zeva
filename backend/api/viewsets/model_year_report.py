@@ -34,6 +34,7 @@ from api.services.model_year_report import \
 from api.serializers.organization_ldv_sales import \
     OrganizationLDVSalesSerializer
 from auditable.views import AuditableMixin
+from api.services.send_email import notifications_model_year_report
 
 
 class ModelYearReportViewset(
@@ -230,7 +231,8 @@ class ModelYearReportViewset(
 
             # check for if validation status is recommended
             if validation_status == 'RECOMMENDED' or \
-                    (validation_status == 'SUBMITTED' and description):
+                    (validation_status == 'SUBMITTED' and description) or \
+                    (validation_status == 'RETURNED' and description):
                 # do "update or create" to create the assessment object
                 penalty = request.data.get('penalty')
                 ModelYearReportAssessment.objects.update_or_create(
@@ -244,6 +246,8 @@ class ModelYearReportViewset(
 
             if validation_status == 'ASSESSED':
                 adjust_credits(model_year_report_id, request)
+            
+            notifications_model_year_report(validation_status, request.user )
 
         if confirmations:
             for confirmation in confirmations:

@@ -156,8 +156,10 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
         status = request.data.get('validation_status')
         if status and (
             status != 'DELETED' or (
-                status == 'DELETED' and instance.status == CreditAgreementStatuses.DRAFT)
-                ):
+                status == 'DELETED' and (
+                    instance.status == CreditAgreementStatuses.DRAFT or 
+                    instance.status == CreditAgreementStatuses.RETURNED)
+                )):
             history = CreditAgreementHistory.objects.create(
                 credit_agreement=instance,
                 status=status,
