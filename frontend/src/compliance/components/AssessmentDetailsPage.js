@@ -216,6 +216,7 @@ const AssessmentDetailsPage = (props) => {
                         <div> {address.representativeName} </div>
                       )}
                       <div> {address.addressLine1} </div>
+                      <div> {address.addressLine2} </div>
                       <div> {address.city} {address.state} {address.country} </div>
                       <div> {address.postalCode} </div>
                     </div>
@@ -231,6 +232,7 @@ const AssessmentDetailsPage = (props) => {
                         <div> {address.representativeName} </div>
                       )}
                       <div> {address.addressLine1} </div>
+                      <div> {address.addressLine2} </div>
                       <div> {address.city} {address.state} {address.country} </div>
                       <div> {address.postalCode} </div>
                     </div>
@@ -296,7 +298,7 @@ const AssessmentDetailsPage = (props) => {
       </div>
       {(details.assessment && details.assessment.decision
         && details.assessment.decision.description)
-        && (!user.isGovernment || (user.isGovernment && statuses.assessment.status === 'ASSESSED')) && (
+        && (!user.isGovernment || (user.isGovernment && ['ASSESSED', 'RECOMMENDED'].indexOf(statuses.assessment.status) >= 0)) && (
           <>
             <h3 className="mt-4 mb-1">Director Assessment</h3>
             <div className="row mb-3">
@@ -314,47 +316,55 @@ const AssessmentDetailsPage = (props) => {
             </div>
           </>
       )}
-      {user.isGovernment && statuses.assessment.status !== 'ASSESSED'
+      {user.isGovernment && ['ASSESSED'].indexOf(statuses.assessment.status) < 0
       && (
         <>
+          {['RECOMMENDED'].indexOf(statuses.assessment.status) < 0 && (
           <h3 className="mt-4 mb-1">Analyst Recommended Director Assessment</h3>
+          )}
           <div className="row mb-3">
             <div className="col-12">
               <div className="grey-border-area comment-box p-3 mt-2">
                 <div>
-                  {radioDescriptions.map((each) => (
-                    (each.displayOrder === 0)
-            && showDescription(each)
-                  ))}
-                  <div className="text-blue mt-3 ml-3 mb-1">
-                    &nbsp;&nbsp; {details.organization.name} has not complied with section 10 (2) of the
-                    Zero-Emission Vehicles Act for the {reportYear} adjustment period.
-                  </div>
-                  {radioDescriptions.map((each) => (
-                    (each.displayOrder > 0)
-            && showDescription(each)
-                  ))}
-                  <label className="d-inline" htmlFor="penalty-radio">
-                    <div>
-                      <input
-                        disabled={directorAction || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0}
-                        type="text"
-                        className="ml-4 mr-1"
-                        defaultValue={details.assessment.assessmentPenalty}
-                        name="penalty-amount"
-                        onChange={(e) => {
-                          setDetails({
-                            ...details,
-                            assessment: {
-                              ...details.assessment,
-                              assessmentPenalty: e.target.value,
-                            },
-                          });
-                        }}
-                      />
-                      <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
+                  {['RECOMMENDED'].indexOf(statuses.assessment.status) < 0 && (
+                  <>
+                    {radioDescriptions.map((each) => (
+                      (each.displayOrder === 0) && showDescription(each)
+                    ))}
+                    <div className="text-blue mt-3 ml-3 mb-1">
+                      &nbsp;&nbsp; {details.organization.name} has not complied with section 10 (2) of the
+                      Zero-Emission Vehicles Act for the {reportYear} adjustment period.
                     </div>
-                  </label>
+                    {radioDescriptions.map((each) => (
+                      (each.displayOrder > 0) && showDescription(each)
+                    ))}
+                    <label className="d-inline" htmlFor="penalty-radio">
+                      <div>
+                        <input
+                          disabled={
+                            directorAction
+                            || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0
+                            || assessmentDecision.indexOf('Section 10 (3) applies') < 0
+                          }
+                          type="text"
+                          className="ml-4 mr-1"
+                          defaultValue={details.assessment.assessmentPenalty}
+                          name="penalty-amount"
+                          onChange={(e) => {
+                            setDetails({
+                              ...details,
+                              assessment: {
+                                ...details.assessment,
+                                assessmentPenalty: e.target.value,
+                              },
+                            });
+                          }}
+                        />
+                        <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
+                      </div>
+                    </label>
+                  </>
+                  )}
                   <CommentInput
                     disable={details.assessment.validationStatus === 'ASSESSED'}
                     defaultComment={details.bceidComment}
@@ -379,7 +389,7 @@ const AssessmentDetailsPage = (props) => {
                 <button
                   className="button text-danger"
                   onClick={() => {
-                    handleSubmit('SUBMITTED');
+                    handleSubmit('RETURNED');
                   }}
                   type="button"
                 >

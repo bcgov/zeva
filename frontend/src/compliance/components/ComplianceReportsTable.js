@@ -8,7 +8,13 @@ import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceReportsTable = (props) => {
-  const { user, data, showSupplier, filtered, setFiltered } = props;
+  const {
+    user,
+    data,
+    showSupplier,
+    filtered,
+    setFiltered,
+  } = props;
 
   const supplierClass = (paramClass) => {
     if (paramClass === 'L') {
@@ -114,11 +120,16 @@ const ComplianceReportsTable = (props) => {
   );
 };
 
-ComplianceReportsTable.defaultProps = {};
+ComplianceReportsTable.defaultProps = {
+  filtered: [],
+  setFiltered: () => {},
+};
 
 ComplianceReportsTable.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  filtered: PropTypes.arrayOf(PropTypes.shape()),
   user: CustomPropTypes.user.isRequired,
+  setFiltered: PropTypes.func,
   showSupplier: PropTypes.bool.isRequired,
 };
 

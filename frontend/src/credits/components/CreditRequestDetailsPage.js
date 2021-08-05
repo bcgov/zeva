@@ -241,10 +241,10 @@ const CreditRequestDetailsPage = (props) => {
             </h3>
             <div>
               <h4 className="d-inline-block sales-upload-grey my-2">Service address: </h4>
-              {serviceAddress && <h4 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h4>}
+              {serviceAddress && <h4 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.addressLine2} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h4>}
               <br />
               <h4 className="d-inline-block sales-upload-grey mb-3">Records address: </h4>
-              {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
+              {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.addressLine2} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
             </div>
 
             <CreditRequestSummaryTable

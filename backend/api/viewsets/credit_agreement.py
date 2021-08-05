@@ -20,6 +20,7 @@ from api.services.minio import minio_put_object
 from api.services.credit_agreement import adjust_credits
 from auditable.views import AuditableMixin
 from api.models.credit_agreement_statuses import CreditAgreementStatuses
+from api.services.send_email import notifications_credit_agreement
 
 
 class CreditAgreementViewSet(
@@ -62,6 +63,8 @@ class CreditAgreementViewSet(
         agreement = serializer.save()
         if agreement.status == CreditAgreementStatuses.ISSUED:
             adjust_credits(agreement)
+
+        notifications_credit_agreement(agreement)
 
     @action(detail=True, methods=['get'])
     def minio_url(self, request, pk=None):
@@ -106,18 +109,11 @@ class CreditAgreementViewSet(
                 )
         return Response({'saved': True})
 
-    def get_queryset(self):
-        request = self.request
-
-        queryset = CreditAgreement.objects.all()
-
-        return queryset
-
     def list(self, request):
         """
         Get all the credit agreements
         """
-        creditAgreements = self.get_queryset()
+        credit_agreements = self.get_queryset()
 
-        serializer = self.get_serializer(creditAgreements, many=True)
+        serializer = self.get_serializer(credit_agreements, many=True)
         return Response(serializer.data)

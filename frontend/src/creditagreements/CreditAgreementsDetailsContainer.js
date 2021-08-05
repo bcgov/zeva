@@ -28,7 +28,10 @@ const CreditAgreementsDetailsContainer = (props) => {
       { validationStatus: status })
       .then(() => {
         history.push(ROUTES_CREDIT_AGREEMENTS.LIST);
-        history.replace(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id));
+
+        if (status !== 'DELETED') {
+          history.replace(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id));
+        }
       });
   };
   const handleAddComment = (commentType) => {

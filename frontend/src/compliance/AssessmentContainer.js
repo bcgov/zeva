@@ -51,7 +51,8 @@ const AssessmentContainer = (props) => {
   const handleAddIdirComment = () => {
     const comment = { comment: idirComment, director: true };
     axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
-      history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+      history.push(ROUTES_COMPLIANCE.REPORTS);
+      history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
     });
   };
   const refreshDetails = () => {
@@ -247,7 +248,7 @@ const AssessmentContainer = (props) => {
   && user.hasPermission('SIGN_COMPLIANCE_REPORT');
 
   const analystAction = user.isGovernment
-  && ['SUBMITTED'].indexOf(details.assessment.validationStatus) >= 0
+  && ['SUBMITTED','RETURNED'].indexOf(details.assessment.validationStatus) >= 0
   && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
 
   const handleSubmit = (status) => {
@@ -361,12 +362,8 @@ const AssessmentContainer = (props) => {
   const handleAddBceidComment = () => {
     const comment = { comment: bceidComment, director: false };
     axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
-      if (directorAction) {
-        history.push(ROUTES_COMPLIANCE.REPORTS);
-        history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
-      } else {
-        handleSubmit('SUBMITTED');
-      }
+      history.push(ROUTES_COMPLIANCE.REPORTS);
+      history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
     });
   };
 

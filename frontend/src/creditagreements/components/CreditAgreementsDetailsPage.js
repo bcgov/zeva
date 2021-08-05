@@ -9,7 +9,8 @@ import CreditAgreementsAlert from './CreditAgreementsAlert';
 import CreditAgreementsDetailsTable from './CreditAgreementsDetailsTable';
 import DisplayComment from '../../app/components/DisplayComment';
 import CommentInput from '../../app/components/CommentInput';
-
+import history from '../../app/History';
+import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements';
 import CustomPropTypes from '../../app/utilities/props';
 
 const CreditAgreementsDetailsPage = (props) => {
@@ -177,7 +178,7 @@ const CreditAgreementsDetailsPage = (props) => {
       )}
       <div className="row">
         <div className="col-sm-12">
-          <div className="action-bar mt-0">
+          <div className="action-bar mt-3">
             {directorAction && details.status === 'RECOMMENDED' && (
               <>
                 <span className="left-content">
@@ -186,7 +187,7 @@ const CreditAgreementsDetailsPage = (props) => {
                   <button
                     className="button text-danger"
                     onClick={() => {
-                      handleSubmit('DRAFT');
+                      handleSubmit('RETURNED');
                     }}
                     type="button"
                   >
@@ -214,24 +215,27 @@ const CreditAgreementsDetailsPage = (props) => {
                 </span>
               </>
             )}
-            {analystAction && details.status === 'DRAFT' && (
+            {analystAction && (
+              details.status === 'DRAFT' || details.status === 'RETURNED') && (
               <>
                 <span className="left-content">
-                  {details.status === 'DRAFT' && (
-                    <Button
-                      buttonType="delete"
-                      optionalText="Delete"
-                      action={() => {
-                        handleSubmit('DELETED');
-                      }}
-                    />
-                  )}
+                  <Button buttonType="back" locationRoute="/credit-agreements" />
+
+                  <Button
+                    buttonType="delete"
+                    optionalText="Delete"
+                    action={() => {
+                      handleSubmit('DELETED');
+                    }}
+                  />
                 </span>
                 <span className="right-content">
                   <Button
                     buttonType="edit"
                     optionalText="Edit"
-                    action={() => {}}
+                    action={() => {
+                      history.push(ROUTES_CREDIT_AGREEMENTS.EDIT.replace(/:id/g, id));
+                    }}
                   />
                   <Button
                     buttonType="submit"
@@ -242,6 +246,14 @@ const CreditAgreementsDetailsPage = (props) => {
                     }}
                   />
                 </span>
+              </>
+            )}
+            {details.status === 'ISSUED' && (
+              <>
+                <span className="left-content">
+                  <Button buttonType="back" locationRoute="/credit-agreements" />
+                </span>
+                <span className="right-content" />
               </>
             )}
           </div>

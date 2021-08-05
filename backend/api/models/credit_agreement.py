@@ -43,7 +43,7 @@ class CreditAgreement(Auditable):
     effective_date = models.DateField(
         blank=True,
         null=True,
-        auto_now_add=True,
+        auto_now_add=False,
         db_comment="The calendar date the credit agreement created"
     )
 

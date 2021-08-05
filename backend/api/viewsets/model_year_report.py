@@ -34,6 +34,7 @@ from api.services.model_year_report import \
 from api.serializers.organization_ldv_sales import \
     OrganizationLDVSalesSerializer
 from auditable.views import AuditableMixin
+from api.services.send_email import notifications_model_year_report
 
 
 class ModelYearReportViewset(
@@ -230,7 +231,8 @@ class ModelYearReportViewset(
 
             # check for if validation status is recommended
             if validation_status == 'RECOMMENDED' or \
-                    (validation_status == 'SUBMITTED' and description):
+                    (validation_status == 'SUBMITTED' and description) or \
+                    (validation_status == 'RETURNED' and description):
                 # do "update or create" to create the assessment object
                 penalty = request.data.get('penalty')
                 ModelYearReportAssessment.objects.update_or_create(
@@ -244,6 +246,8 @@ class ModelYearReportViewset(
 
             if validation_status == 'ASSESSED':
                 adjust_credits(model_year_report_id, request)
+            
+            notifications_model_year_report(validation_status, request.user )
 
         if confirmations:
             for confirmation in confirmations:
@@ -322,20 +326,28 @@ class ModelYearReportViewset(
             ModelYearReportAssessmentComment.objects.create(
                 model_year_report_id=pk,
                 comment=comment,
-                to_director=director,
+                to_director=True,
                 create_user=request.user.username,
                 update_user=request.user.username,
             )
         elif comment and not director:
-            ModelYearReportAssessmentComment.objects.update_or_create(
+            assessment_comment = ModelYearReportAssessmentComment.objects.filter(
                 model_year_report_id=pk,
-                to_director=director,
-                defaults={
-                    'comment': comment,
-                    'create_user': request.user.username,
-                    'update_user': request.user.username,
-                }
-            )
+                to_director=False
+            ).order_by('-update_timestamp').first()
+
+            if assessment_comment:
+                assessment_comment.comment = comment
+                assessment_comment.update_user = request.user.username
+                assessment_comment.save()
+            else:
+                ModelYearReportAssessmentComment.objects.create(
+                    model_year_report_id=pk,
+                    to_director=False,
+                    comment=comment,
+                    create_user=request.user.username,
+                    update_user=request.user.username
+                )
 
         report = get_object_or_404(ModelYearReport, pk=pk)
 

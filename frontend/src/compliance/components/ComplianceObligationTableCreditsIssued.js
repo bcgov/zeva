@@ -17,7 +17,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
   const {
     administrativeAllocation,
     administrativeReduction,
-    automaticAdministrativePenalty,
+    automaticAdministrativePenalty: tempAutomaticAdministrativePenalty,
     creditsIssuedSales,
     initiativeAgreement,
     purchaseAgreement,
@@ -53,7 +53,9 @@ const ComplianceObligationTableCreditsIssued = (props) => {
         }).map((each) => (
           <tr key={each.modelYear}>
             <td className="text-blue">
-              &bull; &nbsp; &nbsp; {each.modelYear} Credits
+              &bull; &nbsp; &nbsp;
+              {title !== 'Automatic Administrative Penalty' && (` ${each.modelYear} `)}
+              Credits
             </td>
             {title === 'Transferred Away' || title === 'Administrative Credit Reduction' ? (
               <>
@@ -79,6 +81,19 @@ const ComplianceObligationTableCreditsIssued = (props) => {
       </>
     );
   };
+
+  const automaticAdministrativePenalty = [];
+
+  if (tempAutomaticAdministrativePenalty && tempAutomaticAdministrativePenalty.length > 0) {
+    automaticAdministrativePenalty.push(tempAutomaticAdministrativePenalty.reduce(
+      (aggregated, each) => ({
+        modelYear: reportYear,
+        A: Number(aggregated.A) + Number(each.A),
+        B: Number(aggregated.B) + Number(each.B),
+      }),
+    ));
+  }
+
   return (
     <>
       <table>
