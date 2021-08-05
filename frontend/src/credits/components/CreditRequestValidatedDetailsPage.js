@@ -189,6 +189,9 @@ const CreditRequestValidatedDetailsPage = (props) => {
                       ['bold', 'italic'],
                       [{ list: 'bullet' }, { list: 'ordered' }],
                     ],
+                    keyboard: {
+                      bindings: { tab: false },
+                    },
                   }}
                   formats={['bold', 'italic', 'list', 'bullet']}
                   onChange={handleCommentChange}

@@ -1,7 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import History from '../../app/History';
 import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
 import CustomPropTypes from '../../app/utilities/props';
 
@@ -15,17 +15,10 @@ const Administration = (props) => {
       {typeof user.hasPermission === 'function'
         && user.hasPermission('EDIT_USERS')
         && user.isGovernment && (
-        <div className="content">
+        <div className="content list">
           <div className="text">
             <FontAwesomeIcon icon={['fas', 'play']} />
-            <button
-              type="button"
-              onClick={() => {
-                History.push(ROUTES_ORGANIZATIONS.MINE);
-              }}
-            >
-              Manage Government of B.C. users
-            </button>
+            <Link to={ROUTES_ORGANIZATIONS.MINE}>Manage Government of B.C. users</Link>
           </div>
         </div>
       )}
@@ -36,14 +29,7 @@ const Administration = (props) => {
         <div className="content">
           <div className="text">
             <FontAwesomeIcon icon={['fas', 'play']} />
-            <button
-              type="button"
-              onClick={() => {
-                History.push(ROUTES_ORGANIZATIONS.LIST);
-              }}
-            >
-              Add/Edit vehicle suppliers
-            </button>
+            <Link to={ROUTES_ORGANIZATIONS.LIST}>Add/Edit vehicle suppliers</Link>
           </div>
         </div>
       )}
