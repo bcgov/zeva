@@ -78,7 +78,24 @@ class CustomReactTable extends Component {
         defaultPageSize={this.defaultPageSize}
         defaultSorted={defaultSorted}
         filterable={filterable}
-        getTrProps={getTrProps}
+        getTdProps={() => ({
+          tabIndex: 0,
+        })}
+        getTrProps={(state, row) => {
+          if (!getTrProps) {
+            return {};
+          }
+
+          return {
+            onKeyDown: (event) => {
+              const { onClick } = getTrProps(state, row);
+              if (onClick && event.key === 'Enter') {
+                onClick();
+              }
+            },
+            ...getTrProps(state, row),
+          };
+        }}
         onFilteredChange={(input) => {
           onFilteredChange(input);
           if (setFiltered) {
