@@ -2,6 +2,7 @@
 Credit Transaction Model
 """
 from django.db import models
+from datetime import datetime
 
 from auditable.models import Auditable
 from api.models.credit_class import CreditClass
@@ -52,7 +53,8 @@ class CreditTransaction(Auditable):
     transaction_timestamp = models.DateTimeField(
         blank=False,
         null=False,
-        auto_now_add=True,
+        default=datetime.now(),
+        auto_now_add=False,
         db_comment="The timestamp at which the transaction was recorded"
     )
     model_year = models.ForeignKey(
