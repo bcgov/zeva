@@ -62,6 +62,9 @@ const CreditRequestDetailsPage = (props) => {
       ['bold', 'italic'],
       [{ list: 'bullet' }, { list: 'ordered' }],
     ],
+    keyboard: {
+      bindings: { tab: false },
+    },
   };
   const formats = ['bold', 'italic', 'list', 'bullet'];
 

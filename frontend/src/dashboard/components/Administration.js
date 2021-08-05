@@ -12,29 +12,27 @@ const Administration = (props) => {
     <div id="administration" className="dashboard-fieldset">
       <h1>Administration</h1>
 
-      <form>
-        {typeof user.hasPermission === 'function'
-          && user.hasPermission('EDIT_USERS')
-          && user.isGovernment && (
-          <div className="content list">
-            <div className="text">
-              <FontAwesomeIcon icon={['fas', 'play']} />
-              <Link to={ROUTES_ORGANIZATIONS.MINE}>Manage Government of B.C. users</Link>
-            </div>
+      {typeof user.hasPermission === 'function'
+        && user.hasPermission('EDIT_USERS')
+        && user.isGovernment && (
+        <div className="content list">
+          <div className="text">
+            <FontAwesomeIcon icon={['fas', 'play']} />
+            <Link to={ROUTES_ORGANIZATIONS.MINE}>Manage Government of B.C. users</Link>
           </div>
-        )}
+        </div>
+      )}
 
-        {typeof user.hasPermission === 'function'
-          && user.hasPermission('VIEW_ORGANIZATIONS')
-          && user.isGovernment && (
-          <div className="content">
-            <div className="text">
-              <FontAwesomeIcon icon={['fas', 'play']} />
-              <Link to={ROUTES_ORGANIZATIONS.LIST}>Add/Edit vehicle suppliers</Link>
-            </div>
+      {typeof user.hasPermission === 'function'
+        && user.hasPermission('VIEW_ORGANIZATIONS')
+        && user.isGovernment && (
+        <div className="content">
+          <div className="text">
+            <FontAwesomeIcon icon={['fas', 'play']} />
+            <Link to={ROUTES_ORGANIZATIONS.LIST}>Add/Edit vehicle suppliers</Link>
           </div>
-        )}
-      </form>
+        </div>
+      )}
     </div>
   );
 };
