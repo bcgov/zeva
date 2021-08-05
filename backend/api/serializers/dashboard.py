@@ -169,15 +169,12 @@ class DashboardListSerializer(ModelSerializer):
 
             # agreements
             credit_agreements = CreditAgreement.objects.filter(
-                (Q(organization_id=request.user.organization.id) &
-                    Q(status__in=[
+                Q(organization_id=request.user.organization.id) &
+                Q(status__in=[
                         CreditAgreementStatuses.ISSUED,
-                        
-                        ])) |
-                Q(organization_id=request.user.organization.id)
-                ).exclude(status__in=[CreditAgreementStatuses.DELETED]
-                ).values('status').annotate(total=Count('id')).order_by('status')
-
+                        ])).exclude(status__in=[CreditAgreementStatuses.DELETED]).exclude(
+                Q(update_timestamp__lte=twenty_eight_days_ago)
+                & Q(status=CreditAgreementStatuses.ISSUED)).values('status').annotate(total=Count('id')).order_by('status')
 
         if request.user.is_government:
             model_year_reports = ModelYearReport.objects.exclude(
