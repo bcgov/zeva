@@ -60,6 +60,7 @@ def adjust_credits(agreement):
             transaction_type=CreditTransactionType.objects.get(
                 transaction_type=credit_transaction_type
             ),
+            transaction_timestamp=agreement.effective_date,
             update_user=agreement.update_user,
             weight_class=weight_class
             )
