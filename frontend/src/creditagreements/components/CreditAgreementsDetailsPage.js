@@ -220,7 +220,6 @@ const CreditAgreementsDetailsPage = (props) => {
               <>
                 <span className="left-content">
                   <Button buttonType="back" locationRoute="/credit-agreements" />
-
                   <Button
                     buttonType="delete"
                     optionalText="Delete"
