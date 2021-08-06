@@ -31,6 +31,9 @@ const CreditAgreementListContainer = (props) => {
       queryFilter.push({ id: key, value });
     });
     setFiltered([...filtered, ...queryFilter]);
+    if (location.state) {
+      setFiltered([...filtered, ...location.state]);
+    }
     axios.get(ROUTES_CREDIT_AGREEMENTS.LIST).then((response) => {
       setCreditAgreements(response.data);
       setLoading(false);

@@ -30,6 +30,9 @@ const DashboardContainer = (props) => {
     transfersRecorded: 0,
     transfersRejectedByPartner: 0,
     transfersRejected: 0,
+    creditAgreementsIssued: 0,
+    creditAgreementsDraft: 0,
+    creditAgreementsRecommended: 0,
     reportsDraft: 0,
     reportsSubmitted: 0,
     reportsAnalyst: 0,
@@ -40,169 +43,171 @@ const DashboardContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const isMountedRef = useRef(null);
 
-  const getCreditRequests = () => (
-    axios.get(ROUTES_CREDIT_REQUESTS.LIST).then((salesResponse) => {
-      const days28 = moment().subtract(28, 'days').calendar();
-
-      if (!user.isGovernment) {
-        const draftCredits = salesResponse.data
-          .filter((submission) => submission.validationStatus === 'DRAFT');
-        const submittedCredits = salesResponse.data
-          .filter((submission) => submission.validationStatus === 'SUBMITTED' || submission.validationStatus === 'RECOMMEND_APPROVAL' || submission.validationStatus === 'RECOMMEND_REJECTION');
-        const validatedCredits = salesResponse.data
-          .filter((submission) => submission.validationStatus === 'VALIDATED' && moment(submission.updatedTimestamp).isAfter(days28));
-
-        activityCount = {
-          ...activityCount,
-          creditsDraft: draftCredits.length,
-          creditsIssued: validatedCredits.length,
-          creditsAwaiting: submittedCredits.length,
-        };
-      } else {
-        const recommendApprove = salesResponse.data
-          .filter((submission) => submission.validationStatus === 'RECOMMEND_APPROVAL');
-        const recommendReject = salesResponse.data
-          .filter((submission) => submission.validationStatus === 'RECOMMEND_REJECTION');
-        const analystNeeded = salesResponse.data
-          .filter((submission) => ['SUBMITTED', 'CHECKED'].indexOf(submission.validationStatus) >= 0);
-
-        activityCount = {
-          ...activityCount,
-          creditsAnalyst: analystNeeded.length,
-          creditsRecommendApprove: recommendApprove.length,
-          creditsRecommendReject: recommendReject.length,
-        };
-      }
-    })
-  );
-
-  const getVehicles = () => (
-    axios.get(ROUTES_VEHICLES.LIST).then((vehiclesResponse) => {
-      if (!user.isGovernment) {
-        const date3months = moment().subtract(3, 'months').calendar();
-
-        const vehiclesRejected = vehiclesResponse.data
-          .filter((vehicle) => vehicle.validationStatus === 'REJECTED')
-          .map((vehicle) => vehicle.modelName);
-        const changesRequested = vehiclesResponse.data
-          .filter((vehicle) => vehicle.validationStatus === 'CHANGES_REQUESTED')
-          .map((vehicle) => vehicle.modelName);
-        const submittedModels = vehiclesResponse.data
-          .filter((vehicle) => vehicle.validationStatus === 'SUBMITTED')
-          .map((vehicle) => vehicle.modelName);
-        const draftModels = vehiclesResponse.data
-          .filter((vehicle) => vehicle.validationStatus === 'DRAFT')
-          .map((vehicle) => vehicle.modelName);
-        const validatedModels = vehiclesResponse.data
-          .filter((vehicle) => vehicle.validationStatus === 'VALIDATED' && moment(vehicle.updatedTimestamp).isAfter(date3months))
-          .map((vehicle) => vehicle.modelName);
-
-        activityCount = {
-          ...activityCount,
-          modelsRejected: vehiclesRejected.length,
-          modelsDraft: draftModels.length,
-          modelsAwaitingValidation: submittedModels.length,
-          modelsValidated: validatedModels.length,
-          modelsInfoRequest: changesRequested.length,
-        };
-      } else {
-        const submittedVehicles = vehiclesResponse.data
-          .filter((vehicle) => vehicle.validationStatus === 'SUBMITTED')
-          .map((vehicle) => vehicle.modelName);
-
-        activityCount = {
-          ...activityCount,
-          submittedVehicles: submittedVehicles.length,
-        };
-      }
-    })
-  );
-  const getModelYearReports = () => (
+  const getDashboard = () => {
     axios.get(ROUTES_DASHBOARD.LIST).then((dashboardResponse) => {
+      const dashboard = dashboardResponse.data[0].activity;
+      // get vehicles!
+      if (user.hasPermission('VIEW_ZEV')) {
+        let modelsValidated = dashboard.vehicle.find((each) => each.status === 'VALIDATED');
+        modelsValidated = modelsValidated ? modelsValidated.total : 0;
+        let modelsRejected = dashboard.vehicle.find((each) => each.status === 'REJECTED');
+        modelsRejected = modelsRejected ? modelsRejected.total : 0;
 
-      if (!user.isGovernment) {
-        const reportsDraft = dashboardResponse.data.filter((report) => report.modelYearReportValidationStatus === 'DRAFT');
-        const reportsSubmitted = dashboardResponse.data.filter((report) => report.modelYearReportValidationStatus === 'SUBMITTED');
-        const reportsAssessed = dashboardResponse.data.filter((report) => report.modelYearReportValidationStatus === 'ASSESSED');
-        activityCount = {...activityCount,
-          reportsDraft: reportsDraft.length,
-          reportsSubmitted: reportsSubmitted.length,
-          reportsAssessed: reportsAssessed.length,
-        };
-      } else {
-        const reportsAnalyst = dashboardResponse.data.filter((report) => report.modelYearReportValidationStatus === 'SUBMITTED');
-        activityCount = { ...activityCount,
-          reportsAnalyst: reportsAnalyst.length }
-      }
-    })
-  );
+        let modelsDraft = dashboard.vehicle.find((each) => each.status === 'DRAFT');
+        modelsDraft = modelsDraft ? modelsDraft.total : 0;
 
-  const getCreditTransfers = () => (
-    axios.get(ROUTES_CREDIT_TRANSFERS.LIST).then((transfersResponse) => {
-      const days28 = moment().subtract(28, 'days').calendar();
-
-      if (!user.isGovernment) {
-        const transfersAwaitingPartner = transfersResponse.data
-          .filter((submission) => submission.status === 'SUBMITTED');
-        const transfersAwaitingGovernment = transfersResponse.data
-          .filter((submission) => submission.status === 'APPROVED' || submission.status === 'RECOMMEND_APPROVAL');
-        const transfersRecorded = transfersResponse.data
-          .filter((submission) => submission.status === 'VALIDATED' && moment(submission.updatedTimestamp).isAfter(days28));
-        const transfersRejected = transfersResponse.data
-          .filter((submission) => submission.status === 'REJECTED' && moment(submission.updatedTimestamp).isAfter(days28));
-        const transfersRejectedByTransferPartner = transfersResponse.data
-          .filter((submission) => submission.status === 'DISAPPROVED' && moment(submission.updatedTimestamp).isAfter(days28));
+        let modelsAwaitingValidation = dashboard.vehicle.find((each) => each.status === 'SUBMITTED');
+        modelsAwaitingValidation = modelsAwaitingValidation ? modelsAwaitingValidation.total : 0;
+        let modelsInfoRequest = dashboard.vehicle.find((each) => each.status === 'CHANGES_REQUESTED');
+        modelsInfoRequest = modelsInfoRequest ? modelsInfoRequest.total : 0;
 
         activityCount = {
           ...activityCount,
-          transfersAwaitingPartner: transfersAwaitingPartner.length,
-          transfersAwaitingGovernment: transfersAwaitingGovernment.length,
-          transfersRecorded: transfersRecorded.length,
-          transfersRejected: transfersRejected.length,
-          transfersRejectedByPartner: transfersRejectedByTransferPartner.length,
-        };
-      } else {
-        const transfersAwaitingPartner = transfersResponse.data
-          .filter((submission) => submission.status === 'SUBMITTED');
-        const transfersAwaitingAnalyst = transfersResponse.data
-          .filter((submission) => submission.status === 'APPROVED');
-        const transfersAwaitingDirector = transfersResponse.data
-          .filter((submission) => submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMEND_REJECTION');
-        const transfersRecorded = transfersResponse.data
-          .filter((submission) => submission.status === 'VALIDATED');
-
-        activityCount = {
-          ...activityCount,
-          transfersAwaitingAnalyst: transfersAwaitingAnalyst.length,
-          transfersAwaitingDirector: transfersAwaitingDirector.length,
-          transfersRecorded: transfersRecorded.length,
-          transfersAwaitingPartner: transfersAwaitingPartner.length,
+          modelsRejected,
+          modelsDraft,
+          modelsAwaitingValidation,
+          modelsValidated,
+          modelsInfoRequest,
         };
       }
-    })
-  );
+      // get transfers!
+      if (user.hasPermission('VIEW_CREDIT_TRANSFERS') || user.hasPermission('VIEW_CREDIT_TRANSACTIONS')) {
+        if (!user.isGovernment) {
+          let transfersAwaitingPartner = dashboard.creditTransfer.find((submission) => submission.status === 'SUBMITTED');
+          transfersAwaitingPartner = transfersAwaitingPartner ? transfersAwaitingPartner.total : 0;
 
+          let transfersAwaitingGovernment = dashboard.creditTransfer.find((submission) => submission.status === 'APPROVED' || submission.status === 'RECOMMEND_APPROVAL');
+          transfersAwaitingGovernment = transfersAwaitingGovernment ? transfersAwaitingGovernment.total : 0;
+
+          let transfersRecorded = dashboard.creditTransfer.find((submission) => submission.status === 'VALIDATED');
+          transfersRecorded = transfersRecorded ? transfersRecorded.total : 0;
+
+          let transfersRejected = dashboard.creditTransfer.find((submission) => submission.status === 'REJECTED');
+          transfersRejected = transfersRejected ? transfersRejected.total : 0;
+
+          let transfersRejectedByTransferPartner = dashboard.creditTransfer.find((submission) => submission.status === 'DISAPPROVED');
+          transfersRejectedByTransferPartner = transfersRejectedByTransferPartner ? transfersRejectedByTransferPartner.total : 0;
+
+          activityCount = {
+            ...activityCount,
+            transfersAwaitingPartner,
+            transfersAwaitingGovernment,
+            transfersRecorded,
+            transfersRejected,
+            transfersRejectedByTransferPartner,
+          };
+        } else {
+          let transfersAwaitingPartner = dashboard.creditTransfer.find((submission) => submission.status === 'SUBMITTED');
+          transfersAwaitingPartner = transfersAwaitingPartner ? transfersAwaitingPartner.total : 0;
+
+          let transfersAwaitingAnalyst = dashboard.creditTransfer.find((submission) => submission.status === 'APPROVED');
+          transfersAwaitingAnalyst = transfersAwaitingAnalyst ? transfersAwaitingAnalyst.total : 0;
+
+          let transfersAwaitingDirector = dashboard.creditTransfer.find((submission) => submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMEND_REJECTION');
+          transfersAwaitingDirector = transfersAwaitingDirector ? transfersAwaitingDirector.total : 0;
+
+          let transfersRecorded = dashboard.creditTransfer.find((submission) => submission.status === 'VALIDATED');
+          transfersRecorded = transfersRecorded ? transfersRecorded.total : 0;
+
+          activityCount = {
+            ...activityCount,
+            transfersAwaitingAnalyst,
+            transfersAwaitingDirector,
+            transfersRecorded,
+            transfersAwaitingPartner,
+          };
+        }
+      }
+      // model year reports!
+      if (user.hasPermission('SUBMIT_COMPLIANCE_REPORT') || user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')) {
+        if (!user.isGovernment) {
+          let reportsDraft = dashboard.modelYearReport.find((report) => report.status === 'DRAFT');
+          reportsDraft = reportsDraft ? reportsDraft.total : 0;
+          let reportsSubmitted = dashboard.modelYearReport.find((report) => report.status === 'SUBMITTED');
+          reportsSubmitted = reportsSubmitted ? reportsSubmitted.total : 0;
+          let reportsAssessed = dashboard.modelYearReport.find((report) => report.status === 'ASSESSED');
+          reportsAssessed = reportsAssessed ? reportsAssessed.total : reportsAssessed;
+          activityCount = {
+            ...activityCount,
+            reportsDraft,
+            reportsSubmitted,
+            reportsAssessed,
+          };
+        } else {
+          let reportsAnalyst = dashboard.modelYearReport.find((report) => report.status === 'SUBMITTED');
+          reportsAnalyst = reportsAnalyst ? reportsAnalyst.total : 0;
+          activityCount = {
+            ...activityCount,
+            reportsAnalyst,
+          };
+        }
+      }
+      // credit requests
+      if (user.hasPermission('VIEW_SALES')) {
+        if (!user.isGovernment) {
+          let creditsDraft = dashboard.creditRequest
+            .find((submission) => submission.status === 'DRAFT');
+          creditsDraft = creditsDraft ? creditsDraft.total : 0;
+          let submittedCredits = dashboard.creditRequest
+            .find((submission) => submission.status === 'SUBMITTED' || submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMEND_REJECTION');
+          submittedCredits = submittedCredits ? submittedCredits.total : 0;
+          let creditsIssued = dashboard.creditRequest
+            .find((submission) => submission.status === 'VALIDATED');
+          creditsIssued = creditsIssued ? creditsIssued.total : 0;
+
+          activityCount = {
+            ...activityCount,
+            creditsDraft,
+            creditsIssued,
+            submittedCredits,
+          };
+        } else {
+          let creditsRecommendApprove = dashboard.creditRequest
+            .find((submission) => submission.status === 'RECOMMEND_APPROVAL');
+          creditsRecommendApprove = creditsRecommendApprove ? creditsRecommendApprove.total : 0;
+          let creditsRecommendReject = dashboard.creditRequest
+            .find((submission) => submission.status === 'RECOMMEND_REJECTION');
+          creditsRecommendReject = creditsRecommendReject ? creditsRecommendReject.total : 0;
+          let creditsAnalyst = dashboard.creditRequest
+            .find((submission) => ['SUBMITTED', 'CHECKED'].indexOf(submission.status) >= 0);
+          creditsAnalyst = creditsAnalyst ? creditsAnalyst.total : 0;
+          activityCount = {
+            ...activityCount,
+            creditsAnalyst,
+            creditsRecommendApprove,
+            creditsRecommendReject,
+          };
+        }
+      }
+      // agreements
+      // permissions for agreements???
+      let creditAgreementsIssued = dashboard.creditAgreement.find((agreement) => agreement.status === 'ISSUED');
+      creditAgreementsIssued = creditAgreementsIssued ? creditAgreementsIssued.total : 0;
+      if (user.isGovernment) {
+        let creditAgreementsDraft = dashboard.creditAgreement.find((agreement) => agreement.status === 'DRAFT');
+        creditAgreementsDraft = creditAgreementsDraft ? creditAgreementsDraft.total : 0;
+        let creditAgreementsRecommended = dashboard.creditAgreement.find((agreement) => agreement.status === 'RECOMMENDED');
+        creditAgreementsRecommended = creditAgreementsRecommended ? creditAgreementsRecommended.total : 0;
+        activityCount = {
+          ...activityCount,
+          creditAgreementsDraft,
+          creditAgreementsRecommended,
+        };
+      }
+      activityCount = {
+        ...activityCount,
+        creditAgreementsIssued,
+      };
+      setActivityCount(activityCount);
+    });
+  };
   const refreshList = () => {
     const promises = [];
-    promises.push(getModelYearReports())
-    if (user.hasPermission('VIEW_SALES')) {
-      promises.push(getCreditRequests());
-    }
-
-    if (user.hasPermission('VIEW_ZEV')) {
-      promises.push(getVehicles());
-    }
-
-    if (user.hasPermission('VIEW_CREDIT_TRANSFERS') || user.hasPermission('VIEW_CREDIT_TRANSACTIONS')) {
-      promises.push(getCreditTransfers());
-    }
-
+    promises.push(getDashboard());
     Promise.all(promises).then(() => {
-      setActivityCount(activityCount);
       if (!isMountedRef.current) {
         return false;
       }
-
       setLoading(false);
     });
   };
@@ -210,12 +215,10 @@ const DashboardContainer = (props) => {
   useEffect(() => {
     isMountedRef.current = true;
     refreshList(isMountedRef.current);
-
     return () => {
       isMountedRef.current = false;
     };
   }, []);
-
   return (
     <DashboardPage user={user} activityCount={activityCount} loading={loading} />
   );
