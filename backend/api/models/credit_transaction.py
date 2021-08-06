@@ -53,7 +53,7 @@ class CreditTransaction(Auditable):
     transaction_timestamp = models.DateTimeField(
         blank=False,
         null=False,
-        default=datetime.now(),
+        default=datetime.now,
         auto_now_add=False,
         db_comment="The timestamp at which the transaction was recorded"
     )
