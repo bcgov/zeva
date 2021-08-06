@@ -50,7 +50,6 @@ const DashboardContainer = (props) => {
       if (user.hasPermission('VIEW_ZEV')) {
         let modelsValidated = dashboard.vehicle.find((each) => each.status === 'VALIDATED');
         modelsValidated = modelsValidated ? modelsValidated.total : 0;
-
         let modelsRejected = dashboard.vehicle.find((each) => each.status === 'REJECTED');
         modelsRejected = modelsRejected ? modelsRejected.total : 0;
 
@@ -59,7 +58,6 @@ const DashboardContainer = (props) => {
 
         let modelsAwaitingValidation = dashboard.vehicle.find((each) => each.status === 'SUBMITTED');
         modelsAwaitingValidation = modelsAwaitingValidation ? modelsAwaitingValidation.total : 0;
-
         let modelsInfoRequest = dashboard.vehicle.find((each) => each.status === 'CHANGES_REQUESTED');
         modelsInfoRequest = modelsInfoRequest ? modelsInfoRequest.total : 0;
 

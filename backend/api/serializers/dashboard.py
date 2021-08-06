@@ -185,8 +185,10 @@ class DashboardListSerializer(ModelSerializer):
             vehicles = Vehicle.objects.exclude(
                 validation_status__in=[
                     VehicleDefinitionStatuses.DRAFT,
+                    VehicleDefinitionStatuses.VALIDATED,
                     VehicleDefinitionStatuses.NEW]
             ).values('validation_status').annotate(total=Count('id')).order_by('validation_status')
+
 
             # credit requests
             credit_requests = SalesSubmission.objects.exclude(validation_status__in=(

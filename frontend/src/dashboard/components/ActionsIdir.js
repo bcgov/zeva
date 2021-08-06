@@ -19,17 +19,17 @@ const ActionsIdir = (props) => {
     <div id="actions" className="dashboard-card">
       <div className="content">
         <h1>Latest Activity</h1>
-        {activityCount.submittedVehicles > 0 && user.hasPermission('VALIDATE_ZEV')
+        {activityCount.modelsAwaitingValidation > 0 && user.hasPermission('VALIDATE_ZEV')
         && (
         <ActivityBanner
           colour="yellow"
           icon="car"
           boldText="ZEV Models"
-          regularText={`${activityCount.submittedVehicles} submitted for validation`}
+          regularText={`${activityCount.modelsAwaitingValidation} submitted for validation`}
           linkTo={`${ROUTES_VEHICLES.LIST}?col-status=Submitted`}
         />
         )}
-        {user.hasPermission('VALIDATE_ZEV') && activityCount.submittedVehicles === 0
+        {user.hasPermission('VALIDATE_ZEV') && activityCount.modelsAwaitingValidation === 0
         && (
           <ActivityBanner
             colour="green"
