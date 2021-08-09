@@ -262,6 +262,7 @@ const ComplianceReportSummaryContainer = (props) => {
           provisionalBalanceAfterCreditReduction.B -= bValue;
         }
       });
+
       setCreditActivityDetails({
         timestampCreditActivity,
         creditBalanceStart,

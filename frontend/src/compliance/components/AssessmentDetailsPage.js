@@ -45,7 +45,7 @@ const AssessmentDetailsPage = (props) => {
     updatedBalances,
   } = props;
 
-  const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, user.organization.name).replace(/{modelYear}/g, reportYear) : '';
+  const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, details.organization.name).replace(/{modelYear}/g, reportYear) : '';
   const disabledInputs = false;
   const showDescription = (each) => (
     <div className="mb-3" key={each.id}>
@@ -406,7 +406,9 @@ const AssessmentDetailsPage = (props) => {
                   optionalClassname="button"
                   optionalText="Save"
                   disabled={disabledRecommendBtn}
-                  action={handleAddBceidComment}
+                  action={() => {
+                    handleSubmit(details.assessment.validationStatus);
+                  }}
                 />
               )}
               {analystAction && (

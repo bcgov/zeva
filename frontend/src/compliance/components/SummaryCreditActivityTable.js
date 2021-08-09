@@ -22,7 +22,7 @@ const SummaryCreditActivityTable = (props) => {
   } = creditActivityDetails;
 
   const tableSection = (input, title, numberClassname = 'text-right') => {
-    if (input.A > 0 || input.B > 0 || title.indexOf('Balance at end') >= 0 || title.indexOf('Balance after Credit Reduction') >= 0) {
+    if (input.A > 0 || input.B > 0 || input.A < 0 || input.B < 0 || title.indexOf('Balance at end') >= 0 || title.indexOf('Balance after Credit Reduction') >= 0) {
       return (
         <tr>
           <th className="large-column text-blue">

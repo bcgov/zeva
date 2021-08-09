@@ -92,7 +92,8 @@ def get_model_year_report_statuses(report):
             compliance_obligation_status == 'CONFIRMED':
         summary_status = 'SAVED'
 
-    if report.validation_status == ModelYearReportStatuses.SUBMITTED:
+    if report.validation_status == ModelYearReportStatuses.SUBMITTED or \
+            report.validation_status == report.validation_status.RETURNED:
         supplier_information_status = 'SUBMITTED'
         consumer_sales_status = 'SUBMITTED'
         compliance_obligation_status = 'SUBMITTED'

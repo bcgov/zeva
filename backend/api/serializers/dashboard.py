@@ -126,7 +126,6 @@ class DashboardListSerializer(ModelSerializer):
     """
     activity = SerializerMethodField()
 
-
     def get_activity(self, obj):
         request = self.context.get('request')
         if not request.user.is_government:
