@@ -96,6 +96,14 @@ const VehicleDetailsPage = (props) => {
         handleSubmit: () => { postComment('CHANGES_REQUESTED'); },
       };
       break;
+    case 'delete':
+      modalProps = {
+        confirmLabel: 'Delete',
+        modalText: 'Delete the ZEV model?',
+        handleSubmit: () => { requestStateChange('DELETED'); },
+        buttonClass: 'btn-outline-danger',
+      };
+      break;
     default:
       modalProps = {
         confirmLabel: '',
@@ -229,6 +237,13 @@ const VehicleDetailsPage = (props) => {
                 locationRoute={ROUTES_VEHICLES.LIST}
                 locationState={locationState}
               />
+              {details.validationStatus  && (details.validationStatus === 'CHANGES_REQUESTED' || details.validationStatus === 'DRAFT')
+              && (
+              <Button
+                buttonType="delete"
+                action={() => { setModalType('delete'); setShowModal(true); }}
+              />
+              )}
             </span>
             <span className="right-content">
               {['DRAFT', 'CHANGES_REQUESTED'].indexOf(details.validationStatus) >= 0

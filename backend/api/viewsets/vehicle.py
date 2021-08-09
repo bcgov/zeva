@@ -18,7 +18,7 @@ from api.serializers.vehicle import ModelYearSerializer, \
     VehicleStatusChangeSerializer, VehicleIsActiveChangeSerializer
 from api.services.minio import minio_put_object
 from auditable.views import AuditableMixin
-
+from api.models.vehicle import VehicleDefinitionStatuses
 
 class VehicleViewSet(
     AuditableMixin, viewsets.GenericViewSet, mixins.CreateModelMixin,
@@ -47,7 +47,7 @@ class VehicleViewSet(
 
         queryset = Vehicle.objects.filter(
             organization_id=request.user.organization.id
-        )
+        ).exclude(validation_status=VehicleDefinitionStatuses.DELETED)
 
         if request.user.is_government:
             queryset = Vehicle.objects.filter(
