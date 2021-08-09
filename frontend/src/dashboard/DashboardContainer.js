@@ -155,18 +155,17 @@ const DashboardContainer = (props) => {
           let creditsDraft = dashboard.creditRequest
             .find((submission) => submission.status === 'DRAFT');
           creditsDraft = creditsDraft ? creditsDraft.total : 0;
-          let submittedCredits = dashboard.creditRequest
-            .find((submission) => submission.status === 'SUBMITTED' || submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMEND_REJECTION');
-          submittedCredits = submittedCredits ? submittedCredits.total : 0;
+          let creditsAwaiting = dashboard.creditRequest
+            .find((submission) => submission.status === 'SUBMITTED');
+          creditsAwaiting = creditsAwaiting ? creditsAwaiting.total : 0;
           let creditsIssued = dashboard.creditRequest
             .find((submission) => submission.status === 'VALIDATED');
           creditsIssued = creditsIssued ? creditsIssued.total : 0;
-
           activityCount = {
             ...activityCount,
             creditsDraft,
             creditsIssued,
-            submittedCredits,
+            creditsAwaiting,
           };
         } else {
           let creditsRecommendApprove = dashboard.creditRequest
