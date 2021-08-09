@@ -262,7 +262,7 @@ class DashboardListSerializer(ModelSerializer):
         }
 
     class Meta:
-        model = ModelYearReport
+        model = Organization
         fields = (
             'id', 'activity'
         )

@@ -36,6 +36,7 @@ const DashboardContainer = (props) => {
     reportsDraft: 0,
     reportsSubmitted: 0,
     reportsAnalyst: 0,
+    reportsReturned: 0,
     reportsAssessed: 0,
     reportsRecommended: 0,
   });
@@ -136,9 +137,15 @@ const DashboardContainer = (props) => {
         } else {
           let reportsAnalyst = dashboard.modelYearReport.find((report) => report.status === 'SUBMITTED');
           reportsAnalyst = reportsAnalyst ? reportsAnalyst.total : 0;
+          let reportsReturned = dashboard.modelYearReport.find((report) => report.status === 'RETURNED');
+          reportsReturned = reportsReturned ? reportsReturned.total : 0;
+          let reportsDirector =  dashboard.modelYearReport.find((report) => report.status === 'RECOMMENDED');
+          reportsDirector = reportsDirector ? reportsDirector.total : 0;
           activityCount = {
             ...activityCount,
             reportsAnalyst,
+            reportsDirector,
+            reportsReturned
           };
         }
       }
@@ -148,18 +155,17 @@ const DashboardContainer = (props) => {
           let creditsDraft = dashboard.creditRequest
             .find((submission) => submission.status === 'DRAFT');
           creditsDraft = creditsDraft ? creditsDraft.total : 0;
-          let submittedCredits = dashboard.creditRequest
-            .find((submission) => submission.status === 'SUBMITTED' || submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMEND_REJECTION');
-          submittedCredits = submittedCredits ? submittedCredits.total : 0;
+          let creditsAwaiting = dashboard.creditRequest
+            .find((submission) => submission.status === 'SUBMITTED');
+          creditsAwaiting = creditsAwaiting ? creditsAwaiting.total : 0;
           let creditsIssued = dashboard.creditRequest
             .find((submission) => submission.status === 'VALIDATED');
           creditsIssued = creditsIssued ? creditsIssued.total : 0;
-
           activityCount = {
             ...activityCount,
             creditsDraft,
             creditsIssued,
-            submittedCredits,
+            creditsAwaiting,
           };
         } else {
           let creditsRecommendApprove = dashboard.creditRequest

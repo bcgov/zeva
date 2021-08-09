@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from api.models.user_profile import UserProfile
 from api.permissions.user import UserPermissions
-from api.models.model_year_report import ModelYearReport
+from api.models.organization import Organization
 from api.serializers.dashboard import DashboardListSerializer
 from auditable.views import AuditableMixin
 from api.models.model_year_report_statuses import ModelYearReportStatuses
@@ -24,12 +24,10 @@ class DashboardViewset(
     def get_queryset(self):
         request = self.request
         if request.user.is_government:
-            queryset = ModelYearReport.objects.exclude(validation_status__in=[
-                ModelYearReportStatuses.DRAFT,
-            ])
+            queryset = Organization.objects.all()
         else:
-            queryset = ModelYearReport.objects.filter(
-                organization_id=request.user.organization.id
+            queryset = Organization.objects.filter(
+                id=request.user.organization.id
             )
         return queryset
 
