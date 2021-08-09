@@ -63,7 +63,7 @@ class UserSaveSerializer(serializers.ModelSerializer):
             ):
                 raise PermissionDenied(
                     "You do not have the permission to add {}.".format(
-                        role.code
+                        role.description
                     )
                 )
 

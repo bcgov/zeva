@@ -30,7 +30,6 @@ const CreditAgreementsAlert = (props) => {
     transaction = 'IA';
   }
 
-
   switch (status) {
     case 'DRAFT':
       title = 'Draft';

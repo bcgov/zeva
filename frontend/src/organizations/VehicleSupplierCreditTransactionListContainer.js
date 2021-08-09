@@ -27,12 +27,10 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
     setLoading(true);
     const balancePromise = axios.get(ROUTES_ORGANIZATIONS.SUPPLIER_BALANCE.replace(/:id/gi, id)).then((response) => {
       setBalances(response.data);
-      
     });
 
     const listPromise = axios.get(ROUTES_ORGANIZATIONS.SUPPLIER_TRANSACTIONS.replace(/:id/gi, id)).then((response) => {
       setCreditTransactions(response.data);
-      
     });
 
     const detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {

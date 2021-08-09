@@ -208,7 +208,7 @@ const DashboardContainer = (props) => {
       if (!isMountedRef.current) {
         return false;
       }
-      setLoading(false);
+      return setLoading(false);
     });
   };
 
