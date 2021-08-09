@@ -29,11 +29,10 @@ const CreditTransactionListTable = (props) => {
       case 'credit adjustment validation':
         if (item.detailTransactionType) {
           return item.detailTransactionType;
-        } {
-          return 'Initiative Agreement'
         }
+        return 'Initiative Agreement';
       case 'credit adjustment reduction':
-          return 'Administrative Credit Reduction';
+        return 'Administrative Credit Reduction';
       case 'reduction':
         return `${name} Model Year Report Credit Reduction`;
       default:
@@ -56,17 +55,18 @@ const CreditTransactionListTable = (props) => {
       case 'credit adjustment validation':
         if (item.detailTransactionType === 'Automatic Administrative Penalty') {
           return 'AP';
-        } else if (item.detailTransactionType === 'Purchase Agreement') {
+        } if (item.detailTransactionType === 'Purchase Agreement') {
           return 'PA';
-        } else if (item.detailTransactionType === 'Administrative Credit Allocation') {
+        } if (item.detailTransactionType === 'Administrative Credit Allocation') {
           return 'AA';
-        } else {
-          return 'IA';
         }
+        return 'IA';
+
       case 'credit adjustment reduction':
         if (item.detailTransactionType === 'Administrative Credit Reduction') {
           return 'AR';
         }
+        break;
       case 'reduction':
         return 'CR';
       default:

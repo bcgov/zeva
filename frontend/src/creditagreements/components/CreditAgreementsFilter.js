@@ -29,10 +29,11 @@ const CreditAgreementsFilter = (props) => {
   return (
     <div className="action-bar p-2 justify-content-end action-bar-background">
       <span className="right-content d-block d-md-flex d-lg-flex d-xl-flex">
-        <label className="my-0">Filter by supplier/status</label>
+        <label htmlFor="supplier-filter" className="my-0">Filter by supplier/status</label>
         <select
           className="form-control"
           id="col-supplier"
+          name="supplier-filter"
           onChange={handleChange}
           value={filtered.length > 0 && filtered.findIndex((arr) => (arr.id === 'col-supplier')) >= 0 ? filtered[filtered.findIndex((arr) => (arr.id === 'col-supplier'))].value : ''}
         >
@@ -77,6 +78,7 @@ CreditAgreementsFilter.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.object).isRequired,
   setFiltered: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape).isRequired,
+  user: PropTypes.shape.isRequired,
 };
 
 export default CreditAgreementsFilter;
