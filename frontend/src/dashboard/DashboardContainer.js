@@ -134,11 +134,14 @@ const DashboardContainer = (props) => {
             reportsAssessed,
           };
         } else {
-          let reportsAnalyst = dashboard.modelYearReport.find((report) => report.status === 'SUBMITTED');
+          let reportsAnalyst = dashboard.modelYearReport.find((report) => report.status === 'SUBMITTED' || report.status === 'RETURNED');
           reportsAnalyst = reportsAnalyst ? reportsAnalyst.total : 0;
+          let reportsDirector =  dashboard.modelYearReport.find((report) => report.status === 'RECOMMENDED');
+          reportsDirector = reportsDirector ? reportsDirector.total : 0;
           activityCount = {
             ...activityCount,
             reportsAnalyst,
+            reportsDirector,
           };
         }
       }

@@ -15,6 +15,7 @@ const ActionsIdir = (props) => {
   if (loading) {
     return <Loading />;
   }
+  console.log(activityCount)
   return (
     <div id="actions" className="dashboard-card">
       <div className="content">
@@ -168,8 +169,8 @@ const ActionsIdir = (props) => {
         {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
         && ((user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')
         && activityCount.reportsAnalyst === 0)
-        || (user.hasPermission('APPROVE_COMPLIANCE_REPORT') && activityCount.reportsDirector === 0)
-        )
+        || (user.hasPermission('SIGN_COMPLIANCE_REPORT') && activityCount.reportsDirector === 0)
+        ) && !(user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && user.hasPermission('SIGN_COMPLIANCE_REPORT') && (activityCount.reportsDirector > 0 || activityCount.reportsAnalyst > 0))
         && (
         <ActivityBanner
           colour="green"
@@ -187,7 +188,7 @@ const ActionsIdir = (props) => {
           colour="blue"
           icon="file-alt"
           boldText="Model Year Reports"
-          regularText={`${activityCount.reportsAnalyst} recommended for director action`}
+          regularText={`${activityCount.reportsDirector} recommended for director action`}
           linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Recommended`}
         />
         )}
