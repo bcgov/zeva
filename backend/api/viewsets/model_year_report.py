@@ -212,6 +212,7 @@ class ModelYearReportViewset(
         model_year_report_update = ModelYearReport.objects.filter(
             id=model_year_report_id
         )
+
         if validation_status:
             if validation_status == 'RECOMMENDED' and not description:
                 return HttpResponse(
@@ -247,7 +248,7 @@ class ModelYearReportViewset(
             if validation_status == 'ASSESSED':
                 adjust_credits(model_year_report_id, request)
             
-            notifications_model_year_report(validation_status, request.user )
+            notifications_model_year_report(validation_status, request.user)
 
         if confirmations:
             for confirmation in confirmations:

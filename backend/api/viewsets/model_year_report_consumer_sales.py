@@ -1,6 +1,5 @@
 from rest_framework import mixins, viewsets
 from rest_framework.response import Response
-from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
 from api.models.model_year_report_vehicle import ModelYearReportVehicle
@@ -8,9 +7,6 @@ from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_confirmation import \
     ModelYearReportConfirmation
 from api.models.model_year_report_history import ModelYearReportHistory
-from api.models.model_year import ModelYear
-from api.models.model_year_report_ldv_sales import \
-    ModelYearReportLDVSales
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 
 from api.permissions.model_year_report import ModelYearReportPermissions
@@ -127,15 +123,29 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
         vehicles = vehicles_serializer.data
 
         history_list = ModelYearReportHistory.objects.filter(
-                model_year_report_id=pk
+            model_year_report_id=pk
         )
 
+        if not request.user.is_government:
+            history_list = history_list.exclude(
+                validation_status__in=[
+                    ModelYearReportStatuses.RECOMMENDED,
+                    ModelYearReportStatuses.RETURNED,
+                ]
+            )
+
         history = ModelYearReportHistorySerializer(history_list, many=True)
+
+        validation_status = report.validation_status.value
+
+        if not request.user.is_government and \
+                report.validation_status == ModelYearReportStatuses.RETURNED:
+            validation_status = ModelYearReportStatuses.SUBMITTED.value
 
         return Response({
             'vehicle_list': vehicles,
             'model_year_report_history': history.data,
             'confirmations': confirmation,
             'organization_name': request.user.organization.name,
-            'validation_status': report.validation_status.value,
-            })
+            'validation_status': validation_status,
+        })

@@ -243,8 +243,8 @@ class ModelYearReportComplianceObligationViewset(
             initative_agreements = CreditTransaction.objects.filter(
                 credit_to=organization,
                 credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.INITIATIVE_AGREEMENT,
-                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=date(report_year, 9, 30),
-                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=date(report_year-1, 10, 1),
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=to_date,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=from_date,
             ).values(
                 'credit_class_id', 'model_year_id'
             ).annotate(
@@ -255,8 +255,8 @@ class ModelYearReportComplianceObligationViewset(
             purchase_agreements = CreditTransaction.objects.filter(
                 credit_to=organization,
                 credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.PURCHASE_AGREEMENT,
-                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=date(report_year, 9, 30),
-                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=date(report_year-1, 10, 1),
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=to_date,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=from_date,
             ).values(
                 'credit_class_id', 'model_year_id'
             ).annotate(
@@ -267,8 +267,8 @@ class ModelYearReportComplianceObligationViewset(
             administrative_credit_alloction = CreditTransaction.objects.filter(
                 credit_to=organization,
                 credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.ADMINISTRATIVE_CREDIT_ALLOCATION,
-                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=date(report_year, 9, 30),
-                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=date(report_year-1, 10, 1),
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=to_date,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=from_date,
             ).values(
                 'credit_class_id', 'model_year_id'
             ).annotate(
@@ -279,8 +279,8 @@ class ModelYearReportComplianceObligationViewset(
             administrative_credit_reduction = CreditTransaction.objects.filter(
                 debit_from=organization,
                 credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.ADMINISTRATIVE_CREDIT_REDUCTION,
-                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=date(report_year, 9, 30),
-                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=date(report_year-1, 10, 1),
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=to_date,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=from_date,
             ).values(
                 'credit_class_id', 'model_year_id'
             ).annotate(
@@ -291,8 +291,8 @@ class ModelYearReportComplianceObligationViewset(
             automatic_administrative_penalty = CreditTransaction.objects.filter(
                 credit_to=organization,
                 credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.AUTOMATIC_ADMINISTRATIVE_PENALTY,
-                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=date(report_year, 9, 30),
-                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=date(report_year-1, 10, 1),
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=to_date,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=from_date,
             ).values(
                 'credit_class_id', 'model_year_id'
             ).annotate(

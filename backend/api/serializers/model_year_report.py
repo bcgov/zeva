@@ -30,14 +30,24 @@ class ModelYearReportSerializer(ModelSerializer):
     model_year = ModelYearSerializer()
     model_year_report_addresses = ModelYearReportAddressSerializer(many=True)
     makes = SerializerMethodField()
-    validation_status = EnumField(ModelYearReportStatuses)
-    model_year_report_history = ModelYearReportHistorySerializer(many=True)
+    # validation_status = EnumField(ModelYearReportStatuses)
+    validation_status = SerializerMethodField()
+    model_year_report_history = SerializerMethodField()
     confirmations = SerializerMethodField()
     statuses = SerializerMethodField()
     ldv_sales = SerializerMethodField()
     ldv_sales_previous = SerializerMethodField()
     avg_sales = SerializerMethodField()
     changelog = SerializerMethodField()
+
+    def get_validation_status(self, obj):
+        request = self.context.get('request')
+
+        if not request.user.is_government and \
+                obj.validation_status == ModelYearReportStatuses.RETURNED:
+            return ModelYearReportStatuses.SUBMITTED.value
+
+        return obj.validation_status.value
 
     def get_ldv_sales_previous(self, obj):
         year = int(obj.model_year.name)
@@ -139,6 +149,25 @@ class ModelYearReportSerializer(ModelSerializer):
 
     def get_statuses(self, obj):
         return get_model_year_report_statuses(obj)
+
+    def get_model_year_report_history(self, obj):
+        request = self.context.get('request')
+
+        history = ModelYearReportHistory.objects.filter(
+            model_year_report_id=obj.id
+        ).order_by('create_timestamp')
+
+        if not request.user.is_government:
+            history = history.exclude(
+                validation_status__in=[
+                    ModelYearReportStatuses.RECOMMENDED,
+                    ModelYearReportStatuses.RETURNED,
+                ]
+            )
+
+        serializer = ModelYearReportHistorySerializer(history, many=True)
+
+        return serializer.data
 
     class Meta:
         model = ModelYearReport
