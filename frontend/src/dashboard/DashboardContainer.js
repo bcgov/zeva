@@ -3,14 +3,9 @@
  * All data handling & manipulation should be handled here.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import moment from 'moment-timezone';
 import axios from 'axios';
 import CustomPropTypes from '../app/utilities/props';
 import DashboardPage from './components/DashboardPage';
-
-import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
-import ROUTES_VEHICLES from '../app/routes/Vehicles';
-import ROUTES_CREDIT_TRANSFERS from '../app/routes/CreditTransfers';
 import ROUTES_DASHBOARD from '../app/routes/Dashboard';
 
 const DashboardContainer = (props) => {
