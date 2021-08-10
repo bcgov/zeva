@@ -14,6 +14,7 @@ from api.models.model_year_report_make import ModelYearReportMake
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.serializers.model_year_report_ldv_sales import ModelYearReportLDVSalesSerializer
 from api.models.user_profile import UserProfile
+from api.models.model_year_report_assessment import ModelYearReportAssessment
 from api.serializers.model_year_report_address import \
     ModelYearReportAddressSerializer
 from api.serializers.model_year_report_make import \
@@ -195,7 +196,24 @@ class ModelYearReportListSerializer(
         return obj.ldv_sales
 
     def get_compliant(self, obj):
-        return True
+        if obj.validation_status != ModelYearReportStatuses.ASSESSED:
+            return '-'
+
+        assessment = ModelYearReportAssessment.objects.get(
+            model_year_report_id=obj.id
+        )
+
+        if assessment:
+            found = assessment.model_year_report_assessment_description.description.find(
+                'has complied'
+            )
+
+            if found >= 0:
+                return 'Yes'
+            else:
+                return 'No'
+
+        return 'No'
 
     def get_obligation_total(self, obj):
         return 0

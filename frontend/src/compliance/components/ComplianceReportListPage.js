@@ -10,13 +10,14 @@ import history from '../../app/History';
 
 const ComplianceReportListPage = (props) => {
   const {
-    user,
-    data,
-    loading,
     availableYears,
-    showSupplier,
+    data,
     filtered,
+    loading,
+    ratios,
     setFiltered,
+    showSupplier,
+    user,
   } = props;
 
   if (loading) {
@@ -65,10 +66,11 @@ const ComplianceReportListPage = (props) => {
         <div className="col-sm-12">
           <ComplianceReportsTable
             data={data}
-            user={user}
-            showSupplier={showSupplier}
             filtered={filtered}
+            ratios={ratios}
             setFiltered={setFiltered}
+            showSupplier={showSupplier}
+            user={user}
           />
         </div>
       </div>

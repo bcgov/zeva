@@ -6,6 +6,8 @@ import CustomPropTypes from '../../app/utilities/props';
 import history from '../../app/History';
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import formatNumeric from '../../app/utilities/formatNumeric';
+import getClassAReduction from '../../app/utilities/getClassAReduction';
+import getTotalReduction from '../../app/utilities/getTotalReduction';
 
 const ComplianceReportsTable = (props) => {
   const {
@@ -13,6 +15,7 @@ const ComplianceReportsTable = (props) => {
     data,
     showSupplier,
     filtered,
+    ratios,
     setFiltered,
   } = props;
 
@@ -27,6 +30,38 @@ const ComplianceReportsTable = (props) => {
 
     if (paramClass === 'S') {
       return 'Small';
+    }
+
+    return '-';
+  };
+
+  const calculateClassAReduction = (item) => {
+    if (item.validationStatus !== 'ASSESSED') {
+      return '-';
+    }
+
+    const filteredRatio = ratios.find(
+      (each) => Number(each.modelYear) === Number(item.modelYear.name),
+    );
+
+    if (filteredRatio && item.ldvSales > 0) {
+      return formatNumeric(getClassAReduction(item.ldvSales, filteredRatio.zevClassA, item.supplierClass), 0);
+    }
+
+    return '-';
+  };
+
+  const calculateTotalReduction = (item) => {
+    if (item.validationStatus !== 'ASSESSED') {
+      return '-';
+    }
+
+    const filteredRatio = ratios.find(
+      (each) => Number(each.modelYear) === Number(item.modelYear.name),
+    );
+
+    if (filteredRatio && item.ldvSales > 0) {
+      return formatNumeric(getTotalReduction(item.ldvSales, filteredRatio.complianceRatio), 0);
     }
 
     return '-';
@@ -55,7 +90,7 @@ const ComplianceReportsTable = (props) => {
     id: 'status',
     maxWidth: 260,
   }, {
-    accessor: (item) => (item.compliant === true ? '-' : ''),
+    accessor: (item) => (item.compliant),
     className: 'text-center',
     Header: 'Compliant',
     headerClassName: 'font-weight-bold',
@@ -76,15 +111,15 @@ const ComplianceReportsTable = (props) => {
     id: 'supplier-class',
     maxWidth: 260,
   }, {
-    accessor: (item) => (item.obligationTotal ? item.obligationTotal : '-'),
-    className: 'text-center',
+    accessor: (item) => (calculateTotalReduction(item)),
+    className: 'text-right',
     Header: 'Obligation Total',
     headerClassName: 'font-weight-bold',
     id: 'obligation-total',
     maxWidth: 260,
   }, {
-    accessor: (item) => (item.obligationCredits ? item.obligationCredits : '-'),
-    className: 'text-center',
+    accessor: (item) => (calculateClassAReduction(item)),
+    className: 'text-right',
     Header: 'Obligation A Credits',
     headerClassName: 'font-weight-bold',
     id: 'obligation-a-credits',
@@ -128,6 +163,7 @@ ComplianceReportsTable.defaultProps = {
 ComplianceReportsTable.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   filtered: PropTypes.arrayOf(PropTypes.shape()),
+  ratios: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   user: CustomPropTypes.user.isRequired,
   setFiltered: PropTypes.func,
   showSupplier: PropTypes.bool.isRequired,
