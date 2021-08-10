@@ -9,3 +9,4 @@ class VehicleDefinitionStatuses(Enum):
     VALIDATED = 'VALIDATED'
     REJECTED = 'REJECTED'
     CHANGES_REQUESTED = 'CHANGES_REQUESTED'
+    DELETED = 'DELETED'

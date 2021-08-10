@@ -58,7 +58,18 @@ const VehicleEditContainer = (props) => {
       ...fields,
     });
   };
+  const requestStateChange = (newState) => {
+    setLoading(true);
+    axios.patch(`vehicles/${id}/state_change`, { validationStatus: newState }).then(() => {
+      history.push(ROUTES_VEHICLES.LIST);
 
+      if (newState === 'SUBMITTED') {
+        history.replace(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id));
+      }
+
+      setLoading(false);
+    });
+  };
   const resetForm = () => {
     setFields({
       hasPassedUs06Test: false,
@@ -255,6 +266,7 @@ const VehicleEditContainer = (props) => {
       vehicleTypes={types}
       vehicleYears={years}
       newVehicle={newVehicle}
+      requestStateChange={requestStateChange}
     />
   );
 };
