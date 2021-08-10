@@ -80,7 +80,7 @@ const CreditRequestAlert = (props) => {
       if (!isGovernment) {
         message = `CA-${id}  rejected ${moment(statusFilter('REJECTED').createTimestamp).format('MMM D, YYYY')} by Government of B.C.`;  
       } else {
-        message = `CA-${id}  rejected ${moment(statusFilter('REJECTED').createTimestamp).format('MMM D, YYYY')} by by ${statusFilter('REJECTED').createUser.displayName}.`;
+        message = `CA-${id}  rejected ${moment(statusFilter('REJECTED').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('REJECTED').createUser.displayName}.`;
       }
       break;
     case 'RECOMMEND_APPROVAL':
