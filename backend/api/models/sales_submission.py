@@ -80,8 +80,7 @@ class SalesSubmission(Auditable):
             )
 
         if status in [
-                SalesSubmissionStatuses.VALIDATED,
-                SalesSubmissionStatuses.REJECTED
+                SalesSubmissionStatuses.VALIDATED
         ]:
             if self.validation_status not in [
                     SalesSubmissionStatuses.RECOMMEND_APPROVAL,

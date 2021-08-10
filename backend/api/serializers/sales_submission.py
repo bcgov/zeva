@@ -70,7 +70,7 @@ class SalesSubmissionHistorySerializer(
     create_user = SerializerMethodField()
     update_user = SerializerMethodField()
     validation_status = SerializerMethodField()
-
+    
     class Meta:
         model = SalesSubmissionHistory
         fields = (
@@ -510,6 +510,7 @@ class SalesSubmissionSaveSerializer(
         sales_evidences = validated_data.pop('sales_evidences', [])
         files_to_be_removed = request.data.get('evidence_delete_list', [])
         sales_submission_comment = validated_data.pop('sales_submission_comment', None)
+        comment_type = request.data.get('comment_type', None)
         reasons = request.data.get('reasons', [])
 
         if instance.validation_status != SalesSubmissionStatuses.DRAFT and \
@@ -527,10 +528,11 @@ class SalesSubmissionSaveSerializer(
                 "it's been recommended"
             )
 
-        if sales_submission_comment:
+        if sales_submission_comment and comment_type:
             SalesSubmissionComment.objects.create(
                 create_user=request.user.username,
                 sales_submission=instance,
+                to_govt=comment_type.get('govt'),
                 comment=sales_submission_comment.get('comment')
             )
         for each in sales_evidences:
