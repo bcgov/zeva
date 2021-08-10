@@ -17,20 +17,20 @@ import Modal from '../../app/components/Modal';
 const ComplianceReportSummaryDetailsPage = (props) => {
   const [showModal, setShowModal] = useState(false);
   const {
-    complianceRatios,
     assertions,
     checkboxes,
+    complianceRatios,
+    confirmationStatuses,
+    consumerSalesDetails,
     creditActivityDetails,
-    user,
+    handleCheckboxClick,
     handleSubmit,
     loading,
-    supplierDetails,
-    consumerSalesDetails,
-    handleCheckboxClick,
     makes,
-    confirmationStatuses,
-    pendingBalanceExist,
     modelYear,
+    pendingBalanceExist,
+    supplierDetails,
+    user,
   } = props;
   const signedInfomation = {
     supplierInformation: { nameSigned: 'Buzz Collins', dateSigned: '2020-01-01' },

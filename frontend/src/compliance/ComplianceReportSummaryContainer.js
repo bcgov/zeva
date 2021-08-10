@@ -310,20 +310,20 @@ const ComplianceReportSummaryContainer = (props) => {
         user={user}
       />
       <ComplianceReportSummaryDetailsPage
-        complianceRatios={complianceRatios}
-        handleCheckboxClick={handleCheckboxClick}
-        checkboxes={checkboxes}
         assertions={assertions}
-        creditActivityDetails={creditActivityDetails}
+        checkboxes={checkboxes}
+        complianceRatios={complianceRatios}
+        confirmationStatuses={confirmationStatuses}
         consumerSalesDetails={consumerSalesDetails}
+        creditActivityDetails={creditActivityDetails}
+        handleCheckboxClick={handleCheckboxClick}
+        handleSubmit={handleSubmit}
+        loading={loading}
+        makes={makes}
+        modelYear={modelYear}
+        pendingBalanceExist={pendingBalanceExist}
         supplierDetails={supplierDetails}
         user={user}
-        loading={loading}
-        handleSubmit={handleSubmit}
-        makes={makes}
-        confirmationStatuses={confirmationStatuses}
-        pendingBalanceExist={pendingBalanceExist}
-        modelYear={modelYear}
       />
     </>
   );
