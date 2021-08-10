@@ -74,6 +74,15 @@ const CreditRequestAlert = (props) => {
         historyMessage = `${excelUploadMessage}. Application submitted to Government of B.C. ${moment(statusFilter('SUBMITTED').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('SUBMITTED').createUser.displayName}`;
       }
       break;
+    case 'REJECTED':
+      title = 'Rejected';
+      classname = 'alert-danger';
+      if (!isGovernment) {
+        message = `CA-${id}  rejected ${moment(statusFilter('REJECTED').createTimestamp).format('MMM D, YYYY')} by Government of B.C.`;  
+      } else {
+        message = `CA-${id}  rejected ${moment(statusFilter('REJECTED').createTimestamp).format('MMM D, YYYY')} by by ${statusFilter('REJECTED').createUser.displayName}.`;
+      }
+      break;
     case 'RECOMMEND_APPROVAL':
       if (isGovernment || excelUploadMessage === '') {
         title = 'Recommended';
