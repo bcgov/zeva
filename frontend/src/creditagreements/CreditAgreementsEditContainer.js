@@ -16,7 +16,7 @@ const CreditAgreementsEditContainer = (props) => {
   const [bceidComment, setBceidComment] = useState('');
   const [creditRows, setCreditRows] = useState([{
     creditClass: 'A',
-    modelYear: '-',
+    modelYear: '2021',
     quantity: 0,
   }]);
   const [years, setYears] = useState([]);
@@ -76,7 +76,7 @@ const CreditAgreementsEditContainer = (props) => {
   const addRow = () => {
     creditRows.push({
       creditClass: 'A',
-      modelYear: '-',
+      modelYear: '2021',
       quantity: 0,
     });
 

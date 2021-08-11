@@ -46,8 +46,12 @@ const CreditRequestDetailsContainer = (props) => {
     refreshDetails();
   }, [id]);
 
-  const handleSubmit = (validationStatus) => {
+  const handleSubmit = (validationStatus, comment = '') => {
     const submissionContent = { validationStatus };
+    if (comment.length > 0) {
+      submissionContent.salesSubmissionComment = { comment: comment };
+      submissionContent.commentType = {govt: false}
+    }
     axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), submissionContent).then(() => {
       if (validationStatus === 'SUBMITTED') {
         window.location.reload();

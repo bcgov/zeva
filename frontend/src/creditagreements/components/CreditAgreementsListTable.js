@@ -11,7 +11,6 @@ import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements';
 const CreditAgreementsListTable = (props) => {
   const {
     items,
-    user,
     filtered,
     setFiltered,
   } = props;
@@ -127,6 +126,12 @@ const CreditAgreementsListTable = (props) => {
       }}
     />
   );
+};
+
+CreditAgreementsListTable.propTypes = {
+  filtered: PropTypes.arrayOf(PropTypes.object).isRequired,
+  setFiltered: PropTypes.func.isRequired,
+  items: PropTypes.arrayOf(PropTypes.shape).isRequired,
 };
 
 export default CreditAgreementsListTable;

@@ -184,9 +184,8 @@ def adjust_credits(id, request):
         'ldv_sales', flat=True
     ).filter(
         model_year_id=model_year_id,
-        model_year_report_id=id,
-        from_gov=True
-    ).first()
+        model_year_report_id=id
+    ).order_by('-update_timestamp').first()
 
     OrganizationLDVSales.objects.update_or_create(
         organization_id=organization_id,
@@ -211,19 +210,25 @@ def adjust_credits(id, request):
     for reduction in reductions:
         category = reduction.category
 
-        credit_reductions[reduction.model_year_id] = {
-            category: {
-                credit_class_a: reduction.credit_a_value,
-                credit_class_b: reduction.credit_b_value
-            }
-        }
+        if reduction.model_year_id not in credit_reductions:
+            credit_reductions[reduction.model_year_id] = {}
+
+        if category not in credit_reductions[reduction.model_year_id]:
+            credit_reductions[reduction.model_year_id][category] = {}
+        
+        credit_reductions[reduction.model_year_id][category]['A'] = \
+            reduction.credit_a_value
+        credit_reductions[reduction.model_year_id][category]['B'] = \
+            reduction.credit_b_value
 
     total_a_value = 0
     total_b_value = 0
 
     for year, item in credit_reductions.items():
         for category, values in item.items():
-            for credit_class, credit_value in values.items():
+            for credit_class_obj, credit_value in values.items():
+                credit_class = credit_class_a if credit_class_obj == 'A' else credit_class_b
+
                 if credit_value > 0:
                     added_transaction = CreditTransaction.objects.create(
                         create_user=request.user.username,
@@ -242,9 +247,9 @@ def adjust_credits(id, request):
                         weight_class=weight_class
                     )
 
-                    if credit_class.credit_class == 'A':
+                    if credit_class == 'A':
                         total_a_value += credit_value
-                    elif credit_class.credit_class == 'B':
+                    elif credit_class == 'B':
                         total_b_value += credit_value
 
                     ModelYearReportCreditTransaction.objects.create(
@@ -253,15 +258,17 @@ def adjust_credits(id, request):
                     )
 
     balance_changes = [{
-        'credit_class': credit_class_a,
+        'credit_class': 'A',
         'credit_value': total_a_value
     }, {
-        'credit_class': credit_class_b,
+        'credit_class': 'B',
         'credit_value': total_b_value
     }]
 
     for balance_change in balance_changes:
-        credit_class = balance_change.get('credit_class')
+        credit_class_obj = balance_change.get('credit_class')
+        credit_class = credit_class_a if credit_class_obj == 'A' else credit_class_b
+
         credit_value = Decimal(balance_change.get('credit_value'))
 
         current_balance = AccountBalance.objects.filter(
@@ -292,11 +299,9 @@ def adjust_credits(id, request):
     )
 
     for deficit in deficits:
-        credit_class = CreditClass.objects.get(credit_class='A')
-
         if deficit.credit_a_value > 0:
             OrganizationDeficits.objects.update_or_create(
-                credit_class=credit_class,
+                credit_class=credit_class_a,
                 organization_id=organization_id,
                 model_year_id=model_year_id,
                 defaults={
@@ -307,16 +312,14 @@ def adjust_credits(id, request):
             )
         else:
             OrganizationDeficits.objects.filter(
-                credit_class=credit_class,
+                credit_class=credit_class_a,
                 organization_id=organization_id,
                 model_year_id=model_year_id
             ).delete()
 
-        credit_class = CreditClass.objects.get(credit_class='B')
-
         if deficit.credit_b_value > 0:
             OrganizationDeficits.objects.update_or_create(
-                credit_class=credit_class,
+                credit_class=credit_class_b,
                 organization_id=organization_id,
                 model_year_id=model_year_id,
                 defaults={
@@ -327,7 +330,7 @@ def adjust_credits(id, request):
             )
         else:
             OrganizationDeficits.objects.filter(
-                credit_class=credit_class,
+                credit_class=credit_class_b,
                 organization_id=organization_id,
                 model_year_id=model_year_id
             ).delete()

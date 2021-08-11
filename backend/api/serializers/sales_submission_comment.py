@@ -25,7 +25,7 @@ class SalesSubmissionCommentSerializer(ModelSerializer):
     class Meta:
         model = SalesSubmissionComment
         fields = (
-            'id', 'comment', 'create_timestamp', 'create_user',
+            'id', 'comment', 'create_timestamp', 'create_user','to_govt'
         )
         read_only_fields = (
             'id',
