@@ -38,22 +38,52 @@ const VehicleForm = (props) => {
     vehicleTypes,
     vehicleYears,
     newVehicle,
+    requestStateChange,
   } = props;
   const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState('');
   const modalText = (fields && fields.hasPassedUs06Test) ? 'Submit vehicle model and range test results to Government of B.C.' : 'Submit ZEV model to Government of B.C.?';
+  let modalProps;
+  switch (modalType) {
+    case 'submit':
+      modalProps = {
+        confirmLabel: ' Submit',
+        handleSubmit: () => { (event) => { handleSubmit(event, 'SUBMITTED'); setShowModal(false); }; },
+        buttonClass: 'button primary',
+        modalText: details.attachments.length > 0 ? 'Submit vehicle model and range test results to Government of B.C.?' : 'Submit ZEV model to Government of B.C.?',
+      };
+      break;
+    case 'delete':
+      modalProps = {
+        confirmLabel: 'Delete',
+        modalText: 'Delete the ZEV model?',
+        handleSubmit: () => { requestStateChange('DELETED'); },
+        buttonClass: 'btn-outline-danger',
+      };
+      break;
+    default:
+      modalProps = {
+        confirmLabel: '',
+        buttonClass: '',
+        modalText: '',
+        handleSubmit: () => {},
+      };
+      break;
+  }
+
   const modal = (
     <Modal
-      confirmLabel=" Submit"
+      confirmLabel={modalProps.confirmLabel}
       handleCancel={() => { setShowModal(false); }}
-      handleSubmit={(event) => { handleSubmit(event, 'SUBMITTED'); setShowModal(false); }}
+      handleSubmit={modalProps.handleSubmit}
       modalClass="w-75"
       showModal={showModal}
-      confirmClass="button primary"
-      icon={<FontAwesomeIcon icon="paper-plane" />}
+      confirmClass={modalProps.buttonClass}
+      title={modalProps.title ? modalProps.title : 'Confirm'}
     >
       <div>
         <div><br /><br /></div>
-        <h3 className="d-inline">{modalText}</h3>
+        <h3 className="d-inline">{modalProps.modalText}</h3>
         <div><br /><br /></div>
       </div>
     </Modal>
@@ -308,6 +338,13 @@ const VehicleForm = (props) => {
             <div className="action-bar form-group row">
               <span className="left-content">
                 <Button buttonType="back" locationRoute={ROUTES_VEHICLES.LIST} />
+                {status && !newVehicle && (status === 'CHANGES_REQUESTED' || status === 'DRAFT')
+                 && (
+                 <Button
+                   buttonType="delete"
+                   action={() => { setModalType('delete'); setShowModal(true); }}
+                 />
+                 )}
               </span>
 
               <span className="right-content">
@@ -316,7 +353,7 @@ const VehicleForm = (props) => {
                   buttonType="submit"
                   disabled={fields.hasPassedUs06Test && files.length === 0 && (!fields.attachments
                     || fields.attachments.length <= deleteFiles.length)}
-                  action={() => { setShowModal(true); }}
+                  action={() => { setModalType('submit'); setShowModal(true); }}
                 />
               </span>
             </div>
