@@ -40,6 +40,7 @@ import ComplianceObligationContainer from '../compliance/ComplianceObligationCon
 import ConsumerSalesContainer from '../compliance/ConsumerSalesContainer';
 import CreditAgreementsEditContainer from '../creditagreements/CreditAgreementsEditContainer';
 import CreditAgreementsDetailsContainer from '../creditagreements/CreditAgreementsDetailsContainer';
+import SupplementaryContainer from '../supplementary/SupplementaryContainer';
 
 import ErrorHandler from './components/ErrorHandler';
 import Loading from './components/Loading';
@@ -57,6 +58,7 @@ import ROUTES_NOTIFICATIONS from './routes/Notifications';
 import ROUTES_USERS from './routes/Users';
 import ROUTES_VEHICLES from './routes/Vehicles';
 import ROUTES_COMPLIANCE from './routes/Compliance';
+import ROUTES_SUPPLEMENTARY from './routes/SupplementaryReport';
 
 class Router extends Component {
   constructor(props) {
@@ -137,6 +139,10 @@ class Router extends Component {
         <PageLayout keycloak={keycloak} user={user}>
           <ErrorHandler statusCode={statusCode}>
             <Switch>
+              <Route
+                path={ROUTES_SUPPLEMENTARY.CREATE}
+                render={() => <SupplementaryContainer keycloak={keycloak} user={user} />}
+              />
               <Route
                 path={ROUTES_COMPLIANCE.REPORT_ASSESSMENT}
                 render={() => <AssessmentContainer keycloak={keycloak} user={user} />}
