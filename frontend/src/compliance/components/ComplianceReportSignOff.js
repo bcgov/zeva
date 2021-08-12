@@ -15,7 +15,7 @@ const ComplianceReportSignOff = (props) => {
   return (
     <div id="compliance-sign-off" className="my-3">
       <ReactTooltip />
-      {assertions.map((assertion) => (
+      {user.hasPermission('SUBMIT_COMPLIANCE_REPORT') && assertions.map((assertion) => (
         <div key={assertion.id}>
           <div className="d-inline-block align-middle my-2 ml-2 mr-1">
             <input

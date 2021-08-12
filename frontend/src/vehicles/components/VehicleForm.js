@@ -42,15 +42,21 @@ const VehicleForm = (props) => {
   } = props;
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
+
   const modalText = (fields && fields.hasPassedUs06Test) ? 'Submit vehicle model and range test results to Government of B.C.' : 'Submit ZEV model to Government of B.C.?';
+
   let modalProps;
+
   switch (modalType) {
     case 'submit':
       modalProps = {
         confirmLabel: ' Submit',
-        handleSubmit: () => { (event) => { handleSubmit(event, 'SUBMITTED'); setShowModal(false); }; },
+        handleSubmit: (event) => {
+          handleSubmit(event, 'SUBMITTED');
+          setShowModal(false);
+        },
         buttonClass: 'button primary',
-        modalText: details.attachments.length > 0 ? 'Submit vehicle model and range test results to Government of B.C.?' : 'Submit ZEV model to Government of B.C.?',
+        modalText,
       };
       break;
     case 'delete':
