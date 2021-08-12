@@ -15,9 +15,9 @@ const SupplementaryContainer = (props) => {
     setDetails({ ...details, comment });
   };
 
-  const handleSubmit = (action) => {
-    // axios.post(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id), details, action);
-    console.log(action)
+  const handleSubmit = (status) => {
+    setDetails({...details, status })
+    axios.post(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id), details);
   };
 
   const handleInputChange = (event) => {
