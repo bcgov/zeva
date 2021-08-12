@@ -26,7 +26,7 @@ from api.models.account_balance import AccountBalance
 from api.models.model_year_report_credit_transaction import ModelYearReportCreditTransaction
 
 
-def get_model_year_report_statuses(report):
+def get_model_year_report_statuses(report, request_user=None):
     supplier_information_status = 'UNSAVED'
     consumer_sales_status = 'UNSAVED'
     compliance_obligation_status = 'UNSAVED'
@@ -111,6 +111,10 @@ def get_model_year_report_statuses(report):
 
     if report.validation_status == ModelYearReportStatuses.RECOMMENDED:
         assessment_status = 'RECOMMENDED'
+
+        if not request_user.is_government:
+            assessment_status = 'SUBMITTED'
+
         user_profile = UserProfile.objects.filter(username=report.update_user)
         if user_profile.exists():
             serializer = MemberSerializer(user_profile.first(), read_only=True)
@@ -122,6 +126,10 @@ def get_model_year_report_statuses(report):
 
     if report.validation_status == ModelYearReportStatuses.RETURNED:
         assessment_status = 'RETURNED'
+
+        if not request_user.is_government:
+            assessment_status = 'SUBMITTED'
+
         user_profile = UserProfile.objects.filter(username=report.update_user)
         if user_profile.exists():
             serializer = MemberSerializer(user_profile.first(), read_only=True)
@@ -247,9 +255,9 @@ def adjust_credits(id, request):
                         weight_class=weight_class
                     )
 
-                    if credit_class == 'A':
+                    if credit_class_obj == 'A':
                         total_a_value += credit_value
-                    elif credit_class == 'B':
+                    elif credit_class_obj == 'B':
                         total_b_value += credit_value
 
                     ModelYearReportCreditTransaction.objects.create(

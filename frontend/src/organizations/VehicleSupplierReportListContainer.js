@@ -21,12 +21,17 @@ const VehicleSupplierReportListContainer = (props) => {
   const [availableYears, setAvailableYears] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.YEARS);
   const [details, setDetails] = useState({});
   const [filtered, setFiltered] = useState([]);
+  const [ratios, setRatios] = useState({});
 
   const refreshList = () => {
     setLoading(true);
 
     const detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
       setDetails(response.data);
+    });
+
+    const ratiosPromise = axios.get(ROUTES_COMPLIANCE.RATIOS).then((response) => {
+      setRatios(response.data);
     });
 
     const reportsPromise = axios.get(ROUTES_COMPLIANCE.REPORTS, {
@@ -45,7 +50,7 @@ const VehicleSupplierReportListContainer = (props) => {
       setAvailableYears(filteredYears);
     });
 
-    Promise.all([detailsPromise, reportsPromise]).then(() => {
+    Promise.all([detailsPromise, reportsPromise, ratiosPromise]).then(() => {
       setLoading(false);
     });
   };
@@ -63,6 +68,7 @@ const VehicleSupplierReportListContainer = (props) => {
         data={data}
         loading={loading}
         filtered={filtered}
+        ratios={ratios}
         setFiltered={setFiltered}
         user={user}
       />

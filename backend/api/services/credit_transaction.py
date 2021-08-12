@@ -340,10 +340,12 @@ def validate_transfer(transfer):
                 credit_total_no_years[credit_type] = credit_value
             else:
                 credit_total_no_years[credit_type] += credit_value
+
             if model_year not in credit_total:
-                credit_total[model_year] = {credit_type: credit_value}
-            elif credit_type not in credit_total[model_year]:
-                credit_total[model_year] = {credit_type: credit_value}
+                credit_total[model_year] = {}
+
+            if credit_type not in credit_total[model_year]:
+                credit_total[model_year][credit_type] = credit_value
             else:
                 credit_total[model_year][credit_type] += credit_value
 
