@@ -29,7 +29,7 @@ const SupplementaryContainer = (props) => {
   };
   const refreshDetails = () => {
     const data = {
-      legalName: 'test',
+      legalName: 'test car manufacturing company limited',
       organizationAddress: [{
         addressLine1: '123 Street',
         addressLine2: null,
@@ -50,18 +50,15 @@ const SupplementaryContainer = (props) => {
         city: 'VICTORIA',
         country: 'Canada',
         county: null,
-        id: 209,
+        id: 210,
         postalCode: 'V9A 3V5',
         representativeName: 'Emily H',
         state: 'BC',
       }],
       makes: ['KIA', 'JEEP', 'BMW'],
+      supplierClass: 'Large Volume Supplier',
     };
-    const serviceAddress = data.organizationAddress.find((each) => each.addressType.addressType === 'Service');
-    const recordsAddress = data.organizationAddress.find((each) => each.addressType.addressType === 'Records');
-    setDetails({
-      legalName: data.legalName, serviceAddress, recordsAddress, makes: data.makes,
-    });
+    setDetails(data);
     // setLoading(true);
     // axios.get(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)).then((response) => {
     //   setDetails(response.details);
