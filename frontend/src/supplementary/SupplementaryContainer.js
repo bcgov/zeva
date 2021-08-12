@@ -16,8 +16,11 @@ const SupplementaryContainer = (props) => {
   };
 
   const handleSubmit = (status) => {
-    setDetails({...details, status })
-    axios.post(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id), details);
+    const data = {
+      ...details,
+      status,
+    };
+    axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data);
   };
 
   const handleInputChange = (event) => {
@@ -25,11 +28,14 @@ const SupplementaryContainer = (props) => {
     setDetails({ ...details, [name]: value });
   };
   const refreshDetails = () => {
-    // setLoading(true);
-    // axios.get(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)).then((response) => {
-    //   setDetails(response.details);
-    setLoading(false);
-    // });
+    setLoading(true);
+    axios.get(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)).then((response) => {
+      if (response.data) {
+        setDetails(response.data);
+      }
+
+      setLoading(false);
+    });
   };
 
   useEffect(() => {
