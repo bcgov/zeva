@@ -45,7 +45,10 @@ class ModelYearReportSerializer(ModelSerializer):
         request = self.context.get('request')
 
         if not request.user.is_government and \
-                obj.validation_status == ModelYearReportStatuses.RETURNED:
+                obj.validation_status in [
+                    ModelYearReportStatuses.RETURNED,
+                    ModelYearReportStatuses.RECOMMENDED
+                ]:
             return ModelYearReportStatuses.SUBMITTED.value
 
         return obj.validation_status.value
@@ -139,7 +142,8 @@ class ModelYearReportSerializer(ModelSerializer):
             model_year_report_id=obj.id
         )
 
-        if not request.user.is_government:
+        if not request.user.is_government and \
+                obj.validation_status != ModelYearReportStatuses.ASSESSED:
             makes = makes.filter(
                 from_gov=False
             )
@@ -149,7 +153,9 @@ class ModelYearReportSerializer(ModelSerializer):
         return serializer.data
 
     def get_statuses(self, obj):
-        return get_model_year_report_statuses(obj)
+        request = self.context.get('request')
+
+        return get_model_year_report_statuses(obj, request.user)
 
     def get_model_year_report_history(self, obj):
         request = self.context.get('request')

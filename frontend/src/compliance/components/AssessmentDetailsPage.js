@@ -189,7 +189,7 @@ const AssessmentDetailsPage = (props) => {
                 Create Supplemental Report
               </button>
             )}
-            {user.isGovernment && (statuses.assessment.status === 'SUBMITTED' || statuses.assessment.status === 'UNSAVED') && (
+            {analystAction && (['RETURNED', 'SUBMITTED', 'UNSAVED'].indexOf(statuses.assessment.status) >= 0) && (
               <button
                 className="btn button primary float-right"
                 onClick={() => {
@@ -316,7 +316,7 @@ const AssessmentDetailsPage = (props) => {
             </div>
           </>
       )}
-      {user.isGovernment && ['ASSESSED'].indexOf(statuses.assessment.status) < 0
+      {analystAction && ['ASSESSED'].indexOf(statuses.assessment.status) < 0
       && (
         <>
           {['RECOMMENDED'].indexOf(statuses.assessment.status) < 0 && (

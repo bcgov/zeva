@@ -145,6 +145,11 @@ class ModelYearReportViewset(
 
                 ldv_sales_previous = None
 
+            validation_status = report.validation_status.value
+
+            if validation_status in ['RECOMMENDED', 'RETURNED']:
+                validation_status = ModelYearReportStatuses.SUBMITTED
+
             return Response({
                 'avg_sales': avg_sales,
                 'organization': organization.data,
@@ -158,7 +163,7 @@ class ModelYearReportViewset(
                 'create_user': report.create_user,
                 'confirmations': confirmations,
                 'ldv_sales': report.ldv_sales,
-                'statuses': get_model_year_report_statuses(report),
+                'statuses': get_model_year_report_statuses(report, request.user),
                 'ldv_sales_previous': ldv_sales_previous.data
                 if ldv_sales_previous else [],
                 'credit_reduction_selection': report.credit_reduction_selection
@@ -215,8 +220,9 @@ class ModelYearReportViewset(
 
         if validation_status:
             if validation_status == 'RECOMMENDED' and not description:
+                # returning a 200 to bypass the rest of the update
                 return HttpResponse(
-                    status=400, content="Recommendation is required"
+                    status=200, content="Recommendation is required"
                 )
 
             model_year_report_update.update(

@@ -29,14 +29,17 @@ const ComplianceReportAlert = (props) => {
   let userName;
 
   if (validationStatus && history.length > 0) {
-    date = moment(statusFilter(validationStatus).createTimestamp).format('MMM D, YYYY');
-    userName = statusFilter(validationStatus).createUser.displayName;
+    const found = statusFilter(validationStatus);
+    if (found) {
+      date = moment(found.createTimestamp).format('MMM D, YYYY');
+      userName = found.createUser.displayName;
 
-    if (validationStatus === 'ASSESSED') {
-      confirmedBy = {
-        date: moment(statusFilter('SUBMITTED').createTimestamp).format('MMM D, YYYY'),
-        user: statusFilter('SUBMITTED').createUser.displayName,
-      };
+      if (validationStatus === 'ASSESSED') {
+        confirmedBy = {
+          date: moment(statusFilter('SUBMITTED').createTimestamp).format('MMM D, YYYY'),
+          user: statusFilter('SUBMITTED').createUser.displayName,
+        };
+      }
     }
   }
 
