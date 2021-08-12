@@ -9,7 +9,7 @@ import CommentInput from '../../app/components/CommentInput';
 
 const SupplementaryDetailsPage = (props) => {
   const {
-    details, loading, handleAddComment, handleSubmit, handleInputChange,
+    details, loading, handleAddComment, handleSubmit, handleInputChange, newData
   } = props;
 
   if (loading) {
@@ -23,9 +23,9 @@ const SupplementaryDetailsPage = (props) => {
         </div>
       </div>
       <div className="supplementary-form">
-        <SupplierInformation />
-        <ZevSales />
-        <CreditActivity />
+        <SupplierInformation details={details} handleInputChange={handleInputChange} newData={newData} />
+        <ZevSales details={details} handleInputChange={handleInputChange} />
+        <CreditActivity details={details} handleInputChange={handleInputChange} />
         <div id="comment-input">
 
           <CommentInput

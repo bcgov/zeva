@@ -9,20 +9,21 @@ const SupplementaryContainer = (props) => {
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState('');
+  const [newData, setNewData] = useState({})
   const { keycloak, user } = props;
 
   const handleAddComment = (comment) => {
-    setDetails({ ...details, comment });
+    setNewData({ ...newData, comment });
   };
 
   const handleSubmit = (status) => {
-    setDetails({...details, status })
+    setNewData({...newData, status })
     axios.post(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id), details);
   };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setDetails({ ...details, [name]: value });
+    setNewData({ ...newData, [name]: value });
   };
   const refreshDetails = () => {
     // setLoading(true);
@@ -44,6 +45,7 @@ const SupplementaryContainer = (props) => {
       loading={loading}
       user={user}
       details={details}
+      newData={newData}
     />
   );
 };
