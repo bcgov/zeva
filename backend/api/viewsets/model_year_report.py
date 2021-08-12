@@ -35,6 +35,8 @@ from api.serializers.organization_ldv_sales import \
     OrganizationLDVSalesSerializer
 from auditable.views import AuditableMixin
 from api.services.send_email import notifications_model_year_report
+from api.serializers.model_year_report_supplemental import \
+    ModelYearReportSupplementalSerializer
 
 
 class ModelYearReportViewset(
@@ -373,4 +375,47 @@ class ModelYearReportViewset(
         """
         years = ModelYear.objects.all().order_by('-name')
         serializer = ModelYearSerializer(years, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def supplemental(self, request, pk):
+        report = get_object_or_404(ModelYearReport, pk=pk)
+
+        if not report.supplemental:
+            return Response(None)
+
+        serializer = ModelYearReportSupplementalSerializer(
+            report.supplemental
+        )
+
+        return Response(serializer.data)
+
+
+    @action(detail=True, methods=['patch'])
+    def supplemental_save(self, request, pk):
+        report = get_object_or_404(ModelYearReport, pk=pk)
+
+        # update the existing supplemental if it exists
+        if report.supplemental:
+            serializer = ModelYearReportSupplementalSerializer(
+                report.supplemental,
+                data=request.data
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save(
+                model_year_report_id=report.id,
+                update_user=request.user.username
+            )
+        # otherwise create a new one
+        else:
+            serializer = ModelYearReportSupplementalSerializer(
+                data=request.data
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save(
+                model_year_report_id=report.id,
+                create_user=request.user.username,
+                update_user=request.user.username
+            )
+
         return Response(serializer.data)
