@@ -15,7 +15,7 @@ class SupplementalReport(Auditable):
 
     model_year_report = models.ForeignKey(
         'ModelYearReport',
-        related_name=None,
+        related_name='supplemental_report',
         on_delete=models.PROTECT,
         null=False
     )

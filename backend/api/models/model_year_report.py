@@ -11,7 +11,7 @@ from api.models.model_year_report_make import ModelYearReportMake
 from api.models.model_year_report_ldv_sales import ModelYearReportLDVSales
 from api.models.model_year_report_compliance_obligation import \
     ModelYearReportComplianceObligation
-
+from api.models.supplemental_report import SupplementalReport
 
 class ModelYearReport(Auditable):
     """
@@ -78,6 +78,12 @@ class ModelYearReport(Auditable):
         )
 
         return data
+
+    @property
+    def supplemental(self):
+        return SupplementalReport.objects.filter(
+            model_year_report_id=self.id
+        ).first()
 
     def get_avg_sales(self):
         avg_sales = self.organization.get_avg_ldv_sales(

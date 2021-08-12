@@ -19,7 +19,7 @@ const SupplementaryContainer = (props) => {
   const handleSubmit = (status) => {
     setNewData({ ...newData, status });
     console.log(newData)
-    // axios.patch(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id), newData);
+    axios.patch(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id), newData);
   };
 
   const handleInputChange = (event) => {

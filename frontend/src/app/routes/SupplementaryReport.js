@@ -1,8 +1,9 @@
-const API_BASE_PATH = '/reports';
+const API_BASE_PATH = '/compliance/reports';
 
 const ROUTES_SUPPLEMENTARY = {
-  DETAILS: `${API_BASE_PATH}/:id/details`,
-  CREATE: `${API_BASE_PATH}/:id/supplementary`,
+  CREATE: '/reports/:id/supplementary',
+  DETAILS: `${API_BASE_PATH}/:id/supplemental`,
+  SAVE: `${API_BASE_PATH}/:id/supplemental_save`,
 };
 
 export default ROUTES_SUPPLEMENTARY;
