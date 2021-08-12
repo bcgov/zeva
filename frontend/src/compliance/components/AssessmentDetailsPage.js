@@ -14,6 +14,7 @@ import ComplianceObligationReductionOffsetTable from './ComplianceObligationRedu
 import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued';
 import CommentInput from '../../app/components/CommentInput';
 import DisplayComment from '../../app/components/DisplayComment';
+import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
 
 const AssessmentDetailsPage = (props) => {
   const {
@@ -182,7 +183,7 @@ const AssessmentDetailsPage = (props) => {
               <button
                 className="btn button primary float-right"
                 onClick={() => {
-                  console.log('create supplemental');
+                  history.push(ROUTES_SUPPLEMENTARY.CREATE.replace(/:id/g, id))
                 }}
                 type="button"
               >
