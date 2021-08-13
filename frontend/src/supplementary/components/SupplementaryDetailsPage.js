@@ -23,7 +23,7 @@ const SupplementaryDetailsPage = (props) => {
         </div>
       </div>
       <div className="supplementary-form">
-        <SupplierInformation details={details} handleInputChange={handleInputChange} newData={newData} />
+        <SupplierInformation loading={loading} details={details} handleInputChange={handleInputChange} newData={newData} />
         <ZevSales details={details} handleInputChange={handleInputChange} />
         <CreditActivity details={details} handleInputChange={handleInputChange} />
         <div id="comment-input">

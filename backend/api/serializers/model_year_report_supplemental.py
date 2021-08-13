@@ -11,11 +11,28 @@ from api.serializers.vehicle import ModelYearSerializer
 
 class ModelYearReportSupplementalSerializer(ModelSerializer):
     status = EnumField(SupplementalReportStatuses)
+
+    class Meta:
+        model = SupplementalReport
+        fields = (
+            'id', 'status', 
+        )
+
+class ModelYearReportSupplementalSupplierSerializer(ModelSerializer):
     assessment_data = SerializerMethodField()
+    status = SerializerMethodField()
+
+    def get_status(self, obj):
+        if obj.supplemental:
+            supp_status = ModelYearReportSupplementalSerializer(obj.supplemental)
+            return supp_status.data
+        else:
+            return None
 
     def get_assessment_data(self, obj):
+
         report = ModelYearReport.objects.get(
-            id=obj.model_year_report.id
+            id=obj.id
         )
 
         model_year_serializer = ModelYearSerializer(report.model_year)
@@ -24,17 +41,17 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         if report.supplier_class == 'S':
             supplier_size = 'Small Volume Supplier'
         elif report.supplier_class == 'M':
-            supplier_size =  'Medium Volume Supplier'
+            supplier_size = 'Medium Volume Supplier'
         else:
-            supplier_size =  'Large Volume Supplier'
+            supplier_size = 'Large Volume Supplier'
 
         address_queryset = ModelYearReportAddress.objects.filter(
-            model_year_report_id=obj.model_year_report
+            model_year_report_id=obj.id
          )
         address_serializer = OrganizationAddressSerializer(address_queryset, many=True)
         makes_list = []
         makes_queryset = ModelYearReportMake.objects.filter(
-            model_year_report_id=obj.model_year_report
+            model_year_report_id=obj.id
         )
 
         for each in makes_queryset:
@@ -49,8 +66,7 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         }
 
     class Meta:
-        model = SupplementalReport
+        model = ModelYearReport
         fields = (
-            'id', 'status', 'assessment_data',
+            'id', 'assessment_data', 'status'
         )
-
