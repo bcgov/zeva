@@ -65,8 +65,7 @@ const SupplementaryContainer = (props) => {
       if (response.data) {
         setDetails(response.data);
       }
-      setDetails(fakeData)
-      setLoading(false)
+      setLoading(false);
     });
   };
 

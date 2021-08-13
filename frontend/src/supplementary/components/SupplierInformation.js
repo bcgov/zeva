@@ -17,10 +17,10 @@ const SupplierInformation = (props) => {
             Legal Name
           </label>
           <div className="w-75">
-            {details.legalName}
+            {details.assessmentData.legalName}
           </div>
         </div>
-        <div className="d-inline-block align-middle col-sm-5 p-0">
+        <div className="d-inline-block align-top mt-4 col-sm-5 p-0">
           <input
             className="form-control"
             id="legalName"
@@ -38,7 +38,7 @@ const SupplierInformation = (props) => {
             Service Address
           </label>
           <div className="w-75">
-            {details.organizationAddress && details.organizationAddress.map(
+            {details.assessmentData.reportAddress  && details.assessmentData.reportAddress.map(
               (address) => address.addressType.addressType === 'Service' && (
               <div className="p-0" key={address.id}>
                 {address.representativeName && (
@@ -57,10 +57,10 @@ const SupplierInformation = (props) => {
           </div>
         </div>
         <textarea
-          className="form-control d-inline-block align-middle col-sm-5"
+          rows="4"
+          className="form-control d-inline-block align-top mt-4 col-sm-5"
           id="serviceAddress"
           name="serviceAddress"
-            // type={type}
           value={newData.serviceAddress}
           onChange={handleInputChange}
           min="0"
@@ -75,7 +75,7 @@ const SupplierInformation = (props) => {
             Records Address
           </label>
           <div className="w-75">
-            {details.organizationAddress && details.organizationAddress.map(
+            {details.assessmentData.reportAddress && details.assessmentData.reportAddress.map(
               (address) => address.addressType.addressType === 'Records' && (
               <div className="p-0" key={address.id}>
                 {address.representativeName && (
@@ -94,10 +94,10 @@ const SupplierInformation = (props) => {
           </div>
         </div>
         <textarea
-          className="form-control d-inline-block align-middle col-sm-5"
+          rows="4"
+          className="form-control d-inline-block align-top mt-4 col-sm-5"
           id="recordsAddress"
           name="recordsAddress"
-            // type={type}
           value={newData.recordsAddress}
           onChange={handleInputChange}
           min="0"
@@ -112,11 +112,11 @@ const SupplierInformation = (props) => {
             Light Duty Vehicle Makes
           </label>
           <div className="w-75">
-            {details.makes && details.makes.map((make) => <div className="p-0" key={make}>{make}</div>)}
+            {details.assessmentData.makes && details.assessmentData.makes.map((make) => <div className="p-0" key={make}>{make}</div>)}
           </div>
         </div>
         <textarea
-          className="form-control d-inline-block align-middle col-sm-5"
+          className="form-control d-inline-block align-top mt-4 col-sm-5"
           id="lightDutyMakes"
           name="lightDutyMakes"
             // type={type}
@@ -134,11 +134,11 @@ const SupplierInformation = (props) => {
             Vehicle Supplier Class
           </label>
           <div className="w-75">
-              {details.supplierClass}
+              {details.assessmentData.supplierClass}
           </div>
         </div>
         <input
-          className="form-control d-inline-block align-middle col-sm-5"
+          className="form-control d-inline-block align-top mt-4 col-sm-5"
           id="supplierClass"
           name="supplierClass"
             // type={type}
