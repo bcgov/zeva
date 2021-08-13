@@ -414,16 +414,6 @@ class ModelYearReportViewset(
                 model_year_report_id=report.id,
                 update_user=request.user.username
             )
-            supplier_information = request.data['supplier_info']
-            if supplier_information:
-                for k, v  in supplier_information.items():
-                    SupplementalReportSupplierInformation.objects.create(
-                        update_user=request.user.username,
-                        create_user=request.user.username,
-                        supplemental_report_id=report.supplemental.id,
-                        category=k.upper(),
-                        value=v
-                    )
 
         # otherwise create a new one
         else:
@@ -436,16 +426,16 @@ class ModelYearReportViewset(
                 create_user=request.user.username,
                 update_user=request.user.username
             )
-
-            # supplier_information = request.data['supplier_info']
-            # if supplier_information:
-            #     for k, v  in supplier_information.items():
-            #         SupplementalReportSupplierInformation.objects.create(
-            #             update_user=request.user.username,
-            #             create_user=request.user.username,
-            #             supplemental_report_id=serializer.supplemental.id,
-            #             category=k,
-            #             value=v
-            #         )
+        report = get_object_or_404(ModelYearReport, pk=pk)
+        supplier_information = request.data['supplier_info']
+        if supplier_information:
+            for k, v  in supplier_information.items():
+                SupplementalReportSupplierInformation.objects.create(
+                    update_user=request.user.username,
+                    create_user=request.user.username,
+                    supplemental_report_id=report.supplemental.id,
+                    category=k.upper(),
+                    value=v
+                )
 
         return Response(serializer.data)
