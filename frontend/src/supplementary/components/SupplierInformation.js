@@ -3,7 +3,6 @@ import TextInput from '../../app/components/TextInput';
 
 const SupplierInformation = (props) => {
   const { details, handleInputChange, newData } = props;
-  console.log(details);
   return (
     <>
       <div className="text-blue mb-4">

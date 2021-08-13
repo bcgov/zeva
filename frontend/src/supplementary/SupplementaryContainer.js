@@ -17,9 +17,11 @@ const SupplementaryContainer = (props) => {
   };
 
   const handleSubmit = (status) => {
-    setNewData({ ...newData, status });
-    console.log(newData)
-    axios.patch(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id), newData);
+    const data = {
+      ...newData,
+      status,
+    };
+    axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data);
   };
 
   const handleInputChange = (event) => {
@@ -59,11 +61,13 @@ const SupplementaryContainer = (props) => {
       supplierClass: 'Large Volume Supplier',
     };
     setDetails(data);
-    // setLoading(true);
-    // axios.get(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)).then((response) => {
-    //   setDetails(response.details);
-    setLoading(false);
-    // });
+    setLoading(true);
+    axios.get(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)).then((response) => {
+      if (response.data) {
+        setDetails(response.data);
+      }
+      setLoading(false)
+    });
   };
 
   useEffect(() => {
