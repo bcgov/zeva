@@ -30,7 +30,7 @@ const SupplementaryContainer = (props) => {
     console.log(newData);
   };
   const refreshDetails = () => {
-    const data = {
+    const fakeData = {
       legalName: 'test car manufacturing company limited',
       organizationAddress: [{
         addressLine1: '123 Street',
@@ -60,12 +60,12 @@ const SupplementaryContainer = (props) => {
       makes: ['KIA', 'JEEP', 'BMW'],
       supplierClass: 'Large Volume Supplier',
     };
-    setDetails(data);
     setLoading(true);
     axios.get(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)).then((response) => {
       if (response.data) {
         setDetails(response.data);
       }
+      setDetails(fakeData)
       setLoading(false)
     });
   };

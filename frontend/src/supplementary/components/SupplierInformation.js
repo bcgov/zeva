@@ -38,7 +38,7 @@ const SupplierInformation = (props) => {
             Service Address
           </label>
           <div className="w-75">
-            {details.organizationAddress.map(
+            {details.organizationAddress && details.organizationAddress.map(
               (address) => address.addressType.addressType === 'Service' && (
               <div className="p-0" key={address.id}>
                 {address.representativeName && (
@@ -75,7 +75,7 @@ const SupplierInformation = (props) => {
             Records Address
           </label>
           <div className="w-75">
-            {details.organizationAddress.map(
+            {details.organizationAddress && details.organizationAddress.map(
               (address) => address.addressType.addressType === 'Records' && (
               <div className="p-0" key={address.id}>
                 {address.representativeName && (
@@ -112,7 +112,7 @@ const SupplierInformation = (props) => {
             Light Duty Vehicle Makes
           </label>
           <div className="w-75">
-            {details.makes.map((make) => <div className="p-0" key={make}>{make}</div>)}
+            {details.makes && details.makes.map((make) => <div className="p-0" key={make}>{make}</div>)}
           </div>
         </div>
         <textarea
