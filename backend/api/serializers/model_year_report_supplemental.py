@@ -7,7 +7,7 @@ from api.models.model_year_report_address import ModelYearReportAddress
 from api.serializers.organization_address import OrganizationAddressSerializer
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_make import ModelYearReportMake
-
+from api.serializers.vehicle import ModelYearSerializer
 
 class ModelYearReportSupplementalSerializer(ModelSerializer):
     status = EnumField(SupplementalReportStatuses)
@@ -17,6 +17,9 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         report = ModelYearReport.objects.get(
             id=obj.model_year_report.id
         )
+
+        model_year_serializer = ModelYearSerializer(report.model_year)
+
 
         if report.supplier_class == 'S':
             supplier_size = 'Small Volume Supplier'
@@ -33,6 +36,7 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         makes_queryset = ModelYearReportMake.objects.filter(
             model_year_report_id=obj.model_year_report
         )
+
         for each in makes_queryset:
             makes_list.append(each.make)
         return {
@@ -40,11 +44,13 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
             'supplier_class': supplier_size,
             'report_address': address_serializer.data,
             'makes': makes_list,
+            'model_year': model_year_serializer.data['name']
+
         }
 
     class Meta:
         model = SupplementalReport
         fields = (
-            'id', 'status', 'assessment_data'
+            'id', 'status', 'assessment_data',
         )
 
