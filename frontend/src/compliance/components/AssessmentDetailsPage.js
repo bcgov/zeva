@@ -372,7 +372,7 @@ const AssessmentDetailsPage = (props) => {
           </div>
         </>
       )}
-      {user.isGovernment && ( <CommentInput
+      {user.isGovernment && statuses.assessment.status !== 'ASSESSED' && ( <CommentInput
         disable={details.assessment.validationStatus === 'ASSESSED'}
         defaultComment={details.bceidComment}
         handleAddComment={handleAddBceidComment}
