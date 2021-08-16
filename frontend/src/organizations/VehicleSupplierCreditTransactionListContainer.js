@@ -23,7 +23,6 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
   const [reports, setReports] = useState([]);
   const [creditTransactions, setCreditTransactions] = useState([]);
   const { keycloak, location, user } = props;
-  const [reports, setReports] = useState([]);
   const { state: locationState } = location;
 
   const refreshDetails = () => {
