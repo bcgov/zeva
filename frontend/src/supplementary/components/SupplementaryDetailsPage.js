@@ -19,11 +19,11 @@ const SupplementaryDetailsPage = (props) => {
     <div id="supplementary" className="page">
       <div className="row mt-3">
         <div className="col">
-          <h2 className="mb-2">(Add YEAR!) Model Year Supplementary Report</h2>
+          <h2 className="mb-2">{details.assessmentData && details.assessmentData.modelYear} Model Year Supplementary Report</h2>
         </div>
       </div>
       <div className="supplementary-form">
-        <SupplierInformation details={details} handleInputChange={handleInputChange} newData={newData} />
+        <SupplierInformation loading={loading} details={details} handleInputChange={handleInputChange} newData={newData} />
         <ZevSales details={details} handleInputChange={handleInputChange} />
         <CreditActivity details={details} handleInputChange={handleInputChange} />
         <div id="comment-input">

@@ -2,7 +2,7 @@ import React from 'react';
 import TextInput from '../../app/components/TextInput';
 
 const SupplierInformation = (props) => {
-  const { details, handleInputChange, newData } = props;
+  const { details, handleInputChange, newData, loading } = props;
   return (
     <>
       <div className="text-blue mb-4">
@@ -17,14 +17,14 @@ const SupplierInformation = (props) => {
             Legal Name
           </label>
           <div className="w-75">
-            {details.legalName}
+            {details.assessmentData && details.assessmentData.legalName}
           </div>
         </div>
-        <div className="d-inline-block align-middle col-sm-5 p-0">
+        <div className="d-inline-block align-top mt-4 col-sm-5 p-0">
           <input
             className="form-control"
             id="legalName"
-            name="legalName"
+            name="supplierInfo"
             onChange={handleInputChange}
           />
         </div>
@@ -38,7 +38,7 @@ const SupplierInformation = (props) => {
             Service Address
           </label>
           <div className="w-75">
-            {details.organizationAddress && details.organizationAddress.map(
+            {details.assessmentData && details.assessmentData.reportAddress  && details.assessmentData.reportAddress.map(
               (address) => address.addressType.addressType === 'Service' && (
               <div className="p-0" key={address.id}>
                 {address.representativeName && (
@@ -57,10 +57,10 @@ const SupplierInformation = (props) => {
           </div>
         </div>
         <textarea
-          className="form-control d-inline-block align-middle col-sm-5"
+          rows="4"
+          className="form-control d-inline-block align-top mt-4 col-sm-5"
           id="serviceAddress"
-          name="serviceAddress"
-            // type={type}
+          name="supplierInfo"
           value={newData.serviceAddress}
           onChange={handleInputChange}
           min="0"
@@ -75,7 +75,7 @@ const SupplierInformation = (props) => {
             Records Address
           </label>
           <div className="w-75">
-            {details.organizationAddress && details.organizationAddress.map(
+            {details.assessmentData && details.assessmentData.reportAddress && details.assessmentData.reportAddress.map(
               (address) => address.addressType.addressType === 'Records' && (
               <div className="p-0" key={address.id}>
                 {address.representativeName && (
@@ -94,10 +94,10 @@ const SupplierInformation = (props) => {
           </div>
         </div>
         <textarea
-          className="form-control d-inline-block align-middle col-sm-5"
+          rows="4"
+          className="form-control d-inline-block align-top mt-4 col-sm-5"
           id="recordsAddress"
-          name="recordsAddress"
-            // type={type}
+          name="supplierInfo"
           value={newData.recordsAddress}
           onChange={handleInputChange}
           min="0"
@@ -107,20 +107,20 @@ const SupplierInformation = (props) => {
         <div className="d-inline-block col-sm-4">
           <label
             className="text-blue font-weight-bold"
-            htmlFor="lightDutyMakes"
+            htmlFor="ldvMakes"
           >
             Light Duty Vehicle Makes
           </label>
           <div className="w-75">
-            {details.makes && details.makes.map((make) => <div className="p-0" key={make}>{make}</div>)}
+            {details.assessmentData && details.assessmentData.makes && details.assessmentData.makes.map((make) => <div className="p-0" key={make}>{make}</div>)}
           </div>
         </div>
         <textarea
-          className="form-control d-inline-block align-middle col-sm-5"
-          id="lightDutyMakes"
-          name="lightDutyMakes"
+          className="form-control d-inline-block align-top mt-4 col-sm-5"
+          id="ldvMakes"
+          name="supplierInfo"
             // type={type}
-          value={newData.lightDutyMakes}
+          value={newData.ldvMakes}
           onChange={handleInputChange}
           min="0"
         />
@@ -129,18 +129,18 @@ const SupplierInformation = (props) => {
         <div className="d-inline-block col-sm-4">
           <label
             className="text-blue font-weight-bold"
-            htmlFor="lightDutyMakes"
+            htmlFor="supplierClass"
           >
             Vehicle Supplier Class
           </label>
           <div className="w-75">
-              {details.supplierClass}
+              {details.assessmentData && details.assessmentData.supplierClass}
           </div>
         </div>
         <input
-          className="form-control d-inline-block align-middle col-sm-5"
+          className="form-control d-inline-block align-top mt-4 col-sm-5"
           id="supplierClass"
-          name="supplierClass"
+          name="supplierInfo"
             // type={type}
           value={newData.supplierClass}
           onChange={handleInputChange}

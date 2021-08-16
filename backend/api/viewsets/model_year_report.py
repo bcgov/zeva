@@ -36,8 +36,8 @@ from api.serializers.organization_ldv_sales import \
 from auditable.views import AuditableMixin
 from api.services.send_email import notifications_model_year_report
 from api.serializers.model_year_report_supplemental import \
-    ModelYearReportSupplementalSerializer
-
+    ModelYearReportSupplementalSerializer, ModelYearReportSupplementalSupplierSerializer
+from api.models.supplemental_report_supplier_information import SupplementalReportSupplierInformation
 
 class ModelYearReportViewset(
         AuditableMixin, viewsets.GenericViewSet,
@@ -385,16 +385,18 @@ class ModelYearReportViewset(
 
     @action(detail=True, methods=['get'])
     def supplemental(self, request, pk):
+        model_year_report = ModelYearReport.objects.get(id=pk)
+        supplier_serializer = ModelYearReportSupplementalSupplierSerializer(model_year_report)
         report = get_object_or_404(ModelYearReport, pk=pk)
 
         if not report.supplemental:
-            return Response(None)
+            return Response(supplier_serializer.data)
 
         serializer = ModelYearReportSupplementalSerializer(
             report.supplemental
         )
 
-        return Response(serializer.data)
+        return Response(supplier_serializer.data)
 
 
     @action(detail=True, methods=['patch'])
@@ -412,6 +414,7 @@ class ModelYearReportViewset(
                 model_year_report_id=report.id,
                 update_user=request.user.username
             )
+
         # otherwise create a new one
         else:
             serializer = ModelYearReportSupplementalSerializer(
@@ -423,5 +426,16 @@ class ModelYearReportViewset(
                 create_user=request.user.username,
                 update_user=request.user.username
             )
+        report = get_object_or_404(ModelYearReport, pk=pk)
+        supplier_information = request.data['supplier_info']
+        if supplier_information:
+            for k, v  in supplier_information.items():
+                SupplementalReportSupplierInformation.objects.create(
+                    update_user=request.user.username,
+                    create_user=request.user.username,
+                    supplemental_report_id=report.supplemental.id,
+                    category=k.upper(),
+                    value=v
+                )
 
         return Response(serializer.data)
