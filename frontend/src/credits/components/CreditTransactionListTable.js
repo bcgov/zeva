@@ -27,7 +27,10 @@ const CreditTransactionListTable = (props) => {
 
     if (transactionType.toLowerCase() === 'reduction') {
       const report = reports.find((each) => Number(each.id) === (item.foreignKey));
-      ({ name } = report.modelYear);
+
+      if (report) {
+        ({ name } = report.modelYear);
+      }
     }
 
     switch (transactionType.toLowerCase()) {
