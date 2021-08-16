@@ -11,6 +11,7 @@ import { withRouter } from 'react-router';
 
 import CustomPropTypes from '../app/utilities/props';
 import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
+import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import VehicleSupplierTabs from '../app/components/VehicleSupplierTabs';
 import VehicleSupplierSalesListPage from './components/VehicleSupplierSalesListPage';
 
@@ -19,6 +20,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [balances, setBalances] = useState([]);
+  const [reports, setReports] = useState([]);
   const [creditTransactions, setCreditTransactions] = useState([]);
   const { keycloak, location, user } = props;
   const { state: locationState } = location;
@@ -37,7 +39,11 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
       setDetails(response.data);
     });
 
-    Promise.all([balancePromise, listPromise, detailsPromise]).then(() => {
+    const reportsPromise = axios.get(ROUTES_COMPLIANCE.REPORTS).then((response) => {
+      setReports(response.data);
+    });
+
+    Promise.all([balancePromise, listPromise, detailsPromise, reportsPromise]).then(() => {
       setLoading(false);
     });
   };
@@ -55,6 +61,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
         locationState={locationState}
         balances={balances}
         items={creditTransactions}
+        reports={reports}
         user={{ isGovernment: true }}
       />
     </div>
