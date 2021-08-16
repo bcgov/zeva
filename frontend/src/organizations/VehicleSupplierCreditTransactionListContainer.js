@@ -23,6 +23,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
   const [reports, setReports] = useState([]);
   const [creditTransactions, setCreditTransactions] = useState([]);
   const { keycloak, location, user } = props;
+  const [reports, setReports] = useState([]);
   const { state: locationState } = location;
 
   const refreshDetails = () => {
@@ -70,6 +71,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
 VehicleSupplierCreditTransactionListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   location: PropTypes.shape().isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default withRouter(VehicleSupplierCreditTransactionListContainer);

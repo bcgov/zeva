@@ -24,7 +24,9 @@ const VehicleSupplierSalesListPage = (props) => {
             balances={balances}
             reports={reports}
             items={items}
-            user={user} />
+            reports={reports}
+            user={user}
+          />
         </div>
       </div>
 
@@ -51,12 +53,12 @@ VehicleSupplierSalesListPage.defaultProps = {
 };
 
 VehicleSupplierSalesListPage.propTypes = {
+  balances: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),
-  user: CustomPropTypes.user.isRequired,
-  items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  balances: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   reports: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default VehicleSupplierSalesListPage;
