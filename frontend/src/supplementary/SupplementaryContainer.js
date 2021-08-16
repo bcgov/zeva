@@ -9,15 +9,16 @@ const SupplementaryContainer = (props) => {
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState('');
+  const [newData, setNewData] = useState({});
   const { keycloak, user } = props;
 
   const handleAddComment = (comment) => {
-    setDetails({ ...details, comment });
+    setNewData({ ...newData, comment });
   };
 
   const handleSubmit = (status) => {
     const data = {
-      ...details,
+      ...newData,
       status,
     };
     axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data);
@@ -25,16 +26,47 @@ const SupplementaryContainer = (props) => {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setDetails({ ...details, [name]: value });
+    setNewData({ ...newData, [name]: value });
+    console.log(newData);
   };
   const refreshDetails = () => {
+    const fakeData = {
+      legalName: 'test car manufacturing company limited',
+      organizationAddress: [{
+        addressLine1: '123 Street',
+        addressLine2: null,
+        addressLine3: null,
+        addressType: { addressType: 'Records' },
+        city: 'VICTORIA',
+        country: 'Canada',
+        county: null,
+        id: 209,
+        postalCode: '-',
+        representativeName: 'Emily H',
+        state: 'BC',
+      }, {
+        addressLine1: '73 TEST ST',
+        addressLine2: null,
+        addressLine3: null,
+        addressType: { addressType: 'Service' },
+        city: 'VICTORIA',
+        country: 'Canada',
+        county: null,
+        id: 210,
+        postalCode: 'V9A 3V5',
+        representativeName: 'Emily H',
+        state: 'BC',
+      }],
+      makes: ['KIA', 'JEEP', 'BMW'],
+      supplierClass: 'Large Volume Supplier',
+    };
     setLoading(true);
     axios.get(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)).then((response) => {
       if (response.data) {
         setDetails(response.data);
       }
-
-      setLoading(false);
+      setDetails(fakeData)
+      setLoading(false)
     });
   };
 
@@ -50,6 +82,7 @@ const SupplementaryContainer = (props) => {
       loading={loading}
       user={user}
       details={details}
+      newData={newData}
     />
   );
 };
