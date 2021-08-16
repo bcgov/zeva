@@ -24,7 +24,6 @@ const VehicleSupplierSalesListPage = (props) => {
             balances={balances}
             reports={reports}
             items={items}
-            reports={reports}
             user={user}
           />
         </div>
