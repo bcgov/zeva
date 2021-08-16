@@ -366,18 +366,19 @@ const AssessmentDetailsPage = (props) => {
                     </label>
                   </>
                   )}
-                  <CommentInput
-                    disable={details.assessment.validationStatus === 'ASSESSED'}
-                    defaultComment={details.bceidComment}
-                    handleAddComment={handleAddBceidComment}
-                    handleCommentChange={handleCommentChangeBceid}
-                    title="Assessment Message to the Supplier: "
-                  />
                 </div>
               </div>
             </div>
           </div>
         </>
+      )}
+      {user.isGovernment && statuses.assessment.status !== 'ASSESSED' && ( <CommentInput
+        disable={details.assessment.validationStatus === 'ASSESSED'}
+        defaultComment={details.bceidComment}
+        handleAddComment={handleAddBceidComment}
+        handleCommentChange={handleCommentChangeBceid}
+        title="Assessment Message to the Supplier: "
+      />
       )}
 
       <div className="row">
