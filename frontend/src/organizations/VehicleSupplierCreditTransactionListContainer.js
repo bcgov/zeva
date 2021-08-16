@@ -70,6 +70,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
 VehicleSupplierCreditTransactionListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   location: PropTypes.shape().isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default withRouter(VehicleSupplierCreditTransactionListContainer);

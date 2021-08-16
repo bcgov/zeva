@@ -118,7 +118,7 @@ def get_model_year_report_statuses(report, request_user=None):
         supplier_information_status = 'SUBMITTED'
         consumer_sales_status = 'SUBMITTED'
         compliance_obligation_status = 'SUBMITTED'
-        summary_status = 'SUBMITTED'    
+        summary_status = 'SUBMITTED'
 
         user_profile = UserProfile.objects.filter(username=report.update_user)
         if user_profile.exists():

@@ -317,7 +317,7 @@ const AssessmentDetailsPage = (props) => {
             </div>
           </>
       )}
-      {analystAction && ['ASSESSED'].indexOf(statuses.assessment.status) < 0
+      {(analystAction || directorAction) && ['ASSESSED'].indexOf(statuses.assessment.status) < 0
       && (
         <>
           {['RECOMMENDED'].indexOf(statuses.assessment.status) < 0 && (
@@ -366,19 +366,20 @@ const AssessmentDetailsPage = (props) => {
                     </label>
                   </>
                   )}
+                  {(analystAction || directorAction) && (
+                    <CommentInput
+                      disable={details.assessment.validationStatus === 'ASSESSED'}
+                      defaultComment={details.bceidComment}
+                      handleAddComment={handleAddBceidComment}
+                      handleCommentChange={handleCommentChangeBceid}
+                      title="Assessment Message to the Supplier: "
+                    />
+                  )}
                 </div>
               </div>
             </div>
           </div>
         </>
-      )}
-      {user.isGovernment && statuses.assessment.status !== 'ASSESSED' && ( <CommentInput
-        disable={details.assessment.validationStatus === 'ASSESSED'}
-        defaultComment={details.bceidComment}
-        handleAddComment={handleAddBceidComment}
-        handleCommentChange={handleCommentChangeBceid}
-        title="Assessment Message to the Supplier: "
-      />
       )}
 
       <div className="row">
