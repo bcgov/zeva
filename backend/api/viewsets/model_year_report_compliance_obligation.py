@@ -393,19 +393,17 @@ class ModelYearReportComplianceObligationViewset(
                     'credit_a_value',
                     flat=True
                 ).filter(
-                    from_gov=False,
                     model_year_report_id=previous_report,
-                    category='creditBalanceEnd'
-                ).first()
+                    category='ProvisionalBalanceAfterCreditReduction'
+                ).order_by('-update_timestamp').first()
 
                 prior_year_balance_b = ModelYearReportComplianceObligation.objects.values_list(
                     'credit_b_value',
                     flat=True
                 ).filter(
-                    from_gov=False,
                     model_year_report_id=previous_report,
-                    category='creditBalanceEnd'
-                ).first()
+                    category='ProvisionalBalanceAfterCreditReduction'
+                ).order_by('-update_timestamp').first()
 
             content.append({
                 'credit_a_value': prior_year_balance_a if prior_year_balance_a else 0,
