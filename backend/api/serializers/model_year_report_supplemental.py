@@ -1,5 +1,5 @@
 from enumfields.drf import EnumField
-from rest_framework.serializers import ModelSerializer, SlugRelatedField, SerializerMethodField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 from api.models.supplemental_report import SupplementalReport
 from api.models.supplemental_report_statuses import SupplementalReportStatuses
@@ -7,16 +7,43 @@ from api.models.model_year_report_address import ModelYearReportAddress
 from api.serializers.organization_address import OrganizationAddressSerializer
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_make import ModelYearReportMake
+from api.models.supplemental_report_credit_activity import \
+    SupplementalReportCreditActivity
 from api.serializers.vehicle import ModelYearSerializer
+
+
+class ModelYearReportSupplementalCreditActivitySerializer(ModelSerializer):
+    model_year = ModelYearSerializer()
+
+    class Meta:
+        model = SupplementalReportCreditActivity
+        fields = (
+            'id', 'credit_a_value', 'credit_b_value', 'category',
+            'model_year'
+        )
+
 
 class ModelYearReportSupplementalSerializer(ModelSerializer):
     status = EnumField(SupplementalReportStatuses)
+    credit_activity = SerializerMethodField()
+
+    def get_credit_activity(self, obj):
+        activity = SupplementalReportCreditActivity.objects.filter(
+            supplemental_report_id=obj.id
+        )
+
+        serializer = ModelYearReportSupplementalCreditActivitySerializer(
+            activity, many=True
+        )
+
+        return serializer.data
 
     class Meta:
         model = SupplementalReport
         fields = (
-            'id', 'status', 
+            'id', 'status', 'ldv_sales', 'credit_activity',
         )
+
 
 class ModelYearReportSupplementalSupplierSerializer(ModelSerializer):
     assessment_data = SerializerMethodField()

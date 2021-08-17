@@ -20,7 +20,19 @@ const SupplementaryContainer = (props) => {
     const data = {
       ...newData,
       status,
+      creditActivity: [{
+        category: 'creditBalanceStart',
+        modelYearId: 2,
+        creditAValue: '100',
+        creditBValue: '50',
+      }, {
+        category: 'creditBalanceEnd',
+        modelYearId: 1,
+        creditAValue: '100',
+        creditBValue: '50',
+      }],
     };
+
     axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data);
     console.log(data);
   };
@@ -32,7 +44,10 @@ const SupplementaryContainer = (props) => {
       ...newData[name],
       [id]: value,
     };
-    setNewData({...newData, [name] : dataToUpdate })
+    setNewData({
+      ...newData,
+      [name]: dataToUpdate,
+    });
   };
   const refreshDetails = () => {
     setLoading(true);
@@ -40,7 +55,7 @@ const SupplementaryContainer = (props) => {
       if (response.data) {
         setDetails(response.data);
 
-        console.log(details)
+        console.log(details);
       }
       setLoading(false);
     });
