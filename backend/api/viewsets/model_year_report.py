@@ -37,6 +37,8 @@ from auditable.views import AuditableMixin
 from api.services.send_email import notifications_model_year_report
 from api.serializers.model_year_report_supplemental import \
     ModelYearReportSupplementalSerializer, ModelYearReportSupplementalSupplierSerializer
+from api.models.supplemental_report_sales import \
+    SupplementalReportSales
 from api.models.supplemental_report_supplier_information import SupplementalReportSupplierInformation
 
 class ModelYearReportViewset(
@@ -396,7 +398,7 @@ class ModelYearReportViewset(
             report.supplemental
         )
 
-        return Response(supplier_serializer.data)
+        return Response(serializer.data)
 
 
     @action(detail=True, methods=['patch'])
@@ -427,7 +429,7 @@ class ModelYearReportViewset(
                 update_user=request.user.username
             )
         report = get_object_or_404(ModelYearReport, pk=pk)
-        supplier_information = request.data['supplier_info']
+        supplier_information = request.data.get('supplier_info')
         if supplier_information:
             for k, v  in supplier_information.items():
                 SupplementalReportSupplierInformation.objects.create(
@@ -436,6 +438,26 @@ class ModelYearReportViewset(
                     supplemental_report_id=report.supplemental.id,
                     category=k.upper(),
                     value=v
+                )
+
+        zev_sales = request.data.get('zev_sales')
+        if zev_sales:
+            SupplementalReportSales.objects.filter(
+                supplemental_report_id=report.supplemental.id
+            ).delete()
+
+            for sale in zev_sales:
+                SupplementalReportSales.objects.create(
+                    update_user=request.user.username,
+                    create_user=request.user.username,
+                    supplemental_report_id=report.supplemental.id,
+                    sales=sale.get('sales'),
+                    make=sale.get('make'),
+                    model_name=sale.get('model_name'),
+                    model_year_id=sale.get('model_year_id'),
+                    #vehicle_zev_type=sale.get('vehicle_zev_type'),
+                    range=sale.get('range'),
+                    #zev_class=sale.get('zev_class')
                 )
 
         return Response(serializer.data)
