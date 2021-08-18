@@ -380,37 +380,35 @@ class ModelYearReportComplianceObligationViewset(
                     'model_year': {'name': key}
                 })
 
-            previous_report = None
+            previous_report_id = None
             prior_year_balance_a = 0
             prior_year_balance_b = 0
             prior_year = report_year - 1
-            previous_report = ModelYearReport.objects.values_list('id', flat=True).filter(
+            previous_report_id = ModelYearReport.objects.values_list('id', flat=True).filter(
                 model_year__name=str(prior_year)
             ).filter(organization_name=organization.name).first()
 
-            if previous_report:
-                prior_year_balance_a = ModelYearReportComplianceObligation.objects.values_list(
-                    'credit_a_value',
-                    flat=True
-                ).filter(
-                    model_year_report_id=previous_report,
+            if previous_report_id:
+                starting_balances = ModelYearReportComplianceObligation.objects.filter(
+                    model_year_report_id=previous_report_id,
                     category='ProvisionalBalanceAfterCreditReduction'
-                ).order_by('-update_timestamp').first()
+                ).order_by(
+                    'model_year__name'
+                )
 
-                prior_year_balance_b = ModelYearReportComplianceObligation.objects.values_list(
-                    'credit_b_value',
-                    flat=True
-                ).filter(
-                    model_year_report_id=previous_report,
-                    category='ProvisionalBalanceAfterCreditReduction'
-                ).order_by('-update_timestamp').first()
-
-            content.append({
-                'credit_a_value': prior_year_balance_a if prior_year_balance_a else 0,
-                'credit_b_value': prior_year_balance_b if prior_year_balance_b else 0,
-                'category': 'creditBalanceStart',
-                'model_year': {'name': report_year_obj.name}
-            })
+                for balance in starting_balances:
+                    if balance and (
+                            balance.credit_a_value > 0 or
+                            balance.credit_b_value
+                    ):
+                        content.append({
+                            'credit_a_value': balance.credit_a_value,
+                            'credit_b_value': balance.credit_b_value,
+                            'category': 'creditBalanceStart',
+                            'model_year': {
+                                'name': balance.model_year.name
+                            }
+                        })
 
             report_year_balance_a = get_current_year_balance(organization.id, report_year, 'A')
             report_year_balance_b = get_current_year_balance(organization.id, report_year, 'B')

@@ -112,7 +112,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
           {Object.keys(creditBalanceStart).map((each) => (
             <tr key={each}>
               <td className="text-blue">
-                &bull; &nbsp; &nbsp; Credits
+                &bull; &nbsp; &nbsp; {each} Credits
               </td>
               <td className="text-right">
                 {formatNumeric(creditBalanceStart[each].A, 2)}
@@ -122,6 +122,19 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               </td>
             </tr>
           ))}
+          {Object.keys(creditBalanceStart).length === 0 && (
+            <tr>
+              <td className="text-blue">
+                &bull; &nbsp; &nbsp; Credits
+              </td>
+              <td className="text-right">
+                0.00
+              </td>
+              <td className="text-right">
+                0.00
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
 
