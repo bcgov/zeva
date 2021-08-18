@@ -80,10 +80,9 @@ const AssessmentEditContainer = (props) => {
     const ratiosPromise = axios.get(ROUTES_COMPLIANCE.RATIOS);
     const makesPromise = axios.get(ROUTES_COMPLIANCE.MAKES.replace(/:id/g, id));
     const yearsPromise = axios.get(ROUTES_VEHICLES.YEARS);
-    const assessmentPromise = axios.get(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
 
-    Promise.all([detailsPromise, ratiosPromise, makesPromise, yearsPromise, assessmentPromise]).then(
-      ([response, ratiosResponse, makesResponse, yearsResponse, assessmentResponse]) => {
+    Promise.all([detailsPromise, ratiosPromise, makesPromise, yearsPromise]).then(
+      ([response, ratiosResponse, makesResponse, yearsResponse]) => {
         const {
           makes: modelYearReportMakes,
           modelYear: reportModelYear,
