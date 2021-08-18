@@ -37,7 +37,12 @@ from auditable.views import AuditableMixin
 from api.services.send_email import notifications_model_year_report
 from api.serializers.model_year_report_supplemental import \
     ModelYearReportSupplementalSerializer, ModelYearReportSupplementalSupplierSerializer
+from api.models.supplemental_report_sales import \
+    SupplementalReportSales
 from api.models.supplemental_report_supplier_information import SupplementalReportSupplierInformation
+from api.models.supplemental_report_credit_activity import \
+    SupplementalReportCreditActivity
+
 
 class ModelYearReportViewset(
         AuditableMixin, viewsets.GenericViewSet,
@@ -386,18 +391,13 @@ class ModelYearReportViewset(
     @action(detail=True, methods=['get'])
     def supplemental(self, request, pk):
         model_year_report = ModelYearReport.objects.get(id=pk)
-        supplier_serializer = ModelYearReportSupplementalSupplierSerializer(model_year_report)
         report = get_object_or_404(ModelYearReport, pk=pk)
-
-        if not report.supplemental:
-            return Response(supplier_serializer.data)
 
         serializer = ModelYearReportSupplementalSerializer(
             report.supplemental
         )
 
-        return Response(supplier_serializer.data)
-
+        return Response(serializer.data)
 
     @action(detail=True, methods=['patch'])
     def supplemental_save(self, request, pk):
@@ -427,15 +427,52 @@ class ModelYearReportViewset(
                 update_user=request.user.username
             )
         report = get_object_or_404(ModelYearReport, pk=pk)
-        supplier_information = request.data['supplier_info']
+        supplier_information = request.data.get('supplier_info')
         if supplier_information:
-            for k, v  in supplier_information.items():
+            for k, v in supplier_information.items():
                 SupplementalReportSupplierInformation.objects.create(
                     update_user=request.user.username,
                     create_user=request.user.username,
                     supplemental_report_id=report.supplemental.id,
                     category=k.upper(),
                     value=v
+                )
+
+        credit_activity = request.data.get('credit_activity')
+        if credit_activity:
+            SupplementalReportCreditActivity.objects.filter(
+                supplemental_report_id=report.supplemental.id
+            ).delete()
+
+            for activity in credit_activity:
+                SupplementalReportCreditActivity.objects.create(
+                    update_user=request.user.username,
+                    create_user=request.user.username,
+                    supplemental_report_id=report.supplemental.id,
+                    category=activity.get('category'),
+                    credit_a_value=activity.get('credit_a_value'),
+                    credit_b_value=activity.get('credit_b_value'),
+                    model_year_id=activity.get('model_year_id')
+                )
+
+        zev_sales = request.data.get('zev_sales')
+        if zev_sales:
+            SupplementalReportSales.objects.filter(
+                supplemental_report_id=report.supplemental.id
+            ).delete()
+
+            for sale in zev_sales:
+                SupplementalReportSales.objects.create(
+                    update_user=request.user.username,
+                    create_user=request.user.username,
+                    supplemental_report_id=report.supplemental.id,
+                    sales=sale.get('sales'),
+                    make=sale.get('make'),
+                    model_name=sale.get('model_name'),
+                    model_year_id=sale.get('model_year_id'),
+                    #vehicle_zev_type=sale.get('vehicle_zev_type'),
+                    range=sale.get('range'),
+                    #zev_class=sale.get('zev_class')
                 )
 
         return Response(serializer.data)
