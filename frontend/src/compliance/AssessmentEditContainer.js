@@ -78,13 +78,12 @@ const AssessmentEditContainer = (props) => {
     );
 
     const ratiosPromise = axios.get(ROUTES_COMPLIANCE.RATIOS);
-
     const makesPromise = axios.get(ROUTES_COMPLIANCE.MAKES.replace(/:id/g, id));
-
     const yearsPromise = axios.get(ROUTES_VEHICLES.YEARS);
+    const assessmentPromise = axios.get(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
 
-    Promise.all([detailsPromise, ratiosPromise, makesPromise, yearsPromise]).then(
-      ([response, ratiosResponse, makesResponse, yearsResponse]) => {
+    Promise.all([detailsPromise, ratiosPromise, makesPromise, yearsPromise, assessmentPromise]).then(
+      ([response, ratiosResponse, makesResponse, yearsResponse, assessmentResponse]) => {
         const {
           makes: modelYearReportMakes,
           modelYear: reportModelYear,
@@ -93,8 +92,9 @@ const AssessmentEditContainer = (props) => {
           modelYearReportAddresses,
           organizationName,
           validationStatus,
-          ldvSales,
+          ldvSales: reportLdvSales,
           supplierClass,
+          changelog,
         } = response.data;
         const year = parseInt(reportModelYear.name, 10);
 
@@ -108,6 +108,12 @@ const AssessmentEditContainer = (props) => {
           const analystMakes = govMakes.map((each) => each.make);
           setMakes(analystMakes);
           setSupplierMakesList(supplierCurrentMakes);
+        }
+
+        let ldvSales = reportLdvSales;
+
+        if (changelog && changelog.ldvChanges && changelog.ldvChanges.notFromGov) {
+          ldvSales = changelog.ldvChanges.notFromGov;
         }
 
         setDetails({
@@ -129,7 +135,7 @@ const AssessmentEditContainer = (props) => {
         });
 
         setSales({
-          [year]: ldvSales,
+          [year]: reportLdvSales,
         });
 
         const filteredRatio = ratiosResponse.data.find(
