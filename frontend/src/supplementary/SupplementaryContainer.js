@@ -31,6 +31,15 @@ const SupplementaryContainer = (props) => {
         creditAValue: '100',
         creditBValue: '50',
       }],
+      zevSales: [{
+        sales: 250,
+        make: 'TESLA',
+        model_name: 'TEST 1',
+        model_year_id: 2,
+        vehicle_zev_type: 2,
+        range: 87,
+        zev_class: 1,
+      }],
     };
 
     axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data);
@@ -55,7 +64,7 @@ const SupplementaryContainer = (props) => {
       if (response.data) {
         setDetails(response.data);
 
-        console.log(details);
+        console.log(response.data);
       }
       setLoading(false);
     });

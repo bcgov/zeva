@@ -37,6 +37,8 @@ from auditable.views import AuditableMixin
 from api.services.send_email import notifications_model_year_report
 from api.serializers.model_year_report_supplemental import \
     ModelYearReportSupplementalSerializer, ModelYearReportSupplementalSupplierSerializer
+from api.models.supplemental_report_sales import \
+    SupplementalReportSales
 from api.models.supplemental_report_supplier_information import SupplementalReportSupplierInformation
 from api.models.supplemental_report_credit_activity import \
     SupplementalReportCreditActivity
@@ -451,6 +453,26 @@ class ModelYearReportViewset(
                     credit_a_value=activity.get('credit_a_value'),
                     credit_b_value=activity.get('credit_b_value'),
                     model_year_id=activity.get('model_year_id')
+                )
+
+        zev_sales = request.data.get('zev_sales')
+        if zev_sales:
+            SupplementalReportSales.objects.filter(
+                supplemental_report_id=report.supplemental.id
+            ).delete()
+
+            for sale in zev_sales:
+                SupplementalReportSales.objects.create(
+                    update_user=request.user.username,
+                    create_user=request.user.username,
+                    supplemental_report_id=report.supplemental.id,
+                    sales=sale.get('sales'),
+                    make=sale.get('make'),
+                    model_name=sale.get('model_name'),
+                    model_year_id=sale.get('model_year_id'),
+                    #vehicle_zev_type=sale.get('vehicle_zev_type'),
+                    range=sale.get('range'),
+                    #zev_class=sale.get('zev_class')
                 )
 
         return Response(serializer.data)

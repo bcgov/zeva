@@ -66,11 +66,22 @@ const calculateCreditReduction = (
       if (balance.creditA >= remainingReduction) {
         deduction.creditA = remainingReduction;
 
-        updatedBalances.push({
-          modelYear: balance.modelYear,
-          creditA: balance.creditA - remainingReduction,
-          creditB: balance.creditB,
-        });
+        const balanceIndex = updatedBalances.findIndex(
+          (each) => each.modelYear === balance.modelYear,
+        );
+
+        if (balanceIndex >= 0) {
+          updatedBalances[balanceIndex] = {
+            ...updatedBalances[balanceIndex],
+            creditA: updatedBalances[balanceIndex].creditA - remainingReduction,
+          };
+        } else {
+          updatedBalances.push({
+            modelYear: balance.modelYear,
+            creditA: balance.creditA - remainingReduction,
+            creditB: balance.creditB,
+          });
+        }
 
         remainingReduction = 0;
 
@@ -79,17 +90,38 @@ const calculateCreditReduction = (
         deduction.creditA = balance.creditA;
         remainingReduction -= balance.creditA;
 
-        updatedBalances.push({
-          modelYear: balance.modelYear,
-          creditA: 0,
-          creditB: balance.creditB,
-        });
+        const balanceIndex = updatedBalances.findIndex(
+          (each) => each.modelYear === balance.modelYear,
+        );
+
+        if (balanceIndex >= 0) {
+          updatedBalances[balanceIndex] = {
+            ...updatedBalances[balanceIndex],
+            creditA: 0,
+          };
+        } else {
+          updatedBalances.push({
+            modelYear: balance.modelYear,
+            creditA: 0,
+            creditB: balance.creditB,
+          });
+        }
 
         balances[index].creditA = 0;
       }
 
+      balances = updatedBalances;
+
       if (deduction.creditA > 0) {
-        deductions.push(deduction);
+        const deductionIndex = deductions.findIndex(
+          (each) => Number(each.modelYear) === Number(deduction.modelYear),
+        );
+
+        if (deductionIndex >= 0) {
+          deductions[deductionIndex].creditA += deduction.creditA;
+        } else {
+          deductions.push(deduction);
+        }
       }
     });
 
