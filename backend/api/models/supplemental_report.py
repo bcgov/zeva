@@ -19,6 +19,10 @@ class SupplementalReport(Auditable):
         on_delete=models.PROTECT,
         null=False
     )
+    ldv_sales = models.IntegerField(
+        null=True,
+        db_comment="Contains the LDV sales/leases data based on supplemental report."
+    )
     status = EnumField(
         SupplementalReportStatuses,
         max_length=20,

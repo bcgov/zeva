@@ -1,5 +1,6 @@
 from enumfields.drf import EnumField
-from rest_framework.serializers import ModelSerializer, SlugRelatedField, SerializerMethodField
+from rest_framework.serializers import ModelSerializer, \
+    SerializerMethodField, SlugRelatedField
 
 from api.models.supplemental_report import SupplementalReport
 from api.models.supplemental_report_sales import SupplementalReportSales
@@ -8,6 +9,8 @@ from api.models.model_year_report_address import ModelYearReportAddress
 from api.serializers.organization_address import OrganizationAddressSerializer
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_make import ModelYearReportMake
+from api.models.supplemental_report_credit_activity import \
+    SupplementalReportCreditActivity
 from api.models.model_year_report_vehicle import ModelYearReportVehicle
 from api.serializers.model_year_report_vehicle import ModelYearReportVehicleSerializer
 from api.serializers.vehicle import ModelYearSerializer
@@ -15,14 +18,39 @@ from api.models.vehicle_zev_type import ZevType
 from api.models.model_year import ModelYear
 from api.models.credit_class import CreditClass
 
+
+class ModelYearReportSupplementalCreditActivitySerializer(ModelSerializer):
+    model_year = ModelYearSerializer()
+
+    class Meta:
+        model = SupplementalReportCreditActivity
+        fields = (
+            'id', 'credit_a_value', 'credit_b_value', 'category',
+            'model_year'
+        )
+
+
 class ModelYearReportSupplementalSerializer(ModelSerializer):
     status = EnumField(SupplementalReportStatuses)
-    
+    credit_activity = SerializerMethodField()
+
+    def get_credit_activity(self, obj):
+        activity = SupplementalReportCreditActivity.objects.filter(
+            supplemental_report_id=obj.id
+        )
+
+        serializer = ModelYearReportSupplementalCreditActivitySerializer(
+            activity, many=True
+        )
+
+        return serializer.data
+
     class Meta:
         model = SupplementalReport
         fields = (
-            'id', 'status'
+            'id', 'status', 'ldv_sales', 'credit_activity',
         )
+
 
 class ModelYearReportSupplementalSales(ModelSerializer):
     zev_class = SlugRelatedField(
@@ -45,6 +73,7 @@ class ModelYearReportSupplementalSales(ModelSerializer):
             'range', 'zev_class', 'model_year', 'vehicle_zev_type','update_timestamp',
         )
 
+
 class ModelYearReportSupplementalSupplierSerializer(ModelSerializer):
     assessment_data = SerializerMethodField()
     status = SerializerMethodField()
@@ -58,7 +87,6 @@ class ModelYearReportSupplementalSupplierSerializer(ModelSerializer):
 
         return sales_serializer.data
     
-
     def get_status(self, obj):
         if obj.supplemental:
             supp_status = ModelYearReportSupplementalSerializer(obj.supplemental)
@@ -73,7 +101,6 @@ class ModelYearReportSupplementalSupplierSerializer(ModelSerializer):
         )
 
         model_year_serializer = ModelYearSerializer(report.model_year)
-
 
         if report.supplier_class == 'S':
             supplier_size = 'Small Volume Supplier'
