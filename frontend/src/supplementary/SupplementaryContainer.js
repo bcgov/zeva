@@ -20,23 +20,34 @@ const SupplementaryContainer = (props) => {
     const data = {
       ...newData,
       status,
+      zevSales: [{
+        sales: 250,
+        make: 'TESLA',
+        model_name: 'TEST 1',
+        model_year_id: 2,
+        vehicle_zev_type: 2,
+        range: 87,
+        zev_class: 1,
+      }],
     };
     axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data);
     console.log(data);
   };
-  const handleSalesChange = (event) => {
-    const { id, name, value } = event.target;
-    setNewData({ ...newData, modelSales: { ...newData.modelSales, [id]: { ...newData.modelSales[id], [name]: value } } });
-    console.log(newData);
-  };
+
   const handleInputChange = (event) => {
     const { id, name, value } = event.target;
-    // seperate sections into which database table they will be inserted into ie supplierInfo
-    const dataToUpdate = {
-      ...newData[name],
-      [id]: value,
-    };
-    setNewData({ ...newData, [name]: dataToUpdate });
+    if (name === 'modelSales') {
+      const itemId = id.split('-')[1];
+      const type = id.split('-')[0];
+      setNewData({ ...newData, modelSales: { ...newData.modelSales, [itemId]: { ...newData.modelSales[itemId], [type]: value } } });
+    } else {
+      // seperate sections into which database table they will be inserted into ie supplierInfo
+      const dataToUpdate = {
+        ...newData[name],
+        [id]: value,
+      };
+      setNewData({ ...newData, [name]: dataToUpdate });
+    }
     console.log(newData);
   };
   const refreshDetails = () => {
@@ -82,7 +93,6 @@ const SupplementaryContainer = (props) => {
 
   return (
     <SupplementaryDetailsPage
-      handleSalesChange={handleSalesChange}
       handleCommentChange={handleCommentChange}
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}

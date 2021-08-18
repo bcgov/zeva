@@ -2,7 +2,7 @@ import React from 'react';
 import ReactTable from '../../app/components/ReactTable';
 
 const ZevSales = (props) => {
-  const { details, handleInputChange, handleSalesChange } = props;
+  const { details, handleInputChange } = props;
   const { modelSales } = details;
 
   const columns = [{
@@ -10,10 +10,10 @@ const ZevSales = (props) => {
       <>
         <span className="mr-2">{item.sales}</span>
         <input
+          id={`sales-${item.id}`}
           size="5"
           name="modelSales"
-          id={item.id}
-          onChange={handleSalesChange}
+          onChange={handleInputChange}
         />
       </>
     ),
@@ -26,10 +26,11 @@ const ZevSales = (props) => {
   }, {
     accessor: (item) => (
       <>
-        <span className="mr-2">{item.modelYear}</span><input
-          name="modelYear"
-          id={item.id}
-          onChange={handleSalesChange}
+        <span className="mr-2">{item.modelYear}</span>
+        <input
+          name="modelSales"
+          id={`modelYear-${item.id}`}
+          onChange={handleInputChange}
           size="4"
           maxLength="4"
         />
@@ -46,9 +47,9 @@ const ZevSales = (props) => {
       <>
         <span className="mr-2">{item.make}</span><input
           size="10"
-          name="make"
-          id={item.id}
-          onChange={handleSalesChange}
+          name="modelSales"
+          id={`make-${item.id}`}
+          onChange={handleInputChange}
         />
       </>
     ),
@@ -63,9 +64,9 @@ const ZevSales = (props) => {
       <>
         <span className="mr-2">{item.model}</span><input
           size="11"
-          name="model"
-          id={item.id}
-          onChange={handleSalesChange}
+          name="modelSales"
+          id={`model-${item.id}`}
+          onChange={handleInputChange}
         />
       </>
     ),
@@ -80,9 +81,9 @@ const ZevSales = (props) => {
       <>
         <span className="mr-2">{item.type}</span><input
           size="5"
-          name="type"
-          id={item.id}
-          onChange={handleSalesChange}
+          name="modelSales"
+          id={`type-${item.id}`}
+          onChange={handleInputChange}
         />
       </>
     ),
@@ -97,9 +98,9 @@ const ZevSales = (props) => {
       <>
         <span className="mr-2">{item.range}</span><input
           size="4"
-          name="range"
-          id={item.id}
-          onChange={handleSalesChange}
+          name="modelSales"
+          id={`range-${item.id}`}
+          onChange={handleInputChange}
         />
       </>
     ),
@@ -115,9 +116,9 @@ const ZevSales = (props) => {
         <span className="mr-2">{item.zevClass}</span><input
           maxLength="3"
           size="3"
-          name="class"
-          id={item.id}
-          onChange={handleSalesChange}
+          name="modelSales"
+          id={`class-${item.id}`}
+          onChange={handleInputChange}
         />
       </>
     ),

@@ -15,7 +15,6 @@ const SupplementaryDetailsPage = (props) => {
     handleSubmit,
     handleInputChange,
     newData,
-    handleSalesChange
   } = props;
 
   if (loading) {
@@ -32,7 +31,7 @@ const SupplementaryDetailsPage = (props) => {
       </div>
       <div className="supplementary-form">
         <SupplierInformation loading={loading} details={details} handleInputChange={handleInputChange} newData={newData} />
-        <ZevSales details={details} handleInputChange={handleInputChange} handleSalesChange={handleSalesChange} />
+        <ZevSales details={details} handleInputChange={handleInputChange} />
         <CreditActivity details={details} handleInputChange={handleInputChange} />
         <div id="comment-input">
           <CommentInput
