@@ -17,10 +17,6 @@ class SupplementalReportCreditActivity(Auditable):
         on_delete=models.PROTECT,
         null=False
     )
-    ldv_sales = models.IntegerField(
-        blank=True,
-        db_comment="Contains the LDV sales/leases data based on supplemental report."
-    )
     model_year = models.ForeignKey(
         'ModelYear',
         related_name=None,
@@ -45,7 +41,6 @@ class SupplementalReportCreditActivity(Auditable):
         null=True,
         db_comment="Category (eg. CREDIT_BALANCE_START. CREDITS_ISSUED_ZEV_SALES, CREDITS_IN, CREDITS_OUT, CREDIT_BALANCE_END, CREDIT_BALANCE_END, CREDIT_BALANCE_PROVISIONAL)"
     )
-
 
     class Meta:
         db_table = 'supplemental_report_credit_activity'

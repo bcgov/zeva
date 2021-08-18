@@ -20,6 +20,17 @@ const SupplementaryContainer = (props) => {
     const data = {
       ...newData,
       status,
+      creditActivity: [{
+        category: 'creditBalanceStart',
+        modelYearId: 2,
+        creditAValue: '100',
+        creditBValue: '50',
+      }, {
+        category: 'creditBalanceEnd',
+        modelYearId: 1,
+        creditAValue: '100',
+        creditBValue: '50',
+      }],
       zevSales: [{
         sales: 250,
         make: 'TESLA',
@@ -30,6 +41,7 @@ const SupplementaryContainer = (props) => {
         zev_class: 1,
       }],
     };
+
     axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data);
     console.log(data);
   };
@@ -39,7 +51,15 @@ const SupplementaryContainer = (props) => {
     if (name === 'modelSales') {
       const itemId = id.split('-')[1];
       const type = id.split('-')[0];
-      setNewData({ ...newData, modelSales: { ...newData.modelSales, [itemId]: { ...newData.modelSales[itemId], [type]: value } } });
+      setNewData({
+        ...newData,
+        modelSales: {
+          ...newData.modelSales,
+          [itemId]: {
+            ...newData.modelSales[itemId], [type]: value,
+          },
+        },
+      });
     } else {
       // seperate sections into which database table they will be inserted into ie supplierInfo
       const dataToUpdate = {
