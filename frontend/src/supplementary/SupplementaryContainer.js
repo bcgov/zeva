@@ -9,10 +9,10 @@ const SupplementaryContainer = (props) => {
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState('');
-  const [newData, setNewData] = useState({});
+  const [newData, setNewData] = useState({ modelSales: {}, supplierInfo: {}, creditActivity: {} });
   const { keycloak, user } = props;
 
-  const handleAddComment = (comment) => {
+  const handleCommentChange = (comment) => {
     setNewData({ ...newData, comment });
   };
 
@@ -24,7 +24,11 @@ const SupplementaryContainer = (props) => {
     axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data);
     console.log(data);
   };
-
+  const handleSalesChange = (event) => {
+    const { id, name, value } = event.target;
+    setNewData({ ...newData, modelSales: { ...newData.modelSales, [id]: { ...newData.modelSales[id], [name]: value } } });
+    console.log(newData);
+  };
   const handleInputChange = (event) => {
     const { id, name, value } = event.target;
     // seperate sections into which database table they will be inserted into ie supplierInfo
@@ -32,16 +36,42 @@ const SupplementaryContainer = (props) => {
       ...newData[name],
       [id]: value,
     };
-    setNewData({...newData, [name] : dataToUpdate })
+    setNewData({ ...newData, [name]: dataToUpdate });
+    console.log(newData);
   };
   const refreshDetails = () => {
     setLoading(true);
     axios.get(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)).then((response) => {
       if (response.data) {
         setDetails(response.data);
+        console.log(response.data);
 
-        console.log(details)
+        console.log(details);
+        setDetails({
+          ...response.data,
+          modelSales: [{
+            id: 0,
+            sales: 100,
+            modelYear: 2020,
+            make: 'BMW',
+            model: 'testModel',
+            type: 'compact',
+            range: 10,
+            zevClass: 'A',
+          }, {
+            id: 2,
+            sales: 200,
+            modelYear: 2021,
+            make: 'KIA',
+            model: 'test kia',
+            type: 'full size',
+            range: 28,
+            zevClass: 'B',
+
+          }],
+        });
       }
+
       setLoading(false);
     });
   };
@@ -52,7 +82,8 @@ const SupplementaryContainer = (props) => {
 
   return (
     <SupplementaryDetailsPage
-      handleAddComment={handleAddComment}
+      handleSalesChange={handleSalesChange}
+      handleCommentChange={handleCommentChange}
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
       loading={loading}

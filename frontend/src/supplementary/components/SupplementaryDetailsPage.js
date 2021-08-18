@@ -9,7 +9,13 @@ import CommentInput from '../../app/components/CommentInput';
 
 const SupplementaryDetailsPage = (props) => {
   const {
-    details, loading, handleAddComment, handleSubmit, handleInputChange, newData
+    details,
+    loading,
+    handleCommentChange,
+    handleSubmit,
+    handleInputChange,
+    newData,
+    handleSalesChange
   } = props;
 
   if (loading) {
@@ -19,17 +25,19 @@ const SupplementaryDetailsPage = (props) => {
     <div id="supplementary" className="page">
       <div className="row mt-3">
         <div className="col">
-          <h2 className="mb-2">{details.assessmentData && details.assessmentData.modelYear} Model Year Supplementary Report</h2>
+          <h2 className="mb-2">
+            {details.assessmentData && details.assessmentData.modelYear} Model Year Supplementary Report
+          </h2>
         </div>
       </div>
       <div className="supplementary-form">
         <SupplierInformation loading={loading} details={details} handleInputChange={handleInputChange} newData={newData} />
-        <ZevSales details={details} handleInputChange={handleInputChange} />
+        <ZevSales details={details} handleInputChange={handleInputChange} handleSalesChange={handleSalesChange} />
         <CreditActivity details={details} handleInputChange={handleInputChange} />
         <div id="comment-input">
-
           <CommentInput
-            handleAddComment={handleAddComment}
+            handleAddComment={handleCommentChange}
+            handleCommentChange={handleCommentChange}
             title="Provide details in the comment box below for any changes above."
           />
         </div>
