@@ -399,7 +399,7 @@ class ModelYearReportComplianceObligationViewset(
                 for balance in starting_balances:
                     if balance and (
                             balance.credit_a_value > 0 or
-                            balance.credit_b_value
+                            balance.credit_b_value > 0
                     ):
                         content.append({
                             'credit_a_value': balance.credit_a_value,
