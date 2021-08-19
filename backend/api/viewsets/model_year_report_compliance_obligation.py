@@ -33,9 +33,9 @@ from api.serializers.model_year_report_compliance_obligation import \
     ModelYearReportComplianceObligationOffsetSerializer
 from api.serializers.credit_transaction import \
     CreditTransactionObligationActivitySerializer
-from api.serializers.organization_deficit import OrganizationDeficitsSerializer
 from api.services.summary import parse_summary_serializer, \
     get_current_year_balance
+from api.models.organization_deficits import OrganizationDeficits
 
 
 class ModelYearReportComplianceObligationViewset(
@@ -410,6 +410,36 @@ class ModelYearReportComplianceObligationViewset(
                             }
                         })
 
+            deficits = OrganizationDeficits.objects.filter(
+                organization_id=organization.id
+            ).order_by('model_year__name')
+
+            for deficit in deficits:
+                index = 0
+                found = False
+
+                for each in content:
+                    if each.get('category') == 'deficit' and \
+                            each.get('model_year').get('name') == deficit.model_year.name:
+                        found = True
+                        break
+                    index += 1
+
+                if found:
+                    if deficit.credit_class.credit_class == 'A':
+                        content[index]['credit_a_value'] += deficit.credit_value
+                    else:
+                        content[index]['credit_b_value'] += deficit.credit_value
+                else:
+                    content.append({
+                        'credit_a_value': deficit.credit_value if deficit.credit_class.credit_class == 'A' else 0,
+                        'credit_b_value': deficit.credit_value if deficit.credit_class.credit_class == 'B' else 0,
+                        'category': 'deficit',
+                        'model_year': {
+                            'name': deficit.model_year.name
+                        }
+                    })
+
             report_year_balance_a = get_current_year_balance(organization.id, report_year, 'A')
             report_year_balance_b = get_current_year_balance(organization.id, report_year, 'B')
 
@@ -437,24 +467,18 @@ class ModelYearReportComplianceObligationViewset(
                 }, many=True
             )
 
-            deficits = OrganizationDeficitsSerializer(organization.deficits, many=True)
-
             return Response({
                 'compliance_obligation': content + serializer.data,
                 'compliance_offset': compliance_offset,
-                'ldv_sales': report.ldv_sales,
-                'deficits': deficits.data
+                'ldv_sales': report.ldv_sales
             })
         else:
             serializer = ModelYearReportComplianceObligationSnapshotSerializer(
                 snapshot, context={'request': request, 'kwargs': kwargs}, many=True
             )
 
-        deficits = OrganizationDeficitsSerializer(organization.deficits, many=True)
-
         return Response({
             'compliance_obligation': serializer.data,
             'compliance_offset': compliance_offset,
-            'ldv_sales': report.ldv_sales,
-            'deficits': deficits.data
+            'ldv_sales': report.ldv_sales
         })

@@ -11,6 +11,7 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
   const administrativeAllocation = [];
   const administrativeReduction = [];
   const automaticAdministrativePenalty = [];
+  const deficits = [];
   let pendingBalanceExist = false;
 
   complianceResponseDetails.forEach((item) => {
@@ -30,6 +31,21 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
 
       endingBalanceA += Number(item.creditAValue);
       endingBalanceB += Number(item.creditBValue);
+    }
+
+    if (item.category === 'deficit') {
+      if (item.modelYear.name in creditBalanceStart) {
+        creditBalanceStart[item.modelYear.name].A -= Number(item.creditAValue);
+        creditBalanceStart[item.modelYear.name].B -= Number(item.creditBValue);
+      } else {
+        creditBalanceStart[item.modelYear.name] = {
+          A: Number(item.creditAValue) * -1,
+          B: Number(item.creditBValue) * -1,
+        };
+      }
+
+      endingBalanceA -= Number(item.creditAValue);
+      endingBalanceB -= Number(item.creditBValue);
     }
 
     if (item.category === 'transfersIn') {
@@ -160,6 +176,7 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
     creditBalanceEnd,
     creditBalanceStart,
     creditsIssuedSales,
+    deficits,
     pendingBalance,
     pendingBalanceExist,
     provisionalBalance,
