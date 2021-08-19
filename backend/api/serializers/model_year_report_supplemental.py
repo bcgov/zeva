@@ -52,7 +52,7 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         )
 
 
-class ModelYearReportSupplementalSales(ModelSerializer):
+class ModelYearReportSupplementalSalesSerializer(ModelSerializer):
     zev_class = SlugRelatedField(
         slug_field='credit_class',
         queryset=CreditClass.objects.all()

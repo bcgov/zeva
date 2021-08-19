@@ -3,7 +3,7 @@ import ReactTable from '../../app/components/ReactTable';
 
 const ZevSales = (props) => {
   const { details, handleInputChange } = props;
-  const { modelSales } = details;
+  const { zevSales } = details;
 
   const columns = [{
     accessor: (item) => (
@@ -12,7 +12,7 @@ const ZevSales = (props) => {
         <input
           id={`sales-${item.id}`}
           size="5"
-          name="modelSales"
+          name="zevSales"
           onChange={handleInputChange}
         />
       </>
@@ -28,7 +28,7 @@ const ZevSales = (props) => {
       <>
         <span className="mr-2">{item.modelYear}</span>
         <input
-          name="modelSales"
+          name="zevSales"
           id={`modelYear-${item.id}`}
           onChange={handleInputChange}
           size="4"
@@ -47,7 +47,7 @@ const ZevSales = (props) => {
       <>
         <span className="mr-2">{item.make}</span><input
           size="10"
-          name="modelSales"
+          name="zevSales"
           id={`make-${item.id}`}
           onChange={handleInputChange}
         />
@@ -64,8 +64,8 @@ const ZevSales = (props) => {
       <>
         <span className="mr-2">{item.model}</span><input
           size="11"
-          name="modelSales"
-          id={`model-${item.id}`}
+          name="zevSales"
+          id={`modelName-${item.id}`}
           onChange={handleInputChange}
         />
       </>
@@ -81,8 +81,8 @@ const ZevSales = (props) => {
       <>
         <span className="mr-2">{item.type}</span><input
           size="5"
-          name="modelSales"
-          id={`type-${item.id}`}
+          name="zevSales"
+          id={`vehicleZevType-${item.id}`}
           onChange={handleInputChange}
         />
       </>
@@ -98,7 +98,7 @@ const ZevSales = (props) => {
       <>
         <span className="mr-2">{item.range}</span><input
           size="4"
-          name="modelSales"
+          name="zevSales"
           id={`range-${item.id}`}
           onChange={handleInputChange}
         />
@@ -116,8 +116,8 @@ const ZevSales = (props) => {
         <span className="mr-2">{item.zevClass}</span><input
           maxLength="3"
           size="3"
-          name="modelSales"
-          id={`class-${item.id}`}
+          name="zevSales"
+          id={`zevClass-${item.id}`}
           onChange={handleInputChange}
         />
       </>
@@ -137,12 +137,12 @@ const ZevSales = (props) => {
         Provide additional details in the comment box at the bottom of this form if there are changes to the consumer ZEV sales details.
       </div>
       <div className="my-4">
-        {modelSales
+        {zevSales
         && (
         <ReactTable
           className="supplementary-sales-table"
           columns={columns}
-          data={modelSales}
+          data={zevSales}
           filterable={false}
         />
         )}

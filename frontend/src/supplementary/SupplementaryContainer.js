@@ -9,7 +9,7 @@ const SupplementaryContainer = (props) => {
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState('');
-  const [newData, setNewData] = useState({ modelSales: {}, supplierInfo: {}, creditActivity: {} });
+  const [newData, setNewData] = useState({ zevSales: {}, supplierInfo: {}, creditActivity: {} });
   const { keycloak, user } = props;
 
   const handleCommentChange = (comment) => {
@@ -31,15 +31,6 @@ const SupplementaryContainer = (props) => {
         creditAValue: '100',
         creditBValue: '50',
       }],
-      zevSales: [{
-        sales: 250,
-        make: 'TESLA',
-        model_name: 'TEST 1',
-        model_year_id: 2,
-        vehicle_zev_type: 2,
-        range: 87,
-        zev_class: 1,
-      }],
     };
 
     axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data);
@@ -48,15 +39,15 @@ const SupplementaryContainer = (props) => {
 
   const handleInputChange = (event) => {
     const { id, name, value } = event.target;
-    if (name === 'modelSales') {
-      const itemId = id.split('-')[1];
+    if (name === 'zevSales') {
+      const vehicleId = id.split('-')[1];
       const type = id.split('-')[0];
       setNewData({
         ...newData,
-        modelSales: {
-          ...newData.modelSales,
-          [itemId]: {
-            ...newData.modelSales[itemId], [type]: value,
+        zevSales: {
+          ...newData.zevSales,
+          [vehicleId]: {
+            ...newData.zevSales[vehicleId], [type]: value,
           },
         },
       });
@@ -80,7 +71,7 @@ const SupplementaryContainer = (props) => {
         console.log(details);
         setDetails({
           ...response.data,
-          modelSales: [{
+          zevSales: [{
             id: 0,
             sales: 100,
             modelYear: 2020,
