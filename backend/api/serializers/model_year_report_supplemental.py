@@ -17,6 +17,8 @@ from api.serializers.vehicle import ModelYearSerializer
 from api.models.vehicle_zev_type import ZevType
 from api.models.model_year import ModelYear
 from api.models.credit_class import CreditClass
+from api.models.supplemental_report_supplier_information import \
+    SupplementalReportSupplierInformation
 
 
 class ModelYearReportSupplementalCreditActivitySerializer(ModelSerializer):
@@ -27,28 +29,6 @@ class ModelYearReportSupplementalCreditActivitySerializer(ModelSerializer):
         fields = (
             'id', 'credit_a_value', 'credit_b_value', 'category',
             'model_year'
-        )
-
-
-class ModelYearReportSupplementalSerializer(ModelSerializer):
-    status = EnumField(SupplementalReportStatuses)
-    credit_activity = SerializerMethodField()
-
-    def get_credit_activity(self, obj):
-        activity = SupplementalReportCreditActivity.objects.filter(
-            supplemental_report_id=obj.id
-        )
-
-        serializer = ModelYearReportSupplementalCreditActivitySerializer(
-            activity, many=True
-        )
-
-        return serializer.data
-
-    class Meta:
-        model = SupplementalReport
-        fields = (
-            'id', 'status', 'ldv_sales', 'credit_activity',
         )
 
 
@@ -76,7 +56,6 @@ class ModelYearReportSupplementalSales(ModelSerializer):
 
 class ModelYearReportSupplementalSupplierSerializer(ModelSerializer):
     assessment_data = SerializerMethodField()
-    status = SerializerMethodField()
     zev_sales = SerializerMethodField()
 
     def get_zev_sales(self, obj):
@@ -86,16 +65,8 @@ class ModelYearReportSupplementalSupplierSerializer(ModelSerializer):
         sales_serializer = ModelYearReportVehicleSerializer(sales_queryset, many=True)
 
         return sales_serializer.data
-    
-    def get_status(self, obj):
-        if obj.supplemental:
-            supp_status = ModelYearReportSupplementalSerializer(obj.supplemental)
-            return supp_status.data
-        else:
-            return None
 
     def get_assessment_data(self, obj):
-
         report = ModelYearReport.objects.get(
             id=obj.id
         )
@@ -132,5 +103,36 @@ class ModelYearReportSupplementalSupplierSerializer(ModelSerializer):
     class Meta:
         model = ModelYearReport
         fields = (
-            'id', 'assessment_data', 'status', 'zev_sales'
+            'id', 'assessment_data', 'zev_sales'
+        )
+
+
+class ModelYearReportSupplementalSerializer(ModelSerializer):
+    status = EnumField(SupplementalReportStatuses)
+    credit_activity = SerializerMethodField()
+    supplier_information = SerializerMethodField()
+
+    def get_supplier_information(self, obj):
+        serializer = ModelYearReportSupplementalSupplierSerializer(
+            obj.model_year_report
+        )
+
+        return serializer.data
+
+    def get_credit_activity(self, obj):
+        activity = SupplementalReportCreditActivity.objects.filter(
+            supplemental_report_id=obj.id
+        )
+
+        serializer = ModelYearReportSupplementalCreditActivitySerializer(
+            activity, many=True
+        )
+
+        return serializer.data
+
+    class Meta:
+        model = SupplementalReport
+        fields = (
+            'id', 'status', 'ldv_sales', 'credit_activity',
+            'supplier_information'
         )
