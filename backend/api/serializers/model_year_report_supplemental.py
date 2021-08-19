@@ -142,3 +142,34 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
             'id', 'status', 'ldv_sales', 'credit_activity',
             'assessment_data', 'zev_sales', 'supplier_information',
         )
+
+
+class ModelYearReportSupplementalSerializer(ModelSerializer):
+    status = EnumField(SupplementalReportStatuses)
+    credit_activity = SerializerMethodField()
+    supplier_information = SerializerMethodField()
+
+    def get_supplier_information(self, obj):
+        serializer = ModelYearReportSupplementalSupplierSerializer(
+            obj.model_year_report
+        )
+
+        return serializer.data
+
+    def get_credit_activity(self, obj):
+        activity = SupplementalReportCreditActivity.objects.filter(
+            supplemental_report_id=obj.id
+        )
+
+        serializer = ModelYearReportSupplementalCreditActivitySerializer(
+            activity, many=True
+        )
+
+        return serializer.data
+
+    class Meta:
+        model = SupplementalReport
+        fields = (
+            'id', 'status', 'ldv_sales', 'credit_activity',
+            'supplier_information'
+        )
