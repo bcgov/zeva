@@ -42,6 +42,7 @@ from api.models.supplemental_report_sales import \
 from api.models.supplemental_report_supplier_information import SupplementalReportSupplierInformation
 from api.models.supplemental_report_credit_activity import \
     SupplementalReportCreditActivity
+from api.models.supplemental_report import SupplementalReport
 
 
 class ModelYearReportViewset(
@@ -390,11 +391,17 @@ class ModelYearReportViewset(
 
     @action(detail=True, methods=['get'])
     def supplemental(self, request, pk):
-        model_year_report = ModelYearReport.objects.get(id=pk)
         report = get_object_or_404(ModelYearReport, pk=pk)
 
+        data = report.supplemental
+
+        if not data:
+            data = SupplementalReport()
+            data.model_year_report_id = report.id
+
+
         serializer = ModelYearReportSupplementalSerializer(
-            report.supplemental
+            data
         )
 
         return Response(serializer.data)
