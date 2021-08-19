@@ -430,6 +430,10 @@ class ModelYearReportViewset(
         report = get_object_or_404(ModelYearReport, pk=pk)
         supplier_information = request.data.get('supplier_info')
         if supplier_information:
+            SupplementalReportSupplierInformation.objects.filter(
+                supplemental_report_id=report.supplemental.id
+            ).delete()
+
             for k, v in supplier_information.items():
                 SupplementalReportSupplierInformation.objects.create(
                     update_user=request.user.username,
