@@ -44,6 +44,7 @@ const ComplianceObligationDetailsPage = (props) => {
 
   const [showModal, setShowModal] = useState(false);
   let disabledCheckboxes = '';
+  let hoverText = '';
 
   const modal = (
     <Modal
@@ -70,6 +71,12 @@ const ComplianceObligationDetailsPage = (props) => {
       disabledCheckboxes = 'disabled';
     }
   });
+
+  if (!creditReductionSelection) {
+    disabledCheckboxes = 'disabled';
+    hoverText = 'You must select a ZEV class credit preference for your Unspecified ZEV Class Credit Reduction';
+  }
+
   if (loading) {
     return <Loading />;
   }
@@ -147,6 +154,7 @@ const ComplianceObligationDetailsPage = (props) => {
         checkboxes={checkboxes}
         disabledCheckboxes={disabledCheckboxes}
         handleCheckboxClick={handleCheckboxClick}
+        hoverText={hoverText}
         user={user}
       />
       <div className="row">

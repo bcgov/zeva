@@ -10,10 +10,12 @@ import ConsumerLDVSales from './ConsumerLDVSales';
 import getTotalReduction from '../../app/utilities/getTotalReduction';
 import getClassACredits from '../../app/utilities/getClassAReduction';
 import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClassReduction';
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 
 const AssessmentEditPage = (props) => {
   const {
     details,
+    id,
     loading,
     makes,
     make,
@@ -28,7 +30,6 @@ const AssessmentEditPage = (props) => {
     ratios,
     sales,
     supplierMakes,
-    years,
   } = props;
 
   if (loading) {
@@ -43,7 +44,9 @@ const AssessmentEditPage = (props) => {
     <div className="row">
       <div className="col-sm-12">
         <div className="action-bar">
-          <span className="left-content" />
+          <span className="left-content">
+            <Button buttonType="back" locationRoute={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id)} />
+          </span>
           <span className="right-content mr-3">
             <Button
               optionalClassname="button primary"
@@ -131,6 +134,10 @@ AssessmentEditPage.defaultProps = {};
 
 AssessmentEditPage.propTypes = {
   details: PropTypes.shape().isRequired,
+  id: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]).isRequired,
   loading: PropTypes.bool.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   supplierMakes: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -145,6 +152,5 @@ AssessmentEditPage.propTypes = {
   make: PropTypes.string.isRequired,
   sales: PropTypes.shape().isRequired,
   ratios: PropTypes.shape().isRequired,
-  years: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 };
 export default AssessmentEditPage;
