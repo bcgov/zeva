@@ -38,8 +38,10 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
         creditBalanceStart[item.modelYear.name].A -= Number(item.creditAValue);
         creditBalanceStart[item.modelYear.name].B -= Number(item.creditBValue);
       } else {
-        creditBalanceStart[item.modelYear.name].A = Number(item.creditAValue) * -1;
-        creditBalanceStart[item.modelYear.name].B = Number(item.creditBValue) * -1;
+        creditBalanceStart[item.modelYear.name] = {
+          A: Number(item.creditAValue) * -1,
+          B: Number(item.creditBValue) * -1,
+        };
       }
 
       endingBalanceA -= Number(item.creditAValue);
