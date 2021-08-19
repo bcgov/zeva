@@ -55,12 +55,35 @@ class ModelYearReportSupplementalSales(ModelSerializer):
 
 
 class ModelYearReportSupplementalSupplierSerializer(ModelSerializer):
+    class Meta:
+        model = SupplementalReportSupplierInformation
+        fields = (
+            'category', 'value'
+        )
+
+
+class ModelYearReportSupplementalSerializer(ModelSerializer):
+    status = EnumField(SupplementalReportStatuses)
+    credit_activity = SerializerMethodField()
+    supplier_information = SerializerMethodField()
     assessment_data = SerializerMethodField()
     zev_sales = SerializerMethodField()
 
+    def get_supplier_information(self, obj):
+        supplier_info = SupplementalReportSupplierInformation.objects.filter(
+            supplemental_report_id=obj.id
+        )
+
+        serializer = ModelYearReportSupplementalSupplierSerializer(
+            supplier_info,
+            many=True
+        )
+
+        return serializer.data
+
     def get_zev_sales(self, obj):
         sales_queryset = ModelYearReportVehicle.objects.filter(
-            model_year_report_id=obj.id
+            model_year_report_id=obj.model_year_report_id
         )
         sales_serializer = ModelYearReportVehicleSerializer(sales_queryset, many=True)
 
@@ -68,7 +91,7 @@ class ModelYearReportSupplementalSupplierSerializer(ModelSerializer):
 
     def get_assessment_data(self, obj):
         report = ModelYearReport.objects.get(
-            id=obj.id
+            id=obj.model_year_report_id
         )
 
         model_year_serializer = ModelYearSerializer(report.model_year)
@@ -81,12 +104,14 @@ class ModelYearReportSupplementalSupplierSerializer(ModelSerializer):
             supplier_size = 'Large Volume Supplier'
 
         address_queryset = ModelYearReportAddress.objects.filter(
-            model_year_report_id=obj.id
+            model_year_report_id=report.id
          )
-        address_serializer = OrganizationAddressSerializer(address_queryset, many=True)
+        address_serializer = OrganizationAddressSerializer(
+            address_queryset, many=True
+        )
         makes_list = []
         makes_queryset = ModelYearReportMake.objects.filter(
-            model_year_report_id=obj.id
+            model_year_report_id=report.id
         )
 
         for each in makes_queryset:
@@ -99,25 +124,6 @@ class ModelYearReportSupplementalSupplierSerializer(ModelSerializer):
             'model_year': model_year_serializer.data['name']
 
         }
-
-    class Meta:
-        model = ModelYearReport
-        fields = (
-            'id', 'assessment_data', 'zev_sales'
-        )
-
-
-class ModelYearReportSupplementalSerializer(ModelSerializer):
-    status = EnumField(SupplementalReportStatuses)
-    credit_activity = SerializerMethodField()
-    supplier_information = SerializerMethodField()
-
-    def get_supplier_information(self, obj):
-        serializer = ModelYearReportSupplementalSupplierSerializer(
-            obj.model_year_report
-        )
-
-        return serializer.data
 
     def get_credit_activity(self, obj):
         activity = SupplementalReportCreditActivity.objects.filter(
@@ -134,5 +140,5 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         model = SupplementalReport
         fields = (
             'id', 'status', 'ldv_sales', 'credit_activity',
-            'supplier_information'
+            'assessment_data', 'zev_sales', 'supplier_information',
         )
