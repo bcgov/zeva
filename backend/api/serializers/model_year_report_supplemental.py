@@ -20,10 +20,12 @@ from api.models.credit_class import CreditClass
 from api.models.supplemental_report_supplier_information import \
     SupplementalReportSupplierInformation
 
+
 class ModelYearReportZevSalesSerializer(ModelSerializer):
     class Meta:
         model = SupplementalReportSales
         fields = '__all__'
+
 
 class ModelYearReportSupplementalCreditActivitySerializer(ModelSerializer):
     model_year = ModelYearSerializer()

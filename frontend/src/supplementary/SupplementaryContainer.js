@@ -9,7 +9,7 @@ const SupplementaryContainer = (props) => {
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState('');
-  const [newData, setNewData] = useState({ zevSales: {}, supplierInfo: {}, creditActivity: {} });
+  const [newData, setNewData] = useState({ zevSales: {}, creditActivity: {} });
   const { keycloak, user } = props;
 
   const handleCommentChange = (comment) => {
@@ -34,7 +34,6 @@ const SupplementaryContainer = (props) => {
     };
 
     axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data);
-    console.log(data);
   };
 
   const handleInputChange = (event) => {
@@ -66,31 +65,24 @@ const SupplementaryContainer = (props) => {
     axios.get(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)).then((response) => {
       if (response.data) {
         setDetails(response.data);
-        console.log(response.data);
-
+        const newSupplier = response.data.supplierInformation;
+        const newLegalName = newSupplier.find((each) => each.category === 'LEGAL_NAME') || '';
+        const newServiceAddress = newSupplier.find((each) => each.category === 'SERVICE_ADDRESS') || '';
+        const newRecordsAddress = newSupplier.find((each) => each.category === 'RECORDS_ADDRESS') || '';
+        const newMakes = newSupplier.find((each) => each.category === 'LDV_MAKES') || '';
+        const newSupplierClass = newSupplier.find((each) => each.category === 'SUPPLIER_CLASS') || '';
+        const newZevSales = response.data.zevSales;
         console.log(details);
-        setDetails({
-          ...response.data,
-          zevSales: [{
-            id: 0,
-            sales: 100,
-            modelYear: 2020,
-            make: 'BMW',
-            model: 'testModel',
-            type: 'compact',
-            range: 10,
-            zevClass: 'A',
-          }, {
-            id: 2,
-            sales: 200,
-            modelYear: 2021,
-            make: 'KIA',
-            model: 'test kia',
-            type: 'full size',
-            range: 28,
-            zevClass: 'B',
-
-          }],
+        const supplierInfo = {
+          legalName: newLegalName.value,
+          serviceAddress: newServiceAddress.value,
+          recordsAddress: newRecordsAddress.value,
+          makes: newMakes.value,
+          supplierClass: newSupplierClass.value,
+        }
+        setNewData({
+          ...newData,
+          supplierInfo,
         });
       }
 

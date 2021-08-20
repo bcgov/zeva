@@ -3,16 +3,17 @@ import ReactTable from '../../app/components/ReactTable';
 
 const ZevSales = (props) => {
   const { details, handleInputChange } = props;
-  const { zevSales } = details;
-
+  const { assessmentData, zevSales: newZevSales } = details;
+  const { zevSales: assessmentZevSales } = assessmentData;
   const columns = [{
     accessor: (item) => (
       <>
-        <span className="mr-2">{item.sales}</span>
+        <span className="mr-2">{item.salesIssued}</span>
         <input
           id={`sales-${item.id}`}
           size="5"
           name="zevSales"
+          value={newZevSales.sales}
           onChange={handleInputChange}
         />
       </>
@@ -62,7 +63,7 @@ const ZevSales = (props) => {
   }, {
     accessor: (item) => (
       <>
-        <span className="mr-2">{item.model}</span><input
+        <span className="mr-2">{item.modelName}</span><input
           size="11"
           name="zevSales"
           id={`modelName-${item.id}`}
@@ -73,13 +74,13 @@ const ZevSales = (props) => {
     className: 'text-right',
     Header: 'Model',
     headerClassName: 'font-weight-bold',
-    id: 'model',
+    id: 'modelName',
     sortable: false,
     maxWidth: 300,
   }, {
     accessor: (item) => (
       <>
-        <span className="mr-2">{item.type}</span><input
+        <span className="mr-2">{item.vehicleZevType}</span><input
           size="5"
           name="zevSales"
           id={`vehicleZevType-${item.id}`}
@@ -137,12 +138,12 @@ const ZevSales = (props) => {
         Provide additional details in the comment box at the bottom of this form if there are changes to the consumer ZEV sales details.
       </div>
       <div className="my-4">
-        {zevSales
+        {assessmentZevSales
         && (
         <ReactTable
           className="supplementary-sales-table"
           columns={columns}
-          data={zevSales}
+          data={assessmentZevSales}
           filterable={false}
         />
         )}

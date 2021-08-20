@@ -396,16 +396,12 @@ class ModelYearReportViewset(
         data = report.supplemental
 
         if not data:
-            print("(((((((((())))))))))")
             data = SupplementalReport()
             data.model_year_report_id = report.id
-
 
         serializer = ModelYearReportSupplementalSerializer(
             data
         )
-        print(serializer.data)
-
         return Response(serializer.data)
 
     @action(detail=True, methods=['patch'])
