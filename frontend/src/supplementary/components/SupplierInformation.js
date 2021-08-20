@@ -123,7 +123,7 @@ const SupplierInformation = (props) => {
           id="ldvMakes"
           name="supplierInfo"
             // type={type}
-          defaultValue={supplierInfo.makes}
+          defaultValue={supplierInfo.ldvMakes}
           onChange={handleInputChange}
           min="0"
         />

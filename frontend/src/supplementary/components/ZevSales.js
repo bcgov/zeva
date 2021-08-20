@@ -5,6 +5,7 @@ const ZevSales = (props) => {
   const { details, handleInputChange } = props;
   const { assessmentData, zevSales: newZevSales } = details;
   const { zevSales: assessmentZevSales } = assessmentData;
+  console.log(newZevSales)
   const columns = [{
     accessor: (item) => (
       <>

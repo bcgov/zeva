@@ -77,9 +77,9 @@ const SupplementaryContainer = (props) => {
           legalName: newLegalName.value,
           serviceAddress: newServiceAddress.value,
           recordsAddress: newRecordsAddress.value,
-          makes: newMakes.value,
+          ldvMakes: newMakes.value,
           supplierClass: newSupplierClass.value,
-        }
+        };
         setNewData({
           ...newData,
           supplierInfo,
