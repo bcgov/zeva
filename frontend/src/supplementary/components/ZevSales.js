@@ -1,20 +1,25 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import ReactTable from '../../app/components/ReactTable';
 
 const ZevSales = (props) => {
-  const { details, handleInputChange } = props;
+  const { details, handleInputChange, salesRows } = props;
   const { assessmentData, zevSales: newZevSales } = details;
   const { zevSales: assessmentZevSales } = assessmentData;
-  console.log(newZevSales)
+   console.log(salesRows)
+
+   // FINSH FILLING OUT THE ROWS WITH OLD AND NEW DATA
+   // GET ADD ROW TO WORK
+
   const columns = [{
     accessor: (item) => (
       <>
-        <span className="mr-2">{item.salesIssued}</span>
+        <span className="mr-2">{item.oldData.sales}</span>
         <input
           id={`sales-${item.id}`}
           size="5"
           name="zevSales"
-          value={newZevSales.sales}
+          value={item.newData.sales}
           onChange={handleInputChange}
         />
       </>
@@ -139,15 +144,24 @@ const ZevSales = (props) => {
         Provide additional details in the comment box at the bottom of this form if there are changes to the consumer ZEV sales details.
       </div>
       <div className="my-4">
-        {assessmentZevSales
+        {salesRows
         && (
         <ReactTable
           className="supplementary-sales-table"
           columns={columns}
-          data={assessmentZevSales}
+          data={salesRows}
           filterable={false}
         />
         )}
+        <button
+          className="transfer-add-line my-2"
+          onClick={() => {
+            console.log('new record');
+          }}
+          type="button"
+        >
+          <FontAwesomeIcon icon="plus" /> Add another line for a new ZEV model
+        </button>
       </div>
     </>
   );

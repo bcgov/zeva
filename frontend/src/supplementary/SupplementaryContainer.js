@@ -10,11 +10,14 @@ const SupplementaryContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState('');
   const [newData, setNewData] = useState({ zevSales: {}, creditActivity: {} });
+  const [salesRows, setSalesRows] = useState([]);
   const { keycloak, user } = props;
 
   const handleCommentChange = (comment) => {
     setNewData({ ...newData, comment });
   };
+
+  const addSalesRow = () => { console.log('hi'); };
 
   const handleSubmit = (status) => {
     const data = {
@@ -71,8 +74,6 @@ const SupplementaryContainer = (props) => {
         const newRecordsAddress = newSupplier.find((each) => each.category === 'RECORDS_ADDRESS') || '';
         const newMakes = newSupplier.find((each) => each.category === 'LDV_MAKES') || '';
         const newSupplierClass = newSupplier.find((each) => each.category === 'SUPPLIER_CLASS') || '';
-        const newZevSales = response.data.zevSales;
-        console.log(details);
         const supplierInfo = {
           legalName: newLegalName.value,
           serviceAddress: newServiceAddress.value,
@@ -80,12 +81,42 @@ const SupplementaryContainer = (props) => {
           ldvMakes: newMakes.value,
           supplierClass: newSupplierClass.value,
         };
+        const newZevSales = response.data.zevSales;
+        const salesData = [];
+        //sales from assessment
+        response.data.assessmentData.zevSales.forEach((item) => {
+          salesData.push({
+            newData: {},
+            oldData: {
+              make: item.make,
+              model: item.modelName,
+              modelYear: item.modelYear,
+              sales: item.salesIssued,
+              vehicleId: item.id,
+              range: item.range,
+              zevClass: item.zevClass,
+              zevType: item.vehicleZevType,
+            },
+          });
+        });
+        //new /adjusted sales
+        response.data.zevSales.forEach((item) => {
+          if (item.modelYearReportVehicle) {
+            const match = salesData.findIndex((record) => record.oldData.vehicleId === item.modelYearReportVehicle);
+            if (match >= 0) {
+              salesData[match].newData = item;
+            } else {
+              salesData.push({ newData: item, oldData: {}});
+            }
+          }
+        });
+        setSalesRows(salesData);
         setNewData({
           ...newData,
           supplierInfo,
         });
       }
-
+      console.log(salesRows)
       setLoading(false);
     });
   };
@@ -103,6 +134,8 @@ const SupplementaryContainer = (props) => {
       user={user}
       details={details}
       newData={newData}
+      addSalesRow={addSalesRow}
+      salesRows={salesRows}
     />
   );
 };
