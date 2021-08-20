@@ -20,6 +20,10 @@ from api.models.credit_class import CreditClass
 from api.models.supplemental_report_supplier_information import \
     SupplementalReportSupplierInformation
 
+class ModelYearReportZevSalesSerializer(ModelSerializer):
+    class Meta:
+        model = SupplementalReportSales
+        fields = '__all__'
 
 class ModelYearReportSupplementalCreditActivitySerializer(ModelSerializer):
     model_year = ModelYearSerializer()
@@ -82,10 +86,10 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         return serializer.data
 
     def get_zev_sales(self, obj):
-        sales_queryset = ModelYearReportVehicle.objects.filter(
-            model_year_report_id=obj.model_year_report_id
+        sales_queryset = SupplementalReportSales.objects.filter(
+            supplemental_report_id=obj.id
         )
-        sales_serializer = ModelYearReportVehicleSerializer(sales_queryset, many=True)
+        sales_serializer = ModelYearReportZevSalesSerializer(sales_queryset, many=True)
 
         return sales_serializer.data
 
@@ -116,12 +120,17 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
 
         for each in makes_queryset:
             makes_list.append(each.make)
+        sales_queryset = ModelYearReportVehicle.objects.filter(
+            model_year_report_id=obj.model_year_report_id
+            )
+        sales_serializer = ModelYearReportVehicleSerializer(sales_queryset, many=True)
         return {
             'legal_name': report.organization_name,
             'supplier_class': supplier_size,
             'report_address': address_serializer.data,
             'makes': makes_list,
-            'model_year': model_year_serializer.data['name']
+            'model_year': model_year_serializer.data['name'],
+            'zev_sales': sales_serializer.data
 
         }
 
@@ -140,36 +149,5 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         model = SupplementalReport
         fields = (
             'id', 'status', 'ldv_sales', 'credit_activity',
-            'assessment_data', 'zev_sales', 'supplier_information',
-        )
-
-
-class ModelYearReportSupplementalSerializer(ModelSerializer):
-    status = EnumField(SupplementalReportStatuses)
-    credit_activity = SerializerMethodField()
-    supplier_information = SerializerMethodField()
-
-    def get_supplier_information(self, obj):
-        serializer = ModelYearReportSupplementalSupplierSerializer(
-            obj.model_year_report
-        )
-
-        return serializer.data
-
-    def get_credit_activity(self, obj):
-        activity = SupplementalReportCreditActivity.objects.filter(
-            supplemental_report_id=obj.id
-        )
-
-        serializer = ModelYearReportSupplementalCreditActivitySerializer(
-            activity, many=True
-        )
-
-        return serializer.data
-
-    class Meta:
-        model = SupplementalReport
-        fields = (
-            'id', 'status', 'ldv_sales', 'credit_activity',
-            'supplier_information'
+            'assessment_data', 'supplier_information', 'zev_sales'
         )
