@@ -11,5 +11,13 @@
             border: None;
         }
     }
-
+    .bordered {
+        border: 1px solid $border-grey;
+        padding: 0.5rem;
+      }
+    
+      .content {
+        background-color: $default-background-grey;
+      }
+    
 }

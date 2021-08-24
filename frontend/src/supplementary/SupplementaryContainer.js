@@ -12,6 +12,9 @@ const SupplementaryContainer = (props) => {
   const [newData, setNewData] = useState({ zevSales: {}, creditActivity: {} });
   const [salesRows, setSalesRows] = useState([]);
   const { keycloak, user } = props;
+  const [files, setFiles] = useState([]);
+  const [deleteFiles, setDeleteFiles] = useState([]);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const handleCommentChange = (comment) => {
     setNewData({ ...newData, comment });
@@ -26,24 +29,73 @@ const SupplementaryContainer = (props) => {
     });
     setSalesRows([...salesRows]);
   };
+  const handleUpload = (paramId) => {
+    const promises = [];
+    files.forEach((file, index) => {
+      promises.push(new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const blob = reader.result;
+
+          axios.get(ROUTES_SUPPLEMENTARY.MINIO_URL.replace(/:id/gi, paramId)).then((response) => {
+            const { url: uploadUrl, minioObjectName } = response.data;
+            axios.put(uploadUrl, blob, {
+              headers: {
+                Authorization: null,
+              },
+              onUploadProgress: (progressEvent) => {
+                if (progressEvent.loaded >= progressEvent.total) {
+                  resolve({
+                    filename: file.name,
+                    mimeType: file.type,
+                    minioObjectName,
+                    size: file.size,
+                  });
+                }
+              },
+            }).catch(() => {
+              reject();
+            });
+          });
+        };
+
+        reader.readAsArrayBuffer(file);
+      }));
+    });
+
+    return promises;
+  };
 
   const handleSubmit = (status) => {
-    const data = {
-      ...newData,
-      status,
-      creditActivity: [{
-        category: 'creditBalanceStart',
-        modelYearId: 2,
-        creditAValue: '100',
-        creditBValue: '50',
-      }, {
-        category: 'creditBalanceEnd',
-        modelYearId: 1,
-        creditAValue: '100',
-        creditBValue: '50',
-      }],
-    };
-    axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data);
+    const uploadPromises = handleUpload(id);
+    Promise.all(uploadPromises).then((attachments) => {
+      const evidenceAttachments = {};
+      if (attachments.length > 0) {
+        evidenceAttachments.attachments = attachments;
+      }
+
+      const data = {
+        ...newData,
+        status,
+        creditActivity: [{
+          category: 'creditBalanceStart',
+          modelYearId: 2,
+          creditAValue: '100',
+          creditBValue: '50',
+        }, {
+          category: 'creditBalanceEnd',
+          modelYearId: 1,
+          creditAValue: '100',
+          creditBValue: '50',
+        }],
+        evidenceAttachments,
+        deleteFiles,
+      };
+      axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data).then((response) => {
+      });
+    }).catch((e) => {
+      setErrorMessage(e);
+    });
   };
 
   const handleInputChange = (event) => {
@@ -150,6 +202,11 @@ const SupplementaryContainer = (props) => {
       newData={newData}
       addSalesRow={addSalesRow}
       salesRows={salesRows}
+      files={files}
+      deleteFiles={deleteFiles}
+      setDeleteFiles={setDeleteFiles}
+      setUploadFiles={setFiles}
+      errorMessage={errorMessage}
     />
   );
 };

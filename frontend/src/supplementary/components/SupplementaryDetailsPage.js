@@ -5,18 +5,24 @@ import Button from '../../app/components/Button';
 import ZevSales from './ZevSales';
 import SupplierInformation from './SupplierInformation';
 import CreditActivity from './CreditActivity';
+import UploadEvidence from './UploadEvidence';
 import CommentInput from '../../app/components/CommentInput';
 
 const SupplementaryDetailsPage = (props) => {
   const {
-    details,
-    loading,
-    handleCommentChange,
-    handleSubmit,
-    handleInputChange,
-    newData,
     addSalesRow,
-    salesRows
+    deleteFiles,
+    details,
+    files,
+    handleAddComment,
+    handleCommentChange,
+    handleInputChange,
+    handleSubmit,
+    loading,
+    newData,
+    salesRows,
+    setDeleteFiles,
+    setUploadFiles,
   } = props;
 
   if (loading) {
@@ -42,6 +48,13 @@ const SupplementaryDetailsPage = (props) => {
             title="Provide details in the comment box below for any changes above."
           />
         </div>
+        <UploadEvidence
+          setUploadFiles={setUploadFiles}
+          setDeleteFiles={setDeleteFiles}
+          details={details}
+          deleteFiles={deleteFiles}
+          files={files}
+        />
       </div>
       <div className="row">
         <div className="col-12">
