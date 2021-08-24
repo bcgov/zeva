@@ -11,13 +11,60 @@ const SupplementaryContainer = (props) => {
   const [comment, setComment] = useState('');
   const [newData, setNewData] = useState({});
   const { keycloak, user } = props;
+  const [files, setFiles] = useState([]);
+  const [deleteFiles, setDeleteFiles] = useState([]);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const handleAddComment = (comment) => {
     setNewData({ ...newData, comment });
   };
 
+  const handleUpload = (paramId) => {
+    const promises = [];
+    files.forEach((file, index) => {
+      promises.push(new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const blob = reader.result;
+
+          axios.get(ROUTES_SUPPLEMENTARY.MINIO_URL.replace(/:id/gi, paramId)).then((response) => {
+            const { url: uploadUrl, minioObjectName } = response.data;
+            axios.put(uploadUrl, blob, {
+              headers: {
+                Authorization: null,
+              },
+              onUploadProgress: (progressEvent) => {
+                if (progressEvent.loaded >= progressEvent.total) {
+                  resolve({
+                    filename: file.name,
+                    mimeType: file.type,
+                    minioObjectName,
+                    size: file.size,
+                  });
+                }
+              },
+            }).catch(() => {
+              reject();
+            });
+          });
+        };
+
+        reader.readAsArrayBuffer(file);
+      }));
+    });
+
+    return promises;
+  };
+
   const handleSubmit = (status) => {
-    const data = {
+    const uploadPromises = handleUpload(id);
+    Promise.all(uploadPromises).then((attachments) => {
+      const evidenceAttachments = {};
+      if (attachments.length > 0) {
+          evidenceAttachments.attachments = attachments;
+      }
+    
+      const data = {
       ...newData,
       status,
       creditActivity: [{
@@ -40,10 +87,16 @@ const SupplementaryContainer = (props) => {
         range: 87,
         zev_class: 1,
       }],
+      evidenceAttachments,
+      deleteFiles
     };
-
-    axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data);
-    console.log(data);
+  
+    axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data).then((response) => {
+      console.log(response)
+    })
+  }).catch((e) => {
+      setErrorMessage(e);
+  });
   };
 
   const handleInputChange = (event) => {
@@ -63,7 +116,6 @@ const SupplementaryContainer = (props) => {
     axios.get(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)).then((response) => {
       if (response.data) {
         setDetails(response.data);
-
         console.log(response.data);
       }
       setLoading(false);
@@ -83,6 +135,11 @@ const SupplementaryContainer = (props) => {
       user={user}
       details={details}
       newData={newData}
+      files={files}
+      deleteFiles={deleteFiles}
+      setDeleteFiles={setDeleteFiles}
+      setUploadFiles={setFiles}
+      errorMessage={errorMessage}
     />
   );
 };

@@ -12,11 +12,13 @@ from api.models.model_year_report_make import ModelYearReportMake
 from api.models.supplemental_report_credit_activity import \
     SupplementalReportCreditActivity
 from api.models.model_year_report_vehicle import ModelYearReportVehicle
+from api.models.supplemental_report_attachment import SupplementalReportAttachment
 from api.serializers.model_year_report_vehicle import ModelYearReportVehicleSerializer
 from api.serializers.vehicle import ModelYearSerializer
 from api.models.vehicle_zev_type import ZevType
 from api.models.model_year import ModelYear
 from api.models.credit_class import CreditClass
+from api.services.minio import minio_get_object
 from api.models.supplemental_report_supplier_information import \
     SupplementalReportSupplierInformation
 
@@ -30,6 +32,36 @@ class ModelYearReportSupplementalCreditActivitySerializer(ModelSerializer):
             'id', 'credit_a_value', 'credit_b_value', 'category',
             'model_year'
         )
+
+class ModelYearReportSupplementalAttachmentSerializer(ModelSerializer):
+    """
+    Readonly Serializer for attachments
+    """
+    url = SerializerMethodField()
+
+    def get_url(self, obj):
+        try:
+            object_name = obj.minio_object_name
+
+            url = minio_get_object(object_name)
+
+            return url
+
+        except TypeError:
+            raise ImproperlyConfigured(
+                "Minio is not properly configured for this server."
+            )
+
+    class Meta:
+        model = SupplementalReportAttachment
+        fields = (
+            'id', 'mime_type', 'size', 'filename', 'minio_object_name',
+            'is_removed', 'url',
+        )
+        read_only_fields = (
+            'id', 'is_removed', 'url',
+        )
+
 
 
 class ModelYearReportSupplementalSales(ModelSerializer):
@@ -68,6 +100,16 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
     supplier_information = SerializerMethodField()
     assessment_data = SerializerMethodField()
     zev_sales = SerializerMethodField()
+    attachments = SerializerMethodField()
+
+    def get_attachments(self, obj):
+        attachments = SupplementalReportAttachment.objects.filter(
+            supplemental_report_id=obj.id,
+            is_removed=False)
+
+        serializer = ModelYearReportSupplementalAttachmentSerializer(attachments, many=True)
+
+        return serializer.data
 
     def get_supplier_information(self, obj):
         supplier_info = SupplementalReportSupplierInformation.objects.filter(
@@ -140,36 +182,5 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         model = SupplementalReport
         fields = (
             'id', 'status', 'ldv_sales', 'credit_activity',
-            'assessment_data', 'zev_sales', 'supplier_information',
-        )
-
-
-class ModelYearReportSupplementalSerializer(ModelSerializer):
-    status = EnumField(SupplementalReportStatuses)
-    credit_activity = SerializerMethodField()
-    supplier_information = SerializerMethodField()
-
-    def get_supplier_information(self, obj):
-        serializer = ModelYearReportSupplementalSupplierSerializer(
-            obj.model_year_report
-        )
-
-        return serializer.data
-
-    def get_credit_activity(self, obj):
-        activity = SupplementalReportCreditActivity.objects.filter(
-            supplemental_report_id=obj.id
-        )
-
-        serializer = ModelYearReportSupplementalCreditActivitySerializer(
-            activity, many=True
-        )
-
-        return serializer.data
-
-    class Meta:
-        model = SupplementalReport
-        fields = (
-            'id', 'status', 'ldv_sales', 'credit_activity',
-            'supplier_information'
+            'assessment_data', 'zev_sales', 'supplier_information','attachments',
         )
