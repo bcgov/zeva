@@ -21,7 +21,6 @@ const SupplementaryContainer = (props) => {
 
   const handleUpload = (paramId) => {
     const promises = [];
-    // setShowProgressBars(true);
     files.forEach((file, index) => {
       promises.push(new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -35,7 +34,6 @@ const SupplementaryContainer = (props) => {
                 Authorization: null,
               },
               onUploadProgress: (progressEvent) => {
-                // updateProgressBars(progressEvent, index);
                 if (progressEvent.loaded >= progressEvent.total) {
                   resolve({
                     filename: file.name,
