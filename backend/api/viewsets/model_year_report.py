@@ -46,6 +46,7 @@ from api.models.supplemental_report_credit_activity import \
 from api.services.minio import minio_put_object
 from api.services.minio import minio_remove_object
 from api.models.supplemental_report_attachment import SupplementalReportAttachment
+from api.models.supplemental_report import SupplementalReport
 
 
 class ModelYearReportViewset(
@@ -394,11 +395,17 @@ class ModelYearReportViewset(
 
     @action(detail=True, methods=['get'])
     def supplemental(self, request, pk):
-        model_year_report = ModelYearReport.objects.get(id=pk)
         report = get_object_or_404(ModelYearReport, pk=pk)
 
+        data = report.supplemental
+
+        if not data:
+            data = SupplementalReport()
+            data.model_year_report_id = report.id
+
+
         serializer = ModelYearReportSupplementalSerializer(
-            report.supplemental
+            data
         )
 
         return Response(serializer.data)
@@ -443,6 +450,10 @@ class ModelYearReportViewset(
         report = get_object_or_404(ModelYearReport, pk=pk)
         supplier_information = request.data.get('supplier_info')
         if supplier_information:
+            SupplementalReportSupplierInformation.objects.filter(
+                supplemental_report_id=report.supplemental.id
+            ).delete()
+
             for k, v in supplier_information.items():
                 SupplementalReportSupplierInformation.objects.create(
                     update_user=request.user.username,
