@@ -1,25 +1,23 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import ReactTable from '../../app/components/ReactTable';
+import ReactTable from 'react-table';
 
 const ZevSales = (props) => {
-  const { details, handleInputChange, salesRows } = props;
-  const { assessmentData, zevSales: newZevSales } = details;
-  const { zevSales: assessmentZevSales } = assessmentData;
-   console.log(salesRows)
-
-   // FINSH FILLING OUT THE ROWS WITH OLD AND NEW DATA
-   // GET ADD ROW TO WORK
-
+  const {
+    details,
+    handleInputChange,
+    salesRows,
+    addSalesRow
+  } = props;
   const columns = [{
-    accessor: (item) => (
+    Cell: (item) => (
       <>
-        <span className="mr-2">{item.oldData.sales}</span>
+        <span className="mr-2">{item.original.oldData.sales}</span>
         <input
-          id={`sales-${item.id}`}
+          id={`sales-${item.index}`}
           size="5"
           name="zevSales"
-          value={item.newData.sales}
+          defaultValue={item.original.newData ? item.original.newData.sales : ''}
           onChange={handleInputChange}
         />
       </>
@@ -31,15 +29,16 @@ const ZevSales = (props) => {
     sortable: false,
     maxWidth: 150,
   }, {
-    accessor: (item) => (
+    Cell: (item) => (
       <>
-        <span className="mr-2">{item.modelYear}</span>
+        <span className="mr-2">{item.original.oldData.modelYear}</span>
         <input
           name="zevSales"
-          id={`modelYear-${item.id}`}
+          id={`modelYear-${item.index}`}
           onChange={handleInputChange}
           size="4"
           maxLength="4"
+          defaultValue={item.original.newData.modelYear}
         />
       </>
     ),
@@ -50,13 +49,15 @@ const ZevSales = (props) => {
     sortable: false,
     maxWidth: 120,
   }, {
-    accessor: (item) => (
+    Cell: (item) => (
       <>
-        <span className="mr-2">{item.make}</span><input
+        <span className="mr-2">{item.original.oldData.make}</span>
+        <input
           size="10"
           name="zevSales"
-          id={`make-${item.id}`}
+          id={`make-${item.index}`}
           onChange={handleInputChange}
+          defaultValue={item.original.newData.make}
         />
       </>
     ),
@@ -67,13 +68,15 @@ const ZevSales = (props) => {
     sortable: false,
     maxWidth: 200,
   }, {
-    accessor: (item) => (
+    Cell: (item) => (
       <>
-        <span className="mr-2">{item.modelName}</span><input
+        <span className="mr-2">{item.original.oldData.model}</span>
+        <input
           size="11"
           name="zevSales"
-          id={`modelName-${item.id}`}
+          id={`modelName-${item.index}`}
           onChange={handleInputChange}
+          defaultValue={item.original.newData.modelName}
         />
       </>
     ),
@@ -84,13 +87,15 @@ const ZevSales = (props) => {
     sortable: false,
     maxWidth: 300,
   }, {
-    accessor: (item) => (
+    Cell: (item) => (
       <>
-        <span className="mr-2">{item.vehicleZevType}</span><input
+        <span className="mr-2">{item.original.oldData.zevType}</span>
+        <input
           size="5"
           name="zevSales"
-          id={`vehicleZevType-${item.id}`}
+          id={`vehicleZevType-${item.index}`}
           onChange={handleInputChange}
+          defaultValue={item.original.newData.vehicleZevType}
         />
       </>
     ),
@@ -101,31 +106,35 @@ const ZevSales = (props) => {
     sortable: false,
     maxWidth: 200,
   }, {
-    accessor: (item) => (
+    Cell: (item) => (
       <>
-        <span className="mr-2">{item.range}</span><input
+        <span className="mr-2">{item.original.oldData.range}</span>
+        <input
           size="4"
           name="zevSales"
-          id={`range-${item.id}`}
+          id={`range-${item.index}`}
           onChange={handleInputChange}
+          defaultValue={item.original.newData.range}
         />
       </>
     ),
     className: 'text-right',
-    Header: 'Range',
+    Header: 'Range (km)',
     headerClassName: 'font-weight-bold',
     id: 'range',
     sortable: false,
     maxWidth: 150,
   }, {
-    accessor: (item) => (
+    Cell: (item) => (
       <>
-        <span className="mr-2">{item.zevClass}</span><input
+        <span className="mr-2">{item.original.oldData.zevClass}</span>
+        <input
           maxLength="3"
           size="3"
           name="zevSales"
-          id={`zevClass-${item.id}`}
+          id={`zevClass-${item.index}`}
           onChange={handleInputChange}
+          defaultValue={item.original.newData.zevClass}
         />
       </>
     ),
@@ -143,20 +152,22 @@ const ZevSales = (props) => {
       <div className="text-blue my-3">
         Provide additional details in the comment box at the bottom of this form if there are changes to the consumer ZEV sales details.
       </div>
-      <div className="my-4">
+      <div className="my-4 sales-table-container">
         {salesRows
         && (
         <ReactTable
-          className="supplementary-sales-table"
+          className="sales-table"
           columns={columns}
           data={salesRows}
           filterable={false}
+          minRows={1}
+          showPagination={false}
         />
         )}
         <button
-          className="transfer-add-line my-2"
+          className="transfer-add-line m-2"
           onClick={() => {
-            console.log('new record');
+            addSalesRow();
           }}
           type="button"
         >

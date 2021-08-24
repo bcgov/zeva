@@ -17,7 +17,15 @@ const SupplementaryContainer = (props) => {
     setNewData({ ...newData, comment });
   };
 
-  const addSalesRow = () => { console.log('hi'); };
+  const addSalesRow = () => {
+    salesRows.push({
+      oldData: {},
+      newData: {
+        modelYearReportVehicle: '',
+      },
+    });
+    setSalesRows([...salesRows]);
+  };
 
   const handleSubmit = (status) => {
     const data = {
@@ -35,24 +43,29 @@ const SupplementaryContainer = (props) => {
         creditBValue: '50',
       }],
     };
-
     axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data);
   };
 
   const handleInputChange = (event) => {
     const { id, name, value } = event.target;
     if (name === 'zevSales') {
-      const vehicleId = id.split('-')[1];
+      const rowId = id.split('-')[1];
       const type = id.split('-')[0];
-      setNewData({
-        ...newData,
-        zevSales: {
-          ...newData.zevSales,
-          [vehicleId]: {
-            ...newData.zevSales[vehicleId], [type]: value,
-          },
-        },
+      const index = salesRows.findIndex((each, index) => Number(index) === Number(rowId));
+      if (index >= 0) {
+        salesRows[index].newData = {
+          ...salesRows[index].newData,
+          [type]: value,
+          modelYearReportVehicle: salesRows[index].oldData.modelYearReportVehicle,
+        };
+      }
+      const zevSales = [];
+      salesRows.forEach((each) => {
+        if (each.newData && Object.keys(each.newData).length > 0) {
+          zevSales.push(each.newData);
+        }
       });
+      newData.zevSales = zevSales;
     } else {
       // seperate sections into which database table they will be inserted into ie supplierInfo
       const dataToUpdate = {
@@ -61,7 +74,6 @@ const SupplementaryContainer = (props) => {
       };
       setNewData({ ...newData, [name]: dataToUpdate });
     }
-    console.log(newData);
   };
   const refreshDetails = () => {
     setLoading(true);
@@ -83,7 +95,7 @@ const SupplementaryContainer = (props) => {
         };
         const newZevSales = response.data.zevSales;
         const salesData = [];
-        //sales from assessment
+        // sales from assessment
         response.data.assessmentData.zevSales.forEach((item) => {
           salesData.push({
             newData: {},
@@ -92,31 +104,33 @@ const SupplementaryContainer = (props) => {
               model: item.modelName,
               modelYear: item.modelYear,
               sales: item.salesIssued,
-              vehicleId: item.id,
+              modelYearReportVehicle: item.id,
               range: item.range,
               zevClass: item.zevClass,
               zevType: item.vehicleZevType,
             },
           });
         });
-        //new /adjusted sales
-        response.data.zevSales.forEach((item) => {
+        // new /adjusted sales
+        newZevSales.forEach((item) => {
           if (item.modelYearReportVehicle) {
-            const match = salesData.findIndex((record) => record.oldData.vehicleId === item.modelYearReportVehicle);
+            const match = salesData.findIndex((record) => record.oldData.modelYearReportVehicle === item.modelYearReportVehicle);
             if (match >= 0) {
               salesData[match].newData = item;
             } else {
-              salesData.push({ newData: item, oldData: {}});
+              salesData.push({ newData: item, oldData: {} });
             }
+          } else {
+            salesData.push({ newData: item, oldData: {} });
           }
         });
         setSalesRows(salesData);
         setNewData({
           ...newData,
           supplierInfo,
+
         });
       }
-      console.log(salesRows)
       setLoading(false);
     });
   };

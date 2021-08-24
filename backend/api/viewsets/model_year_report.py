@@ -467,13 +467,17 @@ class ModelYearReportViewset(
         zev_sales = request.data.get('zev_sales')
         if zev_sales:
             SupplementalReportSales.objects.filter(supplemental_report_id=report.supplemental.id).delete()
-            for k,v in zev_sales.items():
-                model_year_report_vehicle = ModelYearReportVehicle.objects.filter(id=k).first()
+            for v in zev_sales:
+                model_year_report_vehicle_id = None
+                if v.get('model_year_report_vehicle'):
+                    model_year_report_vehicle = ModelYearReportVehicle.objects.filter(id=v.get('model_year_report_vehicle')).first()
+                    if model_year_report_vehicle:
+                        model_year_report_vehicle_id = model_year_report_vehicle.id
                 SupplementalReportSales.objects.create(
                     update_user=request.user.username,
                     create_user=request.user.username,
                     supplemental_report_id=report.supplemental.id,
-                    model_year_report_vehicle=model_year_report_vehicle,
+                    model_year_report_vehicle_id=model_year_report_vehicle_id,
                     sales=v.get('sales'),
                     make=v.get('make'),
                     model_name=v.get('model_name'),
