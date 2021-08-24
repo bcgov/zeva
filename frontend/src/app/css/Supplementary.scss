@@ -4,5 +4,14 @@
         border: 1px solid $border-grey;
         padding: 2rem;
     }
+
+    .bordered {
+        border: 1px solid $border-grey;
+        padding: 0.5rem;
+      }
+    
+      .content {
+        background-color: $default-background-grey;
+      }
     
 }

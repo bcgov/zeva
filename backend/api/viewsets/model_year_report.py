@@ -1,3 +1,4 @@
+import uuid
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from rest_framework.response import Response
@@ -42,6 +43,9 @@ from api.models.supplemental_report_sales import \
 from api.models.supplemental_report_supplier_information import SupplementalReportSupplierInformation
 from api.models.supplemental_report_credit_activity import \
     SupplementalReportCreditActivity
+from api.services.minio import minio_put_object
+from api.services.minio import minio_remove_object
+from api.models.supplemental_report_attachment import SupplementalReportAttachment
 
 
 class ModelYearReportViewset(
@@ -399,6 +403,16 @@ class ModelYearReportViewset(
 
         return Response(serializer.data)
 
+    @action(detail=True, methods=['get'])
+    def minio_url(self, request, pk=None):
+        object_name = uuid.uuid4().hex
+        url = minio_put_object(object_name)
+
+        return Response({
+            'url': url,
+            'minio_object_name': object_name
+        })
+
     @action(detail=True, methods=['patch'])
     def supplemental_save(self, request, pk):
         report = get_object_or_404(ModelYearReport, pk=pk)
@@ -437,6 +451,31 @@ class ModelYearReportViewset(
                     category=k.upper(),
                     value=v
                 )
+
+        supplemental_attachments = request.data.get('evidence_attachments', None)
+        if supplemental_attachments:
+            attachments = supplemental_attachments.get('attachments', None)
+            if attachments:
+                for attachment in attachments:
+                    SupplementalReportAttachment.objects.create(
+                        create_user=request.user.username,
+                        supplemental_report_id=report.supplemental.id,
+                        **attachment
+                    )
+        files_to_be_removed = request.data.get('delete_files', [])
+        if files_to_be_removed:
+            for file_id in files_to_be_removed:
+                attachment = SupplementalReportAttachment.objects.filter(
+                    id=file_id,
+                    supplemental_report_id=report.supplemental.id
+                ).first()
+
+                if attachment:
+                    minio_remove_object(attachment.minio_object_name)
+
+                    attachment.is_removed = True
+                    attachment.update_user = request.user.username
+                    attachment.save()
 
         credit_activity = request.data.get('credit_activity')
         if credit_activity:

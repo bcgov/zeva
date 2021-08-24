@@ -52,3 +52,4 @@ from . import credit_agreement_credit_transaction
 from . import supplemental_report
 from . import supplemental_report_sales, supplemental_report_supplier_information
 from . import supplemental_report_credit_activity
+from . import supplemental_report_attachment
