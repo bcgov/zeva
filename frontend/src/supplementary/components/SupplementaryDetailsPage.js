@@ -38,9 +38,22 @@ const SupplementaryDetailsPage = (props) => {
         </div>
       </div>
       <div className="supplementary-form">
-        <SupplierInformation loading={loading} details={details} handleInputChange={handleInputChange} newData={newData} />
-        <ZevSales details={details} handleInputChange={handleInputChange} addSalesRow={addSalesRow} salesRows={salesRows} />
-        <CreditActivity details={details} handleInputChange={handleInputChange} />
+        <SupplierInformation
+          details={details}
+          handleInputChange={handleInputChange}
+          loading={loading}
+          newData={newData}
+        />
+        <ZevSales
+          addSalesRow={addSalesRow}
+          details={details}
+          handleInputChange={handleInputChange}
+          salesRows={salesRows}
+        />
+        <CreditActivity
+          details={details}
+          handleInputChange={handleInputChange}
+        />
         <div id="comment-input">
           <CommentInput
             handleAddComment={handleCommentChange}
@@ -49,11 +62,11 @@ const SupplementaryDetailsPage = (props) => {
           />
         </div>
         <UploadEvidence
-          setUploadFiles={setUploadFiles}
-          setDeleteFiles={setDeleteFiles}
           details={details}
           deleteFiles={deleteFiles}
           files={files}
+          setDeleteFiles={setDeleteFiles}
+          setUploadFiles={setUploadFiles}
         />
       </div>
       <div className="row">

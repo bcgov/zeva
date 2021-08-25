@@ -1,15 +1,16 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ExcelFileDrop from '../../app/components/FileDrop';
 import getFileSize from '../../app/utilities/getFileSize';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from 'axios';
 
 const UploadEvidence = (props) => {
-  const { 
-    details, 
-    setUploadFiles, 
-    files, 
+  const {
+    details,
+    setUploadFiles,
+    files,
     setDeleteFiles,
-    deleteFiles
+    deleteFiles,
   } = props;
 
   const removeFile = (removedFile) => {
@@ -19,21 +20,21 @@ const UploadEvidence = (props) => {
   };
 
   return (
-  <>
-    <div className="row mt-5 mb-2">
+    <>
+      <div className="row mt-5 mb-2">
         <div className="col-12">
           <h2 className="mb-2">Supplementary Report Attachments<span> (optional)</span></h2>
           <p>
             Upload evidence supporting any of the changes made above.
           </p>
         </div>
-    </div>
-    <div className="bordered mt-1">
-      <div className="col-12 content p-3">
-        <ExcelFileDrop setFiles={setUploadFiles} maxFiles={100000} />
       </div>
-    </div>
-    {(files.length > 0 || (details.attachments && details.attachments.length > 0)) && (
+      <div className="bordered mt-1">
+        <div className="col-12 content p-3">
+          <ExcelFileDrop setFiles={setUploadFiles} maxFiles={100000} />
+        </div>
+      </div>
+      {(files.length > 0 || (details.attachments && details.attachments.length > 0)) && (
       <div className="form-group uploader-files mt-3">
         <div className="row">
           <div className="col-8 filename header">Filename</div>
@@ -48,62 +49,62 @@ const UploadEvidence = (props) => {
               <button
                 className="link"
                 onClick={() => {
-                axios.get(attachment.url, {
-                responseType: 'blob',
-                headers: {
-                  Authorization: null,
-                },
-                }).then((response) => {
-                  const objectURL = window.URL.createObjectURL(
-                    new Blob([response.data]),
-                  );
-                  const link = document.createElement('a');
+                  axios.get(attachment.url, {
+                    responseType: 'blob',
+                    headers: {
+                      Authorization: null,
+                    },
+                  }).then((response) => {
+                    const objectURL = window.URL.createObjectURL(
+                      new Blob([response.data]),
+                    );
+                    const link = document.createElement('a');
                     link.href = objectURL;
                     link.setAttribute('download', attachment.filename);
                     document.body.appendChild(link);
                     link.click();
                   });
                 }}
-                  type="button"
+                type="button"
               >
-              {attachment.filename}
+                {attachment.filename}
               </button>
             </div>
             <div className="col-3 size">{getFileSize(attachment.size)}</div>
-              <div className="col-1 actions">
+            <div className="col-1 actions">
+              <button
+                className="delete"
+                onClick={() => {
+                  setDeleteFiles([...deleteFiles, attachment.id]);
+                }}
+                type="button"
+              >
+                <FontAwesomeIcon icon="trash" />
+              </button>
+            </div>
+          </div>
+        ))}
+          {files.map((file, index) => (
+            <div className="row" key={file.name}>
+              <div className="col-8 filename">{file.name}</div>
+              <div className="col-3 size" key="size">{getFileSize(file.size)}</div>
+              <div className="col-1 actions" key="actions">
                 <button
                   className="delete"
                   onClick={() => {
-                   setDeleteFiles([...deleteFiles, attachment.id]);
+                    removeFile(file);
                   }}
                   type="button"
                 >
-                <FontAwesomeIcon icon="trash" />
+                  <FontAwesomeIcon icon="trash" />
                 </button>
               </div>
             </div>
           ))}
-          {files.map((file, index) => (
-            <div className="row" key={file.name}>
-              <div className="col-8 filename">{file.name}</div>
-                <div className="col-3 size" key="size">{getFileSize(file.size)}</div>
-                  <div className="col-1 actions" key="actions">
-                    <button
-                      className="delete"
-                      onClick={() => {
-                      removeFile(file);
-                      }}
-                      type="button"
-                    >
-                    <FontAwesomeIcon icon="trash" />
-                    </button>
-                  </div>
-                  </div>
-          ))}
       </div>
-    )}
-  </> 
-  )
+      )}
+    </>
+  );
 };
 
 export default UploadEvidence;

@@ -4,10 +4,10 @@ import ReactTable from 'react-table';
 
 const ZevSales = (props) => {
   const {
+    addSalesRow,
     details,
     handleInputChange,
     salesRows,
-    addSalesRow
   } = props;
   const columns = [{
     Cell: (item) => (
@@ -145,12 +145,15 @@ const ZevSales = (props) => {
     sortable: false,
     maxWidth: 75,
   }];
-  // Sales Model Year Make  Model Type Range ZEV Class
   return (
     <>
-      <h3>{details.assessmentData && details.assessmentData.modelYear} Model Year Zero-Emission Vehicles Sales</h3>
+      <h3>
+        {details.assessmentData && details.assessmentData.modelYear}
+        Model Year Zero-Emission Vehicles Sales
+      </h3>
       <div className="text-blue my-3">
-        Provide additional details in the comment box at the bottom of this form if there are changes to the consumer ZEV sales details.
+        Provide additional details in the comment box at the bottom of this form if there are
+        changes to the consumer ZEV sales details.
       </div>
       <div className="my-4 sales-table-container">
         {salesRows

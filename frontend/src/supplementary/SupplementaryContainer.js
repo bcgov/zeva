@@ -119,7 +119,6 @@ const SupplementaryContainer = (props) => {
       });
       newData.zevSales = zevSales;
     } else {
-      // seperate sections into which database table they will be inserted into ie supplierInfo
       const dataToUpdate = {
         ...newData[name],
         [id]: value,
@@ -193,20 +192,20 @@ const SupplementaryContainer = (props) => {
 
   return (
     <SupplementaryDetailsPage
+      addSalesRow={addSalesRow}
+      deleteFiles={deleteFiles}
+      details={details}
+      errorMessage={errorMessage}
+      files={files}
       handleCommentChange={handleCommentChange}
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
       loading={loading}
-      user={user}
-      details={details}
       newData={newData}
-      addSalesRow={addSalesRow}
       salesRows={salesRows}
-      files={files}
-      deleteFiles={deleteFiles}
       setDeleteFiles={setDeleteFiles}
       setUploadFiles={setFiles}
-      errorMessage={errorMessage}
+      user={user}
     />
   );
 };
