@@ -47,7 +47,7 @@ from api.services.minio import minio_put_object
 from api.services.minio import minio_remove_object
 from api.models.supplemental_report_attachment import SupplementalReportAttachment
 from api.models.supplemental_report import SupplementalReport
-
+from api.models.model_year_report_vehicle import ModelYearReportVehicle
 
 class ModelYearReportViewset(
         AuditableMixin, viewsets.GenericViewSet,
@@ -403,11 +403,9 @@ class ModelYearReportViewset(
             data = SupplementalReport()
             data.model_year_report_id = report.id
 
-
         serializer = ModelYearReportSupplementalSerializer(
             data
         )
-
         return Response(serializer.data)
 
     @action(detail=True, methods=['get'])
@@ -507,22 +505,25 @@ class ModelYearReportViewset(
 
         zev_sales = request.data.get('zev_sales')
         if zev_sales:
-            SupplementalReportSales.objects.filter(
-                supplemental_report_id=report.supplemental.id
-            ).delete()
-
-            for sale in zev_sales:
+            SupplementalReportSales.objects.filter(supplemental_report_id=report.supplemental.id).delete()
+            for v in zev_sales:
+                model_year_report_vehicle_id = None
+                if v.get('model_year_report_vehicle'):
+                    model_year_report_vehicle = ModelYearReportVehicle.objects.filter(id=v.get('model_year_report_vehicle')).first()
+                    if model_year_report_vehicle:
+                        model_year_report_vehicle_id = model_year_report_vehicle.id
                 SupplementalReportSales.objects.create(
                     update_user=request.user.username,
                     create_user=request.user.username,
                     supplemental_report_id=report.supplemental.id,
-                    sales=sale.get('sales'),
-                    make=sale.get('make'),
-                    model_name=sale.get('model_name'),
-                    model_year_id=sale.get('model_year_id'),
-                    #vehicle_zev_type=sale.get('vehicle_zev_type'),
-                    range=sale.get('range'),
-                    #zev_class=sale.get('zev_class')
+                    model_year_report_vehicle_id=model_year_report_vehicle_id,
+                    sales=v.get('sales'),
+                    make=v.get('make'),
+                    model_name=v.get('model_name'),
+                    model_year=v.get('model_year'),
+                    vehicle_zev_type=v.get('vehicle_zev_type'),
+                    range=v.get('range'),
+                    zev_class=v.get('zev_class')
                 )
 
         return Response(serializer.data)

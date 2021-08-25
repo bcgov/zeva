@@ -10,16 +10,19 @@ import CommentInput from '../../app/components/CommentInput';
 
 const SupplementaryDetailsPage = (props) => {
   const {
-    details, 
-    loading, 
-    handleAddComment, 
-    handleSubmit, 
-    setUploadFiles, 
-    setDeleteFiles,
+    addSalesRow,
     deleteFiles,
+    details,
     files,
-    handleInputChange, 
-    newData
+    handleAddComment,
+    handleCommentChange,
+    handleInputChange,
+    handleSubmit,
+    loading,
+    newData,
+    salesRows,
+    setDeleteFiles,
+    setUploadFiles,
   } = props;
 
   if (loading) {
@@ -29,26 +32,29 @@ const SupplementaryDetailsPage = (props) => {
     <div id="supplementary" className="page">
       <div className="row mt-3">
         <div className="col">
-          <h2 className="mb-2">{details.assessmentData && details.assessmentData.modelYear} Model Year Supplementary Report</h2>
+          <h2 className="mb-2">
+            {details.assessmentData && details.assessmentData.modelYear} Model Year Supplementary Report
+          </h2>
         </div>
       </div>
       <div className="supplementary-form">
         <SupplierInformation loading={loading} details={details} handleInputChange={handleInputChange} newData={newData} />
-        <ZevSales details={details} handleInputChange={handleInputChange} />
+        <ZevSales details={details} handleInputChange={handleInputChange} addSalesRow={addSalesRow} salesRows={salesRows} />
         <CreditActivity details={details} handleInputChange={handleInputChange} />
         <div id="comment-input">
           <CommentInput
-            handleAddComment={handleAddComment}
+            handleAddComment={handleCommentChange}
+            handleCommentChange={handleCommentChange}
             title="Provide details in the comment box below for any changes above."
           />
         </div>
-        <UploadEvidence 
-          setUploadFiles={setUploadFiles} 
-          setDeleteFiles={setDeleteFiles} 
-          details={details} 
+        <UploadEvidence
+          setUploadFiles={setUploadFiles}
+          setDeleteFiles={setDeleteFiles}
+          details={details}
           deleteFiles={deleteFiles}
-          files={files}>
-        </UploadEvidence>
+          files={files}
+        />
       </div>
       <div className="row">
         <div className="col-12">

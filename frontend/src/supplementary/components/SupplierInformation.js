@@ -3,6 +3,8 @@ import TextInput from '../../app/components/TextInput';
 
 const SupplierInformation = (props) => {
   const { details, handleInputChange, newData, loading } = props;
+  const { assessmentData } = details;
+  const {supplierInfo} = newData
   return (
     <>
       <div className="text-blue mb-4">
@@ -17,7 +19,7 @@ const SupplierInformation = (props) => {
             Legal Name
           </label>
           <div className="w-75">
-            {details.assessmentData && details.assessmentData.legalName}
+            {assessmentData && assessmentData.legalName}
           </div>
         </div>
         <div className="d-inline-block align-top mt-4 col-sm-5 p-0">
@@ -26,6 +28,7 @@ const SupplierInformation = (props) => {
             id="legalName"
             name="supplierInfo"
             onChange={handleInputChange}
+            defaultValue={supplierInfo.legalName}
           />
         </div>
       </div>
@@ -38,7 +41,7 @@ const SupplierInformation = (props) => {
             Service Address
           </label>
           <div className="w-75">
-            {details.assessmentData && details.assessmentData.reportAddress  && details.assessmentData.reportAddress.map(
+            {assessmentData && assessmentData.reportAddress  && assessmentData.reportAddress.map(
               (address) => address.addressType.addressType === 'Service' && (
               <div className="p-0" key={address.id}>
                 {address.representativeName && (
@@ -61,7 +64,7 @@ const SupplierInformation = (props) => {
           className="form-control d-inline-block align-top mt-4 col-sm-5"
           id="serviceAddress"
           name="supplierInfo"
-          value={newData.serviceAddress}
+          defaultValue={supplierInfo.serviceAddress}
           onChange={handleInputChange}
           min="0"
         />
@@ -75,7 +78,7 @@ const SupplierInformation = (props) => {
             Records Address
           </label>
           <div className="w-75">
-            {details.assessmentData && details.assessmentData.reportAddress && details.assessmentData.reportAddress.map(
+            {assessmentData && assessmentData.reportAddress && assessmentData.reportAddress.map(
               (address) => address.addressType.addressType === 'Records' && (
               <div className="p-0" key={address.id}>
                 {address.representativeName && (
@@ -98,7 +101,7 @@ const SupplierInformation = (props) => {
           className="form-control d-inline-block align-top mt-4 col-sm-5"
           id="recordsAddress"
           name="supplierInfo"
-          value={newData.recordsAddress}
+          defaultValue={supplierInfo.recordsAddress}
           onChange={handleInputChange}
           min="0"
         />
@@ -112,7 +115,7 @@ const SupplierInformation = (props) => {
             Light Duty Vehicle Makes
           </label>
           <div className="w-75">
-            {details.assessmentData && details.assessmentData.makes && details.assessmentData.makes.map((make) => <div className="p-0" key={make}>{make}</div>)}
+            {assessmentData && assessmentData.makes && assessmentData.makes.map((make) => <div className="p-0" key={make}>{make}</div>)}
           </div>
         </div>
         <textarea
@@ -120,7 +123,7 @@ const SupplierInformation = (props) => {
           id="ldvMakes"
           name="supplierInfo"
             // type={type}
-          value={newData.ldvMakes}
+          defaultValue={supplierInfo.ldvMakes}
           onChange={handleInputChange}
           min="0"
         />
@@ -134,7 +137,7 @@ const SupplierInformation = (props) => {
             Vehicle Supplier Class
           </label>
           <div className="w-75">
-              {details.assessmentData && details.assessmentData.supplierClass}
+              {assessmentData && assessmentData.supplierClass}
           </div>
         </div>
         <input
@@ -142,7 +145,7 @@ const SupplierInformation = (props) => {
           id="supplierClass"
           name="supplierInfo"
             // type={type}
-          value={newData.supplierClass}
+          defaultValue={supplierInfo.supplierClass}
           onChange={handleInputChange}
           min="0"
         />

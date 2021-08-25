@@ -4,7 +4,13 @@
         border: 1px solid $border-grey;
         padding: 2rem;
     }
+    .sales-table-container {
+        border: 1px solid $border-grey;
 
+        .sales-table {
+            border: None;
+        }
+    }
     .bordered {
         border: 1px solid $border-grey;
         padding: 0.5rem;
