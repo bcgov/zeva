@@ -2,9 +2,9 @@ import React from 'react';
 import TextInput from '../../app/components/TextInput';
 
 const SupplierInformation = (props) => {
-  const { details, handleInputChange, newData, loading } = props;
+  const { details, handleInputChange, newData } = props;
   const { assessmentData } = details;
-  const {supplierInfo} = newData
+  const { supplierInfo } = newData;
   return (
     <>
       <div className="text-blue mb-4">
@@ -41,7 +41,7 @@ const SupplierInformation = (props) => {
             Service Address
           </label>
           <div className="w-75">
-            {assessmentData && assessmentData.reportAddress  && assessmentData.reportAddress.map(
+            {assessmentData && assessmentData.reportAddress && assessmentData.reportAddress.map(
               (address) => address.addressType.addressType === 'Service' && (
               <div className="p-0" key={address.id}>
                 {address.representativeName && (
@@ -50,7 +50,7 @@ const SupplierInformation = (props) => {
                 {address.addressLine1} {' '}
                 {address.addressLine2} {' '}
                 <br />
-                {address.city}{' '} 
+                {address.city}{' '}
                 {address.state}{' '}
                 {address.country}{' '}
                 {address.postalCode}
@@ -115,14 +115,14 @@ const SupplierInformation = (props) => {
             Light Duty Vehicle Makes
           </label>
           <div className="w-75">
-            {assessmentData && assessmentData.makes && assessmentData.makes.map((make) => <div className="p-0" key={make}>{make}</div>)}
+            {assessmentData && assessmentData.makes
+            && assessmentData.makes.map((make) => <div className="p-0" key={make}>{make}</div>)}
           </div>
         </div>
         <textarea
           className="form-control d-inline-block align-top mt-4 col-sm-5"
           id="ldvMakes"
           name="supplierInfo"
-            // type={type}
           defaultValue={supplierInfo.ldvMakes}
           onChange={handleInputChange}
           min="0"
@@ -137,14 +137,13 @@ const SupplierInformation = (props) => {
             Vehicle Supplier Class
           </label>
           <div className="w-75">
-              {assessmentData && assessmentData.supplierClass}
+            {assessmentData && assessmentData.supplierClass}
           </div>
         </div>
         <input
           className="form-control d-inline-block align-top mt-4 col-sm-5"
           id="supplierClass"
           name="supplierInfo"
-            // type={type}
           defaultValue={supplierInfo.supplierClass}
           onChange={handleInputChange}
           min="0"
