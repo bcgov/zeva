@@ -3,18 +3,84 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import ROUTES_SUPPLEMENTARY from '../app/routes/SupplementaryReport';
 import SupplementaryDetailsPage from './components/SupplementaryDetailsPage';
+import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 
 const SupplementaryContainer = (props) => {
   const { id } = useParams();
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState('');
-  const [newData, setNewData] = useState({ zevSales: {}, creditActivity: {} });
   const [salesRows, setSalesRows] = useState([]);
   const { keycloak, user } = props;
   const [files, setFiles] = useState([]);
   const [deleteFiles, setDeleteFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [newData, setNewData] = useState({ zevSales: {}, creditActivity: {} });
+  const [obligationDetails, setObligationDetails] = useState({});
+  const [ldvSales, setLdvSales] = useState();
+  const [ratios, setRatios] = useState();
+  const [newBalances, setNewBalances] = useState({});
+
+  const calculateBalance = (creditActivity) => {
+    const balances = {};
+
+    obligationDetails.forEach((each) => {
+      if (!(each.modelYear.name in balances)) {
+        balances[each.modelYear.name] = {
+          A: 0,
+          B: 0,
+        };
+      }
+
+      if ([
+        'administrativeAllocation',
+        'automaticAdministrativePenalty',
+        'creditBalanceStart',
+        'creditsIssuedSales',
+        'initiativeAgreement',
+        'purchaseAgreement',
+        'transfersIn',
+      ].indexOf(each.category) >= 0) {
+        const found = creditActivity.findIndex((activity) => (
+          activity.category === each.category
+          && Number(activity.modelYear) === Number(each.modelYear.name)
+        ));
+
+        if (found >= 0) {
+          balances[each.modelYear.name].A += creditActivity[found].creditAValue
+            ? Number(creditActivity[found].creditAValue) : Number(each.creditAValue);
+          balances[each.modelYear.name].B += creditActivity[found].creditBValue
+            ? Number(creditActivity[found].creditBValue) : Number(each.creditBValue);
+        } else {
+          balances[each.modelYear.name].A += Number(each.creditAValue);
+          balances[each.modelYear.name].B += Number(each.creditBValue);
+        }
+      }
+
+      if ([
+        'administrativeReduction',
+        'deficit',
+        'transfersOut',
+      ].indexOf(each.category) >= 0) {
+        const found = creditActivity.findIndex((activity) => (
+          activity.category === each.category
+          && Number(activity.modelYear) === Number(each.modelYear.name)
+        ));
+
+        if (found >= 0) {
+          balances[each.modelYear.name].A -= creditActivity[found].creditAValue
+            ? Number(creditActivity[found].creditAValue) : Number(each.creditAValue);
+          balances[each.modelYear.name].B -= creditActivity[found].creditBValue
+            ? Number(creditActivity[found].creditBValue) : Number(each.creditBValue);
+        } else {
+          balances[each.modelYear.name].A -= Number(each.creditAValue);
+          balances[each.modelYear.name].B -= Number(each.creditBValue);
+        }
+      }
+    });
+
+    setNewBalances(balances);
+  };
 
   const handleCommentChange = (content) => {
     setComment(content);
@@ -66,6 +132,45 @@ const SupplementaryContainer = (props) => {
     return promises;
   };
 
+  const handleSupplementalChange = (obj) => {
+    let creditActivity = [];
+
+    if (newData.creditActivity) {
+      ({ creditActivity } = newData);
+    } else {
+      newData.creditActivity = [];
+    }
+
+    if (obj.modelYear && obj.title) {
+      const index = newData.creditActivity.findIndex((each) => (
+        each.modelYear === obj.modelYear
+        && each.category === obj.title
+      ));
+
+      if (index >= 0) {
+        creditActivity[index] = {
+          ...newData.creditActivity[index],
+          creditAValue: obj.creditA,
+          creditBValue: obj.creditB,
+        };
+      } else {
+        creditActivity.push({
+          category: obj.title,
+          modelYear: obj.modelYear,
+          creditAValue: obj.creditA,
+          creditBValue: obj.creditB,
+        });
+      }
+
+      calculateBalance(creditActivity);
+    }
+
+    setNewData({
+      ...newData,
+      creditActivity: [...creditActivity],
+    });
+  };
+
   const handleSubmit = (status) => {
     const uploadPromises = handleUpload(id);
     Promise.all(uploadPromises).then((attachments) => {
@@ -77,17 +182,6 @@ const SupplementaryContainer = (props) => {
       const data = {
         ...newData,
         status,
-        creditActivity: [{
-          category: 'creditBalanceStart',
-          modelYearId: 2,
-          creditAValue: '100',
-          creditBValue: '50',
-        }, {
-          category: 'creditBalanceEnd',
-          modelYearId: 1,
-          creditAValue: '100',
-          creditBValue: '50',
-        }],
         evidenceAttachments,
         deleteFiles,
         comment
@@ -128,9 +222,15 @@ const SupplementaryContainer = (props) => {
       setNewData({ ...newData, [name]: dataToUpdate });
     }
   };
+
   const refreshDetails = () => {
     setLoading(true);
-    axios.get(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)).then((response) => {
+
+    axios.all([
+      axios.get(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)),
+      axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)),
+      axios.get(ROUTES_COMPLIANCE.RATIOS),
+    ]).then(axios.spread((response, complianceResponse, ratioResponse) => {
       if (response.data) {
         setDetails(response.data);
         const newSupplier = response.data.supplierInformation;
@@ -184,8 +284,20 @@ const SupplementaryContainer = (props) => {
 
         });
       }
+
+      if (complianceResponse.data && complianceResponse.data.complianceObligation) {
+        setObligationDetails(complianceResponse.data.complianceObligation);
+        setLdvSales(complianceResponse.data.ldvSales);
+      }
+
+      const reportYear = response.data.assessmentData && response.data.assessmentData.modelYear;
+      const filteredRatios = ratioResponse.data.find(
+        (data) => Number(data.modelYear) === Number(reportYear),
+      );
+      setRatios(filteredRatios);
+
       setLoading(false);
-    });
+    }));
   };
 
   useEffect(() => {
@@ -197,9 +309,12 @@ const SupplementaryContainer = (props) => {
       handleCommentChange={handleCommentChange}
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
+      handleSupplementalChange={handleSupplementalChange}
+      ldvSales={ldvSales}
       loading={loading}
       user={user}
       details={details}
+      newBalances={newBalances}
       newData={newData}
       addSalesRow={addSalesRow}
       salesRows={salesRows}
@@ -208,6 +323,8 @@ const SupplementaryContainer = (props) => {
       setDeleteFiles={setDeleteFiles}
       setUploadFiles={setFiles}
       errorMessage={errorMessage}
+      obligationDetails={obligationDetails}
+      ratios={ratios}
     />
   );
 };
