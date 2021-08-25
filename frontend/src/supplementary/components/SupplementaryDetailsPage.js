@@ -12,9 +12,9 @@ const SupplementaryDetailsPage = (props) => {
   const {
     addSalesRow,
     deleteFiles,
-    details, 
+    details,
     files,
-    handleCommentChange, 
+    handleCommentChange,
     handleInputChange,
     handleSubmit,
     handleSupplementalChange,
@@ -26,7 +26,7 @@ const SupplementaryDetailsPage = (props) => {
     ratios,
     salesRows,
     setDeleteFiles,
-    setUploadFiles, 
+    setUploadFiles,
   } = props;
 
   if (loading) {
