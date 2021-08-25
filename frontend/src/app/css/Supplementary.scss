@@ -4,6 +4,7 @@
         border: 1px solid $border-grey;
         padding: 2rem;
     }
+
     .sales-table-container {
         border: 1px solid $border-grey;
 
@@ -11,13 +12,73 @@
             border: None;
         }
     }
+
     .bordered {
         border: 1px solid $border-grey;
         padding: 0.5rem;
-      }
+    }
     
-      .content {
+    .content {
         background-color: $default-background-grey;
-      }
+    }
+
+    .no-border {
+        border: none;
+    }
+
+    .credit-selection {
+        input[type=radio] {
+            margin-left: 3px;
+        }
     
+        td {
+            background-color: $background-warning;
+        }
+    }
+
+    .ldv-sales {
+        height: 50px;
+        line-height: 30px;
+        font-weight: bold;
+        background-color: $default-background-grey;
+    }
+    .compliance-reduction-table {
+        border: 1px solid $border-grey;
+    }
+    table {
+        width: 100%;
+        border: 1px solid $border-grey;
+    
+        td {
+        padding: 0 1rem 0 1rem;
+        line-height: 35px;
+        }
+        tr {
+        margin-top: 1rem;
+        }
+        .subclass {
+        font-weight: bold;
+        background-color: $default-background-grey;
+        }
+        .small-column {
+        width: 10%;
+        }
+        .large-column {
+        color: $default-text-blue;
+        // width: 70%;
+        padding-left: 1rem;
+        border-right: 4px solid white;
+        }
+    }
+    #offset-table {
+        input {
+        max-width: 125px;
+        margin-left: 1rem;
+        }
+        td {
+        line-height: 35px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        }
+    }
 }

@@ -174,8 +174,8 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
             'report_address': address_serializer.data,
             'makes': makes_list,
             'model_year': model_year_serializer.data['name'],
-            'zev_sales': sales_serializer.data
-
+            'zev_sales': sales_serializer.data,
+            'credit_reduction_selection': report.credit_reduction_selection
         }
 
     def get_credit_activity(self, obj):

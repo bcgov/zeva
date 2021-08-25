@@ -4,7 +4,12 @@ import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceObligationTableCreditsIssued = (props) => {
   const {
-    reportDetails, reportYear, pendingBalanceExist,
+    handleSupplementalChange,
+    newBalances,
+    reportDetails,
+    reportYear,
+    pendingBalanceExist,
+    supplementalReport,
   } = props;
 
   const {
@@ -32,6 +37,40 @@ const ComplianceObligationTableCreditsIssued = (props) => {
       numberClassname += ' text-red';
     }
 
+    let category = '';
+
+    switch (title) {
+      case 'Administrative Credit Allocation':
+        category = 'administrativeAllocation';
+        break;
+      case 'Administrative Credit Reduction':
+        category = 'administrativeReduction';
+        break;
+      case 'Automatic Administrative Penalty':
+        category = 'automaticAdministrativePenalty';
+        break;
+      case 'Issued for Consumer ZEV Sales':
+        category = 'creditsIssuedSales';
+        break;
+      case 'Issued from Initiative Agreements':
+        category = 'initiativeAgreement';
+        break;
+      case 'Issued from Purchase Agreements':
+        category = 'purchaseAgreement';
+        break;
+      case 'Pending Issuance for Consumer ZEV Sales':
+        category = 'pendingBalance';
+        break;
+      case 'Transferred Away':
+        category = 'transfersOut';
+        break;
+      case 'Transferred In':
+        category = 'transfersIn';
+        break;
+      default:
+        category = title;
+    }
+
     return (
       <>
         <tr className="subclass">
@@ -40,7 +79,12 @@ const ComplianceObligationTableCreditsIssued = (props) => {
           </th>
           <th className="small-column text-center text-blue">A</th>
           <th className="small-column text-center text-blue">B</th>
-
+          {supplementalReport && (
+            <>
+              <th className="small-column text-center text-blue">A</th>
+              <th className="small-column text-center text-blue">B</th>
+            </>
+          )}
         </tr>
         {input.sort((a, b) => {
           if (a.modelYear > b.modelYear) {
@@ -76,6 +120,36 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                 </td>
               </>
             )}
+            {supplementalReport && (
+              <>
+                <td>
+                  <input
+                    className="form-control"
+                    type="text"
+                    onChange={(event) => {
+                      handleSupplementalChange({
+                        title: category,
+                        modelYear: each.modelYear,
+                        creditA: event.target.value,
+                      });
+                    }}
+                  />
+                </td>
+                <td>
+                  <input
+                    className="form-control"
+                    type="text"
+                    onChange={(event) => {
+                      handleSupplementalChange({
+                        title: category,
+                        modelYear: each.modelYear,
+                        creditB: event.target.value,
+                      });
+                    }}
+                  />
+                </td>
+              </>
+            )}
           </tr>
         ))}
       </>
@@ -108,6 +182,12 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             <th className="small-column text-center text-blue">
               B
             </th>
+            {supplementalReport && (
+              <>
+                <th className="small-column text-center text-blue">A</th>
+                <th className="small-column text-center text-blue">B</th>
+              </>
+            )}
           </tr>
           {Object.keys(creditBalanceStart).map((each) => (
             <tr key={each}>
@@ -120,6 +200,36 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               <td className="text-right">
                 {formatNumeric(creditBalanceStart[each].B, 2)}
               </td>
+              {supplementalReport && (
+                <>
+                  <td>
+                    <input
+                      className="form-control"
+                      type="text"
+                      onChange={(event) => {
+                        handleSupplementalChange({
+                          title: 'creditBalanceStart',
+                          modelYear: each,
+                          creditA: event.target.value,
+                        });
+                      }}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      className="form-control"
+                      type="text"
+                      onChange={(event) => {
+                        handleSupplementalChange({
+                          title: 'creditBalanceStart',
+                          modelYear: each,
+                          creditB: event.target.value,
+                        });
+                      }}
+                    />
+                  </td>
+                </>
+              )}
             </tr>
           ))}
           {Object.keys(creditBalanceStart).length === 0 && (
@@ -133,6 +243,36 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               <td className="text-right">
                 0.00
               </td>
+              {supplementalReport && (
+                <>
+                  <td>
+                    <input
+                      className="form-control"
+                      type="text"
+                      onChange={(event) => {
+                        handleSupplementalChange({
+                          title: 'creditBalanceStart',
+                          modelYear: reportYear,
+                          creditA: event.target.value,
+                        });
+                      }}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      className="form-control"
+                      type="text"
+                      onChange={(event) => {
+                        handleSupplementalChange({
+                          title: 'creditBalanceStart',
+                          modelYear: reportYear,
+                          creditB: event.target.value,
+                        });
+                      }}
+                    />
+                  </td>
+                </>
+              )}
             </tr>
           )}
         </tbody>
@@ -187,6 +327,12 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             </th>
             <th className="small-column text-center text-blue">A</th>
             <th className="small-column text-center text-blue">B</th>
+            {supplementalReport && (
+              <>
+                <th className="small-column text-center text-blue">A</th>
+                <th className="small-column text-center text-blue">B</th>
+              </>
+            )}
           </tr>
           {Object.keys(provisionalBalance).length > 0
           && Object.keys(provisionalBalance).sort((a, b) => {
@@ -197,7 +343,11 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               return -1;
             }
             return 0;
-          }).map((each) => ((provisionalBalance[each].A > 0 || provisionalBalance[each].B > 0) && (
+          }).map((each) => ((
+            provisionalBalance[each].A > 0 || provisionalBalance[each].B > 0
+            || (newBalances && newBalances[each] && newBalances[each].A > 0)
+            || (newBalances && newBalances[each] && newBalances[each].B > 0)
+          ) && (
             <tr key={each}>
               <td className="text-blue">
                 &bull; &nbsp; &nbsp; {each} Credits
@@ -208,6 +358,16 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               <td className="text-right">
                 {formatNumeric(provisionalBalance[each].B, 2)}
               </td>
+              {supplementalReport && (
+                <>
+                  <td className="text-right">
+                    {newBalances && newBalances[each] && formatNumeric(newBalances[each].A, 2)}
+                  </td>
+                  <td className="text-right">
+                    {newBalances && newBalances[each] && formatNumeric(newBalances[each].B, 2)}
+                  </td>
+                </>
+              )}
             </tr>
           )))}
         </tbody>
@@ -217,12 +377,18 @@ const ComplianceObligationTableCreditsIssued = (props) => {
 };
 
 ComplianceObligationTableCreditsIssued.defaultProps = {
+  handleSupplementalChange: () => {},
+  newBalances: {},
   pendingBalanceExist: false,
+  supplementalReport: false,
 };
 
 ComplianceObligationTableCreditsIssued.propTypes = {
+  handleSupplementalChange: PropTypes.func,
+  newBalances: PropTypes.shape(),
   pendingBalanceExist: PropTypes.bool,
-  reportYear: PropTypes.number.isRequired,
   reportDetails: PropTypes.shape().isRequired,
+  reportYear: PropTypes.number.isRequired,
+  supplementalReport: PropTypes.bool,
 };
 export default ComplianceObligationTableCreditsIssued;
