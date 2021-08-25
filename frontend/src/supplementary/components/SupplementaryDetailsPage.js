@@ -11,18 +11,17 @@ import CommentInput from '../../app/components/CommentInput';
 const SupplementaryDetailsPage = (props) => {
   const {
     addSalesRow,
+    details, 
+    loading, 
+    handleCommentChange, 
+    handleSubmit, 
+    setUploadFiles, 
+    setDeleteFiles,
     deleteFiles,
-    details,
     files,
-    handleAddComment,
-    handleCommentChange,
     handleInputChange,
-    handleSubmit,
-    loading,
     newData,
     salesRows,
-    setDeleteFiles,
-    setUploadFiles,
   } = props;
 
   if (loading) {
@@ -43,7 +42,7 @@ const SupplementaryDetailsPage = (props) => {
         <CreditActivity details={details} handleInputChange={handleInputChange} />
         <div id="comment-input">
           <CommentInput
-            handleAddComment={handleCommentChange}
+            defaultComment={details && details.comments && details.comments.length > 0 ? details.comments[0] : ''}
             handleCommentChange={handleCommentChange}
             title="Provide details in the comment box below for any changes above."
           />

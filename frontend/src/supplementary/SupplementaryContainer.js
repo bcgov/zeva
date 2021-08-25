@@ -16,8 +16,8 @@ const SupplementaryContainer = (props) => {
   const [deleteFiles, setDeleteFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
 
-  const handleCommentChange = (comment) => {
-    setNewData({ ...newData, comment });
+  const handleCommentChange = (content) => {
+    setComment(content);
   };
 
   const addSalesRow = () => {
@@ -90,6 +90,7 @@ const SupplementaryContainer = (props) => {
         }],
         evidenceAttachments,
         deleteFiles,
+        comment
       };
       axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data).then((response) => {
       });
