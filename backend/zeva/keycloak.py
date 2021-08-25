@@ -22,6 +22,6 @@ def config():
             'KEYCLOAK_SA_BASEURL',
             'http://localhost:8888'
         ),
-        'SERVICE_ACCOUNT_CLIENT_SECRET': os.getenv('KEYCLOAK_SA_CLIENT_SECRET', ''),
+        'SERVICE_ACCOUNT_CLIENT_SECRET': os.getenv('KEYCLOAK_SA_CLIENT_SECRET', '9b675775-81ba-4e39-82af-f5af3adfd41a'),
         'RS256_KEY': None
     }

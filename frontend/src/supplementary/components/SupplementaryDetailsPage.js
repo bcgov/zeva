@@ -12,29 +12,37 @@ const SupplementaryDetailsPage = (props) => {
   const {
     addSalesRow,
     deleteFiles,
-    details,
+    details, 
     files,
-    handleAddComment,
-    handleCommentChange,
+    handleCommentChange, 
     handleInputChange,
     handleSubmit,
+    handleSupplementalChange,
+    ldvSales,
     loading,
+    newBalances,
     newData,
+    obligationDetails,
+    ratios,
     salesRows,
     setDeleteFiles,
-    setUploadFiles,
+    setUploadFiles, 
   } = props;
 
   if (loading) {
     return <Loading />;
   }
+
+  const reportYear = details.assessmentData && details.assessmentData.modelYear;
+  const supplierClass = details.assessmentData && details.assessmentData.supplierClass[0];
+  const creditReductionSelection = details.assessmentData && details.assessmentData.creditReductionSelection;
+  const newLdvSales = newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
+
   return (
     <div id="supplementary" className="page">
       <div className="row mt-3">
         <div className="col">
-          <h2 className="mb-2">
-            {details.assessmentData && details.assessmentData.modelYear} Model Year Supplementary Report
-          </h2>
+          <h2 className="mb-2">{reportYear} Model Year Supplementary Report</h2>
         </div>
       </div>
       <div className="supplementary-form">
@@ -51,12 +59,20 @@ const SupplementaryDetailsPage = (props) => {
           salesRows={salesRows}
         />
         <CreditActivity
+          creditReductionSelection={creditReductionSelection}
           details={details}
           handleInputChange={handleInputChange}
+          handleSupplementalChange={handleSupplementalChange}
+          ldvSales={ldvSales}
+          newBalances={newBalances}
+          newLdvSales={newLdvSales}
+          obligationDetails={obligationDetails}
+          ratios={ratios}
+          supplierClass={supplierClass}
         />
         <div id="comment-input">
           <CommentInput
-            handleAddComment={handleCommentChange}
+            defaultComment={details && details.comments && details.comments.length > 0 ? details.comments[0] : ''}
             handleCommentChange={handleCommentChange}
             title="Provide details in the comment box below for any changes above."
           />

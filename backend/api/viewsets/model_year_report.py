@@ -48,6 +48,8 @@ from api.services.minio import minio_remove_object
 from api.models.supplemental_report_attachment import SupplementalReportAttachment
 from api.models.supplemental_report import SupplementalReport
 from api.models.model_year_report_vehicle import ModelYearReportVehicle
+from api.models.supplemental_report_comment import SupplementalReportComment
+
 
 class ModelYearReportViewset(
         AuditableMixin, viewsets.GenericViewSet,
@@ -493,15 +495,21 @@ class ModelYearReportViewset(
             ).delete()
 
             for activity in credit_activity:
-                SupplementalReportCreditActivity.objects.create(
-                    update_user=request.user.username,
-                    create_user=request.user.username,
-                    supplemental_report_id=report.supplemental.id,
-                    category=activity.get('category'),
-                    credit_a_value=activity.get('credit_a_value'),
-                    credit_b_value=activity.get('credit_b_value'),
-                    model_year_id=activity.get('model_year_id')
-                )
+                model_year_name = activity.get('model_year')
+                model_year = ModelYear.objects.filter(
+                    name=model_year_name
+                ).first()
+
+                if model_year:
+                    SupplementalReportCreditActivity.objects.create(
+                        update_user=request.user.username,
+                        create_user=request.user.username,
+                        supplemental_report_id=report.supplemental.id,
+                        category=activity.get('category'),
+                        credit_a_value=activity.get('credit_a_value'),
+                        credit_b_value=activity.get('credit_b_value'),
+                        model_year=model_year
+                    )
 
         zev_sales = request.data.get('zev_sales')
         if zev_sales:
@@ -525,5 +533,18 @@ class ModelYearReportViewset(
                     range=v.get('range'),
                     zev_class=v.get('zev_class')
                 )
+
+        comment = request.data.get('comment')
+        if comment:
+            SupplementalReportComment.objects.filter(
+                supplemental_report_id=report.supplemental.id,
+                to_govt=True
+            ).delete()
+            SupplementalReportComment.objects.create(
+                create_user=request.user.username,
+                supplemental_report_id=report.supplemental.id,
+                comment=comment,
+                to_govt=True
+            )
 
         return Response(serializer.data)
