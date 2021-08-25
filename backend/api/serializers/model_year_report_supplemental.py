@@ -18,6 +18,8 @@ from api.serializers.vehicle import ModelYearSerializer
 from api.models.vehicle_zev_type import ZevType
 from api.models.model_year import ModelYear
 from api.models.credit_class import CreditClass
+from api.models.supplemental_report_comment import \
+    SupplementalReportComment
 from api.services.minio import minio_get_object
 from api.models.supplemental_report_supplier_information import \
     SupplementalReportSupplierInformation
@@ -37,6 +39,16 @@ class ModelYearReportSupplementalCreditActivitySerializer(ModelSerializer):
         fields = (
             'id', 'credit_a_value', 'credit_b_value', 'category',
             'model_year'
+        )
+
+class ModelYearReportSupplementalCommentSerializer(ModelSerializer):
+    class Meta:
+        model = SupplementalReportComment
+        fields = (
+            'id', 'comment', 'create_timestamp', 'create_user', 'to_govt'
+        )
+        read_only_fields = (
+            'id',
         )
 
 class ModelYearReportSupplementalAttachmentSerializer(ModelSerializer):
@@ -107,6 +119,18 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
     assessment_data = SerializerMethodField()
     zev_sales = SerializerMethodField()
     attachments = SerializerMethodField()
+    comments = SerializerMethodField()
+
+    def get_comments(self, obj):
+        comments = SupplementalReportComment.objects.filter(
+            supplemental_report_id=obj.id
+        ).order_by('-create_timestamp')
+
+        if comments.exists():
+            serializer = ModelYearReportSupplementalCommentSerializer(comments, many=True)
+            return serializer.data
+
+        return None
 
     def get_attachments(self, obj):
         attachments = SupplementalReportAttachment.objects.filter(
@@ -193,5 +217,5 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         model = SupplementalReport
         fields = (
             'id', 'status', 'ldv_sales', 'credit_activity',
-            'assessment_data', 'zev_sales', 'supplier_information','attachments',
+            'assessment_data', 'zev_sales', 'supplier_information','attachments','comments'
         )

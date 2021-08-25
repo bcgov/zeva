@@ -82,8 +82,8 @@ const SupplementaryContainer = (props) => {
     setNewBalances(balances);
   };
 
-  const handleCommentChange = (comment) => {
-    setNewData({ ...newData, comment });
+  const handleCommentChange = (content) => {
+    setComment(content);
   };
 
   const addSalesRow = () => {
@@ -184,6 +184,7 @@ const SupplementaryContainer = (props) => {
         status,
         evidenceAttachments,
         deleteFiles,
+        comment
       };
       axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data).then((response) => {
       });

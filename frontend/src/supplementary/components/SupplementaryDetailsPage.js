@@ -12,10 +12,9 @@ const SupplementaryDetailsPage = (props) => {
   const {
     addSalesRow,
     deleteFiles,
-    details,
+    details, 
     files,
-    handleAddComment,
-    handleCommentChange,
+    handleCommentChange, 
     handleInputChange,
     handleSubmit,
     handleSupplementalChange,
@@ -27,7 +26,7 @@ const SupplementaryDetailsPage = (props) => {
     ratios,
     salesRows,
     setDeleteFiles,
-    setUploadFiles,
+    setUploadFiles, 
   } = props;
 
   if (loading) {
@@ -63,7 +62,7 @@ const SupplementaryDetailsPage = (props) => {
         />
         <div id="comment-input">
           <CommentInput
-            handleAddComment={handleCommentChange}
+            defaultComment={details && details.comments && details.comments.length > 0 ? details.comments[0] : ''}
             handleCommentChange={handleCommentChange}
             title="Provide details in the comment box below for any changes above."
           />
