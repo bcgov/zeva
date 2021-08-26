@@ -14,7 +14,7 @@ const SupplementaryDetailsPage = (props) => {
     deleteFiles,
     details, 
     files,
-    handleCommentChange, 
+    handleCommentChange,
     handleInputChange,
     handleSubmit,
     handleSupplementalChange,
@@ -65,6 +65,7 @@ const SupplementaryDetailsPage = (props) => {
           handleSupplementalChange={handleSupplementalChange}
           ldvSales={ldvSales}
           newBalances={newBalances}
+          newData={newData}
           newLdvSales={newLdvSales}
           obligationDetails={obligationDetails}
           ratios={ratios}
