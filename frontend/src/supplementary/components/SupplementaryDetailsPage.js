@@ -46,30 +46,32 @@ const SupplementaryDetailsPage = (props) => {
         </div>
       </div>
       <div className="supplementary-form">
-        <SupplierInformation
-          details={details}
-          handleInputChange={handleInputChange}
-          loading={loading}
-          newData={newData}
-        />
-        <ZevSales
-          addSalesRow={addSalesRow}
-          details={details}
-          handleInputChange={handleInputChange}
-          salesRows={salesRows}
-        />
-        <CreditActivity
-          creditReductionSelection={creditReductionSelection}
-          details={details}
-          handleInputChange={handleInputChange}
-          handleSupplementalChange={handleSupplementalChange}
-          ldvSales={ldvSales}
-          newBalances={newBalances}
-          newLdvSales={newLdvSales}
-          obligationDetails={obligationDetails}
-          ratios={ratios}
-          supplierClass={supplierClass}
-        />
+        <div className="mb-3">
+          <SupplierInformation
+            details={details}
+            handleInputChange={handleInputChange}
+            loading={loading}
+            newData={newData}
+          />
+          <ZevSales
+            addSalesRow={addSalesRow}
+            details={details}
+            handleInputChange={handleInputChange}
+            salesRows={salesRows}
+          />
+          <CreditActivity
+            creditReductionSelection={creditReductionSelection}
+            details={details}
+            handleInputChange={handleInputChange}
+            handleSupplementalChange={handleSupplementalChange}
+            ldvSales={ldvSales}
+            newBalances={newBalances}
+            newLdvSales={newLdvSales}
+            obligationDetails={obligationDetails}
+            ratios={ratios}
+            supplierClass={supplierClass}
+          />
+        </div>
         <div id="comment-input">
           <CommentInput
             defaultComment={details && details.comments && details.comments.length > 0 ? details.comments[0] : ''}
