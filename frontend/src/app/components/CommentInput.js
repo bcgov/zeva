@@ -13,7 +13,7 @@ const CommentInput = (props) => {
   } = props;
   return (
     <div className="text-editor">
-      <label htmlFor="comment">
+      <label htmlFor="comment" className="text-blue">
         <b>{title}</b>
       </label>
       <ReactQuill

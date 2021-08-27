@@ -15,6 +15,8 @@ const ComplianceObligationReductionOffsetTable = (props) => {
     supplierClass,
     updatedBalances,
     user,
+    assessment,
+    reportYear,
   } = props;
 
   return (
@@ -166,10 +168,13 @@ const ComplianceObligationReductionOffsetTable = (props) => {
             <table className="col-12">
               <tbody>
                 <tr className="subclass">
-                  <th className="large-column">
+                  {!assessment && (<th className="large-column">
                     {pendingBalanceExist ? 'PROVISIONAL ' : ''}
                     BALANCE AFTER CREDIT REDUCTION
-                  </th>
+                  </th>)}
+                  {assessment && (<th className="large-column">
+                    ASSESSED BALANCE AT END OF SEPT. 30, {reportYear+1}
+                  </th>)}
                   <th className="small-column text-center text-blue">A</th>
                   <th className="small-column text-center text-blue">
                     {
@@ -236,6 +241,8 @@ ComplianceObligationReductionOffsetTable.propTypes = {
   deductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleUnspecifiedCreditReduction: PropTypes.func,
   pendingBalanceExist: PropTypes.bool,
+  assessment: PropTypes.bool,
+  reportYear: PropTypes.number,
   statuses: PropTypes.shape().isRequired,
   supplierClass: PropTypes.string.isRequired,
   updatedBalances: PropTypes.shape().isRequired,
