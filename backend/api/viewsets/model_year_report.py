@@ -50,7 +50,6 @@ from api.models.supplemental_report import SupplementalReport
 from api.models.model_year_report_vehicle import ModelYearReportVehicle
 from api.models.supplemental_report_comment import SupplementalReportComment
 
-
 class ModelYearReportViewset(
         AuditableMixin, viewsets.GenericViewSet,
         mixins.ListModelMixin, mixins.RetrieveModelMixin,
@@ -426,6 +425,18 @@ class ModelYearReportViewset(
 
         # update the existing supplemental if it exists
         if report.supplemental:
+            if request.data.get('status') == 'DELETED':
+                SupplementalReportAttachment.objects.filter(
+                    supplemental_report_id=report.supplemental.id).delete()
+                SupplementalReportSupplierInformation.objects.filter(
+                    supplemental_report_id=report.supplemental.id).delete()
+                SupplementalReportCreditActivity.objects.filter(
+                    supplemental_report_id=report.supplemental.id).delete()
+                SupplementalReportSales.objects.filter(
+                    supplemental_report_id=report.supplemental.id).delete()
+                SupplementalReport.objects.filter(
+                    id=report.supplemental.id).delete()
+                return HttpResponse(status=200)
             serializer = ModelYearReportSupplementalSerializer(
                 report.supplemental,
                 data=request.data

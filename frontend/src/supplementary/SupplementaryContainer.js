@@ -7,6 +7,7 @@ import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 
 const SupplementaryContainer = (props) => {
   const { id } = useParams();
+  const [checkboxConfirmed, setCheckboxConfirmed] = useState(false)
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState('');
@@ -84,6 +85,10 @@ const SupplementaryContainer = (props) => {
 
   const handleCommentChange = (content) => {
     setComment(content);
+  };
+
+  const handleCheckboxClick = (event) => {
+    setCheckboxConfirmed(event.target.checked);
   };
 
   const addSalesRow = () => {
@@ -321,14 +326,17 @@ const SupplementaryContainer = (props) => {
   return (
     <SupplementaryDetailsPage
       addSalesRow={addSalesRow}
+      checkboxConfirmed={checkboxConfirmed}
       deleteFiles={deleteFiles}
       details={details}
       errorMessage={errorMessage}
       files={files}
+      handleCheckboxClick={handleCheckboxClick}
       handleCommentChange={handleCommentChange}
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
       handleSupplementalChange={handleSupplementalChange}
+      id={id}
       ldvSales={ldvSales}
       loading={loading}
       newBalances={newBalances}

@@ -5,4 +5,3 @@ from enum import Enum, unique
 class SupplementalReportStatuses(Enum):
     DRAFT = 'DRAFT'
     SUBMITTED = 'SUBMITTED'
-    

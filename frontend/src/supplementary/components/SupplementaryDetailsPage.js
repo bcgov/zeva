@@ -7,17 +7,21 @@ import SupplierInformation from './SupplierInformation';
 import CreditActivity from './CreditActivity';
 import UploadEvidence from './UploadEvidence';
 import CommentInput from '../../app/components/CommentInput';
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 
 const SupplementaryDetailsPage = (props) => {
   const {
     addSalesRow,
+    checkboxConfirmed,
     deleteFiles,
     details,
     files,
+    handleCheckboxClick,
     handleCommentChange,
     handleInputChange,
     handleSubmit,
     handleSupplementalChange,
+    id,
     ldvSales,
     loading,
     newBalances,
@@ -27,12 +31,11 @@ const SupplementaryDetailsPage = (props) => {
     salesRows,
     setDeleteFiles,
     setUploadFiles,
+    user,
   } = props;
-
   if (loading) {
     return <Loading />;
   }
-
   const reportYear = details.assessmentData && details.assessmentData.modelYear;
   const supplierClass = details.assessmentData && details.assessmentData.supplierClass[0];
   const creditReductionSelection = details.assessmentData && details.assessmentData.creditReductionSelection;
@@ -88,20 +91,55 @@ const SupplementaryDetailsPage = (props) => {
           setUploadFiles={setUploadFiles}
         />
       </div>
+      {!user.isGovernment && user.hasPermission('SUBMIT_COMPLIANCE_REPORT') && details.status === 'DRAFT'
+              && (
+              <div className="mt-3">
+                <input
+                  defaultChecked={checkboxConfirmed}
+                  className="mr-2"
+                  id="supplier-confirm-checkbox"
+                  name="confirmations"
+                  onChange={(event) => { handleCheckboxClick(event); }}
+                  type="checkbox"
+                />
+                <label htmlFor="supplier-confirm-checkbox">
+                  On behalf of {details.assessmentData.legalName} I confirm the information included in the this Model Year Report is complete and correct.
+                </label>
+              </div>
+              )}
       <div className="row">
         <div className="col-12">
           <div className="action-bar">
-            <span className="left-content" />
+            <span className="left-content">
+              <Button
+                buttonType="back"
+                locationRoute={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id)}
+              />
+              {details.status === 'DRAFT'
+              && (
+              <Button
+                buttonType="delete"
+                action={() => handleSubmit('DELETED')}
+              />
+              )}
+            </span>
+            {details.status === 'DRAFT'
+            && (
             <span className="right-content">
               <Button
                 buttonType="save"
                 action={() => handleSubmit('DRAFT')}
               />
+              {!user.isGovernment && user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
+              && (
               <Button
+                disabled={!checkboxConfirmed}
                 buttonType="submit"
                 action={() => handleSubmit('SUBMITTED')}
               />
+              )}
             </span>
+            )}
           </div>
         </div>
       </div>
