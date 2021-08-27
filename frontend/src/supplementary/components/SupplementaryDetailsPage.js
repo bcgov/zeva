@@ -36,7 +36,6 @@ const SupplementaryDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
-
   const reportYear = details.assessmentData && details.assessmentData.modelYear;
   const supplierClass = details.assessmentData && details.assessmentData.supplierClass[0];
   const creditReductionSelection = details.assessmentData && details.assessmentData.creditReductionSelection;
@@ -89,7 +88,7 @@ const SupplementaryDetailsPage = (props) => {
           setUploadFiles={setUploadFiles}
         />
       </div>
-      {!user.isGovernment && user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
+      {!user.isGovernment && user.hasPermission('SUBMIT_COMPLIANCE_REPORT') && details.status === 'DRAFT'
               && (
               <div className="mt-3">
                 <input
@@ -113,11 +112,16 @@ const SupplementaryDetailsPage = (props) => {
                 buttonType="back"
                 locationRoute={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id)}
               />
+              {details.status === 'DRAFT'
+              && (
               <Button
                 buttonType="delete"
                 action={() => handleSubmit('DELETED')}
               />
+              )}
             </span>
+            {details.status === 'DRAFT'
+            && (
             <span className="right-content">
               <Button
                 buttonType="save"
@@ -132,6 +136,7 @@ const SupplementaryDetailsPage = (props) => {
               />
               )}
             </span>
+            )}
           </div>
         </div>
       </div>
