@@ -6,6 +6,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
   const {
     handleSupplementalChange,
     newBalances,
+    newData,
     reportDetails,
     reportYear,
     pendingBalanceExist,
@@ -29,6 +30,20 @@ const ComplianceObligationTableCreditsIssued = (props) => {
     transfersIn,
     transfersOut,
   } = transactions;
+
+  const getNewData = (category, modelYear, value) => {
+    if (newData && newData.creditActivity) {
+      const found = newData.creditActivity.find((each) => (
+        each.category === category && each.modelYear === modelYear
+      ));
+
+      if (found) {
+        return found[value];
+      }
+    }
+
+    return '';
+  };
 
   const tableSection = (input, title, negativeValue) => {
     let numberClassname = 'text-right';
@@ -125,6 +140,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                 <td>
                   <input
                     className="form-control"
+                    defaultValue={getNewData(category, each.modelYear, 'creditAValue')}
                     type="text"
                     onChange={(event) => {
                       handleSupplementalChange({
@@ -138,6 +154,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                 <td>
                   <input
                     className="form-control"
+                    defaultValue={getNewData(category, each.modelYear, 'creditBValue')}
                     type="text"
                     onChange={(event) => {
                       handleSupplementalChange({
@@ -205,6 +222,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                   <td>
                     <input
                       className="form-control"
+                      defaultValue={getNewData('creditBalanceStart', each, 'creditAValue')}
                       type="text"
                       onChange={(event) => {
                         handleSupplementalChange({
@@ -218,6 +236,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                   <td>
                     <input
                       className="form-control"
+                      defaultValue={getNewData('creditBalanceStart', each, 'creditBValue')}
                       type="text"
                       onChange={(event) => {
                         handleSupplementalChange({
@@ -248,6 +267,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                   <td>
                     <input
                       className="form-control"
+                      defaultValue={getNewData('creditBalanceStart', reportYear, 'creditAValue')}
                       type="text"
                       onChange={(event) => {
                         handleSupplementalChange({
@@ -261,6 +281,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                   <td>
                     <input
                       className="form-control"
+                      defaultValue={getNewData('creditBalanceStart', reportYear, 'creditBValue')}
                       type="text"
                       onChange={(event) => {
                         handleSupplementalChange({
@@ -379,6 +400,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
 ComplianceObligationTableCreditsIssued.defaultProps = {
   handleSupplementalChange: () => {},
   newBalances: {},
+  newData: {},
   pendingBalanceExist: false,
   supplementalReport: false,
 };
@@ -386,6 +408,7 @@ ComplianceObligationTableCreditsIssued.defaultProps = {
 ComplianceObligationTableCreditsIssued.propTypes = {
   handleSupplementalChange: PropTypes.func,
   newBalances: PropTypes.shape(),
+  newData: PropTypes.shape(),
   pendingBalanceExist: PropTypes.bool,
   reportDetails: PropTypes.shape().isRequired,
   reportYear: PropTypes.number.isRequired,
