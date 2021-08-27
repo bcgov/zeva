@@ -69,6 +69,7 @@ const SupplementaryDetailsPage = (props) => {
             handleSupplementalChange={handleSupplementalChange}
             ldvSales={ldvSales}
             newBalances={newBalances}
+            newData={newData}
             newLdvSales={newLdvSales}
             obligationDetails={obligationDetails}
             ratios={ratios}

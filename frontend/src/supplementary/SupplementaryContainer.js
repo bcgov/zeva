@@ -16,8 +16,8 @@ const SupplementaryContainer = (props) => {
   const [files, setFiles] = useState([]);
   const [deleteFiles, setDeleteFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [newData, setNewData] = useState({ zevSales: {}, creditActivity: {} });
-  const [obligationDetails, setObligationDetails] = useState({});
+  const [newData, setNewData] = useState({ zevSales: {}, creditActivity: [] });
+  let [obligationDetails, setObligationDetails] = useState({});
   const [ldvSales, setLdvSales] = useState();
   const [ratios, setRatios] = useState();
   const [newBalances, setNewBalances] = useState({});
@@ -282,16 +282,31 @@ const SupplementaryContainer = (props) => {
           }
         });
         setSalesRows(salesData);
+
+        const creditActivity = [];
+
+        response.data.creditActivity.forEach((each) => {
+          creditActivity.push({
+            category: each.category,
+            creditAValue: each.creditAValue,
+            creditBValue: each.creditBValue,
+            modelYear: each.modelYear.name,
+          });
+        });
+
         setNewData({
           ...newData,
           supplierInfo,
-
+          creditActivity,
         });
-      }
 
-      if (complianceResponse.data && complianceResponse.data.complianceObligation) {
-        setObligationDetails(complianceResponse.data.complianceObligation);
-        setLdvSales(complianceResponse.data.ldvSales);
+        if (complianceResponse.data && complianceResponse.data.complianceObligation) {
+          obligationDetails = complianceResponse.data.complianceObligation;
+          setObligationDetails(complianceResponse.data.complianceObligation);
+          setLdvSales(complianceResponse.data.ldvSales);
+        }
+
+        calculateBalance(creditActivity);
       }
 
       const reportYear = response.data.assessmentData && response.data.assessmentData.modelYear;

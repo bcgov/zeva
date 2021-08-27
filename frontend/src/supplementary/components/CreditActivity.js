@@ -18,6 +18,7 @@ const CreditActivity = (props) => {
     handleSupplementalChange,
     ldvSales,
     newBalances,
+    newData,
     newLdvSales,
     obligationDetails,
     ratios,
@@ -307,6 +308,7 @@ const CreditActivity = (props) => {
         <ComplianceObligationTableCreditsIssued
           handleSupplementalChange={handleSupplementalChange}
           newBalances={newBalances}
+          newData={newData}
           pendingBalanceExist={false}
           reportDetails={reportDetails}
           reportYear={reportYear}

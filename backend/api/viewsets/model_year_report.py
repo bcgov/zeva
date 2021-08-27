@@ -510,15 +510,30 @@ class ModelYearReportViewset(
                 model_year = ModelYear.objects.filter(
                     name=model_year_name
                 ).first()
+                category = activity.get('category')
+                credit_a_value = activity.get('credit_a_value')
+                credit_b_value = activity.get('credit_b_value')
+
+                if credit_a_value:
+                    try:
+                        float(credit_a_value)
+                    except ValueError:
+                        credit_a_value = None
+
+                if credit_b_value:
+                    try:
+                        float(credit_b_value)
+                    except ValueError:
+                        credit_b_value = None
 
                 if model_year:
                     SupplementalReportCreditActivity.objects.create(
                         update_user=request.user.username,
                         create_user=request.user.username,
                         supplemental_report_id=report.supplemental.id,
-                        category=activity.get('category'),
-                        credit_a_value=activity.get('credit_a_value'),
-                        credit_b_value=activity.get('credit_b_value'),
+                        category=category,
+                        credit_a_value=credit_a_value,
+                        credit_b_value=credit_b_value,
                         model_year=model_year
                     )
 
