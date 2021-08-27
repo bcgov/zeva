@@ -286,6 +286,8 @@ const AssessmentDetailsPage = (props) => {
             <h3 className="mt-4 mb-2">Credit Reduction</h3>
 
             <ComplianceObligationReductionOffsetTable
+              assessment={true}
+              reportYear={reportYear}
               creditReductionSelection={details.creditReductionSelection}
               deductions={deductions}
               pendingBalanceExist={pendingBalanceExist}
