@@ -184,7 +184,7 @@ const SupplementaryContainer = (props) => {
         status,
         evidenceAttachments,
         deleteFiles,
-        comment
+        comment,
       };
       axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data).then((response) => {
       });
