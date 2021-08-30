@@ -54,3 +54,5 @@ from . import supplemental_report_sales, supplemental_report_supplier_informatio
 from . import supplemental_report_credit_activity
 from . import supplemental_report_attachment
 from . import supplemental_report_comment
+from . import supplemental_report_assessment
+from . import supplemental_report_assessment_comment
