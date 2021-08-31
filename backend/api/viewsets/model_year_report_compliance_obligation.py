@@ -195,7 +195,14 @@ class ModelYearReportComplianceObligationViewset(
         if is_assessment:
             organization = report.organization
 
-        if (request.user.is_government and request.GET.get('assessment') == 'True' and report.validation_status != ModelYearReportStatuses.ASSESSED) or (not request.user.is_government and not confirmation and report.validation_status == ModelYearReportStatuses.DRAFT):
+        if (request.user.is_government and request.GET.get('assessment') == 'True' and
+                report.validation_status not in [
+                    ModelYearReportStatuses.ASSESSED,
+                    ModelYearReportStatuses.RECOMMENDED
+                ]) or (
+                    not request.user.is_government and not confirmation and
+                    report.validation_status == ModelYearReportStatuses.DRAFT
+        ):
             report = ModelYearReport.objects.get(
                 id=id
             )
