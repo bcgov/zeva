@@ -2,14 +2,19 @@ import React from 'react';
 import TextInput from '../../app/components/TextInput';
 
 const SupplierInformation = (props) => {
-  const { details, handleInputChange, newData } = props;
+  const {
+    details, handleInputChange, newData, userType,
+  } = props;
   const { assessmentData } = details;
   const { supplierInfo } = newData;
   return (
     <>
+      {userType.isBceid
+      && (
       <div className="text-blue mb-4">
         Make the required updates in the fields next to the original submitted values and provide an explanation in the comment box at the bottom of this form.
       </div>
+      )}
       <div className="my-4">
         <div className="d-inline-block col-sm-4">
           <label

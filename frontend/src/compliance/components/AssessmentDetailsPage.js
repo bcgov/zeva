@@ -190,6 +190,17 @@ const AssessmentDetailsPage = (props) => {
                 Create Supplemental Report
               </button>
             )}
+            {user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && statuses.assessment.status === 'ASSESSED' && (
+              <button
+                className="btn button primary float-right"
+                onClick={() => {
+                  history.push(ROUTES_SUPPLEMENTARY.CREATE.replace(/:id/g, id))
+                }}
+                type="button"
+              >
+                Create Reassessment Report
+              </button>
+            )}
             {analystAction && (['RETURNED', 'SUBMITTED', 'UNSAVED'].indexOf(statuses.assessment.status) >= 0) && (
               <button
                 className="btn button primary float-right"

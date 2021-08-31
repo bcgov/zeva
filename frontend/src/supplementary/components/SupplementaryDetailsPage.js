@@ -8,16 +8,21 @@ import CreditActivity from './CreditActivity';
 import UploadEvidence from './UploadEvidence';
 import CommentInput from '../../app/components/CommentInput';
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
+import DisplayComment from '../../app/components/DisplayComment';
+import Comment from '../../app/components/Comment';
 
 const SupplementaryDetailsPage = (props) => {
   const {
     addSalesRow,
     checkboxConfirmed,
+    commentArray,
     deleteFiles,
     details,
     files,
+    handleAddDirectorComment,
     handleCheckboxClick,
     handleCommentChange,
+    handleDirectorCommentChange,
     handleInputChange,
     handleSubmit,
     handleSupplementalChange,
@@ -40,17 +45,58 @@ const SupplementaryDetailsPage = (props) => {
   const supplierClass = details.assessmentData && details.assessmentData.supplierClass[0];
   const creditReductionSelection = details.assessmentData && details.assessmentData.creditReductionSelection;
   const newLdvSales = newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
-
+  const userType = {
+    isAnalyst: user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT'),
+    isBceid: !user.isGovernment,
+  };
   return (
     <div id="supplementary" className="page">
       <div className="row mt-3">
         <div className="col">
-          <h2 className="mb-2">{reportYear} Model Year Supplementary Report</h2>
+          <h2 className="mb-2">{userType.isAnalyst ? `${reportYear} Model Year Report Reassessment` : `${reportYear} Model Year Supplementary Report`}</h2>
         </div>
       </div>
+      {userType.isAnalyst
+       && (
+       <div className="supplementary-form my-3">
+         {commentArray
+         && (
+         <DisplayComment
+           commentArray={commentArray}
+         />
+         )}
+         <div id="comment-input">
+           {
+           //
+           //
+           //
+           //
+           //
+           //todo
+           // if id does not exist, disable add comment button
+           // ADD assessment recommendation at bottom of page
+           // update action bar!
+           //
+           //
+           //
+           //
+           //
+           //
+}
+           <CommentInput
+             defaultComment={details && details.comments && details.comments.length > 0 ? details.comments[0] : ''}
+             handleCommentChange={handleDirectorCommentChange}
+             title="Add comment to the Director."
+             buttonText="Add Comment"
+             handleAddComment={handleAddDirectorComment}
+           />
+         </div>
+       </div>
+       )}
       <div className="supplementary-form">
         <div className="mb-3">
           <SupplierInformation
+            userType={userType}
             details={details}
             handleInputChange={handleInputChange}
             loading={loading}
