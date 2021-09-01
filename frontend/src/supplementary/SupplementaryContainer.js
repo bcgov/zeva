@@ -21,6 +21,8 @@ const SupplementaryContainer = (props) => {
   const [ldvSales, setLdvSales] = useState();
   const [ratios, setRatios] = useState();
   const [newBalances, setNewBalances] = useState({});
+  const [commentArray, setCommentArray] = useState([]);
+  const [directorComment, setDirectorComment] = useState('');
 
   const calculateBalance = (creditActivity) => {
     const balances = {};
@@ -81,6 +83,14 @@ const SupplementaryContainer = (props) => {
     });
 
     setNewBalances(balances);
+  };
+  const handleDirectorCommentChange = (text) => {
+    setDirectorComment(text);
+  };
+
+  const handleAddDirectorComment = (content) => {
+    console.log(directorComment);
+    //post to database
   };
 
   const handleCommentChange = (content) => {
@@ -327,12 +337,15 @@ const SupplementaryContainer = (props) => {
     <SupplementaryDetailsPage
       addSalesRow={addSalesRow}
       checkboxConfirmed={checkboxConfirmed}
+      commentArray={commentArray}
       deleteFiles={deleteFiles}
       details={details}
       errorMessage={errorMessage}
       files={files}
+      handleAddDirectorComment={handleAddDirectorComment}
       handleCheckboxClick={handleCheckboxClick}
       handleCommentChange={handleCommentChange}
+      handleDirectorCommentChange={handleDirectorCommentChange}
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
       handleSupplementalChange={handleSupplementalChange}

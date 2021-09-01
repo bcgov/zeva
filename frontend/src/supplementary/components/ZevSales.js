@@ -149,7 +149,7 @@ const ZevSales = (props) => {
     <>
       <h3>
         {details.assessmentData && details.assessmentData.modelYear}
-        Model Year Zero-Emission Vehicles Sales
+        &nbsp; Model Year Zero-Emission Vehicles Sales
       </h3>
       <div className="text-blue my-3">
         Provide additional details in the comment box at the bottom of this form if there are

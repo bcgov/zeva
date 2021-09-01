@@ -8,16 +8,21 @@ import CreditActivity from './CreditActivity';
 import UploadEvidence from './UploadEvidence';
 import CommentInput from '../../app/components/CommentInput';
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
+import DisplayComment from '../../app/components/DisplayComment';
+import Comment from '../../app/components/Comment';
 
 const SupplementaryDetailsPage = (props) => {
   const {
     addSalesRow,
     checkboxConfirmed,
+    commentArray,
     deleteFiles,
     details,
     files,
+    handleAddDirectorComment,
     handleCheckboxClick,
     handleCommentChange,
+    handleDirectorCommentChange,
     handleInputChange,
     handleSubmit,
     handleSupplementalChange,
@@ -40,17 +45,44 @@ const SupplementaryDetailsPage = (props) => {
   const supplierClass = details.assessmentData && details.assessmentData.supplierClass[0];
   const creditReductionSelection = details.assessmentData && details.assessmentData.creditReductionSelection;
   const newLdvSales = newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
-
+  const userType = {
+    //need to add to condition to account for whether it is reassessment or supplemental report for analyst or bceid
+    isReassessment: user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT'),
+    isBceid: !user.isGovernment,
+    isAnalyst: user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT'),
+  };
   return (
     <div id="supplementary" className="page">
       <div className="row mt-3">
         <div className="col">
-          <h2 className="mb-2">{reportYear} Model Year Supplementary Report</h2>
+          <h2 className="mb-2">{userType.isReassessment ? `${reportYear} Model Year Report Reassessment` : `${reportYear} Model Year Supplementary Report`}</h2>
         </div>
       </div>
+      {userType.isReassessment
+       && (
+       <div className="supplementary-form my-3">
+         {commentArray && commentArray.length > 0
+         && (
+         <DisplayComment
+           commentArray={commentArray}
+         />
+         )}
+         <div id="comment-input">
+           <CommentInput
+             defaultComment={details && details.comments && details.comments.length > 0 ? details.comments[0] : ''}
+             handleCommentChange={handleDirectorCommentChange}
+             title="Add comment to the Director."
+             buttonText="Add Comment"
+             handleAddComment={handleAddDirectorComment}
+             buttonDisable={!details.id}
+           />
+         </div>
+       </div>
+       )}
       <div className="supplementary-form">
         <div className="mb-3">
           <SupplierInformation
+            userType={userType}
             details={details}
             handleInputChange={handleInputChange}
             loading={loading}
