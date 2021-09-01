@@ -144,6 +144,10 @@ class Router extends Component {
                 render={() => <SupplementaryContainer keycloak={keycloak} user={user} />}
               />
               <Route
+                path={ROUTES_SUPPLEMENTARY.REASSESSMENT}
+                render={() => <SupplementaryContainer keycloak={keycloak} user={user} reassessment />}
+              />
+              <Route
                 path={ROUTES_COMPLIANCE.REPORT_ASSESSMENT}
                 render={() => <AssessmentContainer keycloak={keycloak} user={user} />}
               />
