@@ -109,7 +109,7 @@ const SupplementaryDetailsPage = (props) => {
             </ul>
           </div>
         </div>
-        {isReassessment
+        {(isReassessment || analystAction)
         && (
         <div className="supplementary-form my-3">
           {commentArray && commentArray.length > 0
