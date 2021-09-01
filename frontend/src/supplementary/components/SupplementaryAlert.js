@@ -7,7 +7,6 @@ const SupplementaryAlert = (props) => {
     status,
     date,
     user,
-    id,
   } = props;
 
   let message = '';
@@ -55,7 +54,6 @@ SupplementaryAlert.propTypes = {
   date: PropTypes.string.isRequired,
   user: PropTypes.string.isRequired,
   status: PropTypes.string.isRequired,
-  id: PropTypes.string,
 };
 
 export default SupplementaryAlert;

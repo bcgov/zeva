@@ -94,10 +94,6 @@ const SupplementaryContainer = (props) => {
 
   const handleAddIdirComment = () => {
     console.log("add comment to the db", idirComment)
-    // axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
-    //   history.push(ROUTES_COMPLIANCE.REPORTS);
-    //   history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
-    // });
   };
 
   const handleCommentChangeIdir = (text) => {

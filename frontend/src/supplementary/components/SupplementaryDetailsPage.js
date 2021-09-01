@@ -58,7 +58,6 @@ const SupplementaryDetailsPage = (props) => {
   };
 
   //const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, 'Tesla').replace(/{modelYear}/g, 2020) : '';
-  const assessmentDecision = '';
   const showDescription = (each) => (
     <div className="mb-3" key={each.id}>
       <input
