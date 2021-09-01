@@ -10,6 +10,7 @@ const CommentInput = (props) => {
     buttonText,
     defaultComment,
     disable,
+    buttonDisable,
   } = props;
   return (
     <div className="text-editor">
@@ -38,6 +39,7 @@ const CommentInput = (props) => {
         className="button mt-2"
         onClick={() => { handleAddComment(); }}
         type="button"
+        disabled={buttonDisable}
       >{buttonText}
       </button>
       )}

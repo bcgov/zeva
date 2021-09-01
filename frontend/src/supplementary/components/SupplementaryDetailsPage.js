@@ -46,49 +46,35 @@ const SupplementaryDetailsPage = (props) => {
   const creditReductionSelection = details.assessmentData && details.assessmentData.creditReductionSelection;
   const newLdvSales = newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
   const userType = {
-    isAnalyst: user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT'),
+    //need to add to condition to account for whether it is reassessment or supplemental report for analyst or bceid
+    isReassessment: user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT'),
     isBceid: !user.isGovernment,
+    isAnalyst: user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT'),
   };
   return (
     <div id="supplementary" className="page">
       <div className="row mt-3">
         <div className="col">
-          <h2 className="mb-2">{userType.isAnalyst ? `${reportYear} Model Year Report Reassessment` : `${reportYear} Model Year Supplementary Report`}</h2>
+          <h2 className="mb-2">{userType.isReassessment ? `${reportYear} Model Year Report Reassessment` : `${reportYear} Model Year Supplementary Report`}</h2>
         </div>
       </div>
-      {userType.isAnalyst
+      {userType.isReassessment
        && (
        <div className="supplementary-form my-3">
-         {commentArray
+         {commentArray && commentArray.length > 0
          && (
          <DisplayComment
            commentArray={commentArray}
          />
          )}
          <div id="comment-input">
-           {
-           //
-           //
-           //
-           //
-           //
-           //todo
-           // if id does not exist, disable add comment button
-           // ADD assessment recommendation at bottom of page
-           // update action bar!
-           //
-           //
-           //
-           //
-           //
-           //
-}
            <CommentInput
              defaultComment={details && details.comments && details.comments.length > 0 ? details.comments[0] : ''}
              handleCommentChange={handleDirectorCommentChange}
              title="Add comment to the Director."
              buttonText="Add Comment"
              handleAddComment={handleAddDirectorComment}
+             buttonDisable={!details.id}
            />
          </div>
        </div>
