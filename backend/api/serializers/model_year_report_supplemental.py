@@ -119,9 +119,9 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
     assessment_data = SerializerMethodField()
     zev_sales = SerializerMethodField()
     attachments = SerializerMethodField()
-    comments = SerializerMethodField()
+    from_supplier_comments = SerializerMethodField()
 
-    def get_comments(self, obj):
+    def get_from_supplier_comments(self, obj):
         comments = SupplementalReportComment.objects.filter(
             supplemental_report_id=obj.id
         ).order_by('-create_timestamp')
@@ -217,5 +217,5 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         model = SupplementalReport
         fields = (
             'id', 'status', 'ldv_sales', 'credit_activity',
-            'assessment_data', 'zev_sales', 'supplier_information','attachments','comments'
+            'assessment_data', 'zev_sales', 'supplier_information','attachments','from_supplier_comments'
         )

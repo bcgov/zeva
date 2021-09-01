@@ -2,9 +2,7 @@ import React from 'react';
 import TextInput from '../../app/components/TextInput';
 
 const SupplierInformation = (props) => {
-  const {
-    details, handleInputChange, newData, userType,
-  } = props;
+  const { details, handleInputChange, newData, userType } = props;
   const { assessmentData } = details;
   const { supplierInfo } = newData;
   return (
