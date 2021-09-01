@@ -5,6 +5,7 @@ const ROUTES_SUPPLEMENTARY = {
   DETAILS: `${API_BASE_PATH}/:id/supplemental`,
   SAVE: `${API_BASE_PATH}/:id/supplemental_save`,
   MINIO_URL: `${API_BASE_PATH}/:id/minio_url`,
+  REASSESSMENT: `${API_BASE_PATH}/:id/reassessment`,
 };
 
 export default ROUTES_SUPPLEMENTARY;

@@ -12,7 +12,7 @@ const SupplementaryContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState('');
   const [salesRows, setSalesRows] = useState([]);
-  const { keycloak, user } = props;
+  const { keycloak, user, reassessment } = props;
   const [files, setFiles] = useState([]);
   const [deleteFiles, setDeleteFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -30,6 +30,8 @@ const SupplementaryContainer = (props) => {
 
   const directorAction = user.isGovernment
   && user.hasPermission('SIGN_COMPLIANCE_REPORT');
+
+  const isReassessment = reassessment && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')
 
   const calculateBalance = (creditActivity) => {
     const balances = {};
@@ -376,6 +378,7 @@ const SupplementaryContainer = (props) => {
       setUploadFiles={setFiles}
       radioDescriptions={radioDescriptions}
       user={user}
+      isReassessment={isReassessment}
     />
   );
 };

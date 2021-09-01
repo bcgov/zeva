@@ -220,9 +220,13 @@ const CreditActivity = (props) => {
 
   return (
     <>
-      <div className="compliance-reduction-table">
+      <h3>Compliance Obligation</h3>
+      <div className="text-blue my-3">
+        A change to the LDV sales total could result in a change of compliance status for this and any subsequent model year reports. Provide an explanation for any change to the LDV Sales total in the comment box at the bottom of this form.
+      </div>
+      <div className="compliance-reduction-table mb-3">
         <div className="row mb-4 ">
-          <div className="col-12">
+          <div className="col-12 p-2">
             <table className="no-border">
               <tbody>
                 <tr>
@@ -303,7 +307,6 @@ const CreditActivity = (props) => {
           </div>
         </div>
       </div>
-      <h3>Credit Activity</h3>
       <div className="mt-4">
         <ComplianceObligationTableCreditsIssued
           handleSupplementalChange={handleSupplementalChange}

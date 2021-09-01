@@ -2,12 +2,12 @@ import React from 'react';
 import TextInput from '../../app/components/TextInput';
 
 const SupplierInformation = (props) => {
-  const { details, handleInputChange, newData, userType } = props;
+  const { details, handleInputChange, newData, user  } = props;
   const { assessmentData } = details;
   const { supplierInfo } = newData;
   return (
     <>
-      {userType.isBceid
+      {!user.isGovernment
       && (
       <div className="text-blue mb-4">
         Make the required updates in the fields next to the original submitted values and provide an explanation in the comment box at the bottom of this form.

@@ -42,6 +42,7 @@ const SupplementaryDetailsPage = (props) => {
     setUploadFiles,
     user,
     radioDescriptions,
+    isReassessment,
   } = props;
   if (loading) {
     return <Loading />;
@@ -50,18 +51,12 @@ const SupplementaryDetailsPage = (props) => {
   const supplierClass = details.assessmentData && details.assessmentData.supplierClass[0];
   const creditReductionSelection = details.assessmentData && details.assessmentData.creditReductionSelection;
   const newLdvSales = newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
-  const userType = {
-    //need to add to condition to account for whether it is reassessment or supplemental report for analyst or bceid
-    isReassessment: user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT'),
-    isBceid: !user.isGovernment,
-    isAnalyst: user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT'),
-  };
 
-  //const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, 'Tesla').replace(/{modelYear}/g, 2020) : '';
+  // const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, 'Tesla').replace(/{modelYear}/g, 2020) : '';
   const showDescription = (each) => (
     <div className="mb-3" key={each.id}>
       <input
-        //defaultChecked={details.assessment.decision.description === each.description}
+        // defaultChecked={details.assessment.decision.description === each.description}
         className="mr-3"
         type="radio"
         name="assessment"
@@ -94,52 +89,52 @@ const SupplementaryDetailsPage = (props) => {
     <div id="supplementary" className="page">
       <div className="row mt-3">
         <div className="col">
-          <h2 className="mb-2">{userType.isReassessment ? `${reportYear} Model Year Report Reassessment` : `${reportYear} Model Year Supplementary Report`}</h2>
+          <h2 className="mb-2">{isReassessment ? `${reportYear} Model Year Report Reassessment` : `${reportYear} Model Year Supplementary Report`}</h2>
         </div>
       </div>
       <div className="supplementary-form">
-      <div className="supplementary-alert mt-2">
-        <SupplementaryAlert
-          id={id}
-          date={moment(details.updateTimestamp).format('MMM D, YYYY')}
-          status={details.status}
-          user={user.username}
-        />
-      </div>
-      <div className="report-assessment-history">
-        <h3 className="mb-2">Model Year Report Assessment History</h3>
-        <div className="grey-border-area">
-          <ul>
-            <li><u>Notice of Assessment Oct. 11, 2021</u></li>
-          </ul>
+        <div className="supplementary-alert mt-2">
+          <SupplementaryAlert
+            id={id}
+            date={moment(details.updateTimestamp).format('MMM D, YYYY')}
+            status={details.status}
+            user={user.username}
+          />
         </div>
-      </div>
-        {userType.isReassessment
+        <div className="report-assessment-history">
+          <h3 className="mb-2">Model Year Report Assessment History</h3>
+          <div className="grey-border-area">
+            <ul>
+              <li><u>Notice of Assessment Oct. 11, 2021</u></li>
+            </ul>
+          </div>
+        </div>
+        {isReassessment
         && (
         <div className="supplementary-form my-3">
-         {commentArray && commentArray.length > 0
+          {commentArray && commentArray.length > 0
          && (
          <DisplayComment
            commentArray={commentArray}
          />
          )}
-         <div id="comment-input">
-           <CommentInput
-             defaultComment={details && details.comments && details.comments.length > 0 ? details.comments[0] : ''}
-             handleCommentChange={handleCommentChangeIdir}
-             title={analystAction ? 'Add comment to director: ' : 'Add comment to the analyst'}
-             buttonText="Add Comment"
-             handleAddComment={handleAddIdirComment}
-             buttonDisable={!details.id}
-           />
-         </div>
-         </div>
+          <div id="comment-input">
+            <CommentInput
+              defaultComment={details && details.comments && details.comments.length > 0 ? details.comments[0] : ''}
+              handleCommentChange={handleCommentChangeIdir}
+              title={analystAction ? 'Add comment to director: ' : 'Add comment to the analyst'}
+              buttonText="Add Comment"
+              handleAddComment={handleAddIdirComment}
+              buttonDisable={!details.id}
+            />
+          </div>
+        </div>
         )}
       </div>
       <div className="supplementary-form mt-2">
         <div className="mb-3">
           <SupplierInformation
-            userType={userType}
+            user={user}
             details={details}
             handleInputChange={handleInputChange}
             loading={loading}
@@ -166,73 +161,81 @@ const SupplementaryDetailsPage = (props) => {
           />
         </div>
         <div id="comment-input">
-        {!user.isGovernment && details.status === 'DRAFT' && <CommentInput
+          {!user.isGovernment && details.status === 'DRAFT' && (
+          <CommentInput
             defaultComment={details && details.comments && details.comments.length > 0 ? details.comments[0] : ''}
             handleCommentChange={handleCommentChange}
             title="Provide details in the comment box below for any changes above."
-          />}
+          />
+          )}
         </div>
-        {!user.isGovernment && details.status === 'DRAFT' && <UploadEvidence
+        {!user.isGovernment && details.status === 'DRAFT' && (
+        <UploadEvidence
           details={details}
           deleteFiles={deleteFiles}
           files={files}
           setDeleteFiles={setDeleteFiles}
           setUploadFiles={setUploadFiles}
-        />}
+        />
+        )}
       </div>
-      {(analystAction || directorAction) && <div className="row mb-3">
-            <div className="col-12">
-              <div className="grey-border-area  p-3 mt-2">
-                <div>
-                  {['RECOMMENDED'].indexOf(details.status) < 0 && (
-                  <>
-                    {radioDescriptions.map((each) => (
-                      (each.displayOrder === 0) && showDescription(each)
-                    ))}
-                    <div className="text-blue mt-3 ml-3 mb-1">
-                      &nbsp;&nbsp; {} has not complied with section 10 (2) of the
-                      Zero-Emission Vehicles Act for the {2020} adjustment period.
-                    </div>
-                    {radioDescriptions.map((each) => (
-                      (each.displayOrder > 0) && showDescription(each)
-                    ))}
-                    <label className="d-inline" htmlFor="penalty-radio">
-                      <div>
-                        <input
-                          disabled={directorAction}
-                          type="text"
-                          className="ml-4 mr-1"
-                          //defaultValue={details.assessment.assessmentPenalty}
-                          name="penalty-amount"
-                          onChange={(e) => {
-                            setDetails({
-                              ...details,
-                              assessment: {
-                                ...details.assessment,
-                                assessmentPenalty: e.target.value,
-                              },
-                            });
-                          }}
-                        />
-                        <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
-                      </div>
-                    </label>
-                  </>
-                  )}
-                   {(analystAction || directorAction) && <div id="comment-input">
-                    <CommentInput
-                      //disable={details.assessment.validationStatus === 'ASSESSED'}
-                      //defaultComment={details.bceidComment}
-                      //handleAddComment={handleAddBceidComment}
-                      //handleCommentChange={handleCommentChangeBceid}
-                      title="Assessment Message to the Supplier: "
-                    />
-                    </div>
-                   } 
+      {(analystAction || directorAction) && (
+      <div className="row my-3">
+        <div className="col-12">
+          <h3>Analyst Recommended Director Reassessment</h3>
+          <div className="grey-border-area  p-3 mt-2">
+            <div>
+              {['RECOMMENDED'].indexOf(details.status) < 0 && (
+              <>
+                {radioDescriptions.map((each) => (
+                  (each.displayOrder === 0) && showDescription(each)
+                ))}
+                <div className="text-blue mt-3 ml-3 mb-1">
+                  &nbsp;&nbsp; {} has not complied with section 10 (2) of the
+                  Zero-Emission Vehicles Act for the {2020} adjustment period.
                 </div>
+                {radioDescriptions.map((each) => (
+                  (each.displayOrder > 0) && showDescription(each)
+                ))}
+                <label className="d-inline" htmlFor="penalty-radio">
+                  <div>
+                    <input
+                      disabled={directorAction}
+                      type="text"
+                      className="ml-4 mr-1"
+                          // defaultValue={details.assessment.assessmentPenalty}
+                      name="penalty-amount"
+                      onChange={(e) => {
+                        setDetails({
+                          ...details,
+                          assessment: {
+                            ...details.assessment,
+                            assessmentPenalty: e.target.value,
+                          },
+                        });
+                      }}
+                    />
+                    <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
+                  </div>
+                </label>
+              </>
+              )}
+              {(analystAction || directorAction) && (
+              <div id="comment-input">
+                <CommentInput
+                      // disable={details.assessment.validationStatus === 'ASSESSED'}
+                      // defaultComment={details.bceidComment}
+                      // handleAddComment={handleAddBceidComment}
+                      // handleCommentChange={handleCommentChangeBceid}
+                  title="Assessment Message to the Supplier: "
+                />
               </div>
+              )}
             </div>
-        </div>}
+          </div>
+        </div>
+      </div>
+      )}
       {!user.isGovernment && user.hasPermission('SUBMIT_COMPLIANCE_REPORT') && details.status === 'DRAFT'
               && (
               <div className="mt-3">
@@ -248,7 +251,7 @@ const SupplementaryDetailsPage = (props) => {
                   On behalf of {details.assessmentData.legalName} I confirm the information included in the this Model Year Report is complete and correct.
                 </label>
               </div>
-      )}
+              )}
       <div className="row">
         <div className="col-12">
           <div className="action-bar">
@@ -264,34 +267,36 @@ const SupplementaryDetailsPage = (props) => {
                 action={() => handleSubmit('DELETED')}
               />
               )}
-              {details.status === 'SUBMITTED' &&
+              {details.status === 'SUBMITTED'
+                && (
                 <button
-                    className="button text-danger"
-                    onClick={() => {
-                      handleSubmit('RETURNED');
-                    }}
-                    type="button"
-                  >
-                    Return to Vehicle Supplier
+                  className="button text-danger"
+                  onClick={() => {
+                    handleSubmit('RETURNED');
+                  }}
+                  type="button"
+                >
+                  Return to Vehicle Supplier
                 </button>
-              }
+                )}
             </span>
             <span className="right-content">
-              {(details.status !== 'SUBMITTED' && !user.isGovernment) &&
+              {(details.status !== 'SUBMITTED' && !user.isGovernment)
+                && (
                 <Button
                   buttonType="save"
                   action={() => handleSubmit('')}
                 />
-              }
+                )}
               {analystAction && (
-                  <Button
-                    buttonType="submit"
-                    optionalClassname="button primary"
-                    optionalText="Recommend Reassessment"
-                    action={() => {
-                      handleSubmit('RECOMMENDED');
-                    }}
-                  />
+              <Button
+                buttonType="submit"
+                optionalClassname="button primary"
+                optionalText="Recommend Reassessment"
+                action={() => {
+                  handleSubmit('RECOMMENDED');
+                }}
+              />
               )}
               {!user.isGovernment && details.status === 'DRAFT' && user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
               && (
@@ -309,6 +314,6 @@ const SupplementaryDetailsPage = (props) => {
   );
 };
 
-SupplementaryDetailsPage.propTypes = {}
+SupplementaryDetailsPage.propTypes = {};
 
 export default SupplementaryDetailsPage;
