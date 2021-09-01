@@ -22,6 +22,12 @@
         background-color: $default-background-grey;
     }
 
+    .comment-box {
+        border: 1px solid $border-grey;
+        width: 100%;
+        padding: 0.5rem 0.5rem;
+    }
+
     .no-border {
         border: none;
     }

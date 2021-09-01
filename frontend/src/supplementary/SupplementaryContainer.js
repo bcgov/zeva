@@ -22,7 +22,14 @@ const SupplementaryContainer = (props) => {
   const [ratios, setRatios] = useState();
   const [newBalances, setNewBalances] = useState({});
   const [commentArray, setCommentArray] = useState([]);
-  const [directorComment, setDirectorComment] = useState('');
+  const [idirComment, setIdirComment] = useState([]);
+  const [radioDescriptions, setRadioDescriptions] = useState([{ id: 0, description: '' }]);
+
+  const analystAction = user.isGovernment
+  && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
+
+  const directorAction = user.isGovernment
+  && user.hasPermission('SIGN_COMPLIANCE_REPORT');
 
   const calculateBalance = (creditActivity) => {
     const balances = {};
@@ -84,13 +91,17 @@ const SupplementaryContainer = (props) => {
 
     setNewBalances(balances);
   };
-  const handleDirectorCommentChange = (text) => {
-    setDirectorComment(text);
+
+  const handleAddIdirComment = () => {
+    console.log("add comment to the db", idirComment)
+    // axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
+    //   history.push(ROUTES_COMPLIANCE.REPORTS);
+    //   history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+    // });
   };
 
-  const handleAddDirectorComment = (content) => {
-    console.log(directorComment);
-    //post to database
+  const handleCommentChangeIdir = (text) => {
+    setIdirComment(text);
   };
 
   const handleCommentChange = (content) => {
@@ -244,15 +255,21 @@ const SupplementaryContainer = (props) => {
       axios.get(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)),
       axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)),
       axios.get(ROUTES_COMPLIANCE.RATIOS),
-    ]).then(axios.spread((response, complianceResponse, ratioResponse) => {
+      axios.get(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)),
+    ]).then(axios.spread((response, complianceResponse, ratioResponse, assessmentResponse) => {
       if (response.data) {
         setDetails(response.data);
+        console.log(response.data)
         const newSupplier = response.data.supplierInformation;
         const newLegalName = newSupplier.find((each) => each.category === 'LEGAL_NAME') || '';
         const newServiceAddress = newSupplier.find((each) => each.category === 'SERVICE_ADDRESS') || '';
         const newRecordsAddress = newSupplier.find((each) => each.category === 'RECORDS_ADDRESS') || '';
         const newMakes = newSupplier.find((each) => each.category === 'LDV_MAKES') || '';
         const newSupplierClass = newSupplier.find((each) => each.category === 'SUPPLIER_CLASS') || '';
+        const {
+          descriptions: assessmentDescriptions,
+        } = assessmentResponse.data;
+        setRadioDescriptions(assessmentDescriptions);
         const supplierInfo = {
           legalName: newLegalName.value,
           serviceAddress: newServiceAddress.value,
@@ -338,14 +355,16 @@ const SupplementaryContainer = (props) => {
       addSalesRow={addSalesRow}
       checkboxConfirmed={checkboxConfirmed}
       commentArray={commentArray}
+      analystAction={analystAction}
+      directorAction={directorAction}
       deleteFiles={deleteFiles}
       details={details}
       errorMessage={errorMessage}
       files={files}
-      handleAddDirectorComment={handleAddDirectorComment}
       handleCheckboxClick={handleCheckboxClick}
+      handleAddIdirComment={handleAddIdirComment}
+      handleCommentChangeIdir={handleCommentChangeIdir}
       handleCommentChange={handleCommentChange}
-      handleDirectorCommentChange={handleDirectorCommentChange}
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
       handleSupplementalChange={handleSupplementalChange}
@@ -359,6 +378,7 @@ const SupplementaryContainer = (props) => {
       salesRows={salesRows}
       setDeleteFiles={setDeleteFiles}
       setUploadFiles={setFiles}
+      radioDescriptions={radioDescriptions}
       user={user}
     />
   );
