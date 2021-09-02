@@ -1,6 +1,6 @@
 {
   "name": "zeva-frontend",
-  "version": "1.29.0",
+  "version": "1.30.0",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
