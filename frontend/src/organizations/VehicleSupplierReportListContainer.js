@@ -18,19 +18,20 @@ const VehicleSupplierReportListContainer = (props) => {
 
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
-  const [collapsed, setCollapsed] = useState(true);
   const [availableYears, setAvailableYears] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.YEARS);
   const [details, setDetails] = useState({});
-
-  const collapseDropdown = () => {
-    setCollapsed(!collapsed);
-  };
+  const [filtered, setFiltered] = useState([]);
+  const [ratios, setRatios] = useState({});
 
   const refreshList = () => {
     setLoading(true);
 
     const detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
       setDetails(response.data);
+    });
+
+    const ratiosPromise = axios.get(ROUTES_COMPLIANCE.RATIOS).then((response) => {
+      setRatios(response.data);
     });
 
     const reportsPromise = axios.get(ROUTES_COMPLIANCE.REPORTS, {
@@ -49,7 +50,7 @@ const VehicleSupplierReportListContainer = (props) => {
       setAvailableYears(filteredYears);
     });
 
-    Promise.all([detailsPromise, reportsPromise]).then(() => {
+    Promise.all([detailsPromise, reportsPromise, ratiosPromise]).then(() => {
       setLoading(false);
     });
   };
@@ -64,10 +65,11 @@ const VehicleSupplierReportListContainer = (props) => {
       <VehicleSupplierTabs locationState={locationState} supplierId={details.id} active="model-year-reports" user={user} />
       <ComplianceReportListPage
         availableYears={availableYears}
-        collapsed={collapsed}
-        collapseDropdown={collapseDropdown}
         data={data}
         loading={loading}
+        filtered={filtered}
+        ratios={ratios}
+        setFiltered={setFiltered}
         user={user}
       />
     </div>

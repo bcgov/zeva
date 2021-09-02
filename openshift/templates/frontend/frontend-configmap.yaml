@@ -54,6 +54,10 @@ parameters:
     displayName: null
     description: 
     required: true                   
+  - name: CREDIT_AGREEMENTS_ENABLED
+    displayName: null
+    description: 
+    required: true                   
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -73,6 +77,7 @@ objects:
           'purchase_requests.enabled': ${PURCHASE_REQUESTS_ENABLED},
           'notifications.enabled': ${NOTIFICATIONS_ENABLED},
           'roles.enabled': ${ROLES_ENABLED},
+          'credit_agreements.enabled': ${CREDIT_AGREEMENTS_ENABLED},
           'model_year_report.years': [
             2020,
             2021,

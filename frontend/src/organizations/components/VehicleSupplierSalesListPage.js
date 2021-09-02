@@ -9,7 +9,7 @@ import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
 
 const VehicleSupplierSalesListPage = (props) => {
   const {
-    loading, locationState, user, items, balances,
+    loading, locationState, user, items, reports, balances,
   } = props;
 
   if (loading) {
@@ -22,8 +22,10 @@ const VehicleSupplierSalesListPage = (props) => {
         <div className="col-sm-12">
           <CreditTransactions
             balances={balances}
+            reports={reports}
             items={items}
-            user={user} />
+            user={user}
+          />
         </div>
       </div>
 
@@ -50,11 +52,12 @@ VehicleSupplierSalesListPage.defaultProps = {
 };
 
 VehicleSupplierSalesListPage.propTypes = {
+  balances: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),
+  reports: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   user: CustomPropTypes.user.isRequired,
-  items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  balances: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 };
 
 export default VehicleSupplierSalesListPage;

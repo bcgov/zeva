@@ -14,14 +14,13 @@ from api.models.model_year_report_make import ModelYearReportMake
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.serializers.model_year_report_ldv_sales import ModelYearReportLDVSalesSerializer
 from api.models.user_profile import UserProfile
+from api.models.model_year_report_assessment import ModelYearReportAssessment
 from api.serializers.model_year_report_address import \
     ModelYearReportAddressSerializer
 from api.serializers.model_year_report_make import \
     ModelYearReportMakeSerializer
 from api.serializers.model_year_report_history import \
     ModelYearReportHistorySerializer
-from api.serializers.model_year_report_adjustment import \
-    ModelYearReportAdjustmentSerializer
 from api.serializers.user import MemberSerializer
 from api.serializers.vehicle import ModelYearSerializer
 from api.services.model_year_report import get_model_year_report_statuses
@@ -32,15 +31,27 @@ class ModelYearReportSerializer(ModelSerializer):
     model_year = ModelYearSerializer()
     model_year_report_addresses = ModelYearReportAddressSerializer(many=True)
     makes = SerializerMethodField()
-    validation_status = EnumField(ModelYearReportStatuses)
-    model_year_report_history = ModelYearReportHistorySerializer(many=True)
+    # validation_status = EnumField(ModelYearReportStatuses)
+    validation_status = SerializerMethodField()
+    model_year_report_history = SerializerMethodField()
     confirmations = SerializerMethodField()
     statuses = SerializerMethodField()
     ldv_sales = SerializerMethodField()
     ldv_sales_previous = SerializerMethodField()
     avg_sales = SerializerMethodField()
     changelog = SerializerMethodField()
-    adjustments = ModelYearReportAdjustmentSerializer(many=True)
+
+    def get_validation_status(self, obj):
+        request = self.context.get('request')
+
+        if not request.user.is_government and \
+                obj.validation_status in [
+                    ModelYearReportStatuses.RETURNED,
+                    ModelYearReportStatuses.RECOMMENDED
+                ]:
+            return ModelYearReportStatuses.SUBMITTED.value
+
+        return obj.validation_status.value
 
     def get_ldv_sales_previous(self, obj):
         year = int(obj.model_year.name)
@@ -96,7 +107,13 @@ class ModelYearReportSerializer(ModelSerializer):
     def get_ldv_sales(self, obj):
         request = self.context.get('request')
 
-        if request.user.is_government:
+        is_assessed = (
+            (request.user.organization_id == obj.organization_id and
+             obj.validation_status == ModelYearReportStatuses.ASSESSED) or
+            request.user.is_government
+        )
+
+        if is_assessed:
             return obj.get_ldv_sales(from_gov=True) or obj.ldv_sales
 
         return obj.ldv_sales
@@ -125,7 +142,8 @@ class ModelYearReportSerializer(ModelSerializer):
             model_year_report_id=obj.id
         )
 
-        if not request.user.is_government:
+        if not request.user.is_government and \
+                obj.validation_status != ModelYearReportStatuses.ASSESSED:
             makes = makes.filter(
                 from_gov=False
             )
@@ -135,7 +153,28 @@ class ModelYearReportSerializer(ModelSerializer):
         return serializer.data
 
     def get_statuses(self, obj):
-        return get_model_year_report_statuses(obj)
+        request = self.context.get('request')
+
+        return get_model_year_report_statuses(obj, request.user)
+
+    def get_model_year_report_history(self, obj):
+        request = self.context.get('request')
+
+        history = ModelYearReportHistory.objects.filter(
+            model_year_report_id=obj.id
+        ).order_by('create_timestamp')
+
+        if not request.user.is_government:
+            history = history.exclude(
+                validation_status__in=[
+                    ModelYearReportStatuses.RECOMMENDED,
+                    ModelYearReportStatuses.RETURNED,
+                ]
+            )
+
+        serializer = ModelYearReportHistorySerializer(history, many=True)
+
+        return serializer.data
 
     class Meta:
         model = ModelYearReport
@@ -144,7 +183,7 @@ class ModelYearReportSerializer(ModelSerializer):
             'model_year_report_addresses', 'makes', 'validation_status',
             'create_user', 'model_year_report_history', 'confirmations',
             'statuses', 'ldv_sales', 'ldv_sales_previous', 'avg_sales',
-            'credit_reduction_selection', 'changelog', 'adjustments',
+            'credit_reduction_selection', 'changelog',
             'update_timestamp',
         )
 
@@ -163,7 +202,24 @@ class ModelYearReportListSerializer(
         return obj.ldv_sales
 
     def get_compliant(self, obj):
-        return True
+        if obj.validation_status != ModelYearReportStatuses.ASSESSED:
+            return '-'
+
+        assessment = ModelYearReportAssessment.objects.get(
+            model_year_report_id=obj.id
+        )
+
+        if assessment:
+            found = assessment.model_year_report_assessment_description.description.find(
+                'has complied'
+            )
+
+            if found >= 0:
+                return 'Yes'
+            else:
+                return 'No'
+
+        return 'No'
 
     def get_obligation_total(self, obj):
         return 0
@@ -173,7 +229,9 @@ class ModelYearReportListSerializer(
 
     def get_validation_status(self, obj):
         request = self.context.get('request')
-        if not request.user.is_government and obj.validation_status is ModelYearReportStatuses.RECOMMENDED:
+        if not request.user.is_government and obj.validation_status in [
+            ModelYearReportStatuses.RECOMMENDED,
+            ModelYearReportStatuses.RETURNED]:
             return ModelYearReportStatuses.SUBMITTED.value
         return obj.get_validation_status_display()
 
@@ -187,7 +245,7 @@ class ModelYearReportListSerializer(
 
 
 class ModelYearReportSaveSerializer(
-    ModelSerializer, EnumSupportSerializerMixin
+        ModelSerializer, EnumSupportSerializerMixin
 ):
     model_year = SlugRelatedField(
         slug_field='name',

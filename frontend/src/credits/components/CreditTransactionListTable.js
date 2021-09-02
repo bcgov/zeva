@@ -10,23 +10,41 @@ import ReactTable from '../../app/components/ReactTable';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import history from '../../app/History';
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
+import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements';
 import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 import ROUTES_CREDITS from '../../app/routes/Credits';
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 
 const CreditTransactionListTable = (props) => {
-  const { items } = props;
+  const { items, reports } = props;
   const translateTransactionType = (item) => {
     if (!item.transactionType) {
       return false;
     }
-    
     const { transactionType } = item.transactionType;
-    const { name } = item.modelYear;
+
+    let name = '';
+
+    if (transactionType.toLowerCase() === 'reduction') {
+      const report = reports.find((each) => Number(each.id) === (item.foreignKey));
+
+      if (report) {
+        ({ name } = report.modelYear);
+      }
+    }
+
     switch (transactionType.toLowerCase()) {
       case 'validation':
         return 'Credit Application';
+      case 'credit adjustment validation':
+        if (item.detailTransactionType) {
+          return item.detailTransactionType;
+        }
+        return 'Initiative Agreement';
+      case 'credit adjustment reduction':
+        return 'Administrative Credit Reduction';
       case 'reduction':
-        return  name + ' Model Year Report Credit Reduction';
+        return `${name} Model Year Report Credit Reduction`;
       default:
         return transactionType;
     }
@@ -44,6 +62,25 @@ const CreditTransactionListTable = (props) => {
         return 'CA';
       case 'credit transfer':
         return 'CT';
+      case 'credit adjustment validation':
+        if (item.detailTransactionType === 'Automatic Administrative Penalty') {
+          return 'AP';
+        }
+
+        if (item.detailTransactionType === 'Purchase Agreement') {
+          return 'PA';
+        }
+
+        if (item.detailTransactionType === 'Administrative Credit Allocation') {
+          return 'AA';
+        }
+
+        return 'IA';
+      case 'credit adjustment reduction':
+        if (item.detailTransactionType === 'Administrative Credit Reduction') {
+          return 'AR';
+        }
+        break;
       case 'reduction':
         return 'CR';
       default:
@@ -87,8 +124,8 @@ const CreditTransactionListTable = (props) => {
     if (found >= 0) {
       transactions[found] = {
         ...transactions[found],
-        creditsA: (item.creditClass.creditClass === 'A' ? item.totalValue : transactions[found].creditsA),
-        creditsB: (item.creditClass.creditClass === 'B' ? item.totalValue : transactions[found].creditsB),
+        creditsA: (item.creditClass.creditClass === 'A' ? transactions[found].creditsA + item.totalValue : transactions[found].creditsA),
+        creditsB: (item.creditClass.creditClass === 'B' ? transactions[found].creditsB + item.totalValue : transactions[found].creditsB),
         displayTotalA: totalA,
         displayTotalB: totalB,
       };
@@ -102,6 +139,7 @@ const CreditTransactionListTable = (props) => {
         transactionTimestamp: item.transactionTimestamp,
         modelYear: item.modelYear,
         transactionType: item.transactionType,
+        detailTransactionType: item.detailTransactionType,
       });
     }
   });
@@ -110,7 +148,13 @@ const CreditTransactionListTable = (props) => {
     Header: '',
     headerClassName: 'header-group',
     columns: [{
-      accessor: (item) => (`${abbreviateTransactionType(item)}-${item.foreignKey}`),
+      accessor: (item) => {
+        if (item.transactionType.transactionType === 'Reduction' && !item.foreignKey) {
+          return 'AR';
+        }
+
+        return `${abbreviateTransactionType(item)}-${item.foreignKey}`;
+      },
       className: 'text-center',
       Header: 'Transaction ID',
       id: 'id',
@@ -219,6 +263,24 @@ const CreditTransactionListTable = (props) => {
                     { href: ROUTES_CREDITS.LIST },
                   );
                   break;
+                case 'credit adjustment validation':
+                  history.push(
+                    ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/g, item.foreignKey),
+                    { href: ROUTES_CREDITS.LIST },
+                  );
+                  break;
+                case 'reduction':
+                  history.push(
+                    ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, item.foreignKey),
+                    { href: ROUTES_CREDITS.LIST },
+                  );
+                  break;
+                case 'credit adjustment reduction':
+                  history.push(
+                    ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/g, item.foreignKey),
+                    { href: ROUTES_CREDITS.LIST },
+                  );
+                  break;
                 default:
               }
 
@@ -238,6 +300,7 @@ CreditTransactionListTable.defaultProps = {};
 
 CreditTransactionListTable.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  reports: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
 
 export default CreditTransactionListTable;

@@ -2,6 +2,7 @@ from datetime import date
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.http import HttpResponse
 from django.db.models import Sum
 from django.utils.decorators import method_decorator
 
@@ -14,11 +15,17 @@ from api.models.model_year_report_confirmation import \
 from api.models.credit_transaction import CreditTransaction
 from api.models.model_year_report_credit_offset import \
     ModelYearReportCreditOffset
+from api.models.model_year_report_statuses import \
+    ModelYearReportStatuses
 from api.models.model_year_report_compliance_obligation import \
     ModelYearReportComplianceObligation
 from api.models.sales_submission import SalesSubmission
 from api.models.vehicle import Vehicle
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
+from api.models.credit_agreement_transaction_types import \
+    CreditAgreementTransactionTypes
+from api.models.model_year_report_ldv_sales import \
+    ModelYearReportLDVSales
 from api.permissions.model_year_report import ModelYearReportPermissions
 from api.serializers.model_year_report_compliance_obligation import \
     ModelYearReportComplianceObligationDetailsSerializer, \
@@ -26,10 +33,9 @@ from api.serializers.model_year_report_compliance_obligation import \
     ModelYearReportComplianceObligationOffsetSerializer
 from api.serializers.credit_transaction import \
     CreditTransactionObligationActivitySerializer
-from api.services.summary import parse_summary_serializer, retrieve_balance, \
+from api.services.summary import parse_summary_serializer, \
     get_current_year_balance
-from api.models.model_year_report_ldv_sales import \
-    ModelYearReportLDVSales
+from api.models.organization_deficits import OrganizationDeficits
 
 
 class ModelYearReportComplianceObligationViewset(
@@ -47,7 +53,6 @@ class ModelYearReportComplianceObligationViewset(
     serializer_classes = {
         'default': ModelYearReportComplianceObligationDetailsSerializer,
         'details': ModelYearReportComplianceObligationDetailsSerializer,
-        # 'create': ModelYearReportComplianceObligationSaveSerializer
     }
 
     def get_queryset(self):
@@ -98,18 +103,17 @@ class ModelYearReportComplianceObligationViewset(
             model_year_report_id=id
         ).delete()
         for each in credit_activity:
-            print(each)
             category = each['category']
             model_year = ModelYear.objects.get(name=each['year'])
             a = each['a']
             b = each['b']
             compliance_obj = ModelYearReportComplianceObligation.objects.create(
-                    model_year_report_id=id,
-                    model_year=model_year,
-                    category=category,
-                    credit_a_value=a,
-                    credit_b_value=b
-                )
+                model_year_report_id=id,
+                model_year=model_year,
+                category=category,
+                credit_a_value=a,
+                credit_b_value=b
+            )
             compliance_obj.save()
 
         if credit_reduction_selection:
@@ -122,15 +126,40 @@ class ModelYearReportComplianceObligationViewset(
 
         return Response(id)
 
+    @action(detail=False, methods=['patch'])
+    def update_obligation(self, request):
+        id = request.data.get('report_id')
+        credit_activity = request.data.get('credit_activity')
+        records = ModelYearReportComplianceObligation.objects.filter(
+            model_year_report_id=id,
+            from_gov=True
+        )
+        if records:
+            records.delete()
+        for each in credit_activity:
+            category = each['category']
+            model_year = ModelYear.objects.get(name=each['year'])
+            credit_a_value = each['a']
+            credit_b_value = each['b']
+            compliance_obj = ModelYearReportComplianceObligation.objects.create(
+                model_year_report_id=id,
+                model_year=model_year,
+                category=category,
+                credit_a_value=credit_a_value,
+                credit_b_value=credit_b_value,
+                from_gov=True
+            )
+            compliance_obj.save()
+
+        return HttpResponse(
+            status=201, content="Record Updated"
+        )
+
     @action(detail=False, url_path=r'(?P<id>\d+)')
     @method_decorator(permission_required('VIEW_SALES'))
     def details(self, request, *args, **kwargs):
         summary_param = request.GET.get('summary', None)
         summary = True if summary_param == "true" else None
-
-        issued_credits = []
-        obj_a = None
-        obj_b = None
 
         organization = request.user.organization
         id = kwargs.get('id')
@@ -142,6 +171,7 @@ class ModelYearReportComplianceObligationViewset(
             signing_authority_assertion__module="compliance_obligation"
         ).first()
         snapshot = ModelYearReportComplianceObligation.objects.filter(
+            from_gov=False,
             model_year_report_id=report.id,
         ).order_by('-update_timestamp')
         offset_snapshot = ModelYearReportCreditOffset.objects.filter(
@@ -150,16 +180,29 @@ class ModelYearReportComplianceObligationViewset(
         compliance_offset = None
         if offset_snapshot:
             offset_serializer = ModelYearReportComplianceObligationOffsetSerializer(
-                offset_snapshot, context={'request': request, 'kwargs': kwargs}, many=True
+                offset_snapshot,
+                context={'request': request, 'kwargs': kwargs},
+                many=True
             )
             compliance_offset = offset_serializer.data
 
-        is_assessment = request.GET.get('assessment') == 'True' and request.user.is_government
+        is_assessment = request.GET.get('assessment') == 'True' and (
+            (request.user.organization_id == report.organization_id and
+             report.validation_status == ModelYearReportStatuses.ASSESSED) or
+            request.user.is_government
+        )
 
         if is_assessment:
             organization = report.organization
 
-        if (not confirmation and not summary) or is_assessment or not snapshot:
+        if (request.user.is_government and request.GET.get('assessment') == 'True' and
+                report.validation_status not in [
+                    ModelYearReportStatuses.ASSESSED,
+                    ModelYearReportStatuses.RECOMMENDED
+                ]) or (
+                    not request.user.is_government and not confirmation and
+                    report.validation_status == ModelYearReportStatuses.DRAFT
+        ):
             report = ModelYearReport.objects.get(
                 id=id
             )
@@ -178,7 +221,7 @@ class ModelYearReportComplianceObligationViewset(
                 to_date = date(report_year + 1, 9, 30,)
 
             content = []
-
+            
             transfers_in = CreditTransaction.objects.filter(
                 credit_to=organization,
                 transaction_type__transaction_type='Credit Transfer',
@@ -199,12 +242,72 @@ class ModelYearReportComplianceObligationViewset(
                 transaction_timestamp__gte=from_date,
             ).values(
                 'credit_class_id', 'model_year_id'
-            ).annotate(total_value=Sum(
-                'total_value')
+            ).annotate(
+                total_value=Sum('total_value')
             ).order_by(
                 'credit_class_id', 'model_year_id'
             )
 
+            initative_agreements = CreditTransaction.objects.filter(
+                credit_to=organization,
+                credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.INITIATIVE_AGREEMENT,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=to_date,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=from_date,
+            ).values(
+                'credit_class_id', 'model_year_id'
+            ).annotate(
+                total_value=Sum('total_value')
+            ).order_by(
+               'credit_class_id', 'model_year_id'
+            )
+            purchase_agreements = CreditTransaction.objects.filter(
+                credit_to=organization,
+                credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.PURCHASE_AGREEMENT,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=to_date,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=from_date,
+            ).values(
+                'credit_class_id', 'model_year_id'
+            ).annotate(
+                total_value=Sum('total_value')
+            ).order_by(
+               'credit_class_id', 'model_year_id'
+            )
+            administrative_credit_alloction = CreditTransaction.objects.filter(
+                credit_to=organization,
+                credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.ADMINISTRATIVE_CREDIT_ALLOCATION,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=to_date,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=from_date,
+            ).values(
+                'credit_class_id', 'model_year_id'
+            ).annotate(
+                total_value=Sum('total_value')
+            ).order_by(
+               'credit_class_id', 'model_year_id'
+            )
+            administrative_credit_reduction = CreditTransaction.objects.filter(
+                debit_from=organization,
+                credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.ADMINISTRATIVE_CREDIT_REDUCTION,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=to_date,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=from_date,
+            ).values(
+                'credit_class_id', 'model_year_id'
+            ).annotate(
+                total_value=Sum('total_value')
+            ).order_by(
+               'credit_class_id', 'model_year_id'
+            )
+            automatic_administrative_penalty = CreditTransaction.objects.filter(
+                credit_to=organization,
+                credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.AUTOMATIC_ADMINISTRATIVE_PENALTY,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=to_date,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__gte=from_date,
+            ).values(
+                'credit_class_id', 'model_year_id'
+            ).annotate(
+                total_value=Sum('total_value')
+            ).order_by(
+               'credit_class_id', 'model_year_id'
+            )
             credits_issued_sales = CreditTransaction.objects.filter(
                 credit_to=organization,
                 transaction_type__transaction_type='Validation',
@@ -217,10 +320,30 @@ class ModelYearReportComplianceObligationViewset(
             ).order_by(
                 'credit_class_id', 'model_year_id'
             )
-
+            purchase_agreements_serializer = CreditTransactionObligationActivitySerializer(purchase_agreements, read_only=True, many=True)
+            initiative_agreements_serializer = CreditTransactionObligationActivitySerializer(initative_agreements, read_only=True, many=True)
+            adminitrative_alloction_serializer = CreditTransactionObligationActivitySerializer(administrative_credit_alloction, read_only=True, many=True)
+            administrative_reduction_serializer = CreditTransactionObligationActivitySerializer(administrative_credit_reduction, read_only=True, many=True)
+            automatic_penalty_serializer = CreditTransactionObligationActivitySerializer(automatic_administrative_penalty, read_only=True, many=True)
+            
             transfers_in_serializer = CreditTransactionObligationActivitySerializer(transfers_in, read_only=True, many=True)
             transfers_out_serializer = CreditTransactionObligationActivitySerializer(transfers_out, read_only=True, many=True)
             credit_sales_serializer = CreditTransactionObligationActivitySerializer(credits_issued_sales, read_only=True, many=True)
+
+            for purchase_agreement in purchase_agreements_serializer.data:
+                parse_summary_serializer(content, purchase_agreement, 'purchaseAgreement')
+
+            for initative_agreement in initiative_agreements_serializer.data:
+                parse_summary_serializer(content, initative_agreement, 'initiativeAgreement')
+            
+            for adminitrative_alloction in adminitrative_alloction_serializer.data:
+                parse_summary_serializer(content, adminitrative_alloction, 'administrativeAllocation')
+
+            for administrative_reduction in administrative_reduction_serializer.data:
+                parse_summary_serializer(content, administrative_reduction, 'administrativeReduction')
+
+            for automatic_penalty in automatic_penalty_serializer.data:
+                parse_summary_serializer(content, automatic_penalty, 'automaticAdministrativePenalty')
 
             for transfer_in in transfers_in_serializer.data:
                 parse_summary_serializer(content, transfer_in, 'transfersIn')
@@ -228,19 +351,8 @@ class ModelYearReportComplianceObligationViewset(
             for transfer_out in transfers_out_serializer.data:
                 parse_summary_serializer(content, transfer_out, 'transfersOut')
 
-            for credits_sale in list(credit_sales_serializer.data):
-                if credits_sale['credit_class'].get('credit_class') == 'A':
-                    obj_a = {'model_year': credits_sale['model_year']['name'], 'A': credits_sale['total_value'], 'B': 0}
-                    issued_credits.append(obj_a)
-                if credits_sale['credit_class'].get('credit_class') == 'B':
-                    obj_b = {'model_year': credits_sale['model_year']['name'], 'A': 0, 'B': credits_sale['total_value']}
-                    issued_credits.append(obj_b)
-            if obj_a and obj_b and obj_a['model_year'] == obj_b['model_year']:
-                issued_credits.append({'model_year': obj_a['model_year'], 'A': obj_a['A'], 'B': obj_b['B']})
-                issued_credits.remove({'model_year': obj_a['model_year'], 'A': obj_a['A'], 'B': 0})
-                issued_credits.remove({'model_year': obj_b['model_year'], 'A': 0, 'B': obj_b['B']})
-                
-            content.append({"issued_credits": issued_credits, 'category': 'creditsIssuedSales'})
+            for credits_sale in credit_sales_serializer.data:
+                parse_summary_serializer(content, credits_sale, 'creditsIssuedSales')
 
             pending_sales_submissions = SalesSubmission.objects.filter(
                 organization=organization,
@@ -276,26 +388,65 @@ class ModelYearReportComplianceObligationViewset(
                     'model_year': {'name': key}
                 })
 
-            previous_report = None
+            previous_report_id = None
             prior_year_balance_a = 0
             prior_year_balance_b = 0
             prior_year = report_year - 1
-            previous_report = ModelYearReport.objects.values_list('id', flat=True).filter(
-                    model_year__name=str(prior_year)).filter(organization_name=organization.name).first()
+            previous_report_id = ModelYearReport.objects.values_list('id', flat=True).filter(
+                model_year__name=str(prior_year)
+            ).filter(organization_name=organization.name).first()
 
-            if previous_report:
-                prior_year_balance_a = ModelYearReportComplianceObligation.objects.values_list('credit_a_value', flat=True).filter(
-                        model_year_report_id=previous_report).filter(category='creditBalanceEnd').first()
+            if previous_report_id:
+                starting_balances = ModelYearReportComplianceObligation.objects.filter(
+                    model_year_report_id=previous_report_id,
+                    category='ProvisionalBalanceAfterCreditReduction'
+                ).order_by(
+                    'model_year__name'
+                )
 
-                prior_year_balance_b = ModelYearReportComplianceObligation.objects.values_list('credit_b_value', flat=True).filter(
-                        model_year_report_id=previous_report).filter(category='creditBalanceEnd').first()
+                for balance in starting_balances:
+                    if balance and (
+                            balance.credit_a_value > 0 or
+                            balance.credit_b_value > 0
+                    ):
+                        content.append({
+                            'credit_a_value': balance.credit_a_value,
+                            'credit_b_value': balance.credit_b_value,
+                            'category': 'creditBalanceStart',
+                            'model_year': {
+                                'name': balance.model_year.name
+                            }
+                        })
 
-            content.append({
-                'credit_a_value': prior_year_balance_a if prior_year_balance_a else 0,
-                'credit_b_value': prior_year_balance_b if prior_year_balance_b else 0,
-                'category': 'creditBalanceStart',
-                'model_year': {'name': report_year_obj.name}
-            })
+            deficits = OrganizationDeficits.objects.filter(
+                organization_id=organization.id
+            ).order_by('model_year__name')
+
+            for deficit in deficits:
+                index = 0
+                found = False
+
+                for each in content:
+                    if each.get('category') == 'deficit' and \
+                            each.get('model_year').get('name') == deficit.model_year.name:
+                        found = True
+                        break
+                    index += 1
+
+                if found:
+                    if deficit.credit_class.credit_class == 'A':
+                        content[index]['credit_a_value'] += deficit.credit_value
+                    else:
+                        content[index]['credit_b_value'] += deficit.credit_value
+                else:
+                    content.append({
+                        'credit_a_value': deficit.credit_value if deficit.credit_class.credit_class == 'A' else 0,
+                        'credit_b_value': deficit.credit_value if deficit.credit_class.credit_class == 'B' else 0,
+                        'category': 'deficit',
+                        'model_year': {
+                            'name': deficit.model_year.name
+                        }
+                    })
 
             report_year_balance_a = get_current_year_balance(organization.id, report_year, 'A')
             report_year_balance_b = get_current_year_balance(organization.id, report_year, 'B')
@@ -338,4 +489,4 @@ class ModelYearReportComplianceObligationViewset(
             'compliance_obligation': serializer.data,
             'compliance_offset': compliance_offset,
             'ldv_sales': report.ldv_sales
-         })
+        })

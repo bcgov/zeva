@@ -43,3 +43,16 @@ from . import model_year_report_assessment
 from . import model_year_report_assessment_comment
 from . import model_year_report_assessment_descriptions
 from . import model_year_report_credit_transaction
+from . import organization_deficits
+from . import credit_agreement
+from . import credit_agreement_attachment
+from . import credit_agreement_comment
+from . import credit_agreement_content, credit_agreement_history
+from . import credit_agreement_credit_transaction
+from . import supplemental_report
+from . import supplemental_report_sales, supplemental_report_supplier_information
+from . import supplemental_report_credit_activity
+from . import supplemental_report_attachment
+from . import supplemental_report_comment
+from . import supplemental_report_assessment
+from . import supplemental_report_assessment_comment

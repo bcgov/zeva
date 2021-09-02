@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import CustomPropTypes from '../../app/utilities/props';
 import ComplianceReportAlert from './ComplianceReportAlert';
@@ -11,12 +10,12 @@ import ConsumerLDVSales from './ConsumerLDVSales';
 import getTotalReduction from '../../app/utilities/getTotalReduction';
 import getClassACredits from '../../app/utilities/getClassAReduction';
 import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClassReduction';
-import TextInput from '../../app/components/TextInput';
-import FormDropdown from '../../credits/components/FormDropdown';
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 
 const AssessmentEditPage = (props) => {
   const {
     details,
+    id,
     loading,
     makes,
     make,
@@ -31,11 +30,6 @@ const AssessmentEditPage = (props) => {
     ratios,
     sales,
     supplierMakes,
-    years,
-    adjustments,
-    handleChangeAdjustment,
-    handleDeleteAdjustment,
-    addAdjustment,
   } = props;
 
   if (loading) {
@@ -50,7 +44,9 @@ const AssessmentEditPage = (props) => {
     <div className="row">
       <div className="col-sm-12">
         <div className="action-bar">
-          <span className="left-content" />
+          <span className="left-content">
+            <Button buttonType="back" locationRoute={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id)} />
+          </span>
           <span className="right-content mr-3">
             <Button
               optionalClassname="button primary"
@@ -127,119 +123,6 @@ const AssessmentEditPage = (props) => {
                 />
               </div>
             </div>
-            <div className="assessment-credit-adjustment mt-2">
-              <h3>Assessment Credit Adjustment</h3>
-              <div className="mt-2 grey-border-area">
-                {adjustments && adjustments.map((adjustment, index) => (
-                  <div className="form-group" key={index}>
-                    <div className="d-inline-block align-middle mr-5 text-blue">
-                      Credits
-                    </div>
-                    <div className="d-inline-block align-middle mr-5">
-                      <div className="mb-2">
-                        <input
-                          id={`adjustment-type-${index}-allocation`}
-                          checked={adjustment.type === 'Allocation'}
-                          name={`adjustment-type-${index}`}
-                          type="radio"
-                          value="Allocation"
-                          onChange={(event) => {
-                            handleChangeAdjustment(event.target.value, 'type', index);
-                          }}
-                        />
-                        <label htmlFor={`adjustment-type-${index}-allocation`}>Allocation</label>
-                      </div>
-                      <div>
-                        <input
-                          id={`adjustment-type-${index}-reduction`}
-                          checked={adjustment.type === 'Reduction'}
-                          name={`adjustment-type-${index}`}
-                          type="radio"
-                          value="Reduction"
-                          onChange={(event) => {
-                            handleChangeAdjustment(event.target.value, 'type', index);
-                          }}
-                        />
-                        <label htmlFor={`adjustment-type-${index}-reduction`}>Reduction</label>
-                      </div>
-                    </div>
-                    <div className="d-inline-block align-middle mr-5">
-                      <div className="mb-2">
-                        <input
-                          id={`credit-type-${index}-a`}
-                          checked={adjustment.creditClass === 'A'}
-                          name={`credit-type-${index}`}
-                          type="radio"
-                          value="A"
-                          onChange={(event) => {
-                            handleChangeAdjustment(event.target.value, 'creditClass', index);
-                          }}
-                        />
-                        <label htmlFor={`credit-type-${index}-a`}>A credits</label>
-                      </div>
-                      <div>
-                        <input
-                          id={`credit-type-${index}-b`}
-                          checked={adjustment.creditClass === 'B'}
-                          name={`credit-type-${index}`}
-                          type="radio"
-                          value="B"
-                          onChange={(event) => {
-                            handleChangeAdjustment(event.target.value, 'creditClass', index);
-                          }}
-                        />
-                        <label htmlFor={`credit-type-${index}-b`}>B credits</label>
-                      </div>
-                    </div>
-                    <FormDropdown
-                      dropdownData={years}
-                      dropdownName="model year"
-                      handleInputChange={(event) => {
-                        handleChangeAdjustment(event.target.value, 'modelYear', index);
-                      }}
-                      fieldName="modelYear"
-                      accessor={(year) => year.name}
-                      selectedOption={adjustment.modelYear || '--'}
-                      labelClassname="mr-2 d-inline-block"
-                      inputClassname="d-inline-block"
-                      rowClassname="mr-5 d-inline-block align-middle"
-                    />
-                    <TextInput
-                      label="quantity of credits"
-                      id="quantityOfCredits"
-                      name="quantity"
-                      defaultValue={adjustment.quantity}
-                      handleInputChange={(event) => {
-                        handleChangeAdjustment(event.target.value, 'quantity', index);
-                      }}
-                      labelSize="mr-2 col-form-label d-inline-block align-middle"
-                      inputSize="d-inline-block align-middle transfer-input-width"
-                      mandatory
-                      rowSize="mr-5 d-inline-block align-middle"
-                      num
-                    />
-                    <button
-                      type="button"
-                      className="transfer-row-x"
-                      onClick={() => {
-                        handleDeleteAdjustment(index);
-                      }}
-                    >
-                      <FontAwesomeIcon icon="times" />
-                    </button>
-                  </div>
-                ))}
-
-                <button
-                  className="button"
-                  onClick={addAdjustment}
-                  type="button"
-                >
-                  <FontAwesomeIcon icon="plus" />{' '}
-                  Add Adjustment
-                </button>
-              </div>
-            </div>
           </div>
           {actionbar}
         </div>
@@ -251,6 +134,10 @@ AssessmentEditPage.defaultProps = {};
 
 AssessmentEditPage.propTypes = {
   details: PropTypes.shape().isRequired,
+  id: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]).isRequired,
   loading: PropTypes.bool.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   supplierMakes: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -265,10 +152,5 @@ AssessmentEditPage.propTypes = {
   make: PropTypes.string.isRequired,
   sales: PropTypes.shape().isRequired,
   ratios: PropTypes.shape().isRequired,
-  years: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  adjustments: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  handleChangeAdjustment: PropTypes.func.isRequired,
-  handleDeleteAdjustment: PropTypes.func.isRequired,
-  addAdjustment: PropTypes.func.isRequired,
 };
 export default AssessmentEditPage;

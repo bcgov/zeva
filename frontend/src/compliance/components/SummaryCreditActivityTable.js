@@ -18,31 +18,42 @@ const SummaryCreditActivityTable = (props) => {
     totalCreditReduction,
     ldvSales,
     supplierClass,
-    creditDeficit,
     provisionalBalanceAfterCreditReduction,
   } = creditActivityDetails;
 
-  const tableSection = (input, title, numberClassname = 'text-right') => (
-    <tr>
-      <th className="large-column text-blue">
-        {title}
-      </th>
-      <td className={`${numberClassname} a-class`}>
-        {title === 'Credit Deficit:' && input.A > 0 ? (
-          <span>({formatNumeric(input.A)})</span>
-        ) : (
-          <span className={input.A < 0 ? 'text-red' : ''}>{formatNumeric(input.A) || 0.00}</span>
-        )}
-      </td>
-      <td className={numberClassname}>
-        {title === 'Credit Deficit:' && input.B > 0 ? (
-          <span>({formatNumeric(input.B)})</span>
-        ) : (
-          <span className={input.B < 0 ? 'text-red' : ''}>{formatNumeric(input.B) || 0.00}</span>
-        )}
-      </td>
-    </tr>
-  );
+  const tableSection = (input, title, numberClassname = 'text-right') => {
+    if (input.A > 0 || input.B > 0 || input.A < 0 || input.B < 0 || title.indexOf('Balance at end') >= 0 || title.indexOf('Balance after Credit Reduction') >= 0) {
+      return (
+        <tr>
+          <th className="large-column text-blue">
+            {title}
+          </th>
+          <td className={`${numberClassname} a-class`}>
+            {title.indexOf('Balance after Credit Reduction') >= 0 && input.A < 0 ? (
+              <span>({formatNumeric(input.A * -1)})</span>
+            ) : (
+              <span className={(input.A < 0 || (input.A !== 0 && title === 'Credit Reduction:')) ? 'text-red' : ''}>
+                {title === 'Credit Reduction:' && input.A > 0 && '-'}
+                {formatNumeric(input.A) || 0.00}
+              </span>
+            )}
+          </td>
+          <td className={numberClassname}>
+            {title.indexOf('Balance after Credit Reduction') >= 0 && input.B < 0 ? (
+              <span>({formatNumeric(input.B * -1)})</span>
+            ) : (
+              <span className={(input.B < 0 || (input.B !== 0 && title === 'Credit Reduction:')) ? 'text-red' : ''}>
+                {title === 'Credit Reduction:' && input.B > 0 && '-'}
+                {formatNumeric(input.B) || 0.00}
+              </span>
+            )}
+          </td>
+        </tr>
+      );
+    }
+
+    return false;
+  };
 
   return (
     <table id="summary-credit-activity">
@@ -57,7 +68,7 @@ const SummaryCreditActivityTable = (props) => {
             {year} Model Year LDV Sales\Leases:
           </td>
           <td />
-          <td className="text-right font-weight-bold">{ldvSales}</td>
+          <td className="text-right font-weight-bold">{formatNumeric(ldvSales, 0)}</td>
         </tr>
         <tr>
           <td className="text-blue">{year} Compliance Ratio:</td>
@@ -136,45 +147,28 @@ const SummaryCreditActivityTable = (props) => {
       <tbody>
         {tableSection(
           creditBalanceStart,
-          `Balance at end of September 30, ${year} :`,
+          `Balance at end of September 30, ${year}:`,
         )}
+        {Object.keys(transactions.administrativeAllocation).length > 0
+          && tableSection(transactions.automaticAdministrativePenalty, 'Automatic Administrative Penalty:')}
         {Object.keys(transactions.creditsIssuedSales).length > 0
           && tableSection(transactions.creditsIssuedSales, 'Consumer ZEV Sales:')}
         {Object.keys(pendingBalance).length > 0
           && tableSection(pendingBalance, 'Pending for Consumer Sales:')}
-        {/* {Object.keys(creditsIssuedInitiative).length > 0
-          && (
-            tableSection(creditsIssuedInitiative, 'Initiative Agreements:')
-          )}
-        {Object.keys(creditsIssuedPurchase).length > 0
-          && (
-            tableSection(creditsIssuedPurchase, 'Purchase Agreements:')
-          )} */}
+        {Object.keys(transactions.initiativeAgreement).length > 0
+          && tableSection(transactions.initiativeAgreement, 'Initiative Agreements:')}
+        {Object.keys(transactions.purchaseAgreement).length > 0
+          && tableSection(transactions.purchaseAgreement, 'Purchase Agreements:')}
+        {Object.keys(transactions.administrativeAllocation).length > 0
+          && tableSection(transactions.administrativeAllocation, 'Administrative Credit Allocation:')}
         {Object.keys(transactions.transfersIn).length > 0
           && tableSection(transactions.transfersIn, 'Transferred In:')}
+        {Object.keys(transactions.administrativeReduction).length > 0
+          && tableSection(transactions.administrativeReduction, 'Administrative Credit Reduction:')}
         {Object.keys(transactions.transfersOut).length > 0
-          && tableSection(
-            transactions.transfersOut,
-            'Transferred Away:',
-            'text-right',
-          )}
-
-        {/* {Object.keys(provisionalAssessedBalance).length > 0
-          && (
-            tableSection(provisionalAssessedBalance, 'Provisional assessed balance:')
-          )} */}
-        {Object.keys(totalCreditReduction).length > 0
-          && tableSection(
-            totalCreditReduction,
-            'Credit Reduction:',
-            'text-right',
-          )}
-        {Object.keys(creditDeficit).length > 0
-          && (creditDeficit.A > 0 || creditDeficit.B > 0)
-          && tableSection(creditDeficit, 'Credit Deficit:')}
+          && tableSection(transactions.transfersOut, 'Transferred Away:')}
+        {Object.keys(totalCreditReduction).length > 0 && tableSection(totalCreditReduction, 'Credit Reduction:')}
         {Object.keys(provisionalBalanceAfterCreditReduction).length > 0
-          && creditDeficit.A <= 0
-          && creditDeficit.B <= 0
           && tableSection(
             provisionalBalanceAfterCreditReduction,
             pendingBalanceExist
@@ -187,13 +181,14 @@ const SummaryCreditActivityTable = (props) => {
 };
 
 SummaryCreditActivityTable.defaultProps = {
+  pendingBalanceExist: false,
 };
 
 SummaryCreditActivityTable.propTypes = {
   complianceRatios: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   consumerSalesDetails: PropTypes.shape().isRequired,
   creditActivityDetails: PropTypes.shape().isRequired,
-  pendingBalanceExist: PropTypes.bool.isRequired,
+  pendingBalanceExist: PropTypes.bool,
 };
 
 export default SummaryCreditActivityTable;

@@ -34,7 +34,7 @@ const CreditRequestDetailsPage = (props) => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
   const [comment, setComment] = useState('');
-
+  
   const serviceAddress = submission.organization.organizationAddress.find(
     (address) => address.addressType.addressType === 'Service',
   );
@@ -57,22 +57,31 @@ const CreditRequestDetailsPage = (props) => {
 
   let modalProps = {};
 
-  const modules = {
-    toolbar: [
-      ['bold', 'italic'],
-      [{ list: 'bullet' }, { list: 'ordered' }],
-    ],
-  };
-  const formats = ['bold', 'italic', 'list', 'bullet'];
-
+  const transferCommentsIDIR = submission && submission.salesSubmissionComment && submission.salesSubmissionComment
+    .filter((each) => each.toGovt == true && each.comment)
+    .map((item) => item);
+  const transferCommentsSupplier = submission && submission.salesSubmissionComment && submission.salesSubmissionComment
+    .filter((each) => each.toGovt == false && each.comment)
+    .map((item) => item);
   const handleCommentChange = (content) => {
     setComment(content);
   };
+  
+  const analystToSupplier = (
+    <div>
+      <label className="mt-3" htmlFor="reject-comment">
+        <h4> Comment to vehicle suppliers (mandatory to Reject)
+        </h4>
+      </label>
+      <textarea testid="reject-comment-analyst" name="reject-comment" className="col-sm-11" rows="3" onChange={(event) => { const commentValue = `<p>${event.target.value}</p>`; setComment(commentValue); }} />
+    </div>
+  );
 
   const handleAddComment = () => {
     const submissionContent = {};
     if (comment.length > 0) {
-      submissionContent.salesSubmissionComment = { comment };
+      submissionContent.salesSubmissionComment = { comment: comment };
+      submissionContent.commentType = {govt: true}
     }
     axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), submissionContent).then(() => {
       history.push(ROUTES_CREDIT_REQUESTS.EDIT.replace(':id', id));
@@ -118,6 +127,14 @@ const CreditRequestDetailsPage = (props) => {
         modalText: 'Return submission to analyst?',
       };
       break;
+    case 'analyst-reject':
+      modalProps = {
+        confirmLabel: 'Reject Application',
+        handleSubmit: () => { handleSubmit('REJECTED', comment); },
+        buttonClass: 'btn-outline-danger',
+        modalText: 'Reject the application?',
+      };
+      break;
     default:
       modalProps = {
         confirmLabel: 'Issue Credits',
@@ -146,6 +163,35 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
     </Modal>
+  );
+
+  const idirCommentSection = (
+    <div className="text-editor mb-2 mt-2">
+      <label className="mt-3" htmlFor="application-comment">
+        <h4>{analystAction ? 'Comment to director:' : 'Add Comment to analyst if returning submission:'}
+        </h4>
+      </label>
+      <ReactQuill
+        theme="snow"
+        modules={{
+          toolbar: [
+            ['bold', 'italic'],
+            [{ list: 'bullet' }, { list: 'ordered' }],
+          ],
+          keyboard: {
+            bindings: { tab: false },
+          },
+        }}
+        formats={['bold', 'italic', 'list', 'bullet']}
+        onChange={handleCommentChange}
+      />
+      <button
+        className="button mt-2"
+        onClick={() => { handleAddComment(); }}
+        type="button"
+      >Add Comment
+      </button>
+    </div>
   );
 
   let totalEligibleCredits = 0;
@@ -201,31 +247,18 @@ const CreditRequestDetailsPage = (props) => {
                 icbcDate={submission.icbcCurrentTo ? moment(submission.icbcCurrentTo).format('MMM D, YYYY') : ''}
                 invalidSubmission={invalidSubmission}
               />
-              {user.isGovernment && ((submission.salesSubmissionComment) || ((analystAction && validatedOnly) || directorAction) || submission.validationStatus === 'ISSUED') && (
-                <div className="comment-box mt-2">
-                  {submission.salesSubmissionComment && user.isGovernment && (
-                    <DisplayComment commentArray={submission.salesSubmissionComment} />
-                  )}
-                  {((analystAction && validatedOnly) || directorAction) && (
-                  <div className="text-editor mb-2 mt-2">
-                    <label htmlFor="comment">
-                      <b>{analystAction ? 'Add Comment' : 'Add Comment to analyst if returning submission'}</b>
-                    </label>
-                    <ReactQuill
-                      theme="snow"
-                      modules={modules}
-                      formats={formats}
-                      onChange={handleCommentChange}
-                    />
-                    <button
-                      className="button mt-2"
-                      onClick={() => { handleAddComment(); }}
-                      type="button"
-                    >Add Comment
-                    </button>
-                  </div>
-                  )}
-                </div>
+              {((transferCommentsIDIR && transferCommentsIDIR.length > 0) || (transferCommentsSupplier && transferCommentsSupplier.length > 0) || user.isGovernment)
+              && (
+              <div className="comment-box mt-2">
+                {transferCommentsIDIR && transferCommentsIDIR.length > 0 && user.isGovernment && (
+                  <DisplayComment commentArray={transferCommentsIDIR} />
+                )}
+                {transferCommentsSupplier && transferCommentsSupplier.length > 0 && !user.isGovernment && (
+                  <DisplayComment commentArray={transferCommentsSupplier} />
+                )}
+                {(((analystAction && validatedOnly) || directorAction))
+                  && idirCommentSection}
+              </div>
               )}
             </div>
           </div>
@@ -241,10 +274,10 @@ const CreditRequestDetailsPage = (props) => {
             </h3>
             <div>
               <h4 className="d-inline-block sales-upload-grey my-2">Service address: </h4>
-              {serviceAddress && <h4 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h4>}
+              {serviceAddress && <h4 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.addressLine2} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h4>}
               <br />
               <h4 className="d-inline-block sales-upload-grey mb-3">Records address: </h4>
-              {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
+              {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.addressLine2} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
             </div>
 
             <CreditRequestSummaryTable
@@ -324,7 +357,8 @@ const CreditRequestDetailsPage = (props) => {
           {submission.organization.name} based on {formatNumeric(_.sumBy(submission.eligible, 'vinCount'), 0)} eligible ZEV sales.
         </div>
       </div>
-      )}
+        )}
+      {analystAction && analystToSupplier}
 
       <div className="row">
         <div className="col-sm-12">
@@ -335,6 +369,18 @@ const CreditRequestDetailsPage = (props) => {
                 locationRoute={(locationState && locationState.href) ? locationState.href : ROUTES_CREDIT_REQUESTS.LIST}
                 locationState={locationState}
               />
+              {analystAction && (
+              <Button
+                disabled={comment.length === 0}
+                testid="analyst-reject-application"
+                buttonType="reject"
+                optionalText="Reject Application"
+                action={() => {
+                  setModalType('analyst-reject');
+                  setShowModal(true);
+                }}
+                />
+              )} 
               {submission.validationStatus === 'DRAFT'
                 && typeof user.hasPermission === 'function'
                 && user.hasPermission('EDIT_SALES')

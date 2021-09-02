@@ -1,4 +1,4 @@
-FROM docker-remote.artifacts.developer.gov.bc.ca/debian:buster
+FROM artifacts.developer.gov.bc.ca/docker-remote/debian:buster
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install supervisor vim net-tools curl git tzdata nano -y
 RUN ln -fs /usr/share/zoneinfo/Canada/Pacific /etc/localtime \

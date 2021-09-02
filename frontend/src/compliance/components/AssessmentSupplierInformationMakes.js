@@ -31,15 +31,13 @@ const AssessmentSupplierInformationMakes = (props) => {
             <td className="text-blue text-left">
               {supplierMakes.length > 0 && (
                 <div className="mt-0 list">
-                  <ul>
-                    {supplierMakes.map((item, index) => (
-                      <div className="form-row my-2" key={index}>
-                        <li>
-                          <div className="col-11">{item}</div>
-                        </li>
-                      </div>
-                    ))}
-                  </ul>
+                  <div className="form-row my-2">
+                    <ul>
+                      {supplierMakes.map((item, index) => (
+                        <li className="my-0 py-0" key={index}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               )}
             </td>

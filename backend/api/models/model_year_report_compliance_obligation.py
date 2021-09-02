@@ -38,6 +38,11 @@ class ModelYearReportComplianceObligation(Auditable):
         db_comment="Category (eg. CREDIT_BALANCE_START. CREDITS_ISSUED_ZEV_SALES, CREDITS_IN, CREDITS_OUT, CREDIT_BALANCE_END, CREDIT_BALANCE_END, CREDIT_BALANCE_PROVISIONAL)"
     )
 
+    from_gov = models.BooleanField(
+        default=False,
+        db_comment="Flag. True if this edit came from a government user."
+    )
+
     class Meta:
         db_table = 'model_year_report_compliance_obligation'
 

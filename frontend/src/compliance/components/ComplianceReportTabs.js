@@ -9,7 +9,7 @@ const ComplianceReportTabs = (props) => {
   const { id } = useParams();
   const disableOtherTabs = reportStatuses.supplierInformation && reportStatuses.supplierInformation.status === 'UNSAVED';
   const disableAssessment = (reportStatuses.reportSummary && (
-    reportStatuses.reportSummary.status !== 'SUBMITTED' && reportStatuses.assessment.status !== 'ASSESSED'
+    ['DRAFT'].indexOf(reportStatuses.reportSummary.status) >= 0
   ) && user.isGovernment)
     || (reportStatuses.assessment && reportStatuses.assessment.status !== 'ASSESSED' && !user.isGovernment);
 
@@ -62,6 +62,7 @@ const ComplianceReportTabs = (props) => {
           `nav-item
           ${(active === 'summary') ? ' active ' : ' '}
           ${reportStatuses.reportSummary ? reportStatuses.reportSummary.status : ''}
+          ${reportStatuses.assessment ? reportStatuses.assessment.status : ''}
           `
       }
         role="presentation"

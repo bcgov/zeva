@@ -9,7 +9,7 @@ import CustomPropTypes from '../../app/utilities/props';
 
 const OrganizationListPage = (props) => {
   const {
-    filtered, loading, organizations, setFiltered, user
+    filtered, loading, organizations, setFiltered, user,
   } = props;
 
   if (loading) {
@@ -22,7 +22,8 @@ const OrganizationListPage = (props) => {
         <div className="col-md-8">
           <h2>Vehicle Suppliers</h2>
         </div>
-        {typeof user.hasPermission === 'function'&& user.hasPermission('EDIT_ORGANIZATIONS') && user.isGovernment &&
+        {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_ORGANIZATIONS') && user.isGovernment
+        && (
         <div className="col-md-4 text-right">
           <button
             className="button primary"
@@ -33,7 +34,8 @@ const OrganizationListPage = (props) => {
           >
             <FontAwesomeIcon icon="plus" /> New Supplier
           </button>
-        </div>}
+        </div>
+        )}
       </div>
 
       <div className="row">

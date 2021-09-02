@@ -3,8 +3,10 @@ import PropTypes from 'prop-types';
 import Loading from '../../app/components/Loading';
 import ActivityBanner from './ActivityBanner';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
+import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements';
 import CONFIG from '../../app/config';
 import CustomPropTypes from '../../app/utilities/props';
 
@@ -194,6 +196,54 @@ const ActionsBceid = (props) => {
           boldText="Credit Transfer"
           regularText={`${activityCount.transfersRejected} rejected by Government of B.C.`}
           linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Rejected By Government`}
+        />
+        )}
+        {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED
+        && activityCount.creditAgreementsIssued > 0
+        // && user.hasPermission('')
+        && (
+        <ActivityBanner
+          colour="green"
+          icon="list"
+          boldText="Credit Adjustments"
+          regularText={`${activityCount.creditAgreementsIssued} recorded by the Government of B.C.`}
+          linkTo={`${ROUTES_CREDIT_AGREEMENTS.LIST}?col-status=Issued`}
+        />
+        )}
+        {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
+        && activityCount.reportsDraft > 0
+        && user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
+        && (
+        <ActivityBanner
+          colour="yellow"
+          icon="file-alt"
+          boldText="Model Year Report"
+          regularText={`${activityCount.reportsDraft} awaiting submission`}
+          linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Draft`}
+        />
+        )}
+        {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
+        && activityCount.reportsSubmitted > 0
+        && user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
+        && (
+        <ActivityBanner
+          colour="blue"
+          icon="file-alt"
+          boldText="Model Year Report"
+          regularText={`${activityCount.reportsSubmitted} awaiting government assessment`}
+          linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Submitted`}
+        />
+        )}
+        {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
+        && activityCount.reportsAssessed > 0
+        && user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
+        && (
+        <ActivityBanner
+          colour="green"
+          icon="file-alt"
+          boldText="Model Year Report"
+          regularText={`${activityCount.reportsAssessed} assessed by government`}
+          linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Assessed`}
         />
         )}
       </div>

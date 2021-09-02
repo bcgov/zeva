@@ -61,7 +61,6 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
     report_year_balance = serializers.SerializerMethodField()
     report_year_transactions = serializers.SerializerMethodField()
     pending_balance = serializers.SerializerMethodField()
-    
     def retrieve_year(self, report_id):
         report = ModelYearReport.objects.get(
             id=report_id
@@ -94,69 +93,62 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
         prior_year_balance_b = self.retrieve_balance(prior_year, 2)
         return {'year': prior_year, 'A': prior_year_balance_a, 'B': prior_year_balance_b}
 
-    # def get_report_year_balance(self, obj, *args, **kwargs):
-    #     ## this is actually being calculated on the frontend and not used
+    # def get_report_year_transactions(self, obj, *args, **kwargs):
+    #     request = self.context.get('request')
     #     kwargs = self.context.get('kwargs')
     #     report_id = int(kwargs.get('id'))
     #     report_year = self.retrieve_year(report_id)
+
+    #     transfers_in = CreditTransaction.objects.filter(
+    #         credit_to=request.user.organization,
+    #         transaction_type__transaction_type='Credit Transfer',
+    #         transaction_timestamp__lte=date(report_year, 9, 30),
+    #         transaction_timestamp__gte=date(report_year-1, 10, 1),
+    #     ).values(
+    #         'credit_class_id', 'model_year_id'
+    #     ).annotate(
+    #         total_value=Sum('total_value')
+    #     ).order_by(
+    #         'credit_class_id', 'model_year_id'
+    #     )
         
-    #     report_year_balance_a = self.retrieve_balance(report_year, 1)
-    #     report_year_balance_b = self.retrieve_balance(report_year, 2)   
-    #     return {'year': report_year, 'A': report_year_balance_a, 'B': report_year_balance_b}
+    #     transfers_out = CreditTransaction.objects.filter(
+    #         debit_from=request.user.organization,
+    #         transaction_type__transaction_type='Credit Transfer',
+    #         transaction_timestamp__lte=date(report_year, 9, 30),
+    #         transaction_timestamp__gte=date(report_year-1, 10, 1),
+    #     ).values(
+    #         'credit_class_id', 'model_year_id'
+    #     ).annotate(total_value=Sum(
+    #         'total_value')
+    #     ).order_by(
+    #         'credit_class_id', 'model_year_id'
+    #     )
 
-    def get_report_year_transactions(self, obj, *args, **kwargs):
-        request = self.context.get('request')
-        kwargs = self.context.get('kwargs')
-        report_id = int(kwargs.get('id'))
-        report_year = self.retrieve_year(report_id)
-        transfers_in = CreditTransaction.objects.filter(
-            credit_to=request.user.organization,
-            transaction_type__transaction_type='Credit Transfer',
-            transaction_timestamp__lte=date(report_year, 9, 30),
-            transaction_timestamp__gte=date(report_year-1, 10, 1),
-        ).values(
-            'credit_class_id', 'model_year_id'
-        ).annotate(
-            total_value=Sum('total_value')
-        ).order_by(
-            'credit_class_id', 'model_year_id'
-        )
+    #     credits_issued_sales = CreditTransaction.objects.filter(
+    #         credit_to=request.user.organization,
+    #         transaction_type__transaction_type='Validation',
+    #         transaction_timestamp__lte=date(report_year, 9, 30),
+    #         transaction_timestamp__gte=date(report_year-1, 10, 1),
+    #     ).values(
+    #         'credit_class_id', 'model_year_id'
+    #     ).annotate(
+    #         total_value=Sum('total_value')
+    #     ).order_by(
+    #         'credit_class_id', 'model_year_id'
+    #     )
 
-        transfers_out = CreditTransaction.objects.filter(
-            debit_from=request.user.organization,
-            transaction_type__transaction_type='Credit Transfer',
-            transaction_timestamp__lte=date(report_year, 9, 30),
-            transaction_timestamp__gte=date(report_year-1, 10, 1),
-        ).values(
-            'credit_class_id', 'model_year_id'
-        ).annotate(total_value=Sum(
-            'total_value')
-        ).order_by(
-            'credit_class_id', 'model_year_id'
-        )
-
-        credits_issued_sales = CreditTransaction.objects.filter(
-            credit_to=request.user.organization,
-            transaction_type__transaction_type='Validation',
-            transaction_timestamp__lte=date(report_year, 9, 30),
-            transaction_timestamp__gte=date(report_year-1, 10, 1),
-        ).values(
-            'credit_class_id', 'model_year_id'
-        ).annotate(
-            total_value=Sum('total_value')
-        ).order_by(
-            'credit_class_id', 'model_year_id'
-        )
-
-        transfers_in_serializer = CreditTransactionObligationActivitySerializer(transfers_in, read_only=True, many=True)
-        transfers_out_serializer = CreditTransactionObligationActivitySerializer(transfers_out, read_only=True, many=True)
-        credit_sales_serializer = CreditTransactionObligationActivitySerializer(credits_issued_sales, read_only=True, many=True)
-        content = {
-            'transfers_in': transfers_in_serializer.data,
-            'transfers_out': transfers_out_serializer.data,
-            'credits_issued_sales': credit_sales_serializer.data
-            }
-        return content
+    #     transfers_in_serializer = CreditTransactionObligationActivitySerializer(transfers_in, read_only=True, many=True)
+    #     transfers_out_serializer = CreditTransactionObligationActivitySerializer(transfers_out, read_only=True, many=True)
+    #     credit_sales_serializer = CreditTransactionObligationActivitySerializer(credits_issued_sales, read_only=True, many=True)
+    #     content = {
+    #         'transfers_in': transfers_in_serializer.data,
+    #         'transfers_out': transfers_out_serializer.data,
+    #         'credits_issued_sales': credit_sales_serializer.data,
+    #         'adjustments_validation': adjustments_validation_serializer.data,
+    #         'adjustments_reduction': adjustments_reduction_serializer.data
+    #         }
+    #     return content
 
     def get_pending_balance(self, obj, *args, **kwargs):
         kwargs = self.context.get('kwargs')

@@ -17,20 +17,20 @@ import Modal from '../../app/components/Modal';
 const ComplianceReportSummaryDetailsPage = (props) => {
   const [showModal, setShowModal] = useState(false);
   const {
-    complianceRatios,
     assertions,
     checkboxes,
+    complianceRatios,
+    confirmationStatuses,
+    consumerSalesDetails,
     creditActivityDetails,
-    user,
+    handleCheckboxClick,
     handleSubmit,
     loading,
-    supplierDetails,
-    consumerSalesDetails,
-    handleCheckboxClick,
     makes,
-    confirmationStatuses,
-    pendingBalanceExist,
     modelYear,
+    pendingBalanceExist,
+    supplierDetails,
+    user,
   } = props;
   const signedInfomation = {
     supplierInformation: { nameSigned: 'Buzz Collins', dateSigned: '2020-01-01' },
@@ -148,7 +148,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
                 <div className="mt-4 compliance-report-summary-grey">
                   <h3>Consumer ZEV Sales</h3>
                   <SummaryConsumerSalesTable consumerSalesDetails={consumerSalesDetails} />
-                  {savedInformation(consumerSalesDetails.updateTimestampConsumerSales ,confirmationStatuses.consumerSales, 'Consumer Sales')}
+                  {savedInformation(consumerSalesDetails.updateTimestampConsumerSales, confirmationStatuses.consumerSales, 'Consumer Sales')}
                   {signatureInformation(confirmationStatuses.consumerSales, 'Consumer Sales')}
                 </div>
               </div>
@@ -209,13 +209,14 @@ const ComplianceReportSummaryDetailsPage = (props) => {
 };
 
 ComplianceReportSummaryDetailsPage.defaultProps = {
+  pendingBalanceExist: false,
 };
 
 ComplianceReportSummaryDetailsPage.propTypes = {
-  assertions: PropTypes.arrayOf(PropTypes.shape()),
+  assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   checkboxes: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-  ),
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  ).isRequired,
   complianceRatios: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   confirmationStatuses: PropTypes.shape().isRequired,
   consumerSalesDetails: PropTypes.shape().isRequired,
@@ -224,10 +225,10 @@ ComplianceReportSummaryDetailsPage.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
-  pendingBalanceExist: PropTypes.bool.isRequired,
+  pendingBalanceExist: PropTypes.bool,
   supplierDetails: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
-  modelYear: PropTypes.number.isRequired
+  modelYear: PropTypes.number.isRequired,
 };
 
 export default ComplianceReportSummaryDetailsPage;

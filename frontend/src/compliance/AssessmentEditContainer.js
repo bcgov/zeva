@@ -32,28 +32,6 @@ const AssessmentEditContainer = (props) => {
   const [sales, setSales] = useState({});
   const [ratios, setRatios] = useState({});
   const [years, setYears] = useState([]);
-  const [adjustments, setAdjustments] = useState([]);
-
-  const addAdjustment = () => {
-    adjustments.push({
-      creditClass: 'A',
-      quantity: 0,
-      type: 'Allocation',
-    });
-
-    setAdjustments([...adjustments]);
-  };
-
-  const handleChangeAdjustment = (value, property, index) => {
-    adjustments[index][property] = value;
-
-    setAdjustments([...adjustments]);
-  };
-
-  const handleDeleteAdjustment = (index) => {
-    adjustments.splice(index, 1);
-    setAdjustments([...adjustments]);
-  };
 
   const handleChangeMake = (event) => {
     const { value } = event.target;
@@ -85,7 +63,6 @@ const AssessmentEditContainer = (props) => {
     const data = {
       makes,
       sales,
-      adjustments,
     };
 
     axios.patch(
@@ -101,9 +78,7 @@ const AssessmentEditContainer = (props) => {
     );
 
     const ratiosPromise = axios.get(ROUTES_COMPLIANCE.RATIOS);
-
     const makesPromise = axios.get(ROUTES_COMPLIANCE.MAKES.replace(/:id/g, id));
-
     const yearsPromise = axios.get(ROUTES_VEHICLES.YEARS);
 
     Promise.all([detailsPromise, ratiosPromise, makesPromise, yearsPromise]).then(
@@ -116,9 +91,9 @@ const AssessmentEditContainer = (props) => {
           modelYearReportAddresses,
           organizationName,
           validationStatus,
-          ldvSales,
+          ldvSales: reportLdvSales,
           supplierClass,
-          adjustments: adjustmentsData,
+          changelog,
         } = response.data;
         const year = parseInt(reportModelYear.name, 10);
 
@@ -127,23 +102,17 @@ const AssessmentEditContainer = (props) => {
         setModelYear(year);
         setStatuses(reportStatuses);
 
-        const adjustmentArr = [];
-
-        adjustmentsData.forEach((each) => {
-          adjustmentArr.push({
-            creditClass: each.creditClass,
-            modelYear: each.modelYear,
-            quantity: each.numberOfCredits,
-            type: each.isReduction ? 'Reduction' : 'Allocation',
-          });
-        });
-        setAdjustments(adjustmentArr);
-
         if (modelYearReportMakes) {
           const supplierCurrentMakes = supplierMakes.map((each) => each.make);
           const analystMakes = govMakes.map((each) => each.make);
           setMakes(analystMakes);
           setSupplierMakesList(supplierCurrentMakes);
+        }
+
+        let ldvSales = reportLdvSales;
+
+        if (changelog && changelog.ldvChanges && changelog.ldvChanges.notFromGov) {
+          ldvSales = changelog.ldvChanges.notFromGov;
         }
 
         setDetails({
@@ -165,13 +134,13 @@ const AssessmentEditContainer = (props) => {
         });
 
         setSales({
-          [year]: ldvSales,
+          [year]: reportLdvSales,
         });
 
-        const filteredRatio = ratiosResponse.data.filter(
+        const filteredRatio = ratiosResponse.data.find(
           (data) => data.modelYear === year.toString(),
-        )[0];
-        console.error(filteredRatio);
+        );
+
         setRatios(filteredRatio);
 
         setYears(yearsResponse.data);
@@ -214,10 +183,6 @@ const AssessmentEditContainer = (props) => {
         sales={sales}
         supplierMakes={supplierMakesList}
         years={years}
-        adjustments={adjustments}
-        addAdjustment={addAdjustment}
-        handleChangeAdjustment={handleChangeAdjustment}
-        handleDeleteAdjustment={handleDeleteAdjustment}
       />
     </>
   );

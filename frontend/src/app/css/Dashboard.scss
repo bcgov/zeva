@@ -288,6 +288,14 @@
       margin: 5px 0.5rem 0 0;
     }
 
+    &.list {
+      svg {
+        display: inline-block;
+        float: none;
+        vertical-align: middle;
+      }
+    }
+
     .text {
       padding: 0;
 

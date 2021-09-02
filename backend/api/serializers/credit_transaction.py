@@ -1,5 +1,6 @@
 from rest_framework.serializers import ModelSerializer, \
     SerializerMethodField, SlugRelatedField
+from enumfields.drf import EnumField
 
 from api.models.credit_class import CreditClass
 from api.models.credit_transaction import CreditTransaction
@@ -9,6 +10,7 @@ from api.models.weight_class import WeightClass
 from api.serializers.organization import OrganizationSerializer
 from api.serializers.vehicle import ModelYearSerializer
 from api.serializers.weight_class import WeightClassSerializer
+from api.models.credit_agreement_transaction_types import CreditAgreementTransactionTypes
 
 
 class CreditClassSerializer(ModelSerializer):
@@ -54,6 +56,7 @@ class CreditTransactionListSerializer(ModelSerializer):
     total_value = SerializerMethodField()
     transaction_type = SerializerMethodField()
     model_year = SerializerMethodField()
+    detail_transaction_type = EnumField(CreditAgreementTransactionTypes)
 
     def get_credit_class(self, obj):
         credit_class = CreditClass.objects.get(id=obj.get('credit_class_id'))
@@ -89,7 +92,8 @@ class CreditTransactionListSerializer(ModelSerializer):
         model = CreditTransaction
         fields = (
             'credit_class', 'foreign_key', 'total_value',
-            'transaction_timestamp', 'transaction_type', 'model_year'
+            'transaction_timestamp', 'transaction_type', 'model_year',
+            'detail_transaction_type',
         )
 
 
@@ -132,7 +136,6 @@ class CreditTransactionObligationActivitySerializer(ModelSerializer):
     """
     credit_class = SerializerMethodField()
     model_year = SerializerMethodField()
-
     def get_credit_class(self, obj):
         credit_class = CreditClass.objects.get(id=obj.get('credit_class_id'))
 

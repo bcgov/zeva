@@ -38,7 +38,9 @@ const Button = (props) => {
       onclick = action;
       break;
     case 'back':
-      onclick = () => { getRoute(); };
+      onclick = () => {
+        getRoute();
+      };
       text = 'Back';
       icon = 'arrow-left';
       break;
@@ -46,6 +48,11 @@ const Button = (props) => {
       icon = 'trash';
       text = 'Delete';
       classname += ' text-danger';
+      onclick = action;
+      break;
+    case 'edit':
+      icon = 'edit';
+      text = 'Edit';
       onclick = action;
       break;
     case 'download':

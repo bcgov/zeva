@@ -18,6 +18,7 @@ import CreditsContainer from '../credits/CreditsContainer';
 import CreditRequestListContainer from '../credits/CreditRequestListContainer';
 import CreditTransfersEditContainer from '../credits/CreditTransfersEditContainer';
 import CreditTransferListContainer from '../credits/CreditTransferListContainer';
+import CreditAgreementListContainer from '../creditagreements/CreditAgreementListContainer';
 import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContainer';
 import CreditTransfersDetailsContainer from '../credits/CreditTransfersDetailsContainer';
 import CreditRequestVINListContainer from '../credits/CreditRequestVINListContainer';
@@ -37,6 +38,9 @@ import AssessmentEditContainer from '../compliance/AssessmentEditContainer';
 import SupplierInformationContainer from '../compliance/SupplierInformationContainer';
 import ComplianceObligationContainer from '../compliance/ComplianceObligationContainer';
 import ConsumerSalesContainer from '../compliance/ConsumerSalesContainer';
+import CreditAgreementsEditContainer from '../creditagreements/CreditAgreementsEditContainer';
+import CreditAgreementsDetailsContainer from '../creditagreements/CreditAgreementsDetailsContainer';
+import SupplementaryContainer from '../supplementary/SupplementaryContainer';
 
 import ErrorHandler from './components/ErrorHandler';
 import Loading from './components/Loading';
@@ -47,12 +51,14 @@ import History from './History';
 import PageLayout from './PageLayout';
 import ROUTES_CREDIT_REQUESTS from './routes/CreditRequests';
 import ROUTES_CREDIT_TRANSFERS from './routes/CreditTransfers';
+import ROUTES_CREDIT_AGREEMENTS from './routes/CreditAgreements';
 import ROUTES_CREDITS from './routes/Credits';
 import ROUTES_ORGANIZATIONS from './routes/Organizations';
 import ROUTES_NOTIFICATIONS from './routes/Notifications';
 import ROUTES_USERS from './routes/Users';
 import ROUTES_VEHICLES from './routes/Vehicles';
 import ROUTES_COMPLIANCE from './routes/Compliance';
+import ROUTES_SUPPLEMENTARY from './routes/SupplementaryReport';
 
 class Router extends Component {
   constructor(props) {
@@ -133,6 +139,14 @@ class Router extends Component {
         <PageLayout keycloak={keycloak} user={user}>
           <ErrorHandler statusCode={statusCode}>
             <Switch>
+              <Route
+                path={ROUTES_SUPPLEMENTARY.CREATE}
+                render={() => <SupplementaryContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_SUPPLEMENTARY.REASSESSMENT}
+                render={() => <SupplementaryContainer keycloak={keycloak} user={user} reassessment />}
+              />
               <Route
                 path={ROUTES_COMPLIANCE.REPORT_ASSESSMENT}
                 render={() => <AssessmentContainer keycloak={keycloak} user={user} />}
@@ -331,7 +345,32 @@ class Router extends Component {
                 path={ROUTES_CREDIT_REQUESTS.LIST}
                 render={() => <CreditRequestListContainer keycloak={keycloak} user={user} />}
               />
-
+              {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED && ([
+                <Route
+                  exact
+                  key="route-credit-agreements-list"
+                  path={ROUTES_CREDIT_AGREEMENTS.LIST}
+                  render={() => <CreditAgreementListContainer keycloak={keycloak} user={user} />}
+                />,
+                <Route
+                  exact
+                  key="route-credit-agreements-edit"
+                  path={ROUTES_CREDIT_AGREEMENTS.EDIT}
+                  render={() => <CreditAgreementsEditContainer keycloak={keycloak} user={user} />}
+                />,
+                <Route
+                  exact
+                  key="route-credit-agreements-new"
+                  path={ROUTES_CREDIT_AGREEMENTS.NEW}
+                  render={() => (user.isGovernment ? <CreditAgreementsEditContainer keycloak={keycloak} user={user} /> : <></>)}
+                />,
+                <Route
+                  exact
+                  key="route-credit-agreements-details"
+                  path={ROUTES_CREDIT_AGREEMENTS.DETAILS}
+                  render={() => <CreditAgreementsDetailsContainer keycloak={keycloak} user={user} />}
+                />,
+              ])}
               <Route
                 exact
                 path="/"

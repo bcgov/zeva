@@ -25,9 +25,9 @@ const CreditRequestsPage = (props) => {
 
         <div className="col-md-4 text-right">
           <button
+            type="button"
             className="button"
             onClick={handleClear}
-            type="button"
             disabled={filtered.length === 0}
           >
             Clear Filters

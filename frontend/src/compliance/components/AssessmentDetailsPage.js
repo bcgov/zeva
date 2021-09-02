@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import parse from 'html-react-parser';
 import Button from '../../app/components/Button';
@@ -14,6 +14,7 @@ import ComplianceObligationReductionOffsetTable from './ComplianceObligationRedu
 import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued';
 import CommentInput from '../../app/components/CommentInput';
 import DisplayComment from '../../app/components/DisplayComment';
+import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
 
 const AssessmentDetailsPage = (props) => {
   const {
@@ -26,10 +27,8 @@ const AssessmentDetailsPage = (props) => {
     handleCommentChangeIdir,
     loading,
     makes,
-    modelYear,
+    reportYear,
     radioDescriptions,
-    setRadioSelection,
-    ratios,
     statuses,
     user,
     sales,
@@ -37,16 +36,17 @@ const AssessmentDetailsPage = (props) => {
     directorAction,
     analystAction,
     setDetails,
+    classAReductions,
+    ratios,
+    pendingBalanceExist,
+    supplierClass,
+    totalReduction,
+    unspecifiedReductions,
+    deductions,
+    updatedBalances,
   } = props;
-  const {
-    creditBalanceStart, pendingBalance, transactions, provisionalBalance,
-  } = creditActivityDetails;
 
-  const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, user.organization.name).replace(/{modelYear}/g, modelYear) : '';
-  const {
-    creditsIssuedSales, transfersIn, transfersOut,
-  } = transactions;
-  const [showModal, setShowModal] = useState(false);
+  const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, details.organization.name).replace(/{modelYear}/g, reportYear) : '';
   const disabledInputs = false;
   const showDescription = (each) => (
     <div className="mb-3" key={each.id}>
@@ -56,10 +56,16 @@ const AssessmentDetailsPage = (props) => {
         type="radio"
         name="assessment"
         disabled={directorAction || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0}
-        onChange={(event) => {
+        onChange={() => {
           setDetails({
             ...details,
-            assessment: { ...details.assessment, decision: { description: each.description, id: each.id } },
+            assessment: {
+              ...details.assessment,
+              decision: {
+                description: each.description,
+                id: each.id,
+              },
+            },
           });
         }}
       />
@@ -68,7 +74,7 @@ const AssessmentDetailsPage = (props) => {
       <label className="d-inline text-blue" htmlFor="complied">
         {each.description
           .replace(/{user.organization.name}/g, details.organization.name)
-          .replace(/{modelYear}/g, modelYear)}
+          .replace(/{modelYear}/g, reportYear)}
       </label>
       )}
     </div>
@@ -76,30 +82,22 @@ const AssessmentDetailsPage = (props) => {
   let disabledRecommendBtn = false;
   let recommendTooltip = '';
 
-  const pendingSalesExist = () => {
-    if (Object.keys(pendingBalance).length > 0) {
-      pendingBalance.forEach((each) => {
-        if (parseInt(each.A) > 0 || parseInt(each.B) > 0) {
-          disabledRecommendBtn = true;
-          recommendTooltip = 'There are credit applications that must be issued prior to recommending this assessment.';
-        }
-      });
-    }
-  };
+  if (!assessmentDecision) {
+    disabledRecommendBtn = true;
+    recommendTooltip = 'Please select an Analyst Recommendation before recommending this assessment.';
+  }
+
+  if (pendingBalanceExist) {
+    disabledRecommendBtn = true;
+    recommendTooltip = 'There are credit applications that must be issued prior to recommending this assessment.';
+  }
+
   if (loading) {
     return <Loading />;
   }
 
-  const totalReduction = ((ratios.complianceRatio / 100) * details.ldvSales);
-  const classAReduction = formatNumeric(
-    ((ratios.zevClassA / 100) * details.ldvSales),
-    2,
-  );
-  const leftoverReduction = ((ratios.complianceRatio / 100) * details.ldvSales)
-  - ((ratios.zevClassA / 100) * details.ldvSales);
-
-  const getClassDescriptions = (supplierClass) => {
-    switch (supplierClass) {
+  const getClassDescriptions = (_supplierClass) => {
+    switch (_supplierClass) {
       case 'L':
         return 'Large';
       case 'M':
@@ -111,10 +109,9 @@ const AssessmentDetailsPage = (props) => {
 
   return (
     <div id="assessment-details" className="page">
-      {pendingSalesExist()}
       <div className="row mt-3">
         <div className="col-sm-12">
-          <h2>{modelYear} Model Year Report</h2>
+          <h2>{reportYear} Model Year Report</h2>
         </div>
       </div>
       <div className="row mt-3">
@@ -131,11 +128,16 @@ const AssessmentDetailsPage = (props) => {
           </div>
           {user.isGovernment
           && (
-          <div className="grey-border-area p-3 comment-box mt-2">
-            {details.changelog.ldvChanges && (
-              Object.keys(details.changelog.makesAdditions)
+            <>
+              {(details.changelog.ldvChanges
+              || details.idirComment.length > 0
+              || statuses.assessment.status !== 'ASSESSED')
+              && (
+              <div className="grey-border-area p-3 comment-box mt-2">
+                {details.changelog.ldvChanges && (
+                  Object.keys(details.changelog.makesAdditions)
               || details.changelog.ldvChanges > 0
-            )
+                )
            && (
            <>
              <h3>Assessment Adjustments</h3>
@@ -154,18 +156,23 @@ const AssessmentDetailsPage = (props) => {
              </div>
            </>
            )}
-            {details.idirComment && details.idirComment.length > 0 && user.isGovernment && (
-            <DisplayComment
-              commentArray={details.idirComment}
-            />
-            )}
+                {details.idirComment && details.idirComment.length > 0 && user.isGovernment && (
+                <DisplayComment
+                  commentArray={details.idirComment}
+                />
+                )}
+                {statuses.assessment.status !== 'ASSESSED'
+            && (
             <CommentInput
               handleAddComment={handleAddIdirComment}
               handleCommentChange={handleCommentChangeIdir}
               title={analystAction ? 'Add comment to director: ' : 'Add comment to the analyst'}
               buttonText="Add Comment"
             />
-          </div>
+            )}
+              </div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -176,14 +183,25 @@ const AssessmentDetailsPage = (props) => {
               <button
                 className="btn button primary float-right"
                 onClick={() => {
-                  console.log('create supplemental');
+                  history.push(ROUTES_SUPPLEMENTARY.CREATE.replace(/:id/g, id))
                 }}
                 type="button"
               >
                 Create Supplemental Report
               </button>
             )}
-            {user.isGovernment && (statuses.assessment.status === 'SUBMITTED' || statuses.assessment.status === 'UNSAVED') && (
+            {user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && statuses.assessment.status === 'ASSESSED' && (
+              <button
+                className="btn button primary float-right"
+                onClick={() => {
+                  history.push(ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(/:id/g, id))
+                }}
+                type="button"
+              >
+                Create Reassessment Report
+              </button>
+            )}
+            {analystAction && (['RETURNED', 'SUBMITTED', 'UNSAVED'].indexOf(statuses.assessment.status) >= 0) && (
               <button
                 className="btn button primary float-right"
                 onClick={() => {
@@ -198,7 +216,8 @@ const AssessmentDetailsPage = (props) => {
             <div className="mt-3">
               <h3> {details.organization.name} </h3>
             </div>
-            {details.organization.organizationAddress && details.organization.organizationAddress.length > 0 && (
+            {details.organization.organizationAddress
+            && details.organization.organizationAddress.length > 0 && (
             <div>
               <div className="d-inline-block mr-5 mt-3 col-5 text-blue">
                 <h4>Service Address</h4>
@@ -209,6 +228,7 @@ const AssessmentDetailsPage = (props) => {
                         <div> {address.representativeName} </div>
                       )}
                       <div> {address.addressLine1} </div>
+                      <div> {address.addressLine2} </div>
                       <div> {address.city} {address.state} {address.country} </div>
                       <div> {address.postalCode} </div>
                     </div>
@@ -224,6 +244,7 @@ const AssessmentDetailsPage = (props) => {
                         <div> {address.representativeName} </div>
                       )}
                       <div> {address.addressLine1} </div>
+                      <div> {address.addressLine2} </div>
                       <div> {address.city} {address.state} {address.country} </div>
                       <div> {address.postalCode} </div>
                     </div>
@@ -248,26 +269,27 @@ const AssessmentDetailsPage = (props) => {
                 </div>
               )}
               <h4 className="d-inline">Vehicle Supplier Class:</h4>
-              <p className="d-inline ml-2">{getClassDescriptions(details.class)} Volume Supplier</p>
+              <p className="d-inline ml-2">{getClassDescriptions(supplierClass)} Volume Supplier</p>
             </div>
 
             <div className="mt-4">
               <ComplianceObligationAmountsTable
+                classAReductions={classAReductions}
                 page="assessment"
-                reportYear={modelYear}
-                supplierClassInfo={details}
-                totalReduction={totalReduction}
                 ratios={ratios}
-                classAReduction={classAReduction}
-                leftoverReduction={leftoverReduction}
-                statuses={statuses}
+                reportYear={reportYear}
                 sales={sales}
+                statuses={statuses}
+                supplierClass={supplierClass}
+                totalReduction={totalReduction}
+                unspecifiedReductions={unspecifiedReductions}
               />
             </div>
 
             <div className="mt-4">
               <ComplianceObligationTableCreditsIssued
-                reportYear={modelYear}
+                pendingBalanceExist={pendingBalanceExist}
+                reportYear={reportYear}
                 reportDetails={creditActivityDetails}
               />
             </div>
@@ -275,23 +297,22 @@ const AssessmentDetailsPage = (props) => {
             <h3 className="mt-4 mb-2">Credit Reduction</h3>
 
             <ComplianceObligationReductionOffsetTable
-              statuses={statuses}
-              unspecifiedCreditReduction={() => {}}
-              supplierClassInfo={details}
-              user={user}
-              zevClassAReduction={creditActivityDetails.zevClassAReduction}
-              unspecifiedReductions={creditActivityDetails.unspecifiedReductions}
-              leftoverReduction={leftoverReduction}
-              totalReduction={totalReduction}
-              reportYear={modelYear}
-              creditBalance={creditActivityDetails.creditBalance}
+              assessment={true}
+              reportYear={reportYear}
               creditReductionSelection={details.creditReductionSelection}
+              deductions={deductions}
+              pendingBalanceExist={pendingBalanceExist}
+              statuses={statuses}
+              supplierClass={supplierClass}
+              updatedBalances={updatedBalances}
+              user={user}
             />
           </div>
         </div>
       </div>
-      {!user.isGovernment && details.assessment && details.assessment.decision && details.assessment.decision.description
-        && (
+      {(details.assessment && details.assessment.decision
+        && details.assessment.decision.description)
+        && (!user.isGovernment || (user.isGovernment && ['ASSESSED', 'RECOMMENDED'].indexOf(statuses.assessment.status) >= 0)) && (
           <>
             <h3 className="mt-4 mb-1">Director Assessment</h3>
             <div className="row mb-3">
@@ -308,78 +329,117 @@ const AssessmentDetailsPage = (props) => {
               </div>
             </div>
           </>
-        )}
-      {user.isGovernment
-          && (
-            <>
-              <h3 className="mt-4 mb-1">Analyst Recommended Director Assessment</h3>
-              <div className="row mb-3">
-                <div className="col-12">
-                  <div className="grey-border-area comment-box p-3 mt-2">
-                    <div>
-                      {radioDescriptions.map((each) => (
-                        (each.displayOrder === 0)
-                && showDescription(each)
-                      ))}
-                      <div className="text-blue mt-3 ml-3 mb-1">
-                        &nbsp;&nbsp; {details.organization.name} has not complied with section 10 (2) of the
-                        Zero-Emission Vehicles Act for the {modelYear} adjustment period.
-                      </div>
-                      {radioDescriptions.map((each) => (
-                        (each.displayOrder > 0)
-               && showDescription(each)
-                      ))}
-                      <label className="d-inline" htmlFor="penalty-radio">
-                        <div>
-                          <input
-                            disabled={directorAction || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0}
-                            type="text"
-                            className="ml-4 mr-1"
-                            defaultValue={details.assessment.assessmentPenalty}
-                            name="penalty-amount"
-                            onChange={(e) => {
-                              setDetails({
-                                ...details,
-                                assessment: { ...details.assessment, assessmentPenalty: e.target.value },
-                              });
-                            }}
-                          />
-                          <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
-                        </div>
-                      </label>
-                      <CommentInput
-                        disable={details.assessment.validationStatus === 'ASSESSED'}
-                        defaultComment={details.bceidComment}
-                        handleAddComment={handleAddBceidComment}
-                        handleCommentChange={handleCommentChangeBceid}
-                        title="Assessment Message to the Supplier: "
-                        buttonText="Add/Update Message"
-                      />
+      )}
+      {(analystAction || directorAction) && ['ASSESSED'].indexOf(statuses.assessment.status) < 0
+      && (
+        <>
+          {['RECOMMENDED'].indexOf(statuses.assessment.status) < 0 && (
+          <h3 className="mt-4 mb-1">Analyst Recommended Director Assessment</h3>
+          )}
+          <div className="row mb-3">
+            <div className="col-12">
+              <div className="grey-border-area comment-box p-3 mt-2">
+                <div>
+                  {['RECOMMENDED'].indexOf(statuses.assessment.status) < 0 && (
+                  <>
+                    {radioDescriptions.map((each) => (
+                      (each.displayOrder === 0) && showDescription(each)
+                    ))}
+                    <div className="text-blue mt-3 ml-3 mb-1">
+                      &nbsp;&nbsp; {details.organization.name} has not complied with section 10 (2) of the
+                      Zero-Emission Vehicles Act for the {reportYear} adjustment period.
                     </div>
-                  </div>
+                    {radioDescriptions.map((each) => (
+                      (each.displayOrder > 0) && showDescription(each)
+                    ))}
+                    <label className="d-inline" htmlFor="penalty-radio">
+                      <div>
+                        <input
+                          disabled={
+                            directorAction
+                            || ['RECOMMENDED', 'ASSESSED'].indexOf(details.assessment.validationStatus) >= 0
+                            || assessmentDecision.indexOf('Section 10 (3) applies') < 0
+                          }
+                          type="text"
+                          className="ml-4 mr-1"
+                          defaultValue={details.assessment.assessmentPenalty}
+                          name="penalty-amount"
+                          onChange={(e) => {
+                            setDetails({
+                              ...details,
+                              assessment: {
+                                ...details.assessment,
+                                assessmentPenalty: e.target.value,
+                              },
+                            });
+                          }}
+                        />
+                        <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
+                      </div>
+                    </label>
+                  </>
+                  )}
+                  {(analystAction || directorAction) && (
+                    <CommentInput
+                      disable={details.assessment.validationStatus === 'ASSESSED'}
+                      defaultComment={details.bceidComment}
+                      handleAddComment={handleAddBceidComment}
+                      handleCommentChange={handleCommentChangeBceid}
+                      title="Assessment Message to the Supplier: "
+                    />
+                  )}
                 </div>
               </div>
-            </>
-          )}
+            </div>
+          </div>
+        </>
+      )}
 
       <div className="row">
         <div className="col-sm-12">
           <div className="action-bar mt-0">
-            {directorAction && (
-            <>
-              <span className="left-content">
+            <span className="left-content">
+              <Button buttonType="back" locationRoute="/compliance/reports" />
+
+              {directorAction && (
                 <button
                   className="button text-danger"
                   onClick={() => {
-                    handleSubmit('SUBMITTED');
+                    handleSubmit('RETURNED');
                   }}
                   type="button"
                 >
                   Return to Analyst
                 </button>
-              </span>
+              )}
+            </span>
 
-              <span className="right-content">
+            <span className="right-content">
+              {(directorAction || analystAction) && (
+                <Button
+                  buttonTooltip={recommendTooltip}
+                  buttonType="button"
+                  optionalClassname="button"
+                  optionalText="Save"
+                  disabled={disabledRecommendBtn}
+                  action={() => {
+                    handleSubmit(details.assessment.validationStatus);
+                  }}
+                />
+              )}
+              {analystAction && (
+                <Button
+                  buttonTooltip={recommendTooltip}
+                  buttonType="submit"
+                  optionalClassname="button primary"
+                  optionalText="Recommend Assessment"
+                  disabled={disabledRecommendBtn}
+                  action={() => {
+                    handleSubmit('RECOMMENDED');
+                  }}
+                />
+              )}
+              {directorAction && (
                 <Button
                   buttonType="submit"
                   optionalClassname="button primary"
@@ -388,26 +448,8 @@ const AssessmentDetailsPage = (props) => {
                     handleSubmit('ASSESSED');
                   }}
                 />
-              </span>
-            </>
-            )}
-            {analystAction && (
-              <>
-                <span className="left-content" />
-                <span className="right-content">
-                  <Button
-                    buttonTooltip={recommendTooltip}
-                    buttonType="submit"
-                    optionalClassname="button primary"
-                    optionalText="Recommend Assessment"
-                    disabled={disabledRecommendBtn}
-                    action={() => {
-                      handleSubmit('RECOMMENDED');
-                    }}
-                  />
-                </span>
-              </>
-            )}
+              )}
+            </span>
           </div>
         </div>
       </div>
@@ -416,6 +458,7 @@ const AssessmentDetailsPage = (props) => {
 };
 
 AssessmentDetailsPage.defaultProps = {
+  pendingBalanceExist: false,
   sales: 0,
 };
 
@@ -426,9 +469,25 @@ AssessmentDetailsPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   user: CustomPropTypes.user.isRequired,
-  modelYear: PropTypes.number.isRequired,
+  reportYear: PropTypes.number.isRequired,
   statuses: PropTypes.shape().isRequired,
   sales: PropTypes.number,
   handleSubmit: PropTypes.func.isRequired,
+  directorAction: PropTypes.bool.isRequired,
+  analystAction: PropTypes.bool.isRequired,
+  handleAddBceidComment: PropTypes.func.isRequired,
+  handleAddIdirComment: PropTypes.func.isRequired,
+  handleCommentChangeBceid: PropTypes.func.isRequired,
+  handleCommentChangeIdir: PropTypes.func.isRequired,
+  radioDescriptions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  setDetails: PropTypes.func.isRequired,
+  classAReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  ratios: PropTypes.shape().isRequired,
+  pendingBalanceExist: PropTypes.bool,
+  supplierClass: PropTypes.string.isRequired,
+  totalReduction: PropTypes.number.isRequired,
+  unspecifiedReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  deductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  updatedBalances: PropTypes.shape().isRequired,
 };
 export default AssessmentDetailsPage;

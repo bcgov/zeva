@@ -131,6 +131,7 @@ const SupplierInformationDetailsPage = (props) => {
                                   <div> {address.representativeName} </div>
                                 )}
                                 {address.addressLine1}{' '}
+                                {address.addressLine2}{' '}
                                 {address.city}{' '}
                                 {address.state}{' '}
                                 {address.country}{' '}
@@ -155,6 +156,7 @@ const SupplierInformationDetailsPage = (props) => {
                                   <div> {address.representativeName} </div>
                                 )}
                                 {address.addressLine1} {' '}
+                                {address.addressLine2} {' '}
                                 {address.city}{' '}
                                 {address.state}{' '}
                                 {address.country}{' '}
@@ -186,8 +188,8 @@ const SupplierInformationDetailsPage = (props) => {
                     <span className="col-6">{FormatNumeric(details.organization.avgLdvSales, 0)}</span>
                   </div>
                 </div>
-                {details.organization.ldvSales &&
-                  details.organization.ldvSales.length > 0 && (
+                {details.organization.ldvSales
+                  && details.organization.ldvSales.length > 0 && (
                     <div className="col-sm-12 col-md-5">
                       <div className="supplier-information d-inline-block">
                         <div className="previous-ldv-sales d-flex flex-column mt-2 px-3 py-1">
@@ -223,6 +225,10 @@ const SupplierInformationDetailsPage = (props) => {
               </div>
               <div className="ldv-makes p-3">
                 <form disabled={disabledInputs} onSubmit={handleSubmitMake}>
+                  {statuses && (
+                    (statuses.assessment && statuses.assessment.status !== 'ASSESSED')
+                    || !statuses.assessment
+                  ) && (
                   <div className="form-row">
                     <div className="col-sm-8 col-xs-12">
                       <input
@@ -235,7 +241,7 @@ const SupplierInformationDetailsPage = (props) => {
                     </div>
                     <div className="col">
                       <button
-                        className="btn btn-primary"
+                        className="btn btn-primary mb-3"
                         disabled={disabledInputs}
                         type="submit"
                       >
@@ -243,11 +249,12 @@ const SupplierInformationDetailsPage = (props) => {
                       </button>
                     </div>
                   </div>
+                  )}
                 </form>
 
                 {makes.length > 0 && (
                   <div
-                    className={`list mt-3 p-2 ${
+                    className={`list p-2 ${
                       disabledInputs ? 'disabled' : ''
                     }`}
                   >
@@ -304,7 +311,7 @@ const SupplierInformationDetailsPage = (props) => {
                 optionalText="Next"
                 action={() => {
                   history.push(
-                    ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id)
+                    ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id),
                   );
                 }}
               />
@@ -313,7 +320,7 @@ const SupplierInformationDetailsPage = (props) => {
                   buttonType="save"
                   disabled={
                     ['SAVED', 'UNSAVED'].indexOf(
-                      statuses.supplierInformation.status
+                      statuses.supplierInformation.status,
                     ) < 0
                   }
                   optionalClassname="button primary"

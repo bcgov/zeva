@@ -1,12 +1,11 @@
+import uuid
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
-from api.models.credit_class import CreditClass
 from api.models.model_year import ModelYear
 from api.models.model_year_report import ModelYearReport
-from api.models.model_year_report_adjustment import ModelYearReportAdjustment
 from api.models.model_year_report_confirmation import \
     ModelYearReportConfirmation
 from api.models.model_year_report_history import ModelYearReportHistory
@@ -36,7 +35,20 @@ from api.services.model_year_report import \
 from api.serializers.organization_ldv_sales import \
     OrganizationLDVSalesSerializer
 from auditable.views import AuditableMixin
-
+from api.services.send_email import notifications_model_year_report
+from api.serializers.model_year_report_supplemental import \
+    ModelYearReportSupplementalSerializer, ModelYearReportSupplementalSupplierSerializer
+from api.models.supplemental_report_sales import \
+    SupplementalReportSales
+from api.models.supplemental_report_supplier_information import SupplementalReportSupplierInformation
+from api.models.supplemental_report_credit_activity import \
+    SupplementalReportCreditActivity
+from api.services.minio import minio_put_object
+from api.services.minio import minio_remove_object
+from api.models.supplemental_report_attachment import SupplementalReportAttachment
+from api.models.supplemental_report import SupplementalReport
+from api.models.model_year_report_vehicle import ModelYearReportVehicle
+from api.models.supplemental_report_comment import SupplementalReportComment
 
 class ModelYearReportViewset(
         AuditableMixin, viewsets.GenericViewSet,
@@ -146,6 +158,11 @@ class ModelYearReportViewset(
 
                 ldv_sales_previous = None
 
+            validation_status = report.validation_status.value
+
+            if validation_status in ['RECOMMENDED', 'RETURNED']:
+                validation_status = ModelYearReportStatuses.SUBMITTED
+
             return Response({
                 'avg_sales': avg_sales,
                 'organization': organization.data,
@@ -159,11 +176,12 @@ class ModelYearReportViewset(
                 'create_user': report.create_user,
                 'confirmations': confirmations,
                 'ldv_sales': report.ldv_sales,
-                'statuses': get_model_year_report_statuses(report),
+                'statuses': get_model_year_report_statuses(report, request.user),
                 'ldv_sales_previous': ldv_sales_previous.data
                 if ldv_sales_previous else [],
                 'credit_reduction_selection': report.credit_reduction_selection
             })
+
         serializer = ModelYearReportSerializer(
             report, context={'request': request}
         )
@@ -207,11 +225,19 @@ class ModelYearReportViewset(
         validation_status = request.data.get('validation_status')
         model_year_report_id = request.data.get('model_year_report_id')
         confirmations = request.data.get('confirmation', None)
+        description = request.data.get('description')
 
         model_year_report_update = ModelYearReport.objects.filter(
             id=model_year_report_id
         )
+
         if validation_status:
+            if validation_status == 'RECOMMENDED' and not description:
+                # returning a 200 to bypass the rest of the update
+                return HttpResponse(
+                    status=200, content="Recommendation is required"
+                )
+
             model_year_report_update.update(
                 validation_status=validation_status)
             model_year_report_update.update(update_user=request.user.username)
@@ -222,10 +248,12 @@ class ModelYearReportViewset(
                 update_user=request.user.username,
                 create_user=request.user.username,
             )
-            ## check for if validation status is recommended
-            if validation_status == 'RECOMMENDED':
-                ## do "update or create" to create the assessment object
-                description = request.data.get('description')
+
+            # check for if validation status is recommended
+            if validation_status == 'RECOMMENDED' or \
+                    (validation_status == 'SUBMITTED' and description) or \
+                    (validation_status == 'RETURNED' and description):
+                # do "update or create" to create the assessment object
                 penalty = request.data.get('penalty')
                 ModelYearReportAssessment.objects.update_or_create(
                     model_year_report_id=model_year_report_id,
@@ -234,11 +262,12 @@ class ModelYearReportViewset(
                         'model_year_report_assessment_description_id': description,
                         'penalty': penalty
                     }
-
                 )
 
             if validation_status == 'ASSESSED':
                 adjust_credits(model_year_report_id, request)
+            
+            notifications_model_year_report(validation_status, request.user)
 
         if confirmations:
             for confirmation in confirmations:
@@ -303,37 +332,6 @@ class ModelYearReportViewset(
                         }
                     )
 
-        adjustments = request.data.get('adjustments', None)
-        if adjustments and isinstance(adjustments, list):
-            ModelYearReportAdjustment.objects.filter(
-                model_year_report=report
-            ).delete()
-
-            for adjustment in adjustments:
-                model_year = ModelYear.objects.filter(
-                    name=adjustment.get('model_year')
-                ).first()
-
-                credit_class = CreditClass.objects.filter(
-                    credit_class=adjustment.get('credit_class')
-                ).first()
-
-                is_reduction = False
-
-                if adjustment.get('type') == 'Reduction':
-                    is_reduction = True
-
-                if model_year and credit_class and adjustment.get('quantity'):
-                    ModelYearReportAdjustment.objects.create(
-                        credit_class_id=credit_class.id,
-                        model_year_id=model_year.id,
-                        number_of_credits=adjustment.get('quantity'),
-                        is_reduction=is_reduction,
-                        model_year_report=report,
-                        create_user=request.user.username,
-                        update_user=request.user.username,
-                    )
-
         report = get_object_or_404(ModelYearReport, pk=pk)
 
         serializer = ModelYearReportSerializer(report, context={'request': request})
@@ -344,14 +342,33 @@ class ModelYearReportViewset(
     def comment_save(self, request, pk):
         comment = request.data.get('comment')
         director = request.data.get('director')
-        if comment:
+        if comment and director:
             ModelYearReportAssessmentComment.objects.create(
                 model_year_report_id=pk,
                 comment=comment,
-                to_director=director,
+                to_director=True,
                 create_user=request.user.username,
                 update_user=request.user.username,
             )
+        elif comment and not director:
+            assessment_comment = ModelYearReportAssessmentComment.objects.filter(
+                model_year_report_id=pk,
+                to_director=False
+            ).order_by('-update_timestamp').first()
+
+            if assessment_comment:
+                assessment_comment.comment = comment
+                assessment_comment.update_user = request.user.username
+                assessment_comment.save()
+            else:
+                ModelYearReportAssessmentComment.objects.create(
+                    model_year_report_id=pk,
+                    to_director=False,
+                    comment=comment,
+                    create_user=request.user.username,
+                    update_user=request.user.username
+                )
+
         report = get_object_or_404(ModelYearReport, pk=pk)
 
         serializer = ModelYearReportSerializer(report, context={'request': request})
@@ -375,4 +392,185 @@ class ModelYearReportViewset(
         """
         years = ModelYear.objects.all().order_by('-name')
         serializer = ModelYearSerializer(years, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def supplemental(self, request, pk):
+        report = get_object_or_404(ModelYearReport, pk=pk)
+
+        data = report.supplemental
+
+        if not data:
+            data = SupplementalReport()
+            data.model_year_report_id = report.id
+
+        serializer = ModelYearReportSupplementalSerializer(
+            data
+        )
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def minio_url(self, request, pk=None):
+        object_name = uuid.uuid4().hex
+        url = minio_put_object(object_name)
+
+        return Response({
+            'url': url,
+            'minio_object_name': object_name
+        })
+
+    @action(detail=True, methods=['patch'])
+    def supplemental_save(self, request, pk):
+        report = get_object_or_404(ModelYearReport, pk=pk)
+
+        # update the existing supplemental if it exists
+        if report.supplemental:
+            if request.data.get('status') == 'DELETED':
+                SupplementalReportAttachment.objects.filter(
+                    supplemental_report_id=report.supplemental.id).delete()
+                SupplementalReportSupplierInformation.objects.filter(
+                    supplemental_report_id=report.supplemental.id).delete()
+                SupplementalReportCreditActivity.objects.filter(
+                    supplemental_report_id=report.supplemental.id).delete()
+                SupplementalReportSales.objects.filter(
+                    supplemental_report_id=report.supplemental.id).delete()
+                SupplementalReport.objects.filter(
+                    id=report.supplemental.id).delete()
+                return HttpResponse(status=200)
+            serializer = ModelYearReportSupplementalSerializer(
+                report.supplemental,
+                data=request.data
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save(
+                model_year_report_id=report.id,
+                update_user=request.user.username
+            )
+
+        # otherwise create a new one
+        else:
+            serializer = ModelYearReportSupplementalSerializer(
+                data=request.data
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save(
+                model_year_report_id=report.id,
+                create_user=request.user.username,
+                update_user=request.user.username
+            )
+        report = get_object_or_404(ModelYearReport, pk=pk)
+        supplier_information = request.data.get('supplier_info')
+        if supplier_information:
+            SupplementalReportSupplierInformation.objects.filter(
+                supplemental_report_id=report.supplemental.id
+            ).delete()
+
+            for k, v in supplier_information.items():
+                SupplementalReportSupplierInformation.objects.create(
+                    update_user=request.user.username,
+                    create_user=request.user.username,
+                    supplemental_report_id=report.supplemental.id,
+                    category=k.upper(),
+                    value=v
+                )
+
+        supplemental_attachments = request.data.get('evidence_attachments', None)
+        if supplemental_attachments:
+            attachments = supplemental_attachments.get('attachments', None)
+            if attachments:
+                for attachment in attachments:
+                    SupplementalReportAttachment.objects.create(
+                        create_user=request.user.username,
+                        supplemental_report_id=report.supplemental.id,
+                        **attachment
+                    )
+        files_to_be_removed = request.data.get('delete_files', [])
+        if files_to_be_removed:
+            for file_id in files_to_be_removed:
+                attachment = SupplementalReportAttachment.objects.filter(
+                    id=file_id,
+                    supplemental_report_id=report.supplemental.id
+                ).first()
+
+                if attachment:
+                    minio_remove_object(attachment.minio_object_name)
+
+                    attachment.is_removed = True
+                    attachment.update_user = request.user.username
+                    attachment.save()
+
+        credit_activity = request.data.get('credit_activity')
+        if credit_activity:
+            SupplementalReportCreditActivity.objects.filter(
+                supplemental_report_id=report.supplemental.id
+            ).delete()
+
+            for activity in credit_activity:
+                model_year_name = activity.get('model_year')
+                model_year = ModelYear.objects.filter(
+                    name=model_year_name
+                ).first()
+                category = activity.get('category')
+                credit_a_value = activity.get('credit_a_value')
+                credit_b_value = activity.get('credit_b_value')
+
+                if credit_a_value:
+                    try:
+                        float(credit_a_value)
+                    except ValueError:
+                        credit_a_value = None
+
+                if credit_b_value:
+                    try:
+                        float(credit_b_value)
+                    except ValueError:
+                        credit_b_value = None
+
+                if model_year:
+                    SupplementalReportCreditActivity.objects.create(
+                        update_user=request.user.username,
+                        create_user=request.user.username,
+                        supplemental_report_id=report.supplemental.id,
+                        category=category,
+                        credit_a_value=credit_a_value,
+                        credit_b_value=credit_b_value,
+                        model_year=model_year
+                    )
+
+        zev_sales = request.data.get('zev_sales')
+        if zev_sales:
+            SupplementalReportSales.objects.filter(supplemental_report_id=report.supplemental.id).delete()
+            for v in zev_sales:
+                model_year_report_vehicle_id = None
+                if v.get('model_year_report_vehicle'):
+                    model_year_report_vehicle = ModelYearReportVehicle.objects.filter(id=v.get('model_year_report_vehicle')).first()
+                    if model_year_report_vehicle:
+                        model_year_report_vehicle_id = model_year_report_vehicle.id
+                SupplementalReportSales.objects.create(
+                    update_user=request.user.username,
+                    create_user=request.user.username,
+                    supplemental_report_id=report.supplemental.id,
+                    model_year_report_vehicle_id=model_year_report_vehicle_id,
+                    sales=v.get('sales'),
+                    make=v.get('make'),
+                    model_name=v.get('model_name'),
+                    model_year=v.get('model_year'),
+                    vehicle_zev_type=v.get('vehicle_zev_type'),
+                    range=v.get('range'),
+                    zev_class=v.get('zev_class')
+                )
+
+        comment = request.data.get('comment')
+        if comment:
+            SupplementalReportComment.objects.filter(
+                supplemental_report_id=report.supplemental.id,
+                to_govt=True
+            ).delete()
+            SupplementalReportComment.objects.create(
+                create_user=request.user.username,
+                supplemental_report_id=report.supplemental.id,
+                comment=comment,
+                to_govt=True
+            )
+
         return Response(serializer.data)

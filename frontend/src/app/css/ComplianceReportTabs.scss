@@ -18,7 +18,7 @@
       }
     }
 
-    &.CONFIRMED, &.SUBMITTED {
+    &.CONFIRMED, &.SUBMITTED, &.RECOMMENDED, &.RETURNED {
       a {
         border-bottom-color: $background-light-blue;  
       }

@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import CustomPropTypes from '../../app/utilities/props';
@@ -11,13 +10,14 @@ import history from '../../app/History';
 
 const ComplianceReportListPage = (props) => {
   const {
-    user,
-    data,
-    loading,
-    collapsed,
-    collapseDropdown,
     availableYears,
+    data,
+    filtered,
+    loading,
+    ratios,
+    setFiltered,
     showSupplier,
+    user,
   } = props;
 
   if (loading) {
@@ -32,43 +32,15 @@ const ComplianceReportListPage = (props) => {
         </div>
         {availableYears.length > 0 && !user.isGovernment && (
           <div className="col-md-4 text-right">
-            <div className="btn-group">
-              <button
-                className="btn button primary ml-3"
-                onClick={() => {
-                  history.push(`${ROUTES_COMPLIANCE.NEW}?year=${availableYears[0]}`);
-                }}
-                type="button"
-              >
-                <FontAwesomeIcon icon="plus" /> New Report
-              </button>
-              <button
-                aria-expanded="false"
-                aria-haspopup="true"
-                className="btn button primary dropdown-toggle dropdown-toggle-split"
-                data-toggle="dropdown"
-                onClick={() => {
-                  collapseDropdown();
-                }}
-                type="button"
-              >
-                <span className="sr-only">Toggle Dropdown</span>
-              </button>
-              <div
-                aria-labelledby="navbarDropdown"
-                className={`dropdown-menu p-0 ${collapsed ? 'd-none' : 'd-block'}`}
-              >
-                {availableYears.map((year) => (
-                  <Link
-                    className="py-2 px-3"
-                    key={year}
-                    to={`${ROUTES_COMPLIANCE.NEW}?year=${year}`}
-                  >
-                    {year}
-                  </Link>
-                ))}
-              </div>
-            </div>
+            <button
+              className="btn button primary ml-3"
+              onClick={() => {
+                history.push(`${ROUTES_COMPLIANCE.NEW}?year=${availableYears[0]}`);
+              }}
+              type="button"
+            >
+              <FontAwesomeIcon icon="plus" /> New Report
+            </button>
           </div>
         )}
       </div>
@@ -92,7 +64,14 @@ const ComplianceReportListPage = (props) => {
       )}
       <div className="row mt-4">
         <div className="col-sm-12">
-          <ComplianceReportsTable data={data} user={user} showSupplier={showSupplier} />
+          <ComplianceReportsTable
+            data={data}
+            filtered={filtered}
+            ratios={ratios}
+            setFiltered={setFiltered}
+            showSupplier={showSupplier}
+            user={user}
+          />
         </div>
       </div>
     </div>
@@ -110,9 +89,9 @@ ComplianceReportListPage.propTypes = {
   ])).isRequired,
   user: CustomPropTypes.user.isRequired,
   data: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
-  collapsed: PropTypes.bool.isRequired,
-  collapseDropdown: PropTypes.func.isRequired,
+  setFiltered: PropTypes.func.isRequired,
   showSupplier: PropTypes.bool,
 };
 export default ComplianceReportListPage;

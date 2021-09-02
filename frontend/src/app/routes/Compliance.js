@@ -15,6 +15,7 @@ const COMPLIANCE = {
   REPORT_ASSESSMENT: `${API_BASE_PATH}/reports/:id/assessment`,
   REPORT_ASSESSMENT_SAVE: `${API_BASE_PATH}/reports/:id/assessment_patch`,
   OBLIGATION: `${API_BASE_PATH}/compliance-activity-details`,
+  OBLIGATION_SAVE: `${API_BASE_PATH}/compliance-activity-details/update_obligation`,
   CONSUMER_SALES: `${API_BASE_PATH}/consumer-sales`,
   RETRIEVE_CONSUMER_SALES: `${API_BASE_PATH}/consumer-sales/:id`,
   REPORT_COMPLIANCE_DETAILS_BY_ID: `${API_BASE_PATH}/compliance-activity-details/:id`,
@@ -23,6 +24,7 @@ const COMPLIANCE = {
   ASSESSMENT_COMMENT_SAVE: `${API_BASE_PATH}/reports/:id/comment_save`,
   YEARS: `${API_BASE_PATH}/reports/years`,
   MAKES: `${API_BASE_PATH}/reports/:id/makes`,
+  SUPPLEMENTAL_CREATE: `${API_BASE_PATH}/reports/:id/supplemental_save`,
 };
 
 export default COMPLIANCE;

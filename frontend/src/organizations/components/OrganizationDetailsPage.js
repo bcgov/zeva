@@ -11,13 +11,12 @@ import UsersTable from './UsersTable';
 
 const OrganizationDetailsPage = (props) => {
   const {
-    details, filtered, loading, members, setFiltered, user
+    details, filtered, loading, members, setFiltered, user,
   } = props;
 
   if (loading) {
     return <Loading />;
   }
-
   return (
     <div id="organization-details" className="page">
       <div className="row mb-2">
@@ -42,7 +41,7 @@ const OrganizationDetailsPage = (props) => {
                 <div className="row" key={each.id}>
                   <div className="col-md-3">{each.addressType ? each.addressType.addressType : ''} Address:</div>
                   <div className="col-md-9 value">
-                    {(each.addressType.addressType === "Service") ? each.representativeName : ''}{' '}
+                    {(each.addressType.addressType === 'Service') ? each.representativeName : ''}{' '}
                     {each.addressLine1}{' '}
                     {each.addressLine2}{' '}
                     {each.addressLine3}{' '}
@@ -67,6 +66,7 @@ const OrganizationDetailsPage = (props) => {
           <h2>Users</h2>
         </div>
         <div className="col-sm-6 text-right">
+          {user.hasPermission('EDIT_USERS') && (
           <button
             className="button primary"
             onClick={() => {
@@ -76,6 +76,7 @@ const OrganizationDetailsPage = (props) => {
           >
             <FontAwesomeIcon icon="user-plus" /> <span>New User</span>
           </button>
+          )}
         </div>
       </div>
 

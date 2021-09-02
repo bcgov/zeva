@@ -9,7 +9,7 @@ import ComplianceObligationAmountsTable from './ComplianceObligationAmountsTable
 import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable';
 import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued';
 import ComplianceReportSignoff from './ComplianceReportSignOff';
-import formatNumeric from '../../app/utilities/formatNumeric';
+
 import Modal from '../../app/components/Modal';
 import history from '../../app/History';
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
@@ -18,38 +18,33 @@ const ComplianceObligationDetailsPage = (props) => {
   const {
     assertions,
     checkboxes,
+    classAReductions,
+    creditReductionSelection,
+    deductions,
     details,
     handleCancelConfirmation,
+    handleChangeSales,
     handleCheckboxClick,
     handleSave,
+    handleUnspecifiedCreditReduction,
+    id,
     loading,
-    user,
+    pendingBalanceExist,
     ratios,
     reportDetails,
     reportYear,
-    supplierClassInfo,
-    statuses,
-    disabledCheckboxes: propsDisabledCheckboxes,
-    unspecifiedCreditReduction,
-    id,
-    zevClassAReduction,
-    unspecifiedReductions,
-    creditBalance,
     sales,
-    handleChangeSales,
-    creditReductionSelection,
-    pendingBalanceExist,
+    statuses,
+    supplierClass,
+    totalReduction,
+    unspecifiedReductions,
+    updatedBalances,
+    user,
   } = props;
-  const [showModal, setShowModal] = useState(false);
-  let disabledCheckboxes = propsDisabledCheckboxes;
-  const totalReduction = ((ratios.complianceRatio / 100) * sales);
 
-  const classAReduction = formatNumeric(
-    ((ratios.zevClassA / 100) * sales),
-    2,
-  );
-  const leftoverReduction = ((ratios.complianceRatio / 100) * sales)
-    - ((ratios.zevClassA / 100) * sales);
+  const [showModal, setShowModal] = useState(false);
+  let disabledCheckboxes = '';
+  let hoverText = '';
 
   const modal = (
     <Modal
@@ -76,6 +71,12 @@ const ComplianceObligationDetailsPage = (props) => {
       disabledCheckboxes = 'disabled';
     }
   });
+
+  if (!creditReductionSelection) {
+    disabledCheckboxes = 'disabled';
+    hoverText = 'You must select a ZEV class credit preference for your Unspecified ZEV Class Credit Reduction';
+  }
+
   if (loading) {
     return <Loading />;
   }
@@ -116,17 +117,16 @@ const ComplianceObligationDetailsPage = (props) => {
         </div>
         <div className="clear">
           <ComplianceObligationAmountsTable
-            reportYear={reportYear}
-            supplierClassInfo={supplierClassInfo}
-            totalReduction={totalReduction}
-            ratios={ratios}
-            classAReduction={classAReduction}
-            leftoverReduction={leftoverReduction}
-            sales={sales}
+            classAReductions={classAReductions}
             handleChangeSales={handleChangeSales}
-            statuses={statuses}
-            user={user}
             page="obligation"
+            ratios={ratios}
+            reportYear={reportYear}
+            sales={sales}
+            statuses={statuses}
+            supplierClass={supplierClass}
+            totalReduction={totalReduction}
+            unspecifiedReductions={unspecifiedReductions}
           />
         </div>
         <div className="mt-4">
@@ -139,31 +139,29 @@ const ComplianceObligationDetailsPage = (props) => {
         <h3 className="mt-4 mb-2">Credit Reduction</h3>
         You must select your ZEV class credit preference below.
         <ComplianceObligationReductionOffsetTable
-          statuses={statuses}
-          unspecifiedCreditReduction={unspecifiedCreditReduction}
-          supplierClassInfo={supplierClassInfo}
-          user={user}
-          zevClassAReduction={zevClassAReduction}
-          unspecifiedReductions={unspecifiedReductions}
-          leftoverReduction={leftoverReduction}
-          totalReduction={totalReduction}
-          reportYear={reportYear}
-          creditBalance={creditBalance}
           creditReductionSelection={creditReductionSelection}
+          deductions={deductions}
+          handleUnspecifiedCreditReduction={handleUnspecifiedCreditReduction}
+          pendingBalanceExist={pendingBalanceExist}
+          statuses={statuses}
+          supplierClass={supplierClass}
+          updatedBalances={updatedBalances}
+          user={user}
         />
       </div>
       <ComplianceReportSignoff
         assertions={assertions}
-        handleCheckboxClick={handleCheckboxClick}
-        user={user}
         checkboxes={checkboxes}
         disabledCheckboxes={disabledCheckboxes}
+        handleCheckboxClick={handleCheckboxClick}
+        hoverText={hoverText}
+        user={user}
       />
       <div className="row">
         <div className="col-sm-12">
           <div className="action-bar mt-0">
             <span className="left-content">
-              {/* <Button buttonType="back" locationRoute="/compliance/reports" /> */}
+              <Button buttonType="back" locationRoute="/compliance/reports" />
             </span>
             <span className="right-content">
               <Button
@@ -192,45 +190,47 @@ const ComplianceObligationDetailsPage = (props) => {
 };
 
 ComplianceObligationDetailsPage.defaultProps = {
+  creditReductionSelection: null,
+  pendingBalanceExist: false,
   ratios: {
     complianceRatio: 0,
     zevClassA: 0,
   },
-  creditReductionSelection: null,
   sales: 0,
 };
 
 ComplianceObligationDetailsPage.propTypes = {
+  assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  checkboxes: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  ).isRequired,
+  classAReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  creditReductionSelection: PropTypes.string,
+  deductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   details: PropTypes.shape({
     organization: PropTypes.shape(),
     complianceObligation: PropTypes.shape(),
   }).isRequired,
   handleCancelConfirmation: PropTypes.func.isRequired,
+  handleChangeSales: PropTypes.func.isRequired,
+  handleCheckboxClick: PropTypes.func.isRequired,
+  handleSave: PropTypes.func.isRequired,
+  handleUnspecifiedCreditReduction: PropTypes.func.isRequired,
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   loading: PropTypes.bool.isRequired,
-  user: CustomPropTypes.user.isRequired,
-  supplierClassInfo: PropTypes.shape().isRequired,
-  reportDetails: PropTypes.shape().isRequired,
+  pendingBalanceExist: PropTypes.bool,
   ratios: PropTypes.shape(),
+  reportDetails: PropTypes.shape().isRequired,
   reportYear: PropTypes.number.isRequired,
-  handleCheckboxClick: PropTypes.func.isRequired,
-  assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  checkboxes: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  ).isRequired,
-  statuses: PropTypes.shape().isRequired,
-  // handleOffsetChange: PropTypes.func.isRequired,
-  handleSave: PropTypes.func.isRequired,
-  disabledCheckboxes: PropTypes.string.isRequired,
-  unspecifiedCreditReduction: PropTypes.func.isRequired,
-  zevClassAReduction: PropTypes.shape().isRequired,
-  unspecifiedReductions: PropTypes.shape().isRequired,
-  creditBalance: PropTypes.shape().isRequired,
   sales: PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string,
   ]),
-  handleChangeSales: PropTypes.func.isRequired,
-  creditReductionSelection: PropTypes.string,
+  statuses: PropTypes.shape().isRequired,
+  supplierClass: PropTypes.string.isRequired,
+  totalReduction: PropTypes.number.isRequired,
+  unspecifiedReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  updatedBalances: PropTypes.shape().isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 export default ComplianceObligationDetailsPage;

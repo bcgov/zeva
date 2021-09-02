@@ -29,8 +29,18 @@ const ComplianceReportAlert = (props) => {
   let userName;
 
   if (validationStatus && history.length > 0) {
-    date = moment(statusFilter(validationStatus).createTimestamp).format('MMM D, YYYY');
-    userName = statusFilter(validationStatus).createUser.displayName;
+    const found = statusFilter(validationStatus);
+    if (found) {
+      date = moment(found.createTimestamp).format('MMM D, YYYY');
+      userName = found.createUser.displayName;
+
+      if (validationStatus === 'ASSESSED') {
+        confirmedBy = {
+          date: moment(statusFilter('SUBMITTED').createTimestamp).format('MMM D, YYYY'),
+          user: statusFilter('SUBMITTED').createUser.displayName,
+        };
+      }
+    }
   }
 
   if (status && status.confirmedBy) {
@@ -93,6 +103,11 @@ const ComplianceReportAlert = (props) => {
       case 'RECOMMENDED':
         title = 'Recommended';
         message = `Model Year Report recommended ${date} by ${userName}, pending Director assessment. Signed and submitted ${confirmedBy.date} by ${confirmedBy.user}`;
+        classname = 'alert-primary';
+        break;
+      case 'RETURNED':
+        title = 'Returned';
+        message = `Model Year Report returned ${date} by Director, Pending analyst review and Director assessment. Signed and submitted ${confirmedBy.date} by ${confirmedBy.user}`;
         classname = 'alert-primary';
         break;
       case 'ASSESSED':

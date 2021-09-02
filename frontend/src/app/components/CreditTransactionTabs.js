@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 import ROUTES_CREDIT_REQUESTS from '../routes/CreditRequests';
 import ROUTES_CREDIT_TRANSFERS from '../routes/CreditTransfers';
+import ROUTES_CREDIT_AGREEMENTS from '../routes/CreditAgreements';
 import ROUTES_CREDITS from '../routes/Credits';
 import CustomPropTypes from '../utilities/props';
 
@@ -39,6 +40,16 @@ const CreditTransactionTabs = (props) => {
       >
         <Link to={ROUTES_CREDIT_TRANSFERS.LIST}>Credit Transfers</Link>
       </li>
+      )}
+      {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED
+      && typeof user.hasPermission === 'function'
+      && user.hasPermission('VIEW_INITIATIVE_AGREEMENTS') && user.isGovernment && (
+        <li
+          className={`nav-item ${(active === 'credit-agreements') ? 'active' : ''}`}
+          role="presentation"
+        >
+          <Link to={ROUTES_CREDIT_AGREEMENTS.LIST}>Credit Agreements</Link>
+        </li>
       )}
       {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_ICBC_DATA') && user.isGovernment && (
       <li

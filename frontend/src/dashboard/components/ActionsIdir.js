@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 import ROUTES_VEHICLES from '../../app/routes/Vehicles';
 import Loading from '../../app/components/Loading';
 import CustomPropTypes from '../../app/utilities/props';
 import ActivityBanner from './ActivityBanner';
-
+import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements';
 import CONFIG from '../../app/config';
 
 const ActionsIdir = (props) => {
@@ -19,17 +19,17 @@ const ActionsIdir = (props) => {
     <div id="actions" className="dashboard-card">
       <div className="content">
         <h1>Latest Activity</h1>
-        {activityCount.submittedVehicles > 0 && user.hasPermission('VALIDATE_ZEV')
+        {activityCount.modelsAwaitingValidation > 0 && user.hasPermission('VALIDATE_ZEV')
         && (
         <ActivityBanner
           colour="yellow"
           icon="car"
           boldText="ZEV Models"
-          regularText={`${activityCount.submittedVehicles} submitted for validation`}
+          regularText={`${activityCount.modelsAwaitingValidation} submitted for validation`}
           linkTo={`${ROUTES_VEHICLES.LIST}?col-status=Submitted`}
         />
         )}
-        {user.hasPermission('VALIDATE_ZEV') && activityCount.submittedVehicles === 0
+        {user.hasPermission('VALIDATE_ZEV') && activityCount.modelsAwaitingValidation === 0
         && (
           <ActivityBanner
             colour="green"
@@ -118,9 +118,8 @@ const ActionsIdir = (props) => {
         />
         )}
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED
-        && activityCount.transfersAwaitingDirector === 0 && activityCount.transfersAwaitingAnalyst === 0
-        && activityCount.transfersAwaitingPartner === 0 && activityCount.transfersRecorded === 0
-        && user.hasPermission('VIEW_CREDIT_TRANSFERS')
+        && ((user.hasPermission('SIGN_CREDIT_TRANSFERS') && activityCount.transfersAwaitingDirector === 0)
+        || (user.hasPermission('RECOMMEND_CREDIT_TRANSFER') && activityCount.transfersAwaitingAnalyst === 0))
         && (
           <ActivityBanner
             colour="green"
@@ -129,6 +128,80 @@ const ActionsIdir = (props) => {
             regularText="no current activity"
             linkTo={ROUTES_CREDIT_TRANSFERS.LIST}
           />
+        )}
+        {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED
+        && activityCount.creditAgreementsDraft > 0
+        && user.hasPermission('CREATE_INITIATIVE_AGREEMENTS')
+        && (
+        <ActivityBanner
+          colour="yellow"
+          icon="list"
+          boldText="Credit Adjustments"
+          regularText={`${activityCount.creditAgreementsDraft} saved as draft`}
+          linkTo={`${ROUTES_CREDIT_AGREEMENTS.LIST}?col-status=Draft`}
+        />
+        )}
+        {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED
+        && activityCount.creditAgreementsIssued > 0
+        && user.hasPermission('SIGN_INITIATIVE_AGREEMENTS')
+        && (
+        <ActivityBanner
+          colour="blue"
+          icon="list"
+          boldText="Credit Adjustments"
+          regularText={`${activityCount.creditAgreementsRecommended} recommended for director action`}
+          linkTo={`${ROUTES_CREDIT_AGREEMENTS.LIST}?col-status=Recommended`}
+        />
+        )}
+        {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
+        && activityCount.reportsAnalyst > 0
+        && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')
+        && (
+        <ActivityBanner
+          colour="yellow"
+          icon="file-alt"
+          boldText="Model Year Reports"
+          regularText={`${activityCount.reportsAnalyst} require analyst/engineer review`}
+          linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Submitted`}
+        />
+        )}
+        {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
+          && activityCount.reportsReturned > 0
+          && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')
+          && (
+          <ActivityBanner
+            colour="yellow"
+            icon="file-alt"
+            boldText="Model Year Reports"
+            regularText={`${activityCount.reportsReturned} were returned by the director`}
+            linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Returned`}
+          />
+          )}
+        {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
+        && ((user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')
+        && activityCount.reportsAnalyst === 0 && activityCount.reportsReturned === 0)
+        || (user.hasPermission('SIGN_COMPLIANCE_REPORT') && activityCount.reportsDirector === 0)
+        ) && !(user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && user.hasPermission('SIGN_COMPLIANCE_REPORT') && (activityCount.reportsDirector > 0 || activityCount.reportsAnalyst > 0 || activityCount.reportsReturned > 0))
+        && (
+        <ActivityBanner
+          colour="green"
+          icon="file-alt"
+          boldText="Model Year Reports"
+          regularText="no current activity"
+          linkTo={ROUTES_COMPLIANCE.REPORTS}
+        />
+        )}
+        {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
+        && user.hasPermission('SIGN_COMPLIANCE_REPORT')
+        && activityCount.reportsDirector > 0
+        && (
+        <ActivityBanner
+          colour="blue"
+          icon="file-alt"
+          boldText="Model Year Reports"
+          regularText={`${activityCount.reportsDirector} recommended for director action`}
+          linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Recommended`}
+        />
         )}
       </div>
     </div>
