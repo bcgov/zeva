@@ -195,7 +195,14 @@ class ModelYearReportComplianceObligationViewset(
         if is_assessment:
             organization = report.organization
 
-        if (not confirmation and not summary) or is_assessment or not snapshot:
+        if (request.user.is_government and request.GET.get('assessment') == 'True' and
+                report.validation_status not in [
+                    ModelYearReportStatuses.ASSESSED,
+                    ModelYearReportStatuses.RECOMMENDED
+                ]) or (
+                    not request.user.is_government and not confirmation and
+                    report.validation_status == ModelYearReportStatuses.DRAFT
+        ):
             report = ModelYearReport.objects.get(
                 id=id
             )
@@ -240,6 +247,7 @@ class ModelYearReportComplianceObligationViewset(
             ).order_by(
                 'credit_class_id', 'model_year_id'
             )
+
             initative_agreements = CreditTransaction.objects.filter(
                 credit_to=organization,
                 credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.INITIATIVE_AGREEMENT,
