@@ -17,6 +17,9 @@ jobs:
       - name: Run oc command to list projects
         run: oc projects
 
+      - name: Checkout Target Branch
+        uses: actions/checkout@v2
+
       - name: Run Build
         run: |
           pwd
