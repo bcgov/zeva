@@ -8,9 +8,15 @@ jobs:
   loginopenshift:
     name: login Opneshift
     runs-on: ubuntu-16.04
+    env:
+      BUILD_ID: ${{ github.event.number }}
     steps:
       - name: Login to Openshift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
       - name: Run oc command to list projects
         run: oc projects
+
+      - name: Run Build
+        working-directory: './pipeline'
+        run: npm run build -- --pr=$BUILD_ID --env=build
