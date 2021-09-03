@@ -6,7 +6,7 @@ on:
 
 jobs:
   loginopenshift:
-    name: login opneshift
+    name: login Opneshift
     runs-on: ubuntu-16.04
     steps:
       - name: Login to Openshift
