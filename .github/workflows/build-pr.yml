@@ -18,5 +18,6 @@ jobs:
         run: oc projects
 
       - name: Run Build
-        working-directory: './pipeline'
-        run: npm run build -- --pr=$BUILD_ID --env=build
+        run: |
+          pwd
+          ls -l
