@@ -22,4 +22,5 @@ jobs:
 
       - name: Run Build
         working-directory: .pipeline
-        run: npm run build -- --pr=$BUILD_ID --env=build
+        run: |
+          npm run build -- --pr=$BUILD_ID --env=build
