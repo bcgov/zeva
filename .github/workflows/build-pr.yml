@@ -5,11 +5,12 @@ on:
     types: [opened, reopened, synchronize]
 
 jobs:
-  name: loginopneshift
-  runs-on: ubuntu-16.04
-  steps:
-    - name: Login to Openshift
-      run: oc login --token:${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+  loginopenshift:
+    name: login opneshift
+    runs-on: ubuntu-16.04
+    steps:
+      - name: Login to Openshift
+        run: oc login --token:${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
-    - name: Run oc command to list projects
-      run: oc projects
+      - name: Run oc command to list projects
+        run: oc projects
