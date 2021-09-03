@@ -21,6 +21,4 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Run Build
-        run: |
-          pwd
-          ls -l
+        run: npm run build -- --pr=$BUILD_ID --env=build
