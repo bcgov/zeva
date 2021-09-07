@@ -43,6 +43,8 @@ objects:
 - apiVersion: build.openshift.io/v1
   kind: BuildConfig
   metadata:
+    annotations:
+      description: Defines how to build the application  
     creationTimestamp: null
     labels:
       buildname: ${NAME}-frontend${SUFFIX}
