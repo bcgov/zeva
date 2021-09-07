@@ -31,6 +31,8 @@ objects:
       annotations:
         description: Keeps track of changes in the backend image
       creationTimestamp: null
+      labels:
+        shared: 'true'      
       name: ${NAME}-python
     spec:
       lookupPolicy:
