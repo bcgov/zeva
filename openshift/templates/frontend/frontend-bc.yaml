@@ -42,7 +42,6 @@ objects:
 - apiVersion: build.openshift.io/v1
   kind: BuildConfig
   metadata:
-    creationTimestamp: null
     name: ${NAME}-frontend${SUFFIX}
   spec:
     failedBuildsHistoryLimit: 5
@@ -74,8 +73,8 @@ objects:
           namespace: e52f12-tools
         pullSecret:
           name: zeva-image-pull-secret
-        forcePull: 'true'
-        noCache: 'true'          
+        forcePull: true
+        noCache: true     
         env:
           - name: ARTIFACTORY_USER
             valueFrom:
