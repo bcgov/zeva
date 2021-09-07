@@ -30,7 +30,6 @@ objects:
     metadata:
       annotations:
         description: Keeps track of changes in the backend image
-      creationTimestamp: null
       name: ${NAME}-python
     spec:
       lookupPolicy:
