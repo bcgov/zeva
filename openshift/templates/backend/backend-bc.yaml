@@ -29,7 +29,7 @@ objects:
     kind: ImageStream
     metadata:
       annotations:
-        description: Keeps track of changes in the backend image
+        description: Keeps
       name: ${NAME}-python
     spec:
       lookupPolicy:
