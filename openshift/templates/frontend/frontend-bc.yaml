@@ -64,7 +64,7 @@ objects:
     source:
       git:
         ref: ${GIT_REF}
-        uri: https://github.com/bcgov/zeva.git
+        uri: "https://github.com/bcgov/zeva.git"
       type: Git
       contextDir: frontend
     strategy:
