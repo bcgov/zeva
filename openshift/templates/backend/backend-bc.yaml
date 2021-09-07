@@ -32,9 +32,81 @@ objects:
         description: Keeps track of changes in the backend image
       creationTimestamp: null
       labels:
-        shared: 'true'      
+        shared: "true"      
       name: ${NAME}-python
     spec:
       lookupPolicy:
         local: false
-
+    status:
+      dockerImageRepository: ""
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      annotations:
+        description: Keeps track of changes in the backend image
+      labels:
+        shared: "true"
+      creationTimestamp: null
+      name: ${NAME}-backend
+    spec:
+      lookupPolicy:
+        local: false
+    status:
+      dockerImageRepository: ""
+  - apiVersion: build.openshift.io/v1
+    kind: BuildConfig
+    metadata:
+      annotations:
+        description: Defines how to build the application
+      creationTimestamp: null
+      labels:
+        buildname: ${NAME}-backend${SUFFIX}
+      name: ${NAME}-backend${SUFFIX}
+    spec:
+      nodeSelector: null
+      output:
+        to:
+          kind: ImageStreamTag
+          name: ${NAME}-backend:${VERSION}
+      postCommit: {}
+      resources:
+        limits:
+          cpu: 2000m
+          memory: 2G
+        requests:
+          cpu: 500m
+          memory: 200M
+      runPolicy: SerialLatestOnly
+      source:
+        contextDir: backend
+        git:
+          ref: ${GIT_REF}
+          uri: ${GIT_URL}
+        type: Git
+      strategy:
+        sourceStrategy:
+          env:
+            - name: ARTIFACTORY_USER
+              valueFrom:
+                secretKeyRef:
+                  name: artifacts-zeva-artifactory-service-account-xgchey
+                  key: username
+            - name: ARTIFACTORY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: artifacts-zeva-artifactory-service-account-xgchey
+                  key: password            
+          from:
+            kind: ImageStreamTag
+            name: python:3.6-1-134
+          pullSecret:
+            name: zeva-image-pull-secret            
+          forcePull: true
+          noCache: true            
+        type: Source
+      triggers:
+      - imageChange: {}
+        type: ImageChange
+      - type: ConfigChange
+    status:
+      lastVersion: 0
