@@ -29,10 +29,10 @@ objects:
     kind: ImageStream
     metadata:
       annotations:
-        description: Keeps
+        description: Keeps track of changes in the backend image
+      creationTimestamp: null
       name: ${NAME}-python
     spec:
       lookupPolicy:
         local: false
-    status:
-      dockerImageRepository: ""
+
