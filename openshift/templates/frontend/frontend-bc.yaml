@@ -31,7 +31,7 @@ objects:
     annotations:
       description: Keeps track of changes in the client / front end image
     labels:
-      shared: "true"
+      shared: true
     creationTimestamp: null
     generation: 643
     name: ${NAME}-frontend
