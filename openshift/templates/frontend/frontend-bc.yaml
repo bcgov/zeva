@@ -40,3 +40,56 @@ objects:
       local: false
   status:
     dockerImageRepository: ""
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    name: ${NAME}-frontend${SUFFIX}
+  spec:
+    failedBuildsHistoryLimit: 5
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${NAME}-frontend:${VERSION}
+    postCommit: {}
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 2G
+      requests:
+        cpu: 500m
+        memory: 200M
+    runPolicy: Serial
+    source:
+      git:
+        ref: 872
+        uri: https://github.com/bcgov/zeva
+      type: Git
+      contextDir: frontend
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: nodejs:14-1-28
+          namespace: e52f12-tools
+        pullSecret:
+          name: zeva-image-pull-secret
+        forcePull: true
+        noCache: true          
+        env:
+          - name: ARTIFACTORY_USER
+            valueFrom:
+              secretKeyRef:
+                name: artifacts-zeva-artifactory-service-account-xgchey
+                key: username
+          - name: ARTIFACTORY_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: artifacts-zeva-artifactory-service-account-xgchey
+                key: password
+      type: Source
+    successfulBuildsHistoryLimit: 5
+    triggers: []
+  status:
+    lastVersion: 0
