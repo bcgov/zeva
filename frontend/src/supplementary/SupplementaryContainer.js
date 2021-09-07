@@ -97,8 +97,8 @@ const SupplementaryContainer = (props) => {
   };
 
   const handleAddIdirComment = () => {
-    const comment = { fromGovtComment: idirComment, director: true };
-    axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), comment).then(() => {
+    const commentData = { fromGovtComment: idirComment, director: true };
+    axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
       console.log("comment saved");
     });
   };
@@ -205,8 +205,8 @@ const SupplementaryContainer = (props) => {
   };
 
   const handleSubmit = (status) => {
-    const comment = { fromGovtComment: bceidComment, director: false };
-    axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), comment).then(() => {
+    const commentData = { fromGovtComment: bceidComment, director: false };
+    axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
       console.log("bceid comment saved")
     });
     const uploadPromises = handleUpload(id);
