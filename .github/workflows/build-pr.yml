@@ -30,5 +30,7 @@ jobs:
         run: |
           pwd
           ls -l
+          which oc
+          oc version
           npm install
           DEBUG=* npm run build -- --pr=$BUILD_ID --env=build
