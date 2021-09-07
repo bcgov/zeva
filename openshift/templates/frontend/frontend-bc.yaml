@@ -63,7 +63,7 @@ objects:
     runPolicy: Serial
     source:
       git:
-        ref: 872
+        ref: ${GIT_REF}
         uri: https://github.com/bcgov/zeva
       type: Git
       contextDir: frontend
