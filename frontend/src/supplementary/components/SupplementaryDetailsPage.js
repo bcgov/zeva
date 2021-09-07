@@ -366,7 +366,9 @@ const SupplementaryDetailsPage = (props) => {
                   buttonType="submit"
                   optionalClassname="button primary"
                   optionalText="Issue Assessment"
-                  action={() => {}}
+                  action={() => {
+                    console.log("ASSESSED")
+                  }}
                 />
               )}
               {!user.isGovernment && details.status === 'DRAFT' && user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
