@@ -33,7 +33,6 @@ objects:
     labels:
       shared: 'true'
     creationTimestamp: null
-    generation: 643
     name: ${NAME}-frontend
   spec:
     lookupPolicy:
@@ -64,7 +63,7 @@ objects:
     source:
       git:
         ref: ${GIT_REF}
-        uri: "https://github.com/bcgov/zeva.git"
+        uri: ${GIT_URL}
       type: Git
       contextDir: frontend
     strategy:
@@ -75,8 +74,8 @@ objects:
           namespace: e52f12-tools
         pullSecret:
           name: zeva-image-pull-secret
-        forcePull: true
-        noCache: true          
+        forcePull: 'true'
+        noCache: 'true'          
         env:
           - name: ARTIFACTORY_USER
             valueFrom:
