@@ -42,15 +42,16 @@ objects:
 - apiVersion: build.openshift.io/v1
   kind: BuildConfig
   metadata:
+    creationTimestamp:
     name: ${NAME}-frontend${SUFFIX}
   spec:
     failedBuildsHistoryLimit: 5
-    nodeSelector: null
+    nodeSelector:
     output:
       to:
         kind: ImageStreamTag
         name: ${NAME}-frontend:${VERSION}
-    postCommit: {}
+    postCommit: 
     resources:
       limits:
         cpu: 2000m
