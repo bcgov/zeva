@@ -40,14 +40,14 @@ objects:
       local: false
   status:
     dockerImageRepository: ""
+# metadata.labels.shared "false" is added because the Github action could fail as "invalid: metadata.labels: Invalid value:" without is    
 - apiVersion: build.openshift.io/v1
   kind: BuildConfig
   metadata:
     annotations:
       description: Defines how to build the application  
     labels:
-      buildname: "frontendbc"
-      shared: "true"
+      shared: "false"
     creationTimestamp: null
     name: ${NAME}-frontend${SUFFIX}
   spec:
