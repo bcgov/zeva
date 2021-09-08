@@ -56,7 +56,6 @@ objects:
       to:
         kind: ImageStreamTag
         name: ${NAME}-frontend:${VERSION}
-    postCommit: {}
     resources:
       limits:
         cpu: 2000m
