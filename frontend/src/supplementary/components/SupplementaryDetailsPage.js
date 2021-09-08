@@ -235,6 +235,26 @@ const SupplementaryDetailsPage = (props) => {
         </div>
         }
       </div>
+      {(supplementaryAssessmentData.supplementaryAssessment && supplementaryAssessmentData.supplementaryAssessment.decision
+        && supplementaryAssessmentData.supplementaryAssessment.decision.description)
+        && (!user.isGovernment || (user.isGovernment && ['ASSESSED', 'RECOMMENDED'].indexOf(details.status) >= 0)) && (
+          <>
+            <h3 className="mt-4 mb-1">Director Reassessment</h3>
+            <div className="row mb-3">
+              <div className="col-12">
+                <div className="grey-border-area comment-box p-3 mt-2">
+                  <div className="text-blue">
+                    <div>The Director has assessed that {assessmentDecision} {supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty
+                    && `$${supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty} CAD`}
+                    </div>
+                    {commentArray.bceidComment && commentArray.bceidComment.comment
+                    && <div className="mt-2">{parse(commentArray.bceidComment.comment)}</div>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+      )}
       {(analystAction || directorAction) && ['ASSESSED'].indexOf(details.status) < 0
       && (
         <>
