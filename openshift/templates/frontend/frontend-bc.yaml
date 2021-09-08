@@ -46,7 +46,7 @@ objects:
     annotations:
       description: Defines how to build the application  
     labels:
-      buildname: "frontendbc"
+      shared: "true"
     creationTimestamp: null
     name: ${NAME}-frontend${SUFFIX}
   spec:
