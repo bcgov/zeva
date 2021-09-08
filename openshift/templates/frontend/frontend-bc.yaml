@@ -92,6 +92,5 @@ objects:
                 key: password
       type: Source
     successfulBuildsHistoryLimit: 5
-    triggers: []
   status:
     lastVersion: 0
