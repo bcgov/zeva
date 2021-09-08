@@ -40,22 +40,21 @@ objects:
       local: false
   status:
     dockerImageRepository: ""
-# metadata.labels.shared "false" is added because the Github action could fail as "invalid: metadata.labels: Invalid value:" without is    
 - apiVersion: build.openshift.io/v1
   kind: BuildConfig
   metadata:
-    annotations:
-      description: Defines how to build the application  
-    labels:
-      shared: "true"
     creationTimestamp: null
     name: ${NAME}-frontend${SUFFIX}
+    labels:
+      shared: "true"    
   spec:
     failedBuildsHistoryLimit: 5
+    nodeSelector: null
     output:
       to:
         kind: ImageStreamTag
         name: ${NAME}-frontend:${VERSION}
+    postCommit: {}
     resources:
       limits:
         cpu: 2000m
@@ -93,5 +92,6 @@ objects:
                 key: password
       type: Source
     successfulBuildsHistoryLimit: 5
+    triggers: []
   status:
     lastVersion: 0
