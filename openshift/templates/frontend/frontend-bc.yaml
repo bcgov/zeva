@@ -47,7 +47,7 @@ objects:
     annotations:
       description: Defines how to build the application  
     labels:
-      shared: "false"
+      shared: "true"
     creationTimestamp: null
     name: ${NAME}-frontend${SUFFIX}
   spec:
