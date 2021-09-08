@@ -412,6 +412,17 @@ const AssessmentDetailsPage = (props) => {
                   Return to Analyst
                 </button>
               )}
+              {analystAction && (
+                <button
+                  className="button text-danger"
+                  onClick={() => {
+                    handleSubmit('DRAFT');
+                  }}
+                  type="button"
+                >
+                  Return to Vehicle Supplier
+                </button>
+              )}
             </span>
 
             <span className="right-content">
