@@ -45,6 +45,8 @@ objects:
   metadata:
     creationTimestamp: null
     name: ${NAME}-frontend${SUFFIX}
+    labels:
+      shared: "true"    
   spec:
     failedBuildsHistoryLimit: 5
     nodeSelector: null

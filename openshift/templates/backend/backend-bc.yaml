@@ -32,6 +32,8 @@ objects:
         description: Keeps track of changes in the backend image
       creationTimestamp: null
       name: ${NAME}-python
+      labels:
+        shared: "true"      
     spec:
       lookupPolicy:
         local: false
@@ -58,6 +60,8 @@ objects:
         description: Defines how to build the application
       creationTimestamp: null
       name: ${NAME}-backend${SUFFIX}
+      labels:
+        shared: "true"      
     spec:
       nodeSelector: null
       output:
