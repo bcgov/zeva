@@ -28,9 +28,5 @@ jobs:
       - name: Run Build
         working-directory: .pipeline
         run: |
-          pwd
-          ls -l
-          which oc
-          oc version
           npm install
-          DEBUG=* npm run build -- --pr=$BUILD_ID --env=build
+          npm run build -- --pr=$BUILD_ID --env=build
