@@ -52,13 +52,13 @@ const FileDropArea = (props) => {
                   setErrorMessage={setErrorMessage}
                   files={files}
                   setFiles={setUploadFiles}
-                  maxFiles={5}
+                  maxFiles={20}
                   allowedFileTypes="image/png, image/gif, image/jpg,image/jpeg, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 />
                 <div className="form-group mt-4 row">
                   <div className="col-12 text-blue">
                     <div>
-                      <strong>Limit of 5 files</strong>
+                      <strong>Limit of 20 files</strong>
                     </div>
                     <strong>Files</strong> (doc, docx, pdf, jpg, png, gif)
                   </div>

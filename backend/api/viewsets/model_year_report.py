@@ -436,6 +436,10 @@ class ModelYearReportViewset(
     @action(detail=True, methods=['get'])
     def supplemental_assessment(self, request, pk):
         report = get_object_or_404(ModelYearReport, pk=pk)
+
+        if report.supplemental is None:
+            return Response(None)
+
         serializer = SupplementalReportAssessmentSerializer(report.supplemental.id, context={'request': request})
         return Response(serializer.data)
 
