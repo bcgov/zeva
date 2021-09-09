@@ -21,8 +21,10 @@ const SupplementaryContainer = (props) => {
   const [ldvSales, setLdvSales] = useState();
   const [ratios, setRatios] = useState();
   const [newBalances, setNewBalances] = useState({});
-  const [commentArray, setCommentArray] = useState([]);
+  const [commentArray, setCommentArray] = useState({});
   const [idirComment, setIdirComment] = useState([]);
+  const [bceidComment, setBceidComment] = useState([]);
+  const [supplementaryAssessmentData, setSupplementaryAssessmentData] = useState([]);
   const [radioDescriptions, setRadioDescriptions] = useState([{ id: 0, description: '' }]);
 
   const analystAction = user.isGovernment
@@ -95,11 +97,18 @@ const SupplementaryContainer = (props) => {
   };
 
   const handleAddIdirComment = () => {
-    console.log("add comment to the db", idirComment)
+    const commentData = { fromGovtComment: idirComment, director: true };
+    axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
+      console.log("comment saved");
+    });
   };
 
   const handleCommentChangeIdir = (text) => {
     setIdirComment(text);
+  };
+
+  const handleCommentChangeBceid = (text) => {
+    setBceidComment(text);
   };
 
   const handleCommentChange = (content) => {
@@ -196,6 +205,10 @@ const SupplementaryContainer = (props) => {
   };
 
   const handleSubmit = (status) => {
+    const commentData = { fromGovtComment: bceidComment, director: false };
+    axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
+      console.log("bceid comment saved")
+    });
     const uploadPromises = handleUpload(id);
     Promise.all(uploadPromises).then((attachments) => {
       const evidenceAttachments = {};
@@ -203,15 +216,21 @@ const SupplementaryContainer = (props) => {
         evidenceAttachments.attachments = attachments;
       }
 
-      const data = {
-        ...newData,
-        status,
-        evidenceAttachments,
-        deleteFiles,
-        comment,
-      };
-      axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data).then((response) => {
-      });
+      if (status) {
+        const data = {
+          ...newData,
+          status,
+          evidenceAttachments,
+          deleteFiles,
+          fromSupplierComment: comment,
+        };
+        if (analystAction) {
+          data.penalty = supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty;
+          data.description = supplementaryAssessmentData.supplementaryAssessment.decision.id;
+        }
+        axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data).then((response) => {
+        });
+    }
     }).catch((e) => {
       setErrorMessage(e);
     });
@@ -253,21 +272,36 @@ const SupplementaryContainer = (props) => {
       axios.get(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)),
       axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)),
       axios.get(ROUTES_COMPLIANCE.RATIOS),
-      axios.get(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)),
+      axios.get(ROUTES_SUPPLEMENTARY.ASSESSMENT.replace(':id', id)),
     ]).then(axios.spread((response, complianceResponse, ratioResponse, assessmentResponse) => {
       if (response.data) {
         setDetails(response.data);
-        console.log(response.data)
         const newSupplier = response.data.supplierInformation;
         const newLegalName = newSupplier.find((each) => each.category === 'LEGAL_NAME') || '';
         const newServiceAddress = newSupplier.find((each) => each.category === 'SERVICE_ADDRESS') || '';
         const newRecordsAddress = newSupplier.find((each) => each.category === 'RECORDS_ADDRESS') || '';
         const newMakes = newSupplier.find((each) => each.category === 'LDV_MAKES') || '';
         const newSupplierClass = newSupplier.find((each) => each.category === 'SUPPLIER_CLASS') || '';
+        const idirCommentArrayResponse = [];
+        let bceidCommentResponse = {};
         const {
+          assessment: {
+            penalty: assessmentPenalty, decision, deficit, inCompliance,
+          },
           descriptions: assessmentDescriptions,
         } = assessmentResponse.data;
         setRadioDescriptions(assessmentDescriptions);
+        assessmentResponse.data.assessmentComment.forEach((item) => {
+          if (item.toDirector === true) {
+            idirCommentArrayResponse.push(item);
+          } else {
+            bceidCommentResponse = item;
+          }
+        });
+        setCommentArray({
+          bceidComment: bceidCommentResponse,
+          idirComment: idirCommentArrayResponse,
+        })
         const supplierInfo = {
           legalName: newLegalName.value,
           serviceAddress: newServiceAddress.value,
@@ -319,6 +353,15 @@ const SupplementaryContainer = (props) => {
           });
         });
 
+        setSupplementaryAssessmentData({
+          supplementaryAssessment: {
+            inCompliance,
+            assessmentPenalty,
+            decision,
+            deficit,
+          }
+        });
+
         setNewData({
           ...newData,
           supplierInfo,
@@ -362,6 +405,7 @@ const SupplementaryContainer = (props) => {
       handleCheckboxClick={handleCheckboxClick}
       handleAddIdirComment={handleAddIdirComment}
       handleCommentChangeIdir={handleCommentChangeIdir}
+      handleCommentChangeBceid={handleCommentChangeBceid}
       handleCommentChange={handleCommentChange}
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
@@ -379,6 +423,8 @@ const SupplementaryContainer = (props) => {
       radioDescriptions={radioDescriptions}
       user={user}
       isReassessment={isReassessment}
+      setSupplementaryAssessmentData={setSupplementaryAssessmentData}
+      supplementaryAssessmentData={supplementaryAssessmentData}
     />
   );
 };

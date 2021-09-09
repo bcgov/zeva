@@ -11,6 +11,7 @@ import UploadEvidence from './UploadEvidence';
 import CommentInput from '../../app/components/CommentInput';
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import DisplayComment from '../../app/components/DisplayComment';
+import parse from 'html-react-parser';
 import Comment from '../../app/components/Comment';
 
 const SupplementaryDetailsPage = (props) => {
@@ -27,6 +28,7 @@ const SupplementaryDetailsPage = (props) => {
     handleCommentChange,
     handleAddIdirComment,
     handleCommentChangeIdir,
+    handleCommentChangeBceid,
     handleInputChange,
     handleSubmit,
     handleSupplementalChange,
@@ -43,6 +45,8 @@ const SupplementaryDetailsPage = (props) => {
     user,
     radioDescriptions,
     isReassessment,
+    supplementaryAssessmentData,
+    setSupplementaryAssessmentData
   } = props;
   if (loading) {
     return <Loading />;
@@ -52,7 +56,7 @@ const SupplementaryDetailsPage = (props) => {
   const creditReductionSelection = details.assessmentData && details.assessmentData.creditReductionSelection;
   const newLdvSales = newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
 
-  // const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, 'Tesla').replace(/{modelYear}/g, 2020) : '';
+  const assessmentDecision = supplementaryAssessmentData.supplementaryAssessment.decision && supplementaryAssessmentData.supplementaryAssessment.decision.description ? supplementaryAssessmentData.supplementaryAssessment.decision.description.replace(/{user.organization.name}/g, details.assessmentData.legalName).replace(/{modelYear}/g, details.assessmentData.modelYear) : '';
   const showDescription = (each) => (
     <div className="mb-3" key={each.id}>
       <input
@@ -62,10 +66,10 @@ const SupplementaryDetailsPage = (props) => {
         name="assessment"
         disabled={!analystAction || ['RECOMMENDED', 'ASSESSED'].indexOf(details.status) >= 0}
         onChange={() => {
-          setDetails({
-            ...details,
-            assessment: {
-              ...details.assessment,
+          setSupplementaryAssessmentData({
+            ...supplementaryAssessmentData,
+            supplementaryAssessment: {
+              ...supplementaryAssessmentData.supplementaryAssessment,
               decision: {
                 description: each.description,
                 id: each.id,
@@ -78,12 +82,19 @@ const SupplementaryDetailsPage = (props) => {
       && (
       <label className="d-inline text-blue" htmlFor="complied">
         {each.description
-          .replace(/{user.organization.name}/g, 'Tesla')
-          .replace(/{modelYear}/g, 2020)}
+          .replace(/{user.organization.name}/g, details.assessmentData.legalName)
+          .replace(/{modelYear}/g, details.assessmentData.modelYear)}
       </label>
       )}
     </div>
   );
+  let disabledRecommendBtn = false;
+  let recommendTooltip = '';
+
+  if (!assessmentDecision) {
+    disabledRecommendBtn = true;
+    recommendTooltip = 'Please select an Analyst Recommendation before recommending this assessment.';
+  }
 
   return (
     <div id="supplementary" className="page">
@@ -109,18 +120,17 @@ const SupplementaryDetailsPage = (props) => {
             </ul>
           </div>
         </div>
-        {(isReassessment || analystAction)
+        {(isReassessment || (analystAction || directorAction))
         && (
         <div className="supplementary-form my-3">
-          {commentArray && commentArray.length > 0
+          {commentArray && commentArray.idirComment && commentArray.idirComment.length > 0
          && (
          <DisplayComment
-           commentArray={commentArray}
+           commentArray={commentArray.idirComment}
          />
          )}
           <div id="comment-input">
             <CommentInput
-              defaultComment={details && details.comments && details.comments.length > 0 ? details.comments[0] : ''}
               handleCommentChange={handleCommentChangeIdir}
               title={analystAction ? 'Add comment to director: ' : 'Add comment to the analyst'}
               buttonText="Add Comment"
@@ -176,65 +186,137 @@ const SupplementaryDetailsPage = (props) => {
           files={files}
           setDeleteFiles={setDeleteFiles}
           setUploadFiles={setUploadFiles}
-        />
-        )}
-      </div>
-      {(analystAction || directorAction) && (
-      <div className="row my-3">
-        <div className="col-12">
-          <h3>Analyst Recommended Director Reassessment</h3>
-          <div className="grey-border-area  p-3 mt-2">
-            <div>
-              {['RECOMMENDED'].indexOf(details.status) < 0 && (
-              <>
-                {radioDescriptions.map((each) => (
-                  (each.displayOrder === 0) && showDescription(each)
-                ))}
-                <div className="text-blue mt-3 ml-3 mb-1">
-                  &nbsp;&nbsp; {} has not complied with section 10 (2) of the
-                  Zero-Emission Vehicles Act for the {2020} adjustment period.
-                </div>
-                {radioDescriptions.map((each) => (
-                  (each.displayOrder > 0) && showDescription(each)
-                ))}
-                <label className="d-inline" htmlFor="penalty-radio">
-                  <div>
-                    <input
-                      disabled={directorAction}
-                      type="text"
-                      className="ml-4 mr-1"
-                          // defaultValue={details.assessment.assessmentPenalty}
-                      name="penalty-amount"
-                      onChange={(e) => {
-                        setDetails({
-                          ...details,
-                          assessment: {
-                            ...details.assessment,
-                            assessmentPenalty: e.target.value,
-                          },
-                        });
-                      }}
-                    />
-                    <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
-                  </div>
-                </label>
-              </>
-              )}
-              {(analystAction || directorAction) && (
-              <div id="comment-input">
-                <CommentInput
-                      // disable={details.assessment.validationStatus === 'ASSESSED'}
-                      // defaultComment={details.bceidComment}
-                      // handleAddComment={handleAddBceidComment}
-                      // handleCommentChange={handleCommentChangeBceid}
-                  title="Assessment Message to the Supplier: "
-                />
+        />)}
+        {user.isGovernment && details.status === 'SUBMITTED' 
+        && 
+        <div className="display-supplier-info grey-border-area mt-3">
+         {details && details.fromSupplierComments && details.fromSupplierComments.length > 0 
+         && <div className="supplier-comment">
+              <h4>Supplier Comments</h4>
+              <span className="text-blue">{parse(details.fromSupplierComments[0].comment)}</span>
+            </div>
+         }
+         {details && details.attachments && <div className="supplier-attachment mt-2">
+           <h4>Supplementary Report Attachemnts</h4>
+           {details.attachments.filter((attachment) => (
+             deleteFiles.indexOf(attachment.id) < 0
+             )).map((attachment) => (
+             <div className="row" key={attachment.id}>
+              <div className="col-8 filename">
+                <button
+                  className="link"
+                  onClick={() => {
+                    axios.get(attachment.url, {
+                      responseType: 'blob',
+                      headers: {
+                        Authorization: null,
+                      },
+                    }).then((response) => {
+                      const objectURL = window.URL.createObjectURL(
+                        new Blob([response.data]),
+                      );
+                      const link = document.createElement('a');
+                      link.href = objectURL;
+                      link.setAttribute('download', attachment.filename);
+                      document.body.appendChild(link);
+                      link.click();
+                    });
+                  }}
+                  type="button"
+                >
+                  {attachment.filename}
+                </button>
               </div>
-              )}
+              </div>
+              ))
+           } 
+         </div>
+        }
+        </div>
+        }
+      </div>
+      {(supplementaryAssessmentData.supplementaryAssessment && supplementaryAssessmentData.supplementaryAssessment.decision
+        && supplementaryAssessmentData.supplementaryAssessment.decision.description)
+        && (!user.isGovernment || (user.isGovernment && ['ASSESSED', 'RECOMMENDED'].indexOf(details.status) >= 0)) && (
+          <>
+            <h3 className="mt-4 mb-1">Director Reassessment</h3>
+            <div className="row mb-3">
+              <div className="col-12">
+                <div className="grey-border-area comment-box p-3 mt-2">
+                  <div className="text-blue">
+                    <div>The Director has assessed that {assessmentDecision} {supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty
+                    && `$${supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty} CAD`}
+                    </div>
+                    {commentArray.bceidComment && commentArray.bceidComment.comment
+                    && <div className="mt-2">{parse(commentArray.bceidComment.comment)}</div>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+      )}
+      {(analystAction || directorAction) && ['ASSESSED'].indexOf(details.status) < 0
+      && (
+        <>
+          {['RECOMMENDED'].indexOf(details.status) < 0 && (
+          <h3 className="mt-4 mb-1">Analyst Recommended Director Assessment</h3>
+          )}
+          <div className="row mb-3">
+            <div className="col-12">
+              <div className="grey-border-area  p-3 mt-2">
+                <div>
+                  {['RECOMMENDED'].indexOf(details.status) < 0 && (
+                  <>
+                    {radioDescriptions.map((each) => (
+                      (each.displayOrder === 0) && showDescription(each)
+                    ))}
+                    <div className="text-blue mt-3 ml-3 mb-1">
+                      &nbsp;&nbsp; {details.assessmentData.legalName} has not complied with section 10 (2) of the
+                      Zero-Emission Vehicles Act for the {details.assessmentData.modelYear} adjustment period.
+                    </div>
+                    {radioDescriptions.map((each) => (
+                      (each.displayOrder > 0) && showDescription(each)
+                    ))}
+                    <label className="d-inline" htmlFor="penalty-radio">
+                      <div>
+                        <input
+                          disabled={directorAction
+                          || assessmentDecision.indexOf('Section 10 (3) applies') < 0
+                          }
+                          type="text"
+                          className="ml-4 mr-1"
+                          defaultValue={supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty}
+                          name="penalty-amount"
+                          onChange={(e) => {
+                            setSupplementaryAssessmentData({
+                              ...supplementaryAssessmentData,
+                              supplementaryAssessment: {
+                                ...supplementaryAssessmentData.supplementaryAssessment,
+                                assessmentPenalty: e.target.value,
+                              },
+                            });
+                          }}
+                        />
+                        <label className="text-grey" htmlFor="penalty-amount">$5,000 CAD x ZEV unit deficit</label>
+                      </div>
+                    </label>
+                  </>
+                  )}
+                   {(analystAction || directorAction) && <div id="comment-input">
+                    <CommentInput
+                      //disable={details.assessment.validationStatus === 'ASSESSED'}
+                      defaultComment={commentArray && commentArray.bceidComment ? commentArray.bceidComment: ''}
+                      //handleAddComment={handleAddBceidComment}
+                      handleCommentChange={handleCommentChangeBceid}
+                      title="Assessment Message to the Supplier: "
+                    />
+                    </div>
+                   } 
+                </div>
             </div>
           </div>
-        </div>
-      </div>
+          </div>
+          </>
       )}
       {!user.isGovernment && user.hasPermission('SUBMIT_COMPLIANCE_REPORT') && details.status === 'DRAFT'
               && (
@@ -267,7 +349,7 @@ const SupplementaryDetailsPage = (props) => {
                 action={() => handleSubmit('DELETED')}
               />
               )}
-              {details.status === 'SUBMITTED'
+              {user.isGovernment && (details.status === 'SUBMITTED' || details.status === 'RECOMMENDED')
                 && (
                 <button
                   className="button text-danger"
@@ -276,27 +358,38 @@ const SupplementaryDetailsPage = (props) => {
                   }}
                   type="button"
                 >
-                  Return to Vehicle Supplier
+                  {details.status === 'SUBMITTED' ? 'Return to Vehicle Supplier' : 'Return to Analyst'}
                 </button>
                 )}
             </span>
             <span className="right-content">
-              {(details.status !== 'SUBMITTED' && !user.isGovernment)
-                && (
+              {/* {((details.status === 'SUBMITTED' && user.isGovernment) || (details.status === 'DRAFT')) && ( */}
                 <Button
                   buttonType="save"
                   action={() => handleSubmit('')}
                 />
-                )}
-              {analystAction && (
-              <Button
-                buttonType="submit"
-                optionalClassname="button primary"
-                optionalText="Recommend Reassessment"
-                action={() => {
-                  handleSubmit('RECOMMENDED');
-                }}
-              />
+              {/* )} */}
+              {analystAction && (details.status !== 'RECOMMENDED' || details.status === 'RETURNED') && (
+                  <Button
+                    buttonTooltip={recommendTooltip}
+                    buttonType="submit"
+                    optionalClassname="button primary"
+                    optionalText="Recommend Reassessment"
+                    disabled={disabledRecommendBtn}
+                    action={() => {
+                      handleSubmit('RECOMMENDED');
+                    }}
+                  />
+              )}
+               {directorAction && details.status === 'RECOMMENDED' && (
+                <Button
+                  buttonType="submit"
+                  optionalClassname="button primary"
+                  optionalText="Issue Assessment"
+                  action={() => {
+                    console.log("ASSESSED")
+                  }}
+                />
               )}
               {!user.isGovernment && details.status === 'DRAFT' && user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
               && (
