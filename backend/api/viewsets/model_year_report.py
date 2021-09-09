@@ -49,6 +49,7 @@ from api.models.supplemental_report_attachment import SupplementalReportAttachme
 from api.models.supplemental_report import SupplementalReport
 from api.models.model_year_report_vehicle import ModelYearReportVehicle
 from api.models.supplemental_report_comment import SupplementalReportComment
+from api.models.signing_authority_assertion import SigningAuthorityAssertion
 from api.models.supplemental_report_statuses import SupplementalReportStatuses
 from api.models.supplemental_report_assessment import SupplementalReportAssessment
 from api.models.supplemental_report_assessment_comment import SupplementalReportAssessmentComment
@@ -230,10 +231,20 @@ class ModelYearReportViewset(
         model_year_report_id = request.data.get('model_year_report_id')
         confirmations = request.data.get('confirmation', None)
         description = request.data.get('description')
+        remove_submission_confirmation = request.data.get('remove_confirmation', None)
 
         model_year_report_update = ModelYearReport.objects.filter(
             id=model_year_report_id
         )
+
+        if remove_submission_confirmation:
+            assertion_id = SigningAuthorityAssertion.objects.filter(module='compliance_summary').first()
+            item = ModelYearReportConfirmation.objects.filter(
+                model_year_report_id=model_year_report_id,
+                signing_authority_assertion_id=assertion_id
+            )
+            item.delete()
+
 
         if validation_status:
             if validation_status == 'RECOMMENDED' and not description:
