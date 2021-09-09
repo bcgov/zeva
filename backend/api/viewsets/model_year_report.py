@@ -50,6 +50,10 @@ from api.models.supplemental_report import SupplementalReport
 from api.models.model_year_report_vehicle import ModelYearReportVehicle
 from api.models.supplemental_report_comment import SupplementalReportComment
 from api.models.signing_authority_assertion import SigningAuthorityAssertion
+from api.models.supplemental_report_statuses import SupplementalReportStatuses
+from api.models.supplemental_report_assessment import SupplementalReportAssessment
+from api.models.supplemental_report_assessment_comment import SupplementalReportAssessmentComment
+from api.serializers.model_year_report_supplemental import SupplementalReportAssessmentSerializer
 
 class ModelYearReportViewset(
         AuditableMixin, viewsets.GenericViewSet,
@@ -429,14 +433,25 @@ class ModelYearReportViewset(
             'url': url,
             'minio_object_name': object_name
         })
+    @action(detail=True, methods=['get'])
+    def supplemental_assessment(self, request, pk):
+        report = get_object_or_404(ModelYearReport, pk=pk)
+        serializer = SupplementalReportAssessmentSerializer(report.supplemental.id, context={'request': request})
+        return Response(serializer.data)
 
     @action(detail=True, methods=['patch'])
     def supplemental_save(self, request, pk):
         report = get_object_or_404(ModelYearReport, pk=pk)
+        validation_status = request.data.get('status')
+        description = request.data.get('description')
+
+        supplemental_report_update = SupplementalReport.objects.filter(
+            id=report.supplemental.id
+        )
 
         # update the existing supplemental if it exists
         if report.supplemental:
-            if request.data.get('status') == 'DELETED':
+            if request.data.get('status') == SupplementalReportStatuses.DELETED:
                 SupplementalReportAttachment.objects.filter(
                     supplemental_report_id=report.supplemental.id).delete()
                 SupplementalReportSupplierInformation.objects.filter(
@@ -448,6 +463,30 @@ class ModelYearReportViewset(
                 SupplementalReport.objects.filter(
                     id=report.supplemental.id).delete()
                 return HttpResponse(status=200)
+            if validation_status:
+                if validation_status == 'RECOMMENDED' and not description:
+                    # returning a 200 to bypass the rest of the update
+                    return HttpResponse(
+                        status=200, content="Recommendation is required"
+                    )
+
+                supplemental_report_update.update(
+                    status=validation_status)
+                supplemental_report_update.update(update_user=request.user.username)
+
+                # check for if validation status is recommended
+                if validation_status == 'RECOMMENDED' or \
+                        (validation_status == 'SUBMITTED' and description):
+                    # do "update or create" to create the assessment object
+                    penalty = request.data.get('penalty')
+                    SupplementalReportAssessment.objects.update_or_create(
+                        supplemental_report_id=report.supplemental.id,
+                        defaults={
+                            'update_user': request.user.username,
+                            'supplemental_report_assessment_description_id': description,
+                            'penalty': penalty
+                        }
+                    )
             serializer = ModelYearReportSupplementalSerializer(
                 report.supplemental,
                 data=request.data
@@ -571,8 +610,8 @@ class ModelYearReportViewset(
                     zev_class=v.get('zev_class')
                 )
 
-        comment = request.data.get('comment')
-        if comment:
+        from_supplier_comment = request.data.get('from_supplier_comment')
+        if from_supplier_comment:
             SupplementalReportComment.objects.filter(
                 supplemental_report_id=report.supplemental.id,
                 to_govt=True
@@ -580,8 +619,43 @@ class ModelYearReportViewset(
             SupplementalReportComment.objects.create(
                 create_user=request.user.username,
                 supplemental_report_id=report.supplemental.id,
-                comment=comment,
+                comment=from_supplier_comment,
                 to_govt=True
             )
 
         return Response(serializer.data)
+
+    @action(detail=True, methods=['post', 'patch'])
+    def supplemental_comment_save(self, request, pk):
+        report = get_object_or_404(ModelYearReport, pk=pk)
+        comment = request.data.get('from_govt_comment')
+        director = request.data.get('director')
+        if comment and director:
+            SupplementalReportAssessmentComment.objects.create(
+                supplemental_report_id=report.supplemental.id,
+                comment=comment,
+                to_director=True,
+                create_user=request.user.username,
+                update_user=request.user.username,
+            )
+        elif comment and not director:
+            assessment_comment = SupplementalReportAssessmentComment.objects.filter(
+                supplemental_report_id=report.supplemental.id,
+                to_director=False
+            ).order_by('-update_timestamp').first()
+
+            if assessment_comment:
+                assessment_comment.comment = comment
+                assessment_comment.update_user = request.user.username
+                assessment_comment.save()
+            else:
+                SupplementalReportAssessmentComment.objects.create(
+                    supplemental_report_id=report.supplemental.id,
+                    to_director=False,
+                    comment=comment,
+                    create_user=request.user.username,
+                    update_user=request.user.username
+                )
+
+
+        return Response({'status': 'Saved'})
