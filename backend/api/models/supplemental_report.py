@@ -33,6 +33,11 @@ class SupplementalReport(Auditable):
                        statuses=[c.name for c in SupplementalReportStatuses]
                    )
     )
+    supplemental_id = models.IntegerField(
+        null=True,
+        blank=True,
+        db_comment="This will reference the previous supplemental report that the analyst was reviewing."
+    )
 
     class Meta:
         db_table = "supplemental_report"
