@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
+import parse from 'html-react-parser';
 import Loading from '../../app/components/Loading';
 import SupplementaryAlert from './SupplementaryAlert';
 import Button from '../../app/components/Button';
@@ -11,8 +12,8 @@ import UploadEvidence from './UploadEvidence';
 import CommentInput from '../../app/components/CommentInput';
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import DisplayComment from '../../app/components/DisplayComment';
-import parse from 'html-react-parser';
 import Comment from '../../app/components/Comment';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const SupplementaryDetailsPage = (props) => {
   const {
@@ -46,7 +47,7 @@ const SupplementaryDetailsPage = (props) => {
     radioDescriptions,
     isReassessment,
     supplementaryAssessmentData,
-    setSupplementaryAssessmentData
+    setSupplementaryAssessmentData,
   } = props;
   if (loading) {
     return <Loading />;
@@ -56,7 +57,8 @@ const SupplementaryDetailsPage = (props) => {
   const creditReductionSelection = details.assessmentData && details.assessmentData.creditReductionSelection;
   const newLdvSales = newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
 
-  const assessmentDecision = supplementaryAssessmentData.supplementaryAssessment.decision && supplementaryAssessmentData.supplementaryAssessment.decision.description ? supplementaryAssessmentData.supplementaryAssessment.decision.description.replace(/{user.organization.name}/g, details.assessmentData.legalName).replace(/{modelYear}/g, details.assessmentData.modelYear) : '';
+  const formattedPenalty = formatNumeric(details.assessment.assessmentPenalty, 0);
+  const assessmentDecision = supplementaryAssessmentData.supplementaryAssessment.decision && supplementaryAssessmentData.supplementaryAssessment.decision.description ? supplementaryAssessmentData.supplementaryAssessment.decision.description.replace(/{user.organization.name}/g, details.assessmentData.legalName).replace(/{modelYear}/g, details.assessmentData.modelYear).replace(/{penalty}/g, `$${formattedPenalty} CAD`) : '';
   const showDescription = (each) => (
     <div className="mb-3" key={each.id}>
       <input
@@ -186,54 +188,56 @@ const SupplementaryDetailsPage = (props) => {
           files={files}
           setDeleteFiles={setDeleteFiles}
           setUploadFiles={setUploadFiles}
-        />)}
-        {user.isGovernment && details.status === 'SUBMITTED' 
-        && 
+        />
+        )}
+        {user.isGovernment && details.status === 'SUBMITTED'
+        && (
         <div className="display-supplier-info grey-border-area mt-3">
-         {details && details.fromSupplierComments && details.fromSupplierComments.length > 0 
-         && <div className="supplier-comment">
-              <h4>Supplier Comments</h4>
-              <span className="text-blue">{parse(details.fromSupplierComments[0].comment)}</span>
-            </div>
-         }
-         {details && details.attachments && <div className="supplier-attachment mt-2">
-           <h4>Supplementary Report Attachemnts</h4>
-           {details.attachments.filter((attachment) => (
-             deleteFiles.indexOf(attachment.id) < 0
-             )).map((attachment) => (
-             <div className="row" key={attachment.id}>
-              <div className="col-8 filename">
-                <button
-                  className="link"
-                  onClick={() => {
-                    axios.get(attachment.url, {
-                      responseType: 'blob',
-                      headers: {
-                        Authorization: null,
-                      },
-                    }).then((response) => {
-                      const objectURL = window.URL.createObjectURL(
-                        new Blob([response.data]),
-                      );
-                      const link = document.createElement('a');
-                      link.href = objectURL;
-                      link.setAttribute('download', attachment.filename);
-                      document.body.appendChild(link);
-                      link.click();
-                    });
-                  }}
-                  type="button"
-                >
-                  {attachment.filename}
-                </button>
-              </div>
-              </div>
-              ))
-           } 
+          {details && details.fromSupplierComments && details.fromSupplierComments.length > 0
+         && (
+         <div className="supplier-comment">
+           <h4>Supplier Comments</h4>
+           <span className="text-blue">{parse(details.fromSupplierComments[0].comment)}</span>
          </div>
-        }
+         )}
+          {details && details.attachments && (
+          <div className="supplier-attachment mt-2">
+            <h4>Supplementary Report Attachemnts</h4>
+            {details.attachments.filter((attachment) => (
+              deleteFiles.indexOf(attachment.id) < 0
+            )).map((attachment) => (
+              <div className="row" key={attachment.id}>
+                <div className="col-8 filename">
+                  <button
+                    className="link"
+                    onClick={() => {
+                      axios.get(attachment.url, {
+                        responseType: 'blob',
+                        headers: {
+                          Authorization: null,
+                        },
+                      }).then((response) => {
+                        const objectURL = window.URL.createObjectURL(
+                          new Blob([response.data]),
+                        );
+                        const link = document.createElement('a');
+                        link.href = objectURL;
+                        link.setAttribute('download', attachment.filename);
+                        document.body.appendChild(link);
+                        link.click();
+                      });
+                    }}
+                    type="button"
+                  >
+                    {attachment.filename}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          )}
         </div>
-        }
+        )}
       </div>
       {(supplementaryAssessmentData.supplementaryAssessment && supplementaryAssessmentData.supplementaryAssessment.decision
         && supplementaryAssessmentData.supplementaryAssessment.decision.description)
@@ -244,8 +248,7 @@ const SupplementaryDetailsPage = (props) => {
               <div className="col-12">
                 <div className="grey-border-area comment-box p-3 mt-2">
                   <div className="text-blue">
-                    <div>The Director has assessed that {assessmentDecision} {supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty
-                    && `$${supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty} CAD`}
+                    <div>The Director has assessed that {assessmentDecision}
                     </div>
                     {commentArray.bceidComment && commentArray.bceidComment.comment
                     && <div className="mt-2">{parse(commentArray.bceidComment.comment)}</div>}
@@ -281,8 +284,7 @@ const SupplementaryDetailsPage = (props) => {
                       <div>
                         <input
                           disabled={directorAction
-                          || assessmentDecision.indexOf('Section 10 (3) applies') < 0
-                          }
+                          || assessmentDecision.indexOf('Section 10 (3) applies') < 0}
                           type="text"
                           className="ml-4 mr-1"
                           defaultValue={supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty}
@@ -302,21 +304,22 @@ const SupplementaryDetailsPage = (props) => {
                     </label>
                   </>
                   )}
-                   {(analystAction || directorAction) && <div id="comment-input">
+                  {(analystAction || directorAction) && (
+                  <div id="comment-input">
                     <CommentInput
-                      //disable={details.assessment.validationStatus === 'ASSESSED'}
-                      defaultComment={commentArray && commentArray.bceidComment ? commentArray.bceidComment: ''}
-                      //handleAddComment={handleAddBceidComment}
+                      // disable={details.assessment.validationStatus === 'ASSESSED'}
+                      defaultComment={commentArray && commentArray.bceidComment ? commentArray.bceidComment : ''}
+                      // handleAddComment={handleAddBceidComment}
                       handleCommentChange={handleCommentChangeBceid}
                       title="Assessment Message to the Supplier: "
                     />
-                    </div>
-                   } 
+                  </div>
+                  )}
                 </div>
+              </div>
             </div>
           </div>
-          </div>
-          </>
+        </>
       )}
       {!user.isGovernment && user.hasPermission('SUBMIT_COMPLIANCE_REPORT') && details.status === 'DRAFT'
               && (
@@ -364,32 +367,32 @@ const SupplementaryDetailsPage = (props) => {
             </span>
             <span className="right-content">
               {/* {((details.status === 'SUBMITTED' && user.isGovernment) || (details.status === 'DRAFT')) && ( */}
-                <Button
-                  buttonType="save"
-                  action={() => handleSubmit('')}
-                />
+              <Button
+                buttonType="save"
+                action={() => handleSubmit('')}
+              />
               {/* )} */}
               {analystAction && (details.status !== 'RECOMMENDED' || details.status === 'RETURNED') && (
-                  <Button
-                    buttonTooltip={recommendTooltip}
-                    buttonType="submit"
-                    optionalClassname="button primary"
-                    optionalText="Recommend Reassessment"
-                    disabled={disabledRecommendBtn}
-                    action={() => {
-                      handleSubmit('RECOMMENDED');
-                    }}
-                  />
+              <Button
+                buttonTooltip={recommendTooltip}
+                buttonType="submit"
+                optionalClassname="button primary"
+                optionalText="Recommend Reassessment"
+                disabled={disabledRecommendBtn}
+                action={() => {
+                  handleSubmit('RECOMMENDED');
+                }}
+              />
               )}
-               {directorAction && details.status === 'RECOMMENDED' && (
-                <Button
-                  buttonType="submit"
-                  optionalClassname="button primary"
-                  optionalText="Issue Assessment"
-                  action={() => {
-                    console.log("ASSESSED")
-                  }}
-                />
+              {directorAction && details.status === 'RECOMMENDED' && (
+              <Button
+                buttonType="submit"
+                optionalClassname="button primary"
+                optionalText="Issue Assessment"
+                action={() => {
+                  console.log('ASSESSED');
+                }}
+              />
               )}
               {!user.isGovernment && details.status === 'DRAFT' && user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
               && (

@@ -12,8 +12,8 @@ const SupplementaryAlert = (props) => {
   let message = '';
   let title;
   let classname;
-  let icon = 'exclamation-circle';
-  
+  const icon = 'exclamation-circle';
+
   switch (status) {
     case 'DRAFT':
       title = 'Draft';
@@ -26,7 +26,7 @@ const SupplementaryAlert = (props) => {
       message = `recommended for reassessment, ${date} by ${user}.`;
       classname = 'alert-primary';
       break;
-    
+
     case 'RETURNED':
       title = 'Returned';
       message = `Supplementary report returned ${date} by the Government of B.C.`;
