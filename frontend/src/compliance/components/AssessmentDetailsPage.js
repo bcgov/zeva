@@ -45,8 +45,8 @@ const AssessmentDetailsPage = (props) => {
     deductions,
     updatedBalances,
   } = props;
-
-  const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, details.organization.name).replace(/{modelYear}/g, reportYear) : '';
+  const formattedPenalty = formatNumeric(details.assessment.assessmentPenalty, 0);
+  const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, details.organization.name).replace(/{modelYear}/g, reportYear).replace(/{penalty}/g, `$${formattedPenalty} CAD`) : '';
   const disabledInputs = false;
   const showDescription = (each) => (
     <div className="mb-3" key={each.id}>
@@ -183,7 +183,7 @@ const AssessmentDetailsPage = (props) => {
               <button
                 className="btn button primary float-right"
                 onClick={() => {
-                  history.push(ROUTES_SUPPLEMENTARY.CREATE.replace(/:id/g, id))
+                  history.push(ROUTES_SUPPLEMENTARY.CREATE.replace(/:id/g, id));
                 }}
                 type="button"
               >
@@ -194,7 +194,7 @@ const AssessmentDetailsPage = (props) => {
               <button
                 className="btn button primary float-right"
                 onClick={() => {
-                  history.push(ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(/:id/g, id))
+                  history.push(ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(/:id/g, id));
                 }}
                 type="button"
               >
@@ -297,7 +297,7 @@ const AssessmentDetailsPage = (props) => {
             <h3 className="mt-4 mb-2">Credit Reduction</h3>
 
             <ComplianceObligationReductionOffsetTable
-              assessment={true}
+              assessment
               reportYear={reportYear}
               creditReductionSelection={details.creditReductionSelection}
               deductions={deductions}
@@ -319,8 +319,8 @@ const AssessmentDetailsPage = (props) => {
               <div className="col-12">
                 <div className="grey-border-area comment-box p-3 mt-2">
                   <div className="text-blue">
-                    <div>The Director has assessed that {assessmentDecision} {details.assessment.assessmentPenalty
-                    && `$${details.assessment.assessmentPenalty} CAD`}
+                    <div>
+                      The Director has assessed that {assessmentDecision}
                     </div>
                     {details.bceidComment && details.bceidComment.comment
                     && <div className="mt-2">{parse(details.bceidComment.comment)}</div>}

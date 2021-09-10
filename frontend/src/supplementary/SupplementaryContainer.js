@@ -7,7 +7,7 @@ import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 
 const SupplementaryContainer = (props) => {
   const { id } = useParams();
-  const [checkboxConfirmed, setCheckboxConfirmed] = useState(false)
+  const [checkboxConfirmed, setCheckboxConfirmed] = useState(false);
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState('');
@@ -33,7 +33,7 @@ const SupplementaryContainer = (props) => {
   const directorAction = user.isGovernment
   && user.hasPermission('SIGN_COMPLIANCE_REPORT');
 
-  const isReassessment = reassessment && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')
+  const isReassessment = reassessment && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
 
   const calculateBalance = (creditActivity) => {
     const balances = {};
@@ -99,7 +99,7 @@ const SupplementaryContainer = (props) => {
   const handleAddIdirComment = () => {
     const commentData = { fromGovtComment: idirComment, director: true };
     axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
-      console.log("comment saved");
+      console.log('comment saved');
     });
   };
 
@@ -207,7 +207,7 @@ const SupplementaryContainer = (props) => {
   const handleSubmit = (status) => {
     const commentData = { fromGovtComment: bceidComment, director: false };
     axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
-      console.log("bceid comment saved")
+      console.log('bceid comment saved');
     });
     const uploadPromises = handleUpload(id);
     Promise.all(uploadPromises).then((attachments) => {
@@ -230,7 +230,7 @@ const SupplementaryContainer = (props) => {
         }
         axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data).then((response) => {
         });
-    }
+      }
     }).catch((e) => {
       setErrorMessage(e);
     });
@@ -301,7 +301,7 @@ const SupplementaryContainer = (props) => {
         setCommentArray({
           bceidComment: bceidCommentResponse,
           idirComment: idirCommentArrayResponse,
-        })
+        });
         const supplierInfo = {
           legalName: newLegalName.value,
           serviceAddress: newServiceAddress.value,
@@ -359,7 +359,7 @@ const SupplementaryContainer = (props) => {
             assessmentPenalty,
             decision,
             deficit,
-          }
+          },
         });
 
         setNewData({
