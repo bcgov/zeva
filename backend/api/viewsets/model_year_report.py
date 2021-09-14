@@ -54,6 +54,7 @@ from api.models.supplemental_report_statuses import SupplementalReportStatuses
 from api.models.supplemental_report_assessment import SupplementalReportAssessment
 from api.models.supplemental_report_assessment_comment import SupplementalReportAssessmentComment
 from api.serializers.model_year_report_supplemental import SupplementalReportAssessmentSerializer
+from api.serializers.model_year_report_noa import ModelYearReportNoaSerializer
 
 class ModelYearReportViewset(
         AuditableMixin, viewsets.GenericViewSet,
@@ -192,6 +193,15 @@ class ModelYearReportViewset(
         )
 
         return Response(serializer.data)
+
+    @action(detail=True)
+    def noa_history(self, request, pk=None):
+        queryset = self.get_queryset()
+        report = get_object_or_404(queryset, pk=pk)
+        # get model year report where id matches and where status is Assessed or Reassessed, along with date
+        report_serializer = ModelYearReportNoaSerializer(report, context={'request': request})
+        # get supplementary table, match model year report id, get status, update timestamp and user
+        return Response(report_serializer.data)
 
     @action(detail=True)
     def makes(self, request, pk=None):

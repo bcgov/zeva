@@ -43,6 +43,7 @@ const AssessmentContainer = (props) => {
   const [totalReduction, setTotalReduction] = useState(0);
   const [unspecifiedReductions, setUnspecifiedReductions] = useState([]);
   const [updatedBalances, setUpdatedBalances] = useState({});
+  const [noaHistory, setNoaHistory] = useState({});
 
   const handleCommentChangeBceid = (text) => {
     setBceidComment(text);
@@ -62,8 +63,10 @@ const AssessmentContainer = (props) => {
         axios.get(ROUTES_COMPLIANCE.RATIOS),
         axios.get(`${ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)}?assessment=True`),
         axios.get(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)),
+        axios.get(ROUTES_COMPLIANCE.NOA_HISTORY.replace(/:id/g, id)),
       ]).then(axios.spread(
-        (reportDetailsResponse, ratioResponse, creditActivityResponse, assessmentResponse) => {
+        (reportDetailsResponse, ratioResponse, creditActivityResponse, assessmentResponse, noaHistoryResponse) => {
+          setNoaHistory(noaHistoryResponse)
           const idirCommentArrayResponse = [];
           let bceidCommentResponse = {};
           const {
@@ -350,13 +353,13 @@ const AssessmentContainer = (props) => {
       if (analystAction) {
         data.penalty = details.assessment.assessmentPenalty;
         data.description = details.assessment.decision.id;
-        if (status === 'DRAFT'){
+        if (status === 'DRAFT') {
           data.removeConfirmation = true;
         }
       }
 
       axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then(() => {
-        if(status ==='DRAFT' && analystAction){
+        if (status === 'DRAFT' && analystAction) {
           history.push(ROUTES_COMPLIANCE.REPORTS);
         } else {
           history.push(ROUTES_COMPLIANCE.REPORTS);
@@ -398,6 +401,7 @@ const AssessmentContainer = (props) => {
         id={id}
         loading={loading}
         makes={makes}
+        noaHistory={noaHistory}
         pendingBalanceExist={pendingBalanceExist}
         radioDescriptions={radioDescriptions}
         ratios={ratios}

@@ -27,6 +27,7 @@ const AssessmentDetailsPage = (props) => {
     handleCommentChangeIdir,
     loading,
     makes,
+    noaHistory,
     reportYear,
     radioDescriptions,
     statuses,
@@ -126,6 +127,12 @@ const AssessmentDetailsPage = (props) => {
             />
             )}
           </div>
+          {noaHistory
+          && (
+          <div className="m-0">
+            Model Year Report Assessment History
+          </div>
+          )}
           {user.isGovernment
           && (
             <>
