@@ -7,6 +7,7 @@ const CREDIT_AGREEMENTS = {
   EDIT: `${API_BASE_PATH}/:id/edit`,
   MINIO_URL: `${API_BASE_PATH}/:id/minio_url`,
   TRANSACTION_TYPES: `${API_BASE_PATH}/transaction_types`,
+  MODEL_YEAR_REPORTS: `${API_BASE_PATH}/model_year_reports`,
   COMMENT_SAVE: `${API_BASE_PATH}/:id/comment_save`,
 };
 

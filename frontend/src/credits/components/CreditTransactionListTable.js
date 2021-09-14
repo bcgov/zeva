@@ -74,11 +74,17 @@ const CreditTransactionListTable = (props) => {
         if (item.detailTransactionType === 'Administrative Credit Allocation') {
           return 'AA';
         }
+        if (item.detailTransactionType === 'Reassessment Allocation') {
+          return 'RA';
+        }
 
         return 'IA';
       case 'credit adjustment reduction':
         if (item.detailTransactionType === 'Administrative Credit Reduction') {
           return 'AR';
+        }
+        if (item.detailTransactionType === 'Reassessment Reduction') {
+          return 'RR';
         }
         break;
       case 'reduction':

@@ -31,13 +31,26 @@ const CreditAgreementsForm = (props) => {
     transactionTypes,
     user,
     years,
+    modelYearReports,
   } = props;
 
+  let supplierReports = [{modelYear:'-', id:'-'}]
   const removeFile = (removedFile) => {
     const found = files.findIndex((file) => (file === removedFile));
     files.splice(found, 1);
     setUploadFiles([...files]);
   };
+
+  const displayModelYear = ((agreementDetails.transactionType === 'Reassessment Allocation' || 
+                            agreementDetails.transactionType === 'Reassessment Reduction') ? true : false);
+
+  const modelYearValues = () => {
+    if(agreementDetails.vehicleSupplier && (agreementDetails.transactionType ==='Reassessment Allocation' || 
+       agreementDetails.transactionType === 'Reassessment Reduction')) {
+        supplierReports = modelYearReports.map((each) => (each.organizationId == parseInt(agreementDetails.vehicleSupplier) ? each : {}));
+     }
+    }
+  
 
   return (
     <div id="credit-agreements-form" className="page">
@@ -165,6 +178,25 @@ const CreditAgreementsForm = (props) => {
                 rowClassname=""
               />
             </div>
+            {displayModelYear &&
+              <div className="credit-agreement-form-row">
+                {modelYearValues()}
+                <FormDropdown
+                  dropdownData={supplierReports}
+                  dropdownName="Model Year"
+                  handleInputChange={(event) => {
+                    handleChangeDetails(event.target.value, 'modelYearReportId');
+                  }}
+                  fieldName="modelYear"
+                  accessor={(supplierReport) => supplierReport.id}
+                  selectedOption={agreementDetails.modelYearReportId || '--'}
+                  labelClassname="d-inline-block col-2"
+                  inputClassname="d-inline-block agreement-input"
+                  rowClassname=""
+                />
+              </div>
+            }
+           {!displayModelYear &&
             <div className="credit-agreement-form-row">
               <TextInput
                 label="Agreement ID (optional)"
@@ -178,7 +210,7 @@ const CreditAgreementsForm = (props) => {
                 inputSize="d-inline-block align-middle agreement-input"
                 rowSize=""
               />
-            </div>
+            </div>}
             <div className="credit-agreement-form-row">
               <label
                 htmlFor="transaction-date"
