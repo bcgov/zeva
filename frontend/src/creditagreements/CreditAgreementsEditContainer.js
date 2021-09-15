@@ -24,6 +24,7 @@ const CreditAgreementsEditContainer = (props) => {
   const [transactionTypes, setTransactionTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [agreementDetails, setAgreementDetails] = useState({});
+  const [modelYearReports, setModelYearReports] = useState({});
   const [files, setFiles] = useState([]);
   const [deleteFiles, setDeleteFiles] = useState([]);
 
@@ -138,6 +139,7 @@ const CreditAgreementsEditContainer = (props) => {
       axios.get(ROUTES_VEHICLES.YEARS),
       axios.get(ROUTES_ORGANIZATIONS.LIST),
       axios.get(ROUTES_CREDIT_AGREEMENTS.TRANSACTION_TYPES),
+      axios.get(ROUTES_CREDIT_AGREEMENTS.MODEL_YEAR_REPORTS)
     ];
 
     if (id) {
@@ -145,7 +147,8 @@ const CreditAgreementsEditContainer = (props) => {
     }
 
     Promise.all(promises).then(
-      ([yearsResponse, supplierResponse, typesResponse, detailsResponse]) => {
+      ([yearsResponse, supplierResponse, typesResponse, modelYearReportResponse, detailsResponse]) => {
+        setModelYearReports(modelYearReportResponse.data);
         setYears(yearsResponse.data);
         setSuppliers(supplierResponse.data);
         setTransactionTypes(typesResponse.data.map((each) => ({ name: each })));
@@ -158,6 +161,7 @@ const CreditAgreementsEditContainer = (props) => {
             optionalAgreementId: optionalAgreementID,
             organization,
             transactionType,
+            modelYearReportId: modelYearReportId
           } = detailsResponse.data;
 
           setCreditRows([
@@ -170,6 +174,7 @@ const CreditAgreementsEditContainer = (props) => {
             attachments,
             effectiveDate,
             optionalAgreementID,
+            modelYearReportId,
             transactionType,
             vehicleSupplier: organization ? organization.id : 0,
           });
@@ -208,6 +213,7 @@ const CreditAgreementsEditContainer = (props) => {
       transactionTypes={transactionTypes}
       user={user}
       years={years}
+      modelYearReports={modelYearReports}
     />,
   ]);
 };

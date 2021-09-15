@@ -29,7 +29,7 @@ def adjust_credits(agreement):
     add_total = None
     reset_total = None
 
-    if transaction_type == CreditAgreementTransactionTypes.ADMINISTRATIVE_CREDIT_REDUCTION:
+    if transaction_type == CreditAgreementTransactionTypes.ADMINISTRATIVE_CREDIT_REDUCTION or transaction_type == CreditAgreementTransactionTypes.REASSESSMENT_REDUCTION:
         credit_transaction_type = "Credit Adjustment Reduction"
         debit_from = agreement.organization
         reduce_total = True
