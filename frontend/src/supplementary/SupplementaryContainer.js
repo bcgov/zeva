@@ -6,7 +6,7 @@ import SupplementaryDetailsPage from './components/SupplementaryDetailsPage';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 
 const SupplementaryContainer = (props) => {
-  const { id } = useParams();
+  const { id, supplementaryId } = useParams();
   const [checkboxConfirmed, setCheckboxConfirmed] = useState(false);
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
@@ -269,7 +269,7 @@ const SupplementaryContainer = (props) => {
     setLoading(true);
 
     axios.all([
-      axios.get(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)),
+      axios.get(`${ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)}?supplemental_id=${supplementaryId}`),
       axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)),
       axios.get(ROUTES_COMPLIANCE.RATIOS),
       axios.get(ROUTES_SUPPLEMENTARY.ASSESSMENT.replace(':id', id)),
@@ -284,20 +284,38 @@ const SupplementaryContainer = (props) => {
         const newSupplierClass = newSupplier.find((each) => each.category === 'SUPPLIER_CLASS') || '';
         const idirCommentArrayResponse = [];
         let bceidCommentResponse = {};
+
         const {
-          assessment: {
-            penalty: assessmentPenalty, decision, deficit, inCompliance,
-          },
+          assessment,
           descriptions: assessmentDescriptions,
+          assessmentComment,
         } = assessmentResponse.data;
+
+        let assessmentPenalty;
+        let decision;
+        let deficit;
+        let inCompliance;
+
+        if (assessment) {
+          ({
+            penalty: assessmentPenalty,
+            decision,
+            deficit,
+            inCompliance,
+          } = assessment);
+        }
         setRadioDescriptions(assessmentDescriptions);
-        assessmentResponse.data.assessmentComment.forEach((item) => {
-          if (item.toDirector === true) {
-            idirCommentArrayResponse.push(item);
-          } else {
-            bceidCommentResponse = item;
-          }
-        });
+
+        if (assessmentComment) {
+          assessmentComment.forEach((item) => {
+            if (item.toDirector === true) {
+              idirCommentArrayResponse.push(item);
+            } else {
+              bceidCommentResponse = item;
+            }
+          });
+        }
+
         setCommentArray({
           bceidComment: bceidCommentResponse,
           idirComment: idirCommentArrayResponse,

@@ -1,8 +1,9 @@
 const API_BASE_PATH = '/compliance/reports';
 
 const ROUTES_SUPPLEMENTARY = {
-  CREATE: '/reports/:id/supplementary',
+  CREATE: `${API_BASE_PATH}/:id/supplementary`,
   DETAILS: `${API_BASE_PATH}/:id/supplemental`,
+  SUPPLEMENTARY_DETAILS: `${API_BASE_PATH}/:id/supplementary/:supplementaryId`,
   SAVE: `${API_BASE_PATH}/:id/supplemental_save`,
   ASSESSMENT: `${API_BASE_PATH}/:id/supplemental_assessment`,
   MINIO_URL: `${API_BASE_PATH}/:id/minio_url`,
