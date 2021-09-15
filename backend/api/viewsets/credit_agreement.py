@@ -21,6 +21,8 @@ from api.services.credit_agreement import adjust_credits
 from auditable.views import AuditableMixin
 from api.models.credit_agreement_statuses import CreditAgreementStatuses
 from api.services.send_email import notifications_credit_agreement
+from api.models.model_year_report import ModelYearReport
+from api.serializers.model_year_report import ModelYearReportSerializer, ModelYearReportsSerializer
 
 
 class CreditAgreementViewSet(
@@ -75,6 +77,16 @@ class CreditAgreementViewSet(
             'url': url,
             'minio_object_name': object_name
         })
+
+    @action(detail=False, methods=['get'])
+    def model_year_reports(self, request):
+        user = self.request.user
+        if user.is_government:
+            model_year_reports = ModelYearReport.objects.filter(validation_status='ASSESSED').order_by('model_year_id', 'organization_name')
+            serializer = ModelYearReportsSerializer(model_year_reports, many=True)
+            return Response(serializer.data)
+        return Response({})
+
 
     @action(detail=False, methods=['get'])
     def transaction_types(self, request):

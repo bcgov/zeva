@@ -187,6 +187,18 @@ class ModelYearReportSerializer(ModelSerializer):
             'update_timestamp',
         )
 
+class ModelYearReportsSerializer(ModelSerializer):
+    validation_status = EnumField(ModelYearReportStatuses)
+    model_year = SlugRelatedField(
+        slug_field='name',
+        queryset=ModelYear.objects.all()
+    )
+
+    class Meta:
+        model = ModelYearReport
+        fields = (
+            'organization_name', 'model_year', 'validation_status', 'id', 'organization_id'
+        )
 
 class ModelYearReportListSerializer(
         ModelSerializer, EnumSupportSerializerMixin

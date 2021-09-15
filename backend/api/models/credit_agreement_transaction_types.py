@@ -8,3 +8,5 @@ class CreditAgreementTransactionTypes(Enum):
     ADMINISTRATIVE_CREDIT_ALLOCATION = 'Administrative Credit Allocation'
     ADMINISTRATIVE_CREDIT_REDUCTION = 'Administrative Credit Reduction'
     AUTOMATIC_ADMINISTRATIVE_PENALTY = 'Automatic Administrative Penalty'
+    REASSESSMENT_ALLOCATION = 'Reassessment Allocation'
+    REASSESSMENT_REDUCTION = 'Reassessment Reduction'
