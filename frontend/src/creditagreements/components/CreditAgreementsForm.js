@@ -49,6 +49,7 @@ const CreditAgreementsForm = (props) => {
        agreementDetails.transactionType === 'Reassessment Reduction')) {
         supplierReports = modelYearReports.map((each) => (each.organizationId == parseInt(agreementDetails.vehicleSupplier) ? each : {}));
      }
+     return supplierReports;
     }
   
 
@@ -180,9 +181,8 @@ const CreditAgreementsForm = (props) => {
             </div>
             {displayModelYear &&
               <div className="credit-agreement-form-row">
-                {modelYearValues()}
                 <FormDropdown
-                  dropdownData={supplierReports}
+                  dropdownData={modelYearValues()}
                   dropdownName="Model Year"
                   handleInputChange={(event) => {
                     handleChangeDetails(event.target.value, 'modelYearReportId');
