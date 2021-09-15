@@ -140,6 +140,7 @@ class ModelYearReportSupplementalSupplierSerializer(ModelSerializer):
             'category', 'value'
         )
 
+
 class SupplementalReportAssessmentSerializer(
         ModelSerializer
 ):

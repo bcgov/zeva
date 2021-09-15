@@ -270,14 +270,14 @@ const SupplementaryDetailsPage = (props) => {
                 <div>
                   {['RECOMMENDED'].indexOf(details.status) < 0 && (
                   <>
-                    {radioDescriptions.map((each) => (
+                    {radioDescriptions && radioDescriptions.map((each) => (
                       (each.displayOrder === 0) && showDescription(each)
                     ))}
                     <div className="text-blue mt-3 ml-3 mb-1">
                       &nbsp;&nbsp; {details.assessmentData.legalName} has not complied with section 10 (2) of the
                       Zero-Emission Vehicles Act for the {details.assessmentData.modelYear} adjustment period.
                     </div>
-                    {radioDescriptions.map((each) => (
+                    {radioDescriptions && radioDescriptions.map((each) => (
                       (each.displayOrder > 0) && showDescription(each)
                     ))}
                     <label className="d-inline" htmlFor="penalty-radio">
@@ -369,7 +369,7 @@ const SupplementaryDetailsPage = (props) => {
               {/* {((details.status === 'SUBMITTED' && user.isGovernment) || (details.status === 'DRAFT')) && ( */}
               <Button
                 buttonType="save"
-                action={() => handleSubmit('')}
+                action={() => handleSubmit(details.status)}
               />
               {/* )} */}
               {analystAction && (details.status !== 'RECOMMENDED' || details.status === 'RETURNED') && (
