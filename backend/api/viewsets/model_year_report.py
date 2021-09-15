@@ -447,11 +447,19 @@ class ModelYearReportViewset(
 
         if report.supplemental is None:
             serializer = SupplementalReportAssessmentSerializer(
-                None, context={'request': request}
+                0, context={'request': request}
             )
         else:
+            supplemental_id = request.GET.get(
+                'supplemental_id',
+                None
+            )
+
+            if not supplemental_id:
+                supplemental_id = report.supplemental.id
+
             serializer = SupplementalReportAssessmentSerializer(
-                report.supplemental.id, context={'request': request}
+                supplemental_id, context={'request': request}
             )
         return Response(serializer.data)
 
