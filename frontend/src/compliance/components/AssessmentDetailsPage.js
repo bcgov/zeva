@@ -2,6 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import parse from 'html-react-parser';
+import moment from 'moment-timezone';
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
 import history from '../../app/History';
@@ -46,6 +47,7 @@ const AssessmentDetailsPage = (props) => {
     deductions,
     updatedBalances,
   } = props;
+  console.log(noaHistory);
   const formattedPenalty = formatNumeric(details.assessment.assessmentPenalty, 0);
   const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, details.organization.name).replace(/{modelYear}/g, reportYear).replace(/{penalty}/g, `$${formattedPenalty} CAD`) : '';
   const disabledInputs = false;
@@ -127,10 +129,28 @@ const AssessmentDetailsPage = (props) => {
             />
             )}
           </div>
-          {noaHistory
+          {noaHistory // add condition to check if its reassessment/supplemental has been submitted
           && (
-          <div className="m-0">
-            Model Year Report Assessment History
+          <div className="m-0 p-4">
+            <h3>
+              Model Year Report Assessment History
+            </h3>
+            <div className="grey-border-area p-3 comment-box mt-2">
+              {noaHistory.map((item) => {
+                let historyTypeTitle;
+                if (item.validationStatus === 'ASSESSED') {
+                  historyTypeTitle = 'Assessment';
+                  if (item.validationStatus === 'REASSESSED') {
+                    historyTypeTitle = 'Reassessment';
+                  }
+                }
+                return (
+                  <div className="font-weight-bold text-blue text-underline" key={item.id}>
+                    &bull; Notice of {historyTypeTitle} {moment(item.updateTimestamp).format('MMM D, YYYY')}
+                  </div>
+                );
+              })}
+            </div>
           </div>
           )}
           {user.isGovernment

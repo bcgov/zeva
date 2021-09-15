@@ -200,7 +200,13 @@ class ModelYearReportViewset(
         report = get_object_or_404(queryset, pk=pk)
         # get model year report where id matches and where status is Assessed or Reassessed, along with date
         report_serializer = ModelYearReportNoaSerializer(report, context={'request': request})
-        # get supplementary table, match model year report id, get status, update timestamp and user
+        if report_serializer.data:
+            # serializer has returned with some records that are assessed or reassessed
+            # get supplementary table, match model year report id, get status, update timestamp and user
+            print(pk)
+            if report.supplemental:
+                print('Supplemental!')
+
         return Response(report_serializer.data)
 
     @action(detail=True)

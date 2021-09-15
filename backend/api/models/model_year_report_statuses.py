@@ -8,3 +8,4 @@ class ModelYearReportStatuses(Enum):
     RECOMMENDED = 'RECOMMENDED'
     RETURNED = 'RETURNED'
     ASSESSED = 'ASSESSED'
+    REASSESSED = 'REASSESSED'
