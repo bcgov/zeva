@@ -350,13 +350,13 @@ const AssessmentContainer = (props) => {
       if (analystAction) {
         data.penalty = details.assessment.assessmentPenalty;
         data.description = details.assessment.decision.id;
-        if (status === 'DRAFT'){
+        if (status === 'DRAFT') {
           data.removeConfirmation = true;
         }
       }
 
       axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then(() => {
-        if(status ==='DRAFT' && analystAction){
+        if (status === 'DRAFT' && analystAction) {
           history.push(ROUTES_COMPLIANCE.REPORTS);
         } else {
           history.push(ROUTES_COMPLIANCE.REPORTS);

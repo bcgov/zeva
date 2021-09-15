@@ -140,6 +140,10 @@ class Router extends Component {
           <ErrorHandler statusCode={statusCode}>
             <Switch>
               <Route
+                path={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS}
+                render={() => <SupplementaryContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
                 path={ROUTES_SUPPLEMENTARY.CREATE}
                 render={() => <SupplementaryContainer keycloak={keycloak} user={user} />}
               />

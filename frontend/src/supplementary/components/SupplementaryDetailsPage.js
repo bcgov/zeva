@@ -57,7 +57,7 @@ const SupplementaryDetailsPage = (props) => {
   const creditReductionSelection = details.assessmentData && details.assessmentData.creditReductionSelection;
   const newLdvSales = newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
 
-  const formattedPenalty = formatNumeric(details.assessment.assessmentPenalty, 0);
+  const formattedPenalty = details.assessment ? formatNumeric(details.assessment.assessmentPenalty, 0) : 0;
   const assessmentDecision = supplementaryAssessmentData.supplementaryAssessment.decision && supplementaryAssessmentData.supplementaryAssessment.decision.description ? supplementaryAssessmentData.supplementaryAssessment.decision.description.replace(/{user.organization.name}/g, details.assessmentData.legalName).replace(/{modelYear}/g, details.assessmentData.modelYear).replace(/{penalty}/g, `$${formattedPenalty} CAD`) : '';
   const showDescription = (each) => (
     <div className="mb-3" key={each.id}>

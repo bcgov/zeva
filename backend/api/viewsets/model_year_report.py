@@ -53,7 +53,9 @@ from api.models.signing_authority_assertion import SigningAuthorityAssertion
 from api.models.supplemental_report_statuses import SupplementalReportStatuses
 from api.models.supplemental_report_assessment import SupplementalReportAssessment
 from api.models.supplemental_report_assessment_comment import SupplementalReportAssessmentComment
+from api.models.user_profile import UserProfile
 from api.serializers.model_year_report_supplemental import SupplementalReportAssessmentSerializer
+
 
 class ModelYearReportViewset(
         AuditableMixin, viewsets.GenericViewSet,
@@ -413,7 +415,12 @@ class ModelYearReportViewset(
     def supplemental(self, request, pk):
         report = get_object_or_404(ModelYearReport, pk=pk)
 
-        data = report.supplemental
+        supplemental_id = request.GET.get('supplemental_id', None)
+
+        if supplemental_id:
+            data = report.get_supplemental(supplemental_id)
+        else:
+            data = report.supplemental
 
         if not data:
             data = SupplementalReport()
@@ -433,14 +440,19 @@ class ModelYearReportViewset(
             'url': url,
             'minio_object_name': object_name
         })
+
     @action(detail=True, methods=['get'])
     def supplemental_assessment(self, request, pk):
         report = get_object_or_404(ModelYearReport, pk=pk)
 
         if report.supplemental is None:
-            return Response(None)
-
-        serializer = SupplementalReportAssessmentSerializer(report.supplemental.id, context={'request': request})
+            serializer = SupplementalReportAssessmentSerializer(
+                None, context={'request': request}
+            )
+        else:
+            serializer = SupplementalReportAssessmentSerializer(
+                report.supplemental.id, context={'request': request}
+            )
         return Response(serializer.data)
 
     @action(detail=True, methods=['patch'])
@@ -449,12 +461,25 @@ class ModelYearReportViewset(
         validation_status = request.data.get('status')
         description = request.data.get('description')
 
-        supplemental_report_update = SupplementalReport.objects.filter(
-            id=report.supplemental.id
-        )
+        create_user = None
+        supplemental_id = None
 
         # update the existing supplemental if it exists
         if report.supplemental:
+            create_user = UserProfile.objects.filter(
+                username=report.supplemental.create_user
+            ).first()
+            supplemental_id = report.supplemental.id
+
+        if create_user and \
+            create_user.is_government == request.user.is_government:
+
+            # supplemental_report_update = SupplementalReport.objects.filter(
+            #     id=report.supplemental.id
+            # ).first()
+
+            # print(report.supplemental.create_user.is_government)
+
             if request.data.get('status') == SupplementalReportStatuses.DELETED:
                 SupplementalReportAttachment.objects.filter(
                     supplemental_report_id=report.supplemental.id).delete()
@@ -474,9 +499,9 @@ class ModelYearReportViewset(
                         status=200, content="Recommendation is required"
                     )
 
-                supplemental_report_update.update(
-                    status=validation_status)
-                supplemental_report_update.update(update_user=request.user.username)
+                report.supplemental.status = validation_status
+                report.supplemental.update_user = request.user.username
+                report.supplemental.save()
 
                 # check for if validation status is recommended
                 if validation_status == 'RECOMMENDED' or \
@@ -510,7 +535,8 @@ class ModelYearReportViewset(
             serializer.save(
                 model_year_report_id=report.id,
                 create_user=request.user.username,
-                update_user=request.user.username
+                update_user=request.user.username,
+                supplemental_id=supplemental_id
             )
         report = get_object_or_404(ModelYearReport, pk=pk)
         supplier_information = request.data.get('supplier_info')
