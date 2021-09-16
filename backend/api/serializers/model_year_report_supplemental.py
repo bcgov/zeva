@@ -1,3 +1,4 @@
+from django.core.exceptions import ImproperlyConfigured
 from enumfields.drf import EnumField
 from rest_framework.serializers import ModelSerializer, \
     SerializerMethodField, SlugRelatedField
@@ -47,6 +48,7 @@ class ModelYearReportSupplementalCreditActivitySerializer(ModelSerializer):
             'model_year'
         )
 
+
 class ModelYearReportSupplementalCommentSerializer(ModelSerializer):
     class Meta:
         model = SupplementalReportComment
@@ -56,6 +58,7 @@ class ModelYearReportSupplementalCommentSerializer(ModelSerializer):
         read_only_fields = (
             'id',
         )
+
 
 class SupplementalReportAssessmentCommentSerializer(ModelSerializer):
     """
@@ -79,6 +82,7 @@ class SupplementalReportAssessmentCommentSerializer(ModelSerializer):
         read_only_fields = (
             'id',
         )
+
 
 class ModelYearReportSupplementalAttachmentSerializer(ModelSerializer):
     """
@@ -110,7 +114,6 @@ class ModelYearReportSupplementalAttachmentSerializer(ModelSerializer):
         )
 
 
-
 class ModelYearReportSupplementalSales(ModelSerializer):
     zev_class = SlugRelatedField(
         slug_field='credit_class',
@@ -129,7 +132,8 @@ class ModelYearReportSupplementalSales(ModelSerializer):
         model = SupplementalReportSales
         fields = (
             'id', 'sales', 'make', 'model_name',
-            'range', 'zev_class', 'model_year', 'vehicle_zev_type','update_timestamp',
+            'range', 'zev_class', 'model_year', 'vehicle_zev_type',
+            'update_timestamp',
         )
 
 
@@ -160,7 +164,7 @@ class SupplementalReportAssessmentSerializer(
     def get_assessment(self, obj):
         assessment = SupplementalReportAssessment.objects.filter(
             supplemental_report_id=obj
-        ).first()            
+        ).first()
 
         if not assessment:
             return {
@@ -172,9 +176,12 @@ class SupplementalReportAssessmentSerializer(
             assessment.supplemental_report_assessment_description,
             read_only=True,
             )
-       
+
         return {
-            'decision': {'description': description_serializer.data['description'], 'id': description_serializer.data['id'] },
+            'decision': {
+                'description': description_serializer.data['description'],
+                'id': description_serializer.data['id']
+            },
             'penalty': assessment.penalty,
             'deficit': '',
             'in_compliance': ''
@@ -184,7 +191,7 @@ class SupplementalReportAssessmentSerializer(
         request = self.context.get('request')
         assessment_comment = SupplementalReportAssessmentComment.objects.filter(
             supplemental_report_id=obj
-            
+
         ).order_by('-create_timestamp')
         if not request.user.is_government:
             assessment_comment = SupplementalReportAssessmentComment.objects.filter(
@@ -271,7 +278,7 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
 
         address_queryset = ModelYearReportAddress.objects.filter(
             model_year_report_id=report.id
-         )
+        )
         address_serializer = OrganizationAddressSerializer(
             address_queryset, many=True
         )
@@ -311,5 +318,6 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         model = SupplementalReport
         fields = (
             'id', 'status', 'ldv_sales', 'credit_activity',
-            'assessment_data', 'zev_sales', 'supplier_information','attachments','from_supplier_comments'
+            'assessment_data', 'zev_sales', 'supplier_information',
+            'attachments', 'from_supplier_comments'
         )

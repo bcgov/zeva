@@ -120,7 +120,7 @@ class ModelYearReport(Auditable):
         if row:
             return row.ldv_sales
         return None
-        
+
     def get_ldv_sales_with_year(self, from_gov=False):
         row = ModelYearReportLDVSales.objects.filter(
             model_year_id=self.model_year_id,
