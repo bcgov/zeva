@@ -4,6 +4,8 @@ from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
+
+from auditable.views import AuditableMixin
 from api.models.model_year import ModelYear
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_confirmation import \
@@ -13,7 +15,40 @@ from api.models.model_year_report_make import ModelYearReportMake
 from api.models.model_year_report_ldv_sales import \
     ModelYearReportLDVSales
 from api.models.model_year_report_statuses import ModelYearReportStatuses
+from api.models.model_year_report_assessment_comment import \
+    ModelYearReportAssessmentComment
+from api.models.model_year_report_assessment import \
+    ModelYearReportAssessment
+from api.models.supplemental_report_sales import \
+    SupplementalReportSales
+from api.models.supplemental_report_supplier_information import \
+    SupplementalReportSupplierInformation
+from api.models.supplemental_report_credit_activity import \
+    SupplementalReportCreditActivity
+from api.models.supplemental_report_attachment import \
+    SupplementalReportAttachment
+from api.models.supplemental_report import SupplementalReport
+from api.models.model_year_report_vehicle import ModelYearReportVehicle
+from api.models.supplemental_report_comment import \
+    SupplementalReportComment
+from api.models.signing_authority_assertion import \
+    SigningAuthorityAssertion
+from api.models.supplemental_report_history import \
+    SupplementalReportHistory
+from api.models.supplemental_report_statuses import \
+    SupplementalReportStatuses
+from api.models.supplemental_report_assessment import \
+    SupplementalReportAssessment
+from api.models.supplemental_report_assessment_comment import \
+    SupplementalReportAssessmentComment
+from api.models.user_profile import UserProfile
 from api.permissions.model_year_report import ModelYearReportPermissions
+from api.services.minio import minio_put_object, minio_remove_object
+from api.services.model_year_report import \
+    get_model_year_report_statuses, adjust_credits
+from api.services.send_email import notifications_model_year_report
+from api.serializers.organization_ldv_sales import \
+    OrganizationLDVSalesSerializer
 from api.serializers.model_year_report import \
     ModelYearReportSerializer, ModelYearReportListSerializer, \
     ModelYearReportSaveSerializer
@@ -26,35 +61,10 @@ from api.serializers.organization_address import OrganizationAddressSerializer
 from api.serializers.vehicle import ModelYearSerializer
 from api.serializers.model_year_report_assessment import \
     ModelYearReportAssessmentSerializer
-from api.models.model_year_report_assessment_comment import \
-    ModelYearReportAssessmentComment
-from api.models.model_year_report_assessment import \
-    ModelYearReportAssessment
-from api.services.model_year_report import \
-    get_model_year_report_statuses, adjust_credits
-from api.serializers.organization_ldv_sales import \
-    OrganizationLDVSalesSerializer
-from auditable.views import AuditableMixin
-from api.services.send_email import notifications_model_year_report
 from api.serializers.model_year_report_supplemental import \
-    ModelYearReportSupplementalSerializer, ModelYearReportSupplementalSupplierSerializer
-from api.models.supplemental_report_sales import \
-    SupplementalReportSales
-from api.models.supplemental_report_supplier_information import SupplementalReportSupplierInformation
-from api.models.supplemental_report_credit_activity import \
-    SupplementalReportCreditActivity
-from api.services.minio import minio_put_object
-from api.services.minio import minio_remove_object
-from api.models.supplemental_report_attachment import SupplementalReportAttachment
-from api.models.supplemental_report import SupplementalReport
-from api.models.model_year_report_vehicle import ModelYearReportVehicle
-from api.models.supplemental_report_comment import SupplementalReportComment
-from api.models.signing_authority_assertion import SigningAuthorityAssertion
-from api.models.supplemental_report_statuses import SupplementalReportStatuses
-from api.models.supplemental_report_assessment import SupplementalReportAssessment
-from api.models.supplemental_report_assessment_comment import SupplementalReportAssessmentComment
-from api.models.user_profile import UserProfile
-from api.serializers.model_year_report_supplemental import SupplementalReportAssessmentSerializer
+    ModelYearReportSupplementalSerializer
+from api.serializers.model_year_report_supplemental import \
+    SupplementalReportAssessmentSerializer
 
 
 class ModelYearReportViewset(
@@ -116,7 +126,7 @@ class ModelYearReportViewset(
         if not confirmation and not summary:
             model_year = ModelYearSerializer(report.model_year)
             model_year_int = int(model_year.data['name'])
-           
+
             addresses = OrganizationAddressSerializer(
                 request.user.organization.organization_address, many=True
             )
@@ -184,8 +194,7 @@ class ModelYearReportViewset(
                 'confirmations': confirmations,
                 'ldv_sales': report.ldv_sales,
                 'statuses': get_model_year_report_statuses(report, request.user),
-                'ldv_sales_previous': ldv_sales_previous.data
-                if ldv_sales_previous else [],
+                'ldv_sales_previous': ldv_sales_previous.data if ldv_sales_previous else [],
                 'credit_reduction_selection': report.credit_reduction_selection
             })
 
@@ -200,15 +209,15 @@ class ModelYearReportViewset(
         queryset = self.get_queryset()
         report = get_object_or_404(queryset, pk=pk)
         supplier_makes_list = ModelYearReportMake.objects.filter(
-                model_year_report_id=report.id,
-                from_gov=False
-            ).values('make').distinct()
+            model_year_report_id=report.id,
+            from_gov=False
+        ).values('make').distinct()
 
         supplier_makes = ModelYearReportMakeSerializer(supplier_makes_list, many=True)
         gov_makes_list = ModelYearReportMake.objects.filter(
-                model_year_report_id=report.id,
-                from_gov=True
-            ).values('make').distinct()
+            model_year_report_id=report.id,
+            from_gov=True
+        ).values('make').distinct()
 
         gov_makes = ModelYearReportMakeSerializer(gov_makes_list, many=True)
         return Response({
@@ -222,7 +231,7 @@ class ModelYearReportViewset(
             model_year_report_id=pk,
             signing_authority_assertion__module="compliance_summary"
         ).values_list(
-                'signing_authority_assertion_id', flat=True
+            'signing_authority_assertion_id', flat=True
         )
 
         return Response({'confirmation': confirmation})
@@ -283,7 +292,7 @@ class ModelYearReportViewset(
 
             if validation_status == 'ASSESSED':
                 adjust_credits(model_year_report_id, request)
-            
+
             notifications_model_year_report(validation_status, request.user)
 
         if confirmations:
@@ -310,8 +319,8 @@ class ModelYearReportViewset(
 
         makes = request.data.get('makes', None)
         makes_delete = ModelYearReportMake.objects.filter(
-                from_gov=True
-            )
+            from_gov=True
+        )
         makes_delete.delete()
         report = get_object_or_404(ModelYearReport, pk=pk)
 
@@ -482,12 +491,6 @@ class ModelYearReportViewset(
         if create_user and \
             create_user.is_government == request.user.is_government:
 
-            # supplemental_report_update = SupplementalReport.objects.filter(
-            #     id=report.supplemental.id
-            # ).first()
-
-            # print(report.supplemental.create_user.is_government)
-
             if request.data.get('status') == SupplementalReportStatuses.DELETED:
                 SupplementalReportAttachment.objects.filter(
                     supplemental_report_id=report.supplemental.id).delete()
@@ -500,6 +503,7 @@ class ModelYearReportViewset(
                 SupplementalReport.objects.filter(
                     id=report.supplemental.id).delete()
                 return HttpResponse(status=200)
+
             if validation_status:
                 if validation_status == 'RECOMMENDED' and not description:
                     # returning a 200 to bypass the rest of the update
@@ -524,6 +528,14 @@ class ModelYearReportViewset(
                             'penalty': penalty
                         }
                     )
+
+                SupplementalReportHistory.objects.create(
+                    supplemental_report_id=supplemental_id,
+                    validation_status=validation_status,
+                    update_user=request.user.username,
+                    create_user=request.user.username,
+                )
+
             serializer = ModelYearReportSupplementalSerializer(
                 report.supplemental,
                 data=request.data
@@ -694,6 +706,5 @@ class ModelYearReportViewset(
                     create_user=request.user.username,
                     update_user=request.user.username
                 )
-
 
         return Response({'status': 'Saved'})

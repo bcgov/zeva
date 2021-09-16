@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
+
 import ROUTES_SUPPLEMENTARY from '../app/routes/SupplementaryReport';
 import SupplementaryDetailsPage from './components/SupplementaryDetailsPage';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import history from '../app/History';
+import CustomPropTypes from '../app/utilities/props';
 
 const SupplementaryContainer = (props) => {
   const { id, supplementaryId } = useParams();
@@ -18,14 +21,14 @@ const SupplementaryContainer = (props) => {
   const [deleteFiles, setDeleteFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
   const [newData, setNewData] = useState({ zevSales: {}, creditActivity: [] });
-  let [obligationDetails, setObligationDetails] = useState({});
+  let [obligationDetails, setObligationDetails] = useState([]);
   const [ldvSales, setLdvSales] = useState();
   const [ratios, setRatios] = useState();
   const [newBalances, setNewBalances] = useState({});
   const [commentArray, setCommentArray] = useState({});
   const [idirComment, setIdirComment] = useState([]);
   const [bceidComment, setBceidComment] = useState([]);
-  const [supplementaryAssessmentData, setSupplementaryAssessmentData] = useState([]);
+  const [supplementaryAssessmentData, setSupplementaryAssessmentData] = useState({});
   const [radioDescriptions, setRadioDescriptions] = useState([{ id: 0, description: '' }]);
 
   const analystAction = user.isGovernment
@@ -449,4 +452,15 @@ const SupplementaryContainer = (props) => {
     />
   );
 };
+
+SupplementaryContainer.defaultProps = {
+  reassessment: false,
+};
+
+SupplementaryContainer.propTypes = {
+  keycloak: CustomPropTypes.keycloak.isRequired,
+  reassessment: PropTypes.bool,
+  user: CustomPropTypes.user.isRequired,
+};
+
 export default SupplementaryContainer;
