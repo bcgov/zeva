@@ -67,6 +67,17 @@
   }
 }
 #assessment-details {
+  .main-list-item {
+    font-weight: bold;
+    color: $default-text-blue;
+    text-decoration: underline;
+  };
+  .sub-list-item {
+    list-style-type: circle;
+    margin-left: 1rem;
+    color: $default-text-blue;
+    text-decoration: underline;
+  }
   .not-in-compliance {
     background-color: #f2dede;
   }

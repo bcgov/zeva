@@ -2,6 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import parse from 'html-react-parser';
+import moment from 'moment-timezone';
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
 import history from '../../app/History';
@@ -27,6 +28,7 @@ const AssessmentDetailsPage = (props) => {
     handleCommentChangeIdir,
     loading,
     makes,
+    noaHistory,
     reportYear,
     radioDescriptions,
     statuses,
@@ -95,7 +97,23 @@ const AssessmentDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
-
+  const getStatus = (item) => {
+    if (item.status === 'DRAFT') {
+      return `Supplementary report saved ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
+    }
+    if (item.status === 'SUBMITTED') {
+      if (user.isGovernment) {
+        return `Supplementary report signed and submitted ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
+      }
+      return `Supplementary report signed and submitted to the Government of B.C. ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
+    }
+    if (item.status === 'RECOMMENDED') {
+      return `Supplementary report recommended ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
+    }
+    if (item.status === 'ASSESSED') {
+      return `Notice of Reassessment ${moment(item.updateTimestamp).format('MMM D, YYYY')}`;
+    }
+  };
   const getClassDescriptions = (_supplierClass) => {
     switch (_supplierClass) {
       case 'L':
@@ -126,6 +144,34 @@ const AssessmentDetailsPage = (props) => {
             />
             )}
           </div>
+          {Object.keys(noaHistory).length > 0
+          && (
+          <div className="m-0 p-4">
+            <h3>
+              Model Year Report Assessment History
+            </h3>
+            <div className="grey-border-area p-3 comment-box mt-2">
+              <ul>
+                {noaHistory.assessment
+              && (
+              <li className="main-list-item">
+                Notice of Assessment {moment(noaHistory.assessment.updateTimestamp).format('MMM D, YYYY')}
+                {noaHistory.supplemental ? <span className="text-red"> Superseded</span> : ''}
+              </li>
+              )}
+                {noaHistory.supplemental
+              && (
+                noaHistory.supplemental.map((item) => (
+                  <li className={item.status === 'ASSESSED' ? 'main-list-item' : 'sub-list-item'}>
+                    {getStatus(item)}
+
+                  </li>
+                ))
+              )}
+              </ul>
+            </div>
+          </div>
+          )}
           {user.isGovernment
           && (
             <>
@@ -500,5 +546,6 @@ AssessmentDetailsPage.propTypes = {
   unspecifiedReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   deductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   updatedBalances: PropTypes.shape().isRequired,
+  noaHistory: PropTypes.shape().isRequired,
 };
 export default AssessmentDetailsPage;

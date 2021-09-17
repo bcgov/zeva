@@ -5,7 +5,7 @@ from django.db import models
 
 from auditable.models import Auditable
 from enumfields import EnumField
-from api.models.supplemental_report_statuses import SupplementalReportStatuses
+from api.models.model_year_report_statuses import ModelYearReportStatuses
 
 
 class SupplementalReport(Auditable):
@@ -24,13 +24,13 @@ class SupplementalReport(Auditable):
         db_comment="Contains the LDV sales/leases data based on supplemental report."
     )
     status = EnumField(
-        SupplementalReportStatuses,
+        ModelYearReportStatuses,
         max_length=20,
         null=False,
-        default=SupplementalReportStatuses.DRAFT,
+        default=ModelYearReportStatuses.DRAFT,
         db_comment="The validation status of this supplemental report."
                    "Valid statuses: {statuses}".format(
-                       statuses=[c.name for c in SupplementalReportStatuses]
+                       statuses=[c.name for c in ModelYearReportStatuses]
                    )
     )
     supplemental_id = models.IntegerField(

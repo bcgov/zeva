@@ -7,4 +7,5 @@ class SupplementalReportStatuses(Enum):
     SUBMITTED = 'SUBMITTED'
     RECOMMENDED = 'RECOMMENDED'
     RETURNED = 'RETURNED'
-    DELETED = 'DELETED'
+    ASSESSED = 'ASSESSED'
+    REASSESSED = 'REASSESSED'

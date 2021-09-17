@@ -25,6 +25,7 @@ const COMPLIANCE = {
   YEARS: `${API_BASE_PATH}/reports/years`,
   MAKES: `${API_BASE_PATH}/reports/:id/makes`,
   SUPPLEMENTAL_CREATE: `${API_BASE_PATH}/reports/:id/supplemental_save`,
+  NOA_HISTORY: `${API_BASE_PATH}/reports/:id/noa_history`,
 };
 
 export default COMPLIANCE;

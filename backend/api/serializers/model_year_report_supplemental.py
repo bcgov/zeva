@@ -5,7 +5,6 @@ from rest_framework.serializers import ModelSerializer, \
 
 from api.models.supplemental_report import SupplementalReport
 from api.models.supplemental_report_sales import SupplementalReportSales
-from api.models.supplemental_report_statuses import SupplementalReportStatuses
 from api.models.model_year_report_address import ModelYearReportAddress
 from api.serializers.organization_address import OrganizationAddressSerializer
 from api.models.model_year_report import ModelYearReport
@@ -14,6 +13,7 @@ from api.models.supplemental_report_credit_activity import \
     SupplementalReportCreditActivity
 from api.models.model_year_report_vehicle import ModelYearReportVehicle
 from api.models.supplemental_report_attachment import SupplementalReportAttachment
+from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.serializers.model_year_report_vehicle import ModelYearReportVehicleSerializer
 from api.models.model_year_report_assessment_descriptions import ModelYearReportAssessmentDescriptions
 from api.serializers.model_year_report_assessment import ModelYearReportAssessmentDescriptionsSerializer
@@ -214,7 +214,7 @@ class SupplementalReportAssessmentSerializer(
 
 
 class ModelYearReportSupplementalSerializer(ModelSerializer):
-    status = EnumField(SupplementalReportStatuses)
+    status = EnumField(ModelYearReportStatuses)
     credit_activity = SerializerMethodField()
     supplier_information = SerializerMethodField()
     assessment_data = SerializerMethodField()
