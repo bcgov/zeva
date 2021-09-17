@@ -156,7 +156,7 @@ const AssessmentDetailsPage = (props) => {
               && (
               <li className="main-list-item">
                 Notice of Assessment {moment(noaHistory.assessment.updateTimestamp).format('MMM D, YYYY')}
-                {noaHistory.supplemental ? <span className="text-red"> Superceded</span> : ''}
+                {noaHistory.supplemental ? <span className="text-red"> Superseded</span> : ''}
               </li>
               )}
                 {noaHistory.supplemental

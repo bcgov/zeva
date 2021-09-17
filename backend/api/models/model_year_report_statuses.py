@@ -9,3 +9,4 @@ class ModelYearReportStatuses(Enum):
     RETURNED = 'RETURNED'
     ASSESSED = 'ASSESSED'
     REASSESSED = 'REASSESSED'
+    DELETED = 'DELETED'
