@@ -3,6 +3,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const SriPlugin = require('webpack-subresource-integrity');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 require('dotenv').config();
 
 const packageJson = require('./package.json');
@@ -99,6 +100,11 @@ const config = {
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[id].css',
+    }),
+    new CopyWebpackPlugin({
+      patterns: [{
+        from: 'static',
+      }],
     }),
     new Webpack.HotModuleReplacementPlugin(),
     new Webpack.DefinePlugin({
