@@ -1,8 +1,13 @@
 from rest_framework.serializers import ModelSerializer, \
     SerializerMethodField, SlugRelatedField
+from enumfields.drf import EnumField
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_history import ModelYearReportHistory
 from api.models.model_year_report_statuses import ModelYearReportStatuses
+from api.models.supplemental_report import SupplementalReport
+from api.models.supplemental_report_statuses import SupplementalReportStatuses
+from api.models.user_profile import UserProfile
+from api.serializers.user import MemberSerializer, UserSerializer
 
 
 class ModelYearReportNoaSerializer(ModelSerializer):
@@ -11,7 +16,6 @@ class ModelYearReportNoaSerializer(ModelSerializer):
     def get_validation_status(self, obj):
         if obj.validation_status in [
             ModelYearReportStatuses.ASSESSED,
-            ModelYearReportStatuses.REASSESSED
         ]:
             return obj.get_validation_status_display()
 
@@ -19,4 +23,28 @@ class ModelYearReportNoaSerializer(ModelSerializer):
         model = ModelYearReportHistory
         fields = (
             'update_timestamp', 'validation_status', 'id',
+        )
+
+
+class SupplementalNOASerializer(ModelSerializer):
+    status = SerializerMethodField()
+    update_user = SerializerMethodField()
+
+    def get_status(self, obj):
+        request = self.context.get('request')
+        if not request.user.is_government:
+            if obj.status.value == 'RECOMMEND_APPROVAL':
+                return 'SUBMITTED'
+        return obj.status.value
+
+    def get_update_user(self, obj):
+        user = UserProfile.objects.filter(username=obj.update_user).first()
+        if user is None:
+            return obj.create_user
+        return user.display_name
+
+    class Meta:
+        model = SupplementalReport
+        fields = (
+            'update_timestamp', 'status', 'id', 'update_user'
         )

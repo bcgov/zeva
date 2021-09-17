@@ -1,4 +1,5 @@
 import uuid
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from rest_framework.response import Response
@@ -55,8 +56,8 @@ from api.models.supplemental_report_assessment import SupplementalReportAssessme
 from api.models.supplemental_report_assessment_comment import SupplementalReportAssessmentComment
 from api.models.user_profile import UserProfile
 from api.serializers.model_year_report_supplemental import SupplementalReportAssessmentSerializer
-from api.serializers.model_year_report_noa import ModelYearReportNoaSerializer
-
+from api.serializers.model_year_report_noa import ModelYearReportNoaSerializer, SupplementalNOASerializer
+from api.models.organization import Organization
 
 class ModelYearReportViewset(
         AuditableMixin, viewsets.GenericViewSet,
@@ -202,14 +203,48 @@ class ModelYearReportViewset(
         report = get_object_or_404(queryset, pk=pk)
         # get model year report where id matches and where status is Assessed or Reassessed, along with date
         report_serializer = ModelYearReportNoaSerializer(report, context={'request': request})
+        report_data = report_serializer.data
+        report_dict = {}
+        gov_org = Organization.objects.filter(is_government=True).first()
+
         if report_serializer.data:
             # serializer has returned with some records that are assessed or reassessed
-            # get supplementary table, match model year report id, get status, update timestamp and user
-            print(pk)
+            # get supplementary table, match model year report id, only show drafts created by own org
             if report.supplemental:
-                print('Supplemental!')
+                SubQuery = UserProfile.objects.filter(organization__is_government=True).values_list('username', flat=True)
+                if request.user.is_government:
+                    supplemental_report = SupplementalReport.objects.filter(
+                        id=report.supplemental.id,
+                        status__in=[
+                            SupplementalReportStatuses.SUBMITTED,
+                            SupplementalReportStatuses.DRAFT,
+                            SupplementalReportStatuses.RECOMMENDED,
+                            SupplementalReportStatuses.REASSESSED,
+                            SupplementalReportStatuses.RETURNED,
+                            ]
+                    ).exclude(Q(~Q(create_user__in=SubQuery) & (Q(status=SupplementalReportStatuses.DRAFT)))).order_by('update_timestamp')
+                else:
+                    supplemental_report = SupplementalReport.objects.filter(
+                        id=report.supplemental.id,
+                        status__in=[
+                            SupplementalReportStatuses.SUBMITTED,
+                            SupplementalReportStatuses.DRAFT,
+                            SupplementalReportStatuses.RECOMMENDED,
+                            SupplementalReportStatuses.REASSESSED,
+                            SupplementalReportStatuses.RETURNED,
+                            ]
+                    ).exclude(Q(Q(create_user__in=SubQuery) & (Q(status=SupplementalReportStatuses.DRAFT)))).order_by('update_timestamp')
 
-        return Response(report_serializer.data)
+                supplemental_serializer = SupplementalNOASerializer(supplemental_report, many=True, context={'request': request})
+                supplemental_data = supplemental_serializer.data
+                ## supplemental needs to be ordered by date
+                ## frontend will iterate down array.. first submitted, then recommended..
+                ## once a supplemental report is assessed, we will create a row for reassessment on the frontend with that date
+                report_dict = {
+                    'assessment': report_data,
+                    'supplemental': supplemental_data
+                    }
+        return Response(report_dict) 
 
     @action(detail=True)
     def makes(self, request, pk=None):

@@ -98,7 +98,21 @@ const AssessmentDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
+  const getStatus = (item) => {
+    if (item.status === 'DRAFT') {
+      return `Supplementary report saved ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
+    }
+    if (item.status === 'SUBMITTED' ) {
+      return `Supplementary report signed and submitted ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
+    }
+    if (item.status === 'RECOMMENDED') {
+      return `Supplementary report recommended ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
+    }
+    if (item.status === 'REASSESSED') {
+      return `Notice of Reassessment ${moment(item.updateTimestamp).format('MMM D, YYYY')}`;
+    }
 
+  };
   const getClassDescriptions = (_supplierClass) => {
     switch (_supplierClass) {
       case 'L':
@@ -129,27 +143,27 @@ const AssessmentDetailsPage = (props) => {
             />
             )}
           </div>
-          {noaHistory // add condition to check if its reassessment/supplemental has been submitted
+          {Object.keys(noaHistory).length > 0
           && (
           <div className="m-0 p-4">
             <h3>
               Model Year Report Assessment History
             </h3>
             <div className="grey-border-area p-3 comment-box mt-2">
-              {noaHistory.map((item) => {
-                let historyTypeTitle;
-                if (item.validationStatus === 'ASSESSED') {
-                  historyTypeTitle = 'Assessment';
-                  if (item.validationStatus === 'REASSESSED') {
-                    historyTypeTitle = 'Reassessment';
-                  }
-                }
-                return (
-                  <div className="font-weight-bold text-blue text-underline" key={item.id}>
-                    &bull; Notice of {historyTypeTitle} {moment(item.updateTimestamp).format('MMM D, YYYY')}
-                  </div>
-                );
-              })}
+              <ul>
+                {noaHistory.assessment
+              && (
+              <li className="main-list-item"> Notice of Assessment {moment(noaHistory.assessment.updateTimestamp).format('MMM D, YYYY')}</li>
+              )}
+                {noaHistory.supplemental
+              && (
+                noaHistory.supplemental.map((item) => (
+                  <li className={item.status === 'REASSESSED' ? 'main-list-item' : 'sub-list-item'}>
+                    {getStatus(item)}
+                  </li>
+                ))
+              )}
+              </ul>
             </div>
           </div>
           )}
