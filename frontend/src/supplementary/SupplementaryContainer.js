@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
+
 import ROUTES_SUPPLEMENTARY from '../app/routes/SupplementaryReport';
 import SupplementaryDetailsPage from './components/SupplementaryDetailsPage';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
+import history from '../app/History';
+import CustomPropTypes from '../app/utilities/props';
 
 const SupplementaryContainer = (props) => {
   const { id, supplementaryId } = useParams();
@@ -17,14 +21,14 @@ const SupplementaryContainer = (props) => {
   const [deleteFiles, setDeleteFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
   const [newData, setNewData] = useState({ zevSales: {}, creditActivity: [] });
-  let [obligationDetails, setObligationDetails] = useState({});
+  let [obligationDetails, setObligationDetails] = useState([]);
   const [ldvSales, setLdvSales] = useState();
   const [ratios, setRatios] = useState();
   const [newBalances, setNewBalances] = useState({});
   const [commentArray, setCommentArray] = useState({});
   const [idirComment, setIdirComment] = useState([]);
   const [bceidComment, setBceidComment] = useState([]);
-  const [supplementaryAssessmentData, setSupplementaryAssessmentData] = useState([]);
+  const [supplementaryAssessmentData, setSupplementaryAssessmentData] = useState({});
   const [radioDescriptions, setRadioDescriptions] = useState([{ id: 0, description: '' }]);
 
   const analystAction = user.isGovernment
@@ -205,10 +209,6 @@ const SupplementaryContainer = (props) => {
   };
 
   const handleSubmit = (status) => {
-    const commentData = { fromGovtComment: bceidComment, director: false };
-    axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
-      console.log('bceid comment saved');
-    });
     const uploadPromises = handleUpload(id);
     Promise.all(uploadPromises).then((attachments) => {
       const evidenceAttachments = {};
@@ -229,6 +229,12 @@ const SupplementaryContainer = (props) => {
           data.description = supplementaryAssessmentData.supplementaryAssessment.decision.id;
         }
         axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data).then((response) => {
+          const { id: supplementalId } = response.data;
+          const commentData = { fromGovtComment: bceidComment, director: false };
+          axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
+            history.push(ROUTES_COMPLIANCE.REPORTS);
+            history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementalId));
+          });
         });
       }
     }).catch((e) => {
@@ -269,10 +275,10 @@ const SupplementaryContainer = (props) => {
     setLoading(true);
 
     axios.all([
-      axios.get(`${ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)}?supplemental_id=${supplementaryId}`),
+      axios.get(`${ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)}?supplemental_id=${supplementaryId || ''}`),
       axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)),
       axios.get(ROUTES_COMPLIANCE.RATIOS),
-      axios.get(ROUTES_SUPPLEMENTARY.ASSESSMENT.replace(':id', id)),
+      axios.get(`${ROUTES_SUPPLEMENTARY.ASSESSMENT.replace(':id', id)}?supplemental_id=${supplementaryId || ''}`),
     ]).then(axios.spread((response, complianceResponse, ratioResponse, assessmentResponse) => {
       if (response.data) {
         setDetails(response.data);
@@ -446,4 +452,15 @@ const SupplementaryContainer = (props) => {
     />
   );
 };
+
+SupplementaryContainer.defaultProps = {
+  reassessment: false,
+};
+
+SupplementaryContainer.propTypes = {
+  keycloak: CustomPropTypes.keycloak.isRequired,
+  reassessment: PropTypes.bool,
+  user: CustomPropTypes.user.isRequired,
+};
+
 export default SupplementaryContainer;

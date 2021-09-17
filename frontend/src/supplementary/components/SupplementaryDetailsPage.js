@@ -1,8 +1,11 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 import parse from 'html-react-parser';
+
 import Loading from '../../app/components/Loading';
+import Modal from '../../app/components/Modal';
 import SupplementaryAlert from './SupplementaryAlert';
 import Button from '../../app/components/Button';
 import ZevSales from './ZevSales';
@@ -12,46 +15,50 @@ import UploadEvidence from './UploadEvidence';
 import CommentInput from '../../app/components/CommentInput';
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import DisplayComment from '../../app/components/DisplayComment';
-import Comment from '../../app/components/Comment';
 import formatNumeric from '../../app/utilities/formatNumeric';
+import CustomPropTypes from '../../app/utilities/props';
 
 const SupplementaryDetailsPage = (props) => {
   const {
     addSalesRow,
+    analystAction,
     checkboxConfirmed,
     commentArray,
     deleteFiles,
-    analystAction,
-    directorAction,
     details,
+    directorAction,
     files,
+    handleAddIdirComment,
     handleCheckboxClick,
     handleCommentChange,
-    handleAddIdirComment,
-    handleCommentChangeIdir,
     handleCommentChangeBceid,
+    handleCommentChangeIdir,
     handleInputChange,
     handleSubmit,
     handleSupplementalChange,
     id,
+    isReassessment,
     ldvSales,
     loading,
     newBalances,
     newData,
     obligationDetails,
+    radioDescriptions,
     ratios,
     salesRows,
     setDeleteFiles,
-    setUploadFiles,
-    user,
-    radioDescriptions,
-    isReassessment,
-    supplementaryAssessmentData,
     setSupplementaryAssessmentData,
+    setUploadFiles,
+    supplementaryAssessmentData,
+    user,
   } = props;
+
   if (loading) {
     return <Loading />;
   }
+
+  const [showModal, setShowModal] = useState(false);
+  const [showModalDraft, setShowModalDraft] = useState(false);
   const reportYear = details.assessmentData && details.assessmentData.modelYear;
   const supplierClass = details.assessmentData && details.assessmentData.supplierClass[0];
   const creditReductionSelection = details.assessmentData && details.assessmentData.creditReductionSelection;
@@ -90,6 +97,47 @@ const SupplementaryDetailsPage = (props) => {
       )}
     </div>
   );
+
+  const modal = (
+    <Modal
+      cancelLabel="No"
+      confirmLabel="Yes"
+      handleCancel={() => { setShowModal(false); }}
+      handleSubmit={() => { setShowModal(false); handleSubmit('RECOMMENDED'); }}
+      modalClass="w-75"
+      showModal={showModal}
+      confirmClass="button primary"
+    >
+      <div className="my-3">
+        <h3>
+          {isReassessment
+            ? 'Are you sure you want to recommend this?'
+            : 'This will create a reassessment report from the supplementary report'}
+        </h3>
+      </div>
+    </Modal>
+  );
+
+  const modalDraft = (
+    <Modal
+      cancelLabel="No"
+      confirmLabel="Yes"
+      handleCancel={() => { setShowModalDraft(false); }}
+      handleSubmit={() => { setShowModalDraft(false); handleSubmit(details.status); }}
+      modalClass="w-75"
+      showModal={showModalDraft}
+      confirmClass="button primary"
+    >
+      <div className="my-3">
+        <h3>
+          {isReassessment
+            ? 'This will create a reassessment report'
+            : 'This will create a reassessment report from the supplementary report'}
+        </h3>
+      </div>
+    </Modal>
+  );
+
   let disabledRecommendBtn = false;
   let recommendTooltip = '';
 
@@ -270,14 +318,14 @@ const SupplementaryDetailsPage = (props) => {
                 <div>
                   {['RECOMMENDED'].indexOf(details.status) < 0 && (
                   <>
-                    {radioDescriptions.map((each) => (
+                    {radioDescriptions && radioDescriptions.map((each) => (
                       (each.displayOrder === 0) && showDescription(each)
                     ))}
                     <div className="text-blue mt-3 ml-3 mb-1">
                       &nbsp;&nbsp; {details.assessmentData.legalName} has not complied with section 10 (2) of the
                       Zero-Emission Vehicles Act for the {details.assessmentData.modelYear} adjustment period.
                     </div>
-                    {radioDescriptions.map((each) => (
+                    {radioDescriptions && radioDescriptions.map((each) => (
                       (each.displayOrder > 0) && showDescription(each)
                     ))}
                     <label className="d-inline" htmlFor="penalty-radio">
@@ -369,7 +417,9 @@ const SupplementaryDetailsPage = (props) => {
               {/* {((details.status === 'SUBMITTED' && user.isGovernment) || (details.status === 'DRAFT')) && ( */}
               <Button
                 buttonType="save"
-                action={() => handleSubmit('')}
+                action={() => {
+                  setShowModalDraft(true);
+                }}
               />
               {/* )} */}
               {analystAction && (details.status !== 'RECOMMENDED' || details.status === 'RETURNED') && (
@@ -380,7 +430,8 @@ const SupplementaryDetailsPage = (props) => {
                 optionalText="Recommend Reassessment"
                 disabled={disabledRecommendBtn}
                 action={() => {
-                  handleSubmit('RECOMMENDED');
+                  // handleSubmit('RECOMMENDED');
+                  setShowModal(true);
                 }}
               />
               )}
@@ -406,10 +457,57 @@ const SupplementaryDetailsPage = (props) => {
           </div>
         </div>
       </div>
+      {modal}
+      {modalDraft}
     </div>
   );
 };
 
-SupplementaryDetailsPage.propTypes = {};
+SupplementaryDetailsPage.defaultProps = {
+  isReassessment: undefined,
+  ldvSales: undefined,
+  obligationDetails: [],
+  ratios: {},
+};
+
+SupplementaryDetailsPage.propTypes = {
+  addSalesRow: PropTypes.func.isRequired,
+  analystAction: PropTypes.bool.isRequired,
+  checkboxConfirmed: PropTypes.bool.isRequired,
+  commentArray: PropTypes.shape().isRequired,
+  deleteFiles: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  details: PropTypes.shape().isRequired,
+  directorAction: PropTypes.bool.isRequired,
+  files: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  handleAddIdirComment: PropTypes.func.isRequired,
+  handleCheckboxClick: PropTypes.func.isRequired,
+  handleCommentChange: PropTypes.func.isRequired,
+  handleCommentChangeBceid: PropTypes.func.isRequired,
+  handleCommentChangeIdir: PropTypes.func.isRequired,
+  handleInputChange: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  handleSupplementalChange: PropTypes.func.isRequired,
+  id: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]).isRequired,
+  isReassessment: PropTypes.bool,
+  ldvSales: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]),
+  loading: PropTypes.bool.isRequired,
+  newBalances: PropTypes.shape().isRequired,
+  newData: PropTypes.shape().isRequired,
+  obligationDetails: PropTypes.arrayOf(PropTypes.shape()),
+  radioDescriptions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  ratios: PropTypes.shape(),
+  salesRows: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  setDeleteFiles: PropTypes.func.isRequired,
+  setSupplementaryAssessmentData: PropTypes.func.isRequired,
+  setUploadFiles: PropTypes.func.isRequired,
+  supplementaryAssessmentData: PropTypes.shape().isRequired,
+  user: CustomPropTypes.user.isRequired,
+};
 
 export default SupplementaryDetailsPage;
