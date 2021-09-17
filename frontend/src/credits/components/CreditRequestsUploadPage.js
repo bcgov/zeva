@@ -37,6 +37,7 @@ const CreditRequestsUploadPage = (props) => {
       setUploadNewExcel(checked);
     }
   };
+
   const downloadTemplate = (e) => {
     const element = e.target;
     const original = element.innerHTML;
@@ -45,6 +46,9 @@ const CreditRequestsUploadPage = (props) => {
       element.innerHTML = original;
     });
   };
+
+  const downloadSalesEvidenceTemplate = () => (window.open('/SalesEvidenceTemplate.docx'));
+
   return (
     <div id="sales-edit" className="page">
       <div className="row mt-3 mb-2">
@@ -130,18 +134,32 @@ const CreditRequestsUploadPage = (props) => {
       </div>
       {evidenceCheckbox
       && (
-      <FileDropArea
-        type="pdf"
-        errorMessage={evidenceErrorMessage}
-        files={uploadEvidenceFiles}
-        setErrorMessage={setEvidenceErrorMessage}
-        setUploadFiles={setEvidenceUploadFiles}
-        showProgressBars={showProgressBars}
-        progressBars={progressBars}
-        submission={submission}
-        evidenceDeleteList={evidenceDeleteList}
-        setEvidenceDeleteList={setEvidenceDeleteList}
-      />
+        <>
+          <div className="row">
+            <div className="col-12">
+              <div className="compact content p-3">
+                <Button
+                  buttonType="download"
+                  optionalText="Download Sales Evidence Template"
+                  action={(e) => { downloadSalesEvidenceTemplate(e); }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <FileDropArea
+            type="pdf"
+            errorMessage={evidenceErrorMessage}
+            files={uploadEvidenceFiles}
+            setErrorMessage={setEvidenceErrorMessage}
+            setUploadFiles={setEvidenceUploadFiles}
+            showProgressBars={showProgressBars}
+            progressBars={progressBars}
+            submission={submission}
+            evidenceDeleteList={evidenceDeleteList}
+            setEvidenceDeleteList={setEvidenceDeleteList}
+          />
+        </>
       )}
       <div className="action-bar">
         <span className="left-content">
