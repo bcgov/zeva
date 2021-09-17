@@ -47,7 +47,6 @@ const AssessmentDetailsPage = (props) => {
     deductions,
     updatedBalances,
   } = props;
-  console.log(noaHistory);
   const formattedPenalty = formatNumeric(details.assessment.assessmentPenalty, 0);
   const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, details.organization.name).replace(/{modelYear}/g, reportYear).replace(/{penalty}/g, `$${formattedPenalty} CAD`) : '';
   const disabledInputs = false;
@@ -102,8 +101,11 @@ const AssessmentDetailsPage = (props) => {
     if (item.status === 'DRAFT') {
       return `Supplementary report saved ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
     }
-    if (item.status === 'SUBMITTED' ) {
-      return `Supplementary report signed and submitted ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
+    if (item.status === 'SUBMITTED') {
+      if (user.isGovernment) {
+        return `Supplementary report signed and submitted ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
+      }
+      return `Supplementary report signed and submitted to the Government of B.C. ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
     }
     if (item.status === 'RECOMMENDED') {
       return `Supplementary report recommended ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
@@ -111,7 +113,6 @@ const AssessmentDetailsPage = (props) => {
     if (item.status === 'ASSESSED') {
       return `Notice of Reassessment ${moment(item.updateTimestamp).format('MMM D, YYYY')}`;
     }
-
   };
   const getClassDescriptions = (_supplierClass) => {
     switch (_supplierClass) {
@@ -153,13 +154,17 @@ const AssessmentDetailsPage = (props) => {
               <ul>
                 {noaHistory.assessment
               && (
-              <li className="main-list-item"> Notice of Assessment {moment(noaHistory.assessment.updateTimestamp).format('MMM D, YYYY')}</li>
+              <li className="main-list-item">
+                Notice of Assessment {moment(noaHistory.assessment.updateTimestamp).format('MMM D, YYYY')}
+                {noaHistory.supplemental ? <span className="text-red"> Superceded</span> : ''}
+              </li>
               )}
                 {noaHistory.supplemental
               && (
                 noaHistory.supplemental.map((item) => (
                   <li className={item.status === 'ASSESSED' ? 'main-list-item' : 'sub-list-item'}>
                     {getStatus(item)}
+
                   </li>
                 ))
               )}
@@ -541,5 +546,6 @@ AssessmentDetailsPage.propTypes = {
   unspecifiedReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   deductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   updatedBalances: PropTypes.shape().isRequired,
+  noaHistory: PropTypes.shape().isRequired,
 };
 export default AssessmentDetailsPage;
