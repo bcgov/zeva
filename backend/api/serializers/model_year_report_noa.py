@@ -5,7 +5,6 @@ from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_history import ModelYearReportHistory
 from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.models.supplemental_report import SupplementalReport
-from api.models.supplemental_report_statuses import SupplementalReportStatuses
 from api.models.user_profile import UserProfile
 from api.serializers.user import MemberSerializer, UserSerializer
 
@@ -33,9 +32,9 @@ class SupplementalNOASerializer(ModelSerializer):
     def get_status(self, obj):
         request = self.context.get('request')
         if not request.user.is_government:
-            if obj.status.value == 'RECOMMEND_APPROVAL':
+            if obj.validation_status.value == 'RECOMMENDED':
                 return 'SUBMITTED'
-        return obj.status.value
+        return obj.validation_status.value
 
     def get_update_user(self, obj):
         user = UserProfile.objects.filter(username=obj.update_user).first()

@@ -108,7 +108,7 @@ const AssessmentDetailsPage = (props) => {
     if (item.status === 'RECOMMENDED') {
       return `Supplementary report recommended ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
     }
-    if (item.status === 'REASSESSED') {
+    if (item.status === 'ASSESSED') {
       return `Notice of Reassessment ${moment(item.updateTimestamp).format('MMM D, YYYY')}`;
     }
 
@@ -158,7 +158,7 @@ const AssessmentDetailsPage = (props) => {
                 {noaHistory.supplemental
               && (
                 noaHistory.supplemental.map((item) => (
-                  <li className={item.status === 'REASSESSED' ? 'main-list-item' : 'sub-list-item'}>
+                  <li className={item.status === 'ASSESSED' ? 'main-list-item' : 'sub-list-item'}>
                     {getStatus(item)}
                   </li>
                 ))

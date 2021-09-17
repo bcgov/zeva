@@ -67,40 +67,6 @@ const AssessmentContainer = (props) => {
       ]).then(axios.spread(
         (reportDetailsResponse, ratioResponse, creditActivityResponse, assessmentResponse, noaHistoryResponse) => {
           setNoaHistory(noaHistoryResponse.data);
-          const testData = {
-            assessment: {
-              id: 26,
-              updateTimestamp: '2021-06-11T08:53:27.655201-07:00',
-              validationStatus: 'ASSESSED',
-            },
-            supplemental: [
-              {
-                id: 24,
-                status: 'DRAFT',
-                updateTimestamp: '2021-08-01T15:12:42.568503-07:00',
-                updateUser: 'Gov User',
-              }, {
-                id: 24,
-                status: 'SUBMITTED',
-                updateTimestamp: '2021-08-27T15:12:42.568503-07:00',
-                updateUser: 'Bob Boss',
-              },
-              {
-                id: 24,
-                status: 'RECOMMENDED',
-                updateTimestamp: '2021-08-28T15:12:42.568503-07:00',
-                updateUser: 'Gov User',
-              },
-              {
-                id: 24,
-                status: 'REASSESSED',
-                updateTimestamp: '2021-08-30T15:12:42.568503-07:00',
-                updateUser: 'Gov User',
-              },
-
-            ],
-          };
-          setNoaHistory(testData)
           const idirCommentArrayResponse = [];
           let bceidCommentResponse = {};
           const {

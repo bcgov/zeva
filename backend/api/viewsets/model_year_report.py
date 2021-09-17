@@ -36,8 +36,6 @@ from api.models.signing_authority_assertion import \
     SigningAuthorityAssertion
 from api.models.supplemental_report_history import \
     SupplementalReportHistory
-from api.models.supplemental_report_statuses import \
-    SupplementalReportStatuses
 from api.models.supplemental_report_assessment import \
     SupplementalReportAssessment
 from api.models.supplemental_report_assessment_comment import \
@@ -76,7 +74,6 @@ from api.models.supplemental_report import SupplementalReport
 from api.models.model_year_report_vehicle import ModelYearReportVehicle
 from api.models.supplemental_report_comment import SupplementalReportComment
 from api.models.signing_authority_assertion import SigningAuthorityAssertion
-from api.models.supplemental_report_statuses import SupplementalReportStatuses
 from api.models.supplemental_report_assessment import SupplementalReportAssessment
 from api.models.supplemental_report_assessment_comment import SupplementalReportAssessmentComment
 from api.models.user_profile import UserProfile
@@ -239,29 +236,33 @@ class ModelYearReportViewset(
             if report.supplemental:
                 SubQuery = UserProfile.objects.filter(organization__is_government=True).values_list('username', flat=True)
                 if request.user.is_government:
-                    supplemental_report = SupplementalReport.objects.filter(
-                        id=report.supplemental.id,
-                        status__in=[
-                            SupplementalReportStatuses.SUBMITTED,
-                            SupplementalReportStatuses.DRAFT,
-                            SupplementalReportStatuses.RECOMMENDED,
-                            # SupplementalReportStatuses.REASSESSED,
-                            SupplementalReportStatuses.RETURNED,
+                    supplemental_report = SupplementalReportHistory.objects.filter(
+                        supplemental_report_id=report.supplemental.id,
+                        validation_status__in=[
+                            ModelYearReportStatuses.SUBMITTED,
+                            ModelYearReportStatuses.DRAFT,
+                            ModelYearReportStatuses.RECOMMENDED,
+                            ModelYearReportStatuses.ASSESSED,
+                            ModelYearReportStatuses.REASSESSED,
+                            ModelYearReportStatuses.RETURNED,
                             ]
-                    ).exclude(Q(~Q(create_user__in=SubQuery) & (Q(status=SupplementalReportStatuses.DRAFT)))).order_by('update_timestamp')
+                    ).exclude(Q(~Q(create_user__in=SubQuery) & (Q(validation_status=ModelYearReportStatuses.DRAFT)))).order_by('update_timestamp')
+                
                 else:
-                    supplemental_report = SupplementalReport.objects.filter(
-                        id=report.supplemental.id,
-                        status__in=[
-                            SupplementalReportStatuses.SUBMITTED,
-                            SupplementalReportStatuses.DRAFT,
-                            SupplementalReportStatuses.RECOMMENDED,
-                            # SupplementalReportStatuses.REASSESSED,
-                            SupplementalReportStatuses.RETURNED,
-                            ]
-                    ).exclude(Q(Q(create_user__in=SubQuery) & (Q(status=SupplementalReportStatuses.DRAFT)))).order_by('update_timestamp')
+                    supplemental_report = SupplementalReportHistory.objects.filter(
+                        supplemental_report_id=report.supplemental.id,
+                        validation_status__in=[
+                            ModelYearReportStatuses.SUBMITTED,
+                            ModelYearReportStatuses.DRAFT,
+                            ModelYearReportStatuses.RECOMMENDED,
+                            ModelYearReportStatuses.ASSESSED,
+                            ModelYearReportStatuses.REASSESSED,
+                            ModelYearReportStatuses.RETURNED,
 
+                            ]
+                    ).exclude(Q(Q(create_user__in=SubQuery) & (Q(validation_status=ModelYearReportStatuses.DRAFT)))).order_by('update_timestamp')
                 supplemental_serializer = SupplementalNOASerializer(supplemental_report, many=True, context={'request': request})
+                
                 supplemental_data = supplemental_serializer.data
                 ## supplemental needs to be ordered by date
                 ## frontend will iterate down array.. first submitted, then recommended..
@@ -559,7 +560,7 @@ class ModelYearReportViewset(
         if create_user and \
             create_user.is_government == request.user.is_government:
 
-            if request.data.get('status') == SupplementalReportStatuses.DELETED:
+            if request.data.get('status') == ModelYearReportStatuses.DELETED:
                 SupplementalReportAttachment.objects.filter(
                     supplemental_report_id=report.supplemental.id).delete()
                 SupplementalReportSupplierInformation.objects.filter(
