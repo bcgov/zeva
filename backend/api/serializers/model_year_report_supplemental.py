@@ -221,6 +221,17 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
     zev_sales = SerializerMethodField()
     attachments = SerializerMethodField()
     from_supplier_comments = SerializerMethodField()
+    actual_status = SerializerMethodField()
+
+    def get_actual_status(self, obj):
+        latest_report = SupplementalReport.objects.filter(
+            model_year_report_id=obj.model_year_report_id
+        ).order_by('-update_timestamp').first()
+
+        if not latest_report:
+            return None
+
+        return latest_report.status.value
 
     def get_from_supplier_comments(self, obj):
         comments = SupplementalReportComment.objects.filter(
@@ -319,5 +330,5 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         fields = (
             'id', 'status', 'ldv_sales', 'credit_activity',
             'assessment_data', 'zev_sales', 'supplier_information',
-            'attachments', 'from_supplier_comments'
+            'attachments', 'from_supplier_comments', 'actual_status'
         )

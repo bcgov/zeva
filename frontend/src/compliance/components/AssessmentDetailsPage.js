@@ -146,12 +146,12 @@ const AssessmentDetailsPage = (props) => {
           </div>
           {Object.keys(noaHistory).length > 0
           && (
-          <div className="m-0 p-4">
+          <div className="m-0">
             <h3>
               Model Year Report Assessment History
             </h3>
             <div className="grey-border-area p-3 comment-box mt-2">
-              <ul>
+              <ul className="mb-0">
                 {noaHistory.assessment
               && (
               <li className="main-list-item">
@@ -162,7 +162,7 @@ const AssessmentDetailsPage = (props) => {
                 {noaHistory.supplemental
               && (
                 noaHistory.supplemental.map((item) => (
-                  <li className={item.status === 'ASSESSED' ? 'main-list-item' : 'sub-list-item'}>
+                  <li key={item} className={item.status === 'ASSESSED' ? 'main-list-item' : 'sub-list-item'}>
                     {getStatus(item)}
 
                   </li>
