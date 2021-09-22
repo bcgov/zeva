@@ -232,7 +232,8 @@ const SupplementaryDetailsPage = (props) => {
           setUploadFiles={setUploadFiles}
         />
         )}
-        {user.isGovernment && details.status === 'SUBMITTED'
+        {user.isGovernment && details && details.status === 'SUBMITTED' && 
+        ((details.fromSupplierComments && details.fromSupplierComments.length > 0) || (details.attachments && details.attachments.length > 0))
         && (
         <div className="display-supplier-info grey-border-area mt-3">
           {details && details.fromSupplierComments && details.fromSupplierComments.length > 0
@@ -242,9 +243,9 @@ const SupplementaryDetailsPage = (props) => {
            <span className="text-blue">{parse(details.fromSupplierComments[0].comment)}</span>
          </div>
          )}
-          {details && details.attachments && (
+          {details && details.attachments && details.attachments.length > 0 && (
           <div className="supplier-attachment mt-2">
-            <h4>Supplementary Report Attachemnts</h4>
+            <h4>Supplementary Report Attachments</h4>
             {details.attachments.filter((attachment) => (
               deleteFiles.indexOf(attachment.id) < 0
             )).map((attachment) => (
@@ -394,7 +395,7 @@ const SupplementaryDetailsPage = (props) => {
                 action={() => handleSubmit('DELETED')}
               />
               )}
-              {user.isGovernment && (details.status === 'SUBMITTED' || details.status === 'RECOMMENDED')
+              {user.isGovernment && details.status === 'RECOMMENDED'
                 && (
                 <button
                   className="button text-danger"
@@ -403,19 +404,20 @@ const SupplementaryDetailsPage = (props) => {
                   }}
                   type="button"
                 >
-                  {details.status === 'SUBMITTED' ? 'Return to Vehicle Supplier' : 'Return to Analyst'}
+                 Return to Analyst
                 </button>
                 )}
             </span>
             <span className="right-content">
-              {/* {((details.status === 'SUBMITTED' && user.isGovernment) || (details.status === 'DRAFT')) && ( */}
+              {((!user.isGovernment && details.status === 'DRAFT') ||
+              ((details.status === 'SUBMITTED' || details.status === 'RECOMMENDED') && user.isGovernment)) && (
               <Button
                 buttonType="save"
                 action={() => {
                   setShowModalDraft(true);
                 }}
               />
-              {/* )} */}
+              )}
               {analystAction && (details.status !== 'RECOMMENDED' || details.status === 'RETURNED') && (
               <Button
                 buttonTooltip={recommendTooltip}
