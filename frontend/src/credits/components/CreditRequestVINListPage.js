@@ -49,8 +49,6 @@ const CreditRequestVINListPage = (props) => {
     reactTable.filterColumn(reactTable.state.columns[3].columns[0], value);
   };
 
-  // let cancelToken;
-
   const refreshContent = async (state, filters = []) => {
     if (cancelToken) {
       cancelToken.cancel('Cancelling previous requests');
