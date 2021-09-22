@@ -17,6 +17,7 @@ import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import DisplayComment from '../../app/components/DisplayComment';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import CustomPropTypes from '../../app/utilities/props';
+import ComplianceHistory from '../../compliance/components/ComplianceHistory';
 
 const SupplementaryDetailsPage = (props) => {
   const {
@@ -162,14 +163,7 @@ const SupplementaryDetailsPage = (props) => {
             user={user.username}
           />
         </div>
-        <div className="report-assessment-history">
-          <h3 className="mb-2">Model Year Report Assessment History</h3>
-          <div className="grey-border-area">
-            <ul>
-              <li><u>Notice of Assessment Oct. 11, 2021</u></li>
-            </ul>
-          </div>
-        </div>
+        <ComplianceHistory user={user} id={id} activePage="supplementary"/>
         {(isReassessment || (analystAction || directorAction))
         && (
         <div className="supplementary-form my-3">

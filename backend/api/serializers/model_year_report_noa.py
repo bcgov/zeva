@@ -4,7 +4,7 @@ from enumfields.drf import EnumField
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_history import ModelYearReportHistory
 from api.models.model_year_report_statuses import ModelYearReportStatuses
-from api.models.supplemental_report import SupplementalReport
+from api.models.supplemental_report_history import SupplementalReportHistory
 from api.models.user_profile import UserProfile
 from api.serializers.user import MemberSerializer, UserSerializer
 
@@ -30,10 +30,6 @@ class SupplementalNOASerializer(ModelSerializer):
     update_user = SerializerMethodField()
 
     def get_status(self, obj):
-        request = self.context.get('request')
-        if not request.user.is_government:
-            if obj.validation_status.value == 'RECOMMENDED':
-                return 'SUBMITTED'
         return obj.validation_status.value
 
     def get_update_user(self, obj):
@@ -43,7 +39,7 @@ class SupplementalNOASerializer(ModelSerializer):
         return user.display_name
 
     class Meta:
-        model = SupplementalReport
+        model = SupplementalReportHistory
         fields = (
-            'update_timestamp', 'status', 'id', 'update_user'
+            'update_timestamp', 'status', 'id', 'update_user', 'supplemental_report_id'
         )
