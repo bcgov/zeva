@@ -1,10 +1,19 @@
+import PropTypes from 'prop-types';
 import React from 'react';
-import TextInput from '../../app/components/TextInput';
+
+import CustomPropTypes from '../../app/utilities/props';
 
 const SupplierInformation = (props) => {
-  const { details, handleInputChange, newData, user  } = props;
+  const {
+    details,
+    handleInputChange,
+    newData,
+    user,
+  } = props;
   const { assessmentData } = details;
   const { supplierInfo } = newData;
+  const currentStatus = details.actualStatus ? details.actualStatus : details.status;
+
   return (
     <>
       {!user.isGovernment
@@ -32,6 +41,7 @@ const SupplierInformation = (props) => {
             name="supplierInfo"
             onChange={handleInputChange}
             defaultValue={supplierInfo.legalName}
+            readOnly={currentStatus === 'ASSESSED'}
           />
         </div>
       </div>
@@ -63,13 +73,14 @@ const SupplierInformation = (props) => {
           </div>
         </div>
         <textarea
-          rows="4"
           className="form-control d-inline-block align-top mt-4 col-sm-5"
-          id="serviceAddress"
-          name="supplierInfo"
           defaultValue={supplierInfo.serviceAddress}
-          onChange={handleInputChange}
+          id="serviceAddress"
           min="0"
+          name="supplierInfo"
+          onChange={handleInputChange}
+          readOnly={currentStatus === 'ASSESSED'}
+          rows="4"
         />
       </div>
       <div className="my-4">
@@ -100,13 +111,14 @@ const SupplierInformation = (props) => {
           </div>
         </div>
         <textarea
-          rows="4"
           className="form-control d-inline-block align-top mt-4 col-sm-5"
-          id="recordsAddress"
-          name="supplierInfo"
           defaultValue={supplierInfo.recordsAddress}
-          onChange={handleInputChange}
+          id="recordsAddress"
           min="0"
+          name="supplierInfo"
+          onChange={handleInputChange}
+          readOnly={currentStatus === 'ASSESSED'}
+          rows="4"
         />
       </div>
       <div className="my-4">
@@ -124,11 +136,12 @@ const SupplierInformation = (props) => {
         </div>
         <textarea
           className="form-control d-inline-block align-top mt-4 col-sm-5"
-          id="ldvMakes"
-          name="supplierInfo"
           defaultValue={supplierInfo.ldvMakes}
-          onChange={handleInputChange}
+          id="ldvMakes"
           min="0"
+          name="supplierInfo"
+          onChange={handleInputChange}
+          readOnly={currentStatus === 'ASSESSED'}
         />
       </div>
       <div className="my-4">
@@ -145,15 +158,23 @@ const SupplierInformation = (props) => {
         </div>
         <input
           className="form-control d-inline-block align-top mt-4 col-sm-5"
-          id="supplierClass"
-          name="supplierInfo"
           defaultValue={supplierInfo.supplierClass}
-          onChange={handleInputChange}
+          id="supplierClass"
           min="0"
+          name="supplierInfo"
+          onChange={handleInputChange}
+          readOnly={currentStatus === 'ASSESSED'}
         />
       </div>
     </>
   );
+};
+
+SupplierInformation.propTypes = {
+  details: PropTypes.shape().isRequired,
+  handleInputChange: PropTypes.func.isRequired,
+  newData: PropTypes.shape().isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default SupplierInformation;

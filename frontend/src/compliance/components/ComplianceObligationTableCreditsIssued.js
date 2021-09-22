@@ -10,6 +10,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
     reportDetails,
     reportYear,
     pendingBalanceExist,
+    readOnly,
     supplementalReport,
   } = props;
 
@@ -149,6 +150,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                         creditA: event.target.value,
                       });
                     }}
+                    readOnly={readOnly}
                   />
                 </td>
                 <td>
@@ -163,6 +165,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                         creditB: event.target.value,
                       });
                     }}
+                    readOnly={readOnly}
                   />
                 </td>
               </>
@@ -231,6 +234,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                           creditA: event.target.value,
                         });
                       }}
+                      readOnly={readOnly}
                     />
                   </td>
                   <td>
@@ -245,6 +249,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                           creditB: event.target.value,
                         });
                       }}
+                      readOnly={readOnly}
                     />
                   </td>
                 </>
@@ -276,6 +281,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                           creditA: event.target.value,
                         });
                       }}
+                      readOnly={readOnly}
                     />
                   </td>
                   <td>
@@ -290,6 +296,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                           creditB: event.target.value,
                         });
                       }}
+                      readOnly={readOnly}
                     />
                   </td>
                 </>
@@ -402,6 +409,7 @@ ComplianceObligationTableCreditsIssued.defaultProps = {
   newBalances: {},
   newData: {},
   pendingBalanceExist: false,
+  readOnly: false,
   supplementalReport: false,
 };
 
@@ -410,6 +418,7 @@ ComplianceObligationTableCreditsIssued.propTypes = {
   newBalances: PropTypes.shape(),
   newData: PropTypes.shape(),
   pendingBalanceExist: PropTypes.bool,
+  readOnly: PropTypes.bool,
   reportDetails: PropTypes.shape().isRequired,
   reportYear: PropTypes.number.isRequired,
   supplementalReport: PropTypes.bool,

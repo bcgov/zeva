@@ -39,6 +39,12 @@ const SupplementaryAlert = (props) => {
       message = `Supplementary report signed and submitted ${date} by ${user}. Pending analyst review and Director reassessment.`;
       break;
 
+    case 'ASSESSED':
+      title = 'Assessed';
+      classname = 'alert-success';
+      message = `Supplementary report assessed ${date} by ${user}.`;
+      break;
+
     default:
       title = '';
   }

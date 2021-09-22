@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import parse from 'html-react-parser';
-import moment from 'moment-timezone';
+import CONFIG from '../../app/config';
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
 import history from '../../app/History';
@@ -97,7 +97,7 @@ const AssessmentDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
- 
+
   const getClassDescriptions = (_supplierClass) => {
     switch (_supplierClass) {
       case 'L':
@@ -128,7 +128,8 @@ const AssessmentDetailsPage = (props) => {
             />
             )}
           </div>
-          <ComplianceHistory user={user} id={id} activePage="assessment"/>
+          {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+          && <ComplianceHistory user={user} id={id} activePage="assessment" />}
           {user.isGovernment
           && (
             <>
@@ -182,7 +183,8 @@ const AssessmentDetailsPage = (props) => {
       <div className="row mt-3">
         <div className="col-12">
           <div id="compliance-obligation-page">
-            {!user.isGovernment && statuses.assessment.status === 'ASSESSED' && (
+            {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+            && !user.isGovernment && statuses.assessment.status === 'ASSESSED' && (
               <button
                 className="btn button primary float-right"
                 onClick={() => {

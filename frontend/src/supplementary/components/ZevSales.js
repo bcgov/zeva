@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import ReactTable from 'react-table';
@@ -9,6 +10,9 @@ const ZevSales = (props) => {
     handleInputChange,
     salesRows,
   } = props;
+
+  const currentStatus = details.actualStatus ? details.actualStatus : details.status;
+
   const columns = [{
     Cell: (item) => (
       <>
@@ -167,6 +171,7 @@ const ZevSales = (props) => {
           showPagination={false}
         />
         )}
+        {currentStatus !== 'ASSESSED' && (
         <button
           className="transfer-add-line m-2"
           onClick={() => {
@@ -176,9 +181,17 @@ const ZevSales = (props) => {
         >
           <FontAwesomeIcon icon="plus" /> Add another line for a new ZEV model
         </button>
+        )}
       </div>
     </>
   );
+};
+
+ZevSales.propTypes = {
+  addSalesRow: PropTypes.func.isRequired,
+  details: PropTypes.shape().isRequired,
+  handleInputChange: PropTypes.func.isRequired,
+  salesRows: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 };
 
 export default ZevSales;
