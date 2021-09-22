@@ -43,7 +43,6 @@ const AssessmentContainer = (props) => {
   const [totalReduction, setTotalReduction] = useState(0);
   const [unspecifiedReductions, setUnspecifiedReductions] = useState([]);
   const [updatedBalances, setUpdatedBalances] = useState({});
-  const [noaHistory, setNoaHistory] = useState([]);
 
   const handleCommentChangeBceid = (text) => {
     setBceidComment(text);
@@ -63,10 +62,8 @@ const AssessmentContainer = (props) => {
         axios.get(ROUTES_COMPLIANCE.RATIOS),
         axios.get(`${ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)}?assessment=True`),
         axios.get(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)),
-        axios.get(ROUTES_COMPLIANCE.NOA_HISTORY.replace(/:id/g, id)),
       ]).then(axios.spread(
-        (reportDetailsResponse, ratioResponse, creditActivityResponse, assessmentResponse, noaHistoryResponse) => {
-          setNoaHistory(noaHistoryResponse.data);
+        (reportDetailsResponse, ratioResponse, creditActivityResponse, assessmentResponse) => {
           const idirCommentArrayResponse = [];
           let bceidCommentResponse = {};
           const {
@@ -401,7 +398,6 @@ const AssessmentContainer = (props) => {
         id={id}
         loading={loading}
         makes={makes}
-        noaHistory={noaHistory}
         pendingBalanceExist={pendingBalanceExist}
         radioDescriptions={radioDescriptions}
         ratios={ratios}

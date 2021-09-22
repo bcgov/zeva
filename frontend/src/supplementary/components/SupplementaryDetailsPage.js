@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 import parse from 'html-react-parser';
-
 import Loading from '../../app/components/Loading';
 import Modal from '../../app/components/Modal';
 import SupplementaryAlert from './SupplementaryAlert';
@@ -17,6 +16,7 @@ import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import DisplayComment from '../../app/components/DisplayComment';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import CustomPropTypes from '../../app/utilities/props';
+import ComplianceHistory from '../../compliance/components/ComplianceHistory';
 
 const SupplementaryDetailsPage = (props) => {
   const {
@@ -163,14 +163,7 @@ const SupplementaryDetailsPage = (props) => {
             user={user.username}
           />
         </div>
-        <div className="report-assessment-history">
-          <h3 className="mb-2">Model Year Report Assessment History</h3>
-          <div className="grey-border-area">
-            <ul>
-              <li><u>Notice of Assessment Oct. 11, 2021</u></li>
-            </ul>
-          </div>
-        </div>
+        <ComplianceHistory user={user} id={id} activePage="supplementary"/>
         {(isReassessment || (analystAction || directorAction))
         && currentStatus !== 'ASSESSED'
         && (

@@ -254,7 +254,6 @@ class ModelYearReportViewset(
                         validation_status__in=[
                             ModelYearReportStatuses.SUBMITTED,
                             ModelYearReportStatuses.DRAFT,
-                            ModelYearReportStatuses.RECOMMENDED,
                             ModelYearReportStatuses.ASSESSED,
                             ModelYearReportStatuses.REASSESSED,
                             ModelYearReportStatuses.RETURNED,
