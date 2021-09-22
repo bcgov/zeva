@@ -35,7 +35,7 @@ const ComplianceHistory = (props) => {
         return (<span>{draftText(item)}</span>);
       }
       return (
-        <Link to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', noaHistory.supplemental[0].supplementalReportId)}>
+        <Link className="text-blue text-underline" to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', noaHistory.supplemental[0].supplementalReportId)}>
           {draftText(item)}
         </Link>
       );
@@ -47,7 +47,7 @@ const ComplianceHistory = (props) => {
         );
       }
       return (
-        <Link to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', noaHistory.supplemental[0].supplementalReportId)}>
+        <Link className="text-blue text-underline" to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', noaHistory.supplemental[0].supplementalReportId)}>
           {submittedText(item)}
         </Link>
       );
@@ -57,7 +57,7 @@ const ComplianceHistory = (props) => {
         return (<span>{recommendedText(item)}</span>);
       }
       return (
-        <Link to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', noaHistory.supplemental[0].supplementalReportId)}>
+        <Link className="text-blue text-underline" to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', noaHistory.supplemental[0].supplementalReportId)}>
           {recommendedText(item)}
         </Link>
       );
@@ -67,7 +67,7 @@ const ComplianceHistory = (props) => {
         return (<span>{reassessmentText(item)}</span>);
       }
       return (
-        <Link to={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)}>
+        <Link className="text-blue text-underline" to={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)}>
           {reassessmentText(item)}
         </Link>
       );
@@ -86,7 +86,7 @@ const ComplianceHistory = (props) => {
           && (
           <li className={`main-list-item ${activePage === 'assessment' ? 'active-history' : ''}`}>
             {activePage !== 'assessment'
-              && <Link to={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)}>Notice of Assessment {moment(noaHistory.assessment.updateTimestamp).format('MMM D, YYYY')}</Link>}
+              && <Link className="text-blue text-underline" to={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)}>Notice of Assessment {moment(noaHistory.assessment.updateTimestamp).format('MMM D, YYYY')}</Link>}
             {activePage === 'assessment'
               && <span>Notice of Assessment {moment(noaHistory.assessment.updateTimestamp).format('MMM D, YYYY')}</span>}
             {noaHistory.supplemental ? <span className="text-red"> Superseded</span> : ''}
