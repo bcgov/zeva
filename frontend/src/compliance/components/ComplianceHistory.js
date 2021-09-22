@@ -95,7 +95,7 @@ const ComplianceHistory = (props) => {
           {noaHistory.supplemental
           && (
             noaHistory.supplemental.map((item) => (
-              <li key={item.id}>
+              <li key={item.id} className={item.status === 'ASSESSED' ? 'main-list-item' : 'sub-list-item'>
                 {getLinkByStatus(item)}
               </li>
             ))
