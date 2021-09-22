@@ -16,6 +16,7 @@ import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableC
 import CommentInput from '../../app/components/CommentInput';
 import DisplayComment from '../../app/components/DisplayComment';
 import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
+import CONFIG from '../../app/config';
 
 const AssessmentDetailsPage = (props) => {
   const {
@@ -144,14 +145,14 @@ const AssessmentDetailsPage = (props) => {
             />
             )}
           </div>
-          {Object.keys(noaHistory).length > 0
-          && (
-          <div className="m-0 p-4">
+          {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+          && Object.keys(noaHistory).length > 0 && (
+          <div className="m-0">
             <h3>
               Model Year Report Assessment History
             </h3>
             <div className="grey-border-area p-3 comment-box mt-2">
-              <ul>
+              <ul className="mb-0">
                 {noaHistory.assessment
               && (
               <li className="main-list-item">
@@ -162,7 +163,7 @@ const AssessmentDetailsPage = (props) => {
                 {noaHistory.supplemental
               && (
                 noaHistory.supplemental.map((item) => (
-                  <li className={item.status === 'ASSESSED' ? 'main-list-item' : 'sub-list-item'}>
+                  <li key={item.id} className={item.status === 'ASSESSED' ? 'main-list-item' : 'sub-list-item'}>
                     {getStatus(item)}
 
                   </li>
@@ -225,7 +226,8 @@ const AssessmentDetailsPage = (props) => {
       <div className="row mt-3">
         <div className="col-12">
           <div id="compliance-obligation-page">
-            {!user.isGovernment && statuses.assessment.status === 'ASSESSED' && (
+            {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+            && !user.isGovernment && statuses.assessment.status === 'ASSESSED' && (
               <button
                 className="btn button primary float-right"
                 onClick={() => {

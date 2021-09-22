@@ -10,6 +10,7 @@ window.zeva_config = {
   'notifications.enabled': true,
   'purchase_requests.enabled': false,
   'roles.enabled': false,
+  'supplemental.enabled': true,
   'model_year_report.years': [
     2020,
     2021,
