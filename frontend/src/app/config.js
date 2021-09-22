@@ -28,7 +28,7 @@ const CONFIG = {
     },
     CREDIT_AGREEMENTS: {
       ENABLED: getConfig('credit_agreements.enabled', false),
-    },    
+    },
     COMPLIANCE_CALCULATOR: {
       ENABLED: getConfig('compliance_calculator.enabled', false),
     },
@@ -54,6 +54,9 @@ const CONFIG = {
     },
     ROLES: {
       ENABLED: getConfig('roles.enabled', false),
+    },
+    SUPPLEMENTAL_REPORT: {
+      ENABLED: getConfig('supplemental.enabled', false),
     },
   },
   KEYCLOAK: {

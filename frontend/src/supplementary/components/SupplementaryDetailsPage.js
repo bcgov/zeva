@@ -240,7 +240,8 @@ const SupplementaryDetailsPage = (props) => {
           setUploadFiles={setUploadFiles}
         />
         )}
-        {user.isGovernment && currentStatus === 'SUBMITTED'
+        {user.isGovernment && details && currentStatus === 'SUBMITTED'
+        && ((details.fromSupplierComments && details.fromSupplierComments.length > 0) || (details.attachments && details.attachments.length > 0))
         && (
         <div className="display-supplier-info grey-border-area mt-3">
           {details && details.fromSupplierComments && details.fromSupplierComments.length > 0
@@ -250,9 +251,9 @@ const SupplementaryDetailsPage = (props) => {
            <span className="text-blue">{parse(details.fromSupplierComments[0].comment)}</span>
          </div>
          )}
-          {details && details.attachments && (
+          {details && details.attachments && details.attachments.length > 0 && (
           <div className="supplier-attachment mt-2">
-            <h4>Supplementary Report Attachemnts</h4>
+            <h4>Supplementary Report Attachments</h4>
             {details.attachments.filter((attachment) => (
               deleteFiles.indexOf(attachment.id) < 0
             )).map((attachment) => (
@@ -416,7 +417,8 @@ const SupplementaryDetailsPage = (props) => {
                 )}
             </span>
             <span className="right-content">
-              {(currentStatus !== 'ASSESSED') && (
+              {((!user.isGovernment && currentStatus === 'DRAFT')
+              || ((currentStatus === 'SUBMITTED' || currentStatus === 'RECOMMENDED') && user.isGovernment)) && (
               <Button
                 buttonType="save"
                 action={() => {
