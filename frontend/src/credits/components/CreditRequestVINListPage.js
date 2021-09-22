@@ -27,6 +27,7 @@ const CreditRequestVINListPage = (props) => {
   const [pages, setPages] = useState(-1);
   const [reactTable, setReactTable] = useState(null);
   const [selectedOption, setSelectedOption] = useState('');
+  const [cancelToken, setCancelToken] = useState(null);
 
   const filterWarnings = (event) => {
     const { value } = event.target;
@@ -48,7 +49,11 @@ const CreditRequestVINListPage = (props) => {
     reactTable.filterColumn(reactTable.state.columns[3].columns[0], value);
   };
 
-  const refreshContent = (state, filters = []) => {
+  const refreshContent = async (state, filters = []) => {
+    if (cancelToken) {
+      cancelToken.cancel('Cancelling previous requests');
+    }
+
     const sorted = [];
 
     state.sorted.forEach((each) => {
@@ -63,13 +68,18 @@ const CreditRequestVINListPage = (props) => {
 
     setLoading(true);
 
-    axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', submission.id), {
+    const newCancelToken = axios.CancelToken.source();
+
+    setCancelToken(newCancelToken);
+
+    await axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', submission.id), {
       params: {
         filters,
         page: state.page + 1, // page from front-end is zero index, but in the back-end we need the actual page number
         page_size: state.pageSize,
         sorted: sorted.join(','),
       },
+      cancelToken: newCancelToken.token,
     }).then((response) => {
       const { content: refreshedContent, pages: numPages } = response.data;
 
