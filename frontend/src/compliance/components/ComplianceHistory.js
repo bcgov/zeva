@@ -93,12 +93,12 @@ const ComplianceHistory = (props) => {
   };
 
   return (
-    <div className="m-0 p-4">
+    <div className="m-0 pt-2">
       <h3>
         Model Year Report Assessment History
       </h3>
       <div className="grey-border-area p-3 comment-box mt-2">
-        <ul>
+        <ul className="mb-0">
           {noaHistory.assessment
           && (
           <li className={`main-list-item ${activePage === 'assessment' ? 'active-history' : ''}`}>

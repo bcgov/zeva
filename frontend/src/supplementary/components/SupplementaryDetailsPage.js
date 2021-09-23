@@ -149,45 +149,43 @@ const SupplementaryDetailsPage = (props) => {
 
   return (
     <div id="supplementary" className="page">
-      <div className="row mt-3">
+      <div className="row">
         <div className="col">
           <h2 className="mb-2">{isReassessment ? `${reportYear} Model Year Report Reassessment` : `${reportYear} Model Year Supplementary Report`}</h2>
         </div>
       </div>
-      <div className="supplementary-form">
-        <div className="supplementary-alert mt-2">
-          <SupplementaryAlert
-            id={id}
-            date={moment(details.updateTimestamp).format('MMM D, YYYY')}
-            status={details.status}
-            user={user.username}
+      <div className="supplementary-alert">
+        <SupplementaryAlert
+          id={id}
+          date={moment(details.updateTimestamp).format('MMM D, YYYY')}
+          status={details.status}
+          user={user.username}
+        />
+      </div>
+      <ComplianceHistory user={user} id={id} activePage="supplementary"/>
+      {(isReassessment || (analystAction || directorAction))
+      && currentStatus !== 'ASSESSED'
+      && (
+      <div className="supplementary-form my-3">
+        {commentArray && commentArray.idirComment && commentArray.idirComment.length > 0
+        && (
+        <DisplayComment
+          commentArray={commentArray.idirComment}
+        />
+        )}
+        <div id="comment-input">
+          <CommentInput
+            handleCommentChange={handleCommentChangeIdir}
+            title={analystAction ? 'Add comment to director: ' : 'Add comment to the analyst'}
+            buttonText="Add Comment"
+            handleAddComment={handleAddIdirComment}
+            buttonDisable={!details.id}
           />
         </div>
-        <ComplianceHistory user={user} id={id} activePage="supplementary"/>
-        {(isReassessment || (analystAction || directorAction))
-        && currentStatus !== 'ASSESSED'
-        && (
-        <div className="supplementary-form my-3">
-          {commentArray && commentArray.idirComment && commentArray.idirComment.length > 0
-         && (
-         <DisplayComment
-           commentArray={commentArray.idirComment}
-         />
-         )}
-          <div id="comment-input">
-            <CommentInput
-              handleCommentChange={handleCommentChangeIdir}
-              title={analystAction ? 'Add comment to director: ' : 'Add comment to the analyst'}
-              buttonText="Add Comment"
-              handleAddComment={handleAddIdirComment}
-              buttonDisable={!details.id}
-            />
-          </div>
-        </div>
-        )}
       </div>
+      )}
       <div className="supplementary-form mt-2">
-        <div className="mb-3">
+        <div>
           <SupplierInformation
             user={user}
             details={details}
