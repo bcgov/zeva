@@ -3,7 +3,7 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Button from '../../app/components/Button';
 import history from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
@@ -14,6 +14,8 @@ const ComplianceHistory = (props) => {
   const {
     user, id, activePage,
   } = props;
+  const { supplementaryId } = useParams();
+
   const [noaHistory, setNoaHistory] = useState({});
   useEffect(() => {
     axios.get(ROUTES_COMPLIANCE.NOA_HISTORY.replace(/:id/g, id)).then((response) => {
@@ -31,50 +33,53 @@ const ComplianceHistory = (props) => {
   const reassessmentText = (item) => `Notice of Reassessment ${moment(item.updateTimestamp).format('MMM D, YYYY')}`;
   const getLinkByStatus = (item) => {
     if (item.status === 'DRAFT') {
-      if (activePage === 'supplementary') {
+      if (Number(item.supplementalReportId) === Number(supplementaryId)) {
         return (<span>{draftText(item)}</span>);
       }
       return (
         <Link
           className="text-blue text-underline"
-          to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', noaHistory.supplemental[0].supplementalReportId)}
+          to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', item.supplementalReportId)}
         >
           {draftText(item)}
         </Link>
       );
     }
     if (item.status === 'SUBMITTED') {
-      if (activePage === 'supplementary') {
+      if (Number(item.supplementalReportId) === Number(supplementaryId)) {
         return (
           <span>{submittedText(item)}</span>
         );
       }
+
       return (
         <Link
           className="text-blue text-underline"
-          to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', noaHistory.supplemental[0].supplementalReportId)}
+          to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', item.supplementalReportId)}
         >
           {submittedText(item)}
         </Link>
       );
     }
     if (item.status === 'RECOMMENDED') {
-      if (activePage === 'supplementary') {
+      if (Number(item.supplementalReportId) === Number(supplementaryId)) {
         return (<span>{recommendedText(item)}</span>);
       }
+
       return (
         <Link
           className="text-blue text-underline"
-          to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', noaHistory.supplemental[0].supplementalReportId)}
+          to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', item.supplementalReportId)}
         >
           {recommendedText(item)}
         </Link>
       );
     }
     if (item.status === 'ASSESSED') {
-      if (activePage === 'assessment') {
+      if (Number(item.supplementalReportId) === Number(supplementaryId)) {
         return (<span>{reassessmentText(item)}</span>);
       }
+
       return (
         <Link
           className="text-blue text-underline"

@@ -61,26 +61,9 @@ from api.serializers.vehicle import ModelYearSerializer
 from api.serializers.model_year_report_assessment import \
     ModelYearReportAssessmentSerializer
 from api.serializers.model_year_report_supplemental import \
-    ModelYearReportSupplementalSerializer, ModelYearReportSupplementalSupplierSerializer, SupplementalReportAssessmentSerializer
-from api.models.supplemental_report_sales import \
-    SupplementalReportSales
-from api.models.supplemental_report_supplier_information import SupplementalReportSupplierInformation
-from api.models.supplemental_report_credit_activity import \
-    SupplementalReportCreditActivity
-from api.services.minio import minio_put_object
-from api.services.minio import minio_remove_object
-from api.models.supplemental_report_attachment import SupplementalReportAttachment
-from api.models.supplemental_report import SupplementalReport
-from api.models.model_year_report_vehicle import ModelYearReportVehicle
-from api.models.supplemental_report_comment import SupplementalReportComment
-from api.models.signing_authority_assertion import SigningAuthorityAssertion
-from api.models.supplemental_report_assessment import SupplementalReportAssessment
-from api.models.supplemental_report_assessment_comment import SupplementalReportAssessmentComment
-from api.models.user_profile import UserProfile
-from api.serializers.model_year_report_supplemental import SupplementalReportAssessmentSerializer
+    ModelYearReportSupplementalSerializer, SupplementalReportAssessmentSerializer
 from api.serializers.model_year_report_noa import ModelYearReportNoaSerializer, SupplementalNOASerializer
 from api.models.organization import Organization
-    
 
 
 class ModelYearReportViewset(
@@ -233,11 +216,15 @@ class ModelYearReportViewset(
         if report_serializer.data:
             # serializer has returned with some records that are assessed or reassessed
             # get supplementary table, match model year report id, only show drafts created by own org
-            if report.supplemental:
+            supplemental_report_ids = SupplementalReport.objects.filter(
+                model_year_report_id=pk
+            ).values_list('id', flat=True)
+
+            if supplemental_report_ids:
                 SubQuery = UserProfile.objects.filter(organization__is_government=True).values_list('username', flat=True)
                 if request.user.is_government:
                     supplemental_report = SupplementalReportHistory.objects.filter(
-                        supplemental_report_id=report.supplemental.id,
+                        supplemental_report_id__in=supplemental_report_ids,
                         validation_status__in=[
                             ModelYearReportStatuses.SUBMITTED,
                             ModelYearReportStatuses.DRAFT,
@@ -250,7 +237,7 @@ class ModelYearReportViewset(
                 
                 else:
                     supplemental_report = SupplementalReportHistory.objects.filter(
-                        supplemental_report_id=report.supplemental.id,
+                        supplemental_report_id__in=supplemental_report_ids,
                         validation_status__in=[
                             ModelYearReportStatuses.SUBMITTED,
                             ModelYearReportStatuses.DRAFT,
@@ -597,12 +584,12 @@ class ModelYearReportViewset(
                         }
                     )
 
-                SupplementalReportHistory.objects.create(
-                    supplemental_report_id=supplemental_id,
-                    validation_status=validation_status,
-                    update_user=request.user.username,
-                    create_user=request.user.username,
-                )
+            SupplementalReportHistory.objects.create(
+                supplemental_report_id=supplemental_id,
+                validation_status=validation_status,
+                update_user=request.user.username,
+                create_user=request.user.username,
+            )
 
             serializer = ModelYearReportSupplementalSerializer(
                 report.supplemental,
@@ -626,6 +613,14 @@ class ModelYearReportViewset(
                 update_user=request.user.username,
                 supplemental_id=supplemental_id
             )
+
+            SupplementalReportHistory.objects.create(
+                supplemental_report_id=serializer.data.get('id'),
+                validation_status=validation_status,
+                update_user=request.user.username,
+                create_user=request.user.username,
+            )
+
         report = get_object_or_404(ModelYearReport, pk=pk)
         supplier_information = request.data.get('supplier_info')
         if supplier_information:
