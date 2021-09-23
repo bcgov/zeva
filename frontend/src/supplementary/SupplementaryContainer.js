@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 
 import ROUTES_SUPPLEMENTARY from '../app/routes/SupplementaryReport';
 import SupplementaryDetailsPage from './components/SupplementaryDetailsPage';
@@ -411,9 +411,11 @@ const SupplementaryContainer = (props) => {
     }));
   };
 
+  const location = useLocation();
+
   useEffect(() => {
     refreshDetails();
-  }, [keycloak.authenticated]);
+  }, [keycloak.authenticated, location.pathname]);
 
   return (
     <SupplementaryDetailsPage
