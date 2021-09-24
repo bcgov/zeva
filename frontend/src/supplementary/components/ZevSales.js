@@ -9,6 +9,7 @@ const ZevSales = (props) => {
     details,
     handleInputChange,
     salesRows,
+    isEditable,
   } = props;
 
   const currentStatus = details.actualStatus ? details.actualStatus : details.status;
@@ -23,6 +24,7 @@ const ZevSales = (props) => {
           name="zevSales"
           defaultValue={item.original.newData ? item.original.newData.sales : ''}
           onChange={handleInputChange}
+          readOnly={!isEditable}
         />
       </>
     ),
@@ -43,6 +45,7 @@ const ZevSales = (props) => {
           size="4"
           maxLength="4"
           defaultValue={item.original.newData.modelYear}
+          readOnly={!isEditable}
         />
       </>
     ),
@@ -62,6 +65,7 @@ const ZevSales = (props) => {
           id={`make-${item.index}`}
           onChange={handleInputChange}
           defaultValue={item.original.newData.make}
+          readOnly={!isEditable}
         />
       </>
     ),
@@ -81,6 +85,7 @@ const ZevSales = (props) => {
           id={`modelName-${item.index}`}
           onChange={handleInputChange}
           defaultValue={item.original.newData.modelName}
+          readOnly={!isEditable}
         />
       </>
     ),
@@ -100,6 +105,7 @@ const ZevSales = (props) => {
           id={`vehicleZevType-${item.index}`}
           onChange={handleInputChange}
           defaultValue={item.original.newData.vehicleZevType}
+          readOnly={!isEditable}
         />
       </>
     ),
@@ -119,6 +125,7 @@ const ZevSales = (props) => {
           id={`range-${item.index}`}
           onChange={handleInputChange}
           defaultValue={item.original.newData.range}
+          readOnly={!isEditable}
         />
       </>
     ),
@@ -139,6 +146,7 @@ const ZevSales = (props) => {
           id={`zevClass-${item.index}`}
           onChange={handleInputChange}
           defaultValue={item.original.newData.zevClass}
+          readOnly={!isEditable}
         />
       </>
     ),

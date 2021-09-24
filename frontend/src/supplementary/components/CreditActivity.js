@@ -24,6 +24,7 @@ const CreditActivity = (props) => {
     obligationDetails,
     ratios,
     supplierClass,
+    isEditable,
   } = props;
 
   let reportYear = false;
@@ -247,7 +248,7 @@ const CreditActivity = (props) => {
                       type="text"
                       onChange={handleInputChange}
                       defaultValue={newLdvSales}
-                      readOnly={currentStatus === 'ASSESSED'}
+                      readOnly={!isEditable}
                     />
                   </td>
                   <td className="text-blue font-weight-bold" width="30%">Compliance Ratio Credit Reduction:</td>
@@ -317,7 +318,7 @@ const CreditActivity = (props) => {
           newBalances={newBalances}
           newData={newData}
           pendingBalanceExist={false}
-          readOnly={currentStatus === 'ASSESSED'}
+          readOnly={!isEditable}
           reportDetails={reportDetails}
           reportYear={reportYear}
           supplementalReport
