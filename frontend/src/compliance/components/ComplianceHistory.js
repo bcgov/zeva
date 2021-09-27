@@ -93,40 +93,42 @@ const ComplianceHistory = (props) => {
   };
 
   return (
-    <div className="m-0 pt-2">
-      <h3>
-        Model Year Report Assessment History
-      </h3>
-      <div className="grey-border-area p-3 comment-box mt-2">
-        <ul className="mb-0">
-          {noaHistory.assessment
-          && (
-          <li className={`main-list-item ${activePage === 'assessment' ? 'active-history' : ''}`}>
-            {activePage !== 'assessment'
-              && (
-              <Link
-                className="text-blue text-underline"
-                to={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)}
-              >
-                Notice of Assessment {moment(noaHistory.assessment.updateTimestamp).format('MMM D, YYYY')}
-              </Link>
-              )}
-            {activePage === 'assessment'
-              && <span>Notice of Assessment {moment(noaHistory.assessment.updateTimestamp).format('MMM D, YYYY')}</span>}
-            {noaHistory.supplemental ? <span className="text-red"> Superseded</span> : ''}
-          </li>
-          )}
-          {noaHistory.supplemental
-          && (
-            noaHistory.supplemental.map((item) => (
-              <li key={item.id} className={item.status === 'ASSESSED' ? 'main-list-item' : 'sub-list-item'}>
-                {getLinkByStatus(item)}
-              </li>
-            ))
-          )}
-        </ul>
+    Object.keys(noaHistory).length > 0 && (
+      <div className="m-0 pt-2">
+        <h3>
+          Model Year Report Assessment History
+        </h3>
+        <div className="grey-border-area p-3 comment-box mt-2">
+          <ul className="mb-0">
+            {noaHistory.assessment
+            && (
+            <li className={`main-list-item ${activePage === 'assessment' ? 'active-history' : ''}`}>
+              {activePage !== 'assessment'
+                && (
+                <Link
+                  className="text-blue text-underline"
+                  to={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)}
+                >
+                  Notice of Assessment {moment(noaHistory.assessment.updateTimestamp).format('MMM D, YYYY')}
+                </Link>
+                )}
+              {activePage === 'assessment'
+                && <span>Notice of Assessment {moment(noaHistory.assessment.updateTimestamp).format('MMM D, YYYY')}</span>}
+              {noaHistory.supplemental ? <span className="text-red"> Superseded</span> : ''}
+            </li>
+            )}
+            {noaHistory.supplemental
+            && (
+              noaHistory.supplemental.map((item) => (
+                <li key={item.id} className={item.status === 'ASSESSED' ? 'main-list-item' : 'sub-list-item'}>
+                  {getLinkByStatus(item)}
+                </li>
+              ))
+            )}
+          </ul>
+        </div>
       </div>
-    </div>
+    )
   );
 };
 

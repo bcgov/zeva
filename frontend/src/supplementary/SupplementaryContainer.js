@@ -180,15 +180,15 @@ const SupplementaryContainer = (props) => {
 
     if (obj.modelYear && obj.title) {
       const index = newData.creditActivity.findIndex((each) => (
-        each.modelYear === obj.modelYear
+        Number(each.modelYear) === Number(obj.modelYear)
         && each.category === obj.title
       ));
 
       if (index >= 0) {
         creditActivity[index] = {
           ...newData.creditActivity[index],
-          creditAValue: obj.creditA,
-          creditBValue: obj.creditB,
+          creditAValue: obj.creditA || creditActivity[index].creditAValue,
+          creditBValue: obj.creditB || creditActivity[index].creditBValue,
         };
       } else {
         creditActivity.push({
@@ -326,12 +326,14 @@ const SupplementaryContainer = (props) => {
           bceidComment: bceidCommentResponse,
           idirComment: idirCommentArrayResponse,
         });
+
         const supplierInfo = {
           legalName: newLegalName.value,
           serviceAddress: newServiceAddress.value,
           recordsAddress: newRecordsAddress.value,
           ldvMakes: newMakes.value,
           supplierClass: newSupplierClass.value,
+          ldvSales: response.data.ldvSales,
         };
         const newZevSales = response.data.zevSales;
         const salesData = [];

@@ -98,8 +98,6 @@ const CreditActivity = (props) => {
   const tempBalances = [];
   const newTempBalances = [];
 
-  // console.error(newBalances);
-
   Object.keys(provisionalBalance).forEach((year) => {
     const { A: creditA, B: creditB } = provisionalBalance[year];
 

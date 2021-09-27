@@ -35,7 +35,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
   const getNewData = (category, modelYear, value) => {
     if (newData && newData.creditActivity) {
       const found = newData.creditActivity.find((each) => (
-        each.category === category && each.modelYear === modelYear
+        each.category === category && Number(each.modelYear) === Number(modelYear)
       ));
 
       if (found) {
