@@ -195,7 +195,8 @@ const AssessmentDetailsPage = (props) => {
                 Create Supplemental Report
               </button>
             )}
-            {user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && statuses.assessment.status === 'ASSESSED' && (
+            {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+            && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && statuses.assessment.status === 'ASSESSED' && (
               <button
                 className="btn button primary float-right"
                 onClick={() => {
