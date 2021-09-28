@@ -25,6 +25,7 @@ const ZevSales = (props) => {
           defaultValue={item.original.newData ? item.original.newData.sales : ''}
           onChange={handleInputChange}
           readOnly={!isEditable}
+          className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
       </>
     ),
@@ -46,6 +47,7 @@ const ZevSales = (props) => {
           maxLength="4"
           defaultValue={item.original.newData.modelYear}
           readOnly={!isEditable}
+          className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
       </>
     ),
@@ -66,6 +68,7 @@ const ZevSales = (props) => {
           onChange={handleInputChange}
           defaultValue={item.original.newData.make}
           readOnly={!isEditable}
+          className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
       </>
     ),
@@ -86,6 +89,7 @@ const ZevSales = (props) => {
           onChange={handleInputChange}
           defaultValue={item.original.newData.modelName}
           readOnly={!isEditable}
+          className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
       </>
     ),
@@ -106,6 +110,7 @@ const ZevSales = (props) => {
           onChange={handleInputChange}
           defaultValue={item.original.newData.vehicleZevType}
           readOnly={!isEditable}
+          className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
       </>
     ),
@@ -126,6 +131,7 @@ const ZevSales = (props) => {
           onChange={handleInputChange}
           defaultValue={item.original.newData.range}
           readOnly={!isEditable}
+          className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
       </>
     ),
@@ -147,6 +153,7 @@ const ZevSales = (props) => {
           onChange={handleInputChange}
           defaultValue={item.original.newData.zevClass}
           readOnly={!isEditable}
+          className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
       </>
     ),
