@@ -622,20 +622,31 @@ class ModelYearReportViewset(
             )
 
         report = get_object_or_404(ModelYearReport, pk=pk)
+
+        if not supplemental_id:
+            supplemental_id = report.supplemental.id
+
         supplier_information = request.data.get('supplier_info')
         if supplier_information:
             SupplementalReportSupplierInformation.objects.filter(
-                supplemental_report_id=report.supplemental.id
+                supplemental_report_id=supplemental_id
             ).delete()
 
             for k, v in supplier_information.items():
-                SupplementalReportSupplierInformation.objects.create(
-                    update_user=request.user.username,
-                    create_user=request.user.username,
-                    supplemental_report_id=report.supplemental.id,
-                    category=k.upper(),
-                    value=v
-                )
+                category = k.upper()
+
+                if category == 'LDV_SALES':
+                    SupplementalReport.objects.filter(
+                        id=supplemental_id
+                    ).update(ldv_sales=v)
+                else:
+                    SupplementalReportSupplierInformation.objects.create(
+                        update_user=request.user.username,
+                        create_user=request.user.username,
+                        supplemental_report_id=supplemental_id,
+                        category=category,
+                        value=v
+                    )
 
         supplemental_attachments = request.data.get('evidence_attachments', None)
         if supplemental_attachments:
@@ -644,7 +655,7 @@ class ModelYearReportViewset(
                 for attachment in attachments:
                     SupplementalReportAttachment.objects.create(
                         create_user=request.user.username,
-                        supplemental_report_id=report.supplemental.id,
+                        supplemental_report_id=supplemental_id,
                         **attachment
                     )
         files_to_be_removed = request.data.get('delete_files', [])
@@ -652,7 +663,7 @@ class ModelYearReportViewset(
             for file_id in files_to_be_removed:
                 attachment = SupplementalReportAttachment.objects.filter(
                     id=file_id,
-                    supplemental_report_id=report.supplemental.id
+                    supplemental_report_id=supplemental_id
                 ).first()
 
                 if attachment:
@@ -665,7 +676,7 @@ class ModelYearReportViewset(
         credit_activity = request.data.get('credit_activity')
         if credit_activity:
             SupplementalReportCreditActivity.objects.filter(
-                supplemental_report_id=report.supplemental.id
+                supplemental_report_id=supplemental_id
             ).delete()
 
             for activity in credit_activity:
@@ -693,7 +704,7 @@ class ModelYearReportViewset(
                     SupplementalReportCreditActivity.objects.create(
                         update_user=request.user.username,
                         create_user=request.user.username,
-                        supplemental_report_id=report.supplemental.id,
+                        supplemental_report_id=supplemental_id,
                         category=category,
                         credit_a_value=credit_a_value,
                         credit_b_value=credit_b_value,
@@ -702,7 +713,7 @@ class ModelYearReportViewset(
 
         zev_sales = request.data.get('zev_sales')
         if zev_sales:
-            SupplementalReportSales.objects.filter(supplemental_report_id=report.supplemental.id).delete()
+            SupplementalReportSales.objects.filter(supplemental_report_id=supplemental_id).delete()
             for v in zev_sales:
                 model_year_report_vehicle_id = None
                 if v.get('model_year_report_vehicle'):
@@ -712,7 +723,7 @@ class ModelYearReportViewset(
                 SupplementalReportSales.objects.create(
                     update_user=request.user.username,
                     create_user=request.user.username,
-                    supplemental_report_id=report.supplemental.id,
+                    supplemental_report_id=supplemental_id,
                     model_year_report_vehicle_id=model_year_report_vehicle_id,
                     sales=v.get('sales'),
                     make=v.get('make'),
@@ -726,12 +737,12 @@ class ModelYearReportViewset(
         from_supplier_comment = request.data.get('from_supplier_comment')
         if from_supplier_comment:
             SupplementalReportComment.objects.filter(
-                supplemental_report_id=report.supplemental.id,
+                supplemental_report_id=supplemental_id,
                 to_govt=True
             ).delete()
             SupplementalReportComment.objects.create(
                 create_user=request.user.username,
-                supplemental_report_id=report.supplemental.id,
+                supplemental_report_id=supplemental_id,
                 comment=from_supplier_comment,
                 to_govt=True
             )

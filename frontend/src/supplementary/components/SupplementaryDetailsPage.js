@@ -17,6 +17,7 @@ import DisplayComment from '../../app/components/DisplayComment';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import CustomPropTypes from '../../app/utilities/props';
 import ComplianceHistory from '../../compliance/components/ComplianceHistory';
+import CONFIG from '../../app/config';
 
 const SupplementaryDetailsPage = (props) => {
   const {
@@ -167,7 +168,10 @@ const SupplementaryDetailsPage = (props) => {
           user={user.username}
         />
       </div>
-      <ComplianceHistory user={user} id={id} activePage="supplementary" />
+      {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+      && (
+        <ComplianceHistory user={user} id={id} activePage="supplementary" />
+      )}
       {(isReassessment || (analystAction || directorAction))
       && currentStatus !== 'ASSESSED'
       && (
@@ -224,7 +228,7 @@ const SupplementaryDetailsPage = (props) => {
         <div id="comment-input">
           {!user.isGovernment && currentStatus === 'DRAFT' && (
           <CommentInput
-            defaultComment={details && details.comments && details.comments.length > 0 ? details.comments[0] : ''}
+            defaultComment={details && details.comments && details.comments.length > 0 ? details.comments[0] : {}}
             handleCommentChange={handleCommentChange}
             title="Provide details in the comment box below for any changes above."
           />
@@ -358,7 +362,7 @@ const SupplementaryDetailsPage = (props) => {
                   <div id="comment-input">
                     <CommentInput
                       // disable={details.assessment.validationStatus === 'ASSESSED'}
-                      defaultComment={commentArray && commentArray.bceidComment ? commentArray.bceidComment : ''}
+                      defaultComment={commentArray && commentArray.bceidComment ? commentArray.bceidComment : {}}
                       // handleAddComment={handleAddBceidComment}
                       handleCommentChange={handleCommentChangeBceid}
                       title="Assessment Message to the Supplier: "
@@ -395,14 +399,16 @@ const SupplementaryDetailsPage = (props) => {
                 buttonType="back"
                 locationRoute={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id)}
               />
-              {currentStatus === 'DRAFT'
+              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+              && currentStatus === 'DRAFT'
               && (
               <Button
                 buttonType="delete"
                 action={() => handleSubmit('DELETED')}
               />
               )}
-              {user.isGovernment && (currentStatus === 'SUBMITTED' || currentStatus === 'RECOMMENDED')
+              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+              && user.isGovernment && (currentStatus === 'SUBMITTED' || currentStatus === 'RECOMMENDED')
                 && (
                 <button
                   className="button text-danger"
@@ -416,7 +422,8 @@ const SupplementaryDetailsPage = (props) => {
                 )}
             </span>
             <span className="right-content">
-              {((!user.isGovernment && currentStatus === 'DRAFT')
+              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+              && ((!user.isGovernment && currentStatus === 'DRAFT')
               || ((currentStatus === 'SUBMITTED' || currentStatus === 'RECOMMENDED') && user.isGovernment)) && (
               <Button
                 buttonType="save"
@@ -425,7 +432,8 @@ const SupplementaryDetailsPage = (props) => {
                 }}
               />
               )}
-              {analystAction && (['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) < 0 || currentStatus === 'RETURNED') && (
+              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+              && analystAction && (['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) < 0 || currentStatus === 'RETURNED') && (
               <Button
                 buttonTooltip={recommendTooltip}
                 buttonType="submit"
@@ -438,7 +446,8 @@ const SupplementaryDetailsPage = (props) => {
                 }}
               />
               )}
-              {directorAction && currentStatus === 'RECOMMENDED' && (
+              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+              && directorAction && currentStatus === 'RECOMMENDED' && (
               <Button
                 buttonType="submit"
                 optionalClassname="button primary"
@@ -446,7 +455,8 @@ const SupplementaryDetailsPage = (props) => {
                 action={() => handleSubmit('ASSESSED')}
               />
               )}
-              {!user.isGovernment && currentStatus === 'DRAFT' && user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
+              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+              && !user.isGovernment && currentStatus === 'DRAFT' && user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
               && (
               <Button
                 disabled={!checkboxConfirmed}
