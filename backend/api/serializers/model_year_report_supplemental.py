@@ -191,7 +191,6 @@ class SupplementalReportAssessmentSerializer(
         request = self.context.get('request')
         assessment_comment = SupplementalReportAssessmentComment.objects.filter(
             supplemental_report_id=obj
-
         ).order_by('-create_timestamp')
         if not request.user.is_government:
             assessment_comment = SupplementalReportAssessmentComment.objects.filter(
