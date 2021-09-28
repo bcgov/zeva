@@ -200,6 +200,9 @@ class CreditRequestViewset(
             submission_id=pk
         )
 
+        extra_filter_by = []
+        extra_filter_params = []
+
         if filters:
             submission_filters = json.loads(filters)
 
@@ -306,20 +309,66 @@ class CreditRequestViewset(
                     overridden_vins
                 )
 
+            if 'model_year.description' in submission_filters:
+                extra_filter_by.append('UPPER(model_year.description) LIKE %s')
+                string = submission_filters['model_year.description'].replace('%', '')
+                extra_filter_params.append('%' + string + '%')
+
+            if 'icbc_vehicle.make' in submission_filters:
+                extra_filter_by.append('UPPER(icbc_vehicle.make) LIKE %s')
+                string = submission_filters['icbc_vehicle.make'].replace('%', '')
+                extra_filter_params.append('%' + string + '%')
+
+            if 'icbc_vehicle.model_name' in submission_filters:
+                extra_filter_by.append('UPPER(icbc_vehicle.model_name) LIKE %s')
+                string = submission_filters['icbc_vehicle.model_name'].replace('%', '')
+                extra_filter_params.append('%' + string + '%')
+
+        extra_order_by = []
+
         if sort_by:
             order_by = []
             sort_by_list = sort_by.split(',')
             for sort in sort_by_list:
                 if sort in [
+                    'model_year.description',
+                    '-model_year.description',
+                    'icbc_vehicle.make',
+                    '-icbc_vehicle.make',
+                    'icbc_vehicle.model_name',
+                    '-icbc_vehicle.model_name'
+                ]:
+                    extra_order_by.append(sort)
+                if sort in [
                     'xls_make', 'xls_model', 'xls_model_year',
                     'xls_sale_date', 'xls_vin',
                     '-xls_make', '-xls_model', '-xls_model_year',
-                    '-xls_sale_date', '-xls_vin',
+                    '-xls_sale_date', '-xls_vin'
                 ]:
                     order_by.append(sort)
 
             if order_by:
                 submission_content = submission_content.order_by(*order_by)
+
+        if extra_order_by or extra_filter_by:
+            where_clause = [
+                'icbc_registration_data.vin=sales_submission_content.xls_vin',
+                'icbc_registration_data.icbc_vehicle_id=icbc_vehicle.id',
+                'icbc_vehicle.model_year_id=model_year.id'
+            ]
+
+            where_clause.extend(extra_filter_by)
+
+            submission_content = submission_content.extra(
+                tables=[
+                    'icbc_registration_data',
+                    'icbc_vehicle',
+                    'model_year'
+                ],
+                where=where_clause,
+                params=extra_filter_params,
+                order_by=extra_order_by
+            )
 
         submission_content_paginator = Paginator(submission_content, page_size)
 
