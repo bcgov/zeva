@@ -225,6 +225,7 @@ const SupplementaryContainer = (props) => {
           fromSupplierComment: comment,
         };
         if (analystAction) {
+          data.analystAction = true;
           data.penalty = supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty;
           data.description = supplementaryAssessmentData.supplementaryAssessment.decision.id;
         }

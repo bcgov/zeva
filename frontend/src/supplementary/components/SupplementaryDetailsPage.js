@@ -99,7 +99,8 @@ const SupplementaryDetailsPage = (props) => {
       <label className="d-inline text-blue" htmlFor="complied">
         {each.description
           .replace(/{user.organization.name}/g, details.assessmentData.legalName)
-          .replace(/{modelYear}/g, details.assessmentData.modelYear)}
+          .replace(/{modelYear}/g, details.assessmentData.modelYear)
+          .replace(/{penalty}/g, `$${formattedPenalty} CAD`)}
       </label>
       )}
     </div>
@@ -423,7 +424,7 @@ const SupplementaryDetailsPage = (props) => {
             </span>
             <span className="right-content">
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-              && ((!user.isGovernment && currentStatus === 'DRAFT')
+              && ((currentStatus === 'DRAFT')
               || ((currentStatus === 'SUBMITTED' || currentStatus === 'RECOMMENDED') && user.isGovernment)) && (
               <Button
                 buttonType="save"

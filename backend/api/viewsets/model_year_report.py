@@ -532,6 +532,7 @@ class ModelYearReportViewset(
         report = get_object_or_404(ModelYearReport, pk=pk)
         validation_status = request.data.get('status')
         description = request.data.get('description')
+        analyst_action = request.data.get('analyst_action',None)
 
         create_user = None
         supplemental_id = None
@@ -560,8 +561,8 @@ class ModelYearReportViewset(
                 return HttpResponse(status=200)
 
             if validation_status:
-                if validation_status == 'RECOMMENDED' and not description:
-                    # returning a 200 to bypass the rest of the update
+                if validation_status == 'RECOMMENDED' and analyst_action and not description:
+                   # returning a 200 to bypass the rest of the update
                     return HttpResponse(
                         status=200, content="Recommendation is required"
                     )
@@ -571,7 +572,7 @@ class ModelYearReportViewset(
                 report.supplemental.save()
 
                 # check for if validation status is recommended
-                if validation_status == 'RECOMMENDED' or \
+                if validation_status == 'RECOMMENDED' and analyst_action or \
                         (validation_status == 'SUBMITTED' and description):
                     # do "update or create" to create the assessment object
                     penalty = request.data.get('penalty')
