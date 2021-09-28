@@ -1,3 +1,4 @@
+
 #supplementary {
     .supplementary-form {
         border: 1px solid $border-grey;
@@ -9,6 +10,11 @@
 
         .sales-table {
             border: None;
+            .supplementary-input-disabled {
+                background-color: #e9ecef;
+                opacity: 1;
+                border: 1px solid #ced4da;
+            }
         }
     }
 

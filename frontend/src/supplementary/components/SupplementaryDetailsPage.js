@@ -57,7 +57,12 @@ const SupplementaryDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
-
+  // if user is bceid then only draft is editable
+  // if user is idir then draft or submitted is editable
+  const isEditable = (
+    details.actualStatus === 'DRAFT' || (details.actualStatus === null && details.status === 'DRAFT'))
+    || (user.isGovernment && details.actualStatus === 'SUBMITTED'
+    );
   const [showModal, setShowModal] = useState(false);
   const [showModalDraft, setShowModalDraft] = useState(false);
   const reportYear = details.assessmentData && details.assessmentData.modelYear;
@@ -191,6 +196,7 @@ const SupplementaryDetailsPage = (props) => {
       <div className="supplementary-form mt-2">
         <div>
           <SupplierInformation
+            isEditable={isEditable}
             user={user}
             details={details}
             handleInputChange={handleInputChange}
@@ -202,6 +208,7 @@ const SupplementaryDetailsPage = (props) => {
             details={details}
             handleInputChange={handleInputChange}
             salesRows={salesRows}
+            isEditable={isEditable}
           />
           <CreditActivity
             creditReductionSelection={creditReductionSelection}
@@ -215,6 +222,7 @@ const SupplementaryDetailsPage = (props) => {
             obligationDetails={obligationDetails}
             ratios={ratios}
             supplierClass={supplierClass}
+            isEditable={isEditable}
           />
         </div>
         <div id="comment-input">
