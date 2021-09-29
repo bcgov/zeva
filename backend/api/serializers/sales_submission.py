@@ -512,6 +512,7 @@ class SalesSubmissionSaveSerializer(
         sales_submission_comment = validated_data.pop('sales_submission_comment', None)
         comment_type = request.data.get('comment_type', None)
         reasons = request.data.get('reasons', [])
+        reset = request.data.get('reset', None)
 
         if instance.validation_status != SalesSubmissionStatuses.DRAFT and \
                 not request.user.is_government:
@@ -553,6 +554,14 @@ class SalesSubmissionSaveSerializer(
                 attachment.is_removed = True
                 attachment.update_user = request.user.username
                 attachment.save()
+
+        if reset == 'Y':
+            SalesSubmissionContent.objects.filter(
+                submission_id=instance.id,
+                reason__isnull=False
+            ).update(
+                reason=None
+            )
 
         if invalidated is not None:
             RecordOfSale.objects.filter(submission_id=instance.id).delete()

@@ -132,7 +132,7 @@ class SalesSubmissionContent(Auditable):
                 return None
 
         elif self.xls_date_type == XL_CELL_TEXT:
-            try: 
+            try:
                 return parse(str(self.xls_sale_date), fuzzy=True)
             except ValueError:
                 return None

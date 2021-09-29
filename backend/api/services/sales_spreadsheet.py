@@ -365,12 +365,12 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
 
 
 def get_date(date, date_type, datemode):
-    try:
-        date_float = float(date)
-    except ValueError:
-        return None
-
     if date_type == xlrd.XL_CELL_DATE:
+        try:
+            date_float = float(date)
+        except ValueError:
+            return None
+
         try:
             return xlrd.xldate.xldate_as_datetime(
                 date_float,
@@ -380,9 +380,9 @@ def get_date(date, date_type, datemode):
             return None
     elif date_type == xlrd.XL_CELL_TEXT:
         try:
-            return parse(str(date_float), fuzzy=True)
+            return parse(str(date), fuzzy=True)
         except ValueError:
-            return None
+            return date
 
     return None
 
@@ -474,7 +474,7 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
                         'format; '
 
         if 'INVALID_MODEL' in content.warnings:
-            error += 'invalid make, model and year combination; '
+            error += 'Invalid make, model and year combination; '
 
         if 'MODEL_YEAR_MISMATCHED' in content.warnings:
             error += 'Model year does not match BC registration data; '
@@ -489,7 +489,7 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
             error += 'VIN already issued credit; '
 
         if 'ROW_NOT_SELECTED' in content.warnings and error == '':
-            error += 'entry was rejected for validation; '
+            error += 'VIN not registered in BC; '
 
         date = get_date(
             content.xls_sale_date,
@@ -520,7 +520,7 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
     sales_date_col = worksheet.col(4)
     sales_date_col.width = 256 * 20  # 20 characters for sales date
 
-    sales_date_col = worksheet.col(5)
-    sales_date_col.width = 256 * 100  # 100 characters for errors
+    errors_col = worksheet.col(5)
+    errors_col.width = 256 * 100  # 100 characters for errors
 
     workbook.save(stream)
