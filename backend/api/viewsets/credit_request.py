@@ -312,17 +312,17 @@ class CreditRequestViewset(
             if 'model_year.description' in submission_filters:
                 extra_filter_by.append('UPPER(model_year.description) LIKE %s')
                 string = submission_filters['model_year.description'].replace('%', '')
-                extra_filter_params.append('%' + string + '%')
+                extra_filter_params.append('%' + string.upper() + '%')
 
             if 'icbc_vehicle.make' in submission_filters:
                 extra_filter_by.append('UPPER(icbc_vehicle.make) LIKE %s')
                 string = submission_filters['icbc_vehicle.make'].replace('%', '')
-                extra_filter_params.append('%' + string + '%')
+                extra_filter_params.append('%' + string.upper() + '%')
 
             if 'icbc_vehicle.model_name' in submission_filters:
                 extra_filter_by.append('UPPER(icbc_vehicle.model_name) LIKE %s')
                 string = submission_filters['icbc_vehicle.model_name'].replace('%', '')
-                extra_filter_params.append('%' + string + '%')
+                extra_filter_params.append('%' + string.upper() + '%')
 
         extra_order_by = []
 

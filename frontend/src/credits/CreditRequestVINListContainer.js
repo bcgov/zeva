@@ -124,6 +124,7 @@ const CreditRequestVINListContainer = (props) => {
       invalidated: invalidatedList,
       validationStatus: 'CHECKED',
       reasons: reasonList,
+      reset: query && query.reset,
     }).then(() => {
       const url = ROUTES_CREDIT_REQUESTS.VALIDATED.replace(/:id/g, submission.id);
 
