@@ -92,7 +92,7 @@ class ModelYearReportViewset(
         if request.user.organization.is_government:
             queryset = ModelYearReport.objects.exclude(validation_status=(
                 ModelYearReportStatuses.DRAFT
-            ))
+            )).order_by('-model_year')
 
             organization_id = request.query_params.get('organization_id', None)
 
@@ -101,7 +101,7 @@ class ModelYearReportViewset(
         else:
             queryset = ModelYearReport.objects.filter(
                 organization_id=request.user.organization.id
-            )
+            ).order_by('-model_year')
 
         return queryset
 

@@ -74,7 +74,7 @@ const ComplianceObligationDetailsPage = (props) => {
 
   if (!creditReductionSelection) {
     disabledCheckboxes = 'disabled';
-    hoverText = 'You must select a ZEV class credit preference for your Unspecified ZEV Class Credit Reduction';
+    hoverText = 'You must enter a LDV Sales Total and select a ZEV class credit preference for your Unspecified ZEV Class Credit Reduction';
   }
 
   if (loading) {

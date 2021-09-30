@@ -25,6 +25,7 @@ const ConsumerSalesDetailsPage = (props) => {
     modelYear,
     statuses,
     id,
+    checked
   } = props;
 
   const [showModal, setShowModal] = useState(false);
@@ -69,6 +70,13 @@ const ConsumerSalesDetailsPage = (props) => {
       disabledCheckboxes = 'disabled';
     }
   });
+
+  const disableSave = () => {
+    if (vehicles.length <= 0 && !checked) {
+       return true;
+    }
+    return false;
+  }
 
   return (
     <div id="compliance-consumer-sales-details" className="page">
@@ -173,9 +181,9 @@ const ConsumerSalesDetailsPage = (props) => {
                 <Button
                   buttonType="save"
                   disabled={
-                    ['SAVED', 'UNSAVED'].indexOf(
-                      statuses.consumerSales.status,
-                    ) < 0
+                    (['SAVED', 'UNSAVED'].indexOf(
+                    statuses.consumerSales.status,
+                    ) < 0) || disableSave()
                   }
                   optionalClassname="button primary"
                   action={(event) => {
