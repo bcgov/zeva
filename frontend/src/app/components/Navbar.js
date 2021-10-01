@@ -38,6 +38,13 @@ class Navbar extends Component {
     });
   }
 
+  getCreditAmounts(creditClass, amount) {
+    if (amount < 0) {
+      return `(${creditClass}-${Math.abs(amount)})`;
+    }
+    return `${creditClass}-${amount}`;
+  }
+
   collapseNavBar() {
     let { collapsed } = this.state;
 
@@ -77,7 +84,7 @@ class Navbar extends Component {
               <div>
                 <h5 className="organization-name">{user.organization ? user.organization.name : ''}</h5>
                 {!user.isGovernment && user.organization && (
-                <Link className="credit-balance" to={ROUTES_CREDITS.LIST}>Credit Balance: {user.organization.balance.A}-A/ {user.organization.balance.B}-B</Link>
+                <Link className="credit-balance" to={ROUTES_CREDITS.LIST}>Credit Balance: {this.getCreditAmounts('A', user.organization.balance.A)}/ {this.getCreditAmounts('B', user.organization.balance.B)}</Link>
                 )}
               </div>
             </div>

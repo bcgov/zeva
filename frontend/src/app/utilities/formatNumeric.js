@@ -1,4 +1,4 @@
-const formatNumeric = (value, decimals = 2) => {
+const formatNumeric = (value, decimals = 2, roundBracket) => {
   let newValue = value;
   if (isNaN(newValue)) {
     return newValue;
@@ -11,7 +11,11 @@ const formatNumeric = (value, decimals = 2) => {
   } else if (decimals === 0) {
     newValue = Math.round(newValue);
   }
-
+  if (roundBracket) {
+    if (newValue < 0) {
+      newValue = `(${newValue * -1})`;
+    }
+  }
   if (typeof newValue === 'number') {
     newValue = newValue.toString();
   }
