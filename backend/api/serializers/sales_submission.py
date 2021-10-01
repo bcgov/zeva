@@ -15,6 +15,7 @@ from api.models.sales_submission_comment import SalesSubmissionComment
 from api.models.sales_submission_history import SalesSubmissionHistory
 from api.models.vehicle import Vehicle
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
+from api.models.icbc_snapshot_data import IcbcSnapshotData
 from api.serializers.sales_submission_comment import \
     SalesSubmissionCommentSerializer
 from api.models.user_profile import UserProfile
@@ -606,6 +607,13 @@ class SalesSubmissionSaveSerializer(
                 if (
                         str(model_year), row.xls_make.upper(), row.xls_model,
                 ) in valid_vehicles:
+                    icbc_snapshot = IcbcSnapshotData.objects.create(
+                        vin=row.icbc_verification.vin,
+                        make=row.icbc_verification.icbc_vehicle.make,
+                        model_name=row.icbc_verification.icbc_vehicle.model_name,
+                        model_year=row.icbc_verification.icbc_vehicle.model_year.name,
+                        upload_date=row.icbc_verification.icbc_upload_date.upload_date
+                    )
                     RecordOfSale.objects.create(
                         sale_date=get_date(
                             row.xls_sale_date,
@@ -617,6 +625,7 @@ class SalesSubmissionSaveSerializer(
                         vehicle=row.vehicle,
                         vin=row.xls_vin,
                         vin_validation_status=VINStatuses.MATCHED,
+                        icbc_snapshot=icbc_snapshot
                     )
 
         if reasons is not None:
