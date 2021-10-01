@@ -13,7 +13,7 @@ const formatNumeric = (value, decimals = 2, roundBracket) => {
   }
   if (roundBracket) {
     if (newValue < 0) {
-      newValue = `(${newValue.substring(1)})`;
+      newValue = `(${newValue * -1})`;
     }
   }
   if (typeof newValue === 'number') {
