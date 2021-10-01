@@ -13,7 +13,7 @@ const formatNumeric = (value, decimals = 2, roundBracket) => {
   }
   if (roundBracket) {
     if (newValue < 0) {
-      newValue = `(${Math.abs(newValue)})`;
+      newValue = `(${newValue.substring(1)})`;
     }
   }
   if (typeof newValue === 'number') {
@@ -21,7 +21,6 @@ const formatNumeric = (value, decimals = 2, roundBracket) => {
   }
 
   newValue = newValue.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-
 
   return newValue;
 };
