@@ -5,6 +5,7 @@ import history from '../../app/History';
 import Loading from '../../app/components/Loading';
 import OrganizationsTable from './OrganizationsTable';
 import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
+import ROUTES_USERS from '../../app/routes/Users';
 import CustomPropTypes from '../../app/utilities/props';
 
 const OrganizationListPage = (props) => {
@@ -36,6 +37,20 @@ const OrganizationListPage = (props) => {
           </button>
         </div>
         )}
+        {user.isGovernment
+                && (
+                <div className="col-md-4 text-right">
+                  <button
+                    className="button primary"
+                    type="button"
+                    onClick={() => {
+                      history.push(ROUTES_USERS.ACTIVE);
+                    }}
+                  >
+                    Email Addresses
+                  </button>
+                </div>
+                )}
       </div>
 
       <div className="row">
