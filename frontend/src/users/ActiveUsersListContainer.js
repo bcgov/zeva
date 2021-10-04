@@ -7,25 +7,37 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
 
-import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
+import ROUTES_USERS from '../app/routes/Users';
 import CustomPropTypes from '../app/utilities/props';
 import ActiveUsersListPage from './components/ActiveUsersListPage';
 
 const ActiveUsersListContainer = (props) => {
-  const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [organizations, setOrganizations] = useState([]);
-  const { keycloak, location, user } = props;
+  const [activeIdirUsers, setActiveIdirUsers] = useState('');
+  const [activeBceidUsers, setActiveBceidUsers] = useState('');
+  const { keycloak, user } = props;
 
   const refreshDetails = () => {
     setLoading(true);
     if (user.isGovernment) {
-      if (location.state) {
-        setFiltered([...filtered, ...location.state]);
-      }
-
-      axios.get(ROUTES_ORGANIZATIONS.LIST).then((response) => {
-        setOrganizations(response.data);
+      let filteredIdir = '';
+      let filteredBceid = '';
+      axios.get(ROUTES_USERS.LIST).then((response) => {
+        response.data.forEach((userProfile) => {
+          if (userProfile.isActive === true && userProfile.email) {
+            if (userProfile.isGovernment) {
+              filteredIdir += userProfile.email;
+              filteredIdir += '; ';
+            } else {
+              filteredBceid += userProfile.email;
+              filteredBceid += '; ';
+            }
+          }
+        });
+        filteredIdir = filteredIdir.substring(0, filteredIdir.length - 2);
+        filteredBceid = filteredBceid.substring(0, filteredBceid.length - 2);
+        setActiveIdirUsers(filteredIdir);
+        setActiveBceidUsers(filteredBceid);
         setLoading(false);
       });
     }
@@ -37,7 +49,8 @@ const ActiveUsersListContainer = (props) => {
 
   return (
     <ActiveUsersListPage
-      filtered={filtered}
+      activeIdirUsers={activeIdirUsers}
+      activeBceidUsers={activeBceidUsers}
       loading={loading}
     />
   );
@@ -45,7 +58,6 @@ const ActiveUsersListContainer = (props) => {
 
 ActiveUsersListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
-  location: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
 };
 

@@ -5,7 +5,7 @@ import CustomPropTypes from '../../app/utilities/props';
 
 const ActiveUsersListPage = (props) => {
   const {
-    filtered, loading,
+    activeIdirUsers, activeBceidUsers, loading,
   } = props;
 
   if (loading) {
@@ -17,9 +17,22 @@ const ActiveUsersListPage = (props) => {
       <div className="col-md-8">
         <h2>Active Users</h2>
       </div>
-      <div className="mt-3">
+      <div className="mt-3 pt-3">
+        <h4>BCEID Users</h4>
         <textarea
-          className="form-control d-inline-block align-top mt-4 col-sm-7"
+          rows="11"
+          className="form-control d-inline-block align-top mt-2 col-sm-9"
+          value={activeBceidUsers}
+          readOnly
+        />
+      </div>
+      <div className="mt-3 pt-4">
+        <h4>IDIR Users</h4>
+        <textarea
+          rows="11"
+          className="form-control d-inline-block align-top mt-2 col-sm-9"
+          value={activeIdirUsers}
+          readOnly
         />
       </div>
     </div>
@@ -30,7 +43,8 @@ ActiveUsersListPage.defaultProps = {
 };
 
 ActiveUsersListPage.propTypes = {
-  filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  activeIdirUsers: PropTypes.string.isRequired,
+  activeBceidUsers: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired,
 };
 
