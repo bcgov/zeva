@@ -565,6 +565,9 @@ class SalesSubmissionSaveSerializer(
             )
 
         if invalidated is not None:
+            IcbcSnapshotData.objects.filter(
+                submission_id=instance.id
+            ).delete()
             RecordOfSale.objects.filter(submission_id=instance.id).delete()
             valid_vehicles = Vehicle.objects.filter(
                 organization_id=instance.organization_id,
@@ -612,6 +615,7 @@ class SalesSubmissionSaveSerializer(
                         make=row.icbc_verification.icbc_vehicle.make,
                         model_name=row.icbc_verification.icbc_vehicle.model_name,
                         model_year=row.icbc_verification.icbc_vehicle.model_year.name,
+                        submission=instance,
                         upload_date=row.icbc_verification.icbc_upload_date.upload_date
                     )
                     RecordOfSale.objects.create(

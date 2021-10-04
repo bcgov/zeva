@@ -3,6 +3,12 @@ from django.db import models
 
 
 class IcbcSnapshotData(Auditable):
+    submission = models.ForeignKey(
+        'SalesSubmission',
+        related_name='icbc_snapshot',
+        null=False,
+        on_delete=models.CASCADE
+    )
     vin = models.CharField(
         blank=False,
         null=False,
