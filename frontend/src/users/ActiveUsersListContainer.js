@@ -3,7 +3,6 @@
  * All data handling & manipulation should be handled here.
  */
 import axios from 'axios';
-import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
 
@@ -12,14 +11,14 @@ import CustomPropTypes from '../app/utilities/props';
 import ActiveUsersListPage from './components/ActiveUsersListPage';
 
 const ActiveUsersListContainer = (props) => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [activeIdirUsers, setActiveIdirUsers] = useState('');
   const [activeBceidUsers, setActiveBceidUsers] = useState('');
   const { keycloak, user } = props;
 
   const refreshDetails = () => {
-    setLoading(true);
     if (user.isGovernment) {
+      setLoading(true);
       let filteredIdir = '';
       let filteredBceid = '';
       axios.get(ROUTES_USERS.LIST).then((response) => {
@@ -48,11 +47,16 @@ const ActiveUsersListContainer = (props) => {
   }, [keycloak.authenticated]);
 
   return (
+    <>
+      {user.isGovernment
+    && (
     <ActiveUsersListPage
       activeIdirUsers={activeIdirUsers}
       activeBceidUsers={activeBceidUsers}
       loading={loading}
     />
+    )}
+    </>
   );
 };
 

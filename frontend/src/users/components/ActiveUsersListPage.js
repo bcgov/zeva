@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Loading from '../../app/components/Loading';
-import CustomPropTypes from '../../app/utilities/props';
 
 const ActiveUsersListPage = (props) => {
   const {
@@ -37,9 +36,6 @@ const ActiveUsersListPage = (props) => {
       </div>
     </div>
   );
-};
-
-ActiveUsersListPage.defaultProps = {
 };
 
 ActiveUsersListPage.propTypes = {
