@@ -20,7 +20,12 @@ class SalesSubmissionContentSerializer(ModelSerializer):
         icbc_data = instance.icbc_verification
 
         if request.user.is_government and icbc_data:
-            serializer = IcbcRegistrationDataSerializer(icbc_data)
+            serializer = IcbcRegistrationDataSerializer(
+                icbc_data,
+                context={
+                    'submission_id': instance.submission.id
+                }
+            )
             return serializer.data
 
         return None
