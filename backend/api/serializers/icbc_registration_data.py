@@ -17,9 +17,6 @@ class IcbcRegistrationDataSerializer(ModelSerializer):
             vin=instance.vin,
             submission_id=submission_id
         ).first()
-        print(instance.vin)
-        print(submission_id)
-        print(snapshot)
 
         if snapshot:
             return {

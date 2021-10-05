@@ -568,6 +568,22 @@ class SalesSubmissionSaveSerializer(
             IcbcSnapshotData.objects.filter(
                 submission_id=instance.id
             ).delete()
+
+            all_content = SalesSubmissionContent.objects.filter(
+                submission_id=instance.id
+            )
+
+            for row in all_content:
+                if row.icbc_verification:
+                    icbc_snapshot = IcbcSnapshotData.objects.create(
+                        vin=row.icbc_verification.vin,
+                        make=row.icbc_verification.icbc_vehicle.make,
+                        model_name=row.icbc_verification.icbc_vehicle.model_name,
+                        model_year=row.icbc_verification.icbc_vehicle.model_year.name,
+                        submission=instance,
+                        upload_date=row.icbc_verification.icbc_upload_date.upload_date
+                    )
+
             RecordOfSale.objects.filter(submission_id=instance.id).delete()
             valid_vehicles = Vehicle.objects.filter(
                 organization_id=instance.organization_id,
@@ -610,14 +626,6 @@ class SalesSubmissionSaveSerializer(
                 if (
                         str(model_year), row.xls_make.upper(), row.xls_model,
                 ) in valid_vehicles:
-                    icbc_snapshot = IcbcSnapshotData.objects.create(
-                        vin=row.icbc_verification.vin,
-                        make=row.icbc_verification.icbc_vehicle.make,
-                        model_name=row.icbc_verification.icbc_vehicle.model_name,
-                        model_year=row.icbc_verification.icbc_vehicle.model_year.name,
-                        submission=instance,
-                        upload_date=row.icbc_verification.icbc_upload_date.upload_date
-                    )
                     RecordOfSale.objects.create(
                         sale_date=get_date(
                             row.xls_sale_date,
