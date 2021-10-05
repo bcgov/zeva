@@ -31,7 +31,7 @@ const ComplianceObligationContainer = (props) => {
   const [ratios, setRatios] = useState({});
   const [reportDetails, setReportDetails] = useState({});
   const [reportYear, setReportYear] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR);
-  const [sales, setSales] = useState(0);
+  const [sales, setSales] = useState('');
   const [statuses, setStatuses] = useState({});
   const [supplierClass, setSupplierClass] = useState('S');
   const [totalReduction, setTotalReduction] = useState(0);
@@ -266,7 +266,9 @@ const ComplianceObligationContainer = (props) => {
       const complianceResponseDetails = complianceResponse.data.complianceObligation;
       const { ldvSales } = complianceResponse.data;
 
-      setSales(Number(ldvSales));
+      if (ldvSales) {
+        setSales(Number(ldvSales));
+      }
 
       const {
         creditBalanceEnd,

@@ -110,6 +110,9 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
             'signing_authority_assertion_id', flat=True
         ).distinct()
 
+        if request.user.is_government:
+            organization = report.organization_id
+
         if not confirmation and not summary:
             vehicle = vehicles_sales(model_year, organization)
             vehicles_serializer = VehicleSalesSerializer(vehicle, many=True)
@@ -119,7 +122,7 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
                 model_year_report_id=report.id)
             vehicles_serializer = ModelYearReportVehicleSerializer(
                 vehicle, many=True)
-            
+
         vehicles = vehicles_serializer.data
 
         history_list = ModelYearReportHistory.objects.filter(

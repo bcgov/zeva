@@ -72,9 +72,9 @@ const ComplianceObligationDetailsPage = (props) => {
     }
   });
 
-  if (!creditReductionSelection) {
+  if (!creditReductionSelection || sales === '') {
     disabledCheckboxes = 'disabled';
-    hoverText = 'You must enter a LDV Sales Total and select a ZEV class credit preference for your Unspecified ZEV Class Credit Reduction';
+    hoverText = 'You must enter an LDV Sales Total and select a ZEV class credit preference for your Unspecified ZEV Class Credit Reduction';
   }
 
   if (loading) {

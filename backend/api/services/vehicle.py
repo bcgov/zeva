@@ -60,13 +60,14 @@ def vehicles_sales(model_year, organization):
             ~Q(xls_sale_date="")
             )
         )
-        ).filter(submission__in=org_submission)
+    ).filter(submission__in=org_submission)
 
     vehicles = Vehicle.objects.none()
     for sale in sales:
         model_year = ModelYear.objects.get(name=sale['xls_model_year'][0:4])
         vehicles |= Vehicle.objects.filter(
-            make=sale['xls_make'],
+            make__iexact=sale['xls_make'],
             model_name=sale['xls_model'],
             model_year=model_year)
+
     return vehicles
