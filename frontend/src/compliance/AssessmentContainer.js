@@ -338,8 +338,6 @@ const AssessmentContainer = (props) => {
           creditActivity: reportDetailsArray,
         };
 
-        console.error(ObligationData);
-
         axios.patch(ROUTES_COMPLIANCE.OBLIGATION_SAVE, ObligationData);
       }
 
