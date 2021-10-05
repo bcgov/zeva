@@ -23,34 +23,36 @@ const OrganizationListPage = (props) => {
         <div className="col-md-8">
           <h2>Vehicle Suppliers</h2>
         </div>
-        {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_ORGANIZATIONS') && user.isGovernment
-        && (
-        <div className="col-md-4 text-right">
-          <button
-            className="button primary"
-            type="button"
-            onClick={() => {
-              history.push(ROUTES_ORGANIZATIONS.NEW);
-            }}
-          >
-            <FontAwesomeIcon icon="plus" /> New Supplier
-          </button>
-        </div>
-        )}
-        {user.isGovernment
+
+        <div className="col-md-4">
+          <div className="text-right">
+            {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_ORGANIZATIONS') && user.isGovernment
+           && (
+           <button
+             className="button primary"
+             type="button"
+             onClick={() => {
+               history.push(ROUTES_ORGANIZATIONS.NEW);
+             }}
+           >
+             <FontAwesomeIcon icon="plus" /> New Supplier
+           </button>
+           )}
+            {user.isGovernment
                 && (
-                <div className="col-md-4 text-right">
-                  <button
-                    className="button primary"
-                    type="button"
-                    onClick={() => {
-                      history.push(ROUTES_USERS.ACTIVE);
-                    }}
-                  >
-                    Email Addresses
-                  </button>
-                </div>
+                <button
+                  className="button primary ml-2"
+                  type="button"
+                  onClick={() => {
+                    history.push(ROUTES_USERS.ACTIVE);
+                  }}
+                >
+                  Email Addresses
+                </button>
                 )}
+          </div>
+        </div>
+
       </div>
 
       <div className="row">
