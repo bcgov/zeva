@@ -4,29 +4,63 @@ const reduceFromBalance = (balance, creditType, paramRemainingReduction) => {
     creditA: 0,
     creditB: 0,
   };
-  const primaryBalance = creditType === 'A' ? 'creditA' : 'creditB';
-  const secondaryBalance = creditType === 'A' ? 'creditB' : 'creditA';
+  const balanceType = creditType === 'A' ? 'creditA' : 'creditB';
 
-  if (balance[primaryBalance] >= remainingReduction) {
-    deduction[primaryBalance] = remainingReduction;
+  if (balance[balanceType] >= remainingReduction) {
+    deduction[balanceType] = remainingReduction;
     remainingReduction = 0;
   } else { // if balance is less than the reduction value
-    deduction[primaryBalance] = balance[primaryBalance];
-    remainingReduction -= balance[primaryBalance];
-  }
-
-  if (balance[secondaryBalance] >= remainingReduction) {
-    deduction[secondaryBalance] = remainingReduction;
-    remainingReduction = 0;
-  } else { // if balance is less than the reduction value
-    deduction[secondaryBalance] = balance[secondaryBalance];
-    remainingReduction -= balance[secondaryBalance];
+    deduction[balanceType] = balance[balanceType];
+    remainingReduction -= balance[balanceType];
   }
 
   return {
     deduction,
     reduction: remainingReduction,
   };
+};
+
+const updateBalances = (paramUpdatedBalances, balance, deduction) => {
+  const updatedBalances = paramUpdatedBalances;
+
+  const balanceIndex = updatedBalances.findIndex(
+    (each) => each.modelYear === balance.modelYear,
+  );
+
+  if (balanceIndex >= 0) {
+    updatedBalances[balanceIndex] = {
+      ...updatedBalances[balanceIndex],
+      creditA: updatedBalances[balanceIndex].creditA - deduction.creditA,
+      creditB: updatedBalances[balanceIndex].creditB - deduction.creditB,
+    };
+  } else {
+    updatedBalances.push({
+      modelYear: balance.modelYear,
+      creditA: balance.creditA - deduction.creditA,
+      creditB: balance.creditB - deduction.creditB,
+    });
+  }
+};
+
+const updateDeductions = (paramDeductions, balance, deduction) => {
+  const deductions = paramDeductions;
+
+  const index = deductions.findIndex(
+    (each) => each.modelYear === balance.modelYear
+    && each.type === 'unspecifiedReduction',
+  );
+
+  if (index >= 0) {
+    deductions[index].creditA += deduction.creditA;
+    deductions[index].creditB += deduction.creditB;
+  } else {
+    deductions.push({
+      creditA: deduction.creditA,
+      creditB: deduction.creditB,
+      modelYear: balance.modelYear,
+      type: 'unspecifiedReduction',
+    });
+  }
 };
 
 const calculateCreditReduction = (
@@ -140,6 +174,8 @@ const calculateCreditReduction = (
   }
 
   if (radioId) {
+    const secondaryReduction = radioId === 'A' ? 'B' : 'A';
+
     unspecifiedReductions.forEach((reduction) => {
       remainingReduction = reduction.value;
 
@@ -150,40 +186,19 @@ const calculateCreditReduction = (
 
         remainingReduction = updatedReduction;
 
-        const index = deductions.findIndex(
-          (each) => each.modelYear === balance.modelYear
-          && each.type === 'unspecifiedReduction',
-        );
+        updateDeductions(deductions, balance, deduction);
+        updateBalances(updatedBalances, balance, deduction);
+      });
 
-        if (index >= 0) {
-          deductions[index].creditA += deduction.creditA;
-          deductions[index].creditB += deduction.creditB;
-        } else {
-          deductions.push({
-            creditA: deduction.creditA,
-            creditB: deduction.creditB,
-            modelYear: balance.modelYear,
-            type: 'unspecifiedReduction',
-          });
-        }
+      balances.forEach((balance) => {
+        const {
+          deduction, reduction: updatedReduction,
+        } = reduceFromBalance(balance, secondaryReduction, remainingReduction);
 
-        const balanceIndex = updatedBalances.findIndex(
-          (each) => each.modelYear === balance.modelYear,
-        );
+        remainingReduction = updatedReduction;
 
-        if (balanceIndex >= 0) {
-          updatedBalances[balanceIndex] = {
-            ...updatedBalances[balanceIndex],
-            creditA: updatedBalances[balanceIndex].creditA - deduction.creditA,
-            creditB: updatedBalances[balanceIndex].creditB - deduction.creditB,
-          };
-        } else {
-          updatedBalances.push({
-            modelYear: balance.modelYear,
-            creditA: balance.creditA - deduction.creditA,
-            creditB: balance.creditB - deduction.creditB,
-          });
-        }
+        updateDeductions(deductions, balance, deduction);
+        updateBalances(updatedBalances, balance, deduction);
       });
 
       if (remainingReduction > 0) {

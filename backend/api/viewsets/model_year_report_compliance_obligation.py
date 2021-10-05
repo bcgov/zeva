@@ -194,6 +194,13 @@ class ModelYearReportComplianceObligationViewset(
 
         if is_assessment:
             organization = report.organization
+            snapshot_from_gov = ModelYearReportComplianceObligation.objects.filter(
+                from_gov=True,
+                model_year_report_id=report.id,
+            ).order_by('-update_timestamp')
+
+            if snapshot_from_gov:
+                snapshot = snapshot_from_gov
 
         if (request.user.is_government and request.GET.get('assessment') == 'True' and
                 report.validation_status not in [
