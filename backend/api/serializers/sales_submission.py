@@ -247,13 +247,13 @@ class SalesSubmissionObligationActivitySerializer(
             'b': round(total_b, 2)
         }
 
-
-
     class Meta:
         model = SalesSubmission
         fields = (
              'total_credits',
         )
+
+
 class SalesSubmissionSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
         BaseSerializer
@@ -417,9 +417,17 @@ class SalesSubmissionSerializer(
         return icbc_upload_date.upload_date
 
     def get_sales_submission_comment(self, obj):
-        sales_submission_comment = SalesSubmissionComment.objects.filter(
-            sales_submission=obj
-        ).order_by('-create_timestamp')
+        request = self.context.get('request')
+
+        if request.user.is_government:
+            sales_submission_comment = SalesSubmissionComment.objects.filter(
+                sales_submission=obj
+            ).order_by('-create_timestamp')
+        else:
+            sales_submission_comment = SalesSubmissionComment.objects.filter(
+                sales_submission=obj,
+                to_govt=True
+            ).order_by('-create_timestamp')
 
         if sales_submission_comment.exists():
             serializer = SalesSubmissionCommentSerializer(

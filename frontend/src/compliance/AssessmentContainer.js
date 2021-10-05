@@ -255,7 +255,7 @@ const AssessmentContainer = (props) => {
     const comment = { comment: bceidComment, director: false };
 
     axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
-      if (changedValue && status === 'RECOMMENDED') {
+      if (status === 'RECOMMENDED') {
         const reportDetailsArray = [];
         Object.keys(creditDetails).forEach((each) => {
           Object.keys(creditDetails[each]).forEach((year) => {
