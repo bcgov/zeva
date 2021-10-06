@@ -38,6 +38,7 @@ const ComplianceHistory = (props) => {
     if(noaHistory.supplemental && noaHistory.supplemental.length > 0 && idx < noaHistory.supplemental.length - 1 && noaHistory.supplemental[idx].status === 'ASSESSED') {
       displaySuperseded = true;
     }
+    return displaySuperseded;
   }
   const getLinkByStatus = (item) => {
     if (item.status === 'DRAFT') {
