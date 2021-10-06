@@ -13,6 +13,7 @@ from api.models.model_year_report_compliance_obligation import \
     ModelYearReportComplianceObligation
 from api.models.supplemental_report import SupplementalReport
 
+
 class ModelYearReport(Auditable):
     """
     Model Year Report container. This will serve as the parent table for
@@ -83,6 +84,12 @@ class ModelYearReport(Auditable):
     def supplemental(self):
         return SupplementalReport.objects.filter(
             model_year_report_id=self.id
+        ).order_by('-update_timestamp').first()
+
+    def get_supplemental(self, supplemental_id):
+        return SupplementalReport.objects.filter(
+            model_year_report_id=self.id,
+            id=supplemental_id
         ).first()
 
     def get_avg_sales(self):
@@ -113,7 +120,7 @@ class ModelYearReport(Auditable):
         if row:
             return row.ldv_sales
         return None
-        
+
     def get_ldv_sales_with_year(self, from_gov=False):
         row = ModelYearReportLDVSales.objects.filter(
             model_year_id=self.model_year_id,

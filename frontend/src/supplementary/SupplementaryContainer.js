@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { useParams, useLocation } from 'react-router-dom';
+
 import ROUTES_SUPPLEMENTARY from '../app/routes/SupplementaryReport';
 import SupplementaryDetailsPage from './components/SupplementaryDetailsPage';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
+import history from '../app/History';
+import CustomPropTypes from '../app/utilities/props';
 
 const SupplementaryContainer = (props) => {
-  const { id } = useParams();
-  const [checkboxConfirmed, setCheckboxConfirmed] = useState(false)
+  const { id, supplementaryId } = useParams();
+  const [checkboxConfirmed, setCheckboxConfirmed] = useState(false);
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState('');
@@ -17,12 +21,14 @@ const SupplementaryContainer = (props) => {
   const [deleteFiles, setDeleteFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
   const [newData, setNewData] = useState({ zevSales: {}, creditActivity: [] });
-  let [obligationDetails, setObligationDetails] = useState({});
+  let [obligationDetails, setObligationDetails] = useState([]);
   const [ldvSales, setLdvSales] = useState();
   const [ratios, setRatios] = useState();
   const [newBalances, setNewBalances] = useState({});
-  const [commentArray, setCommentArray] = useState([]);
+  const [commentArray, setCommentArray] = useState({});
   const [idirComment, setIdirComment] = useState([]);
+  const [bceidComment, setBceidComment] = useState([]);
+  const [supplementaryAssessmentData, setSupplementaryAssessmentData] = useState({});
   const [radioDescriptions, setRadioDescriptions] = useState([{ id: 0, description: '' }]);
 
   const analystAction = user.isGovernment
@@ -31,7 +37,7 @@ const SupplementaryContainer = (props) => {
   const directorAction = user.isGovernment
   && user.hasPermission('SIGN_COMPLIANCE_REPORT');
 
-  const isReassessment = reassessment && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')
+  const isReassessment = reassessment && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
 
   const calculateBalance = (creditActivity) => {
     const balances = {};
@@ -95,11 +101,18 @@ const SupplementaryContainer = (props) => {
   };
 
   const handleAddIdirComment = () => {
-    console.log("add comment to the db", idirComment)
+    const commentData = { fromGovtComment: idirComment, director: true };
+    axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
+      console.log('comment saved');
+    });
   };
 
   const handleCommentChangeIdir = (text) => {
     setIdirComment(text);
+  };
+
+  const handleCommentChangeBceid = (text) => {
+    setBceidComment(text);
   };
 
   const handleCommentChange = (content) => {
@@ -167,15 +180,15 @@ const SupplementaryContainer = (props) => {
 
     if (obj.modelYear && obj.title) {
       const index = newData.creditActivity.findIndex((each) => (
-        each.modelYear === obj.modelYear
+        Number(each.modelYear) === Number(obj.modelYear)
         && each.category === obj.title
       ));
 
       if (index >= 0) {
         creditActivity[index] = {
           ...newData.creditActivity[index],
-          creditAValue: obj.creditA,
-          creditBValue: obj.creditB,
+          creditAValue: obj.creditA || creditActivity[index].creditAValue,
+          creditBValue: obj.creditB || creditActivity[index].creditBValue,
         };
       } else {
         creditActivity.push({
@@ -203,15 +216,28 @@ const SupplementaryContainer = (props) => {
         evidenceAttachments.attachments = attachments;
       }
 
-      const data = {
-        ...newData,
-        status,
-        evidenceAttachments,
-        deleteFiles,
-        comment,
-      };
-      axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data).then((response) => {
-      });
+      if (status) {
+        const data = {
+          ...newData,
+          status,
+          evidenceAttachments,
+          deleteFiles,
+          fromSupplierComment: comment,
+        };
+        if (analystAction) {
+          data.analystAction = true;
+          data.penalty = supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty;
+          data.description = supplementaryAssessmentData.supplementaryAssessment.decision.id;
+        }
+        axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data).then((response) => {
+          const { id: supplementalId } = response.data;
+          const commentData = { fromGovtComment: bceidComment, director: false };
+          axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
+            history.push(ROUTES_COMPLIANCE.REPORTS);
+            history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementalId));
+          });
+        });
+      }
     }).catch((e) => {
       setErrorMessage(e);
     });
@@ -250,30 +276,65 @@ const SupplementaryContainer = (props) => {
     setLoading(true);
 
     axios.all([
-      axios.get(ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)),
+      axios.get(`${ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)}?supplemental_id=${supplementaryId || ''}`),
       axios.get(ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)),
       axios.get(ROUTES_COMPLIANCE.RATIOS),
-      axios.get(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)),
+      axios.get(`${ROUTES_SUPPLEMENTARY.ASSESSMENT.replace(':id', id)}?supplemental_id=${supplementaryId || ''}`),
     ]).then(axios.spread((response, complianceResponse, ratioResponse, assessmentResponse) => {
       if (response.data) {
         setDetails(response.data);
-        console.log(response.data)
         const newSupplier = response.data.supplierInformation;
         const newLegalName = newSupplier.find((each) => each.category === 'LEGAL_NAME') || '';
         const newServiceAddress = newSupplier.find((each) => each.category === 'SERVICE_ADDRESS') || '';
         const newRecordsAddress = newSupplier.find((each) => each.category === 'RECORDS_ADDRESS') || '';
         const newMakes = newSupplier.find((each) => each.category === 'LDV_MAKES') || '';
         const newSupplierClass = newSupplier.find((each) => each.category === 'SUPPLIER_CLASS') || '';
+        const idirCommentArrayResponse = [];
+        let bceidCommentResponse = {};
+
         const {
+          assessment,
           descriptions: assessmentDescriptions,
+          assessmentComment,
         } = assessmentResponse.data;
+
+        let assessmentPenalty;
+        let decision;
+        let deficit;
+        let inCompliance;
+
+        if (assessment) {
+          ({
+            penalty: assessmentPenalty,
+            decision,
+            deficit,
+            inCompliance,
+          } = assessment);
+        }
         setRadioDescriptions(assessmentDescriptions);
+
+        if (assessmentComment) {
+          assessmentComment.forEach((item) => {
+            if (item.toDirector === true) {
+              idirCommentArrayResponse.push(item);
+            } else {
+              bceidCommentResponse = item;
+            }
+          });
+        }
+
+        setCommentArray({
+          bceidComment: bceidCommentResponse,
+          idirComment: idirCommentArrayResponse,
+        });
+
         const supplierInfo = {
           legalName: newLegalName.value,
           serviceAddress: newServiceAddress.value,
           recordsAddress: newRecordsAddress.value,
           ldvMakes: newMakes.value,
           supplierClass: newSupplierClass.value,
+          ldvSales: response.data.ldvSales,
         };
         const newZevSales = response.data.zevSales;
         const salesData = [];
@@ -319,6 +380,15 @@ const SupplementaryContainer = (props) => {
           });
         });
 
+        setSupplementaryAssessmentData({
+          supplementaryAssessment: {
+            inCompliance,
+            assessmentPenalty,
+            decision,
+            deficit,
+          },
+        });
+
         setNewData({
           ...newData,
           supplierInfo,
@@ -344,9 +414,11 @@ const SupplementaryContainer = (props) => {
     }));
   };
 
+  const location = useLocation();
+
   useEffect(() => {
     refreshDetails();
-  }, [keycloak.authenticated]);
+  }, [keycloak.authenticated, location.pathname]);
 
   return (
     <SupplementaryDetailsPage
@@ -362,6 +434,7 @@ const SupplementaryContainer = (props) => {
       handleCheckboxClick={handleCheckboxClick}
       handleAddIdirComment={handleAddIdirComment}
       handleCommentChangeIdir={handleCommentChangeIdir}
+      handleCommentChangeBceid={handleCommentChangeBceid}
       handleCommentChange={handleCommentChange}
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
@@ -379,7 +452,20 @@ const SupplementaryContainer = (props) => {
       radioDescriptions={radioDescriptions}
       user={user}
       isReassessment={isReassessment}
+      setSupplementaryAssessmentData={setSupplementaryAssessmentData}
+      supplementaryAssessmentData={supplementaryAssessmentData}
     />
   );
 };
+
+SupplementaryContainer.defaultProps = {
+  reassessment: false,
+};
+
+SupplementaryContainer.propTypes = {
+  keycloak: CustomPropTypes.keycloak.isRequired,
+  reassessment: PropTypes.bool,
+  user: CustomPropTypes.user.isRequired,
+};
+
 export default SupplementaryContainer;

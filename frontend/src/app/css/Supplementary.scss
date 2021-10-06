@@ -1,8 +1,8 @@
+
 #supplementary {
-    padding: 1rem;
     .supplementary-form {
         border: 1px solid $border-grey;
-        padding: 2rem;
+        padding: 1rem;
     }
 
     .sales-table-container {
@@ -10,6 +10,11 @@
 
         .sales-table {
             border: None;
+            .supplementary-input-disabled {
+                background-color: #e9ecef;
+                opacity: 1;
+                border: 1px solid #ced4da;
+            }
         }
     }
 

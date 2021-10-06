@@ -2,6 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import parse from 'html-react-parser';
+import CONFIG from '../../app/config';
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
 import history from '../../app/History';
@@ -15,6 +16,7 @@ import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableC
 import CommentInput from '../../app/components/CommentInput';
 import DisplayComment from '../../app/components/DisplayComment';
 import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
+import ComplianceHistory from './ComplianceHistory';
 
 const AssessmentDetailsPage = (props) => {
   const {
@@ -45,8 +47,8 @@ const AssessmentDetailsPage = (props) => {
     deductions,
     updatedBalances,
   } = props;
-
-  const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, details.organization.name).replace(/{modelYear}/g, reportYear) : '';
+  const formattedPenalty = formatNumeric(details.assessment.assessmentPenalty, 0);
+  const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, details.organization.name).replace(/{modelYear}/g, reportYear).replace(/{penalty}/g, `$${formattedPenalty} CAD`) : '';
   const disabledInputs = false;
   const showDescription = (each) => (
     <div className="mb-3" key={each.id}>
@@ -126,6 +128,8 @@ const AssessmentDetailsPage = (props) => {
             />
             )}
           </div>
+          {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+          && <ComplianceHistory user={user} id={id} activePage="assessment" />}
           {user.isGovernment
           && (
             <>
@@ -179,22 +183,24 @@ const AssessmentDetailsPage = (props) => {
       <div className="row mt-3">
         <div className="col-12">
           <div id="compliance-obligation-page">
-            {!user.isGovernment && statuses.assessment.status === 'ASSESSED' && (
+            {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+            && !user.isGovernment && statuses.assessment.status === 'ASSESSED' && (
               <button
                 className="btn button primary float-right"
                 onClick={() => {
-                  history.push(ROUTES_SUPPLEMENTARY.CREATE.replace(/:id/g, id))
+                  history.push(ROUTES_SUPPLEMENTARY.CREATE.replace(/:id/g, id));
                 }}
                 type="button"
               >
                 Create Supplemental Report
               </button>
             )}
-            {user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && statuses.assessment.status === 'ASSESSED' && (
+            {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+            && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && statuses.assessment.status === 'ASSESSED' && (
               <button
                 className="btn button primary float-right"
                 onClick={() => {
-                  history.push(ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(/:id/g, id))
+                  history.push(ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(/:id/g, id));
                 }}
                 type="button"
               >
@@ -297,7 +303,7 @@ const AssessmentDetailsPage = (props) => {
             <h3 className="mt-4 mb-2">Credit Reduction</h3>
 
             <ComplianceObligationReductionOffsetTable
-              assessment={true}
+              assessment
               reportYear={reportYear}
               creditReductionSelection={details.creditReductionSelection}
               deductions={deductions}
@@ -319,8 +325,8 @@ const AssessmentDetailsPage = (props) => {
               <div className="col-12">
                 <div className="grey-border-area comment-box p-3 mt-2">
                   <div className="text-blue">
-                    <div>The Director has assessed that {assessmentDecision} {details.assessment.assessmentPenalty
-                    && `$${details.assessment.assessmentPenalty} CAD`}
+                    <div>
+                      The Director has assessed that {assessmentDecision}
                     </div>
                     {details.bceidComment && details.bceidComment.comment
                     && <div className="mt-2">{parse(details.bceidComment.comment)}</div>}
@@ -345,10 +351,6 @@ const AssessmentDetailsPage = (props) => {
                     {radioDescriptions.map((each) => (
                       (each.displayOrder === 0) && showDescription(each)
                     ))}
-                    <div className="text-blue mt-3 ml-3 mb-1">
-                      &nbsp;&nbsp; {details.organization.name} has not complied with section 10 (2) of the
-                      Zero-Emission Vehicles Act for the {reportYear} adjustment period.
-                    </div>
                     {radioDescriptions.map((each) => (
                       (each.displayOrder > 0) && showDescription(each)
                     ))}
@@ -410,6 +412,17 @@ const AssessmentDetailsPage = (props) => {
                   type="button"
                 >
                   Return to Analyst
+                </button>
+              )}
+              {analystAction && (
+                <button
+                  className="button text-danger"
+                  onClick={() => {
+                    handleSubmit('DRAFT');
+                  }}
+                  type="button"
+                >
+                  Return to Vehicle Supplier
                 </button>
               )}
             </span>

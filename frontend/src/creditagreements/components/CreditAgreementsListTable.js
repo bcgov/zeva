@@ -36,6 +36,12 @@ const CreditAgreementsListTable = (props) => {
         case 'Automatic Administrative Penalty':
           transactionInitial = 'AP';
           break;
+        case 'Reassessment Allocation':
+          transactionInitial = 'RA';
+          break;
+        case 'Reassessment Reduction':
+          transactionInitial = 'RR';
+          break;
         default:
           transactionInitial = '';
       }

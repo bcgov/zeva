@@ -255,7 +255,7 @@ const AssessmentContainer = (props) => {
     const comment = { comment: bceidComment, director: false };
 
     axios.post(ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id), comment).then(() => {
-      if (changedValue && status === 'RECOMMENDED') {
+      if (status === 'RECOMMENDED') {
         const reportDetailsArray = [];
         Object.keys(creditDetails).forEach((each) => {
           Object.keys(creditDetails[each]).forEach((year) => {
@@ -350,11 +350,18 @@ const AssessmentContainer = (props) => {
       if (analystAction) {
         data.penalty = details.assessment.assessmentPenalty;
         data.description = details.assessment.decision.id;
+        if (status === 'DRAFT') {
+          data.removeConfirmation = true;
+        }
       }
 
       axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then(() => {
-        history.push(ROUTES_COMPLIANCE.REPORTS);
-        history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+        if (status === 'DRAFT' && analystAction) {
+          history.push(ROUTES_COMPLIANCE.REPORTS);
+        } else {
+          history.push(ROUTES_COMPLIANCE.REPORTS);
+          history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+        }
       });
     });
   };

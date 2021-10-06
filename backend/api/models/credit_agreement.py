@@ -46,6 +46,13 @@ class CreditAgreement(Auditable):
         auto_now_add=False,
         db_comment="The calendar date the credit agreement created"
     )
+    model_year_report = models.ForeignKey(
+        'ModelYearReport',
+        related_name='credit_agreement',
+        on_delete=models.DO_NOTHING,
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         db_table = 'credit_agreement'

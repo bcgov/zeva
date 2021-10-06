@@ -18,6 +18,7 @@ const ConsumerSalesContainer = (props) => {
   const [vehicles, setVehicles] = useState([]);
   const [assertions, setAssertions] = useState([]);
   const [confirmed, setConfirmed] = useState(false);
+  const [checked, setChecked] = useState(false);
   const [checkboxes, setCheckboxes] = useState([]);
   const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
   const [modelYear, setModelYear] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR);
@@ -96,11 +97,13 @@ const ConsumerSalesContainer = (props) => {
         (each) => Number(each) !== Number(event.target.id),
       );
       setCheckboxes(checked);
+      setChecked(false);
     }
 
     if (event.target.checked) {
       const checked = checkboxes.concat(event.target.id);
       setCheckboxes(checked);
+      setChecked(true);
     }
   };
 
@@ -147,6 +150,7 @@ const ConsumerSalesContainer = (props) => {
         errorMessage={errorMessage}
         id={id}
         handleCancelConfirmation={handleCancelConfirmation}
+        checked={checked}
       />
     </>
   );

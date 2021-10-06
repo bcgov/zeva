@@ -15,7 +15,7 @@ const FormDropdown = (props) => {
   } = props;
 
   const selectionList = dropdownData.map((obj) => (
-    <option key={accessor(obj)} value={accessor(obj)}>{obj.name || obj.description}</option>
+    <option key={accessor(obj)} value={accessor(obj)}>{obj.name || obj.description || obj.modelYear}</option>
   ));
   return (
     <div className={rowClassname}>
@@ -55,6 +55,7 @@ FormDropdown.propTypes = {
     description: PropTypes.string,
     id: PropTypes.any,
     name: PropTypes.string,
+    modelYear: PropTypes.string,
   })).isRequired,
   dropdownName: PropTypes.string.isRequired,
   fieldName: PropTypes.string.isRequired,

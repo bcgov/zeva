@@ -22,13 +22,13 @@ const OrganizationsTable = (props) => {
     id: 'class',
   },
   {
-    accessor: (item) => (item.balance && item.balance.A ? formatNumeric(item.balance.A, 2) : '-'),
+    accessor: (item) => (item.balance && item.balance.A ? formatNumeric(item.balance.A, 2, true) : '-'),
     className: 'col-credit-balance text-right',
     Header: 'A-Credits',
     id: 'a-credits',
 
   }, {
-    accessor: (item) => (item.balance && item.balance.B ? formatNumeric(item.balance.B, 2) : '-'),
+    accessor: (item) => (item.balance && item.balance.B ? formatNumeric(item.balance.B, 2, true) : '-'),
     className: 'col-credit-balance text-right',
     Header: 'B-Credits',
     id: 'b-credits',

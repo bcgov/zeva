@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -23,6 +24,7 @@ const CreditActivity = (props) => {
     obligationDetails,
     ratios,
     supplierClass,
+    isEditable,
   } = props;
 
   let reportYear = false;
@@ -96,8 +98,6 @@ const CreditActivity = (props) => {
 
   const tempBalances = [];
   const newTempBalances = [];
-
-  // console.error(newBalances);
 
   Object.keys(provisionalBalance).forEach((year) => {
     const { A: creditA, B: creditB } = provisionalBalance[year];
@@ -218,6 +218,8 @@ const CreditActivity = (props) => {
     });
   }
 
+  const currentStatus = details.actualStatus ? details.actualStatus : details.status;
+
   return (
     <>
       <h3>Compliance Obligation</h3>
@@ -244,6 +246,7 @@ const CreditActivity = (props) => {
                       type="text"
                       onChange={handleInputChange}
                       defaultValue={newLdvSales}
+                      readOnly={!isEditable}
                     />
                   </td>
                   <td className="text-blue font-weight-bold" width="30%">Compliance Ratio Credit Reduction:</td>
@@ -313,6 +316,7 @@ const CreditActivity = (props) => {
           newBalances={newBalances}
           newData={newData}
           pendingBalanceExist={false}
+          readOnly={!isEditable}
           reportDetails={reportDetails}
           reportYear={reportYear}
           supplementalReport
@@ -538,6 +542,32 @@ const CreditActivity = (props) => {
       </div>
     </>
   );
+};
+
+CreditActivity.defaultProps = {
+  creditReductionSelection: '',
+  newLdvSales: null,
+  supplierClass: '',
+};
+
+CreditActivity.propTypes = {
+  creditReductionSelection: PropTypes.string,
+  details: PropTypes.shape().isRequired,
+  handleInputChange: PropTypes.func.isRequired,
+  handleSupplementalChange: PropTypes.func.isRequired,
+  ldvSales: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]).isRequired,
+  newBalances: PropTypes.shape().isRequired,
+  newData: PropTypes.shape().isRequired,
+  newLdvSales: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
+  obligationDetails: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  ratios: PropTypes.shape().isRequired,
+  supplierClass: PropTypes.string,
 };
 
 export default CreditActivity;

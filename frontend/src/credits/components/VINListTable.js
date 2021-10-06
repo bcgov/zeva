@@ -104,29 +104,53 @@ const VINListTable = (props) => {
     Header: 'ICBC Registration',
     headerClassName: 'header-group header-margin',
     columns: [{
-      accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.modelYear.name : '-'),
+      accessor: (item) => {
+        if (item.icbcVerification) {
+          if (item.icbcSnapshot) {
+            return item.icbcSnapshot.modelYear;
+          }
+
+          return item.icbcVerification.icbcVehicle.modelYear.name;
+        }
+
+        return '-';
+      },
       className: 'icbc-model-year text-center',
-      filterable: false,
-      sortable: false,
       Header: 'MY',
       headerClassName: 'icbc-model-year',
-      id: 'icbc-model-year',
+      id: 'model_year.description',
       width: 75,
     }, {
-      accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.make : '-'),
+      accessor: (item) => {
+        if (item.icbcVerification) {
+          if (item.icbcSnapshot) {
+            return item.icbcSnapshot.make;
+          }
+
+          return item.icbcVerification.icbcVehicle.make;
+        }
+
+        return '-';
+      },
       className: 'icbc-make',
-      filterable: false,
-      sortable: false,
       Header: 'Make',
-      id: 'icbc-make',
+      id: 'icbc_vehicle.make',
       width: 100,
     }, {
-      accessor: (item) => (item.icbcVerification ? item.icbcVerification.icbcVehicle.modelName : '-'),
+      accessor: (item) => {
+        if (item.icbcVerification) {
+          if (item.icbcSnapshot) {
+            return item.icbcSnapshot.modelName;
+          }
+
+          return item.icbcVerification.icbcVehicle.modelName;
+        }
+
+        return '-';
+      },
       className: 'icbc-model',
-      filterable: false,
-      sortable: false,
       Header: 'Model',
-      id: 'icbc-model',
+      id: 'icbc_vehicle.model_name',
       width: 200,
     }],
   }, {

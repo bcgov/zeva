@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import ReactTable from 'react-table';
@@ -8,7 +9,11 @@ const ZevSales = (props) => {
     details,
     handleInputChange,
     salesRows,
+    isEditable,
   } = props;
+
+  const currentStatus = details.actualStatus ? details.actualStatus : details.status;
+
   const columns = [{
     Cell: (item) => (
       <>
@@ -19,6 +24,8 @@ const ZevSales = (props) => {
           name="zevSales"
           defaultValue={item.original.newData ? item.original.newData.sales : ''}
           onChange={handleInputChange}
+          readOnly={!isEditable}
+          className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
       </>
     ),
@@ -39,6 +46,8 @@ const ZevSales = (props) => {
           size="4"
           maxLength="4"
           defaultValue={item.original.newData.modelYear}
+          readOnly={!isEditable}
+          className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
       </>
     ),
@@ -58,6 +67,8 @@ const ZevSales = (props) => {
           id={`make-${item.index}`}
           onChange={handleInputChange}
           defaultValue={item.original.newData.make}
+          readOnly={!isEditable}
+          className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
       </>
     ),
@@ -77,6 +88,8 @@ const ZevSales = (props) => {
           id={`modelName-${item.index}`}
           onChange={handleInputChange}
           defaultValue={item.original.newData.modelName}
+          readOnly={!isEditable}
+          className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
       </>
     ),
@@ -96,6 +109,8 @@ const ZevSales = (props) => {
           id={`vehicleZevType-${item.index}`}
           onChange={handleInputChange}
           defaultValue={item.original.newData.vehicleZevType}
+          readOnly={!isEditable}
+          className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
       </>
     ),
@@ -115,6 +130,8 @@ const ZevSales = (props) => {
           id={`range-${item.index}`}
           onChange={handleInputChange}
           defaultValue={item.original.newData.range}
+          readOnly={!isEditable}
+          className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
       </>
     ),
@@ -135,6 +152,8 @@ const ZevSales = (props) => {
           id={`zevClass-${item.index}`}
           onChange={handleInputChange}
           defaultValue={item.original.newData.zevClass}
+          readOnly={!isEditable}
+          className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
       </>
     ),
@@ -167,6 +186,7 @@ const ZevSales = (props) => {
           showPagination={false}
         />
         )}
+        {currentStatus !== 'ASSESSED' && (
         <button
           className="transfer-add-line m-2"
           onClick={() => {
@@ -176,9 +196,17 @@ const ZevSales = (props) => {
         >
           <FontAwesomeIcon icon="plus" /> Add another line for a new ZEV model
         </button>
+        )}
       </div>
     </>
   );
+};
+
+ZevSales.propTypes = {
+  addSalesRow: PropTypes.func.isRequired,
+  details: PropTypes.shape().isRequired,
+  handleInputChange: PropTypes.func.isRequired,
+  salesRows: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 };
 
 export default ZevSales;

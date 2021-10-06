@@ -41,7 +41,7 @@ import ConsumerSalesContainer from '../compliance/ConsumerSalesContainer';
 import CreditAgreementsEditContainer from '../creditagreements/CreditAgreementsEditContainer';
 import CreditAgreementsDetailsContainer from '../creditagreements/CreditAgreementsDetailsContainer';
 import SupplementaryContainer from '../supplementary/SupplementaryContainer';
-
+import ActiveUsersListContainer from '../users/ActiveUsersListContainer'
 import ErrorHandler from './components/ErrorHandler';
 import Loading from './components/Loading';
 import StatusInterceptor from './components/StatusInterceptor';
@@ -139,6 +139,14 @@ class Router extends Component {
         <PageLayout keycloak={keycloak} user={user}>
           <ErrorHandler statusCode={statusCode}>
             <Switch>
+              <Route
+                path={ROUTES_USERS.ACTIVE}
+                render={() => <ActiveUsersListContainer keycloak={keycloak} user={user} />}
+              />
+              <Route
+                path={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS}
+                render={() => <SupplementaryContainer keycloak={keycloak} user={user} />}
+              />
               <Route
                 path={ROUTES_SUPPLEMENTARY.CREATE}
                 render={() => <SupplementaryContainer keycloak={keycloak} user={user} />}

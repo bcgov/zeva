@@ -26,6 +26,10 @@ const CreditAgreementsAlert = (props) => {
     transaction = 'AA';
   } else if (transactionType === 'Administrative Credit Reduction') {
     transaction = 'AR';
+  } else if (transactionType === 'Reassessment Reduction') {
+    transaction = 'RR';
+  } else if (transactionType === 'Reassessment Allocation') {
+    transaction = 'RA';
   } else {
     transaction = 'IA';
   }

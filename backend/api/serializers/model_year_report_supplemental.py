@@ -1,10 +1,10 @@
+from django.core.exceptions import ImproperlyConfigured
 from enumfields.drf import EnumField
 from rest_framework.serializers import ModelSerializer, \
     SerializerMethodField, SlugRelatedField
 
 from api.models.supplemental_report import SupplementalReport
 from api.models.supplemental_report_sales import SupplementalReportSales
-from api.models.supplemental_report_statuses import SupplementalReportStatuses
 from api.models.model_year_report_address import ModelYearReportAddress
 from api.serializers.organization_address import OrganizationAddressSerializer
 from api.models.model_year_report import ModelYearReport
@@ -13,7 +13,12 @@ from api.models.supplemental_report_credit_activity import \
     SupplementalReportCreditActivity
 from api.models.model_year_report_vehicle import ModelYearReportVehicle
 from api.models.supplemental_report_attachment import SupplementalReportAttachment
+from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.serializers.model_year_report_vehicle import ModelYearReportVehicleSerializer
+from api.models.model_year_report_assessment_descriptions import ModelYearReportAssessmentDescriptions
+from api.serializers.model_year_report_assessment import ModelYearReportAssessmentDescriptionsSerializer
+from api.models.supplemental_report_assessment import SupplementalReportAssessment
+from api.models.supplemental_report_assessment_comment import SupplementalReportAssessmentComment
 from api.serializers.vehicle import ModelYearSerializer
 from api.models.vehicle_zev_type import ZevType
 from api.models.model_year import ModelYear
@@ -21,6 +26,8 @@ from api.models.credit_class import CreditClass
 from api.models.supplemental_report_comment import \
     SupplementalReportComment
 from api.services.minio import minio_get_object
+from api.models.user_profile import UserProfile
+from api.serializers.user import MemberSerializer
 from api.models.supplemental_report_supplier_information import \
     SupplementalReportSupplierInformation
 
@@ -41,6 +48,7 @@ class ModelYearReportSupplementalCreditActivitySerializer(ModelSerializer):
             'model_year'
         )
 
+
 class ModelYearReportSupplementalCommentSerializer(ModelSerializer):
     class Meta:
         model = SupplementalReportComment
@@ -50,6 +58,31 @@ class ModelYearReportSupplementalCommentSerializer(ModelSerializer):
         read_only_fields = (
             'id',
         )
+
+
+class SupplementalReportAssessmentCommentSerializer(ModelSerializer):
+    """
+    Serializer for supplemental report assessment comments
+    """
+    create_user = SerializerMethodField()
+
+    def get_create_user(self, obj):
+        user = UserProfile.objects.filter(username=obj.create_user).first()
+        if user is None:
+            return obj.create_user
+
+        serializer = MemberSerializer(user, read_only=True)
+        return serializer.data
+
+    class Meta:
+        model = SupplementalReportAssessmentComment
+        fields = (
+            'id', 'comment', 'create_timestamp', 'create_user', 'to_director'
+        )
+        read_only_fields = (
+            'id',
+        )
+
 
 class ModelYearReportSupplementalAttachmentSerializer(ModelSerializer):
     """
@@ -81,7 +114,6 @@ class ModelYearReportSupplementalAttachmentSerializer(ModelSerializer):
         )
 
 
-
 class ModelYearReportSupplementalSales(ModelSerializer):
     zev_class = SlugRelatedField(
         slug_field='credit_class',
@@ -100,7 +132,8 @@ class ModelYearReportSupplementalSales(ModelSerializer):
         model = SupplementalReportSales
         fields = (
             'id', 'sales', 'make', 'model_name',
-            'range', 'zev_class', 'model_year', 'vehicle_zev_type','update_timestamp',
+            'range', 'zev_class', 'model_year', 'vehicle_zev_type',
+            'update_timestamp',
         )
 
 
@@ -112,14 +145,92 @@ class ModelYearReportSupplementalSupplierSerializer(ModelSerializer):
         )
 
 
+class SupplementalReportAssessmentSerializer(
+        ModelSerializer
+):
+    assessment_comment = SerializerMethodField()
+    assessment = SerializerMethodField()
+    descriptions = SerializerMethodField()
+
+    def get_descriptions(self, obj):
+        descriptions = ModelYearReportAssessmentDescriptions.objects.filter()
+        serializer = ModelYearReportAssessmentDescriptionsSerializer(
+            descriptions,
+            read_only=True,
+            many=True,
+            )
+        return serializer.data
+
+    def get_assessment(self, obj):
+        assessment = SupplementalReportAssessment.objects.filter(
+            supplemental_report_id=obj
+        ).first()
+
+        if not assessment:
+            return {
+                'decision': {'id': None, 'description': None},
+                'penalty': None,
+                'in_compliance': ''
+            }
+        description_serializer = ModelYearReportAssessmentDescriptionsSerializer(
+            assessment.supplemental_report_assessment_description,
+            read_only=True,
+            )
+
+        return {
+            'decision': {
+                'description': description_serializer.data['description'],
+                'id': description_serializer.data['id']
+            },
+            'penalty': assessment.penalty,
+            'deficit': '',
+            'in_compliance': ''
+        }
+
+    def get_assessment_comment(self, obj):
+        request = self.context.get('request')
+        assessment_comment = SupplementalReportAssessmentComment.objects.filter(
+            supplemental_report_id=obj
+        ).order_by('-create_timestamp')
+        if not request.user.is_government:
+            assessment_comment = SupplementalReportAssessmentComment.objects.filter(
+                supplemental_report_id=obj,
+                to_director=False
+            ).order_by('-create_timestamp')
+        if not assessment_comment:
+            return []
+        serializer = SupplementalReportAssessmentCommentSerializer(
+            assessment_comment, read_only=True, many=True
+        )
+        return serializer.data
+
+    class Meta:
+        model = SupplementalReport
+        fields = (
+            'id', 'assessment_comment',
+            'assessment', 'descriptions'
+        )
+
+
 class ModelYearReportSupplementalSerializer(ModelSerializer):
-    status = EnumField(SupplementalReportStatuses)
+    status = EnumField(ModelYearReportStatuses)
     credit_activity = SerializerMethodField()
     supplier_information = SerializerMethodField()
     assessment_data = SerializerMethodField()
     zev_sales = SerializerMethodField()
     attachments = SerializerMethodField()
     from_supplier_comments = SerializerMethodField()
+    actual_status = SerializerMethodField()
+
+    def get_actual_status(self, obj):
+        latest_report = SupplementalReport.objects.filter(
+            model_year_report_id=obj.model_year_report_id
+        ).order_by('-update_timestamp').first()
+
+        if not latest_report:
+            return None
+
+        return latest_report.status.value
 
     def get_from_supplier_comments(self, obj):
         comments = SupplementalReportComment.objects.filter(
@@ -177,7 +288,7 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
 
         address_queryset = ModelYearReportAddress.objects.filter(
             model_year_report_id=report.id
-         )
+        )
         address_serializer = OrganizationAddressSerializer(
             address_queryset, many=True
         )
@@ -217,5 +328,6 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         model = SupplementalReport
         fields = (
             'id', 'status', 'ldv_sales', 'credit_activity',
-            'assessment_data', 'zev_sales', 'supplier_information','attachments','from_supplier_comments'
+            'assessment_data', 'zev_sales', 'supplier_information',
+            'attachments', 'from_supplier_comments', 'actual_status'
         )

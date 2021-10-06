@@ -74,11 +74,17 @@ const CreditTransactionListTable = (props) => {
         if (item.detailTransactionType === 'Administrative Credit Allocation') {
           return 'AA';
         }
+        if (item.detailTransactionType === 'Reassessment Allocation') {
+          return 'RA';
+        }
 
         return 'IA';
       case 'credit adjustment reduction':
         if (item.detailTransactionType === 'Administrative Credit Reduction') {
           return 'AR';
+        }
+        if (item.detailTransactionType === 'Reassessment Reduction') {
+          return 'RR';
         }
         break;
       case 'reduction':
@@ -208,7 +214,7 @@ const CreditTransactionListTable = (props) => {
     Header: 'Balance',
     headerClassName: 'header-group balance-left',
     columns: [{
-      accessor: (item) => (item.displayTotalA ? _.round(item.displayTotalA, 2).toFixed(2) : '-'),
+      accessor: (item) => (item.displayTotalA ? formatNumeric(item.displayTotalA, 2, true) : '-'),
       className: 'text-right balance-left',
       Cell: (item) => (
         <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>
@@ -218,7 +224,7 @@ const CreditTransactionListTable = (props) => {
       id: 'credit-balance-a',
       maxWidth: 175,
     }, {
-      accessor: (item) => (item.displayTotalB ? _.round(item.displayTotalB, 2).toFixed(2) : '-'),
+      accessor: (item) => (item.displayTotalB ? formatNumeric(item.displayTotalB, 2, true) : '-'),
       className: 'text-right',
       Cell: (item) => (
         <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>

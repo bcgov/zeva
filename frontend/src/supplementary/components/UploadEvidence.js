@@ -1,8 +1,8 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from 'axios';
 import ExcelFileDrop from '../../app/components/FileDrop';
 import getFileSize from '../../app/utilities/getFileSize';
-import axios from 'axios';
 
 const UploadEvidence = (props) => {
   const {
@@ -18,7 +18,7 @@ const UploadEvidence = (props) => {
     files.splice(found, 1);
     setUploadFiles([...files]);
   };
-  
+
   return (
     <>
       <div className="row mt-3 mb-2">

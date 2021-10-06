@@ -68,7 +68,7 @@ class CreditAgreementSerializer(ModelSerializer, CreditAgreementBaseSerializer):
         fields = (
             'id', 'organization', 'effective_date', 'status',
             'transaction_type', 'comments', 'optional_agreement_id', 
-            'update_timestamp', 'attachments','credit_agreement_content'
+            'update_timestamp', 'attachments','credit_agreement_content', 'model_year_report_id'
         )
 
 
@@ -102,11 +102,13 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
         transaction_type = agreement_details.get('transaction_type')
         optional_agreement_id = agreement_details.get('optional_agreement_id')
         effective_date = agreement_details.get('effective_date')
+        model_year_report_id = agreement_details.get('model_year_report_id')
 
         obj = CreditAgreement.objects.create(
             transaction_type=transaction_type,
             optional_agreement_id=optional_agreement_id,
             effective_date=effective_date,
+            model_year_report_id=model_year_report_id,
             **validated_data
         )
         if bceid_comment:
@@ -255,9 +257,11 @@ class CreditAgreementSaveSerializer(ModelSerializer, EnumSupportSerializerMixin)
             transaction_type = agreement_details.get('transaction_type')
             optional_agreement_id = agreement_details.get('optional_agreement_id')
             effective_date = agreement_details.get('effective_date')
+            model_year_report_id = agreement_details.get('model_year_report_id')
             instance.transaction_type = transaction_type
             instance.effective_date = effective_date
             instance.optional_agreement_id = optional_agreement_id
+            instance.model_year_report_id = model_year_report_id
 
         instance.update_user = request.user.username
         instance.save()
