@@ -289,7 +289,6 @@ const SupplementaryContainer = (props) => {
       axios.get(`${ROUTES_SUPPLEMENTARY.ASSESSMENT.replace(':id', id)}?supplemental_id=${supplementaryId || ''}`),
     ]).then(axios.spread((response, complianceResponse, ratioResponse, assessmentResponse) => {
       if (response.data) {
-        console.log("response.data",response.data);
         if (location && location.state && location.state.new){
           setNewReport(true);
         } else {

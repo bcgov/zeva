@@ -59,7 +59,6 @@ const SupplementaryDetailsPage = (props) => {
     return <Loading />;
   }
 
-  console.log(details.actualStatus, details.status);
   // if user is bceid then only draft is editable
   // if user is idir then draft or submitted is editable
   const isEditable = (

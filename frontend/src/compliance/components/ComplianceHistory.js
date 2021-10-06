@@ -17,6 +17,7 @@ const ComplianceHistory = (props) => {
   const { supplementaryId } = useParams();
 
   const [noaHistory, setNoaHistory] = useState({});
+  let displaySuperseded;
   useEffect(() => {
     axios.get(ROUTES_COMPLIANCE.NOA_HISTORY.replace(/:id/g, id)).then((response) => {
       setNoaHistory(response.data);
@@ -30,7 +31,14 @@ const ComplianceHistory = (props) => {
     return `Supplementary report signed and submitted to the Government of B.C. ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
   };
   const recommendedText = (item) => `Supplementary report recommended ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
-  const reassessmentText = (item) => `Notice of Reassessment ${moment(item.updateTimestamp).format('MMM D, YYYY')}`;
+  const getSupersededStatus = (idx) => {
+    if (idx == noaHistory.supplemental.length - 1 && noaHistory.supplemental[idx].status === 'ASSESSED') {
+      displaySuperseded = false;
+    } 
+    if(idx < noaHistory.supplemental.length - 1 && noaHistory.supplemental[idx].status === 'ASSESSED') {
+      displaySuperseded = true;
+    }
+  }
   const getLinkByStatus = (item) => {
     if (item.status === 'DRAFT') {
       if (Number(item.supplementalReportId) === Number(supplementaryId)) {
@@ -77,7 +85,7 @@ const ComplianceHistory = (props) => {
     }
     if (item.status === 'ASSESSED') {
       if (Number(item.supplementalReportId) === Number(supplementaryId)) {
-        return (<span>{reassessmentText(item)}</span>);
+        return (<span>Notice of Reassessment {moment(item.updateTimestamp).format('MMM D, YYYY')}{displaySuperseded? <span className="text-red"> Superseded</span> : ''}</span>);
       }
 
       return (
@@ -85,7 +93,7 @@ const ComplianceHistory = (props) => {
           className="text-blue text-underline"
           to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', item.supplementalReportId)}
         >
-          {reassessmentText(item)}
+          Notice of Reassessment {moment(item.updateTimestamp).format('MMM D, YYYY')}{displaySuperseded ? <span className="text-red"> Superseded</span> : ''}
         </Link>
       );
     }
@@ -119,8 +127,9 @@ const ComplianceHistory = (props) => {
             )}
             {noaHistory.supplemental
             && (
-              noaHistory.supplemental.map((item) => (
+              noaHistory.supplemental.map((item,idx) => (
                 <li key={item.id} className={item.status === 'ASSESSED' ? 'main-list-item' : 'sub-list-item'}>
+                  {getSupersededStatus(idx)}
                   {getLinkByStatus(item)}
                 </li>
               ))
