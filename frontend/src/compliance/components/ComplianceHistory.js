@@ -83,7 +83,7 @@ const ComplianceHistory = (props) => {
       return (
         <Link
           className="text-blue text-underline"
-          to={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)}
+          to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', item.supplementalReportId)}
         >
           {reassessmentText(item)}
         </Link>
@@ -93,7 +93,7 @@ const ComplianceHistory = (props) => {
   };
 
   return (
-    Object.keys(noaHistory).length > 0 && (
+    Object.keys(noaHistory).length > 0 && noaHistory.supplemental && noaHistory.supplemental.length > 0 && (
       <div className="m-0 pt-2">
         <h3>
           Model Year Report Assessment History

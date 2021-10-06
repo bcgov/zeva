@@ -188,7 +188,7 @@ const AssessmentDetailsPage = (props) => {
               <button
                 className="btn button primary float-right"
                 onClick={() => {
-                  history.push(ROUTES_SUPPLEMENTARY.CREATE.replace(/:id/g, id));
+                  history.push(ROUTES_SUPPLEMENTARY.CREATE.replace(/:id/g, id), {new:true});
                 }}
                 type="button"
               >
@@ -200,7 +200,7 @@ const AssessmentDetailsPage = (props) => {
               <button
                 className="btn button primary float-right"
                 onClick={() => {
-                  history.push(ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(/:id/g, id));
+                  history.push(ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(/:id/g, id), {new:true});
                 }}
                 type="button"
               >
