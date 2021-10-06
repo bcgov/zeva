@@ -31,6 +31,7 @@ const ComplianceHistory = (props) => {
     return `Supplementary report signed and submitted to the Government of B.C. ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
   };
   const recommendedText = (item) => `Supplementary report recommended ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
+
   const getSupersededStatus = (idx) => {
     if (noaHistory.supplemental && noaHistory.supplemental.length > 0 && idx == noaHistory.supplemental.length - 1 && noaHistory.supplemental[idx].status === 'ASSESSED') {
       displaySuperseded = false;
@@ -40,6 +41,7 @@ const ComplianceHistory = (props) => {
     }
     return displaySuperseded;
   }
+  
   const getLinkByStatus = (item) => {
     if (item.status === 'DRAFT') {
       if (Number(item.supplementalReportId) === Number(supplementaryId)) {

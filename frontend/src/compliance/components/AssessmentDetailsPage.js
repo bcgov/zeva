@@ -189,6 +189,7 @@ const AssessmentDetailsPage = (props) => {
                 className="btn button primary float-right"
                 onClick={() => {
                   history.push(ROUTES_SUPPLEMENTARY.CREATE.replace(/:id/g, id), {new:true});
+
                 }}
                 type="button"
               >

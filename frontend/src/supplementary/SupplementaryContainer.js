@@ -228,6 +228,7 @@ const SupplementaryContainer = (props) => {
           deleteFiles,
           fromSupplierComment: comment,
         };
+
         if((status == 'RECOMMENDED' || status == 'DRAFT') && paramNewReport){
           data.newReport = paramNewReport;
         }
