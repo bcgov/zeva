@@ -32,10 +32,10 @@ const ComplianceHistory = (props) => {
   };
   const recommendedText = (item) => `Supplementary report recommended ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
   const getSupersededStatus = (idx) => {
-    if (idx == noaHistory.supplemental.length - 1 && noaHistory.supplemental[idx].status === 'ASSESSED') {
+    if (noaHistory.supplemental && noaHistory.supplemental.length > 0 && idx == noaHistory.supplemental.length - 1 && noaHistory.supplemental[idx].status === 'ASSESSED') {
       displaySuperseded = false;
     } 
-    if(idx < noaHistory.supplemental.length - 1 && noaHistory.supplemental[idx].status === 'ASSESSED') {
+    if(noaHistory.supplemental && noaHistory.supplemental.length > 0 && idx < noaHistory.supplemental.length - 1 && noaHistory.supplemental[idx].status === 'ASSESSED') {
       displaySuperseded = true;
     }
   }
