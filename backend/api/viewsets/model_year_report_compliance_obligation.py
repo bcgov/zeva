@@ -375,6 +375,10 @@ class ModelYearReportComplianceObligationViewset(
                         model_year = float(record['xls_model_year'])
                     except ValueError:
                         continue
+
+                    if int(model_year) != int(report_year):
+                        continue
+
                     vehicle = Vehicle.objects.filter(
                         make__iexact=record['xls_make'],
                         model_name=record['xls_model'],
