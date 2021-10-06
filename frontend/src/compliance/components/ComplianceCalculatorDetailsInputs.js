@@ -41,7 +41,7 @@ const ComplianceCalculatorDetailsInputs = (props) => {
               htmlFor="supplier-size"
               className="pl-3 col-form-label"
             >
-              Supplier Size
+              Supplier Class
             </label>
             &nbsp; (based on average of previous 3 year total LDV sale):
           </div>

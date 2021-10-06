@@ -15,6 +15,7 @@ from api.models.sales_submission_comment import SalesSubmissionComment
 from api.models.sales_submission_history import SalesSubmissionHistory
 from api.models.vehicle import Vehicle
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
+from api.models.icbc_snapshot_data import IcbcSnapshotData
 from api.serializers.sales_submission_comment import \
     SalesSubmissionCommentSerializer
 from api.models.user_profile import UserProfile
@@ -247,13 +248,13 @@ class SalesSubmissionObligationActivitySerializer(
             'b': round(total_b, 2)
         }
 
-
-
     class Meta:
         model = SalesSubmission
         fields = (
              'total_credits',
         )
+
+
 class SalesSubmissionSerializer(
         ModelSerializer, EnumSupportSerializerMixin,
         BaseSerializer
@@ -417,9 +418,17 @@ class SalesSubmissionSerializer(
         return icbc_upload_date.upload_date
 
     def get_sales_submission_comment(self, obj):
-        sales_submission_comment = SalesSubmissionComment.objects.filter(
-            sales_submission=obj
-        ).order_by('-create_timestamp')
+        request = self.context.get('request')
+
+        if request.user.is_government:
+            sales_submission_comment = SalesSubmissionComment.objects.filter(
+                sales_submission=obj
+            ).order_by('-create_timestamp')
+        else:
+            sales_submission_comment = SalesSubmissionComment.objects.filter(
+                sales_submission=obj,
+                to_govt=True
+            ).order_by('-create_timestamp')
 
         if sales_submission_comment.exists():
             serializer = SalesSubmissionCommentSerializer(
@@ -564,6 +573,25 @@ class SalesSubmissionSaveSerializer(
             )
 
         if invalidated is not None:
+            IcbcSnapshotData.objects.filter(
+                submission_id=instance.id
+            ).delete()
+
+            all_content = SalesSubmissionContent.objects.filter(
+                submission_id=instance.id
+            )
+
+            for row in all_content:
+                if row.icbc_verification:
+                    icbc_snapshot = IcbcSnapshotData.objects.create(
+                        vin=row.icbc_verification.vin,
+                        make=row.icbc_verification.icbc_vehicle.make,
+                        model_name=row.icbc_verification.icbc_vehicle.model_name,
+                        model_year=row.icbc_verification.icbc_vehicle.model_year.name,
+                        submission=instance,
+                        upload_date=row.icbc_verification.icbc_upload_date.upload_date
+                    )
+
             RecordOfSale.objects.filter(submission_id=instance.id).delete()
             valid_vehicles = Vehicle.objects.filter(
                 organization_id=instance.organization_id,
@@ -617,6 +645,7 @@ class SalesSubmissionSaveSerializer(
                         vehicle=row.vehicle,
                         vin=row.xls_vin,
                         vin_validation_status=VINStatuses.MATCHED,
+                        icbc_snapshot=icbc_snapshot
                     )
 
         if reasons is not None:

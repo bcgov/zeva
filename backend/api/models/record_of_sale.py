@@ -59,6 +59,12 @@ class RecordOfSale(Auditable):
                        statuses=[c.name for c in RecordOfSaleStatuses]
                    )
     )
+    icbc_snapshot = models.ForeignKey(
+        'ICBCSnapshotData',
+        related_name='sales',
+        null=True,
+        on_delete=models.CASCADE
+    )
 
     class Meta:
         db_table = "record_of_sale"

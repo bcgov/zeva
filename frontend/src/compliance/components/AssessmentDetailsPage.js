@@ -351,10 +351,6 @@ const AssessmentDetailsPage = (props) => {
                     {radioDescriptions.map((each) => (
                       (each.displayOrder === 0) && showDescription(each)
                     ))}
-                    <div className="text-blue mt-3 ml-3 mb-1">
-                      &nbsp;&nbsp; {details.organization.name} has not complied with section 10 (2) of the
-                      Zero-Emission Vehicles Act for the {reportYear} adjustment period.
-                    </div>
                     {radioDescriptions.map((each) => (
                       (each.displayOrder > 0) && showDescription(each)
                     ))}

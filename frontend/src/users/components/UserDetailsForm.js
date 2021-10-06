@@ -108,7 +108,7 @@ const UserDetailsForm = (props) => {
                     errorMessage={'username' in errorFields && errorFields.username}
                     handleInputChange={handleInputChange}
                     id="username"
-                    label={`${accountType} User Name`}
+                    label={`${accountType} User Id`}
                     mandatory
                     name="username"
                   />

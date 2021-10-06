@@ -58,3 +58,4 @@ from . import supplemental_report_assessment
 from . import supplemental_report_assessment_comment
 from . import supplemental_report_history
 from . import supplemental_report_statuses
+from . import icbc_snapshot_data
