@@ -533,6 +533,8 @@ class ModelYearReportViewset(
         validation_status = request.data.get('status')
         description = request.data.get('description')
         analyst_action = request.data.get('analyst_action',None)
+        new_report = request.data.get('new_report', None)
+
 
         create_user = None
         supplemental_id = None
@@ -566,10 +568,11 @@ class ModelYearReportViewset(
                     return HttpResponse(
                         status=200, content="Recommendation is required"
                     )
-
-                report.supplemental.status = validation_status
-                report.supplemental.update_user = request.user.username
-                report.supplemental.save()
+                
+                if not new_report:
+                    report.supplemental.status = validation_status
+                    report.supplemental.update_user = request.user.username
+                    report.supplemental.save()
 
                 # check for if validation status is recommended
                 if validation_status == 'RECOMMENDED' and analyst_action or \
@@ -585,22 +588,42 @@ class ModelYearReportViewset(
                         }
                     )
 
-            SupplementalReportHistory.objects.create(
-                supplemental_report_id=supplemental_id,
-                validation_status=validation_status,
-                update_user=request.user.username,
-                create_user=request.user.username,
-            )
-
-            serializer = ModelYearReportSupplementalSerializer(
-                report.supplemental,
+            if new_report:
+                serializer = ModelYearReportSupplementalSerializer(
                 data=request.data
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save(
-                model_year_report_id=report.id,
-                update_user=request.user.username
-            )
+                )
+                serializer.is_valid(raise_exception=True)
+                serializer.save(
+                    model_year_report_id=report.id,
+                    create_user=request.user.username,
+                    update_user=request.user.username,
+                    supplemental_id=supplemental_id
+                )
+
+                SupplementalReportHistory.objects.create(
+                    supplemental_report_id=serializer.data.get('id'),
+                    validation_status=validation_status,
+                    update_user=request.user.username,
+                    create_user=request.user.username,
+                )
+
+            else:
+                SupplementalReportHistory.objects.create(
+                    supplemental_report_id=supplemental_id,
+                    validation_status=validation_status,
+                    update_user=request.user.username,
+                    create_user=request.user.username,
+                )
+
+                serializer = ModelYearReportSupplementalSerializer(
+                    report.supplemental,
+                    data=request.data
+                )
+                serializer.is_valid(raise_exception=True)
+                serializer.save(
+                    model_year_report_id=report.id,
+                    update_user=request.user.username
+                )
 
         # otherwise create a new one
         else:

@@ -52,17 +52,18 @@ const SupplementaryDetailsPage = (props) => {
     setUploadFiles,
     supplementaryAssessmentData,
     user,
+    newReport
   } = props;
 
   if (loading) {
     return <Loading />;
   }
+
   // if user is bceid then only draft is editable
   // if user is idir then draft or submitted is editable
   const isEditable = (
     details.actualStatus === 'DRAFT' || (details.actualStatus === null && details.status === 'DRAFT'))
-    || (user.isGovernment && details.actualStatus === 'SUBMITTED'
-    );
+    || (user.isGovernment && details.actualStatus === 'SUBMITTED') || newReport;
   const [showModal, setShowModal] = useState(false);
   const [showModalDraft, setShowModalDraft] = useState(false);
   const reportYear = details.assessmentData && details.assessmentData.modelYear;
@@ -80,7 +81,7 @@ const SupplementaryDetailsPage = (props) => {
         className="mr-3"
         type="radio"
         name="assessment"
-        disabled={!analystAction || ['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) >= 0}
+        disabled={!analystAction || ['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) >= 0 && !newReport}
         onChange={() => {
           setSupplementaryAssessmentData({
             ...supplementaryAssessmentData,
@@ -111,7 +112,7 @@ const SupplementaryDetailsPage = (props) => {
       cancelLabel="No"
       confirmLabel="Yes"
       handleCancel={() => { setShowModal(false); }}
-      handleSubmit={() => { setShowModal(false); handleSubmit('RECOMMENDED'); }}
+      handleSubmit={() => { setShowModal(false); handleSubmit('RECOMMENDED', newReport); }}
       modalClass="w-75"
       showModal={showModal}
       confirmClass="button primary"
@@ -131,7 +132,7 @@ const SupplementaryDetailsPage = (props) => {
       cancelLabel="No"
       confirmLabel="Yes"
       handleCancel={() => { setShowModalDraft(false); }}
-      handleSubmit={() => { setShowModalDraft(false); handleSubmit(currentStatus); }}
+      handleSubmit={() => { setShowModalDraft(false); handleSubmit(currentStatus, newReport); }}
       modalClass="w-75"
       showModal={showModalDraft}
       confirmClass="button primary"
@@ -227,7 +228,7 @@ const SupplementaryDetailsPage = (props) => {
           />
         </div>
         <div id="comment-input">
-          {!user.isGovernment && currentStatus === 'DRAFT' && (
+          {!user.isGovernment && (currentStatus === 'DRAFT'||  newReport) && (
           <CommentInput
             defaultComment={details && details.comments && details.comments.length > 0 ? details.comments[0] : {}}
             handleCommentChange={handleCommentChange}
@@ -235,7 +236,7 @@ const SupplementaryDetailsPage = (props) => {
           />
           )}
         </div>
-        {!user.isGovernment && currentStatus === 'DRAFT' && (
+        {!user.isGovernment && (currentStatus === 'DRAFT'|| newReport) && (
         <UploadEvidence
           details={details}
           deleteFiles={deleteFiles}
@@ -296,7 +297,7 @@ const SupplementaryDetailsPage = (props) => {
       </div>
       {(supplementaryAssessmentData.supplementaryAssessment && supplementaryAssessmentData.supplementaryAssessment.decision
         && supplementaryAssessmentData.supplementaryAssessment.decision.description)
-        && (!user.isGovernment || (user.isGovernment && ['ASSESSED', 'RECOMMENDED'].indexOf(currentStatus) >= 0)) && (
+        && (!user.isGovernment || (user.isGovernment && ['ASSESSED', 'RECOMMENDED'].indexOf(currentStatus) >= 0 && !newReport)) && (
           <>
             <h3 className="mt-4 mb-1">Director Reassessment</h3>
             <div className="row mb-3">
@@ -313,7 +314,7 @@ const SupplementaryDetailsPage = (props) => {
             </div>
           </>
       )}
-      {(analystAction || directorAction) && ['ASSESSED'].indexOf(currentStatus) < 0
+      {(analystAction || directorAction) && (['ASSESSED'].indexOf(currentStatus) < 0 || newReport)
       && (
         <>
           {['RECOMMENDED'].indexOf(currentStatus) < 0 && (
@@ -376,7 +377,7 @@ const SupplementaryDetailsPage = (props) => {
           </div>
         </>
       )}
-      {!user.isGovernment && user.hasPermission('SUBMIT_COMPLIANCE_REPORT') && currentStatus === 'DRAFT'
+      {!user.isGovernment && user.hasPermission('SUBMIT_COMPLIANCE_REPORT') && (currentStatus === 'DRAFT'|| newReport)
       && (
       <div className="mt-3">
         <input
@@ -424,7 +425,7 @@ const SupplementaryDetailsPage = (props) => {
             </span>
             <span className="right-content">
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-              && ((currentStatus === 'DRAFT')
+              && ((currentStatus === 'DRAFT' || newReport)
               || ((currentStatus === 'SUBMITTED' || currentStatus === 'RECOMMENDED') && user.isGovernment)) && (
               <Button
                 buttonType="save"
@@ -434,7 +435,8 @@ const SupplementaryDetailsPage = (props) => {
               />
               )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-              && analystAction && (['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) < 0 || currentStatus === 'RETURNED') && (
+              && analystAction && (['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) < 0 || currentStatus === 'RETURNED' || newReport) 
+              && (
               <Button
                 buttonTooltip={recommendTooltip}
                 buttonType="submit"
@@ -457,7 +459,7 @@ const SupplementaryDetailsPage = (props) => {
               />
               )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-              && !user.isGovernment && currentStatus === 'DRAFT' && user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
+              && !user.isGovernment && (currentStatus === 'DRAFT' || newReport) && user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
               && (
               <Button
                 disabled={!checkboxConfirmed}
