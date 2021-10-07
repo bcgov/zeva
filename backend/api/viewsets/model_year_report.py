@@ -535,7 +535,6 @@ class ModelYearReportViewset(
         analyst_action = request.data.get('analyst_action',None)
         new_report = request.data.get('new_report', None)
 
-
         create_user = None
         supplemental_id = None
 
