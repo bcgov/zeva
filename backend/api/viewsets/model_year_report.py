@@ -491,7 +491,8 @@ class ModelYearReportViewset(
             data.model_year_report_id = report.id
 
         serializer = ModelYearReportSupplementalSerializer(
-            data
+            data,
+            context={'request': request}
         )
         return Response(serializer.data)
 
@@ -589,7 +590,7 @@ class ModelYearReportViewset(
 
             if new_report:
                 serializer = ModelYearReportSupplementalSerializer(
-                data=request.data
+                    data=request.data
                 )
                 serializer.is_valid(raise_exception=True)
                 serializer.save(

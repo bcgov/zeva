@@ -223,6 +223,7 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
     actual_status = SerializerMethodField()
 
     def get_actual_status(self, obj):
+        request = self.context.get('request')
         supplemental_report = SupplementalReport.objects.filter(
             model_year_report_id=obj.model_year_report_id,
             supplemental_id=obj.id
@@ -232,7 +233,7 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
             return obj.status.value
 
         if supplemental_report.status == ModelYearReportStatuses.RECOMMENDED:
-            return obj.status.value
+            return ModelYearReportStatuses.RECOMMENDED.value if request.user.is_government else obj.status.value
 
         if supplemental_report.status == ModelYearReportStatuses.ASSESSED:
             return ModelYearReportStatuses.ASSESSED.value
