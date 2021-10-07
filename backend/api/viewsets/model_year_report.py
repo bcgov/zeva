@@ -491,7 +491,8 @@ class ModelYearReportViewset(
             data.model_year_report_id = report.id
 
         serializer = ModelYearReportSupplementalSerializer(
-            data
+            data,
+            context={'request': request}
         )
         return Response(serializer.data)
 
@@ -589,7 +590,7 @@ class ModelYearReportViewset(
 
             if new_report:
                 serializer = ModelYearReportSupplementalSerializer(
-                data=request.data
+                    data=request.data
                 )
                 serializer.is_valid(raise_exception=True)
                 serializer.save(
@@ -637,8 +638,10 @@ class ModelYearReportViewset(
                 supplemental_id=supplemental_id
             )
 
+            supplemental_id = serializer.data.get('id')
+
             SupplementalReportHistory.objects.create(
-                supplemental_report_id=serializer.data.get('id'),
+                supplemental_report_id=supplemental_id,
                 validation_status=validation_status,
                 update_user=request.user.username,
                 create_user=request.user.username,
