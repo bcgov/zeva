@@ -223,14 +223,21 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
     actual_status = SerializerMethodField()
 
     def get_actual_status(self, obj):
-        latest_report = SupplementalReport.objects.filter(
-            model_year_report_id=obj.model_year_report_id
+        supplemental_report = SupplementalReport.objects.filter(
+            model_year_report_id=obj.model_year_report_id,
+            supplemental_id=obj.id
         ).order_by('-update_timestamp').first()
 
-        if not latest_report:
-            return None
+        if not supplemental_report:
+            return obj.status.value
 
-        return latest_report.status.value
+        if supplemental_report.status == ModelYearReportStatuses.RECOMMENDED:
+            return obj.status.value
+
+        if supplemental_report.status == ModelYearReportStatuses.ASSESSED:
+            return ModelYearReportStatuses.ASSESSED.value
+
+        return supplemental_report.status.value
 
     def get_from_supplier_comments(self, obj):
         comments = SupplementalReportComment.objects.filter(
