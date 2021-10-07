@@ -23,12 +23,9 @@ class DashboardViewset(
     
     def get_queryset(self):
         request = self.request
-        if request.user.is_government:
-            queryset = Organization.objects.all()
-        else:
-            queryset = Organization.objects.filter(
-                id=request.user.organization.id
-            )
+        queryset = Organization.objects.filter(
+            id=request.user.organization.id
+        )
         return queryset
 
     serializer_classes = {
