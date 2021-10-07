@@ -169,9 +169,12 @@ const DashboardContainer = (props) => {
           let creditsRecommendReject = dashboard.creditRequest
             .find((submission) => submission.status === 'RECOMMEND_REJECTION');
           creditsRecommendReject = creditsRecommendReject ? creditsRecommendReject.total : 0;
-          let creditsAnalyst = dashboard.creditRequest
-            .find((submission) => ['SUBMITTED', 'CHECKED'].indexOf(submission.status) >= 0);
-          creditsAnalyst = creditsAnalyst ? creditsAnalyst.total : 0;
+          let creditsAnalyst = 0;
+          dashboard.creditRequest.forEach((submission) => {
+            if (['SUBMITTED', 'CHECKED'].indexOf(submission.status) >= 0) {
+              creditsAnalyst += submission.total;
+            }
+          });
           activityCount = {
             ...activityCount,
             creditsAnalyst,
