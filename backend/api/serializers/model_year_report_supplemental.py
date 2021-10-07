@@ -233,7 +233,7 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
             return obj.status.value
 
         if supplemental_report.status == ModelYearReportStatuses.RECOMMENDED:
-            return ModelYearReportStatuses.RECOMMENDED.value if request.user.is_government else obj.status.value
+            return ModelYearReportStatuses.RECOMMENDED.value if request and request.user.is_government else obj.status.value
 
         if supplemental_report.status == ModelYearReportStatuses.ASSESSED:
             return ModelYearReportStatuses.ASSESSED.value
