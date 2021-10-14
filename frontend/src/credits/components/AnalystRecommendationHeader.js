@@ -53,6 +53,7 @@ const AnalystRecommendationHeader = (props) => {
 AnalystRecommendationHeader.propTypes = {
   submission: PropTypes.shape().isRequired,
   user: PropTypes.shape().isRequired,
-  handleCheckboxClick: PropTypes.func,
+  handleCheckboxClick: PropTypes.func.isRequired,
+  issueAsMY: PropTypes.bool.isRequired
 };
 export default AnalystRecommendationHeader;

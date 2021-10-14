@@ -530,6 +530,8 @@ CreditRequestDetailsPage.propTypes = {
     updateTimestamp: PropTypes.string,
   }).isRequired,
   user: CustomPropTypes.user.isRequired,
+  handleCheckboxClick: PropTypes.func.isRequired,
+  issueAsMY: PropTypes.bool.isRequired
 };
 
 export default CreditRequestDetailsPage;

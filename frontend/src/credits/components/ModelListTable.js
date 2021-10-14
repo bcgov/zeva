@@ -206,7 +206,8 @@ ModelListTable.propTypes = {
     validationStatus: PropTypes.string,
   }).isRequired,
   user: CustomPropTypes.user.isRequired,
-  handleCheckboxClick: PropTypes.func,
+  handleCheckboxClick: PropTypes.func.isRequired,
+  issueAsMY: PropTypes.bool.isRequired
 };
 
 export default ModelListTable;
