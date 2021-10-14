@@ -222,17 +222,17 @@ class ModelYearReportComplianceObligationViewset(
 
             if report_year == 2020:
                 from_date = date(2018, 1, 2,)
-                to_date = date(report_year + 1, 9, 30,)
+                to_date = date(report_year + 1, 10, 1,)
             else:
                 from_date = date(report_year, 10, 1,)
-                to_date = date(report_year + 1, 9, 30,)
+                to_date = date(report_year + 1, 10, 1,)
 
             content = []
             
             transfers_in = CreditTransaction.objects.filter(
                 credit_to=organization,
                 transaction_type__transaction_type='Credit Transfer',
-                transaction_timestamp__lte=to_date,
+                transaction_timestamp__lt=to_date,
                 transaction_timestamp__gte=from_date,
             ).values(
                 'credit_class_id', 'model_year_id'
@@ -245,7 +245,7 @@ class ModelYearReportComplianceObligationViewset(
             transfers_out = CreditTransaction.objects.filter(
                 debit_from=organization,
                 transaction_type__transaction_type='Credit Transfer',
-                transaction_timestamp__lte=to_date,
+                transaction_timestamp__lt=to_date,
                 transaction_timestamp__gte=from_date,
             ).values(
                 'credit_class_id', 'model_year_id'
@@ -258,7 +258,7 @@ class ModelYearReportComplianceObligationViewset(
             initative_agreements = CreditTransaction.objects.filter(
                 credit_to=organization,
                 credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.INITIATIVE_AGREEMENT,
-                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=to_date,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lt=to_date,
                 credit_agreement_credit_transaction__credit_agreement__effective_date__gte=from_date,
             ).values(
                 'credit_class_id', 'model_year_id'
@@ -270,7 +270,7 @@ class ModelYearReportComplianceObligationViewset(
             purchase_agreements = CreditTransaction.objects.filter(
                 credit_to=organization,
                 credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.PURCHASE_AGREEMENT,
-                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=to_date,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lt=to_date,
                 credit_agreement_credit_transaction__credit_agreement__effective_date__gte=from_date,
             ).values(
                 'credit_class_id', 'model_year_id'
@@ -282,7 +282,7 @@ class ModelYearReportComplianceObligationViewset(
             administrative_credit_alloction = CreditTransaction.objects.filter(
                 credit_to=organization,
                 credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.ADMINISTRATIVE_CREDIT_ALLOCATION,
-                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=to_date,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lt=to_date,
                 credit_agreement_credit_transaction__credit_agreement__effective_date__gte=from_date,
             ).values(
                 'credit_class_id', 'model_year_id'
@@ -294,7 +294,7 @@ class ModelYearReportComplianceObligationViewset(
             administrative_credit_reduction = CreditTransaction.objects.filter(
                 debit_from=organization,
                 credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.ADMINISTRATIVE_CREDIT_REDUCTION,
-                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=to_date,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lt=to_date,
                 credit_agreement_credit_transaction__credit_agreement__effective_date__gte=from_date,
             ).values(
                 'credit_class_id', 'model_year_id'
@@ -306,7 +306,7 @@ class ModelYearReportComplianceObligationViewset(
             automatic_administrative_penalty = CreditTransaction.objects.filter(
                 credit_to=organization,
                 credit_agreement_credit_transaction__credit_agreement__transaction_type=CreditAgreementTransactionTypes.AUTOMATIC_ADMINISTRATIVE_PENALTY,
-                credit_agreement_credit_transaction__credit_agreement__effective_date__lte=to_date,
+                credit_agreement_credit_transaction__credit_agreement__effective_date__lt=to_date,
                 credit_agreement_credit_transaction__credit_agreement__effective_date__gte=from_date,
             ).values(
                 'credit_class_id', 'model_year_id'
@@ -318,7 +318,7 @@ class ModelYearReportComplianceObligationViewset(
             credits_issued_sales = CreditTransaction.objects.filter(
                 credit_to=organization,
                 transaction_type__transaction_type='Validation',
-                transaction_timestamp__lte=to_date,
+                transaction_timestamp__lt=to_date,
                 transaction_timestamp__gte=from_date,
             ).values(
                 'credit_class_id', 'model_year_id'
@@ -364,7 +364,7 @@ class ModelYearReportComplianceObligationViewset(
             pending_sales_submissions = SalesSubmission.objects.filter(
                 organization=organization,
                 validation_status__in=['SUBMITTED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'CHECKED'],
-                submission_date__lte=to_date,
+                submission_date__lt=to_date,
                 submission_date__gte=from_date,
             )
 
