@@ -188,12 +188,11 @@ const AssessmentDetailsPage = (props) => {
               <button
                 className="btn button primary float-right"
                 onClick={() => {
-                  history.push(ROUTES_SUPPLEMENTARY.CREATE.replace(/:id/g, id), {new:true});
-
+                  history.push(ROUTES_SUPPLEMENTARY.CREATE.replace(/:id/g, id), { new: true });
                 }}
                 type="button"
               >
-                Create Supplemental Report
+                Create Supplementary Report
               </button>
             )}
             {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
@@ -201,7 +200,7 @@ const AssessmentDetailsPage = (props) => {
               <button
                 className="btn button primary float-right"
                 onClick={() => {
-                  history.push(ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(/:id/g, id), {new:true});
+                  history.push(ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(/:id/g, id), { new: true });
                 }}
                 type="button"
               >
