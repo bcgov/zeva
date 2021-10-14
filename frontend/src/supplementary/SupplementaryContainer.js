@@ -39,7 +39,6 @@ const SupplementaryContainer = (props) => {
   && user.hasPermission('SIGN_COMPLIANCE_REPORT');
 
   const isReassessment = reassessment && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
-
   const calculateBalance = (creditActivity) => {
     const balances = {};
 

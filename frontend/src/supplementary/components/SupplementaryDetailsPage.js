@@ -52,7 +52,7 @@ const SupplementaryDetailsPage = (props) => {
     setUploadFiles,
     supplementaryAssessmentData,
     user,
-    newReport
+    newReport,
   } = props;
 
   if (loading) {
@@ -70,8 +70,10 @@ const SupplementaryDetailsPage = (props) => {
   const supplierClass = details.assessmentData && details.assessmentData.supplierClass[0];
   const creditReductionSelection = details.assessmentData && details.assessmentData.creditReductionSelection;
   const newLdvSales = newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
-  const currentStatus = details.actualStatus ? details.actualStatus : details.status;
-
+  let currentStatus = details.actualStatus ? details.actualStatus : details.status;
+  if (currentStatus === 'ASSESSED' && newReport) {
+    currentStatus = 'DRAFT';
+  }
   const formattedPenalty = details.assessment ? formatNumeric(details.assessment.assessmentPenalty, 0) : 0;
   const assessmentDecision = supplementaryAssessmentData.supplementaryAssessment.decision && supplementaryAssessmentData.supplementaryAssessment.decision.description ? supplementaryAssessmentData.supplementaryAssessment.decision.description.replace(/{user.organization.name}/g, details.assessmentData.legalName).replace(/{modelYear}/g, details.assessmentData.modelYear).replace(/{penalty}/g, `$${formattedPenalty} CAD`) : '';
   const showDescription = (each) => (
@@ -81,7 +83,7 @@ const SupplementaryDetailsPage = (props) => {
         className="mr-3"
         type="radio"
         name="assessment"
-        disabled={!analystAction || ['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) >= 0 && !newReport}
+        disabled={!analystAction || (['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) >= 0 && !newReport)}
         onChange={() => {
           setSupplementaryAssessmentData({
             ...supplementaryAssessmentData,
@@ -126,7 +128,6 @@ const SupplementaryDetailsPage = (props) => {
       </div>
     </Modal>
   );
-
   const modalDraft = (
     <Modal
       cancelLabel="No"
@@ -138,15 +139,17 @@ const SupplementaryDetailsPage = (props) => {
       confirmClass="button primary"
     >
       <div className="my-3">
+        {user.isGovernment
+        && (
         <h3>
           {isReassessment
             ? 'This will create a reassessment report'
             : 'This will create a reassessment report from the supplementary report'}
         </h3>
+        )}
       </div>
     </Modal>
   );
-
   let disabledRecommendBtn = false;
   let recommendTooltip = '';
 
@@ -228,7 +231,7 @@ const SupplementaryDetailsPage = (props) => {
           />
         </div>
         <div id="comment-input">
-          {!user.isGovernment && (currentStatus === 'DRAFT'||  newReport) && (
+          {!user.isGovernment && (currentStatus === 'DRAFT' || newReport) && (
           <CommentInput
             defaultComment={details && details.comments && details.comments.length > 0 ? details.comments[0] : {}}
             handleCommentChange={handleCommentChange}
@@ -236,7 +239,7 @@ const SupplementaryDetailsPage = (props) => {
           />
           )}
         </div>
-        {!user.isGovernment && (currentStatus === 'DRAFT'|| newReport) && (
+        {!user.isGovernment && (currentStatus === 'DRAFT' || newReport) && (
         <UploadEvidence
           details={details}
           deleteFiles={deleteFiles}
@@ -377,7 +380,7 @@ const SupplementaryDetailsPage = (props) => {
           </div>
         </>
       )}
-      {!user.isGovernment && user.hasPermission('SUBMIT_COMPLIANCE_REPORT') && (currentStatus === 'DRAFT'|| newReport)
+      {!user.isGovernment && user.hasPermission('SUBMIT_COMPLIANCE_REPORT') && (currentStatus === 'DRAFT' || newReport)
       && (
       <div className="mt-3">
         <input
@@ -429,13 +432,11 @@ const SupplementaryDetailsPage = (props) => {
               || ((currentStatus === 'SUBMITTED' || currentStatus === 'RECOMMENDED') && user.isGovernment)) && (
               <Button
                 buttonType="save"
-                action={() => {
-                  setShowModalDraft(true);
-                }}
+                action={user.isGovernment ? () => { setShowModalDraft(true); } : () => { handleSubmit('DRAFT', newReport); }}
               />
               )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-              && analystAction && (['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) < 0 || currentStatus === 'RETURNED' || newReport) 
+              && analystAction && (['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) < 0 || currentStatus === 'RETURNED' || newReport)
               && (
               <Button
                 buttonTooltip={recommendTooltip}
