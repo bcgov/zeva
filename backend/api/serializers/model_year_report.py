@@ -211,6 +211,17 @@ class ModelYearReportListSerializer(
     ldv_sales = SerializerMethodField()
 
     def get_ldv_sales(self, obj):
+        request = self.context.get('request')
+
+        is_assessed = (
+            (request.user.organization_id == obj.organization_id and
+             obj.validation_status == ModelYearReportStatuses.ASSESSED) or
+            request.user.is_government
+        )
+
+        if is_assessed:
+            return obj.get_ldv_sales(from_gov=True) or obj.ldv_sales
+
         return obj.ldv_sales
 
     def get_compliant(self, obj):

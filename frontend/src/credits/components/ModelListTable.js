@@ -12,10 +12,10 @@ import getAnalystRecommendationColumns from './getAnalystRecommendationColumns';
 import CreditApplicationHeader from './CreditApplicationHeader';
 
 const ModelListTable = (props) => {
-  const { submission, user } = props;
+  const { submission, user, handleCheckboxClick, issueAsMY } = props;
 
   const columns = [{
-    Header: <AnalystRecommendationHeader submission={submission} user={user} />,
+    Header: <AnalystRecommendationHeader submission={submission} user={user} handleCheckboxClick={handleCheckboxClick} issueAsMY={issueAsMY}/>,
     headerClassName: 'header-group text-left analyst-recommendation',
     columns: getAnalystRecommendationColumns(props),
   }, {
@@ -206,6 +206,7 @@ ModelListTable.propTypes = {
     validationStatus: PropTypes.string,
   }).isRequired,
   user: CustomPropTypes.user.isRequired,
+  handleCheckboxClick: PropTypes.func,
 };
 
 export default ModelListTable;

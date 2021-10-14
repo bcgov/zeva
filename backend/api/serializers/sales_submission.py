@@ -462,7 +462,7 @@ class SalesSubmissionSerializer(
             'submission_sequence', 'content', 'submission_id', 'history',
             'sales_submission_comment', 'update_user', 'unselected',
             'update_timestamp', 'create_user', 'filename', 'create_timestamp',
-            'eligible', 'icbc_current_to', 'evidence',
+            'eligible', 'icbc_current_to', 'evidence','part_of_model_year_report'
         )
 
 
@@ -522,6 +522,7 @@ class SalesSubmissionSaveSerializer(
         comment_type = request.data.get('comment_type', None)
         reasons = request.data.get('reasons', [])
         reset = request.data.get('reset', None)
+        issue_as_model_year_report = request.data.get('issue_as_model_year_report', None)
 
         if instance.validation_status != SalesSubmissionStatuses.DRAFT and \
                 not request.user.is_government:
@@ -667,6 +668,7 @@ class SalesSubmissionSaveSerializer(
             )
             instance.validation_status = validation_status
             instance.update_user = request.user.username
+            instance.part_of_model_year_report=issue_as_model_year_report
             instance.save()
 
         return instance
@@ -677,5 +679,5 @@ class SalesSubmissionSaveSerializer(
             'id', 'organization', 'submission_date',
             'submission_sequence', 'submission_id',
             'validation_status', 'sales_submission_comment',
-            'sales_evidences'
+            'sales_evidences', 'part_of_model_year_report'
         )

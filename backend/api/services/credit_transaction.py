@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from django.db.models import Case, Count, Sum, Value, F, Q, When, Max
 from django.db.models.functions import Coalesce
@@ -19,6 +19,7 @@ from api.models.weight_class import WeightClass
 from api.models.organization_deficits import OrganizationDeficits
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_statuses import ModelYearReportStatuses
+from api.models.sales_submission import SalesSubmission
 
 from api.services.credit_transfer import aggregate_credit_transfer_details
 
@@ -140,6 +141,10 @@ def adjust_deficits(organization):
 
 
 def award_credits(submission):
+    part_of_model_year_report = SalesSubmission.objects.filter(
+        id=submission.id
+    ).values_list('part_of_model_year_report', flat=True).first()
+    current_year = datetime.now().year
     records = RecordOfSale.objects.filter(
         submission_id=submission.id,
         validation_status="VALIDATED",
@@ -170,8 +175,12 @@ def award_credits(submission):
                     transaction_type="Validation"
                 ),
                 update_user=submission.update_user,
-                weight_class=weight_class
+                weight_class=weight_class,
             )
+
+            if part_of_model_year_report and current_year:
+                credit_transaction.transaction_timestamp=date(current_year, 9, 30,)
+                credit_transaction.save()
 
             SalesSubmissionCreditTransaction.objects.create(
                 sales_submission_id=submission.id,
