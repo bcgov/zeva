@@ -32,7 +32,6 @@ const ComplianceReportsContainer = (props) => {
     }
     const ratiosPromise = axios.get(ROUTES_COMPLIANCE.RATIOS);
     const reportsPromise = axios.get(ROUTES_COMPLIANCE.REPORTS);
-    
 
     Promise.all([reportsPromise, ratiosPromise]).then(
       ([response, ratiosResponse]) => {
