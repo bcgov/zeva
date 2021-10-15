@@ -54,7 +54,6 @@ const SupplementaryDetailsPage = (props) => {
     user,
     newReport,
   } = props;
-
   if (loading) {
     return <Loading />;
   }
@@ -166,12 +165,14 @@ const SupplementaryDetailsPage = (props) => {
         </div>
       </div>
       <div className="supplementary-alert">
-        <SupplementaryAlert
-          id={id}
-          date={moment(details.updateTimestamp).format('MMM D, YYYY')}
-          status={details.status}
-          user={user.username}
-        />
+        {details.id && (
+          <SupplementaryAlert
+            id={id}
+            date={moment(details.updateTimestamp).format('MMM D, YYYY')}
+            status={details.status}
+            user={user.username}
+          />
+        )}
       </div>
       {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
       && (
