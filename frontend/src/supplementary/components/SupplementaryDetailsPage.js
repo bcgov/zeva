@@ -342,7 +342,7 @@ const SupplementaryDetailsPage = (props) => {
                     <label className="d-inline" htmlFor="penalty-radio">
                       <div>
                         <input
-                          disabled={directorAction
+                          disabled={(directorAction && currentStatus == 'RECOMMENDED')
                           || assessmentDecision.indexOf('Section 10 (3) applies') < 0}
                           type="text"
                           className="ml-4 mr-1"
@@ -392,7 +392,7 @@ const SupplementaryDetailsPage = (props) => {
           type="checkbox"
         />
         <label htmlFor="supplier-confirm-checkbox">
-          On behalf of {details.assessmentData.legalName} I confirm the information included in the this Model Year Report is complete and correct.
+          On behalf of {details.assessmentData.legalName} I confirm the information included in the this Supplementary Report is complete and correct.
         </label>
       </div>
       )}
