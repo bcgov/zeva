@@ -396,7 +396,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                   </td>
                 </>
               )}
-              {supplementalReport && !newBalances && (
+              {supplementalReport && (!newBalances || !newBalances[each]) && (
                 <>
                   <td />
                   <td />
