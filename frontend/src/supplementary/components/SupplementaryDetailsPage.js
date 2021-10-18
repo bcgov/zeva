@@ -62,7 +62,8 @@ const SupplementaryDetailsPage = (props) => {
   // if user is idir then draft or submitted is editable
   const isEditable = (
     details.actualStatus === 'DRAFT' || (details.actualStatus === null && details.status === 'DRAFT'))
-    || (user.isGovernment && details.actualStatus === 'SUBMITTED') || newReport;
+    || (user.isGovernment && ['SUBMITTED', 'RETURNED'].indexOf(details.actualStatus) >= 0)
+    || newReport;
   const [showModal, setShowModal] = useState(false);
   const [showModalDraft, setShowModalDraft] = useState(false);
   const reportYear = details.assessmentData && details.assessmentData.modelYear;
@@ -191,7 +192,7 @@ const SupplementaryDetailsPage = (props) => {
         <div id="comment-input">
           <CommentInput
             handleCommentChange={handleCommentChangeIdir}
-            title={analystAction ? 'Add comment to director: ' : 'Add comment to the analyst'}
+            title={['SUBMITTED', 'RETURNED'].indexOf(currentStatus) >= 0 ? 'Add comment to director: ' : 'Add comment to the analyst'}
             buttonText="Add Comment"
             handleAddComment={handleAddIdirComment}
             buttonDisable={!details.id}
