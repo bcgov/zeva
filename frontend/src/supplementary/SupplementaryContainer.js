@@ -39,7 +39,6 @@ const SupplementaryContainer = (props) => {
   && user.hasPermission('SIGN_COMPLIANCE_REPORT');
 
   const isReassessment = reassessment && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
-
   const calculateBalance = (creditActivity) => {
     const balances = {};
 
@@ -210,7 +209,7 @@ const SupplementaryContainer = (props) => {
   };
 
   const handleSubmit = (status, paramNewReport) => {
-    if(status == 'ASSESSED' && paramNewReport){
+    if (status == 'ASSESSED' && paramNewReport) {
       status = 'DRAFT';
     }
     const uploadPromises = handleUpload(id);
@@ -229,7 +228,7 @@ const SupplementaryContainer = (props) => {
           fromSupplierComment: comment,
         };
 
-        if((status == 'RECOMMENDED' || status == 'DRAFT') && paramNewReport){
+        if ((status === 'RECOMMENDED' || status === 'DRAFT') && paramNewReport) {
           data.newReport = paramNewReport;
         }
         if (analystAction) {
@@ -290,7 +289,7 @@ const SupplementaryContainer = (props) => {
       axios.get(`${ROUTES_SUPPLEMENTARY.ASSESSMENT.replace(':id', id)}?supplemental_id=${supplementaryId || ''}`),
     ]).then(axios.spread((response, complianceResponse, ratioResponse, assessmentResponse) => {
       if (response.data) {
-        if (location && location.state && location.state.new){
+        if (location && location.state && location.state.new) {
           setNewReport(true);
         } else {
           setNewReport(false);

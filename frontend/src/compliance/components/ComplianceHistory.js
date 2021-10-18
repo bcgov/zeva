@@ -23,6 +23,7 @@ const ComplianceHistory = (props) => {
       setNoaHistory(response.data);
     });
   }, []);
+  const returnedText = (item) => `Supplementary report returned ${moment(item.updateTimestamp).format('MMM D, YYYY')} by the Government of B.C.`
   const draftText = (item) => `Supplementary report saved ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
   const submittedText = (item) => {
     if (user.isGovernment) {
@@ -35,13 +36,13 @@ const ComplianceHistory = (props) => {
   const getSupersededStatus = (idx) => {
     if (noaHistory.supplemental && noaHistory.supplemental.length > 0 && idx == noaHistory.supplemental.length - 1 && noaHistory.supplemental[idx].status === 'ASSESSED') {
       displaySuperseded = false;
-    } 
-    if(noaHistory.supplemental && noaHistory.supplemental.length > 0 && idx < noaHistory.supplemental.length - 1 && noaHistory.supplemental[idx].status === 'ASSESSED') {
+    }
+    if (noaHistory.supplemental && noaHistory.supplemental.length > 0 && idx < noaHistory.supplemental.length - 1 && noaHistory.supplemental[idx].status === 'ASSESSED') {
       displaySuperseded = true;
     }
     return displaySuperseded;
-  }
-  
+  };
+
   const getLinkByStatus = (item) => {
     if (item.status === 'DRAFT') {
       if (Number(item.supplementalReportId) === Number(supplementaryId)) {
@@ -72,6 +73,20 @@ const ComplianceHistory = (props) => {
         </Link>
       );
     }
+    if (item.status === 'RETURNED') {
+      if (Number(item.supplementalReportId) === Number(supplementaryId)) {
+        return (<span>{returnedText(item)}</span>);
+      }
+
+      return (
+        <Link
+          className="text-blue text-underline"
+          to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', item.supplementalReportId)}
+        >
+          {returnedText(item)}
+        </Link>
+      );
+    }
     if (item.status === 'RECOMMENDED') {
       if (Number(item.supplementalReportId) === Number(supplementaryId)) {
         return (<span>{recommendedText(item)}</span>);
@@ -88,7 +103,7 @@ const ComplianceHistory = (props) => {
     }
     if (item.status === 'ASSESSED') {
       if (Number(item.supplementalReportId) === Number(supplementaryId)) {
-        return (<span>Notice of Reassessment {moment(item.updateTimestamp).format('MMM D, YYYY')}{displaySuperseded? <span className="text-red"> Superseded</span> : ''}</span>);
+        return (<span>Notice of Reassessment {moment(item.updateTimestamp).format('MMM D, YYYY')}{displaySuperseded ? <span className="text-red"> Superseded</span> : ''}</span>);
       }
 
       return (
@@ -130,7 +145,7 @@ const ComplianceHistory = (props) => {
             )}
             {noaHistory.supplemental
             && (
-              noaHistory.supplemental.map((item,idx) => (
+              noaHistory.supplemental.map((item, idx) => (
                 <li key={item.id} className={item.status === 'ASSESSED' ? 'main-list-item' : 'sub-list-item'}>
                   {getSupersededStatus(idx)}
                   {getLinkByStatus(item)}
