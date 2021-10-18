@@ -386,7 +386,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               <td className="text-right">
                 {formatNumeric(provisionalBalance[each].B, 2)}
               </td>
-              {supplementalReport && newBalances && newBalances[each] ? (
+              {supplementalReport && newBalances && newBalances[each] && (
                 <>
                   <td className={`text-right ${Number(provisionalBalance[each].A) !== Number(newBalances[each].A) && newBalances[each].A !== '' ? 'highlight' : ''}`}>
                     {formatNumeric(newBalances[each].A, 2)}
@@ -395,7 +395,8 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                     {formatNumeric(newBalances[each].B, 2)}
                   </td>
                 </>
-              ) : (
+              )}
+              {supplementalReport && !newBalances && (
                 <>
                   <td />
                   <td />
