@@ -28,6 +28,8 @@ const CreditRequestDetailsPage = (props) => {
     locationState,
     submission,
     user,
+    issueAsMY,
+    handleCheckboxClick
   } = props;
   const { id } = useParams();
   const validatedOnly = submission.validationStatus === 'CHECKED';
@@ -345,6 +347,8 @@ const CreditRequestDetailsPage = (props) => {
           <ModelListTable
             submission={submission}
             user={user}
+            handleCheckboxClick={handleCheckboxClick}
+            issueAsMY={issueAsMY}
           />
         </div>
       </div>
@@ -526,6 +530,8 @@ CreditRequestDetailsPage.propTypes = {
     updateTimestamp: PropTypes.string,
   }).isRequired,
   user: CustomPropTypes.user.isRequired,
+  handleCheckboxClick: PropTypes.func.isRequired,
+  issueAsMY: PropTypes.bool.isRequired
 };
 
 export default CreditRequestDetailsPage;
