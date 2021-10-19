@@ -386,14 +386,20 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               <td className="text-right">
                 {formatNumeric(provisionalBalance[each].B, 2)}
               </td>
-              {supplementalReport && (
+              {supplementalReport && newBalances && newBalances[each] && (
                 <>
-                  <td className="text-right">
-                    {newBalances && newBalances[each] && formatNumeric(newBalances[each].A, 2)}
+                  <td className={`text-right ${Number(provisionalBalance[each].A) !== Number(newBalances[each].A) && newBalances[each].A !== '' ? 'highlight' : ''}`}>
+                    {formatNumeric(newBalances[each].A, 2)}
                   </td>
-                  <td className="text-right">
-                    {newBalances && newBalances[each] && formatNumeric(newBalances[each].B, 2)}
+                  <td className={`text-right ${Number(provisionalBalance[each].B) !== Number(newBalances[each].B) && newBalances[each].B !== '' ? 'highlight' : ''}`}>
+                    {formatNumeric(newBalances[each].B, 2)}
                   </td>
+                </>
+              )}
+              {supplementalReport && (!newBalances || !newBalances[each]) && (
+                <>
+                  <td />
+                  <td />
                 </>
               )}
             </tr>

@@ -28,6 +28,7 @@ class ModelYearReportNoaSerializer(ModelSerializer):
 class SupplementalNOASerializer(ModelSerializer):
     status = SerializerMethodField()
     update_user = SerializerMethodField()
+    is_reassessment = SerializerMethodField()
 
     def get_status(self, obj):
         return obj.validation_status.value
@@ -38,8 +39,20 @@ class SupplementalNOASerializer(ModelSerializer):
             return obj.create_user
         return user.display_name
 
+    def get_is_reassessment(self, obj):
+        user = UserProfile.objects.filter(username=obj.create_user).first()
+        if user is None:
+            return False
+
+        if user.is_government:
+            return True
+        
+        return False
+
+
     class Meta:
         model = SupplementalReportHistory
         fields = (
-            'update_timestamp', 'status', 'id', 'update_user', 'supplemental_report_id'
+            'update_timestamp', 'status', 'id', 'update_user', 'supplemental_report_id',
+            'is_reassessment'
         )

@@ -217,7 +217,15 @@ class ModelYearReportViewset(
             # serializer has returned with some records that are assessed or reassessed
             # get supplementary table, match model year report id, only show drafts created by own org
             supplemental_report_ids = SupplementalReport.objects.filter(
-                model_year_report_id=pk
+                model_year_report_id=pk,
+                status__in=[
+                    ModelYearReportStatuses.SUBMITTED,
+                    ModelYearReportStatuses.DRAFT,
+                    ModelYearReportStatuses.RECOMMENDED,
+                    ModelYearReportStatuses.ASSESSED,
+                    ModelYearReportStatuses.REASSESSED,
+                    ModelYearReportStatuses.RETURNED,
+                ]
             ).values_list('id', flat=True)
 
             if supplemental_report_ids:
@@ -483,6 +491,26 @@ class ModelYearReportViewset(
 
         if supplemental_id:
             data = report.get_supplemental(supplemental_id)
+
+            if not data:
+                return HttpResponse(
+                    status=404, content=None
+                )
+
+            if data.status == ModelYearReportStatuses.DELETED:
+                return HttpResponse(
+                    status=404, content=None
+                )
+
+            if not request.user.is_government and data.status not in [
+                ModelYearReportStatuses.DRAFT,
+                ModelYearReportStatuses.SUBMITTED,
+                ModelYearReportStatuses.ASSESSED,
+                ModelYearReportStatuses.REASSESSED
+            ]:
+                return HttpResponse(
+                    status=404, content=None
+                )
         else:
             data = report.supplemental
 

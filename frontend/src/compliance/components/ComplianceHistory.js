@@ -4,8 +4,6 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 import { Link, useParams } from 'react-router-dom';
-import Button from '../../app/components/Button';
-import history from '../../app/History';
 import CustomPropTypes from '../../app/utilities/props';
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
@@ -17,21 +15,55 @@ const ComplianceHistory = (props) => {
   const { supplementaryId } = useParams();
 
   const [noaHistory, setNoaHistory] = useState({});
+  const [supplementalHistory, setSupplementalHistory] = useState([]);
+
   let displaySuperseded;
   useEffect(() => {
     axios.get(ROUTES_COMPLIANCE.NOA_HISTORY.replace(/:id/g, id)).then((response) => {
       setNoaHistory(response.data);
+
+      const { supplemental } = response.data;
+
+      const tempSupplementalHistory = [];
+
+      supplemental.forEach((each) => {
+        if (each.status === 'DRAFT') {
+          const index = tempSupplementalHistory.findIndex((temp) => temp.status === 'DRAFT');
+
+          if (index >= 0) {
+            tempSupplementalHistory[index] = each;
+          } else {
+            tempSupplementalHistory.push(each);
+          }
+        }
+
+        if (each.status === 'SUBMITTED') {
+          const index = tempSupplementalHistory.findIndex((temp) => ['DRAFT', 'SUBMITTED'].indexOf(temp.status) >= 0);
+
+          if (index >= 0) {
+            tempSupplementalHistory[index] = each;
+          } else {
+            tempSupplementalHistory.push(each);
+          }
+        }
+
+        if (['RETURNED', 'RECOMMENDED', 'ASSESSED'].indexOf(each.status) >= 0) {
+          tempSupplementalHistory.push(each);
+        }
+      });
+
+      setSupplementalHistory(tempSupplementalHistory);
     });
   }, []);
-  const returnedText = (item) => `Supplementary report returned ${moment(item.updateTimestamp).format('MMM D, YYYY')} by the Government of B.C.`
-  const draftText = (item) => `Supplementary report saved ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
+  const returnedText = (item) => `${item.isReassessment ? 'Reassessment' : 'Supplementary'} report returned ${moment(item.updateTimestamp).format('MMM D, YYYY')} by the Government of B.C.`;
+  const draftText = (item) => `${item.isReassessment ? 'Reassessment' : 'Supplementary'} report saved ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
   const submittedText = (item) => {
     if (user.isGovernment) {
-      return `Supplementary report signed and submitted ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
+      return `${item.isReassessment ? 'Reassessment' : 'Supplementary'} report signed and submitted ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
     }
-    return `Supplementary report signed and submitted to the Government of B.C. ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
+    return `${item.isReassessment ? 'Reassessment' : 'Supplementary'} report signed and submitted to the Government of B.C. ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
   };
-  const recommendedText = (item) => `Supplementary report recommended ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
+  const recommendedText = (item) => `${item.isReassessment ? 'Reassessment' : 'Supplementary'} report recommended ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
 
   const getSupersededStatus = (idx) => {
     if (noaHistory.supplemental && noaHistory.supplemental.length > 0 && idx == noaHistory.supplemental.length - 1 && noaHistory.supplemental[idx].status === 'ASSESSED') {
@@ -57,6 +89,7 @@ const ComplianceHistory = (props) => {
         </Link>
       );
     }
+
     if (item.status === 'SUBMITTED') {
       if (Number(item.supplementalReportId) === Number(supplementaryId)) {
         return (
@@ -143,9 +176,9 @@ const ComplianceHistory = (props) => {
               {noaHistory.supplemental ? <span className="text-red"> Superseded</span> : ''}
             </li>
             )}
-            {noaHistory.supplemental
+            {supplementalHistory
             && (
-              noaHistory.supplemental.map((item, idx) => (
+              supplementalHistory.map((item, idx) => (
                 <li key={item.id} className={item.status === 'ASSESSED' ? 'main-list-item' : 'sub-list-item'}>
                   {getSupersededStatus(idx)}
                   {getLinkByStatus(item)}

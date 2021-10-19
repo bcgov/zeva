@@ -429,7 +429,7 @@ const CreditActivity = (props) => {
                           <span>0.00</span>
                         )}
                       </td>
-                      <td className="text-right">
+                      <td className={`text-right ${Number(getNewDeduction(deduction, newDeductions).creditA) !== deduction.creditA ? 'highlight' : ''}`}>
                         {getNewDeduction(deduction, newDeductions).creditA > 0 && (
                           <span className="text-red">-{formatNumeric(getNewDeduction(deduction, newDeductions).creditA, 2)}</span>
                         )}
@@ -437,7 +437,7 @@ const CreditActivity = (props) => {
                           <span>0.00</span>
                         )}
                       </td>
-                      <td className="text-right">
+                      <td className={`text-right ${Number(getNewDeduction(deduction, newDeductions).creditB) !== deduction.creditB ? 'highlight' : ''}`}>
                         {getNewDeduction(deduction, newDeductions).creditB > 0 && (
                           <span className="text-red">-{formatNumeric(getNewDeduction(deduction, newDeductions).creditB, 2)}</span>
                         )}

@@ -103,7 +103,8 @@ const SupplementaryContainer = (props) => {
   const handleAddIdirComment = () => {
     const commentData = { fromGovtComment: idirComment, director: true };
     axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
-      console.log('comment saved');
+      history.push(ROUTES_COMPLIANCE.REPORTS);
+      history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementaryId));
     });
   };
 
