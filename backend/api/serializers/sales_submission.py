@@ -10,6 +10,8 @@ from api.models.record_of_sale import RecordOfSale
 from api.models.record_of_sale_statuses import RecordOfSaleStatuses
 from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_content import SalesSubmissionContent
+from api.models.credit_transaction import \
+    CreditTransaction
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.models.sales_submission_comment import SalesSubmissionComment
 from api.models.sales_submission_history import SalesSubmissionHistory
@@ -93,6 +95,15 @@ class SalesSubmissionListSerializer(
 
     def get_submission_history(self, obj):
         request = self.context.get('request')
+
+        if obj.part_of_model_year_report:
+            credit_transaction = CreditTransaction.objects.filter(
+                sales_submission_credit_transaction__sales_submission_id=obj.id
+            ).first()
+
+            if credit_transaction:
+                return credit_transaction.transaction_timestamp.date()
+
         if not request.user.is_government and obj.validation_status in [
             SalesSubmissionStatuses.RECOMMEND_REJECTION,
             SalesSubmissionStatuses.RECOMMEND_APPROVAL,
