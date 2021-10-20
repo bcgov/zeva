@@ -46,6 +46,9 @@ const AssessmentDetailsPage = (props) => {
     unspecifiedReductions,
     deductions,
     updatedBalances,
+    supplementaryStatus,
+    supplementaryId,
+    createdByGov,
   } = props;
   const formattedPenalty = formatNumeric(details.assessment.assessmentPenalty, 0);
   const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, details.organization.name).replace(/{modelYear}/g, reportYear).replace(/{penalty}/g, `$${formattedPenalty} CAD`) : '';
@@ -184,7 +187,10 @@ const AssessmentDetailsPage = (props) => {
         <div className="col-12">
           <div id="compliance-obligation-page">
             {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-            && !user.isGovernment && statuses.assessment.status === 'ASSESSED' && (
+            && !user.isGovernment && statuses.assessment.status === 'ASSESSED' 
+            && ((!supplementaryId && supplementaryStatus == 'DRAFT') 
+            || (supplementaryStatus == 'DRAFT' && createdByGov) 
+            || (supplementaryStatus == 'DELETED' || supplementaryStatus == 'ASSESSED'))  && (
               <button
                 className="btn button primary float-right"
                 onClick={() => {
@@ -196,7 +202,10 @@ const AssessmentDetailsPage = (props) => {
               </button>
             )}
             {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-            && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && statuses.assessment.status === 'ASSESSED' && (
+            && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') 
+            && ((!supplementaryId && supplementaryStatus == 'DRAFT') 
+            || (supplementaryStatus == 'DRAFT' && !createdByGov)
+            || (supplementaryStatus == 'DELETED' || supplementaryStatus == 'ASSESSED')) && (
               <button
                 className="btn button primary float-right"
                 onClick={() => {
@@ -502,5 +511,6 @@ AssessmentDetailsPage.propTypes = {
   unspecifiedReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   deductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   updatedBalances: PropTypes.shape().isRequired,
+  supplementaryStatus: PropTypes.string,
 };
 export default AssessmentDetailsPage;
