@@ -389,6 +389,11 @@ def get_date(date, date_type, datemode):
 
 def store_raw_value(submission, row_contents, date_mode):
     if row_contents[3].value != '':
+        xls_date_type = row_contents[4].ctype
+
+        if xls_date_type == 2:
+            xls_date_type = 3
+
         SalesSubmissionContent.objects.create(
             submission=submission,
             xls_model_year=str(row_contents[0].value).strip(),
@@ -396,7 +401,7 @@ def store_raw_value(submission, row_contents, date_mode):
             xls_model=str(row_contents[2].value).strip(),
             xls_vin=str(row_contents[3].value).strip(),
             xls_sale_date=str(row_contents[4].value).strip(),
-            xls_date_type=row_contents[4].ctype,
+            xls_date_type=xls_date_type,
             xls_date_mode=date_mode
         )
 
