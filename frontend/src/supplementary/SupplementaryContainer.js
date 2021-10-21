@@ -210,7 +210,7 @@ const SupplementaryContainer = (props) => {
   };
 
   const handleSubmit = (status, paramNewReport) => {
-    if (status == 'ASSESSED' && paramNewReport) {
+    if ((status == 'ASSESSED' && paramNewReport) || (status == 'SUBMITTED' && analystAction)) {
       status = 'DRAFT';
     }
     const uploadPromises = handleUpload(id);

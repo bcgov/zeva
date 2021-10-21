@@ -14,6 +14,7 @@ import calculateCreditReduction from '../app/utilities/calculateCreditReduction'
 import getComplianceObligationDetails from '../app/utilities/getComplianceObligationDetails';
 import getTotalReduction from '../app/utilities/getTotalReduction';
 import getUnspecifiedClassReduction from '../app/utilities/getUnspecifiedClassReduction';
+import ROUTES_SUPPLEMENTARY from '../app/routes/SupplementaryReport';
 
 const AssessmentContainer = (props) => {
   const { keycloak, user } = props;
@@ -33,6 +34,9 @@ const AssessmentContainer = (props) => {
   const [ratios, setRatios] = useState({});
   const [reportYear, setReportYear] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR);
   const [sales, setSales] = useState(0);
+  const [supplementaryStatus, setSupplementaryStatus] = useState('');
+  const [supplementaryId, setSupplementaryId] = useState('');
+  const [createdByGov, setCreatedByGov] = useState(false);
   const [statuses, setStatuses] = useState({
     assessment: {
       status: 'UNSAVED',
@@ -62,8 +66,21 @@ const AssessmentContainer = (props) => {
         axios.get(ROUTES_COMPLIANCE.RATIOS),
         axios.get(`${ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)}?assessment=True`),
         axios.get(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)),
+        axios.get(`${ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)}?supplemental_id=${''}`)
       ]).then(axios.spread(
-        (reportDetailsResponse, ratioResponse, creditActivityResponse, assessmentResponse) => {
+        (reportDetailsResponse, ratioResponse, creditActivityResponse, assessmentResponse, supplementaryResponse) => {
+          if(supplementaryResponse && supplementaryResponse.data && supplementaryResponse.data.status){
+            setSupplementaryId(supplementaryResponse.data.id);
+            setSupplementaryStatus(supplementaryResponse.data.status);
+            if(supplementaryResponse.data.createUser && supplementaryResponse.data.createUser.roles){
+              supplementaryResponse.data.createUser.roles.forEach((each)=>{
+                if(each.roleCode == 'Administrator' || each.roleCode == 'Director' || each.roleCode == 'Engineer/Analyst'){
+                  setCreatedByGov(true);
+                } else {
+                  setCreatedByGov(false);
+                }
+              })
+          }}
           const idirCommentArrayResponse = [];
           let bceidCommentResponse = {};
           const {
@@ -410,6 +427,9 @@ const AssessmentContainer = (props) => {
         unspecifiedReductions={unspecifiedReductions}
         updatedBalances={updatedBalances}
         user={user}
+        supplementaryStatus={supplementaryStatus}
+        supplementaryId={supplementaryId}
+        createdByGov={createdByGov}
       />
     </>
   );

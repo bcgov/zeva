@@ -318,7 +318,7 @@ class ModelYearReportListSerializer(
                                 item_create_user = UserProfile.objects.get(username=each.create_user)
                                 # they are allowed to see any created by idir
                                 # or if it is submitted
-                                if item.create_user.is_government:
+                                if item_create_user.is_government:
                                     return ('REASSESSMENT {}').format(each.status.value)
                                 if each.status.value == 'SUBMITTED':
                                     return ('SUPPLEMENTARY {}').format(each.status.value)

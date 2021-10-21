@@ -512,7 +512,7 @@ class ModelYearReportViewset(
                     status=404, content=None
                 )
         else:
-            data = report.supplemental
+            data = report.get_latest_supplemental(request)
 
         if not data:
             data = SupplementalReport()
@@ -568,26 +568,27 @@ class ModelYearReportViewset(
         supplemental_id = None
 
         # update the existing supplemental if it exists
-        if report.supplemental:
+        supplemental_report = report.get_latest_supplemental(request)
+        if supplemental_report:
             create_user = UserProfile.objects.filter(
-                username=report.supplemental.create_user
+                username=supplemental_report.create_user
             ).first()
-            supplemental_id = report.supplemental.id
+            supplemental_id = supplemental_report.id
 
         if create_user and \
-            create_user.is_government == request.user.is_government:
+            create_user.is_government == request.user.is_government and not new_report:
 
             if request.data.get('status') == ModelYearReportStatuses.DELETED:
                 SupplementalReportAttachment.objects.filter(
-                    supplemental_report_id=report.supplemental.id).delete()
+                    supplemental_report_id=supplemental_report.id).delete()
                 SupplementalReportSupplierInformation.objects.filter(
-                    supplemental_report_id=report.supplemental.id).delete()
+                    supplemental_report_id=supplemental_report.id).delete()
                 SupplementalReportCreditActivity.objects.filter(
-                    supplemental_report_id=report.supplemental.id).delete()
+                    supplemental_report_id=supplemental_report.id).delete()
                 SupplementalReportSales.objects.filter(
-                    supplemental_report_id=report.supplemental.id).delete()
+                    supplemental_report_id=supplemental_report.id).delete()
                 SupplementalReport.objects.filter(
-                    id=report.supplemental.id).delete()
+                    id=supplemental_report.id).delete()
                 return HttpResponse(status=200)
 
             if validation_status:
@@ -598,9 +599,9 @@ class ModelYearReportViewset(
                     )
                 
                 if not new_report:
-                    report.supplemental.status = validation_status
-                    report.supplemental.update_user = request.user.username
-                    report.supplemental.save()
+                    supplemental_report.status = validation_status
+                    supplemental_report.update_user = request.user.username
+                    supplemental_report.save()
 
                 # check for if validation status is recommended
                 if validation_status == 'RECOMMENDED' and analyst_action or \
@@ -608,34 +609,36 @@ class ModelYearReportViewset(
                     # do "update or create" to create the assessment object
                     penalty = request.data.get('penalty')
                     SupplementalReportAssessment.objects.update_or_create(
-                        supplemental_report_id=report.supplemental.id,
+                        supplemental_report_id=supplemental_report.id,
                         defaults={
                             'update_user': request.user.username,
                             'supplemental_report_assessment_description_id': description,
                             'penalty': penalty
                         }
                     )
-
-            if new_report:
-                serializer = ModelYearReportSupplementalSerializer(
-                    data=request.data
-                )
-                serializer.is_valid(raise_exception=True)
-                serializer.save(
-                    model_year_report_id=report.id,
-                    create_user=request.user.username,
-                    update_user=request.user.username,
-                    supplemental_id=supplemental_id
-                )
-
-                SupplementalReportHistory.objects.create(
-                    supplemental_report_id=serializer.data.get('id'),
-                    validation_status=validation_status,
-                    update_user=request.user.username,
-                    create_user=request.user.username,
-                )
-
-            else:
+                if validation_status == 'SUBMITTED':
+                    supplemental_records = SupplementalReport.objects.filter(
+                    model_year_report=report,
+                    status='DRAFT'
+                    ).order_by('-create_timestamp')
+                    if supplemental_records:
+                        for supplemental_record in supplemental_records:
+                            create_user = UserProfile.objects.get(
+                                username=supplemental_record.create_user
+                            )
+                            if create_user.is_government:
+                                status = 'DELETED'
+                                supplemental_record_id = supplemental_record.id
+                                SupplementalReportHistory.objects.create(
+                                    supplemental_report_id=supplemental_record_id,
+                                    validation_status=status,
+                                    update_user=request.user.username,
+                                    create_user=request.user.username,
+                                )
+                                update_sup_report = SupplementalReport.objects.filter(id=supplemental_record_id)
+                                update_sup_report.update(status=status)
+                                update_sup_report.update(update_user=request.user.username)
+                                
                 SupplementalReportHistory.objects.create(
                     supplemental_report_id=supplemental_id,
                     validation_status=validation_status,
@@ -644,7 +647,7 @@ class ModelYearReportViewset(
                 )
 
                 serializer = ModelYearReportSupplementalSerializer(
-                    report.supplemental,
+                    supplemental_report,
                     data=request.data
                 )
                 serializer.is_valid(raise_exception=True)
@@ -678,7 +681,7 @@ class ModelYearReportViewset(
         report = get_object_or_404(ModelYearReport, pk=pk)
 
         if not supplemental_id:
-            supplemental_id = report.supplemental.id
+            supplemental_id = supplemental_report.id
 
         supplier_information = request.data.get('supplier_info')
         if supplier_information:

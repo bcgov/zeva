@@ -221,6 +221,14 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
     attachments = SerializerMethodField()
     from_supplier_comments = SerializerMethodField()
     actual_status = SerializerMethodField()
+    create_user = SerializerMethodField()
+
+    def get_create_user(self, obj):
+        user_profile = UserProfile.objects.filter(username=obj.create_user)
+        if user_profile.exists():
+            serializer = MemberSerializer(user_profile.first(), read_only=True)
+            return serializer.data
+        return obj.create_user
 
     def get_actual_status(self, obj):
         request = self.context.get('request')
@@ -337,5 +345,5 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         fields = (
             'id', 'status', 'ldv_sales', 'credit_activity',
             'assessment_data', 'zev_sales', 'supplier_information',
-            'attachments', 'from_supplier_comments', 'actual_status'
+            'attachments', 'from_supplier_comments', 'actual_status', 'create_user'
         )
