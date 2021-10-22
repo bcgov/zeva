@@ -10,6 +10,8 @@ from api.models.record_of_sale import RecordOfSale
 from api.models.record_of_sale_statuses import RecordOfSaleStatuses
 from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_content import SalesSubmissionContent
+from api.models.credit_transaction import \
+    CreditTransaction
 from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.models.sales_submission_comment import SalesSubmissionComment
 from api.models.sales_submission_history import SalesSubmissionHistory
@@ -93,6 +95,15 @@ class SalesSubmissionListSerializer(
 
     def get_submission_history(self, obj):
         request = self.context.get('request')
+
+        if obj.part_of_model_year_report:
+            credit_transaction = CreditTransaction.objects.filter(
+                sales_submission_credit_transaction__sales_submission_id=obj.id
+            ).first()
+
+            if credit_transaction:
+                return credit_transaction.transaction_timestamp.date()
+
         if not request.user.is_government and obj.validation_status in [
             SalesSubmissionStatuses.RECOMMEND_REJECTION,
             SalesSubmissionStatuses.RECOMMEND_APPROVAL,
@@ -462,7 +473,7 @@ class SalesSubmissionSerializer(
             'submission_sequence', 'content', 'submission_id', 'history',
             'sales_submission_comment', 'update_user', 'unselected',
             'update_timestamp', 'create_user', 'filename', 'create_timestamp',
-            'eligible', 'icbc_current_to', 'evidence',
+            'eligible', 'icbc_current_to', 'evidence','part_of_model_year_report'
         )
 
 
@@ -522,6 +533,7 @@ class SalesSubmissionSaveSerializer(
         comment_type = request.data.get('comment_type', None)
         reasons = request.data.get('reasons', [])
         reset = request.data.get('reset', None)
+        issue_as_model_year_report = request.data.get('issue_as_model_year_report', None)
 
         if instance.validation_status != SalesSubmissionStatuses.DRAFT and \
                 not request.user.is_government:
@@ -667,6 +679,7 @@ class SalesSubmissionSaveSerializer(
             )
             instance.validation_status = validation_status
             instance.update_user = request.user.username
+            instance.part_of_model_year_report=issue_as_model_year_report
             instance.save()
 
         return instance
@@ -677,5 +690,5 @@ class SalesSubmissionSaveSerializer(
             'id', 'organization', 'submission_date',
             'submission_sequence', 'submission_id',
             'validation_status', 'sales_submission_comment',
-            'sales_evidences'
+            'sales_evidences', 'part_of_model_year_report'
         )

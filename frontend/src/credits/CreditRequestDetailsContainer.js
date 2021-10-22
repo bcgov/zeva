@@ -27,11 +27,16 @@ const CreditRequestDetailsContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [nonValidated, setNonValidated] = useState([]);
   const [ICBCUploadDate, setICBCUploadDate] = useState(null);
+  const [issueAsMY, setIssueAsMY] = useState(false);
+
   const refreshDetails = () => {
     axios.all([
       axios.get(ROUTES_ICBCVERIFICATION.DATE),
       axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
     ]).then(axios.spread((dateResponse, submissionResponse) => {
+      if(submissionResponse.data && submissionResponse.data.partOfModelYearReport){
+        setIssueAsMY(submissionResponse.data.partOfModelYearReport);
+      }
       if (dateResponse.data) {
         setICBCUploadDate(dateResponse.data);
       }
@@ -42,12 +47,18 @@ const CreditRequestDetailsContainer = (props) => {
     }));
   };
 
+  
+  const handleCheckboxClick = (event) => {
+    setIssueAsMY(event.target.checked);
+  };
+
   useEffect(() => {
     refreshDetails();
   }, [id]);
 
   const handleSubmit = (validationStatus, comment = '') => {
     const submissionContent = { validationStatus };
+    submissionContent.issueAsModelYearReport = issueAsMY;
     if (comment.length > 0) {
       submissionContent.salesSubmissionComment = { comment: comment };
       submissionContent.commentType = {govt: false}
@@ -78,6 +89,8 @@ const CreditRequestDetailsContainer = (props) => {
       uploadDate={ICBCUploadDate}
       user={user}
       validatedOnly={validatedOnly}
+      handleCheckboxClick={handleCheckboxClick}
+      issueAsMY={issueAsMY}
     />,
   ]);
 };

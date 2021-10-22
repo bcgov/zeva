@@ -213,11 +213,24 @@ def adjust_credits(id, request):
 
     credit_reductions = {}
 
+    from_gov = False
+
+    # are there overrides?
+    # if so, then we should only get the ones from 
+    has_override = ModelYearReportComplianceObligation.objects.filter(
+        model_year_report_id=id,
+        from_gov=True
+    ).first()
+
+    if has_override:
+        from_gov = True
+
     # order by timestamp is important as this is a way for us to check if there are
     # overrides
     reductions = ModelYearReportComplianceObligation.objects.filter(
         model_year_report_id=id,
         category__in=['ClassAReduction', 'UnspecifiedClassCreditReduction'],
+        from_gov=from_gov,
     ).order_by('model_year__name', 'update_timestamp')
 
     for reduction in reductions:

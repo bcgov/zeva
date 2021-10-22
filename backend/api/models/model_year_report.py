@@ -12,6 +12,7 @@ from api.models.model_year_report_ldv_sales import ModelYearReportLDVSales
 from api.models.model_year_report_compliance_obligation import \
     ModelYearReportComplianceObligation
 from api.models.supplemental_report import SupplementalReport
+from api.models.user_profile import UserProfile
 
 
 class ModelYearReport(Auditable):
@@ -85,6 +86,25 @@ class ModelYearReport(Auditable):
         return SupplementalReport.objects.filter(
             model_year_report_id=self.id
         ).order_by('-update_timestamp').first()
+        
+
+    def get_latest_supplemental(self, request):
+        reports = SupplementalReport.objects.filter(
+            model_year_report_id=self.id
+        ).order_by('-update_timestamp')
+        for report in reports:
+            create_user = UserProfile.objects.get(
+                username=report.create_user)
+            if request.user.is_government:
+                if report.status.value in ['SUBMITTED','RECOMMENDED', 'ASSESSED', 'RETURNED']:
+                    return report
+                if report.status.value == 'DRAFT' and create_user.is_government:
+                    return report
+            if not request.user.is_government:
+                if report.status.value in ['SUBMITTED','ASSESSED']:
+                    return report
+                if report.status.value == 'DRAFT' and not create_user.is_government:
+                    return report 
 
     def get_supplemental(self, supplemental_id):
         return SupplementalReport.objects.filter(

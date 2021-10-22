@@ -30,6 +30,7 @@ const SupplementaryContainer = (props) => {
   const [bceidComment, setBceidComment] = useState([]);
   const [supplementaryAssessmentData, setSupplementaryAssessmentData] = useState({});
   const [radioDescriptions, setRadioDescriptions] = useState([{ id: 0, description: '' }]);
+  const [newReport, setNewReport] = useState(false);
 
   const analystAction = user.isGovernment
   && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
@@ -38,7 +39,6 @@ const SupplementaryContainer = (props) => {
   && user.hasPermission('SIGN_COMPLIANCE_REPORT');
 
   const isReassessment = reassessment && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
-
   const calculateBalance = (creditActivity) => {
     const balances = {};
 
@@ -103,7 +103,8 @@ const SupplementaryContainer = (props) => {
   const handleAddIdirComment = () => {
     const commentData = { fromGovtComment: idirComment, director: true };
     axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
-      console.log('comment saved');
+      history.push(ROUTES_COMPLIANCE.REPORTS);
+      history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementaryId));
     });
   };
 
@@ -208,7 +209,10 @@ const SupplementaryContainer = (props) => {
     });
   };
 
-  const handleSubmit = (status) => {
+  const handleSubmit = (status, paramNewReport) => {
+    if ((status == 'ASSESSED' && paramNewReport) || (status == 'SUBMITTED' && analystAction)) {
+      status = 'DRAFT';
+    }
     const uploadPromises = handleUpload(id);
     Promise.all(uploadPromises).then((attachments) => {
       const evidenceAttachments = {};
@@ -224,6 +228,10 @@ const SupplementaryContainer = (props) => {
           deleteFiles,
           fromSupplierComment: comment,
         };
+
+        if ((status === 'RECOMMENDED' || status === 'DRAFT') && paramNewReport) {
+          data.newReport = paramNewReport;
+        }
         if (analystAction) {
           data.analystAction = true;
           data.penalty = supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty;
@@ -282,6 +290,11 @@ const SupplementaryContainer = (props) => {
       axios.get(`${ROUTES_SUPPLEMENTARY.ASSESSMENT.replace(':id', id)}?supplemental_id=${supplementaryId || ''}`),
     ]).then(axios.spread((response, complianceResponse, ratioResponse, assessmentResponse) => {
       if (response.data) {
+        if (location && location.state && location.state.new) {
+          setNewReport(true);
+        } else {
+          setNewReport(false);
+        }
         setDetails(response.data);
         const newSupplier = response.data.supplierInformation;
         const newLegalName = newSupplier.find((each) => each.category === 'LEGAL_NAME') || '';
@@ -454,6 +467,7 @@ const SupplementaryContainer = (props) => {
       isReassessment={isReassessment}
       setSupplementaryAssessmentData={setSupplementaryAssessmentData}
       supplementaryAssessmentData={supplementaryAssessmentData}
+      newReport={newReport}
     />
   );
 };

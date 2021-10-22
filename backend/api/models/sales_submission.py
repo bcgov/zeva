@@ -41,6 +41,12 @@ class SalesSubmission(Auditable):
                        statuses=[c.name for c in SalesSubmissionStatuses]
                    )
     )
+    part_of_model_year_report = models.BooleanField(
+        default=False,
+        null=True,
+        blank=True,
+        db_comment="determine if issue as Sept 30 as part of model year report."
+    )
     filename = models.CharField(
         blank=True,
         max_length=260,

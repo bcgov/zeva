@@ -15,8 +15,10 @@ from api.models.model_year_report_statuses import ModelYearReportStatuses
 from api.serializers.model_year_report_ldv_sales import ModelYearReportLDVSalesSerializer
 from api.models.user_profile import UserProfile
 from api.models.model_year_report_assessment import ModelYearReportAssessment
+from api.models.supplemental_report import SupplementalReport
 from api.serializers.model_year_report_address import \
     ModelYearReportAddressSerializer
+
 from api.serializers.model_year_report_make import \
     ModelYearReportMakeSerializer
 from api.serializers.model_year_report_history import \
@@ -209,8 +211,22 @@ class ModelYearReportListSerializer(
     obligation_total = SerializerMethodField()
     obligation_credits = SerializerMethodField()
     ldv_sales = SerializerMethodField()
+    supplemental_status = SerializerMethodField()
+
+
 
     def get_ldv_sales(self, obj):
+        request = self.context.get('request')
+
+        is_assessed = (
+            (request.user.organization_id == obj.organization_id and
+             obj.validation_status == ModelYearReportStatuses.ASSESSED) or
+            request.user.is_government
+        )
+
+        if is_assessed:
+            return obj.get_ldv_sales(from_gov=True) or obj.ldv_sales
+
         return obj.ldv_sales
 
     def get_compliant(self, obj):
@@ -247,12 +263,79 @@ class ModelYearReportListSerializer(
             return ModelYearReportStatuses.SUBMITTED.value
         return obj.get_validation_status_display()
 
+    def get_supplemental_status(self, obj):
+        request = self.context.get('request')
+        supplemental_records = SupplementalReport.objects.filter(
+            model_year_report=obj
+        ).order_by('-create_timestamp')
+        supplemental_record = 0
+        if supplemental_records:
+            supplemental_record = supplemental_records[0]
+        if supplemental_record:
+            # get information on who created the record
+            create_user = UserProfile.objects.get(
+                username=supplemental_record.create_user
+            )
+            sup_status = supplemental_record.status.value
+            if create_user.is_government:
+                if sup_status == 'RETURNED':
+                    # this record was created by idir but 
+                    # should show up as supplementary returned
+                    return ('SUPPLEMENTARY {}').format(sup_status)
+                if sup_status == 'REASSESSED' or sup_status == 'ASSESSED':
+                    # bceid and idir can see just 'reassessed' as status
+                    return 'REASSESSED'
+                if request.user.is_government and sup_status in ['DRAFT', 'RECOMMENDED']:
+                    # created by idir and viewed by idir, they can see 
+                    # draft or recommended status
+                    return ('REASSESSMENT {}').format(sup_status)
+                if not request.user.is_government and sup_status in ['SUBMITTED', 'DRAFT', 'RECOMMENDED']:
+                    # if it is being viewed by bceid, they shouldnt see it
+                    # unless it is reassessed or returned
+                    if supplemental_records.count() > 1:
+                        for each in supplemental_records:
+                            # find the newest record that is either created by bceid or one that they are allowed to see
+                            item_create_user = UserProfile.objects.get(username=each.create_user)
+                            # bceid are allowed to see any created by them or
+                            # if the status is REASSESSED or RETURNED?
+                            if not item_create_user.is_government or each.status.value == 'RETURNED':
+                                return ('SUPPLEMENTARY {}').format(each.status.value)
+                            if each.status.value == 'REASSESSED':
+                                return each.status.value
+            else:
+                # if created by bceid its a supplemental report
+                if sup_status == 'SUBMITTED':
+                    return('SUPPLEMENTARY {}').format(sup_status)
+                if sup_status == 'DRAFT':
+                    if not request.user.is_government:
+                        return('SUPPLEMENTARY {}').format(sup_status)
+                    else:
+                        # same logic for bceid to check if theres another record
+                        if supplemental_records.count() > 1:
+                            for each in supplemental_records:
+                                # find the newest record that is either
+                                # created by bceid or they are able to see
+                                item_create_user = UserProfile.objects.get(username=each.create_user)
+                                # they are allowed to see any created by idir
+                                # or if it is submitted
+                                if item_create_user.is_government:
+                                    return ('REASSESSMENT {}').format(each.status.value)
+                                if each.status.value == 'SUBMITTED':
+                                    return ('SUPPLEMENTARY {}').format(each.status.value)
+        
+        # no supplemental report, just return the status from the assessment
+        if not request.user.is_government and obj.validation_status in [
+                ModelYearReportStatuses.RECOMMENDED,
+                ModelYearReportStatuses.RETURNED]:
+            return ModelYearReportStatuses.SUBMITTED.value
+        return obj.get_validation_status_display()
+    
     class Meta:
         model = ModelYearReport
         fields = (
             'id', 'organization_name', 'model_year', 'validation_status', 'ldv_sales',
             'supplier_class', 'compliant', 'obligation_total',
-            'obligation_credits',
+            'obligation_credits', 'supplemental_status'
         )
 
 

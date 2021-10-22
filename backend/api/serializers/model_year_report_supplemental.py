@@ -221,16 +221,32 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
     attachments = SerializerMethodField()
     from_supplier_comments = SerializerMethodField()
     actual_status = SerializerMethodField()
+    create_user = SerializerMethodField()
+
+    def get_create_user(self, obj):
+        user_profile = UserProfile.objects.filter(username=obj.create_user)
+        if user_profile.exists():
+            serializer = MemberSerializer(user_profile.first(), read_only=True)
+            return serializer.data
+        return obj.create_user
 
     def get_actual_status(self, obj):
-        latest_report = SupplementalReport.objects.filter(
-            model_year_report_id=obj.model_year_report_id
+        request = self.context.get('request')
+        supplemental_report = SupplementalReport.objects.filter(
+            model_year_report_id=obj.model_year_report_id,
+            supplemental_id=obj.id
         ).order_by('-update_timestamp').first()
 
-        if not latest_report:
-            return None
+        if not supplemental_report:
+            return obj.status.value
 
-        return latest_report.status.value
+        if supplemental_report.status == ModelYearReportStatuses.RECOMMENDED:
+            return ModelYearReportStatuses.RECOMMENDED.value if request and request.user.is_government else obj.status.value
+
+        if supplemental_report.status == ModelYearReportStatuses.ASSESSED:
+            return ModelYearReportStatuses.ASSESSED.value
+
+        return supplemental_report.status.value
 
     def get_from_supplier_comments(self, obj):
         comments = SupplementalReportComment.objects.filter(
@@ -329,5 +345,5 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         fields = (
             'id', 'status', 'ldv_sales', 'credit_activity',
             'assessment_data', 'zev_sales', 'supplier_information',
-            'attachments', 'from_supplier_comments', 'actual_status'
+            'attachments', 'from_supplier_comments', 'actual_status', 'create_user'
         )

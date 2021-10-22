@@ -219,6 +219,7 @@ class ModelYearReportComplianceObligationViewset(
             report_year = int(report_year_obj.name)
             from_date = None
             to_date = None
+            to_pending_date = None
 
             if report_year == 2020:
                 from_date = date(2018, 1, 2,)
@@ -226,6 +227,8 @@ class ModelYearReportComplianceObligationViewset(
             else:
                 from_date = date(report_year, 10, 1,)
                 to_date = date(report_year + 1, 10, 1,)
+
+            to_pending_date = date(report_year + 1, 10, 21,)
 
             content = []
             
@@ -364,7 +367,7 @@ class ModelYearReportComplianceObligationViewset(
             pending_sales_submissions = SalesSubmission.objects.filter(
                 organization=organization,
                 validation_status__in=['SUBMITTED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'CHECKED'],
-                submission_date__lt=to_date,
+                submission_date__lt=to_pending_date,
                 submission_date__gte=from_date,
             )
 
@@ -375,6 +378,10 @@ class ModelYearReportComplianceObligationViewset(
                         model_year = float(record['xls_model_year'])
                     except ValueError:
                         continue
+
+                    if int(model_year) != int(report_year):
+                        continue
+
                     vehicle = Vehicle.objects.filter(
                         make__iexact=record['xls_make'],
                         model_name=record['xls_model'],

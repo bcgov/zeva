@@ -8,6 +8,7 @@ import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import getClassAReduction from '../../app/utilities/getClassAReduction';
 import getTotalReduction from '../../app/utilities/getTotalReduction';
+import formatStatus from '../../app/utilities/formatStatus';
 
 const ComplianceReportsTable = (props) => {
   const {
@@ -83,8 +84,8 @@ const ComplianceReportsTable = (props) => {
     id: 'model-year',
     maxWidth: 260,
   }, {
-    accessor: (item) => (item.validationStatus),
-    className: 'text-center',
+    accessor: (row) => (formatStatus(row.supplementalStatus)),
+    className: 'text-center text-capitalize',
     Header: 'Status',
     headerClassName: 'font-weight-bold',
     id: 'status',
