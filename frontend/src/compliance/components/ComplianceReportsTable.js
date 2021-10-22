@@ -85,6 +85,21 @@ const ComplianceReportsTable = (props) => {
     maxWidth: 260,
   }, {
     accessor: (row) => (formatStatus(row.supplementalStatus)),
+    filterMethod: (filter, row) => {
+      const filterValues = filter.value.split(',');
+
+      let returnValue = false;
+
+      filterValues.forEach((filterValue) => {
+        const value = filterValue.toLowerCase().trim();
+
+        if (value !== '' && !returnValue) {
+          returnValue = row[filter.id].toLowerCase().includes(value);
+        }
+      });
+
+      return returnValue;
+    },
     className: 'text-center text-capitalize',
     Header: 'Status',
     headerClassName: 'font-weight-bold',

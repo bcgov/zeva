@@ -3,7 +3,7 @@ Account Balance Serializer
 """
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from enumfields.drf import EnumField
-from django.db.models import Q
+from django.db.models import Q, F
 from api.models.model_year_report import ModelYearReport
 from api.serializers.credit_transaction import CreditClassSerializer
 from api.serializers.user import MemberSerializer
@@ -17,10 +17,12 @@ from api.models.sales_submission_statuses import SalesSubmissionStatuses
 from api.models.credit_transfer import CreditTransfer
 from api.models.credit_transfer_statuses import CreditTransferStatuses
 from api.models.credit_agreement import CreditAgreement
+from api.models.supplemental_report import SupplementalReport
 from api.models.credit_agreement_statuses import CreditAgreementStatuses
 from datetime import date
 from dateutil.relativedelta import relativedelta
-
+from api.models.user_profile import UserProfile
+from itertools import chain
 three_months_ago = date.today() - relativedelta(months=+3)
 twenty_eight_days_ago = date.today() - relativedelta(days=+28)
 # filters for dates are not working
@@ -34,7 +36,6 @@ class ModelYearReportCountSerializer(ModelSerializer):
 
     def get_status(self, obj):
         request = self.context.get('request')
-
         if not request.user.is_government:
             if obj['validation_status'].value == 'RECOMMENDED':
                 return 'SUBMITTED'
@@ -128,11 +129,21 @@ class DashboardListSerializer(ModelSerializer):
 
     def get_activity(self, obj):
         request = self.context.get('request')
+        SubQuery = UserProfile.objects.filter(organization__is_government=True).values_list('username', flat=True)
         if not request.user.is_government:
             # get querysets, grouping together and getting counts for each status
             model_year_reports = ModelYearReport.objects.filter(
                 organization_id=request.user.organization_id
             ).values('validation_status').annotate(total=Count('id')).order_by('validation_status')
+
+            all_model_year_reports_by_org = ModelYearReport.objects.filter(
+                organization_id=request.user.organization_id)
+            
+            supplementary_reports = SupplementalReport.objects.filter(
+                model_year_report__in=all_model_year_reports_by_org
+            ).values('status').annotate(total=Count('id')).order_by('status').exclude(Q(create_user__in=SubQuery)).annotate(validation_status=F('status'))
+            
+            combined_reports = list(chain(model_year_reports,supplementary_reports))
 
             # vehicles WITHIN 3 MONTHS IF VALIDATED
             vehicles = Vehicle.objects.filter(
@@ -176,10 +187,12 @@ class DashboardListSerializer(ModelSerializer):
                 & Q(status=CreditAgreementStatuses.ISSUED)).values('status').annotate(total=Count('id')).order_by('status')
 
         if request.user.is_government:
+            # model year reports
             model_year_reports = ModelYearReport.objects.exclude(
                 validation_status=ModelYearReportStatuses.DRAFT
             ).values('validation_status').annotate(total=Count('id')).order_by('validation_status')
-
+            supplementary_reports = SupplementalReport.objects.exclude(Q(~Q(create_user__in=SubQuery) & (Q(status=ModelYearReportStatuses.DRAFT)))).values('status').annotate(total=Count('id')).order_by('status').annotate(validation_status=F('status'))
+            combined_reports = list(chain(model_year_reports,supplementary_reports))
             # vehicles
             vehicles = Vehicle.objects.exclude(
                 validation_status__in=[
@@ -187,7 +200,6 @@ class DashboardListSerializer(ModelSerializer):
                     VehicleDefinitionStatuses.VALIDATED,
                     VehicleDefinitionStatuses.NEW]
             ).values('validation_status').annotate(total=Count('id')).order_by('validation_status')
-
 
             # credit requests
             credit_requests = SalesSubmission.objects.exclude(validation_status__in=(
@@ -214,7 +226,7 @@ class DashboardListSerializer(ModelSerializer):
         # serialize querysets
         #model year report
         model_year_report_serializer = ModelYearReportCountSerializer(
-            model_year_reports,
+            combined_reports,
             read_only=True,
             many=True,
             context={'request': request}

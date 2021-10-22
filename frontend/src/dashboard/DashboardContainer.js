@@ -115,6 +115,8 @@ const DashboardContainer = (props) => {
         }
       }
       // model year reports!
+      // need to add logic to add up multiples.. ie both model year report and supplemental have draft,
+      //  we need to add the totals!! because they both just have draft status and find just gets one, we need to retrieve all 
       if (user.hasPermission('SUBMIT_COMPLIANCE_REPORT') || user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')) {
         if (!user.isGovernment) {
           let reportsDraft = dashboard.modelYearReport.find((report) => report.status === 'DRAFT');
@@ -130,8 +132,11 @@ const DashboardContainer = (props) => {
             reportsAssessed,
           };
         } else {
+          let reportsDraft = dashboard.modelYearReport.find((report) => report.status === 'DRAFT');
+          reportsDraft = reportsDraft ? reportsDraft.total : 0;
           let reportsAnalyst = dashboard.modelYearReport.find((report) => report.status === 'SUBMITTED');
           reportsAnalyst = reportsAnalyst ? reportsAnalyst.total : 0;
+          reportsAnalyst += reportsDraft.total;
           let reportsReturned = dashboard.modelYearReport.find((report) => report.status === 'RETURNED');
           reportsReturned = reportsReturned ? reportsReturned.total : 0;
           let reportsDirector =  dashboard.modelYearReport.find((report) => report.status === 'RECOMMENDED');

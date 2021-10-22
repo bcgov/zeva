@@ -34,7 +34,7 @@ const CreditRequestDetailsContainer = (props) => {
       axios.get(ROUTES_ICBCVERIFICATION.DATE),
       axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
     ]).then(axios.spread((dateResponse, submissionResponse) => {
-      if(submissionResponse.data && submissionResponse.data.partOfModelYearReport){
+      if (submissionResponse.data && submissionResponse.data.partOfModelYearReport) {
         setIssueAsMY(submissionResponse.data.partOfModelYearReport);
       }
       if (dateResponse.data) {
@@ -47,7 +47,6 @@ const CreditRequestDetailsContainer = (props) => {
     }));
   };
 
-  
   const handleCheckboxClick = (event) => {
     setIssueAsMY(event.target.checked);
   };
@@ -60,8 +59,8 @@ const CreditRequestDetailsContainer = (props) => {
     const submissionContent = { validationStatus };
     submissionContent.issueAsModelYearReport = issueAsMY;
     if (comment.length > 0) {
-      submissionContent.salesSubmissionComment = { comment: comment };
-      submissionContent.commentType = {govt: false}
+      submissionContent.salesSubmissionComment = { comment };
+      submissionContent.commentType = { govt: false };
     }
     axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), submissionContent).then(() => {
       if (validationStatus === 'SUBMITTED') {
