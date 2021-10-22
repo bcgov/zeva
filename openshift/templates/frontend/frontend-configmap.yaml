@@ -57,7 +57,11 @@ parameters:
   - name: CREDIT_AGREEMENTS_ENABLED
     displayName: null
     description: 
-    required: true                   
+    required: true          
+  - name: SUPPLEMENTAL_ENABLED
+    displayName: null
+    description: 
+    required: true                  
 objects:
   - apiVersion: v1
     kind: ConfigMap
@@ -78,6 +82,7 @@ objects:
           'notifications.enabled': ${NOTIFICATIONS_ENABLED},
           'roles.enabled': ${ROLES_ENABLED},
           'credit_agreements.enabled': ${CREDIT_AGREEMENTS_ENABLED},
+          'supplemental.enabled': ${SUPPLEMENTAL_ENABLED},
           'model_year_report.years': [
             2020,
             2021,
