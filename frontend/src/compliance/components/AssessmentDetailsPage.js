@@ -1,11 +1,12 @@
 /* eslint-disable react/no-array-index-key */
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import parse from 'html-react-parser';
 import CONFIG from '../../app/config';
 import Button from '../../app/components/Button';
 import Loading from '../../app/components/Loading';
 import history from '../../app/History';
+import Modal from '../../app/components/Modal';
 import CustomPropTypes from '../../app/utilities/props';
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import ComplianceObligationAmountsTable from './ComplianceObligationAmountsTable';
@@ -50,9 +51,28 @@ const AssessmentDetailsPage = (props) => {
     supplementaryId,
     createdByGov,
   } = props;
+  const [showModal, setShowModal] = useState(false);
   const formattedPenalty = formatNumeric(details.assessment.assessmentPenalty, 0);
   const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, details.organization.name).replace(/{modelYear}/g, reportYear).replace(/{penalty}/g, `$${formattedPenalty} CAD`) : '';
   const disabledInputs = false;
+
+  const modalReturn = (
+    <Modal
+      cancelLabel="Cancel"
+      confirmLabel="Return to Supplier"
+      handleCancel={() => { setShowModal(false); }}
+      handleSubmit={() => { setShowModal(false); handleSubmit('DRAFT'); }}
+      modalClass="w-75"
+      showModal={showModal}
+      confirmClass="button primary"
+    >
+      <div className="my-3">
+        <h3>
+          Do you wish to return this Model Year report to the supplier?
+        </h3>
+      </div>
+    </Modal>
+  );
   const showDescription = (each) => (
     <div className="mb-3" key={each.id}>
       <input
@@ -202,7 +222,7 @@ const AssessmentDetailsPage = (props) => {
               </button>
             )}
             {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-            && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') 
+            && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && statuses.assessment.status === 'ASSESSED'
             && ((!supplementaryId && supplementaryStatus == 'DRAFT') 
             || (supplementaryStatus == 'DRAFT' && !createdByGov)
             || (supplementaryStatus == 'DELETED' || supplementaryStatus == 'ASSESSED')) && (
@@ -427,7 +447,7 @@ const AssessmentDetailsPage = (props) => {
                 <button
                   className="button text-danger"
                   onClick={() => {
-                    handleSubmit('DRAFT');
+                    setShowModal(true);
                   }}
                   type="button"
                 >
@@ -475,6 +495,7 @@ const AssessmentDetailsPage = (props) => {
           </div>
         </div>
       </div>
+      {modalReturn}
     </div>
   );
 };
