@@ -20,30 +20,8 @@ from api.models.credit_agreement import CreditAgreement
 from api.models.credit_agreement_statuses import CreditAgreementStatuses
 from datetime import date
 from dateutil.relativedelta import relativedelta
-from api.models.user_profile import UserProfile
-from itertools import chain
 three_months_ago = date.today() - relativedelta(months=+3)
 twenty_eight_days_ago = date.today() - relativedelta(days=+28)
-# filters for dates are not working
-
-class ModelYearReportCountSerializer(ModelSerializer):
-    status = SerializerMethodField()
-    total = SerializerMethodField()
-
-    def get_total(self, obj):
-        return obj['total']
-
-    def get_status(self, obj):
-        request = self.context.get('request')
-        if not request.user.is_government:
-            if obj['validation_status'].value == 'RECOMMENDED':
-                return 'SUBMITTED'
-        return obj['validation_status'].value
-
-    class Meta:
-        model = ModelYearReport
-        fields = ('status', 'total',)
-
 
 class CreditRequestCountSerializer(ModelSerializer):
     status = SerializerMethodField()
@@ -128,7 +106,6 @@ class DashboardListSerializer(ModelSerializer):
 
     def get_activity(self, obj):
         request = self.context.get('request')
-        SubQuery = UserProfile.objects.filter(organization__is_government=True).values_list('username', flat=True)
         if not request.user.is_government:
             # get querysets, grouping together and getting counts for each status
             model_year_reports = ModelYearReport.objects.filter(
@@ -244,13 +221,8 @@ class DashboardListSerializer(ModelSerializer):
 
 
         # serialize querysets
-        #model year report
-        model_year_report_serializer = ModelYearReportCountSerializer(
-            # combined_reports,
-            read_only=True,
-            many=True,
-            context={'request': request}
-            )
+        #model year report not needed because we manually counted
+
         # vehicle
         vehicle_serializer = VehicleCountSerializer(
             vehicles,
