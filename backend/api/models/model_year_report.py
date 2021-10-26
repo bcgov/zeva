@@ -96,15 +96,17 @@ class ModelYearReport(Auditable):
             create_user = UserProfile.objects.get(
                 username=report.create_user)
             if request.user.is_government:
-                if report.status.value in ['SUBMITTED','RECOMMENDED', 'ASSESSED', 'RETURNED']:
+                if report.status.value in ['SUBMITTED', 'RECOMMENDED', 'ASSESSED', 'RETURNED']:
                     return report
                 if report.status.value == 'DRAFT' and create_user.is_government:
                     return report
             if not request.user.is_government:
-                if report.status.value in ['SUBMITTED','ASSESSED']:
+                if report.status.value in ['SUBMITTED', 'ASSESSED']:
                     return report
                 if report.status.value == 'DRAFT' and not create_user.is_government:
-                    return report 
+                    return report
+
+        return None
 
     def get_supplemental(self, supplemental_id):
         return SupplementalReport.objects.filter(
