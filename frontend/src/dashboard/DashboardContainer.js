@@ -130,17 +130,20 @@ const DashboardContainer = (props) => {
             reportsAssessed,
           };
         } else {
+          let reportsDraft = dashboard.modelYearReport.find((report) => report.status === 'DRAFT');
+          reportsDraft = reportsDraft ? reportsDraft.total : 0;
           let reportsAnalyst = dashboard.modelYearReport.find((report) => report.status === 'SUBMITTED');
           reportsAnalyst = reportsAnalyst ? reportsAnalyst.total : 0;
+          reportsAnalyst += reportsDraft
           let reportsReturned = dashboard.modelYearReport.find((report) => report.status === 'RETURNED');
           reportsReturned = reportsReturned ? reportsReturned.total : 0;
-          let reportsDirector =  dashboard.modelYearReport.find((report) => report.status === 'RECOMMENDED');
+          let reportsDirector = dashboard.modelYearReport.find((report) => report.status === 'RECOMMENDED');
           reportsDirector = reportsDirector ? reportsDirector.total : 0;
           activityCount = {
             ...activityCount,
             reportsAnalyst,
             reportsDirector,
-            reportsReturned
+            reportsReturned,
           };
         }
       }

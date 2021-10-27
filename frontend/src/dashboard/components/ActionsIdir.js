@@ -161,8 +161,8 @@ const ActionsIdir = (props) => {
           colour="yellow"
           icon="file-alt"
           boldText="Model Year Reports"
-          regularText={`${activityCount.reportsAnalyst} require analyst/engineer review`}
-          linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Submitted`}
+          regularText={`${activityCount.reportsAnalyst} require analyst/engineer action`}
+          linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Submitted, Draft`}
         />
         )}
         {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
