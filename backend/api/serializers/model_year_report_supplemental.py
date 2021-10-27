@@ -240,13 +240,9 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         if not supplemental_report:
             return obj.status.value
 
-        if supplemental_report.status == ModelYearReportStatuses.RECOMMENDED:
-            return ModelYearReportStatuses.RECOMMENDED.value if request and request.user.is_government else obj.status.value
+        latest_supplemental = obj.get_latest_supplemental(request)
 
-        if supplemental_report.status == ModelYearReportStatuses.ASSESSED:
-            return ModelYearReportStatuses.ASSESSED.value
-
-        return supplemental_report.status.value
+        return latest_supplemental.status.value
 
     def get_from_supplier_comments(self, obj):
         comments = SupplementalReportComment.objects.filter(
