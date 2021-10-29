@@ -205,7 +205,7 @@ const ActionsBceid = (props) => {
         <ActivityBanner
           colour="green"
           icon="list"
-          boldText="Credit Adjustments"
+          boldText="Credit Agreements"
           regularText={`${activityCount.creditAgreementsIssued} recorded by the Government of B.C.`}
           linkTo={`${ROUTES_CREDIT_AGREEMENTS.LIST}?col-status=Issued`}
         />

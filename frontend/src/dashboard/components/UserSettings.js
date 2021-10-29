@@ -1,4 +1,6 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { NavLink } from 'react-router-dom';
 
 import CustomPropTypes from '../../app/utilities/props';
 
@@ -35,6 +37,24 @@ const UserSettings = (props) => {
               </dl>
             )
           ))}
+        </div>
+      </div>
+      <div className="tutorials">
+        {details && !details.isGovernment && (
+        <>
+          <div className="mt-1"><FontAwesomeIcon icon='play' className='play-video'/> 
+            <a className='ml-2' href="https://youtube.com/playlist?list=PLQ9IQMQB72Nw9jBLO5HtdNFTZOsAjTFOt">Video Tutorials</a>
+          </div>
+          <div className="mt-1"><FontAwesomeIcon icon='play' className='play-video'/> 
+            <a className='ml-2' href="https://www2.gov.bc.ca/gov/content/industry/electricity-alternative-energy/transportation-energies/clean-transportation-policies-programs/zero-emission-vehicles-act">Zero-Emission Vehicles Act</a>
+          </div>
+        </>
+        )}
+        <div className="mt-1">
+          <NavLink activeClassName="active" className="notifications" exact to="/notifications">
+            <span className="play-video"><FontAwesomeIcon icon="play" /></span>
+            <span className="ml-2">Configure email notifications</span>
+          </NavLink>
         </div>
       </div>
     </div>
