@@ -239,11 +239,16 @@ const SupplementaryContainer = (props) => {
         }
         axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data).then((response) => {
           const { id: supplementalId } = response.data;
-          const commentData = { fromGovtComment: bceidComment, director: false };
-          axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
+          if (status === 'DELETED') {
             history.push(ROUTES_COMPLIANCE.REPORTS);
-            history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementalId));
-          });
+          }
+          else {
+            const commentData = { fromGovtComment: bceidComment, director: false };
+            axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
+              history.push(ROUTES_COMPLIANCE.REPORTS);
+              history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementalId));
+            });
+          }
         });
       }
     }).catch((e) => {
