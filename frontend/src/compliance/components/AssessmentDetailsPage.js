@@ -294,11 +294,9 @@ const AssessmentDetailsPage = (props) => {
                 <div className={`mt-0 list ${disabledInputs ? 'disabled' : ''}`}>
                   <ul>
                     {makes.map((item, index) => (
-                      <div className="form-row my-2" key={index}>
-                        <li>
-                          <div className="col-11">{item}</div>
-                        </li>
-                      </div>
+                      <li key={index}>
+                        <div className="col-11">{item}</div>
+                      </li>
                     ))}
                   </ul>
                 </div>
