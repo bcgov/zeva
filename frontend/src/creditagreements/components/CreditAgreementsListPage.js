@@ -27,6 +27,8 @@ const CreditAgreementsListPage = (props) => {
         </div>
       </div>
       <div className="row">
+        {user.isGovernment
+        && (
         <div className="col-lg-12 text-right content">
           <CreditAgreementsFilter
             items={creditAgreements}
@@ -36,6 +38,7 @@ const CreditAgreementsListPage = (props) => {
             user={user}
           />
         </div>
+        )}
       </div>
       <div className="row mt-4">
         <div className="col-md-12">
