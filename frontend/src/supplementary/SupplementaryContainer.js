@@ -308,7 +308,7 @@ const SupplementaryContainer = (props) => {
         const newMakes = newSupplier.find((each) => each.category === 'LDV_MAKES') || '';
         const newSupplierClass = newSupplier.find((each) => each.category === 'SUPPLIER_CLASS') || '';
         const idirCommentArrayResponse = [];
-        let bceidCommentResponse = {};
+        let bceidCommentResponse = response.data.fromSupplierComments;
 
         const {
           assessment,
@@ -335,12 +335,12 @@ const SupplementaryContainer = (props) => {
           assessmentComment.forEach((item) => {
             if (item.toDirector === true) {
               idirCommentArrayResponse.push(item);
-            } else {
-              bceidCommentResponse = item;
-            }
+            } 
+            // else {
+            //   bceidCommentResponse = item;
+            // }
           });
         }
-
         setCommentArray({
           bceidComment: bceidCommentResponse,
           idirComment: idirCommentArrayResponse,

@@ -28,7 +28,7 @@ const ComplianceHistory = (props) => {
 
       supplemental.forEach((each) => {
         if (each.status === 'DRAFT') {
-          const index = tempSupplementalHistory.findIndex((temp) => temp.status === 'DRAFT');
+          const index = tempSupplementalHistory.findIndex((temp) => temp.status === 'DRAFT' && temp.supplementalReportId === each.supplementalReportId);
 
           if (index >= 0) {
             tempSupplementalHistory[index] = each;
@@ -38,7 +38,7 @@ const ComplianceHistory = (props) => {
         }
 
         if (each.status === 'SUBMITTED') {
-          const index = tempSupplementalHistory.findIndex((temp) => ['DRAFT', 'SUBMITTED'].indexOf(temp.status) >= 0);
+          const index = tempSupplementalHistory.findIndex((temp) => ['DRAFT', 'SUBMITTED'].indexOf(temp.status) >= 0 && temp.supplementalReportId === each.supplementalReportId);
 
           if (index >= 0) {
             tempSupplementalHistory[index] = each;
