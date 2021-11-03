@@ -42,11 +42,10 @@ const VehicleForm = (props) => {
   } = props;
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
-
+  const eligibleWeight = fields.weightKg <= 3856;
   const modalText = (fields && fields.hasPassedUs06Test) ? 'Submit vehicle model and range test results to Government of B.C.' : 'Submit ZEV model to Government of B.C.?';
 
   let modalProps;
-
   switch (modalType) {
     case 'submit':
       modalProps = {
@@ -357,8 +356,8 @@ const VehicleForm = (props) => {
                 <Button buttonType="save" optionalText="Save Draft" action={(e) => { handleSubmit(e); }} />
                 <Button
                   buttonType="submit"
-                  disabled={fields.hasPassedUs06Test && files.length === 0 && (!fields.attachments
-                    || fields.attachments.length <= deleteFiles.length)}
+                  disabled={!eligibleWeight || (fields.hasPassedUs06Test && files.length === 0 && (!fields.attachments
+                    || fields.attachments.length <= deleteFiles.length))}
                   action={() => { setModalType('submit'); setShowModal(true); }}
                 />
               </span>

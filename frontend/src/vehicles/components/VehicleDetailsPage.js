@@ -30,6 +30,7 @@ const VehicleDetailsPage = (props) => {
   const [requestChangeCheck, setRequestChangeCheck] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
+  const eligibleWeight = details.weightKg <= 3856;
   if (loading) {
     return <Loading />;
   }
@@ -154,12 +155,12 @@ const VehicleDetailsPage = (props) => {
             <DetailField label="Electric EPA Range (km)" value={details.range} />
             <DetailField label="Body Type" value={details.vehicleClassCode.description} />
             <DetailField label="Weight (kg)" value={details.weightKg} />
-            <DetailField label="Vehicle Class" id={details.weightKg < 3856 ? '' : 'danger-text'} value={details.weightKg < 3856 ? 'LDV (calculated)' : 'Not within LDV range (calculated)'} />
+            <DetailField label="Vehicle Class" id={eligibleWeight ? '' : 'danger-text'} value={eligibleWeight ? 'LDV (calculated)' : 'Not within LDV range (calculated)'} />
             {details.creditClass && (
-              <DetailField label="ZEV Class" value={` ${details.creditClass} (calculated)`} />
+              <DetailField label="ZEV Class" value={eligibleWeight ? ` ${details.creditClass} (calculated)` : ''} />
             )}
             {(details.creditValue > 0 || details.creditValue < 0) && (
-              <DetailField label="Credit Entitlement" value={` ${details.creditValue} (calculated)`} />
+              <DetailField label="Credit Entitlement" value={eligibleWeight ? ` ${details.creditValue} (calculated)` : ''} />
             )}
 
             {details.attachments.length > 0 && (
@@ -260,6 +261,7 @@ const VehicleDetailsPage = (props) => {
                   </button>
                   <Button
                     buttonType="submit"
+                    disabled={!eligibleWeight}
                     action={() => { setModalType('submit'); setShowModal(true); }}
                   />
                 </>
