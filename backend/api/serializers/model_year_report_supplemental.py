@@ -235,7 +235,7 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         supplemental_report = SupplementalReport.objects.filter(
             model_year_report_id=obj.model_year_report_id,
             supplemental_id=obj.id
-        ).order_by('-update_timestamp').first()
+        ).exclude(status__in=[ModelYearReportStatuses.DELETED]).order_by('-update_timestamp').first()
 
         if not supplemental_report:
             return obj.status.value
