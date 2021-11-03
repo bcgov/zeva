@@ -577,7 +577,6 @@ class ModelYearReportViewset(
             supplemental_id = supplemental_report.id
 
         if request.data.get('status') == 'RETURNED':
-            print('wow')
             SupplementalReportHistory.objects.create(
                 supplemental_report_id=supplemental_id,
                 validation_status=validation_status,
