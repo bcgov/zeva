@@ -64,6 +64,7 @@ const ComplianceHistory = (props) => {
         }
       })
     }
+    return true;
   }
   const returnedText = (item) => `${item.isReassessment ? 'Reassessment' : 'Supplementary'} report returned ${moment(item.updateTimestamp).format('MMM D, YYYY')} by the Government of B.C.`;
   const draftText = (item) => `${item.isReassessment ? 'Reassessment' : 'Supplementary'} report saved ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
