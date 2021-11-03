@@ -34,7 +34,7 @@ const ZevSales = (props) => {
     headerClassName: 'font-weight-bold ',
     id: 'zevSales',
     sortable: false,
-    maxWidth: 150,
+    minWidth: 125,
   }, {
     Cell: (item) => (
       <>
@@ -56,13 +56,13 @@ const ZevSales = (props) => {
     headerClassName: 'font-weight-bold ',
     id: 'model-year',
     sortable: false,
-    maxWidth: 120,
+    minWidth: 120,
   }, {
     Cell: (item) => (
       <>
         <span className="mr-2">{item.original.oldData.make}</span>
         <input
-          size="10"
+          size="8"
           name="zevSales"
           id={`make-${item.index}`}
           onChange={handleInputChange}
@@ -77,7 +77,7 @@ const ZevSales = (props) => {
     headerClassName: 'font-weight-bold',
     id: 'make',
     sortable: false,
-    maxWidth: 200,
+    minWidth: 190,
   }, {
     Cell: (item) => (
       <>
@@ -98,7 +98,7 @@ const ZevSales = (props) => {
     headerClassName: 'font-weight-bold',
     id: 'modelName',
     sortable: false,
-    maxWidth: 300,
+    minWidth: 300,
   }, {
     Cell: (item) => (
       <>
@@ -119,7 +119,7 @@ const ZevSales = (props) => {
     headerClassName: 'font-weight-bold',
     id: 'type',
     sortable: false,
-    maxWidth: 200,
+    minWidth: 120,
   }, {
     Cell: (item) => (
       <>
@@ -140,7 +140,7 @@ const ZevSales = (props) => {
     headerClassName: 'font-weight-bold',
     id: 'range',
     sortable: false,
-    maxWidth: 150,
+    minWidth: 150,
   }, {
     Cell: (item) => (
       <>
@@ -162,7 +162,7 @@ const ZevSales = (props) => {
     headerClassName: 'font-weight-bold',
     id: 'zev-class',
     sortable: false,
-    maxWidth: 75,
+    minWidth: 110,
   }];
   return (
     <>
@@ -179,6 +179,7 @@ const ZevSales = (props) => {
         && (
         <ReactTable
           className="sales-table"
+          overflow="auto"
           columns={columns}
           data={salesRows}
           filterable={false}

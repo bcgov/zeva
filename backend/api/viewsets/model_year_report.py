@@ -506,7 +506,8 @@ class ModelYearReportViewset(
                 ModelYearReportStatuses.DRAFT,
                 ModelYearReportStatuses.SUBMITTED,
                 ModelYearReportStatuses.ASSESSED,
-                ModelYearReportStatuses.REASSESSED
+                ModelYearReportStatuses.REASSESSED,
+                ModelYearReportStatuses.RETURNED
             ]:
                 return HttpResponse(
                     status=404, content=None
@@ -575,10 +576,29 @@ class ModelYearReportViewset(
             ).first()
             supplemental_id = supplemental_report.id
 
+        if request.data.get('status') == 'RETURNED':
+            SupplementalReportHistory.objects.create(
+                supplemental_report_id=supplemental_id,
+                validation_status=validation_status,
+                update_user=request.user.username,
+                create_user=request.user.username,
+            )
+
+            serializer = ModelYearReportSupplementalSerializer(
+                supplemental_report,
+                data=request.data
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save(
+                model_year_report_id=report.id,
+                update_user=request.user.username
+            )
+
+            return Response(serializer.data)
         if create_user and \
             create_user.is_government == request.user.is_government and not new_report:
 
-            if request.data.get('status') == ModelYearReportStatuses.DELETED:
+            if request.data.get('status') == 'DELETED':
                 SupplementalReportAttachment.objects.filter(
                     supplemental_report_id=supplemental_report.id).delete()
                 SupplementalReportSupplierInformation.objects.filter(

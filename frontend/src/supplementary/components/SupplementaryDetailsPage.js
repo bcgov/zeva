@@ -57,13 +57,12 @@ const SupplementaryDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
-
   // if user is bceid then only draft is editable
   // if user is idir then draft or submitted is editable
 
   const isEditable = (
     details.status === 'DRAFT')
-    || (user.isGovernment && ['SUBMITTED', 'RETURNED'].indexOf(details.status) >= 0) 
+    || (user.isGovernment && ['SUBMITTED', 'RETURNED'].indexOf(details.status) >= 0)
     || newReport;
   const [showModal, setShowModal] = useState(false);
   const [showModalDraft, setShowModalDraft] = useState(false);
@@ -180,6 +179,12 @@ const SupplementaryDetailsPage = (props) => {
       && (
         <ComplianceHistory user={user} id={id} activePage="supplementary" />
       )}
+      {details.status !== 'DRAFT' && commentArray && commentArray.bceidComment && commentArray.bceidComment.length > 0
+        && (
+        <DisplayComment
+          commentArray={commentArray.bceidComment}
+        />
+        )}
       {(isReassessment || (analystAction || directorAction))
       && details.status !== 'ASSESSED'
       && (
@@ -190,6 +195,7 @@ const SupplementaryDetailsPage = (props) => {
           commentArray={commentArray.idirComment}
         />
         )}
+
         <div id="comment-input">
           <CommentInput
             handleCommentChange={handleCommentChangeIdir}
@@ -235,12 +241,14 @@ const SupplementaryDetailsPage = (props) => {
         </div>
         <div id="comment-input">
           {!user.isGovernment && (details.status === 'DRAFT' || newReport) && (
+
           <CommentInput
-            defaultComment={details && details.comments && details.comments.length > 0 ? details.comments[0] : {}}
+            defaultComment={details && details.fromSupplierComments && details.fromSupplierComments.length > 0 ? details.fromSupplierComments[0] : {}}
             handleCommentChange={handleCommentChange}
             title="Provide details in the comment box below for any changes above."
           />
           )}
+
         </div>
         {!user.isGovernment && (details.status === 'DRAFT' || newReport) && (
         <UploadEvidence
@@ -383,7 +391,7 @@ const SupplementaryDetailsPage = (props) => {
           </div>
         </>
       )}
-      {!user.isGovernment && user.hasPermission('SUBMIT_COMPLIANCE_REPORT') && (details.status === 'DRAFT'|| newReport)
+      {!user.isGovernment && user.hasPermission('SUBMIT_COMPLIANCE_REPORT') && (details.status === 'DRAFT' || newReport)
       && (
       <div className="mt-3">
         <input
@@ -439,7 +447,7 @@ const SupplementaryDetailsPage = (props) => {
               />
               )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-              && analystAction && (['RECOMMENDED', 'ASSESSED'].indexOf(details.status) < 0 || details.status === 'RETURNED' || newReport) 
+              && analystAction && (['RECOMMENDED', 'ASSESSED'].indexOf(details.status) < 0 || details.status === 'RETURNED' || newReport)
               && (
               <Button
                 buttonTooltip={recommendTooltip}
