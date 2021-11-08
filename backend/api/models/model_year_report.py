@@ -2,6 +2,7 @@
 Model Year Report
 """
 from django.db import models
+from django.db.models import Q
 from enumfields import EnumField
 
 from auditable.models import Auditable
@@ -12,6 +13,7 @@ from api.models.model_year_report_ldv_sales import ModelYearReportLDVSales
 from api.models.model_year_report_compliance_obligation import \
     ModelYearReportComplianceObligation
 from api.models.supplemental_report import SupplementalReport
+from api.models.supplemental_report_history import SupplementalReportHistory
 from api.models.user_profile import UserProfile
 
 
@@ -89,22 +91,62 @@ class ModelYearReport(Auditable):
         
 
     def get_latest_supplemental(self, request):
-        reports = SupplementalReport.objects.filter(
-            model_year_report_id=self.id
-        ).order_by('-update_timestamp')
-        for report in reports:
-            create_user = UserProfile.objects.get(
-                username=report.create_user)
-            if request.user.is_government:
-                if report.status.value in ['SUBMITTED', 'RECOMMENDED', 'ASSESSED', 'RETURNED']:
-                    return report
-                if report.status.value == 'DRAFT' and create_user.is_government:
-                    return report
-            if not request.user.is_government:
-                if report.status.value in ['SUBMITTED', 'ASSESSED']:
-                    return report
-                if report.status.value == 'DRAFT' and not create_user.is_government:
-                    return report
+        supplemental_report_ids = SupplementalReport.objects.filter(
+            model_year_report_id=self.id,
+            status__in=[
+                ModelYearReportStatuses.SUBMITTED,
+                ModelYearReportStatuses.DRAFT,
+                ModelYearReportStatuses.RECOMMENDED,
+                ModelYearReportStatuses.ASSESSED,
+                ModelYearReportStatuses.REASSESSED,
+                ModelYearReportStatuses.RETURNED,
+            ]
+        ).values_list('id', flat=True)
+
+        SubQuery = UserProfile.objects.filter(organization__is_government=True).values_list('username', flat=True)
+        if request.user.is_government:
+            supplemental_report = SupplementalReportHistory.objects.filter(
+                supplemental_report_id__in=supplemental_report_ids,
+                validation_status__in=[
+                    ModelYearReportStatuses.SUBMITTED,
+                    ModelYearReportStatuses.DRAFT,
+                    ModelYearReportStatuses.RECOMMENDED,
+                    ModelYearReportStatuses.ASSESSED,
+                    ModelYearReportStatuses.REASSESSED,
+                    ModelYearReportStatuses.RETURNED,
+                    ]
+            ).exclude(Q(~Q(create_user__in=SubQuery) & (Q(validation_status=ModelYearReportStatuses.DRAFT)))).order_by('-update_timestamp')
+
+            # Exclude reports returned to suppliers
+            exclude_return = []
+
+            for index, report in enumerate(supplemental_report):
+                if report.validation_status.value == 'RETURNED' and \
+                        index + 1 < len(supplemental_report):
+                    if supplemental_report[index + 1].validation_status.value == 'SUBMITTED':
+                        exclude_return.append(report.id)
+                        exclude_return.append(supplemental_report[index + 1].id)
+
+            supplemental_report = supplemental_report.exclude(id__in=exclude_return)
+        else:
+            supplemental_report = SupplementalReportHistory.objects.filter(
+                supplemental_report_id__in=supplemental_report_ids,
+                validation_status__in=[
+                    ModelYearReportStatuses.SUBMITTED,
+                    ModelYearReportStatuses.DRAFT,
+                    ModelYearReportStatuses.ASSESSED,
+                    ModelYearReportStatuses.REASSESSED,
+                    ModelYearReportStatuses.RETURNED,
+
+                    ]
+            ).exclude(Q(Q(create_user__in=SubQuery) & (Q(validation_status=ModelYearReportStatuses.DRAFT)))).order_by('-update_timestamp')
+
+        history = supplemental_report.first()
+
+        if history:
+            return SupplementalReport.objects.filter(
+                id=history.supplemental_report_id
+            ).first()
 
         return None
 
