@@ -10,9 +10,13 @@ import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
 
 const ComplianceHistory = (props) => {
   const {
-    user, id, activePage,
+    user, id, activePage, supplementaryId: detailsId,
   } = props;
-  const { supplementaryId } = useParams();
+  let { supplementaryId } = useParams();
+
+  if (!supplementaryId && detailsId) {
+    supplementaryId = detailsId;
+  }
 
   const [noaHistory, setNoaHistory] = useState({});
   const [supplementalHistory, setSupplementalHistory] = useState([]);
@@ -57,12 +61,12 @@ const ComplianceHistory = (props) => {
   }, []);
 
   const modelYearReportSuperseded = () => {
-    if(noaHistory.supplemental){
-      noaHistory.supplemental.forEach((each)=>{
-        if (each.status === 'ASSESSED'){
-          displayMYSuperseded = true; 
+    if (noaHistory.supplemental) {
+      noaHistory.supplemental.forEach((each) => {
+        if (each.status === 'ASSESSED') {
+          displayMYSuperseded = true;
         }
-      })
+      });
     }
     return true;
   }
@@ -193,9 +197,14 @@ const ComplianceHistory = (props) => {
   );
 };
 
+ComplianceHistory.defaultProps = {
+  supplementaryId: null,
+};
+
 ComplianceHistory.propTypes = {
   user: CustomPropTypes.user.isRequired,
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   activePage: PropTypes.string.isRequired,
+  supplementaryId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 export default ComplianceHistory;
