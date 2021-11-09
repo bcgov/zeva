@@ -46,6 +46,19 @@ const ComplianceObligationTableCreditsIssued = (props) => {
     return '';
   };
 
+  const getDefault = (category, each, classType) => {
+    if (getNewData(category, each.modelYear, classType) === '' || getNewData(category, each.modelYear, classType) === null) {
+      if (classType === 'creditAValue') {
+        return (Number(each.A) > 0 ? formatNumeric(each.A, 2) : formatNumeric(each.A * -1, 2));
+      }
+      if (classType === 'creditBValue') {
+        return (Number(each.B) > 0 ? formatNumeric(each.B, 2) : formatNumeric(each.B * -1, 2));
+      }
+    }
+    return getNewData(category, each.modelYear, classType);
+  }
+
+
   const tableSection = (input, title, negativeValue) => {
     let numberClassname = 'text-right';
 
@@ -141,10 +154,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                 <td>
                   <input
                     className="form-control"
-                    defaultValue={
-                      (getNewData(category, each.modelYear, 'creditAValue') === '' || getNewData(category, each.modelYear, 'creditAValue') === null) 
-                      ? (Number(each.A) > 0 ? formatNumeric(each.A, 2) : formatNumeric(each.A * -1, 2)) 
-                      : getNewData(category, each.modelYear, 'creditAValue')}
+                    defaultValue={getDefault(category, each, 'creditAValue')}
                     type="text"
                     onChange={(event) => {
                       handleSupplementalChange({
@@ -159,10 +169,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                 <td>
                   <input
                     className="form-control"
-                    defaultValue={
-                      (getNewData(category, each.modelYear, 'creditBValue') === '' || getNewData(category, each.modelYear, 'creditBValue') === null) 
-                      ? (Number(each.B) > 0 ? formatNumeric(each.B, 2) : formatNumeric(each.B * -1, 2)) 
-                      : getNewData(category, each.modelYear, 'creditBValue')}
+                    defaultValue={getDefault(category, each, 'creditBValue')}
                     type="text"
                     onChange={(event) => {
                       handleSupplementalChange({
