@@ -152,13 +152,18 @@ const ComplianceReportSummaryContainer = (props) => {
       const { ldvSales } = creditActivityResponse.data;
 
       let timestampCreditActivity;
+
       creditActivityResponse.data.complianceObligation.forEach((item) => {
         timestampCreditActivity = item.updateTimestamp;
 
         if (item.category === 'creditBalanceStart') {
           creditBalanceStart.year = item.modelYear.name;
-          creditBalanceStart.A = item.creditAValue;
-          creditBalanceStart.B = item.creditBValue;
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          creditBalanceStart.A = aValue;
+          creditBalanceStart.B = bValue;
+          provisionalBalanceAfterCreditReduction.A += aValue;
+          provisionalBalanceAfterCreditReduction.B += bValue;
         }
 
         if (item.category === 'creditBalanceEnd') {
@@ -168,8 +173,8 @@ const ComplianceReportSummaryContainer = (props) => {
           creditBalanceEnd.B += bValue;
           provisionalBalanceBeforeOffset.A += aValue;
           provisionalBalanceBeforeOffset.B += bValue;
-          provisionalBalanceAfterOffset.A += aValue;
-          provisionalBalanceAfterOffset.B += bValue;
+          // provisionalBalanceAfterOffset.A += aValue;
+          // provisionalBalanceAfterOffset.B += bValue;
         }
 
         if (item.category === 'UnspecifiedClassCreditReduction') {
@@ -177,6 +182,8 @@ const ComplianceReportSummaryContainer = (props) => {
           const bValue = parseFloat(item.creditBValue);
           totalCreditReduction.A += aValue;
           totalCreditReduction.B += bValue;
+          provisionalBalanceAfterCreditReduction.A -= aValue;
+          provisionalBalanceAfterCreditReduction.B -= bValue;
         }
 
         if (item.category === 'ClassAReduction') {
@@ -184,6 +191,8 @@ const ComplianceReportSummaryContainer = (props) => {
           const bValue = parseFloat(item.creditBValue);
           totalCreditReduction.A += aValue;
           totalCreditReduction.B += bValue;
+          provisionalBalanceAfterCreditReduction.A -= aValue;
+          provisionalBalanceAfterCreditReduction.B -= bValue;
         }
 
         if (item.category === 'pendingBalance') {
@@ -191,6 +200,8 @@ const ComplianceReportSummaryContainer = (props) => {
           const bValue = parseFloat(item.creditBValue);
           pendingBalance.A += aValue;
           pendingBalance.B += bValue;
+          provisionalBalanceAfterCreditReduction.A += aValue;
+          provisionalBalanceAfterCreditReduction.B += bValue;
 
           if (pendingBalance.A > 0 || pendingBalance.B > 0) {
             setPendingBalanceExist(true);
@@ -202,36 +213,48 @@ const ComplianceReportSummaryContainer = (props) => {
           const bValue = parseFloat(item.creditBValue);
           transfersIn.A += aValue;
           transfersIn.B += bValue;
+          provisionalBalanceAfterCreditReduction.A += aValue;
+          provisionalBalanceAfterCreditReduction.B += bValue;
         }
         if (item.category === 'initiativeAgreement') {
           const aValue = parseFloat(item.creditAValue);
           const bValue = parseFloat(item.creditBValue);
           initiativeAgreement.A += aValue;
           initiativeAgreement.B += bValue;
+          provisionalBalanceAfterCreditReduction.A += aValue;
+          provisionalBalanceAfterCreditReduction.B += bValue;
         }
         if (item.category === 'purchaseAgreement') {
           const aValue = parseFloat(item.creditAValue);
           const bValue = parseFloat(item.creditBValue);
           purchaseAgreement.A += aValue;
           purchaseAgreement.B += bValue;
+          provisionalBalanceAfterCreditReduction.A += aValue;
+          provisionalBalanceAfterCreditReduction.B += bValue;
         }
         if (item.category === 'administrativeAllocation') {
           const aValue = parseFloat(item.creditAValue);
           const bValue = parseFloat(item.creditBValue);
           administrativeAllocation.A += aValue;
           administrativeAllocation.B += bValue;
+          provisionalBalanceAfterCreditReduction.A += aValue;
+          provisionalBalanceAfterCreditReduction.B += bValue;
         }
         if (item.category === 'administrativeReduction') {
           const aValue = parseFloat(item.creditAValue);
           const bValue = parseFloat(item.creditBValue);
           administrativeReduction.A -= aValue;
           administrativeReduction.B -= bValue;
+          provisionalBalanceAfterCreditReduction.A -= aValue;
+          provisionalBalanceAfterCreditReduction.B -= bValue;
         }
         if (item.category === 'automaticAdministrativePenalty') {
           const aValue = parseFloat(item.creditAValue);
           const bValue = parseFloat(item.creditBValue);
           automaticAdministrativePenalty.A += aValue;
           automaticAdministrativePenalty.B += bValue;
+          provisionalBalanceAfterCreditReduction.A += aValue;
+          provisionalBalanceAfterCreditReduction.B += bValue;
         }
 
         if (item.category === 'transfersOut') {
@@ -239,6 +262,8 @@ const ComplianceReportSummaryContainer = (props) => {
           const bValue = parseFloat(item.creditBValue);
           transfersOut.A -= aValue;
           transfersOut.B -= bValue;
+          provisionalBalanceAfterCreditReduction.A -= aValue;
+          provisionalBalanceAfterCreditReduction.B -= bValue;
         }
 
         if (item.category === 'creditsIssuedSales') {
@@ -246,14 +271,16 @@ const ComplianceReportSummaryContainer = (props) => {
           const bValue = parseFloat(item.creditBValue);
           creditsIssuedSales.A += aValue;
           creditsIssuedSales.B += bValue;
-        }
-
-        if (item.category === 'ProvisionalBalanceAfterCreditReduction') {
-          const aValue = parseFloat(item.creditAValue);
-          const bValue = parseFloat(item.creditBValue);
           provisionalBalanceAfterCreditReduction.A += aValue;
           provisionalBalanceAfterCreditReduction.B += bValue;
         }
+
+        // if (item.category === 'ProvisionalBalanceAfterCreditReduction') {
+        //   const aValue = parseFloat(item.creditAValue);
+        //   const bValue = parseFloat(item.creditBValue);
+        //   provisionalBalanceAfterCreditReduction.A += aValue;
+        //   provisionalBalanceAfterCreditReduction.B += bValue;
+        // }
 
         if (item.category === 'CreditDeficit') {
           const aValue = parseFloat(item.creditAValue);

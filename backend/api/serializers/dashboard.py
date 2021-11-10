@@ -20,30 +20,8 @@ from api.models.credit_agreement import CreditAgreement
 from api.models.credit_agreement_statuses import CreditAgreementStatuses
 from datetime import date
 from dateutil.relativedelta import relativedelta
-
 three_months_ago = date.today() - relativedelta(months=+3)
 twenty_eight_days_ago = date.today() - relativedelta(days=+28)
-# filters for dates are not working
-
-class ModelYearReportCountSerializer(ModelSerializer):
-    status = SerializerMethodField()
-    total = SerializerMethodField()
-
-    def get_total(self, obj):
-        return obj['total']
-
-    def get_status(self, obj):
-        request = self.context.get('request')
-
-        if not request.user.is_government:
-            if obj['validation_status'].value == 'RECOMMENDED':
-                return 'SUBMITTED'
-        return obj['validation_status'].value
-
-    class Meta:
-        model = ModelYearReport
-        fields = ('status', 'total',)
-
 
 class CreditRequestCountSerializer(ModelSerializer):
     status = SerializerMethodField()
@@ -131,8 +109,24 @@ class DashboardListSerializer(ModelSerializer):
         if not request.user.is_government:
             # get querysets, grouping together and getting counts for each status
             model_year_reports = ModelYearReport.objects.filter(
-                organization_id=request.user.organization_id
-            ).values('validation_status').annotate(total=Count('id')).order_by('validation_status')
+                organization_id=request.user.organization_id)
+            report_statuses = []
+            for each in model_year_reports:
+                
+                supplemental_report = each.get_latest_supplemental(request)
+                if supplemental_report:
+                    report_statuses.append(supplemental_report.status.value)
+                else:
+                    report_statuses.append(each.validation_status.value)
+            status_dict = {}
+            for i in report_statuses:
+                if i in status_dict:
+                    status_dict[i] += 1
+                else:
+                    status_dict[i] = 1
+            report_status_dict_list = []
+            for k, v in status_dict.items():
+                report_status_dict_list.append({'status': k, 'total': v})
 
             # vehicles WITHIN 3 MONTHS IF VALIDATED
             vehicles = Vehicle.objects.filter(
@@ -176,9 +170,25 @@ class DashboardListSerializer(ModelSerializer):
                 & Q(status=CreditAgreementStatuses.ISSUED)).values('status').annotate(total=Count('id')).order_by('status')
 
         if request.user.is_government:
-            model_year_reports = ModelYearReport.objects.exclude(
-                validation_status=ModelYearReportStatuses.DRAFT
-            ).values('validation_status').annotate(total=Count('id')).order_by('validation_status')
+            # model year reports
+            model_year_reports = ModelYearReport.objects.filter()
+            report_statuses = []
+            for each in model_year_reports:
+                supplemental_report = each.get_latest_supplemental(request)
+                if supplemental_report:
+                    report_statuses.append(supplemental_report.status.value)
+                else:
+                    if each.validation_status.value not in ['DRAFT', 'DELETED']:
+                        report_statuses.append(each.validation_status.value)
+            status_dict = {}
+            for i in report_statuses:
+                if i in status_dict:
+                    status_dict[i] += 1
+                else:
+                    status_dict[i] = 1
+            report_status_dict_list = []
+            for k, v in status_dict.items():
+                report_status_dict_list.append({'status': k, 'total': v})
 
             # vehicles
             vehicles = Vehicle.objects.exclude(
@@ -187,7 +197,6 @@ class DashboardListSerializer(ModelSerializer):
                     VehicleDefinitionStatuses.VALIDATED,
                     VehicleDefinitionStatuses.NEW]
             ).values('validation_status').annotate(total=Count('id')).order_by('validation_status')
-
 
             # credit requests
             credit_requests = SalesSubmission.objects.exclude(validation_status__in=(
@@ -212,13 +221,8 @@ class DashboardListSerializer(ModelSerializer):
 
 
         # serialize querysets
-        #model year report
-        model_year_report_serializer = ModelYearReportCountSerializer(
-            model_year_reports,
-            read_only=True,
-            many=True,
-            context={'request': request}
-            )
+        #model year report not needed because we manually counted
+
         # vehicle
         vehicle_serializer = VehicleCountSerializer(
             vehicles,
@@ -252,7 +256,7 @@ class DashboardListSerializer(ModelSerializer):
 
         # return dictionary with activity type as key and number as value
         return {
-            'model_year_report': model_year_report_serializer.data,
+            'model_year_report': report_status_dict_list,
             'vehicle': vehicle_serializer.data,
             'credit_request': credit_request_serializer.data,
             'credit_transfer': credit_transfer_serializer.data,

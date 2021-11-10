@@ -235,18 +235,18 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         supplemental_report = SupplementalReport.objects.filter(
             model_year_report_id=obj.model_year_report_id,
             supplemental_id=obj.id
-        ).order_by('-update_timestamp').first()
+        ).exclude(status__in=[ModelYearReportStatuses.DELETED]).order_by('-update_timestamp').first()
 
         if not supplemental_report:
             return obj.status.value
 
-        if supplemental_report.status == ModelYearReportStatuses.RECOMMENDED:
-            return ModelYearReportStatuses.RECOMMENDED.value if request and request.user.is_government else obj.status.value
-
-        if supplemental_report.status == ModelYearReportStatuses.ASSESSED:
-            return ModelYearReportStatuses.ASSESSED.value
-
-        return supplemental_report.status.value
+        model_year_report = ModelYearReport.objects.get(id=obj.model_year_report_id)
+        latest_supplemental = model_year_report.get_latest_supplemental(request)
+        
+        if latest_supplemental:
+            return latest_supplemental.status.value
+        
+        return model_year_report.validation_status.value
 
     def get_from_supplier_comments(self, obj):
         comments = SupplementalReportComment.objects.filter(

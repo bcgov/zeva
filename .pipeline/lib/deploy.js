@@ -107,7 +107,8 @@ module.exports = settings => {
       'PURCHASE_REQUESTS_ENABLED': phases[phase].purchaseRequestsEnabled,
       'NOTIFICATIONS_ENABLED': phases[phase].notificationsEnabled,
       'ROLES_ENABLED': phases[phase].rolesEnabled,
-      'CREDIT_AGREEMENTS_ENABLED': phases[phase].creditAgreementsEnabled
+      'CREDIT_AGREEMENTS_ENABLED': phases[phase].creditAgreementsEnabled,
+      'SUPPLEMENTAL_ENABLED': phases[phase].supplementalEnabled
     }
   }))
   //}

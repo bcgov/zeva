@@ -483,7 +483,7 @@ class ModelYearReportComplianceObligationViewset(
             })
 
             serializer = ModelYearReportComplianceObligationSnapshotSerializer(
-                report.get_credit_reductions(prior_year), context={
+                report.get_credit_reductions(), context={
                     'request': request,
                     'kwargs': kwargs
                 }, many=True

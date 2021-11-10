@@ -104,7 +104,11 @@ const SupplementaryContainer = (props) => {
     const commentData = { fromGovtComment: idirComment, director: true };
     axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
       history.push(ROUTES_COMPLIANCE.REPORTS);
-      history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementaryId));
+      if (supplementaryId) {
+        history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementaryId));
+      } else {
+        history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', ''));
+      }
     });
   };
 
@@ -239,11 +243,18 @@ const SupplementaryContainer = (props) => {
         }
         axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data).then((response) => {
           const { id: supplementalId } = response.data;
-          const commentData = { fromGovtComment: bceidComment, director: false };
-          axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
+          if (status === 'DELETED') {
             history.push(ROUTES_COMPLIANCE.REPORTS);
-            history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementalId));
-          });
+          } else if (status === 'RETURNED') {
+            history.push(ROUTES_COMPLIANCE.REPORTS);
+            history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', ''));
+          } else {
+            const commentData = { fromGovtComment: bceidComment, director: false };
+            axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
+              history.push(ROUTES_COMPLIANCE.REPORTS);
+              history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementalId));
+            });
+          }
         });
       }
     }).catch((e) => {
@@ -303,7 +314,7 @@ const SupplementaryContainer = (props) => {
         const newMakes = newSupplier.find((each) => each.category === 'LDV_MAKES') || '';
         const newSupplierClass = newSupplier.find((each) => each.category === 'SUPPLIER_CLASS') || '';
         const idirCommentArrayResponse = [];
-        let bceidCommentResponse = {};
+        let bceidCommentResponse = response.data.fromSupplierComments;
 
         const {
           assessment,
@@ -330,12 +341,12 @@ const SupplementaryContainer = (props) => {
           assessmentComment.forEach((item) => {
             if (item.toDirector === true) {
               idirCommentArrayResponse.push(item);
-            } else {
-              bceidCommentResponse = item;
-            }
+            } 
+            // else {
+            //   bceidCommentResponse = item;
+            // }
           });
         }
-
         setCommentArray({
           bceidComment: bceidCommentResponse,
           idirComment: idirCommentArrayResponse,

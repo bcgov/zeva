@@ -136,22 +136,34 @@ const ActionsIdir = (props) => {
         <ActivityBanner
           colour="yellow"
           icon="list"
-          boldText="Credit Adjustments"
+          boldText="Credit Agreements"
           regularText={`${activityCount.creditAgreementsDraft} saved as draft`}
           linkTo={`${ROUTES_CREDIT_AGREEMENTS.LIST}?col-status=Draft`}
         />
         )}
         {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED
-        && activityCount.creditAgreementsIssued > 0
+        && activityCount.creditAgreementsRecommended > 0
         && user.hasPermission('SIGN_INITIATIVE_AGREEMENTS')
         && (
         <ActivityBanner
           colour="blue"
           icon="list"
-          boldText="Credit Adjustments"
+          boldText="Credit Agreements"
           regularText={`${activityCount.creditAgreementsRecommended} recommended for director action`}
           linkTo={`${ROUTES_CREDIT_AGREEMENTS.LIST}?col-status=Recommended`}
         />
+        )}
+        {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED
+        && ((activityCount.creditAgreementsRecommended === 0 && user.hasPermission('SIGN_INITIATIVE_AGREEMENTS'))
+        || (activityCount.creditAgreementsDraft === 0 && user.hasPermission('CREATE_INITIATIVE_AGREEMENTS'))) 
+        && (
+          <ActivityBanner
+            colour="green"
+            icon="list"
+            boldText="Credit Agreements"
+            regularText="no current activity"
+            linkTo={ROUTES_CREDIT_AGREEMENTS.LIST}
+          />
         )}
         {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
         && activityCount.reportsAnalyst > 0
@@ -161,8 +173,8 @@ const ActionsIdir = (props) => {
           colour="yellow"
           icon="file-alt"
           boldText="Model Year Reports"
-          regularText={`${activityCount.reportsAnalyst} require analyst/engineer review`}
-          linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Submitted`}
+          regularText={`${activityCount.reportsAnalyst} require analyst/engineer action`}
+          linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Submitted, Draft`}
         />
         )}
         {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED

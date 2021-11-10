@@ -10,14 +10,18 @@ import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
 
 const ComplianceHistory = (props) => {
   const {
-    user, id, activePage,
+    user, id, activePage, supplementaryId: detailsId,
   } = props;
-  const { supplementaryId } = useParams();
+  let { supplementaryId } = useParams();
+
+  if (!supplementaryId && detailsId) {
+    supplementaryId = detailsId;
+  }
 
   const [noaHistory, setNoaHistory] = useState({});
   const [supplementalHistory, setSupplementalHistory] = useState([]);
 
-  let displaySuperseded;
+  let displayMYSuperseded;
   useEffect(() => {
     axios.get(ROUTES_COMPLIANCE.NOA_HISTORY.replace(/:id/g, id)).then((response) => {
       setNoaHistory(response.data);
@@ -28,7 +32,7 @@ const ComplianceHistory = (props) => {
 
       supplemental.forEach((each) => {
         if (each.status === 'DRAFT') {
-          const index = tempSupplementalHistory.findIndex((temp) => temp.status === 'DRAFT');
+          const index = tempSupplementalHistory.findIndex((temp) => temp.status === 'DRAFT' && temp.supplementalReportId === each.supplementalReportId);
 
           if (index >= 0) {
             tempSupplementalHistory[index] = each;
@@ -38,7 +42,7 @@ const ComplianceHistory = (props) => {
         }
 
         if (each.status === 'SUBMITTED') {
-          const index = tempSupplementalHistory.findIndex((temp) => ['DRAFT', 'SUBMITTED'].indexOf(temp.status) >= 0);
+          const index = tempSupplementalHistory.findIndex((temp) => ['DRAFT', 'SUBMITTED'].indexOf(temp.status) >= 0 && temp.supplementalReportId === each.supplementalReportId);
 
           if (index >= 0) {
             tempSupplementalHistory[index] = each;
@@ -55,6 +59,17 @@ const ComplianceHistory = (props) => {
       setSupplementalHistory(tempSupplementalHistory);
     });
   }, []);
+
+  const modelYearReportSuperseded = () => {
+    if (noaHistory.supplemental) {
+      noaHistory.supplemental.forEach((each) => {
+        if (each.status === 'ASSESSED') {
+          displayMYSuperseded = true;
+        }
+      });
+    }
+    return true;
+  }
   const returnedText = (item) => `${item.isReassessment ? 'Reassessment' : 'Supplementary'} report returned ${moment(item.updateTimestamp).format('MMM D, YYYY')} by the Government of B.C.`;
   const draftText = (item) => `${item.isReassessment ? 'Reassessment' : 'Supplementary'} report saved ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
   const submittedText = (item) => {
@@ -64,16 +79,6 @@ const ComplianceHistory = (props) => {
     return `${item.isReassessment ? 'Reassessment' : 'Supplementary'} report signed and submitted to the Government of B.C. ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
   };
   const recommendedText = (item) => `${item.isReassessment ? 'Reassessment' : 'Supplementary'} report recommended ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
-
-  const getSupersededStatus = (idx) => {
-    if (noaHistory.supplemental && noaHistory.supplemental.length > 0 && idx == noaHistory.supplemental.length - 1 && noaHistory.supplemental[idx].status === 'ASSESSED') {
-      displaySuperseded = false;
-    }
-    if (noaHistory.supplemental && noaHistory.supplemental.length > 0 && idx < noaHistory.supplemental.length - 1 && noaHistory.supplemental[idx].status === 'ASSESSED') {
-      displaySuperseded = true;
-    }
-    return displaySuperseded;
-  };
 
   const getLinkByStatus = (item) => {
     if (item.status === 'DRAFT') {
@@ -136,7 +141,7 @@ const ComplianceHistory = (props) => {
     }
     if (item.status === 'ASSESSED') {
       if (Number(item.supplementalReportId) === Number(supplementaryId)) {
-        return (<span>Notice of Reassessment {moment(item.updateTimestamp).format('MMM D, YYYY')}{displaySuperseded ? <span className="text-red"> Superseded</span> : ''}</span>);
+        return (<span>Notice of Reassessment {moment(item.updateTimestamp).format('MMM D, YYYY')}{item.displaySupersededText ? <span className="text-red"> Superseded</span> : ''}</span>);
       }
 
       return (
@@ -144,7 +149,7 @@ const ComplianceHistory = (props) => {
           className="text-blue text-underline"
           to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', item.supplementalReportId)}
         >
-          Notice of Reassessment {moment(item.updateTimestamp).format('MMM D, YYYY')}{displaySuperseded ? <span className="text-red"> Superseded</span> : ''}
+          Notice of Reassessment {moment(item.updateTimestamp).format('MMM D, YYYY')}{item.displaySupersededText ? <span className="text-red"> Superseded</span> : ''}
         </Link>
       );
     }
@@ -154,6 +159,7 @@ const ComplianceHistory = (props) => {
   return (
     Object.keys(noaHistory).length > 0 && noaHistory.supplemental && noaHistory.supplemental.length > 0 && (
       <div className="m-0 pt-2">
+        {modelYearReportSuperseded()}
         <h3>
           Model Year Report Assessment History
         </h3>
@@ -173,14 +179,13 @@ const ComplianceHistory = (props) => {
                 )}
               {activePage === 'assessment'
                 && <span>Notice of Assessment {moment(noaHistory.assessment.updateTimestamp).format('MMM D, YYYY')}</span>}
-              {noaHistory.supplemental ? <span className="text-red"> Superseded</span> : ''}
+              {noaHistory.supplemental && displayMYSuperseded ? <span className="text-red"> Superseded</span> : ''}
             </li>
             )}
             {supplementalHistory
             && (
-              supplementalHistory.map((item, idx) => (
+              supplementalHistory.map((item) => (
                 <li key={item.id} className={item.status === 'ASSESSED' ? 'main-list-item' : 'sub-list-item'}>
-                  {getSupersededStatus(idx)}
                   {getLinkByStatus(item)}
                 </li>
               ))
@@ -192,9 +197,14 @@ const ComplianceHistory = (props) => {
   );
 };
 
+ComplianceHistory.defaultProps = {
+  supplementaryId: null,
+};
+
 ComplianceHistory.propTypes = {
   user: CustomPropTypes.user.isRequired,
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   activePage: PropTypes.string.isRequired,
+  supplementaryId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 export default ComplianceHistory;

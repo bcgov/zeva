@@ -123,9 +123,16 @@ const SummaryCreditActivityTable = (props) => {
           <td />
           <td className="text-right">
             {complianceRatios.length > 0
+              && supplierClass === 'Large'
               && formatNumeric(
                 ldvSales * (complianceRatios[0].complianceRatio / 100)
                   - ldvSales * (complianceRatios[0].zevClassA / 100),
+                2,
+              )}
+            {complianceRatios.length > 0
+              && supplierClass !== 'Large'
+              && formatNumeric(
+                ldvSales * (complianceRatios[0].complianceRatio / 100),
                 2,
               )}
           </td>
