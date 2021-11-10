@@ -152,6 +152,7 @@ const ComplianceReportSummaryContainer = (props) => {
       const { ldvSales } = creditActivityResponse.data;
 
       let timestampCreditActivity;
+
       creditActivityResponse.data.complianceObligation.forEach((item) => {
         timestampCreditActivity = item.updateTimestamp;
 
@@ -172,8 +173,8 @@ const ComplianceReportSummaryContainer = (props) => {
           creditBalanceEnd.B += bValue;
           provisionalBalanceBeforeOffset.A += aValue;
           provisionalBalanceBeforeOffset.B += bValue;
-          provisionalBalanceAfterOffset.A += aValue;
-          provisionalBalanceAfterOffset.B += bValue;
+          // provisionalBalanceAfterOffset.A += aValue;
+          // provisionalBalanceAfterOffset.B += bValue;
         }
 
         if (item.category === 'UnspecifiedClassCreditReduction') {
@@ -281,12 +282,12 @@ const ComplianceReportSummaryContainer = (props) => {
         //   provisionalBalanceAfterCreditReduction.B += bValue;
         // }
 
-        // if (item.category === 'CreditDeficit') {
-        //   const aValue = parseFloat(item.creditAValue);
-        //   const bValue = parseFloat(item.creditBValue);
-        //   provisionalBalanceAfterCreditReduction.A -= aValue;
-        //   provisionalBalanceAfterCreditReduction.B -= bValue;
-        // }
+        if (item.category === 'CreditDeficit') {
+          const aValue = parseFloat(item.creditAValue);
+          const bValue = parseFloat(item.creditBValue);
+          provisionalBalanceAfterCreditReduction.A -= aValue;
+          provisionalBalanceAfterCreditReduction.B -= bValue;
+        }
       });
 
       setCreditActivityDetails({

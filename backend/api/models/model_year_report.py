@@ -195,10 +195,9 @@ class ModelYearReport(Auditable):
             return {'sales': row.ldv_sales, 'year': row.model_year.name}
         return None
 
-    def get_credit_reductions(self, year):
+    def get_credit_reductions(self):
         data = ModelYearReportComplianceObligation.objects.filter(
             model_year_report_id=self.id,
-            model_year__name=year,
             category__in=[
                 'ClassAReduction', 'UnspecifiedClassCreditReduction',
                 'CreditDeficit', 'ProvisionalBalanceAfterCreditReduction'
