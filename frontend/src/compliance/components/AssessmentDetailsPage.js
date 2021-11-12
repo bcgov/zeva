@@ -152,7 +152,7 @@ const AssessmentDetailsPage = (props) => {
             )}
           </div>
           {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-          && <ComplianceHistory user={user} id={id} activePage="assessment" />}
+          && <ComplianceHistory user={user} id={id} activePage="assessment" reportYear={reportYear} supplementaryId={details.id} />}
           {user.isGovernment
           && (
             <>

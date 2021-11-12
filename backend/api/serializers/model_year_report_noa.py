@@ -65,13 +65,84 @@ class SupplementalNOASerializer(ModelSerializer):
 
         if user.is_government:
             return True
-        
-        return False
 
+        return False
 
     class Meta:
         model = SupplementalReportHistory
         fields = (
             'update_timestamp', 'status', 'id', 'update_user', 'supplemental_report_id', 'display_superseded_text',
             'is_reassessment'
+        )
+
+
+class SupplementalReportHistorySerializer(ModelSerializer):
+    status = SerializerMethodField()
+    create_user = SerializerMethodField()
+
+    def get_status(self, obj):
+        return obj.validation_status.value
+
+    def get_create_user(self, obj):
+        user = UserProfile.objects.filter(username=obj.create_user).first()
+        if user is None:
+            return None
+
+        serializer = MemberSerializer(user)
+
+        return serializer.data
+
+    class Meta:
+        model = SupplementalReportHistory
+        fields = (
+            'update_timestamp', 'status', 'create_user'
+        )
+
+
+class SupplementalReportSerializer(ModelSerializer):
+    status = SerializerMethodField()
+    history = SerializerMethodField()
+
+    def get_status(self, obj):
+        return obj.status.value
+
+    def get_history(self, obj):
+        request = self.context.get('request')
+
+        history = SupplementalReportHistory.objects.filter(
+            supplemental_report_id=obj.id
+        ).order_by('-update_timestamp')
+
+        # is this a supplemental report? (created by bceid user)
+        create_user = UserProfile.objects.filter(username=obj.create_user).first()
+        if create_user and not create_user.is_government:
+            filter_statuses = [
+                ModelYearReportStatuses.ASSESSED,
+                ModelYearReportStatuses.REASSESSED
+            ]
+
+            if request.user.is_government:
+                filter_statuses.append(ModelYearReportStatuses.RECOMMENDED)
+                
+            reassessment_report = SupplementalReport.objects.filter(
+                supplemental_id=obj.id,
+                status__in=filter_statuses
+            ).first()
+
+            if reassessment_report:
+                reassessment_history = SupplementalReportHistory.objects.filter(
+                    supplemental_report_id=reassessment_report.id,
+                    validation_status__in=filter_statuses
+                ).order_by('-update_timestamp')
+                history = reassessment_history | history
+
+        serializer = SupplementalReportHistorySerializer(history, many=True)
+
+        return serializer.data
+
+    class Meta:
+        model = SupplementalReport
+        fields = (
+            'update_timestamp', 'status', 'id', 'update_user', 'history',
+            'supplemental_id'
         )

@@ -169,25 +169,15 @@ const SupplementaryDetailsPage = (props) => {
 
   return (
     <div id="supplementary" className="page">
-      <div className="row">
-        <div className="col">
-          <h2 className="mb-2">{isReassessment ? `${reportYear} Model Year Report Reassessment` : `${reportYear} Model Year Supplementary Report`}</h2>
-        </div>
-      </div>
-      <div className="supplementary-alert">
-        {details.id && details.status != 'DELETED' && (
-          <SupplementaryAlert
-            id={id}
-            date={moment(details.updateTimestamp).format('MMM D, YYYY')}
-            status={details.status}
-            user={user.username}
-          />
-        )}
-      </div>
       {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
       && (
-        <ComplianceHistory user={user} id={id} activePage="supplementary" supplementaryId={details.id} />
+        <ComplianceHistory user={user} id={id} activePage="supplementary" reportYear={reportYear} supplementaryId={details.id} />
       )}
+      <div className="row">
+        <div className="col">
+          <h2 className="mb-2 mt-3">{isReassessment ? `${reportYear} Model Year Report Reassessment` : `${reportYear} Model Year Supplementary Report`}</h2>
+        </div>
+      </div>
       {details.status !== 'DRAFT' && commentArray && commentArray.bceidComment && commentArray.bceidComment.length > 0
         && (
         <DisplayComment
@@ -465,8 +455,11 @@ const SupplementaryDetailsPage = (props) => {
                 optionalText="Recommend Reassessment"
                 disabled={disabledRecommendBtn}
                 action={() => {
-                  // handleSubmit('RECOMMENDED');
-                  setShowModal(true);
+                  if (newReport) {
+                    setShowModal(true);
+                  } else {
+                    handleSubmit('RECOMMENDED');
+                  }
                 }}
               />
               )}
