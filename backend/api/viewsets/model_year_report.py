@@ -64,7 +64,7 @@ from api.serializers.model_year_report_supplemental import \
     ModelYearReportSupplementalSerializer, SupplementalReportAssessmentSerializer
 from api.serializers.model_year_report_noa import \
     ModelYearReportNoaSerializer, SupplementalNOASerializer, \
-    SupplementalReportSerializer
+    SupplementalReportSerializer, SupplementalModelYearReportSerializer
 from api.models.organization import Organization
 
 
@@ -284,10 +284,10 @@ class ModelYearReportViewset(
     @action(detail=True)
     def supplemental_history(self, request, pk=None):
         queryset = self.get_queryset()
-        report = get_object_or_404(queryset, pk=pk)
+        model_year_report = get_object_or_404(queryset, pk=pk)
 
         supplemental_reports = SupplementalReport.objects.filter(
-            model_year_report=report.id
+            model_year_report=model_year_report.id
         ).exclude(
             status=ModelYearReportStatuses.DELETED
         ).order_by('-update_timestamp')
@@ -300,8 +300,10 @@ class ModelYearReportViewset(
             ):
                 exclude_supplemental_reports.append(report.id)
 
-            if not request.user.is_government and report.is_reassessment:
-                if report.status.value not in ['ASSESSED', 'REASSESSED']:
+            if report.is_reassessment:
+                if report.status.value not in [
+                        'ASSESSED', 'REASSESSED'
+                ] and not request.user.is_government:
                     exclude_supplemental_reports.append(report.id)
 
                 # If it's a reassessment report from a supplementary
@@ -326,7 +328,13 @@ class ModelYearReportViewset(
             context={'request': request}
         )
 
-        return Response(serializer.data)
+        model_year_report_serializer = SupplementalModelYearReportSerializer(
+            [model_year_report],
+            many=True,
+            context={'request': request}
+        )
+
+        return Response(serializer.data + model_year_report_serializer.data)
 
     @action(detail=True)
     def makes(self, request, pk=None):

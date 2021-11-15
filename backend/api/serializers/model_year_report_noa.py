@@ -102,8 +102,30 @@ class SupplementalReportHistorySerializer(ModelSerializer):
 class SupplementalReportSerializer(ModelSerializer):
     status = SerializerMethodField()
     history = SerializerMethodField()
+    is_supplementary = SerializerMethodField()
+
+    def get_is_supplementary(self, obj):
+        return True
 
     def get_status(self, obj):
+        request = self.context.get('request')
+
+        filter_statuses = [
+            ModelYearReportStatuses.ASSESSED,
+            ModelYearReportStatuses.REASSESSED
+        ]
+
+        if request.user.is_government:
+            filter_statuses.append(ModelYearReportStatuses.RECOMMENDED)
+
+        reassessment_report = SupplementalReport.objects.filter(
+            supplemental_id=obj.id,
+            status__in=filter_statuses
+        ).first()
+
+        if reassessment_report:
+            return reassessment_report.status.value
+
         return obj.status.value
 
     def get_history(self, obj):
@@ -135,6 +157,15 @@ class SupplementalReportSerializer(ModelSerializer):
                     validation_status__in=filter_statuses
                 ).order_by('-update_timestamp')
                 history = reassessment_history | history
+        elif not request.user.is_government:
+            filter_statuses = [
+                ModelYearReportStatuses.ASSESSED,
+                ModelYearReportStatuses.REASSESSED
+            ]
+
+            history = history.filter(
+                validation_status__in=filter_statuses
+            )
 
         serializer = SupplementalReportHistorySerializer(history, many=True)
 
@@ -144,5 +175,61 @@ class SupplementalReportSerializer(ModelSerializer):
         model = SupplementalReport
         fields = (
             'update_timestamp', 'status', 'id', 'update_user', 'history',
-            'supplemental_id'
+            'supplemental_id', 'is_supplementary',
+        )
+
+
+class SupplementalModelYearReportSerializer(ModelSerializer):
+    status = SerializerMethodField()
+    history = SerializerMethodField()
+    supplemental_id = SerializerMethodField()
+    is_supplementary = SerializerMethodField()
+
+    def get_is_supplementary(self, obj):
+        return False
+
+    def get_supplemental_id(self, _obj):
+        return None
+
+    def get_status(self, obj):
+        request = self.context.get('request')
+
+        if not request.user.is_government and \
+            obj.validation_status in [ModelYearReportStatuses.RECOMMENDED]:
+            return ModelYearReportStatuses.SUBMITTED.value
+
+        return obj.validation_status.value
+
+    def get_history(self, obj):
+        request = self.context.get('request')
+
+        history = ModelYearReportHistory.objects.filter(
+            model_year_report_id=obj.id
+        ).order_by('-update_timestamp')
+
+        if request.user.is_government:
+            history = history.exclude(
+                validation_status__in=[
+                    ModelYearReportStatuses.DRAFT,
+                    ModelYearReportStatuses.DELETED,
+                ]
+            )
+        else:
+            history = history.exclude(
+                validation_status__in=[
+                    ModelYearReportStatuses.RECOMMENDED,
+                    ModelYearReportStatuses.DELETED,
+                    ModelYearReportStatuses.RETURNED,
+                ]
+            )
+
+        serializer = SupplementalReportHistorySerializer(history, many=True)
+
+        return serializer.data
+
+    class Meta:
+        model = ModelYearReport
+        fields = (
+            'update_timestamp', 'status', 'id', 'update_user', 'history',
+            'supplemental_id', 'is_supplementary',
         )
