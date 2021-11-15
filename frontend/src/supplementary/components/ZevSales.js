@@ -22,7 +22,7 @@ const ZevSales = (props) => {
           id={`sales-${item.index}`}
           size="5"
           name="zevSales"
-          defaultValue={item.original.newData ? item.original.newData.sales : ''}
+          defaultValue={item.original.newData.sales ? item.original.newData.sales : item.original.oldData.sales}
           onChange={handleInputChange}
           readOnly={!isEditable}
           className={!isEditable ? 'supplementary-input-disabled' : ''}
@@ -45,7 +45,7 @@ const ZevSales = (props) => {
           onChange={handleInputChange}
           size="4"
           maxLength="4"
-          defaultValue={item.original.newData.modelYear}
+          defaultValue={item.original.newData.modelYear ? item.original.newData.modelYear : item.original.oldData.modelYear}
           readOnly={!isEditable}
           className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
@@ -66,7 +66,7 @@ const ZevSales = (props) => {
           name="zevSales"
           id={`make-${item.index}`}
           onChange={handleInputChange}
-          defaultValue={item.original.newData.make}
+          defaultValue={item.original.newData.make ? item.original.newData.make : item.original.oldData.make}
           readOnly={!isEditable}
           className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
@@ -87,7 +87,7 @@ const ZevSales = (props) => {
           name="zevSales"
           id={`modelName-${item.index}`}
           onChange={handleInputChange}
-          defaultValue={item.original.newData.modelName}
+          defaultValue={item.original.newData.modelName ? item.original.newData.modelName : item.original.oldData.model}
           readOnly={!isEditable}
           className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
@@ -108,7 +108,7 @@ const ZevSales = (props) => {
           name="zevSales"
           id={`vehicleZevType-${item.index}`}
           onChange={handleInputChange}
-          defaultValue={item.original.newData.vehicleZevType}
+          defaultValue={item.original.newData.vehicleZevType ? item.original.newData.vehicleZevType : item.original.oldData.zevType}
           readOnly={!isEditable}
           className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
@@ -129,7 +129,7 @@ const ZevSales = (props) => {
           name="zevSales"
           id={`range-${item.index}`}
           onChange={handleInputChange}
-          defaultValue={item.original.newData.range}
+          defaultValue={item.original.newData.range ? item.original.newData.range : item.original.oldData.range}
           readOnly={!isEditable}
           className={!isEditable ? 'supplementary-input-disabled' : ''}
         />
@@ -151,7 +151,7 @@ const ZevSales = (props) => {
           name="zevSales"
           id={`zevClass-${item.index}`}
           onChange={handleInputChange}
-          defaultValue={item.original.newData.zevClass}
+          defaultValue={item.original.newData.zevClass ? item.original.newData.zevClass : item.original.oldData.zevClass}
           readOnly={!isEditable}
           className={!isEditable ? 'supplementary-input-disabled' : ''}
         />

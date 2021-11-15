@@ -245,7 +245,7 @@ const CreditActivity = (props) => {
                       name="supplierInfo"
                       type="text"
                       onChange={handleInputChange}
-                      defaultValue={newLdvSales}
+                      defaultValue={newLdvSales ? newLdvSales : ldvSales}
                       readOnly={!isEditable}
                     />
                   </td>
