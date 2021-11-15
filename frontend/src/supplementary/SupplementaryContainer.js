@@ -104,7 +104,11 @@ const SupplementaryContainer = (props) => {
     const commentData = { fromGovtComment: idirComment, director: true };
     axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
       history.push(ROUTES_COMPLIANCE.REPORTS);
-      history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementaryId));
+      if (supplementaryId) {
+        history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementaryId));
+      } else {
+        history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', ''));
+      }
     });
   };
 
@@ -241,8 +245,10 @@ const SupplementaryContainer = (props) => {
           const { id: supplementalId } = response.data;
           if (status === 'DELETED') {
             history.push(ROUTES_COMPLIANCE.REPORTS);
-          }
-          else {
+          } else if (status === 'RETURNED') {
+            history.push(ROUTES_COMPLIANCE.REPORTS);
+            history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', ''));
+          } else {
             const commentData = { fromGovtComment: bceidComment, director: false };
             axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
               history.push(ROUTES_COMPLIANCE.REPORTS);

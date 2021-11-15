@@ -593,6 +593,8 @@ class SalesSubmissionSaveSerializer(
                 submission_id=instance.id
             )
 
+            icbc_snapshot = None
+
             for row in all_content:
                 if row.icbc_verification:
                     icbc_snapshot = IcbcSnapshotData.objects.create(

@@ -242,7 +242,18 @@ class ModelYearReportViewset(
                             ModelYearReportStatuses.RETURNED,
                             ]
                     ).exclude(Q(~Q(create_user__in=SubQuery) & (Q(validation_status=ModelYearReportStatuses.DRAFT)))).order_by('update_timestamp')
-                
+
+                    # Exclude reports returned to suppliers
+                    exclude_return = []
+
+                    for index, report in enumerate(supplemental_report):
+                        if report.validation_status.value == 'SUBMITTED' and \
+                                index + 1 < len(supplemental_report):
+                            if supplemental_report[index + 1].validation_status.value == 'RETURNED':
+                                exclude_return.append(report.id)
+                                exclude_return.append(supplemental_report[index + 1].id)
+
+                    supplemental_report = supplemental_report.exclude(id__in=exclude_return)
                 else:
                     supplemental_report = SupplementalReportHistory.objects.filter(
                         supplemental_report_id__in=supplemental_report_ids,
@@ -255,6 +266,7 @@ class ModelYearReportViewset(
 
                             ]
                     ).exclude(Q(Q(create_user__in=SubQuery) & (Q(validation_status=ModelYearReportStatuses.DRAFT)))).order_by('update_timestamp')
+
                 supplemental_serializer = SupplementalNOASerializer(supplemental_report, many=True, context={'request': request})
                 
                 supplemental_data = supplemental_serializer.data
@@ -489,6 +501,9 @@ class ModelYearReportViewset(
 
         supplemental_id = request.GET.get('supplemental_id', None)
 
+        if type(supplemental_id) is str and not supplemental_id.isdigit():
+            supplemental_id = None
+
         if supplemental_id:
             data = report.get_supplemental(supplemental_id)
 
@@ -555,7 +570,11 @@ class ModelYearReportViewset(
             serializer = SupplementalReportAssessmentSerializer(
                 supplemental_id, context={'request': request}
             )
-        return Response(serializer.data)
+
+        try:
+            return Response(serializer.data)
+        except:
+            return HttpResponse(status=404, content=None)
 
     @action(detail=True, methods=['patch'])
     def supplemental_save(self, request, pk):
@@ -606,6 +625,14 @@ class ModelYearReportViewset(
                 SupplementalReportCreditActivity.objects.filter(
                     supplemental_report_id=supplemental_report.id).delete()
                 SupplementalReportSales.objects.filter(
+                    supplemental_report_id=supplemental_report.id).delete()
+                SupplementalReportHistory.objects.filter(
+                    supplemental_report_id=supplemental_report.id).delete()
+                SupplementalReportComment.objects.filter(
+                    supplemental_report_id=supplemental_report.id).delete()
+                SupplementalReportAssessment.objects.filter(
+                    supplemental_report_id=supplemental_report.id).delete()
+                SupplementalReportAssessmentComment.objects.filter(
                     supplemental_report_id=supplemental_report.id).delete()
                 SupplementalReport.objects.filter(
                     id=supplemental_report.id).delete()
