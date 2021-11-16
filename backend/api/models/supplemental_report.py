@@ -2,10 +2,11 @@
 Supplemental Report Model
 """
 from django.db import models
+from enumfields import EnumField
 
 from auditable.models import Auditable
-from enumfields import EnumField
 from api.models.model_year_report_statuses import ModelYearReportStatuses
+from api.models.user_profile import UserProfile
 
 
 class SupplementalReport(Auditable):
@@ -38,6 +39,28 @@ class SupplementalReport(Auditable):
         blank=True,
         db_comment="This will reference the previous supplemental report that the analyst was reviewing."
     )
+
+    @property
+    def is_reassessment(self):
+        create_user = UserProfile.objects.filter(
+            username=self.create_user
+        ).first()
+
+        if create_user and create_user.is_government:
+            return True
+
+        return False
+
+    @property
+    def from_supplemental(self):
+        supplemental_report = SupplementalReport.objects.filter(
+            id=self.supplemental_id
+        ).first()
+
+        if supplemental_report:
+            return not supplemental_report.is_reassessment
+
+        return False
 
     class Meta:
         db_table = "supplemental_report"

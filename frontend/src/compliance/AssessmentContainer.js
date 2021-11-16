@@ -8,7 +8,6 @@ import history from '../app/History';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import CustomPropTypes from '../app/utilities/props';
 import getClassAReduction from '../app/utilities/getClassAReduction';
-import ComplianceReportTabs from './components/ComplianceReportTabs';
 import AssessmentDetailsPage from './components/AssessmentDetailsPage';
 import calculateCreditReduction from '../app/utilities/calculateCreditReduction';
 import getComplianceObligationDetails from '../app/utilities/getComplianceObligationDetails';
@@ -66,21 +65,22 @@ const AssessmentContainer = (props) => {
         axios.get(ROUTES_COMPLIANCE.RATIOS),
         axios.get(`${ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)}?assessment=True`),
         axios.get(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)),
-        axios.get(`${ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)}?supplemental_id=${''}`)
+        axios.get(`${ROUTES_SUPPLEMENTARY.DETAILS.replace(':id', id)}?supplemental_id=${''}`),
       ]).then(axios.spread(
         (reportDetailsResponse, ratioResponse, creditActivityResponse, assessmentResponse, supplementaryResponse) => {
-          if(supplementaryResponse && supplementaryResponse.data && supplementaryResponse.data.status){
+          if (supplementaryResponse && supplementaryResponse.data && supplementaryResponse.data.status) {
             setSupplementaryId(supplementaryResponse.data.id);
             setSupplementaryStatus(supplementaryResponse.data.status);
-            if(supplementaryResponse.data.createUser && supplementaryResponse.data.createUser.roles){
-              supplementaryResponse.data.createUser.roles.forEach((each)=>{
-                if(each.roleCode == 'Administrator' || each.roleCode == 'Director' || each.roleCode == 'Engineer/Analyst'){
+            if (supplementaryResponse.data.createUser && supplementaryResponse.data.createUser.roles) {
+              supplementaryResponse.data.createUser.roles.forEach((each) => {
+                if (each.roleCode == 'Administrator' || each.roleCode == 'Director' || each.roleCode == 'Engineer/Analyst') {
                   setCreatedByGov(true);
                 } else {
                   setCreatedByGov(false);
                 }
-              })
-          }}
+              });
+            }
+          }
           const idirCommentArrayResponse = [];
           let bceidCommentResponse = {};
           const {
@@ -393,12 +393,6 @@ const AssessmentContainer = (props) => {
 
   return (
     <>
-      <ComplianceReportTabs
-        active="assessment"
-        reportStatuses={statuses}
-        id={id}
-        user={user}
-      />
       <AssessmentDetailsPage
         analystAction={analystAction}
         balances={balances}
