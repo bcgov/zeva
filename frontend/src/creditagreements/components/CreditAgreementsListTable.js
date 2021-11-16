@@ -4,9 +4,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTable from '../../app/components/ReactTable';
-import CustomPropTypes from '../../app/utilities/props';
 import history from '../../app/History';
 import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements';
+import formatStatus from '../../app/utilities/formatStatus';
 
 const CreditAgreementsListTable = (props) => {
   const {
@@ -92,23 +92,25 @@ const CreditAgreementsListTable = (props) => {
     id: 'col-bCredits',
     className: 'text-right',
   }, {
-    Header: 'Status',
-    accessor: (row) => {
-      switch (row.status) {
-        case 'DRAFT':
-          return 'Draft';
-        case 'RECOMMENDED':
-          return 'Recommended';
-        case 'ISSUED':
-          return 'Issued';
-        case 'DELETED':
-          return 'Deleted';
-        default:
-          return '';
-      }
+    accessor: (row) => (formatStatus(row.status)),
+    filterMethod: (filter, row) => {
+      const filterValues = filter.value.split(',');
+
+      let returnValue = false;
+
+      filterValues.forEach((filterValue) => {
+        const value = filterValue.toLowerCase().trim();
+
+        if (value !== '' && !returnValue) {
+          returnValue = row[filter.id].toLowerCase().includes(value);
+        }
+      });
+
+      return returnValue;
     },
-    id: 'col-status',
-    className: 'text-center',
+    className: 'text-center text-capitalize',
+    Header: 'Status',
+    id: 'col-status'
   }];
 
   return (

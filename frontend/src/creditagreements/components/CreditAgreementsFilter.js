@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import history from '../../app/History';
+import CustomPropTypes from '../../app/utilities/props';
 import getOptions from '../../app/utilities/getOptions';
 import handleFilterChange from '../../app/utilities/handleFilterChange';
 
@@ -78,7 +79,7 @@ CreditAgreementsFilter.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.object).isRequired,
   setFiltered: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape).isRequired,
-  user: PropTypes.shape.isRequired,
+  user: CustomPropTypes.user.isRequired,
 };
 
 export default CreditAgreementsFilter;

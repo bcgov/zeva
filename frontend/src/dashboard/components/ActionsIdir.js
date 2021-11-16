@@ -130,15 +130,15 @@ const ActionsIdir = (props) => {
           />
         )}
         {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED
-        && activityCount.creditAgreementsDraft > 0
+        && activityCount.creditAgreementsAnalyst > 0
         && user.hasPermission('CREATE_INITIATIVE_AGREEMENTS')
         && (
         <ActivityBanner
           colour="yellow"
           icon="list"
           boldText="Credit Agreements"
-          regularText={`${activityCount.creditAgreementsDraft} saved as draft`}
-          linkTo={`${ROUTES_CREDIT_AGREEMENTS.LIST}?col-status=Draft`}
+          regularText={`${activityCount.creditAgreementsAnalyst} require analyst/engineer action`}
+          linkTo={`${ROUTES_CREDIT_AGREEMENTS.LIST}?col-status=Draft, Returned`}
         />
         )}
         {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED
@@ -155,7 +155,7 @@ const ActionsIdir = (props) => {
         )}
         {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED
         && ((activityCount.creditAgreementsRecommended === 0 && user.hasPermission('SIGN_INITIATIVE_AGREEMENTS'))
-        || (activityCount.creditAgreementsDraft === 0 && user.hasPermission('CREATE_INITIATIVE_AGREEMENTS'))) 
+        || (activityCount.creditAgreementsAnalyst === 0 && user.hasPermission('CREATE_INITIATIVE_AGREEMENTS'))) 
         && (
           <ActivityBanner
             colour="green"
