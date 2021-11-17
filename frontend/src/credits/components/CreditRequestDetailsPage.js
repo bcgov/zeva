@@ -167,8 +167,8 @@ const CreditRequestDetailsPage = (props) => {
     </Modal>
   );
   const directorAction = user.isGovernment
-  && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
-  && user.hasPermission('SIGN_SALES');
+    && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
+    && user.hasPermission('SIGN_SALES');
 
   const analystAction = user.isGovernment
     && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0
