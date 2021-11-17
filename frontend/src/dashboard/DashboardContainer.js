@@ -28,6 +28,7 @@ const DashboardContainer = (props) => {
     creditAgreementsIssued: 0,
     creditAgreementsDraft: 0,
     creditAgreementsRecommended: 0,
+    creditAgreementsAnalyst: 0,
     reportsDraft: 0,
     reportsSubmitted: 0,
     reportsAnalyst: 0,
@@ -193,11 +194,15 @@ const DashboardContainer = (props) => {
       if (user.isGovernment) {
         let creditAgreementsDraft = dashboard.creditAgreement.find((agreement) => agreement.status === 'DRAFT');
         creditAgreementsDraft = creditAgreementsDraft ? creditAgreementsDraft.total : 0;
+        let creditAgreementsAnalyst = dashboard.creditAgreement.find((agreement) => agreement.status === 'RETURNED');
+        creditAgreementsAnalyst = creditAgreementsAnalyst ? creditAgreementsAnalyst.total : 0;
+        creditAgreementsAnalyst += creditAgreementsDraft;
         let creditAgreementsRecommended = dashboard.creditAgreement.find((agreement) => agreement.status === 'RECOMMENDED');
         creditAgreementsRecommended = creditAgreementsRecommended ? creditAgreementsRecommended.total : 0;
         activityCount = {
           ...activityCount,
           creditAgreementsDraft,
+          creditAgreementsAnalyst,
           creditAgreementsRecommended,
         };
       }
