@@ -198,7 +198,7 @@ const SupplementaryDetailsPage = (props) => {
         <div id="comment-input">
           <CommentInput
             handleCommentChange={handleCommentChangeIdir}
-            title={['SUBMITTED', 'RETURNED'].indexOf(currentStatus) >= 0 ? 'Add comment to director: ' : 'Add comment to the analyst'}
+            title={analystAction ? 'Add comment to director: ' : 'Add comment to the analyst'}
             buttonText="Add Comment"
             handleAddComment={handleAddIdirComment}
             buttonDisable={!details.id}

@@ -166,6 +166,13 @@ const CreditRequestDetailsPage = (props) => {
       </div>
     </Modal>
   );
+  const directorAction = user.isGovernment
+  && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
+  && user.hasPermission('SIGN_SALES');
+
+  const analystAction = user.isGovernment
+    && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0
+    && user.hasPermission('RECOMMEND_SALES');
 
   const idirCommentSection = (
     <div className="text-editor mb-2 mt-2">
@@ -213,14 +220,6 @@ const CreditRequestDetailsPage = (props) => {
   });
 
   const invalidSubmission = submission.content.some((row) => (!row.vehicle || !row.vehicle.id || row.vehicle.modelName === ''));
-
-  const directorAction = user.isGovernment
-    && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
-    && user.hasPermission('SIGN_SALES');
-
-  const analystAction = user.isGovernment
-    && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0
-    && user.hasPermission('RECOMMEND_SALES');
 
   return (
     <div id="credit-request-details" className="page">
