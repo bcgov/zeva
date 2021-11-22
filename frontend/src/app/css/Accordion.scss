@@ -28,14 +28,16 @@
       color: $default-link-blue;
     }
   }
+}
 
-  .collapsed {
-  }
+.card {
+  border-radius: 0;
 
-  .expanded {
-  }
+  .card-header {
+    border-radius: 0;
 
-  .accordion-content {
-  }
-
+    .btn-link {
+      color: $default-link-blue;
+    }
+  }  
 }

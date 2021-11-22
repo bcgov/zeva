@@ -10,7 +10,7 @@ import Modal from '../../app/components/Modal';
 import CustomPropTypes from '../../app/utilities/props';
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import ComplianceObligationAmountsTable from './ComplianceObligationAmountsTable';
-import ComplianceReportAlert from './ComplianceReportAlert';
+import ComplianceReportTabs from './ComplianceReportTabs';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable';
 import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued';
@@ -134,25 +134,25 @@ const AssessmentDetailsPage = (props) => {
 
   return (
     <div id="assessment-details" className="page">
-      <div className="row mt-3">
+      {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+      && <ComplianceHistory user={user} id={id} activePage="assessment" reportYear={reportYear} supplementaryId={details.id} />}
+      <div className="row">
         <div className="col-sm-12">
-          <h2>{reportYear} Model Year Report</h2>
+          <h2 className="mb-2 mt-3">{reportYear} Model Year Report</h2>
         </div>
       </div>
-      <div className="row mt-3">
+      <div className="row">
         <div className="col-12">
-          <div className="m-0">
-            {details && details.supplierInformation && details.supplierInformation.history && (
-            <ComplianceReportAlert
-              next=""
-              report={details.assessment}
-              status={statuses.assessment}
-              type="Assessment"
-            />
-            )}
-          </div>
-          {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-          && <ComplianceHistory user={user} id={id} activePage="assessment" />}
+          <ComplianceReportTabs
+            active="assessment"
+            reportStatuses={statuses}
+            id={id}
+            user={user}
+          />
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-12">
           {user.isGovernment
           && (
             <>

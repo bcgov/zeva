@@ -1,11 +1,10 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment-timezone';
+
 import parse from 'html-react-parser';
 import Loading from '../../app/components/Loading';
 import Modal from '../../app/components/Modal';
-import SupplementaryAlert from './SupplementaryAlert';
 import Button from '../../app/components/Button';
 import ZevSales from './ZevSales';
 import SupplierInformation from './SupplierInformation';
@@ -169,25 +168,16 @@ const SupplementaryDetailsPage = (props) => {
 
   return (
     <div id="supplementary" className="page">
+      {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+      && !newReport
+      && (
+        <ComplianceHistory user={user} id={id} activePage="supplementary" reportYear={reportYear} supplementaryId={details.id} />
+      )}
       <div className="row">
         <div className="col">
-          <h2 className="mb-2">{isReassessment ? `${reportYear} Model Year Report Reassessment` : `${reportYear} Model Year Supplementary Report`}</h2>
+          <h2 className="mb-2 mt-3">{isReassessment ? `${reportYear} Model Year Report Reassessment` : `${reportYear} Model Year Supplementary Report`}</h2>
         </div>
       </div>
-      <div className="supplementary-alert">
-        {details.id && details.status != 'DELETED' && (
-          <SupplementaryAlert
-            id={id}
-            date={moment(details.updateTimestamp).format('MMM D, YYYY')}
-            status={details.status}
-            user={user.username}
-          />
-        )}
-      </div>
-      {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-      && (
-        <ComplianceHistory user={user} id={id} activePage="supplementary" supplementaryId={details.id} />
-      )}
       {details.status !== 'DRAFT' && commentArray && commentArray.bceidComment && commentArray.bceidComment.length > 0
         && (
         <DisplayComment
@@ -208,7 +198,7 @@ const SupplementaryDetailsPage = (props) => {
         <div id="comment-input">
           <CommentInput
             handleCommentChange={handleCommentChangeIdir}
-            title={['SUBMITTED', 'RETURNED'].indexOf(currentStatus) >= 0 ? 'Add comment to director: ' : 'Add comment to the analyst'}
+            title={analystAction ? 'Add comment to director: ' : 'Add comment to the analyst'}
             buttonText="Add Comment"
             handleAddComment={handleAddIdirComment}
             buttonDisable={!details.id}
@@ -465,8 +455,11 @@ const SupplementaryDetailsPage = (props) => {
                 optionalText="Recommend Reassessment"
                 disabled={disabledRecommendBtn}
                 action={() => {
-                  // handleSubmit('RECOMMENDED');
-                  setShowModal(true);
+                  if (newReport) {
+                    setShowModal(true);
+                  } else {
+                    handleSubmit('RECOMMENDED');
+                  }
                 }}
               />
               )}
@@ -501,6 +494,7 @@ const SupplementaryDetailsPage = (props) => {
 SupplementaryDetailsPage.defaultProps = {
   isReassessment: undefined,
   ldvSales: undefined,
+  newReport: false,
   obligationDetails: [],
   ratios: {},
 };
@@ -534,6 +528,7 @@ SupplementaryDetailsPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   newBalances: PropTypes.shape().isRequired,
   newData: PropTypes.shape().isRequired,
+  newReport: PropTypes.bool,
   obligationDetails: PropTypes.arrayOf(PropTypes.shape()),
   radioDescriptions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   ratios: PropTypes.shape(),

@@ -15,6 +15,28 @@ const SupplierInformation = (props) => {
   const { supplierInfo } = newData;
   const currentStatus = details.actualStatus ? details.actualStatus : details.status;
 
+
+  const servAddress = () => { 
+    let serviceAddress = '';
+    assessmentData.reportAddress.map(address => {
+    if (address.addressType.addressType === 'Service') {
+      serviceAddress = `${address.representativeName ? address.representativeName + '' : ''} ${address.addressLine1} ${', '} ${address.addressLine2 ? address.addressLine2 + ', ' : ''} ${address.city}${', '} ${address.state}${', '} ${address.country}${', '} ${address.postalCode}`;
+      return serviceAddress;
+    }});
+    return serviceAddress;
+  }
+
+  const recAddress = () => { 
+    let recordAddress = '';
+    assessmentData.reportAddress.map(address => {
+    if(address.addressType.addressType === 'Record') {
+      recordAddress = `${address.representativeName ? address.representativeName + '' : ''} ${address.addressLine1} ${', '} ${address.addressLine2 ? address.addressLine2 + ', ' : ''} ${address.city}${', '} ${address.state}${', '} ${address.country}${', '} ${address.postalCode}`;
+      return recordAddress;
+    }});
+    return recordAddress;
+  }
+    
+
   return (
     <>
       {!user.isGovernment
@@ -41,7 +63,7 @@ const SupplierInformation = (props) => {
             id="legalName"
             name="supplierInfo"
             onChange={handleInputChange}
-            defaultValue={supplierInfo.legalName}
+            defaultValue={supplierInfo.legalName ? supplierInfo.legalName : assessmentData.legalName}
             readOnly={!isEditable}
 
           />
@@ -56,7 +78,7 @@ const SupplierInformation = (props) => {
             Service Address
           </label>
           <div className="w-75">
-            {assessmentData && assessmentData.reportAddress && assessmentData.reportAddress.map(
+          {assessmentData && assessmentData.reportAddress && assessmentData.reportAddress.map(
               (address) => address.addressType.addressType === 'Service' && (
               <div className="p-0" key={address.id}>
                 {address.representativeName && (
@@ -76,7 +98,7 @@ const SupplierInformation = (props) => {
         </div>
         <textarea
           className="form-control d-inline-block align-top mt-4 col-sm-5"
-          defaultValue={supplierInfo.serviceAddress}
+          defaultValue={supplierInfo.serviceAddress ? supplierInfo.serviceAddress : servAddress()}
           id="serviceAddress"
           min="0"
           name="supplierInfo"
@@ -114,7 +136,7 @@ const SupplierInformation = (props) => {
         </div>
         <textarea
           className="form-control d-inline-block align-top mt-4 col-sm-5"
-          defaultValue={supplierInfo.recordsAddress}
+          defaultValue={supplierInfo.recordsAddress ? supplierInfo.recordsAddress : recAddress()}
           id="recordsAddress"
           min="0"
           name="supplierInfo"
@@ -138,7 +160,7 @@ const SupplierInformation = (props) => {
         </div>
         <textarea
           className="form-control d-inline-block align-top mt-4 col-sm-5"
-          defaultValue={supplierInfo.ldvMakes}
+          defaultValue={supplierInfo.ldvMakes ? supplierInfo.ldvMakes : assessmentData.makes}
           id="ldvMakes"
           min="0"
           name="supplierInfo"
@@ -160,7 +182,7 @@ const SupplierInformation = (props) => {
         </div>
         <input
           className="form-control d-inline-block align-top mt-4 col-sm-5"
-          defaultValue={supplierInfo.supplierClass}
+          defaultValue={supplierInfo.supplierClass ? supplierInfo.supplierClass : assessmentData.supplierClass}
           id="supplierClass"
           min="0"
           name="supplierInfo"

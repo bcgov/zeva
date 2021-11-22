@@ -3,194 +3,126 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
-import { Link, useParams } from 'react-router-dom';
-import CustomPropTypes from '../../app/utilities/props';
+import { useParams } from 'react-router-dom';
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
+import history from '../../app/History';
+
+require('bootstrap/js/dist/collapse.js');
 
 const ComplianceHistory = (props) => {
   const {
-    user, id, activePage, supplementaryId: detailsId,
+    id, activePage, supplementaryId: detailsId, reportYear,
   } = props;
+
   let { supplementaryId } = useParams();
 
   if (!supplementaryId && detailsId) {
     supplementaryId = detailsId;
   }
 
-  const [noaHistory, setNoaHistory] = useState({});
-  const [supplementalHistory, setSupplementalHistory] = useState([]);
+  const [supplementalReportHistory, setSupplementalReportHistory] = useState([]);
 
-  let displayMYSuperseded;
   useEffect(() => {
-    axios.get(ROUTES_COMPLIANCE.NOA_HISTORY.replace(/:id/g, id)).then((response) => {
-      setNoaHistory(response.data);
-
-      const { supplemental } = response.data;
-
-      const tempSupplementalHistory = [];
-
-      supplemental.forEach((each) => {
-        if (each.status === 'DRAFT') {
-          const index = tempSupplementalHistory.findIndex((temp) => temp.status === 'DRAFT' && temp.supplementalReportId === each.supplementalReportId);
-
-          if (index >= 0) {
-            tempSupplementalHistory[index] = each;
-          } else {
-            tempSupplementalHistory.push(each);
-          }
-        }
-
-        if (each.status === 'SUBMITTED') {
-          const index = tempSupplementalHistory.findIndex((temp) => ['DRAFT', 'SUBMITTED'].indexOf(temp.status) >= 0 && temp.supplementalReportId === each.supplementalReportId);
-
-          if (index >= 0) {
-            tempSupplementalHistory[index] = each;
-          } else {
-            tempSupplementalHistory.push(each);
-          }
-        }
-
-        if (['RETURNED', 'RECOMMENDED', 'ASSESSED'].indexOf(each.status) >= 0) {
-          tempSupplementalHistory.push(each);
-        }
-      });
-
-      setSupplementalHistory(tempSupplementalHistory);
+    axios.get(ROUTES_COMPLIANCE.SUPPLEMENTAL_HISTORY.replace(/:id/g, id)).then((response) => {
+      setSupplementalReportHistory(response.data);
     });
   }, []);
 
-  const modelYearReportSuperseded = () => {
-    if (noaHistory.supplemental) {
-      noaHistory.supplemental.forEach((each) => {
-        if (each.status === 'ASSESSED') {
-          displayMYSuperseded = true;
-        }
-      });
+  const getStatus = (status) => {
+    if (status === 'DRAFT') {
+      return 'saved';
     }
-    return true;
-  }
-  const returnedText = (item) => `${item.isReassessment ? 'Reassessment' : 'Supplementary'} report returned ${moment(item.updateTimestamp).format('MMM D, YYYY')} by the Government of B.C.`;
-  const draftText = (item) => `${item.isReassessment ? 'Reassessment' : 'Supplementary'} report saved ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
-  const submittedText = (item) => {
-    if (user.isGovernment) {
-      return `${item.isReassessment ? 'Reassessment' : 'Supplementary'} report signed and submitted ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
-    }
-    return `${item.isReassessment ? 'Reassessment' : 'Supplementary'} report signed and submitted to the Government of B.C. ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
+
+    return status.toLowerCase();
   };
-  const recommendedText = (item) => `${item.isReassessment ? 'Reassessment' : 'Supplementary'} report recommended ${moment(item.updateTimestamp).format('MMM D, YYYY')} by ${item.updateUser}`;
 
-  const getLinkByStatus = (item) => {
-    if (item.status === 'DRAFT') {
-      if (Number(item.supplementalReportId) === Number(supplementaryId)) {
-        return (<span>{draftText(item)}</span>);
-      }
-      return (
-        <Link
-          className="text-blue text-underline"
-          to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', item.supplementalReportId)}
-        >
-          {draftText(item)}
-        </Link>
-      );
+  const getColor = (status) => {
+    let classname = '';
+    switch (status) {
+      case 'DRAFT':
+        classname = 'alert-warning';
+        break;
+      case 'UNSAVED':
+        classname = 'alert-warning';
+        break;
+      case 'SUBMITTED':
+        classname = 'alert-warning';
+        break;
+      case 'RECOMMENDED':
+        classname = 'alert-primary';
+        break;
+      case 'RETURNED':
+        classname = 'alert-primary';
+        break;
+      case 'ASSESSED':
+        classname = 'alert-success';
+        break;
+      default:
+        classname = '';
     }
 
-    if (item.status === 'SUBMITTED') {
-      if (Number(item.supplementalReportId) === Number(supplementaryId)) {
-        return (
-          <span>{submittedText(item)}</span>
-        );
-      }
+    return classname;
+  };
 
-      return (
-        <Link
-          className="text-blue text-underline"
-          to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', item.supplementalReportId)}
-        >
-          {submittedText(item)}
-        </Link>
-      );
+  const getShow = (item) => {
+    if (activePage === 'supplementary' && item.isSupplementary && Number(item.id) === Number(detailsId)) {
+      return 'show';
     }
-    if (item.status === 'RETURNED') {
-      if (Number(item.supplementalReportId) === Number(supplementaryId)) {
-        return (<span>{returnedText(item)}</span>);
-      }
 
-      return (
-        <Link
-          className="text-blue text-underline"
-          to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', item.supplementalReportId)}
-        >
-          {returnedText(item)}
-        </Link>
-      );
+    if (activePage === 'assessment' && !item.isSupplementary) {
+      return 'show';
     }
-    if (item.status === 'RECOMMENDED') {
-      if (Number(item.supplementalReportId) === Number(supplementaryId)) {
-        return (<span>{recommendedText(item)}</span>);
-      }
 
-      return (
-        <Link
-          className="text-blue text-underline"
-          to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', item.supplementalReportId)}
-        >
-          {recommendedText(item)}
-        </Link>
-      );
-    }
-    if (item.status === 'ASSESSED') {
-      if (Number(item.supplementalReportId) === Number(supplementaryId)) {
-        return (<span>Notice of Reassessment {moment(item.updateTimestamp).format('MMM D, YYYY')}{item.displaySupersededText ? <span className="text-red"> Superseded</span> : ''}</span>);
-      }
-
-      return (
-        <Link
-          className="text-blue text-underline"
-          to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', item.supplementalReportId)}
-        >
-          Notice of Reassessment {moment(item.updateTimestamp).format('MMM D, YYYY')}{item.displaySupersededText ? <span className="text-red"> Superseded</span> : ''}
-        </Link>
-      );
-    }
     return '';
   };
 
   return (
-    Object.keys(noaHistory).length > 0 && noaHistory.supplemental && noaHistory.supplemental.length > 0 && (
+    Object.keys(supplementalReportHistory).length > 0 && (
       <div className="m-0 pt-2">
-        {modelYearReportSuperseded()}
         <h3>
-          Model Year Report Assessment History
+          {reportYear} Model Year Reporting History
         </h3>
-        <div className="grey-border-area p-3 comment-box mt-2">
-          <ul className="mb-0">
-            {noaHistory.assessment
-            && (
-            <li className={`main-list-item ${activePage === 'assessment' ? 'active-history' : ''}`}>
-              {activePage !== 'assessment'
-                && (
-                <Link
-                  className="text-blue text-underline"
-                  to={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)}
-                >
-                  Notice of Assessment {moment(noaHistory.assessment.updateTimestamp).format('MMM D, YYYY')}
-                </Link>
-                )}
-              {activePage === 'assessment'
-                && <span>Notice of Assessment {moment(noaHistory.assessment.updateTimestamp).format('MMM D, YYYY')}</span>}
-              {noaHistory.supplemental && displayMYSuperseded ? <span className="text-red"> Superseded</span> : ''}
-            </li>
-            )}
-            {supplementalHistory
-            && (
-              supplementalHistory.map((item) => (
-                <li key={item.id} className={item.status === 'ASSESSED' ? 'main-list-item' : 'sub-list-item'}>
-                  {getLinkByStatus(item)}
-                </li>
-              ))
-            )}
-          </ul>
+        <div className="mt-2" id="complianceHistory">
+          {supplementalReportHistory && supplementalReportHistory.map((item, index) => (
+            <div id={`item-${index}`} key={`item-${index}`} className="card">
+              <div className={`card-header px-0 py-1 ${getColor(item.status)}`}>
+                <h2 className="mb-0">
+                  <button
+                    className={`btn ${getShow(item) === 'show' ? '' : 'btn-link'}`}
+                    type="button"
+                    data-toggle="collapse"
+                    data-target={`#collapse${item.id}`}
+                    aria-expanded="true"
+                    aria-controls={`collapse${item.id}`}
+                    onClick={() => {
+                      if (item.isSupplementary) {
+                        history.push(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', item.id));
+                      } else {
+                        history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+                      }
+                    }}
+                  >
+                    Model Year {item.isSupplementary ? 'Supplementary' : ''} Report - {item.status}
+                  </button>
+                </h2>
+              </div>
+
+              <div
+                id={`collapse${item.id}`}
+                className={`collapse ${getShow(item)}`}
+                data-parent="#complianceHistory"
+              >
+                <div className="card-body p-2">
+                  <ul className="py-0 my-0 px-4">
+                    {item.history && item.history.map((each, eachIndex) => (
+                      <li id={`each-${eachIndex}`} key={`each-${eachIndex}`}>Model year {item.isSupplementary ? 'supplementary' : ''} report {getStatus(each.status)} {moment(each.updateTimestamp).format('MMM D, YYYY')} by {each.createUser ? each.createUser.displayName : ''}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     )
@@ -202,9 +134,9 @@ ComplianceHistory.defaultProps = {
 };
 
 ComplianceHistory.propTypes = {
-  user: CustomPropTypes.user.isRequired,
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   activePage: PropTypes.string.isRequired,
   supplementaryId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  reportYear: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 };
 export default ComplianceHistory;

@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from django.http import HttpResponse
 from django.db.models import Sum
 from django.utils.decorators import method_decorator
+from django.shortcuts import get_object_or_404
 
 from auditable.views import AuditableMixin
 from api.decorators.permission import permission_required
@@ -163,9 +164,8 @@ class ModelYearReportComplianceObligationViewset(
 
         organization = request.user.organization
         id = kwargs.get('id')
-        report = ModelYearReport.objects.get(
-            id=id
-        )
+        report = get_object_or_404(ModelYearReport, pk=id)
+
         confirmation = ModelYearReportConfirmation.objects.filter(
             model_year_report_id=report.id,
             signing_authority_assertion__module="compliance_obligation"

@@ -62,7 +62,9 @@ from api.serializers.model_year_report_assessment import \
     ModelYearReportAssessmentSerializer
 from api.serializers.model_year_report_supplemental import \
     ModelYearReportSupplementalSerializer, SupplementalReportAssessmentSerializer
-from api.serializers.model_year_report_noa import ModelYearReportNoaSerializer, SupplementalNOASerializer
+from api.serializers.model_year_report_noa import \
+    ModelYearReportNoaSerializer, SupplementalNOASerializer, \
+    SupplementalReportSerializer, SupplementalModelYearReportSerializer
 from api.models.organization import Organization
 
 
@@ -276,8 +278,63 @@ class ModelYearReportViewset(
                 report_dict = {
                     'assessment': report_data,
                     'supplemental': supplemental_data
-                    }
-        return Response(report_dict) 
+                }
+        return Response(report_dict)
+
+    @action(detail=True)
+    def supplemental_history(self, request, pk=None):
+        queryset = self.get_queryset()
+        model_year_report = get_object_or_404(queryset, pk=pk)
+
+        supplemental_reports = SupplementalReport.objects.filter(
+            model_year_report=model_year_report.id
+        ).exclude(
+            status=ModelYearReportStatuses.DELETED
+        ).order_by('-update_timestamp')
+
+        exclude_supplemental_reports = []
+        for report in supplemental_reports:
+            if report.status.value in ['DRAFT', 'RETURNED'] and (
+                request.user.is_government
+                and not report.is_reassessment
+            ):
+                exclude_supplemental_reports.append(report.id)
+
+            if report.is_reassessment:
+                if report.status.value not in [
+                        'ASSESSED', 'REASSESSED'
+                ] and not request.user.is_government:
+                    exclude_supplemental_reports.append(report.id)
+
+                # If it's a reassessment report from a supplementary
+                # we don't need it as we've already added an entry to the
+                # history for the actual supplementary report created by
+                # the bceid user
+                supplemental_report = SupplementalReport.objects.filter(
+                    supplemental_id=report.supplemental_id
+                ).first()
+
+                if supplemental_report and \
+                        supplemental_report.from_supplemental:
+                    exclude_supplemental_reports.append(report.id)
+
+        supplemental_reports = supplemental_reports.exclude(
+            id__in=exclude_supplemental_reports
+        )
+
+        serializer = SupplementalReportSerializer(
+            supplemental_reports,
+            many=True,
+            context={'request': request}
+        )
+
+        model_year_report_serializer = SupplementalModelYearReportSerializer(
+            [model_year_report],
+            many=True,
+            context={'request': request}
+        )
+
+        return Response(serializer.data + model_year_report_serializer.data)
 
     @action(detail=True)
     def makes(self, request, pk=None):
