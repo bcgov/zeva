@@ -294,9 +294,6 @@ class ModelYearReportViewset(
 
         exclude_supplemental_reports = []
         for report in supplemental_reports:
-            # print(report.id)
-            # print(report.is_reassessment)
-            # print(report.status.value)
             if report.status.value in ['DRAFT', 'RETURNED'] and (
                 request.user.is_government
                 and not report.is_reassessment
