@@ -92,4 +92,56 @@
         padding-bottom: 10px;
         }
     }
+
+    .supplementary-report-tabs {
+        .nav-item {
+          padding: 1rem 0;
+      
+          &.SAVED {
+            a {
+              border-bottom-color: $background-warning;
+            }
+      
+            &.active span {
+              border-bottom-color: $primary-yellow;
+            }
+          }
+      
+          &.UNSAVED {
+            &.active span {
+              border-bottom-color: $primary-yellow;
+            }
+          }
+      
+          &.CONFIRMED, &.SUBMITTED, &.RECOMMENDED, &.RETURNED {
+            a {
+              border-bottom-color: $background-light-blue;  
+            }
+            
+            &.active span {
+              border-bottom-color: $default-text-blue;
+            }
+          }
+      
+          &.ASSESSED {
+            a {
+              border-bottom-color: $background-light-green;
+            }
+      
+            &.active span {
+              border-bottom-color: $alert-success;
+            }
+          }
+      
+          a, span {
+            border-bottom: 1rem transparent solid;
+            color: $default-text-black;
+            display: block;
+          }
+      
+          .disabled {
+            opacity: .3;
+          }
+        }
+    }
 }

@@ -31,6 +31,7 @@ const SupplementaryContainer = (props) => {
   const [supplementaryAssessmentData, setSupplementaryAssessmentData] = useState({});
   const [radioDescriptions, setRadioDescriptions] = useState([{ id: 0, description: '' }]);
   const [newReport, setNewReport] = useState(false);
+  const location = useLocation();
 
   const analystAction = user.isGovernment
   && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
@@ -314,7 +315,7 @@ const SupplementaryContainer = (props) => {
         const newMakes = newSupplier.find((each) => each.category === 'LDV_MAKES') || '';
         const newSupplierClass = newSupplier.find((each) => each.category === 'SUPPLIER_CLASS') || '';
         const idirCommentArrayResponse = [];
-        let bceidCommentResponse = response.data.fromSupplierComments;
+        const bceidCommentResponse = response.data.fromSupplierComments;
 
         const {
           assessment,
@@ -341,7 +342,7 @@ const SupplementaryContainer = (props) => {
           assessmentComment.forEach((item) => {
             if (item.toDirector === true) {
               idirCommentArrayResponse.push(item);
-            } 
+            }
             // else {
             //   bceidCommentResponse = item;
             // }
@@ -437,8 +438,6 @@ const SupplementaryContainer = (props) => {
       setLoading(false);
     }));
   };
-
-  const location = useLocation();
 
   useEffect(() => {
     refreshDetails();
