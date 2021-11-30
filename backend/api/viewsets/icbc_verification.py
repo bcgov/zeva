@@ -64,6 +64,7 @@ class IcbcVerificationViewSet(
             done = ingest_icbc_spreadsheet(filename, user, date_current_to)
 
             if done:
+                print('Done processing')
                 os.remove(filename)
                 minio_remove_object(filename)
 
