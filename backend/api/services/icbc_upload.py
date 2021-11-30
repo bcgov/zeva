@@ -46,17 +46,26 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
         ):
             print('Processing page: ' + str(page_count))
             page_count += 1
-            df = df[(df.MODEL_YEAR > 2018)]
-            df = df[
-                (df.HYBRID_VEHICLE_FLAG != 'N') |
-                (df.ELECTRIC_VEHICLE_FLAG != 'N') |
-                (df.FUEL_TYPE.str.upper() == 'ELECTRIC') |
-                (df.FUEL_TYPE.str.upper() == 'HYDROGEN') |
-                (df.FUEL_TYPE.str.upper() == 'GASOLINEELECTRIC')
-            ]
+
             df['MODEL_YEAR'].fillna(0, inplace=True)
             df['VIN'].fillna(0, inplace=True)
-            df = df[(df.VIN != 0)]
+
+            df.query('MODEL_YEAR > 2018', inplace=True)
+            # df = df[(df.MODEL_YEAR > 2018)]
+            df.query('MODEL_YEAR > 2018', inplace=True)
+            df.query('HYBRID_VEHICLE_FLAG != "N"', inplace=True)
+            df.query('ELECTRIC_VEHICLE_FLAG != "N"', inplace=True)
+            df['FUEL_TYPE'] = df['FUEL_TYPE'].str.upper()
+            df.query('FUEL_TYPE in ["ELECTRIC", "HYDROGEN", "GASOLINEELECTRIC"]')
+            # df = df[
+            #     (df.HYBRID_VEHICLE_FLAG != 'N') |
+            #     (df.ELECTRIC_VEHICLE_FLAG != 'N') |
+            #     (df.FUEL_TYPE.str.upper() == 'ELECTRIC') |
+            #     (df.FUEL_TYPE.str.upper() == 'HYDROGEN') |
+            #     (df.FUEL_TYPE.str.upper() == 'GASOLINEELECTRIC')
+            # ]
+            df.query('VIN != 0')
+            # df = df[(df.VIN != 0)]
 
             # pd.options.display.float_format = '{:.0f}'.format
             try:
