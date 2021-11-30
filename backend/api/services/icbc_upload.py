@@ -44,6 +44,11 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
                 names=header_names,
                 skiprows=(n * 50000) + 1
         ):
+            # This is to tell postgres that we're still processing and keep the
+            # connection alive
+            _ = IcbcUploadDate.objects.get(
+                id=current_to_date.id
+            )
             print('Processing page: ' + str(page_count))
             page_count += 1
 
