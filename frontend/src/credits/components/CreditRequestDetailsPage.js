@@ -384,7 +384,7 @@ const CreditRequestDetailsPage = (props) => {
                 }}
                 />
               )} 
-              {submission.validationStatus === 'DRAFT'
+              {(submission.validationStatus === 'DRAFT' || submission.validationStatus === "REJECTED")
                 && typeof user.hasPermission === 'function'
                 && user.hasPermission('EDIT_SALES')
                 && (
