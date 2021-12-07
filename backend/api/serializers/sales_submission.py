@@ -535,8 +535,8 @@ class SalesSubmissionSaveSerializer(
         reset = request.data.get('reset', None)
         issue_as_model_year_report = request.data.get('issue_as_model_year_report', None)
 
-        if instance.validation_status != SalesSubmissionStatuses.DRAFT and \
-                not request.user.is_government:
+        if instance.validation_status not in [SalesSubmissionStatuses.DRAFT, SalesSubmissionStatuses.REJECTED] \
+                and not request.user.is_government:
             raise ValidationError(
                 "Submission cannot be modified when they've been submitted"
             )
