@@ -78,38 +78,42 @@ const SupplementaryDetailsPage = (props) => {
   }
   const formattedPenalty = details.assessment ? formatNumeric(details.assessment.assessmentPenalty, 0) : 0;
   const assessmentDecision = supplementaryAssessmentData.supplementaryAssessment.decision && supplementaryAssessmentData.supplementaryAssessment.decision.description ? supplementaryAssessmentData.supplementaryAssessment.decision.description.replace(/{user.organization.name}/g, details.assessmentData.legalName).replace(/{modelYear}/g, details.assessmentData.modelYear).replace(/{penalty}/g, `$${formattedPenalty} CAD`) : '';
-  const showDescription = (each) => (
-    <div className="mb-3" key={each.id}>
-      <input
-        // defaultChecked={details.assessment.decision.description === each.description}
-        className="mr-3"
-        type="radio"
-        name="assessment"
-        disabled={!analystAction || (['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) >= 0 && !newReport)}
-        onChange={() => {
-          setSupplementaryAssessmentData({
-            ...supplementaryAssessmentData,
-            supplementaryAssessment: {
-              ...supplementaryAssessmentData.supplementaryAssessment,
-              decision: {
-                description: each.description,
-                id: each.id,
+  const showDescription = (each) => {
+    const selectedId = supplementaryAssessmentData && supplementaryAssessmentData.supplementaryAssessment && supplementaryAssessmentData.supplementaryAssessment.decision && supplementaryAssessmentData.supplementaryAssessment.decision.id;
+
+    return (
+      <div className="mb-3" key={each.id}>
+        <input
+          defaultChecked={selectedId === each.id}
+          className="mr-3"
+          type="radio"
+          name="assessment"
+          disabled={!analystAction || (['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) >= 0 && !newReport)}
+          onChange={() => {
+            setSupplementaryAssessmentData({
+              ...supplementaryAssessmentData,
+              supplementaryAssessment: {
+                ...supplementaryAssessmentData.supplementaryAssessment,
+                decision: {
+                  description: each.description,
+                  id: each.id,
+                },
               },
-            },
-          });
-        }}
-      />
-      {each.description
-      && (
-      <label className="d-inline text-blue" htmlFor="complied">
+            });
+          }}
+        />
         {each.description
-          .replace(/{user.organization.name}/g, details.assessmentData.legalName)
-          .replace(/{modelYear}/g, details.assessmentData.modelYear)
-          .replace(/{penalty}/g, `$${formattedPenalty} CAD`)}
-      </label>
-      )}
-    </div>
-  );
+        && (
+        <label className="d-inline text-blue" htmlFor="complied">
+          {each.description
+            .replace(/{user.organization.name}/g, details.assessmentData.legalName)
+            .replace(/{modelYear}/g, details.assessmentData.modelYear)
+            .replace(/{penalty}/g, `$${formattedPenalty} CAD`)}
+        </label>
+        )}
+      </div>
+    );
+  };
 
   const handleGovSubmitDraft = () => {
     if (newReport) {
@@ -195,7 +199,7 @@ const SupplementaryDetailsPage = (props) => {
         role="tablist"
       >
         <li
-          className={`nav-item ${(!reassessment.isReassessment) ? 'active' : ''} ${details.actualStatus}`}
+          className={`nav-item ${(!reassessment.isReassessment) ? 'active' : ''} ${reassessment.status}`}
           role="presentation"
         >
           {reassessment.isReassessment

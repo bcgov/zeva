@@ -218,8 +218,6 @@ const CreditActivity = (props) => {
     });
   }
 
-  const currentStatus = details.actualStatus ? details.actualStatus : details.status;
-
   return (
     <>
       <h3>Compliance Obligation</h3>
@@ -240,7 +238,7 @@ const CreditActivity = (props) => {
                   </td>
                   <td width="10%">
                     <input
-                      className="form-control"
+                      className={`form-control ${Number(ldvSales) !== Number(newLdvSales) ? 'highlight' : ''}`}
                       id="ldvSales"
                       name="supplierInfo"
                       type="text"
@@ -253,7 +251,7 @@ const CreditActivity = (props) => {
                   <td className="font-weight-bold text-right" width="10%">
                     {formatNumeric(totalReduction, 2)}
                   </td>
-                  <td className="font-weight-bold text-right">
+                  <td className={`font-weight-bold text-right ${totalReduction !== newTotalReduction ? 'highlight' : ''}`}>
                     {newLdvSales && (
                       <span>{formatNumeric(newTotalReduction, 2)}</span>
                     )}
@@ -269,7 +267,7 @@ const CreditActivity = (props) => {
                       <td className="text-right">
                         {formatNumeric(classAReduction, 2)}
                       </td>
-                      <td className="text-right">
+                      <td className={`text-right ${classAReduction !== newClassAReduction ? 'highlight' : ''}`}>
                         {newLdvSales && (
                           <span>{formatNumeric(newClassAReduction, 2)}</span>
                         )}
@@ -281,7 +279,7 @@ const CreditActivity = (props) => {
                       <td className="text-right">
                         {formatNumeric(leftoverReduction, 2)}
                       </td>
-                      <td className="text-right">
+                      <td className={`text-right ${leftoverReduction !== newLeftoverReduction ? 'highlight' : ''}`}>
                         {newLdvSales && (
                           <span>{formatNumeric(newLeftoverReduction, 2)}</span>
                         )}
@@ -495,11 +493,11 @@ const CreditActivity = (props) => {
                       <td className="text-right">
                         {formatNumeric(balance.creditB ? balance.creditB : 0)}
                       </td>
-                      <td className="text-right">
-                        {balance.newCreditA ? formatNumeric(balance.newCreditA) : ''}
+                      <td className={`text-right ${balance.creditA !== balance.newCreditA ? 'highlight' : ''}`}>
+                        {formatNumeric(balance.newCreditA ? balance.newCreditA : 0)}
                       </td>
-                      <td className="text-right">
-                        {balance.newCreditB ? formatNumeric(balance.newCreditB) : ''}
+                      <td className={`text-right ${balance.creditB !== balance.newCreditB ? 'highlight' : ''}`}>
+                        {formatNumeric(balance.newCreditB ? balance.newCreditB : 0)}
                       </td>
                     </tr>
                   ))}

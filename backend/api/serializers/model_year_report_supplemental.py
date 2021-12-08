@@ -238,12 +238,19 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
                 supplemental_user = UserProfile.objects.filter(username=supplementary_report.create_user).first()
 
             supplementary_report_id = None
+            supplementary_report_status = supplementary_report.status.value
             if supplemental_user:
                 supplementary_report_id = obj.supplemental_id
+                supplemental_report = SupplementalReport.objects.filter(
+                    model_year_report_id=obj.model_year_report_id,
+                    id=obj.supplemental_id
+                ).first()
+                supplementary_report_status = supplemental_report.status.value
 
             return {
                 'is_reassessment': True,
-                'supplementary_report_id': supplementary_report_id
+                'supplementary_report_id': supplementary_report_id,
+                'status': supplementary_report_status,
             }
 
         reassessment_report = SupplementalReport.objects.filter(
@@ -338,6 +345,12 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         sales_queryset = SupplementalReportSales.objects.filter(
             supplemental_report_id=obj.id
         )
+
+        if not sales_queryset:
+            sales_queryset = SupplementalReportSales.objects.filter(
+                supplemental_report_id=obj.supplemental_id
+            )
+
         sales_serializer = ModelYearReportZevSalesSerializer(sales_queryset, many=True)
 
         return sales_serializer.data
