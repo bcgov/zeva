@@ -709,7 +709,7 @@ class ModelYearReportViewset(
 
                 # check for if validation status is recommended
                 if validation_status == 'RECOMMENDED' and analyst_action or \
-                        (validation_status == 'SUBMITTED' and description):
+                        (validation_status in ['DRAFT', 'SUBMITTED'] and description):
                     # do "update or create" to create the assessment object
                     penalty = request.data.get('penalty')
                     SupplementalReportAssessment.objects.update_or_create(

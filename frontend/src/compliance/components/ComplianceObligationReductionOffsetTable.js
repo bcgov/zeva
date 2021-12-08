@@ -168,13 +168,17 @@ const ComplianceObligationReductionOffsetTable = (props) => {
             <table className="col-12">
               <tbody>
                 <tr className="subclass">
-                  {!assessment && (<th className="large-column">
-                    {pendingBalanceExist ? 'PROVISIONAL ' : ''}
-                    BALANCE AFTER CREDIT REDUCTION
-                  </th>)}
-                  {assessment && (<th className="large-column">
-                    ASSESSED BALANCE AT END OF SEPT. 30, {reportYear+1}
-                  </th>)}
+                  {!assessment && (
+                    <th className="large-column">
+                      {pendingBalanceExist ? 'PROVISIONAL ' : ''}
+                      BALANCE AFTER CREDIT REDUCTION
+                    </th>
+                  )}
+                  {assessment && (
+                    <th className="large-column">
+                      ASSESSED BALANCE AT END OF SEPT. 30, {reportYear + 1}
+                    </th>
+                  )}
                   <th className="small-column text-center text-blue">A</th>
                   <th className="small-column text-center text-blue">
                     {
