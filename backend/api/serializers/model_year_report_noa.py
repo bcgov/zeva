@@ -180,6 +180,15 @@ class SupplementalReportSerializer(ModelSerializer):
                 validation_status__in=filter_statuses
             )
 
+        # Remove submitted by government user (only happens when the IDIR user saves first)
+        users = UserProfile.objects.filter(organization__is_government=True).values_list('username')
+        history = history.exclude(
+            validation_status__in=[
+                ModelYearReportStatuses.SUBMITTED,
+            ],
+            create_user__in=users
+        )
+
         serializer = SupplementalReportHistorySerializer(history, many=True)
 
         return serializer.data
@@ -235,6 +244,15 @@ class SupplementalModelYearReportSerializer(ModelSerializer):
                     ModelYearReportStatuses.RETURNED,
                 ]
             )
+
+        # Remove submitted by government user (only happens when the IDIR user saves first)
+        users = UserProfile.objects.filter(organization__is_government=True).values_list('username')
+        history = history.exclude(
+            validation_status__in=[
+                ModelYearReportStatuses.SUBMITTED,
+            ],
+            create_user__in=users
+        )
 
         serializer = SupplementalReportHistorySerializer(history, many=True)
 

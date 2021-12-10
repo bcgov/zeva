@@ -8,6 +8,7 @@ from api.models.model_year_report_confirmation import \
     ModelYearReportConfirmation
 from api.models.model_year_report_history import ModelYearReportHistory
 from api.models.model_year_report_statuses import ModelYearReportStatuses
+from api.models.user_profile import UserProfile
 
 from api.permissions.model_year_report import ModelYearReportPermissions
 
@@ -136,6 +137,14 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
                     ModelYearReportStatuses.RETURNED,
                 ]
             )
+
+        users = UserProfile.objects.filter(organization__is_government=True).values_list('username')
+        history_list = history_list.exclude(
+            validation_status__in=[
+                ModelYearReportStatuses.SUBMITTED,
+            ],
+            create_user__in=users
+        )
 
         history = ModelYearReportHistorySerializer(history_list, many=True)
 

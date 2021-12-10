@@ -73,10 +73,10 @@ const ConsumerSalesDetailsPage = (props) => {
 
   const disableSave = () => {
     if (vehicles.length <= 0 && !checked) {
-       return true;
+      return true;
     }
     return false;
-  }
+  };
 
   return (
     <div id="compliance-consumer-sales-details" className="page">
@@ -182,7 +182,7 @@ const ConsumerSalesDetailsPage = (props) => {
                   buttonType="save"
                   disabled={
                     (['SAVED', 'UNSAVED'].indexOf(
-                    statuses.consumerSales.status,
+                      statuses.consumerSales.status,
                     ) < 0) || disableSave()
                   }
                   optionalClassname="button primary"
