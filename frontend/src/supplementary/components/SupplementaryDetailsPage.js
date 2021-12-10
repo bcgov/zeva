@@ -199,7 +199,7 @@ const SupplementaryDetailsPage = (props) => {
         role="tablist"
       >
         <li
-          className={`nav-item ${(!reassessment.isReassessment) ? 'active' : ''} ${reassessment.status}`}
+          className={`nav-item ${(!reassessment.isReassessment) ? 'active' : ''} ${details.actualStatus === 'ASSESSED' ? 'ASSESSED' : reassessment.status}`}
           role="presentation"
         >
           {reassessment.isReassessment

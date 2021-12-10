@@ -265,7 +265,8 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
 
         return {
             'is_reassessment': False,
-            'reassessment_report_id': reassessment_report_id
+            'reassessment_report_id': reassessment_report_id,
+            'status': obj.status.value
         }
 
     def get_create_user(self, obj):
