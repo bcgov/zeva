@@ -9,6 +9,8 @@ import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import history from '../app/History';
 import CustomPropTypes from '../app/utilities/props';
 
+const qs = require('qs');
+
 const SupplementaryContainer = (props) => {
   const { id, supplementaryId } = useParams();
   const [checkboxConfirmed, setCheckboxConfirmed] = useState(false);
@@ -16,7 +18,7 @@ const SupplementaryContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState('');
   const [salesRows, setSalesRows] = useState([]);
-  const { keycloak, user, reassessment } = props;
+  const { keycloak, user } = props;
   const [files, setFiles] = useState([]);
   const [deleteFiles, setDeleteFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -32,6 +34,8 @@ const SupplementaryContainer = (props) => {
   const [radioDescriptions, setRadioDescriptions] = useState([{ id: 0, description: '' }]);
   const [newReport, setNewReport] = useState(false);
   const location = useLocation();
+
+  const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 
   const getNumeric = (parmValue) => {
     let value = parmValue;
@@ -50,7 +54,6 @@ const SupplementaryContainer = (props) => {
   const directorAction = user.isGovernment
   && user.hasPermission('SIGN_COMPLIANCE_REPORT');
 
-  const isReassessment = reassessment && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
   const calculateBalance = (creditActivity) => {
     const balances = {};
 
@@ -196,10 +199,10 @@ const SupplementaryContainer = (props) => {
     }
 
     if (obj.modelYear && obj.title) {
-      const index = newData.creditActivity.findIndex((each) => {
-        return Number(each.modelYear) === Number(obj.modelYear)
-        && each.category === obj.title;
-      });
+      const index = newData.creditActivity.findIndex((each) => (
+        Number(each.modelYear) === Number(obj.modelYear)
+        && each.category === obj.title
+      ));
 
       if (index >= 0) {
         if ((obj.creditA || creditActivity[index].creditAValue)
@@ -239,7 +242,7 @@ const SupplementaryContainer = (props) => {
   };
 
   const handleSubmit = (status, paramNewReport) => {
-    if ((status == 'ASSESSED' && paramNewReport) || (status == 'SUBMITTED' && analystAction)) {
+    if ((status === 'ASSESSED' && paramNewReport) || (status === 'SUBMITTED' && analystAction)) {
       status = 'DRAFT';
     }
     const uploadPromises = handleUpload(id);
@@ -327,7 +330,7 @@ const SupplementaryContainer = (props) => {
       axios.get(`${ROUTES_SUPPLEMENTARY.ASSESSMENT.replace(':id', id)}?supplemental_id=${supplementaryId || ''}`),
     ]).then(axios.spread((response, complianceResponse, ratioResponse, assessmentResponse) => {
       if (response.data) {
-        if (location && location.state && location.state.new) {
+        if (query && query.new === 'Y') {
           setNewReport(true);
         } else {
           setNewReport(false);
@@ -471,19 +474,19 @@ const SupplementaryContainer = (props) => {
   return (
     <SupplementaryDetailsPage
       addSalesRow={addSalesRow}
+      analystAction={analystAction}
       checkboxConfirmed={checkboxConfirmed}
       commentArray={commentArray}
-      analystAction={analystAction}
-      directorAction={directorAction}
       deleteFiles={deleteFiles}
       details={details}
+      directorAction={directorAction}
       errorMessage={errorMessage}
       files={files}
-      handleCheckboxClick={handleCheckboxClick}
       handleAddIdirComment={handleAddIdirComment}
-      handleCommentChangeIdir={handleCommentChangeIdir}
-      handleCommentChangeBceid={handleCommentChangeBceid}
+      handleCheckboxClick={handleCheckboxClick}
       handleCommentChange={handleCommentChange}
+      handleCommentChangeBceid={handleCommentChangeBceid}
+      handleCommentChangeIdir={handleCommentChangeIdir}
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
       handleSupplementalChange={handleSupplementalChange}
@@ -492,17 +495,17 @@ const SupplementaryContainer = (props) => {
       loading={loading}
       newBalances={newBalances}
       newData={newData}
+      newReport={newReport}
       obligationDetails={obligationDetails}
+      query={query}
+      radioDescriptions={radioDescriptions}
       ratios={ratios}
       salesRows={salesRows}
       setDeleteFiles={setDeleteFiles}
-      setUploadFiles={setFiles}
-      radioDescriptions={radioDescriptions}
-      user={user}
-      isReassessment={isReassessment}
       setSupplementaryAssessmentData={setSupplementaryAssessmentData}
+      setUploadFiles={setFiles}
       supplementaryAssessmentData={supplementaryAssessmentData}
-      newReport={newReport}
+      user={user}
     />
   );
 };

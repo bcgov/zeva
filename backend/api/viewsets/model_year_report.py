@@ -624,6 +624,34 @@ class ModelYearReportViewset(
             if not supplemental_id:
                 supplemental_id = report.supplemental.id
 
+            # check if we have permission for this
+            supplemental_report = SupplementalReport.objects.filter(
+                id=supplemental_id
+            ).first()
+
+            create_user = UserProfile.objects.filter(
+                username=supplemental_report.create_user
+            ).first()
+
+            if supplemental_report and request.user.is_government:
+                if supplemental_report.status.value == 'DRAFT' and not create_user.is_government:
+                    supplemental_id = 0
+
+                if supplemental_report.status.value in [
+                        'RETURNED',
+                        'DELETED'
+                ]:
+                    supplemental_id = 0
+            elif supplemental_report and not request.user.is_government:
+                if supplemental_report.status.value == 'DRAFT' and create_user.is_government:
+                    supplemental_id = 0
+
+                if supplemental_report.status.value in [
+                        'RECOMMENDED',
+                        'DELETED'
+                ]:
+                    supplemental_id = 0
+
             serializer = SupplementalReportAssessmentSerializer(
                 supplemental_id, context={'request': request}
             )

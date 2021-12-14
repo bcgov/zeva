@@ -243,7 +243,7 @@ const CreditActivity = (props) => {
                       name="supplierInfo"
                       type="text"
                       onChange={handleInputChange}
-                      defaultValue={newLdvSales ? newLdvSales : ldvSales}
+                      defaultValue={newLdvSales || ldvSales}
                       readOnly={!isEditable}
                     />
                   </td>
@@ -544,6 +544,7 @@ const CreditActivity = (props) => {
 
 CreditActivity.defaultProps = {
   creditReductionSelection: '',
+  isEditable: false,
   newLdvSales: null,
   supplierClass: '',
 };
@@ -553,6 +554,7 @@ CreditActivity.propTypes = {
   details: PropTypes.shape().isRequired,
   handleInputChange: PropTypes.func.isRequired,
   handleSupplementalChange: PropTypes.func.isRequired,
+  isEditable: PropTypes.bool,
   ldvSales: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.number,
