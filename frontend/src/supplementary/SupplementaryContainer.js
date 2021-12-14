@@ -35,11 +35,8 @@ const SupplementaryContainer = (props) => {
   const [newReport, setNewReport] = useState(false);
   const location = useLocation();
 
-<<<<<<< HEAD
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 
-=======
->>>>>>> upstream/release-1.35.0
   const getNumeric = (parmValue) => {
     let value = parmValue;
 

@@ -71,6 +71,11 @@ const ComplianceHistory = (props) => {
       byUser = ` by ${each.createUser.displayName} `;
     }
 
+    if (status === 'assessed') {
+      status = ' assessed ';
+      byUser = ' by Government of B.C. ';
+    }
+
     let reportType = 'Model year report ';
 
     if (item.isSupplementary) {

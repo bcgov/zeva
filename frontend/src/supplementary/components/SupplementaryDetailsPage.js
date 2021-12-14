@@ -188,8 +188,6 @@ const SupplementaryDetailsPage = (props) => {
     recommendTooltip = 'Please select an Analyst Recommendation before recommending this assessment.';
   }
 
-  const { reassessment } = details;
-
   return (
     <div id="supplementary" className="page">
       {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
