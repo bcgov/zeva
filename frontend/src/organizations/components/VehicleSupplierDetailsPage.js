@@ -104,7 +104,6 @@ const VehicleSupplierDetailsPage = (props) => {
             )}
             <form onSubmit={handleSubmit}>
               <div className="ldv-sales">
-                {!details.hasSubmittedReport && (
                 <div className="header-bg">
                   <div className="d-inline-block">
                     <select
@@ -138,7 +137,6 @@ const VehicleSupplierDetailsPage = (props) => {
                     </button>
                   </div>
                 </div>
-                )}
 
                 <ul className="mb-0 mt-3">
                   {ldvSales.map((sale) => (
@@ -149,7 +147,6 @@ const VehicleSupplierDetailsPage = (props) => {
                       <div className="col-6 sales">
                         {formatNumeric(sale.ldvSales, 0)}
                       </div>
-                      {!details.hasSubmittedReport && (
                         <div className="col-1 delete">
                           <button
                             onClick={() => {
@@ -160,7 +157,6 @@ const VehicleSupplierDetailsPage = (props) => {
                             x
                           </button>
                         </div>
-                      )}
                     </li>
                   ))}
                 </ul>

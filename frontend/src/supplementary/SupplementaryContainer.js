@@ -31,6 +31,18 @@ const SupplementaryContainer = (props) => {
   const [supplementaryAssessmentData, setSupplementaryAssessmentData] = useState({});
   const [radioDescriptions, setRadioDescriptions] = useState([{ id: 0, description: '' }]);
   const [newReport, setNewReport] = useState(false);
+  const location = useLocation();
+
+  const getNumeric = (parmValue) => {
+    let value = parmValue;
+
+    if (value) {
+      value += '';
+      return value.replace(',', '');
+    }
+
+    return value;
+  };
 
   const analystAction = user.isGovernment
   && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
@@ -66,12 +78,12 @@ const SupplementaryContainer = (props) => {
 
         if (found >= 0) {
           balances[each.modelYear.name].A += creditActivity[found].creditAValue
-            ? Number(creditActivity[found].creditAValue) : Number(each.creditAValue);
+            ? Number(getNumeric(creditActivity[found].creditAValue)) : Number(getNumeric(each.creditAValue));
           balances[each.modelYear.name].B += creditActivity[found].creditBValue
-            ? Number(creditActivity[found].creditBValue) : Number(each.creditBValue);
+            ? Number(getNumeric(creditActivity[found].creditBValue)) : Number(getNumeric(each.creditBValue));
         } else {
-          balances[each.modelYear.name].A += Number(each.creditAValue);
-          balances[each.modelYear.name].B += Number(each.creditBValue);
+          balances[each.modelYear.name].A += Number(getNumeric(each.creditAValue));
+          balances[each.modelYear.name].B += Number(getNumeric(each.creditBValue));
         }
       }
 
@@ -87,12 +99,12 @@ const SupplementaryContainer = (props) => {
 
         if (found >= 0) {
           balances[each.modelYear.name].A -= creditActivity[found].creditAValue
-            ? Number(creditActivity[found].creditAValue) : Number(each.creditAValue);
+            ? Number(getNumeric(creditActivity[found].creditAValue)) : Number(getNumeric(each.creditAValue));
           balances[each.modelYear.name].B -= creditActivity[found].creditBValue
-            ? Number(creditActivity[found].creditBValue) : Number(each.creditBValue);
+            ? Number(getNumeric(creditActivity[found].creditBValue)) : Number(getNumeric(each.creditBValue));
         } else {
-          balances[each.modelYear.name].A -= Number(each.creditAValue);
-          balances[each.modelYear.name].B -= Number(each.creditBValue);
+          balances[each.modelYear.name].A -= Number(getNumeric(each.creditAValue));
+          balances[each.modelYear.name].B -= Number(getNumeric(each.creditBValue));
         }
       }
     });
@@ -184,17 +196,30 @@ const SupplementaryContainer = (props) => {
     }
 
     if (obj.modelYear && obj.title) {
-      const index = newData.creditActivity.findIndex((each) => (
-        Number(each.modelYear) === Number(obj.modelYear)
-        && each.category === obj.title
-      ));
+      const index = newData.creditActivity.findIndex((each) => {
+        return Number(each.modelYear) === Number(obj.modelYear)
+        && each.category === obj.title;
+      });
 
       if (index >= 0) {
-        creditActivity[index] = {
-          ...newData.creditActivity[index],
-          creditAValue: obj.creditA || creditActivity[index].creditAValue,
-          creditBValue: obj.creditB || creditActivity[index].creditBValue,
-        };
+        if ((obj.creditA || creditActivity[index].creditAValue)
+          && (obj.creditB || creditActivity[index].creditBValue)) {
+          creditActivity[index] = {
+            ...newData.creditActivity[index],
+            creditAValue: obj.creditA || creditActivity[index].creditAValue,
+            creditBValue: obj.creditB || creditActivity[index].creditBValue,
+          };
+        } else if (obj.creditA || creditActivity[index].creditAValue) {
+          creditActivity[index] = {
+            ...newData.creditActivity[index],
+            creditAValue: obj.creditA || creditActivity[index].creditAValue,
+          };
+        } else if (obj.creditB || creditActivity[index].creditBValue) {
+          creditActivity[index] = {
+            ...newData.creditActivity[index],
+            creditBValue: obj.creditB || creditActivity[index].creditBValue,
+          };
+        }
       } else {
         creditActivity.push({
           category: obj.title,
@@ -241,6 +266,7 @@ const SupplementaryContainer = (props) => {
           data.penalty = supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty;
           data.description = supplementaryAssessmentData.supplementaryAssessment.decision.id;
         }
+
         axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data).then((response) => {
           const { id: supplementalId } = response.data;
           if (status === 'DELETED') {
@@ -314,7 +340,7 @@ const SupplementaryContainer = (props) => {
         const newMakes = newSupplier.find((each) => each.category === 'LDV_MAKES') || '';
         const newSupplierClass = newSupplier.find((each) => each.category === 'SUPPLIER_CLASS') || '';
         const idirCommentArrayResponse = [];
-        let bceidCommentResponse = response.data.fromSupplierComments;
+        const bceidCommentResponse = response.data.fromSupplierComments;
 
         const {
           assessment,
@@ -341,7 +367,7 @@ const SupplementaryContainer = (props) => {
           assessmentComment.forEach((item) => {
             if (item.toDirector === true) {
               idirCommentArrayResponse.push(item);
-            } 
+            }
             // else {
             //   bceidCommentResponse = item;
             // }
@@ -437,8 +463,6 @@ const SupplementaryContainer = (props) => {
       setLoading(false);
     }));
   };
-
-  const location = useLocation();
 
   useEffect(() => {
     refreshDetails();

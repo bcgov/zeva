@@ -78,8 +78,7 @@ class SalesSubmission(Auditable):
 
     def validate_validation_status(self, status, request):
         if self.validation_status in [
-            SalesSubmissionStatuses.VALIDATED,
-            SalesSubmissionStatuses.REJECTED
+            SalesSubmissionStatuses.VALIDATED
         ]:
             raise ValidationError(
                 "Submission is already completed."

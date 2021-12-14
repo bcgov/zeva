@@ -29,12 +29,65 @@ const ComplianceHistory = (props) => {
     });
   }, []);
 
-  const getStatus = (status) => {
-    if (status === 'DRAFT') {
-      return 'saved';
+  const getHistory = (itemHistory) => {
+    const tempHistory = [];
+
+    if (itemHistory) {
+      itemHistory.forEach((obj) => {
+        if (['SUBMITTED', 'DRAFT'].indexOf(obj.status) >= 0) {
+          const found = tempHistory.findIndex((each) => ['SUBMITTED', 'DRAFT'].indexOf(each.status) >= 0);
+
+          if (found < 0) {
+            tempHistory.push(obj);
+          }
+        }
+
+        if (['RECOMMENDED', 'ASSESSED', 'REASSESSED'].indexOf(obj.status) >= 0) {
+          const found = tempHistory.findIndex((each) => obj.status === each.status);
+
+          if (found < 0) {
+            tempHistory.push(obj);
+          }
+        }
+      });
     }
 
-    return status.toLowerCase();
+    return tempHistory;
+  };
+
+  const getStatus = (item, each) => {
+    let status = each.status.toLowerCase();
+
+    if (status === 'draft') {
+      status = ' saved ';
+    }
+
+    if (status === 'submitted') {
+      status = ' signed and submitted to the Government of B.C. ';
+    }
+
+    let byUser = '';
+    if (each.createUser) {
+      byUser = ` by ${each.createUser.displayName} `;
+    }
+
+    let reportType = 'Model year report ';
+
+    if (item.isSupplementary) {
+      if (each.isReassessment) {
+        reportType = 'Reassessment ';
+      } else {
+        reportType = 'Supplementary report ';
+      }
+
+      if (status === 'assessed') {
+        status = 'reassessed';
+        reportType = 'Supplementary report ';
+        byUser = ' by the Director ';
+      }
+    }
+
+    return `${reportType} ${status} ${moment(each.updateTimestamp).format('MMM D, YYYY')} ${byUser}`;
   };
 
   const getColor = (status) => {
@@ -115,8 +168,8 @@ const ComplianceHistory = (props) => {
               >
                 <div className="card-body p-2">
                   <ul className="py-0 my-0 px-4">
-                    {item.history && item.history.map((each, eachIndex) => (
-                      <li id={`each-${eachIndex}`} key={`each-${eachIndex}`}>Model year {item.isSupplementary ? 'supplementary' : ''} report {getStatus(each.status)} {moment(each.updateTimestamp).format('MMM D, YYYY')} by {each.createUser ? each.createUser.displayName : ''}</li>
+                    {item.history && getHistory(item.history).map((each, eachIndex) => (
+                      <li id={`each-${eachIndex}`} key={`each-${eachIndex}`}>{getStatus(item, each)}</li>
                     ))}
                   </ul>
                 </div>

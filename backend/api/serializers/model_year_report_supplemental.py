@@ -222,6 +222,52 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
     from_supplier_comments = SerializerMethodField()
     actual_status = SerializerMethodField()
     create_user = SerializerMethodField()
+    reassessment = SerializerMethodField()
+
+    def get_reassessment(self, obj):
+        user = UserProfile.objects.filter(username=obj.create_user).first()
+        if user and user.is_government:
+            supplementary_report = SupplementalReport.objects.filter(
+                model_year_report_id=obj.model_year_report_id,
+                supplemental_id=obj.supplemental_id
+            ).first()
+
+            supplemental_user = None
+
+            if supplementary_report.create_user:
+                supplemental_user = UserProfile.objects.filter(username=supplementary_report.create_user).first()
+
+            supplementary_report_id = None
+            supplementary_report_status = supplementary_report.status.value
+            if supplemental_user:
+                supplementary_report_id = obj.supplemental_id
+                supplemental_report = SupplementalReport.objects.filter(
+                    model_year_report_id=obj.model_year_report_id,
+                    id=obj.supplemental_id
+                ).first()
+                supplementary_report_status = supplemental_report.status.value
+
+            return {
+                'is_reassessment': True,
+                'supplementary_report_id': supplementary_report_id,
+                'status': supplementary_report_status,
+            }
+
+        reassessment_report = SupplementalReport.objects.filter(
+            model_year_report_id=obj.model_year_report_id,
+            supplemental_id=obj.id
+        ).first()
+
+        reassessment_report_id = None
+
+        if reassessment_report:
+            reassessment_report_id = reassessment_report.id
+
+        return {
+            'is_reassessment': False,
+            'reassessment_report_id': reassessment_report_id,
+            'status': obj.status.value
+        }
 
     def get_create_user(self, obj):
         user_profile = UserProfile.objects.filter(username=obj.create_user)
@@ -232,6 +278,12 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
 
     def get_actual_status(self, obj):
         request = self.context.get('request')
+        # is this a reassessment report? if so this is the actual status
+        create_user = UserProfile.objects.filter(username=obj.create_user).first()
+
+        if create_user and create_user.is_government:
+            return obj.status.value
+
         supplemental_report = SupplementalReport.objects.filter(
             model_year_report_id=obj.model_year_report_id,
             supplemental_id=obj.id
@@ -239,6 +291,16 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
 
         if not supplemental_report:
             return obj.status.value
+
+        if supplemental_report:
+            user = UserProfile.objects.filter(username=supplemental_report.create_user).first()
+
+            if user and user.is_government and not request.user.is_government and \
+                    supplemental_report.status.value in ['ASSESSED', 'REASSESSED']:
+                return supplemental_report.status.value
+
+            if user and user.is_government and request.user.is_government:
+                return supplemental_report.status.value
 
         model_year_report = ModelYearReport.objects.get(id=obj.model_year_report_id)
         latest_supplemental = model_year_report.get_latest_supplemental(request)
@@ -284,6 +346,12 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         sales_queryset = SupplementalReportSales.objects.filter(
             supplemental_report_id=obj.id
         )
+
+        if not sales_queryset:
+            sales_queryset = SupplementalReportSales.objects.filter(
+                supplemental_report_id=obj.supplemental_id
+            )
+
         sales_serializer = ModelYearReportZevSalesSerializer(sales_queryset, many=True)
 
         return sales_serializer.data
@@ -345,5 +413,6 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         fields = (
             'id', 'status', 'ldv_sales', 'credit_activity',
             'assessment_data', 'zev_sales', 'supplier_information',
-            'attachments', 'from_supplier_comments', 'actual_status', 'create_user'
+            'attachments', 'from_supplier_comments', 'actual_status',
+            'create_user', 'reassessment',
         )

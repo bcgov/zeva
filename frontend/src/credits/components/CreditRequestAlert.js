@@ -29,7 +29,7 @@ const CreditRequestAlert = (props) => {
 
   const statusFilter = (status) => history.filter((each) => each.validationStatus === status)[0];
 
-  if (!history.some((each) => ['DRAFT', 'SUBMITTED', 'VALIDATED', 'RECOMMEND_APPROVAL', 'CHECKED'].includes(each.validationStatus))) {
+  if (!history.some((each) => ['DRAFT', 'SUBMITTED', 'VALIDATED', 'RECOMMEND_APPROVAL', 'CHECKED', 'REJECTED'].includes(each.validationStatus))) {
     return false;
   }
   // later we might put in a flag to check if submission has gone back and forth between
@@ -78,6 +78,7 @@ const CreditRequestAlert = (props) => {
       title = 'Rejected';
       classname = 'alert-danger';
       if (!isGovernment) {
+        historyMessage = `${excelUploadMessage}. `;
         message = `CA-${id}  rejected ${moment(statusFilter('REJECTED').createTimestamp).format('MMM D, YYYY')} by Government of B.C.`;  
       } else {
         message = `CA-${id}  rejected ${moment(statusFilter('REJECTED').createTimestamp).format('MMM D, YYYY')} by ${statusFilter('REJECTED').createUser.displayName}.`;

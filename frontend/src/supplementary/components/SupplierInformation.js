@@ -15,27 +15,27 @@ const SupplierInformation = (props) => {
   const { supplierInfo } = newData;
   const currentStatus = details.actualStatus ? details.actualStatus : details.status;
 
-
-  const servAddress = () => { 
+  const servAddress = () => {
     let serviceAddress = '';
-    assessmentData.reportAddress.map(address => {
-    if (address.addressType.addressType === 'Service') {
-      serviceAddress = `${address.representativeName ? address.representativeName + '' : ''} ${address.addressLine1} ${', '} ${address.addressLine2 ? address.addressLine2 + ', ' : ''} ${address.city}${', '} ${address.state}${', '} ${address.country}${', '} ${address.postalCode}`;
-      return serviceAddress;
-    }});
+    assessmentData.reportAddress.map((address) => {
+      if (address.addressType.addressType === 'Service') {
+        serviceAddress = `${address.representativeName ? address.representativeName + '' : ''} ${address.addressLine1} ${', '} ${address.addressLine2 ? address.addressLine2 + ', ' : ''} ${address.city}${', '} ${address.state}${', '} ${address.country}${', '} ${address.postalCode}`;
+        return serviceAddress;
+      }
+    });
     return serviceAddress;
-  }
+  };
 
-  const recAddress = () => { 
+  const recAddress = () => {
     let recordAddress = '';
-    assessmentData.reportAddress.map(address => {
-    if(address.addressType.addressType === 'Record') {
-      recordAddress = `${address.representativeName ? address.representativeName + '' : ''} ${address.addressLine1} ${', '} ${address.addressLine2 ? address.addressLine2 + ', ' : ''} ${address.city}${', '} ${address.state}${', '} ${address.country}${', '} ${address.postalCode}`;
-      return recordAddress;
-    }});
+    assessmentData.reportAddress.map((address) => {
+      if (address.addressType.addressType === 'Records') {
+        recordAddress = `${address.representativeName ? address.representativeName + '' : ''} ${address.addressLine1} ${', '} ${address.addressLine2 ? address.addressLine2 + ', ' : ''} ${address.city}${', '} ${address.state}${', '} ${address.country}${', '} ${address.postalCode}`;
+        return recordAddress;
+      }
+    });
     return recordAddress;
-  }
-    
+  };
 
   return (
     <>
@@ -78,7 +78,7 @@ const SupplierInformation = (props) => {
             Service Address
           </label>
           <div className="w-75">
-          {assessmentData && assessmentData.reportAddress && assessmentData.reportAddress.map(
+            {assessmentData && assessmentData.reportAddress && assessmentData.reportAddress.map(
               (address) => address.addressType.addressType === 'Service' && (
               <div className="p-0" key={address.id}>
                 {address.representativeName && (

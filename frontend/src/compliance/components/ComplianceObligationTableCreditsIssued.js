@@ -56,8 +56,18 @@ const ComplianceObligationTableCreditsIssued = (props) => {
       }
     }
     return getNewData(category, each.modelYear, classType);
-  }
+  };
 
+  const getNumeric = (parmValue) => {
+    let value = parmValue;
+
+    if (value) {
+      value += '';
+      return value.replace(',', '');
+    }
+
+    return value;
+  };
 
   const tableSection = (input, title, negativeValue) => {
     let numberClassname = 'text-right';
@@ -153,14 +163,21 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               <>
                 <td>
                   <input
-                    className="form-control"
-                    defaultValue={getDefault(category, each, 'creditAValue')}
+                    className={`form-control ${Number(each.A) !== Number(getNumeric(getDefault(category, each, 'creditAValue'))) ? 'highlight' : ''}`}
+                    defaultValue={`${title === 'Transferred Away' || title === 'Administrative Credit Reduction' ? '-' : ''}${getDefault(category, each, 'creditAValue')}`}
                     type="text"
                     onChange={(event) => {
+                      let { value } = event.target;
+
+                      if (value < 0 && (title === 'Transferred Away' || title === 'Administrative Credit Reduction')) {
+                        value *= -1;
+                      }
+
                       handleSupplementalChange({
                         title: category,
                         modelYear: each.modelYear,
-                        creditA: event.target.value,
+                        creditA: value,
+                        creditB: Number(getNumeric(getDefault(category, each, 'creditBValue'))),
                       });
                     }}
                     readOnly={readOnly}
@@ -168,14 +185,21 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                 </td>
                 <td>
                   <input
-                    className="form-control"
-                    defaultValue={getDefault(category, each, 'creditBValue')}
+                    className={`form-control ${Number(each.B) !== Number(getNumeric(getDefault(category, each, 'creditBValue'))) ? 'highlight' : ''}`}
+                    defaultValue={`${title === 'Transferred Away' || title === 'Administrative Credit Reduction' ? '-' : ''}${getDefault(category, each, 'creditBValue')}`}
                     type="text"
                     onChange={(event) => {
+                      let { value } = event.target;
+
+                      if (value < 0 && (title === 'Transferred Away' || title === 'Administrative Credit Reduction')) {
+                        value *= -1;
+                      }
+
                       handleSupplementalChange({
                         title: category,
                         modelYear: each.modelYear,
-                        creditB: event.target.value,
+                        creditA: Number(getNumeric(getDefault(category, each, 'creditAValue'))),
+                        creditB: value,
                       });
                     }}
                     readOnly={readOnly}
@@ -239,9 +263,10 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                     <input
                       className="form-control"
                       defaultValue={
-                        (getNewData('creditBalanceStart', each, 'creditAValue') === '' || getNewData('creditBalanceStart', each, 'creditAValue') === null) 
-                        ? formatNumeric(creditBalanceStart[each].A, 2) 
-                        : getNewData('creditBalanceStart', each, 'creditAValue')}
+                        (getNewData('creditBalanceStart', each, 'creditAValue') === '' || getNewData('creditBalanceStart', each, 'creditAValue') === null)
+                          ? formatNumeric(creditBalanceStart[each].A, 2)
+                          : getNewData('creditBalanceStart', each, 'creditAValue')
+                      }
                       type="text"
                       onChange={(event) => {
                         handleSupplementalChange({
@@ -257,9 +282,10 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                     <input
                       className="form-control"
                       defaultValue={
-                        (getNewData('creditBalanceStart', each, 'creditBValue') === '' || getNewData('creditBalanceStart', each, 'creditBValue') === null) 
-                        ? formatNumeric(creditBalanceStart[each].B, 2) 
-                        : getNewData('creditBalanceStart', each, 'creditBValue')}
+                        (getNewData('creditBalanceStart', each, 'creditBValue') === '' || getNewData('creditBalanceStart', each, 'creditBValue') === null)
+                          ? formatNumeric(creditBalanceStart[each].B, 2)
+                          : getNewData('creditBalanceStart', each, 'creditBValue')
+                      }
                       type="text"
                       onChange={(event) => {
                         handleSupplementalChange({

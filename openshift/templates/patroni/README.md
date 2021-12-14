@@ -41,6 +41,13 @@ login patroini-backup pod on Openshift v4, run the following command
 
 6. Verify the database on Openshift v3 and v4 to make sure they are same
 
+### Create read only user for metabase conection
+CREATE USER metabaseuser WITH PASSWORD '[password]';
+GRANT CONNECT ON DATABASE zeva TO metabaseuser;
+GRANT USAGE ON SCHEMA public TO metabaseuser;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO metabaseuser;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO metabaseuser;
+
 ### Create staging patroni in order to test the operational scripts
 
 1. backup prod database and rsync to test env ex. /backups/2020-10-30-prod/patroni-master-prod-tfrs_2020-10-30_12-29-48.sql.gz
@@ -76,14 +83,3 @@ the admin command can get from the patroni-staging secret
 
 4. update bacckend dc to connect to staging database
 
-
-  dev: {namespace:'e52f12-dev', transient:true, name: `${name}`, ssoSuffix:'-dev', 
-        ssoName:'dev.oidc.gov.bc.ca', phase: 'dev'  , changeId:`${changeId}`, suffix: `-dev-${changeId}`, 
-        instance: `${name}-dev-${changeId}`  , version:`${version}-${changeId}`, tag:`dev-${version}-${changeId}`, 
-        host: `zeva-dev-${changeId}.${ocpName}.gov.bc.ca`, djangoDebug: 'True',
-        frontendCpuRequest: '100m', frontendCpuLimit: '700m', frontendMemoryRequest: '300M', frontendMemoryLimit: '4G', frontendReplicas: 1,
-        backendCpuRequest: '300m', backendCpuLimit: '600m', backendMemoryRequest: '1G', backendMemoryLimit: '2G', backendHealthCheckDelay: 30, backendHost: `zeva-backend-dev-${changeId}.${ocpName}.gov.bc.ca`, backendReplicas: 1,
-        minioCpuRequest: '100m', minioCpuLimit: '200m', minioMemoryRequest: '200M', minioMemoryLimit: '500M', minioPvcSize: '1G',
-        schemaspyCpuRequest: '50m', schemaspyCpuLimit: '200m', schemaspyMemoryRequest: '150M', schemaspyMemoryLimit: '300M', schemaspyHealthCheckDelay: 160,
-        rabbitmqCpuRequest: '250m', rabbitmqCpuLimit: '700m', rabbitmqMemoryRequest: '500M', rabbitmqMemoryLimit: '1G', rabbitmqPvcSize: '1G', rabbitmqReplica: 1, rabbitmqPostStartSleep: 120, storageClass: 'netapp-block-standard',
-        patroniCpuRequest: '200m', patroniCpuLimit: '400m', patroniMemoryRequest: '250M', patroniMemoryLimit: '500M', patroniPvcSize: '2G', patroniReplica: 2, storageClass: 'netapp-block-standard', ocpName: `${ocpName}`},
