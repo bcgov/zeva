@@ -35,8 +35,11 @@ const SupplementaryContainer = (props) => {
   const [newReport, setNewReport] = useState(false);
   const location = useLocation();
 
+<<<<<<< HEAD
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 
+=======
+>>>>>>> upstream/release-1.35.0
   const getNumeric = (parmValue) => {
     let value = parmValue;
 
@@ -199,10 +202,10 @@ const SupplementaryContainer = (props) => {
     }
 
     if (obj.modelYear && obj.title) {
-      const index = newData.creditActivity.findIndex((each) => (
-        Number(each.modelYear) === Number(obj.modelYear)
-        && each.category === obj.title
-      ));
+      const index = newData.creditActivity.findIndex((each) => {
+        return Number(each.modelYear) === Number(obj.modelYear)
+        && each.category === obj.title;
+      });
 
       if (index >= 0) {
         if ((obj.creditA || creditActivity[index].creditAValue)

@@ -188,6 +188,8 @@ const SupplementaryDetailsPage = (props) => {
     recommendTooltip = 'Please select an Analyst Recommendation before recommending this assessment.';
   }
 
+  const { reassessment } = details;
+
   return (
     <div id="supplementary" className="page">
       {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
@@ -475,7 +477,7 @@ const SupplementaryDetailsPage = (props) => {
                 locationRoute={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id)}
               />
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-              && ['DRAFT', 'RETURNED'].indexOf(details.status) >= 0
+              && ['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0
               && (
               <Button
                 buttonType="delete"
@@ -527,7 +529,7 @@ const SupplementaryDetailsPage = (props) => {
               />
               )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-              && directorAction && details.status === 'RECOMMENDED' && (
+              && directorAction && currentStatus === 'RECOMMENDED' && (
               <Button
                 buttonType="submit"
                 optionalClassname="button primary"
