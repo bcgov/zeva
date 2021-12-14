@@ -100,7 +100,7 @@ const ComplianceHistory = (props) => {
         classname = 'alert-warning';
         break;
       case 'SUBMITTED':
-        classname = 'alert-warning';
+        classname = 'alert-primary';
         break;
       case 'RECOMMENDED':
         classname = 'alert-primary';

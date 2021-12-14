@@ -207,14 +207,14 @@ const AssessmentDetailsPage = (props) => {
         <div className="col-12">
           <div id="compliance-obligation-page">
             {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-            && !user.isGovernment && statuses.assessment.status === 'ASSESSED' 
-            && ((!supplementaryId && supplementaryStatus == 'DRAFT') 
-            || (supplementaryStatus == 'DRAFT' && createdByGov) 
-            || (supplementaryStatus == 'DELETED' || supplementaryStatus == 'ASSESSED'))  && (
+            && !user.isGovernment && statuses.assessment.status === 'ASSESSED'
+            && ((!supplementaryId && supplementaryStatus === 'DRAFT')
+            || (supplementaryStatus === 'DRAFT' && createdByGov)
+            || (supplementaryStatus === 'DELETED' || supplementaryStatus === 'ASSESSED')) && (
               <button
                 className="btn button primary float-right"
                 onClick={() => {
-                  history.push(ROUTES_SUPPLEMENTARY.CREATE.replace(/:id/g, id), { new: true });
+                  history.push(`${ROUTES_SUPPLEMENTARY.CREATE.replace(/:id/g, id)}?new=Y`);
                 }}
                 type="button"
               >
@@ -223,13 +223,13 @@ const AssessmentDetailsPage = (props) => {
             )}
             {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
             && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && statuses.assessment.status === 'ASSESSED'
-            && ((!supplementaryId && supplementaryStatus == 'DRAFT') 
-            || (supplementaryStatus == 'DRAFT' && !createdByGov)
-            || (supplementaryStatus == 'DELETED' || supplementaryStatus == 'ASSESSED')) && (
+            && ((!supplementaryId && supplementaryStatus === 'DRAFT')
+            || (supplementaryStatus === 'DRAFT' && !createdByGov)
+            || (supplementaryStatus === 'DELETED' || supplementaryStatus === 'ASSESSED')) && (
               <button
                 className="btn button primary float-right"
                 onClick={() => {
-                  history.push(ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(/:id/g, id), { new: true });
+                  history.push(`${ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(/:id/g, id)}?new=Y`);
                 }}
                 type="button"
               >

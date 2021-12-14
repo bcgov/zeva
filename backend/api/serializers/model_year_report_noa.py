@@ -57,7 +57,6 @@ class SupplementalNOASerializer(ModelSerializer):
                 return True
         return False
 
-
     def get_is_reassessment(self, obj):
         user = UserProfile.objects.filter(username=obj.create_user).first()
         if user is None:

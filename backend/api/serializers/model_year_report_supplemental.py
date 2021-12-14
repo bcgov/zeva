@@ -239,18 +239,26 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
 
             supplementary_report_id = None
             supplementary_report_status = supplementary_report.status.value
+            supplementary_report_is_reassessment = False
             if supplemental_user:
                 supplementary_report_id = obj.supplemental_id
                 supplemental_report = SupplementalReport.objects.filter(
                     model_year_report_id=obj.model_year_report_id,
                     id=obj.supplemental_id
                 ).first()
+
                 supplementary_report_status = supplemental_report.status.value
+
+                supplemental_user = UserProfile.objects.filter(username=supplemental_report.create_user).first()
+
+                if supplemental_user.is_government:
+                    supplementary_report_is_reassessment = True
 
             return {
                 'is_reassessment': True,
                 'supplementary_report_id': supplementary_report_id,
                 'status': supplementary_report_status,
+                'supplementary_report_is_reassessment': supplementary_report_is_reassessment
             }
 
         reassessment_report = SupplementalReport.objects.filter(
