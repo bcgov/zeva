@@ -105,6 +105,8 @@ class SalesSubmissionContent(Auditable):
     @property
     def is_already_awarded(self):
         has_been_awarded = RecordOfSale.objects.exclude(
+            submission__validation_status='REJECTED'
+        ).exclude(
             submission_id=self.submission_id
         ).filter(
             vin=self.xls_vin
