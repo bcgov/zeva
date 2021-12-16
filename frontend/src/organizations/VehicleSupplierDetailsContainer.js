@@ -27,6 +27,7 @@ const VehicleSupplierDetailsContainer = (props) => {
   const [modelYears, setModelYears] = useState([]);
   const [fields, setFields] = useState({});
   const [ldvSales, setLDVSales] = useState([]);
+  const [isEditable, setIsEditable] = useState(false);
 
   const refreshDetails = () => {
     setLoading(true);
@@ -116,6 +117,8 @@ const VehicleSupplierDetailsContainer = (props) => {
         selectedModelYear={fields.modelYear}
         inputLDVSales={fields.ldvSales}
         handleDeleteSale={handleDeleteSale}
+        isEditable={isEditable}
+        setIsEditable={setIsEditable}
       />
     </div>
   );
