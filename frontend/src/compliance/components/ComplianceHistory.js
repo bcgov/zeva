@@ -88,7 +88,7 @@ const ComplianceHistory = (props) => {
       if (status === 'assessed') {
         status = 'reassessed';
         reportType = 'Supplementary report ';
-        byUser = ' by the Director ';
+        byUser = ' by Government of B.C. ';
       }
     }
 

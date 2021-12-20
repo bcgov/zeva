@@ -21,6 +21,8 @@ const VehicleSupplierDetailsPage = (props) => {
     modelYears,
     selectedModelYear,
     handleDeleteSale,
+    isEditable,
+    setIsEditable,
   } = props;
   const { organizationAddress } = details;
 
@@ -108,6 +110,7 @@ const VehicleSupplierDetailsPage = (props) => {
                   <div className="d-inline-block">
                     <select
                       className="form-control"
+                      disabled={!isEditable}
                       id="model-year"
                       name="modelYear"
                       onChange={handleInputChange}
@@ -122,6 +125,7 @@ const VehicleSupplierDetailsPage = (props) => {
                   <div className="d-inline-block">
                     <input
                       className="form-control"
+                      disabled={!isEditable}
                       name="ldvSales"
                       onChange={handleInputChange}
                       type="text"
@@ -131,10 +135,33 @@ const VehicleSupplierDetailsPage = (props) => {
                   <div className="d-inline-block">
                     <button
                       className="btn button primary"
+                      disabled={!isEditable}
                       type="submit"
                     >
                       Add
                     </button>
+
+                    {!isEditable ? (
+                      <button
+                        className="btn button ml-3 primary"
+                        onClick={() => {
+                          setIsEditable(true);
+                        }}
+                        type="button"
+                      >
+                        Edit
+                      </button>
+                    ) : (
+                      <button
+                        className="btn button ml-3"
+                        onClick={() => {
+                          setIsEditable(false);
+                        }}
+                        type="button"
+                      >
+                        Cancel
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -144,19 +171,21 @@ const VehicleSupplierDetailsPage = (props) => {
                       <div className="col-5 model-year">
                         {sale.modelYear} Model Year:
                       </div>
-                      <div className="col-6 sales">
+                      <div className="col-4 sales">
                         {formatNumeric(sale.ldvSales, 0)}
                       </div>
-                        <div className="col-1 delete">
-                          <button
-                            onClick={() => {
-                              handleDeleteSale(sale);
-                            }}
-                            type="button"
-                          >
-                            x
-                          </button>
-                        </div>
+                      <div className="col-3 delete">
+                        {isEditable && (
+                        <button
+                          onClick={() => {
+                            handleDeleteSale(sale);
+                          }}
+                          type="button"
+                        >
+                          x
+                        </button>
+                        )}
+                      </div>
                     </li>
                   ))}
                 </ul>
