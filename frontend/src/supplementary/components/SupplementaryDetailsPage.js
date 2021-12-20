@@ -246,7 +246,7 @@ const SupplementaryDetailsPage = (props) => {
           commentArray={commentArray.bceidComment}
         />
         )}
-      {isEditable
+      {isEditable && user.isGovernment
       && (
       <div className="supplementary-form my-3">
         {commentArray && commentArray.idirComment && commentArray.idirComment.length > 0
@@ -263,6 +263,7 @@ const SupplementaryDetailsPage = (props) => {
             buttonText="Add Comment"
             handleAddComment={handleAddIdirComment}
             buttonDisable={!details.id}
+            tooltip="Please save the report first, before adding comments"
           />
         </div>
       </div>
@@ -388,7 +389,7 @@ const SupplementaryDetailsPage = (props) => {
             </div>
           </>
       )}
-      {isEditable && (
+      {isEditable && user.isGovernment && (
         <>
           {['RECOMMENDED'].indexOf(currentStatus) < 0 && (
           <h3 className="mt-4 mb-1">Analyst Recommended Director Assessment</h3>
