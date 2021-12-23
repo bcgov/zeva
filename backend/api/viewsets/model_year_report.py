@@ -943,9 +943,10 @@ class ModelYearReportViewset(
         report = get_object_or_404(ModelYearReport, pk=pk)
         comment = request.data.get('from_govt_comment')
         director = request.data.get('director')
+        supplemental_id = request.data.get('supplemental_id', report.supplemental.id)
         if comment and director:
             SupplementalReportAssessmentComment.objects.create(
-                supplemental_report_id=report.supplemental.id,
+                supplemental_report_id=supplemental_id,
                 comment=comment,
                 to_director=True,
                 create_user=request.user.username,
@@ -953,7 +954,7 @@ class ModelYearReportViewset(
             )
         elif comment and not director:
             assessment_comment = SupplementalReportAssessmentComment.objects.filter(
-                supplemental_report_id=report.supplemental.id,
+                supplemental_report_id=supplemental_id,
                 to_director=False
             ).order_by('-update_timestamp').first()
 
@@ -963,7 +964,7 @@ class ModelYearReportViewset(
                 assessment_comment.save()
             else:
                 SupplementalReportAssessmentComment.objects.create(
-                    supplemental_report_id=report.supplemental.id,
+                    supplemental_report_id=supplemental_id,
                     to_director=False,
                     comment=comment,
                     create_user=request.user.username,

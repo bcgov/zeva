@@ -22,7 +22,7 @@ const SupplementaryContainer = (props) => {
   const [files, setFiles] = useState([]);
   const [deleteFiles, setDeleteFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [newData, setNewData] = useState({ zevSales: {}, creditActivity: [] });
+  const [newData, setNewData] = useState({ zevSales: [], creditActivity: [] });
   let [obligationDetails, setObligationDetails] = useState([]);
   const [ldvSales, setLdvSales] = useState();
   const [ratios, setRatios] = useState();
@@ -72,6 +72,7 @@ const SupplementaryContainer = (props) => {
         'creditsIssuedSales',
         'initiativeAgreement',
         'purchaseAgreement',
+        'pendingBalance',
         'transfersIn',
       ].indexOf(each.category) >= 0) {
         const found = creditActivity.findIndex((activity) => (
@@ -117,14 +118,40 @@ const SupplementaryContainer = (props) => {
 
   const handleAddIdirComment = () => {
     const commentData = { fromGovtComment: idirComment, director: true };
-    axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
-      history.push(ROUTES_COMPLIANCE.REPORTS);
-      if (supplementaryId) {
-        history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementaryId));
-      } else {
-        history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', ''));
+    if (query.reassessment === 'Y') {
+      const zevSales = newData && newData.zevSales && newData.zevSales.filter((each) => Number(each.sales) > 0);
+
+      const data = {
+        ...newData,
+        zevSales,
+        status: 'DRAFT',
+      };
+
+      if (analystAction) {
+        data.analystAction = true;
+        data.penalty = supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty;
+        data.description = supplementaryAssessmentData.supplementaryAssessment.decision.id;
       }
-    });
+
+      axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data).then((response) => {
+        const { id: supplementalId } = response.data;
+        commentData.supplementalId = supplementalId;
+
+        axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
+          history.push(ROUTES_COMPLIANCE.REPORTS);
+          history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementalId));
+        });
+      });
+    } else {
+      axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
+        history.push(ROUTES_COMPLIANCE.REPORTS);
+        if (supplementaryId) {
+          history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementaryId));
+        } else {
+          history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', ''));
+        }
+      });
+    }
   };
 
   const handleCommentChangeIdir = (text) => {
@@ -245,6 +272,7 @@ const SupplementaryContainer = (props) => {
     if ((status === 'ASSESSED' && paramNewReport) || (status === 'SUBMITTED' && analystAction)) {
       status = 'DRAFT';
     }
+
     const uploadPromises = handleUpload(id);
     Promise.all(uploadPromises).then((attachments) => {
       const evidenceAttachments = {};
@@ -252,9 +280,12 @@ const SupplementaryContainer = (props) => {
         evidenceAttachments.attachments = attachments;
       }
 
+      const zevSales = newData && newData.zevSales && newData.zevSales.filter((each) => Number(each.sales) > 0);
+
       if (status) {
         const data = {
           ...newData,
+          zevSales,
           status,
           evidenceAttachments,
           deleteFiles,
