@@ -223,6 +223,7 @@ class ModelYearReportListSerializer(
     obligation_credits = SerializerMethodField()
     ldv_sales = SerializerMethodField()
     supplemental_status = SerializerMethodField()
+    supplemental_id = SerializerMethodField()
 
     def get_ldv_sales(self, obj):
         request = self.context.get('request')
@@ -336,13 +337,25 @@ class ModelYearReportListSerializer(
                 ModelYearReportStatuses.RETURNED]:
             return ModelYearReportStatuses.SUBMITTED.value
         return obj.get_validation_status_display()
-    
+
+    def get_supplemental_id(self, obj):
+        request = self.context.get('request')
+        supplemental_records = SupplementalReport.objects.filter(
+            model_year_report=obj
+        ).order_by('-create_timestamp')
+
+        if supplemental_records:
+            supplemental_record = supplemental_records[0]
+            return supplemental_record.id
+
+        return None
+
     class Meta:
         model = ModelYearReport
         fields = (
             'id', 'organization_name', 'model_year', 'validation_status', 'ldv_sales',
             'supplier_class', 'compliant', 'obligation_total',
-            'obligation_credits', 'supplemental_status'
+            'obligation_credits', 'supplemental_status', 'supplemental_id'
         )
 
 

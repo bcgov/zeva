@@ -5,6 +5,7 @@ import ReactTable from '../../app/components/ReactTable';
 import CustomPropTypes from '../../app/utilities/props';
 import history from '../../app/History';
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
+import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import getClassAReduction from '../../app/utilities/getClassAReduction';
 import getTotalReduction from '../../app/utilities/getTotalReduction';
@@ -154,8 +155,10 @@ const ComplianceReportsTable = (props) => {
         if (row && row.original && user) {
           return {
             onClick: () => {
-              const { id, validationStatus } = row.original;
-              if (validationStatus === 'ASSESSED' || user.isGovernment) {
+              const { id, validationStatus, supplementalId } = row.original;
+              if (supplementalId) {
+                history.push(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(/:id/g, id).replace(/:supplementaryId/g, supplementalId));
+              } else if (validationStatus === 'ASSESSED' || user.isGovernment) {
                 history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id));
               } else {
                 history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(/:id/g, id));

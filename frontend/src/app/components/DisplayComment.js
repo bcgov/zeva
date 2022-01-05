@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 import parse from 'html-react-parser';
-//shows array of comments like
+// shows array of comments like
 // Comments (bold) - Name, Date: Comment
 const DisplayComment = (props) => {
   const {

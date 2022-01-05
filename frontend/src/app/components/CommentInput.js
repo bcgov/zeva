@@ -38,8 +38,8 @@ const CommentInput = (props) => {
       {!disable && buttonText
       && (
         <>
-          {tooltip !== '' && <ReactTooltip />}
-          <span data-tip={tooltip}>
+          {tooltip !== '' && buttonDisable && <ReactTooltip />}
+          <span data-tip={(buttonDisable && tooltip) || ''}>
             <button
               className="button mt-2"
               onClick={() => { handleAddComment(); }}

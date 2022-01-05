@@ -240,12 +240,6 @@ const SupplementaryDetailsPage = (props) => {
         </li>
       </ul>
       )}
-      {currentStatus !== 'DRAFT' && commentArray && commentArray.bceidComment && commentArray.bceidComment.length > 0
-        && (
-        <DisplayComment
-          commentArray={commentArray.bceidComment}
-        />
-        )}
       {isEditable && user.isGovernment
       && (
       <div className="supplementary-form my-3">
@@ -262,7 +256,6 @@ const SupplementaryDetailsPage = (props) => {
             title={analystAction ? 'Add comment to director: ' : 'Add comment to the analyst'}
             buttonText="Add Comment"
             handleAddComment={handleAddIdirComment}
-            buttonDisable={!details.id}
             tooltip="Please save the report first, before adding comments"
           />
         </div>
@@ -320,7 +313,7 @@ const SupplementaryDetailsPage = (props) => {
           setUploadFiles={setUploadFiles}
         />
         )}
-        {user.isGovernment && details && currentStatus === 'SUBMITTED'
+        {details && details.status === 'SUBMITTED'
         && ((details.fromSupplierComments && details.fromSupplierComments.length > 0) || (details.attachments && details.attachments.length > 0))
         && (
         <div className="display-supplier-info grey-border-area mt-3">
