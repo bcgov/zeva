@@ -21,7 +21,7 @@ pipeline {
                     abortAllPreviousBuildInProgress(currentBuild)
                 }
                 echo "Building ..."
-                sh "cd .pipeline && ./npmw ci && ./npmw run build -- --pr=${CHANGE_ID}"
+                sh "cd .pipeline && ./npmw ci && DEBUG=* ./npmw run build -- --pr=${CHANGE_ID}"
             }
         }
         stage('Deploy (DEV)') {
