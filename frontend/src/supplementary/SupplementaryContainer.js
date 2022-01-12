@@ -374,7 +374,7 @@ const SupplementaryContainer = (props) => {
         const newMakes = newSupplier.find((each) => each.category === 'LDV_MAKES') || '';
         const newSupplierClass = newSupplier.find((each) => each.category === 'SUPPLIER_CLASS') || '';
         const idirCommentArrayResponse = [];
-        const bceidCommentResponse = response.data.fromSupplierComments;
+        let bceidCommentResponse = response.data.fromSupplierComments;
 
         const {
           assessment,
@@ -401,10 +401,9 @@ const SupplementaryContainer = (props) => {
           assessmentComment.forEach((item) => {
             if (item.toDirector === true) {
               idirCommentArrayResponse.push(item);
+            } else if (item) {
+              bceidCommentResponse = item;
             }
-            // else {
-            //   bceidCommentResponse = item;
-            // }
           });
         }
         setCommentArray({
@@ -439,18 +438,20 @@ const SupplementaryContainer = (props) => {
           });
         });
         // new /adjusted sales
-        newZevSales.forEach((item) => {
-          if (item.modelYearReportVehicle) {
-            const match = salesData.findIndex((record) => record.oldData.modelYearReportVehicle === item.modelYearReportVehicle);
-            if (match >= 0) {
-              salesData[match].newData = item;
+        if ((query && query.new !== 'Y') || user.isGovernment) {
+          newZevSales.forEach((item) => {
+            if (item.modelYearReportVehicle) {
+              const match = salesData.findIndex((record) => record.oldData.modelYearReportVehicle === item.modelYearReportVehicle);
+              if (match >= 0) {
+                salesData[match].newData = item;
+              } else {
+                salesData.push({ newData: item, oldData: {} });
+              }
             } else {
               salesData.push({ newData: item, oldData: {} });
             }
-          } else {
-            salesData.push({ newData: item, oldData: {} });
-          }
-        });
+          });
+        }
         setSalesRows(salesData);
 
         const creditActivity = [];

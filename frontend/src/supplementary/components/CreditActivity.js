@@ -481,7 +481,7 @@ const CreditActivity = (props) => {
                   </tr>
                   {updatedBalances.balances
                   && updatedBalances.balances.filter(
-                    (balance) => balance.creditA > 0 || balance.creditB > 0,
+                    (balance) => balance.creditA > 0 || balance.creditB > 0 || balance.newCreditA > 0 || balance.newCreditB > 0,
                   ).map((balance) => (
                     <tr key={balance.modelYear}>
                       <td className="text-blue">

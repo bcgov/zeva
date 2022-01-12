@@ -634,7 +634,7 @@ class ModelYearReportViewset(
             ).first()
 
             if supplemental_report and request.user.is_government:
-                if supplemental_report.status.value == 'DRAFT' and not create_user.is_government:
+                if supplemental_report.status.value in 'DRAFT' and not create_user.is_government:
                     supplemental_id = 0
 
                 if supplemental_report.status.value in [
@@ -690,7 +690,8 @@ class ModelYearReportViewset(
 
             serializer = ModelYearReportSupplementalSerializer(
                 supplemental_report,
-                data=request.data
+                data=request.data,
+                context={'request': request}
             )
             serializer.is_valid(raise_exception=True)
             serializer.save(
@@ -780,7 +781,8 @@ class ModelYearReportViewset(
 
                 serializer = ModelYearReportSupplementalSerializer(
                     supplemental_report,
-                    data=request.data
+                    data=request.data,
+                    context={'request': request}
                 )
                 serializer.is_valid(raise_exception=True)
                 serializer.save(
@@ -791,7 +793,8 @@ class ModelYearReportViewset(
         # otherwise create a new one
         else:
             serializer = ModelYearReportSupplementalSerializer(
-                data=request.data
+                data=request.data,
+                context={'request': request}
             )
             serializer.is_valid(raise_exception=True)
             serializer.save(

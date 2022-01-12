@@ -42,7 +42,6 @@ const SupplementaryDetailsPage = (props) => {
     ldvSales,
     loading,
     newBalances,
-    newData,
     obligationDetails,
     radioDescriptions,
     ratios,
@@ -56,6 +55,7 @@ const SupplementaryDetailsPage = (props) => {
     query,
   } = props;
 
+  let { newData } = props;
   let { reassessment } = details;
 
   if (loading) {
@@ -86,6 +86,18 @@ const SupplementaryDetailsPage = (props) => {
 
   if (!user.isGovernment && details.actualStatus === 'ASSESSED') {
     showTabs = true;
+  }
+
+  if (newReport && !user.isGovernment) {
+    reassessment = {
+      isReassessment: false,
+    };
+
+    showTabs = false;
+
+    details.actualStatus = 'DRAFT';
+
+    newData = { zevSales: [], creditActivity: [], supplierInfo: {} };
   }
 
   const isEditable = (
@@ -131,11 +143,11 @@ const SupplementaryDetailsPage = (props) => {
     );
   };
 
-  const handleGovSubmitDraft = () => {
+  const handleGovSubmitDraft = (status) => {
     if (newReport) {
       setShowModalDraft(true);
     } else {
-      handleSubmit('DRAFT', newReport);
+      handleSubmit(status, newReport);
     }
   };
 
@@ -365,7 +377,7 @@ const SupplementaryDetailsPage = (props) => {
       </div>
       {(supplementaryAssessmentData.supplementaryAssessment && supplementaryAssessmentData.supplementaryAssessment.decision
         && supplementaryAssessmentData.supplementaryAssessment.decision.description)
-        && (!user.isGovernment || (user.isGovernment && ['ASSESSED', 'RECOMMENDED'].indexOf(currentStatus) >= 0 && !newReport)) && (
+        && ((!user.isGovernment || (user.isGovernment && ['ASSESSED', 'RECOMMENDED'].indexOf(currentStatus) >= 0)) && !newReport) && (
           <>
             <h3 className="mt-4 mb-1">Director Reassessment</h3>
             <div className="row mb-3">
@@ -396,10 +408,6 @@ const SupplementaryDetailsPage = (props) => {
                     {radioDescriptions && radioDescriptions.map((each) => (
                       (each.displayOrder === 0) && showDescription(each)
                     ))}
-                    <div className="text-blue mt-3 ml-3 mb-1">
-                      &nbsp;&nbsp; {details.assessmentData.legalName} has not complied with section 10 (2) of the
-                      Zero-Emission Vehicles Act for the {details.assessmentData.modelYear} adjustment period.
-                    </div>
                     {radioDescriptions && radioDescriptions.map((each) => (
                       (each.displayOrder > 0) && showDescription(each)
                     ))}
@@ -483,7 +491,11 @@ const SupplementaryDetailsPage = (props) => {
                 <button
                   className="button text-danger"
                   onClick={() => {
-                    handleSubmit('RETURNED');
+                    if (currentStatus === 'SUBMITTED') {
+                      handleSubmit('RETURNED');
+                    } else {
+                      handleSubmit('DRAFT');
+                    }
                   }}
                   type="button"
                 >
@@ -498,7 +510,7 @@ const SupplementaryDetailsPage = (props) => {
               || ((['SUBMITTED', 'RECOMMENDED'].indexOf(currentStatus) >= 0) && user.isGovernment)) && (
               <Button
                 buttonType="save"
-                action={user.isGovernment ? () => { handleGovSubmitDraft(); } : () => { handleSubmit('DRAFT', newReport); }}
+                action={user.isGovernment ? () => { handleGovSubmitDraft(currentStatus); } : () => { handleSubmit('DRAFT', newReport); }}
               />
               )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
