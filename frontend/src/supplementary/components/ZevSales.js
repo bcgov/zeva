@@ -187,7 +187,7 @@ const ZevSales = (props) => {
           showPagination={false}
         />
         )}
-        {currentStatus !== 'ASSESSED' && (
+        {currentStatus !== 'ASSESSED' && isEditable && (
         <button
           className="transfer-add-line m-2"
           onClick={() => {

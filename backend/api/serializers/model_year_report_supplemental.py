@@ -192,6 +192,7 @@ class SupplementalReportAssessmentSerializer(
         assessment_comment = SupplementalReportAssessmentComment.objects.filter(
             supplemental_report_id=obj
         ).order_by('-create_timestamp')
+
         if not request.user.is_government:
             assessment_comment = SupplementalReportAssessmentComment.objects.filter(
                 supplemental_report_id=obj,
@@ -355,10 +356,10 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
             supplemental_report_id=obj.id
         )
 
-        if not sales_queryset:
-            sales_queryset = SupplementalReportSales.objects.filter(
-                supplemental_report_id=obj.supplemental_id
-            )
+        # if not sales_queryset:
+        #     sales_queryset = SupplementalReportSales.objects.filter(
+        #         supplemental_report_id=obj.supplemental_id
+        #     )
 
         sales_serializer = ModelYearReportZevSalesSerializer(sales_queryset, many=True)
 
