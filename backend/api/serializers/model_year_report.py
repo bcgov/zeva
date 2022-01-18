@@ -287,6 +287,7 @@ class ModelYearReportListSerializer(
                 username=supplemental_record.create_user
             )
             sup_status = supplemental_record.status.value
+
             if create_user.is_government:
                 if sup_status == 'RETURNED':
                     # this record was created by idir but 
@@ -310,6 +311,8 @@ class ModelYearReportListSerializer(
                             # if the status is REASSESSED
                             if item_create_user.is_government and each.status.value == 'ASSESSED':
                                 return ('SUPPLEMENTARY {}').format(each.status.value)
+                            if not item_create_user.is_government and each.status.value == 'SUBMITTED':
+                                return ('SUPPLEMENTARY {}').format(each.status.value)
             else:
                 # if created by bceid its a supplemental report
                 if sup_status == 'SUBMITTED':
@@ -330,7 +333,7 @@ class ModelYearReportListSerializer(
                                     return ('REASSESSMENT {}').format(each.status.value)
                                 if each.status.value == 'SUBMITTED':
                                     return ('SUPPLEMENTARY {}').format(each.status.value)
-        
+
         # no supplemental report, just return the status from the assessment
         if not request.user.is_government and obj.validation_status in [
                 ModelYearReportStatuses.RECOMMENDED,
@@ -350,7 +353,9 @@ class ModelYearReportListSerializer(
             if not request.user.is_government:
                 user = UserProfile.objects.filter(username=supplemental_record.create_user).first()
 
-                if user and user.is_government and supplemental_record.status != 'ASSESSED':
+                if user and not user.is_government and supplemental_record.status.value == 'ASSESSED':
+                    supplemental_record = supplemental_records.filter(id=supplemental_record.supplemental_id).first()
+                if user and user.is_government and supplemental_record.status.value != 'ASSESSED':
                     supplemental_record = supplemental_records.filter(id=supplemental_record.supplemental_id).first()
 
             return supplemental_record.id

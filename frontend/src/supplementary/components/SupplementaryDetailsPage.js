@@ -101,7 +101,7 @@ const SupplementaryDetailsPage = (props) => {
   }
 
   const isEditable = (
-    details.status === 'DRAFT')
+    ['DRAFT', 'RETURNED'].indexOf(details.status) >= 0)
     || (reassessment && reassessment.isReassessment && (user.isGovernment && currentStatus !== 'ASSESSED') && (analystAction || directorAction))
     || newReport;
   const formattedPenalty = details.assessment ? formatNumeric(details.assessment.assessmentPenalty, 0) : 0;
@@ -276,7 +276,7 @@ const SupplementaryDetailsPage = (props) => {
       <div className="supplementary-form mt-2">
         <div>
           <SupplierInformation
-            isEditable={isEditable}
+            isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
             user={user}
             details={details}
             handleInputChange={handleInputChange}
@@ -288,7 +288,7 @@ const SupplementaryDetailsPage = (props) => {
             details={details}
             handleInputChange={handleInputChange}
             salesRows={salesRows}
-            isEditable={isEditable}
+            isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
           />
           <CreditActivity
             creditReductionSelection={creditReductionSelection}
@@ -302,7 +302,7 @@ const SupplementaryDetailsPage = (props) => {
             obligationDetails={obligationDetails}
             ratios={ratios}
             supplierClass={supplierClass}
-            isEditable={isEditable}
+            isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
           />
         </div>
         <div id="comment-input">
@@ -477,6 +477,7 @@ const SupplementaryDetailsPage = (props) => {
                 locationRoute={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id)}
               />
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+              && isEditable
               && ['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0
               && (
               <Button
@@ -485,8 +486,12 @@ const SupplementaryDetailsPage = (props) => {
               />
               )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-              && (isEditable || details.status === 'RECOMMENDED')
-              && user.isGovernment && (['SUBMITTED', 'RECOMMENDED'].indexOf(currentStatus) >= 0)
+              && query && query.reassessment !== 'Y'
+              && (isEditable || ['SUBMITTED', 'RECOMMENDED'].indexOf(details.status) >= 0)
+              && user.isGovernment && (
+                (currentStatus === 'SUBMITTED' && details && details.reassessment && !details.reassessment.isReassessment)
+                || (currentStatus === 'RECOMMENDED' && details && details.reassessment && details.reassessment.isReassessment)
+              )
                 && (
                 <button
                   className="button text-danger"
@@ -507,7 +512,7 @@ const SupplementaryDetailsPage = (props) => {
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
               && isEditable
               && ((['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0 || newReport)
-              || ((['SUBMITTED', 'RECOMMENDED'].indexOf(currentStatus) >= 0) && user.isGovernment)) && (
+              || ((['SUBMITTED'].indexOf(currentStatus) >= 0) && user.isGovernment)) && (
               <Button
                 buttonType="save"
                 action={user.isGovernment ? () => { handleGovSubmitDraft(currentStatus); } : () => { handleSubmit('DRAFT', newReport); }}

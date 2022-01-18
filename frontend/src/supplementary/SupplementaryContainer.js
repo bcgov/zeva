@@ -322,7 +322,7 @@ const SupplementaryContainer = (props) => {
     });
   };
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (event, forceSetNewData = false) => {
     const { id, name, value } = event.target;
     if (name === 'zevSales') {
       const rowId = id.split('-')[1];
@@ -342,6 +342,9 @@ const SupplementaryContainer = (props) => {
         }
       });
       newData.zevSales = zevSales;
+      if (forceSetNewData) {
+        setNewData({ ...newData });
+      }
     } else {
       const dataToUpdate = {
         ...newData[name],
@@ -473,6 +476,14 @@ const SupplementaryContainer = (props) => {
             deficit,
           },
         });
+
+        const zevSales = [];
+        salesData.forEach((each) => {
+          if (each.newData && Object.keys(each.newData).length > 0) {
+            zevSales.push(each.newData);
+          }
+        });
+        newData.zevSales = zevSales;
 
         setNewData({
           ...newData,
