@@ -155,10 +155,31 @@ const ComplianceReportsTable = (props) => {
         if (row && row.original && user) {
           return {
             onClick: () => {
-              const { id, validationStatus, supplementalId } = row.original;
-              if (supplementalId) {
+              const {
+                id,
+                validationStatus,
+                supplementalId,
+                supplementalStatus,
+              } = row.original;
+
+              if (supplementalStatus === 'REASSESSED' && supplementalId) {
                 history.push(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(/:id/g, id).replace(/:supplementaryId/g, supplementalId));
-              } else if (validationStatus === 'ASSESSED' || user.isGovernment) {
+              } else if (supplementalStatus === 'SUPPLEMENTARY SUBMITTED' && supplementalId) {
+                if (user.isGovernment) {
+                  history.push({
+                    pathname: ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(/:id/g, id).replace(/:supplementaryId/g, supplementalId),
+                    search: '?reassessment=Y',
+                  });
+                } else {
+                  history.push(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(/:id/g, id).replace(/:supplementaryId/g, supplementalId));
+                }
+              } else if (['REASSESSMENT DRAFT', 'REASSESSMENT RECOMMENDED'].indexOf(supplementalStatus) >= 0 && supplementalId && user.isGovernment) {
+                history.push(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(/:id/g, id).replace(/:supplementaryId/g, supplementalId));
+              } else if (validationStatus === 'ASSESSED') {
+                history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id));
+              } else if (supplementalId) {
+                history.push(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(/:id/g, id).replace(/:supplementaryId/g, supplementalId));
+              } else if (user.isGovernment) {
                 history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id));
               } else {
                 history.push(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(/:id/g, id));

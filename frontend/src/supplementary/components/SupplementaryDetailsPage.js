@@ -65,6 +65,7 @@ const SupplementaryDetailsPage = (props) => {
   // if user is idir then draft or submitted is editable
   const [showModal, setShowModal] = useState(false);
   const [showModalDraft, setShowModalDraft] = useState(false);
+  const [showModalDelete, setShowModalDelete] = useState(false);
   const reportYear = details.assessmentData && details.assessmentData.modelYear;
   const supplierClass = details.assessmentData && details.assessmentData.supplierClass[0];
   const creditReductionSelection = details.assessmentData && details.assessmentData.creditReductionSelection;
@@ -101,7 +102,7 @@ const SupplementaryDetailsPage = (props) => {
   }
 
   const isEditable = (
-    details.status === 'DRAFT')
+    ['DRAFT', 'RETURNED'].indexOf(details.status) >= 0)
     || (reassessment && reassessment.isReassessment && (user.isGovernment && currentStatus !== 'ASSESSED') && (analystAction || directorAction))
     || newReport;
   const formattedPenalty = details.assessment ? formatNumeric(details.assessment.assessmentPenalty, 0) : 0;
@@ -170,6 +171,25 @@ const SupplementaryDetailsPage = (props) => {
       </div>
     </Modal>
   );
+
+  const modalDelete = (
+    <Modal
+      cancelLabel="No"
+      confirmLabel="Yes"
+      handleCancel={() => { setShowModalDelete(false); }}
+      handleSubmit={() => { setShowModalDelete(false); handleSubmit('DELETED'); }}
+      modalClass="w-75"
+      showModal={showModalDelete}
+      confirmClass="button primary"
+    >
+      <div className="my-3">
+        <h3>
+          Are you sure you want to delete this?
+        </h3>
+      </div>
+    </Modal>
+  );
+
   const modalDraft = (
     <Modal
       cancelLabel="No"
@@ -192,6 +212,7 @@ const SupplementaryDetailsPage = (props) => {
       </div>
     </Modal>
   );
+
   let disabledRecommendBtn = false;
   let recommendTooltip = '';
 
@@ -276,7 +297,7 @@ const SupplementaryDetailsPage = (props) => {
       <div className="supplementary-form mt-2">
         <div>
           <SupplierInformation
-            isEditable={isEditable}
+            isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
             user={user}
             details={details}
             handleInputChange={handleInputChange}
@@ -288,7 +309,7 @@ const SupplementaryDetailsPage = (props) => {
             details={details}
             handleInputChange={handleInputChange}
             salesRows={salesRows}
-            isEditable={isEditable}
+            isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
           />
           <CreditActivity
             creditReductionSelection={creditReductionSelection}
@@ -302,7 +323,7 @@ const SupplementaryDetailsPage = (props) => {
             obligationDetails={obligationDetails}
             ratios={ratios}
             supplierClass={supplierClass}
-            isEditable={isEditable}
+            isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
           />
         </div>
         <div id="comment-input">
@@ -477,16 +498,22 @@ const SupplementaryDetailsPage = (props) => {
                 locationRoute={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id)}
               />
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
+              && isEditable
               && ['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0
               && (
               <Button
                 buttonType="delete"
-                action={() => handleSubmit('DELETED')}
+                action={() => setShowModalDelete(true)}
+                optionalText={details && details.reassessment && details.reassessment.isReassessment ? 'Delete Reassessment' : 'Delete'}
               />
               )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-              && (isEditable || details.status === 'RECOMMENDED')
-              && user.isGovernment && (['SUBMITTED', 'RECOMMENDED'].indexOf(currentStatus) >= 0)
+              && query && query.reassessment !== 'Y'
+              && (isEditable || ['SUBMITTED', 'RECOMMENDED'].indexOf(details.status) >= 0)
+              && user.isGovernment && (
+                (currentStatus === 'SUBMITTED' && details && details.reassessment && !details.reassessment.isReassessment)
+                || (currentStatus === 'RECOMMENDED' && details && details.reassessment && details.reassessment.isReassessment)
+              )
                 && (
                 <button
                   className="button text-danger"
@@ -507,7 +534,7 @@ const SupplementaryDetailsPage = (props) => {
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
               && isEditable
               && ((['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0 || newReport)
-              || ((['SUBMITTED', 'RECOMMENDED'].indexOf(currentStatus) >= 0) && user.isGovernment)) && (
+              || ((['SUBMITTED'].indexOf(currentStatus) >= 0) && user.isGovernment)) && (
               <Button
                 buttonType="save"
                 action={user.isGovernment ? () => { handleGovSubmitDraft(currentStatus); } : () => { handleSubmit('DRAFT', newReport); }}
@@ -556,6 +583,7 @@ const SupplementaryDetailsPage = (props) => {
       </div>
       {modal}
       {modalDraft}
+      {modalDelete}
     </div>
   );
 };

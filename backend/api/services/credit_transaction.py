@@ -179,6 +179,10 @@ def award_credits(submission):
             )
 
             if part_of_model_year_report and current_year:
+                month = datetime.now().month
+                if month <= 9:
+                    current_year = current_year - 1
+
                 credit_transaction.transaction_timestamp=date(current_year, 9, 30,)
                 credit_transaction.save()
 
