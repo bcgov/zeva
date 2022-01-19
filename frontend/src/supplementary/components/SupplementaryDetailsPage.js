@@ -65,6 +65,7 @@ const SupplementaryDetailsPage = (props) => {
   // if user is idir then draft or submitted is editable
   const [showModal, setShowModal] = useState(false);
   const [showModalDraft, setShowModalDraft] = useState(false);
+  const [showModalDelete, setShowModalDelete] = useState(false);
   const reportYear = details.assessmentData && details.assessmentData.modelYear;
   const supplierClass = details.assessmentData && details.assessmentData.supplierClass[0];
   const creditReductionSelection = details.assessmentData && details.assessmentData.creditReductionSelection;
@@ -170,6 +171,25 @@ const SupplementaryDetailsPage = (props) => {
       </div>
     </Modal>
   );
+
+  const modalDelete = (
+    <Modal
+      cancelLabel="No"
+      confirmLabel="Yes"
+      handleCancel={() => { setShowModalDelete(false); }}
+      handleSubmit={() => { setShowModalDelete(false); handleSubmit('DELETED'); }}
+      modalClass="w-75"
+      showModal={showModalDelete}
+      confirmClass="button primary"
+    >
+      <div className="my-3">
+        <h3>
+          Are you sure you want to delete this?
+        </h3>
+      </div>
+    </Modal>
+  );
+
   const modalDraft = (
     <Modal
       cancelLabel="No"
@@ -192,6 +212,7 @@ const SupplementaryDetailsPage = (props) => {
       </div>
     </Modal>
   );
+
   let disabledRecommendBtn = false;
   let recommendTooltip = '';
 
@@ -482,7 +503,8 @@ const SupplementaryDetailsPage = (props) => {
               && (
               <Button
                 buttonType="delete"
-                action={() => handleSubmit('DELETED')}
+                action={() => setShowModalDelete(true)}
+                optionalText={details && details.reassessment && details.reassessment.isReassessment ? 'Delete Reassessment' : 'Delete'}
               />
               )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
@@ -561,6 +583,7 @@ const SupplementaryDetailsPage = (props) => {
       </div>
       {modal}
       {modalDraft}
+      {modalDelete}
     </div>
   );
 };
