@@ -243,7 +243,7 @@ const CreditActivity = (props) => {
                       name="supplierInfo"
                       type="text"
                       onChange={handleInputChange}
-                      defaultValue={newLdvSales ? newLdvSales : ldvSales}
+                      defaultValue={newLdvSales || ldvSales}
                       readOnly={!isEditable}
                     />
                   </td>
@@ -296,7 +296,7 @@ const CreditActivity = (props) => {
                     <td className="text-right">
                       {formatNumeric(leftoverReduction, 2)}
                     </td>
-                    <td className="text-right">
+                    <td className={`text-right ${leftoverReduction !== newLeftoverReduction ? 'highlight' : ''}`}>
                       {newLdvSales && (
                         <span>{formatNumeric(newLeftoverReduction, 2)}</span>
                       )}
@@ -359,7 +359,7 @@ const CreditActivity = (props) => {
                               <span>0.00</span>
                             )}
                           </td>
-                          <td className="text-right">
+                          <td className={`text-right ${deduction.creditA !== Number(getNewDeduction(deduction, newDeductions).creditA) ? 'highlight' : ''}`}>
                             {getNewDeduction(deduction, newDeductions).creditA > 0 && (
                               <span className="text-red">-{formatNumeric(getNewDeduction(deduction, newDeductions).creditA, 2)}</span>
                             )}
@@ -367,7 +367,7 @@ const CreditActivity = (props) => {
                               <span>0.00</span>
                             )}
                           </td>
-                          <td className="text-right">
+                          <td className={`text-right ${deduction.creditB !== Number(getNewDeduction(deduction, newDeductions).creditB) ? 'highlight' : ''}`}>
                             {getNewDeduction(deduction, newDeductions).creditB > 0 && (
                               <span className="text-red">-{formatNumeric(getNewDeduction(deduction, newDeductions).creditB, 2)}</span>
                             )}
@@ -481,7 +481,7 @@ const CreditActivity = (props) => {
                   </tr>
                   {updatedBalances.balances
                   && updatedBalances.balances.filter(
-                    (balance) => balance.creditA > 0 || balance.creditB > 0,
+                    (balance) => balance.creditA > 0 || balance.creditB > 0 || balance.newCreditA > 0 || balance.newCreditB > 0,
                   ).map((balance) => (
                     <tr key={balance.modelYear}>
                       <td className="text-blue">
@@ -544,6 +544,7 @@ const CreditActivity = (props) => {
 
 CreditActivity.defaultProps = {
   creditReductionSelection: '',
+  isEditable: false,
   newLdvSales: null,
   supplierClass: '',
 };
@@ -553,6 +554,7 @@ CreditActivity.propTypes = {
   details: PropTypes.shape().isRequired,
   handleInputChange: PropTypes.func.isRequired,
   handleSupplementalChange: PropTypes.func.isRequired,
+  isEditable: PropTypes.bool,
   ldvSales: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.number,

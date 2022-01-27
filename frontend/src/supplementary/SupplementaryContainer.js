@@ -9,6 +9,8 @@ import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import history from '../app/History';
 import CustomPropTypes from '../app/utilities/props';
 
+const qs = require('qs');
+
 const SupplementaryContainer = (props) => {
   const { id, supplementaryId } = useParams();
   const [checkboxConfirmed, setCheckboxConfirmed] = useState(false);
@@ -16,11 +18,11 @@ const SupplementaryContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState('');
   const [salesRows, setSalesRows] = useState([]);
-  const { keycloak, user, reassessment } = props;
+  const { keycloak, user } = props;
   const [files, setFiles] = useState([]);
   const [deleteFiles, setDeleteFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [newData, setNewData] = useState({ zevSales: {}, creditActivity: [] });
+  const [newData, setNewData] = useState({ zevSales: [], creditActivity: [] });
   let [obligationDetails, setObligationDetails] = useState([]);
   const [ldvSales, setLdvSales] = useState();
   const [ratios, setRatios] = useState();
@@ -32,6 +34,8 @@ const SupplementaryContainer = (props) => {
   const [radioDescriptions, setRadioDescriptions] = useState([{ id: 0, description: '' }]);
   const [newReport, setNewReport] = useState(false);
   const location = useLocation();
+
+  const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 
   const getNumeric = (parmValue) => {
     let value = parmValue;
@@ -50,7 +54,6 @@ const SupplementaryContainer = (props) => {
   const directorAction = user.isGovernment
   && user.hasPermission('SIGN_COMPLIANCE_REPORT');
 
-  const isReassessment = reassessment && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
   const calculateBalance = (creditActivity) => {
     const balances = {};
 
@@ -69,6 +72,7 @@ const SupplementaryContainer = (props) => {
         'creditsIssuedSales',
         'initiativeAgreement',
         'purchaseAgreement',
+        'pendingBalance',
         'transfersIn',
       ].indexOf(each.category) >= 0) {
         const found = creditActivity.findIndex((activity) => (
@@ -114,14 +118,40 @@ const SupplementaryContainer = (props) => {
 
   const handleAddIdirComment = () => {
     const commentData = { fromGovtComment: idirComment, director: true };
-    axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
-      history.push(ROUTES_COMPLIANCE.REPORTS);
-      if (supplementaryId) {
-        history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementaryId));
-      } else {
-        history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', ''));
+    if (query.reassessment === 'Y') {
+      const zevSales = newData && newData.zevSales && newData.zevSales.filter((each) => Number(each.sales) > 0);
+
+      const data = {
+        ...newData,
+        zevSales,
+        status: 'DRAFT',
+      };
+
+      if (analystAction) {
+        data.analystAction = true;
+        data.penalty = supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty;
+        data.description = supplementaryAssessmentData.supplementaryAssessment.decision.id;
       }
-    });
+
+      axios.patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data).then((response) => {
+        const { id: supplementalId } = response.data;
+        commentData.supplementalId = supplementalId;
+
+        axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
+          history.push(ROUTES_COMPLIANCE.REPORTS);
+          history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementalId));
+        });
+      });
+    } else {
+      axios.post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData).then(() => {
+        history.push(ROUTES_COMPLIANCE.REPORTS);
+        if (supplementaryId) {
+          history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', supplementaryId));
+        } else {
+          history.replace(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', ''));
+        }
+      });
+    }
   };
 
   const handleCommentChangeIdir = (text) => {
@@ -239,9 +269,10 @@ const SupplementaryContainer = (props) => {
   };
 
   const handleSubmit = (status, paramNewReport) => {
-    if ((status == 'ASSESSED' && paramNewReport) || (status == 'SUBMITTED' && analystAction)) {
+    if ((status === 'ASSESSED' && paramNewReport) || (status === 'SUBMITTED' && analystAction)) {
       status = 'DRAFT';
     }
+
     const uploadPromises = handleUpload(id);
     Promise.all(uploadPromises).then((attachments) => {
       const evidenceAttachments = {};
@@ -249,9 +280,12 @@ const SupplementaryContainer = (props) => {
         evidenceAttachments.attachments = attachments;
       }
 
+      const zevSales = newData && newData.zevSales && newData.zevSales.filter((each) => Number(each.sales) > 0);
+
       if (status) {
         const data = {
           ...newData,
+          zevSales,
           status,
           evidenceAttachments,
           deleteFiles,
@@ -288,7 +322,7 @@ const SupplementaryContainer = (props) => {
     });
   };
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (event, forceSetNewData = false) => {
     const { id, name, value } = event.target;
     if (name === 'zevSales') {
       const rowId = id.split('-')[1];
@@ -308,6 +342,9 @@ const SupplementaryContainer = (props) => {
         }
       });
       newData.zevSales = zevSales;
+      if (forceSetNewData) {
+        setNewData({ ...newData });
+      }
     } else {
       const dataToUpdate = {
         ...newData[name],
@@ -327,7 +364,7 @@ const SupplementaryContainer = (props) => {
       axios.get(`${ROUTES_SUPPLEMENTARY.ASSESSMENT.replace(':id', id)}?supplemental_id=${supplementaryId || ''}`),
     ]).then(axios.spread((response, complianceResponse, ratioResponse, assessmentResponse) => {
       if (response.data) {
-        if (location && location.state && location.state.new) {
+        if (query && query.new === 'Y') {
           setNewReport(true);
         } else {
           setNewReport(false);
@@ -340,7 +377,7 @@ const SupplementaryContainer = (props) => {
         const newMakes = newSupplier.find((each) => each.category === 'LDV_MAKES') || '';
         const newSupplierClass = newSupplier.find((each) => each.category === 'SUPPLIER_CLASS') || '';
         const idirCommentArrayResponse = [];
-        const bceidCommentResponse = response.data.fromSupplierComments;
+        let bceidCommentResponse = response.data.fromSupplierComments;
 
         const {
           assessment,
@@ -367,10 +404,9 @@ const SupplementaryContainer = (props) => {
           assessmentComment.forEach((item) => {
             if (item.toDirector === true) {
               idirCommentArrayResponse.push(item);
+            } else if (item) {
+              bceidCommentResponse = item;
             }
-            // else {
-            //   bceidCommentResponse = item;
-            // }
           });
         }
         setCommentArray({
@@ -405,18 +441,20 @@ const SupplementaryContainer = (props) => {
           });
         });
         // new /adjusted sales
-        newZevSales.forEach((item) => {
-          if (item.modelYearReportVehicle) {
-            const match = salesData.findIndex((record) => record.oldData.modelYearReportVehicle === item.modelYearReportVehicle);
-            if (match >= 0) {
-              salesData[match].newData = item;
+        if ((query && query.new !== 'Y') || user.isGovernment) {
+          newZevSales.forEach((item) => {
+            if (item.modelYearReportVehicle) {
+              const match = salesData.findIndex((record) => record.oldData.modelYearReportVehicle === item.modelYearReportVehicle);
+              if (match >= 0) {
+                salesData[match].newData = item;
+              } else {
+                salesData.push({ newData: item, oldData: {} });
+              }
             } else {
               salesData.push({ newData: item, oldData: {} });
             }
-          } else {
-            salesData.push({ newData: item, oldData: {} });
-          }
-        });
+          });
+        }
         setSalesRows(salesData);
 
         const creditActivity = [];
@@ -438,6 +476,14 @@ const SupplementaryContainer = (props) => {
             deficit,
           },
         });
+
+        const zevSales = [];
+        salesData.forEach((each) => {
+          if (each.newData && Object.keys(each.newData).length > 0) {
+            zevSales.push(each.newData);
+          }
+        });
+        newData.zevSales = zevSales;
 
         setNewData({
           ...newData,
@@ -471,19 +517,19 @@ const SupplementaryContainer = (props) => {
   return (
     <SupplementaryDetailsPage
       addSalesRow={addSalesRow}
+      analystAction={analystAction}
       checkboxConfirmed={checkboxConfirmed}
       commentArray={commentArray}
-      analystAction={analystAction}
-      directorAction={directorAction}
       deleteFiles={deleteFiles}
       details={details}
+      directorAction={directorAction}
       errorMessage={errorMessage}
       files={files}
-      handleCheckboxClick={handleCheckboxClick}
       handleAddIdirComment={handleAddIdirComment}
-      handleCommentChangeIdir={handleCommentChangeIdir}
-      handleCommentChangeBceid={handleCommentChangeBceid}
+      handleCheckboxClick={handleCheckboxClick}
       handleCommentChange={handleCommentChange}
+      handleCommentChangeBceid={handleCommentChangeBceid}
+      handleCommentChangeIdir={handleCommentChangeIdir}
       handleInputChange={handleInputChange}
       handleSubmit={handleSubmit}
       handleSupplementalChange={handleSupplementalChange}
@@ -492,17 +538,17 @@ const SupplementaryContainer = (props) => {
       loading={loading}
       newBalances={newBalances}
       newData={newData}
+      newReport={newReport}
       obligationDetails={obligationDetails}
+      query={query}
+      radioDescriptions={radioDescriptions}
       ratios={ratios}
       salesRows={salesRows}
       setDeleteFiles={setDeleteFiles}
-      setUploadFiles={setFiles}
-      radioDescriptions={radioDescriptions}
-      user={user}
-      isReassessment={isReassessment}
       setSupplementaryAssessmentData={setSupplementaryAssessmentData}
+      setUploadFiles={setFiles}
       supplementaryAssessmentData={supplementaryAssessmentData}
-      newReport={newReport}
+      user={user}
     />
   );
 };

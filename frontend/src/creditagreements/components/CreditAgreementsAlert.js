@@ -46,7 +46,7 @@ const CreditAgreementsAlert = (props) => {
       message = `recommended for issuance, ${date} by ${user}.`;
       classname = 'alert-primary';
       break;
-    
+
     case 'RETURNED':
       title = 'Returned';
       message = `${transaction}-${id} returned ${date} by the Director`;

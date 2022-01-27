@@ -97,7 +97,7 @@
     .nav-item {
       padding: 1rem 0;
   
-      &.DRAFT, &.SUBMITTED, &.UNSAVED, &.SAVED {
+      &.DRAFT, &.UNSAVED, &.SAVED {
         a {
           border-bottom-color: $background-warning;
         }
@@ -107,7 +107,7 @@
         }
       }
   
-      &.CONFIRMED, &.RECOMMENDED, &.RETURNED {
+      &.CONFIRMED, &.SUBMITTED, &.RECOMMENDED, &.RETURNED {
         a {
           border-bottom-color: $background-light-blue;  
         }

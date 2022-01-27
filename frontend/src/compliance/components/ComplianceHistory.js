@@ -71,6 +71,11 @@ const ComplianceHistory = (props) => {
       byUser = ` by ${each.createUser.displayName} `;
     }
 
+    if (status === 'assessed') {
+      status = ' assessed ';
+      byUser = ' by Government of B.C. ';
+    }
+
     let reportType = 'Model year report ';
 
     if (item.isSupplementary) {
@@ -83,7 +88,7 @@ const ComplianceHistory = (props) => {
       if (status === 'assessed') {
         status = 'reassessed';
         reportType = 'Supplementary report ';
-        byUser = ' by the Director ';
+        byUser = ' by Government of B.C. ';
       }
     }
 
@@ -100,7 +105,7 @@ const ComplianceHistory = (props) => {
         classname = 'alert-warning';
         break;
       case 'SUBMITTED':
-        classname = 'alert-warning';
+        classname = 'alert-primary';
         break;
       case 'RECOMMENDED':
         classname = 'alert-primary';

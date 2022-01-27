@@ -231,7 +231,7 @@ class ModelYearReportComplianceObligationViewset(
             to_pending_date = date(report_year + 1, 10, 21,)
 
             content = []
-            
+
             transfers_in = CreditTransaction.objects.filter(
                 credit_to=organization,
                 transaction_type__transaction_type='Credit Transfer',
@@ -335,7 +335,7 @@ class ModelYearReportComplianceObligationViewset(
             adminitrative_alloction_serializer = CreditTransactionObligationActivitySerializer(administrative_credit_alloction, read_only=True, many=True)
             administrative_reduction_serializer = CreditTransactionObligationActivitySerializer(administrative_credit_reduction, read_only=True, many=True)
             automatic_penalty_serializer = CreditTransactionObligationActivitySerializer(automatic_administrative_penalty, read_only=True, many=True)
-            
+
             transfers_in_serializer = CreditTransactionObligationActivitySerializer(transfers_in, read_only=True, many=True)
             transfers_out_serializer = CreditTransactionObligationActivitySerializer(transfers_out, read_only=True, many=True)
             credit_sales_serializer = CreditTransactionObligationActivitySerializer(credits_issued_sales, read_only=True, many=True)
@@ -345,7 +345,7 @@ class ModelYearReportComplianceObligationViewset(
 
             for initative_agreement in initiative_agreements_serializer.data:
                 parse_summary_serializer(content, initative_agreement, 'initiativeAgreement')
-            
+
             for adminitrative_alloction in adminitrative_alloction_serializer.data:
                 parse_summary_serializer(content, adminitrative_alloction, 'administrativeAllocation')
 

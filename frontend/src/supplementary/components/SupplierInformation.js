@@ -13,13 +13,12 @@ const SupplierInformation = (props) => {
   } = props;
   const { assessmentData } = details;
   const { supplierInfo } = newData;
-  const currentStatus = details.actualStatus ? details.actualStatus : details.status;
 
   const servAddress = () => {
     let serviceAddress = '';
     assessmentData.reportAddress.map((address) => {
       if (address.addressType.addressType === 'Service') {
-        serviceAddress = `${address.representativeName ? address.representativeName + '' : ''} ${address.addressLine1} ${', '} ${address.addressLine2 ? address.addressLine2 + ', ' : ''} ${address.city}${', '} ${address.state}${', '} ${address.country}${', '} ${address.postalCode}`;
+        serviceAddress = `${address.representativeName ? `${address.representativeName} ` : ' '}${address.addressLine1}${', '}${address.addressLine2 ? `${address.addressLine2}, ` : ''}${address.city}${', '}${address.state}${', '}${address.country}${', '}${address.postalCode}`;
         return serviceAddress;
       }
     });
@@ -30,11 +29,37 @@ const SupplierInformation = (props) => {
     let recordAddress = '';
     assessmentData.reportAddress.map((address) => {
       if (address.addressType.addressType === 'Records') {
-        recordAddress = `${address.representativeName ? address.representativeName + '' : ''} ${address.addressLine1} ${', '} ${address.addressLine2 ? address.addressLine2 + ', ' : ''} ${address.city}${', '} ${address.state}${', '} ${address.country}${', '} ${address.postalCode}`;
+        recordAddress = `${address.representativeName ? `${address.representativeName} ` : ' '}${address.addressLine1}${', '}${address.addressLine2 ? `${address.addressLine2}, ` : ''}${address.city}${', '}${address.state}${', '}${address.country}${', '}${address.postalCode}`;
         return recordAddress;
       }
     });
     return recordAddress;
+  };
+
+  const checkAddressChanges = (data, addressType, supplierAddress) => {
+    let returnClassName = '';
+
+    if (data && data.reportAddress && data.reportAddress && supplierAddress) {
+      data.reportAddress.forEach((address) => {
+        if (address && address.addressType && address.addressType.addressType === addressType) {
+          const compareAddress = `${address.representativeName ? `${address.representativeName} ` : ' '}${address.addressLine1}${', '}${address.addressLine2 ? `${address.addressLine2}, ` : ''}${address.city}${', '}${address.state}${', '}${address.country}${', '}${address.postalCode}`;
+
+          if (compareAddress !== supplierAddress) {
+            returnClassName = 'highlight';
+          }
+        }
+      });
+    }
+
+    return returnClassName;
+  };
+
+  const checkMakesChanges = (data, ldvMakes) => {
+    if (ldvMakes && data.makes.join('\n') !== ldvMakes) {
+      return ' highlight ';
+    }
+
+    return '';
   };
 
   return (
@@ -59,13 +84,12 @@ const SupplierInformation = (props) => {
         </div>
         <div className="d-inline-block align-top mt-4 col-sm-5 p-0">
           <input
-            className="form-control"
+            className={`form-control ${supplierInfo.legalName && supplierInfo.legalName !== assessmentData.legalName ? 'highlight' : ''}`}
             id="legalName"
             name="supplierInfo"
             onChange={handleInputChange}
             defaultValue={supplierInfo.legalName ? supplierInfo.legalName : assessmentData.legalName}
             readOnly={!isEditable}
-
           />
         </div>
       </div>
@@ -97,7 +121,7 @@ const SupplierInformation = (props) => {
           </div>
         </div>
         <textarea
-          className="form-control d-inline-block align-top mt-4 col-sm-5"
+          className={`form-control d-inline-block align-top mt-4 col-sm-5 ${checkAddressChanges(assessmentData, 'Service', supplierInfo.serviceAddress)}`}
           defaultValue={supplierInfo.serviceAddress ? supplierInfo.serviceAddress : servAddress()}
           id="serviceAddress"
           min="0"
@@ -135,7 +159,7 @@ const SupplierInformation = (props) => {
           </div>
         </div>
         <textarea
-          className="form-control d-inline-block align-top mt-4 col-sm-5"
+          className={`form-control d-inline-block align-top mt-4 col-sm-5 ${checkAddressChanges(assessmentData, 'Records', supplierInfo.recordsAddress)}`}
           defaultValue={supplierInfo.recordsAddress ? supplierInfo.recordsAddress : recAddress()}
           id="recordsAddress"
           min="0"
@@ -159,8 +183,8 @@ const SupplierInformation = (props) => {
           </div>
         </div>
         <textarea
-          className="form-control d-inline-block align-top mt-4 col-sm-5"
-          defaultValue={supplierInfo.ldvMakes ? supplierInfo.ldvMakes : assessmentData.makes}
+          className={`form-control d-inline-block align-top mt-4 col-sm-5 ${checkMakesChanges(assessmentData, supplierInfo.ldvMakes)}`}
+          defaultValue={supplierInfo.ldvMakes ? supplierInfo.ldvMakes : assessmentData.makes.join('\n')}
           id="ldvMakes"
           min="0"
           name="supplierInfo"
@@ -181,7 +205,7 @@ const SupplierInformation = (props) => {
           </div>
         </div>
         <input
-          className="form-control d-inline-block align-top mt-4 col-sm-5"
+          className={`form-control d-inline-block align-top mt-4 col-sm-5 ${supplierInfo.supplierClass && supplierInfo.supplierClass !== assessmentData.supplierClass ? 'highlight' : ''}`}
           defaultValue={supplierInfo.supplierClass ? supplierInfo.supplierClass : assessmentData.supplierClass}
           id="supplierClass"
           min="0"

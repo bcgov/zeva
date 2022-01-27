@@ -51,7 +51,9 @@ const AssessmentDetailsPage = (props) => {
     supplementaryId,
     createdByGov,
   } = props;
+
   const [showModal, setShowModal] = useState(false);
+  const [showModalAssess, setShowModalAssess] = useState(false);
   const formattedPenalty = formatNumeric(details.assessment.assessmentPenalty, 0);
   const assessmentDecision = details.assessment.decision && details.assessment.decision.description ? details.assessment.decision.description.replace(/{user.organization.name}/g, details.organization.name).replace(/{modelYear}/g, reportYear).replace(/{penalty}/g, `$${formattedPenalty} CAD`) : '';
   const disabledInputs = false;
@@ -69,6 +71,24 @@ const AssessmentDetailsPage = (props) => {
       <div className="my-3">
         <h3>
           Do you wish to return this Model Year report to the supplier?
+        </h3>
+      </div>
+    </Modal>
+  );
+
+  const modalIssueAssessment = (
+    <Modal
+      cancelLabel="Cancel"
+      confirmLabel="Issue Assessment"
+      handleCancel={() => { setShowModalAssess(false); }}
+      handleSubmit={() => { setShowModalAssess(false); handleSubmit('ASSESSED'); }}
+      modalClass="w-75"
+      showModal={showModalAssess}
+      confirmClass="button primary"
+    >
+      <div className="my-3">
+        <h3>
+          Are you sure you want to issue this assessment?
         </h3>
       </div>
     </Modal>
@@ -207,14 +227,14 @@ const AssessmentDetailsPage = (props) => {
         <div className="col-12">
           <div id="compliance-obligation-page">
             {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-            && !user.isGovernment && statuses.assessment.status === 'ASSESSED' 
-            && ((!supplementaryId && supplementaryStatus == 'DRAFT') 
-            || (supplementaryStatus == 'DRAFT' && createdByGov) 
-            || (supplementaryStatus == 'DELETED' || supplementaryStatus == 'ASSESSED'))  && (
+            && !user.isGovernment && statuses.assessment.status === 'ASSESSED'
+            && ((!supplementaryId && supplementaryStatus === 'DRAFT')
+            || (supplementaryStatus === 'DRAFT' && createdByGov)
+            || (supplementaryStatus === 'DELETED' || supplementaryStatus === 'ASSESSED')) && (
               <button
                 className="btn button primary float-right"
                 onClick={() => {
-                  history.push(ROUTES_SUPPLEMENTARY.CREATE.replace(/:id/g, id), { new: true });
+                  history.push(`${ROUTES_SUPPLEMENTARY.CREATE.replace(/:id/g, id)}?new=Y`);
                 }}
                 type="button"
               >
@@ -223,13 +243,13 @@ const AssessmentDetailsPage = (props) => {
             )}
             {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
             && user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && statuses.assessment.status === 'ASSESSED'
-            && ((!supplementaryId && supplementaryStatus == 'DRAFT') 
-            || (supplementaryStatus == 'DRAFT' && !createdByGov)
-            || (supplementaryStatus == 'DELETED' || supplementaryStatus == 'ASSESSED')) && (
+            && ((!supplementaryId && supplementaryStatus === 'DRAFT')
+            || (supplementaryStatus === 'DRAFT' && !createdByGov)
+            || (supplementaryStatus === 'DELETED' || supplementaryStatus === 'ASSESSED')) && (
               <button
                 className="btn button primary float-right"
                 onClick={() => {
-                  history.push(ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(/:id/g, id), { new: true });
+                  history.push(`${ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(/:id/g, id)}?new=Y`);
                 }}
                 type="button"
               >
@@ -485,7 +505,7 @@ const AssessmentDetailsPage = (props) => {
                   optionalClassname="button primary"
                   optionalText="Issue Assessment"
                   action={() => {
-                    handleSubmit('ASSESSED');
+                    setShowModalAssess(true);
                   }}
                 />
               )}
@@ -494,6 +514,7 @@ const AssessmentDetailsPage = (props) => {
         </div>
       </div>
       {modalReturn}
+      {modalIssueAssessment}
     </div>
   );
 };

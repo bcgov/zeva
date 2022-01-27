@@ -198,6 +198,7 @@ class ModelYearReportSerializer(ModelSerializer):
             'update_timestamp',
         )
 
+
 class ModelYearReportsSerializer(ModelSerializer):
     validation_status = EnumField(ModelYearReportStatuses)
     model_year = SlugRelatedField(
@@ -211,6 +212,7 @@ class ModelYearReportsSerializer(ModelSerializer):
             'organization_name', 'model_year', 'validation_status', 'id', 'organization_id'
         )
 
+
 class ModelYearReportListSerializer(
         ModelSerializer, EnumSupportSerializerMixin
 ):
@@ -221,8 +223,7 @@ class ModelYearReportListSerializer(
     obligation_credits = SerializerMethodField()
     ldv_sales = SerializerMethodField()
     supplemental_status = SerializerMethodField()
-
-
+    supplemental_id = SerializerMethodField()
 
     def get_ldv_sales(self, obj):
         request = self.context.get('request')
@@ -286,6 +287,7 @@ class ModelYearReportListSerializer(
                 username=supplemental_record.create_user
             )
             sup_status = supplemental_record.status.value
+
             if create_user.is_government:
                 if sup_status == 'RETURNED':
                     # this record was created by idir but 
@@ -300,17 +302,17 @@ class ModelYearReportListSerializer(
                     return ('REASSESSMENT {}').format(sup_status)
                 if not request.user.is_government and sup_status in ['SUBMITTED', 'DRAFT', 'RECOMMENDED']:
                     # if it is being viewed by bceid, they shouldnt see it
-                    # unless it is reassessed or returned
+                    # show the last assessed report
                     if supplemental_records.count() > 1:
                         for each in supplemental_records:
                             # find the newest record that is either created by bceid or one that they are allowed to see
                             item_create_user = UserProfile.objects.get(username=each.create_user)
                             # bceid are allowed to see any created by them or
-                            # if the status is REASSESSED or RETURNED?
-                            if not item_create_user.is_government or each.status.value == 'RETURNED':
+                            # if the status is REASSESSED
+                            if item_create_user.is_government and each.status.value == 'ASSESSED':
                                 return ('SUPPLEMENTARY {}').format(each.status.value)
-                            if each.status.value == 'REASSESSED':
-                                return each.status.value
+                            if not item_create_user.is_government and each.status.value == 'SUBMITTED':
+                                return ('SUPPLEMENTARY {}').format(each.status.value)
             else:
                 # if created by bceid its a supplemental report
                 if sup_status == 'SUBMITTED':
@@ -331,20 +333,41 @@ class ModelYearReportListSerializer(
                                     return ('REASSESSMENT {}').format(each.status.value)
                                 if each.status.value == 'SUBMITTED':
                                     return ('SUPPLEMENTARY {}').format(each.status.value)
-        
+
         # no supplemental report, just return the status from the assessment
         if not request.user.is_government and obj.validation_status in [
                 ModelYearReportStatuses.RECOMMENDED,
                 ModelYearReportStatuses.RETURNED]:
             return ModelYearReportStatuses.SUBMITTED.value
         return obj.get_validation_status_display()
-    
+
+    def get_supplemental_id(self, obj):
+        request = self.context.get('request')
+        supplemental_records = SupplementalReport.objects.filter(
+            model_year_report=obj
+        ).order_by('-create_timestamp')
+
+        if supplemental_records:
+            supplemental_record = supplemental_records[0]
+
+            if not request.user.is_government:
+                user = UserProfile.objects.filter(username=supplemental_record.create_user).first()
+
+                if user and not user.is_government and supplemental_record.status.value == 'ASSESSED':
+                    supplemental_record = supplemental_records.filter(id=supplemental_record.supplemental_id).first()
+                if user and user.is_government and supplemental_record.status.value != 'ASSESSED':
+                    supplemental_record = supplemental_records.filter(id=supplemental_record.supplemental_id).first()
+
+            return supplemental_record.id
+
+        return None
+
     class Meta:
         model = ModelYearReport
         fields = (
             'id', 'organization_name', 'model_year', 'validation_status', 'ldv_sales',
             'supplier_class', 'compliant', 'obligation_total',
-            'obligation_credits', 'supplemental_status'
+            'obligation_credits', 'supplemental_status', 'supplemental_id'
         )
 
 

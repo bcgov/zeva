@@ -23,9 +23,26 @@ const ZevSales = (props) => {
           size="5"
           name="zevSales"
           defaultValue={item.original.newData.sales ? item.original.newData.sales : item.original.oldData.sales}
-          onChange={handleInputChange}
+          onBlur={(event) => {
+            event.persist();
+
+            setTimeout(() => {
+              handleInputChange(event, true);
+            }, 100);
+          }}
+          onChange={(event) => {
+            handleInputChange(event);
+
+            const ele = document.getElementById(`sales-${item.index}`);
+            if (Number(item.original.oldData.sales) === Number(event.target.value)) {
+              const { className } = ele;
+              ele.className = className.replace(/highlight/g, '');
+            } else {
+              ele.className += ' highlight';
+            }
+          }}
           readOnly={!isEditable}
-          className={`${!isEditable ? 'supplementary-input-disabled' : ''} ${item.original.newData.sales !== item.original.oldData.sales ? 'highlight' : ''}`}
+          className={`${!isEditable ? 'supplementary-input-disabled' : ''} ${item.original.newData.sales && item.original.newData.sales !== item.original.oldData.sales ? 'highlight' : ''}`}
         />
       </>
     ),
@@ -42,12 +59,29 @@ const ZevSales = (props) => {
         <input
           name="zevSales"
           id={`modelYear-${item.index}`}
-          onChange={handleInputChange}
+          onBlur={(event) => {
+            event.persist();
+
+            setTimeout(() => {
+              handleInputChange(event, true);
+            }, 100);
+          }}
+          onChange={(event) => {
+            handleInputChange(event);
+
+            const ele = document.getElementById(`modelYear-${item.index}`);
+            if (Number(item.original.oldData.modelYear) === Number(event.target.value)) {
+              const { className } = ele;
+              ele.className = className.replace(/highlight/g, '');
+            } else {
+              ele.className += ' highlight';
+            }
+          }}
           size="4"
           maxLength="4"
           defaultValue={item.original.newData.modelYear ? item.original.newData.modelYear : item.original.oldData.modelYear}
           readOnly={!isEditable}
-          className={`${!isEditable ? 'supplementary-input-disabled' : ''} ${item.original.newData.modelYear !== item.original.oldData.modelYear ? 'highlight' : ''}`}
+          className={`${!isEditable ? 'supplementary-input-disabled' : ''} ${item.original.newData.modelYear && item.original.newData.modelYear !== item.original.oldData.modelYear ? 'highlight' : ''}`}
         />
       </>
     ),
@@ -65,10 +99,27 @@ const ZevSales = (props) => {
           size="8"
           name="zevSales"
           id={`make-${item.index}`}
-          onChange={handleInputChange}
+          onBlur={(event) => {
+            event.persist();
+
+            setTimeout(() => {
+              handleInputChange(event, true);
+            }, 100);
+          }}
+          onChange={(event) => {
+            handleInputChange(event);
+
+            const ele = document.getElementById(`make-${item.index}`);
+            if (item.original.oldData.make === event.target.value) {
+              const { className } = ele;
+              ele.className = className.replace(/highlight/g, '');
+            } else {
+              ele.className += ' highlight';
+            }
+          }}
           defaultValue={item.original.newData.make ? item.original.newData.make : item.original.oldData.make}
           readOnly={!isEditable}
-          className={`${!isEditable ? 'supplementary-input-disabled' : ''} ${item.original.newData.make !== item.original.oldData.make ? 'highlight' : ''}`}
+          className={`${!isEditable ? 'supplementary-input-disabled' : ''} ${item.original.newData.make && item.original.newData.make !== item.original.oldData.make ? 'highlight' : ''}`}
         />
       </>
     ),
@@ -86,10 +137,27 @@ const ZevSales = (props) => {
           size="11"
           name="zevSales"
           id={`modelName-${item.index}`}
-          onChange={handleInputChange}
+          onBlur={(event) => {
+            event.persist();
+
+            setTimeout(() => {
+              handleInputChange(event, true);
+            }, 100);
+          }}
+          onChange={(event) => {
+            handleInputChange(event);
+
+            const ele = document.getElementById(`modelName-${item.index}`);
+            if (item.original.oldData.model === event.target.value) {
+              const { className } = ele;
+              ele.className = className.replace(/highlight/g, '');
+            } else {
+              ele.className += ' highlight';
+            }
+          }}
           defaultValue={item.original.newData.modelName ? item.original.newData.modelName : item.original.oldData.model}
           readOnly={!isEditable}
-          className={`${!isEditable ? 'supplementary-input-disabled' : ''} ${item.original.newData.modelName !== item.original.oldData.model ? 'highlight' : ''}`}
+          className={`${!isEditable ? 'supplementary-input-disabled' : ''} ${item.original.newData.modelName && item.original.newData.modelName !== item.original.oldData.model ? 'highlight' : ''}`}
         />
       </>
     ),
@@ -107,10 +175,27 @@ const ZevSales = (props) => {
           size="5"
           name="zevSales"
           id={`vehicleZevType-${item.index}`}
-          onChange={handleInputChange}
+          onBlur={(event) => {
+            event.persist();
+
+            setTimeout(() => {
+              handleInputChange(event, true);
+            }, 100);
+          }}
+          onChange={(event) => {
+            handleInputChange(event);
+
+            const ele = document.getElementById(`vehicleZevType-${item.index}`);
+            if (item.original.oldData.zevType === event.target.value) {
+              const { className } = ele;
+              ele.className = className.replace(/highlight/g, '');
+            } else {
+              ele.className += ' highlight';
+            }
+          }}
           defaultValue={item.original.newData.vehicleZevType ? item.original.newData.vehicleZevType : item.original.oldData.zevType}
           readOnly={!isEditable}
-          className={`${!isEditable ? 'supplementary-input-disabled' : ''} ${item.original.newData.vehicleZevType !== item.original.oldData.zevType ? 'highlight' : ''}`}
+          className={`${!isEditable ? 'supplementary-input-disabled' : ''} ${item.original.newData.vehicleZevType && item.original.newData.vehicleZevType !== item.original.oldData.zevType ? 'highlight' : ''}`}
         />
       </>
     ),
@@ -128,10 +213,27 @@ const ZevSales = (props) => {
           size="4"
           name="zevSales"
           id={`range-${item.index}`}
-          onChange={handleInputChange}
+          onBlur={(event) => {
+            event.persist();
+
+            setTimeout(() => {
+              handleInputChange(event, true);
+            }, 100);
+          }}
+          onChange={(event) => {
+            handleInputChange(event);
+
+            const ele = document.getElementById(`range-${item.index}`);
+            if (Number(item.original.oldData.range) === Number(event.target.value)) {
+              const { className } = ele;
+              ele.className = className.replace(/highlight/g, '');
+            } else {
+              ele.className += ' highlight';
+            }
+          }}
           defaultValue={item.original.newData.range ? item.original.newData.range : item.original.oldData.range}
           readOnly={!isEditable}
-          className={`${!isEditable ? 'supplementary-input-disabled' : ''} ${item.original.newData.range !== item.original.oldData.range ? 'highlight' : ''}`}
+          className={`${!isEditable ? 'supplementary-input-disabled' : ''} ${item.original.newData.range && item.original.newData.range !== item.original.oldData.range ? 'highlight' : ''}`}
         />
       </>
     ),
@@ -150,10 +252,27 @@ const ZevSales = (props) => {
           size="3"
           name="zevSales"
           id={`zevClass-${item.index}`}
-          onChange={handleInputChange}
+          onBlur={(event) => {
+            event.persist();
+
+            setTimeout(() => {
+              handleInputChange(event, true);
+            }, 100);
+          }}
+          onChange={(event) => {
+            handleInputChange(event);
+
+            const ele = document.getElementById(`zevClass-${item.index}`);
+            if (item.original.oldData.zevClass === event.target.value) {
+              const { className } = ele;
+              ele.className = className.replace(/highlight/g, '');
+            } else {
+              ele.className += ' highlight';
+            }
+          }}
           defaultValue={item.original.newData.zevClass ? item.original.newData.zevClass : item.original.oldData.zevClass}
           readOnly={!isEditable}
-          className={`${!isEditable ? 'supplementary-input-disabled' : ''} ${item.original.newData.zevClass !== item.original.oldData.zevClass ? 'highlight' : ''}`}
+          className={`${!isEditable ? 'supplementary-input-disabled' : ''} ${item.original.newData.zevClass && item.original.newData.zevClass !== item.original.oldData.zevClass ? 'highlight' : ''}`}
         />
       </>
     ),
@@ -187,7 +306,7 @@ const ZevSales = (props) => {
           showPagination={false}
         />
         )}
-        {currentStatus !== 'ASSESSED' && (
+        {currentStatus !== 'ASSESSED' && isEditable && (
         <button
           className="transfer-add-line m-2"
           onClick={() => {

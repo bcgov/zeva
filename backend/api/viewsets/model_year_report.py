@@ -624,6 +624,34 @@ class ModelYearReportViewset(
             if not supplemental_id:
                 supplemental_id = report.supplemental.id
 
+            # check if we have permission for this
+            supplemental_report = SupplementalReport.objects.filter(
+                id=supplemental_id
+            ).first()
+
+            create_user = UserProfile.objects.filter(
+                username=supplemental_report.create_user
+            ).first()
+
+            if supplemental_report and request.user.is_government:
+                if supplemental_report.status.value in 'DRAFT' and not create_user.is_government:
+                    supplemental_id = 0
+
+                if supplemental_report.status.value in [
+                        'RETURNED',
+                        'DELETED'
+                ]:
+                    supplemental_id = 0
+            elif supplemental_report and not request.user.is_government:
+                if supplemental_report.status.value == 'DRAFT' and create_user.is_government:
+                    supplemental_id = 0
+
+                if supplemental_report.status.value in [
+                        'RECOMMENDED',
+                        'DELETED'
+                ]:
+                    supplemental_id = 0
+
             serializer = SupplementalReportAssessmentSerializer(
                 supplemental_id, context={'request': request}
             )
@@ -662,7 +690,8 @@ class ModelYearReportViewset(
 
             serializer = ModelYearReportSupplementalSerializer(
                 supplemental_report,
-                data=request.data
+                data=request.data,
+                context={'request': request}
             )
             serializer.is_valid(raise_exception=True)
             serializer.save(
@@ -752,7 +781,8 @@ class ModelYearReportViewset(
 
                 serializer = ModelYearReportSupplementalSerializer(
                     supplemental_report,
-                    data=request.data
+                    data=request.data,
+                    context={'request': request}
                 )
                 serializer.is_valid(raise_exception=True)
                 serializer.save(
@@ -763,7 +793,8 @@ class ModelYearReportViewset(
         # otherwise create a new one
         else:
             serializer = ModelYearReportSupplementalSerializer(
-                data=request.data
+                data=request.data,
+                context={'request': request}
             )
             serializer.is_valid(raise_exception=True)
             serializer.save(
@@ -915,9 +946,10 @@ class ModelYearReportViewset(
         report = get_object_or_404(ModelYearReport, pk=pk)
         comment = request.data.get('from_govt_comment')
         director = request.data.get('director')
+        supplemental_id = request.data.get('supplemental_id', report.supplemental.id)
         if comment and director:
             SupplementalReportAssessmentComment.objects.create(
-                supplemental_report_id=report.supplemental.id,
+                supplemental_report_id=supplemental_id,
                 comment=comment,
                 to_director=True,
                 create_user=request.user.username,
@@ -925,7 +957,7 @@ class ModelYearReportViewset(
             )
         elif comment and not director:
             assessment_comment = SupplementalReportAssessmentComment.objects.filter(
-                supplemental_report_id=report.supplemental.id,
+                supplemental_report_id=supplemental_id,
                 to_director=False
             ).order_by('-update_timestamp').first()
 
@@ -935,7 +967,7 @@ class ModelYearReportViewset(
                 assessment_comment.save()
             else:
                 SupplementalReportAssessmentComment.objects.create(
-                    supplemental_report_id=report.supplemental.id,
+                    supplemental_report_id=supplemental_id,
                     to_director=False,
                     comment=comment,
                     create_user=request.user.username,

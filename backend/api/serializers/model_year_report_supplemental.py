@@ -192,6 +192,7 @@ class SupplementalReportAssessmentSerializer(
         assessment_comment = SupplementalReportAssessmentComment.objects.filter(
             supplemental_report_id=obj
         ).order_by('-create_timestamp')
+
         if not request.user.is_government:
             assessment_comment = SupplementalReportAssessmentComment.objects.filter(
                 supplemental_report_id=obj,
@@ -239,18 +240,26 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
 
             supplementary_report_id = None
             supplementary_report_status = supplementary_report.status.value
+            supplementary_report_is_reassessment = False
             if supplemental_user:
                 supplementary_report_id = obj.supplemental_id
                 supplemental_report = SupplementalReport.objects.filter(
                     model_year_report_id=obj.model_year_report_id,
                     id=obj.supplemental_id
                 ).first()
+
                 supplementary_report_status = supplemental_report.status.value
+
+                supplemental_user = UserProfile.objects.filter(username=supplemental_report.create_user).first()
+
+                if supplemental_user.is_government:
+                    supplementary_report_is_reassessment = True
 
             return {
                 'is_reassessment': True,
                 'supplementary_report_id': supplementary_report_id,
                 'status': supplementary_report_status,
+                'supplementary_report_is_reassessment': supplementary_report_is_reassessment
             }
 
         reassessment_report = SupplementalReport.objects.filter(
@@ -347,10 +356,10 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
             supplemental_report_id=obj.id
         )
 
-        if not sales_queryset:
-            sales_queryset = SupplementalReportSales.objects.filter(
-                supplemental_report_id=obj.supplemental_id
-            )
+        # if not sales_queryset:
+        #     sales_queryset = SupplementalReportSales.objects.filter(
+        #         supplemental_report_id=obj.supplemental_id
+        #     )
 
         sales_serializer = ModelYearReportZevSalesSerializer(sales_queryset, many=True)
 
