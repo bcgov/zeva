@@ -185,6 +185,8 @@ def get_model_year_report_statuses(report, request_user=None):
 
 def adjust_credits(id, request):
     model_year = request.data.get('model_year')
+    model_year_report_timestamp = "{}-09-30".format(
+        int(model_year) + 1)
     credit_class_a = CreditClass.objects.get(credit_class='A')
     credit_class_b = CreditClass.objects.get(credit_class='B')
     model_year_id = ModelYear.objects.values_list('id', flat=True).filter(
@@ -265,6 +267,7 @@ def adjust_credits(id, request):
                         model_year_id=year,
                         number_of_credits=1,
                         credit_value=credit_value,
+                        transaction_timestamp=model_year_report_timestamp,
                         transaction_type=CreditTransactionType.objects.get(
                             transaction_type="Reduction"
                         ),
@@ -277,7 +280,6 @@ def adjust_credits(id, request):
                         total_a_value += credit_value
                     elif credit_class_obj == 'B':
                         total_b_value += credit_value
-
                     ModelYearReportCreditTransaction.objects.create(
                         model_year_report_id=id,
                         credit_transaction_id=added_transaction.id
@@ -306,14 +308,14 @@ def adjust_credits(id, request):
         if current_balance:
             new_balance = Decimal(current_balance.balance) -\
                 credit_value
-            current_balance.expiration_date = date.today()
+            current_balance.expiration_date = model_year_report_timestamp
             current_balance.save()
         else:
             new_balance = 0 - credit_value
 
         AccountBalance.objects.create(
             balance=new_balance,
-            effective_date=date.today(),
+            effective_date=model_year_report_timestamp,
             credit_class=credit_class,
             credit_transaction=added_transaction,
             organization_id=organization_id
