@@ -154,8 +154,7 @@ const AssessmentDetailsPage = (props) => {
 
   return (
     <div id="assessment-details" className="page">
-      {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED
-      && <ComplianceHistory user={user} id={id} activePage="assessment" reportYear={reportYear} supplementaryId={details.id} />}
+      <ComplianceHistory user={user} id={id} activePage="assessment" reportYear={reportYear} supplementaryId={details.id} />
       <div className="row">
         <div className="col-sm-12">
           <h2 className="mb-2 mt-3">{reportYear} Model Year Report</h2>
