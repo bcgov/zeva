@@ -3,6 +3,8 @@ version: "3.9"
 services:
   db:
     image: postgres
+    ports:
+      - 5432:5432
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
@@ -70,14 +72,13 @@ services:
       - 5672:5672
   web:
     build: ./frontend
-    command: >
-      sh -c "npm install --force &&
-             npm start"
+    command: npm start
     env_file:
       - frontend.env
       - rabbitmq.env
     volumes:
       - ./frontend:/web
+      - /web/node_modules
     depends_on:
       - rabbitmq
     ports:
