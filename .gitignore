@@ -16,3 +16,4 @@ frontend/coverage/
 backend/minio/
 .sql.gz
 backend/db.json
+minio/minio_files/.minio.sys
