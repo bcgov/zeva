@@ -144,7 +144,7 @@ def award_credits(submission):
     part_of_model_year_report = SalesSubmission.objects.filter(
         id=submission.id
     ).values_list('part_of_model_year_report', flat=True).first()
-    current_year = datetime.now().year
+  
     records = RecordOfSale.objects.filter(
         submission_id=submission.id,
         validation_status="VALIDATED",
@@ -153,6 +153,7 @@ def award_credits(submission):
     weight_class = WeightClass.objects.get(weight_class_code="LDV")
 
     for record in records:
+        current_year = datetime.now().year
         vehicle = Vehicle.objects.get(id=record.get('vehicle_id'))
         number_of_credits = record.get('total')
         credit_value = vehicle.get_credit_value()
@@ -163,6 +164,7 @@ def award_credits(submission):
             vehicle_credit_class = CreditClass.objects.get(
                 credit_class=credit_class
             )
+            
             credit_transaction = CreditTransaction.objects.create(
                 create_user=submission.update_user,
                 credit_class=vehicle_credit_class,
