@@ -3,6 +3,8 @@ version: "3.9"
 services:
   db:
     image: postgres
+    ports:
+      - 5432:5432
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
@@ -54,9 +56,10 @@ services:
       - ./minio/minio_files:/minio_files
     env_file:
       - minio.env
-    command: "minio server /minio_files"
+    command: "minio server /minio_files --console-address \":9001\""
     ports:
       - 9000:9000
+      - 9001:9001
   rabbitmq:
     image: rabbitmq:3.7-management
     hostname: "rabbitmq"
@@ -70,14 +73,13 @@ services:
       - 5672:5672
   web:
     build: ./frontend
-    command: >
-      sh -c "npm install --force &&
-             npm start"
+    command: npm start
     env_file:
       - frontend.env
       - rabbitmq.env
     volumes:
       - ./frontend:/web
+      - /web/node_modules
     depends_on:
       - rabbitmq
     ports:
