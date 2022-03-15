@@ -113,7 +113,7 @@ objects:
     metadata:
       creationTimestamp: null
       annotations:      
-        haproxy.router.openshift.io/timeout: 1200s            
+        haproxy.router.openshift.io/timeout: 1500s            
       labels:
         name: frontend
         app: zeva
