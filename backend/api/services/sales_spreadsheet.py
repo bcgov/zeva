@@ -267,7 +267,7 @@ def ingest_sales_spreadsheet(
         row += 1
 
     return {
-        'id': submission_id,
+        'id': submission.id,
         'submissionId': datetime.now().strftime("%Y-%m-%d")
     }
 
