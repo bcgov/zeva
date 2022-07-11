@@ -1,26 +1,27 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useParams } from 'react-router-dom';
-import parse from 'html-react-parser';
-import ReactQuill from 'react-quill';
-import axios from 'axios';
-import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import moment from 'moment-timezone';
-import 'react-quill/dist/quill.snow.css';
-import _ from 'lodash';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useParams } from "react-router-dom";
+import parse from "html-react-parser";
+import ReactQuill from "react-quill";
+import axios from "axios";
+import PropTypes from "prop-types";
+import React, { useState } from "react";
+import moment from "moment-timezone";
+import "react-quill/dist/quill.snow.css";
+import _ from "lodash";
 
-import CreditRequestAlert from './CreditRequestAlert';
-import Button from '../../app/components/Button';
-import Modal from '../../app/components/Modal';
-import history from '../../app/History';
-import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
-import download from '../../app/utilities/download';
-import CustomPropTypes from '../../app/utilities/props';
-import ModelListTable from './ModelListTable';
-import CreditRequestSummaryTable from './CreditRequestSummaryTable';
-import getFileSize from '../../app/utilities/getFileSize';
-import DisplayComment from '../../app/components/DisplayComment';
-import formatNumeric from '../../app/utilities/formatNumeric';
+import CreditRequestAlert from "./CreditRequestAlert";
+import Button from "../../app/components/Button";
+import Modal from "../../app/components/Modal";
+import history from "../../app/History";
+import ROUTES_CREDIT_REQUESTS from "../../app/routes/CreditRequests";
+import download from "../../app/utilities/download";
+import CustomPropTypes from "../../app/utilities/props";
+import ModelListTable from "./ModelListTable";
+import CreditRequestSummaryTable from "./CreditRequestSummaryTable";
+import getFileSize from "../../app/utilities/getFileSize";
+import DisplayComment from "../../app/components/DisplayComment";
+import formatNumeric from "../../app/utilities/formatNumeric";
+import DownloadAllSubmissionContentButton from "./DownloadAllSubmissionContentButton";
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -29,29 +30,33 @@ const CreditRequestDetailsPage = (props) => {
     submission,
     user,
     issueAsMY,
-    handleCheckboxClick
+    handleCheckboxClick,
   } = props;
+
   const { id } = useParams();
-  const validatedOnly = submission.validationStatus === 'CHECKED';
+  const validatedOnly = submission.validationStatus === "CHECKED";
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState('');
-  const [comment, setComment] = useState('');
-  
+  const [modalType, setModalType] = useState("");
+  const [comment, setComment] = useState("");
+
   const serviceAddress = submission.organization.organizationAddress.find(
-    (address) => address.addressType.addressType === 'Service',
+    (address) => address.addressType.addressType === "Service"
   );
   const recordsAddress = submission.organization.organizationAddress.find(
-    (address) => address.addressType.addressType === 'Records',
+    (address) => address.addressType.addressType === "Records"
   );
 
   const downloadErrors = (e) => {
     const element = e.currentTarget;
     const original = element.innerHTML;
 
-    element.innerText = 'Downloading...';
+    element.innerText = "Downloading...";
     element.disabled = true;
 
-    return download(ROUTES_CREDIT_REQUESTS.DOWNLOAD_ERRORS.replace(':id', submission.id), {}).then(() => {
+    return download(
+      ROUTES_CREDIT_REQUESTS.DOWNLOAD_ERRORS.replace(":id", submission.id),
+      {}
+    ).then(() => {
       element.innerHTML = original;
       element.disabled = false;
     });
@@ -59,23 +64,37 @@ const CreditRequestDetailsPage = (props) => {
 
   let modalProps = {};
 
-  const transferCommentsIDIR = submission && submission.salesSubmissionComment && submission.salesSubmissionComment
-    .filter((each) => each.toGovt == true && each.comment)
-    .map((item) => item);
-  const transferCommentsSupplier = submission && submission.salesSubmissionComment && submission.salesSubmissionComment
-    .filter((each) => each.toGovt == false && each.comment)
-    .map((item) => item);
+  const transferCommentsIDIR =
+    submission &&
+    submission.salesSubmissionComment &&
+    submission.salesSubmissionComment
+      .filter((each) => each.toGovt == true && each.comment)
+      .map((item) => item);
+  const transferCommentsSupplier =
+    submission &&
+    submission.salesSubmissionComment &&
+    submission.salesSubmissionComment
+      .filter((each) => each.toGovt == false && each.comment)
+      .map((item) => item);
   const handleCommentChange = (content) => {
     setComment(content);
   };
-  
+
   const analystToSupplier = (
     <div>
       <label className="mt-3" htmlFor="reject-comment">
-        <h4> Comment to vehicle suppliers (mandatory to Reject)
-        </h4>
+        <h4> Comment to vehicle suppliers (mandatory to Reject)</h4>
       </label>
-      <textarea testid="reject-comment-analyst" name="reject-comment" className="col-sm-11" rows="3" onChange={(event) => { const commentValue = `<p>${event.target.value}</p>`; setComment(commentValue); }} />
+      <textarea
+        testid="reject-comment-analyst"
+        name="reject-comment"
+        className="col-sm-11"
+        rows="3"
+        onChange={(event) => {
+          const commentValue = `<p>${event.target.value}</p>`;
+          setComment(commentValue);
+        }}
+      />
     </div>
   );
 
@@ -83,122 +102,154 @@ const CreditRequestDetailsPage = (props) => {
     const submissionContent = {};
     if (comment.length > 0) {
       submissionContent.salesSubmissionComment = { comment: comment };
-      submissionContent.commentType = {govt: true}
+      submissionContent.commentType = { govt: true };
     }
-    axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), submissionContent).then(() => {
-      history.push(ROUTES_CREDIT_REQUESTS.EDIT.replace(':id', id));
-      const refreshed = true;
-      if (refreshed) {
-        history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id));
-      }
-    });
+    axios
+      .patch(
+        ROUTES_CREDIT_REQUESTS.DETAILS.replace(":id", id),
+        submissionContent
+      )
+      .then(() => {
+        history.push(ROUTES_CREDIT_REQUESTS.EDIT.replace(":id", id));
+        const refreshed = true;
+        if (refreshed) {
+          history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(":id", id));
+        }
+      });
   };
 
   switch (modalType) {
-    case 'submit':
+    case "submit":
       modalProps = {
-        confirmLabel: ' Submit',
-        handleSubmit: () => { handleSubmit('SUBMITTED'); },
-        buttonClass: 'button primary',
-        modalText: 'Submit credit request to Government of B.C.?',
+        confirmLabel: " Submit",
+        handleSubmit: () => {
+          handleSubmit("SUBMITTED");
+        },
+        buttonClass: "button primary",
+        modalText: "Submit credit request to Government of B.C.?",
         icon: <FontAwesomeIcon icon="paper-plane" />,
       };
       break;
-    case 'delete':
+    case "delete":
       modalProps = {
-        confirmLabel: ' Delete',
-        handleSubmit: () => { handleSubmit('DELETED'); },
-        buttonClass: 'btn-outline-danger',
-        modalText: 'Delete submission? WARNING: this action cannot be undone',
+        confirmLabel: " Delete",
+        handleSubmit: () => {
+          handleSubmit("DELETED");
+        },
+        buttonClass: "btn-outline-danger",
+        modalText: "Delete submission? WARNING: this action cannot be undone",
         icon: <FontAwesomeIcon icon="trash" />,
       };
       break;
-    case 'approve':
+    case "approve":
       modalProps = {
-        confirmLabel: 'Recommend Issuance',
-        handleSubmit: () => { handleSubmit('RECOMMEND_APPROVAL'); },
-        buttonClass: 'button primary',
-        modalText: 'Recommend issuance of credits?',
+        confirmLabel: "Recommend Issuance",
+        handleSubmit: () => {
+          handleSubmit("RECOMMEND_APPROVAL");
+        },
+        buttonClass: "button primary",
+        modalText: "Recommend issuance of credits?",
       };
       break;
-    case 'return':
+    case "return":
       modalProps = {
-        confirmLabel: 'Return to Analyst',
-        handleSubmit: () => { handleSubmit('CHECKED'); },
-        buttonClass: 'btn-outline-danger',
-        modalText: 'Return submission to analyst?',
+        confirmLabel: "Return to Analyst",
+        handleSubmit: () => {
+          handleSubmit("CHECKED");
+        },
+        buttonClass: "btn-outline-danger",
+        modalText: "Return submission to analyst?",
       };
       break;
-    case 'analyst-reject':
+    case "analyst-reject":
       modalProps = {
-        confirmLabel: 'Reject Application',
-        handleSubmit: () => { handleSubmit('REJECTED', comment); },
-        buttonClass: 'btn-outline-danger',
-        modalText: 'Reject the application?',
+        confirmLabel: "Reject Application",
+        handleSubmit: () => {
+          handleSubmit("REJECTED", comment);
+        },
+        buttonClass: "btn-outline-danger",
+        modalText: "Reject the application?",
       };
       break;
     default:
       modalProps = {
-        confirmLabel: 'Issue Credits',
-        buttonClass: 'button primary',
-        modalText: 'Issue credits to vehicle supplier?',
-        handleSubmit: () => { handleSubmit('VALIDATED', ''); },
+        confirmLabel: "Issue Credits",
+        buttonClass: "button primary",
+        modalText: "Issue credits to vehicle supplier?",
+        handleSubmit: () => {
+          handleSubmit("VALIDATED", "");
+        },
       };
   }
 
   const modal = (
     <Modal
       confirmLabel={modalProps.confirmLabel}
-      handleCancel={() => { setShowModal(false); }}
+      handleCancel={() => {
+        setShowModal(false);
+      }}
       handleSubmit={modalProps.handleSubmit}
       modalClass="w-75"
       showModal={showModal}
       confirmClass={modalProps.buttonClass}
     >
       <div>
-        <div><br /><br /></div>
-        <h3 className="d-inline">{modalProps.modalText}
-        </h3>
-        <div><br />{comment && (
-          <p>Comment: {parse(comment)}</p>
-        )}<br />
+        <div>
+          <br />
+          <br />
+        </div>
+        <h3 className="d-inline">{modalProps.modalText}</h3>
+        <div>
+          <br />
+          {comment && <p>Comment: {parse(comment)}</p>}
+          <br />
         </div>
       </div>
     </Modal>
   );
-  const directorAction = user.isGovernment
-    && ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(submission.validationStatus) >= 0
-    && user.hasPermission('SIGN_SALES');
+  const directorAction =
+    user.isGovernment &&
+    ["RECOMMEND_APPROVAL", "RECOMMEND_REJECTION"].indexOf(
+      submission.validationStatus
+    ) >= 0 &&
+    user.hasPermission("SIGN_SALES");
 
-  const analystAction = user.isGovernment
-    && ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0
-    && user.hasPermission('RECOMMEND_SALES');
+  const analystAction =
+    user.isGovernment &&
+    ["CHECKED", "SUBMITTED"].indexOf(submission.validationStatus) >= 0 &&
+    user.hasPermission("RECOMMEND_SALES");
 
   const idirCommentSection = (
     <div className="text-editor mb-2 mt-2">
       <label className="mt-3" htmlFor="application-comment">
-        <h4>{analystAction ? 'Comment to director:' : 'Add Comment to analyst if returning submission:'}
+        <h4>
+          {analystAction
+            ? "Comment to director:"
+            : "Add Comment to analyst if returning submission:"}
         </h4>
       </label>
       <ReactQuill
         theme="snow"
         modules={{
           toolbar: [
-            ['bold', 'italic'],
-            [{ list: 'bullet' }, { list: 'ordered' }],
+            ["bold", "italic"],
+            [{ list: "bullet" }, { list: "ordered" }],
           ],
           keyboard: {
             bindings: { tab: false },
           },
         }}
-        formats={['bold', 'italic', 'list', 'bullet']}
+        formats={["bold", "italic", "list", "bullet"]}
         onChange={handleCommentChange}
       />
       <button
         className="button mt-2"
-        onClick={() => { handleAddComment(); }}
+        onClick={() => {
+          handleAddComment();
+        }}
         type="button"
-      >Add Comment
+      >
+        Add Comment
       </button>
     </div>
   );
@@ -210,16 +261,25 @@ const CreditRequestDetailsPage = (props) => {
 
     if (submission.eligible) {
       const eligibleSales = submission.eligible.find(
-        (eligible) => (eligible.vehicleId === vehicle.id),
+        (eligible) => eligible.vehicleId === vehicle.id
       );
 
-      if (eligibleSales && vehicle && vehicle.creditValue && vehicle.creditValue !== 0) {
-        totalEligibleCredits += parseFloat(eligibleSales.vinCount * _.round(vehicle.creditValue, 2));
+      if (
+        eligibleSales &&
+        vehicle &&
+        vehicle.creditValue &&
+        vehicle.creditValue !== 0
+      ) {
+        totalEligibleCredits += parseFloat(
+          eligibleSales.vinCount * _.round(vehicle.creditValue, 2)
+        );
       }
     }
   });
 
-  const invalidSubmission = submission.content.some((row) => (!row.vehicle || !row.vehicle.id || row.vehicle.modelName === ''));
+  const invalidSubmission = submission.content.some(
+    (row) => !row.vehicle || !row.vehicle.id || row.vehicle.modelName === ""
+  );
 
   return (
     <div id="credit-request-details" className="page">
@@ -232,8 +292,8 @@ const CreditRequestDetailsPage = (props) => {
       {analystAction && submission.icbcCurrentTo && (
         <div className="row my-1">
           <div className="col-sm-12">
-            ICBC data current to:{' '}
-            {moment(submission.icbcCurrentTo).format('MMM D, YYYY')}
+            ICBC data current to:{" "}
+            {moment(submission.icbcCurrentTo).format("MMM D, YYYY")}
           </div>
         </div>
       )}
@@ -244,22 +304,32 @@ const CreditRequestDetailsPage = (props) => {
               <CreditRequestAlert
                 isGovernment={user.isGovernment}
                 submission={submission}
-                date={moment(submission.updateTimestamp).format('MMM D, YYYY')}
-                icbcDate={submission.icbcCurrentTo ? moment(submission.icbcCurrentTo).format('MMM D, YYYY') : ''}
+                date={moment(submission.updateTimestamp).format("MMM D, YYYY")}
+                icbcDate={
+                  submission.icbcCurrentTo
+                    ? moment(submission.icbcCurrentTo).format("MMM D, YYYY")
+                    : ""
+                }
                 invalidSubmission={invalidSubmission}
               />
-              {((transferCommentsIDIR && transferCommentsIDIR.length > 0) || (transferCommentsSupplier && transferCommentsSupplier.length > 0) || user.isGovernment)
-              && (
-              <div className="comment-box mt-2">
-                {transferCommentsIDIR && transferCommentsIDIR.length > 0 && user.isGovernment && (
-                  <DisplayComment commentArray={transferCommentsIDIR} />
-                )}
-                {transferCommentsSupplier && transferCommentsSupplier.length > 0 && !user.isGovernment && (
-                  <DisplayComment commentArray={transferCommentsSupplier} />
-                )}
-                {(((analystAction && validatedOnly) || directorAction))
-                  && idirCommentSection}
-              </div>
+              {((transferCommentsIDIR && transferCommentsIDIR.length > 0) ||
+                (transferCommentsSupplier &&
+                  transferCommentsSupplier.length > 0) ||
+                user.isGovernment) && (
+                <div className="comment-box mt-2">
+                  {transferCommentsIDIR &&
+                    transferCommentsIDIR.length > 0 &&
+                    user.isGovernment && (
+                      <DisplayComment commentArray={transferCommentsIDIR} />
+                    )}
+                  {transferCommentsSupplier &&
+                    transferCommentsSupplier.length > 0 &&
+                    !user.isGovernment && (
+                      <DisplayComment commentArray={transferCommentsSupplier} />
+                    )}
+                  {((analystAction && validatedOnly) || directorAction) &&
+                    idirCommentSection}
+                </div>
               )}
             </div>
           </div>
@@ -267,78 +337,100 @@ const CreditRequestDetailsPage = (props) => {
       )}
 
       {!user.isGovernment && (
-      <div className="row mb-1">
-        <div className="col-sm-12">
-          <div className="my-2 px-2 pb-2 address-summary-table">
-            <h3 className="mt-2">
-              {submission.organization && `${submission.organization.name} `}
-            </h3>
-            <div>
-              <h4 className="d-inline-block sales-upload-grey my-2">Service address: </h4>
-              {serviceAddress && <h4 className="d-inline-block sales-upload-blue">{serviceAddress.addressLine1} {serviceAddress.addressLine2} {serviceAddress.city} {serviceAddress.state} {serviceAddress.postalCode}</h4>}
-              <br />
-              <h4 className="d-inline-block sales-upload-grey mb-3">Records address: </h4>
-              {recordsAddress && <h4 className="d-inline-block sales-upload-blue">{recordsAddress.addressLine1} {recordsAddress.addressLine2} {recordsAddress.city} {recordsAddress.state} {recordsAddress.postalCode}</h4>}
-            </div>
+        <div className="row mb-1">
+          <div className="col-sm-12">
+            <div className="my-2 px-2 pb-2 address-summary-table">
+              <h3 className="mt-2">
+                {submission.organization && `${submission.organization.name} `}
+              </h3>
+              <div>
+                <h4 className="d-inline-block sales-upload-grey my-2">
+                  Service address:{" "}
+                </h4>
+                {serviceAddress && (
+                  <h4 className="d-inline-block sales-upload-blue">
+                    {serviceAddress.addressLine1} {serviceAddress.addressLine2}{" "}
+                    {serviceAddress.city} {serviceAddress.state}{" "}
+                    {serviceAddress.postalCode}
+                  </h4>
+                )}
+                <br />
+                <h4 className="d-inline-block sales-upload-grey mb-3">
+                  Records address:{" "}
+                </h4>
+                {recordsAddress && (
+                  <h4 className="d-inline-block sales-upload-blue">
+                    {recordsAddress.addressLine1} {recordsAddress.addressLine2}{" "}
+                    {recordsAddress.city} {recordsAddress.state}{" "}
+                    {recordsAddress.postalCode}
+                  </h4>
+                )}
+              </div>
 
-            <CreditRequestSummaryTable
-              submission={submission}
-              user={user}
-              validationStatus={submission.validationStatus}
-            />
-            {submission.evidence.length > 0 && (
-              <div className="mt-4">
-                <h3 className="mt-3">Sales Evidence</h3>
-                <div id="sales-edit" className="mt-2 col-8 pl-0">
-                  <div className="files px-3">
-                    <div className="row pb-1">
-                      <div className="col-9 header">
-                        <h4>Filename</h4>
+              <CreditRequestSummaryTable
+                submission={submission}
+                user={user}
+                validationStatus={submission.validationStatus}
+              />
+              {submission.evidence.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="mt-3">Sales Evidence</h3>
+                  <div id="sales-edit" className="mt-2 col-8 pl-0">
+                    <div className="files px-3">
+                      <div className="row pb-1">
+                        <div className="col-9 header">
+                          <h4>Filename</h4>
+                        </div>
+                        <div className="col-3 size header">
+                          <h4>Size</h4>
+                        </div>
+                        <div className="col-1 actions header" />
                       </div>
-                      <div className="col-3 size header">
-                        <h4>Size</h4>
-                      </div>
-                      <div className="col-1 actions header" />
+                      {submission.evidence.map((file) => (
+                        <div className="row py-1" key={file.id}>
+                          <div className="col-9 filename pl-1">
+                            <button
+                              className="link"
+                              onClick={() => {
+                                axios
+                                  .get(file.url, {
+                                    responseType: "blob",
+                                    headers: {
+                                      Authorization: null,
+                                    },
+                                  })
+                                  .then((response) => {
+                                    const objectURL =
+                                      window.URL.createObjectURL(
+                                        new Blob([response.data])
+                                      );
+                                    const link = document.createElement("a");
+                                    link.href = objectURL;
+                                    link.setAttribute(
+                                      "download",
+                                      file.filename
+                                    );
+                                    document.body.appendChild(link);
+                                    link.click();
+                                  });
+                              }}
+                              type="button"
+                            >
+                              {file.filename}
+                            </button>
+                          </div>
+                          <div className="col-3 size">
+                            {getFileSize(file.size)}
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    {submission.evidence.map((file) => (
-                      <div className="row py-1" key={file.id}>
-                        <div className="col-9 filename pl-1">
-                          <button
-                            className="link"
-                            onClick={() => {
-                              axios.get(file.url, {
-                                responseType: 'blob',
-                                headers: {
-                                  Authorization: null,
-                                },
-                              }).then((response) => {
-                                const objectURL = window.URL.createObjectURL(
-                                  new Blob([response.data]),
-                                );
-                                const link = document.createElement('a');
-                                link.href = objectURL;
-                                link.setAttribute('download', file.filename);
-                                document.body.appendChild(link);
-                                link.click();
-                              });
-                            }}
-                            type="button"
-                          >
-                            {file.filename}
-                          </button>
-                        </div>
-                        <div className="col-3 size">
-                          {getFileSize(file.size)}
-                        </div>
-                      </div>
-                    ))}
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
-      </div>
       )}
 
       <div className="row mb-2">
@@ -352,14 +444,22 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
 
-      {['CHECKED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'VALIDATED'].indexOf(submission.validationStatus) >= 0
-      && user.isGovernment && (
-      <div className="row my-4">
-        <div className="col-sm-12">
-          It is recommended that the Director issue a total of {formatNumeric(totalEligibleCredits, 2)} ZEV credits to{' '}
-          {submission.organization.name} based on {formatNumeric(_.sumBy(submission.eligible, 'vinCount'), 0)} eligible ZEV sales.
-        </div>
-      </div>
+      {[
+        "CHECKED",
+        "RECOMMEND_APPROVAL",
+        "RECOMMEND_REJECTION",
+        "VALIDATED",
+      ].indexOf(submission.validationStatus) >= 0 &&
+        user.isGovernment && (
+          <div className="row my-4">
+            <div className="col-sm-12">
+              It is recommended that the Director issue a total of{" "}
+              {formatNumeric(totalEligibleCredits, 2)} ZEV credits to{" "}
+              {submission.organization.name} based on{" "}
+              {formatNumeric(_.sumBy(submission.eligible, "vinCount"), 0)}{" "}
+              eligible ZEV sales.
+            </div>
+          </div>
         )}
       {analystAction && analystToSupplier}
 
@@ -369,29 +469,33 @@ const CreditRequestDetailsPage = (props) => {
             <span className="left-content">
               <Button
                 buttonType="back"
-                locationRoute={(locationState && locationState.href) ? locationState.href : ROUTES_CREDIT_REQUESTS.LIST}
+                locationRoute={
+                  locationState && locationState.href
+                    ? locationState.href
+                    : ROUTES_CREDIT_REQUESTS.LIST
+                }
                 locationState={locationState}
               />
               {analystAction && (
-              <Button
-                disabled={comment.length === 0}
-                testid="analyst-reject-application"
-                buttonType="reject"
-                optionalText="Reject Application"
-                action={() => {
-                  setModalType('analyst-reject');
-                  setShowModal(true);
-                }}
+                <Button
+                  disabled={comment.length === 0}
+                  testid="analyst-reject-application"
+                  buttonType="reject"
+                  optionalText="Reject Application"
+                  action={() => {
+                    setModalType("analyst-reject");
+                    setShowModal(true);
+                  }}
                 />
-              )} 
-              {(submission.validationStatus === 'DRAFT' || submission.validationStatus === "REJECTED")
-                && typeof user.hasPermission === 'function'
-                && user.hasPermission('EDIT_SALES')
-                && (
+              )}
+              {(submission.validationStatus === "DRAFT" ||
+                submission.validationStatus === "REJECTED") &&
+                typeof user.hasPermission === "function" &&
+                user.hasPermission("EDIT_SALES") && (
                   <Button
                     buttonType="delete"
                     action={() => {
-                      setModalType('delete');
+                      setModalType("delete");
                       setShowModal(true);
                     }}
                   />
@@ -400,7 +504,7 @@ const CreditRequestDetailsPage = (props) => {
                 <button
                   className="button text-danger"
                   onClick={() => {
-                    setModalType('return');
+                    setModalType("return");
                     setShowModal(true);
                   }}
                   type="button"
@@ -413,35 +517,41 @@ const CreditRequestDetailsPage = (props) => {
               {analystAction && (
                 <>
                   {validatedOnly && (
-                  <button
-                    className="button"
-                    onClick={() => {
-                      let url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id);
-                      url += '?reset=Y';
-                      history.push(url);
-                    }}
-                    type="button"
-                  >
-                    Re-verify with ICBC Data
-                  </button>
+                    <button
+                      className="button"
+                      onClick={() => {
+                        let url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(
+                          /:id/g,
+                          submission.id
+                        );
+                        url += "?reset=Y";
+                        history.push(url);
+                      }}
+                      type="button"
+                    >
+                      Re-verify with ICBC Data
+                    </button>
                   )}
                   <button
-                    className={validatedOnly ? 'button' : 'button primary'}
+                    className={validatedOnly ? "button" : "button primary"}
                     onClick={() => {
-                      const url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id);
+                      const url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(
+                        /:id/g,
+                        submission.id
+                      );
 
                       history.push(url);
                     }}
                     type="button"
                   >
-                    {validatedOnly ? 'Review Details' : 'Verify with ICBC Data'}
+                    {validatedOnly ? "Review Details" : "Verify with ICBC Data"}
                   </button>
                   {validatedOnly && (
                     <button
-                      className={validatedOnly ? 'button primary' : 'button'}
+                      className={validatedOnly ? "button primary" : "button"}
                       key="recommend-approval"
                       onClick={() => {
-                        setModalType('approve');
+                        setModalType("approve");
                         setShowModal(true);
                       }}
                       type="button"
@@ -456,7 +566,7 @@ const CreditRequestDetailsPage = (props) => {
                   className="button primary"
                   disabled={comment.length > 0}
                   onClick={() => {
-                    setModalType('issue');
+                    setModalType("issue");
                     setShowModal(true);
                   }}
                   type="button"
@@ -464,27 +574,34 @@ const CreditRequestDetailsPage = (props) => {
                   Issue Credits
                 </button>
               )}
-
+              {user.isGovernment &&
+                submission.validationStatus === "VALIDATED" && (
+                  <DownloadAllSubmissionContentButton submission={submission} />
+                )}
               {!user.isGovernment && (
                 <>
-                  {submission.validationStatus === 'VALIDATED' && (
+                  {submission.validationStatus === "VALIDATED" && (
                     <Button
                       buttonType="download"
                       optionalText="Download Errors"
                       optionalClassname="button primary"
-                      action={(e) => { downloadErrors(e); }}
+                      action={(e) => {
+                        downloadErrors(e);
+                      }}
                       disabled={submission.unselected === 0}
                     />
                   )}
-                  {submission.validationStatus === 'DRAFT'
-                    && typeof user.hasPermission === 'function'
-                    && user.hasPermission('EDIT_SALES')
-                    && (
+                  {submission.validationStatus === "DRAFT" &&
+                    typeof user.hasPermission === "function" &&
+                    user.hasPermission("EDIT_SALES") && (
                       <button
                         className="button"
                         key="edit"
                         onClick={() => {
-                          const url = ROUTES_CREDIT_REQUESTS.EDIT.replace(/:id/g, submission.id);
+                          const url = ROUTES_CREDIT_REQUESTS.EDIT.replace(
+                            /:id/g,
+                            submission.id
+                          );
                           history.push(url);
                         }}
                         type="button"
@@ -492,17 +609,19 @@ const CreditRequestDetailsPage = (props) => {
                         <FontAwesomeIcon icon="upload" /> Re-upload files
                       </button>
                     )}
-                  {submission.validationStatus === 'DRAFT'
-                  && typeof user.hasPermission === 'function'
-                  && user.hasPermission('SUBMIT_SALES')
-                  && (
-                    <Button
-                      buttonType="submit"
-                      action={() => { setModalType('submit'); setShowModal(true); }}
-                      disabled={invalidSubmission}
-                      key="submit"
-                    />
-                  )}
+                  {submission.validationStatus === "DRAFT" &&
+                    typeof user.hasPermission === "function" &&
+                    user.hasPermission("SUBMIT_SALES") && (
+                      <Button
+                        buttonType="submit"
+                        action={() => {
+                          setModalType("submit");
+                          setShowModal(true);
+                        }}
+                        disabled={invalidSubmission}
+                        key="submit"
+                      />
+                    )}
                 </>
               )}
             </span>
@@ -530,7 +649,7 @@ CreditRequestDetailsPage.propTypes = {
   }).isRequired,
   user: CustomPropTypes.user.isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
-  issueAsMY: PropTypes.bool.isRequired
+  issueAsMY: PropTypes.bool.isRequired,
 };
 
 export default CreditRequestDetailsPage;

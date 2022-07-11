@@ -7,7 +7,7 @@ from pickle import PickleError
 import magic
 
 from dateutil.parser import parse
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db.models import Subquery
 
 import xlrd
@@ -21,6 +21,8 @@ from api.models.sales_submission import SalesSubmission
 from api.models.sales_submission_history import SalesSubmissionHistory
 from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.vehicle import Vehicle
+from api.models.icbc_snapshot_data import IcbcSnapshotData
+from api.models.sales_submission_statuses import SalesSubmissionStatuses
 
 logger = logging.getLogger('zeva.sales_spreadsheet')
 
@@ -265,7 +267,7 @@ def ingest_sales_spreadsheet(
         row += 1
 
     return {
-        'id': submission.id,
+        'id': submission_id,
         'submissionId': datetime.now().strftime("%Y-%m-%d")
     }
 
@@ -362,6 +364,42 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
         row += 1
 
     return True
+
+
+def get_error(content):
+    error = ''
+    if 'ROW_NOT_SELECTED' in content.warnings and content.reason:
+        error += content.reason
+        error += '; '
+
+    if 'DUPLICATE_VIN' in content.warnings:
+        error += 'Duplicate VIN; '
+
+    if 'EXPIRED_REGISTRATION_DATE' in content.warnings:
+        error += 'Sale prior to 2 Jan 2018; '
+
+    if 'INVALID_DATE' in content.warnings:
+        error += 'Invalid Date Format. Please use YYYY-MM-DD ' \
+                    'format; '
+
+    if 'INVALID_MODEL' in content.warnings:
+        error += 'Invalid make, model and year combination; '
+
+    if 'MODEL_YEAR_MISMATCHED' in content.warnings:
+        error += 'Model year does not match BC registration data; '
+
+    if 'MAKE_MISMATCHED' in content.warnings:
+        error += 'Make does not match BC registration data; '
+
+    if 'NO_ICBC_MATCH' in content.warnings:
+        error += 'VIN not registered in BC; '
+
+    if 'VIN_ALREADY_AWARDED' in content.warnings:
+        error += 'VIN already issued credit; '
+
+    if 'ROW_NOT_SELECTED' in content.warnings and error == '':
+        error += 'VIN not registered in BC; '
+    return error
 
 
 def get_date(date, date_type, datemode):
@@ -462,39 +500,7 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
 
         row += 1
 
-        error = ''
-
-        if 'ROW_NOT_SELECTED' in content.warnings and content.reason:
-            error += content.reason
-            error += '; '
-
-        if 'DUPLICATE_VIN' in content.warnings:
-            error += 'Duplicate VIN; '
-
-        if 'EXPIRED_REGISTRATION_DATE' in content.warnings:
-            error += 'Sale prior to 2 Jan 2018; '
-
-        if 'INVALID_DATE' in content.warnings:
-            error += 'Invalid Date Format. Please use YYYY-MM-DD ' \
-                        'format; '
-
-        if 'INVALID_MODEL' in content.warnings:
-            error += 'Invalid make, model and year combination; '
-
-        if 'MODEL_YEAR_MISMATCHED' in content.warnings:
-            error += 'Model year does not match BC registration data; '
-
-        if 'MAKE_MISMATCHED' in content.warnings:
-            error += 'Make does not match BC registration data; '
-
-        if 'NO_ICBC_MATCH' in content.warnings:
-            error += 'VIN not registered in BC; '
-
-        if 'VIN_ALREADY_AWARDED' in content.warnings:
-            error += 'VIN already issued credit; '
-
-        if 'ROW_NOT_SELECTED' in content.warnings and error == '':
-            error += 'VIN not registered in BC; '
+        error = get_error(content)
 
         date = get_date(
             content.xls_sale_date,
@@ -528,4 +534,118 @@ def create_errors_spreadsheet(submission_id, organization_id, stream):
     errors_col = worksheet.col(5)
     errors_col.width = 256 * 100  # 100 characters for errors
 
+    workbook.save(stream)
+
+
+def create_details_spreadsheet(submission_id, stream):
+    sales_submission = SalesSubmission.objects.get(
+        id=submission_id,
+    )
+    validated = 'No'
+    if sales_submission.validation_status == SalesSubmissionStatuses.VALIDATED:
+        validated = 'Yes'
+
+    icbc_data = IcbcSnapshotData.objects.filter(
+        submission_id=submission_id
+    )
+    organization = sales_submission.organization
+    workbook = xlwt.Workbook('{} Details'.format(organization.name))
+    workbook.protect = True
+
+    descriptor = {
+        'version': 2,
+        'create_time': datetime.utcnow().timestamp(),
+        'organization_id': organization.id,
+        'sheets': []
+    }
+
+    sheet_name = 'Submission Details'
+    worksheet = workbook.add_sheet(sheet_name)
+    worksheet.protect = True
+    descriptor['sheets'].append({
+        'index': 1,
+        'name': sheet_name
+    })
+
+    row = 0
+
+    worksheet.write(row, 0, 'Model Year', style=BOLD)
+    worksheet.write(row, 1, 'Make', style=BOLD)
+    worksheet.write(row, 2, 'Vehicle Model', style=BOLD)
+    worksheet.write(row, 3, 'Retail Sale', style=BOLD)
+    worksheet.write(row, 4, 'VIN', style=BOLD)
+    worksheet.write(row, 5, 'ICBC Model Year', style=BOLD)
+    worksheet.write(row, 6, 'ICBC Make', style=BOLD)
+    worksheet.write(row, 7, 'ICBC Model', style=BOLD)
+    worksheet.write(row, 8, 'Validated', style=BOLD)
+    worksheet.write(row, 9, 'Warning', style=BOLD)
+    worksheet.write(row, 10, 'Reason', style=BOLD)  # why validated
+
+    submission_content = SalesSubmissionContent.objects.filter(
+        submission_id=submission_id,
+        submission__organization_id=organization.id
+    )
+
+    current_vehicle_col_width = 13
+    icbc_match = False
+    for content in submission_content:
+        try:
+            icbc_record = icbc_data.get(vin=content.xls_vin)
+            icbc_match = True
+        except ObjectDoesNotExist:
+            icbc_record = {'model_year': '-', 'model': '-', 'make': '-'}
+            icbc_match = False
+
+        row += 1
+        error = get_error(content)
+
+        date = get_date(
+            content.xls_sale_date,
+            content.xls_date_type,
+            content.xls_date_mode
+        )
+
+        if content.xls_model_year is not None:
+            worksheet.write(
+                row, 0, int(float(content.xls_model_year))
+            )
+        worksheet.write(row, 1, content.xls_make)
+        worksheet.write(row, 2, content.xls_model)
+        if date is not None:
+            worksheet.write(row, 3, date.strftime('%Y-%m-%d'))
+        worksheet.write(row, 4, content.xls_vin)
+        if icbc_match is False:
+            worksheet.write(row, 5, '-')
+            worksheet.write(row, 6, '-')
+            worksheet.write(row, 7, '-')
+        else:
+            worksheet.write(row, 5, int(float(icbc_record.model_year)))
+            worksheet.write(row, 6, icbc_record.make)
+            worksheet.write(row, 7, icbc_record.model_name)
+        worksheet.write(row, 8, validated)
+        worksheet.write(row, 9, error)
+        worksheet.write(row, 10, content.reason)
+        if len(content.xls_model) > current_vehicle_col_width:
+            current_vehicle_col_width = len(content.xls_model)
+
+    vehicle_model_col = worksheet.col(2)
+    vehicle_model_col.width = 256 * (current_vehicle_col_width + 10)
+
+    sales_date_col = worksheet.col(3)
+    sales_date_col.width = 256 * 20  # 20 characters for sales date
+
+    vin_col = worksheet.col(4)
+    vin_col.width = 256 * 30  # 30 characters for VIN
+
+    icbc_modelyear_col = worksheet.col(5)
+    icbc_modelyear_col.width = 256 * 15
+
+    icbc_model_col = worksheet.col(7)
+    icbc_model_col.width = 256 * (current_vehicle_col_width + 10)
+    validated_col = worksheet.col(8)
+    validated_col.width = 256 * 10  # 100 characters for errors
+    warning_col = worksheet.col(9)
+    warning_col.width = 256 * 100  # 100 characters for errors
+    reason_col = worksheet.col(10)
+    reason_col.width = 256 * 100  # 100 characters for errors
     workbook.save(stream)

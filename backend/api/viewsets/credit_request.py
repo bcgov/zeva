@@ -31,7 +31,7 @@ from api.services.credit_transaction import award_credits
 from api.services.minio import minio_put_object
 from api.services.sales_spreadsheet import create_sales_spreadsheet, \
     ingest_sales_spreadsheet, validate_spreadsheet, \
-    create_errors_spreadsheet
+    create_errors_spreadsheet, create_details_spreadsheet
 from api.services.send_email import notifications_credit_application
 from auditable.views import AuditableMixin
 
@@ -455,3 +455,27 @@ class CreditRequestViewset(
         reasons = SalesSubmissionContentReason.objects.all()
 
         return Response(reasons.values_list('reason', flat=True))
+
+    @action(detail=True)
+    def download_details(self, request, pk):
+        """Download a spreadsheet containing submisssion details"""
+        response = HttpResponse(content_type='application/ms-excel')
+        serializer = SalesSubmissionContentSerializer(many=True, read_only=True, context={'request': request})
+        create_details_spreadsheet(pk, response)
+        submission = SalesSubmission.objects.get(
+            id=pk
+        )
+        organization_name = submission.organization.name
+        if submission.organization.short_name:
+            organization_name = submission.organization.short_name
+
+        response['Content-Disposition'] = (
+            'attachment; filename="Details_Submission_{pk}_{org}_{date}.xls"'
+            .format(
+                pk=pk,
+                org=organization_name.replace(' ', '_'),
+                date=datetime.now().strftime(
+                    "_%Y-%m-%d")
+            )
+        )
+        return response
