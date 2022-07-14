@@ -17,3 +17,5 @@ backend/minio/
 .sql.gz
 backend/db.json
 minio/minio_files/.minio.sys/
+
+package-lock.json
