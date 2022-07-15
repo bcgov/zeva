@@ -22,7 +22,7 @@ from api.models.sales_submission_history import SalesSubmissionHistory
 from api.models.sales_submission_content import SalesSubmissionContent
 from api.models.vehicle import Vehicle
 from api.models.icbc_snapshot_data import IcbcSnapshotData
-from api.models.sales_submission_statuses import SalesSubmissionStatuses
+from api.models.record_of_sale_statuses import RecordOfSaleStatuses
 
 logger = logging.getLogger('zeva.sales_spreadsheet')
 
@@ -541,10 +541,7 @@ def create_details_spreadsheet(submission_id, stream):
     sales_submission = SalesSubmission.objects.get(
         id=submission_id,
     )
-    validated = 'No'
-    if sales_submission.validation_status == SalesSubmissionStatuses.VALIDATED:
-        validated = 'Yes'
-
+    
     icbc_data = IcbcSnapshotData.objects.filter(
         submission_id=submission_id
     )
@@ -589,6 +586,10 @@ def create_details_spreadsheet(submission_id, stream):
     current_vehicle_col_width = 13
     icbc_match = False
     for content in submission_content:
+        validated = 'No'
+        if content.record_of_sale:
+            if content.record_of_sale.validation_status == RecordOfSaleStatuses.VALIDATED:
+                validated = 'Yes'
         try:
             icbc_record = icbc_data.get(vin=content.xls_vin)
             icbc_match = True
