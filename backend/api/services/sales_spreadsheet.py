@@ -139,7 +139,7 @@ def add_sales_sheet(**kwargs):
 
     retail_sales_date_col = worksheet.col(4)
     retail_sales_date_col.width = 256 * 20  # 20 characters for sales date
-
+   
     add_vehicle_rows(worksheet, row, vehicles, EDITABLE)
 
 
@@ -349,12 +349,16 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
         model_name = str(row_contents[2].value).strip()
         vin = str(row_contents[3].value)
         date = str(row_contents[4].value).strip()
-
         row_contains_content = False
-
+        
         if len(model_year) > 0 or len(make) > 0 or len(model_name) > 0 or \
                 len(date) > 0:
             row_contains_content = True
+
+        if row_contains_content and row_contents[4].ctype != xlrd.XL_CELL_DATE:
+            raise ValidationError(
+                'Spreadsheet contains a row with an improper date. Please '
+                'try again.')
 
         if row_contains_content and len(vin) < 1:
             raise ValidationError(
