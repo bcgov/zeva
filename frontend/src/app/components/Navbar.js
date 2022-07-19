@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import formatNumeric from '../utilities/formatNumeric';
-import CONFIG from '../config';
-import CustomPropTypes from '../utilities/props';
-import ROUTES_CREDITS from '../routes/Credits';
-import ROUTES_CREDIT_REQUESTS from '../routes/CreditRequests';
-import ROUTES_ORGANIZATIONS from '../routes/Organizations';
-import ROUTES_ROLES from '../routes/Roles';
-import ROUTES_VEHICLES from '../routes/Vehicles';
-import ROUTES_COMPLIANCE from '../routes/Compliance';
+import React, { Component } from "react";
+import { Link, NavLink } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import formatNumeric from "../utilities/formatNumeric";
+import CONFIG from "../config";
+import CustomPropTypes from "../utilities/props";
+import ROUTES_CREDITS from "../routes/Credits";
+import ROUTES_CREDIT_REQUESTS from "../routes/CreditRequests";
+import ROUTES_ORGANIZATIONS from "../routes/Organizations";
+import ROUTES_ROLES from "../routes/Roles";
+import ROUTES_VEHICLES from "../routes/Vehicles";
+import ROUTES_COMPLIANCE from "../routes/Compliance";
 
 class Navbar extends Component {
   constructor(props) {
@@ -25,8 +25,8 @@ class Navbar extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener('click', (e) => {
-      if (!document.getElementById('navbarDropdown').contains(e.target)) {
+    window.addEventListener("click", (e) => {
+      if (!document.getElementById("navbarDropdown").contains(e.target)) {
         const { userMenuCollapsed } = this.state;
 
         if (!userMenuCollapsed) {
@@ -75,14 +75,18 @@ class Navbar extends Component {
           <div className="col-lg-3">
             <div className="logged-in-info">
               <div>
-                <h5 className="organization-name">{user.organization ? user.organization.name : ''}</h5>
+                <h5 className="organization-name">
+                  {user.organization ? user.organization.name : ""}
+                </h5>
                 {!user.isGovernment && user.organization && (
-                <Link
-                  className="credit-balance"
-                  to={ROUTES_CREDITS.LIST}
-                >
-                  Credit Balance: A-{formatNumeric(user.organization.balance.A, 2, true)}/ B-{formatNumeric(user.organization.balance.B, 2, true)}
-                </Link>
+                  <Link
+                    className="credit-balance d-print-none"
+                    to={ROUTES_CREDITS.LIST}
+                  >
+                    Credit Balance: A-
+                    {formatNumeric(user.organization.balance.A, 2, true)}/ B-
+                    {formatNumeric(user.organization.balance.B, 2, true)}
+                  </Link>
                 )}
               </div>
             </div>
@@ -118,29 +122,31 @@ class Navbar extends Component {
               </button>
               <div
                 aria-labelledby="navbarDropdown"
-                className={`dropdown-menu ${userMenuCollapsed ? 'd-none' : ''}`}
+                className={`dropdown-menu ${userMenuCollapsed ? "d-none" : ""}`}
               >
                 {CONFIG.FEATURES.NOTIFICATIONS.ENABLED && (
-                <div className="dropdown-item">
-                  <NavLink
-                    activeClassName="active"
-                    className="notifications"
-                    exact
-                    to="/notifications"
-                  >
-                    <span className="icon">
-                      <FontAwesomeIcon icon="envelope" />
-                    </span>
+                  <div className="dropdown-item">
+                    <NavLink
+                      activeClassName="active"
+                      className="notifications"
+                      exact
+                      to="/notifications"
+                    >
+                      <span className="icon">
+                        <FontAwesomeIcon icon="envelope" />
+                      </span>
 
-                    <span>Email Notifications</span>
-                  </NavLink>
-                </div>
+                      <span>Email Notifications</span>
+                    </NavLink>
+                  </div>
                 )}
                 <div className="dropdown-item">
                   <button
-                    onClick={() => keycloak.logout({
-                      redirectUri: CONFIG.KEYCLOAK.LOGOUT_URL,
-                    })}
+                    onClick={() =>
+                      keycloak.logout({
+                        redirectUri: CONFIG.KEYCLOAK.LOGOUT_URL,
+                      })
+                    }
                     type="button"
                   >
                     <span className="icon">
@@ -154,146 +160,154 @@ class Navbar extends Component {
             </li>
           </ul>
 
-          <div className={`collapse navbar-collapse ${collapsed === false ? 'show' : ''}`}>
+          <div
+            className={`collapse navbar-collapse ${
+              collapsed === false ? "show" : ""
+            }`}
+          >
             <ul className="navbar-nav mr-auto">
               <li className="nav-item">
-                <NavLink
-                  activeClassName="active"
-                  exact
-                  to="/"
-                >
+                <NavLink activeClassName="active" exact to="/">
                   <span>Home</span>
                 </NavLink>
               </li>
-              {CONFIG.FEATURES.COMPLIANCE_REPORT.ENABLED
-              && ((!user.isGovernment && user.hasPermission('EDIT_SALES'))
-              || (user.isGovernment && user.hasPermission('VIEW_SALES')))
-              && (
-              <li className="nav-item">
-                <NavLink
-                  activeClassName="active"
-                  isActive={(match, location) => {
-                    if (location.pathname.toLowerCase().indexOf('compliance') === 1) {
-                      return true;
-                    }
+              {CONFIG.FEATURES.COMPLIANCE_REPORT.ENABLED &&
+                ((!user.isGovernment && user.hasPermission("EDIT_SALES")) ||
+                  (user.isGovernment && user.hasPermission("VIEW_SALES"))) && (
+                  <li className="nav-item">
+                    <NavLink
+                      activeClassName="active"
+                      isActive={(match, location) => {
+                        if (
+                          location.pathname
+                            .toLowerCase()
+                            .indexOf("compliance") === 1
+                        ) {
+                          return true;
+                        }
 
-                    if (!match) {
-                      return false;
-                    }
+                        if (!match) {
+                          return false;
+                        }
 
-                    return true;
-                  }}
-                  to={CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED ? ROUTES_COMPLIANCE.REPORTS : ROUTES_COMPLIANCE.RATIOS}
-                >
-                  <span>Compliance Reporting</span>
-                </NavLink>
-              </li>
-              )}
-              {CONFIG.FEATURES.CREDIT_TRANSACTIONS.ENABLED
-              && typeof user.hasPermission === 'function'
-              && ((!user.isGovernment && user.hasPermission('EDIT_SALES'))
-              || (user.isGovernment && user.hasPermission('VIEW_SALES')))
-              && (
-              <li className="nav-item">
-                <NavLink
-                  activeClassName="active"
-                  isActive={(match, location) => {
-                    if (location.pathname.toLowerCase().indexOf('credit-') === 1) {
-                      return true;
-                    }
-
-                    if (!match) {
-                      return false;
-                    }
-
-                    return true;
-                  }}
-                  to={user.isGovernment ? ROUTES_CREDIT_REQUESTS.LIST : ROUTES_CREDITS.LIST}
-                >
-                  <span>Credit Transactions</span>
-                </NavLink>
-              </li>
-              )}
-
-              {typeof user.hasPermission === 'function'
-              && user.hasPermission('VIEW_ZEV')
-              && (
-                <li className="nav-item">
-                  <NavLink
-                    activeClassName="active"
-                    to={ROUTES_VEHICLES.LIST}
-                  >
-                    <span>ZEV Models</span>
-                  </NavLink>
-                </li>
-              )}
-
-              {typeof user.hasPermission === 'function'
-              && user.hasPermission('VIEW_ORGANIZATIONS')
-              && user.isGovernment
-              && (
-                <li className="nav-item">
-                  <NavLink
-                    activeClassName="active"
-                    isActive={(match, location) => {
-                      if (!match) {
-                        return false;
-                      }
-
-                      if (location.pathname.includes('/organizations/mine')) {
-                        return false;
-                      }
-
-                      return true;
-                    }}
-                    to={ROUTES_ORGANIZATIONS.LIST}
-                  >
-                    <span>Vehicle Suppliers</span>
-                  </NavLink>
-                </li>
-              )}
-              {typeof user.hasPermission === 'function'
-              && (user.hasPermission('EDIT_ORGANIZATIONS') || user.hasPermission('EDIT_ORGANIZATION_INFORMATION'))
-              && (
-                <li className="nav-item">
-                  <NavLink
-                    activeClassName="active"
-                    isActive={(match, location) => {
-                      if (location.pathname.toLowerCase().includes('users')
-                      && !location.pathname.toLowerCase().includes('organizations/')) {
                         return true;
+                      }}
+                      to={
+                        CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED
+                          ? ROUTES_COMPLIANCE.REPORTS
+                          : ROUTES_COMPLIANCE.RATIOS
                       }
+                    >
+                      <span>Compliance Reporting</span>
+                    </NavLink>
+                  </li>
+                )}
+              {CONFIG.FEATURES.CREDIT_TRANSACTIONS.ENABLED &&
+                typeof user.hasPermission === "function" &&
+                ((!user.isGovernment && user.hasPermission("EDIT_SALES")) ||
+                  (user.isGovernment && user.hasPermission("VIEW_SALES"))) && (
+                  <li className="nav-item">
+                    <NavLink
+                      activeClassName="active"
+                      isActive={(match, location) => {
+                        if (
+                          location.pathname.toLowerCase().indexOf("credit-") ===
+                          1
+                        ) {
+                          return true;
+                        }
 
-                      if (location.pathname.toLowerCase().includes('sales')) {
+                        if (!match) {
+                          return false;
+                        }
+
                         return true;
+                      }}
+                      to={
+                        user.isGovernment
+                          ? ROUTES_CREDIT_REQUESTS.LIST
+                          : ROUTES_CREDITS.LIST
                       }
+                    >
+                      <span>Credit Transactions</span>
+                    </NavLink>
+                  </li>
+                )}
 
-                      if (!match) {
-                        return false;
-                      }
+              {typeof user.hasPermission === "function" &&
+                user.hasPermission("VIEW_ZEV") && (
+                  <li className="nav-item">
+                    <NavLink activeClassName="active" to={ROUTES_VEHICLES.LIST}>
+                      <span>ZEV Models</span>
+                    </NavLink>
+                  </li>
+                )}
 
-                      return true;
-                    }}
-                    to={ROUTES_ORGANIZATIONS.MINE}
-                  >
-                    <span>Administration</span>
-                  </NavLink>
-                </li>
-              )}
+              {typeof user.hasPermission === "function" &&
+                user.hasPermission("VIEW_ORGANIZATIONS") &&
+                user.isGovernment && (
+                  <li className="nav-item">
+                    <NavLink
+                      activeClassName="active"
+                      isActive={(match, location) => {
+                        if (!match) {
+                          return false;
+                        }
 
-              {CONFIG.FEATURES.ROLES.ENABLED
-              && typeof user.hasPermission === 'function'
-              && user.hasPermission('VIEW_ROLES_AND_PERMISSIONS')
-              && (
-                <li className="nav-item">
-                  <NavLink
-                    activeClassName="active"
-                    to={ROUTES_ROLES.LIST}
-                  >
-                    <span>Roles</span>
-                  </NavLink>
-                </li>
-              )}
+                        if (location.pathname.includes("/organizations/mine")) {
+                          return false;
+                        }
+
+                        return true;
+                      }}
+                      to={ROUTES_ORGANIZATIONS.LIST}
+                    >
+                      <span>Vehicle Suppliers</span>
+                    </NavLink>
+                  </li>
+                )}
+              {typeof user.hasPermission === "function" &&
+                (user.hasPermission("EDIT_ORGANIZATIONS") ||
+                  user.hasPermission("EDIT_ORGANIZATION_INFORMATION")) && (
+                  <li className="nav-item">
+                    <NavLink
+                      activeClassName="active"
+                      isActive={(match, location) => {
+                        if (
+                          location.pathname.toLowerCase().includes("users") &&
+                          !location.pathname
+                            .toLowerCase()
+                            .includes("organizations/")
+                        ) {
+                          return true;
+                        }
+
+                        if (location.pathname.toLowerCase().includes("sales")) {
+                          return true;
+                        }
+
+                        if (!match) {
+                          return false;
+                        }
+
+                        return true;
+                      }}
+                      to={ROUTES_ORGANIZATIONS.MINE}
+                    >
+                      <span>Administration</span>
+                    </NavLink>
+                  </li>
+                )}
+
+              {CONFIG.FEATURES.ROLES.ENABLED &&
+                typeof user.hasPermission === "function" &&
+                user.hasPermission("VIEW_ROLES_AND_PERMISSIONS") && (
+                  <li className="nav-item">
+                    <NavLink activeClassName="active" to={ROUTES_ROLES.LIST}>
+                      <span>Roles</span>
+                    </NavLink>
+                  </li>
+                )}
             </ul>
           </div>
         </div>

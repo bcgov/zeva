@@ -189,7 +189,8 @@ const AssessmentDetailsPage = (props) => {
           <h2 className="mb-2 mt-3">{reportYear} Model Year Report</h2>
         </div>
       </div>
-      <div className="row">
+
+      <div className="row d-print-none">
         <div className="col-12">
           <ComplianceReportTabs
             active="assessment"
@@ -268,57 +269,56 @@ const AssessmentDetailsPage = (props) => {
       <div className="row mt-3">
         <div className="col-12">
           <div id="compliance-obligation-page">
-            {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-              !user.isGovernment &&
-              statuses.assessment.status === "ASSESSED" &&
-              ((!supplementaryId && supplementaryStatus === "DRAFT") ||
-                (supplementaryStatus === "DRAFT" && createdByGov) ||
-                supplementaryStatus === "DELETED" ||
-                supplementaryStatus === "ASSESSED") && (
-                <button
-                  className="btn button primary float-right"
-                  onClick={() => {
-                    history.push(
-                      `${ROUTES_SUPPLEMENTARY.CREATE.replace(/:id/g, id)}?new=Y`
-                    );
-                  }}
-                  type="button"
-                >
-                  Create Supplementary Report
-                </button>
-              )}
-            {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-              user.isGovernment &&
-              user.hasPermission("RECOMMEND_COMPLIANCE_REPORT") &&
-              statuses.assessment.status === "ASSESSED" &&
-              ((!supplementaryId && supplementaryStatus === "DRAFT") ||
-                (supplementaryStatus === "DRAFT" && !createdByGov) ||
-                supplementaryStatus === "DELETED" ||
-                supplementaryStatus === "ASSESSED") && (
-                <button
-                  className="btn button primary float-right"
-                  onClick={() => {
-                    history.push(
-                      `${ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(
-                        /:id/g,
-                        id
-                      )}?new=Y`
-                    );
-                  }}
-                  type="button"
-                >
-                  Create Reassessment Report
-                </button>
-              )}
-            <span className="float-right">
-              <Button
-                buttonType="button"
-                optionalClassname="btn button primary"
-                optionalText="Print Page"
-                action={() => {
-                  console.log("print!");
-                }}
-              />
+            <span className="float-right d-print-none">
+              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
+                !user.isGovernment &&
+                statuses.assessment.status === "ASSESSED" &&
+                ((!supplementaryId && supplementaryStatus === "DRAFT") ||
+                  (supplementaryStatus === "DRAFT" && createdByGov) ||
+                  supplementaryStatus === "DELETED" ||
+                  supplementaryStatus === "ASSESSED") && (
+                  <button
+                    className="btn button primary"
+                    onClick={() => {
+                      history.push(
+                        `${ROUTES_SUPPLEMENTARY.CREATE.replace(
+                          /:id/g,
+                          id
+                        )}?new=Y`
+                      );
+                    }}
+                    type="button"
+                  >
+                    Create Supplementary Report
+                  </button>
+                )}
+
+              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
+                user.isGovernment &&
+                user.hasPermission("RECOMMEND_COMPLIANCE_REPORT") &&
+                statuses.assessment.status === "ASSESSED" &&
+                ((!supplementaryId && supplementaryStatus === "DRAFT") ||
+                  (supplementaryStatus === "DRAFT" && !createdByGov) ||
+                  supplementaryStatus === "DELETED" ||
+                  supplementaryStatus === "ASSESSED") && (
+                  <>
+                    <button
+                      className="btn button primary"
+                      onClick={() => {
+                        history.push(
+                          `${ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(
+                            /:id/g,
+                            id
+                          )}?new=Y`
+                        );
+                      }}
+                      type="button"
+                    >
+                      Create Reassessment Report
+                    </button>
+                  </>
+                )}
+
               {analystAction &&
                 ["RETURNED", "SUBMITTED", "UNSAVED"].indexOf(
                   statuses.assessment.status
@@ -335,6 +335,14 @@ const AssessmentDetailsPage = (props) => {
                     Edit
                   </button>
                 )}
+              <Button
+                buttonType="button"
+                optionalClassname="ml-2 mr-2 button btn"
+                optionalText="Print Page"
+                action={() => {
+                  window.print();
+                }}
+              />
             </span>
 
             <h3>Notice of Assessment</h3>
@@ -476,11 +484,11 @@ const AssessmentDetailsPage = (props) => {
         ["ASSESSED"].indexOf(statuses.assessment.status) < 0 && (
           <>
             {["RECOMMENDED"].indexOf(statuses.assessment.status) < 0 && (
-              <h3 className="mt-4 mb-1">
+              <h3 className="mt-4 mb-1 d-print-none">
                 Analyst Recommended Director Assessment
               </h3>
             )}
-            <div className="row mb-3">
+            <div className="row mb-3 d-print-none">
               <div className="col-12">
                 <div className="grey-border-area comment-box p-3 mt-2">
                   <div>
@@ -551,7 +559,7 @@ const AssessmentDetailsPage = (props) => {
           </>
         )}
 
-      <div className="row">
+      <div className="row d-print-none">
         <div className="col-sm-12">
           <div className="action-bar mt-0">
             <span className="left-content">
