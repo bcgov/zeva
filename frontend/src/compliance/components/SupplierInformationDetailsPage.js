@@ -1,16 +1,16 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from "react";
+import PropTypes from "prop-types";
 
-import Button from '../../app/components/Button';
-import Loading from '../../app/components/Loading';
-import Modal from '../../app/components/Modal';
-import history from '../../app/History';
-import CustomPropTypes from '../../app/utilities/props';
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
-import FormatNumeric from '../../app/utilities/formatNumeric';
-import ComplianceReportAlert from './ComplianceReportAlert';
-import ComplianceReportSignOff from './ComplianceReportSignOff';
+import Button from "../../app/components/Button";
+import Loading from "../../app/components/Loading";
+import Modal from "../../app/components/Modal";
+import history from "../../app/History";
+import CustomPropTypes from "../../app/utilities/props";
+import ROUTES_COMPLIANCE from "../../app/routes/Compliance";
+import FormatNumeric from "../../app/utilities/formatNumeric";
+import ComplianceReportAlert from "./ComplianceReportAlert";
+import ComplianceReportSignOff from "./ComplianceReportSignOff";
 
 const SupplierInformationDetailsPage = (props) => {
   const {
@@ -43,17 +43,23 @@ const SupplierInformationDetailsPage = (props) => {
     <Modal
       cancelLabel="No"
       confirmLabel="Yes"
-      handleCancel={() => { setShowModal(false); }}
-      handleSubmit={() => { setShowModal(false); handleCancelConfirmation(); }}
+      handleCancel={() => {
+        setShowModal(false);
+      }}
+      handleSubmit={() => {
+        setShowModal(false);
+        handleCancelConfirmation();
+      }}
       modalClass="w-75"
       showModal={showModal}
       confirmClass="button primary"
     >
       <div className="my-3">
         <h3>
-          Do you want to edit this page? This action will allow you to make further changes to{' '}
-          this information, it will also query the database to retrieve any recent updates.{' '}
-          Your previous confirmation will be cleared.
+          Do you want to edit this page? This action will allow you to make
+          further changes to this information, it will also query the database
+          to retrieve any recent updates. Your previous confirmation will be
+          cleared.
         </h3>
       </div>
     </Modal>
@@ -61,12 +67,12 @@ const SupplierInformationDetailsPage = (props) => {
 
   assertions.forEach((assertion) => {
     if (checkboxes.indexOf(assertion.id) >= 0) {
-      disabledCheckboxes = 'disabled';
+      disabledCheckboxes = "disabled";
     }
   });
 
-  if (['SAVED', 'UNSAVED'].indexOf(statuses.supplierInformation.status) < 0) {
-    disabledCheckboxes = 'disabled';
+  if (["SAVED", "UNSAVED"].indexOf(statuses.supplierInformation.status) < 0) {
+    disabledCheckboxes = "disabled";
     disabledInputs = true;
   }
 
@@ -79,30 +85,43 @@ const SupplierInformationDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          {details && details.supplierInformation && details.supplierInformation.history && (
-            <ComplianceReportAlert
-              next="Consumer Sales"
-              report={details.supplierInformation}
-              status={statuses.supplierInformation}
-              type="Supplier Information"
-            />
-          )}
+          {details &&
+            details.supplierInformation &&
+            details.supplierInformation.history && (
+              <ComplianceReportAlert
+                next="Consumer Sales"
+                report={details.supplierInformation}
+                status={statuses.supplierInformation}
+                type="Supplier Information"
+              />
+            )}
         </div>
       </div>
       <div className="row mt-1">
         <div className="col-12">
           <div className="p-3 supplier-information">
-            {!user.isGovernment && statuses.supplierInformation.status === 'CONFIRMED' && (
-            <button
-              className="btn button primary float-right"
-              onClick={() => {
-                setShowModal(true);
-              }}
-              type="button"
-            >
-              Edit
-            </button>
-            )}
+            <span className="float-right d-print-none">
+              {!user.isGovernment &&
+                statuses.supplierInformation.status === "CONFIRMED" && (
+                  <button
+                    className="btn button primary"
+                    onClick={() => {
+                      setShowModal(true);
+                    }}
+                    type="button"
+                  >
+                    Edit
+                  </button>
+                )}
+              <Button
+                buttonType="button"
+                optionalClassname="ml-2 mr-2 button btn"
+                optionalText="Print Page"
+                action={() => {
+                  window.print();
+                }}
+              />
+            </span>
             <h3>Supplier Information</h3>
             <div className="clear">
               <div className="mt-3 row">
@@ -115,8 +134,8 @@ const SupplierInformationDetailsPage = (props) => {
                   </div>
                 </div>
               </div>
-              {details.organization.organizationAddress
-                && details.organization.organizationAddress.length > 0 && (
+              {details.organization.organizationAddress &&
+                details.organization.organizationAddress.length > 0 && (
                   <>
                     <div className="mt-3 row">
                       <div className="col-sm-12 col-md-6">
@@ -125,19 +144,17 @@ const SupplierInformationDetailsPage = (props) => {
                             <h4 className="d-inline">Service Address:</h4>
                           </div>
                           {details.organization.organizationAddress.map(
-                            (address) => address.addressType.addressType === 'Service' && (
-                              <div className="col-7" key={address.id}>
-                                {address.representativeName && (
-                                  <div> {address.representativeName} </div>
-                                )}
-                                {address.addressLine1}{' '}
-                                {address.addressLine2}{' '}
-                                {address.city}{' '}
-                                {address.state}{' '}
-                                {address.country}{' '}
-                                {address.postalCode}
-                              </div>
-                            ),
+                            (address) =>
+                              address.addressType.addressType === "Service" && (
+                                <div className="col-7" key={address.id}>
+                                  {address.representativeName && (
+                                    <div> {address.representativeName} </div>
+                                  )}
+                                  {address.addressLine1} {address.addressLine2}{" "}
+                                  {address.city} {address.state}{" "}
+                                  {address.country} {address.postalCode}
+                                </div>
+                              )
                           )}
                         </div>
                       </div>
@@ -150,25 +167,23 @@ const SupplierInformationDetailsPage = (props) => {
                             <h4 className="d-inline">Records Address</h4>
                           </div>
                           {details.organization.organizationAddress.map(
-                            (address) => address.addressType.addressType === 'Records' && (
-                              <div className="col-7" key={address.id}>
-                                {address.representativeName && (
-                                  <div> {address.representativeName} </div>
-                                )}
-                                {address.addressLine1} {' '}
-                                {address.addressLine2} {' '}
-                                {address.city}{' '}
-                                {address.state}{' '}
-                                {address.country}{' '}
-                                {address.postalCode}
-                              </div>
-                            ),
+                            (address) =>
+                              address.addressType.addressType === "Records" && (
+                                <div className="col-7" key={address.id}>
+                                  {address.representativeName && (
+                                    <div> {address.representativeName} </div>
+                                  )}
+                                  {address.addressLine1} {address.addressLine2}{" "}
+                                  {address.city} {address.state}{" "}
+                                  {address.country} {address.postalCode}
+                                </div>
+                              )
                           )}
                         </div>
                       </div>
                     </div>
                   </>
-              )}
+                )}
               <div className="mt-1 row">
                 <div className="col-sm-12 col-md-6">
                   <div className="mt-2 row">
@@ -185,18 +200,21 @@ const SupplierInformationDetailsPage = (props) => {
                     <span className="col-4">
                       <h4 className="d-inline">3 Year Average LDV Sales: </h4>
                     </span>
-                    <span className="col-6">{FormatNumeric(details.organization.avgLdvSales, 0)}</span>
+                    <span className="col-6">
+                      {FormatNumeric(details.organization.avgLdvSales, 0)}
+                    </span>
                   </div>
                 </div>
-                {details.organization.ldvSales
-                  && details.organization.ldvSales.length > 0 && (
+                {details.organization.ldvSales &&
+                  details.organization.ldvSales.length > 0 && (
                     <div className="col-sm-12 col-md-5">
                       <div className="supplier-information d-inline-block">
                         <div className="previous-ldv-sales d-flex flex-column mt-2 px-3 py-1">
                           {details.organization.ldvSales.map((yearSale) => (
                             <div className="model-year-ldv" key={yearSale.id}>
                               <label className="text-blue mr-4 font-weight-bold">
-                                {yearSale.modelYear} Model Year LDV Sales\Leases:
+                                {yearSale.modelYear} Model Year LDV
+                                Sales\Leases:
                               </label>
                               <label className="sales-numbers">
                                 {FormatNumeric(yearSale.ldvSales, 0)}
@@ -206,11 +224,11 @@ const SupplierInformationDetailsPage = (props) => {
                         </div>
                       </div>
                     </div>
-                )}
+                  )}
               </div>
               <div className="d-block mt-3">
                 If there is an error in any of the information above, please
-                contact:{' '}
+                contact:{" "}
                 <a href="mailto:ZEVRegulation@gov.bc.ca">
                   ZEVRegulation@gov.bc.ca
                 </a>
@@ -225,38 +243,36 @@ const SupplierInformationDetailsPage = (props) => {
               </div>
               <div className="ldv-makes p-3">
                 <form disabled={disabledInputs} onSubmit={handleSubmitMake}>
-                  {statuses && (
-                    (statuses.assessment && statuses.assessment.status !== 'ASSESSED')
-                    || !statuses.assessment
-                  ) && (
-                  <div className="form-row">
-                    <div className="col-sm-8 col-xs-12">
-                      <input
-                        className="form-control mr-3"
-                        disabled={disabledInputs}
-                        onChange={handleChangeMake}
-                        type="text"
-                        value={make}
-                      />
-                    </div>
-                    <div className="col">
-                      <button
-                        className="btn btn-primary mb-3"
-                        disabled={disabledInputs}
-                        type="submit"
-                      >
-                        Add Make
-                      </button>
-                    </div>
-                  </div>
-                  )}
+                  {statuses &&
+                    ((statuses.assessment &&
+                      statuses.assessment.status !== "ASSESSED") ||
+                      !statuses.assessment) && (
+                      <div className="form-row">
+                        <div className="col-sm-8 col-xs-12">
+                          <input
+                            className="form-control mr-3"
+                            disabled={disabledInputs}
+                            onChange={handleChangeMake}
+                            type="text"
+                            value={make}
+                          />
+                        </div>
+                        <div className="col">
+                          <button
+                            className="btn btn-primary mb-3"
+                            disabled={disabledInputs}
+                            type="submit"
+                          >
+                            Add Make
+                          </button>
+                        </div>
+                      </div>
+                    )}
                 </form>
 
                 {makes.length > 0 && (
                   <div
-                    className={`list p-2 ${
-                      disabledInputs ? 'disabled' : ''
-                    }`}
+                    className={`list p-2 ${disabledInputs ? "disabled" : ""}`}
                   >
                     {makes.map((item, index) => (
                       <div className="form-row my-2" key={index}>
@@ -295,7 +311,7 @@ const SupplierInformationDetailsPage = (props) => {
         </div>
       </div>
 
-      <div className="row">
+      <div className="row d-print-none">
         <div className="col-sm-12">
           <div className="action-bar mt-0">
             <span className="left-content">
@@ -305,13 +321,13 @@ const SupplierInformationDetailsPage = (props) => {
               <Button
                 buttonType="next"
                 disabled={
-                  ['UNSAVED'].indexOf(statuses.supplierInformation.status) >= 0
+                  ["UNSAVED"].indexOf(statuses.supplierInformation.status) >= 0
                 }
                 optionalClassname="button"
                 optionalText="Next"
                 action={() => {
                   history.push(
-                    ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id),
+                    ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(":id", id)
                   );
                 }}
               />
@@ -319,8 +335,8 @@ const SupplierInformationDetailsPage = (props) => {
                 <Button
                   buttonType="save"
                   disabled={
-                    ['SAVED', 'UNSAVED'].indexOf(
-                      statuses.supplierInformation.status,
+                    ["SAVED", "UNSAVED"].indexOf(
+                      statuses.supplierInformation.status
                     ) < 0
                   }
                   optionalClassname="button primary"
@@ -338,8 +354,7 @@ const SupplierInformationDetailsPage = (props) => {
   );
 };
 
-SupplierInformationDetailsPage.defaultProps = {
-};
+SupplierInformationDetailsPage.defaultProps = {};
 
 SupplierInformationDetailsPage.propTypes = {
   details: PropTypes.shape({
@@ -359,7 +374,7 @@ SupplierInformationDetailsPage.propTypes = {
   user: CustomPropTypes.user.isRequired,
   assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   checkboxes: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
   ).isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   disabledCheckboxes: PropTypes.string.isRequired,
