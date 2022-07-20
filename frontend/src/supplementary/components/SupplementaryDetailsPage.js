@@ -390,7 +390,7 @@ const SupplementaryDetailsPage = (props) => {
       <div className="supplementary-form mt-2">
         <Button
           buttonType="button"
-          optionalClassname="ml-2 mr-2 button btn float-right"
+          optionalClassname="ml-2 mr-2 button btn float-right d-print-none"
           optionalText="Print Page"
           action={() => {
             window.print();
