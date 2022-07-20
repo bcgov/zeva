@@ -350,15 +350,14 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
         vin = str(row_contents[3].value)
         date = str(row_contents[4].value).strip()
         row_contains_content = False
-        
         if len(model_year) > 0 or len(make) > 0 or len(model_name) > 0 or \
                 len(date) > 0:
             row_contains_content = True
 
         if row_contains_content and row_contents[4].ctype != xlrd.XL_CELL_DATE:
             raise ValidationError(
-                'Spreadsheet contains a row with an improper date. Please '
-                'try again.')
+                'Spreadsheet contains a row with an improper date on row {}. Please '
+                'try again.'.format(row + 1))
 
         if row_contains_content and len(vin) < 1:
             raise ValidationError(
