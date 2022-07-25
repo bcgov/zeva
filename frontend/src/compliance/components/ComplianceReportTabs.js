@@ -1,94 +1,124 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { Link, useParams } from 'react-router-dom';
+import PropTypes from "prop-types";
+import React from "react";
+import { Link, useParams } from "react-router-dom";
 
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
+import ROUTES_COMPLIANCE from "../../app/routes/Compliance";
 
 const ComplianceReportTabs = (props) => {
   const { active, reportStatuses, user } = props;
   const { id } = useParams();
-  const disableOtherTabs = reportStatuses.supplierInformation && reportStatuses.supplierInformation.status === 'UNSAVED';
-  const disableAssessment = (reportStatuses.reportSummary && (
-    ['DRAFT'].indexOf(reportStatuses.reportSummary.status) >= 0
-  ) && user.isGovernment)
-    || (reportStatuses.assessment && reportStatuses.assessment.status !== 'ASSESSED' && !user.isGovernment);
+  const disableOtherTabs =
+    reportStatuses.supplierInformation &&
+    reportStatuses.supplierInformation.status === "UNSAVED";
+  const disableAssessment =
+    (reportStatuses.reportSummary &&
+      ["DRAFT"].indexOf(reportStatuses.reportSummary.status) >= 0 &&
+      user.isGovernment) ||
+    (reportStatuses.assessment &&
+      reportStatuses.assessment.status !== "ASSESSED" &&
+      !user.isGovernment);
 
   return (
     <ul
-      className="nav nav-pills nav-justified compliance-report-tabs"
+      className="nav nav-pills nav-justified compliance-report-tabs d-print-none"
       key="tabs"
       role="tablist"
     >
       <li
-        className={`nav-item ${(active === 'supplier-information') ? 'active' : ''} ${reportStatuses.supplierInformation ? reportStatuses.supplierInformation.status : ''}`}
+        className={`nav-item ${
+          active === "supplier-information" ? "active" : ""
+        } ${
+          reportStatuses.supplierInformation
+            ? reportStatuses.supplierInformation.status
+            : ""
+        }`}
         role="presentation"
       >
-        <Link to={ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', id)}>Supplier Information</Link>
+        <Link
+          to={ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(":id", id)}
+        >
+          Supplier Information
+        </Link>
       </li>
       <li
-        className={
-          `nav-item
-          ${(active === 'consumer-sales') ? ' active ' : ' '}
-          ${reportStatuses.consumerSales ? reportStatuses.consumerSales.status : ''}
-          `
-        }
+        className={`nav-item
+          ${active === "consumer-sales" ? " active " : " "}
+          ${
+            reportStatuses.consumerSales
+              ? reportStatuses.consumerSales.status
+              : ""
+          }
+          `}
         role="presentation"
       >
-        {disableOtherTabs && (
-          <span className="disabled">Consumer Sales</span>
-        )}
+        {disableOtherTabs && <span className="disabled">Consumer Sales</span>}
         {!disableOtherTabs && (
-          <Link to={ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id)}>Consumer ZEV Sales</Link>
+          <Link to={ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(":id", id)}>
+            Consumer ZEV Sales
+          </Link>
         )}
       </li>
       <li
-        className={
-          `nav-item
-          ${(active === 'credit-activity') ? ' active ' : ' '}
-          ${reportStatuses.complianceObligation ? reportStatuses.complianceObligation.status : ''}
-          `
-        }
+        className={`nav-item
+          ${active === "credit-activity" ? " active " : " "}
+          ${
+            reportStatuses.complianceObligation
+              ? reportStatuses.complianceObligation.status
+              : ""
+          }
+          `}
         role="presentation"
       >
         {disableOtherTabs && (
           <span className="disabled">Compliance Obligation</span>
         )}
         {!disableOtherTabs && (
-          <Link to={ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(':id', id)}>Compliance Obligation</Link>
+          <Link
+            to={ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(":id", id)}
+          >
+            Compliance Obligation
+          </Link>
         )}
       </li>
       <li
-        className={
-          `nav-item
-          ${(active === 'summary') ? ' active ' : ' '}
-          ${reportStatuses.reportSummary ? reportStatuses.reportSummary.status : ''}
-          ${reportStatuses.assessment ? reportStatuses.assessment.status : ''}
-          `
-      }
+        className={`nav-item
+          ${active === "summary" ? " active " : " "}
+          ${
+            reportStatuses.reportSummary
+              ? reportStatuses.reportSummary.status
+              : ""
+          }
+          ${reportStatuses.assessment ? reportStatuses.assessment.status : ""}
+          `}
         role="presentation"
       >
-        {disableOtherTabs && (
-          <span className="disabled">Summary</span>
-        )}
+        {disableOtherTabs && <span className="disabled">Summary</span>}
         {!disableOtherTabs && (
-          <Link to={ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id)}>Summary</Link>
+          <Link to={ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(":id", id)}>
+            Summary
+          </Link>
         )}
       </li>
       <li
-        className={
-          `nav-item
-          ${(active === 'assessment') ? ' active ' : ' '}
-          ${reportStatuses.assessment ? reportStatuses.assessment.status : ''}
-          ${reportStatuses.assessment && reportStatuses.assessment.status === 'UNSAVED' ? 'SAVED' : ''}
-          `
-        }
+        className={`nav-item
+          ${active === "assessment" ? " active " : " "}
+          ${reportStatuses.assessment ? reportStatuses.assessment.status : ""}
+          ${
+            reportStatuses.assessment &&
+            reportStatuses.assessment.status === "UNSAVED"
+              ? "SAVED"
+              : ""
+          }
+          `}
         role="presentation"
       >
         {(disableOtherTabs || disableAssessment) && (
           <span className="disabled">Assessment</span>
         )}
         {!disableOtherTabs && !disableAssessment && (
-          <Link to={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id)}>Assessment</Link>
+          <Link to={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(":id", id)}>
+            Assessment
+          </Link>
         )}
       </li>
     </ul>
@@ -97,11 +127,11 @@ const ComplianceReportTabs = (props) => {
 
 ComplianceReportTabs.defaultProps = {
   reportStatuses: {
-    assessment: '',
-    consumerSales: '',
-    creditActivity: '',
-    reportSummary: '',
-    supplierInformation: '',
+    assessment: "",
+    consumerSales: "",
+    creditActivity: "",
+    reportSummary: "",
+    supplierInformation: "",
   },
 };
 

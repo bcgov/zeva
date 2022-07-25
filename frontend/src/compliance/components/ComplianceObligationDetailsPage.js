@@ -1,18 +1,18 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import Button from '../../app/components/Button';
-import Loading from '../../app/components/Loading';
-import CustomPropTypes from '../../app/utilities/props';
-import ComplianceReportAlert from './ComplianceReportAlert';
-import ComplianceObligationAmountsTable from './ComplianceObligationAmountsTable';
-import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable';
-import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued';
-import ComplianceReportSignoff from './ComplianceReportSignOff';
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import Button from "../../app/components/Button";
+import Loading from "../../app/components/Loading";
+import CustomPropTypes from "../../app/utilities/props";
+import ComplianceReportAlert from "./ComplianceReportAlert";
+import ComplianceObligationAmountsTable from "./ComplianceObligationAmountsTable";
+import ComplianceObligationReductionOffsetTable from "./ComplianceObligationReductionOffsetTable";
+import ComplianceObligationTableCreditsIssued from "./ComplianceObligationTableCreditsIssued";
+import ComplianceReportSignoff from "./ComplianceReportSignOff";
 
-import Modal from '../../app/components/Modal';
-import history from '../../app/History';
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
+import Modal from "../../app/components/Modal";
+import history from "../../app/History";
+import ROUTES_COMPLIANCE from "../../app/routes/Compliance";
 
 const ComplianceObligationDetailsPage = (props) => {
   const {
@@ -43,24 +43,30 @@ const ComplianceObligationDetailsPage = (props) => {
   } = props;
 
   const [showModal, setShowModal] = useState(false);
-  let disabledCheckboxes = '';
-  let hoverText = '';
+  let disabledCheckboxes = "";
+  let hoverText = "";
 
   const modal = (
     <Modal
       cancelLabel="No"
       confirmLabel="Yes"
-      handleCancel={() => { setShowModal(false); }}
-      handleSubmit={() => { setShowModal(false); handleCancelConfirmation(); }}
+      handleCancel={() => {
+        setShowModal(false);
+      }}
+      handleSubmit={() => {
+        setShowModal(false);
+        handleCancelConfirmation();
+      }}
       modalClass="w-75"
       showModal={showModal}
       confirmClass="button primary"
     >
       <div className="my-3">
         <h3>
-          Do you want to edit this page? This action will allow you to make further changes to{' '}
-          this information, it will also query the database to retrieve any recent updates.{' '}
-          Your previous confirmation will be cleared.
+          Do you want to edit this page? This action will allow you to make
+          further changes to this information, it will also query the database
+          to retrieve any recent updates. Your previous confirmation will be
+          cleared.
         </h3>
       </div>
     </Modal>
@@ -68,13 +74,14 @@ const ComplianceObligationDetailsPage = (props) => {
 
   assertions.forEach((assertion) => {
     if (checkboxes.indexOf(assertion.id) >= 0) {
-      disabledCheckboxes = 'disabled';
+      disabledCheckboxes = "disabled";
     }
   });
 
-  if (!creditReductionSelection || sales === '') {
-    disabledCheckboxes = 'disabled';
-    hoverText = 'You must enter an LDV Sales Total and select a ZEV class credit preference for your Unspecified ZEV Class Credit Reduction';
+  if (!creditReductionSelection || sales === "") {
+    disabledCheckboxes = "disabled";
+    hoverText =
+      "You must enter an LDV Sales Total and select a ZEV class credit preference for your Unspecified ZEV Class Credit Reduction";
   }
 
   if (loading) {
@@ -90,29 +97,42 @@ const ComplianceObligationDetailsPage = (props) => {
       </div>
       <div className="row">
         <div className="col-12">
-          {details && details.complianceObligation && details.complianceObligation.history && (
-            <ComplianceReportAlert
-              next="Summary"
-              report={details.complianceObligation}
-              status={statuses.complianceObligation}
-              type="Compliance Obligation"
-            />
-          )}
+          {details &&
+            details.complianceObligation &&
+            details.complianceObligation.history && (
+              <ComplianceReportAlert
+                next="Summary"
+                report={details.complianceObligation}
+                status={statuses.complianceObligation}
+                type="Compliance Obligation"
+              />
+            )}
         </div>
       </div>
       <div id="compliance-obligation-page">
         <div>
-          {!user.isGovernment && statuses.complianceObligation.status === 'CONFIRMED' && (
-            <button
-              className="btn button primary float-right mb-2"
-              onClick={() => {
-                setShowModal(true);
+          <span className="float-right d-print-none">
+            {!user.isGovernment &&
+              statuses.complianceObligation.status === "CONFIRMED" && (
+                <button
+                  className="btn button primary mb-2"
+                  onClick={() => {
+                    setShowModal(true);
+                  }}
+                  type="button"
+                >
+                  Edit
+                </button>
+              )}
+            <Button
+              buttonType="button"
+              optionalClassname="ml-2 mr-2 mb-2 button btn"
+              optionalText="Print Page"
+              action={() => {
+                window.print();
               }}
-              type="button"
-            >
-              Edit
-            </button>
-          )}
+            />
+          </span>
           <h3 className="mb-2">Compliance Obligation</h3>
         </div>
         <div className="clear">
@@ -157,7 +177,7 @@ const ComplianceObligationDetailsPage = (props) => {
         hoverText={hoverText}
         user={user}
       />
-      <div className="row">
+      <div className="row  d-print-none">
         <div className="col-sm-12">
           <div className="action-bar mt-0">
             <span className="left-content">
@@ -169,16 +189,24 @@ const ComplianceObligationDetailsPage = (props) => {
                 optionalClassname="button"
                 optionalText="Next"
                 action={() => {
-                  history.push(ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id));
+                  history.push(
+                    ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(":id", id)
+                  );
                 }}
               />
               {!user.isGovernment && (
-              <Button
-                buttonType="save"
-                disabled={['SAVED', 'UNSAVED'].indexOf(statuses.complianceObligation.status) < 0}
-                optionalClassname="button primary"
-                action={() => { handleSave(); }}
-              />
+                <Button
+                  buttonType="save"
+                  disabled={
+                    ["SAVED", "UNSAVED"].indexOf(
+                      statuses.complianceObligation.status
+                    ) < 0
+                  }
+                  optionalClassname="button primary"
+                  action={() => {
+                    handleSave();
+                  }}
+                />
               )}
             </span>
           </div>
@@ -202,7 +230,7 @@ ComplianceObligationDetailsPage.defaultProps = {
 ComplianceObligationDetailsPage.propTypes = {
   assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   checkboxes: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
   ).isRequired,
   classAReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   creditReductionSelection: PropTypes.string,
@@ -222,10 +250,7 @@ ComplianceObligationDetailsPage.propTypes = {
   ratios: PropTypes.shape(),
   reportDetails: PropTypes.shape().isRequired,
   reportYear: PropTypes.number.isRequired,
-  sales: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ]),
+  sales: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   statuses: PropTypes.shape().isRequired,
   supplierClass: PropTypes.string.isRequired,
   totalReduction: PropTypes.number.isRequired,
