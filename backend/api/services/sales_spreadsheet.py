@@ -157,8 +157,7 @@ def create_sales_spreadsheet(organization, stream):
         'sheets': []
     }
 
-    date_today = datetime.today()
-    start_year = datetime(year=date_today.year-2, month=1, day=1)
+    start_year = datetime(year=2019, month=1, day=1)
 
     model_years = ModelYear.objects.filter(effective_date__gte=start_year)
 
