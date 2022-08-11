@@ -1,15 +1,15 @@
-import axios from "axios";
-import React, { useState } from "react";
-import ReactQuill from "react-quill";
-import PropTypes from "prop-types";
+import axios from 'axios';
+import React, { useState } from 'react';
+import ReactQuill from 'react-quill';
+import PropTypes from 'prop-types';
 
-import Button from "../../app/components/Button";
-import ROUTES_CREDIT_REQUESTS from "../../app/routes/CreditRequests";
-import CustomPropTypes from "../../app/utilities/props";
-import VINListTable from "./VINListTable";
-import DisplayComment from "../../app/components/DisplayComment";
-import download from "../../app/utilities/download";
-import DownloadAllSubmissionContentButton from "./DownloadAllSubmissionContentButton";
+import Button from '../../app/components/Button';
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
+import CustomPropTypes from '../../app/utilities/props';
+import VINListTable from './VINListTable';
+import DisplayComment from '../../app/components/DisplayComment';
+import download from '../../app/utilities/download';
+import DownloadAllSubmissionContentButton from './DownloadAllSubmissionContentButton';
 
 const CreditRequestValidatedDetailsPage = (props) => {
   const {
@@ -19,23 +19,23 @@ const CreditRequestValidatedDetailsPage = (props) => {
     invalidatedList,
     setContent,
     submission,
-    user,
+    user
   } = props;
 
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pages, setPages] = useState(-1);
   const [reactTable, setReactTable] = useState(null);
-  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedOption, setSelectedOption] = useState('');
   const downloadAll = (e) => {
     const element = e.currentTarget;
     const original = element.innerHTML;
 
-    element.innerText = "Downloading...";
+    element.innerText = 'Downloading...';
     element.disabled = true;
 
     return download(
-      ROUTES_CREDIT_REQUESTS.DOWNLOAD_DETAILS.replace(":id", submission.id),
+      ROUTES_CREDIT_REQUESTS.DOWNLOAD_DETAILS.replace(':id', submission.id),
       {}
     ).then(() => {
       element.innerHTML = original;
@@ -45,10 +45,10 @@ const CreditRequestValidatedDetailsPage = (props) => {
   const filterWarnings = (event) => {
     const { value } = event.target;
 
-    const index = filtered.findIndex((item) => item.id === "warning");
+    const index = filtered.findIndex((item) => item.id === 'warning');
     const filter = {
-      id: "warning",
-      value,
+      id: 'warning',
+      value
     };
 
     if (index >= 0) {
@@ -58,7 +58,7 @@ const CreditRequestValidatedDetailsPage = (props) => {
     }
 
     setSelectedOption(value);
-    setFiltered([...filtered, { id: "warning", value }]);
+    setFiltered([...filtered, { id: 'warning', value }]);
     reactTable.filterColumn(reactTable.state.columns[3].columns[0], value);
   };
 
@@ -79,18 +79,18 @@ const CreditRequestValidatedDetailsPage = (props) => {
     setLoading(true);
 
     if (!filters.warning) {
-      filters.warning = "1";
+      filters.warning = '1';
       filters.include_overrides = true;
     }
 
     axios
-      .get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(":id", submission.id), {
+      .get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', submission.id), {
         params: {
           filters,
           page: state.page + 1, // page from front-end is zero index, but in the back-end we need the actual page number
           page_size: state.pageSize,
-          sorted: sorted.join(","),
-        },
+          sorted: sorted.join(',')
+        }
       })
       .then((response) => {
         const { content: refreshedContent, pages: numPages } = response.data;
@@ -102,7 +102,7 @@ const CreditRequestValidatedDetailsPage = (props) => {
   };
 
   const clearFilters = () => {
-    setSelectedOption("");
+    setSelectedOption('');
     setFiltered([]);
 
     const state = reactTable.getResolvedState();
@@ -117,7 +117,7 @@ const CreditRequestValidatedDetailsPage = (props) => {
           <Button buttonType="back" />
         </span>
         <span className="right-content" />
-        {user.isGovernment && submission.validationStatus === "VALIDATED" && (
+        {user.isGovernment && submission.validationStatus === 'VALIDATED' && (
           <DownloadAllSubmissionContentButton submission={submission} />
         )}
       </div>
@@ -126,17 +126,17 @@ const CreditRequestValidatedDetailsPage = (props) => {
 
   const analystAction =
     user.isGovernment &&
-    ["CHECKED", "SUBMITTED"].indexOf(submission.validationStatus) >= 0 &&
-    user.hasPermission("RECOMMEND_SALES");
+    ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0 &&
+    user.hasPermission('RECOMMEND_SALES');
 
-  const validatedOnly = submission.validationStatus === "CHECKED";
+  const validatedOnly = submission.validationStatus === 'CHECKED';
 
   const directorAction =
     user.isGovernment &&
-    ["RECOMMEND_APPROVAL", "RECOMMEND_REJECTION"].indexOf(
+    ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(
       submission.validationStatus
     ) >= 0 &&
-    user.hasPermission("SIGN_SALES");
+    user.hasPermission('SIGN_SALES');
 
   return (
     <div id="sales-details" className="page">
@@ -211,7 +211,7 @@ const CreditRequestValidatedDetailsPage = (props) => {
             (submission.salesSubmissionComment ||
               (analystAction && validatedOnly) ||
               directorAction ||
-              submission.validationStatus === "ISSUED") && (
+              submission.validationStatus === 'ISSUED') && (
               <div className="comment-box mt-2">
                 {submission.salesSubmissionComment && user.isGovernment && (
                   <DisplayComment
@@ -223,22 +223,22 @@ const CreditRequestValidatedDetailsPage = (props) => {
                     <label htmlFor="comment">
                       <b>
                         {analystAction
-                          ? "Add Comment"
-                          : "Add Comment to analyst if returning submission"}
+                          ? 'Add Comment'
+                          : 'Add Comment to analyst if returning submission'}
                       </b>
                     </label>
                     <ReactQuill
                       theme="snow"
                       modules={{
                         toolbar: [
-                          ["bold", "italic"],
-                          [{ list: "bullet" }, { list: "ordered" }],
+                          ['bold', 'italic'],
+                          [{ list: 'bullet' }, { list: 'ordered' }]
                         ],
                         keyboard: {
-                          bindings: { tab: false },
-                        },
+                          bindings: { tab: false }
+                        }
                       }}
-                      formats={["bold", "italic", "list", "bullet"]}
+                      formats={['bold', 'italic', 'list', 'bullet']}
                       onChange={handleCommentChange}
                     />
                     <button
@@ -275,7 +275,7 @@ CreditRequestValidatedDetailsPage.propTypes = {
   ).isRequired,
   setContent: PropTypes.func.isRequired,
   submission: PropTypes.shape().isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default CreditRequestValidatedDetailsPage;

@@ -3,9 +3,8 @@ import PropTypes from 'prop-types';
 import Alert from '../../app/components/Alert';
 
 const VehicleAlert = (props) => {
-  const {
-    date, optionalMessage, optionalClassname, user, status, isActive,
-  } = props;
+  const { date, optionalMessage, optionalClassname, user, status, isActive } =
+    props;
   let message = optionalMessage;
   let title;
   let classname;
@@ -44,13 +43,19 @@ const VehicleAlert = (props) => {
   }
   if (isActive === false) {
     title = 'Inactive';
-    message = 'This ZEV model has been made inactive and can no longer be submitted for credits for consumer sales. You can make this model active again if you have more sales to submit.';
+    message =
+      'This ZEV model has been made inactive and can no longer be submitted for credits for consumer sales. You can make this model active again if you have more sales to submit.';
     classname = 'alert-warning';
   }
 
   return (
     <>
-      <Alert title={title} icon={icon} classname={classname} message={message} />
+      <Alert
+        title={title}
+        icon={icon}
+        classname={classname}
+        message={message}
+      />
     </>
   );
 };
@@ -61,8 +66,7 @@ VehicleAlert.defaultProps = {
   status: '',
   optionalClassname: '',
   optionalMessage: '',
-  isActive: true,
-
+  isActive: true
 };
 VehicleAlert.propTypes = {
   date: PropTypes.string,
@@ -70,6 +74,6 @@ VehicleAlert.propTypes = {
   status: PropTypes.string,
   optionalClassname: PropTypes.string,
   optionalMessage: PropTypes.string,
-  isActive: PropTypes.bool,
+  isActive: PropTypes.bool
 };
 export default VehicleAlert;

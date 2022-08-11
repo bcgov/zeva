@@ -5,12 +5,7 @@ import CreditBalanceTable from './CreditBalanceTable';
 import CreditTransactionListTable from './CreditTransactionListTable';
 
 const CreditTransactions = (props) => {
-  const {
-    balances,
-    items,
-    reports,
-    user,
-  } = props;
+  const { balances, items, reports, user } = props;
 
   return (
     <div id="credit-transaction" className="page">
@@ -43,8 +38,8 @@ CreditTransactions.propTypes = {
   reports: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   user: PropTypes.shape({
     isGovernment: PropTypes.bool,
-    organization: PropTypes.shape(),
-  }).isRequired,
+    organization: PropTypes.shape()
+  }).isRequired
 };
 
 export default CreditTransactions;

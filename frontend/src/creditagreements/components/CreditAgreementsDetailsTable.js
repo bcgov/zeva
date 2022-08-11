@@ -12,22 +12,22 @@ const CreditAgreementsDetailsTable = (props) => {
       headerClassName: 'header-group font-weight-bold',
       accessor: (item) => formatNumeric(item.numberOfCredits),
       id: 'credit-quantity',
-      className: 'text-center',
+      className: 'text-center'
     },
     {
       Header: 'Model Year',
       headerClassName: 'header-group font-weight-bold',
       accessor: (item) => item.modelYear,
       id: 'model-year',
-      className: 'text-center',
+      className: 'text-center'
     },
     {
       Header: 'ZEV Class',
       headerClassName: 'header-group font-weight-bold',
       accessor: (item) => item.creditClass,
       id: 'zev-class',
-      className: 'text-center',
-    },
+      className: 'text-center'
+    }
   ];
   return (
     <div className="row mb-3">
@@ -44,7 +44,7 @@ const CreditAgreementsDetailsTable = (props) => {
 };
 
 CreditAgreementsDetailsTable.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  items: PropTypes.arrayOf(PropTypes.shape({})).isRequired
 };
 
 export default CreditAgreementsDetailsTable;

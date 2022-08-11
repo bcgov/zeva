@@ -16,7 +16,7 @@ const ConsumerLDVSales = (props) => {
     ratios,
     supplierClass,
     totalReduction,
-    updatedSales,
+    updatedSales
   } = props;
 
   return (
@@ -34,11 +34,16 @@ const ConsumerLDVSales = (props) => {
         <div className="col-5 text-blue">
           {modelYear} Model Year LDV Sales\Leases:
         </div>
+        <div className="col-3 text-right">{currentSales}</div>
         <div className="col-3 text-right">
-          {currentSales}
-        </div>
-        <div className="col-3 text-right">
-          <input className="text-right" type="text" onChange={(event) => { handleChangeSale(modelYear, event.target.value); }} value={updatedSales} />
+          <input
+            className="text-right"
+            type="text"
+            onChange={(event) => {
+              handleChangeSale(modelYear, event.target.value);
+            }}
+            value={updatedSales}
+          />
         </div>
       </div>
       <div className="row">
@@ -49,18 +54,22 @@ const ConsumerLDVSales = (props) => {
           {formatNumeric(totalReduction, 2)}
         </div>
         <div className="col-3 text-right">
-          {formatNumeric(getTotalReduction(updatedSales, ratios.complianceRatio), 2)}
+          {formatNumeric(
+            getTotalReduction(updatedSales, ratios.complianceRatio),
+            2
+          )}
         </div>
       </div>
       <div className="row">
-        <div className="col-5 text-blue">
-          ZEV Class A Credit Reduction:
-        </div>
+        <div className="col-5 text-blue">ZEV Class A Credit Reduction:</div>
         <div className="col-3 text-right">
           {formatNumeric(classAReduction, 2)}
         </div>
         <div className="col-3 text-right">
-          {formatNumeric(getClassAReduction(updatedSales, ratios.zevClassA, supplierClass), 2)}
+          {formatNumeric(
+            getClassAReduction(updatedSales, ratios.zevClassA, supplierClass),
+            2
+          )}
         </div>
       </div>
       <div className="row">
@@ -71,48 +80,37 @@ const ConsumerLDVSales = (props) => {
           {formatNumeric(leftoverReduction, 2)}
         </div>
         <div className="col-3 text-right">
-          {formatNumeric(getUnspecifiedClassReduction(
-            getTotalReduction(updatedSales, ratios.complianceRatio),
-            getClassAReduction(updatedSales, ratios.zevClassA, supplierClass),
-          ), 2)}
+          {formatNumeric(
+            getUnspecifiedClassReduction(
+              getTotalReduction(updatedSales, ratios.complianceRatio),
+              getClassAReduction(updatedSales, ratios.zevClassA, supplierClass)
+            ),
+            2
+          )}
         </div>
       </div>
     </>
   );
 };
 
-ConsumerLDVSales.defaultProps = {
-
-};
+ConsumerLDVSales.defaultProps = {};
 
 ConsumerLDVSales.propTypes = {
-  classAReduction: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ]).isRequired,
-  currentSales: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ]).isRequired,
+  classAReduction: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    .isRequired,
+  currentSales: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    .isRequired,
   handleChangeSale: PropTypes.func.isRequired,
-  leftoverReduction: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ]).isRequired,
-  modelYear: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ]).isRequired,
+  leftoverReduction: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    .isRequired,
+  modelYear: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    .isRequired,
   ratios: PropTypes.shape().isRequired,
   supplierClass: PropTypes.string.isRequired,
-  totalReduction: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ]).isRequired,
-  updatedSales: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ]).isRequired,
+  totalReduction: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    .isRequired,
+  updatedSales: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    .isRequired
 };
 
 export default ConsumerLDVSales;

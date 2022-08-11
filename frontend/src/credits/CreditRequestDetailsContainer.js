@@ -16,9 +16,7 @@ import CreditRequestDetailsPage from './components/CreditRequestDetailsPage';
 import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification';
 
 const CreditRequestDetailsContainer = (props) => {
-  const {
-    location, match, user, validatedOnly,
-  } = props;
+  const { location, match, user, validatedOnly } = props;
 
   const { state: locationState } = location;
   const { id } = match.params;
@@ -30,21 +28,29 @@ const CreditRequestDetailsContainer = (props) => {
   const [issueAsMY, setIssueAsMY] = useState(false);
 
   const refreshDetails = () => {
-    axios.all([
-      axios.get(ROUTES_ICBCVERIFICATION.DATE),
-      axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
-    ]).then(axios.spread((dateResponse, submissionResponse) => {
-      if (submissionResponse.data && submissionResponse.data.partOfModelYearReport) {
-        setIssueAsMY(submissionResponse.data.partOfModelYearReport);
-      }
-      if (dateResponse.data) {
-        setICBCUploadDate(dateResponse.data);
-      }
-      setSubmission(submissionResponse.data);
-      setNonValidated(submissionResponse.data.content
-        .filter((row) => row.recordOfSale));
-      setLoading(false);
-    }));
+    axios
+      .all([
+        axios.get(ROUTES_ICBCVERIFICATION.DATE),
+        axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id))
+      ])
+      .then(
+        axios.spread((dateResponse, submissionResponse) => {
+          if (
+            submissionResponse.data &&
+            submissionResponse.data.partOfModelYearReport
+          ) {
+            setIssueAsMY(submissionResponse.data.partOfModelYearReport);
+          }
+          if (dateResponse.data) {
+            setICBCUploadDate(dateResponse.data);
+          }
+          setSubmission(submissionResponse.data);
+          setNonValidated(
+            submissionResponse.data.content.filter((row) => row.recordOfSale)
+          );
+          setLoading(false);
+        })
+      );
   };
 
   const handleCheckboxClick = (event) => {
@@ -62,22 +68,27 @@ const CreditRequestDetailsContainer = (props) => {
       submissionContent.salesSubmissionComment = { comment };
       submissionContent.commentType = { govt: false };
     }
-    axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), submissionContent).then(() => {
-      if (validationStatus === 'SUBMITTED') {
-        window.location.reload();
-      } else if (validationStatus === 'VALIDATED') {
-        window.location.reload();
-      } else {
-        history.push(ROUTES_CREDIT_REQUESTS.LIST);
-      }
-    });
+    axios
+      .patch(
+        ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id),
+        submissionContent
+      )
+      .then(() => {
+        if (validationStatus === 'SUBMITTED') {
+          window.location.reload();
+        } else if (validationStatus === 'VALIDATED') {
+          window.location.reload();
+        } else {
+          history.push(ROUTES_CREDIT_REQUESTS.LIST);
+        }
+      });
   };
 
   if (loading) {
-    return (<Loading />);
+    return <Loading />;
   }
 
-  return ([
+  return [
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
     <CreditRequestDetailsPage
       handleSubmit={handleSubmit}
@@ -90,18 +101,18 @@ const CreditRequestDetailsContainer = (props) => {
       validatedOnly={validatedOnly}
       handleCheckboxClick={handleCheckboxClick}
       issueAsMY={issueAsMY}
-    />,
-  ]);
+    />
+  ];
 };
 
 CreditRequestDetailsContainer.defaultProps = {
-  validatedOnly: false,
+  validatedOnly: false
 };
 
 CreditRequestDetailsContainer.propTypes = {
   match: CustomPropTypes.routeMatch.isRequired,
   user: CustomPropTypes.user.isRequired,
-  validatedOnly: PropTypes.bool,
+  validatedOnly: PropTypes.bool
 };
 
 export default withRouter(CreditRequestDetailsContainer);

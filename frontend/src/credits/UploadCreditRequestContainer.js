@@ -34,7 +34,8 @@ const UploadCreditRequestsContainer = (props) => {
   const refreshDetails = () => {
     if (id) {
       setLoading(true);
-      axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id))
+      axios
+        .get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id))
         .then((response) => {
           setSubmission(response.data);
           setUploadNewExcel(false);
@@ -54,10 +55,12 @@ const UploadCreditRequestsContainer = (props) => {
   };
 
   const updateProgressBars = (progressEvent, index) => {
-    const percentage = Math.round((100 * progressEvent.loaded) / progressEvent.total);
+    const percentage = Math.round(
+      (100 * progressEvent.loaded) / progressEvent.total
+    );
     setProgressBars({
       ...progressBars,
-      [index]: percentage,
+      [index]: percentage
     });
 
     progressBars[index] = percentage;
@@ -68,38 +71,44 @@ const UploadCreditRequestsContainer = (props) => {
     setShowProgressBars(true);
 
     evidenceFiles.forEach((file, index) => {
-      promises.push(new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const blob = reader.result;
+      promises.push(
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const blob = reader.result;
 
-          axios.get(ROUTES_CREDIT_REQUESTS.MINIO_URL.replace(/:id/gi, paramId)).then((response) => {
-            const { url: uploadUrl, minioObjectName } = response.data;
+            axios
+              .get(ROUTES_CREDIT_REQUESTS.MINIO_URL.replace(/:id/gi, paramId))
+              .then((response) => {
+                const { url: uploadUrl, minioObjectName } = response.data;
 
-            axios.put(uploadUrl, blob, {
-              headers: {
-                Authorization: null,
-              },
-              onUploadProgress: (progressEvent) => {
-                updateProgressBars(progressEvent, index);
+                axios
+                  .put(uploadUrl, blob, {
+                    headers: {
+                      Authorization: null
+                    },
+                    onUploadProgress: (progressEvent) => {
+                      updateProgressBars(progressEvent, index);
 
-                if (progressEvent.loaded >= progressEvent.total) {
-                  resolve({
-                    filename: file.name,
-                    mimeType: file.type,
-                    minioObjectName,
-                    size: file.size,
+                      if (progressEvent.loaded >= progressEvent.total) {
+                        resolve({
+                          filename: file.name,
+                          mimeType: file.type,
+                          minioObjectName,
+                          size: file.size
+                        });
+                      }
+                    }
+                  })
+                  .catch(() => {
+                    reject();
                   });
-                }
-              },
-            }).catch(() => {
-              reject();
-            });
-          });
-        };
+              });
+          };
 
-        reader.readAsArrayBuffer(file);
-      }));
+          reader.readAsArrayBuffer(file);
+        })
+      );
     });
 
     return promises;
@@ -111,51 +120,72 @@ const UploadCreditRequestsContainer = (props) => {
 
     if (id) {
       data = {
-        id,
+        id
       };
     }
     if (uploadNewExcel && files.length > 0) {
       data.upload_new = true;
     }
-    upload(ROUTES_CREDIT_REQUESTS.UPLOAD, files, data).then((response) => {
-      const { id: creditRequestId } = response.data;
-      if (evidenceCheckbox === true) {
-        const uploadPromises = handleEvidenceUpload(creditRequestId);
-        Promise.all(uploadPromises).then((attachments) => {
-          const patchData = {};
+    upload(ROUTES_CREDIT_REQUESTS.UPLOAD, files, data)
+      .then((response) => {
+        const { id: creditRequestId } = response.data;
+        if (evidenceCheckbox === true) {
+          const uploadPromises = handleEvidenceUpload(creditRequestId);
+          Promise.all(uploadPromises).then((attachments) => {
+            const patchData = {};
 
-          if (attachments.length > 0) {
-            patchData.salesEvidences = attachments;
-          }
+            if (attachments.length > 0) {
+              patchData.salesEvidences = attachments;
+            }
 
-          axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/gi, creditRequestId), {
-            ...patchData,
-            evidenceDeleteList,
-          }).then(() => {
-            history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/gi, creditRequestId));
+            axios
+              .patch(
+                ROUTES_CREDIT_REQUESTS.DETAILS.replace(
+                  /:id/gi,
+                  creditRequestId
+                ),
+                {
+                  ...patchData,
+                  evidenceDeleteList
+                }
+              )
+              .then(() => {
+                history.push(
+                  ROUTES_CREDIT_REQUESTS.DETAILS.replace(
+                    /:id/gi,
+                    creditRequestId
+                  )
+                );
+              });
           });
-        });
-      } else {
-        history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/gi, creditRequestId));
-      }
-    }).catch((error) => {
-      const { response } = error;
+        } else {
+          history.push(
+            ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/gi, creditRequestId)
+          );
+        }
+      })
+      .catch((error) => {
+        const { response } = error;
 
-      if (response.status === 400) {
-        setErrorMessage(error.response.data);
-      } else {
-        setErrorMessage('An error has occurred while uploading. Please try again later.');
-      }
+        if (response.status === 400) {
+          setErrorMessage(error.response.data);
+        } else {
+          setErrorMessage(
+            'An error has occurred while uploading. Please try again later.'
+          );
+        }
 
-      setLoading(false);
-    });
+        setLoading(false);
+      });
   };
 
-  useEffect(() => { refreshDetails(); }, []);
+  useEffect(() => {
+    refreshDetails();
+  }, []);
   if (loading) {
-    return (<Loading />);
+    return <Loading />;
   }
-  return ([
+  return [
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
     <CreditRequestsUploadPage
       errorMessage={errorMessage}
@@ -179,12 +209,12 @@ const UploadCreditRequestsContainer = (props) => {
       uploadNewExcel={uploadNewExcel}
       upload={doUpload}
       user={user}
-    />,
-  ]);
+    />
+  ];
 };
 
 UploadCreditRequestsContainer.propTypes = {
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default withRouter(UploadCreditRequestsContainer);

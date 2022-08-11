@@ -5,29 +5,47 @@ import FormDropdown from './FormDropdown';
 import TextInput from '../../app/components/TextInput';
 
 const TransferFormRow = (props) => {
-  const {
-    years,
-    rowId,
-    handleRowInputChange,
-    removeRow,
-    rows,
-  } = props;
+  const { years, rowId, handleRowInputChange, removeRow, rows } = props;
 
   const radioName = `creditType-${rowId}`;
   return (
     <div className="mb-2">
       <div className="form-group">
         <div className="d-inline-block align-middle mr-5">
-          <input type="radio" name={radioName} value="A" checked={rows[rowId].creditType === 'A'} onChange={(event) => { handleRowInputChange({ target: { name: 'creditType', value: event.target.value } }, rowId); }} />
+          <input
+            type="radio"
+            name={radioName}
+            value="A"
+            checked={rows[rowId].creditType === 'A'}
+            onChange={(event) => {
+              handleRowInputChange(
+                { target: { name: 'creditType', value: event.target.value } },
+                rowId
+              );
+            }}
+          />
           <label htmlFor={radioName}>A credits</label>
           <br />
-          <input type="radio" name={radioName} value="B" checked={rows[rowId].creditType === 'B'} onChange={(event) => { handleRowInputChange({ target: { name: 'creditType', value: event.target.value } }, rowId); }} />
+          <input
+            type="radio"
+            name={radioName}
+            value="B"
+            checked={rows[rowId].creditType === 'B'}
+            onChange={(event) => {
+              handleRowInputChange(
+                { target: { name: 'creditType', value: event.target.value } },
+                rowId
+              );
+            }}
+          />
           <label htmlFor={radioName}>B credits</label>
         </div>
         <FormDropdown
           dropdownData={years}
           dropdownName="model year"
-          handleInputChange={(event) => { handleRowInputChange(event, rowId); }}
+          handleInputChange={(event) => {
+            handleRowInputChange(event, rowId);
+          }}
           fieldName="modelYear"
           accessor={(year) => year.name}
           selectedOption={rows[rowId].modelYear || '--'}
@@ -40,7 +58,9 @@ const TransferFormRow = (props) => {
           id="quantityOfCredits"
           name="quantity"
           defaultValue={rows[rowId].quantity || 0}
-          handleInputChange={(event) => { handleRowInputChange(event, rowId); }}
+          handleInputChange={(event) => {
+            handleRowInputChange(event, rowId);
+          }}
           labelSize="mr-2 col-form-label d-inline-block align-middle"
           inputSize="d-inline-block align-middle transfer-input-width"
           mandatory
@@ -52,7 +72,9 @@ const TransferFormRow = (props) => {
           id="valuePerCredit"
           name="value"
           defaultValue={rows[rowId].value || 0}
-          handleInputChange={(event) => { handleRowInputChange(event, rowId); }}
+          handleInputChange={(event) => {
+            handleRowInputChange(event, rowId);
+          }}
           labelSize="mr-2 col-form-label d-inline-block align-middle"
           inputSize="d-inline-block align-middle transfer-input-width"
           mandatory
@@ -60,7 +82,13 @@ const TransferFormRow = (props) => {
           num
           showCurrency
         />
-        <button type="button" className="transfer-row-x" onClick={() => { removeRow(rowId); }}>
+        <button
+          type="button"
+          className="transfer-row-x"
+          onClick={() => {
+            removeRow(rowId);
+          }}
+        >
           <FontAwesomeIcon icon="times" />
         </button>
       </div>
@@ -75,7 +103,7 @@ TransferFormRow.propTypes = {
   rowId: PropTypes.number.isRequired,
   handleRowInputChange: PropTypes.func.isRequired,
   removeRow: PropTypes.func.isRequired,
-  rows: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  rows: PropTypes.arrayOf(PropTypes.shape()).isRequired
 };
 
 export default TransferFormRow;

@@ -12,8 +12,8 @@ describe('UserEditContainer', () => {
   const user = {
     isGovernment: false,
     organization: {
-      id: 2,
-    },
+      id: 2
+    }
   };
 
   it('renders without crashing', () => {
@@ -24,7 +24,7 @@ describe('UserEditContainer', () => {
           location={location}
           user={user}
         />
-      </BrowserRouter>,
+      </BrowserRouter>
     );
   });
 });

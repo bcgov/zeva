@@ -5,9 +5,7 @@ class StatusInterceptor extends Component {
   static render400Message() {
     return (
       <div className="alert alert-danger" role="alert">
-        <p>
-          Please review the form for errors then try again.
-        </p>
+        <p>Please review the form for errors then try again.</p>
       </div>
     );
   }
@@ -16,12 +14,10 @@ class StatusInterceptor extends Component {
     return (
       <div>
         <p>
-          It looks like you don&apos;t have an account setup yet, or that you are trying to access
-          a page that you do not have permissions to see.
+          It looks like you don&apos;t have an account setup yet, or that you
+          are trying to access a page that you do not have permissions to see.
         </p>
-        <p>
-          Please contact your administrator to get your account setup.
-        </p>
+        <p>Please contact your administrator to get your account setup.</p>
       </div>
     );
   }
@@ -29,9 +25,9 @@ class StatusInterceptor extends Component {
   static render403Message() {
     return (
       <p>
-        It looks like you don&apos;t have the permission to access this page.
-        If you&apos;re supposed to have access to the page.
-        Please contact your administrator.
+        It looks like you don&apos;t have the permission to access this page. If
+        you&apos;re supposed to have access to the page. Please contact your
+        administrator.
       </p>
     );
   }
@@ -40,7 +36,13 @@ class StatusInterceptor extends Component {
     return (
       <div>
         <p>The requested page could not be found.</p>
-        <p>To trade this page for a valid one click <a href="/" className="alert-link">here</a>.</p>
+        <p>
+          To trade this page for a valid one click{' '}
+          <a href="/" className="alert-link">
+            here
+          </a>
+          .
+        </p>
       </div>
     );
   }
@@ -48,8 +50,8 @@ class StatusInterceptor extends Component {
   static render500Message() {
     return (
       <p>
-        It looks like our system is experiencing some technical difficulties. We have been
-        notified and will look into it. Please try again later.
+        It looks like our system is experiencing some technical difficulties. We
+        have been notified and will look into it. Please try again later.
       </p>
     );
   }
@@ -57,8 +59,8 @@ class StatusInterceptor extends Component {
   static render502Message() {
     return (
       <p>
-        It looks like our system is currently down for maintenance.
-        Please check back in a few minutes.
+        It looks like our system is currently down for maintenance. Please check
+        back in a few minutes.
       </p>
     );
   }
@@ -66,8 +68,8 @@ class StatusInterceptor extends Component {
   static renderDefaultMessage() {
     return (
       <p>
-        It looks like our system is experiencing some technical difficulties. We have been
-        notified and will look into it. Please try again later.
+        It looks like our system is experiencing some technical difficulties. We
+        have been notified and will look into it. Please try again later.
       </p>
     );
   }
@@ -108,11 +110,11 @@ class StatusInterceptor extends Component {
 }
 
 StatusInterceptor.defaultProps = {
-  statusCode: null,
+  statusCode: null
 };
 
 StatusInterceptor.propTypes = {
-  statusCode: PropTypes.number,
+  statusCode: PropTypes.number
 };
 
 export default StatusInterceptor;

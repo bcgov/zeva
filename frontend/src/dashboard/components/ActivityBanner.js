@@ -4,13 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import history from '../../app/History';
 
 const ActivityBanner = (props) => {
-  const {
-    colour,
-    icon,
-    boldText,
-    regularText,
-    linkTo,
-  } = props;
+  const { colour, icon, boldText, regularText, linkTo } = props;
 
   return (
     <button
@@ -19,7 +13,9 @@ const ActivityBanner = (props) => {
       data-testid="activity-button"
       className="alert alert-light activity-banner"
       key={regularText}
-      onClick={() => { history.push(linkTo); }}
+      onClick={() => {
+        history.push(linkTo);
+      }}
     >
       <div>
         <FontAwesomeIcon icon={icon} size="3x" className={colour} />
@@ -38,7 +34,7 @@ const ActivityBanner = (props) => {
 export default ActivityBanner;
 
 ActivityBanner.defaultProps = {
-  linkTo: '',
+  linkTo: ''
 };
 
 ActivityBanner.propTypes = {
@@ -46,5 +42,5 @@ ActivityBanner.propTypes = {
   icon: PropTypes.string.isRequired,
   boldText: PropTypes.string.isRequired,
   regularText: PropTypes.string.isRequired,
-  linkTo: PropTypes.string,
+  linkTo: PropTypes.string
 };

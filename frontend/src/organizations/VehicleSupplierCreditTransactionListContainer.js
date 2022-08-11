@@ -27,23 +27,36 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
 
   const refreshDetails = () => {
     setLoading(true);
-    const balancePromise = axios.get(ROUTES_ORGANIZATIONS.SUPPLIER_BALANCE.replace(/:id/gi, id)).then((response) => {
-      setBalances(response.data);
-    });
+    const balancePromise = axios
+      .get(ROUTES_ORGANIZATIONS.SUPPLIER_BALANCE.replace(/:id/gi, id))
+      .then((response) => {
+        setBalances(response.data);
+      });
 
-    const listPromise = axios.get(ROUTES_ORGANIZATIONS.SUPPLIER_TRANSACTIONS.replace(/:id/gi, id)).then((response) => {
-      setCreditTransactions(response.data);
-    });
+    const listPromise = axios
+      .get(ROUTES_ORGANIZATIONS.SUPPLIER_TRANSACTIONS.replace(/:id/gi, id))
+      .then((response) => {
+        setCreditTransactions(response.data);
+      });
 
-    const detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
-      setDetails(response.data);
-    });
+    const detailsPromise = axios
+      .get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id))
+      .then((response) => {
+        setDetails(response.data);
+      });
 
-    const reportsPromise = axios.get(ROUTES_COMPLIANCE.REPORTS).then((response) => {
-      setReports(response.data);
-    });
+    const reportsPromise = axios
+      .get(ROUTES_COMPLIANCE.REPORTS)
+      .then((response) => {
+        setReports(response.data);
+      });
 
-    Promise.all([balancePromise, listPromise, detailsPromise, reportsPromise]).then(() => {
+    Promise.all([
+      balancePromise,
+      listPromise,
+      detailsPromise,
+      reportsPromise
+    ]).then(() => {
       setLoading(false);
     });
   };
@@ -55,7 +68,12 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
   return (
     <div className="page">
       <h1 className="mb-2">{details.name}</h1>
-      <VehicleSupplierTabs locationState={locationState} supplierId={details.id} active="supplier-credit-transactions" user={user} />
+      <VehicleSupplierTabs
+        locationState={locationState}
+        supplierId={details.id}
+        active="supplier-credit-transactions"
+        user={user}
+      />
       <VehicleSupplierSalesListPage
         loading={loading}
         locationState={locationState}
@@ -70,7 +88,7 @@ const VehicleSupplierCreditTransactionListContainer = (props) => {
 VehicleSupplierCreditTransactionListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   location: PropTypes.shape().isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default withRouter(VehicleSupplierCreditTransactionListContainer);

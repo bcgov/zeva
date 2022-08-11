@@ -8,9 +8,7 @@ import CreditTransactions from '../../credits/components/CreditTransactions';
 import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
 
 const VehicleSupplierSalesListPage = (props) => {
-  const {
-    loading, locationState, user, items, reports, balances,
-  } = props;
+  const { loading, locationState, user, items, reports, balances } = props;
 
   if (loading) {
     return <Loading />;
@@ -48,7 +46,7 @@ const VehicleSupplierSalesListPage = (props) => {
 };
 
 VehicleSupplierSalesListPage.defaultProps = {
-  locationState: undefined,
+  locationState: undefined
 };
 
 VehicleSupplierSalesListPage.propTypes = {
@@ -57,7 +55,7 @@ VehicleSupplierSalesListPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),
   reports: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default VehicleSupplierSalesListPage;

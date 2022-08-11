@@ -16,9 +16,7 @@ import CustomPropTypes from '../app/utilities/props';
 import CreditTransfersDetailsPage from './components/CreditTransfersDetailsPage';
 
 const CreditTransfersDetailsContainer = (props) => {
-  const {
-    location, user, match,
-  } = props;
+  const { location, user, match } = props;
   const { state: locationState } = location;
   const [errorMessage, setErrorMessage] = useState([]);
   const [assertions, setAssertions] = useState([]);
@@ -29,17 +27,23 @@ const CreditTransfersDetailsContainer = (props) => {
   const [loading, setLoading] = useState(true);
 
   const refreshDetails = () => {
-    axios.all([
-      axios.get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id)),
-      axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST),
-    ]).then(axios.spread((response, assertionsResponse) => {
-      const filteredAssertions = assertionsResponse.data.filter((data) => data.module == 'credit_transfer');
-      setAssertions(filteredAssertions);
-      setSubmission(response.data);
-      setSufficientCredit(response.data.sufficientCredits);
+    axios
+      .all([
+        axios.get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id)),
+        axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST)
+      ])
+      .then(
+        axios.spread((response, assertionsResponse) => {
+          const filteredAssertions = assertionsResponse.data.filter(
+            (data) => data.module == 'credit_transfer'
+          );
+          setAssertions(filteredAssertions);
+          setSubmission(response.data);
+          setSufficientCredit(response.data.sufficientCredits);
 
-      setLoading(false);
-    }));
+          setLoading(false);
+        })
+      );
   };
 
   useEffect(() => {
@@ -48,7 +52,9 @@ const CreditTransfersDetailsContainer = (props) => {
 
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
-      const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
+      const checked = checkboxes.filter(
+        (each) => Number(each) !== Number(event.target.id)
+      );
       setCheckboxes(checked);
     }
 
@@ -66,7 +72,11 @@ const CreditTransfersDetailsContainer = (props) => {
     if (checkboxes.length > 0) {
       submissionContent.signingConfirmation = checkboxes;
     }
-    axios.patch(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id), submissionContent)
+    axios
+      .patch(
+        ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id),
+        submissionContent
+      )
       .then(() => {
         history.push(ROUTES_CREDIT_TRANSFERS.EDIT.replace(':id', id));
         if (status === 'RESCINDED' || status === 'DRAFT') {
@@ -88,9 +98,9 @@ const CreditTransfersDetailsContainer = (props) => {
   };
 
   if (loading) {
-    return (<Loading />);
+    return <Loading />;
   }
-  return ([
+  return [
     <CreditTransactionTabs active="credit-transfers" key="tabs" user={user} />,
     <CreditTransfersDetailsPage
       assertions={assertions}
@@ -102,18 +112,18 @@ const CreditTransfersDetailsContainer = (props) => {
       submission={submission}
       user={user}
       errorMessage={errorMessage}
-    />,
-  ]);
+    />
+  ];
 };
 
 CreditTransfersDetailsContainer.defaultProps = {
-  validatedOnly: false,
+  validatedOnly: false
 };
 
 CreditTransfersDetailsContainer.propTypes = {
   match: CustomPropTypes.routeMatch.isRequired,
   user: CustomPropTypes.user.isRequired,
-  validatedOnly: PropTypes.bool,
+  validatedOnly: PropTypes.bool
 };
 
 export default withRouter(CreditTransfersDetailsContainer);

@@ -20,14 +20,14 @@ const AssessmentEditContainer = (props) => {
   const [supplierMakesList, setSupplierMakesList] = useState([]);
   const [make, setMake] = useState('');
   const [modelYear, setModelYear] = useState(
-    CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR,
+    CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR
   );
   const { user, keycloak } = props;
   const [statuses, setStatuses] = useState({
     assessment: {
       status: 'UNSAVED',
-      confirmedBy: null,
-    },
+      confirmedBy: null
+    }
   });
   const [sales, setSales] = useState({});
   const [ratios, setRatios] = useState({});
@@ -41,7 +41,7 @@ const AssessmentEditContainer = (props) => {
   const handleChangeSale = (year, value) => {
     setSales({
       ...sales,
-      [year]: value,
+      [year]: value
     });
   };
 
@@ -62,92 +62,99 @@ const AssessmentEditContainer = (props) => {
 
     const data = {
       makes,
-      sales,
+      sales
     };
 
-    axios.patch(
-      ROUTES_COMPLIANCE.REPORT_ASSESSMENT_SAVE.replace(/:id/g, id), data,
-    ).then(() => {
-      history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id));
-    });
+    axios
+      .patch(ROUTES_COMPLIANCE.REPORT_ASSESSMENT_SAVE.replace(/:id/g, id), data)
+      .then(() => {
+        history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id));
+      });
   };
 
   const refreshDetails = () => {
     const detailsPromise = axios.get(
-      ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id),
+      ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)
     );
 
     const ratiosPromise = axios.get(ROUTES_COMPLIANCE.RATIOS);
     const makesPromise = axios.get(ROUTES_COMPLIANCE.MAKES.replace(/:id/g, id));
     const yearsPromise = axios.get(ROUTES_VEHICLES.YEARS);
 
-    Promise.all([detailsPromise, ratiosPromise, makesPromise, yearsPromise]).then(
-      ([response, ratiosResponse, makesResponse, yearsResponse]) => {
-        const {
-          makes: modelYearReportMakes,
-          modelYear: reportModelYear,
-          statuses: reportStatuses,
-          modelYearReportHistory,
-          modelYearReportAddresses,
-          organizationName,
-          validationStatus,
-          ldvSales: reportLdvSales,
-          supplierClass,
-          changelog,
-        } = response.data;
-        const year = parseInt(reportModelYear.name, 10);
+    Promise.all([
+      detailsPromise,
+      ratiosPromise,
+      makesPromise,
+      yearsPromise
+    ]).then(([response, ratiosResponse, makesResponse, yearsResponse]) => {
+      const {
+        makes: modelYearReportMakes,
+        modelYear: reportModelYear,
+        statuses: reportStatuses,
+        modelYearReportHistory,
+        modelYearReportAddresses,
+        organizationName,
+        validationStatus,
+        ldvSales: reportLdvSales,
+        supplierClass,
+        changelog
+      } = response.data;
+      const year = parseInt(reportModelYear.name, 10);
 
-        const { supplierMakes, govMakes } = makesResponse.data;
+      const { supplierMakes, govMakes } = makesResponse.data;
 
-        setModelYear(year);
-        setStatuses(reportStatuses);
+      setModelYear(year);
+      setStatuses(reportStatuses);
 
-        if (modelYearReportMakes) {
-          const supplierCurrentMakes = supplierMakes.map((each) => each.make);
-          const analystMakes = govMakes.map((each) => each.make);
-          setMakes(analystMakes);
-          setSupplierMakesList(supplierCurrentMakes);
-        }
+      if (modelYearReportMakes) {
+        const supplierCurrentMakes = supplierMakes.map((each) => each.make);
+        const analystMakes = govMakes.map((each) => each.make);
+        setMakes(analystMakes);
+        setSupplierMakesList(supplierCurrentMakes);
+      }
 
-        let ldvSales = reportLdvSales;
+      let ldvSales = reportLdvSales;
 
-        if (changelog && changelog.ldvChanges && changelog.ldvChanges.notFromGov) {
-          ldvSales = changelog.ldvChanges.notFromGov;
-        }
+      if (
+        changelog &&
+        changelog.ldvChanges &&
+        changelog.ldvChanges.notFromGov
+      ) {
+        ldvSales = changelog.ldvChanges.notFromGov;
+      }
 
-        setDetails({
-          assessment: {
-            history: modelYearReportHistory,
-            validationStatus,
-          },
-          ldvSales,
+      setDetails({
+        assessment: {
+          history: modelYearReportHistory,
+          validationStatus
+        },
+        ldvSales,
 
-          organization: {
-            name: organizationName,
-            organizationAddress: modelYearReportAddresses,
-          },
-          supplierInformation: {
-            history: modelYearReportHistory,
-            validationStatus,
-          },
-          supplierClass,
-        });
+        organization: {
+          name: organizationName,
+          organizationAddress: modelYearReportAddresses
+        },
+        supplierInformation: {
+          history: modelYearReportHistory,
+          validationStatus
+        },
+        supplierClass
+      });
 
-        setSales({
-          [year]: reportLdvSales,
-        });
+      setSales({
+        [year]: reportLdvSales
+      });
 
-        const filteredRatio = ratiosResponse.data.find(
-          (data) => data.modelYear === year.toString(),
-        );
+      const filteredRatio = ratiosResponse.data.find(
+        (data) => data.modelYear === year.toString()
+      );
 
-        setRatios(filteredRatio);
+      setRatios(filteredRatio);
 
-        setYears(yearsResponse.data);
+      setYears(yearsResponse.data);
 
-        setLoading(false);
-      },
-    );
+      setLoading(false);
+    });
   };
 
   useEffect(() => {
@@ -189,6 +196,6 @@ const AssessmentEditContainer = (props) => {
 };
 AssessmentEditContainer.propTypes = {
   user: CustomPropTypes.user.isRequired,
-  keycloak: CustomPropTypes.keycloak.isRequired,
+  keycloak: CustomPropTypes.keycloak.isRequired
 };
 export default withRouter(AssessmentEditContainer);

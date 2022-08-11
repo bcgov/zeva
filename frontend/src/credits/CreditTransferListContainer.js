@@ -42,7 +42,7 @@ const CreditTransferListContainer = (props) => {
     refreshList(true);
   }, [keycloak.authenticated]);
 
-  return ([
+  return [
     <CreditTransactionTabs active="credit-transfers" key="tabs" user={user} />,
     <CreditTransfersListPage
       creditTransfers={creditTransfers}
@@ -52,13 +52,13 @@ const CreditTransferListContainer = (props) => {
       loading={loading}
       setFiltered={setFiltered}
       user={user}
-    />,
-  ]);
+    />
+  ];
 };
 
 CreditTransferListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default withRouter(withReferenceData(CreditTransferListContainer)());

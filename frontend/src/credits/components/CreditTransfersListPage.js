@@ -9,14 +9,8 @@ import CreditTransfersListTable from './CreditTransfersListTable';
 import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
 
 const CreditTransfersListPage = (props) => {
-  const {
-    creditTransfers,
-    filtered,
-    handleClear,
-    loading,
-    setFiltered,
-    user,
-  } = props;
+  const { creditTransfers, filtered, handleClear, loading, setFiltered, user } =
+    props;
 
   if (loading) {
     return <Loading />;
@@ -38,20 +32,19 @@ const CreditTransfersListPage = (props) => {
           >
             Clear Filters
           </button>
-          {!user.isGovernment
-          && typeof user.hasPermission === 'function'
-          && user.hasPermission('CREATE_CREDIT_TRANSFERS')
-          && (
-            <button
-              className="button primary ml-3"
-              onClick={() => {
-                history.push(ROUTES_CREDIT_TRANSFERS.NEW);
-              }}
-              type="button"
-            >
-              <FontAwesomeIcon icon="plus" /> New Credit Transfer
-            </button>
-          )}
+          {!user.isGovernment &&
+            typeof user.hasPermission === 'function' &&
+            user.hasPermission('CREATE_CREDIT_TRANSFERS') && (
+              <button
+                className="button primary ml-3"
+                onClick={() => {
+                  history.push(ROUTES_CREDIT_TRANSFERS.NEW);
+                }}
+                type="button"
+              >
+                <FontAwesomeIcon icon="plus" /> New Credit Transfer
+              </button>
+            )}
         </div>
       </div>
 
@@ -71,7 +64,7 @@ const CreditTransfersListPage = (props) => {
 
 CreditTransfersListPage.defaultProps = {
   filtered: undefined,
-  setFiltered: undefined,
+  setFiltered: undefined
 };
 
 CreditTransfersListPage.propTypes = {
@@ -80,7 +73,7 @@ CreditTransfersListPage.propTypes = {
   handleClear: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   setFiltered: PropTypes.func,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default CreditTransfersListPage;

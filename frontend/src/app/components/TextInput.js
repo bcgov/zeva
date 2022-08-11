@@ -20,7 +20,7 @@ const TextInput = (props) => {
     disabled,
     readonly,
     serviceSame,
-    addressType,
+    addressType
   } = props;
 
   let type;
@@ -61,21 +61,16 @@ const TextInput = (props) => {
 
   return (
     <div className={rowClass}>
-      <label
-        className={labelSize}
-        htmlFor={id}
-      >
+      <label className={labelSize} htmlFor={id}>
         {label}
       </label>
       <div className={inputSize}>
-        {details && (<small className="form-text text-muted">{details}</small>) }
+        {details && <small className="form-text text-muted">{details}</small>}
         <div className={showCurrency ? 'has-currency' : ''}>
           {showCurrency && (
-          <span className="currency-symbol">
-            <span>
-              $
+            <span className="currency-symbol">
+              <span>$</span>
             </span>
-          </span>
           )}
           <input
             data-testid="input-test"
@@ -91,7 +86,9 @@ const TextInput = (props) => {
             min="0"
           />
         </div>
-        <small className="form-text text-danger">{errorMessage || validationErrors}</small>
+        <small className="form-text text-danger">
+          {errorMessage || validationErrors}
+        </small>
       </div>
     </div>
   );
@@ -111,19 +108,13 @@ TextInput.defaultProps = {
   disabled: false,
   readonly: false,
   addressType: 'none',
-  serviceSame: false,
+  serviceSame: false
 };
 
 TextInput.propTypes = {
-  defaultValue: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ]),
+  defaultValue: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   details: PropTypes.string,
-  errorMessage: PropTypes.oneOfType([
-    PropTypes.bool,
-    PropTypes.string,
-  ]),
+  errorMessage: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   handleInputChange: PropTypes.func.isRequired,
   id: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
@@ -138,7 +129,7 @@ TextInput.propTypes = {
   disabled: PropTypes.bool,
   readonly: PropTypes.bool,
   addressType: PropTypes.string,
-  serviceSame: PropTypes.bool,
+  serviceSame: PropTypes.bool
 };
 
 export default TextInput;

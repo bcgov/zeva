@@ -18,6 +18,6 @@ it('renders without crashing', () => {
         setDateCurrentTo={() => {}}
         user={{ isGovernment: true }}
       />
-    </Router>,
+    </Router>
   );
 });

@@ -34,7 +34,7 @@ const DashboardContainer = (props) => {
     reportsAnalyst: 0,
     reportsReturned: 0,
     reportsAssessed: 0,
-    reportsRecommended: 0,
+    reportsRecommended: 0
   });
 
   const [loading, setLoading] = useState(true);
@@ -45,17 +45,29 @@ const DashboardContainer = (props) => {
       const dashboard = dashboardResponse.data[0].activity;
       // get vehicles!
       if (user.hasPermission('VIEW_ZEV')) {
-        let modelsValidated = dashboard.vehicle.find((each) => each.status === 'VALIDATED');
+        let modelsValidated = dashboard.vehicle.find(
+          (each) => each.status === 'VALIDATED'
+        );
         modelsValidated = modelsValidated ? modelsValidated.total : 0;
-        let modelsRejected = dashboard.vehicle.find((each) => each.status === 'REJECTED');
+        let modelsRejected = dashboard.vehicle.find(
+          (each) => each.status === 'REJECTED'
+        );
         modelsRejected = modelsRejected ? modelsRejected.total : 0;
 
-        let modelsDraft = dashboard.vehicle.find((each) => each.status === 'DRAFT');
+        let modelsDraft = dashboard.vehicle.find(
+          (each) => each.status === 'DRAFT'
+        );
         modelsDraft = modelsDraft ? modelsDraft.total : 0;
 
-        let modelsAwaitingValidation = dashboard.vehicle.find((each) => each.status === 'SUBMITTED');
-        modelsAwaitingValidation = modelsAwaitingValidation ? modelsAwaitingValidation.total : 0;
-        let modelsInfoRequest = dashboard.vehicle.find((each) => each.status === 'CHANGES_REQUESTED');
+        let modelsAwaitingValidation = dashboard.vehicle.find(
+          (each) => each.status === 'SUBMITTED'
+        );
+        modelsAwaitingValidation = modelsAwaitingValidation
+          ? modelsAwaitingValidation.total
+          : 0;
+        let modelsInfoRequest = dashboard.vehicle.find(
+          (each) => each.status === 'CHANGES_REQUESTED'
+        );
         modelsInfoRequest = modelsInfoRequest ? modelsInfoRequest.total : 0;
 
         activityCount = {
@@ -64,26 +76,49 @@ const DashboardContainer = (props) => {
           modelsDraft,
           modelsAwaitingValidation,
           modelsValidated,
-          modelsInfoRequest,
+          modelsInfoRequest
         };
       }
       // get transfers!
-      if (user.hasPermission('VIEW_CREDIT_TRANSFERS') || user.hasPermission('VIEW_CREDIT_TRANSACTIONS')) {
+      if (
+        user.hasPermission('VIEW_CREDIT_TRANSFERS') ||
+        user.hasPermission('VIEW_CREDIT_TRANSACTIONS')
+      ) {
         if (!user.isGovernment) {
-          let transfersAwaitingPartner = dashboard.creditTransfer.find((submission) => submission.status === 'SUBMITTED');
-          transfersAwaitingPartner = transfersAwaitingPartner ? transfersAwaitingPartner.total : 0;
+          let transfersAwaitingPartner = dashboard.creditTransfer.find(
+            (submission) => submission.status === 'SUBMITTED'
+          );
+          transfersAwaitingPartner = transfersAwaitingPartner
+            ? transfersAwaitingPartner.total
+            : 0;
 
-          let transfersAwaitingGovernment = dashboard.creditTransfer.find((submission) => submission.status === 'APPROVED' || submission.status === 'RECOMMEND_APPROVAL');
-          transfersAwaitingGovernment = transfersAwaitingGovernment ? transfersAwaitingGovernment.total : 0;
+          let transfersAwaitingGovernment = dashboard.creditTransfer.find(
+            (submission) =>
+              submission.status === 'APPROVED' ||
+              submission.status === 'RECOMMEND_APPROVAL'
+          );
+          transfersAwaitingGovernment = transfersAwaitingGovernment
+            ? transfersAwaitingGovernment.total
+            : 0;
 
-          let transfersRecorded = dashboard.creditTransfer.find((submission) => submission.status === 'VALIDATED');
+          let transfersRecorded = dashboard.creditTransfer.find(
+            (submission) => submission.status === 'VALIDATED'
+          );
           transfersRecorded = transfersRecorded ? transfersRecorded.total : 0;
 
-          let transfersRejected = dashboard.creditTransfer.find((submission) => submission.status === 'REJECTED');
+          let transfersRejected = dashboard.creditTransfer.find(
+            (submission) => submission.status === 'REJECTED'
+          );
           transfersRejected = transfersRejected ? transfersRejected.total : 0;
 
-          let transfersRejectedByTransferPartner = dashboard.creditTransfer.find((submission) => submission.status === 'DISAPPROVED');
-          transfersRejectedByTransferPartner = transfersRejectedByTransferPartner ? transfersRejectedByTransferPartner.total : 0;
+          let transfersRejectedByTransferPartner =
+            dashboard.creditTransfer.find(
+              (submission) => submission.status === 'DISAPPROVED'
+            );
+          transfersRejectedByTransferPartner =
+            transfersRejectedByTransferPartner
+              ? transfersRejectedByTransferPartner.total
+              : 0;
 
           activityCount = {
             ...activityCount,
@@ -91,19 +126,35 @@ const DashboardContainer = (props) => {
             transfersAwaitingGovernment,
             transfersRecorded,
             transfersRejected,
-            transfersRejectedByTransferPartner,
+            transfersRejectedByTransferPartner
           };
         } else {
-          let transfersAwaitingPartner = dashboard.creditTransfer.find((submission) => submission.status === 'SUBMITTED');
-          transfersAwaitingPartner = transfersAwaitingPartner ? transfersAwaitingPartner.total : 0;
+          let transfersAwaitingPartner = dashboard.creditTransfer.find(
+            (submission) => submission.status === 'SUBMITTED'
+          );
+          transfersAwaitingPartner = transfersAwaitingPartner
+            ? transfersAwaitingPartner.total
+            : 0;
 
-          let transfersAwaitingAnalyst = dashboard.creditTransfer.find((submission) => submission.status === 'APPROVED');
-          transfersAwaitingAnalyst = transfersAwaitingAnalyst ? transfersAwaitingAnalyst.total : 0;
+          let transfersAwaitingAnalyst = dashboard.creditTransfer.find(
+            (submission) => submission.status === 'APPROVED'
+          );
+          transfersAwaitingAnalyst = transfersAwaitingAnalyst
+            ? transfersAwaitingAnalyst.total
+            : 0;
 
-          let transfersAwaitingDirector = dashboard.creditTransfer.find((submission) => submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMEND_REJECTION');
-          transfersAwaitingDirector = transfersAwaitingDirector ? transfersAwaitingDirector.total : 0;
+          let transfersAwaitingDirector = dashboard.creditTransfer.find(
+            (submission) =>
+              submission.status === 'RECOMMEND_APPROVAL' ||
+              submission.status === 'RECOMMEND_REJECTION'
+          );
+          transfersAwaitingDirector = transfersAwaitingDirector
+            ? transfersAwaitingDirector.total
+            : 0;
 
-          let transfersRecorded = dashboard.creditTransfer.find((submission) => submission.status === 'VALIDATED');
+          let transfersRecorded = dashboard.creditTransfer.find(
+            (submission) => submission.status === 'VALIDATED'
+          );
           transfersRecorded = transfersRecorded ? transfersRecorded.total : 0;
 
           activityCount = {
@@ -111,70 +162,97 @@ const DashboardContainer = (props) => {
             transfersAwaitingAnalyst,
             transfersAwaitingDirector,
             transfersRecorded,
-            transfersAwaitingPartner,
+            transfersAwaitingPartner
           };
         }
       }
       // model year reports!
-      if (user.hasPermission('SUBMIT_COMPLIANCE_REPORT') || user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')
-        || user.hasPermission('SIGN_COMPLIANCE_REPORT')
+      if (
+        user.hasPermission('SUBMIT_COMPLIANCE_REPORT') ||
+        user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') ||
+        user.hasPermission('SIGN_COMPLIANCE_REPORT')
       ) {
         if (!user.isGovernment) {
-          let reportsDraft = dashboard.modelYearReport.find((report) => report.status === 'DRAFT');
+          let reportsDraft = dashboard.modelYearReport.find(
+            (report) => report.status === 'DRAFT'
+          );
           reportsDraft = reportsDraft ? reportsDraft.total : 0;
-          let reportsSubmitted = dashboard.modelYearReport.find((report) => report.status === 'SUBMITTED');
+          let reportsSubmitted = dashboard.modelYearReport.find(
+            (report) => report.status === 'SUBMITTED'
+          );
           reportsSubmitted = reportsSubmitted ? reportsSubmitted.total : 0;
-          let reportsAssessed = dashboard.modelYearReport.find((report) => report.status === 'ASSESSED');
-          reportsAssessed = reportsAssessed ? reportsAssessed.total : reportsAssessed;
+          let reportsAssessed = dashboard.modelYearReport.find(
+            (report) => report.status === 'ASSESSED'
+          );
+          reportsAssessed = reportsAssessed
+            ? reportsAssessed.total
+            : reportsAssessed;
           activityCount = {
             ...activityCount,
             reportsDraft,
             reportsSubmitted,
-            reportsAssessed,
+            reportsAssessed
           };
         } else {
-          let reportsDraft = dashboard.modelYearReport.find((report) => report.status === 'DRAFT');
+          let reportsDraft = dashboard.modelYearReport.find(
+            (report) => report.status === 'DRAFT'
+          );
           reportsDraft = reportsDraft ? reportsDraft.total : 0;
-          let reportsAnalyst = dashboard.modelYearReport.find((report) => report.status === 'SUBMITTED');
+          let reportsAnalyst = dashboard.modelYearReport.find(
+            (report) => report.status === 'SUBMITTED'
+          );
           reportsAnalyst = reportsAnalyst ? reportsAnalyst.total : 0;
           reportsAnalyst += reportsDraft;
-          let reportsReturned = dashboard.modelYearReport.find((report) => report.status === 'RETURNED');
+          let reportsReturned = dashboard.modelYearReport.find(
+            (report) => report.status === 'RETURNED'
+          );
           reportsReturned = reportsReturned ? reportsReturned.total : 0;
-          let reportsDirector = dashboard.modelYearReport.find((report) => report.status === 'RECOMMENDED');
+          let reportsDirector = dashboard.modelYearReport.find(
+            (report) => report.status === 'RECOMMENDED'
+          );
           reportsDirector = reportsDirector ? reportsDirector.total : 0;
           activityCount = {
             ...activityCount,
             reportsAnalyst,
             reportsDirector,
-            reportsReturned,
+            reportsReturned
           };
         }
       }
       // credit requests
       if (user.hasPermission('VIEW_SALES')) {
         if (!user.isGovernment) {
-          let creditsDraft = dashboard.creditRequest
-            .find((submission) => submission.status === 'DRAFT');
+          let creditsDraft = dashboard.creditRequest.find(
+            (submission) => submission.status === 'DRAFT'
+          );
           creditsDraft = creditsDraft ? creditsDraft.total : 0;
-          let creditsAwaiting = dashboard.creditRequest
-            .find((submission) => submission.status === 'SUBMITTED');
+          let creditsAwaiting = dashboard.creditRequest.find(
+            (submission) => submission.status === 'SUBMITTED'
+          );
           creditsAwaiting = creditsAwaiting ? creditsAwaiting.total : 0;
-          let creditsIssued = dashboard.creditRequest
-            .find((submission) => submission.status === 'VALIDATED');
+          let creditsIssued = dashboard.creditRequest.find(
+            (submission) => submission.status === 'VALIDATED'
+          );
           creditsIssued = creditsIssued ? creditsIssued.total : 0;
           activityCount = {
             ...activityCount,
             creditsDraft,
             creditsIssued,
-            creditsAwaiting,
+            creditsAwaiting
           };
         } else {
-          let creditsRecommendApprove = dashboard.creditRequest
-            .find((submission) => submission.status === 'RECOMMEND_APPROVAL');
-          creditsRecommendApprove = creditsRecommendApprove ? creditsRecommendApprove.total : 0;
-          let creditsRecommendReject = dashboard.creditRequest
-            .find((submission) => submission.status === 'RECOMMEND_REJECTION');
-          creditsRecommendReject = creditsRecommendReject ? creditsRecommendReject.total : 0;
+          let creditsRecommendApprove = dashboard.creditRequest.find(
+            (submission) => submission.status === 'RECOMMEND_APPROVAL'
+          );
+          creditsRecommendApprove = creditsRecommendApprove
+            ? creditsRecommendApprove.total
+            : 0;
+          let creditsRecommendReject = dashboard.creditRequest.find(
+            (submission) => submission.status === 'RECOMMEND_REJECTION'
+          );
+          creditsRecommendReject = creditsRecommendReject
+            ? creditsRecommendReject.total
+            : 0;
           let creditsAnalyst = 0;
           dashboard.creditRequest.forEach((submission) => {
             if (['SUBMITTED', 'CHECKED'].indexOf(submission.status) >= 0) {
@@ -185,32 +263,48 @@ const DashboardContainer = (props) => {
             ...activityCount,
             creditsAnalyst,
             creditsRecommendApprove,
-            creditsRecommendReject,
+            creditsRecommendReject
           };
         }
       }
       // agreements
       // permissions for agreements???
-      let creditAgreementsIssued = dashboard.creditAgreement.find((agreement) => agreement.status === 'ISSUED');
-      creditAgreementsIssued = creditAgreementsIssued ? creditAgreementsIssued.total : 0;
+      let creditAgreementsIssued = dashboard.creditAgreement.find(
+        (agreement) => agreement.status === 'ISSUED'
+      );
+      creditAgreementsIssued = creditAgreementsIssued
+        ? creditAgreementsIssued.total
+        : 0;
       if (user.isGovernment) {
-        let creditAgreementsDraft = dashboard.creditAgreement.find((agreement) => agreement.status === 'DRAFT');
-        creditAgreementsDraft = creditAgreementsDraft ? creditAgreementsDraft.total : 0;
-        let creditAgreementsAnalyst = dashboard.creditAgreement.find((agreement) => agreement.status === 'RETURNED');
-        creditAgreementsAnalyst = creditAgreementsAnalyst ? creditAgreementsAnalyst.total : 0;
+        let creditAgreementsDraft = dashboard.creditAgreement.find(
+          (agreement) => agreement.status === 'DRAFT'
+        );
+        creditAgreementsDraft = creditAgreementsDraft
+          ? creditAgreementsDraft.total
+          : 0;
+        let creditAgreementsAnalyst = dashboard.creditAgreement.find(
+          (agreement) => agreement.status === 'RETURNED'
+        );
+        creditAgreementsAnalyst = creditAgreementsAnalyst
+          ? creditAgreementsAnalyst.total
+          : 0;
         creditAgreementsAnalyst += creditAgreementsDraft;
-        let creditAgreementsRecommended = dashboard.creditAgreement.find((agreement) => agreement.status === 'RECOMMENDED');
-        creditAgreementsRecommended = creditAgreementsRecommended ? creditAgreementsRecommended.total : 0;
+        let creditAgreementsRecommended = dashboard.creditAgreement.find(
+          (agreement) => agreement.status === 'RECOMMENDED'
+        );
+        creditAgreementsRecommended = creditAgreementsRecommended
+          ? creditAgreementsRecommended.total
+          : 0;
         activityCount = {
           ...activityCount,
           creditAgreementsDraft,
           creditAgreementsAnalyst,
-          creditAgreementsRecommended,
+          creditAgreementsRecommended
         };
       }
       activityCount = {
         ...activityCount,
-        creditAgreementsIssued,
+        creditAgreementsIssued
       };
       setActivityCount(activityCount);
     });
@@ -234,15 +328,18 @@ const DashboardContainer = (props) => {
     };
   }, []);
   return (
-    <DashboardPage user={user} activityCount={activityCount} loading={loading} />
+    <DashboardPage
+      user={user}
+      activityCount={activityCount}
+      loading={loading}
+    />
   );
 };
 
-DashboardContainer.defaultProps = {
-};
+DashboardContainer.defaultProps = {};
 
 DashboardContainer.propTypes = {
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default DashboardContainer;

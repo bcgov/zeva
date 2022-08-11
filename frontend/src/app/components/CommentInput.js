@@ -1,7 +1,7 @@
-import React from "react";
-import PropTypes from "prop-types";
-import ReactQuill from "react-quill";
-import ReactTooltip from "react-tooltip";
+import React from 'react';
+import PropTypes from 'prop-types';
+import ReactQuill from 'react-quill';
+import ReactTooltip from 'react-tooltip';
 
 const CommentInput = (props) => {
   const {
@@ -12,7 +12,7 @@ const CommentInput = (props) => {
     defaultComment,
     disable,
     buttonDisable,
-    tooltip,
+    tooltip
   } = props;
   return (
     <div className="text-editor no-print">
@@ -21,24 +21,24 @@ const CommentInput = (props) => {
       </label>
       <ReactQuill
         readOnly={disable}
-        defaultValue={defaultComment ? defaultComment.comment : ""}
+        defaultValue={defaultComment ? defaultComment.comment : ''}
         theme="snow"
         modules={{
           toolbar: [
-            ["bold", "italic"],
-            [{ list: "bullet" }, { list: "ordered" }],
+            ['bold', 'italic'],
+            [{ list: 'bullet' }, { list: 'ordered' }]
           ],
           keyboard: {
-            bindings: { tab: false },
-          },
+            bindings: { tab: false }
+          }
         }}
-        formats={["bold", "italic", "list", "bullet"]}
+        formats={['bold', 'italic', 'list', 'bullet']}
         onChange={handleCommentChange}
       />
       {!disable && buttonText && (
         <>
-          {tooltip !== "" && buttonDisable && <ReactTooltip />}
-          <span data-tip={(buttonDisable && tooltip) || ""}>
+          {tooltip !== '' && buttonDisable && <ReactTooltip />}
+          <span data-tip={(buttonDisable && tooltip) || ''}>
             <button
               className="button mt-2"
               onClick={() => {
@@ -61,7 +61,7 @@ CommentInput.defaultProps = {
   defaultComment: null,
   disable: false,
   handleAddComment: () => {},
-  tooltip: "",
+  tooltip: ''
 };
 CommentInput.propTypes = {
   handleAddComment: PropTypes.func,
@@ -70,6 +70,6 @@ CommentInput.propTypes = {
   buttonText: PropTypes.string,
   title: PropTypes.string.isRequired,
   disable: PropTypes.bool,
-  tooltip: PropTypes.string,
+  tooltip: PropTypes.string
 };
 export default CommentInput;

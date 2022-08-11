@@ -1,13 +1,13 @@
 /*
  * Presentational component
  */
-import moment from "moment-timezone";
-import PropTypes from "prop-types";
-import React from "react";
-import ReactTable from "react-table";
+import moment from 'moment-timezone';
+import PropTypes from 'prop-types';
+import React from 'react';
+import ReactTable from 'react-table';
 
-import CREDIT_ERROR_CODES from "../../app/constants/errorCodes";
-import CustomPropTypes from "../../app/utilities/props";
+import CREDIT_ERROR_CODES from '../../app/constants/errorCodes';
+import CustomPropTypes from '../../app/utilities/props';
 
 const VINListTable = (props) => {
   const {
@@ -26,13 +26,13 @@ const VINListTable = (props) => {
     refreshContent,
     setFiltered,
     setLoading,
-    setReactTable,
+    setReactTable
   } = props;
 
-  const reset = query && query.reset === "Y";
+  const reset = query && query.reset === 'Y';
 
   const getErrorCodes = (item, fields = false) => {
-    let errorCodes = "";
+    let errorCodes = '';
 
     if (!item.warnings) {
       return errorCodes;
@@ -45,8 +45,8 @@ const VINListTable = (props) => {
         } else if (
           !errorCodes.includes(CREDIT_ERROR_CODES[warning].errorCode)
         ) {
-          if (errorCodes !== "" && CREDIT_ERROR_CODES[warning].errorCode) {
-            errorCodes += ", ";
+          if (errorCodes !== '' && CREDIT_ERROR_CODES[warning].errorCode) {
+            errorCodes += ', ';
           }
           errorCodes += CREDIT_ERROR_CODES[warning].errorCode;
         }
@@ -58,8 +58,8 @@ const VINListTable = (props) => {
 
   const columns = [
     {
-      Header: "Supplier Information",
-      headerClassName: "header-group header-margin",
+      Header: 'Supplier Information',
+      headerClassName: 'header-group header-margin',
       columns: [
         {
           accessor: (row) => {
@@ -71,53 +71,53 @@ const VINListTable = (props) => {
 
             return Math.trunc(row.xlsModelYear);
           },
-          className: "text-center",
-          Header: "MY",
-          id: "xls_model_year",
-          width: 75,
+          className: 'text-center',
+          Header: 'MY',
+          id: 'xls_model_year',
+          width: 75
         },
         {
-          accessor: "xlsMake",
-          Header: "Make",
-          id: "xls_make",
-          width: 100,
+          accessor: 'xlsMake',
+          Header: 'Make',
+          id: 'xls_make',
+          width: 100
         },
         {
-          accessor: "xlsModel",
-          Header: "Model",
-          id: "xls_model",
-          width: 200,
+          accessor: 'xlsModel',
+          Header: 'Model',
+          id: 'xls_model',
+          width: 200
         },
         {
           accessor: (row) =>
-            moment(row.salesDate).format("YYYY-MM-DD") !== "Invalid date"
-              ? moment(row.salesDate).format("YYYY-MM-DD")
+            moment(row.salesDate).format('YYYY-MM-DD') !== 'Invalid date'
+              ? moment(row.salesDate).format('YYYY-MM-DD')
               : row.salesDate,
-          className: "text-center sales-date",
+          className: 'text-center sales-date',
           filterable: false,
-          Header: "Retail Sale",
-          id: "xls_sale_date",
-          width: 100,
-        },
-      ],
+          Header: 'Retail Sale',
+          id: 'xls_sale_date',
+          width: 100
+        }
+      ]
     },
     {
-      Header: "",
-      headerClassName: "header-group header-margin",
+      Header: '',
+      headerClassName: 'header-group header-margin',
       columns: [
         {
-          accessor: "xlsVin",
-          className: "vin",
-          Header: "VIN",
-          headerClassName: "vin",
-          id: "xls_vin",
-          width: 175,
-        },
-      ],
+          accessor: 'xlsVin',
+          className: 'vin',
+          Header: 'VIN',
+          headerClassName: 'vin',
+          id: 'xls_vin',
+          width: 175
+        }
+      ]
     },
     {
-      Header: "ICBC Registration",
-      headerClassName: "header-group header-margin",
+      Header: 'ICBC Registration',
+      headerClassName: 'header-group header-margin',
       columns: [
         {
           accessor: (item) => {
@@ -129,13 +129,13 @@ const VINListTable = (props) => {
               return item.icbcVerification.icbcVehicle.modelYear.name;
             }
 
-            return "-";
+            return '-';
           },
-          className: "icbc-model-year text-center",
-          Header: "MY",
-          headerClassName: "icbc-model-year",
-          id: "model_year.description",
-          width: 75,
+          className: 'icbc-model-year text-center',
+          Header: 'MY',
+          headerClassName: 'icbc-model-year',
+          id: 'model_year.description',
+          width: 75
         },
         {
           accessor: (item) => {
@@ -147,12 +147,12 @@ const VINListTable = (props) => {
               return item.icbcVerification.icbcVehicle.make;
             }
 
-            return "-";
+            return '-';
           },
-          className: "icbc-make",
-          Header: "Make",
-          id: "icbc_vehicle.make",
-          width: 100,
+          className: 'icbc-make',
+          Header: 'Make',
+          id: 'icbc_vehicle.make',
+          width: 100
         },
         {
           accessor: (item) => {
@@ -164,27 +164,27 @@ const VINListTable = (props) => {
               return item.icbcVerification.icbcVehicle.modelName;
             }
 
-            return "-";
+            return '-';
           },
-          className: "icbc-model",
-          Header: "Model",
-          id: "icbc_vehicle.model_name",
-          width: 200,
-        },
-      ],
+          className: 'icbc-model',
+          Header: 'Model',
+          id: 'icbc_vehicle.model_name',
+          width: 200
+        }
+      ]
     },
     {
-      Header: "",
-      headerClassName: "header-group header-margin",
+      Header: '',
+      headerClassName: 'header-group header-margin',
       columns: [
         {
           accessor: (item) => getErrorCodes(item),
-          className: "warning text-right",
-          Header: "Warning",
-          headerClassName: "warning",
-          id: "warning",
+          className: 'warning text-right',
+          Header: 'Warning',
+          headerClassName: 'warning',
+          id: 'warning',
           sortable: false,
-          width: 150,
+          width: 150
         },
         {
           accessor: (row) => {
@@ -193,10 +193,10 @@ const VINListTable = (props) => {
               row.warnings.some(
                 (warning) =>
                   [
-                    "DUPLICATE_VIN",
-                    "INVALID_MODEL",
-                    "VIN_ALREADY_AWARDED",
-                    "EXPIRED_REGISTRATION_DATE",
+                    'DUPLICATE_VIN',
+                    'INVALID_MODEL',
+                    'VIN_ALREADY_AWARDED',
+                    'EXPIRED_REGISTRATION_DATE'
                   ].indexOf(warning) >= 0
               )
             ) {
@@ -219,13 +219,13 @@ const VINListTable = (props) => {
               />
             );
           },
-          className: "text-center validated",
+          className: 'text-center validated',
           filterable: false,
           sortable: false,
-          Header: "Validated",
-          id: "validated",
+          Header: 'Validated',
+          id: 'validated',
           show: user.isGovernment,
-          width: 100,
+          width: 100
         },
         {
           accessor: (row) => {
@@ -257,14 +257,14 @@ const VINListTable = (props) => {
               </select>
             );
           },
-          className: "reason text-center",
+          className: 'reason text-center',
           filterable: false,
-          Header: "Reason",
-          id: "reason",
-          sortable: false,
-        },
-      ],
-    },
+          Header: 'Reason',
+          id: 'reason',
+          sortable: false
+        }
+      ]
+    }
   ];
 
   return (
@@ -278,41 +278,41 @@ const VINListTable = (props) => {
       }}
       defaultSorted={[
         {
-          id: "xls_vin",
-          desc: true,
-        },
+          id: 'xls_vin',
+          desc: true
+        }
       ]}
       getTrProps={(state, rowInfo) => {
         if (rowInfo) {
-          const warnings = rowInfo.row.warning.split(", ");
+          const warnings = rowInfo.row.warning.split(', ');
 
-          if (warnings.some((each) => ["21", "31", "51"].includes(each))) {
+          if (warnings.some((each) => ['21', '31', '51'].includes(each))) {
             return {
-              className: "icbc-danger",
+              className: 'icbc-danger'
             };
           }
 
-          if (warnings.some((each) => ["11", "41", "61"].includes(each))) {
-            let className = "icbc-warning";
+          if (warnings.some((each) => ['11', '41', '61'].includes(each))) {
+            let className = 'icbc-warning';
 
-            if (rowInfo.original.warnings.includes("INVALID_DATE")) {
-              className += " warning-sales-date";
+            if (rowInfo.original.warnings.includes('INVALID_DATE')) {
+              className += ' warning-sales-date';
             }
 
-            if (rowInfo.original.warnings.includes("MAKE_MISMATCHED")) {
-              className += " warning-icbc-make";
+            if (rowInfo.original.warnings.includes('MAKE_MISMATCHED')) {
+              className += ' warning-icbc-make';
             }
 
-            if (rowInfo.original.warnings.includes("MODEL_YEAR_MISMATCHED")) {
-              className += " warning-icbc-model-year";
+            if (rowInfo.original.warnings.includes('MODEL_YEAR_MISMATCHED')) {
+              className += ' warning-icbc-model-year';
             }
 
-            if (rowInfo.original.warnings.includes("NO_ICBC_MATCH")) {
-              className += " warning-vin";
+            if (rowInfo.original.warnings.includes('NO_ICBC_MATCH')) {
+              className += ' warning-vin';
             }
 
             return {
-              className,
+              className
             };
           }
         }
@@ -359,7 +359,7 @@ VINListTable.defaultProps = {
   readOnly: false,
   reasons: [],
   handleCheckboxClick: undefined,
-  handleChangeReason: undefined,
+  handleChangeReason: undefined
 };
 
 VINListTable.propTypes = {
@@ -382,7 +382,7 @@ VINListTable.propTypes = {
   setFiltered: PropTypes.func,
   setLoading: PropTypes.func.isRequired,
   setReactTable: PropTypes.func.isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default VINListTable;

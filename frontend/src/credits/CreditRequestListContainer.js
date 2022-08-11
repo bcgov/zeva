@@ -49,10 +49,10 @@ const CreditRequestListContainer = (props) => {
   }, []);
 
   if (loading) {
-    return (<Loading />);
+    return <Loading />;
   }
 
-  return ([
+  return [
     <CreditTransactionTabs active="credit-requests" key="tabs" user={user} />,
     <CreditRequestsPage
       filtered={filtered}
@@ -61,12 +61,12 @@ const CreditRequestListContainer = (props) => {
       setFiltered={setFiltered}
       submissions={submissions}
       user={user}
-    />,
-  ]);
+    />
+  ];
 };
 
 CreditRequestListContainer.propTypes = {
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default withRouter(CreditRequestListContainer);

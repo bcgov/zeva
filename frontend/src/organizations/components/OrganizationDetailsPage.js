@@ -10,9 +10,7 @@ import CustomPropTypes from '../../app/utilities/props';
 import UsersTable from './UsersTable';
 
 const OrganizationDetailsPage = (props) => {
-  const {
-    details, filtered, loading, members, setFiltered, user,
-  } = props;
+  const { details, filtered, loading, members, setFiltered, user } = props;
 
   if (loading) {
     return <Loading />;
@@ -21,7 +19,11 @@ const OrganizationDetailsPage = (props) => {
     <div id="organization-details" className="page">
       <div className="row mb-2">
         <div className="col-sm-12">
-          <h2>{details.isGovernment ? details.name : 'Vehicle Supplier Information'}</h2>
+          <h2>
+            {details.isGovernment
+              ? details.name
+              : 'Vehicle Supplier Information'}
+          </h2>
         </div>
       </div>
 
@@ -39,21 +41,24 @@ const OrganizationDetailsPage = (props) => {
               </div>
               {details.organizationAddress.map((each) => (
                 <div className="row" key={each.id}>
-                  <div className="col-md-3">{each.addressType ? each.addressType.addressType : ''} Address:</div>
+                  <div className="col-md-3">
+                    {each.addressType ? each.addressType.addressType : ''}{' '}
+                    Address:
+                  </div>
                   <div className="col-md-9 value">
-                    {(each.addressType.addressType === 'Service') ? each.representativeName : ''}{' '}
-                    {each.addressLine1}{' '}
-                    {each.addressLine2}{' '}
-                    {each.addressLine3}{' '}
-                    {each.city}{' '}
-                    {each.state}{' '}
-                    {each.postalCode}
+                    {each.addressType.addressType === 'Service'
+                      ? each.representativeName
+                      : ''}{' '}
+                    {each.addressLine1} {each.addressLine2} {each.addressLine3}{' '}
+                    {each.city} {each.state} {each.postalCode}
                   </div>
                 </div>
               ))}
               <div className="row">
                 <div className="offset-md-3 col-md-9 col-sm-12">
-                  <a href="mailto:CEVEnquiries@gov.bc.ca?subject=ZEVA supplier address change request">Request change to name or address</a>
+                  <a href="mailto:CEVEnquiries@gov.bc.ca?subject=ZEVA supplier address change request">
+                    Request change to name or address
+                  </a>
                 </div>
               </div>
             </div>
@@ -67,15 +72,15 @@ const OrganizationDetailsPage = (props) => {
         </div>
         <div className="col-sm-6 text-right">
           {user.hasPermission('EDIT_USERS') && (
-          <button
-            className="button primary"
-            onClick={() => {
-              history.push(ROUTES_ORGANIZATIONS.MINE_ADD_USER);
-            }}
-            type="button"
-          >
-            <FontAwesomeIcon icon="user-plus" /> <span>New User</span>
-          </button>
+            <button
+              className="button primary"
+              onClick={() => {
+                history.push(ROUTES_ORGANIZATIONS.MINE_ADD_USER);
+              }}
+              type="button"
+            >
+              <FontAwesomeIcon icon="user-plus" /> <span>New User</span>
+            </button>
           )}
         </div>
       </div>
@@ -95,7 +100,7 @@ const OrganizationDetailsPage = (props) => {
 };
 
 OrganizationDetailsPage.defaultProps = {
-  members: [],
+  members: []
 };
 
 OrganizationDetailsPage.propTypes = {
@@ -104,7 +109,7 @@ OrganizationDetailsPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   members: PropTypes.arrayOf(PropTypes.shape()),
   setFiltered: PropTypes.func.isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default OrganizationDetailsPage;

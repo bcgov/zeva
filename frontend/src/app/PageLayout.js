@@ -23,12 +23,10 @@ const PageLayout = (props) => {
       <div id="main" key="main">
         <Navbar user={user} keycloak={keycloak} />
 
-        <div id="content">
-          {children}
-        </div>
+        <div id="content">{children}</div>
       </div>
-      {!user.isGovernment
-        && (props.location.pathname === '/compliance/calculator' ? (
+      {!user.isGovernment &&
+        (props.location.pathname === '/compliance/calculator' ? (
           <div id="content">
             All Information is provided for your convenience and guidance only.
             This information does not replace or constitute legal advice, is not
@@ -46,16 +44,16 @@ const PageLayout = (props) => {
 };
 
 PageLayout.defaultProps = {
-  children: [],
+  children: []
 };
 
 PageLayout.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
+    PropTypes.node
   ]),
   keycloak: CustomPropTypes.keycloak.isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default hot(withRouter(PageLayout));

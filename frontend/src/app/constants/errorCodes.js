@@ -1,40 +1,40 @@
 const CREDIT_ERROR_CODES = {
   DUPLICATE_VIN: {
     errorCode: 31,
-    errorField: 'vin',
+    errorField: 'vin'
   },
   EXPIRED_REGISTRATION_DATE: {
     errorCode: 51,
-    errorField: 'sales-date',
+    errorField: 'sales-date'
   },
   INVALID_DATE: {
     errorCode: 61,
-    errorField: 'sales-date',
+    errorField: 'sales-date'
   },
   INVALID_MODEL: {
     errorCode: 41,
-    errorField: 'model-year make model',
+    errorField: 'model-year make model'
   },
   MODEL_YEAR_MISMATCHED: {
     errorCode: 41,
-    errorField: 'icbc-model-year',
+    errorField: 'icbc-model-year'
   },
   MAKE_MISMATCHED: {
     errorCode: 41,
-    errorField: 'icbc-make',
+    errorField: 'icbc-make'
   },
   NO_ICBC_MATCH: {
     errorCode: 11,
-    errorField: 'vin',
+    errorField: 'vin'
   },
   ROW_NOT_SELECTED: {
     errorCode: '',
-    errorField: '',
+    errorField: ''
   },
   VIN_ALREADY_AWARDED: {
     errorCode: 21,
-    errorField: 'vin',
-  },
+    errorField: 'vin'
+  }
 };
 
 export default CREDIT_ERROR_CODES;
