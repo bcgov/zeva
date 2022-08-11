@@ -61,7 +61,13 @@ const ComplianceHistory = (props) => {
     if (status === 'draft') {
       status = ' saved ';
     }
-
+    if (status === "recommended") {
+      if (item.isSupplementary) {
+        status = " recommended to Director ";
+      } else {
+        status = " assessment recommended to Director ";
+      }
+    }
     if (status === 'submitted') {
       status = ' signed and submitted to the Government of B.C. ';
     }
@@ -161,7 +167,7 @@ const ComplianceHistory = (props) => {
                       }
                     }}
                   >
-                    Model Year {item.isSupplementary ? 'Supplementary' : ''} Report - {item.status}
+                    Model Year {item.isSupplementary ? 'Supplementary' : ''} Report - {item.status === "RECOMMENDED"? "ASSESSMENT RECOMMENDED": item.status}
                   </button>
                 </h2>
               </div>
