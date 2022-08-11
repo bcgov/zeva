@@ -202,7 +202,6 @@ const ComplianceHistory = (props) => {
                     </button>
                   </h2>
                 </div>
-
                 <div
                   id={`collapse${item.id}`}
                   className={`collapse ${getShow(item)}`}
