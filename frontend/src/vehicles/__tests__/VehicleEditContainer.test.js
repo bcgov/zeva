@@ -9,8 +9,8 @@ jest.mock('axios', () => ({
   default: {
     all: jest.fn(() => Promise.resolve({ data: 'data' })),
     get: jest.fn(() => Promise.resolve({ data: 'data' })),
-    spread: jest.fn(() => Promise.resolve({ data: 'data' })),
-  },
+    spread: jest.fn(() => Promise.resolve({ data: 'data' }))
+  }
 }));
 
 afterEach(cleanup);
@@ -19,7 +19,7 @@ describe('VehicleEditContainer', () => {
   const keycloak = {};
   const location = {};
   const user = {
-    isGovernment: false,
+    isGovernment: false
   };
 
   it('renders without crashing', () => {
@@ -30,7 +30,7 @@ describe('VehicleEditContainer', () => {
           location={location}
           user={user}
         />
-      </BrowserRouter>,
+      </BrowserRouter>
     );
   });
 });

@@ -24,7 +24,7 @@ const CreditActivity = (props) => {
     obligationDetails,
     ratios,
     supplierClass,
-    isEditable,
+    isEditable
   } = props;
 
   let reportYear = false;
@@ -49,7 +49,7 @@ const CreditActivity = (props) => {
     purchaseAgreement,
     administrativeAllocation,
     administrativeReduction,
-    automaticAdministrativePenalty,
+    automaticAdministrativePenalty
   } = getComplianceObligationDetails(obligationDetails);
 
   const reportDetails = {
@@ -65,36 +65,67 @@ const CreditActivity = (props) => {
       purchaseAgreement,
       administrativeAllocation,
       administrativeReduction,
-      automaticAdministrativePenalty,
-    },
+      automaticAdministrativePenalty
+    }
   };
 
   const totalReduction = getTotalReduction(ldvSales, ratios.complianceRatio);
-  const classAReduction = getClassAReduction(ldvSales, ratios.zevClassA, supplierClass);
-  const leftoverReduction = getUnspecifiedClassReduction(totalReduction, classAReduction);
-  const newTotalReduction = getTotalReduction(newLdvSales, ratios.complianceRatio);
-  const newClassAReduction = getClassAReduction(newLdvSales, ratios.zevClassA, supplierClass);
-  const newLeftoverReduction = getUnspecifiedClassReduction(newTotalReduction, newClassAReduction);
+  const classAReduction = getClassAReduction(
+    ldvSales,
+    ratios.zevClassA,
+    supplierClass
+  );
+  const leftoverReduction = getUnspecifiedClassReduction(
+    totalReduction,
+    classAReduction
+  );
+  const newTotalReduction = getTotalReduction(
+    newLdvSales,
+    ratios.complianceRatio
+  );
+  const newClassAReduction = getClassAReduction(
+    newLdvSales,
+    ratios.zevClassA,
+    supplierClass
+  );
+  const newLeftoverReduction = getUnspecifiedClassReduction(
+    newTotalReduction,
+    newClassAReduction
+  );
 
-  const classAReductions = [{
-    modelYear: Number(reportYear),
-    value: Number(classAReduction),
-  }];
+  const classAReductions = [
+    {
+      modelYear: Number(reportYear),
+      value: Number(classAReduction)
+    }
+  ];
 
-  const newClassAReductions = [{
-    modelYear: Number(reportYear),
-    value: Number(newClassAReduction) > 0 ? Number(newClassAReduction) : Number(classAReduction),
-  }];
+  const newClassAReductions = [
+    {
+      modelYear: Number(reportYear),
+      value:
+        Number(newClassAReduction) > 0
+          ? Number(newClassAReduction)
+          : Number(classAReduction)
+    }
+  ];
 
-  const unspecifiedReductions = [{
-    modelYear: Number(reportYear),
-    value: Number(leftoverReduction),
-  }];
+  const unspecifiedReductions = [
+    {
+      modelYear: Number(reportYear),
+      value: Number(leftoverReduction)
+    }
+  ];
 
-  const newUnspecifiedReductions = [{
-    modelYear: Number(reportYear),
-    value: Number(newLeftoverReduction) > 0 ? Number(newLeftoverReduction) : Number(leftoverReduction),
-  }];
+  const newUnspecifiedReductions = [
+    {
+      modelYear: Number(reportYear),
+      value:
+        Number(newLeftoverReduction) > 0
+          ? Number(newLeftoverReduction)
+          : Number(leftoverReduction)
+    }
+  ];
 
   const tempBalances = [];
   const newTempBalances = [];
@@ -105,7 +136,7 @@ const CreditActivity = (props) => {
     tempBalances.push({
       modelYear: Number(year),
       creditA,
-      creditB,
+      creditB
     });
   });
 
@@ -114,7 +145,7 @@ const CreditActivity = (props) => {
     newTempBalances.push({
       modelYear: Number(year),
       creditA,
-      creditB,
+      creditB
     });
   });
 
@@ -122,14 +153,14 @@ const CreditActivity = (props) => {
     tempBalances,
     classAReductions,
     unspecifiedReductions,
-    creditReductionSelection,
+    creditReductionSelection
   );
 
   const newCreditReduction = calculateCreditReduction(
     newTempBalances,
     newClassAReductions,
     newUnspecifiedReductions,
-    creditReductionSelection,
+    creditReductionSelection
   );
 
   const { deductions } = creditReduction;
@@ -138,13 +169,14 @@ const CreditActivity = (props) => {
   const getNewDeduction = (deduction, arr) => {
     const values = {
       creditA: deduction.creditA,
-      creditB: deduction.creditB,
+      creditB: deduction.creditB
     };
 
-    const found = arr.find((each) => (
-      Number(each.modelYear) === Number(deduction.modelYear)
-      && each.type === deduction.type
-    ));
+    const found = arr.find(
+      (each) =>
+        Number(each.modelYear) === Number(deduction.modelYear) &&
+        each.type === deduction.type
+    );
 
     if (found) {
       values.creditA = found.creditA;
@@ -156,14 +188,16 @@ const CreditActivity = (props) => {
 
   const updatedBalances = {
     balances: [],
-    deficits: [],
+    deficits: []
   };
   const { balances, deficits } = creditReduction;
 
   balances.forEach((balance) => {
     const tempBalance = balance;
 
-    const found = newCreditReduction.balances.find((each) => (each.modelYear === balance.modelYear));
+    const found = newCreditReduction.balances.find(
+      (each) => each.modelYear === balance.modelYear
+    );
 
     if (found && newTempBalances.length > 0) {
       tempBalance.newCreditA = found.creditA;
@@ -175,7 +209,9 @@ const CreditActivity = (props) => {
 
   if (newTempBalances.length > 0) {
     newCreditReduction.balances.forEach((each) => {
-      const index = updatedBalances.balances.findIndex((balance) => (balance.modelYear === each.modelYear));
+      const index = updatedBalances.balances.findIndex(
+        (balance) => balance.modelYear === each.modelYear
+      );
 
       if (index < 0) {
         updatedBalances.balances.push({
@@ -183,7 +219,7 @@ const CreditActivity = (props) => {
           creditA: 0,
           creditB: 0,
           newCreditA: each.creditA,
-          newCreditB: each.creditB,
+          newCreditB: each.creditB
         });
       }
     });
@@ -192,7 +228,9 @@ const CreditActivity = (props) => {
   deficits.forEach((balance) => {
     const tempBalance = balance;
 
-    const found = newCreditReduction.deficits.find((each) => (each.modelYear === balance.modelYear));
+    const found = newCreditReduction.deficits.find(
+      (each) => each.modelYear === balance.modelYear
+    );
 
     if (found && newTempBalances.length > 0) {
       tempBalance.newCreditA = found.creditA;
@@ -204,7 +242,9 @@ const CreditActivity = (props) => {
 
   if (newTempBalances.length > 0) {
     newCreditReduction.deficits.forEach((each) => {
-      const index = updatedBalances.deficits.findIndex((balance) => (balance.modelYear === each.modelYear));
+      const index = updatedBalances.deficits.findIndex(
+        (balance) => balance.modelYear === each.modelYear
+      );
 
       if (index < 0) {
         updatedBalances.deficits.push({
@@ -212,7 +252,7 @@ const CreditActivity = (props) => {
           creditA: 0,
           creditB: 0,
           newCreditA: each.creditA,
-          newCreditB: each.creditB,
+          newCreditB: each.creditB
         });
       }
     });
@@ -222,7 +262,10 @@ const CreditActivity = (props) => {
     <>
       <h3>Compliance Obligation</h3>
       <div className="text-blue my-3">
-        A change to the LDV sales total could result in a change of compliance status for this and any subsequent model year reports. Provide an explanation for any change to the LDV Sales total in the comment box at the bottom of this form.
+        A change to the LDV sales total could result in a change of compliance
+        status for this and any subsequent model year reports. Provide an
+        explanation for any change to the LDV Sales total in the comment box at
+        the bottom of this form.
       </div>
       <div className="compliance-reduction-table mb-3">
         <div className="row mb-4 ">
@@ -238,7 +281,11 @@ const CreditActivity = (props) => {
                   </td>
                   <td width="10%">
                     <input
-                      className={`form-control ${Number(ldvSales) !== Number(newLdvSales) ? 'highlight' : ''}`}
+                      className={`form-control ${
+                        Number(ldvSales) !== Number(newLdvSales)
+                          ? 'highlight'
+                          : ''
+                      }`}
                       id="ldvSales"
                       name="supplierInfo"
                       type="text"
@@ -247,11 +294,17 @@ const CreditActivity = (props) => {
                       readOnly={!isEditable}
                     />
                   </td>
-                  <td className="text-blue font-weight-bold" width="30%">Compliance Ratio Credit Reduction:</td>
+                  <td className="text-blue font-weight-bold" width="30%">
+                    Compliance Ratio Credit Reduction:
+                  </td>
                   <td className="font-weight-bold text-right" width="10%">
                     {formatNumeric(totalReduction, 2)}
                   </td>
-                  <td className={`font-weight-bold text-right ${totalReduction !== newTotalReduction ? 'highlight' : ''}`}>
+                  <td
+                    className={`font-weight-bold text-right ${
+                      totalReduction !== newTotalReduction ? 'highlight' : ''
+                    }`}
+                  >
                     {newLdvSales && (
                       <span>{formatNumeric(newTotalReduction, 2)}</span>
                     )}
@@ -263,11 +316,19 @@ const CreditActivity = (props) => {
                   <td />
                   {supplierClass === 'L' ? (
                     <>
-                      <td className="text-blue">&bull; ZEV Class A Credit Reduction:</td>
+                      <td className="text-blue">
+                        &bull; ZEV Class A Credit Reduction:
+                      </td>
                       <td className="text-right">
                         {formatNumeric(classAReduction, 2)}
                       </td>
-                      <td className={`text-right ${classAReduction !== newClassAReduction ? 'highlight' : ''}`}>
+                      <td
+                        className={`text-right ${
+                          classAReduction !== newClassAReduction
+                            ? 'highlight'
+                            : ''
+                        }`}
+                      >
                         {newLdvSales && (
                           <span>{formatNumeric(newClassAReduction, 2)}</span>
                         )}
@@ -275,11 +336,19 @@ const CreditActivity = (props) => {
                     </>
                   ) : (
                     <>
-                      <td className="text-blue">&bull; Unspecified ZEV Class Credit Reduction:</td>
+                      <td className="text-blue">
+                        &bull; Unspecified ZEV Class Credit Reduction:
+                      </td>
                       <td className="text-right">
                         {formatNumeric(leftoverReduction, 2)}
                       </td>
-                      <td className={`text-right ${leftoverReduction !== newLeftoverReduction ? 'highlight' : ''}`}>
+                      <td
+                        className={`text-right ${
+                          leftoverReduction !== newLeftoverReduction
+                            ? 'highlight'
+                            : ''
+                        }`}
+                      >
                         {newLdvSales && (
                           <span>{formatNumeric(newLeftoverReduction, 2)}</span>
                         )}
@@ -289,14 +358,24 @@ const CreditActivity = (props) => {
                 </tr>
                 {supplierClass === 'L' && (
                   <tr>
-                    <td className="text-blue">Large Volume Supplier Class A Ratio:</td>
+                    <td className="text-blue">
+                      Large Volume Supplier Class A Ratio:
+                    </td>
                     <td className="text-right">{ratios.zevClassA} %</td>
                     <td />
-                    <td className="text-blue">&bull; Unspecified ZEV Class Credit Reduction:</td>
+                    <td className="text-blue">
+                      &bull; Unspecified ZEV Class Credit Reduction:
+                    </td>
                     <td className="text-right">
                       {formatNumeric(leftoverReduction, 2)}
                     </td>
-                    <td className={`text-right ${leftoverReduction !== newLeftoverReduction ? 'highlight' : ''}`}>
+                    <td
+                      className={`text-right ${
+                        leftoverReduction !== newLeftoverReduction
+                          ? 'highlight'
+                          : ''
+                      }`}
+                    >
                       {newLdvSales && (
                         <span>{formatNumeric(newLeftoverReduction, 2)}</span>
                       )}
@@ -326,65 +405,122 @@ const CreditActivity = (props) => {
             {deductions && (
               <table className="col-12">
                 <tbody>
-                  {supplierClass === 'L'
-                  && (
+                  {supplierClass === 'L' && (
                     <>
-                      {deductions.filter((deduction) => deduction.type === 'classAReduction').length > 0 && (
+                      {deductions.filter(
+                        (deduction) => deduction.type === 'classAReduction'
+                      ).length > 0 && (
                         <tr className="subclass">
-                          <th className="large-column">ZEV Class A Credit Reduction</th>
-                          <th className="small-column text-center text-blue">A</th>
-                          <th className="small-column text-center text-blue">B</th>
-                          <th className="small-column text-center text-blue">A</th>
-                          <th className="small-column text-center text-blue">B</th>
+                          <th className="large-column">
+                            ZEV Class A Credit Reduction
+                          </th>
+                          <th className="small-column text-center text-blue">
+                            A
+                          </th>
+                          <th className="small-column text-center text-blue">
+                            B
+                          </th>
+                          <th className="small-column text-center text-blue">
+                            A
+                          </th>
+                          <th className="small-column text-center text-blue">
+                            B
+                          </th>
                         </tr>
                       )}
-                      {deductions.filter((deduction) => deduction.type === 'classAReduction').map((deduction) => (
-                        <tr key={deduction.modelYear}>
-                          <td className="text-blue">
-                            &bull; &nbsp; &nbsp; {deduction.modelYear} Credits
-                          </td>
-                          <td className="text-right">
-                            {deduction.creditA > 0 && (
-                              <span className="text-red">-{formatNumeric(deduction.creditA, 2)}</span>
-                            )}
-                            {!deduction.creditA && (
-                              <span>0.00</span>
-                            )}
-                          </td>
-                          <td className="text-right">
-                            {deduction.creditB > 0 && (
-                              <span className="text-red">-{formatNumeric(deduction.creditB, 2)}</span>
-                            )}
-                            {!deduction.creditB && (
-                              <span>0.00</span>
-                            )}
-                          </td>
-                          <td className={`text-right ${deduction.creditA !== Number(getNewDeduction(deduction, newDeductions).creditA) ? 'highlight' : ''}`}>
-                            {getNewDeduction(deduction, newDeductions).creditA > 0 && (
-                              <span className="text-red">-{formatNumeric(getNewDeduction(deduction, newDeductions).creditA, 2)}</span>
-                            )}
-                            {!getNewDeduction(deduction, newDeductions).creditA && (
-                              <span>0.00</span>
-                            )}
-                          </td>
-                          <td className={`text-right ${deduction.creditB !== Number(getNewDeduction(deduction, newDeductions).creditB) ? 'highlight' : ''}`}>
-                            {getNewDeduction(deduction, newDeductions).creditB > 0 && (
-                              <span className="text-red">-{formatNumeric(getNewDeduction(deduction, newDeductions).creditB, 2)}</span>
-                            )}
-                            {!getNewDeduction(deduction, newDeductions).creditB && (
-                              <span>0.00</span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
+                      {deductions
+                        .filter(
+                          (deduction) => deduction.type === 'classAReduction'
+                        )
+                        .map((deduction) => (
+                          <tr key={deduction.modelYear}>
+                            <td className="text-blue">
+                              &bull; &nbsp; &nbsp; {deduction.modelYear} Credits
+                            </td>
+                            <td className="text-right">
+                              {deduction.creditA > 0 && (
+                                <span className="text-red">
+                                  -{formatNumeric(deduction.creditA, 2)}
+                                </span>
+                              )}
+                              {!deduction.creditA && <span>0.00</span>}
+                            </td>
+                            <td className="text-right">
+                              {deduction.creditB > 0 && (
+                                <span className="text-red">
+                                  -{formatNumeric(deduction.creditB, 2)}
+                                </span>
+                              )}
+                              {!deduction.creditB && <span>0.00</span>}
+                            </td>
+                            <td
+                              className={`text-right ${
+                                deduction.creditA !==
+                                Number(
+                                  getNewDeduction(deduction, newDeductions)
+                                    .creditA
+                                )
+                                  ? 'highlight'
+                                  : ''
+                              }`}
+                            >
+                              {getNewDeduction(deduction, newDeductions)
+                                .creditA > 0 && (
+                                <span className="text-red">
+                                  -
+                                  {formatNumeric(
+                                    getNewDeduction(deduction, newDeductions)
+                                      .creditA,
+                                    2
+                                  )}
+                                </span>
+                              )}
+                              {!getNewDeduction(deduction, newDeductions)
+                                .creditA && <span>0.00</span>}
+                            </td>
+                            <td
+                              className={`text-right ${
+                                deduction.creditB !==
+                                Number(
+                                  getNewDeduction(deduction, newDeductions)
+                                    .creditB
+                                )
+                                  ? 'highlight'
+                                  : ''
+                              }`}
+                            >
+                              {getNewDeduction(deduction, newDeductions)
+                                .creditB > 0 && (
+                                <span className="text-red">
+                                  -
+                                  {formatNumeric(
+                                    getNewDeduction(deduction, newDeductions)
+                                      .creditB,
+                                    2
+                                  )}
+                                </span>
+                              )}
+                              {!getNewDeduction(deduction, newDeductions)
+                                .creditB && <span>0.00</span>}
+                            </td>
+                          </tr>
+                        ))}
                       <tr className="subclass">
                         <th className="large-column">
                           Unspecified ZEV Class Credit Reduction
                         </th>
-                        <th className="small-column text-center text-blue">A</th>
-                        <th className="small-column text-center text-blue">B</th>
-                        <th className="small-column text-center text-blue">A</th>
-                        <th className="small-column text-center text-blue">B</th>
+                        <th className="small-column text-center text-blue">
+                          A
+                        </th>
+                        <th className="small-column text-center text-blue">
+                          B
+                        </th>
+                        <th className="small-column text-center text-blue">
+                          A
+                        </th>
+                        <th className="small-column text-center text-blue">
+                          B
+                        </th>
                       </tr>
                     </>
                   )}
@@ -396,55 +532,96 @@ const CreditActivity = (props) => {
                       <th className="text-center small-column">A</th>
                       <th className="text-center small-column">B</th>
                       <th className="text-center small-column">
-                        {creditReductionSelection === 'A' ? <FontAwesomeIcon icon="check" /> : 'A'}
+                        {creditReductionSelection === 'A' ? (
+                          <FontAwesomeIcon icon="check" />
+                        ) : (
+                          'A'
+                        )}
                       </th>
                       <th className="text-center small-column">
-                        {creditReductionSelection === 'B' ? <FontAwesomeIcon icon="check" /> : 'B'}
+                        {creditReductionSelection === 'B' ? (
+                          <FontAwesomeIcon icon="check" />
+                        ) : (
+                          'B'
+                        )}
                       </th>
                     </tr>
                   )}
-                  {deductions.filter(
-                    (deduction) => deduction.type === 'unspecifiedReduction'
-                    && (deduction.creditA > 0 || deduction.creditB > 0),
-                  ).map((deduction) => (
-                    <tr key={deduction.modelYear}>
-                      <td className="text-blue">
-                        &bull; &nbsp; &nbsp; {deduction.modelYear} Credits
-                      </td>
-                      <td className="text-right">
-                        {deduction.creditA > 0 && (
-                          <span className="text-red">-{formatNumeric(deduction.creditA, 2)}</span>
-                        )}
-                        {!deduction.creditA && (
-                          <span>0.00</span>
-                        )}
-                      </td>
-                      <td className="text-right">
-                        {deduction.creditB > 0 && (
-                          <span className="text-red">-{formatNumeric(deduction.creditB, 2)}</span>
-                        )}
-                        {!deduction.creditB && (
-                          <span>0.00</span>
-                        )}
-                      </td>
-                      <td className={`text-right ${Number(getNewDeduction(deduction, newDeductions).creditA) !== deduction.creditA ? 'highlight' : ''}`}>
-                        {getNewDeduction(deduction, newDeductions).creditA > 0 && (
-                          <span className="text-red">-{formatNumeric(getNewDeduction(deduction, newDeductions).creditA, 2)}</span>
-                        )}
-                        {!getNewDeduction(deduction, newDeductions).creditA && (
-                          <span>0.00</span>
-                        )}
-                      </td>
-                      <td className={`text-right ${Number(getNewDeduction(deduction, newDeductions).creditB) !== deduction.creditB ? 'highlight' : ''}`}>
-                        {getNewDeduction(deduction, newDeductions).creditB > 0 && (
-                          <span className="text-red">-{formatNumeric(getNewDeduction(deduction, newDeductions).creditB, 2)}</span>
-                        )}
-                        {!getNewDeduction(deduction, newDeductions).creditB && (
-                          <span>0.00</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                  {deductions
+                    .filter(
+                      (deduction) =>
+                        deduction.type === 'unspecifiedReduction' &&
+                        (deduction.creditA > 0 || deduction.creditB > 0)
+                    )
+                    .map((deduction) => (
+                      <tr key={deduction.modelYear}>
+                        <td className="text-blue">
+                          &bull; &nbsp; &nbsp; {deduction.modelYear} Credits
+                        </td>
+                        <td className="text-right">
+                          {deduction.creditA > 0 && (
+                            <span className="text-red">
+                              -{formatNumeric(deduction.creditA, 2)}
+                            </span>
+                          )}
+                          {!deduction.creditA && <span>0.00</span>}
+                        </td>
+                        <td className="text-right">
+                          {deduction.creditB > 0 && (
+                            <span className="text-red">
+                              -{formatNumeric(deduction.creditB, 2)}
+                            </span>
+                          )}
+                          {!deduction.creditB && <span>0.00</span>}
+                        </td>
+                        <td
+                          className={`text-right ${
+                            Number(
+                              getNewDeduction(deduction, newDeductions).creditA
+                            ) !== deduction.creditA
+                              ? 'highlight'
+                              : ''
+                          }`}
+                        >
+                          {getNewDeduction(deduction, newDeductions).creditA >
+                            0 && (
+                            <span className="text-red">
+                              -
+                              {formatNumeric(
+                                getNewDeduction(deduction, newDeductions)
+                                  .creditA,
+                                2
+                              )}
+                            </span>
+                          )}
+                          {!getNewDeduction(deduction, newDeductions)
+                            .creditA && <span>0.00</span>}
+                        </td>
+                        <td
+                          className={`text-right ${
+                            Number(
+                              getNewDeduction(deduction, newDeductions).creditB
+                            ) !== deduction.creditB
+                              ? 'highlight'
+                              : ''
+                          }`}
+                        >
+                          {getNewDeduction(deduction, newDeductions).creditB >
+                            0 && (
+                            <span className="text-red">
+                              -
+                              {formatNumeric(
+                                getNewDeduction(deduction, newDeductions)
+                                  .creditB,
+                                2
+                              )}
+                            </span>
+                          )}
+                          {!getNewDeduction(deduction, newDeductions)
+                            .creditB && <span>0.00</span>}
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             )}
@@ -460,65 +637,90 @@ const CreditActivity = (props) => {
                 <tbody>
                   <tr className="subclass">
                     <th className="large-column">
-                      ASSESSED BALANCE AT THE END OF SEPT.30, {Number(reportYear) + 1}
+                      ASSESSED BALANCE AT THE END OF SEPT.30,{' '}
+                      {Number(reportYear) + 1}
                     </th>
                     <th className="small-column text-center text-blue">A</th>
                     <th className="small-column text-center text-blue">
-                      {
-                        updatedBalances.deficits.filter(
-                          (deficit) => (deficit.creditB > 0),
-                        ).length > 0 ? 'Unspecified' : 'B'
-                      }
+                      {updatedBalances.deficits.filter(
+                        (deficit) => deficit.creditB > 0
+                      ).length > 0
+                        ? 'Unspecified'
+                        : 'B'}
                     </th>
                     <th className="small-column text-center text-blue">A</th>
                     <th className="small-column text-center text-blue">
-                      {
-                        updatedBalances.deficits.filter(
-                          (deficit) => (deficit.newCreditB > 0),
-                        ).length > 0 ? 'Unspecified' : 'B'
-                      }
+                      {updatedBalances.deficits.filter(
+                        (deficit) => deficit.newCreditB > 0
+                      ).length > 0
+                        ? 'Unspecified'
+                        : 'B'}
                     </th>
                   </tr>
-                  {updatedBalances.balances
-                  && updatedBalances.balances.filter(
-                    (balance) => balance.creditA > 0 || balance.creditB > 0 || balance.newCreditA > 0 || balance.newCreditB > 0,
-                  ).map((balance) => (
-                    <tr key={balance.modelYear}>
-                      <td className="text-blue">
-                        &bull; &nbsp; &nbsp; {balance.modelYear} Credits
-                      </td>
-                      <td className="text-right">
-                        {formatNumeric(balance.creditA ? balance.creditA : 0)}
-                      </td>
-                      <td className="text-right">
-                        {formatNumeric(balance.creditB ? balance.creditB : 0)}
-                      </td>
-                      <td className={`text-right ${balance.creditA !== balance.newCreditA ? 'highlight' : ''}`}>
-                        {formatNumeric(balance.newCreditA ? balance.newCreditA : 0)}
-                      </td>
-                      <td className={`text-right ${balance.creditB !== balance.newCreditB ? 'highlight' : ''}`}>
-                        {formatNumeric(balance.newCreditB ? balance.newCreditB : 0)}
-                      </td>
-                    </tr>
-                  ))}
+                  {updatedBalances.balances &&
+                    updatedBalances.balances
+                      .filter(
+                        (balance) =>
+                          balance.creditA > 0 ||
+                          balance.creditB > 0 ||
+                          balance.newCreditA > 0 ||
+                          balance.newCreditB > 0
+                      )
+                      .map((balance) => (
+                        <tr key={balance.modelYear}>
+                          <td className="text-blue">
+                            &bull; &nbsp; &nbsp; {balance.modelYear} Credits
+                          </td>
+                          <td className="text-right">
+                            {formatNumeric(
+                              balance.creditA ? balance.creditA : 0
+                            )}
+                          </td>
+                          <td className="text-right">
+                            {formatNumeric(
+                              balance.creditB ? balance.creditB : 0
+                            )}
+                          </td>
+                          <td
+                            className={`text-right ${
+                              balance.creditA !== balance.newCreditA
+                                ? 'highlight'
+                                : ''
+                            }`}
+                          >
+                            {formatNumeric(
+                              balance.newCreditA ? balance.newCreditA : 0
+                            )}
+                          </td>
+                          <td
+                            className={`text-right ${
+                              balance.creditB !== balance.newCreditB
+                                ? 'highlight'
+                                : ''
+                            }`}
+                          >
+                            {formatNumeric(
+                              balance.newCreditB ? balance.newCreditB : 0
+                            )}
+                          </td>
+                        </tr>
+                      ))}
                   {updatedBalances.deficits.map((deficit) => (
                     <tr key={deficit.modelYear}>
-                      <td className="text-blue background-danger">&bull; &nbsp; &nbsp; Credit Deficit</td>
+                      <td className="text-blue background-danger">
+                        &bull; &nbsp; &nbsp; Credit Deficit
+                      </td>
                       <td className="text-right background-danger">
                         {Number(deficit.creditA) > 0 && (
                           <span>({formatNumeric(deficit.creditA)})</span>
                         )}
-                        {!deficit.creditA && (
-                          <span>0.00</span>
-                        )}
+                        {!deficit.creditA && <span>0.00</span>}
                       </td>
                       <td className="text-right background-danger">
                         {Number(deficit.creditB) > 0 && (
                           <span>({formatNumeric(deficit.creditB)})</span>
                         )}
-                        {!deficit.creditB && (
-                          <span>0.00</span>
-                        )}
+                        {!deficit.creditB && <span>0.00</span>}
                       </td>
                       <td className="text-right background-danger">
                         {Number(deficit.newCreditA) > 0 && (
@@ -546,7 +748,7 @@ CreditActivity.defaultProps = {
   creditReductionSelection: '',
   isEditable: false,
   newLdvSales: null,
-  supplierClass: '',
+  supplierClass: ''
 };
 
 CreditActivity.propTypes = {
@@ -555,19 +757,14 @@ CreditActivity.propTypes = {
   handleInputChange: PropTypes.func.isRequired,
   handleSupplementalChange: PropTypes.func.isRequired,
   isEditable: PropTypes.bool,
-  ldvSales: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]).isRequired,
+  ldvSales: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    .isRequired,
   newBalances: PropTypes.shape().isRequired,
   newData: PropTypes.shape().isRequired,
-  newLdvSales: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]),
+  newLdvSales: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   obligationDetails: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   ratios: PropTypes.shape().isRequired,
-  supplierClass: PropTypes.string,
+  supplierClass: PropTypes.string
 };
 
 export default CreditActivity;

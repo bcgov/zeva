@@ -1,23 +1,23 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from "react";
-import PropTypes from "prop-types";
-import parse from "html-react-parser";
-import CONFIG from "../../app/config";
-import Button from "../../app/components/Button";
-import Loading from "../../app/components/Loading";
-import history from "../../app/History";
-import Modal from "../../app/components/Modal";
-import CustomPropTypes from "../../app/utilities/props";
-import ROUTES_COMPLIANCE from "../../app/routes/Compliance";
-import ComplianceObligationAmountsTable from "./ComplianceObligationAmountsTable";
-import ComplianceReportTabs from "./ComplianceReportTabs";
-import formatNumeric from "../../app/utilities/formatNumeric";
-import ComplianceObligationReductionOffsetTable from "./ComplianceObligationReductionOffsetTable";
-import ComplianceObligationTableCreditsIssued from "./ComplianceObligationTableCreditsIssued";
-import CommentInput from "../../app/components/CommentInput";
-import DisplayComment from "../../app/components/DisplayComment";
-import ROUTES_SUPPLEMENTARY from "../../app/routes/SupplementaryReport";
-import ComplianceHistory from "./ComplianceHistory";
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import parse from 'html-react-parser';
+import CONFIG from '../../app/config';
+import Button from '../../app/components/Button';
+import Loading from '../../app/components/Loading';
+import history from '../../app/History';
+import Modal from '../../app/components/Modal';
+import CustomPropTypes from '../../app/utilities/props';
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
+import ComplianceObligationAmountsTable from './ComplianceObligationAmountsTable';
+import ComplianceReportTabs from './ComplianceReportTabs';
+import formatNumeric from '../../app/utilities/formatNumeric';
+import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable';
+import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued';
+import CommentInput from '../../app/components/CommentInput';
+import DisplayComment from '../../app/components/DisplayComment';
+import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
+import ComplianceHistory from './ComplianceHistory';
 
 const AssessmentDetailsPage = (props) => {
   const {
@@ -49,7 +49,7 @@ const AssessmentDetailsPage = (props) => {
     updatedBalances,
     supplementaryStatus,
     supplementaryId,
-    createdByGov,
+    createdByGov
   } = props;
 
   const [showModal, setShowModal] = useState(false);
@@ -64,7 +64,7 @@ const AssessmentDetailsPage = (props) => {
           .replace(/{user.organization.name}/g, details.organization.name)
           .replace(/{modelYear}/g, reportYear)
           .replace(/{penalty}/g, `$${formattedPenalty} CAD`)
-      : "";
+      : '';
   const disabledInputs = false;
 
   const modalReturn = (
@@ -76,7 +76,7 @@ const AssessmentDetailsPage = (props) => {
       }}
       handleSubmit={() => {
         setShowModal(false);
-        handleSubmit("DRAFT");
+        handleSubmit('DRAFT');
       }}
       modalClass="w-75"
       showModal={showModal}
@@ -97,7 +97,7 @@ const AssessmentDetailsPage = (props) => {
       }}
       handleSubmit={() => {
         setShowModalAssess(false);
-        handleSubmit("ASSESSED");
+        handleSubmit('ASSESSED');
       }}
       modalClass="w-75"
       showModal={showModalAssess}
@@ -119,7 +119,7 @@ const AssessmentDetailsPage = (props) => {
         name="assessment"
         disabled={
           directorAction ||
-          ["RECOMMENDED", "ASSESSED"].indexOf(
+          ['RECOMMENDED', 'ASSESSED'].indexOf(
             details.assessment.validationStatus
           ) >= 0
         }
@@ -130,9 +130,9 @@ const AssessmentDetailsPage = (props) => {
               ...details.assessment,
               decision: {
                 description: each.description,
-                id: each.id,
-              },
-            },
+                id: each.id
+              }
+            }
           });
         }}
       />
@@ -146,18 +146,18 @@ const AssessmentDetailsPage = (props) => {
     </div>
   );
   let disabledRecommendBtn = false;
-  let recommendTooltip = "";
+  let recommendTooltip = '';
 
   if (!assessmentDecision) {
     disabledRecommendBtn = true;
     recommendTooltip =
-      "Please select an Analyst Recommendation before recommending this assessment.";
+      'Please select an Analyst Recommendation before recommending this assessment.';
   }
 
   if (pendingBalanceExist) {
     disabledRecommendBtn = true;
     recommendTooltip =
-      "There are credit applications that must be issued prior to recommending this assessment.";
+      'There are credit applications that must be issued prior to recommending this assessment.';
   }
 
   if (loading) {
@@ -166,12 +166,12 @@ const AssessmentDetailsPage = (props) => {
 
   const getClassDescriptions = (_supplierClass) => {
     switch (_supplierClass) {
-      case "L":
-        return "Large";
-      case "M":
-        return "Medium";
+      case 'L':
+        return 'Large';
+      case 'M':
+        return 'Medium';
       default:
-        return "Small";
+        return 'Small';
     }
   };
 
@@ -206,7 +206,7 @@ const AssessmentDetailsPage = (props) => {
             <>
               {(details.changelog.ldvChanges ||
                 details.idirComment.length > 0 ||
-                statuses.assessment.status !== "ASSESSED") && (
+                statuses.assessment.status !== 'ASSESSED') && (
                 <div className="grey-border-area p-3 comment-box mt-2">
                   {details.changelog.ldvChanges &&
                     (Object.keys(details.changelog.makesAdditions) ||
@@ -226,13 +226,13 @@ const AssessmentDetailsPage = (props) => {
                               )}
                               {/* {details.analystChanges.ldvChanges.map((change) => ( */}
                               <li>
-                                changed the {details.changelog.ldvChanges.year}{" "}
-                                Model Year LDV Sales\Leases total from{" "}
+                                changed the {details.changelog.ldvChanges.year}{' '}
+                                Model Year LDV Sales\Leases total from{' '}
                                 {formatNumeric(
                                   details.changelog.ldvChanges.notFromGov,
                                   0
-                                )}{" "}
-                                to{" "}
+                                )}{' '}
+                                to{' '}
                                 {formatNumeric(
                                   details.changelog.ldvChanges.fromGov,
                                   0
@@ -248,14 +248,14 @@ const AssessmentDetailsPage = (props) => {
                     user.isGovernment && (
                       <DisplayComment commentArray={details.idirComment} />
                     )}
-                  {statuses.assessment.status !== "ASSESSED" && (
+                  {statuses.assessment.status !== 'ASSESSED' && (
                     <CommentInput
                       handleAddComment={handleAddIdirComment}
                       handleCommentChange={handleCommentChangeIdir}
                       title={
                         analystAction
-                          ? "Add comment to director: "
-                          : "Add comment to the analyst"
+                          ? 'Add comment to director: '
+                          : 'Add comment to the analyst'
                       }
                       buttonText="Add Comment"
                     />
@@ -272,11 +272,11 @@ const AssessmentDetailsPage = (props) => {
             <span className="float-right d-print-none">
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 !user.isGovernment &&
-                statuses.assessment.status === "ASSESSED" &&
-                ((!supplementaryId && supplementaryStatus === "DRAFT") ||
-                  (supplementaryStatus === "DRAFT" && createdByGov) ||
-                  supplementaryStatus === "DELETED" ||
-                  supplementaryStatus === "ASSESSED") && (
+                statuses.assessment.status === 'ASSESSED' &&
+                ((!supplementaryId && supplementaryStatus === 'DRAFT') ||
+                  (supplementaryStatus === 'DRAFT' && createdByGov) ||
+                  supplementaryStatus === 'DELETED' ||
+                  supplementaryStatus === 'ASSESSED') && (
                   <button
                     className="btn button primary"
                     onClick={() => {
@@ -295,12 +295,12 @@ const AssessmentDetailsPage = (props) => {
 
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 user.isGovernment &&
-                user.hasPermission("RECOMMEND_COMPLIANCE_REPORT") &&
-                statuses.assessment.status === "ASSESSED" &&
-                ((!supplementaryId && supplementaryStatus === "DRAFT") ||
-                  (supplementaryStatus === "DRAFT" && !createdByGov) ||
-                  supplementaryStatus === "DELETED" ||
-                  supplementaryStatus === "ASSESSED") && (
+                user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') &&
+                statuses.assessment.status === 'ASSESSED' &&
+                ((!supplementaryId && supplementaryStatus === 'DRAFT') ||
+                  (supplementaryStatus === 'DRAFT' && !createdByGov) ||
+                  supplementaryStatus === 'DELETED' ||
+                  supplementaryStatus === 'ASSESSED') && (
                   <>
                     <button
                       className="btn button primary"
@@ -320,14 +320,14 @@ const AssessmentDetailsPage = (props) => {
                 )}
 
               {analystAction &&
-                ["RETURNED", "SUBMITTED", "UNSAVED"].indexOf(
+                ['RETURNED', 'SUBMITTED', 'UNSAVED'].indexOf(
                   statuses.assessment.status
                 ) >= 0 && (
                   <button
                     className="btn button primary"
                     onClick={() => {
                       history.push(
-                        ROUTES_COMPLIANCE.ASSESSMENT_EDIT.replace(":id", id)
+                        ROUTES_COMPLIANCE.ASSESSMENT_EDIT.replace(':id', id)
                       );
                     }}
                     type="button"
@@ -356,7 +356,7 @@ const AssessmentDetailsPage = (props) => {
                     <h4>Service Address</h4>
                     {details.organization.organizationAddress.map(
                       (address) =>
-                        address.addressType.addressType === "Service" && (
+                        address.addressType.addressType === 'Service' && (
                           <div key={address.id}>
                             {address.representativeName && (
                               <div> {address.representativeName} </div>
@@ -364,8 +364,8 @@ const AssessmentDetailsPage = (props) => {
                             <div> {address.addressLine1} </div>
                             <div> {address.addressLine2} </div>
                             <div>
-                              {" "}
-                              {address.city} {address.state} {address.country}{" "}
+                              {' '}
+                              {address.city} {address.state} {address.country}{' '}
                             </div>
                             <div> {address.postalCode} </div>
                           </div>
@@ -376,7 +376,7 @@ const AssessmentDetailsPage = (props) => {
                     <h4>Records Address</h4>
                     {details.organization.organizationAddress.map(
                       (address) =>
-                        address.addressType.addressType === "Records" && (
+                        address.addressType.addressType === 'Records' && (
                           <div key={address.id}>
                             {address.representativeName && (
                               <div> {address.representativeName} </div>
@@ -384,8 +384,8 @@ const AssessmentDetailsPage = (props) => {
                             <div> {address.addressLine1} </div>
                             <div> {address.addressLine2} </div>
                             <div>
-                              {" "}
-                              {address.city} {address.state} {address.country}{" "}
+                              {' '}
+                              {address.city} {address.state} {address.country}{' '}
                             </div>
                             <div> {address.postalCode} </div>
                           </div>
@@ -398,7 +398,7 @@ const AssessmentDetailsPage = (props) => {
               <h4>Light Duty Vehicle Makes:</h4>
               {makes.length > 0 && (
                 <div
-                  className={`mt-0 list ${disabledInputs ? "disabled" : ""}`}
+                  className={`mt-0 list ${disabledInputs ? 'disabled' : ''}`}
                 >
                   <ul>
                     {makes.map((item, index) => (
@@ -458,7 +458,7 @@ const AssessmentDetailsPage = (props) => {
         details.assessment.decision.description &&
         (!user.isGovernment ||
           (user.isGovernment &&
-            ["ASSESSED", "RECOMMENDED"].indexOf(statuses.assessment.status) >=
+            ['ASSESSED', 'RECOMMENDED'].indexOf(statuses.assessment.status) >=
               0)) && (
           <>
             <h3 className="mt-4 mb-1">Director Assessment</h3>
@@ -481,9 +481,9 @@ const AssessmentDetailsPage = (props) => {
           </>
         )}
       {(analystAction || directorAction) &&
-        ["ASSESSED"].indexOf(statuses.assessment.status) < 0 && (
+        ['ASSESSED'].indexOf(statuses.assessment.status) < 0 && (
           <>
-            {["RECOMMENDED"].indexOf(statuses.assessment.status) < 0 && (
+            {['RECOMMENDED'].indexOf(statuses.assessment.status) < 0 && (
               <h3 className="mt-4 mb-1 d-print-none">
                 Analyst Recommended Director Assessment
               </h3>
@@ -492,7 +492,7 @@ const AssessmentDetailsPage = (props) => {
               <div className="col-12">
                 <div className="grey-border-area comment-box p-3 mt-2">
                   <div>
-                    {["RECOMMENDED"].indexOf(statuses.assessment.status) <
+                    {['RECOMMENDED'].indexOf(statuses.assessment.status) <
                       0 && (
                       <>
                         {radioDescriptions.map(
@@ -508,11 +508,11 @@ const AssessmentDetailsPage = (props) => {
                             <input
                               disabled={
                                 directorAction ||
-                                ["RECOMMENDED", "ASSESSED"].indexOf(
+                                ['RECOMMENDED', 'ASSESSED'].indexOf(
                                   details.assessment.validationStatus
                                 ) >= 0 ||
                                 assessmentDecision.indexOf(
-                                  "Section 10 (3) applies"
+                                  'Section 10 (3) applies'
                                 ) < 0
                               }
                               type="text"
@@ -526,8 +526,8 @@ const AssessmentDetailsPage = (props) => {
                                   ...details,
                                   assessment: {
                                     ...details.assessment,
-                                    assessmentPenalty: e.target.value,
-                                  },
+                                    assessmentPenalty: e.target.value
+                                  }
                                 });
                               }}
                             />
@@ -544,7 +544,7 @@ const AssessmentDetailsPage = (props) => {
                     {(analystAction || directorAction) && (
                       <CommentInput
                         disable={
-                          details.assessment.validationStatus === "ASSESSED"
+                          details.assessment.validationStatus === 'ASSESSED'
                         }
                         defaultComment={details.bceidComment}
                         handleAddComment={handleAddBceidComment}
@@ -569,7 +569,7 @@ const AssessmentDetailsPage = (props) => {
                 <button
                   className="button text-danger"
                   onClick={() => {
-                    handleSubmit("RETURNED");
+                    handleSubmit('RETURNED');
                   }}
                   type="button"
                 >
@@ -610,7 +610,7 @@ const AssessmentDetailsPage = (props) => {
                   optionalText="Recommend Assessment"
                   disabled={disabledRecommendBtn}
                   action={() => {
-                    handleSubmit("RECOMMENDED");
+                    handleSubmit('RECOMMENDED');
                   }}
                 />
               )}
@@ -636,7 +636,7 @@ const AssessmentDetailsPage = (props) => {
 
 AssessmentDetailsPage.defaultProps = {
   pendingBalanceExist: false,
-  sales: 0,
+  sales: 0
 };
 
 AssessmentDetailsPage.propTypes = {
@@ -666,6 +666,6 @@ AssessmentDetailsPage.propTypes = {
   unspecifiedReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   deductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   updatedBalances: PropTypes.shape().isRequired,
-  supplementaryStatus: PropTypes.string,
+  supplementaryStatus: PropTypes.string
 };
 export default AssessmentDetailsPage;

@@ -13,42 +13,62 @@ const historyData = [
   {
     createTimestamp: '2020-01-01T15:51:51.602702-07:00',
     createUser: {
-      id: 11, firstName: null, lastName: null, email: null, displayName: 'Wendy Worker',
+      id: 11,
+      firstName: null,
+      lastName: null,
+      email: null,
+      displayName: 'Wendy Worker'
     },
-    validationStatus: 'DRAFT',
+    validationStatus: 'DRAFT'
   },
 
   {
     createTimestamp: '2020-02-01T16:12:47.114148-07:00',
     createUser: {
-      id: 11, firstName: null, lastName: null, email: null, displayName: 'Barb Boss',
+      id: 11,
+      firstName: null,
+      lastName: null,
+      email: null,
+      displayName: 'Barb Boss'
     },
-    validationStatus: 'SUBMITTED',
+    validationStatus: 'SUBMITTED'
   },
 
   {
     createTimestamp: '2020-03-01T16:16:17.825740-07:00',
     createUser: {
-      id: 10, firstName: 'Gov', lastName: 'User', email: 'asdsf@saf.com', displayName: 'Andy Analyst',
+      id: 10,
+      firstName: 'Gov',
+      lastName: 'User',
+      email: 'asdsf@saf.com',
+      displayName: 'Andy Analyst'
     },
-    validationStatus: 'CHECKED',
+    validationStatus: 'CHECKED'
   },
 
   {
     createTimestamp: '2020-04-01T16:16:21.220723-07:00',
     createUser: {
-      id: 10, firstName: 'Gov', lastName: 'User', email: 'asdsf@saf.com', displayName: 'Andy Analyst',
+      id: 10,
+      firstName: 'Gov',
+      lastName: 'User',
+      email: 'asdsf@saf.com',
+      displayName: 'Andy Analyst'
     },
-    validationStatus: 'RECOMMEND_APPROVAL',
+    validationStatus: 'RECOMMEND_APPROVAL'
   },
 
   {
     createTimestamp: '2020-05-01T16:16:32.941211-07:00',
     createUser: {
-      id: 10, firstName: 'Gov', lastName: 'User', email: 'asdsf@saf.com', displayName: 'Devon Director',
+      id: 10,
+      firstName: 'Gov',
+      lastName: 'User',
+      email: 'asdsf@saf.com',
+      displayName: 'Devon Director'
     },
-    validationStatus: 'VALIDATED',
-  },
+    validationStatus: 'VALIDATED'
+  }
 ];
 
 const submissionDraft = {
@@ -56,35 +76,35 @@ const submissionDraft = {
   validationStatus: 'DRAFT',
   unselected: 1,
   history: historyData,
-  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls',
+  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls'
 };
 const submissionErrors = {
   content: [],
   validationStatus: 'DRAFT',
   unselected: 1,
   history: historyData,
-  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls',
+  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls'
 };
 const submissionSubmitted = {
   content: [],
   validationStatus: 'SUBMITTED',
   unselected: 1,
   history: historyData,
-  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls',
+  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls'
 };
 const submissionValidated = {
   content: [],
   validationStatus: 'VALIDATED',
   unselected: 1,
   history: historyData,
-  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls',
+  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls'
 };
 const submissionRecommend = {
   content: [],
   validationStatus: 'RECOMMEND_APPROVAL',
   unselected: 1,
   history: historyData,
-  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls',
+  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls'
 };
 const submissionChecked = {
   content: [],
@@ -94,41 +114,24 @@ const submissionChecked = {
   updateUser: { displayName: 'Teddy' },
   unselected: 1,
   history: historyData,
-  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls',
+  filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls'
 };
 storiesOf('credit alert', module)
   .add('errors bceid', () => (
-    <CreditRequestAlert
-      submission={submissionErrors}
-      invalidSubmission
-    />
+    <CreditRequestAlert submission={submissionErrors} invalidSubmission />
   ))
-  .add('draft BCEID', () => (
-    <CreditRequestAlert
-      submission={submissionDraft}
-    />
-  ))
+  .add('draft BCEID', () => <CreditRequestAlert submission={submissionDraft} />)
   .add('submitted BCEID', () => (
-    <CreditRequestAlert
-      submission={submissionSubmitted}
-    />
+    <CreditRequestAlert submission={submissionSubmitted} />
   ))
   .add('submitted IDIR', () => (
-    <CreditRequestAlert
-      submission={submissionSubmitted}
-      isGovernment
-    />
+    <CreditRequestAlert submission={submissionSubmitted} isGovernment />
   ))
   .add('validated BCEID', () => (
-    <CreditRequestAlert
-      submission={submissionValidated}
-    />
+    <CreditRequestAlert submission={submissionValidated} />
   ))
   .add('validated IDIR', () => (
-    <CreditRequestAlert
-      submission={submissionValidated}
-      isGovernment
-    />
+    <CreditRequestAlert submission={submissionValidated} isGovernment />
   ))
 
   .add('recommend approval idir', () => (

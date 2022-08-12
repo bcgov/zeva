@@ -31,27 +31,36 @@ const CreditAgreementsForm = (props) => {
     transactionTypes,
     user,
     years,
-    modelYearReports,
+    modelYearReports
   } = props;
 
-  let supplierReports = [{modelYear:'-', id:'-'}]
+  let supplierReports = [{ modelYear: '-', id: '-' }];
   const removeFile = (removedFile) => {
-    const found = files.findIndex((file) => (file === removedFile));
+    const found = files.findIndex((file) => file === removedFile);
     files.splice(found, 1);
     setUploadFiles([...files]);
   };
 
-  const displayModelYear = ((agreementDetails.transactionType === 'Reassessment Allocation' || 
-                            agreementDetails.transactionType === 'Reassessment Reduction') ? true : false);
+  const displayModelYear =
+    agreementDetails.transactionType === 'Reassessment Allocation' ||
+    agreementDetails.transactionType === 'Reassessment Reduction'
+      ? true
+      : false;
 
   const modelYearValues = () => {
-    if(agreementDetails.vehicleSupplier && (agreementDetails.transactionType ==='Reassessment Allocation' || 
-       agreementDetails.transactionType === 'Reassessment Reduction')) {
-        supplierReports = modelYearReports.map((each) => (each.organizationId == parseInt(agreementDetails.vehicleSupplier) ? each : {}));
-     }
-     return supplierReports;
+    if (
+      agreementDetails.vehicleSupplier &&
+      (agreementDetails.transactionType === 'Reassessment Allocation' ||
+        agreementDetails.transactionType === 'Reassessment Reduction')
+    ) {
+      supplierReports = modelYearReports.map((each) =>
+        each.organizationId == parseInt(agreementDetails.vehicleSupplier)
+          ? each
+          : {}
+      );
     }
-  
+    return supplierReports;
+  };
 
   return (
     <div id="credit-agreements-form" className="page">
@@ -66,70 +75,82 @@ const CreditAgreementsForm = (props) => {
             <h4>Agreement Attachments (optional)</h4>
             <div className="grey-border-area p-3 mt-1">
               <div className="col-12">
-                <ExcelFileDrop
-                  setFiles={setUploadFiles}
-                  maxFiles={5}
-                />
+                <ExcelFileDrop setFiles={setUploadFiles} maxFiles={5} />
               </div>
               <div className="form-group mt-4 row">
                 <div className="col-12 text-blue">
                   <strong>Files</strong> (doc, docx, xls, xlsx, pdf, jpg, png)
                 </div>
               </div>
-              {(files.length > 0 || (agreementDetails.attachments && agreementDetails.attachments.length > 0)) && (
+              {(files.length > 0 ||
+                (agreementDetails.attachments &&
+                  agreementDetails.attachments.length > 0)) && (
                 <div className="form-group uploader-files mt-3">
                   <div className="row">
                     <div className="col-8 filename header">Filename</div>
                     <div className="col-3 size header">Size</div>
                     <div className="col-1 actions header" />
                   </div>
-                  {agreementDetails.attachments && agreementDetails.attachments.filter((attachment) => (
-                    deleteFiles.indexOf(attachment.id) < 0
-                  )).map((attachment) => (
-                    <div className="row" key={attachment.id}>
-                      <div className="col-8 filename">
-                        <button
-                          className="link"
-                          onClick={() => {
-                            axios.get(attachment.url, {
-                              responseType: 'blob',
-                              headers: {
-                                Authorization: null,
-                              },
-                            }).then((response) => {
-                              const objectURL = window.URL.createObjectURL(
-                                new Blob([response.data]),
-                              );
-                              const link = document.createElement('a');
-                              link.href = objectURL;
-                              link.setAttribute('download', attachment.filename);
-                              document.body.appendChild(link);
-                              link.click();
-                            });
-                          }}
-                          type="button"
-                        >
-                          {attachment.filename}
-                        </button>
-                      </div>
-                      <div className="col-3 size">{getFileSize(attachment.size)}</div>
-                      <div className="col-1 actions">
-                        <button
-                          className="delete"
-                          onClick={() => {
-                            setDeleteFiles([...deleteFiles, attachment.id]);
-                          }}
-                          type="button"
-                        >
-                          <FontAwesomeIcon icon="trash" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                  {agreementDetails.attachments &&
+                    agreementDetails.attachments
+                      .filter(
+                        (attachment) => deleteFiles.indexOf(attachment.id) < 0
+                      )
+                      .map((attachment) => (
+                        <div className="row" key={attachment.id}>
+                          <div className="col-8 filename">
+                            <button
+                              className="link"
+                              onClick={() => {
+                                axios
+                                  .get(attachment.url, {
+                                    responseType: 'blob',
+                                    headers: {
+                                      Authorization: null
+                                    }
+                                  })
+                                  .then((response) => {
+                                    const objectURL =
+                                      window.URL.createObjectURL(
+                                        new Blob([response.data])
+                                      );
+                                    const link = document.createElement('a');
+                                    link.href = objectURL;
+                                    link.setAttribute(
+                                      'download',
+                                      attachment.filename
+                                    );
+                                    document.body.appendChild(link);
+                                    link.click();
+                                  });
+                              }}
+                              type="button"
+                            >
+                              {attachment.filename}
+                            </button>
+                          </div>
+                          <div className="col-3 size">
+                            {getFileSize(attachment.size)}
+                          </div>
+                          <div className="col-1 actions">
+                            <button
+                              className="delete"
+                              onClick={() => {
+                                setDeleteFiles([...deleteFiles, attachment.id]);
+                              }}
+                              type="button"
+                            >
+                              <FontAwesomeIcon icon="trash" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                   {files.map((file, index) => (
                     <div className="row" key={file.name}>
                       <div className="col-8 filename">{file.name}</div>
-                      <div className="col-3 size" key="size">{getFileSize(file.size)}</div>
+                      <div className="col-3 size" key="size">
+                        {getFileSize(file.size)}
+                      </div>
                       <div className="col-1 actions" key="actions">
                         <button
                           className="delete"
@@ -141,7 +162,6 @@ const CreditAgreementsForm = (props) => {
                           <FontAwesomeIcon icon="trash" />
                         </button>
                       </div>
-
                     </div>
                   ))}
                 </div>
@@ -179,13 +199,16 @@ const CreditAgreementsForm = (props) => {
                 rowClassname=""
               />
             </div>
-            {displayModelYear &&
+            {displayModelYear && (
               <div className="credit-agreement-form-row">
                 <FormDropdown
                   dropdownData={modelYearValues()}
                   dropdownName="Model Year"
                   handleInputChange={(event) => {
-                    handleChangeDetails(event.target.value, 'modelYearReportId');
+                    handleChangeDetails(
+                      event.target.value,
+                      'modelYearReportId'
+                    );
                   }}
                   fieldName="modelYear"
                   accessor={(supplierReport) => supplierReport.id}
@@ -195,27 +218,32 @@ const CreditAgreementsForm = (props) => {
                   rowClassname=""
                 />
               </div>
-            }
-           {!displayModelYear &&
-            <div className="credit-agreement-form-row">
-              <TextInput
-                label="Agreement ID (optional)"
-                id="optionalAgreementID"
-                name="optionalAgreementID"
-                defaultValue={agreementDetails.optionalAgreementID}
-                handleInputChange={(event) => {
-                  handleChangeDetails(event.target.value, 'optionalAgreementID');
-                }}
-                labelSize="d-inline-block col-sm-2"
-                inputSize="d-inline-block align-middle agreement-input"
-                rowSize=""
-              />
-            </div>}
+            )}
+            {!displayModelYear && (
+              <div className="credit-agreement-form-row">
+                <TextInput
+                  label="Agreement ID (optional)"
+                  id="optionalAgreementID"
+                  name="optionalAgreementID"
+                  defaultValue={agreementDetails.optionalAgreementID}
+                  handleInputChange={(event) => {
+                    handleChangeDetails(
+                      event.target.value,
+                      'optionalAgreementID'
+                    );
+                  }}
+                  labelSize="d-inline-block col-sm-2"
+                  inputSize="d-inline-block align-middle agreement-input"
+                  rowSize=""
+                />
+              </div>
+            )}
             <div className="credit-agreement-form-row">
               <label
                 htmlFor="transaction-date"
                 className="d-inline-block col-2"
-              >Transaction Date
+              >
+                Transaction Date
               </label>
               <input
                 className="d-inline-block"
@@ -227,83 +255,116 @@ const CreditAgreementsForm = (props) => {
                 }}
                 value={agreementDetails.effectiveDate}
               />
-
             </div>
 
-            {creditRows && creditRows.map((creditRow, index) => (
-              <div className="credit-agreement-form-row" key={index}>
-                <div className="d-inline-block align-middle mr-5 text-blue">
-                  Credits
-                </div>
-                <div className="d-inline-block align-middle mr-5">
-                  <div className="mb-2 d-flex flex-column">
-                    <div>
-                      <input
-                        checked={creditRow.creditClass === 'A'}
-                        id={`agreement-${index}-credit-type-A`}
-                        name={`agreement-${index}`}
-                        onChange={(event) => { handleChangeRow(event.target.value, 'creditClass', index); }}
-                        type="radio"
-                        value="A"
-                      />
-                      <label className="ml-2" htmlFor={`agreement-${index}-credit-type-A`}>A credits</label>
-                    </div>
-                    <div>
-                      <input
-                        checked={creditRow.creditClass === 'B'}
-                        id={`agreement-${index}-credit-type-B`}
-                        name={`agreement-${index}`}
-                        onChange={(event) => { handleChangeRow(event.target.value, 'creditClass', index); }}
-                        type="radio"
-                        value="B"
-                      />
-                      <label className="ml-2" htmlFor={`agreement-${index}-credit-type-B`}>B credits</label>
+            {creditRows &&
+              creditRows.map((creditRow, index) => (
+                <div className="credit-agreement-form-row" key={index}>
+                  <div className="d-inline-block align-middle mr-5 text-blue">
+                    Credits
+                  </div>
+                  <div className="d-inline-block align-middle mr-5">
+                    <div className="mb-2 d-flex flex-column">
+                      <div>
+                        <input
+                          checked={creditRow.creditClass === 'A'}
+                          id={`agreement-${index}-credit-type-A`}
+                          name={`agreement-${index}`}
+                          onChange={(event) => {
+                            handleChangeRow(
+                              event.target.value,
+                              'creditClass',
+                              index
+                            );
+                          }}
+                          type="radio"
+                          value="A"
+                        />
+                        <label
+                          className="ml-2"
+                          htmlFor={`agreement-${index}-credit-type-A`}
+                        >
+                          A credits
+                        </label>
+                      </div>
+                      <div>
+                        <input
+                          checked={creditRow.creditClass === 'B'}
+                          id={`agreement-${index}-credit-type-B`}
+                          name={`agreement-${index}`}
+                          onChange={(event) => {
+                            handleChangeRow(
+                              event.target.value,
+                              'creditClass',
+                              index
+                            );
+                          }}
+                          type="radio"
+                          value="B"
+                        />
+                        <label
+                          className="ml-2"
+                          htmlFor={`agreement-${index}-credit-type-B`}
+                        >
+                          B credits
+                        </label>
+                      </div>
                     </div>
                   </div>
+                  <FormDropdown
+                    accessor={(year) => year.name}
+                    dropdownData={years}
+                    dropdownName="model year"
+                    fieldName="modelYear"
+                    handleInputChange={(event) => {
+                      handleChangeRow(event.target.value, 'modelYear', index);
+                    }}
+                    inputClassname="d-inline-block"
+                    labelClassname="mr-2 d-inline-block"
+                    rowClassname="mr-5 d-inline-block align-middle"
+                    selectedOption={creditRow.modelYear || '--'}
+                  />
+                  <TextInput
+                    defaultValue={creditRow.quantity}
+                    handleInputChange={(event) => {
+                      handleChangeRow(event.target.value, 'quantity', index);
+                    }}
+                    id="quantityOfCredits"
+                    inputSize="d-inline-block align-middle transfer-input-width"
+                    label="quantity of credits"
+                    labelSize="mr-2 col-form-label d-inline-block align-middle"
+                    mandatory
+                    name="quantity"
+                    num
+                    rowSize="mr-5 d-inline-block align-middle"
+                  />
+                  <button
+                    type="button"
+                    className="transfer-row-x"
+                    onClick={() => {
+                      handleDeleteRow(index);
+                    }}
+                  >
+                    <FontAwesomeIcon icon="times" />
+                  </button>
                 </div>
-                <FormDropdown
-                  accessor={(year) => year.name}
-                  dropdownData={years}
-                  dropdownName="model year"
-                  fieldName="modelYear"
-                  handleInputChange={(event) => {
-                    handleChangeRow(event.target.value, 'modelYear', index);
-                  }}
-                  inputClassname="d-inline-block"
-                  labelClassname="mr-2 d-inline-block"
-                  rowClassname="mr-5 d-inline-block align-middle"
-                  selectedOption={creditRow.modelYear || '--'}
-                />
-                <TextInput
-                  defaultValue={creditRow.quantity}
-                  handleInputChange={(event) => {
-                    handleChangeRow(event.target.value, 'quantity', index);
-                  }}
-                  id="quantityOfCredits"
-                  inputSize="d-inline-block align-middle transfer-input-width"
-                  label="quantity of credits"
-                  labelSize="mr-2 col-form-label d-inline-block align-middle"
-                  mandatory
-                  name="quantity"
-                  num
-                  rowSize="mr-5 d-inline-block align-middle"
-                />
-                <button
-                  type="button"
-                  className="transfer-row-x"
-                  onClick={() => {
-                    handleDeleteRow(index);
-                  }}
-                >
-                  <FontAwesomeIcon icon="times" />
-                </button>
-              </div>
-            ))}
-            <button type="button" className="transfer-add-line my-2" onClick={() => { addRow(); }}>
-              <h4><FontAwesomeIcon icon="plus" /> Add another line</h4>
+              ))}
+            <button
+              type="button"
+              className="transfer-add-line my-2"
+              onClick={() => {
+                addRow();
+              }}
+            >
+              <h4>
+                <FontAwesomeIcon icon="plus" /> Add another line
+              </h4>
             </button>
           </div>
-          <div className="grey-border-area p-3 comment-box mt-4" id="comment-input">
+          <div
+            className="grey-border-area p-3 comment-box mt-4"
+            id="comment-input"
+          >
             <div id="comment-input">
               <CommentInput
                 defaultComment={agreementDetails.bceidComment}
@@ -319,7 +380,10 @@ const CreditAgreementsForm = (props) => {
           <div className="action-bar mt-3">
             <span className="left-content">
               {id ? (
-                <Button buttonType="back" locationRoute={`/credit-agreements/${id}`} />
+                <Button
+                  buttonType="back"
+                  locationRoute={`/credit-agreements/${id}`}
+                />
               ) : (
                 <Button buttonType="back" locationRoute="/credit-agreements/" />
               )}
@@ -344,7 +408,7 @@ const CreditAgreementsForm = (props) => {
 };
 
 CreditAgreementsForm.defaultProps = {
-  id: null,
+  id: null
 };
 
 CreditAgreementsForm.propTypes = {
@@ -352,10 +416,9 @@ CreditAgreementsForm.propTypes = {
   agreementDetails: PropTypes.shape().isRequired,
   analystAction: PropTypes.bool.isRequired,
   creditRows: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  deleteFiles: PropTypes.arrayOf(PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ])).isRequired,
+  deleteFiles: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+  ).isRequired,
   files: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleChangeDetails: PropTypes.func.isRequired,
   handleChangeRow: PropTypes.func.isRequired,
@@ -368,7 +431,7 @@ CreditAgreementsForm.propTypes = {
   suppliers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   transactionTypes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   user: CustomPropTypes.user.isRequired,
-  years: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  years: PropTypes.arrayOf(PropTypes.shape()).isRequired
 };
 
 export default CreditAgreementsForm;

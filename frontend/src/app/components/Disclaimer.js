@@ -8,10 +8,8 @@ const Disclaimer = () => (
   </div>
 );
 
-Disclaimer.defaultProps = {
-};
+Disclaimer.defaultProps = {};
 
-Disclaimer.propTypes = {
-};
+Disclaimer.propTypes = {};
 
 export default Disclaimer;

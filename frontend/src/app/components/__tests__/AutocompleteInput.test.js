@@ -1,6 +1,10 @@
 import React from 'react';
 import {
-  render, cleanup, getByTestId, fireEvent, getByPlaceholderText,
+  render,
+  cleanup,
+  getByTestId,
+  fireEvent,
+  getByPlaceholderText
 } from '@testing-library/react';
 import AutocompleteInput from '../AutocompleteInput';
 
@@ -13,11 +17,21 @@ describe('autocomplete input', () => {
   const handleInputChange = (event) => {
     const { value, name } = event.target;
     const input = value.trim();
-    return ({ name: input });
+    return { name: input };
   };
 
   it('renders without crashing', () => {
-    render(<AutocompleteInput label="Model" id="modelName" name="modelName" defaultValue="test" mandatory possibleChoicesList={['one', 'two', 'three']} handleInputChange={handleInputChange} />);
+    render(
+      <AutocompleteInput
+        label="Model"
+        id="modelName"
+        name="modelName"
+        defaultValue="test"
+        mandatory
+        possibleChoicesList={['one', 'two', 'three']}
+        handleInputChange={handleInputChange}
+      />
+    );
   });
   // const setup = () => {
   //   const utils = render(

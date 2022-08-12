@@ -1,4 +1,4 @@
-const API_BASE_PATH = "/credit-requests";
+const API_BASE_PATH = '/credit-requests';
 
 const CREDIT_REQUESTS = {
   CONTENT: `${API_BASE_PATH}/:id/content`,
@@ -16,7 +16,7 @@ const CREDIT_REQUESTS = {
   UPLOAD: `${API_BASE_PATH}/upload`,
   VALIDATE: `${API_BASE_PATH}/:id/validate`,
   VALIDATED: `${API_BASE_PATH}/:id/validated`,
-  VALIDATED_DETAILS: `${API_BASE_PATH}/:id/validated-details`,
+  VALIDATED_DETAILS: `${API_BASE_PATH}/:id/validated-details`
 };
 
 export default CREDIT_REQUESTS;

@@ -12,7 +12,7 @@ const CreditAgreementsListPage = (props) => {
     handleClear,
     loading,
     setFiltered,
-    user,
+    user
   } = props;
 
   if (loading) {
@@ -27,17 +27,16 @@ const CreditAgreementsListPage = (props) => {
         </div>
       </div>
       <div className="row">
-        {user.isGovernment
-        && (
-        <div className="col-lg-12 text-right content">
-          <CreditAgreementsFilter
-            items={creditAgreements}
-            filtered={filtered}
-            handleClear={handleClear}
-            setFiltered={setFiltered}
-            user={user}
-          />
-        </div>
+        {user.isGovernment && (
+          <div className="col-lg-12 text-right content">
+            <CreditAgreementsFilter
+              items={creditAgreements}
+              filtered={filtered}
+              handleClear={handleClear}
+              setFiltered={setFiltered}
+              user={user}
+            />
+          </div>
         )}
       </div>
       <div className="row mt-4">
@@ -56,7 +55,7 @@ const CreditAgreementsListPage = (props) => {
 
 CreditAgreementsListPage.defaultProps = {
   filtered: undefined,
-  setFiltered: undefined,
+  setFiltered: undefined
 };
 
 CreditAgreementsListPage.propTypes = {
@@ -65,7 +64,7 @@ CreditAgreementsListPage.propTypes = {
   handleClear: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   setFiltered: PropTypes.func,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default CreditAgreementsListPage;

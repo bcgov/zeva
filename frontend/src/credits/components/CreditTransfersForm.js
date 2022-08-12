@@ -34,12 +34,17 @@ const CreditTransfersForm = (props) => {
     user,
     years,
     transferComments,
-    submission,
+    submission
   } = props;
 
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState({ type: '', buttonText: '', message: '' });
-  let submitTooltip = 'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.';
+  const [modalType, setModalType] = useState({
+    type: '',
+    buttonText: '',
+    message: ''
+  });
+  let submitTooltip =
+    'You must acknowledge the three confirmation checkboxes prior to submitting this transfer.';
 
   if (!user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')) {
     submitTooltip = 'You do not have the permission to submit this transfer.';
@@ -48,18 +53,36 @@ const CreditTransfersForm = (props) => {
   const modal = (
     <Modal
       confirmLabel={modalType.buttonText}
-      handleCancel={() => { setShowModal(false); }}
-      handleSubmit={() => { setShowModal(false); handleSubmit(modalType.type); }}
+      handleCancel={() => {
+        setShowModal(false);
+      }}
+      handleSubmit={() => {
+        setShowModal(false);
+        handleSubmit(modalType.type);
+      }}
       modalClass="w-75"
       showModal={showModal}
-      confirmClass={modalType.type === 'SUBMITTED' ? 'button primary' : 'btn-outline-danger'}
-      icon={modalType.type === 'SUBMITTED' ? <FontAwesomeIcon icon="paper-plane" /> : <FontAwesomeIcon icon="trash" />}
+      confirmClass={
+        modalType.type === 'SUBMITTED' ? 'button primary' : 'btn-outline-danger'
+      }
+      icon={
+        modalType.type === 'SUBMITTED' ? (
+          <FontAwesomeIcon icon="paper-plane" />
+        ) : (
+          <FontAwesomeIcon icon="trash" />
+        )
+      }
     >
       <div>
-        <div><br /><br /></div>
-        <h3 className="d-inline">{modalType.message}
-        </h3>
-        <div><br /><br /></div>
+        <div>
+          <br />
+          <br />
+        </div>
+        <h3 className="d-inline">{modalType.message}</h3>
+        <div>
+          <br />
+          <br />
+        </div>
       </div>
     </Modal>
   );
@@ -70,37 +93,55 @@ const CreditTransfersForm = (props) => {
         <div className="action-bar">
           <span className="left-content">
             <Button buttonType="back" locationRoute="/credit-transfers" />
-            {['DRAFT', 'RESCIND_PRE_APPROVAL', 'RESCINDED'].indexOf(submission.status) >= 0
-            && (
-            <Button
-              buttonType="delete"
-              action={() => {
-                setModalType({ type: 'DELETED', buttonText: ' Delete Notice', message: 'Delete transfer notice? WARNING: this action cannot be undone.' });
-                setShowModal(true);
-              }}
-            />
+            {['DRAFT', 'RESCIND_PRE_APPROVAL', 'RESCINDED'].indexOf(
+              submission.status
+            ) >= 0 && (
+              <Button
+                buttonType="delete"
+                action={() => {
+                  setModalType({
+                    type: 'DELETED',
+                    buttonText: ' Delete Notice',
+                    message:
+                      'Delete transfer notice? WARNING: this action cannot be undone.'
+                  });
+                  setShowModal(true);
+                }}
+              />
             )}
           </span>
           <span className="right-content">
             {user.hasPermission('CREATE_CREDIT_TRANSFERS') && (
-            <Button
-              disabled={unfilledRow || fields.transferPartner === ''}
-              buttonTooltip={unfilledRow || fields.transferPartner === '' ? 'please fill out all the rows to save' : ''}
-              buttonType="save"
-              action={() => {
-                handleSave();
-              }}
-            />
+              <Button
+                disabled={unfilledRow || fields.transferPartner === ''}
+                buttonTooltip={
+                  unfilledRow || fields.transferPartner === ''
+                    ? 'please fill out all the rows to save'
+                    : ''
+                }
+                buttonType="save"
+                action={() => {
+                  handleSave();
+                }}
+              />
             )}
             <Button
               buttonType="submit"
               action={() => {
                 setShowModal(true);
-                setModalType({ type: 'SUBMITTED', buttonText: ' Submit Notice', message: 'Submit credit transfer notice to trade partner?' });
+                setModalType({
+                  type: 'SUBMITTED',
+                  buttonText: ' Submit Notice',
+                  message: 'Submit credit transfer notice to trade partner?'
+                });
               }}
               optionalText="Submit Notice"
               buttonTooltip={submitTooltip}
-              disabled={checkboxes.length < assertions.length || unfilledRow || !user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')}
+              disabled={
+                checkboxes.length < assertions.length ||
+                unfilledRow ||
+                !user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')
+              }
             />
           </span>
         </div>
@@ -114,30 +155,27 @@ const CreditTransfersForm = (props) => {
         <div className="col-sm-12">
           <h2>Light Duty Vehicle Credit Transfer</h2>
           <div className="text-blue">
-            Transfer notices can only be initiated by the seller of credits.
-            To submit a notice of credit transfer there must be sufficient credits in your balance
+            Transfer notices can only be initiated by the seller of credits. To
+            submit a notice of credit transfer there must be sufficient credits
+            in your balance
           </div>
         </div>
-
       </div>
-      {errorMessage.length > 0
-      && (
-      <Alert
-        title="Error"
-        message="insufficient credits, you can only transfer credits available in your current balance."
-        classname="alert-danger"
-      />
+      {errorMessage.length > 0 && (
+        <Alert
+          title="Error"
+          message="insufficient credits, you can only transfer credits available in your current balance."
+          classname="alert-danger"
+        />
       )}
-      {submission.status && errorMessage.length === 0
-      && (
-      <CreditTransfersAlert
-        user={user}
-        errorMessage={errorMessage}
-        submission={submission}
-      />
+      {submission.status && errorMessage.length === 0 && (
+        <CreditTransfersAlert
+          user={user}
+          errorMessage={errorMessage}
+          submission={submission}
+        />
       )}
-      {transferComments.length > 0
-      && (
+      {transferComments.length > 0 && (
         <DisplayComment commentArray={transferComments} />
       )}
       <div id="form">
@@ -146,7 +184,8 @@ const CreditTransfersForm = (props) => {
             <div className="col-sm-12">
               <fieldset>
                 <h3>
-                  {user.organization.name} submits notice of the following proposed credit transfer:
+                  {user.organization.name} submits notice of the following
+                  proposed credit transfer:
                 </h3>
                 <div className="form-group">
                   <div className="d-inline-block align-middle mr-2">
@@ -174,16 +213,33 @@ const CreditTransfersForm = (props) => {
                     years={years}
                   />
                 ))}
-                <button type="button" className="transfer-add-line my-2" onClick={() => { addRow(); }}>
-                  <h4><FontAwesomeIcon icon="plus" /> Add another line</h4>
+                <button
+                  type="button"
+                  className="transfer-add-line my-2"
+                  onClick={() => {
+                    addRow();
+                  }}
+                >
+                  <h4>
+                    <FontAwesomeIcon icon="plus" /> Add another line
+                  </h4>
                 </button>
-                <span className="transfer-total">Total CAD: $ {formatNumeric(total, 2)}</span>
+                <span className="transfer-total">
+                  Total CAD: $ {formatNumeric(total, 2)}
+                </span>
                 <CreditTransferSignoff
                   assertions={assertions}
                   checkboxes={checkboxes}
-                  disableCheckboxes={unfilledRow || !user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')}
+                  disableCheckboxes={
+                    unfilledRow ||
+                    !user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')
+                  }
                   handleCheckboxClick={handleCheckboxClick}
-                  hoverText={user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL') ? hoverText : 'You do not have permission to check the boxes.'}
+                  hoverText={
+                    user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')
+                      ? hoverText
+                      : 'You do not have permission to check the boxes.'
+                  }
                   user={user}
                 />
                 {actionbar}
@@ -203,13 +259,15 @@ CreditTransfersForm.defaultProps = {
   unfilledRow: true,
   hoverText: '',
   transferComments: [{}],
-  errorMessage: [],
+  errorMessage: []
 };
 
 CreditTransfersForm.propTypes = {
   addRow: PropTypes.func.isRequired,
   assertions: PropTypes.arrayOf(PropTypes.shape()),
-  checkboxes: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])),
+  checkboxes: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+  ),
   fields: PropTypes.shape().isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   handleInputChange: PropTypes.func.isRequired,
@@ -226,7 +284,7 @@ CreditTransfersForm.propTypes = {
   user: CustomPropTypes.user.isRequired,
   years: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   transferComments: PropTypes.arrayOf(PropTypes.shape()),
-  errorMessage: PropTypes.arrayOf(PropTypes.string),
+  errorMessage: PropTypes.arrayOf(PropTypes.string)
 };
 
 export default CreditTransfersForm;

@@ -1,27 +1,27 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useParams } from "react-router-dom";
-import parse from "html-react-parser";
-import ReactQuill from "react-quill";
-import axios from "axios";
-import PropTypes from "prop-types";
-import React, { useState } from "react";
-import moment from "moment-timezone";
-import "react-quill/dist/quill.snow.css";
-import _ from "lodash";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useParams } from 'react-router-dom';
+import parse from 'html-react-parser';
+import ReactQuill from 'react-quill';
+import axios from 'axios';
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import moment from 'moment-timezone';
+import 'react-quill/dist/quill.snow.css';
+import _ from 'lodash';
 
-import CreditRequestAlert from "./CreditRequestAlert";
-import Button from "../../app/components/Button";
-import Modal from "../../app/components/Modal";
-import history from "../../app/History";
-import ROUTES_CREDIT_REQUESTS from "../../app/routes/CreditRequests";
-import download from "../../app/utilities/download";
-import CustomPropTypes from "../../app/utilities/props";
-import ModelListTable from "./ModelListTable";
-import CreditRequestSummaryTable from "./CreditRequestSummaryTable";
-import getFileSize from "../../app/utilities/getFileSize";
-import DisplayComment from "../../app/components/DisplayComment";
-import formatNumeric from "../../app/utilities/formatNumeric";
-import DownloadAllSubmissionContentButton from "./DownloadAllSubmissionContentButton";
+import CreditRequestAlert from './CreditRequestAlert';
+import Button from '../../app/components/Button';
+import Modal from '../../app/components/Modal';
+import history from '../../app/History';
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
+import download from '../../app/utilities/download';
+import CustomPropTypes from '../../app/utilities/props';
+import ModelListTable from './ModelListTable';
+import CreditRequestSummaryTable from './CreditRequestSummaryTable';
+import getFileSize from '../../app/utilities/getFileSize';
+import DisplayComment from '../../app/components/DisplayComment';
+import formatNumeric from '../../app/utilities/formatNumeric';
+import DownloadAllSubmissionContentButton from './DownloadAllSubmissionContentButton';
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -30,31 +30,31 @@ const CreditRequestDetailsPage = (props) => {
     submission,
     user,
     issueAsMY,
-    handleCheckboxClick,
+    handleCheckboxClick
   } = props;
 
   const { id } = useParams();
-  const validatedOnly = submission.validationStatus === "CHECKED";
+  const validatedOnly = submission.validationStatus === 'CHECKED';
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState("");
-  const [comment, setComment] = useState("");
+  const [modalType, setModalType] = useState('');
+  const [comment, setComment] = useState('');
 
   const serviceAddress = submission.organization.organizationAddress.find(
-    (address) => address.addressType.addressType === "Service"
+    (address) => address.addressType.addressType === 'Service'
   );
   const recordsAddress = submission.organization.organizationAddress.find(
-    (address) => address.addressType.addressType === "Records"
+    (address) => address.addressType.addressType === 'Records'
   );
 
   const downloadErrors = (e) => {
     const element = e.currentTarget;
     const original = element.innerHTML;
 
-    element.innerText = "Downloading...";
+    element.innerText = 'Downloading...';
     element.disabled = true;
 
     return download(
-      ROUTES_CREDIT_REQUESTS.DOWNLOAD_ERRORS.replace(":id", submission.id),
+      ROUTES_CREDIT_REQUESTS.DOWNLOAD_ERRORS.replace(':id', submission.id),
       {}
     ).then(() => {
       element.innerHTML = original;
@@ -106,79 +106,79 @@ const CreditRequestDetailsPage = (props) => {
     }
     axios
       .patch(
-        ROUTES_CREDIT_REQUESTS.DETAILS.replace(":id", id),
+        ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id),
         submissionContent
       )
       .then(() => {
-        history.push(ROUTES_CREDIT_REQUESTS.EDIT.replace(":id", id));
+        history.push(ROUTES_CREDIT_REQUESTS.EDIT.replace(':id', id));
         const refreshed = true;
         if (refreshed) {
-          history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(":id", id));
+          history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id));
         }
       });
   };
 
   switch (modalType) {
-    case "submit":
+    case 'submit':
       modalProps = {
-        confirmLabel: " Submit",
+        confirmLabel: ' Submit',
         handleSubmit: () => {
-          handleSubmit("SUBMITTED");
+          handleSubmit('SUBMITTED');
         },
-        buttonClass: "button primary",
-        modalText: "Submit credit request to Government of B.C.?",
-        icon: <FontAwesomeIcon icon="paper-plane" />,
+        buttonClass: 'button primary',
+        modalText: 'Submit credit request to Government of B.C.?',
+        icon: <FontAwesomeIcon icon="paper-plane" />
       };
       break;
-    case "delete":
+    case 'delete':
       modalProps = {
-        confirmLabel: " Delete",
+        confirmLabel: ' Delete',
         handleSubmit: () => {
-          handleSubmit("DELETED");
+          handleSubmit('DELETED');
         },
-        buttonClass: "btn-outline-danger",
-        modalText: "Delete submission? WARNING: this action cannot be undone",
-        icon: <FontAwesomeIcon icon="trash" />,
+        buttonClass: 'btn-outline-danger',
+        modalText: 'Delete submission? WARNING: this action cannot be undone',
+        icon: <FontAwesomeIcon icon="trash" />
       };
       break;
-    case "approve":
+    case 'approve':
       modalProps = {
-        confirmLabel: "Recommend Issuance",
+        confirmLabel: 'Recommend Issuance',
         handleSubmit: () => {
-          handleSubmit("RECOMMEND_APPROVAL");
+          handleSubmit('RECOMMEND_APPROVAL');
         },
-        buttonClass: "button primary",
-        modalText: "Recommend issuance of credits?",
+        buttonClass: 'button primary',
+        modalText: 'Recommend issuance of credits?'
       };
       break;
-    case "return":
+    case 'return':
       modalProps = {
-        confirmLabel: "Return to Analyst",
+        confirmLabel: 'Return to Analyst',
         handleSubmit: () => {
-          handleSubmit("CHECKED");
+          handleSubmit('CHECKED');
         },
-        buttonClass: "btn-outline-danger",
-        modalText: "Return submission to analyst?",
+        buttonClass: 'btn-outline-danger',
+        modalText: 'Return submission to analyst?'
       };
       break;
-    case "analyst-reject":
+    case 'analyst-reject':
       modalProps = {
-        confirmLabel: "Reject Application",
+        confirmLabel: 'Reject Application',
         handleSubmit: () => {
-          handleSubmit("REJECTED", comment);
+          handleSubmit('REJECTED', comment);
         },
-        buttonClass: "btn-outline-danger",
-        modalText: "Reject the application?",
+        buttonClass: 'btn-outline-danger',
+        modalText: 'Reject the application?'
       };
       break;
     default:
       modalProps = {
-        confirmLabel: "Issue Credits",
-        buttonClass: "button primary",
-        modalText: "Issue credits to vehicle supplier?",
+        confirmLabel: 'Issue Credits',
+        buttonClass: 'button primary',
+        modalText: 'Issue credits to vehicle supplier?',
         handleSubmit: () => {
-          handleSubmit("VALIDATED", "");
-        },
+          handleSubmit('VALIDATED', '');
+        }
       };
   }
 
@@ -209,37 +209,37 @@ const CreditRequestDetailsPage = (props) => {
   );
   const directorAction =
     user.isGovernment &&
-    ["RECOMMEND_APPROVAL", "RECOMMEND_REJECTION"].indexOf(
+    ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(
       submission.validationStatus
     ) >= 0 &&
-    user.hasPermission("SIGN_SALES");
+    user.hasPermission('SIGN_SALES');
 
   const analystAction =
     user.isGovernment &&
-    ["CHECKED", "SUBMITTED"].indexOf(submission.validationStatus) >= 0 &&
-    user.hasPermission("RECOMMEND_SALES");
+    ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0 &&
+    user.hasPermission('RECOMMEND_SALES');
 
   const idirCommentSection = (
     <div className="text-editor mb-2 mt-2">
       <label className="mt-3" htmlFor="application-comment">
         <h4>
           {analystAction
-            ? "Comment to director:"
-            : "Add Comment to analyst if returning submission:"}
+            ? 'Comment to director:'
+            : 'Add Comment to analyst if returning submission:'}
         </h4>
       </label>
       <ReactQuill
         theme="snow"
         modules={{
           toolbar: [
-            ["bold", "italic"],
-            [{ list: "bullet" }, { list: "ordered" }],
+            ['bold', 'italic'],
+            [{ list: 'bullet' }, { list: 'ordered' }]
           ],
           keyboard: {
-            bindings: { tab: false },
-          },
+            bindings: { tab: false }
+          }
         }}
-        formats={["bold", "italic", "list", "bullet"]}
+        formats={['bold', 'italic', 'list', 'bullet']}
         onChange={handleCommentChange}
       />
       <button
@@ -278,7 +278,7 @@ const CreditRequestDetailsPage = (props) => {
   });
 
   const invalidSubmission = submission.content.some(
-    (row) => !row.vehicle || !row.vehicle.id || row.vehicle.modelName === ""
+    (row) => !row.vehicle || !row.vehicle.id || row.vehicle.modelName === ''
   );
 
   return (
@@ -292,8 +292,8 @@ const CreditRequestDetailsPage = (props) => {
       {analystAction && submission.icbcCurrentTo && (
         <div className="row my-1">
           <div className="col-sm-12">
-            ICBC data current to:{" "}
-            {moment(submission.icbcCurrentTo).format("MMM D, YYYY")}
+            ICBC data current to:{' '}
+            {moment(submission.icbcCurrentTo).format('MMM D, YYYY')}
           </div>
         </div>
       )}
@@ -304,11 +304,11 @@ const CreditRequestDetailsPage = (props) => {
               <CreditRequestAlert
                 isGovernment={user.isGovernment}
                 submission={submission}
-                date={moment(submission.updateTimestamp).format("MMM D, YYYY")}
+                date={moment(submission.updateTimestamp).format('MMM D, YYYY')}
                 icbcDate={
                   submission.icbcCurrentTo
-                    ? moment(submission.icbcCurrentTo).format("MMM D, YYYY")
-                    : ""
+                    ? moment(submission.icbcCurrentTo).format('MMM D, YYYY')
+                    : ''
                 }
                 invalidSubmission={invalidSubmission}
               />
@@ -345,23 +345,23 @@ const CreditRequestDetailsPage = (props) => {
               </h3>
               <div>
                 <h4 className="d-inline-block sales-upload-grey my-2">
-                  Service address:{" "}
+                  Service address:{' '}
                 </h4>
                 {serviceAddress && (
                   <h4 className="d-inline-block sales-upload-blue">
-                    {serviceAddress.addressLine1} {serviceAddress.addressLine2}{" "}
-                    {serviceAddress.city} {serviceAddress.state}{" "}
+                    {serviceAddress.addressLine1} {serviceAddress.addressLine2}{' '}
+                    {serviceAddress.city} {serviceAddress.state}{' '}
                     {serviceAddress.postalCode}
                   </h4>
                 )}
                 <br />
                 <h4 className="d-inline-block sales-upload-grey mb-3">
-                  Records address:{" "}
+                  Records address:{' '}
                 </h4>
                 {recordsAddress && (
                   <h4 className="d-inline-block sales-upload-blue">
-                    {recordsAddress.addressLine1} {recordsAddress.addressLine2}{" "}
-                    {recordsAddress.city} {recordsAddress.state}{" "}
+                    {recordsAddress.addressLine1} {recordsAddress.addressLine2}{' '}
+                    {recordsAddress.city} {recordsAddress.state}{' '}
                     {recordsAddress.postalCode}
                   </h4>
                 )}
@@ -394,20 +394,20 @@ const CreditRequestDetailsPage = (props) => {
                               onClick={() => {
                                 axios
                                   .get(file.url, {
-                                    responseType: "blob",
+                                    responseType: 'blob',
                                     headers: {
-                                      Authorization: null,
-                                    },
+                                      Authorization: null
+                                    }
                                   })
                                   .then((response) => {
                                     const objectURL =
                                       window.URL.createObjectURL(
                                         new Blob([response.data])
                                       );
-                                    const link = document.createElement("a");
+                                    const link = document.createElement('a');
                                     link.href = objectURL;
                                     link.setAttribute(
-                                      "download",
+                                      'download',
                                       file.filename
                                     );
                                     document.body.appendChild(link);
@@ -445,18 +445,18 @@ const CreditRequestDetailsPage = (props) => {
       </div>
 
       {[
-        "CHECKED",
-        "RECOMMEND_APPROVAL",
-        "RECOMMEND_REJECTION",
-        "VALIDATED",
+        'CHECKED',
+        'RECOMMEND_APPROVAL',
+        'RECOMMEND_REJECTION',
+        'VALIDATED'
       ].indexOf(submission.validationStatus) >= 0 &&
         user.isGovernment && (
           <div className="row my-4">
             <div className="col-sm-12">
-              It is recommended that the Director issue a total of{" "}
-              {formatNumeric(totalEligibleCredits, 2)} ZEV credits to{" "}
-              {submission.organization.name} based on{" "}
-              {formatNumeric(_.sumBy(submission.eligible, "vinCount"), 0)}{" "}
+              It is recommended that the Director issue a total of{' '}
+              {formatNumeric(totalEligibleCredits, 2)} ZEV credits to{' '}
+              {submission.organization.name} based on{' '}
+              {formatNumeric(_.sumBy(submission.eligible, 'vinCount'), 0)}{' '}
               eligible ZEV sales.
             </div>
           </div>
@@ -483,19 +483,19 @@ const CreditRequestDetailsPage = (props) => {
                   buttonType="reject"
                   optionalText="Reject Application"
                   action={() => {
-                    setModalType("analyst-reject");
+                    setModalType('analyst-reject');
                     setShowModal(true);
                   }}
                 />
               )}
-              {(submission.validationStatus === "DRAFT" ||
-                submission.validationStatus === "REJECTED") &&
-                typeof user.hasPermission === "function" &&
-                user.hasPermission("EDIT_SALES") && (
+              {(submission.validationStatus === 'DRAFT' ||
+                submission.validationStatus === 'REJECTED') &&
+                typeof user.hasPermission === 'function' &&
+                user.hasPermission('EDIT_SALES') && (
                   <Button
                     buttonType="delete"
                     action={() => {
-                      setModalType("delete");
+                      setModalType('delete');
                       setShowModal(true);
                     }}
                   />
@@ -504,7 +504,7 @@ const CreditRequestDetailsPage = (props) => {
                 <button
                   className="button text-danger"
                   onClick={() => {
-                    setModalType("return");
+                    setModalType('return');
                     setShowModal(true);
                   }}
                   type="button"
@@ -524,7 +524,7 @@ const CreditRequestDetailsPage = (props) => {
                           /:id/g,
                           submission.id
                         );
-                        url += "?reset=Y";
+                        url += '?reset=Y';
                         history.push(url);
                       }}
                       type="button"
@@ -533,7 +533,7 @@ const CreditRequestDetailsPage = (props) => {
                     </button>
                   )}
                   <button
-                    className={validatedOnly ? "button" : "button primary"}
+                    className={validatedOnly ? 'button' : 'button primary'}
                     onClick={() => {
                       const url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(
                         /:id/g,
@@ -544,14 +544,14 @@ const CreditRequestDetailsPage = (props) => {
                     }}
                     type="button"
                   >
-                    {validatedOnly ? "Review Details" : "Verify with ICBC Data"}
+                    {validatedOnly ? 'Review Details' : 'Verify with ICBC Data'}
                   </button>
                   {validatedOnly && (
                     <button
-                      className={validatedOnly ? "button primary" : "button"}
+                      className={validatedOnly ? 'button primary' : 'button'}
                       key="recommend-approval"
                       onClick={() => {
-                        setModalType("approve");
+                        setModalType('approve');
                         setShowModal(true);
                       }}
                       type="button"
@@ -566,7 +566,7 @@ const CreditRequestDetailsPage = (props) => {
                   className="button primary"
                   disabled={comment.length > 0}
                   onClick={() => {
-                    setModalType("issue");
+                    setModalType('issue');
                     setShowModal(true);
                   }}
                   type="button"
@@ -575,12 +575,12 @@ const CreditRequestDetailsPage = (props) => {
                 </button>
               )}
               {user.isGovernment &&
-                submission.validationStatus === "VALIDATED" && (
+                submission.validationStatus === 'VALIDATED' && (
                   <DownloadAllSubmissionContentButton submission={submission} />
                 )}
               {!user.isGovernment && (
                 <>
-                  {submission.validationStatus === "VALIDATED" && (
+                  {submission.validationStatus === 'VALIDATED' && (
                     <Button
                       buttonType="download"
                       optionalText="Download Errors"
@@ -591,9 +591,9 @@ const CreditRequestDetailsPage = (props) => {
                       disabled={submission.unselected === 0}
                     />
                   )}
-                  {submission.validationStatus === "DRAFT" &&
-                    typeof user.hasPermission === "function" &&
-                    user.hasPermission("EDIT_SALES") && (
+                  {submission.validationStatus === 'DRAFT' &&
+                    typeof user.hasPermission === 'function' &&
+                    user.hasPermission('EDIT_SALES') && (
                       <button
                         className="button"
                         key="edit"
@@ -609,13 +609,13 @@ const CreditRequestDetailsPage = (props) => {
                         <FontAwesomeIcon icon="upload" /> Re-upload files
                       </button>
                     )}
-                  {submission.validationStatus === "DRAFT" &&
-                    typeof user.hasPermission === "function" &&
-                    user.hasPermission("SUBMIT_SALES") && (
+                  {submission.validationStatus === 'DRAFT' &&
+                    typeof user.hasPermission === 'function' &&
+                    user.hasPermission('SUBMIT_SALES') && (
                       <Button
                         buttonType="submit"
                         action={() => {
-                          setModalType("submit");
+                          setModalType('submit');
                           setShowModal(true);
                         }}
                         disabled={invalidSubmission}
@@ -633,23 +633,23 @@ const CreditRequestDetailsPage = (props) => {
 };
 
 CreditRequestDetailsPage.defaultProps = {
-  locationState: undefined,
+  locationState: undefined
 };
 
 CreditRequestDetailsPage.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   locationState: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.shape()),
-    PropTypes.shape(),
+    PropTypes.shape()
   ]),
   submission: PropTypes.shape().isRequired,
   uploadDate: PropTypes.shape({
     uploadDate: PropTypes.string,
-    updateTimestamp: PropTypes.string,
+    updateTimestamp: PropTypes.string
   }).isRequired,
   user: CustomPropTypes.user.isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
-  issueAsMY: PropTypes.bool.isRequired,
+  issueAsMY: PropTypes.bool.isRequired
 };
 
 export default CreditRequestDetailsPage;

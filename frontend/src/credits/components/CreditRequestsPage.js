@@ -8,13 +8,7 @@ import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import CreditRequestListTable from './CreditRequestListTable';
 
 const CreditRequestsPage = (props) => {
-  const {
-    filtered,
-    handleClear,
-    setFiltered,
-    submissions,
-    user,
-  } = props;
+  const { filtered, handleClear, setFiltered, submissions, user } = props;
 
   return (
     <div id="credit-requests-list" className="page">
@@ -32,20 +26,19 @@ const CreditRequestsPage = (props) => {
           >
             Clear Filters
           </button>
-          {!user.isGovernment
-          && typeof user.hasPermission === 'function'
-          && user.hasPermission('CREATE_SALES')
-          && (
-            <button
-              className="button primary ml-3"
-              onClick={() => {
-                history.push(ROUTES_CREDIT_REQUESTS.NEW);
-              }}
-              type="button"
-            >
-              <FontAwesomeIcon icon="plus" /> New Credit Application
-            </button>
-          )}
+          {!user.isGovernment &&
+            typeof user.hasPermission === 'function' &&
+            user.hasPermission('CREATE_SALES') && (
+              <button
+                className="button primary ml-3"
+                onClick={() => {
+                  history.push(ROUTES_CREDIT_REQUESTS.NEW);
+                }}
+                type="button"
+              >
+                <FontAwesomeIcon icon="plus" /> New Credit Application
+              </button>
+            )}
         </div>
       </div>
       <div className="row">
@@ -69,7 +62,7 @@ CreditRequestsPage.propTypes = {
   handleClear: PropTypes.func.isRequired,
   setFiltered: PropTypes.func.isRequired,
   submissions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default CreditRequestsPage;

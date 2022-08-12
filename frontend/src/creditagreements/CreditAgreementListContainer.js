@@ -44,7 +44,7 @@ const CreditAgreementListContainer = (props) => {
     refreshList(true);
   }, [keycloak.authenticated]);
 
-  return ([
+  return [
     <CreditTransactionTabs active="credit-agreements" key="tabs" user={user} />,
     <CreditAgreementsListPage
       creditAgreements={creditAgreements}
@@ -54,13 +54,13 @@ const CreditAgreementListContainer = (props) => {
       key="list"
       setFiltered={setFiltered}
       user={user}
-    />,
-  ]);
+    />
+  ];
 };
 
 CreditAgreementListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default withRouter(withReferenceData(CreditAgreementListContainer)());

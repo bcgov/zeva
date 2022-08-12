@@ -10,7 +10,13 @@ import VehicleListTable from '../../vehicles/components/VehicleListTable';
 
 const VehicleSupplierZEVListPage = (props) => {
   const {
-    filtered, handleClear, loading, locationState, setFiltered, user, vehicles,
+    filtered,
+    handleClear,
+    loading,
+    locationState,
+    setFiltered,
+    user,
+    vehicles
   } = props;
 
   if (loading) {
@@ -65,7 +71,7 @@ const VehicleSupplierZEVListPage = (props) => {
 
 VehicleSupplierZEVListPage.defaultProps = {
   locationState: undefined,
-  vehicles: [],
+  vehicles: []
 };
 
 VehicleSupplierZEVListPage.propTypes = {
@@ -75,7 +81,7 @@ VehicleSupplierZEVListPage.propTypes = {
   locationState: PropTypes.arrayOf(PropTypes.shape()),
   setFiltered: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired,
-  vehicles: PropTypes.arrayOf(PropTypes.shape({})),
+  vehicles: PropTypes.arrayOf(PropTypes.shape({}))
 };
 
 export default VehicleSupplierZEVListPage;

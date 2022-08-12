@@ -89,6 +89,7 @@
     "jest-mock-axios": "^4.3.0",
     "mini-css-extract-plugin": "^0.8.2",
     "node-sass": "^4.14.1",
+    "prettier": "2.7.1",
     "react-is": "^16.13.1",
     "react-test-renderer": "^16.13.1",
     "sass-loader": "^8.0.0",
@@ -107,6 +108,7 @@
     "production": "NODE_ENV=production node start",
     "lint": "eslint src",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "pretty": "prettier --write \"./**/*.{js,jsx,json}\""
   }
 }

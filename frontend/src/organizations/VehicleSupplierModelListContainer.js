@@ -30,17 +30,21 @@ const VehicleSupplierModelListContainer = (props) => {
 
   const refreshDetails = () => {
     setLoading(true);
-    const detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
-      setDetails(response.data);
-    });
+    const detailsPromise = axios
+      .get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id))
+      .then((response) => {
+        setDetails(response.data);
+      });
 
-    const vehiclesPromise = axios.get(ROUTES_VEHICLES.LIST, {
-      params: {
-        organization_id: id,
-      },
-    }).then((response) => {
-      setVehicles(response.data);
-    });
+    const vehiclesPromise = axios
+      .get(ROUTES_VEHICLES.LIST, {
+        params: {
+          organization_id: id
+        }
+      })
+      .then((response) => {
+        setVehicles(response.data);
+      });
 
     Promise.all([detailsPromise, vehiclesPromise]).then(() => {
       setLoading(false);
@@ -54,7 +58,12 @@ const VehicleSupplierModelListContainer = (props) => {
   return (
     <div className="page">
       <h1>{details.name}</h1>
-      <VehicleSupplierTabs locationState={locationState} supplierId={details.id} active="supplier-zev-models" user={user} />
+      <VehicleSupplierTabs
+        locationState={locationState}
+        supplierId={details.id}
+        active="supplier-zev-models"
+        user={user}
+      />
       <VehicleSupplierZEVListPage
         filtered={filtered}
         handleClear={handleClear}
@@ -70,7 +79,7 @@ const VehicleSupplierModelListContainer = (props) => {
 VehicleSupplierModelListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   location: PropTypes.shape().isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default withRouter(VehicleSupplierModelListContainer);

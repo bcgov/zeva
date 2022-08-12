@@ -4,21 +4,25 @@ const getCreditRequestSummary = (submission, validationStatus, user) => {
     b: 0,
     sales: 0,
     label: validationStatus === 'DRAFT' ? 'Uploaded' : 'Submitted',
-    creditsLabel: 'Applied for',
+    creditsLabel: 'Applied for'
   };
   const eligible = {
     a: 0,
     b: 0,
     sales: 0,
     label: 'Eligible for Credits',
-    creditsLabel: validationStatus === 'VALIDATED' ? 'Issued' : 'Recommended for Issuance',
+    creditsLabel:
+      validationStatus === 'VALIDATED' ? 'Issued' : 'Recommended for Issuance'
   };
   const notEligible = {
     a: 0,
     b: 0,
     sales: 0,
     label: 'Not Eligible for Credits',
-    creditsLabel: validationStatus === 'VALIDATED' ? 'Not Issued' : 'Not Recommended for Issuance',
+    creditsLabel:
+      validationStatus === 'VALIDATED'
+        ? 'Not Issued'
+        : 'Not Recommended for Issuance'
   };
 
   submission.content.forEach((item) => {
@@ -42,7 +46,9 @@ const getCreditRequestSummary = (submission, validationStatus, user) => {
     let vinCount = 0;
 
     if (item.vehicle && item.vehicle.id && submission.eligible) {
-      const eligibleVins = submission.eligible.find((eligibleItem) => eligibleItem.vehicleId === item.vehicle.id);
+      const eligibleVins = submission.eligible.find(
+        (eligibleItem) => eligibleItem.vehicleId === item.vehicle.id
+      );
 
       if (eligibleVins) {
         vinCount = eligibleVins.vinCount;
@@ -72,7 +78,11 @@ const getCreditRequestSummary = (submission, validationStatus, user) => {
 
   const summaryData = [submitted];
 
-  if (validationStatus === 'VALIDATED' || (user.isGovernment && ['CHECKED', 'RECOMMEND_APPROVAL'].indexOf(validationStatus) >= 0)) {
+  if (
+    validationStatus === 'VALIDATED' ||
+    (user.isGovernment &&
+      ['CHECKED', 'RECOMMEND_APPROVAL'].indexOf(validationStatus) >= 0)
+  ) {
     summaryData.push(eligible);
     summaryData.push(notEligible);
   }

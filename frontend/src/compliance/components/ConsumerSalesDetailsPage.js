@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
-import CustomPropTypes from "../../app/utilities/props";
-import Loading from "../../app/components/Loading";
-import ComplianceReportAlert from "./ComplianceReportAlert";
-import Button from "../../app/components/Button";
-import Modal from "../../app/components/Modal";
-import history from "../../app/History";
-import ComplianceReportSignOff from "./ComplianceReportSignOff";
-import ConsumerSalesLDVModalTable from "./ConsumerSalesLDVModelTable";
-import ROUTES_COMPLIANCE from "../../app/routes/Compliance";
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import CustomPropTypes from '../../app/utilities/props';
+import Loading from '../../app/components/Loading';
+import ComplianceReportAlert from './ComplianceReportAlert';
+import Button from '../../app/components/Button';
+import Modal from '../../app/components/Modal';
+import history from '../../app/History';
+import ComplianceReportSignOff from './ComplianceReportSignOff';
+import ConsumerSalesLDVModalTable from './ConsumerSalesLDVModelTable';
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 
 const ConsumerSalesDetailsPage = (props) => {
   const {
@@ -25,7 +25,7 @@ const ConsumerSalesDetailsPage = (props) => {
     modelYear,
     statuses,
     id,
-    checked,
+    checked
   } = props;
 
   const [showModal, setShowModal] = useState(false);
@@ -73,7 +73,7 @@ const ConsumerSalesDetailsPage = (props) => {
 
   assertions.forEach((assertion) => {
     if (checkboxes.indexOf(assertion.id) >= 0) {
-      disabledCheckboxes = "disabled";
+      disabledCheckboxes = 'disabled';
     }
   });
 
@@ -112,9 +112,9 @@ const ConsumerSalesDetailsPage = (props) => {
           <div className="p-3 consumer-sales">
             <span className="float-right d-print-none">
               {(!user.isGovernment ||
-                (user.hasPermission("RECOMMEND_COMPLIANCE_REPORT") &&
+                (user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') &&
                   enableEditBtnForAnalyst)) &&
-                statuses.consumerSales.status === "CONFIRMED" && (
+                statuses.consumerSales.status === 'CONFIRMED' && (
                   <button
                     className="btn button primary"
                     onClick={() => {
@@ -141,17 +141,17 @@ const ConsumerSalesDetailsPage = (props) => {
               <div className="text-blue mt-2">
                 If you have {modelYear} model year ZEV sales or leases that
                 occurred before Oct. 1, {modelYear + 1} that you haven&apos;t
-                applied for credits you must{" "}
+                applied for credits you must{' '}
                 <button
                   className="text-primary credit-request-link"
                   onClick={() => {
-                    history.push("/credit-requests/new");
+                    history.push('/credit-requests/new');
                   }}
                   type="button"
                 >
-                  {" "}
+                  {' '}
                   <u>enter an application for credits for consumer sales</u>
-                </button>{" "}
+                </button>{' '}
                 before submitting this model year report.
               </div>
               <div className="total-ldv-sales mt-2 mb-2">
@@ -191,7 +191,7 @@ const ConsumerSalesDetailsPage = (props) => {
                 optionalText="Next"
                 action={() => {
                   history.push(
-                    ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(":id", id)
+                    ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(':id', id)
                   );
                 }}
               />
@@ -199,7 +199,7 @@ const ConsumerSalesDetailsPage = (props) => {
                 <Button
                   buttonType="save"
                   disabled={
-                    ["SAVED", "UNSAVED"].indexOf(
+                    ['SAVED', 'UNSAVED'].indexOf(
                       statuses.consumerSales.status
                     ) < 0 || disableSave()
                   }
@@ -219,13 +219,13 @@ const ConsumerSalesDetailsPage = (props) => {
 };
 ConsumerSalesDetailsPage.defaultProps = {
   assertions: [],
-  checkboxes: [],
+  checkboxes: []
 };
 
 ConsumerSalesDetailsPage.propTypes = {
   details: PropTypes.shape({
     organization: PropTypes.shape(),
-    consumerSales: PropTypes.shape(),
+    consumerSales: PropTypes.shape()
   }).isRequired,
   user: CustomPropTypes.user.isRequired,
   loading: PropTypes.bool.isRequired,
@@ -240,6 +240,6 @@ ConsumerSalesDetailsPage.propTypes = {
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   disabledCheckboxes: PropTypes.string.isRequired,
   modelYear: PropTypes.number.isRequired,
-  statuses: PropTypes.shape().isRequired,
+  statuses: PropTypes.shape().isRequired
 };
 export default ConsumerSalesDetailsPage;

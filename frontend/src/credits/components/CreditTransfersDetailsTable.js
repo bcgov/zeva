@@ -9,7 +9,8 @@ const CreditTransfersDetailsTable = (props) => {
   const tableText = (
     <>
       <h3 className="mt-2">
-        {submission.debitFrom.name} submits notice of the following proposed credit transfer
+        {submission.debitFrom.name} submits notice of the following proposed
+        credit transfer
       </h3>
       <div className="text-blue">
         {submission.debitFrom.name} will transfer to {submission.creditTo.name}:
@@ -17,35 +18,40 @@ const CreditTransfersDetailsTable = (props) => {
     </>
   );
 
-  const submissionProposalColumns = [{
-    Header: 'Quantity',
-    accessor: (item) => (formatNumeric(item.creditValue)),
-    id: 'credit-quantity',
-    className: 'text-right',
-  }, {
-    Header: 'Model Year',
-    accessor: (item) => (item.modelYear.name),
-    id: 'model-year',
-    className: 'text-center',
-  }, {
-    Header: 'ZEV Class',
-    accessor: (item) => (item.creditClass.creditClass),
-    id: 'zev-class',
-    className: 'text-center',
-  },
-  {
-    Header: 'Value Per Credit',
-    accessor: (item) => (formatNumeric(item.dollarValue, 2)),
-    id: 'dollar-value',
-    width: 175,
-    className: 'text-right',
-  }, {
-    Header: 'Total',
-    accessor: (item) => (`$ ${formatNumeric((item.creditValue * item.dollarValue), 2)}`),
-    id: 'total',
-    className: 'text-right',
-    width: 175,
-  },
+  const submissionProposalColumns = [
+    {
+      Header: 'Quantity',
+      accessor: (item) => formatNumeric(item.creditValue),
+      id: 'credit-quantity',
+      className: 'text-right'
+    },
+    {
+      Header: 'Model Year',
+      accessor: (item) => item.modelYear.name,
+      id: 'model-year',
+      className: 'text-center'
+    },
+    {
+      Header: 'ZEV Class',
+      accessor: (item) => item.creditClass.creditClass,
+      id: 'zev-class',
+      className: 'text-center'
+    },
+    {
+      Header: 'Value Per Credit',
+      accessor: (item) => formatNumeric(item.dollarValue, 2),
+      id: 'dollar-value',
+      width: 175,
+      className: 'text-right'
+    },
+    {
+      Header: 'Total',
+      accessor: (item) =>
+        `$ ${formatNumeric(item.creditValue * item.dollarValue, 2)}`,
+      id: 'total',
+      className: 'text-right',
+      width: 175
+    }
   ];
   return (
     <div className="row mb-3">
@@ -62,8 +68,7 @@ const CreditTransfersDetailsTable = (props) => {
 };
 
 CreditTransfersDetailsTable.propTypes = {
-  submission: PropTypes.shape().isRequired,
-
+  submission: PropTypes.shape().isRequired
 };
 
 export default CreditTransfersDetailsTable;

@@ -14,15 +14,15 @@ const ComplianceObligationAmountsTable = (props) => {
     statuses,
     supplierClass,
     totalReduction,
-    unspecifiedReductions,
+    unspecifiedReductions
   } = props;
 
   const filteredClassAReductions = classAReductions.find(
-    (reduction) => (Number(reduction.modelYear) === Number(reportYear)),
+    (reduction) => Number(reduction.modelYear) === Number(reportYear)
   );
 
   const filteredUnspecifiedReductions = unspecifiedReductions.find(
-    (reduction) => (Number(reduction.modelYear) === Number(reportYear)),
+    (reduction) => Number(reduction.modelYear) === Number(reportYear)
   );
 
   return (
@@ -37,41 +37,53 @@ const ComplianceObligationAmountsTable = (props) => {
                     {reportYear} Model Year LDV Sales:
                   </td>
                   <td>
-                    {page === 'obligation' && statuses.assessment.status !== 'ASSESSED'
-                    && (
-                    <input
-                      className="form-control"
-                      disabled={['SAVED', 'UNSAVED'].indexOf(statuses.complianceObligation.status) < 0}
-                      onChange={handleChangeSales}
-                      type="number"
-                      value={sales}
-                    />
-                    )}
-                    {(page === 'assessment' || (page === 'obligation' && statuses.assessment.status === 'ASSESSED'))
-                    && (sales || 0)}
+                    {page === 'obligation' &&
+                      statuses.assessment.status !== 'ASSESSED' && (
+                        <input
+                          className="form-control"
+                          disabled={
+                            ['SAVED', 'UNSAVED'].indexOf(
+                              statuses.complianceObligation.status
+                            ) < 0
+                          }
+                          onChange={handleChangeSales}
+                          type="number"
+                          value={sales}
+                        />
+                      )}
+                    {(page === 'assessment' ||
+                      (page === 'obligation' &&
+                        statuses.assessment.status === 'ASSESSED')) &&
+                      (sales || 0)}
                   </td>
                 </tr>
                 <tr>
                   <td className="text-blue">{reportYear} Compliance Ratio:</td>
                   <td width="25%">{ratios.complianceRatio} %</td>
-                  <td className="text-blue font-weight-bold" width="25%">Compliance Ratio Credit Reduction:</td>
+                  <td className="text-blue font-weight-bold" width="25%">
+                    Compliance Ratio Credit Reduction:
+                  </td>
                   <td className="font-weight-bold" width="25%">
                     {formatNumeric(totalReduction, 2)}
                   </td>
                 </tr>
                 {supplierClass === 'L' && (
-                <tr>
-                  <td className="text-blue">Large Volume Supplier Class A Ratio:</td>
-                  <td>{ratios.zevClassA} %</td>
-                  <td className="text-blue">&bull; ZEV Class A Credit Reduction:</td>
-                  <td>
-                    {formatNumeric(filteredClassAReductions.value, 2)}
-                  </td>
-                </tr>
+                  <tr>
+                    <td className="text-blue">
+                      Large Volume Supplier Class A Ratio:
+                    </td>
+                    <td>{ratios.zevClassA} %</td>
+                    <td className="text-blue">
+                      &bull; ZEV Class A Credit Reduction:
+                    </td>
+                    <td>{formatNumeric(filteredClassAReductions.value, 2)}</td>
+                  </tr>
                 )}
                 <tr>
                   <td colSpan="2" />
-                  <td className="text-blue">&bull; Unspecified ZEV Class Credit Reduction:</td>
+                  <td className="text-blue">
+                    &bull; Unspecified ZEV Class Credit Reduction:
+                  </td>
                   <td>
                     {formatNumeric(filteredUnspecifiedReductions.value, 2)}
                   </td>
@@ -86,26 +98,21 @@ const ComplianceObligationAmountsTable = (props) => {
 };
 
 ComplianceObligationAmountsTable.defaultProps = {
-  handleChangeSales: () => {},
+  handleChangeSales: () => {}
 };
 
 ComplianceObligationAmountsTable.propTypes = {
   classAReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleChangeSales: PropTypes.func,
   page: PropTypes.string.isRequired,
-  reportYear: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]).isRequired,
+  reportYear: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    .isRequired,
   ratios: PropTypes.shape().isRequired,
-  sales: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]).isRequired,
+  sales: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   statuses: PropTypes.shape().isRequired,
   supplierClass: PropTypes.string.isRequired,
   totalReduction: PropTypes.number.isRequired,
-  unspecifiedReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  unspecifiedReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired
 };
 
 export default ComplianceObligationAmountsTable;

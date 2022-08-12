@@ -9,7 +9,7 @@ class BaseController extends Component {
     super(props);
 
     this.state = {
-      fields: {},
+      fields: {}
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -22,7 +22,7 @@ class BaseController extends Component {
 
     fields[name] = value;
     this.setState({
-      fields,
+      fields
     });
   }
 

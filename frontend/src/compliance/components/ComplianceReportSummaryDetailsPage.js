@@ -1,18 +1,18 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from "react";
-import PropTypes from "prop-types";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import moment from "moment-timezone";
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import moment from 'moment-timezone';
 
-import CustomPropTypes from "../../app/utilities/props";
-import Button from "../../app/components/Button";
-import Loading from "../../app/components/Loading";
-import ComplianceReportAlert from "./ComplianceReportAlert";
-import ComplianceReportSignOff from "./ComplianceReportSignOff";
-import SummaryCreditActivityTable from "./SummaryCreditActivityTable";
-import SummarySupplierInfo from "./SummarySupplierInfo";
-import SummaryConsumerSalesTable from "./SummaryConsumerSalesTable";
-import Modal from "../../app/components/Modal";
+import CustomPropTypes from '../../app/utilities/props';
+import Button from '../../app/components/Button';
+import Loading from '../../app/components/Loading';
+import ComplianceReportAlert from './ComplianceReportAlert';
+import ComplianceReportSignOff from './ComplianceReportSignOff';
+import SummaryCreditActivityTable from './SummaryCreditActivityTable';
+import SummarySupplierInfo from './SummarySupplierInfo';
+import SummaryConsumerSalesTable from './SummaryConsumerSalesTable';
+import Modal from '../../app/components/Modal';
 
 const ComplianceReportSummaryDetailsPage = (props) => {
   const [showModal, setShowModal] = useState(false);
@@ -30,15 +30,15 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     modelYear,
     pendingBalanceExist,
     supplierDetails,
-    user,
+    user
   } = props;
   const signedInfomation = {
     supplierInformation: {
-      nameSigned: "Buzz Collins",
-      dateSigned: "2020-01-01",
+      nameSigned: 'Buzz Collins',
+      dateSigned: '2020-01-01'
     },
-    consumerSales: { nameSigned: "Buzz Collins", dateSigned: "2020-02-20" },
-    creditActivity: { nameSigned: "Buzz Collins", dateSigned: "2020-03-01" },
+    consumerSales: { nameSigned: 'Buzz Collins', dateSigned: '2020-02-20' },
+    creditActivity: { nameSigned: 'Buzz Collins', dateSigned: '2020-03-01' }
   };
 
   let disableSubmitBtn = true;
@@ -52,11 +52,11 @@ const ComplianceReportSummaryDetailsPage = (props) => {
       <div className="mt-3">
         {confirmedBy && (
           <span className="text-black">
-            {title} confirmed by {confirmedBy.createUser.displayName}{" "}
-            {moment(confirmedBy.createTimestamp).format("YYYY-MM-DD h[:]mm a")}
+            {title} confirmed by {confirmedBy.createUser.displayName}{' '}
+            {moment(confirmedBy.createTimestamp).format('YYYY-MM-DD h[:]mm a')}
           </span>
         )}
-        {status !== "CONFIRMED" && status !== "SUBMITTED" && !confirmedBy && (
+        {status !== 'CONFIRMED' && status !== 'SUBMITTED' && !confirmedBy && (
           <span className="text-red">{title} pending confirmation</span>
         )}
       </div>
@@ -67,13 +67,13 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     const { status } = input;
     return (
       <div className="mt-3">
-        {status === "SAVED" && (
+        {status === 'SAVED' && (
           <span className="text-black">
-            {title} was last saved on{" "}
-            {moment(timeStamp).format("YYYY-MM-DD h[:]mm a")}
+            {title} was last saved on{' '}
+            {moment(timeStamp).format('YYYY-MM-DD h[:]mm a')}
           </span>
         )}
-        {status === "UNSAVED" && (
+        {status === 'UNSAVED' && (
           <span className="text-red">
             {title} has not been saved yet, please go to the {title} section and
             save first.
@@ -87,10 +87,10 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     const { supplierInformation, consumerSales, complianceObligation } =
       confirmationStatuses;
     if (
-      user.hasPermission("SUBMIT_COMPLIANCE_REPORT") &&
-      supplierInformation.status === "CONFIRMED" &&
-      consumerSales.status === "CONFIRMED" &&
-      complianceObligation.status === "CONFIRMED"
+      user.hasPermission('SUBMIT_COMPLIANCE_REPORT') &&
+      supplierInformation.status === 'CONFIRMED' &&
+      consumerSales.status === 'CONFIRMED' &&
+      complianceObligation.status === 'CONFIRMED'
     ) {
       return false;
     }
@@ -111,7 +111,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
       }}
       handleSubmit={() => {
         setShowModal(false);
-        handleSubmit("SUBMITTED");
+        handleSubmit('SUBMITTED');
       }}
       modalClass="w-75"
       showModal={showModal}
@@ -182,11 +182,11 @@ const ComplianceReportSummaryDetailsPage = (props) => {
                   {savedInformation(
                     supplierDetails.supplierInformation.updateTimestamp,
                     confirmationStatuses.supplierInformation,
-                    "Supplier Information"
+                    'Supplier Information'
                   )}
                   {signatureInformation(
                     confirmationStatuses.supplierInformation,
-                    "Supplier Information"
+                    'Supplier Information'
                   )}
                 </div>
 
@@ -198,11 +198,11 @@ const ComplianceReportSummaryDetailsPage = (props) => {
                   {savedInformation(
                     consumerSalesDetails.updateTimestampConsumerSales,
                     confirmationStatuses.consumerSales,
-                    "Consumer Sales"
+                    'Consumer Sales'
                   )}
                   {signatureInformation(
                     confirmationStatuses.consumerSales,
-                    "Consumer Sales"
+                    'Consumer Sales'
                   )}
                 </div>
               </div>
@@ -217,11 +217,11 @@ const ComplianceReportSummaryDetailsPage = (props) => {
                   {savedInformation(
                     creditActivityDetails.timestampCreditActivity,
                     confirmationStatuses.complianceObligation,
-                    "Compliance Obligation"
+                    'Compliance Obligation'
                   )}
                   {signatureInformation(
                     confirmationStatuses.complianceObligation,
-                    "Compliance Obligation"
+                    'Compliance Obligation'
                   )}
                 </div>
               </div>
@@ -250,14 +250,14 @@ const ComplianceReportSummaryDetailsPage = (props) => {
             </span>
             <span className="right-content">
               {!user.isGovernment &&
-                confirmationStatuses.assessment.status !== "ASSESSED" && (
+                confirmationStatuses.assessment.status !== 'ASSESSED' && (
                   <Button
                     buttonType="submit"
                     disabled={
                       disableSubmitBtn ||
                       confirmationStatuses.reportSummary.status ===
-                        "SUBMITTED" ||
-                      !user.hasPermission("SUBMIT_COMPLIANCE_REPORT")
+                        'SUBMITTED' ||
+                      !user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
                     }
                     optionalClassname="button primary"
                     action={() => {
@@ -275,7 +275,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
 };
 
 ComplianceReportSummaryDetailsPage.defaultProps = {
-  pendingBalanceExist: false,
+  pendingBalanceExist: false
 };
 
 ComplianceReportSummaryDetailsPage.propTypes = {
@@ -294,7 +294,7 @@ ComplianceReportSummaryDetailsPage.propTypes = {
   pendingBalanceExist: PropTypes.bool,
   supplierDetails: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
-  modelYear: PropTypes.number.isRequired,
+  modelYear: PropTypes.number.isRequired
 };
 
 export default ComplianceReportSummaryDetailsPage;

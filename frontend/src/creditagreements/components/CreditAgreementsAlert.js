@@ -3,14 +3,7 @@ import PropTypes from 'prop-types';
 import Alert from '../../app/components/Alert';
 
 const CreditAgreementsAlert = (props) => {
-  const {
-    status,
-    date,
-    user,
-    isGovernment,
-    id,
-    transactionType,
-  } = props;
+  const { status, date, user, isGovernment, id, transactionType } = props;
 
   let message = '';
   let title;
@@ -74,7 +67,7 @@ const CreditAgreementsAlert = (props) => {
 };
 
 CreditAgreementsAlert.defaultProps = {
-  isGovernment: false,
+  isGovernment: false
 };
 
 CreditAgreementsAlert.propTypes = {
@@ -83,7 +76,7 @@ CreditAgreementsAlert.propTypes = {
   status: PropTypes.string.isRequired,
   transactionType: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
-  isGovernment: PropTypes.bool,
+  isGovernment: PropTypes.bool
 };
 
 export default CreditAgreementsAlert;

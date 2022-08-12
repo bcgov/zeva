@@ -23,7 +23,7 @@ const CreditAgreementsDetailsPage = (props) => {
     handleCommentChangeIdir,
     handleSubmit,
     id,
-    user,
+    user
   } = props;
   return (
     <div id="credit-agreements-detail-page" className="page">
@@ -49,11 +49,11 @@ const CreditAgreementsDetailsPage = (props) => {
               className="grey-border-area p-3 comment-box mt-2"
               id="comment-input"
             >
-              {details
-                && details.filteredIdirComments
-                && details.filteredIdirComments.length > 0 && (
+              {details &&
+                details.filteredIdirComments &&
+                details.filteredIdirComments.length > 0 && (
                   <DisplayComment commentArray={details.filteredIdirComments} />
-              )}
+                )}
               <div>
                 <CommentInput
                   handleAddComment={handleAddComment}
@@ -100,36 +100,39 @@ const CreditAgreementsDetailsPage = (props) => {
           <div className="col-5 filename">
             {details.attachments && details.attachments.length > 0
               ? details.attachments.map((attachment) => (
-                <div className="row" key={attachment.id}>
-                  <div className="col-9 file">
-                    <button
-                      className="link"
-                      onClick={() => {
-                        axios
-                          .get(attachment.url, {
-                            responseType: 'blob',
-                            headers: {
-                              Authorization: null,
-                            },
-                          })
-                          .then((response) => {
-                            const objectURL = window.URL.createObjectURL(
-                              new Blob([response.data]),
-                            );
-                            const link = document.createElement('a');
-                            link.href = objectURL;
-                            link.setAttribute('download', attachment.filename);
-                            document.body.appendChild(link);
-                            link.click();
-                          });
-                      }}
-                      type="button"
-                    >
-                      {attachment.filename}
-                    </button>
+                  <div className="row" key={attachment.id}>
+                    <div className="col-9 file">
+                      <button
+                        className="link"
+                        onClick={() => {
+                          axios
+                            .get(attachment.url, {
+                              responseType: 'blob',
+                              headers: {
+                                Authorization: null
+                              }
+                            })
+                            .then((response) => {
+                              const objectURL = window.URL.createObjectURL(
+                                new Blob([response.data])
+                              );
+                              const link = document.createElement('a');
+                              link.href = objectURL;
+                              link.setAttribute(
+                                'download',
+                                attachment.filename
+                              );
+                              document.body.appendChild(link);
+                              link.click();
+                            });
+                        }}
+                        type="button"
+                      >
+                        {attachment.filename}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))
+                ))
               : ' - '}
           </div>
         </div>
@@ -139,9 +142,9 @@ const CreditAgreementsDetailsPage = (props) => {
             <h4 className="d-inline">Message from the Director: </h4>
           </span>
           <span className="col-5">
-            {details
-            && details.filteredBceidComments
-            && details.filteredBceidComments.length > 0
+            {details &&
+            details.filteredBceidComments &&
+            details.filteredBceidComments.length > 0
               ? parse(details.filteredBceidComments[0].comment)
               : 'no comment'}
           </span>
@@ -149,24 +152,27 @@ const CreditAgreementsDetailsPage = (props) => {
         <div className="row mt-2">
           <span className="col-3" />
           <span className="col-5">
-            {details
-              && details.creditAgreementContent
-              && details.creditAgreementContent.length > 0 && (
+            {details &&
+              details.creditAgreementContent &&
+              details.creditAgreementContent.length > 0 && (
                 <CreditAgreementsDetailsTable
                   items={details.creditAgreementContent}
                 />
-            )}
+              )}
           </span>
         </div>
       </div>
       {directorAction && details && details.status === 'RECOMMENDED' && (
-        <div className="grey-border-area p-3 comment-box mt-4" id="comment-input">
+        <div
+          className="grey-border-area p-3 comment-box mt-4"
+          id="comment-input"
+        >
           <div id="comment-input">
             <CommentInput
               defaultComment={
-                details
-                && details.filteredBceidComments
-                && details.filteredBceidComments.length > 0
+                details &&
+                details.filteredBceidComments &&
+                details.filteredBceidComments.length > 0
                   ? details.filteredBceidComments[0]
                   : {}
               }
@@ -182,7 +188,10 @@ const CreditAgreementsDetailsPage = (props) => {
             {directorAction && details.status === 'RECOMMENDED' && (
               <>
                 <span className="left-content">
-                  <Button buttonType="back" locationRoute="/credit-agreements" />
+                  <Button
+                    buttonType="back"
+                    locationRoute="/credit-agreements"
+                  />
 
                   <button
                     className="button text-danger"
@@ -215,42 +224,50 @@ const CreditAgreementsDetailsPage = (props) => {
                 </span>
               </>
             )}
-            {analystAction && (
-              details.status === 'DRAFT' || details.status === 'RETURNED') && (
-              <>
-                <span className="left-content">
-                  <Button buttonType="back" locationRoute="/credit-agreements" />
-                  <Button
-                    buttonType="delete"
-                    optionalText="Delete"
-                    action={() => {
-                      handleSubmit('DELETED');
-                    }}
-                  />
-                </span>
-                <span className="right-content">
-                  <Button
-                    buttonType="edit"
-                    optionalText="Edit"
-                    action={() => {
-                      history.push(ROUTES_CREDIT_AGREEMENTS.EDIT.replace(/:id/g, id));
-                    }}
-                  />
-                  <Button
-                    buttonType="submit"
-                    optionalClassname="button primary"
-                    optionalText="Submit to Director"
-                    action={() => {
-                      handleSubmit('RECOMMENDED');
-                    }}
-                  />
-                </span>
-              </>
-            )}
+            {analystAction &&
+              (details.status === 'DRAFT' || details.status === 'RETURNED') && (
+                <>
+                  <span className="left-content">
+                    <Button
+                      buttonType="back"
+                      locationRoute="/credit-agreements"
+                    />
+                    <Button
+                      buttonType="delete"
+                      optionalText="Delete"
+                      action={() => {
+                        handleSubmit('DELETED');
+                      }}
+                    />
+                  </span>
+                  <span className="right-content">
+                    <Button
+                      buttonType="edit"
+                      optionalText="Edit"
+                      action={() => {
+                        history.push(
+                          ROUTES_CREDIT_AGREEMENTS.EDIT.replace(/:id/g, id)
+                        );
+                      }}
+                    />
+                    <Button
+                      buttonType="submit"
+                      optionalClassname="button primary"
+                      optionalText="Submit to Director"
+                      action={() => {
+                        handleSubmit('RECOMMENDED');
+                      }}
+                    />
+                  </span>
+                </>
+              )}
             {details.status === 'ISSUED' && (
               <>
                 <span className="left-content">
-                  <Button buttonType="back" locationRoute="/credit-agreements" />
+                  <Button
+                    buttonType="back"
+                    locationRoute="/credit-agreements"
+                  />
                 </span>
                 <span className="right-content" />
               </>
@@ -273,7 +290,7 @@ CreditAgreementsDetailsPage.propTypes = {
     organization: PropTypes.shape(),
     status: PropTypes.string,
     transactionType: PropTypes.string,
-    updateTimestamp: PropTypes.string,
+    updateTimestamp: PropTypes.string
   }).isRequired,
   analystAction: PropTypes.bool.isRequired,
   directorAction: PropTypes.bool.isRequired,
@@ -282,7 +299,7 @@ CreditAgreementsDetailsPage.propTypes = {
   handleCommentChangeIdir: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   id: PropTypes.string.isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default CreditAgreementsDetailsPage;

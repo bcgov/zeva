@@ -22,7 +22,7 @@ const VehicleSupplierDetailsPage = (props) => {
     selectedModelYear,
     handleDeleteSale,
     isEditable,
-    setIsEditable,
+    setIsEditable
   } = props;
   const { organizationAddress } = details;
 
@@ -47,49 +47,67 @@ const VehicleSupplierDetailsPage = (props) => {
 
           <div className="mt-3">
             <h4 className="d-inline">Status: </h4>
-            <span> {(details.isActive) ? 'Actively supplying vehicles in British Columbia' : 'Not actively supplying vehicles in British Columbia'} </span>
+            <span>
+              {' '}
+              {details.isActive
+                ? 'Actively supplying vehicles in British Columbia'
+                : 'Not actively supplying vehicles in British Columbia'}{' '}
+            </span>
           </div>
 
           <div className="row">
             <div className="d-inline-block col-5 mr-5 mt-3">
               <h4>Service Address</h4>
-              {organizationAddress
-              && organizationAddress.map((address) => (
-                address.addressType.addressType === 'Service' && (
-                  <div key={address.id}>
-                    {address.representativeName && (
-                      <div> {address.representativeName} </div>
-                    )}
-                    <div> {address.addressLine1} </div>
-                    <div> {address.addressLine2} </div>
-                    <div> {address.city} {address.state} {address.country} </div>
-                    <div> {address.postalCode} </div>
-                  </div>
-                )
-              ))}
+              {organizationAddress &&
+                organizationAddress.map(
+                  (address) =>
+                    address.addressType.addressType === 'Service' && (
+                      <div key={address.id}>
+                        {address.representativeName && (
+                          <div> {address.representativeName} </div>
+                        )}
+                        <div> {address.addressLine1} </div>
+                        <div> {address.addressLine2} </div>
+                        <div>
+                          {' '}
+                          {address.city} {address.state} {address.country}{' '}
+                        </div>
+                        <div> {address.postalCode} </div>
+                      </div>
+                    )
+                )}
             </div>
             <div className="d-inline-block col-5 mt-3">
               <h4>Records Address</h4>
-              {organizationAddress
-              && organizationAddress.map((address) => (
-                address.addressType.addressType === 'Records' && (
-                  <div key={address.id}>
-                    {address.representativeName && (
-                      <div> {address.representativeName} </div>
-                    )}
-                    <div> {address.addressLine1} </div>
-                    <div> {address.addressLine2} </div>
-                    <div> {address.city} {address.state} {address.country} </div>
-                    <div> {address.postalCode} </div>
-                  </div>
-                )
-              ))}
+              {organizationAddress &&
+                organizationAddress.map(
+                  (address) =>
+                    address.addressType.addressType === 'Records' && (
+                      <div key={address.id}>
+                        {address.representativeName && (
+                          <div> {address.representativeName} </div>
+                        )}
+                        <div> {address.addressLine1} </div>
+                        <div> {address.addressLine2} </div>
+                        <div>
+                          {' '}
+                          {address.city} {address.state} {address.country}{' '}
+                        </div>
+                        <div> {address.postalCode} </div>
+                      </div>
+                    )
+                )}
             </div>
           </div>
 
           <div className="mt-3">
             <h4 className="d-inline">Vehicle Supplier Class: </h4>
-            <span> <VehicleSupplierClass supplierClass={details.supplierClass} /> </span>
+            <span>
+              {' '}
+              <VehicleSupplierClass
+                supplierClass={details.supplierClass}
+              />{' '}
+            </span>
           </div>
 
           <div className="mt-3">
@@ -99,10 +117,13 @@ const VehicleSupplierDetailsPage = (props) => {
 
           <div className="mt-3">
             {!details.hasSubmittedReport && (
-              <div className="mb-2">Enter the previous 3 year LDV sales total to determine vehicle supplier class.</div>
+              <div className="mb-2">
+                Enter the previous 3 year LDV sales total to determine vehicle
+                supplier class.
+              </div>
             )}
             {details.hasSubmittedReport && (
-            <h4 className="d-inline">Previous 3 Year LDV Sales: </h4>
+              <h4 className="d-inline">Previous 3 Year LDV Sales: </h4>
             )}
             <form onSubmit={handleSubmit}>
               <div className="ldv-sales">
@@ -118,7 +139,9 @@ const VehicleSupplierDetailsPage = (props) => {
                     >
                       <option> </option>
                       {modelYears.map((modelYear) => (
-                        <option key={modelYear.name} value={modelYear.name}>{modelYear.name}</option>
+                        <option key={modelYear.name} value={modelYear.name}>
+                          {modelYear.name}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -176,14 +199,14 @@ const VehicleSupplierDetailsPage = (props) => {
                       </div>
                       <div className="col-3 delete">
                         {isEditable && (
-                        <button
-                          onClick={() => {
-                            handleDeleteSale(sale);
-                          }}
-                          type="button"
-                        >
-                          x
-                        </button>
+                          <button
+                            onClick={() => {
+                              handleDeleteSale(sale);
+                            }}
+                            type="button"
+                          >
+                            x
+                          </button>
                         )}
                       </div>
                     </li>
@@ -193,9 +216,7 @@ const VehicleSupplierDetailsPage = (props) => {
             </form>
           </div>
         </div>
-        <div className="col-sm-2">
-          {editButton}
-        </div>
+        <div className="col-sm-2">{editButton}</div>
       </div>
 
       <div className="row">
@@ -219,7 +240,7 @@ const VehicleSupplierDetailsPage = (props) => {
 VehicleSupplierDetailsPage.defaultProps = {
   inputLDVSales: '',
   locationState: undefined,
-  selectedModelYear: '',
+  selectedModelYear: ''
 };
 
 VehicleSupplierDetailsPage.propTypes = {
@@ -232,14 +253,8 @@ VehicleSupplierDetailsPage.propTypes = {
   handleDeleteSale: PropTypes.func.isRequired,
   handleInputChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-  inputLDVSales: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]),
-  selectedModelYear: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]),
+  inputLDVSales: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  selectedModelYear: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };
 
 export default VehicleSupplierDetailsPage;

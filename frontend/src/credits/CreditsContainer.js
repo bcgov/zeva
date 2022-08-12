@@ -17,17 +17,21 @@ const CreditsContainer = (props) => {
 
   const refreshList = (showLoading) => {
     setLoading(showLoading);
-    const balancePromise = axios.get(ROUTES_CREDITS.CREDIT_BALANCES).then((response) => {
-      setBalances(response.data);
-    });
+    const balancePromise = axios
+      .get(ROUTES_CREDITS.CREDIT_BALANCES)
+      .then((response) => {
+        setBalances(response.data);
+      });
 
     const listPromise = axios.get(ROUTES_CREDITS.LIST).then((response) => {
       setCreditTransactions(response.data);
     });
 
-    const reportsPromise = axios.get(ROUTES_COMPLIANCE.REPORTS).then((response) => {
-      setReports(response.data);
-    });
+    const reportsPromise = axios
+      .get(ROUTES_COMPLIANCE.REPORTS)
+      .then((response) => {
+        setReports(response.data);
+      });
 
     Promise.all([balancePromise, listPromise, reportsPromise]).then(() => {
       setLoading(false);
@@ -44,15 +48,24 @@ const CreditsContainer = (props) => {
   return (
     <div>
       <div>
-        <CreditTransactionTabs active="credit-transactions" key="tabs" user={user} />
-        <CreditTransactions balances={balances} items={creditTransactions} reports={reports} user={user} />
+        <CreditTransactionTabs
+          active="credit-transactions"
+          key="tabs"
+          user={user}
+        />
+        <CreditTransactions
+          balances={balances}
+          items={creditTransactions}
+          reports={reports}
+          user={user}
+        />
       </div>
     </div>
   );
 };
 
 CreditsContainer.propTypes = {
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default CreditsContainer;

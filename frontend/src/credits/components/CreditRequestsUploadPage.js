@@ -26,7 +26,7 @@ const CreditRequestsUploadPage = (props) => {
     submission,
     uploadEvidenceFiles,
     upload,
-    uploadNewExcel,
+    uploadNewExcel
   } = props;
 
   const handleCheckboxChange = (event) => {
@@ -47,7 +47,8 @@ const CreditRequestsUploadPage = (props) => {
     });
   };
 
-  const downloadSalesEvidenceTemplate = () => (window.open('/SalesEvidenceTemplate.docx'));
+  const downloadSalesEvidenceTemplate = () =>
+    window.open('/SalesEvidenceTemplate.docx');
 
   return (
     <div id="sales-edit" className="page">
@@ -55,7 +56,8 @@ const CreditRequestsUploadPage = (props) => {
         <div className="col-12">
           <h2 className="mb-2">Application for Credits for Consumer Sales</h2>
           <h3 className="sales-upload-grey">
-            Download an Excel template containing all eligible ZEV models to submit consumer sales
+            Download an Excel template containing all eligible ZEV models to
+            submit consumer sales
           </h3>
         </div>
       </div>
@@ -66,7 +68,9 @@ const CreditRequestsUploadPage = (props) => {
             <Button
               buttonType="download"
               optionalText="Download Excel Sales Template"
-              action={(e) => { downloadTemplate(e); }}
+              action={(e) => {
+                downloadTemplate(e);
+              }}
             />
           </div>
         </div>
@@ -81,8 +85,14 @@ const CreditRequestsUploadPage = (props) => {
           {submission && submission.id && (
             <>
               <div className="mt-3 mx-3">
-                <div>Current file: <strong>{submission.filename}</strong></div>
-                <div><em>To replace the current file, please check Upload new file</em></div>
+                <div>
+                  Current file: <strong>{submission.filename}</strong>
+                </div>
+                <div>
+                  <em>
+                    To replace the current file, please check Upload new file
+                  </em>
+                </div>
               </div>
               <div>
                 <input
@@ -90,19 +100,18 @@ const CreditRequestsUploadPage = (props) => {
                   type="checkbox"
                   name="new-sales-upload-checkbox"
                   id="new-sales-upload-checkbox"
-                  onChange={(event) => { handleCheckboxChange(event); }}
+                  onChange={(event) => {
+                    handleCheckboxChange(event);
+                  }}
                   className="m-3"
                 />
-                <span className="text-blue">
-                  Upload new file
-                </span>
+                <span className="text-blue">Upload new file</span>
               </div>
             </>
           )}
         </div>
       </div>
-      {(!submission || uploadNewExcel)
-      && (
+      {(!submission || uploadNewExcel) && (
         <FileDropArea
           type="excel"
           errorMessage={errorMessage}
@@ -115,25 +124,29 @@ const CreditRequestsUploadPage = (props) => {
         <div className="col-12">
           <h2 className="mb-2">Upload Sales Evidence</h2>
           <p>
-            If you are reapplying for credits for VIN that were previously returned as errors you can upload additional sales evidence to support your credit application.
+            If you are reapplying for credits for VIN that were previously
+            returned as errors you can upload additional sales evidence to
+            support your credit application.
           </p>
           <div>
             <input
               type="checkbox"
               name="evidence-upload-checkbox"
               id="evidence-upload-checkbox"
-              onChange={(event) => { handleCheckboxChange(event); }}
+              onChange={(event) => {
+                handleCheckboxChange(event);
+              }}
               defaultChecked={evidenceCheckbox}
               className="m-3"
             />
             <span className="text-blue">
-              Upload sales evidence document (in addition to the Excel ZEV Sales Information above)
+              Upload sales evidence document (in addition to the Excel ZEV Sales
+              Information above)
             </span>
           </div>
         </div>
       </div>
-      {evidenceCheckbox
-      && (
+      {evidenceCheckbox && (
         <>
           <div className="row">
             <div className="col-12">
@@ -141,7 +154,9 @@ const CreditRequestsUploadPage = (props) => {
                 <Button
                   buttonType="download"
                   optionalText="Download Sales Evidence Template"
-                  action={(e) => { downloadSalesEvidenceTemplate(e); }}
+                  action={(e) => {
+                    downloadSalesEvidenceTemplate(e);
+                  }}
                 />
               </div>
             </div>
@@ -180,7 +195,6 @@ const CreditRequestsUploadPage = (props) => {
         </span>
       </div>
     </div>
-
   );
 };
 
@@ -192,7 +206,7 @@ CreditRequestsUploadPage.defaultProps = {
   progressBars: {},
   showProgressBars: false,
   submission: {},
-  uploadNewExcel: false,
+  uploadNewExcel: false
 };
 
 CreditRequestsUploadPage.propTypes = {
@@ -212,12 +226,11 @@ CreditRequestsUploadPage.propTypes = {
   showProgressBars: PropTypes.bool,
   submission: PropTypes.shape(),
   setUploadFiles: PropTypes.func.isRequired,
-  uploadEvidenceFiles: PropTypes.arrayOf(PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.shape(),
-  ])).isRequired,
+  uploadEvidenceFiles: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.string, PropTypes.shape()])
+  ).isRequired,
   upload: PropTypes.func.isRequired,
-  uploadNewExcel: PropTypes.bool,
+  uploadNewExcel: PropTypes.bool
 };
 
 export default CreditRequestsUploadPage;

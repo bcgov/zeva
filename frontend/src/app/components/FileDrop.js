@@ -4,13 +4,13 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 const FileDrop = (props) => {
-  const {
-    setErrorMessage, setFiles, maxFiles, allowedFileTypes,
-  } = props;
+  const { setErrorMessage, setFiles, maxFiles, allowedFileTypes } = props;
   const [dropMessage, setDropMessage] = useState('');
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > maxFiles) {
-      setDropMessage(`Please select only ${maxFiles} file${maxFiles !== 1 ? 's' : ''}.`);
+      setDropMessage(
+        `Please select only ${maxFiles} file${maxFiles !== 1 ? 's' : ''}.`
+      );
     } else {
       setDropMessage('');
       setErrorMessage('');
@@ -18,7 +18,10 @@ const FileDrop = (props) => {
     }
   }, []);
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: allowedFileTypes });
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: allowedFileTypes
+  });
   return (
     <div {...getRootProps()}>
       <input {...getInputProps()} />
@@ -27,10 +30,10 @@ const FileDrop = (props) => {
         <FontAwesomeIcon icon="upload" />
         <br />
         Drag and Drop files here or <br />
-        <button className="link text-center" type="button">browse to select a file from your machine to upload.</button>
-        {dropMessage && (
-          <div id="danger-text">{dropMessage}</div>
-        )}
+        <button className="link text-center" type="button">
+          browse to select a file from your machine to upload.
+        </button>
+        {dropMessage && <div id="danger-text">{dropMessage}</div>}
       </div>
     </div>
   );
@@ -38,14 +41,14 @@ const FileDrop = (props) => {
 
 FileDrop.defaultProps = {
   setErrorMessage: () => {},
-  allowedFileTypes: null,
+  allowedFileTypes: null
 };
 
 FileDrop.propTypes = {
   setErrorMessage: PropTypes.func,
   setFiles: PropTypes.func.isRequired,
   maxFiles: PropTypes.number.isRequired,
-  allowedFileTypes: PropTypes.string,
+  allowedFileTypes: PropTypes.string
 };
 
 export default FileDrop;

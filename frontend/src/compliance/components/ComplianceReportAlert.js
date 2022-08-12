@@ -4,16 +4,9 @@ import moment from 'moment-timezone';
 import Alert from '../../app/components/Alert';
 
 const ComplianceReportAlert = (props) => {
-  const {
-    next,
-    report,
-    status,
-    type,
-  } = props;
+  const { next, report, status, type } = props;
 
-  const {
-    history, validationStatus,
-  } = report;
+  const { history, validationStatus } = report;
   let message = '';
   let title;
   let classname;
@@ -21,9 +14,10 @@ const ComplianceReportAlert = (props) => {
   const icon = 'exclamation-circle';
   let confirmedBy = {};
 
-  const statusFilter = (transferStatus) => history
-    .filter((each) => each.validationStatus === transferStatus)
-    .reverse()[0];
+  const statusFilter = (transferStatus) =>
+    history
+      .filter((each) => each.validationStatus === transferStatus)
+      .reverse()[0];
 
   let date;
   let userName;
@@ -36,8 +30,10 @@ const ComplianceReportAlert = (props) => {
 
       if (validationStatus === 'ASSESSED') {
         confirmedBy = {
-          date: moment(statusFilter('SUBMITTED').createTimestamp).format('MMM D, YYYY'),
-          user: statusFilter('SUBMITTED').createUser.displayName,
+          date: moment(statusFilter('SUBMITTED').createTimestamp).format(
+            'MMM D, YYYY'
+          ),
+          user: statusFilter('SUBMITTED').createUser.displayName
         };
       }
     }
@@ -46,7 +42,7 @@ const ComplianceReportAlert = (props) => {
   if (status && status.confirmedBy) {
     confirmedBy = {
       date: moment(status.confirmedBy.createTimestamp).format('MMM D, YYYY'),
-      user: status.confirmedBy.createUser.displayName,
+      user: status.confirmedBy.createUser.displayName
     };
   }
 
@@ -54,14 +50,16 @@ const ComplianceReportAlert = (props) => {
     switch (status && status.status) {
       case 'UNSAVED':
         title = 'Model Year Report Draft';
-        message = 'All previous confirmation checkboxes must be confirmed to submit the report to government. You must have the Signing Authority role to submit the report to government.';
+        message =
+          'All previous confirmation checkboxes must be confirmed to submit the report to government. You must have the Signing Authority role to submit the report to government.';
         classname = 'alert-warning';
         break;
 
       case 'SAVED':
       case 'CONFIRMED':
         title = 'Model Year Report Draft';
-        message = 'The confirmation checkbox must be confirmed to submit the report to government. You must have the Signing Authority role to submit the report to government.';
+        message =
+          'The confirmation checkbox must be confirmed to submit the report to government. You must have the Signing Authority role to submit the report to government.';
         classname = 'alert-primary';
         if (type === 'Report Summary') {
           classname = 'alert-warning';
@@ -85,7 +83,12 @@ const ComplianceReportAlert = (props) => {
     }
 
     return (
-      <Alert title={title} icon={icon} classname={classname} message={message} />
+      <Alert
+        title={title}
+        icon={icon}
+        classname={classname}
+        message={message}
+      />
     );
   }
   if (type === 'Assessment') {
@@ -119,7 +122,12 @@ const ComplianceReportAlert = (props) => {
         title = '';
     }
     return (
-      <Alert title={title} icon={icon} classname={classname} message={message} />
+      <Alert
+        title={title}
+        icon={icon}
+        classname={classname}
+        message={message}
+      />
     );
   }
   switch (status && status.status) {
@@ -163,14 +171,14 @@ const ComplianceReportAlert = (props) => {
 };
 
 ComplianceReportAlert.defaultProps = {
-  next: '',
+  next: ''
 };
 
 ComplianceReportAlert.propTypes = {
   report: PropTypes.shape().isRequired,
   status: PropTypes.shape().isRequired,
   type: PropTypes.string.isRequired,
-  next: PropTypes.string,
+  next: PropTypes.string
 };
 
 export default ComplianceReportAlert;

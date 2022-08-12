@@ -17,7 +17,7 @@ const ComplianceReportListPage = (props) => {
     ratios,
     setFiltered,
     showSupplier,
-    user,
+    user
   } = props;
 
   if (loading) {
@@ -35,7 +35,9 @@ const ComplianceReportListPage = (props) => {
             <button
               className="btn button primary ml-3"
               onClick={() => {
-                history.push(`${ROUTES_COMPLIANCE.NEW}?year=${availableYears[0]}`);
+                history.push(
+                  `${ROUTES_COMPLIANCE.NEW}?year=${availableYears[0]}`
+                );
               }}
               type="button"
             >
@@ -46,18 +48,19 @@ const ComplianceReportListPage = (props) => {
       </div>
       {!user.isGovernment && (
         <div className="text-blue mt-4">
-          Under section 17 (5) of the ZEV Act a model year report must include for
-          the adjustment period ending September 30:
+          Under section 17 (5) of the ZEV Act a model year report must include
+          for the adjustment period ending September 30:
           <ul className="mt-2">
             <li>
-              the number of credits issued or transferred or added to your balance
+              the number of credits issued or transferred or added to your
+              balance
             </li>
             <li>
               the number of credits offset or transferred away from your balance
             </li>
           </ul>
-          Consumer sales of zero-emission vehicles made prior to October 1 must be
-          included in a submitted credit application prior to completing your
+          Consumer sales of zero-emission vehicles made prior to October 1 must
+          be included in a submitted credit application prior to completing your
           model year report. Model year reports must be submitted on or before
           October 20.
         </div>
@@ -79,19 +82,18 @@ const ComplianceReportListPage = (props) => {
 };
 
 ComplianceReportListPage.defaultProps = {
-  showSupplier: false,
+  showSupplier: false
 };
 
 ComplianceReportListPage.propTypes = {
-  availableYears: PropTypes.arrayOf(PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ])).isRequired,
+  availableYears: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+  ).isRequired,
   user: CustomPropTypes.user.isRequired,
   data: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
   setFiltered: PropTypes.func.isRequired,
-  showSupplier: PropTypes.bool,
+  showSupplier: PropTypes.bool
 };
 export default ComplianceReportListPage;

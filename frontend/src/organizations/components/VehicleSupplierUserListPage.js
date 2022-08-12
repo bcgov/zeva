@@ -11,9 +11,8 @@ import UsersTable from './UsersTable';
 
 const VehicleSupplierUserListPage = (props) => {
   const { id } = useParams();
-  const {
-    loading, locationState, members, filtered, user, setFiltered,
-  } = props;
+  const { loading, locationState, members, filtered, user, setFiltered } =
+    props;
   if (loading) {
     return <Loading />;
   }
@@ -23,19 +22,22 @@ const VehicleSupplierUserListPage = (props) => {
         <div className="col-md-8 d-flex align-items-end">
           <h2>Users</h2>
         </div>
-        {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_USERS') && user.isGovernment
-          && (
-          <div className="col-md-4 text-right">
-            <button
-              className="button primary"
-              onClick={() => {
-                History.push(ROUTES_ORGANIZATIONS.ADD_USER.replace(/:id/gi, id));
-              }}
-              type="button"
-            >
-              <FontAwesomeIcon icon="user-plus" /> <span>New User</span>
-            </button>
-          </div>
+        {typeof user.hasPermission === 'function' &&
+          user.hasPermission('EDIT_USERS') &&
+          user.isGovernment && (
+            <div className="col-md-4 text-right">
+              <button
+                className="button primary"
+                onClick={() => {
+                  History.push(
+                    ROUTES_ORGANIZATIONS.ADD_USER.replace(/:id/gi, id)
+                  );
+                }}
+                type="button"
+              >
+                <FontAwesomeIcon icon="user-plus" /> <span>New User</span>
+              </button>
+            </div>
           )}
       </div>
 
@@ -70,7 +72,7 @@ const VehicleSupplierUserListPage = (props) => {
 
 VehicleSupplierUserListPage.defaultProps = {
   locationState: undefined,
-  members: [],
+  members: []
 };
 
 VehicleSupplierUserListPage.propTypes = {
@@ -79,8 +81,7 @@ VehicleSupplierUserListPage.propTypes = {
   locationState: PropTypes.arrayOf(PropTypes.shape()),
   members: PropTypes.arrayOf(PropTypes.shape({})),
   setFiltered: PropTypes.func.isRequired,
-  user: CustomPropTypes.user.isRequired,
-
+  user: CustomPropTypes.user.isRequired
 };
 
 export default VehicleSupplierUserListPage;

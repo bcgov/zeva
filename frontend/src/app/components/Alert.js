@@ -3,9 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 
 const Alert = (props) => {
-  const {
-    message, title, icon, classname, historyMessage, status,
-  } = props;
+  const { message, title, icon, classname, historyMessage, status } = props;
 
   return (
     <div className={`${classname} status-alert`} role="alert">
@@ -15,15 +13,14 @@ const Alert = (props) => {
       <span>
         <b>
           {status}: {title} &mdash;
-        </b>
-        {' '}{message}
-        {historyMessage
-        && (
-        <>
-          <br /> <br />
-          <b>History - </b>
-          {historyMessage}
-        </>
+        </b>{' '}
+        {message}
+        {historyMessage && (
+          <>
+            <br /> <br />
+            <b>History - </b>
+            {historyMessage}
+          </>
         )}
       </span>
     </div>
@@ -36,8 +33,7 @@ Alert.defaultProps = {
   message: '',
   icon: 'exclamation-circle',
   historyMessage: '',
-  status: 'STATUS',
-
+  status: 'STATUS'
 };
 Alert.propTypes = {
   message: PropTypes.string,
@@ -45,6 +41,6 @@ Alert.propTypes = {
   classname: PropTypes.string,
   icon: PropTypes.string,
   historyMessage: PropTypes.string,
-  status: PropTypes.string,
+  status: PropTypes.string
 };
 export default Alert;

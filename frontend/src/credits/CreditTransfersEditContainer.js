@@ -19,10 +19,13 @@ import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityA
 const CreditTransfersEditContainer = (props) => {
   const { id } = useParams();
   const emptyRow = {
-    creditType: '', modelYear: '', quantity: 0, value: 0,
+    creditType: '',
+    modelYear: '',
+    quantity: 0,
+    value: 0
   };
   const emptyForm = {
-    transferPartner: '',
+    transferPartner: ''
   };
   const [transferComments, setTransferComments] = useState([]);
   const [submission, setSubmission] = useState({});
@@ -41,11 +44,12 @@ const CreditTransfersEditContainer = (props) => {
   const checkFilled = (input, partner = fields) => {
     Object.entries(input).forEach(([key, val]) => {
       if (
-        val.creditType === ''
-      || val.modelYear === ''
-      || val.quantity === 0
-      || val.value === 0
-      || fields.transferPartner === '') {
+        val.creditType === '' ||
+        val.modelYear === '' ||
+        val.quantity === 0 ||
+        val.value === 0 ||
+        fields.transferPartner === ''
+      ) {
         setUnfilledRow(true);
         // setCheckboxes(emptyCheckboxes);
         setHoverText(checkboxText);
@@ -61,7 +65,7 @@ const CreditTransfersEditContainer = (props) => {
     const input = value.trim();
     fields[name] = input;
     setFields({
-      ...fields,
+      ...fields
     });
     checkFilled(rows);
   };
@@ -95,7 +99,7 @@ const CreditTransfersEditContainer = (props) => {
   };
 
   const removeRow = (rowId) => {
-    const filteredRows = rows.filter((item, index) => (index !== rowId));
+    const filteredRows = rows.filter((item, index) => index !== rowId);
     setRows(filteredRows);
     checkFilled(filteredRows);
   };
@@ -105,7 +109,9 @@ const CreditTransfersEditContainer = (props) => {
     const debitFrom = user.organization.id;
 
     const data = rows
-      .filter((row) => row.quantity && row.value && row.creditType && row.modelYear)
+      .filter(
+        (row) => row.quantity && row.value && row.creditType && row.modelYear
+      )
       .map((row) => ({
         creditValue: row.quantity,
         dollarValue: row.value,
@@ -114,23 +120,27 @@ const CreditTransfersEditContainer = (props) => {
         debitFrom,
         modelYear: row.modelYear,
         transactionType: 'Credit Transfer',
-        weightClass: 'LDV',
+        weightClass: 'LDV'
       }));
 
     if (newTransfer) {
-      axios.post(ROUTES_CREDIT_TRANSFERS.LIST, {
-        content: data,
-        status,
-        creditTo,
-        debitFrom,
-        signingConfirmation: checkboxes,
-      })
+      axios
+        .post(ROUTES_CREDIT_TRANSFERS.LIST, {
+          content: data,
+          status,
+          creditTo,
+          debitFrom,
+          signingConfirmation: checkboxes
+        })
         .then((response) => {
-          if (status === "DRAFT") {
-            history.push(ROUTES_CREDIT_TRANSFERS.EDIT.replace(/:id/gi, response.data.id))
-          }
-          else {
-            history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/gi, response.data.id))
+          if (status === 'DRAFT') {
+            history.push(
+              ROUTES_CREDIT_TRANSFERS.EDIT.replace(/:id/gi, response.data.id)
+            );
+          } else {
+            history.push(
+              ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/gi, response.data.id)
+            );
           }
         })
         .catch((error) => {
@@ -140,13 +150,14 @@ const CreditTransfersEditContainer = (props) => {
           }
         });
     } else {
-      axios.patch(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/gi, id), {
-        content: data,
-        status,
-        creditTo,
-        debitFrom,
-        signingConfirmation: checkboxes,
-      })
+      axios
+        .patch(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/gi, id), {
+          content: data,
+          status,
+          creditTo,
+          debitFrom,
+          signingConfirmation: checkboxes
+        })
         .then(() => {
           history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/g, id));
           if (status === 'DRAFT') {
@@ -164,7 +175,9 @@ const CreditTransfersEditContainer = (props) => {
 
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
-      const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
+      const checked = checkboxes.filter(
+        (each) => Number(each) !== Number(event.target.id)
+      );
       setCheckboxes(checked);
     }
 
@@ -184,37 +197,52 @@ const CreditTransfersEditContainer = (props) => {
 
   const refreshDetails = () => {
     setLoading(true);
-    axios.all([
-      axios.get(ROUTES_ORGANIZATIONS.LIST),
-      axios.get(ROUTES_VEHICLES.YEARS),
-      axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST),
-    ]).then(axios.spread((orgResponse, yearsResponse, assertionsResponse) => {
-      setOrganizations(orgResponse.data);
-      setYears(yearsResponse.data);
-      const filteredAssertions = assertionsResponse.data.filter((data) => data.module == 'credit_transfer');
-      setAssertions(filteredAssertions);
-    }));
+    axios
+      .all([
+        axios.get(ROUTES_ORGANIZATIONS.LIST),
+        axios.get(ROUTES_VEHICLES.YEARS),
+        axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST)
+      ])
+      .then(
+        axios.spread((orgResponse, yearsResponse, assertionsResponse) => {
+          setOrganizations(orgResponse.data);
+          setYears(yearsResponse.data);
+          const filteredAssertions = assertionsResponse.data.filter(
+            (data) => data.module == 'credit_transfer'
+          );
+          setAssertions(filteredAssertions);
+        })
+      );
     if (!newTransfer) {
-      axios.get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/gi, id)).then((response) => {
-        const details = response.data;
-        if (details.debitFrom.id !== user.organization.id || ['DRAFT', 'RESCINDED', 'RESCIND_PRE_APPROVAL'].indexOf(details.status) < 0) {
-          history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/g, id));
-        }
-        setFields({ ...fields, transferPartner: details.creditTo.id });
-        const rowInfo = details.creditTransferContent.map((each) => ({
-          creditType: each.creditClass.creditClass,
-          modelYear: each.modelYear.name,
-          quantity: each.creditValue,
-          value: each.dollarValue,
-        }));
-        setTransferComments(details.history
-          .filter((each) => each.comment)
-          .map((comment) => comment.comment));
-        setSubmission(details);
-        setRows(rowInfo);
-        setUnfilledRow(false);
-        setHoverText('');
-      });
+      axios
+        .get(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/gi, id))
+        .then((response) => {
+          const details = response.data;
+          if (
+            details.debitFrom.id !== user.organization.id ||
+            ['DRAFT', 'RESCINDED', 'RESCIND_PRE_APPROVAL'].indexOf(
+              details.status
+            ) < 0
+          ) {
+            history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/g, id));
+          }
+          setFields({ ...fields, transferPartner: details.creditTo.id });
+          const rowInfo = details.creditTransferContent.map((each) => ({
+            creditType: each.creditClass.creditClass,
+            modelYear: each.modelYear.name,
+            quantity: each.creditValue,
+            value: each.dollarValue
+          }));
+          setTransferComments(
+            details.history
+              .filter((each) => each.comment)
+              .map((comment) => comment.comment)
+          );
+          setSubmission(details);
+          setRows(rowInfo);
+          setUnfilledRow(false);
+          setHoverText('');
+        });
     }
     setLoading(false);
   };
@@ -224,9 +252,9 @@ const CreditTransfersEditContainer = (props) => {
   }, [keycloak.authenticated]);
   const total = rows.reduce((a, v) => a + v.quantity * v.value, 0);
   if (loading) {
-    return (<Loading />);
+    return <Loading />;
   }
-  return ([
+  return [
     <CreditTransactionTabs active="credit-transfers" key="tabs" user={user} />,
     <CreditTransfersForm
       errorMessage={errorMessage}
@@ -252,17 +280,17 @@ const CreditTransfersEditContainer = (props) => {
       years={years}
       transferComments={transferComments}
       submission={submission}
-    />,
-  ]);
+    />
+  ];
 };
 
 CreditTransfersEditContainer.defaultProps = {
-  newTransfer: false,
+  newTransfer: false
 };
 
 CreditTransfersEditContainer.propTypes = {
   user: CustomPropTypes.user.isRequired,
-  newTransfer: PropTypes.bool,
+  newTransfer: PropTypes.bool
 };
 
 export default CreditTransfersEditContainer;

@@ -30,41 +30,56 @@ const CreditRequestVINListContainer = (props) => {
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 
   const refreshDetails = () => {
-    axios.all([
-      axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
-      axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id)),
-      axios.get(ROUTES_CREDIT_REQUESTS.UNSELECTED.replace(':id', id), { params: query }),
-      axios.get(ROUTES_CREDIT_REQUESTS.REASONS),
-    ]).then(axios.spread((submissionResponse, contentResponse, unselectedResponse, reasonsResponse) => {
-      const { data: submissionData } = submissionResponse;
-      setSubmission(submissionData);
+    axios
+      .all([
+        axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
+        axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id)),
+        axios.get(ROUTES_CREDIT_REQUESTS.UNSELECTED.replace(':id', id), {
+          params: query
+        }),
+        axios.get(ROUTES_CREDIT_REQUESTS.REASONS)
+      ])
+      .then(
+        axios.spread(
+          (
+            submissionResponse,
+            contentResponse,
+            unselectedResponse,
+            reasonsResponse
+          ) => {
+            const { data: submissionData } = submissionResponse;
+            setSubmission(submissionData);
 
-      const { data } = contentResponse;
-      setContent(data.content);
+            const { data } = contentResponse;
+            setContent(data.content);
 
-      const reset = query && query.reset;
+            const reset = query && query.reset;
 
-      data.content.forEach((each) => {
-        const index = reasonList.findIndex((item) => Number(item.id) === Number(each.id));
+            data.content.forEach((each) => {
+              const index = reasonList.findIndex(
+                (item) => Number(item.id) === Number(each.id)
+              );
 
-        if (each.reason && index < 0) {
-          reasonList.push({
-            id: Number(each.id),
-            reason: reset ? '' : each.reason,
-          });
-        }
-      });
+              if (each.reason && index < 0) {
+                reasonList.push({
+                  id: Number(each.id),
+                  reason: reset ? '' : each.reason
+                });
+              }
+            });
 
-      setReasonList(reasonList);
+            setReasonList(reasonList);
 
-      const { data: unselected } = unselectedResponse;
-      setInvalidatedList(unselected);
+            const { data: unselected } = unselectedResponse;
+            setInvalidatedList(unselected);
 
-      const { data: reasonsData } = reasonsResponse;
-      setReasons(reasonsData);
+            const { data: reasonsData } = reasonsResponse;
+            setReasons(reasonsData);
 
-      setLoading(false);
-    }));
+            setLoading(false);
+          }
+        )
+      );
   };
 
   useEffect(() => {
@@ -72,14 +87,16 @@ const CreditRequestVINListContainer = (props) => {
   }, [id]);
 
   const handleChangeReason = (submissionId, value = false) => {
-    const index = reasonList.findIndex((each) => (Number(each.id) === Number(submissionId)));
+    const index = reasonList.findIndex(
+      (each) => Number(each.id) === Number(submissionId)
+    );
 
     if (index >= 0) {
       reasonList[index].reason = value;
     } else {
       reasonList.push({
         id: Number(submissionId),
-        reason: value,
+        reason: value
       });
     }
 
@@ -92,22 +109,28 @@ const CreditRequestVINListContainer = (props) => {
     if (!checked) {
       setInvalidatedList(() => [...invalidatedList, newId]);
     } else {
-      setInvalidatedList(invalidatedList.filter((item) => Number(item) !== Number(submissionId)));
+      setInvalidatedList(
+        invalidatedList.filter((item) => Number(item) !== Number(submissionId))
+      );
     }
 
-    const index = modified.findIndex((item) => Number(item) === Number(submissionId));
+    const index = modified.findIndex(
+      (item) => Number(item) === Number(submissionId)
+    );
 
     if (index >= 0) {
       modified.splice(index, 1);
     } else {
       modified.push(Number(submissionId));
 
-      const reasonListIndex = reasonList.findIndex((each) => (Number(each.id) === Number(submissionId)));
+      const reasonListIndex = reasonList.findIndex(
+        (each) => Number(each.id) === Number(submissionId)
+      );
 
       if (reasonListIndex < 0) {
         reasonList.push({
           id: Number(submissionId),
-          reason: reasons[0],
+          reason: reasons[0]
         });
       }
 
@@ -120,20 +143,25 @@ const CreditRequestVINListContainer = (props) => {
   const handleSubmit = () => {
     setLoading(true);
 
-    axios.patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), {
-      invalidated: invalidatedList,
-      validationStatus: 'CHECKED',
-      reasons: reasonList,
-      reset: query && query.reset,
-    }).then(() => {
-      const url = ROUTES_CREDIT_REQUESTS.VALIDATED.replace(/:id/g, submission.id);
+    axios
+      .patch(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id), {
+        invalidated: invalidatedList,
+        validationStatus: 'CHECKED',
+        reasons: reasonList,
+        reset: query && query.reset
+      })
+      .then(() => {
+        const url = ROUTES_CREDIT_REQUESTS.VALIDATED.replace(
+          /:id/g,
+          submission.id
+        );
 
-      history.push(url);
-    });
+        history.push(url);
+      });
   };
 
   if (loading) {
-    return (<Loading />);
+    return <Loading />;
   }
 
   return (
@@ -157,7 +185,7 @@ const CreditRequestVINListContainer = (props) => {
 CreditRequestVINListContainer.propTypes = {
   location: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
-  match: CustomPropTypes.routeMatch.isRequired,
+  match: CustomPropTypes.routeMatch.isRequired
 };
 
 export default withRouter(CreditRequestVINListContainer);

@@ -2,8 +2,11 @@ const getCreditClass = (vehicle) => {
   if (!vehicle || !vehicle.vehicleZevType) {
     return '';
   }
-  if ((vehicle.vehicleZevType.vehicleZevCode === 'BEV' && vehicle.range < 80.47)
-    || vehicle.range < 16) {
+  if (
+    (vehicle.vehicleZevType.vehicleZevCode === 'BEV' &&
+      vehicle.range < 80.47) ||
+    vehicle.range < 16
+  ) {
     return 'C';
   }
 

@@ -4,14 +4,14 @@ const getSupplierSummary = (submission) => {
     currentBalanceB: parseFloat(submission.debitFrom.balance.B),
     newBalanceA: parseFloat(submission.debitFrom.balance.A),
     newBalanceB: parseFloat(submission.debitFrom.balance.B),
-    supplierLabel: submission.debitFrom.name,
+    supplierLabel: submission.debitFrom.name
   };
   const receivingSupplier = {
     currentBalanceA: parseFloat(submission.creditTo.balance.A),
     currentBalanceB: parseFloat(submission.creditTo.balance.B),
     newBalanceA: parseFloat(submission.creditTo.balance.A),
     newBalanceB: parseFloat(submission.creditTo.balance.B),
-    supplierLabel: submission.creditTo.name,
+    supplierLabel: submission.creditTo.name
   };
   submission.creditTransferContent.forEach((item) => {
     if (item.creditClass.creditClass === 'A') {

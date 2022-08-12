@@ -13,7 +13,9 @@ const UploadICBCVerificationContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const { user } = props;
   const [dateCurrentTo, setDateCurrentTo] = useState('');
-  const [previousDateCurrentTo, setPreviousDateCurrentTo] = useState('No ICBC data uploaded yet');
+  const [previousDateCurrentTo, setPreviousDateCurrentTo] = useState(
+    'No ICBC data uploaded yet'
+  );
   const [files, setFiles] = useState([]);
   const [alertMessage, setAlertMessage] = useState(null);
   const [showProcessing, setShowProcessing] = useState(false);
@@ -21,7 +23,9 @@ const UploadICBCVerificationContainer = (props) => {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const today = new Date();
-  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+  const date = `${today.getFullYear()}-${
+    today.getMonth() + 1
+  }-${today.getDate()}`;
 
   const refreshList = (showLoading) => {
     setLoading(showLoading);
@@ -35,7 +39,9 @@ const UploadICBCVerificationContainer = (props) => {
   };
 
   const updateProgressBar = (progressEvent) => {
-    const percentage = Math.round((100 * progressEvent.loaded) / progressEvent.total);
+    const percentage = Math.round(
+      (100 * progressEvent.loaded) / progressEvent.total
+    );
     setUploadProgress(percentage);
   };
 
@@ -46,41 +52,55 @@ const UploadICBCVerificationContainer = (props) => {
       axios.get(ROUTES_UPLOADS.MINIO_URL).then((response) => {
         const { url: uploadUrl, minioObjectName: filename } = response.data;
 
-        axios.put(uploadUrl, file, {
-          headers: {
-            Authorization: null,
-          },
-          onUploadProgress: (progressEvent) => {
-            updateProgressBar(progressEvent);
-          },
-        }).then(() => {
-          setShowProcessing(true);
-
-          axios.post(ROUTES_ICBCVERIFICATION.UPLOAD, {
-            filename,
-            submissionCurrentDate: dateCurrentTo,
-          }).then((postResponse) => {
-            const { dateCurrentTo: updatedDateCurrentTo } = postResponse.data;
-            setPreviousDateCurrentTo(updatedDateCurrentTo);
-          }).catch((error) => {
-            console.error(error);
-            const { response: errorResponse } = error;
-            if (errorResponse.status === 400) {
-              setAlertMessage(errorResponse.data);
-            } else {
-              setAlertMessage('An error has occurred while uploading. Please try again later.');
+        axios
+          .put(uploadUrl, file, {
+            headers: {
+              Authorization: null
+            },
+            onUploadProgress: (progressEvent) => {
+              updateProgressBar(progressEvent);
             }
-          }).finally(() => {
-            setAlertMessage('upload successful');
-            toastr.success('upload successful!', '', { positionClass: 'toast-bottom-right' });
-            setFiles([]);
-            setShowProcessing(false);
-            setShowProgressBar(false);
+          })
+          .then(() => {
+            setShowProcessing(true);
+
+            axios
+              .post(ROUTES_ICBCVERIFICATION.UPLOAD, {
+                filename,
+                submissionCurrentDate: dateCurrentTo
+              })
+              .then((postResponse) => {
+                const { dateCurrentTo: updatedDateCurrentTo } =
+                  postResponse.data;
+                setPreviousDateCurrentTo(updatedDateCurrentTo);
+              })
+              .catch((error) => {
+                console.error(error);
+                const { response: errorResponse } = error;
+                if (errorResponse.status === 400) {
+                  setAlertMessage(errorResponse.data);
+                } else {
+                  setAlertMessage(
+                    'An error has occurred while uploading. Please try again later.'
+                  );
+                }
+              })
+              .finally(() => {
+                setAlertMessage('upload successful');
+                toastr.success('upload successful!', '', {
+                  positionClass: 'toast-bottom-right'
+                });
+                setFiles([]);
+                setShowProcessing(false);
+                setShowProgressBar(false);
+              });
+          })
+          .catch((error) => {
+            console.error(error);
+            setAlertMessage(
+              'An error has occurred while uploading. Please try again later.'
+            );
           });
-        }).catch((error) => {
-          console.error(error);
-          setAlertMessage('An error has occurred while uploading. Please try again later.');
-        });
       });
     });
   };
@@ -93,7 +113,7 @@ const UploadICBCVerificationContainer = (props) => {
     return <Loading />;
   }
 
-  return ([
+  return [
     <CreditTransactionTabs active="icbc-update" key="tabs" user={user} />,
     <UploadVerificationData
       alertMessage={alertMessage}
@@ -109,12 +129,12 @@ const UploadICBCVerificationContainer = (props) => {
       upload={doUpload}
       uploadProgress={uploadProgress}
       user={user}
-    />,
-  ]);
+    />
+  ];
 };
 
 UploadICBCVerificationContainer.propTypes = {
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default UploadICBCVerificationContainer;

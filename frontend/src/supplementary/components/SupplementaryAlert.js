@@ -3,11 +3,7 @@ import PropTypes from 'prop-types';
 import Alert from '../../app/components/Alert';
 
 const SupplementaryAlert = (props) => {
-  const {
-    status,
-    date,
-    user,
-  } = props;
+  const { status, date, user } = props;
 
   let message = '';
   let title;
@@ -59,7 +55,7 @@ SupplementaryAlert.defaultProps = {};
 SupplementaryAlert.propTypes = {
   date: PropTypes.string.isRequired,
   user: PropTypes.string.isRequired,
-  status: PropTypes.string.isRequired,
+  status: PropTypes.string.isRequired
 };
 
 export default SupplementaryAlert;

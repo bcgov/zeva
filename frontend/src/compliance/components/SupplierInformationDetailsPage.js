@@ -1,16 +1,16 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
-import Button from "../../app/components/Button";
-import Loading from "../../app/components/Loading";
-import Modal from "../../app/components/Modal";
-import history from "../../app/History";
-import CustomPropTypes from "../../app/utilities/props";
-import ROUTES_COMPLIANCE from "../../app/routes/Compliance";
-import FormatNumeric from "../../app/utilities/formatNumeric";
-import ComplianceReportAlert from "./ComplianceReportAlert";
-import ComplianceReportSignOff from "./ComplianceReportSignOff";
+import Button from '../../app/components/Button';
+import Loading from '../../app/components/Loading';
+import Modal from '../../app/components/Modal';
+import history from '../../app/History';
+import CustomPropTypes from '../../app/utilities/props';
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
+import FormatNumeric from '../../app/utilities/formatNumeric';
+import ComplianceReportAlert from './ComplianceReportAlert';
+import ComplianceReportSignOff from './ComplianceReportSignOff';
 
 const SupplierInformationDetailsPage = (props) => {
   const {
@@ -30,7 +30,7 @@ const SupplierInformationDetailsPage = (props) => {
     handleCheckboxClick,
     modelYear,
     statuses,
-    id,
+    id
   } = props;
   const [showModal, setShowModal] = useState(false);
   let disabledCheckboxes = propsDisabledCheckboxes;
@@ -67,12 +67,12 @@ const SupplierInformationDetailsPage = (props) => {
 
   assertions.forEach((assertion) => {
     if (checkboxes.indexOf(assertion.id) >= 0) {
-      disabledCheckboxes = "disabled";
+      disabledCheckboxes = 'disabled';
     }
   });
 
-  if (["SAVED", "UNSAVED"].indexOf(statuses.supplierInformation.status) < 0) {
-    disabledCheckboxes = "disabled";
+  if (['SAVED', 'UNSAVED'].indexOf(statuses.supplierInformation.status) < 0) {
+    disabledCheckboxes = 'disabled';
     disabledInputs = true;
   }
 
@@ -102,7 +102,7 @@ const SupplierInformationDetailsPage = (props) => {
           <div className="p-3 supplier-information">
             <span className="float-right d-print-none">
               {!user.isGovernment &&
-                statuses.supplierInformation.status === "CONFIRMED" && (
+                statuses.supplierInformation.status === 'CONFIRMED' && (
                   <button
                     className="btn button primary"
                     onClick={() => {
@@ -145,13 +145,13 @@ const SupplierInformationDetailsPage = (props) => {
                           </div>
                           {details.organization.organizationAddress.map(
                             (address) =>
-                              address.addressType.addressType === "Service" && (
+                              address.addressType.addressType === 'Service' && (
                                 <div className="col-7" key={address.id}>
                                   {address.representativeName && (
                                     <div> {address.representativeName} </div>
                                   )}
-                                  {address.addressLine1} {address.addressLine2}{" "}
-                                  {address.city} {address.state}{" "}
+                                  {address.addressLine1} {address.addressLine2}{' '}
+                                  {address.city} {address.state}{' '}
                                   {address.country} {address.postalCode}
                                 </div>
                               )
@@ -168,13 +168,13 @@ const SupplierInformationDetailsPage = (props) => {
                           </div>
                           {details.organization.organizationAddress.map(
                             (address) =>
-                              address.addressType.addressType === "Records" && (
+                              address.addressType.addressType === 'Records' && (
                                 <div className="col-7" key={address.id}>
                                   {address.representativeName && (
                                     <div> {address.representativeName} </div>
                                   )}
-                                  {address.addressLine1} {address.addressLine2}{" "}
-                                  {address.city} {address.state}{" "}
+                                  {address.addressLine1} {address.addressLine2}{' '}
+                                  {address.city} {address.state}{' '}
                                   {address.country} {address.postalCode}
                                 </div>
                               )
@@ -228,7 +228,7 @@ const SupplierInformationDetailsPage = (props) => {
               </div>
               <div className="d-block mt-3">
                 If there is an error in any of the information above, please
-                contact:{" "}
+                contact:{' '}
                 <a href="mailto:ZEVRegulation@gov.bc.ca">
                   ZEVRegulation@gov.bc.ca
                 </a>
@@ -245,7 +245,7 @@ const SupplierInformationDetailsPage = (props) => {
                 <form disabled={disabledInputs} onSubmit={handleSubmitMake}>
                   {statuses &&
                     ((statuses.assessment &&
-                      statuses.assessment.status !== "ASSESSED") ||
+                      statuses.assessment.status !== 'ASSESSED') ||
                       !statuses.assessment) && (
                       <div className="form-row">
                         <div className="col-sm-8 col-xs-12">
@@ -272,7 +272,7 @@ const SupplierInformationDetailsPage = (props) => {
 
                 {makes.length > 0 && (
                   <div
-                    className={`list p-2 ${disabledInputs ? "disabled" : ""}`}
+                    className={`list p-2 ${disabledInputs ? 'disabled' : ''}`}
                   >
                     {makes.map((item, index) => (
                       <div className="form-row my-2" key={index}>
@@ -321,13 +321,13 @@ const SupplierInformationDetailsPage = (props) => {
               <Button
                 buttonType="next"
                 disabled={
-                  ["UNSAVED"].indexOf(statuses.supplierInformation.status) >= 0
+                  ['UNSAVED'].indexOf(statuses.supplierInformation.status) >= 0
                 }
                 optionalClassname="button"
                 optionalText="Next"
                 action={() => {
                   history.push(
-                    ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(":id", id)
+                    ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id)
                   );
                 }}
               />
@@ -335,7 +335,7 @@ const SupplierInformationDetailsPage = (props) => {
                 <Button
                   buttonType="save"
                   disabled={
-                    ["SAVED", "UNSAVED"].indexOf(
+                    ['SAVED', 'UNSAVED'].indexOf(
                       statuses.supplierInformation.status
                     ) < 0
                   }
@@ -360,7 +360,7 @@ SupplierInformationDetailsPage.propTypes = {
   details: PropTypes.shape({
     organization: PropTypes.shape(),
     supplierInformation: PropTypes.shape(),
-    supplierClassString: PropTypes.shape(),
+    supplierClassString: PropTypes.shape()
   }).isRequired,
   handleCancelConfirmation: PropTypes.func.isRequired,
   handleChangeMake: PropTypes.func.isRequired,
@@ -379,6 +379,6 @@ SupplierInformationDetailsPage.propTypes = {
   handleCheckboxClick: PropTypes.func.isRequired,
   disabledCheckboxes: PropTypes.string.isRequired,
   modelYear: PropTypes.number.isRequired,
-  statuses: PropTypes.shape().isRequired,
+  statuses: PropTypes.shape().isRequired
 };
 export default SupplierInformationDetailsPage;

@@ -5,14 +5,17 @@ import NotificationListPage from '../NotificationListPage';
 
 const baseProps = {
   handleCheckboxClick: () => {},
-  notifications: [{
-    id: 1,
-    name: 'test this',
-  }, {
-    id: 2,
-    name: 'test that',
-  }],
-  checkboxes: [2],
+  notifications: [
+    {
+      id: 1,
+      name: 'test this'
+    },
+    {
+      id: 2,
+      name: 'test that'
+    }
+  ],
+  checkboxes: [2]
 };
 
 it('renders without crashing', () => {
@@ -24,6 +27,6 @@ it('renders without crashing', () => {
         notifications={baseProps.notifications}
         user={{ isGovernment: true }}
       />
-    </Router>,
+    </Router>
   );
 });

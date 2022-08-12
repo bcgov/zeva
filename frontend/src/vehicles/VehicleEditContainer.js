@@ -31,12 +31,7 @@ const VehicleEditContainer = (props) => {
   const { id } = useParams();
   const { keycloak, newVehicle } = props;
   const handleInputChange = (event) => {
-    const {
-      checked,
-      name,
-      type,
-      value,
-    } = event.target;
+    const { checked, name, type, value } = event.target;
 
     let input = value;
 
@@ -55,20 +50,22 @@ const VehicleEditContainer = (props) => {
     }
 
     setFields({
-      ...fields,
+      ...fields
     });
   };
   const requestStateChange = (newState) => {
     setLoading(true);
-    axios.patch(`vehicles/${id}/state_change`, { validationStatus: newState }).then(() => {
-      history.push(ROUTES_VEHICLES.LIST);
+    axios
+      .patch(`vehicles/${id}/state_change`, { validationStatus: newState })
+      .then(() => {
+        history.push(ROUTES_VEHICLES.LIST);
 
-      if (newState === 'SUBMITTED') {
-        history.replace(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id));
-      }
+        if (newState === 'SUBMITTED') {
+          history.replace(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id));
+        }
 
-      setLoading(false);
-    });
+        setLoading(false);
+      });
   };
   const resetForm = () => {
     setFields({
@@ -79,17 +76,19 @@ const VehicleEditContainer = (props) => {
       range: '',
       modelYear: { name: '--' },
       vehicleClassCode: { vehicleClassCode: '--' },
-      weightKg: '',
+      weightKg: ''
     });
     setFiles([]);
     setProgressBars({});
   };
 
   const updateProgressBars = (progressEvent, index) => {
-    const percentage = Math.round((100 * progressEvent.loaded) / progressEvent.total);
+    const percentage = Math.round(
+      (100 * progressEvent.loaded) / progressEvent.total
+    );
     setProgressBars({
       ...progressBars,
-      [index]: percentage,
+      [index]: percentage
     });
 
     progressBars[index] = percentage;
@@ -100,38 +99,44 @@ const VehicleEditContainer = (props) => {
     setShowProgressBars(true);
 
     files.forEach((file, index) => {
-      promises.push(new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const blob = reader.result;
+      promises.push(
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const blob = reader.result;
 
-          axios.get(ROUTES_VEHICLES.MINIO_URL.replace(/:id/gi, paramId)).then((response) => {
-            const { url: uploadUrl, minioObjectName } = response.data;
+            axios
+              .get(ROUTES_VEHICLES.MINIO_URL.replace(/:id/gi, paramId))
+              .then((response) => {
+                const { url: uploadUrl, minioObjectName } = response.data;
 
-            axios.put(uploadUrl, blob, {
-              headers: {
-                Authorization: null,
-              },
-              onUploadProgress: (progressEvent) => {
-                updateProgressBars(progressEvent, index);
+                axios
+                  .put(uploadUrl, blob, {
+                    headers: {
+                      Authorization: null
+                    },
+                    onUploadProgress: (progressEvent) => {
+                      updateProgressBars(progressEvent, index);
 
-                if (progressEvent.loaded >= progressEvent.total) {
-                  resolve({
-                    filename: file.name,
-                    mimeType: file.type,
-                    minioObjectName,
-                    size: file.size,
+                      if (progressEvent.loaded >= progressEvent.total) {
+                        resolve({
+                          filename: file.name,
+                          mimeType: file.type,
+                          minioObjectName,
+                          size: file.size
+                        });
+                      }
+                    }
+                  })
+                  .catch(() => {
+                    reject();
                   });
-                }
-              },
-            }).catch(() => {
-              reject();
-            });
-          });
-        };
+              });
+          };
 
-        reader.readAsArrayBuffer(file);
-      }));
+          reader.readAsArrayBuffer(file);
+        })
+      );
     });
 
     return promises;
@@ -141,7 +146,7 @@ const VehicleEditContainer = (props) => {
     if (!newVehicle && id) {
       return axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), {
         ...data,
-        deleteFiles,
+        deleteFiles
       });
     }
 
@@ -157,40 +162,44 @@ const VehicleEditContainer = (props) => {
       }
     });
 
-    saveVehicle(data).then((response) => {
-      const { id: vehicleId } = response.data;
+    saveVehicle(data)
+      .then((response) => {
+        const { id: vehicleId } = response.data;
 
-      const uploadPromises = handleUpload(vehicleId);
+        const uploadPromises = handleUpload(vehicleId);
 
-      Promise.all(uploadPromises).then((attachments) => {
-        const patchData = {};
+        Promise.all(uploadPromises).then((attachments) => {
+          const patchData = {};
 
-        if (attachments.length > 0) {
-          patchData.vehicleAttachments = attachments;
-        }
+          if (attachments.length > 0) {
+            patchData.vehicleAttachments = attachments;
+          }
 
-        if (validationStatus) {
-          patchData.validationStatus = validationStatus;
-        }
+          if (validationStatus) {
+            patchData.validationStatus = validationStatus;
+          }
 
-        axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, vehicleId), {
-          ...patchData,
-          deleteFiles,
-        }).then(() => {
-          history.push(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, vehicleId));
+          axios
+            .patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, vehicleId), {
+              ...patchData,
+              deleteFiles
+            })
+            .then(() => {
+              history.push(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, vehicleId));
+            });
         });
+      })
+      .catch((errors) => {
+        if (!errors.response) {
+          return;
+        }
+
+        const { data: errorData } = errors.response;
+        const err = {};
+
+        parseErrorResponse(err, errorData);
+        setErrorFields(err);
       });
-    }).catch((errors) => {
-      if (!errors.response) {
-        return;
-      }
-
-      const { data: errorData } = errors.response;
-      const err = {};
-
-      parseErrorResponse(err, errorData);
-      setErrorFields(err);
-    });
   };
 
   const loadVehicle = (data) => {
@@ -205,7 +214,7 @@ const VehicleEditContainer = (props) => {
       vehicleZevType: data.vehicleZevType.vehicleZevCode,
       weightKg: data.weightKg,
       updateTimestamp: data.updateTimestamp,
-      user: data.updateUser.displayName,
+      user: data.updateUser.displayName
     });
 
     setStatus(data.validationStatus);
@@ -213,7 +222,9 @@ const VehicleEditContainer = (props) => {
     setVehicleComment(data.vehicleComment);
   };
 
-  const orgMakes = [...new Set(vehicles.map((vehicle) => vehicle.make.toUpperCase()))];
+  const orgMakes = [
+    ...new Set(vehicles.map((vehicle) => vehicle.make.toUpperCase()))
+  ];
   const refreshList = () => {
     setLoading(true);
 
@@ -221,23 +232,27 @@ const VehicleEditContainer = (props) => {
       axios.get(ROUTES_VEHICLES.YEARS),
       axios.get(ROUTES_VEHICLES.ZEV_TYPES),
       axios.get(ROUTES_VEHICLES.CLASSES),
-      axios.get(ROUTES_VEHICLES.LIST),
+      axios.get(ROUTES_VEHICLES.LIST)
     ];
 
     if (id) {
       promises.push(axios.get(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id)));
     }
 
-    axios.all(promises).then(
-      axios.spread((yearsRes, typesRes, classesRes, orgVehiclesRes, vehicleRes) => ([
-        vehicleRes ? loadVehicle(vehicleRes.data) : resetForm(),
-        setClasses(classesRes.data),
-        setTypes(typesRes.data),
-        setVehicles(orgVehiclesRes.data),
-        setYears(yearsRes.data),
-        setLoading(false),
-      ])),
-    );
+    axios
+      .all(promises)
+      .then(
+        axios.spread(
+          (yearsRes, typesRes, classesRes, orgVehiclesRes, vehicleRes) => [
+            vehicleRes ? loadVehicle(vehicleRes.data) : resetForm(),
+            setClasses(classesRes.data),
+            setTypes(typesRes.data),
+            setVehicles(orgVehiclesRes.data),
+            setYears(yearsRes.data),
+            setLoading(false)
+          ]
+        )
+      );
   };
 
   useEffect(() => {
@@ -272,12 +287,12 @@ const VehicleEditContainer = (props) => {
 };
 
 VehicleEditContainer.defaultProps = {
-  newVehicle: false,
+  newVehicle: false
 };
 
 VehicleEditContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
-  newVehicle: PropTypes.bool,
+  newVehicle: PropTypes.bool
 };
 
 export default VehicleEditContainer;

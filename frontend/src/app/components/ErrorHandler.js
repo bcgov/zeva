@@ -33,12 +33,12 @@ class ErrorHandler extends Component {
 }
 
 ErrorHandler.defaultProps = {
-  statusCode: null,
+  statusCode: null
 };
 
 ErrorHandler.propTypes = {
   children: PropTypes.node.isRequired,
-  statusCode: PropTypes.number,
+  statusCode: PropTypes.number
 };
 
 export default ErrorHandler;
