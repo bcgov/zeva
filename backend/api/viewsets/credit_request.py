@@ -388,12 +388,11 @@ class CreditRequestViewset(
         if not request.user.is_government:
             return HttpResponseForbidden()
 
-        submission = SalesSubmission.objects.get(id=pk)
+        # submission = SalesSubmission.objects.get(id=pk)
 
         reset = request.GET.get('reset', None)
 
-        if submission.validation_status == SalesSubmissionStatuses.SUBMITTED or \
-                reset == 'Y':
+        if reset == 'Y':
             submission_content = SalesSubmissionContent.objects.filter(
                 submission_id=pk
             )

@@ -171,6 +171,21 @@ const CreditRequestDetailsPage = (props) => {
         modalText: "Reject the application?",
       };
       break;
+    case "verify":
+      modalProps = {
+        confirmLabel: "Verify with ICBC Data",
+        handleSubmit: () => {
+          let url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(
+            /:id/g,
+            submission.id
+          );
+          url += "?reset=Y";
+          history.push(url);
+        },
+        buttonClass: "button primary",
+        modalText: <div><h2 className="mb-2">Verify submission with ICBC Data?</h2><p>This will clear all existing validation and re-calculate with the latest uploaded ICBC data.</p></div>
+      };
+      break;
     default:
       modalProps = {
         confirmLabel: "Issue Credits",
@@ -516,22 +531,16 @@ const CreditRequestDetailsPage = (props) => {
             <span className="right-content">
               {analystAction && (
                 <>
-                  {validatedOnly && (
-                    <button
-                      className="button"
-                      onClick={() => {
-                        let url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(
-                          /:id/g,
-                          submission.id
-                        );
-                        url += "?reset=Y";
-                        history.push(url);
-                      }}
-                      type="button"
-                    >
-                      Re-verify with ICBC Data
-                    </button>
-                  )}
+                  <button
+                    className="button"
+                    onClick={() => {
+                      setModalType("verify");
+                      setShowModal(true);
+                    }}
+                    type="button"
+                  >
+                    Verify with ICBC Data
+                  </button>
                   <button
                     className={validatedOnly ? "button" : "button primary"}
                     onClick={() => {
@@ -544,7 +553,7 @@ const CreditRequestDetailsPage = (props) => {
                     }}
                     type="button"
                   >
-                    {validatedOnly ? "Review Details" : "Verify with ICBC Data"}
+                    Review Details
                   </button>
                   {validatedOnly && (
                     <button

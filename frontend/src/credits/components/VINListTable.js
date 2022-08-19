@@ -230,19 +230,32 @@ const VINListTable = (props) => {
         {
           accessor: (row) => {
             if (
-              ((row.reason && reset) || !row.reason) &&
-              modified.findIndex((id) => id === row.id) < 0
+              row.warnings &&
+              row.warnings.some(
+                (warning) =>
+                  [
+                    "DUPLICATE_VIN",
+                    "INVALID_MODEL",
+                    "VIN_ALREADY_AWARDED",
+                    "EXPIRED_REGISTRATION_DATE",
+                  ].indexOf(warning) >= 0
+              )
             ) {
               return false;
             }
-
+            
+            // Only show reasons if the validation checkbox is clicked
+            if(invalidatedList.includes(row.id)) {
+              return false
+            }
+            
             if (row.reason && readOnly) {
               return <div className="text-left">{row.reason}</div>;
             }
 
             return (
               <select
-                defaultValue={row.reason}
+                defaultValue={row.reason || ""}
                 onChange={(event) => {
                   const { value } = event.target;
                   handleChangeReason(row.id, value);
@@ -321,14 +334,12 @@ const VINListTable = (props) => {
       loading={loading}
       manual
       onFetchData={(state) => {
-        setLoading(true);
 
         const filters = {};
 
         state.filtered.forEach((each) => {
           filters[each.id] = each.value;
         });
-
         const sorted = [];
 
         state.sorted.forEach((each) => {
@@ -341,6 +352,11 @@ const VINListTable = (props) => {
           sorted.push(value);
         });
 
+        if(Object.keys(filters).length === 0 && 
+          sorted.length <= 0){
+          return
+        }
+        
         refreshContent(state, filters);
       }}
       pages={pages}
