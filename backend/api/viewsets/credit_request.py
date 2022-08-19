@@ -388,8 +388,6 @@ class CreditRequestViewset(
         if not request.user.is_government:
             return HttpResponseForbidden()
 
-        # submission = SalesSubmission.objects.get(id=pk)
-
         reset = request.GET.get('reset', None)
 
         if reset == 'Y':
