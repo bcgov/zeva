@@ -29,8 +29,6 @@ const VINListTable = (props) => {
     setReactTable
   } = props;
 
-  const reset = query && query.reset === 'Y';
-
   const getErrorCodes = (item, fields = false) => {
     let errorCodes = '';
 
