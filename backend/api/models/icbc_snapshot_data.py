@@ -12,7 +12,7 @@ class IcbcSnapshotData(Auditable):
     vin = models.CharField(
         blank=False,
         null=False,
-        unique=True,
+        unique=False,
         max_length=20,
         db_comment="A Vehicle Identification Number, a standard 17-character "
                    "identifier  used in the automative industry to identify "
