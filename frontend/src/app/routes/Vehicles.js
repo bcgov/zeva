@@ -10,7 +10,7 @@ const VEHICLES = {
   MINIO_URL: `${API_BASE_PATH}/:id/minio_url`,
   MODELS: `${API_BASE_PATH}/models`,
   YEARS: `${API_BASE_PATH}/years`,
-  ZEV_TYPES: `${API_BASE_PATH}/zev_types`,
+  ZEV_TYPES: `${API_BASE_PATH}/zev_types`
 };
 
 export default VEHICLES;

@@ -5,12 +5,18 @@ import { useDropzone } from 'react-dropzone';
 
 const FileDrop = (props) => {
   const {
-    setErrorMessage, setFiles, maxFiles, allowedFileTypes, getExistingFilesCount,
+    setErrorMessage,
+    setFiles,
+    maxFiles,
+    allowedFileTypes,
+    getExistingFilesCount
   } = props;
   const [dropMessage, setDropMessage] = useState('');
   const onDrop = (acceptedFiles) => {
-    if (acceptedFiles.length > (maxFiles - getExistingFilesCount())) {
-      setDropMessage(`Please select only ${maxFiles} file${maxFiles !== 1 ? 's' : ''}.`);
+    if (acceptedFiles.length > maxFiles - getExistingFilesCount()) {
+      setDropMessage(
+        `Please select only ${maxFiles} file${maxFiles !== 1 ? 's' : ''}.`
+      );
     } else {
       setDropMessage('');
       setErrorMessage('');
@@ -18,7 +24,10 @@ const FileDrop = (props) => {
     }
   };
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: allowedFileTypes });
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: allowedFileTypes
+  });
   return (
     <div {...getRootProps()}>
       <input {...getInputProps()} />
@@ -27,10 +36,10 @@ const FileDrop = (props) => {
         <FontAwesomeIcon icon="upload" />
         <br />
         Drag and Drop files here or <br />
-        <button className="link text-center" type="button">browse to select a file from your machine to upload.</button>
-        {dropMessage && (
-          <div id="danger-text">{dropMessage}</div>
-        )}
+        <button className="link text-center" type="button">
+          browse to select a file from your machine to upload.
+        </button>
+        {dropMessage && <div id="danger-text">{dropMessage}</div>}
       </div>
     </div>
   );
@@ -39,7 +48,7 @@ const FileDrop = (props) => {
 FileDrop.defaultProps = {
   setErrorMessage: () => {},
   allowedFileTypes: null,
-  getExistingFilesCount: () => {},
+  getExistingFilesCount: () => {}
 };
 
 FileDrop.propTypes = {
@@ -47,7 +56,7 @@ FileDrop.propTypes = {
   setFiles: PropTypes.func.isRequired,
   maxFiles: PropTypes.number.isRequired,
   allowedFileTypes: PropTypes.string,
-  getExistingFilesCount: PropTypes.func,
+  getExistingFilesCount: PropTypes.func
 };
 
 export default FileDrop;

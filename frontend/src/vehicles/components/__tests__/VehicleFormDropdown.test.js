@@ -10,13 +10,15 @@ afterEach(cleanup);
 
 describe('Vehicle Form Dropdown', () => {
   it('renders without crashing', () => {
-    render(<VehicleFormDropdown
-      accessor={(model) => model.name}
-      dropdownName="Model Year"
-      dropdownData={[{ id: 1, name: 'test' }]}
-      handleInputChange={handleInputChange}
-      fieldName="modelYear"
-      selectedOption="test"
-    />);
+    render(
+      <VehicleFormDropdown
+        accessor={(model) => model.name}
+        dropdownName="Model Year"
+        dropdownData={[{ id: 1, name: 'test' }]}
+        handleInputChange={handleInputChange}
+        fieldName="modelYear"
+        selectedOption="test"
+      />
+    );
   });
 });

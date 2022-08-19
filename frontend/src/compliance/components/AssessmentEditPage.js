@@ -29,23 +29,39 @@ const AssessmentEditPage = (props) => {
     handleSubmit,
     ratios,
     sales,
-    supplierMakes,
+    supplierMakes
   } = props;
 
   if (loading) {
     return <Loading />;
   }
 
-  const totalReduction = getTotalReduction(details.ldvSales, ratios.complianceRatio);
-  const classAReduction = getClassACredits(details.ldvSales, ratios.zevClassA, details.supplierClass);
-  const leftoverReduction = getUnspecifiedClassReduction(totalReduction, classAReduction);
+  const totalReduction = getTotalReduction(
+    details.ldvSales,
+    ratios.complianceRatio
+  );
+  const classAReduction = getClassACredits(
+    details.ldvSales,
+    ratios.zevClassA,
+    details.supplierClass
+  );
+  const leftoverReduction = getUnspecifiedClassReduction(
+    totalReduction,
+    classAReduction
+  );
 
   const actionbar = (
     <div className="row">
       <div className="col-sm-12">
         <div className="action-bar">
           <span className="left-content">
-            <Button buttonType="back" locationRoute={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id)} />
+            <Button
+              buttonType="back"
+              locationRoute={ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(
+                /:id/g,
+                id
+              )}
+            />
           </span>
           <span className="right-content mr-3">
             <Button
@@ -70,16 +86,16 @@ const AssessmentEditPage = (props) => {
       <div className="row mt-3">
         <div className="col-12">
           <div className="m-0">
-            {details
-              && details.supplierInformation
-              && details.supplierInformation.history && (
+            {details &&
+              details.supplierInformation &&
+              details.supplierInformation.history && (
                 <ComplianceReportAlert
                   next=""
                   report={details.assessment}
                   status={statuses.assessment}
                   type="Assessment"
                 />
-            )}
+              )}
           </div>
         </div>
       </div>
@@ -134,10 +150,7 @@ AssessmentEditPage.defaultProps = {};
 
 AssessmentEditPage.propTypes = {
   details: PropTypes.shape().isRequired,
-  id: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ]).isRequired,
+  id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   loading: PropTypes.bool.isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   supplierMakes: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -151,6 +164,6 @@ AssessmentEditPage.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   make: PropTypes.string.isRequired,
   sales: PropTypes.shape().isRequired,
-  ratios: PropTypes.shape().isRequired,
+  ratios: PropTypes.shape().isRequired
 };
 export default AssessmentEditPage;

@@ -16,13 +16,20 @@ const upload = (url, files, additionalData = {}) => {
 
   return axios.post(url, data, {
     headers: {
-      'Content-Type': 'multipart/form-data',
-    },
+      'Content-Type': 'multipart/form-data'
+    }
   });
 };
 
 const uploadPartialData = (
-  url, filename, fileData, chunk, chunkSize, totalNumberOfChunks, resolve, reject,
+  url,
+  filename,
+  fileData,
+  chunk,
+  chunkSize,
+  totalNumberOfChunks,
+  resolve,
+  reject
 ) => {
   if (chunk < totalNumberOfChunks) {
     const data = new FormData();
@@ -30,21 +37,31 @@ const uploadPartialData = (
     const chunkData = fileData.slice(offset, offset + chunkSize);
     data.set('files', chunkData, `${filename}.part.${chunk}`);
 
-    axios.post(url, data, {
-      headers: {
-        'Content-Type': 'application/octet-stream',
-      },
-    }).then(() => {
-      uploadPartialData(
-        url, filename, fileData, chunk + 1, chunkSize, totalNumberOfChunks, resolve, reject,
-      );
-    }).catch((error) => {
-      reject(error);
-    });
+    axios
+      .post(url, data, {
+        headers: {
+          'Content-Type': 'application/octet-stream'
+        }
+      })
+      .then(() => {
+        uploadPartialData(
+          url,
+          filename,
+          fileData,
+          chunk + 1,
+          chunkSize,
+          totalNumberOfChunks,
+          resolve,
+          reject
+        );
+      })
+      .catch((error) => {
+        reject(error);
+      });
   } else {
     resolve({
       filename,
-      chunks: totalNumberOfChunks,
+      chunks: totalNumberOfChunks
     });
   }
 };
@@ -63,7 +80,16 @@ const chunkUpload = (url, files) => {
   const filename = moment().format('YYYY-MM-DD-hh-mm-ss');
 
   return new Promise((resolve, reject) => {
-    uploadPartialData(url, filename, file, chunk, chunkSize, totalNumberOfChunks, resolve, reject);
+    uploadPartialData(
+      url,
+      filename,
+      file,
+      chunk,
+      chunkSize,
+      totalNumberOfChunks,
+      resolve,
+      reject
+    );
   });
 };
 

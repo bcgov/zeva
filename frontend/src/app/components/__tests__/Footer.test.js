@@ -11,6 +11,6 @@ afterEach(cleanup);
 
 describe('footer', () => {
   it('renders without crashing', () => {
-    render(<Footer/>);
+    render(<Footer />);
   });
 });

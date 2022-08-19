@@ -48,21 +48,20 @@ const ActiveUsersListContainer = (props) => {
 
   return (
     <>
-      {user.isGovernment
-    && (
-    <ActiveUsersListPage
-      activeIdirUsers={activeIdirUsers}
-      activeBceidUsers={activeBceidUsers}
-      loading={loading}
-    />
-    )}
+      {user.isGovernment && (
+        <ActiveUsersListPage
+          activeIdirUsers={activeIdirUsers}
+          activeBceidUsers={activeBceidUsers}
+          loading={loading}
+        />
+      )}
     </>
   );
 };
 
 ActiveUsersListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default withRouter(ActiveUsersListContainer);

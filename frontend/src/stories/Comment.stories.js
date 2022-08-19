@@ -13,11 +13,10 @@ import Comment from '../app/components/Comment';
 
 library.add(fab, far, fas);
 
-storiesOf('comment', module)
-  .add('comment', () => (
-    <Comment
-      comment="this vehicle does not meet the ZEV requirements"
-      user="Emily"
-      updateTimestamp="Dec 1, 2020"
-    />
-  ))
+storiesOf('comment', module).add('comment', () => (
+  <Comment
+    comment="this vehicle does not meet the ZEV requirements"
+    user="Emily"
+    updateTimestamp="Dec 1, 2020"
+  />
+));

@@ -14,7 +14,11 @@ const ConsumerSalesLDVModalTable = (props) => {
       headerClassName: 'font-weight-bold ',
       id: 'pending-sales',
       maxWidth: 200,
-      Footer: <span><b>{_.sum(_.map(vehicles, (d) => d.pendingSales))}</b></span>,
+      Footer: (
+        <span>
+          <b>{_.sum(_.map(vehicles, (d) => d.pendingSales))}</b>
+        </span>
+      )
     },
     {
       accessor: (item) => item.salesIssued,
@@ -23,7 +27,11 @@ const ConsumerSalesLDVModalTable = (props) => {
       headerClassName: 'font-weight-bold ',
       id: 'sales-issued',
       maxWidth: 200,
-      Footer: <span><b>{_.sum(_.map(vehicles, (d) => d.salesIssued))}</b></span>,
+      Footer: (
+        <span>
+          <b>{_.sum(_.map(vehicles, (d) => d.salesIssued))}</b>
+        </span>
+      )
     },
     {
       accessor: (item) => item.modelYear,
@@ -31,7 +39,7 @@ const ConsumerSalesLDVModalTable = (props) => {
       Header: 'Model Year',
       headerClassName: 'font-weight-bold',
       id: 'model-year',
-      maxWidth: 200,
+      maxWidth: 200
     },
     {
       accessor: (item) => item.make,
@@ -39,7 +47,7 @@ const ConsumerSalesLDVModalTable = (props) => {
       Header: 'Make',
       headerClassName: 'font-weight-bold',
       id: 'make',
-      maxWidth: 200,
+      maxWidth: 200
     },
     {
       accessor: (item) => item.modelName,
@@ -47,7 +55,7 @@ const ConsumerSalesLDVModalTable = (props) => {
       Header: 'Model',
       headerClassName: 'font-weight-bold',
       id: 'model',
-      maxWidth: 200,
+      maxWidth: 200
     },
     {
       accessor: (item) => item.vehicleZevType,
@@ -55,7 +63,7 @@ const ConsumerSalesLDVModalTable = (props) => {
       Header: 'Type',
       headerClassName: 'font-weight-bold',
       id: 'type',
-      maxWidth: 200,
+      maxWidth: 200
     },
     {
       accessor: (item) => item.range,
@@ -63,7 +71,7 @@ const ConsumerSalesLDVModalTable = (props) => {
       Header: 'Range(km)',
       headerClassName: 'font-weight-bold',
       id: 'range',
-      maxWidth: 200,
+      maxWidth: 200
     },
     {
       accessor: (item) => item.zevClass,
@@ -71,8 +79,8 @@ const ConsumerSalesLDVModalTable = (props) => {
       Header: 'ZEV Class',
       headerClassName: 'font-weight-bold',
       id: 'zev-class',
-      maxWidth: 200,
-    },
+      maxWidth: 200
+    }
   ];
 
   return (
@@ -88,7 +96,7 @@ const ConsumerSalesLDVModalTable = (props) => {
 ConsumerSalesLDVModalTable.defaultProps = {};
 
 ConsumerSalesLDVModalTable.propTypes = {
-  vehicles: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  vehicles: PropTypes.arrayOf(PropTypes.shape({})).isRequired
 };
 
 export default ConsumerSalesLDVModalTable;

@@ -4,7 +4,8 @@ import formatNumeric from '../../app/utilities/formatNumeric';
 
 const ComplianceCalculatorModelTable = (props) => {
   const { models, estimatedModelSales, setEstimatedModelSales } = props;
-  const findModelIndex = (model) => estimatedModelSales.findIndex((sale) => (model.id === sale.id));
+  const findModelIndex = (model) =>
+    estimatedModelSales.findIndex((sale) => model.id === sale.id);
   const handleInputChange = (event, model) => {
     const { value } = event.target;
     const index = findModelIndex(model);
@@ -20,7 +21,7 @@ const ComplianceCalculatorModelTable = (props) => {
         id: model.id,
         value: totalValue,
         estimatedSalesNum: value,
-        creditClass: model.creditClass,
+        creditClass: model.creditClass
       });
     }
     setEstimatedModelSales(estimatedSalesCopy);
@@ -36,16 +37,24 @@ const ComplianceCalculatorModelTable = (props) => {
                   <tr className="text-center compliance-calculator-grey">
                     <th className="zev-model text-left">ZEV Model</th>
                     <th className="zev-class">ZEV Class</th>
-                    <th className="credit-entitlement text-right">Credit Entitlement</th>
-                    <th className="estimated-sales">Estimated Annual Sales Total</th>
-                    <th className="estimated-credits text-right">Estimated Credits Total</th>
+                    <th className="credit-entitlement text-right">
+                      Credit Entitlement
+                    </th>
+                    <th className="estimated-sales">
+                      Estimated Annual Sales Total
+                    </th>
+                    <th className="estimated-credits text-right">
+                      Estimated Credits Total
+                    </th>
                     <th>&nbsp;</th>
                   </tr>
                 </thead>
                 <tbody>
                   {models.map((each) => (
                     <tr className="mx-2" key={each.id}>
-                      <td className="text-left">{each.modelYear.name} {each.make} {each.modelName}</td>
+                      <td className="text-left">
+                        {each.modelYear.name} {each.make} {each.modelName}
+                      </td>
                       <td className="text-center">{each.creditClass}</td>
                       <td className="text-right px-1">{each.creditValue}</td>
                       <td className="px-4">
@@ -61,7 +70,16 @@ const ComplianceCalculatorModelTable = (props) => {
                           }}
                         />
                       </td>
-                      <td className="text-right px-1">{estimatedModelSales[findModelIndex(each)] ? `${formatNumeric(estimatedModelSales[findModelIndex(each)].value)}-${estimatedModelSales[findModelIndex(each)].creditClass}` : ''}</td>
+                      <td className="text-right px-1">
+                        {estimatedModelSales[findModelIndex(each)]
+                          ? `${formatNumeric(
+                              estimatedModelSales[findModelIndex(each)].value
+                            )}-${
+                              estimatedModelSales[findModelIndex(each)]
+                                .creditClass
+                            }`
+                          : ''}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -76,14 +94,13 @@ const ComplianceCalculatorModelTable = (props) => {
 
 ComplianceCalculatorModelTable.propTypes = {
   models: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  estimatedModelSales: PropTypes.arrayOf(PropTypes.shape({
-    creditClass: PropTypes.string,
-    value: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number,
-    ]),
-  })).isRequired,
-  setEstimatedModelSales: PropTypes.func.isRequired,
+  estimatedModelSales: PropTypes.arrayOf(
+    PropTypes.shape({
+      creditClass: PropTypes.string,
+      value: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    })
+  ).isRequired,
+  setEstimatedModelSales: PropTypes.func.isRequired
 };
 
 export default ComplianceCalculatorModelTable;

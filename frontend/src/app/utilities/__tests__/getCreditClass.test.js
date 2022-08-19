@@ -1,6 +1,9 @@
 import React from 'react';
 import {
-  render, cleanup, getByTestId, fireEvent,
+  render,
+  cleanup,
+  getByTestId,
+  fireEvent
 } from '@testing-library/react';
 import getCreditClass from '../getCreditClass';
 

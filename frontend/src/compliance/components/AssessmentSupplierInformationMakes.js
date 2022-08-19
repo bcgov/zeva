@@ -10,7 +10,7 @@ const AssessmentSupplierInformationMakes = (props) => {
     handleChangeMake,
     handleDeleteMake,
     handleSubmitMake,
-    supplierMakes,
+    supplierMakes
   } = props;
 
   return (
@@ -34,7 +34,9 @@ const AssessmentSupplierInformationMakes = (props) => {
                   <div className="form-row my-2">
                     <ul>
                       {supplierMakes.map((item, index) => (
-                        <li className="my-0 py-0" key={index}>{item}</li>
+                        <li className="my-0 py-0" key={index}>
+                          {item}
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -94,7 +96,7 @@ AssessmentSupplierInformationMakes.defaultProps = {};
 AssessmentSupplierInformationMakes.propTypes = {
   details: PropTypes.shape({
     organization: PropTypes.shape(),
-    supplierInformation: PropTypes.shape(),
+    supplierInformation: PropTypes.shape()
   }).isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   supplierMakes: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -102,6 +104,6 @@ AssessmentSupplierInformationMakes.propTypes = {
   handleChangeMake: PropTypes.func.isRequired,
   handleDeleteMake: PropTypes.func.isRequired,
   handleSubmitMake: PropTypes.func.isRequired,
-  make: PropTypes.string.isRequired,
+  make: PropTypes.string.isRequired
 };
 export default AssessmentSupplierInformationMakes;

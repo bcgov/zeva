@@ -16,8 +16,12 @@ const Login = (props) => {
           <div className="buttons-section">
             <div className="section">
               Vehicle Suppliers
-
-              <button type="button" onClick={() => keycloak.login({ idpHint: 'bceid' })} id="link-bceid" className="button">
+              <button
+                type="button"
+                onClick={() => keycloak.login({ idpHint: 'bceid' })}
+                id="link-bceid"
+                className="button"
+              >
                 <span className="text"> Login with </span>
                 <span className="display-name"> BCeID </span>
               </button>
@@ -27,8 +31,12 @@ const Login = (props) => {
 
             <div className="section">
               Government
-
-              <button type="button" onClick={() => keycloak.login({ idpHint: 'idir' })} id="link-idir" className="button">
+              <button
+                type="button"
+                onClick={() => keycloak.login({ idpHint: 'idir' })}
+                id="link-idir"
+                className="button"
+              >
                 <span className="text">Login with</span>
                 <span className="display-name"> IDIR </span>
               </button>
@@ -41,7 +49,7 @@ const Login = (props) => {
 };
 
 Login.propTypes = {
-  keycloak: CustomPropTypes.keycloak.isRequired,
+  keycloak: CustomPropTypes.keycloak.isRequired
 };
 
 export default Login;

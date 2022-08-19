@@ -34,7 +34,7 @@ const VehicleSupplierDetailsContainer = (props) => {
 
     Promise.all([
       axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)),
-      axios.get(ROUTES_COMPLIANCE.YEARS),
+      axios.get(ROUTES_COMPLIANCE.YEARS)
     ]).then(([response, yearsResponse]) => {
       setDetails(response.data);
       setDisplay(response.data);
@@ -52,7 +52,11 @@ const VehicleSupplierDetailsContainer = (props) => {
   }, [keycloak.authenticated]);
 
   const editButton = () => {
-    if (typeof user.hasPermission === 'function' && user.hasPermission('EDIT_ORGANIZATIONS') && user.isGovernment) {
+    if (
+      typeof user.hasPermission === 'function' &&
+      user.hasPermission('EDIT_ORGANIZATIONS') &&
+      user.isGovernment
+    ) {
       return (
         <button
           className="button primary"
@@ -74,14 +78,14 @@ const VehicleSupplierDetailsContainer = (props) => {
 
     setFields({
       ...fields,
-      [name]: value,
+      [name]: value
     });
   };
 
   const handleDeleteSale = (sale) => {
     axios
       .put(ROUTES_ORGANIZATIONS.LDV_SALES.replace(/:id/gi, id), {
-        id: sale.id,
+        id: sale.id
       })
       .then(() => {
         History.push(ROUTES_ORGANIZATIONS.LIST);
@@ -92,18 +96,25 @@ const VehicleSupplierDetailsContainer = (props) => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    axios.put(ROUTES_ORGANIZATIONS.LDV_SALES.replace(/:id/gi, id), {
-      ...fields,
-    }).then(() => {
-      History.push(ROUTES_ORGANIZATIONS.LIST);
-      History.replace(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));
-    });
+    axios
+      .put(ROUTES_ORGANIZATIONS.LDV_SALES.replace(/:id/gi, id), {
+        ...fields
+      })
+      .then(() => {
+        History.push(ROUTES_ORGANIZATIONS.LIST);
+        History.replace(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));
+      });
   };
 
   return (
     <div className="page">
       <h1 className="mb-2">{display.name}</h1>
-      <VehicleSupplierTabs locationState={locationState} supplierId={details.id} active="supplier-info" user={user} />
+      <VehicleSupplierTabs
+        locationState={locationState}
+        supplierId={details.id}
+        active="supplier-info"
+        user={user}
+      />
       <VehicleSupplierDetailsPage
         details={details}
         ldvSales={ldvSales}
@@ -126,7 +137,7 @@ const VehicleSupplierDetailsContainer = (props) => {
 VehicleSupplierDetailsContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   location: PropTypes.shape().isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default withRouter(VehicleSupplierDetailsContainer);

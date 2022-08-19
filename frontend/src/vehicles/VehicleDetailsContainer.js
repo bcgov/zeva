@@ -22,22 +22,26 @@ const VehicleDetailsContainer = (props) => {
 
   const stateChange = (newState) => {
     setLoading(true);
-    axios.patch(`vehicles/${id}/state_change`, { validationStatus: newState }).then(() => {
-      history.push(ROUTES_VEHICLES.LIST);
+    axios
+      .patch(`vehicles/${id}/state_change`, { validationStatus: newState })
+      .then(() => {
+        history.push(ROUTES_VEHICLES.LIST);
 
-      if (newState === 'SUBMITTED') {
-        history.replace(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id));
-      }
+        if (newState === 'SUBMITTED') {
+          history.replace(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id));
+        }
 
-      setLoading(false);
-    });
+        setLoading(false);
+      });
   };
 
   const postComment = (newState) => {
     setLoading(true);
-    axios.patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), comments).then(() => {
-      stateChange(newState);
-    });
+    axios
+      .patch(ROUTES_VEHICLES.DETAILS.replace(/:id/gi, id), comments)
+      .then(() => {
+        stateChange(newState);
+      });
   };
 
   const refreshList = () => {
@@ -76,7 +80,7 @@ const VehicleDetailsContainer = (props) => {
 VehicleDetailsContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   user: CustomPropTypes.user.isRequired,
-  location: PropTypes.shape().isRequired,
+  location: PropTypes.shape().isRequired
 };
 
 export default withRouter(VehicleDetailsContainer);

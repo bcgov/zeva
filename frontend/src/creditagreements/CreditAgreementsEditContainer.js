@@ -14,11 +14,13 @@ const CreditAgreementsEditContainer = (props) => {
   const { keycloak, user } = props;
   const { id } = useParams();
   const [bceidComment, setBceidComment] = useState('');
-  const [creditRows, setCreditRows] = useState([{
-    creditClass: 'A',
-    modelYear: '2021',
-    quantity: 0,
-  }]);
+  const [creditRows, setCreditRows] = useState([
+    {
+      creditClass: 'A',
+      modelYear: '2021',
+      quantity: 0
+    }
+  ]);
   const [years, setYears] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const [transactionTypes, setTransactionTypes] = useState([]);
@@ -29,8 +31,8 @@ const CreditAgreementsEditContainer = (props) => {
   const [deleteFiles, setDeleteFiles] = useState([]);
 
   const [errorMessage, setErrorMessage] = useState(null);
-  const analystAction = user.isGovernment
-    && user.hasPermission('RECOMMEND_INITIATIVE_AGREEMENTS');
+  const analystAction =
+    user.isGovernment && user.hasPermission('RECOMMEND_INITIATIVE_AGREEMENTS');
   const handleCommentChangeBceid = (text) => {
     setBceidComment(text);
   };
@@ -39,37 +41,43 @@ const CreditAgreementsEditContainer = (props) => {
     const promises = [];
     // setShowProgressBars(true);
     files.forEach((file, index) => {
-      promises.push(new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const blob = reader.result;
+      promises.push(
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const blob = reader.result;
 
-          axios.get(ROUTES_CREDIT_AGREEMENTS.MINIO_URL.replace(/:id/gi, paramId)).then((response) => {
-            const { url: uploadUrl, minioObjectName } = response.data;
-            axios.put(uploadUrl, blob, {
-              headers: {
-                Authorization: null,
-              },
-              onUploadProgress: (progressEvent) => {
-                // updateProgressBars(progressEvent, index);
+            axios
+              .get(ROUTES_CREDIT_AGREEMENTS.MINIO_URL.replace(/:id/gi, paramId))
+              .then((response) => {
+                const { url: uploadUrl, minioObjectName } = response.data;
+                axios
+                  .put(uploadUrl, blob, {
+                    headers: {
+                      Authorization: null
+                    },
+                    onUploadProgress: (progressEvent) => {
+                      // updateProgressBars(progressEvent, index);
 
-                if (progressEvent.loaded >= progressEvent.total) {
-                  resolve({
-                    filename: file.name,
-                    mimeType: file.type,
-                    minioObjectName,
-                    size: file.size,
+                      if (progressEvent.loaded >= progressEvent.total) {
+                        resolve({
+                          filename: file.name,
+                          mimeType: file.type,
+                          minioObjectName,
+                          size: file.size
+                        });
+                      }
+                    }
+                  })
+                  .catch(() => {
+                    reject();
                   });
-                }
-              },
-            }).catch(() => {
-              reject();
-            });
-          });
-        };
+              });
+          };
 
-        reader.readAsArrayBuffer(file);
-      }));
+          reader.readAsArrayBuffer(file);
+        })
+      );
     });
 
     return promises;
@@ -78,7 +86,7 @@ const CreditAgreementsEditContainer = (props) => {
     creditRows.push({
       creditClass: 'A',
       modelYear: '2021',
-      quantity: 0,
+      quantity: 0
     });
 
     setCreditRows([...creditRows]);
@@ -98,10 +106,13 @@ const CreditAgreementsEditContainer = (props) => {
 
   const saveAgreement = (data) => {
     if (id) {
-      return axios.patch(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, id), {
-        ...data,
-        deleteFiles,
-      });
+      return axios.patch(
+        ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, id),
+        {
+          ...data,
+          deleteFiles
+        }
+      );
     }
 
     return axios.post(ROUTES_CREDIT_AGREEMENTS.LIST, data);
@@ -112,27 +123,36 @@ const CreditAgreementsEditContainer = (props) => {
       organization: agreementDetails.vehicleSupplier,
       agreementDetails,
       bceidComment,
-      content: creditRows,
+      content: creditRows
     };
 
-    saveAgreement(data).then((response) => {
-      // after agreement is created, then post the content using the id from the response
-      const { id: agreementId } = response.data;
-      const uploadPromises = handleUpload(agreementId);
-      Promise.all(uploadPromises).then((attachments) => {
-        const patchData = {};
-        if (attachments.length > 0) {
-          patchData.agreementAttachments = attachments;
-        }
-        axios.patch(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId), {
-          ...patchData,
-        }).then(() => {
-          history.push(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId));
+    saveAgreement(data)
+      .then((response) => {
+        // after agreement is created, then post the content using the id from the response
+        const { id: agreementId } = response.data;
+        const uploadPromises = handleUpload(agreementId);
+        Promise.all(uploadPromises).then((attachments) => {
+          const patchData = {};
+          if (attachments.length > 0) {
+            patchData.agreementAttachments = attachments;
+          }
+          axios
+            .patch(
+              ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId),
+              {
+                ...patchData
+              }
+            )
+            .then(() => {
+              history.push(
+                ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId)
+              );
+            });
         });
+      })
+      .catch((e) => {
+        setErrorMessage(e);
       });
-    }).catch((e) => {
-      setErrorMessage(e);
-    });
   };
   const refreshDetails = () => {
     const promises = [
@@ -143,11 +163,19 @@ const CreditAgreementsEditContainer = (props) => {
     ];
 
     if (id) {
-      promises.push(axios.get(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id)));
+      promises.push(
+        axios.get(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id))
+      );
     }
 
     Promise.all(promises).then(
-      ([yearsResponse, supplierResponse, typesResponse, modelYearReportResponse, detailsResponse]) => {
+      ([
+        yearsResponse,
+        supplierResponse,
+        typesResponse,
+        modelYearReportResponse,
+        detailsResponse
+      ]) => {
         setModelYearReports(modelYearReportResponse.data);
         setYears(yearsResponse.data);
         setSuppliers(supplierResponse.data);
@@ -165,9 +193,10 @@ const CreditAgreementsEditContainer = (props) => {
           } = detailsResponse.data;
 
           setCreditRows([
-            ...creditAgreementContent.map(
-              (each) => ({ ...each, quantity: each.numberOfCredits }),
-            ),
+            ...creditAgreementContent.map((each) => ({
+              ...each,
+              quantity: each.numberOfCredits
+            }))
           ]);
 
           setAgreementDetails({
@@ -176,12 +205,12 @@ const CreditAgreementsEditContainer = (props) => {
             optionalAgreementID,
             modelYearReportId,
             transactionType,
-            vehicleSupplier: organization ? organization.id : 0,
+            vehicleSupplier: organization ? organization.id : 0
           });
         }
 
         setLoading(false);
-      },
+      }
     );
   };
   useEffect(() => {
@@ -190,7 +219,7 @@ const CreditAgreementsEditContainer = (props) => {
   if (loading) {
     return <Loading />;
   }
-  return ([
+  return [
     <CreditTransactionTabs active="credit-agreements" key="tabs" user={user} />,
     <CreditAgreementsForm
       addRow={addRow}
@@ -214,8 +243,8 @@ const CreditAgreementsEditContainer = (props) => {
       user={user}
       years={years}
       modelYearReports={modelYearReports}
-    />,
-  ]);
+    />
+  ];
 };
 
 export default CreditAgreementsEditContainer;

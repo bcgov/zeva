@@ -17,14 +17,29 @@ const ComplianceCalculatorContainer = (props) => {
   const [modelYearList, setModelYearList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [allVehicleModels, setAllVehicleModels] = useState([]);
-  const [complianceNumbers, setComplianceNumbers] = useState({ total: '', classA: '', remaining: '' });
+  const [complianceNumbers, setComplianceNumbers] = useState({
+    total: '',
+    classA: '',
+    remaining: ''
+  });
   const [estimatedModelSales, setEstimatedModelSales] = useState([{}]);
 
   const calculateNumbers = () => {
     if (totalSales && supplierSize && selectedYearOption !== '--') {
-      const total = Math.round(totalSales * (complianceYearInfo.complianceRatio / 100) * 100) / 100;
-      const classA = supplierSize === 'large' ? Math.round(totalSales * (complianceYearInfo.zevClassA / 100) * 100) / 100 : 'NA';
-      const remaining = supplierSize === 'large' ? Math.round((total - classA) * 100) / 100 : 'NA';
+      const total =
+        Math.round(
+          totalSales * (complianceYearInfo.complianceRatio / 100) * 100
+        ) / 100;
+      const classA =
+        supplierSize === 'large'
+          ? Math.round(
+              totalSales * (complianceYearInfo.zevClassA / 100) * 100
+            ) / 100
+          : 'NA';
+      const remaining =
+        supplierSize === 'large'
+          ? Math.round((total - classA) * 100) / 100
+          : 'NA';
       setComplianceNumbers({ total, classA, remaining });
     }
   };
@@ -33,7 +48,9 @@ const ComplianceCalculatorContainer = (props) => {
     const { id, value } = event.target;
     if (id === 'model-year') {
       setSelectedYearOption(value);
-      setComplianceYearInfo(allComplianceRatios.filter((each) => each.modelYear === value)[0]);
+      setComplianceYearInfo(
+        allComplianceRatios.filter((each) => each.modelYear === value)[0]
+      );
     }
     if (id === 'supplier-size') {
       setSupplierSize(value);
@@ -43,20 +60,32 @@ const ComplianceCalculatorContainer = (props) => {
     }
   };
   const refreshDetails = () => {
-    axios.all([
-      axios.get(ROUTES_VEHICLES.YEARS),
-      axios.get(ROUTES_COMPLIANCE.RATIOS),
-      axios.get(ROUTES_VEHICLES.LIST),
-    ]).then(axios.spread((
-      modelYearResponse,
-      allComplianceRatiosResponse,
-      allVehicleModelsResponse,
-    ) => {
-      setModelYearList(modelYearResponse.data);
-      setAllComplianceRatios(allComplianceRatiosResponse.data);
-      setAllVehicleModels(allVehicleModelsResponse.data.filter((each) => each.isActive === true && each.validationStatus === 'VALIDATED'));
-      setLoading(false);
-    }));
+    axios
+      .all([
+        axios.get(ROUTES_VEHICLES.YEARS),
+        axios.get(ROUTES_COMPLIANCE.RATIOS),
+        axios.get(ROUTES_VEHICLES.LIST)
+      ])
+      .then(
+        axios.spread(
+          (
+            modelYearResponse,
+            allComplianceRatiosResponse,
+            allVehicleModelsResponse
+          ) => {
+            setModelYearList(modelYearResponse.data);
+            setAllComplianceRatios(allComplianceRatiosResponse.data);
+            setAllVehicleModels(
+              allVehicleModelsResponse.data.filter(
+                (each) =>
+                  each.isActive === true &&
+                  each.validationStatus === 'VALIDATED'
+              )
+            );
+            setLoading(false);
+          }
+        )
+      );
   };
 
   useEffect(() => {
@@ -67,7 +96,7 @@ const ComplianceCalculatorContainer = (props) => {
   }, [totalSales, supplierSize, selectedYearOption]);
 
   if (loading) {
-    return (<Loading />);
+    return <Loading />;
   }
 
   return (
@@ -89,6 +118,6 @@ const ComplianceCalculatorContainer = (props) => {
   );
 };
 ComplianceCalculatorContainer.propTypes = {
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 export default ComplianceCalculatorContainer;

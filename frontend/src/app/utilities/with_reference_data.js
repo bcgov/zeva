@@ -12,7 +12,7 @@ function withReferenceData(WrappedComponent) {
     const ReferenceDataSupport = (props) => {
       const [loading, setLoading] = useState(true);
       const [referenceData, setReferenceData] = useState({
-        years: [],
+        years: []
       });
 
       useEffect(() => {
@@ -20,21 +20,21 @@ function withReferenceData(WrappedComponent) {
 
         axios.get(ROUTES_VEHICLES.YEARS).then((response) => {
           setReferenceData({
-            years: response.data,
+            years: response.data
           });
           setLoading(false);
         });
       }, []);
 
       if (loading) {
-        return (<Loading />);
+        return <Loading />;
       }
-      return (<WrappedComponent referenceData={referenceData} {...props} />);
+      return <WrappedComponent referenceData={referenceData} {...props} />;
     };
 
-    ReferenceDataSupport
-      .displayName = `ReferenceDataSupport(${getDisplayName(WrappedComponent)})`;
-
+    ReferenceDataSupport.displayName = `ReferenceDataSupport(${getDisplayName(
+      WrappedComponent
+    )})`;
 
     return ReferenceDataSupport;
   };

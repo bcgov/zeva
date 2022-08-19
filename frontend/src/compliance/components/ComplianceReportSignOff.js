@@ -10,7 +10,7 @@ const ComplianceReportSignOff = (props) => {
     handleCheckboxClick,
     disabledCheckboxes,
     hoverText,
-    user,
+    user
   } = props;
 
   return (
@@ -21,16 +21,32 @@ const ComplianceReportSignOff = (props) => {
           <div key={assertion.id}>
             <div className="d-inline-block align-middle my-2 ml-2 mr-1">
               <input
-                checked={checkboxes.findIndex((checkbox) => (parseInt(checkbox, 10) === parseInt(assertion.id, 10))) >= 0}
+                checked={
+                  checkboxes.findIndex(
+                    (checkbox) =>
+                      parseInt(checkbox, 10) === parseInt(assertion.id, 10)
+                  ) >= 0
+                }
                 id={assertion.id}
                 name="confirmations"
-                onChange={(event) => { handleCheckboxClick(event); }}
+                onChange={(event) => {
+                  handleCheckboxClick(event);
+                }}
                 type="checkbox"
                 disabled={disabledCheckboxes}
               />
             </div>
-            <label className={`d-inline ml-2 text-blue ${disabledCheckboxes ? '' : 'clickable'}`} htmlFor={assertion.id} id="confirmation-text">
-              {assertion.description.replace(/{user.organization.name}/g, user.organization.name)}
+            <label
+              className={`d-inline ml-2 text-blue ${
+                disabledCheckboxes ? '' : 'clickable'
+              }`}
+              htmlFor={assertion.id}
+              id="confirmation-text"
+            >
+              {assertion.description.replace(
+                /{user.organization.name}/g,
+                user.organization.name
+              )}
             </label>
           </div>
         ))}
@@ -43,20 +59,17 @@ ComplianceReportSignOff.defaultProps = {
   assertions: [],
   checkboxes: [],
   disabledCheckboxes: '',
-  hoverText: '',
+  hoverText: ''
 };
 ComplianceReportSignOff.propTypes = {
   assertions: PropTypes.arrayOf(PropTypes.shape()),
   user: CustomPropTypes.user.isRequired,
   checkboxes: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
   ),
   handleCheckboxClick: PropTypes.func.isRequired,
   hoverText: PropTypes.string,
-  disabledCheckboxes: PropTypes.oneOfType([
-    PropTypes.bool,
-    PropTypes.string,
-  ]),
+  disabledCheckboxes: PropTypes.oneOfType([PropTypes.bool, PropTypes.string])
 };
 
 export default ComplianceReportSignOff;

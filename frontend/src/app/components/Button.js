@@ -6,8 +6,16 @@ import history from '../History';
 
 const Button = (props) => {
   const {
-    buttonType, locationRoute, locationState, action, optionalText, optionalIcon,
-    disabled, optionalClassname, buttonTooltip, testid,
+    buttonType,
+    locationRoute,
+    locationState,
+    action,
+    optionalText,
+    optionalIcon,
+    disabled,
+    optionalClassname,
+    buttonTooltip,
+    testid
   } = props;
   const getRoute = () => {
     if (locationRoute && locationState) {
@@ -101,10 +109,8 @@ const Button = (props) => {
 
   return (
     <>
-      {tooltip
-    && <ReactTooltip />}
+      {tooltip && <ReactTooltip />}
       <span data-tip={tooltip}>
-
         <button
           data-testid={testid}
           className={classname}
@@ -114,7 +120,8 @@ const Button = (props) => {
           }}
           type="button"
         >
-          {icon && <FontAwesomeIcon icon={icon} /> }{text}
+          {icon && <FontAwesomeIcon icon={icon} />}
+          {text}
         </button>
       </span>
     </>
@@ -130,18 +137,21 @@ Button.defaultProps = {
   optionalClassname: null,
   disabled: false,
   buttonTooltip: '',
-  testid: '',
+  testid: ''
 };
 Button.propTypes = {
   buttonType: PropTypes.string.isRequired,
   locationRoute: PropTypes.string,
-  locationState: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.shape()), PropTypes.shape()]),
+  locationState: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.shape()),
+    PropTypes.shape()
+  ]),
   optionalText: PropTypes.string,
   optionalIcon: PropTypes.string,
   optionalClassname: PropTypes.string,
   action: PropTypes.func,
   disabled: PropTypes.bool,
   buttonTooltip: PropTypes.string,
-  testid: PropTypes.string,
+  testid: PropTypes.string
 };
 export default Button;

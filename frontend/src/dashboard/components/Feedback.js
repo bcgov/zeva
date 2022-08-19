@@ -13,7 +13,14 @@ const Feedback = () => (
       <p>We are always striving to improve ZEVA.</p>
       <p>
         {'Please send your suggestions and feedback to '}
-        <a href="mailto:ZEVRegulation@gov.bc.ca?subject=ZEVA Comments" rel="noopener noreferrer" target="_blank"> ZEVRegulation@gov.bc.ca</a>
+        <a
+          href="mailto:ZEVRegulation@gov.bc.ca?subject=ZEVA Comments"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          {' '}
+          ZEVRegulation@gov.bc.ca
+        </a>
       </p>
     </div>
   </div>

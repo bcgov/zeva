@@ -3,7 +3,6 @@ import { hot } from 'react-hot-loader/root';
 import io from 'socket.io-client';
 import CustomPropTypes from './utilities/props';
 
-
 const NotificationsClient = (props) => {
   const { keycloak } = props;
 
@@ -21,7 +20,7 @@ const NotificationsClient = (props) => {
         setConnectionState('CONNECTED, AUTHENTICATING');
         sock.emit('action', {
           type: 'socketio/AUTHENTICATE',
-          token: keycloak.idToken,
+          token: keycloak.idToken
         });
       });
 
@@ -61,19 +60,21 @@ const NotificationsClient = (props) => {
       {connectionState}
       <br />
       {messages.length > 0 && (
-      <div>
-        <p>Server says</p>
-        <ul>
-          {messages.map((m) => (<li key={m}>{m}</li>))}
-        </ul>
-      </div>
+        <div>
+          <p>Server says</p>
+          <ul>
+            {messages.map((m) => (
+              <li key={m}>{m}</li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );
 };
 
 NotificationsClient.propTypes = {
-  keycloak: CustomPropTypes.keycloak.isRequired,
+  keycloak: CustomPropTypes.keycloak.isRequired
 };
 
 export default hot(NotificationsClient);

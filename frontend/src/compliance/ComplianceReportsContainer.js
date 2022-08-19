@@ -15,7 +15,9 @@ const ComplianceReportsContainer = (props) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [availableYears, setAvailableYears] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.YEARS);
+  const [availableYears, setAvailableYears] = useState(
+    CONFIG.FEATURES.MODEL_YEAR_REPORT.YEARS
+  );
   const [ratios, setRatios] = useState({});
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
@@ -68,29 +70,29 @@ const ComplianceReportsContainer = (props) => {
           }
 
           if (availableYears.length > 0) {
-          // show only the next year if all previous reports have been assessed
-            filteredYears = availableYears.filter((year) => (
-              year === nextYear
-            ));
+            // show only the next year if all previous reports have been assessed
+            filteredYears = availableYears.filter((year) => year === nextYear);
           } else if (availableYears.length === 0) {
             const { ldvSales } = user.organization;
             if (ldvSales.length > 0) {
               // if an organization has ldv sales, only allow them to submit reports
               // for the year after their most recent sale
-              ldvSales.sort((a, b) => parseFloat(a.modelYear) - parseFloat(b.modelYear));
+              ldvSales.sort(
+                (a, b) => parseFloat(a.modelYear) - parseFloat(b.modelYear)
+              );
               const mostRecentSale = ldvSales.pop();
-              filteredYears = availableYears.filter((year) => (
-                year === parseInt(mostRecentSale.modelYear, 10) + 1
-              ));
+              filteredYears = availableYears.filter(
+                (year) => year === parseInt(mostRecentSale.modelYear, 10) + 1
+              );
             } else {
               // if an organization does not have ldv sales, only allow them to submit
               // reports for the current year and previous year
               const today = new Date();
               const currentYear = today.getFullYear();
               const previousYear = currentYear - 1;
-              filteredYears = availableYears.filter((year) => (
-                year === currentYear || year === previousYear
-              ));
+              filteredYears = availableYears.filter(
+                (year) => year === currentYear || year === previousYear
+              );
             }
           }
 
@@ -103,7 +105,7 @@ const ComplianceReportsContainer = (props) => {
         setRatios(ratiosResponse.data);
 
         setLoading(false);
-      },
+      }
     );
   };
   useEffect(() => {
@@ -128,6 +130,6 @@ const ComplianceReportsContainer = (props) => {
 };
 ComplianceReportsContainer.propTypes = {
   location: PropTypes.shape().isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 export default withRouter(ComplianceReportsContainer);

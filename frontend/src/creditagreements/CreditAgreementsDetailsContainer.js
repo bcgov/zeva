@@ -14,8 +14,10 @@ const CreditAgreementsDetailsContainer = (props) => {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [details, setDetails] = useState({});
-  const directorAction = user.isGovernment && user.hasPermission('SIGN_INITIATIVE_AGREEMENTS');
-  const analystAction = user.isGovernment && user.hasPermission('RECOMMEND_INITIATIVE_AGREEMENTS');
+  const directorAction =
+    user.isGovernment && user.hasPermission('SIGN_INITIATIVE_AGREEMENTS');
+  const analystAction =
+    user.isGovernment && user.hasPermission('RECOMMEND_INITIATIVE_AGREEMENTS');
 
   const handleCommentChangeIdir = (text) => {
     setIdirComment(text);
@@ -24,8 +26,10 @@ const CreditAgreementsDetailsContainer = (props) => {
     setBceidComment(text);
   };
   const handleSubmit = (status) => {
-    axios.patch(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id),
-      { validationStatus: status })
+    axios
+      .patch(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id), {
+        validationStatus: status
+      })
       .then(() => {
         history.push(ROUTES_CREDIT_AGREEMENTS.LIST);
 
@@ -42,7 +46,8 @@ const CreditAgreementsDetailsContainer = (props) => {
       comment = { comment: idirComment, director: true };
     }
 
-    axios.post(ROUTES_CREDIT_AGREEMENTS.COMMENT_SAVE.replace(':id', id), comment)
+    axios
+      .post(ROUTES_CREDIT_AGREEMENTS.COMMENT_SAVE.replace(':id', id), comment)
       .then(() => {
         history.push(ROUTES_CREDIT_AGREEMENTS.LIST);
         history.replace(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id));
@@ -50,43 +55,45 @@ const CreditAgreementsDetailsContainer = (props) => {
   };
 
   const refreshDetails = () => {
-    axios.get(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id)).then((response) => {
-      const {
-        comments,
-        effectiveDate,
-        optionalAgreementId,
-        organization,
-        transactionType,
-        status,
-        updateTimestamp,
-        attachments,
-        creditAgreementContent,
-      } = response.data;
-      let filteredIdirComments;
-      let filteredBceidComments;
-      if (comments && comments.length > 0) {
-        filteredIdirComments = comments.filter(
-          (data) => data.toDirector === true,
-        );
-        filteredBceidComments = comments.filter(
-          (data) => data.toDirector === false,
-        );
-      }
+    axios
+      .get(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id))
+      .then((response) => {
+        const {
+          comments,
+          effectiveDate,
+          optionalAgreementId,
+          organization,
+          transactionType,
+          status,
+          updateTimestamp,
+          attachments,
+          creditAgreementContent
+        } = response.data;
+        let filteredIdirComments;
+        let filteredBceidComments;
+        if (comments && comments.length > 0) {
+          filteredIdirComments = comments.filter(
+            (data) => data.toDirector === true
+          );
+          filteredBceidComments = comments.filter(
+            (data) => data.toDirector === false
+          );
+        }
 
-      setDetails({
-        filteredIdirComments,
-        filteredBceidComments,
-        effectiveDate,
-        optionalAgreementId,
-        organization,
-        transactionType,
-        status,
-        updateTimestamp,
-        attachments,
-        creditAgreementContent,
+        setDetails({
+          filteredIdirComments,
+          filteredBceidComments,
+          effectiveDate,
+          optionalAgreementId,
+          organization,
+          transactionType,
+          status,
+          updateTimestamp,
+          attachments,
+          creditAgreementContent
+        });
+        setLoading(false);
       });
-      setLoading(false);
-    });
   };
 
   useEffect(() => {
@@ -113,7 +120,7 @@ const CreditAgreementsDetailsContainer = (props) => {
 
 CreditAgreementsDetailsContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default CreditAgreementsDetailsContainer;

@@ -38,12 +38,15 @@ const VehicleForm = (props) => {
     vehicleTypes,
     vehicleYears,
     newVehicle,
-    requestStateChange,
+    requestStateChange
   } = props;
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
   const eligibleWeight = fields.weightKg <= 3856;
-  const modalText = (fields && fields.hasPassedUs06Test) ? 'Submit vehicle model and range test results to Government of B.C.' : 'Submit ZEV model to Government of B.C.?';
+  const modalText =
+    fields && fields.hasPassedUs06Test
+      ? 'Submit vehicle model and range test results to Government of B.C.'
+      : 'Submit ZEV model to Government of B.C.?';
 
   let modalProps;
   switch (modalType) {
@@ -55,15 +58,17 @@ const VehicleForm = (props) => {
           setShowModal(false);
         },
         buttonClass: 'button primary',
-        modalText,
+        modalText
       };
       break;
     case 'delete':
       modalProps = {
         confirmLabel: 'Delete',
         modalText: 'Delete the ZEV model?',
-        handleSubmit: () => { requestStateChange('DELETED'); },
-        buttonClass: 'btn-outline-danger',
+        handleSubmit: () => {
+          requestStateChange('DELETED');
+        },
+        buttonClass: 'btn-outline-danger'
       };
       break;
     default:
@@ -71,7 +76,7 @@ const VehicleForm = (props) => {
         confirmLabel: '',
         buttonClass: '',
         modalText: '',
-        handleSubmit: () => {},
+        handleSubmit: () => {}
       };
       break;
   }
@@ -79,7 +84,9 @@ const VehicleForm = (props) => {
   const modal = (
     <Modal
       confirmLabel={modalProps.confirmLabel}
-      handleCancel={() => { setShowModal(false); }}
+      handleCancel={() => {
+        setShowModal(false);
+      }}
       handleSubmit={modalProps.handleSubmit}
       modalClass="w-75"
       showModal={showModal}
@@ -87,9 +94,15 @@ const VehicleForm = (props) => {
       title={modalProps.title ? modalProps.title : 'Confirm'}
     >
       <div>
-        <div><br /><br /></div>
+        <div>
+          <br />
+          <br />
+        </div>
         <h3 className="d-inline">{modalProps.modalText}</h3>
-        <div><br /><br /></div>
+        <div>
+          <br />
+          <br />
+        </div>
       </div>
     </Modal>
   );
@@ -99,31 +112,30 @@ const VehicleForm = (props) => {
   };
 
   const removeFile = (removedFile) => {
-    const found = files.findIndex((file) => (file === removedFile));
+    const found = files.findIndex((file) => file === removedFile);
     files.splice(found, 1);
 
     setUploadFiles([...files]);
   };
 
   if (loading) {
-    return (<Loading />);
+    return <Loading />;
   }
-  const selectedZevType = fields.vehicleZevType.vehicleZevCode || fields.vehicleZevType;
+  const selectedZevType =
+    fields.vehicleZevType.vehicleZevCode || fields.vehicleZevType;
   return (
     <div id="form" className="page">
       <div className="row mb-2">
         <div className="col-12">
           <h2>{formTitle}</h2>
-          {status && !newVehicle
-          && (
-          <VehicleAlert
-            status={status}
-            user={fields.user}
-            date={moment(fields.updateTimestamp).format('MMM D, YYYY')}
-          />
+          {status && !newVehicle && (
+            <VehicleAlert
+              status={status}
+              user={fields.user}
+              date={moment(fields.updateTimestamp).format('MMM D, YYYY')}
+            />
           )}
-          {status === 'CHANGES_REQUESTED' && vehicleComment
-          && (
+          {status === 'CHANGES_REQUESTED' && vehicleComment && (
             <Comment commentArray={[vehicleComment]} />
           )}
         </div>
@@ -137,7 +149,9 @@ const VehicleForm = (props) => {
                 accessor={(model) => model.name}
                 dropdownName="Model Year"
                 dropdownData={vehicleYears}
-                errorMessage={'modelYear' in errorFields && 'Please select a Model Year'}
+                errorMessage={
+                  'modelYear' in errorFields && 'Please select a Model Year'
+                }
                 fieldName="modelYear"
                 handleInputChange={handleInputChange}
                 selectedOption={fields.modelYear.name || fields.modelYear}
@@ -157,8 +171,9 @@ const VehicleForm = (props) => {
               <TextInput
                 defaultValue={fields.modelName}
                 errorMessage={
-                  ('modelName' in errorFields && errorFields.modelName)
-                  || ('nonFieldErrors' in errorFields && errorFields.nonFieldErrors.replace(/_/g, ' '))
+                  ('modelName' in errorFields && errorFields.modelName) ||
+                  ('nonFieldErrors' in errorFields &&
+                    errorFields.nonFieldErrors.replace(/_/g, ' '))
                 }
                 handleInputChange={handleInputChange}
                 id="modelName"
@@ -171,19 +186,24 @@ const VehicleForm = (props) => {
                 className="mb-0"
                 dropdownName="ZEV Type"
                 dropdownData={vehicleTypes}
-                errorMessage={'vehicleZevType' in errorFields && 'Please select a ZEV Type'}
+                errorMessage={
+                  'vehicleZevType' in errorFields && 'Please select a ZEV Type'
+                }
                 fieldName="vehicleZevType"
                 handleInputChange={handleInputChange}
                 selectedOption={selectedZevType}
               />
               <div className="form-group row mt-0 pt-0 text-blue">
-                <span
-                  className="col-sm-4"
-                  htmlFor="hasPassedUs06Test"
-                >
+                <span className="col-sm-4" htmlFor="hasPassedUs06Test">
                   Claim Additional US06 0.2 credit
                 </span>
-                <div className={`col-sm-8 ${['EREV', 'PHEV'].indexOf(selectedZevType) < 0 ? 'disabled' : ''}`}>
+                <div
+                  className={`col-sm-8 ${
+                    ['EREV', 'PHEV'].indexOf(selectedZevType) < 0
+                      ? 'disabled'
+                      : ''
+                  }`}
+                >
                   <input
                     checked={fields.hasPassedUs06Test}
                     disabled={['EREV', 'PHEV'].indexOf(selectedZevType) < 0}
@@ -207,10 +227,16 @@ const VehicleForm = (props) => {
                 accessor={(classCode) => classCode.vehicleClassCode}
                 dropdownName="Body Type"
                 dropdownData={vehicleClasses}
-                errorMessage={'vehicleClassCode' in errorFields && 'Please select a Body Type'}
+                errorMessage={
+                  'vehicleClassCode' in errorFields &&
+                  'Please select a Body Type'
+                }
                 fieldName="vehicleClassCode"
                 handleInputChange={handleInputChange}
-                selectedOption={fields.vehicleClassCode.vehicleClassCode || fields.vehicleClassCode}
+                selectedOption={
+                  fields.vehicleClassCode.vehicleClassCode ||
+                  fields.vehicleClassCode
+                }
               />
               <TextInput
                 defaultValue={fields.weightKg}
@@ -226,16 +252,25 @@ const VehicleForm = (props) => {
             </fieldset>
           </div>
 
-          {(fields.hasPassedUs06Test || (status === 'CHANGES_REQUESTED' && setUploadFiles)) && (
+          {(fields.hasPassedUs06Test ||
+            (status === 'CHANGES_REQUESTED' && setUploadFiles)) && (
             <div className="col-xl-6 col-lg-12 mt-2 mt-xl-0">
-              <h3 className="font-weight-bold mb-2">Upload range test results/US06 certificate</h3>
+              <h3 className="font-weight-bold mb-2">
+                Upload range test results/US06 certificate
+              </h3>
               <fieldset>
                 <div className="form-group row">
-                  <label className="col-sm-3 col-form-label" htmlFor="file-upload">
+                  <label
+                    className="col-sm-3 col-form-label"
+                    htmlFor="file-upload"
+                  >
                     File Upload
                   </label>
                   <div className="col-sm-9">
-                    <ExcelFileDrop setFiles={setUploadFiles} maxFiles={100000} />
+                    <ExcelFileDrop
+                      setFiles={setUploadFiles}
+                      maxFiles={100000}
+                    />
                   </div>
                 </div>
 
@@ -244,61 +279,75 @@ const VehicleForm = (props) => {
                     <strong>Files</strong> (doc, docx, xls, xlsx, pdf, jpg, png)
                   </div>
                 </div>
-                {(files.length > 0 || (fields.attachments && fields.attachments.length > 0)) && (
+                {(files.length > 0 ||
+                  (fields.attachments && fields.attachments.length > 0)) && (
                   <div className="form-group uploader-files mt-3">
                     <div className="row">
                       <div className="col-8 filename header">Filename</div>
                       <div className="col-3 size header">Size</div>
                       <div className="col-1 actions header" />
                     </div>
-                    {fields.attachments && fields.attachments.filter((attachment) => (
-                      deleteFiles.indexOf(attachment.id) < 0
-                    )).map((attachment) => (
-                      <div className="row" key={attachment.id}>
-                        <div className="col-8 filename">
-                          <button
-                            className="link"
-                            onClick={() => {
-                              axios.get(attachment.url, {
-                                responseType: 'blob',
-                                headers: {
-                                  Authorization: null,
-                                },
-                              }).then((response) => {
-                                const objectURL = window.URL.createObjectURL(
-                                  new Blob([response.data]),
-                                );
-                                const link = document.createElement('a');
-                                link.href = objectURL;
-                                link.setAttribute('download', attachment.filename);
-                                document.body.appendChild(link);
-                                link.click();
-                              });
-                            }}
-                            type="button"
-                          >
-                            {attachment.filename}
-                          </button>
-                        </div>
-                        <div className="col-3 size">{getFileSize(attachment.size)}</div>
-                        <div className="col-1 actions">
-                          <button
-                            className="delete"
-                            onClick={() => {
-                              deleteFile(attachment.id);
-                            }}
-                            type="button"
-                          >
-                            <FontAwesomeIcon icon="trash" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                    {fields.attachments &&
+                      fields.attachments
+                        .filter(
+                          (attachment) => deleteFiles.indexOf(attachment.id) < 0
+                        )
+                        .map((attachment) => (
+                          <div className="row" key={attachment.id}>
+                            <div className="col-8 filename">
+                              <button
+                                className="link"
+                                onClick={() => {
+                                  axios
+                                    .get(attachment.url, {
+                                      responseType: 'blob',
+                                      headers: {
+                                        Authorization: null
+                                      }
+                                    })
+                                    .then((response) => {
+                                      const objectURL =
+                                        window.URL.createObjectURL(
+                                          new Blob([response.data])
+                                        );
+                                      const link = document.createElement('a');
+                                      link.href = objectURL;
+                                      link.setAttribute(
+                                        'download',
+                                        attachment.filename
+                                      );
+                                      document.body.appendChild(link);
+                                      link.click();
+                                    });
+                                }}
+                                type="button"
+                              >
+                                {attachment.filename}
+                              </button>
+                            </div>
+                            <div className="col-3 size">
+                              {getFileSize(attachment.size)}
+                            </div>
+                            <div className="col-1 actions">
+                              <button
+                                className="delete"
+                                onClick={() => {
+                                  deleteFile(attachment.id);
+                                }}
+                                type="button"
+                              >
+                                <FontAwesomeIcon icon="trash" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
                     {files.map((file, index) => (
                       <div className="row" key={file.name}>
                         <div className="col-8 filename">{file.name}</div>
                         {!showProgressBars && [
-                          <div className="col-3 size" key="size">{getFileSize(file.size)}</div>,
+                          <div className="col-3 size" key="size">
+                            {getFileSize(file.size)}
+                          </div>,
                           <div className="col-1 actions" key="actions">
                             <button
                               className="delete"
@@ -309,7 +358,7 @@ const VehicleForm = (props) => {
                             >
                               <FontAwesomeIcon icon="trash" />
                             </button>
-                          </div>,
+                          </div>
                         ]}
                         {showProgressBars && index in progressBars && (
                           <div className="col-4">
@@ -321,7 +370,7 @@ const VehicleForm = (props) => {
                                 className="progress-bar"
                                 role="progressbar"
                                 style={{
-                                  width: `${progressBars[index]}%`,
+                                  width: `${progressBars[index]}%`
                                 }}
                               >
                                 {progressBars[index]}%
@@ -342,23 +391,44 @@ const VehicleForm = (props) => {
           <div className="col-12">
             <div className="action-bar form-group row">
               <span className="left-content">
-                <Button buttonType="back" locationRoute={ROUTES_VEHICLES.LIST} />
-                {status && !newVehicle && (status === 'CHANGES_REQUESTED' || status === 'DRAFT')
-                 && (
-                 <Button
-                   buttonType="delete"
-                   action={() => { setModalType('delete'); setShowModal(true); }}
-                 />
-                 )}
+                <Button
+                  buttonType="back"
+                  locationRoute={ROUTES_VEHICLES.LIST}
+                />
+                {status &&
+                  !newVehicle &&
+                  (status === 'CHANGES_REQUESTED' || status === 'DRAFT') && (
+                    <Button
+                      buttonType="delete"
+                      action={() => {
+                        setModalType('delete');
+                        setShowModal(true);
+                      }}
+                    />
+                  )}
               </span>
 
               <span className="right-content">
-                <Button buttonType="save" optionalText="Save Draft" action={(e) => { handleSubmit(e); }} />
+                <Button
+                  buttonType="save"
+                  optionalText="Save Draft"
+                  action={(e) => {
+                    handleSubmit(e);
+                  }}
+                />
                 <Button
                   buttonType="submit"
-                  disabled={!eligibleWeight || (fields.hasPassedUs06Test && files.length === 0 && (!fields.attachments
-                    || fields.attachments.length <= deleteFiles.length))}
-                  action={() => { setModalType('submit'); setShowModal(true); }}
+                  disabled={
+                    !eligibleWeight ||
+                    (fields.hasPassedUs06Test &&
+                      files.length === 0 &&
+                      (!fields.attachments ||
+                        fields.attachments.length <= deleteFiles.length))
+                  }
+                  action={() => {
+                    setModalType('submit');
+                    setShowModal(true);
+                  }}
                 />
               </span>
             </div>
@@ -379,7 +449,7 @@ VehicleForm.defaultProps = {
   setUploadFiles: null,
   showProgressBars: false,
   status: undefined,
-  vehicleComment: {},
+  vehicleComment: {}
 };
 
 VehicleForm.propTypes = {
@@ -401,7 +471,7 @@ VehicleForm.propTypes = {
   vehicleTypes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleYears: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleClasses: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  vehicleComment: PropTypes.shape(),
+  vehicleComment: PropTypes.shape()
 };
 
 export default VehicleForm;

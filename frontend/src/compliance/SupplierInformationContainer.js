@@ -22,12 +22,14 @@ const SupplierInformationContainer = (props) => {
   const [checkboxes, setCheckboxes] = useState([]);
   const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
   const [details, setDetails] = useState({});
-  const [modelYear, setModelYear] = useState(CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR);
+  const [modelYear, setModelYear] = useState(
+    CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR
+  );
   const [statuses, setStatuses] = useState({
     supplierInformation: {
       status: 'UNSAVED',
-      confirmedBy: null,
-    },
+      confirmedBy: null
+    }
   });
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
@@ -62,25 +64,39 @@ const SupplierInformationContainer = (props) => {
       ldvSales: details.organization.ldvSales,
       makes,
       modelYear,
-      confirmations: checkboxes,
+      confirmations: checkboxes
     };
 
     if (id && id !== 'new') {
-      axios.patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data).then((response) => {
-        history.push(ROUTES_COMPLIANCE.REPORTS);
-        history.replace(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
-      });
+      axios
+        .patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data)
+        .then((response) => {
+          history.push(ROUTES_COMPLIANCE.REPORTS);
+          history.replace(
+            ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(
+              ':id',
+              response.data.id
+            )
+          );
+        });
     } else {
       axios.post(ROUTES_COMPLIANCE.REPORTS, data).then((response) => {
         history.push(ROUTES_COMPLIANCE.REPORTS);
-        history.replace(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
+        history.replace(
+          ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(
+            ':id',
+            response.data.id
+          )
+        );
       });
     }
   };
 
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
-      const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
+      const checked = checkboxes.filter(
+        (each) => Number(each) !== Number(event.target.id)
+      );
       setCheckboxes(checked);
     }
 
@@ -95,17 +111,17 @@ const SupplierInformationContainer = (props) => {
     if (supplierClass === 'L') {
       supplierClassString = {
         class: 'Large',
-        secondaryText: '(5,000 or more total LDV sales)',
+        secondaryText: '(5,000 or more total LDV sales)'
       };
     } else if (supplierClass === 'M') {
       supplierClassString = {
         class: 'Medium',
-        secondaryText: '(1,000 to 4,999 total LDV sales)',
+        secondaryText: '(1,000 to 4,999 total LDV sales)'
       };
     } else if (supplierClass === 'S') {
       supplierClassString = {
         class: 'Small',
-        secondaryText: '(less than  1,000 total LDV sales)',
+        secondaryText: '(less than  1,000 total LDV sales)'
       };
     }
     return supplierClassString;
@@ -114,79 +130,97 @@ const SupplierInformationContainer = (props) => {
   const handleCancelConfirmation = () => {
     const data = {
       delete_confirmations: true,
-      module: 'supplier_information',
+      module: 'supplier_information'
     };
 
-    axios.patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data).then((response) => {
-      history.push(ROUTES_COMPLIANCE.REPORTS);
-      history.replace(ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(':id', response.data.id));
-    });
+    axios
+      .patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data)
+      .then((response) => {
+        history.push(ROUTES_COMPLIANCE.REPORTS);
+        history.replace(
+          ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(
+            ':id',
+            response.data.id
+          )
+        );
+      });
   };
 
   const refreshDetails = () => {
     if (id && id !== 'new') {
-      axios.get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id)).then((response) => {
-        const {
-          avgSales,
-          ldvSalesPrevious,
-          supplierClass,
-          makes: modelYearReportMakes,
-          modelYearReportAddresses,
-          modelYearReportHistory,
-          organizationName,
-          validationStatus,
-          modelYear: reportModelYear,
-          confirmations,
-          statuses: reportStatuses,
-        } = response.data;
-        setModelYear(parseInt(reportModelYear.name, 10));
-
-        if (modelYearReportMakes) {
-          const currentMakes = modelYearReportMakes.map((each) => (each.make));
-
-          setMakes(currentMakes);
-        }
-        const ldvSales = ldvSalesPrevious.sort((a, b) => ((a.modelYear > b.modelYear) ? 1 : -1));
-        const supplierClassString = getClassDescriptions(supplierClass);
-        setDetails({
-          supplierClassString,
-          organization: {
-            avgLdvSales: avgSales,
-            ldvSales,
-            name: organizationName,
-            organizationAddress: modelYearReportAddresses,
-          },
-          supplierInformation: {
-            history: modelYearReportHistory,
+      axios
+        .get(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id))
+        .then((response) => {
+          const {
+            avgSales,
+            ldvSalesPrevious,
+            supplierClass,
+            makes: modelYearReportMakes,
+            modelYearReportAddresses,
+            modelYearReportHistory,
+            organizationName,
             validationStatus,
-          },
+            modelYear: reportModelYear,
+            confirmations,
+            statuses: reportStatuses
+          } = response.data;
+          setModelYear(parseInt(reportModelYear.name, 10));
+
+          if (modelYearReportMakes) {
+            const currentMakes = modelYearReportMakes.map((each) => each.make);
+
+            setMakes(currentMakes);
+          }
+          const ldvSales = ldvSalesPrevious.sort((a, b) =>
+            a.modelYear > b.modelYear ? 1 : -1
+          );
+          const supplierClassString = getClassDescriptions(supplierClass);
+          setDetails({
+            supplierClassString,
+            organization: {
+              avgLdvSales: avgSales,
+              ldvSales,
+              name: organizationName,
+              organizationAddress: modelYearReportAddresses
+            },
+            supplierInformation: {
+              history: modelYearReportHistory,
+              validationStatus
+            }
+          });
+
+          setCheckboxes(confirmations);
+          setStatuses(reportStatuses);
+
+          setLoading(false);
         });
-
-        setCheckboxes(confirmations);
-        setStatuses(reportStatuses);
-
-        setLoading(false);
-      });
     } else {
       axios.get(ROUTES_VEHICLES.LIST).then((response) => {
         const { data } = response;
         // const previousSales = user.organization.ldvSales;
-        const supplierClassString = getClassDescriptions(user.organization.supplierClass);
-        setMakes([...new Set(data.map((vehicle) => vehicle.make.toUpperCase()))]);
+        const supplierClassString = getClassDescriptions(
+          user.organization.supplierClass
+        );
+        setMakes([
+          ...new Set(data.map((vehicle) => vehicle.make.toUpperCase()))
+        ]);
         const yearTemp = parseInt(query.year, 10);
-        const yearsArray = [(yearTemp - 1).toString(), (yearTemp - 2).toString(), (yearTemp - 3).toString()];
-        const previousSales = user.organization.ldvSales
-          .filter((each) => {
-            if (yearsArray.includes(each.modelYear.toString())) {
-              return each;
-            }
-          });
-        previousSales.sort((a, b) => ((a.modelYear > b.modelYear) ? 1 : -1));
+        const yearsArray = [
+          (yearTemp - 1).toString(),
+          (yearTemp - 2).toString(),
+          (yearTemp - 3).toString()
+        ];
+        const previousSales = user.organization.ldvSales.filter((each) => {
+          if (yearsArray.includes(each.modelYear.toString())) {
+            return each;
+          }
+        });
+        previousSales.sort((a, b) => (a.modelYear > b.modelYear ? 1 : -1));
         const newOrg = {
           ldvSales: previousSales.length >= 3 ? previousSales : [],
           avgLdvSales: user.organization.avgLdvSales,
           organizationAddress: user.organization.organizationAddress,
-          name: user.organization.name,
+          name: user.organization.name
         };
 
         setDetails({
@@ -194,8 +228,8 @@ const SupplierInformationContainer = (props) => {
           supplierClassString,
           supplierInformation: {
             history: [],
-            validationStatus: 'DRAFT',
-          },
+            validationStatus: 'DRAFT'
+          }
         });
         if (!isNaN(query.year) && id === 'new') {
           setModelYear(parseInt(query.year, 10));
@@ -206,7 +240,9 @@ const SupplierInformationContainer = (props) => {
     }
 
     axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
-      const filteredAssertions = response.data.filter((data) => data.module === 'supplier_information');
+      const filteredAssertions = response.data.filter(
+        (data) => data.module === 'supplier_information'
+      );
       setAssertions(filteredAssertions);
     });
   };
@@ -249,7 +285,7 @@ const SupplierInformationContainer = (props) => {
 SupplierInformationContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   location: PropTypes.shape().isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default withRouter(SupplierInformationContainer);
