@@ -2,10 +2,36 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import formatNumeric from '../../app/utilities/formatNumeric';
 
-const SummarySupplierInfo = (props) => {
-  const { supplierDetails, makes, creditActivityDetails, modelYear } = props;
+const SummarySupplierInfo = ({ supplierDetails, makes, creditActivityDetails, modelYear }) => {
   const { supplierClassText } = creditActivityDetails;
   const { organization } = supplierDetails;
+
+  const formatAddressType = (addressType) => {
+    if(organization.organizationAddress) {
+      organization.organizationAddress.map((address) => {
+        if(address.addressType.addressType === addressType) {
+          return (
+            <div key={address.id}>
+              {address.representativeName && (
+                <div className="text-black">
+                  {' '}
+                  {address.representativeName}{' '}
+                </div>
+              )}
+              <div className="text-black"> {address.addressLine1} </div>
+              <div className="text-black"> {address.addressLine2} </div>
+              <div className="text-black">
+                {' '}
+                {address.city} {address.state} {address.country}{' '}
+              </div>
+              <div className="text-black"> {address.postalCode} </div>
+            </div>
+          )
+        }
+      })
+    }
+  }
+
   return (
     <>
       <h3>Supplier Information</h3>
@@ -13,55 +39,14 @@ const SummarySupplierInfo = (props) => {
         <h4 className="d-inline">Legal Name: </h4>
         <span className="text-black"> {organization.name} </span>
       </div>
-
       <div>
         <div className="d-block mr-5 mt-3">
           <h4>Service Address:</h4>
-          {organization.organizationAddress &&
-            organization.organizationAddress.map(
-              (address) =>
-                address.addressType.addressType === 'Service' && (
-                  <div key={address.id}>
-                    {address.representativeName && (
-                      <div className="text-black">
-                        {' '}
-                        {address.representativeName}{' '}
-                      </div>
-                    )}
-                    <div className="text-black"> {address.addressLine1} </div>
-                    <div className="text-black"> {address.addressLine2} </div>
-                    <div className="text-black">
-                      {' '}
-                      {address.city} {address.state} {address.country}{' '}
-                    </div>
-                    <div className="text-black"> {address.postalCode} </div>
-                  </div>
-                )
-            )}
+          {formatAddressType('Service')}
         </div>
         <div className="d-block mt-3">
           <h4>Records Address:</h4>
-          {organization.organizationAddress &&
-            organization.organizationAddress.map(
-              (address) =>
-                address.addressType.addressType === 'Records' && (
-                  <div key={address.id}>
-                    {address.representativeName && (
-                      <div className="text-black">
-                        {' '}
-                        {address.representativeName}{' '}
-                      </div>
-                    )}
-                    <div className="text-black"> {address.addressLine1} </div>
-                    <div className="text-black"> {address.addressLine2} </div>
-                    <div className="text-black">
-                      {' '}
-                      {address.city} {address.state} {address.country}{' '}
-                    </div>
-                    <div className="text-black"> {address.postalCode} </div>
-                  </div>
-                )
-            )}
+          {formatAddressType('Records')}
         </div>
         <div className="mt-3">
           <h4 className="d-inline">Vehicle Supplier Class:</h4>
