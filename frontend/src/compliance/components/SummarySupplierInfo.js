@@ -30,6 +30,7 @@ const SummarySupplierInfo = ({ supplierDetails, makes, creditActivityDetails, mo
         }
       })
     }
+    return (<></>)
   }
 
   return (
