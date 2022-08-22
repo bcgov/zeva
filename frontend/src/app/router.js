@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Switch } from 'react-router';
 import { Route, Redirect, Router as BrowserRouter } from 'react-router-dom';
+import SessionTimeout from './components/SessionTimeout';
 
 import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
@@ -59,12 +60,16 @@ import ROUTES_USERS from './routes/Users';
 import ROUTES_VEHICLES from './routes/Vehicles';
 import ROUTES_COMPLIANCE from './routes/Compliance';
 import ROUTES_SUPPLEMENTARY from './routes/SupplementaryReport';
+import { getSessionTimeout } from './utilities/getSessionTimeout';
+
+let diffTime = 3600000;
+let timeout;
 
 class Router extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
+      showTimeout: false,
       loading: true,
       statusCode: null,
       user: {}
@@ -105,6 +110,21 @@ class Router extends Component {
     };
   }
 
+  timeout = setTimeout(() => {
+    this.setState({ showTimeout: true });
+  }, diffTime);
+  closeModal() {
+    this.setState({ showTimeout: false }, () => {
+      this.props.keycloak.updateToken(diffTime);
+    });
+  }
+  resetIdleTimeout() {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      this.setState({ showTimeout: true });
+    }, diffTime);
+  }
+
   componentDidMount() {
     axios.get(ROUTES_USERS.ME).then((response) => {
       this.setState({
@@ -123,18 +143,25 @@ class Router extends Component {
                 );
               }
             }
-
             return false;
           }
         }
       });
     });
+    this.events = ['load', 'mousedown', 'click', 'scroll', 'keypress'];
+
+    for (let i in this.events) {
+      window.addEventListener(this.events[i], this.resetIdleTimeout.bind(this));
+    }
+
+    // the following code is for retrieving the time until warning from keycloak settings
+    // let tokenExp = new Date(this.props.keycloak.refreshTokenParsed.exp * 1000);
+    // diffTime = getSessionTimeout(tokenExp);
   }
 
   render() {
     const { keycloak } = this.props;
-    const { loading, statusCode, user } = this.state;
-
+    const { loading, statusCode, user, showTimeout } = this.state;
     if (loading) {
       return <Loading />;
     }
@@ -143,6 +170,12 @@ class Router extends Component {
       <BrowserRouter history={History}>
         <PageLayout keycloak={keycloak} user={user}>
           <ErrorHandler statusCode={statusCode}>
+            {showTimeout == true && (
+              <SessionTimeout
+                keycloak={keycloak}
+                closeModal={this.closeModal.bind(this)}
+              />
+            )}
             <Switch>
               <Route
                 path={ROUTES_USERS.ACTIVE}
