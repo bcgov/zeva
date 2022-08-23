@@ -112,48 +112,40 @@ const govUser = {
   }
 };
 
-it('renders without crashing', () => {
-  render(
-    <Router>
+const RenderCreditTransfersDetailsPage = (user) => {
+  return (
+    <>
       <CreditTransfersDetailsPage
         checkboxes={[]}
-        assertions={[]}
         submission={submission}
+        assertions={[]}
         user={user}
         handleSubmit={() => {
           console.log('submit!');
         }}
       />
+    </>
+  )
+}
+
+it('renders without crashing', () => {
+  render(
+    <Router>
+      {RenderCreditTransfersDetailsPage(user)}
     </Router>
   );
 });
 
 it('shows an action bar with just a back button if the user is government', () => {
   const { container } = render(
-    <CreditTransfersDetailsPage
-      checkboxes={[]}
-      submission={submission}
-      assertions={[]}
-      user={govUser}
-      handleSubmit={() => {
-        console.log('submit!');
-      }}
-    />
+    RenderCreditTransfersDetailsPage(govUser)
   );
   expect(findByTestId(container, 'action-bar-basic')).toBeInTheDocument;
 });
 
 it('shows the comment box and reject button (but not rescind button) if the user is from the receiving supplier', () => {
   const { container } = render(
-    <CreditTransfersDetailsPage
-      checkboxes={[]}
-      submission={submission}
-      assertions={[]}
-      user={user}
-      handleSubmit={() => {
-        console.log('submit!');
-      }}
-    />
+    RenderCreditTransfersDetailsPage(user)
   );
   const commentbox = findByTestId(container, 'transfer-comment');
   expect(commentbox).toBeInTheDocument;
@@ -162,15 +154,7 @@ it('shows the comment box and reject button (but not rescind button) if the user
 
 it('shows the reject modal if the user selects the reject button', () => {
   const { container } = render(
-    <CreditTransfersDetailsPage
-      submission={submission}
-      checkboxes={[]}
-      assertions={[]}
-      user={user2}
-      handleSubmit={() => {
-        console.log('submit!');
-      }}
-    />
+    RenderCreditTransfersDetailsPage(user2)
   );
   fireEvent.click(getByText(container, 'Reject Notice'));
   expect(queryByText(container, 'Reject notice?')).toBeInTheDocument;
@@ -192,15 +176,7 @@ it('if its a draft, initiating company can submit to partner or press back', () 
     }
   ];
   const { container } = render(
-    <CreditTransfersDetailsPage
-      submission={submission}
-      checkboxes={[]}
-      assertions={[]}
-      user={user}
-      handleSubmit={() => {
-        console.log('submit!');
-      }}
-    />
+    RenderCreditTransfersDetailsPage(user)
   );
   fireEvent.click(getByTestId(container, 'submit-to-partner'));
   expect(
@@ -229,15 +205,7 @@ it('shows the submit modal if the user selects the submit button', () => {
     }
   ];
   const { container } = render(
-    <CreditTransfersDetailsPage
-      submission={submission}
-      checkboxes={[]}
-      assertions={[]}
-      user={user}
-      handleSubmit={() => {
-        console.log('submit!');
-      }}
-    />
+    RenderCreditTransfersDetailsPage(user)
   );
   fireEvent.click(getByTestId(container, 'submit-to-partner'));
   expect(
@@ -258,15 +226,7 @@ it('shows the submission and signed date if the transfer partner opens it', () =
     }
   ];
   const { container } = render(
-    <CreditTransfersDetailsPage
-      submission={submission}
-      checkboxes={[]}
-      assertions={[]}
-      user={user2}
-      handleSubmit={() => {
-        console.log('submit!');
-      }}
-    />
+    RenderCreditTransfersDetailsPage(user2)
   );
 
   expect(findByTestId(container, 'submit-signature')).toBeInTheDocument;
@@ -276,15 +236,7 @@ it('shows the submission and signed date if the transfer partner opens it', () =
 it('does not show the rescind button to the partner if the partner hasnt approved', () => {
   submission.status = 'SUBMITTED';
   const { container } = render(
-    <CreditTransfersDetailsPage
-      submission={submission}
-      checkboxes={[]}
-      assertions={[]}
-      user={user2}
-      handleSubmit={() => {
-        console.log('submit!');
-      }}
-    />
+    RenderCreditTransfersDetailsPage(user2)
   );
 
   expect(queryByText(container, 'Rescind')).not.toBeInTheDocument;
@@ -311,15 +263,7 @@ it('shows the submission and approved signature dates if status is approved', ()
     }
   ];
   const { container } = render(
-    <CreditTransfersDetailsPage
-      submission={submission}
-      checkboxes={[]}
-      assertions={[]}
-      user={user}
-      handleSubmit={() => {
-        console.log('submit!');
-      }}
-    />
+    RenderCreditTransfersDetailsPage(user)
   );
 
   expect(findByTestId(container, 'submit-signature')).toBeInTheDocument;
@@ -327,15 +271,7 @@ it('shows the submission and approved signature dates if status is approved', ()
 });
 it('shows the comment box to the director if user is analyst', () => {
   const { container } = render(
-    <CreditTransfersDetailsPage
-      submission={submission}
-      checkboxes={[]}
-      assertions={[]}
-      user={govUser}
-      handleSubmit={() => {
-        console.log('submit!');
-      }}
-    />
+    RenderCreditTransfersDetailsPage(govUser)
   );
   const commentbox = findByTestId(container, 'transfer-comment-analyst');
   expect(commentbox).toBeInTheDocument;
@@ -363,15 +299,7 @@ it('does not show the commment box if the submission is already rejected', () =>
     }
   ];
   const { container } = render(
-    <CreditTransfersDetailsPage
-      submission={submission}
-      checkboxes={[]}
-      assertions={[]}
-      user={user}
-      handleSubmit={() => {
-        console.log('submit!');
-      }}
-    />
+    RenderCreditTransfersDetailsPage(user)
   );
   expect(findByTestId(container, 'transfer-comment')).not.toBeInTheDocument;
 });
