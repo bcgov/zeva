@@ -60,10 +60,6 @@ import ROUTES_USERS from './routes/Users';
 import ROUTES_VEHICLES from './routes/Vehicles';
 import ROUTES_COMPLIANCE from './routes/Compliance';
 import ROUTES_SUPPLEMENTARY from './routes/SupplementaryReport';
-import { getSessionTimeout } from './utilities/getSessionTimeout';
-
-let diffTime = 3600000;
-let timeout;
 
 class Router extends Component {
   constructor(props) {
@@ -110,21 +106,6 @@ class Router extends Component {
     };
   }
 
-  timeout = setTimeout(() => {
-    this.setState({ showTimeout: true });
-  }, diffTime);
-  closeModal() {
-    this.setState({ showTimeout: false }, () => {
-      this.props.keycloak.updateToken(diffTime);
-    });
-  }
-  resetIdleTimeout() {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      this.setState({ showTimeout: true });
-    }, diffTime);
-  }
-
   componentDidMount() {
     axios.get(ROUTES_USERS.ME).then((response) => {
       this.setState({
@@ -148,15 +129,6 @@ class Router extends Component {
         }
       });
     });
-    this.events = ['load', 'mousedown', 'click', 'scroll', 'keypress'];
-
-    for (let i in this.events) {
-      window.addEventListener(this.events[i], this.resetIdleTimeout.bind(this));
-    }
-
-    // the following code is for retrieving the time until warning from keycloak settings
-    // let tokenExp = new Date(this.props.keycloak.refreshTokenParsed.exp * 1000);
-    // diffTime = getSessionTimeout(tokenExp);
   }
 
   render() {
@@ -170,12 +142,7 @@ class Router extends Component {
       <BrowserRouter history={History}>
         <PageLayout keycloak={keycloak} user={user}>
           <ErrorHandler statusCode={statusCode}>
-            {showTimeout == true && (
-              <SessionTimeout
-                keycloak={keycloak}
-                closeModal={this.closeModal.bind(this)}
-              />
-            )}
+            <SessionTimeout />
             <Switch>
               <Route
                 path={ROUTES_USERS.ACTIVE}

@@ -9,4 +9,4 @@ const getSessionTimeout = (tokenExp) => {
   return msUntilWarning;
 };
 
-export { getSessionTimeout };
+export default getSessionTimeout;
