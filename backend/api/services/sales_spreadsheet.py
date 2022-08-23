@@ -368,37 +368,38 @@ def validate_spreadsheet(data, user_organization=None, skip_authorization=False)
 
 
 def get_error(content):
+    warnings = content.warnings
     error = ''
-    if 'ROW_NOT_SELECTED' in content.warnings and content.reason:
+    if 'ROW_NOT_SELECTED' in warnings and content.reason:
         error += content.reason
         error += '; '
 
-    if 'DUPLICATE_VIN' in content.warnings:
+    if 'DUPLICATE_VIN' in warnings:
         error += 'Duplicate VIN; '
 
-    if 'EXPIRED_REGISTRATION_DATE' in content.warnings:
+    if 'EXPIRED_REGISTRATION_DATE' in warnings:
         error += 'Sale prior to 2 Jan 2018; '
 
-    if 'INVALID_DATE' in content.warnings:
+    if 'INVALID_DATE' in warnings:
         error += 'Invalid Date Format. Please use YYYY-MM-DD ' \
                     'format; '
 
-    if 'INVALID_MODEL' in content.warnings:
+    if 'INVALID_MODEL' in warnings:
         error += 'Invalid make, model and year combination; '
 
-    if 'MODEL_YEAR_MISMATCHED' in content.warnings:
+    if 'MODEL_YEAR_MISMATCHED' in warnings:
         error += 'Model year does not match BC registration data; '
 
-    if 'MAKE_MISMATCHED' in content.warnings:
+    if 'MAKE_MISMATCHED' in warnings:
         error += 'Make does not match BC registration data; '
 
-    if 'NO_ICBC_MATCH' in content.warnings:
+    if 'NO_ICBC_MATCH' in warnings:
         error += 'VIN not registered in BC; '
 
-    if 'VIN_ALREADY_AWARDED' in content.warnings:
+    if 'VIN_ALREADY_AWARDED' in warnings:
         error += 'VIN already issued credit; '
 
-    if 'ROW_NOT_SELECTED' in content.warnings and error == '':
+    if 'ROW_NOT_SELECTED' in warnings and error == '':
         error += 'VIN not registered in BC; '
     return error
 
@@ -542,7 +543,7 @@ def create_details_spreadsheet(submission_id, stream):
     sales_submission = SalesSubmission.objects.get(
         id=submission_id,
     )
-    
+
     icbc_data = IcbcSnapshotData.objects.filter(
         submission_id=submission_id
     )

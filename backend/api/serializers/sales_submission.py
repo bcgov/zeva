@@ -585,6 +585,7 @@ class SalesSubmissionSaveSerializer(
             )
 
         if invalidated is not None:
+            # Deleting snapshots
             IcbcSnapshotData.objects.filter(
                 submission_id=instance.id
             ).delete()
@@ -595,6 +596,7 @@ class SalesSubmissionSaveSerializer(
 
             icbc_snapshot = None
 
+            # Rebuilding ICBC snapshots for all sale entries in this submission
             for row in all_content:
                 if row.icbc_verification:
                     icbc_snapshot = IcbcSnapshotData.objects.create(
@@ -606,12 +608,16 @@ class SalesSubmissionSaveSerializer(
                         upload_date=row.icbc_verification.icbc_upload_date.upload_date
                     )
 
+            # Deleting potential RecordOfSale records for this submission
             RecordOfSale.objects.filter(submission_id=instance.id).delete()
+
+            # All valid vehicles in the system for this organization
             valid_vehicles = Vehicle.objects.filter(
                 organization_id=instance.organization_id,
                 validation_status=VehicleDefinitionStatuses.VALIDATED
             ).values_list('model_year__name', Upper('make'), 'model_name')
 
+            # Gets already existing vins in this submission
             duplicate_vins = SalesSubmissionContent.objects.annotate(
                 vin_count=Count('xls_vin')
             ).filter(
@@ -619,10 +625,14 @@ class SalesSubmissionSaveSerializer(
                 vin_count__gt=1
             ).values_list('xls_vin', flat=True)
 
+            # Vins that already have rewarded credits from other submissions TODO (n sized query, refactor)
             awarded_vins = RecordOfSale.objects.exclude(
+                submission__validation_status='REJECTED'
+            ).exclude(
                 submission_id=instance.id
             ).values_list('vin', flat=True)
 
+            # Get submission content that is validated
             content = SalesSubmissionContent.objects.filter(
                 submission_id=instance.id
             ).exclude(
@@ -639,6 +649,7 @@ class SalesSubmissionSaveSerializer(
                 xls_date_type="1"
             )
 
+            # Create records for new validated content
             for row in content:
                 try:
                     model_year = int(float(row.xls_model_year))
