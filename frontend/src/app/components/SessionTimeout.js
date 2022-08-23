@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
-const SessionTimeout = () => {
+const SessionTimeout = (keycloak) => {
   const [showTimeout, setShowTimeout] = useState(false);
-  const [diffTime, setDiffTime] = useState(10476000); //2 hours 55 mins,
+  const [diffTime, setDiffTime] = useState(30000); //2 hours 55 mins 10476000,
   //to test with one minute use 60000 and update keykoak
 
   // the following code is for retrieving the time until warning from keycloak settings
@@ -12,6 +12,7 @@ const SessionTimeout = () => {
   let timeout = setTimeout(() => {
     setShowTimeout(true);
   }, diffTime);
+
   const closeModal = () => {
     setShowTimeout(false);
   };
@@ -21,13 +22,20 @@ const SessionTimeout = () => {
       setShowTimeout(true);
     }, diffTime);
   };
+
   useEffect(() => {
     const events = ['load', 'mousedown', 'click', 'scroll', 'keypress'];
     for (let i in events) {
-      window.addEventListener(events[i], resetIdleTimeout());
+      window.addEventListener(events[i], resetIdleTimeout);
     }
+    resetIdleTimeout;
+    return () => {
+      for (let i in events) {
+        window.removeEventListener(events[i], resetIdleTimeout);
+        clearTimeout(timeout);
+      }
+    };
   });
-
   return (
     <>
       {showTimeout && (
