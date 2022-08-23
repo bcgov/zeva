@@ -65,7 +65,6 @@ class Router extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showTimeout: false,
       loading: true,
       statusCode: null,
       user: {}
@@ -133,7 +132,7 @@ class Router extends Component {
 
   render() {
     const { keycloak } = this.props;
-    const { loading, statusCode, user, showTimeout } = this.state;
+    const { loading, statusCode, user } = this.state;
     if (loading) {
       return <Loading />;
     }
