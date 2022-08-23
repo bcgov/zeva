@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Switch } from 'react-router';
 import { Route, Redirect, Router as BrowserRouter } from 'react-router-dom';
+import SessionTimeout from './components/SessionTimeout';
 
 import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
@@ -63,7 +64,6 @@ import ROUTES_SUPPLEMENTARY from './routes/SupplementaryReport';
 class Router extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       loading: true,
       statusCode: null,
@@ -123,7 +123,6 @@ class Router extends Component {
                 );
               }
             }
-
             return false;
           }
         }
@@ -134,7 +133,6 @@ class Router extends Component {
   render() {
     const { keycloak } = this.props;
     const { loading, statusCode, user } = this.state;
-
     if (loading) {
       return <Loading />;
     }
@@ -143,6 +141,7 @@ class Router extends Component {
       <BrowserRouter history={History}>
         <PageLayout keycloak={keycloak} user={user}>
           <ErrorHandler statusCode={statusCode}>
+            <SessionTimeout />
             <Switch>
               <Route
                 path={ROUTES_USERS.ACTIVE}
