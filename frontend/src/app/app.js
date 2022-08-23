@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component } from 'react';
 import Keycloak from 'keycloak-js';
 
 import Loading from './components/Loading';
@@ -12,6 +12,7 @@ import 'react-table/react-table.css';
 class App extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       authenticated: false,
       keycloak: null
@@ -65,11 +66,7 @@ class App extends Component {
       return <Login keycloak={keycloak} />;
     }
 
-    return (
-      <>
-        <Router keycloak={keycloak} logout={this.logout} />;
-      </>
-    );
+    return <Router keycloak={keycloak} logout={this.logout} />;
   }
 }
 
