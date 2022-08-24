@@ -35,6 +35,8 @@ const CreditRequestDetailsPage = (props) => {
 
   const { id } = useParams();
   const validatedOnly = submission.validationStatus === 'CHECKED';
+  const submittedOnly = submission.validationStatus === 'SUBMITTED';
+  const submittedOnlyTooltip = 'You must verify once with ICBC data before reviewing details.';
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
   const [comment, setComment] = useState('');
@@ -118,6 +120,15 @@ const CreditRequestDetailsPage = (props) => {
       });
   };
 
+  const verifyWithICBCData = () => {
+    let url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(
+      /:id/g,
+      submission.id
+    );
+    url += "?reset=Y";
+    history.push(url);
+  }
+
   switch (modalType) {
     case 'submit':
       modalProps = {
@@ -175,12 +186,7 @@ const CreditRequestDetailsPage = (props) => {
       modalProps = {
         confirmLabel: "Verify with ICBC Data",
         handleSubmit: () => {
-          let url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(
-            /:id/g,
-            submission.id
-          );
-          url += "?reset=Y";
-          history.push(url);
+          verifyWithICBCData();
         },
         buttonClass: "button primary",
         modalText: <div><h2 className="mb-2">Verify submission with ICBC Data?</h2><p>This will clear all existing validation and re-calculate with the latest uploaded ICBC data.</p></div>
@@ -534,27 +540,31 @@ const CreditRequestDetailsPage = (props) => {
                   <button
                     className="button"
                     onClick={() => {
-                      setModalType("verify");
-                      setShowModal(true);
+                      if(submittedOnly) {
+                        verifyWithICBCData();
+                      } else {
+                        setModalType("verify");
+                        setShowModal(true);
+                      }
                     }}
                     type="button"
                   >
                     Verify with ICBC Data
                   </button>
-                  <button
-                    className={validatedOnly ? 'button' : 'button primary'}
-                    onClick={() => {
+                  <Button
+                    optionalClassname={validatedOnly ? 'button' : 'button primary'}
+                    buttonType="button"
+                    optionalText="Review Details"
+                    disabled={submittedOnly}
+                    buttonTooltip={submittedOnlyTooltip}
+                    action={(e) => {
                       const url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(
                         /:id/g,
                         submission.id
                       );
-
                       history.push(url);
                     }}
-                    type="button"
-                  >
-                    Review Details
-                  </button>
+                  />
                   {validatedOnly && (
                     <button
                       className={validatedOnly ? 'button primary' : 'button'}

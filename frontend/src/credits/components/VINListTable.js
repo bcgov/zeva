@@ -29,6 +29,8 @@ const VINListTable = (props) => {
     setReactTable
   } = props;
 
+  const reset = query && query.reset;
+
   const getErrorCodes = (item, fields = false) => {
     let errorCodes = '';
 
@@ -253,7 +255,7 @@ const VINListTable = (props) => {
 
             return (
               <select
-                defaultValue={row.reason || ""}
+                defaultValue={reset ? "" : (row.reason || "")}
                 onChange={(event) => {
                   const { value } = event.target;
                   handleChangeReason(row.id, value);
