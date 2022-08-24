@@ -388,9 +388,9 @@ class CreditRequestViewset(
         if not request.user.is_government:
             return HttpResponseForbidden()
 
-        reset = request.GET.get('reset', None)
+        verify_with_icbc_data = request.GET.get('reset', None)
 
-        if reset == 'Y':
+        if verify_with_icbc_data == 'Y':
             submission_content = SalesSubmissionContent.objects.filter(
                 submission_id=pk
             )
