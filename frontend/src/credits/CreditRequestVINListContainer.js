@@ -88,9 +88,9 @@ const CreditRequestVINListContainer = (props) => {
 
   const handleChangeReason = (submissionId, value = false) => {
     let newContent = content
-    const newId = Number(submissionId);
-    const reasonIdx = reasonList.findIndex(r => Number(r.id) == newId);
-    const contentIdx = content.findIndex(c => Number(c.id) == newId);
+    const subId = Number(submissionId);
+    const reasonIdx = reasonList.findIndex(r => Number(r.id) == subId);
+    const contentIdx = content.findIndex(c => Number(c.id) == subId);
 
     if (reasonIdx >= 0) {
       reasonList[reasonIdx].reason = value;
@@ -108,26 +108,28 @@ const CreditRequestVINListContainer = (props) => {
     setContent(newContent);
   };
 
+  // TODO this could be refactored to only use the content list
+  // rather than these 4 different change lists
   const handleCheckboxClick = (event) => {
     const { value: submissionId, checked } = event.target;
 
-    const newId = Number(submissionId);
-    const contentIdx = content.findIndex(c => Number(c.id) == newId);
+    const subId = Number(submissionId);
+    const contentIdx = content.findIndex(c => Number(c.id) == subId);
     const noMatch = content[contentIdx].warnings?.includes("NO_ICBC_MATCH")
 
-    updateInvalidated(checked, newId)
+    updateInvalidated(checked, subId)
     updateContent(checked, noMatch, contentIdx)
-    updateReasons(checked, noMatch, newId)
-    updateModified(newId)
+    updateReasons(checked, noMatch, subId)
+    updateModified(subId)
   };
 
-  const updateInvalidated = (checked, newId) => {
+  const updateInvalidated = (checked, subId) => {
     if(checked) {
       setInvalidatedList(
-        invalidatedList.filter((i) => Number(i) !== newId)
+        invalidatedList.filter((i) => Number(i) !== subId)
       );
     } else {
-      setInvalidatedList(() => [...invalidatedList, newId]);
+      setInvalidatedList(() => [...invalidatedList, subId]);
     }
   }
 
@@ -141,14 +143,14 @@ const CreditRequestVINListContainer = (props) => {
     setContent(newContent);
   }
 
-  const updateReasons = (checked, noMatch, newId) => {
-    const reasonIdx = reasonList.findIndex(r => Number(r.id) == newId);
+  const updateReasons = (checked, noMatch, subId) => {
+    const reasonIdx = reasonList.findIndex(r => Number(r.id) == subId);
     if(checked) {
       if(reasonIdx >= 0) {
         reasonList[reasonIdx].reason = noMatch ? reasons[0] : ''
       } else {
         reasonList.push({
-          id: newId,
+          id: subId,
           reason: noMatch ? reasons[0] : ''
         })
       } 
