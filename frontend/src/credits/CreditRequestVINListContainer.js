@@ -87,32 +87,43 @@ const CreditRequestVINListContainer = (props) => {
   }, [id]);
 
   const handleChangeReason = (submissionId, value = false) => {
-    const index = reasonList.findIndex(
-      (each) => Number(each.id) === Number(submissionId)
-    );
+    let newContent = content
+    const newId = Number(submissionId);
+    const reasonIdx = reasonList.findIndex(r => Number(r.id) == newId);
+    const contentIdx = content.findIndex(c => Number(c.id) == newId);
 
-    if (index >= 0) {
-      reasonList[index].reason = value;
+    if (reasonIdx >= 0) {
+      reasonList[reasonIdx].reason = value;
     } else {
       reasonList.push({
         id: Number(submissionId),
         reason: value
       });
     }
+    if(contentIdx >= 0) {
+      newContent[contentIdx].reason = value
+    }
 
     setReasonList(reasonList);
+    setContent(newContent);
   };
 
   const handleCheckboxClick = (event) => {
     const { value: submissionId, checked } = event.target;
+    let newContent = content
     const newId = Number(submissionId);
     const reasonIdx = reasonList.findIndex(r => Number(r.id) == newId);
+    const contentIdx = content.findIndex(c => Number(c.id) == newId);
     const modifiedIdx = modified.findIndex(m => Number(m.id) == newId);
+    const noMatch = newContent[contentIdx].warnings?.includes("NO_ICBC_MATCH")
     if (!checked) {
       setInvalidatedList(() => [...invalidatedList, newId]);
       // reset reason when checkbox is unchecked
       if(reasonIdx >= 0) {
         reasonList[reasonIdx].reason = ''
+      }
+      if(contentIdx >= 0) {
+        newContent[contentIdx].reason = ''
       }
     } else {
       setInvalidatedList(
@@ -122,10 +133,13 @@ const CreditRequestVINListContainer = (props) => {
       if (reasonIdx < 0) {
         reasonList.push({
           id: newId,
-          reason: reasons[0]
+          reason: noMatch ? reasons[0] : ''
         });
       } else {
-        reasonList[reasonIdx].reason = reasons[0]
+        reasonList[reasonIdx].reason = noMatch ? reasons[0] : ''
+      }
+      if(contentIdx >= 0) {
+        newContent[contentIdx].reason = noMatch ? reasons[0] : ''
       }
     }
 
@@ -137,6 +151,7 @@ const CreditRequestVINListContainer = (props) => {
 
     setReasonList(reasonList);
     setModified(modified);
+    setContent(newContent);
   };
 
   const handleSubmit = () => {

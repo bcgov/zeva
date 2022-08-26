@@ -256,7 +256,7 @@ const VINListTable = (props) => {
 
             return (
               <select
-                defaultValue={reset ? "" : (row.reason || "")}
+                defaultValue={row.reason}
                 onChange={(event) => {
                   const { value } = event.target;
                   handleChangeReason(row.id, value);
