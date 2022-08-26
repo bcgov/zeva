@@ -108,7 +108,7 @@ const CreditRequestVINListContainer = (props) => {
     setContent(newContent);
   };
 
-  // TODO this could be refactored to only use the content list
+  // This could be refactored to only use the content list
   // rather than these 4 different change lists
   const handleCheckboxClick = (event) => {
     const { value: submissionId, checked } = event.target;
