@@ -110,49 +110,61 @@ const CreditRequestVINListContainer = (props) => {
 
   const handleCheckboxClick = (event) => {
     const { value: submissionId, checked } = event.target;
-    let newContent = content
+
     const newId = Number(submissionId);
-    const reasonIdx = reasonList.findIndex(r => Number(r.id) == newId);
     const contentIdx = content.findIndex(c => Number(c.id) == newId);
-    const modifiedIdx = modified.findIndex(m => Number(m.id) == newId);
-    const noMatch = newContent[contentIdx].warnings?.includes("NO_ICBC_MATCH")
-    if (!checked) {
-      setInvalidatedList(() => [...invalidatedList, newId]);
-      // reset reason when checkbox is unchecked
-      if(reasonIdx >= 0) {
-        reasonList[reasonIdx].reason = ''
-      }
-      if(contentIdx >= 0) {
-        newContent[contentIdx].reason = ''
-      }
-    } else {
+    const noMatch = content[contentIdx].warnings?.includes("NO_ICBC_MATCH")
+
+    updateInvalidated(checked, newId)
+    updateContent(checked, noMatch, contentIdx)
+    updateReasons(checked, noMatch, newId)
+    updateModified(newId)
+  };
+
+  const updateInvalidated = (checked, newId) => {
+    if(checked) {
       setInvalidatedList(
         invalidatedList.filter((i) => Number(i) !== newId)
       );
-      // // set reason to Evidence Provided on checkbox checked
-      if (reasonIdx < 0) {
+    } else {
+      setInvalidatedList(() => [...invalidatedList, newId]);
+    }
+  }
+
+  const updateContent = (checked, noMatch, idx) => {
+    let newContent = content
+    if(checked) {
+      newContent[idx].reason = noMatch ? reasons[0] : ''
+    } else {
+      newContent[idx].reason = ''
+    }
+    setContent(newContent);
+  }
+
+  const updateReasons = (checked, noMatch, newId) => {
+    const reasonIdx = reasonList.findIndex(r => Number(r.id) == newId);
+    if(checked) {
+      if(reasonIdx >= 0) {
+        reasonList[reasonIdx].reason = noMatch ? reasons[0] : ''
+      } else {
         reasonList.push({
           id: newId,
           reason: noMatch ? reasons[0] : ''
-        });
-      } else {
-        reasonList[reasonIdx].reason = noMatch ? reasons[0] : ''
-      }
-      if(contentIdx >= 0) {
-        newContent[contentIdx].reason = noMatch ? reasons[0] : ''
-      }
-    }
-
-    if (modifiedIdx >= 0) {
-      modified.splice(modifiedIdx, 1);
+        })
+      } 
     } else {
-      modified.push(newId);
+      if(reasonIdx >= 0) {
+        reasonList[reasonIdx].reason = ''
+      }
     }
-
     setReasonList(reasonList);
+  }
+
+  const updateModified = (id) => {
+    const modifiedIdx = modified.findIndex(m => Number(m.id) == id);
+    modifiedIdx >= 0 ? modified.splice(modifiedIdx, 1) : modified.push(id);
     setModified(modified);
-    setContent(newContent);
-  };
+  }
 
   const handleSubmit = () => {
     setLoading(true);
