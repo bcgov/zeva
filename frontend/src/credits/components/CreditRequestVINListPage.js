@@ -10,6 +10,7 @@ import VINListTable from './VINListTable';
 const CreditRequestVINListPage = (props) => {
   const {
     content,
+    reasonList,
     handleCheckboxClick,
     handleChangeReason,
     handleSubmit,
@@ -17,6 +18,7 @@ const CreditRequestVINListPage = (props) => {
     query,
     reasons,
     setContent,
+    setReasonList,
     submission,
     user,
     invalidatedList
@@ -84,8 +86,22 @@ const CreditRequestVINListPage = (props) => {
       })
       .then((response) => {
         const { content: refreshedContent, pages: numPages } = response.data;
+        
+        refreshedContent.forEach((each) => {
+          const index = reasonList.findIndex(
+            (item) => Number(item.id) === Number(each.id)
+          );
+
+          if (each.reason && index < 0) {
+            reasonList.push({
+              id: Number(each.id),
+              reason: each.reason
+            });
+          }
+        });
 
         setContent(refreshedContent);
+        setReasonList(reasonList);
         setLoading(false);
         setPages(numPages);
       });
@@ -202,6 +218,7 @@ CreditRequestVINListPage.defaultProps = {
 
 CreditRequestVINListPage.propTypes = {
   content: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  reasonList: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   handleChangeReason: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
@@ -214,6 +231,7 @@ CreditRequestVINListPage.propTypes = {
   query: PropTypes.shape(),
   reasons: PropTypes.arrayOf(PropTypes.string).isRequired,
   setContent: PropTypes.func.isRequired,
+  setReasonList: PropTypes.func.isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired
 };

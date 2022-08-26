@@ -106,37 +106,36 @@ const CreditRequestVINListContainer = (props) => {
   const handleCheckboxClick = (event) => {
     const { value: submissionId, checked } = event.target;
     const newId = Number(submissionId);
+    const reasonIdx = reasonList.findIndex(r => Number(r.id) == newId);
+    const modifiedIdx = modified.findIndex(m => Number(m.id) == newId);
     if (!checked) {
       setInvalidatedList(() => [...invalidatedList, newId]);
+      // reset reason when checkbox is unchecked
+      if(reasonIdx >= 0) {
+        reasonList[reasonIdx].reason = ''
+      }
     } else {
       setInvalidatedList(
-        invalidatedList.filter((item) => Number(item) !== Number(submissionId))
+        invalidatedList.filter((i) => Number(i) !== newId)
       );
-    }
-
-    const index = modified.findIndex(
-      (item) => Number(item) === Number(submissionId)
-    );
-
-    if (index >= 0) {
-      modified.splice(index, 1);
-    } else {
-      modified.push(Number(submissionId));
-
-      const reasonListIndex = reasonList.findIndex(
-        (each) => Number(each.id) === Number(submissionId)
-      );
-
-      if (reasonListIndex < 0) {
+      // // set reason to Evidence Provided on checkbox checked
+      if (reasonIdx < 0) {
         reasonList.push({
-          id: Number(submissionId),
+          id: newId,
           reason: reasons[0]
         });
+      } else {
+        reasonList[reasonIdx].reason = reasons[0]
       }
-
-      setReasonList(reasonList);
     }
 
+    if (modifiedIdx >= 0) {
+      modified.splice(modifiedIdx, 1);
+    } else {
+      modified.push(newId);
+    }
+
+    setReasonList(reasonList);
     setModified(modified);
   };
 
@@ -167,6 +166,7 @@ const CreditRequestVINListContainer = (props) => {
   return (
     <CreditRequestVINListPage
       content={content}
+      reasonList={reasonList}
       handleCheckboxClick={handleCheckboxClick}
       handleChangeReason={handleChangeReason}
       handleSubmit={handleSubmit}
@@ -176,6 +176,7 @@ const CreditRequestVINListContainer = (props) => {
       reasons={reasons}
       routeParams={match.params}
       setContent={setContent}
+      setReasonList={setReasonList}
       submission={submission}
       user={user}
     />
