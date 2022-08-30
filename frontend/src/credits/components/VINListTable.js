@@ -228,7 +228,8 @@ const VINListTable = (props) => {
           width: 100
         },
         {
-          accessor: (row) => {
+          Cell: (data) => {
+            const row = data.original
             if (
               row.warnings &&
               row.warnings.some(
@@ -255,7 +256,7 @@ const VINListTable = (props) => {
 
             return (
               <select
-                defaultValue={reset ? "" : (row.reason || "")}
+                defaultValue={row.reason}
                 onChange={(event) => {
                   const { value } = event.target;
                   handleChangeReason(row.id, value);
@@ -272,9 +273,9 @@ const VINListTable = (props) => {
           },
           className: 'reason text-center',
           filterable: false,
+          sortable: false,
           Header: 'Reason',
           id: 'reason',
-          sortable: false
         }
       ]
     }
@@ -291,7 +292,7 @@ const VINListTable = (props) => {
       }}
       defaultSorted={[
         {
-          id: 'xls_vin',
+          id: 'xls_sale_date',
           desc: true
         }
       ]}

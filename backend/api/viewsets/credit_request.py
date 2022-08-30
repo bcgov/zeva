@@ -179,7 +179,7 @@ class CreditRequestViewset(
     @action(detail=True)
     def content(self, request, pk):
         filters = request.GET.get('filters')
-        page_size = request.GET.get('page_size', 20)
+        page_size = request.GET.get('page_size', 100)
         page = request.GET.get('page', 1)
         sort_by = request.GET.get('sorted')
 

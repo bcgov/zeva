@@ -87,58 +87,86 @@ const CreditRequestVINListContainer = (props) => {
   }, [id]);
 
   const handleChangeReason = (submissionId, value = false) => {
-    const index = reasonList.findIndex(
-      (each) => Number(each.id) === Number(submissionId)
-    );
+    let newContent = content
+    const subId = Number(submissionId);
+    const reasonIdx = reasonList.findIndex(r => Number(r.id) == subId);
+    const contentIdx = content.findIndex(c => Number(c.id) == subId);
 
-    if (index >= 0) {
-      reasonList[index].reason = value;
+    if (reasonIdx >= 0) {
+      reasonList[reasonIdx].reason = value;
     } else {
       reasonList.push({
         id: Number(submissionId),
         reason: value
       });
     }
+    if(contentIdx >= 0) {
+      newContent[contentIdx].reason = value
+    }
 
     setReasonList(reasonList);
+    setContent(newContent);
   };
 
+  // This could be refactored to only use the content list
+  // rather than these 4 different change lists
   const handleCheckboxClick = (event) => {
     const { value: submissionId, checked } = event.target;
-    const newId = Number(submissionId);
-    if (!checked) {
-      setInvalidatedList(() => [...invalidatedList, newId]);
-    } else {
-      setInvalidatedList(
-        invalidatedList.filter((item) => Number(item) !== Number(submissionId))
-      );
-    }
 
-    const index = modified.findIndex(
-      (item) => Number(item) === Number(submissionId)
-    );
+    const subId = Number(submissionId);
+    const contentIdx = content.findIndex(c => Number(c.id) == subId);
+    const noMatch = content[contentIdx].warnings?.includes("NO_ICBC_MATCH")
 
-    if (index >= 0) {
-      modified.splice(index, 1);
-    } else {
-      modified.push(Number(submissionId));
-
-      const reasonListIndex = reasonList.findIndex(
-        (each) => Number(each.id) === Number(submissionId)
-      );
-
-      if (reasonListIndex < 0) {
-        reasonList.push({
-          id: Number(submissionId),
-          reason: reasons[0]
-        });
-      }
-
-      setReasonList(reasonList);
-    }
-
-    setModified(modified);
+    updateInvalidated(checked, subId)
+    updateContent(checked, noMatch, contentIdx)
+    updateReasons(checked, noMatch, subId)
+    updateModified(subId)
   };
+
+  const updateInvalidated = (checked, subId) => {
+    if(checked) {
+      setInvalidatedList(
+        invalidatedList.filter((i) => Number(i) !== subId)
+      );
+    } else {
+      setInvalidatedList(() => [...invalidatedList, subId]);
+    }
+  }
+
+  const updateContent = (checked, noMatch, idx) => {
+    let newContent = content
+    if(checked) {
+      newContent[idx].reason = noMatch ? reasons[0] : ''
+    } else {
+      newContent[idx].reason = ''
+    }
+    setContent(newContent);
+  }
+
+  const updateReasons = (checked, noMatch, subId) => {
+    const reasonIdx = reasonList.findIndex(r => Number(r.id) == subId);
+    if(checked) {
+      if(reasonIdx >= 0) {
+        reasonList[reasonIdx].reason = noMatch ? reasons[0] : ''
+      } else {
+        reasonList.push({
+          id: subId,
+          reason: noMatch ? reasons[0] : ''
+        })
+      } 
+    } else {
+      if(reasonIdx >= 0) {
+        reasonList[reasonIdx].reason = ''
+      }
+    }
+    setReasonList(reasonList);
+  }
+
+  const updateModified = (id) => {
+    const modifiedIdx = modified.findIndex(m => Number(m.id) == id);
+    modifiedIdx >= 0 ? modified.splice(modifiedIdx, 1) : modified.push(id);
+    setModified(modified);
+  }
 
   const handleSubmit = () => {
     setLoading(true);
@@ -167,6 +195,7 @@ const CreditRequestVINListContainer = (props) => {
   return (
     <CreditRequestVINListPage
       content={content}
+      reasonList={reasonList}
       handleCheckboxClick={handleCheckboxClick}
       handleChangeReason={handleChangeReason}
       handleSubmit={handleSubmit}
@@ -176,6 +205,7 @@ const CreditRequestVINListContainer = (props) => {
       reasons={reasons}
       routeParams={match.params}
       setContent={setContent}
+      setReasonList={setReasonList}
       submission={submission}
       user={user}
     />
