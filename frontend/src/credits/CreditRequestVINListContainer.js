@@ -169,7 +169,7 @@ const CreditRequestVINListContainer = (props) => {
     const modifiedIdx = modified.findIndex((m) => Number(m.id) == id);
     modifiedIdx >= 0 ? modified.splice(modifiedIdx, 1) : modified.push(id);
     setModified(modified);
-  };
+  }
 
   const handleSubmit = () => {
     setLoading(true);

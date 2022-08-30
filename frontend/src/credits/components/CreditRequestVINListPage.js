@@ -86,6 +86,19 @@ const CreditRequestVINListPage = (props) => {
       })
       .then((response) => {
         const { content: refreshedContent, pages: numPages } = response.data;
+        
+        refreshedContent.forEach((each) => {
+          const index = reasonList.findIndex(
+            (item) => Number(item.id) === Number(each.id)
+          );
+
+          if (each.reason && index < 0) {
+            reasonList.push({
+              id: Number(each.id),
+              reason: each.reason
+            });
+          }
+        });
 
         refreshedContent.forEach((row, idx) => {
           const reasonIndex = reasonList.findIndex(
