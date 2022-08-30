@@ -125,15 +125,11 @@ const RenderCreditTransfersDetailsPage = (user) => {
         }}
       />
     </>
-  )
-}
+  );
+};
 
 it('renders without crashing', () => {
-  render(
-    <Router>
-      {RenderCreditTransfersDetailsPage(user)}
-    </Router>
-  );
+  render(<Router>{RenderCreditTransfersDetailsPage(user)}</Router>);
 });
 
 it('renders without crashing', () => {

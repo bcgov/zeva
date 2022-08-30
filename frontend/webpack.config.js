@@ -66,10 +66,7 @@ const config = {
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
-            options: {
-              hmr: true,
-              reloadAll: true
-            }
+            options: {}
           },
           {
             loader: 'css-loader',

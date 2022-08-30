@@ -2,7 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import formatNumeric from '../../app/utilities/formatNumeric';
 
-const SummarySupplierInfo = ({ supplierDetails, makes, creditActivityDetails, modelYear }) => {
+const SummarySupplierInfo = ({
+  supplierDetails,
+  makes,
+  creditActivityDetails,
+  modelYear
+}) => {
   const { supplierClassText } = creditActivityDetails;
   const { organization } = supplierDetails;
 
