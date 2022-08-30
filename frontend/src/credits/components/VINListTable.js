@@ -344,7 +344,6 @@ const VINListTable = (props) => {
           setTableInitialized(true)
           return
         }
-
         const filters = {};
 
         state.filtered.forEach((each) => {

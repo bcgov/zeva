@@ -2,21 +2,23 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import formatNumeric from '../../app/utilities/formatNumeric';
 
-const SummarySupplierInfo = ({ supplierDetails, makes, creditActivityDetails, modelYear }) => {
+const SummarySupplierInfo = ({
+  supplierDetails,
+  makes,
+  creditActivityDetails,
+  modelYear
+}) => {
   const { supplierClassText } = creditActivityDetails;
   const { organization } = supplierDetails;
 
   const formatAddressType = (addressType) => {
-    if(organization.organizationAddress) {
+    if (organization.organizationAddress) {
       organization.organizationAddress.map((address) => {
-        if(address.addressType.addressType === addressType) {
+        if (address.addressType.addressType === addressType) {
           return (
             <div key={address.id}>
               {address.representativeName && (
-                <div className="text-black">
-                  {' '}
-                  {address.representativeName}{' '}
-                </div>
+                <div className="text-black"> {address.representativeName} </div>
               )}
               <div className="text-black"> {address.addressLine1} </div>
               <div className="text-black"> {address.addressLine2} </div>
@@ -26,12 +28,12 @@ const SummarySupplierInfo = ({ supplierDetails, makes, creditActivityDetails, mo
               </div>
               <div className="text-black"> {address.postalCode} </div>
             </div>
-          )
+          );
         }
-      })
+      });
     }
-    return (<></>)
-  }
+    return <></>;
+  };
 
   return (
     <>

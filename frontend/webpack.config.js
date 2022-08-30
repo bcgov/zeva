@@ -2,7 +2,7 @@ const Webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const SriPlugin = require('webpack-subresource-integrity');
+const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 require('dotenv').config();
 
@@ -49,14 +49,16 @@ const config = {
     rules: [
       {
         test: /\.jsx?$/,
-        loader: 'babel-loader',
         exclude: [nodeModulesPath],
-        query: {
-          presets: ['@babel/preset-react', '@babel/preset-env'],
-          plugins: [
-            '@babel/plugin-proposal-object-rest-spread',
-            'react-hot-loader/babel'
-          ]
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-react', '@babel/preset-env'],
+            plugins: [
+              '@babel/plugin-proposal-object-rest-spread',
+              'react-hot-loader/babel'
+            ]
+          }
         }
       },
       {
@@ -64,10 +66,7 @@ const config = {
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
-            options: {
-              hmr: true,
-              reloadAll: true
-            }
+            options: {}
           },
           {
             loader: 'css-loader',
@@ -85,7 +84,7 @@ const config = {
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
-        loaders: ['file-loader?name=[name].[ext]']
+        use: ['file-loader?name=[name].[ext]']
       },
       {
         test: /\.(otf|eot|svg|ttf|woff|woff2)$/i,
@@ -101,13 +100,12 @@ const config = {
     ]
   },
   devServer: {
-    historyApiFallback: true,
     host: 'localhost',
     port: 3000
   },
   devtool: 'source-map',
   plugins: [
-    new SriPlugin({
+    new SubresourceIntegrityPlugin({
       hashFuncNames: ['sha256', 'sha384'],
       enabled: process.env.NODE_ENV === 'production'
     }),
@@ -150,15 +148,9 @@ const config = {
       title: 'ZEVA',
       chunks: ['bundle', 'vendor'],
       filename: 'generated_index.html',
-      inject: false,
-      mobile: true,
-      appMountId: 'root',
-      links: [
-        'https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'
-        // array of css links to include (eg hosted fonts)
-      ],
-      // eslint-disable-next-line global-require
-      template: require('html-webpack-template')
+      inject: true,
+      favicon: './favicon.ico',
+      template: './template.html'
     })
   ]
 };
