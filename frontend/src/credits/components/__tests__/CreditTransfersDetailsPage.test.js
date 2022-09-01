@@ -212,7 +212,6 @@ it('shows the submission and signed date if the transfer partner opens it', () =
     }
   ];
   const { container } = render(RenderCreditTransfersDetailsPage(user2));
-
   expect(findByTestId(container, 'submit-signature')).toBeInTheDocument;
   expect(findByTestId(container, 'approve-signature')).not.toBeInTheDocument;
 });
@@ -220,7 +219,6 @@ it('shows the submission and signed date if the transfer partner opens it', () =
 it('does not show the rescind button to the partner if the partner hasnt approved', () => {
   submission.status = 'SUBMITTED';
   const { container } = render(RenderCreditTransfersDetailsPage(user2));
-
   expect(queryByText(container, 'Rescind')).not.toBeInTheDocument;
   expect(queryByText(container, 'Reject')).toBeInTheDocument;
 });
@@ -245,7 +243,6 @@ it('shows the submission and approved signature dates if status is approved', ()
     }
   ];
   const { container } = render(RenderCreditTransfersDetailsPage(user));
-
   expect(findByTestId(container, 'submit-signature')).toBeInTheDocument;
   expect(findByTestId(container, 'approve-signature')).toBeInTheDocument;
 });
