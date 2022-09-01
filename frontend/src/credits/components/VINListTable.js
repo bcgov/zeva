@@ -231,7 +231,7 @@ const VINListTable = (props) => {
         },
         {
           Cell: (data) => {
-            const row = data.original
+            const row = data.original;
             if (
               row.warnings &&
               row.warnings.some(
@@ -277,7 +277,7 @@ const VINListTable = (props) => {
           filterable: false,
           sortable: false,
           Header: 'Reason',
-          id: 'reason',
+          id: 'reason'
         }
       ]
     }
@@ -340,9 +340,9 @@ const VINListTable = (props) => {
         // onFetchData is called on component load
         // which we want to avoid, so this tableInitialized
         // variable cancels out the first call to this method
-        if(!tableInitialized) {
-          setTableInitialized(true)
-          return
+        if (!tableInitialized) {
+          setTableInitialized(true);
+          return;
         }
         const filters = {};
 
