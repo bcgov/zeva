@@ -30,6 +30,7 @@ const VINListTable = (props) => {
   } = props;
 
   const [tableInitialized, setTableInitialized] = useState(false);
+
   const reset = query && query.reset;
 
   const getErrorCodes = (item, fields = false) => {
