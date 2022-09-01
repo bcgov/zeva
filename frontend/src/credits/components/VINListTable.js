@@ -3,7 +3,7 @@
  */
 import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import ReactTable from 'react-table';
 
 import CREDIT_ERROR_CODES from '../../app/constants/errorCodes';
@@ -28,6 +28,8 @@ const VINListTable = (props) => {
     setLoading,
     setReactTable
   } = props;
+
+  const [tableInitialized, setTableInitialized] = useState(false);
 
   const reset = query && query.reset;
 
@@ -235,21 +237,21 @@ const VINListTable = (props) => {
               row.warnings.some(
                 (warning) =>
                   [
-                    "DUPLICATE_VIN",
-                    "INVALID_MODEL",
-                    "VIN_ALREADY_AWARDED",
-                    "EXPIRED_REGISTRATION_DATE",
+                    'DUPLICATE_VIN',
+                    'INVALID_MODEL',
+                    'VIN_ALREADY_AWARDED',
+                    'EXPIRED_REGISTRATION_DATE'
                   ].indexOf(warning) >= 0
               )
             ) {
               return false;
             }
-            
+
             // Only show reasons if the validation checkbox is clicked
-            if(invalidatedList.includes(row.id)) {
-              return false
+            if (invalidatedList.includes(row.id)) {
+              return false;
             }
-            
+
             if (row.reason && readOnly) {
               return <div className="text-left">{row.reason}</div>;
             }
@@ -335,6 +337,13 @@ const VINListTable = (props) => {
       loading={loading}
       manual
       onFetchData={(state) => {
+        // onFetchData is called on component load
+        // which we want to avoid, so this tableInitialized
+        // variable cancels out the first call to this method
+        if(!tableInitialized) {
+          setTableInitialized(true)
+          return
+        }
 
         const filters = {};
 
@@ -353,11 +362,10 @@ const VINListTable = (props) => {
           sorted.push(value);
         });
 
-        if(Object.keys(filters).length === 0 && 
-          sorted.length <= 0){
-          return
+        if (Object.keys(filters).length === 0 && sorted.length <= 0) {
+          return;
         }
-        
+
         refreshContent(state, filters);
       }}
       pages={pages}

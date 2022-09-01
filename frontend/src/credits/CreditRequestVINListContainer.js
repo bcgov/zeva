@@ -49,33 +49,38 @@ const CreditRequestVINListContainer = (props) => {
           ) => {
             const { data: submissionData } = submissionResponse;
             setSubmission(submissionData);
-
-            const { data } = contentResponse;
-            setContent(data.content);
-
-            const reset = query && query.reset;
-
-            data.content.forEach((each) => {
-              const index = reasonList.findIndex(
-                (item) => Number(item.id) === Number(each.id)
-              );
-
-              if (each.reason && index < 0) {
-                reasonList.push({
-                  id: Number(each.id),
-                  reason: reset ? '' : each.reason
-                });
-              }
-            });
-
-            setReasonList(reasonList);
-
             const { data: unselected } = unselectedResponse;
             setInvalidatedList(unselected);
-
             const { data: reasonsData } = reasonsResponse;
             setReasons(reasonsData);
 
+            const reset = query && query.reset;
+
+            // Initialize content and reason values
+            const { data } = contentResponse;
+            let contentListData = data.content
+            let reasonListData = []
+
+            // Set content and reason values for each model row
+            contentListData.forEach((row, idx) => {
+              const subId = Number(row.id);
+              const noMatch = row.warnings?.includes("NO_ICBC_MATCH")
+              if(reset) {
+                contentListData[idx].reason = noMatch ? reasons[0] : ''
+                reasonListData.push({
+                  id: subId,
+                  reason: noMatch ? reasons[0] : ''
+                })
+              } else {
+                reasonListData.push({
+                  id: subId,
+                  reason: row.reason
+                });
+              }
+            })
+
+            setContent(contentListData)
+            setReasonList(reasonListData)
             setLoading(false);
           }
         )
