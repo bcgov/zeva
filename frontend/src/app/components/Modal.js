@@ -12,11 +12,16 @@ const Modal = (props) => {
     modalClass,
     showModal,
     title,
-    icon,
+    icon
   } = props;
 
-  return ([
-    <div className={`modal ${showModal ? 'd-block' : 'd-none'}`} key="modal-window" role="dialog" tabIndex="-1">
+  return [
+    <div
+      className={`modal ${showModal ? 'd-block' : 'd-none'}`}
+      key="modal-window"
+      role="dialog"
+      tabIndex="-1"
+    >
       <div className={`modal-dialog ${modalClass}`} role="document">
         <div className="modal-content">
           <div className="modal-header">
@@ -31,9 +36,7 @@ const Modal = (props) => {
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div className="modal-body">
-            {children}
-          </div>
+          <div className="modal-body">{children}</div>
           <div className="modal-footer">
             <button
               className="btn btn-outline-secondary"
@@ -41,21 +44,27 @@ const Modal = (props) => {
               id="cancel"
               onClick={handleCancel}
               type="button"
-            >{cancelLabel}
+            >
+              {cancelLabel}
             </button>
             <button
               className={`btn ${confirmClass}`}
               id="confirm"
               type="button"
               onClick={handleSubmit}
-            >{icon}{confirmLabel}
+            >
+              {icon}
+              {confirmLabel}
             </button>
           </div>
         </div>
       </div>
     </div>,
-    <div className={`modal-backdrop ${showModal ? 'd-block' : 'd-none'}`} key="modal-backdrop" />,
-  ]);
+    <div
+      className={`modal-backdrop ${showModal ? 'd-block' : 'd-none'}`}
+      key="modal-backdrop"
+    />
+  ];
 };
 
 Modal.defaultProps = {
@@ -65,14 +74,14 @@ Modal.defaultProps = {
   confirmClass: 'btn-outline-primary',
   confirmLabel: 'Confirm',
   modalClass: '',
-  title: 'Confirm',
+  title: 'Confirm'
 };
 
 Modal.propTypes = {
   cancelLabel: PropTypes.string,
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
+    PropTypes.node
   ]),
   confirmClass: PropTypes.string,
   confirmLabel: PropTypes.string,
@@ -81,7 +90,7 @@ Modal.propTypes = {
   modalClass: PropTypes.string,
   showModal: PropTypes.bool.isRequired,
   title: PropTypes.string,
-  icon: PropTypes.node,
+  icon: PropTypes.node
 };
 
 export default Modal;

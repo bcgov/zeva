@@ -8,15 +8,17 @@ afterEach(cleanup);
 describe('VehicleDetailsPage', () => {
   const details = {};
   const user = {
-    isGovernment: false,
+    isGovernment: false
   };
 
   it('renders without crashing', () => {
-    render(<VehicleDetailsPage
-      loading
-      details={details}
-      requestStateChange={() => {}}
-      user={user}
-    />);
+    render(
+      <VehicleDetailsPage
+        loading
+        details={details}
+        requestStateChange={() => {}}
+        user={user}
+      />
+    );
   });
 });

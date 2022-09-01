@@ -45,7 +45,7 @@ const OrganizationDetailsContainer = (props) => {
 
 OrganizationDetailsContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default OrganizationDetailsContainer;

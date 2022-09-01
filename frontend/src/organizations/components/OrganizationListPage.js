@@ -9,9 +9,7 @@ import ROUTES_USERS from '../../app/routes/Users';
 import CustomPropTypes from '../../app/utilities/props';
 
 const OrganizationListPage = (props) => {
-  const {
-    filtered, loading, organizations, setFiltered, user,
-  } = props;
+  const { filtered, loading, organizations, setFiltered, user } = props;
 
   if (loading) {
     return <Loading />;
@@ -26,33 +24,32 @@ const OrganizationListPage = (props) => {
 
         <div className="col-md-4">
           <div className="text-right">
-            {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_ORGANIZATIONS') && user.isGovernment
-           && (
-           <button
-             className="button primary"
-             type="button"
-             onClick={() => {
-               history.push(ROUTES_ORGANIZATIONS.NEW);
-             }}
-           >
-             <FontAwesomeIcon icon="plus" /> New Supplier
-           </button>
-           )}
-            {user.isGovernment
-                && (
+            {typeof user.hasPermission === 'function' &&
+              user.hasPermission('EDIT_ORGANIZATIONS') &&
+              user.isGovernment && (
                 <button
-                  className="button primary ml-2"
+                  className="button primary"
                   type="button"
                   onClick={() => {
-                    history.push(ROUTES_USERS.ACTIVE);
+                    history.push(ROUTES_ORGANIZATIONS.NEW);
                   }}
                 >
-                  Email Addresses
+                  <FontAwesomeIcon icon="plus" /> New Supplier
                 </button>
-                )}
+              )}
+            {user.isGovernment && (
+              <button
+                className="button primary ml-2"
+                type="button"
+                onClick={() => {
+                  history.push(ROUTES_USERS.ACTIVE);
+                }}
+              >
+                Email Addresses
+              </button>
+            )}
           </div>
         </div>
-
       </div>
 
       <div className="row">
@@ -69,7 +66,7 @@ const OrganizationListPage = (props) => {
 };
 
 OrganizationListPage.defaultProps = {
-  organizations: [],
+  organizations: []
 };
 
 OrganizationListPage.propTypes = {
@@ -77,7 +74,7 @@ OrganizationListPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   organizations: PropTypes.arrayOf(PropTypes.shape()),
   setFiltered: PropTypes.func.isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default OrganizationListPage;

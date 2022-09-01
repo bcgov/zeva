@@ -12,37 +12,17 @@ import VehicleAlert from '../vehicles/components/VehicleAlert';
 library.add(fab, far, fas);
 storiesOf('vehicle alert', module)
   .add('changes requested alert', () => (
-    <VehicleAlert
-      status="CHANGES_REQUESTED"
-      user="Emily"
-      date="Dec 1, 2020"
-    />
+    <VehicleAlert status="CHANGES_REQUESTED" user="Emily" date="Dec 1, 2020" />
   ))
   .add('draft alert', () => (
-    <VehicleAlert
-      status="DRAFT"
-      user="Emily"
-      date="Dec 1, 2020"
-    />
+    <VehicleAlert status="DRAFT" user="Emily" date="Dec 1, 2020" />
   ))
   .add('submitted alert', () => (
-    <VehicleAlert
-      status="SUBMITTED"
-      user="Emily"
-      date="Dec 1, 2020"
-    />
+    <VehicleAlert status="SUBMITTED" user="Emily" date="Dec 1, 2020" />
   ))
   .add('validated alert', () => (
-    <VehicleAlert
-      status="VALIDATED"
-      user="Emily"
-      date="Dec 1, 2020"
-    />
+    <VehicleAlert status="VALIDATED" user="Emily" date="Dec 1, 2020" />
   ))
   .add('rejected alert', () => (
-    <VehicleAlert
-      status="REJECTED"
-      user="Emily"
-      date="Dec 1, 2020"
-    />
+    <VehicleAlert status="REJECTED" user="Emily" date="Dec 1, 2020" />
   ));

@@ -30,11 +30,9 @@ const BceidUser = {
     shortName: null,
     phone: '111-111-1111',
     title: 'Toyota employee',
-    username: 'fs1',
+    username: 'fs1'
   },
-  hasPermission: () => ([
-    'EDIT_ORGANIZATONS',
-  ]),
+  hasPermission: () => ['EDIT_ORGANIZATONS']
 };
 
 const activityCountIdir = {
@@ -49,7 +47,7 @@ const activityCountIdir = {
   submittedVehicles: 7,
   transfersAwaitingGovernment: 0,
   transfersAwaitingPartner: 0,
-  transfersRecorded: 0,
+  transfersRecorded: 0
 };
 
 const activityCountBceid = {
@@ -64,7 +62,7 @@ const activityCountBceid = {
   modelsValidated: 8,
   transfersAwaitingGovernment: 1,
   transfersAwaitingPartner: 2,
-  transfersRecorded: 5,
+  transfersRecorded: 5
 };
 
 const activityCountBceidNone = {
@@ -79,7 +77,7 @@ const activityCountBceidNone = {
   modelsValidated: 0,
   transfersAwaitingGovernment: 0,
   transfersAwaitingPartner: 0,
-  transfersRecorded: 0,
+  transfersRecorded: 0
 };
 
 storiesOf('Activity Banner BCEID', module)
@@ -157,8 +155,16 @@ storiesOf('Activity Banner BCEID', module)
 
 storiesOf('Actions page bceid', module)
   .add('whole page', () => (
-    <ActionsBceid activityCount={activityCountBceid} loading={false} user={BceidUser} />
-  )) 
+    <ActionsBceid
+      activityCount={activityCountBceid}
+      loading={false}
+      user={BceidUser}
+    />
+  ))
   .add('no activity', () => (
-    <ActionsBceid activityCount={activityCountBceidNone} loading={false} user={BceidUser} />
+    <ActionsBceid
+      activityCount={activityCountBceidNone}
+      loading={false}
+      user={BceidUser}
+    />
   ));

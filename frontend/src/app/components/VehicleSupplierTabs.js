@@ -5,25 +5,19 @@ import history from '../History';
 import ROUTES_ORGANIZATIONS from '../routes/Organizations';
 
 const VehicleSupplierTabs = (props) => {
-  const {
-    active,
-    locationState,
-    supplierId,
-    user,
-  } = props;
+  const { active, locationState, supplierId, user } = props;
   return (
-    <ul
-      className="nav nav-tabs"
-      key="tabs"
-      role="tablist"
-    >
+    <ul className="nav nav-tabs" key="tabs" role="tablist">
       <li
-        className={`nav-item ${(active === 'supplier-info') ? 'active' : ''}`}
+        className={`nav-item ${active === 'supplier-info' ? 'active' : ''}`}
         role="presentation"
       >
         <button
           onClick={() => {
-            history.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/g, supplierId), locationState);
+            history.push(
+              ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/g, supplierId),
+              locationState
+            );
           }}
           type="button"
         >
@@ -31,44 +25,54 @@ const VehicleSupplierTabs = (props) => {
         </button>
       </li>
       <li
-        className={`nav-item ${(active === 'supplier-users') ? 'active' : ''}`}
+        className={`nav-item ${active === 'supplier-users' ? 'active' : ''}`}
         role="presentation"
       >
         <button
           onClick={() => {
-            history.push(ROUTES_ORGANIZATIONS.USERS.replace(/:id/g, supplierId), locationState);
+            history.push(
+              ROUTES_ORGANIZATIONS.USERS.replace(/:id/g, supplierId),
+              locationState
+            );
           }}
           type="button"
         >
           Users
         </button>
       </li>
-      {user.hasPermission('VIEW_ZEV')
-      && (
-      <li
-        className={`nav-item ${(active === 'supplier-zev-models') ? 'active' : ''}`}
-        role="presentation"
-      >
-        <button
-          onClick={() => {
-            history.push(ROUTES_ORGANIZATIONS.VEHICLES.replace(/:id/g, supplierId), locationState);
-          }}
-          type="button"
-        >
-          ZEV Models
-        </button>
-      </li>
-      )}
-      {user.hasPermission('VIEW_SALES')
-      && (
-
+      {user.hasPermission('VIEW_ZEV') && (
         <li
-          className={`nav-item ${(active === 'supplier-credit-transactions') ? 'active' : ''}`}
+          className={`nav-item ${
+            active === 'supplier-zev-models' ? 'active' : ''
+          }`}
           role="presentation"
         >
           <button
             onClick={() => {
-              history.push(ROUTES_ORGANIZATIONS.TRANSACTIONS.replace(/:id/g, supplierId), locationState);
+              history.push(
+                ROUTES_ORGANIZATIONS.VEHICLES.replace(/:id/g, supplierId),
+                locationState
+              );
+            }}
+            type="button"
+          >
+            ZEV Models
+          </button>
+        </li>
+      )}
+      {user.hasPermission('VIEW_SALES') && (
+        <li
+          className={`nav-item ${
+            active === 'supplier-credit-transactions' ? 'active' : ''
+          }`}
+          role="presentation"
+        >
+          <button
+            onClick={() => {
+              history.push(
+                ROUTES_ORGANIZATIONS.TRANSACTIONS.replace(/:id/g, supplierId),
+                locationState
+              );
             }}
             type="button"
           >
@@ -76,15 +80,19 @@ const VehicleSupplierTabs = (props) => {
           </button>
         </li>
       )}
-      {user.hasPermission('VIEW_COMPLIANCE_REPORTS')
-      && (
+      {user.hasPermission('VIEW_COMPLIANCE_REPORTS') && (
         <li
-          className={`nav-item ${(active === 'model-year-reports') ? 'active' : ''}`}
+          className={`nav-item ${
+            active === 'model-year-reports' ? 'active' : ''
+          }`}
           role="presentation"
         >
           <button
             onClick={() => {
-              history.push(ROUTES_ORGANIZATIONS.REPORTS.replace(/:id/g, supplierId), locationState);
+              history.push(
+                ROUTES_ORGANIZATIONS.REPORTS.replace(/:id/g, supplierId),
+                locationState
+              );
             }}
             type="button"
           >
@@ -98,14 +106,14 @@ const VehicleSupplierTabs = (props) => {
 
 VehicleSupplierTabs.defaultProps = {
   locationState: undefined,
-  supplierId: null,
+  supplierId: null
 };
 
 VehicleSupplierTabs.propTypes = {
   active: PropTypes.string.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),
   supplierId: PropTypes.number,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default VehicleSupplierTabs;

@@ -15,7 +15,12 @@ const Balance = (props) => {
       </div>
 
       <div className="content">
-        <a className="pdf-link" href="/" rel="noopener noreferrer" target="_blank">
+        <a
+          className="pdf-link"
+          href="/"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
           <span>Credit Market Report </span>
           <FontAwesomeIcon icon={['far', 'file-pdf']} />
         </a>
@@ -24,11 +29,10 @@ const Balance = (props) => {
   );
 };
 
-Balance.defaultProps = {
-};
+Balance.defaultProps = {};
 
 Balance.propTypes = {
-  organization: CustomPropTypes.organizationDetails.isRequired,
+  organization: CustomPropTypes.organizationDetails.isRequired
 };
 
 export default Balance;

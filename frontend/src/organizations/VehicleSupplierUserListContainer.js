@@ -26,14 +26,18 @@ const VehicleSupplierUserListContainer = (props) => {
   const refreshDetails = () => {
     setLoading(true);
 
-    const detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
-      setDetails(response.data);
-    });
+    const detailsPromise = axios
+      .get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id))
+      .then((response) => {
+        setDetails(response.data);
+      });
 
-    const usersPromise = axios.get(ROUTES_ORGANIZATIONS.USERS.replace(/:id/gi, id)).then((response) => {
-      const { users: organizationUsers } = response.data;
-      setUsers(organizationUsers);
-    });
+    const usersPromise = axios
+      .get(ROUTES_ORGANIZATIONS.USERS.replace(/:id/gi, id))
+      .then((response) => {
+        const { users: organizationUsers } = response.data;
+        setUsers(organizationUsers);
+      });
 
     Promise.all([detailsPromise, usersPromise]).then(() => {
       setLoading(false);
@@ -47,7 +51,12 @@ const VehicleSupplierUserListContainer = (props) => {
   return (
     <div className="page">
       <h1 className="mb-2">{details.name}</h1>
-      <VehicleSupplierTabs locationState={locationState} supplierId={details.id} active="supplier-users" user={user} />
+      <VehicleSupplierTabs
+        locationState={locationState}
+        supplierId={details.id}
+        active="supplier-users"
+        user={user}
+      />
       <VehicleSupplierUserListPage
         filtered={filtered}
         loading={loading}
@@ -62,7 +71,7 @@ const VehicleSupplierUserListContainer = (props) => {
 VehicleSupplierUserListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   location: PropTypes.shape().isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default withRouter(VehicleSupplierUserListContainer);

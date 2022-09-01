@@ -16,19 +16,33 @@ const DashboardPage = (props) => {
       <div className="row">
         <div className="col-xl-3 col-lg-4 col-md-12">
           <UserSettings details={user} />
-          {user && !user.isGovernment && (
-            <Feedback />
-          )}
-          {user && user.isGovernment && (user.hasPermission('EDIT_ORGANIZATIONS') || user.hasPermission('EDIT_ORGANIZATION_INFORMATION'))
-            && (
-            <Administration user={user} />
+          {user && !user.isGovernment && <Feedback />}
+          {user &&
+            user.isGovernment &&
+            (user.hasPermission('EDIT_ORGANIZATIONS') ||
+              user.hasPermission('EDIT_ORGANIZATION_INFORMATION')) && (
+              <Administration user={user} />
             )}
         </div>
 
         <div className="col-xl-8 col-lg-8 col-md-12">
-          {user.isGovernment && <ActionsIdir user={user} activityCount={activityCount} loading={loading} />}
-          {!user.isGovernment && (user.hasPermission('VIEW_ZEV') || user.hasPermission('EDIT_SALES') || user.hasPermission('VIEW_CREDIT_TRANSFERS'))
-            && <ActionsBceid activityCount={activityCount} loading={loading} user={user} />}
+          {user.isGovernment && (
+            <ActionsIdir
+              user={user}
+              activityCount={activityCount}
+              loading={loading}
+            />
+          )}
+          {!user.isGovernment &&
+            (user.hasPermission('VIEW_ZEV') ||
+              user.hasPermission('EDIT_SALES') ||
+              user.hasPermission('VIEW_CREDIT_TRANSFERS')) && (
+              <ActionsBceid
+                activityCount={activityCount}
+                loading={loading}
+                user={user}
+              />
+            )}
         </div>
       </div>
     </div>
@@ -38,7 +52,7 @@ const DashboardPage = (props) => {
 DashboardPage.propTypes = {
   activityCount: PropTypes.shape().isRequired,
   loading: PropTypes.bool.isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default DashboardPage;

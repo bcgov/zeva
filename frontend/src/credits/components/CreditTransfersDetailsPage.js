@@ -29,7 +29,7 @@ const CreditTransfersDetailsPage = (props) => {
     sufficientCredit,
     submission,
     user,
-    errorMessage,
+    errorMessage
   } = props;
   const { id } = useParams();
   const [comment, setComment] = useState('');
@@ -37,15 +37,33 @@ const CreditTransfersDetailsPage = (props) => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
   const transferRole = {
-    rescindable: (user.organization.id === submission.debitFrom.id
-      && ['SUBMITTED', 'APPROVED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL'].indexOf(submission.status) >= 0)
-      || (user.organization.id === submission.creditTo.id && ['APPROVED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL'].indexOf(submission.status) >= 0),
-    initiatingSupplier: user.organization.id === submission.debitFrom.id && ['DRAFT', 'RESCINDED'].indexOf(submission.status) >= 0,
-    tradePartner: user.organization.id === submission.creditTo.id && submission.status === 'SUBMITTED',
-    governmentAnalyst: user.hasPermission('RECOMMEND_CREDIT_TRANSFER')
-      && user.isGovernment && submission.status === 'APPROVED',
-    governmentDirector: user.hasPermission('SIGN_CREDIT_TRANSFERS') && user.isGovernment
-      && (submission.status === 'RECOMMEND_APPROVAL' || submission.status === 'RECOMMEND_REJECTION'),
+    rescindable:
+      (user.organization.id === submission.debitFrom.id &&
+        [
+          'SUBMITTED',
+          'APPROVED',
+          'RECOMMEND_REJECTION',
+          'RECOMMEND_APPROVAL'
+        ].indexOf(submission.status) >= 0) ||
+      (user.organization.id === submission.creditTo.id &&
+        ['APPROVED', 'RECOMMEND_REJECTION', 'RECOMMEND_APPROVAL'].indexOf(
+          submission.status
+        ) >= 0),
+    initiatingSupplier:
+      user.organization.id === submission.debitFrom.id &&
+      ['DRAFT', 'RESCINDED'].indexOf(submission.status) >= 0,
+    tradePartner:
+      user.organization.id === submission.creditTo.id &&
+      submission.status === 'SUBMITTED',
+    governmentAnalyst:
+      user.hasPermission('RECOMMEND_CREDIT_TRANSFER') &&
+      user.isGovernment &&
+      submission.status === 'APPROVED',
+    governmentDirector:
+      user.hasPermission('SIGN_CREDIT_TRANSFERS') &&
+      user.isGovernment &&
+      (submission.status === 'RECOMMEND_APPROVAL' ||
+        submission.status === 'RECOMMEND_REJECTION')
   };
 
   useEffect(() => {
@@ -58,10 +76,28 @@ const CreditTransfersDetailsPage = (props) => {
   });
 
   const transferCommentsIDIR = submission.history
-    .filter((each) => (each.status === 'VALIDATED' || each.status === 'RESCINDED' || each.status === 'APPROVED' || each.status === 'REJECTED' || each.status === 'RECOMMEND_REJECTION' || each.status === 'RECOMMEND_APPROVAL') && each.comment)
+    .filter(
+      (each) =>
+        (each.status === 'VALIDATED' ||
+          each.status === 'RESCINDED' ||
+          each.status === 'APPROVED' ||
+          each.status === 'REJECTED' ||
+          each.status === 'RECOMMEND_REJECTION' ||
+          each.status === 'RECOMMEND_APPROVAL') &&
+        each.comment
+    )
     .map((item) => item.comment);
   const transferCommentsSupplier = submission.history
-    .filter((each) => (each.status === 'VALIDATED' || each.status === 'RESCINDED' || each.status === 'SUBMITTED' || each.status === 'DISAPPROVED' || each.status === 'REJECTED' || each.status === 'RESCIND_PRE_APPROVAL') && each.comment)
+    .filter(
+      (each) =>
+        (each.status === 'VALIDATED' ||
+          each.status === 'RESCINDED' ||
+          each.status === 'SUBMITTED' ||
+          each.status === 'DISAPPROVED' ||
+          each.status === 'REJECTED' ||
+          each.status === 'RESCIND_PRE_APPROVAL') &&
+        each.comment
+    )
     .map((item) => item.comment);
 
   const handleCommentChange = (content) => {
@@ -74,13 +110,18 @@ const CreditTransfersDetailsPage = (props) => {
     if (comment.length > 0) {
       submissionContent.creditTransferComment = { comment };
     }
-    axios.patch(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id), submissionContent).then(() => {
-      history.push(ROUTES_CREDIT_TRANSFERS.EDIT.replace(':id', id));
-      const refreshed = true;
-      if (refreshed) {
-        history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id));
-      }
-    });
+    axios
+      .patch(
+        ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id),
+        submissionContent
+      )
+      .then(() => {
+        history.push(ROUTES_CREDIT_TRANSFERS.EDIT.replace(':id', id));
+        const refreshed = true;
+        if (refreshed) {
+          history.push(ROUTES_CREDIT_TRANSFERS.DETAILS.replace(':id', id));
+        }
+      });
   };
 
   let modalProps = {};
@@ -88,76 +129,97 @@ const CreditTransfersDetailsPage = (props) => {
     case 'initiating-submit':
       modalProps = {
         confirmLabel: ' Submit',
-        handleSubmit: () => { handleSubmit('SUBMITTED'); },
+        handleSubmit: () => {
+          handleSubmit('SUBMITTED');
+        },
         buttonClass: 'button primary',
         modalText: 'Submit credit transfer notice to trade partner?',
-        icon: <FontAwesomeIcon icon="paper-plane" />,
+        icon: <FontAwesomeIcon icon="paper-plane" />
       };
       break;
 
     case 'partner-reject':
       modalProps = {
         confirmLabel: ' Reject',
-        handleSubmit: () => { handleSubmit('DISAPPROVED', comment); },
+        handleSubmit: () => {
+          handleSubmit('DISAPPROVED', comment);
+        },
         buttonClass: 'btn-outline-danger',
-        modalText: 'Reject notice?',
+        modalText: 'Reject notice?'
       };
       break;
     case 'partner-accept':
       modalProps = {
         confirmLabel: ' Submit',
-        handleSubmit: () => { handleSubmit('APPROVED'); },
+        handleSubmit: () => {
+          handleSubmit('APPROVED');
+        },
         buttonClass: 'button primary',
         modalText: 'Submit transfer to government of B.C. Director?',
-        icon: <FontAwesomeIcon icon="paper-plane" />,
+        icon: <FontAwesomeIcon icon="paper-plane" />
       };
       break;
     case 'return':
       modalProps = {
         confirmLabel: 'Return to Analyst',
-        handleSubmit: () => { handleSubmit('APPROVED'); },
+        handleSubmit: () => {
+          handleSubmit('APPROVED');
+        },
         buttonClass: 'btn-outline-danger',
-        modalText: 'Return submission to analyst?',
+        modalText: 'Return submission to analyst?'
       };
       break;
     case 'rescind':
       modalProps = {
         confirmLabel: ' Rescind',
-        handleSubmit: () => { handleSubmit('RESCINDED', comment); },
+        handleSubmit: () => {
+          handleSubmit('RESCINDED', comment);
+        },
         buttonClass: 'button primary',
-        modalText: 'Rescind notice?',
+        modalText: 'Rescind notice?'
       };
       break;
     case 'recommend-reject':
       modalProps = {
         confirmLabel: ' Recommend Rejection',
-        handleSubmit: () => { handleSubmit('RECOMMEND_REJECTION'); },
+        handleSubmit: () => {
+          handleSubmit('RECOMMEND_REJECTION');
+        },
         buttonClass: 'btn-outline-danger',
-        modalText: 'Recommend the Director reject the transfer?',
+        modalText: 'Recommend the Director reject the transfer?'
       };
       break;
     case 'recommend-transfer':
       modalProps = {
         confirmLabel: ' Recommend Transfer',
-        handleSubmit: () => { setShowModal(false); handleSubmit('RECOMMEND_APPROVAL'); },
+        handleSubmit: () => {
+          setShowModal(false);
+          handleSubmit('RECOMMEND_APPROVAL');
+        },
         buttonClass: 'button primary',
-        modalText: 'Recommend the Director record the Transfer?',
+        modalText: 'Recommend the Director record the Transfer?'
       };
       break;
     case 'director-record':
       modalProps = {
         confirmLabel: ' Record Transfer',
-        handleSubmit: () => { setShowModal(false); handleSubmit('VALIDATED', comment); },
+        handleSubmit: () => {
+          setShowModal(false);
+          handleSubmit('VALIDATED', comment);
+        },
         buttonClass: 'button primary',
-        modalText: 'Record the transfer?',
+        modalText: 'Record the transfer?'
       };
       break;
     case 'director-reject':
       modalProps = {
         confirmLabel: ' Reject Transfer',
-        handleSubmit: () => { setShowModal(false); handleSubmit('REJECTED', comment); },
+        handleSubmit: () => {
+          setShowModal(false);
+          handleSubmit('REJECTED', comment);
+        },
         buttonClass: 'btn-outline-danger',
-        modalText: 'Reject the transfer?',
+        modalText: 'Reject the transfer?'
       };
       break;
     default:
@@ -165,7 +227,7 @@ const CreditTransfersDetailsPage = (props) => {
         confirmLabel: '',
         handleSubmit: () => {},
         buttonClass: '',
-        modalText: '',
+        modalText: ''
       };
       break;
   }
@@ -173,19 +235,24 @@ const CreditTransfersDetailsPage = (props) => {
   const modal = (
     <Modal
       confirmLabel={modalProps.confirmLabel}
-      handleCancel={() => { setShowModal(false); }}
+      handleCancel={() => {
+        setShowModal(false);
+      }}
       handleSubmit={modalProps.handleSubmit}
       modalClass="w-75"
       showModal={showModal}
       confirmClass={modalProps.buttonClass}
     >
       <div>
-        <div><br /><br /></div>
-        <h3 className="d-inline">{modalProps.modalText}
-        </h3>
-        <div><br />{comment && (
-          <p>Comment: {parse(comment)}</p>
-        )}<br />
+        <div>
+          <br />
+          <br />
+        </div>
+        <h3 className="d-inline">{modalProps.modalText}</h3>
+        <div>
+          <br />
+          {comment && <p>Comment: {parse(comment)}</p>}
+          <br />
         </div>
       </div>
     </Modal>
@@ -195,18 +262,32 @@ const CreditTransfersDetailsPage = (props) => {
     <>
       <label htmlFor="transfer-rescind-comment">
         <h4>
-          If you need to rescind this transfer notice
-          please enter a reason to your transfer partner.
+          If you need to rescind this transfer notice please enter a reason to
+          your transfer partner.
         </h4>
       </label>
-      <textarea name="transfer-rescind-comment" className="col-sm-11" rows="3" onChange={(event) => { const commentValue = `<p>${event.target.value}</p>`; setComment(commentValue); }} />
+      <textarea
+        name="transfer-rescind-comment"
+        className="col-sm-11"
+        rows="3"
+        onChange={(event) => {
+          const commentValue = `<p>${event.target.value}</p>`;
+          setComment(commentValue);
+        }}
+      />
     </>
   );
   const transferValue = (
     <div className="text-blue">
-      for a total value of $ {formatNumeric(submission.creditTransferContent.reduce(
-      (a, v) => a + v.dollarValue * v.creditValue, 0,
-    ), 2)} Canadian dollars.
+      for a total value of ${' '}
+      {formatNumeric(
+        submission.creditTransferContent.reduce(
+          (a, v) => a + v.dollarValue * v.creditValue,
+          0
+        ),
+        2
+      )}{' '}
+      Canadian dollars.
     </div>
   );
   let latestRescind = false;
@@ -215,7 +296,10 @@ const CreditTransfersDetailsPage = (props) => {
   let showSubmissionConfirmation = true;
   let showApproveConfirmation = true;
   submission.history.forEach((history) => {
-    if (history.status === 'RESCINDED' || history.status === 'RESCIND_PRE_APPROVAL') {
+    if (
+      history.status === 'RESCINDED' ||
+      history.status === 'RESCIND_PRE_APPROVAL'
+    ) {
       latestRescind = history;
     }
     if (history.status === 'SUBMITTED') {
@@ -242,40 +326,59 @@ const CreditTransfersDetailsPage = (props) => {
 
   const signedSubmittedInfo = (
     <>
-      {showSubmissionConfirmation
-        && (
-          <>
-            {latestSubmit && (
-              <div className="text-blue mb-0" data-testid="submit-signature">
-                Signed and submitted by {latestSubmit.createUser.displayName} of&nbsp;
-                {latestSubmit.createUser.organization.name}&nbsp;
-                {moment(latestSubmit.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
-              </div>
-            )}
-            {showApproveConfirmation && (
-              <div className="text-blue mt-0" data-testid="approve-signature">
-                Signed and submitted by {latestApprove.createUser.displayName} of&nbsp;
-                {latestApprove.createUser.organization.name}&nbsp;
-                {moment(latestApprove.createTimestamp).tz('America/Vancouver').format('YYYY-MM-DD hh:mm:ss z')}
-              </div>
-            )}
-          </>
-        )}
+      {showSubmissionConfirmation && (
+        <>
+          {latestSubmit && (
+            <div className="text-blue mb-0" data-testid="submit-signature">
+              Signed and submitted by {latestSubmit.createUser.displayName}{' '}
+              of&nbsp;
+              {latestSubmit.createUser.organization.name}&nbsp;
+              {moment(latestSubmit.createTimestamp)
+                .tz('America/Vancouver')
+                .format('YYYY-MM-DD hh:mm:ss z')}
+            </div>
+          )}
+          {showApproveConfirmation && (
+            <div className="text-blue mt-0" data-testid="approve-signature">
+              Signed and submitted by {latestApprove.createUser.displayName}{' '}
+              of&nbsp;
+              {latestApprove.createUser.organization.name}&nbsp;
+              {moment(latestApprove.createTimestamp)
+                .tz('America/Vancouver')
+                .format('YYYY-MM-DD hh:mm:ss z')}
+            </div>
+          )}
+        </>
+      )}
     </>
   );
   const idirSignoff = (
     <div>
       <label className="mt-3" htmlFor="transfer-comment">
-        <h4> Comment to vehicle suppliers (mandatory to Reject, optional to Record)
+        <h4>
+          {' '}
+          Comment to vehicle suppliers (mandatory to Reject, optional to Record)
         </h4>
       </label>
-      <textarea testid="transfer-comment-analyst" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { const commentValue = `<p>${event.target.value}</p>`; setComment(commentValue); }} />
+      <textarea
+        testid="transfer-comment-analyst"
+        name="transfer-comment"
+        className="col-sm-11"
+        rows="3"
+        onChange={(event) => {
+          const commentValue = `<p>${event.target.value}</p>`;
+          setComment(commentValue);
+        }}
+      />
     </div>
   );
   const idirCommentSection = (
     <div className="text-editor mb-2 mt-2">
       <label className="mt-3" htmlFor="transfer-comment">
-        <h4>{transferRole.governmentAnalyst ? 'Comment to director:' : 'Add Comment to analyst if returning submission:'}
+        <h4>
+          {transferRole.governmentAnalyst
+            ? 'Comment to director:'
+            : 'Add Comment to analyst if returning submission:'}
         </h4>
       </label>
       <ReactQuill
@@ -283,37 +386,46 @@ const CreditTransfersDetailsPage = (props) => {
         modules={{
           toolbar: [
             ['bold', 'italic'],
-            [{ list: 'bullet' }, { list: 'ordered' }],
+            [{ list: 'bullet' }, { list: 'ordered' }]
           ],
           keyboard: {
-            bindings: { tab: false },
-          },
+            bindings: { tab: false }
+          }
         }}
         formats={['bold', 'italic', 'list', 'bullet']}
         onChange={handleCommentChange}
       />
       <button
         className="button mt-2"
-        onClick={() => { handleAddComment(); }}
+        onClick={() => {
+          handleAddComment();
+        }}
         type="button"
-      >Add Comment
+      >
+        Add Comment
       </button>
     </div>
   );
   const tradePartnerSignoff = (
     <div>
       <h4>
-        If you agree to this notice of transfer please confirm the following statements and click
-        Submit Notice to send to the Government of B.C. Director for the transfer to be recorded.
+        If you agree to this notice of transfer please confirm the following
+        statements and click Submit Notice to send to the Government of B.C.
+        Director for the transfer to be recorded.
       </h4>
       <CreditTransferSignoff
         assertions={assertions}
         checkboxes={checkboxes}
-        disableCheckboxes={!user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')}
+        disableCheckboxes={
+          !user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')
+        }
         handleCheckboxClick={handleCheckboxClick}
         user={user}
-        hoverText={user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL') ? '' : 'You do not have permission to check the boxes.'}
-
+        hoverText={
+          user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL')
+            ? ''
+            : 'You do not have permission to check the boxes.'
+        }
       />
       <label htmlFor="transfer-comment">
         <h4>
@@ -321,7 +433,17 @@ const CreditTransfersDetailsPage = (props) => {
           &nbsp;{submission.debitFrom.name} and click Reject Notice
         </h4>
       </label>
-      <textarea testid="transfer-comment" name="transfer-comment" className="col-sm-11" rows="3" onChange={(event) => { const commentValue = `<p>${event.target.value}</p>`; setComment(commentValue); }} disabled={allChecked} />
+      <textarea
+        testid="transfer-comment"
+        name="transfer-comment"
+        className="col-sm-11"
+        rows="3"
+        onChange={(event) => {
+          const commentValue = `<p>${event.target.value}</p>`;
+          setComment(commentValue);
+        }}
+        disabled={allChecked}
+      />
     </div>
   );
   return (
@@ -332,32 +454,30 @@ const CreditTransfersDetailsPage = (props) => {
           <h2>Light Duty Vehicle Credit Transfer</h2>
         </div>
       </div>
-      {transferRole.governmentDirector && errorMessage.length > 0
-        && (
+      {transferRole.governmentDirector && errorMessage.length > 0 && (
         <Alert
           title="Error"
           classname="alert-danger"
           message={`${submission.debitFrom.name} has insufficient credits to fulfil this transfer.`}
         />
-        )}
-      {transferRole.governmentAnalyst && !sufficientCredit
-        && (
+      )}
+      {transferRole.governmentAnalyst && !sufficientCredit && (
         <Alert
           title="Error"
           classname="alert-danger"
           message={`${submission.debitFrom.name} has insufficient credits to fulfil ${submission.pending} pending transfer(s).`}
         />
-        )}
-      {submission.status
-        && (
+      )}
+      {submission.status && (
         <CreditTransfersAlert
           user={user}
           errorMessage={errorMessage}
           submission={submission}
         />
-        )}
-      {((transferCommentsIDIR.length > 0 || transferCommentsSupplier.length > 0) || user.isGovernment)
-        && (
+      )}
+      {(transferCommentsIDIR.length > 0 ||
+        transferCommentsSupplier.length > 0 ||
+        user.isGovernment) && (
         <div className="comment-box mt-2">
           {transferCommentsIDIR.length > 0 && user.isGovernment && (
             <DisplayComment commentArray={transferCommentsIDIR} />
@@ -365,10 +485,11 @@ const CreditTransfersDetailsPage = (props) => {
           {transferCommentsSupplier.length > 0 && !user.isGovernment && (
             <DisplayComment commentArray={transferCommentsSupplier} />
           )}
-          {(transferRole.governmentAnalyst || transferRole.governmentDirector)
-            && idirCommentSection}
+          {(transferRole.governmentAnalyst ||
+            transferRole.governmentDirector) &&
+            idirCommentSection}
         </div>
-        )}
+      )}
 
       {transferRole.governmentAnalyst && (
         <CreditTransfersDetailsSupplierTable
@@ -379,24 +500,17 @@ const CreditTransfersDetailsPage = (props) => {
       <div className="row">
         <div className="col-sm-11 mt-2">
           <div className="form p-2">
-            {submission.debitFrom
-              && (
+            {submission.debitFrom && (
               <div className="my-2 px-2 pb-2">
-                <CreditTransfersDetailsTable submission={submission} tableType="submissionSummary" />
+                <CreditTransfersDetailsTable
+                  submission={submission}
+                  tableType="submissionSummary"
+                />
                 {transferValue}
-                <div className="mb-3">
-                  {signedSubmittedInfo}
-                </div>
-                {transferRole.tradePartner
-                  && tradePartnerSignoff}
-                {transferRole.rescindable
-                  && (
-                  <>
-                    {rescindComment}
-                  </>
-                  )}
-                {transferRole.governmentDirector
-                  && idirSignoff}
+                <div className="mb-3">{signedSubmittedInfo}</div>
+                {transferRole.tradePartner && tradePartnerSignoff}
+                {transferRole.rescindable && <>{rescindComment}</>}
+                {transferRole.governmentDirector && idirSignoff}
                 <CreditTransfersDetailsActionBar
                   allChecked={allChecked}
                   assertions={assertions}
@@ -408,7 +522,7 @@ const CreditTransfersDetailsPage = (props) => {
                   user={user}
                 />
               </div>
-              )}
+            )}
           </div>
         </div>
       </div>
@@ -417,21 +531,20 @@ const CreditTransfersDetailsPage = (props) => {
 };
 
 CreditTransfersDetailsPage.defaultProps = {
-  errorMessage: '',
+  errorMessage: ''
 };
 
 CreditTransfersDetailsPage.propTypes = {
   assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  checkboxes: PropTypes.arrayOf(PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ])).isRequired,
+  checkboxes: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+  ).isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   sufficientCredit: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired,
   submission: PropTypes.shape().isRequired,
-  errorMessage: PropTypes.arrayOf(PropTypes.string),
+  errorMessage: PropTypes.arrayOf(PropTypes.string)
 };
 
 export default CreditTransfersDetailsPage;

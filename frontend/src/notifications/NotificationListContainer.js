@@ -24,11 +24,13 @@ const NotificationListContainer = (props) => {
   const [unsubscribe, setUnsubscribe] = useState();
   const [icon, setIcon] = useState(null);
 
-  const { keycloak, user, } = props;
+  const { keycloak, user } = props;
 
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
-      const checked = checkboxes.filter((each) => Number(each) !== Number(event.target.id));
+      const checked = checkboxes.filter(
+        (each) => Number(each) !== Number(event.target.id)
+      );
       setCheckboxes(checked);
     }
 
@@ -36,57 +38,68 @@ const NotificationListContainer = (props) => {
       const checked = checkboxes.concat(event.target.id);
       setCheckboxes(checked);
     }
-  }; 
-  
+  };
+
   const handleChange = (event) => {
     let items;
-    if (event.target.checked && event.target.value === "Subscribe") {
-      items = notifications.map((notification) => notification.id)
+    if (event.target.checked && event.target.value === 'Subscribe') {
+      items = notifications.map((notification) => notification.id);
       setCheckboxes(items);
-      setDisplayList(true)
-    } 
-    if (event.target.checked && event.target.value === "Unsubscribe") {
-      items = [0]
-      setCheckboxes(items);
-      setDisplayList(false)
+      setDisplayList(true);
     }
-  }; 
+    if (event.target.checked && event.target.value === 'Unsubscribe') {
+      items = [0];
+      setCheckboxes(items);
+      setDisplayList(false);
+    }
+  };
 
   const handleSave = (checkboxes) => {
-    axios.post(ROUTES_NOTIFICATIONS.LIST, {
-      notification: checkboxes,
-    }).then(() => {
-      setAlertMessage("Email notification preferences saved.");
-      setStaus("SAVED");
-      setIcon("check-circle");
-    }).catch(() => {
-      setAlertMessage("Something went wrong, please try again after some time.")
-      setStaus("ERROR")
-      setIcon("exclamation-circle");
-    })
-  }
+    axios
+      .post(ROUTES_NOTIFICATIONS.LIST, {
+        notification: checkboxes
+      })
+      .then(() => {
+        setAlertMessage('Email notification preferences saved.');
+        setStaus('SAVED');
+        setIcon('check-circle');
+      })
+      .catch(() => {
+        setAlertMessage(
+          'Something went wrong, please try again after some time.'
+        );
+        setStaus('ERROR');
+        setIcon('exclamation-circle');
+      });
+  };
 
   const filterNotifications = (notifications) => {
-    const filteredNotifications = notifications.filter((notification) => user.hasPermission(notification.permission));
+    const filteredNotifications = notifications.filter((notification) =>
+      user.hasPermission(notification.permission)
+    );
     setNotifications(filteredNotifications);
   };
 
   const refreshList = (showLoading) => {
     setLoading(showLoading);
-    let notificationList = axios.get(ROUTES_NOTIFICATIONS.LIST).then((response) => {
-      filterNotifications(response.data);
-    });
-    let subscriptionList = axios.get(ROUTES_NOTIFICATIONS.SUBSCRIPTIONS).then((response) => {
-      if (response.data.length === 0) {
-      setUnsubscribe(true)
-      setSubscribe(false)
-    } else {
-      setUnsubscribe(false)
-      setSubscribe(true)
-      setDisplayList(true)
-      setCheckboxes(response.data);
-    } 
-    });
+    let notificationList = axios
+      .get(ROUTES_NOTIFICATIONS.LIST)
+      .then((response) => {
+        filterNotifications(response.data);
+      });
+    let subscriptionList = axios
+      .get(ROUTES_NOTIFICATIONS.SUBSCRIPTIONS)
+      .then((response) => {
+        if (response.data.length === 0) {
+          setUnsubscribe(true);
+          setSubscribe(false);
+        } else {
+          setUnsubscribe(false);
+          setSubscribe(true);
+          setDisplayList(true);
+          setCheckboxes(response.data);
+        }
+      });
     Promise.all([notificationList, subscriptionList]).then(() => {
       setLoading(false);
     });
@@ -106,7 +119,9 @@ const NotificationListContainer = (props) => {
               optionalClassname="button primary"
               disabled={checkboxes.length < 1}
               buttonType="save"
-              action={()=> {handleSave(checkboxes);}}
+              action={() => {
+                handleSave(checkboxes);
+              }}
             />
           </span>
         </div>
@@ -120,13 +135,22 @@ const NotificationListContainer = (props) => {
           <h2>Email Notifications</h2>
           <div className="mt-3 mb-2">
             <div className="text-blue">
-              Receive email notifications of transactions and status changes of interest in the system to: {user.email} 
+              Receive email notifications of transactions and status changes of
+              interest in the system to: {user.email}
             </div>
           </div>
-          {alertMessage
-          && (
+          {alertMessage && (
             <div className="mt-2">
-              <Alert message={alertMessage} status={status} icon={icon} classname={alertMessage === 'Email notification preferences saved.' ? 'alert-success' : 'alert-danger'} />
+              <Alert
+                message={alertMessage}
+                status={status}
+                icon={icon}
+                classname={
+                  alertMessage === 'Email notification preferences saved.'
+                    ? 'alert-success'
+                    : 'alert-danger'
+                }
+              />
             </div>
           )}
         </div>
@@ -160,7 +184,7 @@ const NotificationListContainer = (props) => {
 NotificationListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   location: PropTypes.shape().isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default withRouter(NotificationListContainer);

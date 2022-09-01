@@ -413,7 +413,8 @@ class ModelYearReportComplianceObligationViewset(
             if previous_report_id:
                 starting_balances = ModelYearReportComplianceObligation.objects.filter(
                     model_year_report_id=previous_report_id,
-                    category='ProvisionalBalanceAfterCreditReduction'
+                    category='ProvisionalBalanceAfterCreditReduction',
+                    from_gov=True
                 ).order_by(
                     'model_year__name'
                 )

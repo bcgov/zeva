@@ -12,7 +12,7 @@ const AutocompleteInput = (props) => {
     possibleChoicesList,
     errorMessage,
     handleInputChange,
-    name,
+    name
   } = props;
   const [isHighlighting, setIsHighlighting] = useState(false);
   const [rowClass, setRowClass] = useState('form-group row');
@@ -38,9 +38,11 @@ const AutocompleteInput = (props) => {
   const getSuggestions = (suggestion) => {
     const inputValue = suggestion.trim().toLowerCase();
     const inputLength = inputValue.length;
-    return inputLength === 0 ? [] : possibleChoicesList.filter(
-      (item) => item.toLowerCase().slice(0, inputLength) === inputValue,
-    );
+    return inputLength === 0
+      ? []
+      : possibleChoicesList.filter(
+          (item) => item.toLowerCase().slice(0, inputLength) === inputValue
+        );
   };
 
   // When suggestion is clicked, Autosuggest needs to populate the input
@@ -50,19 +52,15 @@ const AutocompleteInput = (props) => {
     handleInputChange({
       target: {
         name,
-        value: suggestion,
-      },
+        value: suggestion
+      }
     });
 
     return suggestion;
   };
 
   // Use your imagination to render suggestions.
-  const renderSuggestion = (suggestion) => (
-    <div>
-      {suggestion}
-    </div>
-  );
+  const renderSuggestion = (suggestion) => <div>{suggestion}</div>;
 
   const onChange = (event, { newValue }) => {
     if (event.target.name) {
@@ -110,7 +108,7 @@ const AutocompleteInput = (props) => {
       if (key === 'Enter' || key === KEY_RETURN) {
         event.preventDefault();
       }
-    },
+    }
   };
 
   useEffect(() => {
@@ -119,10 +117,7 @@ const AutocompleteInput = (props) => {
 
   return (
     <div id="autocomplete-container" className={rowClass}>
-      <label
-        className="col-sm-4 col-form-label"
-        htmlFor={id}
-      >
+      <label className="col-sm-4 col-form-label" htmlFor={id}>
         {label}
       </label>
       <div className="col-sm-8">
@@ -139,7 +134,9 @@ const AutocompleteInput = (props) => {
             inputProps={inputProps}
           />
         </div>
-        <small className="form-text text-danger">{errorMessage || validationErrors}</small>
+        <small className="form-text text-danger">
+          {errorMessage || validationErrors}
+        </small>
       </div>
     </div>
   );
@@ -150,22 +147,16 @@ AutocompleteInput.defaultProps = {
   defaultValue: '',
   errorMessage: '',
   mandatory: false,
-  possibleChoicesList: [],
+  possibleChoicesList: []
 };
 
 AutocompleteInput.propTypes = {
-  errorMessage: PropTypes.oneOfType([
-    PropTypes.bool,
-    PropTypes.string,
-  ]),
-  defaultValue: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ]),
+  errorMessage: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+  defaultValue: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   handleInputChange: PropTypes.func.isRequired,
   possibleChoicesList: PropTypes.arrayOf(PropTypes.string),
   id: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   mandatory: PropTypes.bool,
-  name: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired
 };

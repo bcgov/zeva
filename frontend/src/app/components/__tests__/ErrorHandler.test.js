@@ -11,6 +11,10 @@ afterEach(cleanup);
 
 describe('error handler', () => {
   it('renders without crashing', () => {
-    render(<ErrorHandler><div /> </ErrorHandler>);
+    render(
+      <ErrorHandler>
+        <div />{' '}
+      </ErrorHandler>
+    );
   });
 });

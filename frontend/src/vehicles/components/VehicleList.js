@@ -7,15 +7,7 @@ import ActionBarNonGov from './ActionBarNonGov';
 import VehicleListTable from './VehicleListTable';
 
 const VehicleList = (props) => {
-  const {
-    loading,
-    vehicles,
-    user,
-    filtered,
-    setFiltered,
-    handleClear,
-
-  } = props;
+  const { loading, vehicles, user, filtered, setFiltered, handleClear } = props;
 
   if (loading) {
     return <Loading />;
@@ -68,9 +60,9 @@ VehicleList.propTypes = {
   handleClear: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   user: PropTypes.shape({
-    isGovernment: PropTypes.bool,
+    isGovernment: PropTypes.bool
   }).isRequired,
-  vehicles: PropTypes.arrayOf(PropTypes.object).isRequired,
+  vehicles: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
 export default VehicleList;

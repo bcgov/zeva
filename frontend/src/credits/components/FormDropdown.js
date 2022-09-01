@@ -11,18 +11,17 @@ const FormDropdown = (props) => {
     selectedOption,
     labelClassname,
     inputClassname,
-    rowClassname,
+    rowClassname
   } = props;
 
   const selectionList = dropdownData.map((obj) => (
-    <option key={accessor(obj)} value={accessor(obj)}>{obj.name || obj.description || obj.modelYear}</option>
+    <option key={accessor(obj)} value={accessor(obj)}>
+      {obj.name || obj.description || obj.modelYear}
+    </option>
   ));
   return (
     <div className={rowClassname}>
-      <label
-        className={labelClassname}
-        htmlFor={dropdownName}
-      >
+      <label className={labelClassname} htmlFor={dropdownName}>
         {dropdownName}
       </label>
       <div className={inputClassname}>
@@ -45,28 +44,26 @@ FormDropdown.defaultProps = {
   accessor: (obj) => obj.id,
   labelClassname: 'col-sm-3 col-form-label',
   inputClassname: 'col-sm-8',
-  rowClassname: 'form-group row',
-
+  rowClassname: 'form-group row'
 };
 
 FormDropdown.propTypes = {
   accessor: PropTypes.func,
-  dropdownData: PropTypes.arrayOf(PropTypes.shape({
-    description: PropTypes.string,
-    id: PropTypes.any,
-    name: PropTypes.string,
-    modelYear: PropTypes.string,
-  })).isRequired,
+  dropdownData: PropTypes.arrayOf(
+    PropTypes.shape({
+      description: PropTypes.string,
+      id: PropTypes.any,
+      name: PropTypes.string,
+      modelYear: PropTypes.string
+    })
+  ).isRequired,
   dropdownName: PropTypes.string.isRequired,
   fieldName: PropTypes.string.isRequired,
   handleInputChange: PropTypes.func.isRequired,
-  selectedOption: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ]).isRequired,
+  selectedOption: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    .isRequired,
   labelClassname: PropTypes.string,
   inputClassname: PropTypes.string,
-  rowClassname: PropTypes.string,
-
+  rowClassname: PropTypes.string
 };
 export default FormDropdown;

@@ -25,11 +25,15 @@ const ComplianceRatiosContainer = (props) => {
   return (
     <>
       <ComplianceTabs active="ratios" user={user} />
-      <ComplianceRatiosDetailsPage user={user} loading={loading} complianceRatios={complianceRatios} />
+      <ComplianceRatiosDetailsPage
+        user={user}
+        loading={loading}
+        complianceRatios={complianceRatios}
+      />
     </>
   );
 };
 ComplianceRatiosContainer.propTypes = {
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 export default ComplianceRatiosContainer;

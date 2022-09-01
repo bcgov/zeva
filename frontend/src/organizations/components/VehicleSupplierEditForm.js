@@ -21,7 +21,7 @@ const VehicleSupplierEditForm = (props) => {
     newSupplier,
     setDetails,
     setServiceSame,
-    serviceSame,
+    serviceSame
   } = props;
   const [showModal, setShowModal] = useState(false);
 
@@ -33,23 +33,26 @@ const VehicleSupplierEditForm = (props) => {
         setShowModal(false);
         setDetails({
           ...details,
-          isActive: true,
+          isActive: true
         });
       }}
       handleSubmit={() => {
         setShowModal(false);
         setDetails({
           ...details,
-          isActive: false,
+          isActive: false
         });
       }}
       showModal={showModal}
       title="Make Supplier Inactive"
     >
-      <p>You have selected to make this vehicle supplier Inactive. <br /><br />
-        They will no longer have the ability to make any further changes
-        within their account and all their users will have read only access
-      </p><br />
+      <p>
+        You have selected to make this vehicle supplier Inactive. <br />
+        <br />
+        They will no longer have the ability to make any further changes within
+        their account and all their users will have read only access
+      </p>
+      <br />
       <p>Do you want to make this supplier Inactive?</p>
     </Modal>
   );
@@ -57,7 +60,7 @@ const VehicleSupplierEditForm = (props) => {
 
   if (details.organizationAddress) {
     addressDetails = {
-      ...details.organizationAddress,
+      ...details.organizationAddress
     };
   }
 
@@ -70,7 +73,9 @@ const VehicleSupplierEditForm = (props) => {
         <div className="col-md-12">
           <h2 className="mb-2">{newSupplier ? 'Add' : 'Edit'} Supplier</h2>
           {display && (
-            <h3 className="mb-2">{display.name} {display.shortName && `(${display.shortName})`}</h3>
+            <h3 className="mb-2">
+              {display.name} {display.shortName && `(${display.shortName})`}
+            </h3>
           )}
         </div>
       </div>
@@ -81,10 +86,7 @@ const VehicleSupplierEditForm = (props) => {
               <div className="form-layout row">
                 <div className="col-lg-12">
                   <div className="form-group row">
-                    <label
-                      className="col-sm-3 col-form-label"
-                      htmlFor="active"
-                    >
+                    <label className="col-sm-3 col-form-label" htmlFor="active">
                       Supplier Status
                     </label>
                     <div className="col-sm-9" id="radio">
@@ -95,7 +97,7 @@ const VehicleSupplierEditForm = (props) => {
                           onChange={() => {
                             setDetails({
                               ...details,
-                              isActive: true,
+                              isActive: true
                             });
                           }}
                           name="isActive"
@@ -134,7 +136,9 @@ const VehicleSupplierEditForm = (props) => {
                     labelSize="col-sm-3 col-form-label"
                     inputSize="col-sm-7"
                     defaultValue={details.shortName}
-                    errorMessage={'shortName' in errorFields && errorFields.shortName}
+                    errorMessage={
+                      'shortName' in errorFields && errorFields.shortName
+                    }
                     handleInputChange={handleInputChange}
                     id="CommonName"
                     label="Common Name"
@@ -176,7 +180,13 @@ const VehicleSupplierEditForm = (props) => {
               </span>
 
               <span className="right-content">
-                <Button buttonType="save" optionalClassname="button primary" action={() => { handleSubmit(); }} />
+                <Button
+                  buttonType="save"
+                  optionalClassname="button primary"
+                  action={() => {
+                    handleSubmit();
+                  }}
+                />
               </span>
             </div>
           </div>
@@ -187,7 +197,7 @@ const VehicleSupplierEditForm = (props) => {
 };
 
 VehicleSupplierEditForm.defaultProps = {
-  errorFields: {},
+  errorFields: {}
 };
 
 VehicleSupplierEditForm.propTypes = {
@@ -201,7 +211,7 @@ VehicleSupplierEditForm.propTypes = {
   newSupplier: PropTypes.bool.isRequired,
   serviceSame: PropTypes.bool.isRequired,
   setDetails: PropTypes.func.isRequired,
-  setServiceSame: PropTypes.func.isRequired,
+  setServiceSame: PropTypes.func.isRequired
 };
 
 export default VehicleSupplierEditForm;

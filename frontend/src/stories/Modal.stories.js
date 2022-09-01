@@ -17,11 +17,7 @@ const handleSubmit = () => console.log('SUBMIT!');
 
 storiesOf('modal', module)
   .add('basic modal', () => (
-    <Modal
-      handleCancel={handleCancel}
-      handleSubmit={handleSubmit}
-      showModal
-    />
+    <Modal handleCancel={handleCancel} handleSubmit={handleSubmit} showModal />
   ))
   .add('no modal', () => (
     <Modal
@@ -39,5 +35,3 @@ storiesOf('modal', module)
       icon={<FontAwesomeIcon icon="paper-plane" />}
     />
   ));
-
-

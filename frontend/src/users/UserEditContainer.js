@@ -18,7 +18,7 @@ import UserDetailsForm from './components/UserDetailsForm';
 const UserEditContainer = (props) => {
   let { id } = useParams();
   const [details, setDetails] = useState({
-    isActive: true,
+    isActive: true
   });
   const [errorFields, setErrorFields] = useState({});
   const [loading, setLoading] = useState(true);
@@ -35,7 +35,9 @@ const UserEditContainer = (props) => {
     const { value, name } = event.target;
     if (name === 'roles-manager') {
       if (!event.target.checked) {
-        const newRoles = userRoles.filter((each) => Number(each) !== Number(event.target.id));
+        const newRoles = userRoles.filter(
+          (each) => Number(each) !== Number(event.target.id)
+        );
         setUserRoles(newRoles);
       }
 
@@ -47,7 +49,7 @@ const UserEditContainer = (props) => {
 
     setDetails({
       ...details,
-      [name]: value,
+      [name]: value
     });
   };
 
@@ -55,37 +57,41 @@ const UserEditContainer = (props) => {
     if (!newUser && id) {
       return axios.put(ROUTES_USERS.DETAILS.replace(/:id/gi, id), {
         ...details,
-        roles: userRoles,
+        roles: userRoles
       });
     }
 
     return axios.post(ROUTES_USERS.LIST, {
       ...details,
       email: details.keycloakEmail,
-      roles: userRoles,
+      roles: userRoles
     });
   };
 
   const handleSubmit = () => {
-    saveUser().then((response) => {
-      const { organization } = response.data;
+    saveUser()
+      .then((response) => {
+        const { organization } = response.data;
 
-      if (organization.id === user.organization.id) {
-        history.push(ROUTES_ORGANIZATIONS.MINE);
-      } else {
-        history.push(ROUTES_ORGANIZATIONS.USERS.replace(/:id/gi, organization.id));
-      }
-    }).catch((errors) => {
-      if (!errors.response) {
-        return;
-      }
+        if (organization.id === user.organization.id) {
+          history.push(ROUTES_ORGANIZATIONS.MINE);
+        } else {
+          history.push(
+            ROUTES_ORGANIZATIONS.USERS.replace(/:id/gi, organization.id)
+          );
+        }
+      })
+      .catch((errors) => {
+        if (!errors.response) {
+          return;
+        }
 
-      const { data } = errors.response;
-      const err = {};
+        const { data } = errors.response;
+        const err = {};
 
-      parseErrorResponse(err, data);
-      setErrorFields(err);
-    });
+        parseErrorResponse(err, data);
+        setErrorFields(err);
+      });
   };
 
   useEffect(() => {
@@ -98,20 +104,24 @@ const UserEditContainer = (props) => {
     let detailsPromise;
 
     if (newUser) {
-      detailsPromise = axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
-        setDetails({
-          ...details,
-          organization: response.data,
+      detailsPromise = axios
+        .get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id))
+        .then((response) => {
+          setDetails({
+            ...details,
+            organization: response.data
+          });
         });
-      });
     } else {
-      detailsPromise = axios.get(ROUTES_USERS.DETAILS.replace(/:id/gi, id)).then((response) => {
-        setDetails(response.data);
+      detailsPromise = axios
+        .get(ROUTES_USERS.DETAILS.replace(/:id/gi, id))
+        .then((response) => {
+          setDetails(response.data);
 
-        const { roles: uRoles } = response.data;
-        const roleIds = uRoles.map((role) => role.id);
-        setUserRoles(roleIds);
-      });
+          const { roles: uRoles } = response.data;
+          const roleIds = uRoles.map((role) => role.id);
+          setUserRoles(roleIds);
+        });
     }
 
     Promise.all([detailsPromise, rolesPromise]).then(() => {
@@ -135,13 +145,13 @@ const UserEditContainer = (props) => {
 };
 
 UserEditContainer.defaultProps = {
-  newUser: false,
+  newUser: false
 };
 
 UserEditContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   newUser: PropTypes.bool,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default UserEditContainer;

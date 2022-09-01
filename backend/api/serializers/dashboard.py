@@ -112,12 +112,17 @@ class DashboardListSerializer(ModelSerializer):
                 organization_id=request.user.organization_id)
             report_statuses = []
             for each in model_year_reports:
-                
                 supplemental_report = each.get_latest_supplemental(request)
                 if supplemental_report:
-                    report_statuses.append(supplemental_report.status.value)
+                    if supplemental_report.status.value == 'RECOMMENDED':
+                        report_statuses.append('SUBMITTED')
+                    else:
+                        report_statuses.append(supplemental_report.status.value)
                 else:
-                    report_statuses.append(each.validation_status.value)
+                    if each.validation_status in [ ModelYearReportStatuses.RECOMMENDED, ModelYearReportStatuses.RETURNED]:
+                        report_statuses.append('SUBMITTED')
+                    else:
+                        report_statuses.append(each.validation_status.value)
             status_dict = {}
             for i in report_statuses:
                 if i in status_dict:

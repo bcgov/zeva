@@ -26,7 +26,7 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
     if (item.category === 'creditBalanceStart') {
       creditBalanceStart[item.modelYear.name] = {
         A: Number(item.creditAValue),
-        B: Number(item.creditBValue),
+        B: Number(item.creditBValue)
       };
 
       endingBalanceA += Number(item.creditAValue);
@@ -40,7 +40,7 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
       } else {
         creditBalanceStart[item.modelYear.name] = {
           A: Number(item.creditAValue) * -1,
-          B: Number(item.creditBValue) * -1,
+          B: Number(item.creditBValue) * -1
         };
       }
 
@@ -52,7 +52,7 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
       transfersIn.push({
         modelYear: item.modelYear.name,
         A: Number(item.creditAValue),
-        B: Number(item.creditBValue),
+        B: Number(item.creditBValue)
       });
 
       endingBalanceA += Number(item.creditAValue);
@@ -63,7 +63,7 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
       transfersOut.push({
         modelYear: item.modelYear.name,
         A: Number(item.creditAValue),
-        B: Number(item.creditBValue),
+        B: Number(item.creditBValue)
       });
 
       endingBalanceA -= Number(item.creditAValue);
@@ -73,7 +73,7 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
       initiativeAgreement.push({
         modelYear: item.modelYear.name,
         A: Number(item.creditAValue),
-        B: Number(item.creditBValue),
+        B: Number(item.creditBValue)
       });
       endingBalanceA += Number(item.creditAValue);
       endingBalanceB += Number(item.creditBValue);
@@ -83,7 +83,7 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
       purchaseAgreement.push({
         modelYear: item.modelYear.name,
         A: Number(item.creditAValue),
-        B: Number(item.creditBValue),
+        B: Number(item.creditBValue)
       });
       endingBalanceA += Number(item.creditAValue);
       endingBalanceB += Number(item.creditBValue);
@@ -92,7 +92,7 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
       administrativeAllocation.push({
         modelYear: item.modelYear.name,
         A: Number(item.creditAValue),
-        B: Number(item.creditBValue),
+        B: Number(item.creditBValue)
       });
       endingBalanceA += Number(item.creditAValue);
       endingBalanceB += Number(item.creditBValue);
@@ -101,7 +101,7 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
       administrativeReduction.push({
         modelYear: item.modelYear.name,
         A: Number(item.creditAValue),
-        B: Number(item.creditBValue),
+        B: Number(item.creditBValue)
       });
       endingBalanceA -= Number(item.creditAValue);
       endingBalanceB -= Number(item.creditBValue);
@@ -110,14 +110,16 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
       automaticAdministrativePenalty.push({
         modelYear: item.modelYear.name,
         A: Number(item.creditAValue),
-        B: Number(item.creditBValue),
+        B: Number(item.creditBValue)
       });
       endingBalanceA += Number(item.creditAValue);
       endingBalanceB += Number(item.creditBValue);
     }
 
     if (item.category === 'creditsIssuedSales') {
-      const index = creditsIssuedSales.findIndex((each) => each.modelYear === item.modelYear.name);
+      const index = creditsIssuedSales.findIndex(
+        (each) => each.modelYear === item.modelYear.name
+      );
       if (index >= 0) {
         creditsIssuedSales[index].A += Number(item.creditAValue);
         creditsIssuedSales[index].B += Number(item.creditBValue);
@@ -125,7 +127,7 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
         creditsIssuedSales.push({
           modelYear: item.modelYear.name,
           A: Number(item.creditAValue),
-          B: Number(item.creditBValue),
+          B: Number(item.creditBValue)
         });
       }
 
@@ -141,13 +143,13 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
       pendingBalance.push({
         modelYear: item.modelYear.name,
         A: Number(item.creditAValue),
-        B: Number(item.creditBValue),
+        B: Number(item.creditBValue)
       });
     }
 
     creditBalanceEnd[item.modelYear.name] = {
       A: Number(endingBalanceA),
-      B: Number(endingBalanceB),
+      B: Number(endingBalanceB)
     };
   });
 
@@ -155,7 +157,7 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
   Object.keys(creditBalanceEnd).forEach((item) => {
     provisionalBalance[item] = {
       A: Number(creditBalanceEnd[item].A),
-      B: Number(creditBalanceEnd[item].B),
+      B: Number(creditBalanceEnd[item].B)
     };
   });
 
@@ -167,7 +169,7 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
     } else {
       provisionalBalance[item.modelYear] = {
         A: item.A,
-        B: item.B,
+        B: item.B
       };
     }
   });
@@ -186,7 +188,7 @@ const getComplianceObligationDetails = (complianceResponseDetails) => {
     purchaseAgreement,
     administrativeAllocation,
     administrativeReduction,
-    automaticAdministrativePenalty,
+    automaticAdministrativePenalty
   };
 };
 

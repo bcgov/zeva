@@ -1,29 +1,23 @@
 module.exports = {
-  collectCoverageFrom: [
-    'src/**/*.{js,jsx}',
-  ],
+  collectCoverageFrom: ['src/**/*.{js,jsx}'],
   coverageThreshold: {
     global: {
       branches: 90,
       functions: 90,
       lines: 90,
-      statements: -50,
-    },
+      statements: -50
+    }
   },
   moduleFileExtensions: ['js', 'node', 'json'],
   moduleNameMapper: {
-    '^.+\\.(css|less|scss)$': '<rootDir>/__mocks__/style.js',
+    '^.+\\.(css|less|scss)$': '<rootDir>/__mocks__/style.js'
   },
-  setupFiles: [
-    './jest.setup.js',
-  ],
+  setupFiles: ['./jest.setup.js'],
   testURL: 'http://localhost/',
   transform: {
-    '^.+\\.(js|jsx)$': 'babel-jest',
+    '^.+\\.(js|jsx)$': 'babel-jest'
   },
-  coveragePathIgnorePatterns: [
-    'node_modules/',
-  ],
+  coveragePathIgnorePatterns: ['node_modules/'],
   verbose: true,
   globals: {
     __APIBASE__: '/',
@@ -31,7 +25,6 @@ module.exports = {
     __KEYCLOAK_LOGOUT_REDIRECT_URL__: '',
     __KEYCLOAK_REALM_NAME__: '',
     __KEYCLOAK_URL__: '',
-    __VERSION__: '',
-  },
-
+    __VERSION__: ''
+  }
 };

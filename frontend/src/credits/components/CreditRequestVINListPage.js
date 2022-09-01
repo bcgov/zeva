@@ -10,6 +10,7 @@ import VINListTable from './VINListTable';
 const CreditRequestVINListPage = (props) => {
   const {
     content,
+    reasonList,
     handleCheckboxClick,
     handleChangeReason,
     handleSubmit,
@@ -17,9 +18,10 @@ const CreditRequestVINListPage = (props) => {
     query,
     reasons,
     setContent,
+    setReasonList,
     submission,
     user,
-    invalidatedList,
+    invalidatedList
   } = props;
 
   const [filtered, setFiltered] = useState([]);
@@ -32,10 +34,10 @@ const CreditRequestVINListPage = (props) => {
   const filterWarnings = (event) => {
     const { value } = event.target;
 
-    const index = filtered.findIndex((item) => (item.id === 'warning'));
+    const index = filtered.findIndex((item) => item.id === 'warning');
     const filter = {
       id: 'warning',
-      value,
+      value
     };
 
     if (index >= 0) {
@@ -72,21 +74,47 @@ const CreditRequestVINListPage = (props) => {
 
     setCancelToken(newCancelToken);
 
-    await axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', submission.id), {
-      params: {
-        filters,
-        page: state.page + 1, // page from front-end is zero index, but in the back-end we need the actual page number
-        page_size: state.pageSize,
-        sorted: sorted.join(','),
-      },
-      cancelToken: newCancelToken.token,
-    }).then((response) => {
-      const { content: refreshedContent, pages: numPages } = response.data;
+    await axios
+      .get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', submission.id), {
+        params: {
+          filters,
+          page: state.page + 1, // page from front-end is zero index, but in the back-end we need the actual page number
+          page_size: state.pageSize,
+          sorted: sorted.join(',')
+        },
+        cancelToken: newCancelToken.token
+      })
+      .then((response) => {
+        const { content: refreshedContent, pages: numPages } = response.data;
+        
+        refreshedContent.forEach((row, idx) => {
+          const reasonIndex = reasonList.findIndex(
+            (x) => Number(x.id) === Number(row.id)
+          );
+          
+          // The reasonList stores any changes to reasons
+          // a user has made. If the user filters or sorts, the content
+          // value can be different when it comes back from the server
+          // and their changes would be lost.
+          // To account for this we set the refreshedContent reason value
+          // to the value in the reasonList so we don't lose the user changes.
+          if(reasonIndex >= 0) {
+            refreshedContent[idx].reason = reasonList[reasonIndex].reason
+          } else if(reasonIndex < 0) {
+            // If the reason with id doesn't exist in the reasonList
+            // then we add it here matching the content reason value
+            reasonList.push({
+              id: Number(row.id),
+              reason: row.reason
+            });
+          }
+        });
 
-      setContent(refreshedContent);
-      setLoading(false);
-      setPages(numPages);
-    });
+        setContent(refreshedContent);
+        setReasonList(reasonList);
+        setLoading(false);
+        setPages(numPages);
+      });
   };
 
   const clearFilters = () => {
@@ -119,8 +147,12 @@ const CreditRequestVINListPage = (props) => {
     <div id="sales-details" className="page">
       <div className="row">
         <div className="col-sm-12">
-          <h1>{submission.organization && `${submission.organization.name} `}</h1>
-          <h2 className="my-0 py-0">ZEV Sales Submission {submission.submissionDate}</h2>
+          <h1>
+            {submission.organization && `${submission.organization.name} `}
+          </h1>
+          <h2 className="my-0 py-0">
+            ZEV Sales Submission {submission.submissionDate}
+          </h2>
         </div>
       </div>
 
@@ -137,7 +169,9 @@ const CreditRequestVINListPage = (props) => {
               <option value="11">11 - VIN not registered in B.C.</option>
               <option value="21">21 - VIN already issued credits</option>
               <option value="31">31 - Duplicate VIN</option>
-              <option value="41">41 - Model year and/or make does not match</option>
+              <option value="41">
+                41 - Model year and/or make does not match
+              </option>
               <option value="51">51 - Sale prior to Jan 2018</option>
               <option value="61">61 - Invalid date format</option>
             </select>
@@ -146,7 +180,9 @@ const CreditRequestVINListPage = (props) => {
           <button
             className="button d-inline-block align-middle"
             disabled={filtered.length === 0}
-            onClick={() => { clearFilters(); }}
+            onClick={() => {
+              clearFilters();
+            }}
             type="button"
           >
             Clear Filters
@@ -180,36 +216,34 @@ const CreditRequestVINListPage = (props) => {
       </div>
 
       <div className="row">
-        <div className="col-sm-12">
-          {actionBar}
-        </div>
+        <div className="col-sm-12">{actionBar}</div>
       </div>
     </div>
   );
 };
 
 CreditRequestVINListPage.defaultProps = {
-  query: null,
+  query: null
 };
 
 CreditRequestVINListPage.propTypes = {
   content: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  reasonList: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   handleChangeReason: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-  invalidatedList: PropTypes.arrayOf(PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ])).isRequired,
-  modified: PropTypes.arrayOf(PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ])).isRequired,
+  invalidatedList: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+  ).isRequired,
+  modified: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+  ).isRequired,
   query: PropTypes.shape(),
   reasons: PropTypes.arrayOf(PropTypes.string).isRequired,
   setContent: PropTypes.func.isRequired,
+  setReasonList: PropTypes.func.isRequired,
   submission: PropTypes.shape().isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default CreditRequestVINListPage;

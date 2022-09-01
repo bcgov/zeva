@@ -17,11 +17,10 @@ const consoleTransport = new winston.transports.Console();
 const log = winston.createLogger({
   format: winston.format.combine(
     winston.format.timestamp(),
-    winston.format.prettyPrint(),
+    winston.format.prettyPrint()
   ),
-  transports: [consoleTransport],
+  transports: [consoleTransport]
 });
-
 
 const connect = (io) => {
   const connection = amqp.createConnection({
@@ -29,7 +28,7 @@ const connect = (io) => {
     port: amqpPort,
     vhost,
     login: user,
-    password,
+    password
   });
 
   connection.on('error', (e) => {
@@ -40,14 +39,18 @@ const connect = (io) => {
     log.info('AMQP connection ready');
 
     connection.queue('', { exclusive: false, autoDelete: true }, (q) => {
-      connection.exchange('notifications', {
-        type: 'fanout',
-        autoDelete: false,
-        durable: true,
-        confirm: false,
-      }, (exchange) => {
-        q.bind(exchange, '#');
-      });
+      connection.exchange(
+        'notifications',
+        {
+          type: 'fanout',
+          autoDelete: false,
+          durable: true,
+          confirm: false
+        },
+        (exchange) => {
+          q.bind(exchange, '#');
+        }
+      );
 
       /* we got a notification -- tell the connected clients */
       q.subscribe((message) => {
@@ -68,7 +71,7 @@ const connect = (io) => {
           case 'notification':
             io.in(room).emit('action', {
               type: 'SERVER_INITIATED_NOTIFICATION_RELOAD',
-              message: 'notification',
+              message: 'notification'
             });
             break;
           default:
@@ -78,7 +81,6 @@ const connect = (io) => {
     });
   });
 };
-
 
 const client = jwksClient({ jwksUri: jwksURI });
 
@@ -95,11 +97,12 @@ function getSigningKey(header, callback) {
 
 const setup = (io) => {
   if (!jwksURI) {
-    log.error('No KEYCLOAK_CERTS_URL in environment,'
-      + ' cannot validate tokens and will not serve socket.io clients');
+    log.error(
+      'No KEYCLOAK_CERTS_URL in environment,' +
+        ' cannot validate tokens and will not serve socket.io clients'
+    );
     return;
   }
-
 
   io.on('connect', (socket) => {
     socket.join('global');
@@ -118,11 +121,11 @@ const setup = (io) => {
               socket.join(roomName);
               authenticated = true;
               io.in(roomName).emit('action', {
-                type: 'socketio/AUTHENTICATE_SUCCESS',
+                type: 'socketio/AUTHENTICATE_SUCCESS'
               });
               io.in(roomName).emit('action', {
                 type: 'message',
-                data: `Hello from nodejs@${process.env.HOSTNAME}, ${decoded.user_id}`,
+                data: `Hello from nodejs@${process.env.HOSTNAME}, ${decoded.user_id}`
               });
             }
           });
@@ -142,10 +145,12 @@ const setup = (io) => {
   if (amqpEnabled) {
     connect(io);
   } else {
-    log.info('AMQP is disabled. Clients can connect and be authenticated but no messages will be relayed to them.');
+    log.info(
+      'AMQP is disabled. Clients can connect and be authenticated but no messages will be relayed to them.'
+    );
   }
 };
 
 module.exports = {
-  setup,
+  setup
 };

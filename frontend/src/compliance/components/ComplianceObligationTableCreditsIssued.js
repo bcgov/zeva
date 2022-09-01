@@ -11,14 +11,14 @@ const ComplianceObligationTableCreditsIssued = (props) => {
     reportYear,
     pendingBalanceExist,
     readOnly,
-    supplementalReport,
+    supplementalReport
   } = props;
 
   const {
     creditBalanceStart,
     pendingBalance,
     provisionalBalance,
-    transactions,
+    transactions
   } = reportDetails;
 
   const {
@@ -29,14 +29,16 @@ const ComplianceObligationTableCreditsIssued = (props) => {
     initiativeAgreement,
     purchaseAgreement,
     transfersIn,
-    transfersOut,
+    transfersOut
   } = transactions;
 
   const getNewData = (category, modelYear, value) => {
     if (newData && newData.creditActivity) {
-      const found = newData.creditActivity.find((each) => (
-        each.category === category && Number(each.modelYear) === Number(modelYear)
-      ));
+      const found = newData.creditActivity.find(
+        (each) =>
+          each.category === category &&
+          Number(each.modelYear) === Number(modelYear)
+      );
 
       if (found) {
         return found[value];
@@ -47,12 +49,19 @@ const ComplianceObligationTableCreditsIssued = (props) => {
   };
 
   const getDefault = (category, each, classType) => {
-    if (getNewData(category, each.modelYear, classType) === '' || getNewData(category, each.modelYear, classType) === null) {
+    if (
+      getNewData(category, each.modelYear, classType) === '' ||
+      getNewData(category, each.modelYear, classType) === null
+    ) {
       if (classType === 'creditAValue') {
-        return (Number(each.A) > 0 ? formatNumeric(each.A, 2) : formatNumeric(each.A * -1, 2));
+        return Number(each.A) > 0
+          ? formatNumeric(each.A, 2)
+          : formatNumeric(each.A * -1, 2);
       }
       if (classType === 'creditBValue') {
-        return (Number(each.B) > 0 ? formatNumeric(each.B, 2) : formatNumeric(each.B * -1, 2));
+        return Number(each.B) > 0
+          ? formatNumeric(each.B, 2)
+          : formatNumeric(each.B * -1, 2);
       }
     }
     return getNewData(category, each.modelYear, classType);
@@ -113,9 +122,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
     return (
       <>
         <tr className="subclass">
-          <th className="large-column">
-            {title}
-          </th>
+          <th className="large-column">{title}</th>
           <th className="small-column text-center text-blue">A</th>
           <th className="small-column text-center text-blue">B</th>
           {supplementalReport && (
@@ -125,104 +132,167 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             </>
           )}
         </tr>
-        {input.sort((a, b) => {
-          if (a.modelYear > b.modelYear) {
-            return 1;
-          }
-          if (a.modelYear < b.modelYear) {
-            return -1;
-          }
-          return 0;
-        }).map((each) => (
-          <tr key={each.modelYear}>
-            <td className="text-blue">
-              &bull; &nbsp; &nbsp;
-              {title !== 'Automatic Administrative Penalty' && (` ${each.modelYear} `)}
-              Credits
-            </td>
-            {title === 'Transferred Away' || title === 'Administrative Credit Reduction' ? (
-              <>
-                <td className={`${numberClassname} ${Number(each.A) > 0 ? 'text-red' : ''}`}>
-                  {formatNumeric(each.A * -1, 2)}
-                </td>
-                <td className={`${numberClassname} ${Number(each.B) > 0 ? 'text-red' : ''}`}>
-                  {formatNumeric(each.B * -1, 2)}
-                </td>
-              </>
-            ) : (
-              <>
-                <td className={`${numberClassname} ${Number(each.A) < 0 ? 'text-red' : ''}`}>
-                  {formatNumeric(each.A, 2)}
-                </td>
-                <td className={`${numberClassname} ${Number(each.B) < 0 ? 'text-red' : ''}`}>
-                  {formatNumeric(each.B, 2)}
-                </td>
-              </>
-            )}
-            {supplementalReport && (
-              <>
-                <td>
-                  <input
-                    className={`form-control ${Number(each.A) !== Number(getNumeric(getDefault(category, each, 'creditAValue'))) ? 'highlight' : ''}`}
-                    defaultValue={`${title === 'Transferred Away' || title === 'Administrative Credit Reduction' ? '-' : ''}${getDefault(category, each, 'creditAValue')}`}
-                    type="text"
-                    onChange={(event) => {
-                      let { value } = event.target;
+        {input
+          .sort((a, b) => {
+            if (a.modelYear > b.modelYear) {
+              return 1;
+            }
+            if (a.modelYear < b.modelYear) {
+              return -1;
+            }
+            return 0;
+          })
+          .map((each) => (
+            <tr key={each.modelYear}>
+              <td className="text-blue">
+                &bull; &nbsp; &nbsp;
+                {title !== 'Automatic Administrative Penalty' &&
+                  ` ${each.modelYear} `}
+                Credits
+              </td>
+              {title === 'Transferred Away' ||
+              title === 'Administrative Credit Reduction' ? (
+                <>
+                  <td
+                    className={`${numberClassname} ${
+                      Number(each.A) > 0 ? 'text-red' : ''
+                    }`}
+                  >
+                    {formatNumeric(each.A * -1, 2)}
+                  </td>
+                  <td
+                    className={`${numberClassname} ${
+                      Number(each.B) > 0 ? 'text-red' : ''
+                    }`}
+                  >
+                    {formatNumeric(each.B * -1, 2)}
+                  </td>
+                </>
+              ) : (
+                <>
+                  <td
+                    className={`${numberClassname} ${
+                      Number(each.A) < 0 ? 'text-red' : ''
+                    }`}
+                  >
+                    {formatNumeric(each.A, 2)}
+                  </td>
+                  <td
+                    className={`${numberClassname} ${
+                      Number(each.B) < 0 ? 'text-red' : ''
+                    }`}
+                  >
+                    {formatNumeric(each.B, 2)}
+                  </td>
+                </>
+              )}
+              {supplementalReport && (
+                <>
+                  <td>
+                    <input
+                      className={`form-control ${
+                        Number(each.A) !==
+                        Number(
+                          getNumeric(getDefault(category, each, 'creditAValue'))
+                        )
+                          ? 'highlight'
+                          : ''
+                      }`}
+                      defaultValue={`${
+                        title === 'Transferred Away' ||
+                        title === 'Administrative Credit Reduction'
+                          ? '-'
+                          : ''
+                      }${getDefault(category, each, 'creditAValue')}`}
+                      type="text"
+                      onChange={(event) => {
+                        let { value } = event.target;
 
-                      if (value < 0 && (title === 'Transferred Away' || title === 'Administrative Credit Reduction')) {
-                        value *= -1;
-                      }
+                        if (
+                          value < 0 &&
+                          (title === 'Transferred Away' ||
+                            title === 'Administrative Credit Reduction')
+                        ) {
+                          value *= -1;
+                        }
 
-                      handleSupplementalChange({
-                        title: category,
-                        modelYear: each.modelYear,
-                        creditA: value,
-                        creditB: Number(getNumeric(getDefault(category, each, 'creditBValue'))),
-                      });
-                    }}
-                    readOnly={readOnly}
-                  />
-                </td>
-                <td>
-                  <input
-                    className={`form-control ${Number(each.B) !== Number(getNumeric(getDefault(category, each, 'creditBValue'))) ? 'highlight' : ''}`}
-                    defaultValue={`${title === 'Transferred Away' || title === 'Administrative Credit Reduction' ? '-' : ''}${getDefault(category, each, 'creditBValue')}`}
-                    type="text"
-                    onChange={(event) => {
-                      let { value } = event.target;
+                        handleSupplementalChange({
+                          title: category,
+                          modelYear: each.modelYear,
+                          creditA: value,
+                          creditB: Number(
+                            getNumeric(
+                              getDefault(category, each, 'creditBValue')
+                            )
+                          )
+                        });
+                      }}
+                      readOnly={readOnly}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      className={`form-control ${
+                        Number(each.B) !==
+                        Number(
+                          getNumeric(getDefault(category, each, 'creditBValue'))
+                        )
+                          ? 'highlight'
+                          : ''
+                      }`}
+                      defaultValue={`${
+                        title === 'Transferred Away' ||
+                        title === 'Administrative Credit Reduction'
+                          ? '-'
+                          : ''
+                      }${getDefault(category, each, 'creditBValue')}`}
+                      type="text"
+                      onChange={(event) => {
+                        let { value } = event.target;
 
-                      if (value < 0 && (title === 'Transferred Away' || title === 'Administrative Credit Reduction')) {
-                        value *= -1;
-                      }
+                        if (
+                          value < 0 &&
+                          (title === 'Transferred Away' ||
+                            title === 'Administrative Credit Reduction')
+                        ) {
+                          value *= -1;
+                        }
 
-                      handleSupplementalChange({
-                        title: category,
-                        modelYear: each.modelYear,
-                        creditA: Number(getNumeric(getDefault(category, each, 'creditAValue'))),
-                        creditB: value,
-                      });
-                    }}
-                    readOnly={readOnly}
-                  />
-                </td>
-              </>
-            )}
-          </tr>
-        ))}
+                        handleSupplementalChange({
+                          title: category,
+                          modelYear: each.modelYear,
+                          creditA: Number(
+                            getNumeric(
+                              getDefault(category, each, 'creditAValue')
+                            )
+                          ),
+                          creditB: value
+                        });
+                      }}
+                      readOnly={readOnly}
+                    />
+                  </td>
+                </>
+              )}
+            </tr>
+          ))}
       </>
     );
   };
 
   const automaticAdministrativePenalty = [];
 
-  if (tempAutomaticAdministrativePenalty && tempAutomaticAdministrativePenalty.length > 0) {
-    automaticAdministrativePenalty.push(tempAutomaticAdministrativePenalty.reduce(
-      (aggregated, each) => ({
+  if (
+    tempAutomaticAdministrativePenalty &&
+    tempAutomaticAdministrativePenalty.length > 0
+  ) {
+    automaticAdministrativePenalty.push(
+      tempAutomaticAdministrativePenalty.reduce((aggregated, each) => ({
         modelYear: reportYear,
         A: Number(aggregated.A) + Number(each.A),
-        B: Number(aggregated.B) + Number(each.B),
-      }),
-    ));
+        B: Number(aggregated.B) + Number(each.B)
+      }))
+    );
   }
 
   return (
@@ -231,14 +301,10 @@ const ComplianceObligationTableCreditsIssued = (props) => {
         <tbody>
           <tr className="subclass">
             <th className="large-column">
-              CREDIT BALANCE AT END OF SEPT. 30,  {reportYear}
+              CREDIT BALANCE AT END OF SEPT. 30, {reportYear}
             </th>
-            <th className="small-column text-center text-blue">
-              A
-            </th>
-            <th className="small-column text-center text-blue">
-              B
-            </th>
+            <th className="small-column text-center text-blue">A</th>
+            <th className="small-column text-center text-blue">B</th>
             {supplementalReport && (
               <>
                 <th className="small-column text-center text-blue">A</th>
@@ -248,9 +314,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
           </tr>
           {Object.keys(creditBalanceStart).map((each) => (
             <tr key={each}>
-              <td className="text-blue">
-                &bull; &nbsp; &nbsp; {each} Credits
-              </td>
+              <td className="text-blue">&bull; &nbsp; &nbsp; {each} Credits</td>
               <td className="text-right">
                 {formatNumeric(creditBalanceStart[each].A, 2)}
               </td>
@@ -263,16 +327,29 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                     <input
                       className="form-control"
                       defaultValue={
-                        (getNewData('creditBalanceStart', each, 'creditAValue') === '' || getNewData('creditBalanceStart', each, 'creditAValue') === null)
+                        getNewData(
+                          'creditBalanceStart',
+                          each,
+                          'creditAValue'
+                        ) === '' ||
+                        getNewData(
+                          'creditBalanceStart',
+                          each,
+                          'creditAValue'
+                        ) === null
                           ? formatNumeric(creditBalanceStart[each].A, 2)
-                          : getNewData('creditBalanceStart', each, 'creditAValue')
+                          : getNewData(
+                              'creditBalanceStart',
+                              each,
+                              'creditAValue'
+                            )
                       }
                       type="text"
                       onChange={(event) => {
                         handleSupplementalChange({
                           title: 'creditBalanceStart',
                           modelYear: each,
-                          creditA: event.target.value,
+                          creditA: event.target.value
                         });
                       }}
                       readOnly={readOnly}
@@ -282,16 +359,29 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                     <input
                       className="form-control"
                       defaultValue={
-                        (getNewData('creditBalanceStart', each, 'creditBValue') === '' || getNewData('creditBalanceStart', each, 'creditBValue') === null)
+                        getNewData(
+                          'creditBalanceStart',
+                          each,
+                          'creditBValue'
+                        ) === '' ||
+                        getNewData(
+                          'creditBalanceStart',
+                          each,
+                          'creditBValue'
+                        ) === null
                           ? formatNumeric(creditBalanceStart[each].B, 2)
-                          : getNewData('creditBalanceStart', each, 'creditBValue')
+                          : getNewData(
+                              'creditBalanceStart',
+                              each,
+                              'creditBValue'
+                            )
                       }
                       type="text"
                       onChange={(event) => {
                         handleSupplementalChange({
                           title: 'creditBalanceStart',
                           modelYear: each,
-                          creditB: event.target.value,
+                          creditB: event.target.value
                         });
                       }}
                       readOnly={readOnly}
@@ -303,27 +393,25 @@ const ComplianceObligationTableCreditsIssued = (props) => {
           ))}
           {Object.keys(creditBalanceStart).length === 0 && (
             <tr>
-              <td className="text-blue">
-                &bull; &nbsp; &nbsp; Credits
-              </td>
-              <td className="text-right">
-                0.00
-              </td>
-              <td className="text-right">
-                0.00
-              </td>
+              <td className="text-blue">&bull; &nbsp; &nbsp; Credits</td>
+              <td className="text-right">0.00</td>
+              <td className="text-right">0.00</td>
               {supplementalReport && (
                 <>
                   <td>
                     <input
                       className="form-control"
-                      defaultValue={getNewData('creditBalanceStart', reportYear, 'creditAValue')}
+                      defaultValue={getNewData(
+                        'creditBalanceStart',
+                        reportYear,
+                        'creditAValue'
+                      )}
                       type="text"
                       onChange={(event) => {
                         handleSupplementalChange({
                           title: 'creditBalanceStart',
                           modelYear: reportYear,
-                          creditA: event.target.value,
+                          creditA: event.target.value
                         });
                       }}
                       readOnly={readOnly}
@@ -332,13 +420,17 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                   <td>
                     <input
                       className="form-control"
-                      defaultValue={getNewData('creditBalanceStart', reportYear, 'creditBValue')}
+                      defaultValue={getNewData(
+                        'creditBalanceStart',
+                        reportYear,
+                        'creditBValue'
+                      )}
                       type="text"
                       onChange={(event) => {
                         handleSupplementalChange({
                           title: 'creditBalanceStart',
                           modelYear: reportYear,
-                          creditB: event.target.value,
+                          creditB: event.target.value
                         });
                       }}
                       readOnly={readOnly}
@@ -352,51 +444,80 @@ const ComplianceObligationTableCreditsIssued = (props) => {
       </table>
 
       <h3 className="mt-4 mb-2">Credit Activity</h3>
-      {(Object.keys(creditsIssuedSales).length > 0 || Object.keys(pendingBalance).length > 0
-      || Object.keys(transfersIn).length > 0 || Object.keys(transfersOut).length > 0
-      || (initiativeAgreement && Object.keys(initiativeAgreement).length > 0)
-      || (purchaseAgreement && Object.keys(purchaseAgreement).length > 0)
-      || (administrativeAllocation && Object.keys(administrativeAllocation).length > 0)
-      || (administrativeReduction && Object.keys(administrativeReduction).length > 0)
-      || (automaticAdministrativePenalty && Object.keys(automaticAdministrativePenalty).length > 0))
-      && (
-      <table className="mb-4">
-        <tbody>
-          {automaticAdministrativePenalty && Object.keys(automaticAdministrativePenalty).length > 0
-            && tableSection(automaticAdministrativePenalty, 'Automatic Administrative Penalty')}
+      {(Object.keys(creditsIssuedSales).length > 0 ||
+        Object.keys(pendingBalance).length > 0 ||
+        Object.keys(transfersIn).length > 0 ||
+        Object.keys(transfersOut).length > 0 ||
+        (initiativeAgreement && Object.keys(initiativeAgreement).length > 0) ||
+        (purchaseAgreement && Object.keys(purchaseAgreement).length > 0) ||
+        (administrativeAllocation &&
+          Object.keys(administrativeAllocation).length > 0) ||
+        (administrativeReduction &&
+          Object.keys(administrativeReduction).length > 0) ||
+        (automaticAdministrativePenalty &&
+          Object.keys(automaticAdministrativePenalty).length > 0)) && (
+        <table className="mb-4">
+          <tbody>
+            {automaticAdministrativePenalty &&
+              Object.keys(automaticAdministrativePenalty).length > 0 &&
+              tableSection(
+                automaticAdministrativePenalty,
+                'Automatic Administrative Penalty'
+              )}
 
-          {Object.keys(creditsIssuedSales).length > 0
-            && tableSection(creditsIssuedSales, 'Issued for Consumer ZEV Sales')}
+            {Object.keys(creditsIssuedSales).length > 0 &&
+              tableSection(creditsIssuedSales, 'Issued for Consumer ZEV Sales')}
 
-          {Object.keys(pendingBalance).length > 0
-            && tableSection(pendingBalance, 'Pending Issuance for Consumer ZEV Sales')}
+            {Object.keys(pendingBalance).length > 0 &&
+              tableSection(
+                pendingBalance,
+                'Pending Issuance for Consumer ZEV Sales'
+              )}
 
-          {initiativeAgreement && Object.keys(initiativeAgreement).length > 0
-            && tableSection(initiativeAgreement, 'Issued from Initiative Agreements')}
+            {initiativeAgreement &&
+              Object.keys(initiativeAgreement).length > 0 &&
+              tableSection(
+                initiativeAgreement,
+                'Issued from Initiative Agreements'
+              )}
 
-          {purchaseAgreement && Object.keys(purchaseAgreement).length > 0
-            && tableSection(purchaseAgreement, 'Issued from Purchase Agreements')}
+            {purchaseAgreement &&
+              Object.keys(purchaseAgreement).length > 0 &&
+              tableSection(
+                purchaseAgreement,
+                'Issued from Purchase Agreements'
+              )}
 
-          {administrativeAllocation && Object.keys(administrativeAllocation).length > 0
-            && tableSection(administrativeAllocation, 'Administrative Credit Allocation')}
+            {administrativeAllocation &&
+              Object.keys(administrativeAllocation).length > 0 &&
+              tableSection(
+                administrativeAllocation,
+                'Administrative Credit Allocation'
+              )}
 
-          {Object.keys(transfersIn).length > 0
-            && tableSection(transfersIn, 'Transferred In')}
+            {Object.keys(transfersIn).length > 0 &&
+              tableSection(transfersIn, 'Transferred In')}
 
-          {administrativeReduction && Object.keys(administrativeReduction).length > 0
-            && tableSection(administrativeReduction, 'Administrative Credit Reduction')}
+            {administrativeReduction &&
+              Object.keys(administrativeReduction).length > 0 &&
+              tableSection(
+                administrativeReduction,
+                'Administrative Credit Reduction'
+              )}
 
-          {Object.keys(transfersOut).length > 0
-            && tableSection(transfersOut, 'Transferred Away')}
-        </tbody>
-      </table>
+            {Object.keys(transfersOut).length > 0 &&
+              tableSection(transfersOut, 'Transferred Away')}
+          </tbody>
+        </table>
       )}
 
       <table>
         <tbody>
           <tr className="subclass">
             <th className="large-column">
-              {pendingBalanceExist ? 'PROVISIONAL BALANCE BEFORE CREDIT REDUCTION' : 'BALANCE BEFORE CREDIT REDUCTION'}
+              {pendingBalanceExist
+                ? 'PROVISIONAL BALANCE BEFORE CREDIT REDUCTION'
+                : 'BALANCE BEFORE CREDIT REDUCTION'}
             </th>
             <th className="small-column text-center text-blue">A</th>
             <th className="small-column text-center text-blue">B</th>
@@ -407,48 +528,73 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               </>
             )}
           </tr>
-          {Object.keys(provisionalBalance).length > 0
-          && Object.keys(provisionalBalance).sort((a, b) => {
-            if (a.modelYear < b.modelYear) {
-              return 1;
-            }
-            if (a.modelYear > b.modelYear) {
-              return -1;
-            }
-            return 0;
-          }).map((each) => ((
-            provisionalBalance[each].A > 0 || provisionalBalance[each].B > 0
-            || (newBalances && newBalances[each] && newBalances[each].A > 0)
-            || (newBalances && newBalances[each] && newBalances[each].B > 0)
-          ) && (
-            <tr key={each}>
-              <td className="text-blue">
-                &bull; &nbsp; &nbsp; {each} Credits
-              </td>
-              <td className="text-right">
-                {formatNumeric(provisionalBalance[each].A, 2)}
-              </td>
-              <td className="text-right">
-                {formatNumeric(provisionalBalance[each].B, 2)}
-              </td>
-              {supplementalReport && newBalances && newBalances[each] && (
-                <>
-                  <td className={`text-right ${Number(provisionalBalance[each].A) !== Number(newBalances[each].A) && newBalances[each].A !== '' ? 'highlight' : ''}`}>
-                    {formatNumeric(newBalances[each].A, 2)}
-                  </td>
-                  <td className={`text-right ${Number(provisionalBalance[each].B) !== Number(newBalances[each].B) && newBalances[each].B !== '' ? 'highlight' : ''}`}>
-                    {formatNumeric(newBalances[each].B, 2)}
-                  </td>
-                </>
+          {Object.keys(provisionalBalance).length > 0 &&
+            Object.keys(provisionalBalance)
+              .sort((a, b) => {
+                if (a.modelYear < b.modelYear) {
+                  return 1;
+                }
+                if (a.modelYear > b.modelYear) {
+                  return -1;
+                }
+                return 0;
+              })
+              .map(
+                (each) =>
+                  (provisionalBalance[each].A > 0 ||
+                    provisionalBalance[each].B > 0 ||
+                    (newBalances &&
+                      newBalances[each] &&
+                      newBalances[each].A > 0) ||
+                    (newBalances &&
+                      newBalances[each] &&
+                      newBalances[each].B > 0)) && (
+                    <tr key={each}>
+                      <td className="text-blue">
+                        &bull; &nbsp; &nbsp; {each} Credits
+                      </td>
+                      <td className="text-right">
+                        {formatNumeric(provisionalBalance[each].A, 2)}
+                      </td>
+                      <td className="text-right">
+                        {formatNumeric(provisionalBalance[each].B, 2)}
+                      </td>
+                      {supplementalReport && newBalances && newBalances[each] && (
+                        <>
+                          <td
+                            className={`text-right ${
+                              Number(provisionalBalance[each].A) !==
+                                Number(newBalances[each].A) &&
+                              newBalances[each].A !== ''
+                                ? 'highlight'
+                                : ''
+                            }`}
+                          >
+                            {formatNumeric(newBalances[each].A, 2)}
+                          </td>
+                          <td
+                            className={`text-right ${
+                              Number(provisionalBalance[each].B) !==
+                                Number(newBalances[each].B) &&
+                              newBalances[each].B !== ''
+                                ? 'highlight'
+                                : ''
+                            }`}
+                          >
+                            {formatNumeric(newBalances[each].B, 2)}
+                          </td>
+                        </>
+                      )}
+                      {supplementalReport &&
+                        (!newBalances || !newBalances[each]) && (
+                          <>
+                            <td />
+                            <td />
+                          </>
+                        )}
+                    </tr>
+                  )
               )}
-              {supplementalReport && (!newBalances || !newBalances[each]) && (
-                <>
-                  <td />
-                  <td />
-                </>
-              )}
-            </tr>
-          )))}
         </tbody>
       </table>
     </>
@@ -461,7 +607,7 @@ ComplianceObligationTableCreditsIssued.defaultProps = {
   newData: {},
   pendingBalanceExist: false,
   readOnly: false,
-  supplementalReport: false,
+  supplementalReport: false
 };
 
 ComplianceObligationTableCreditsIssued.propTypes = {
@@ -472,6 +618,6 @@ ComplianceObligationTableCreditsIssued.propTypes = {
   readOnly: PropTypes.bool,
   reportDetails: PropTypes.shape().isRequired,
   reportYear: PropTypes.number.isRequired,
-  supplementalReport: PropTypes.bool,
+  supplementalReport: PropTypes.bool
 };
 export default ComplianceObligationTableCreditsIssued;

@@ -15,7 +15,7 @@ class App extends Component {
 
     this.state = {
       authenticated: false,
-      keycloak: null,
+      keycloak: null
     };
 
     this.logout = this.logout.bind(this);
@@ -25,31 +25,33 @@ class App extends Component {
     const keycloak = Keycloak({
       clientId: CONFIG.KEYCLOAK.CLIENT_ID,
       realm: CONFIG.KEYCLOAK.REALM,
-      url: CONFIG.KEYCLOAK.URL,
+      url: CONFIG.KEYCLOAK.URL
     });
 
-    keycloak.init({
-      onLoad: 'check-sso',
-      checkLoginIframe: false,
-      promiseType: 'native',
-      flow: 'hybrid',
-    }).then((authenticated) => {
-      this.setState({
-        keycloak,
-        authenticated,
+    keycloak
+      .init({
+        onLoad: 'check-sso',
+        checkLoginIframe: false,
+        promiseType: 'native',
+        flow: 'hybrid'
+      })
+      .then((authenticated) => {
+        this.setState({
+          keycloak,
+          authenticated
+        });
       });
-    });
   }
 
   logout() {
     this.setState({
-      authenticated: false,
+      authenticated: false
     });
 
     const { keycloak } = this.state;
 
     keycloak.logout({
-      redirectUri: CONFIG.KEYCLOAK.LOGOUT_URL,
+      redirectUri: CONFIG.KEYCLOAK.LOGOUT_URL
     });
   }
 
@@ -64,9 +66,7 @@ class App extends Component {
       return <Login keycloak={keycloak} />;
     }
 
-    return (
-      <Router keycloak={keycloak} logout={this.logout} />
-    );
+    return <Router keycloak={keycloak} logout={this.logout} />;
   }
 }
 

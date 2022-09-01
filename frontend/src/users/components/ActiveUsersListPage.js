@@ -3,9 +3,7 @@ import PropTypes from 'prop-types';
 import Loading from '../../app/components/Loading';
 
 const ActiveUsersListPage = (props) => {
-  const {
-    activeIdirUsers, activeBceidUsers, loading,
-  } = props;
+  const { activeIdirUsers, activeBceidUsers, loading } = props;
 
   if (loading) {
     return <Loading />;
@@ -41,7 +39,7 @@ const ActiveUsersListPage = (props) => {
 ActiveUsersListPage.propTypes = {
   activeIdirUsers: PropTypes.string.isRequired,
   activeBceidUsers: PropTypes.string.isRequired,
-  loading: PropTypes.bool.isRequired,
+  loading: PropTypes.bool.isRequired
 };
 
 export default ActiveUsersListPage;

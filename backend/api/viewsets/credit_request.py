@@ -179,7 +179,7 @@ class CreditRequestViewset(
     @action(detail=True)
     def content(self, request, pk):
         filters = request.GET.get('filters')
-        page_size = request.GET.get('page_size', 20)
+        page_size = request.GET.get('page_size', 100)
         page = request.GET.get('page', 1)
         sort_by = request.GET.get('sorted')
 
@@ -388,12 +388,9 @@ class CreditRequestViewset(
         if not request.user.is_government:
             return HttpResponseForbidden()
 
-        submission = SalesSubmission.objects.get(id=pk)
+        verify_with_icbc_data = request.GET.get('reset', None)
 
-        reset = request.GET.get('reset', None)
-
-        if submission.validation_status == SalesSubmissionStatuses.SUBMITTED or \
-                reset == 'Y':
+        if verify_with_icbc_data == 'Y':
             submission_content = SalesSubmissionContent.objects.filter(
                 submission_id=pk
             )

@@ -35,52 +35,35 @@ const OrganizationDetails = (props) => {
         </span>
 
         <div className="text">
-          <button
-            type="button"
-          >
-            Edit Address
-          </button>
+          <button type="button">Edit Address</button>
         </div>
       </div>
 
       <div className="content">
         <div className="text">
-          <button
-            type="button"
-          >
-            Users
-          </button>
+          <button type="button">Users</button>
         </div>
       </div>
 
       <div className="content">
         <div className="text">
-          <button
-            type="button"
-          >
-            New user
-          </button>
+          <button type="button">New user</button>
         </div>
       </div>
 
       <div className="content">
         <div className="text">
-          <button
-            type="button"
-          >
-            Create new BCeID account
-          </button>
+          <button type="button">Create new BCeID account</button>
         </div>
       </div>
     </div>
   );
 };
 
-OrganizationDetails.defaultProps = {
-};
+OrganizationDetails.defaultProps = {};
 
 OrganizationDetails.propTypes = {
-  details: CustomPropTypes.organizationDetails.isRequired,
+  details: CustomPropTypes.organizationDetails.isRequired
 };
 
 export default OrganizationDetails;

@@ -10,7 +10,7 @@ describe('VehicleDetailsContainer', () => {
   const keycloak = {};
   const location = {};
   const user = {
-    isGovernment: false,
+    isGovernment: false
   };
 
   it('renders without crashing', () => {
@@ -21,7 +21,7 @@ describe('VehicleDetailsContainer', () => {
           location={location}
           user={user}
         />
-      </BrowserRouter>,
+      </BrowserRouter>
     );
   });
 });

@@ -25,34 +25,44 @@ const VehicleSupplierEditContainer = (props) => {
     if (newSupplier) {
       setLoading(false);
       setDetails({
-        organizationAddress: {},
+        organizationAddress: {}
       });
     }
 
     if (!newSupplier) {
       setLoading(true);
-      axios.get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id)).then((response) => {
-        const addresses = {};
-        response.data.organizationAddress.forEach((element) => {
-          if (element.addressType.addressType === 'Service') {
-            addresses[`${element.addressType.addressType}_representativeName`] = element.representativeName;
-          }
-          addresses[`${element.addressType.addressType}_addressLine_1`] = element.addressLine1;
-          addresses[`${element.addressType.addressType}_addressLine_2`] = element.addressLine2;
-          addresses[`${element.addressType.addressType}_addressLine_3`] = element.addressLine3;
-          addresses[`${element.addressType.addressType}_city`] = element.city;
-          addresses[`${element.addressType.addressType}_state`] = element.state;
-          addresses[`${element.addressType.addressType}_country`] = element.country;
-          addresses[`${element.addressType.addressType}_postalCode`] = element.postalCode;
-        });
+      axios
+        .get(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id))
+        .then((response) => {
+          const addresses = {};
+          response.data.organizationAddress.forEach((element) => {
+            if (element.addressType.addressType === 'Service') {
+              addresses[
+                `${element.addressType.addressType}_representativeName`
+              ] = element.representativeName;
+            }
+            addresses[`${element.addressType.addressType}_addressLine_1`] =
+              element.addressLine1;
+            addresses[`${element.addressType.addressType}_addressLine_2`] =
+              element.addressLine2;
+            addresses[`${element.addressType.addressType}_addressLine_3`] =
+              element.addressLine3;
+            addresses[`${element.addressType.addressType}_city`] = element.city;
+            addresses[`${element.addressType.addressType}_state`] =
+              element.state;
+            addresses[`${element.addressType.addressType}_country`] =
+              element.country;
+            addresses[`${element.addressType.addressType}_postalCode`] =
+              element.postalCode;
+          });
 
-        setDetails({
-          ...response.data,
-          organizationAddress: addresses,
+          setDetails({
+            ...response.data,
+            organizationAddress: addresses
+          });
+          setDisplay({ ...response.data, organizationAddress: addresses });
+          setLoading(false);
         });
-        setDisplay({ ...response.data, organizationAddress: addresses });
-        setLoading(false);
-      });
     }
   };
 
@@ -64,7 +74,7 @@ const VehicleSupplierEditContainer = (props) => {
     const { value, name } = event.target;
     setDetails({
       ...details,
-      [name]: value,
+      [name]: value
     });
   };
 
@@ -74,22 +84,23 @@ const VehicleSupplierEditContainer = (props) => {
       ...details,
       organizationAddress: {
         ...details.organizationAddress,
-        [name]: value,
-      },
+        [name]: value
+      }
     });
   };
 
   const handleSubmit = () => {
     let formData = {};
     const serviceAddress = {
-      representativeName: details.organizationAddress.Service_representativeName,
+      representativeName:
+        details.organizationAddress.Service_representativeName,
       addressType: 'Service',
       addressLine_1: details.organizationAddress.Service_addressLine_1,
       addressLine_2: details.organizationAddress.Service_addressLine_2,
       city: details.organizationAddress.Service_city,
       state: 'BC',
       country: 'Canada',
-      postalCode: details.organizationAddress.Service_postalCode,
+      postalCode: details.organizationAddress.Service_postalCode
     };
 
     let recordsAddress;
@@ -104,39 +115,50 @@ const VehicleSupplierEditContainer = (props) => {
         city: details.organizationAddress.Records_city,
         state: details.organizationAddress.Records_state,
         country: details.organizationAddress.Records_country,
-        postalCode: details.organizationAddress.Records_postalCode,
+        postalCode: details.organizationAddress.Records_postalCode
       };
     }
-    formData = { ...details, organizationAddress: [serviceAddress, recordsAddress] };
+    formData = {
+      ...details,
+      organizationAddress: [serviceAddress, recordsAddress]
+    };
 
     if (newSupplier) {
-      axios.post(ROUTES_ORGANIZATIONS.LIST, formData).then((response) => {
-        history.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, response.data.id));
-      }).catch((errors) => {
-        if (!errors.response) {
-          return;
-        }
+      axios
+        .post(ROUTES_ORGANIZATIONS.LIST, formData)
+        .then((response) => {
+          history.push(
+            ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, response.data.id)
+          );
+        })
+        .catch((errors) => {
+          if (!errors.response) {
+            return;
+          }
 
-        const { data } = errors.response;
-        const err = {};
+          const { data } = errors.response;
+          const err = {};
 
-        parseErrorResponse(err, data);
-        setErrorFields(err);
-      });
+          parseErrorResponse(err, data);
+          setErrorFields(err);
+        });
     } else {
-      axios.patch(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id), formData).then(() => {
-        history.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));
-      }).catch((errors) => {
-        if (!errors.response) {
-          return;
-        }
+      axios
+        .patch(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id), formData)
+        .then(() => {
+          history.push(ROUTES_ORGANIZATIONS.DETAILS.replace(/:id/gi, id));
+        })
+        .catch((errors) => {
+          if (!errors.response) {
+            return;
+          }
 
-        const { data } = errors.response;
-        const err = {};
+          const { data } = errors.response;
+          const err = {};
 
-        parseErrorResponse(err, data);
-        setErrorFields(err);
-      });
+          parseErrorResponse(err, data);
+          setErrorFields(err);
+        });
     }
   };
 
@@ -158,12 +180,12 @@ const VehicleSupplierEditContainer = (props) => {
 };
 
 VehicleSupplierEditContainer.defaultProps = {
-  newSupplier: false,
+  newSupplier: false
 };
 
 VehicleSupplierEditContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
-  newSupplier: PropTypes.bool,
+  newSupplier: PropTypes.bool
 };
 
 export default VehicleSupplierEditContainer;

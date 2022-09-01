@@ -7,7 +7,8 @@ const getFileSize = (bytes) => {
   const sizes = ['bytes', 'KB', 'MB', 'GB', 'TB'];
   let i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  if (i > 4) { // nothing bigger than a terrabyte
+  if (i > 4) {
+    // nothing bigger than a terrabyte
     i = 4;
   }
 

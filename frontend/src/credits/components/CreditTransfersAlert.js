@@ -5,21 +5,18 @@ import moment from 'moment-timezone';
 import Alert from '../../app/components/Alert';
 
 const CreditTransfersAlert = (props) => {
-  const {
-    user,
-    submission,
-  } = props;
-  const {
-    history, status, debitFrom, creditTo, sufficientCredits, id,
-  } = submission;
+  const { user, submission } = props;
+  const { history, status, debitFrom, creditTo, sufficientCredits, id } =
+    submission;
   let message = '';
   let title;
   let classname;
   let icon = 'exclamation-circle';
-  const statusFilter = (transferStatus) => history
-    .filter((each) => each.status === transferStatus)
-    .reverse()[0];
-  const date = moment(statusFilter(status).createTimestamp).format('MMM D, YYYY');
+  const statusFilter = (transferStatus) =>
+    history.filter((each) => each.status === transferStatus).reverse()[0];
+  const date = moment(statusFilter(status).createTimestamp).format(
+    'MMM D, YYYY'
+  );
   const statusOrg = statusFilter(status).createUser.organization.name;
   const userName = statusFilter(status).createUser.displayName;
 
@@ -40,11 +37,13 @@ const CreditTransfersAlert = (props) => {
       classname = 'alert-danger';
       break;
     case 'SUBMITTED':
-      if (user.organization.id === debitFrom.id) { // bceid initiator
+      if (user.organization.id === debitFrom.id) {
+        // bceid initiator
         title = 'Submitted to Transfer Partner';
         message = `CT-${id} submitted ${date} by ${userName}, awaiting ${creditTo.name} acceptance.`;
         classname = 'alert-warning';
-      } else { // bceid receiver
+      } else {
+        // bceid receiver
         title = 'Submitted by Transfer Partner';
         message = `submitted ${date} by ${debitFrom.name}, awaiting your signing authority acceptance.`;
         classname = 'alert-warning';
@@ -107,15 +106,19 @@ const CreditTransfersAlert = (props) => {
 
   return (
     <>
-      <Alert title={title} icon={icon} classname={classname} message={message} />
+      <Alert
+        title={title}
+        icon={icon}
+        classname={classname}
+        message={message}
+      />
     </>
   );
 };
 
-CreditTransfersAlert.defaultProps = {
-};
+CreditTransfersAlert.defaultProps = {};
 CreditTransfersAlert.propTypes = {
   submission: PropTypes.shape().isRequired,
-  user: PropTypes.shape().isRequired,
+  user: PropTypes.shape().isRequired
 };
 export default CreditTransfersAlert;

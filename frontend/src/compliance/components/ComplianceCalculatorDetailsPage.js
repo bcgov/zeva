@@ -16,7 +16,7 @@ const ComplianceCalculatorDetailsPage = (props) => {
     allVehicleModels,
     estimatedModelSales,
     setEstimatedModelSales,
-    user,
+    user
   } = props;
 
   return (
@@ -28,11 +28,14 @@ const ComplianceCalculatorDetailsPage = (props) => {
       </div>
       <div className="row mb-2">
         <div className="col-12">
-          The compliance calculator is to assist in estimating your compliance obligation.<br />
-          Enter your estimated total LDV sales for a model year to see an estimated ratio{' '}
-          reduction.<br />
-          Enter your estimated total ZEV sales by model to see an estimate of credits{' '}
-          generated from these sales.
+          The compliance calculator is to assist in estimating your compliance
+          obligation.
+          <br />
+          Enter your estimated total LDV sales for a model year to see an
+          estimated ratio reduction.
+          <br />
+          Enter your estimated total ZEV sales by model to see an estimate of
+          credits generated from these sales.
         </div>
       </div>
       <div className="calculator-page">
@@ -63,27 +66,18 @@ const ComplianceCalculatorDetailsPage = (props) => {
 ComplianceCalculatorDetailsPage.defaultProps = {
   supplierSize: '',
   selectedYearOption: '--',
-  complianceNumbers: { total: '', classA: '', remaining: '' },
+  complianceNumbers: { total: '', classA: '', remaining: '' }
 };
 ComplianceCalculatorDetailsPage.propTypes = {
   allVehicleModels: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   complianceNumbers: PropTypes.shape({
-    total: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.string,
-    ]),
-    classA: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.string,
-    ]),
-    remaining: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.string,
-    ]),
+    total: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    classA: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    remaining: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
   }),
   complianceYearInfo: PropTypes.shape({
     complianceRatio: PropTypes.string,
-    zevClassA: PropTypes.string,
+    zevClassA: PropTypes.string
   }).isRequired,
   handleInputChange: PropTypes.func.isRequired,
   modelYearList: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -91,7 +85,7 @@ ComplianceCalculatorDetailsPage.propTypes = {
   supplierSize: PropTypes.string,
   estimatedModelSales: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setEstimatedModelSales: PropTypes.func.isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default ComplianceCalculatorDetailsPage;

@@ -26,7 +26,9 @@ const CreditTransactionListTable = (props) => {
     let name = '';
 
     if (transactionType.toLowerCase() === 'reduction') {
-      const report = reports.find((each) => Number(each.id) === (item.foreignKey));
+      const report = reports.find(
+        (each) => Number(each.id) === item.foreignKey
+      );
 
       if (report) {
         ({ name } = report.modelYear);
@@ -121,129 +123,177 @@ const CreditTransactionListTable = (props) => {
     }
 
     const found = transactions.findIndex(
-      (transaction) => (transaction.foreignKey === item.foreignKey
-        && transaction.transactionType
-        && item.transactionType
-        && transaction.transactionType.transactionType === item.transactionType.transactionType),
+      (transaction) =>
+        transaction.foreignKey === item.foreignKey &&
+        transaction.transactionType &&
+        item.transactionType &&
+        transaction.transactionType.transactionType ===
+          item.transactionType.transactionType
     );
 
     if (found >= 0) {
       transactions[found] = {
         ...transactions[found],
-        creditsA: (item.creditClass.creditClass === 'A' ? transactions[found].creditsA + item.totalValue : transactions[found].creditsA),
-        creditsB: (item.creditClass.creditClass === 'B' ? transactions[found].creditsB + item.totalValue : transactions[found].creditsB),
+        creditsA:
+          item.creditClass.creditClass === 'A'
+            ? transactions[found].creditsA + item.totalValue
+            : transactions[found].creditsA,
+        creditsB:
+          item.creditClass.creditClass === 'B'
+            ? transactions[found].creditsB + item.totalValue
+            : transactions[found].creditsB,
         displayTotalA: totalA,
-        displayTotalB: totalB,
+        displayTotalB: totalB
       };
     } else {
       transactions.push({
-        creditsA: (item.creditClass.creditClass === 'A' ? item.totalValue : 0),
-        creditsB: (item.creditClass.creditClass === 'B' ? item.totalValue : 0),
+        creditsA: item.creditClass.creditClass === 'A' ? item.totalValue : 0,
+        creditsB: item.creditClass.creditClass === 'B' ? item.totalValue : 0,
         displayTotalA: totalA,
         displayTotalB: totalB,
         foreignKey: item.foreignKey,
         transactionTimestamp: item.transactionTimestamp,
         modelYear: item.modelYear,
         transactionType: item.transactionType,
-        detailTransactionType: item.detailTransactionType,
+        detailTransactionType: item.detailTransactionType
       });
     }
   });
 
-  const columns = [{
-    Header: '',
-    headerClassName: 'header-group',
-    columns: [{
-      accessor: (item) => {
-        if (item.transactionType.transactionType === 'Reduction' && !item.foreignKey) {
-          return 'AR';
-        }
+  const columns = [
+    {
+      Header: '',
+      headerClassName: 'header-group',
+      columns: [
+        {
+          accessor: (item) => {
+            if (
+              item.transactionType.transactionType === 'Reduction' &&
+              !item.foreignKey
+            ) {
+              return 'AR';
+            }
 
-        return `${abbreviateTransactionType(item)}-${item.foreignKey}`;
-      },
-      className: 'text-center',
-      Header: 'Transaction ID',
-      id: 'id',
-      maxWidth: 150,
-    }],
-  }, {
-    Header: '',
-    headerClassName: 'header-group date',
-    columns: [{
-      accessor: (item) => (moment(item.transactionTimestamp).format('YYYY-MM-DD')),
-      className: 'text-center date',
-      Header: 'Date',
-      headerClassName: 'date',
-      id: 'date',
-      maxWidth: 200,
-    }],
-  }, {
-    Header: '',
-    headerClassName: 'header-group transaction',
-    columns: [{
-      accessor: (item) => translateTransactionType(item),
-      className: 'text-left transaction',
-      Header: 'Transaction',
-      headerClassName: 'text-left transaction',
-      id: 'transaction',
-    }],
-  }, {
-    Header: 'Credits',
-    headerClassName: 'header-group credits-left',
-    columns: [{
-      accessor: (item) => (item.creditsA ? formatNumeric(item.creditsA, 2) : '-'),
-      className: 'text-right credits-left',
-      Header: 'A',
-      Cell: (item) => (
-        <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>
-      ),
-      headerClassName: 'credits-left',
-      id: 'credit-class-a',
-      maxWidth: 175,
-    }, {
-      accessor: (item) => (item.creditsB ? formatNumeric(item.creditsB, 2) : '-'),
-      className: 'text-right',
-      Cell: (item) => (
-        <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>
-      ),
-      Header: 'B',
-      id: 'credit-class-b',
-      maxWidth: 175,
-    }],
-  }, {
-    Header: 'Balance',
-    headerClassName: 'header-group balance-left',
-    columns: [{
-      accessor: (item) => (item.displayTotalA ? formatNumeric(item.displayTotalA, 2, true) : '-'),
-      className: 'text-right balance-left',
-      Cell: (item) => (
-        <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>
-      ),
-      Header: 'A',
-      headerClassName: 'balance-left',
-      id: 'credit-balance-a',
-      maxWidth: 175,
-    }, {
-      accessor: (item) => (item.displayTotalB ? formatNumeric(item.displayTotalB, 2, true) : '-'),
-      className: 'text-right',
-      Cell: (item) => (
-        <span className={item.value < 0 ? 'text-danger' : ''}>{item.value}</span>
-      ),
-      Header: 'B',
-      id: 'credit-balance-b',
-      maxWidth: 175,
-    }],
-  }];
+            return `${abbreviateTransactionType(item)}-${item.foreignKey}`;
+          },
+          className: 'text-center',
+          Header: 'Transaction ID',
+          id: 'id',
+          maxWidth: 150
+        }
+      ]
+    },
+    {
+      Header: '',
+      headerClassName: 'header-group date',
+      columns: [
+        {
+          accessor: (item) =>
+            moment(item.transactionTimestamp).format('YYYY-MM-DD'),
+          className: 'text-center date',
+          Header: 'Date',
+          headerClassName: 'date',
+          id: 'date',
+          maxWidth: 200
+        }
+      ]
+    },
+    {
+      Header: '',
+      headerClassName: 'header-group transaction',
+      columns: [
+        {
+          accessor: (item) => translateTransactionType(item),
+          className: 'text-left transaction',
+          Header: 'Transaction',
+          headerClassName: 'text-left transaction',
+          id: 'transaction'
+        }
+      ]
+    },
+    {
+      Header: 'Credits',
+      headerClassName: 'header-group credits-left',
+      columns: [
+        {
+          accessor: (item) =>
+            item.creditsA ? formatNumeric(item.creditsA, 2) : '-',
+          className: 'text-right credits-left',
+          Header: 'A',
+          Cell: (item) => (
+            <span className={item.value < 0 ? 'text-danger' : ''}>
+              {item.value}
+            </span>
+          ),
+          headerClassName: 'credits-left',
+          id: 'credit-class-a',
+          maxWidth: 175
+        },
+        {
+          accessor: (item) =>
+            item.creditsB ? formatNumeric(item.creditsB, 2) : '-',
+          className: 'text-right',
+          Cell: (item) => (
+            <span className={item.value < 0 ? 'text-danger' : ''}>
+              {item.value}
+            </span>
+          ),
+          Header: 'B',
+          id: 'credit-class-b',
+          maxWidth: 175
+        }
+      ]
+    },
+    {
+      Header: 'Balance',
+      headerClassName: 'header-group balance-left',
+      columns: [
+        {
+          accessor: (item) =>
+            item.displayTotalA
+              ? formatNumeric(item.displayTotalA, 2, true)
+              : '-',
+          className: 'text-right balance-left',
+          Cell: (item) => (
+            <span className={item.value < 0 ? 'text-danger' : ''}>
+              {item.value}
+            </span>
+          ),
+          Header: 'A',
+          headerClassName: 'balance-left',
+          id: 'credit-balance-a',
+          maxWidth: 175
+        },
+        {
+          accessor: (item) =>
+            item.displayTotalB
+              ? formatNumeric(item.displayTotalB, 2, true)
+              : '-',
+          className: 'text-right',
+          Cell: (item) => (
+            <span className={item.value < 0 ? 'text-danger' : ''}>
+              {item.value}
+            </span>
+          ),
+          Header: 'B',
+          id: 'credit-balance-b',
+          maxWidth: 175
+        }
+      ]
+    }
+  ];
 
   return (
     <ReactTable
       className="credit-transaction-list-table"
       columns={columns}
       data={transactions}
-      defaultSorted={[{
-        id: 'date',
-        desc: true,
-      }]}
+      defaultSorted={[
+        {
+          id: 'date',
+          desc: true
+        }
+      ]}
       filterable={false}
       getTrProps={(state, row) => {
         if (row && row.original) {
@@ -259,32 +309,47 @@ const CreditTransactionListTable = (props) => {
               switch (transactionType.toLowerCase()) {
                 case 'credit transfer':
                   history.push(
-                    ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/g, item.foreignKey),
-                    { href: ROUTES_CREDITS.LIST },
+                    ROUTES_CREDIT_TRANSFERS.DETAILS.replace(
+                      /:id/g,
+                      item.foreignKey
+                    ),
+                    { href: ROUTES_CREDITS.LIST }
                   );
                   break;
                 case 'validation':
                   history.push(
-                    ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/g, item.foreignKey),
-                    { href: ROUTES_CREDITS.LIST },
+                    ROUTES_CREDIT_REQUESTS.DETAILS.replace(
+                      /:id/g,
+                      item.foreignKey
+                    ),
+                    { href: ROUTES_CREDITS.LIST }
                   );
                   break;
                 case 'credit adjustment validation':
                   history.push(
-                    ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/g, item.foreignKey),
-                    { href: ROUTES_CREDITS.LIST },
+                    ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(
+                      /:id/g,
+                      item.foreignKey
+                    ),
+                    { href: ROUTES_CREDITS.LIST }
                   );
                   break;
                 case 'reduction':
                   history.push(
-                    ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, item.foreignKey),
-                    { href: ROUTES_CREDITS.LIST },
+                    ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(
+                      /:id/g,
+                      item.foreignKey
+                    ),
+                    { href: ROUTES_CREDITS.LIST }
                   );
                   break;
                 case 'credit adjustment reduction':
                   history.push(
-                    ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/g, item.foreignKey),
-                    { href: ROUTES_CREDITS.LIST },
+                    ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(
+                      /:id/g,
+                      item.foreignKey
+                    ),
+                    { href: ROUTES_CREDITS.LIST }
                   );
                   break;
                 default:
@@ -292,7 +357,7 @@ const CreditTransactionListTable = (props) => {
 
               return false;
             },
-            className: 'clickable',
+            className: 'clickable'
           };
         }
 
@@ -306,7 +371,7 @@ CreditTransactionListTable.defaultProps = {};
 
 CreditTransactionListTable.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  reports: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  reports: PropTypes.arrayOf(PropTypes.shape({})).isRequired
 };
 
 export default CreditTransactionListTable;

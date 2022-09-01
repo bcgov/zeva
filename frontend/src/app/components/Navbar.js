@@ -1,15 +1,15 @@
-import React, { Component } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import formatNumeric from "../utilities/formatNumeric";
-import CONFIG from "../config";
-import CustomPropTypes from "../utilities/props";
-import ROUTES_CREDITS from "../routes/Credits";
-import ROUTES_CREDIT_REQUESTS from "../routes/CreditRequests";
-import ROUTES_ORGANIZATIONS from "../routes/Organizations";
-import ROUTES_ROLES from "../routes/Roles";
-import ROUTES_VEHICLES from "../routes/Vehicles";
-import ROUTES_COMPLIANCE from "../routes/Compliance";
+import React, { Component } from 'react';
+import { Link, NavLink } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import formatNumeric from '../utilities/formatNumeric';
+import CONFIG from '../config';
+import CustomPropTypes from '../utilities/props';
+import ROUTES_CREDITS from '../routes/Credits';
+import ROUTES_CREDIT_REQUESTS from '../routes/CreditRequests';
+import ROUTES_ORGANIZATIONS from '../routes/Organizations';
+import ROUTES_ROLES from '../routes/Roles';
+import ROUTES_VEHICLES from '../routes/Vehicles';
+import ROUTES_COMPLIANCE from '../routes/Compliance';
 
 class Navbar extends Component {
   constructor(props) {
@@ -17,7 +17,7 @@ class Navbar extends Component {
 
     this.state = {
       collapsed: true,
-      userMenuCollapsed: true,
+      userMenuCollapsed: true
     };
 
     this.collapseNavBar = this.collapseNavBar.bind(this);
@@ -25,13 +25,13 @@ class Navbar extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener("click", (e) => {
-      if (!document.getElementById("navbarDropdown").contains(e.target)) {
+    window.addEventListener('click', (e) => {
+      if (!document.getElementById('navbarDropdown').contains(e.target)) {
         const { userMenuCollapsed } = this.state;
 
         if (!userMenuCollapsed) {
           this.setState({
-            userMenuCollapsed: true,
+            userMenuCollapsed: true
           });
         }
       }
@@ -44,7 +44,7 @@ class Navbar extends Component {
     collapsed = !collapsed;
 
     this.setState({
-      collapsed,
+      collapsed
     });
   }
 
@@ -54,7 +54,7 @@ class Navbar extends Component {
     userMenuCollapsed = !userMenuCollapsed;
 
     this.setState({
-      userMenuCollapsed,
+      userMenuCollapsed
     });
   }
 
@@ -76,7 +76,7 @@ class Navbar extends Component {
             <div className="logged-in-info">
               <div>
                 <h5 className="organization-name">
-                  {user.organization ? user.organization.name : ""}
+                  {user.organization ? user.organization.name : ''}
                 </h5>
                 {!user.isGovernment && user.organization && (
                   <Link
@@ -122,7 +122,7 @@ class Navbar extends Component {
               </button>
               <div
                 aria-labelledby="navbarDropdown"
-                className={`dropdown-menu ${userMenuCollapsed ? "d-none" : ""}`}
+                className={`dropdown-menu ${userMenuCollapsed ? 'd-none' : ''}`}
               >
                 {CONFIG.FEATURES.NOTIFICATIONS.ENABLED && (
                   <div className="dropdown-item">
@@ -144,7 +144,7 @@ class Navbar extends Component {
                   <button
                     onClick={() =>
                       keycloak.logout({
-                        redirectUri: CONFIG.KEYCLOAK.LOGOUT_URL,
+                        redirectUri: CONFIG.KEYCLOAK.LOGOUT_URL
                       })
                     }
                     type="button"
@@ -162,7 +162,7 @@ class Navbar extends Component {
 
           <div
             className={`collapse navbar-collapse ${
-              collapsed === false ? "show" : ""
+              collapsed === false ? 'show' : ''
             }`}
           >
             <ul className="navbar-nav mr-auto">
@@ -172,8 +172,8 @@ class Navbar extends Component {
                 </NavLink>
               </li>
               {CONFIG.FEATURES.COMPLIANCE_REPORT.ENABLED &&
-                ((!user.isGovernment && user.hasPermission("EDIT_SALES")) ||
-                  (user.isGovernment && user.hasPermission("VIEW_SALES"))) && (
+                ((!user.isGovernment && user.hasPermission('EDIT_SALES')) ||
+                  (user.isGovernment && user.hasPermission('VIEW_SALES'))) && (
                   <li className="nav-item">
                     <NavLink
                       activeClassName="active"
@@ -181,7 +181,7 @@ class Navbar extends Component {
                         if (
                           location.pathname
                             .toLowerCase()
-                            .indexOf("compliance") === 1
+                            .indexOf('compliance') === 1
                         ) {
                           return true;
                         }
@@ -203,15 +203,15 @@ class Navbar extends Component {
                   </li>
                 )}
               {CONFIG.FEATURES.CREDIT_TRANSACTIONS.ENABLED &&
-                typeof user.hasPermission === "function" &&
-                ((!user.isGovernment && user.hasPermission("EDIT_SALES")) ||
-                  (user.isGovernment && user.hasPermission("VIEW_SALES"))) && (
+                typeof user.hasPermission === 'function' &&
+                ((!user.isGovernment && user.hasPermission('EDIT_SALES')) ||
+                  (user.isGovernment && user.hasPermission('VIEW_SALES'))) && (
                   <li className="nav-item">
                     <NavLink
                       activeClassName="active"
                       isActive={(match, location) => {
                         if (
-                          location.pathname.toLowerCase().indexOf("credit-") ===
+                          location.pathname.toLowerCase().indexOf('credit-') ===
                           1
                         ) {
                           return true;
@@ -234,8 +234,8 @@ class Navbar extends Component {
                   </li>
                 )}
 
-              {typeof user.hasPermission === "function" &&
-                user.hasPermission("VIEW_ZEV") && (
+              {typeof user.hasPermission === 'function' &&
+                user.hasPermission('VIEW_ZEV') && (
                   <li className="nav-item">
                     <NavLink activeClassName="active" to={ROUTES_VEHICLES.LIST}>
                       <span>ZEV Models</span>
@@ -243,8 +243,8 @@ class Navbar extends Component {
                   </li>
                 )}
 
-              {typeof user.hasPermission === "function" &&
-                user.hasPermission("VIEW_ORGANIZATIONS") &&
+              {typeof user.hasPermission === 'function' &&
+                user.hasPermission('VIEW_ORGANIZATIONS') &&
                 user.isGovernment && (
                   <li className="nav-item">
                     <NavLink
@@ -254,7 +254,7 @@ class Navbar extends Component {
                           return false;
                         }
 
-                        if (location.pathname.includes("/organizations/mine")) {
+                        if (location.pathname.includes('/organizations/mine')) {
                           return false;
                         }
 
@@ -266,23 +266,23 @@ class Navbar extends Component {
                     </NavLink>
                   </li>
                 )}
-              {typeof user.hasPermission === "function" &&
-                (user.hasPermission("EDIT_ORGANIZATIONS") ||
-                  user.hasPermission("EDIT_ORGANIZATION_INFORMATION")) && (
+              {typeof user.hasPermission === 'function' &&
+                (user.hasPermission('EDIT_ORGANIZATIONS') ||
+                  user.hasPermission('EDIT_ORGANIZATION_INFORMATION')) && (
                   <li className="nav-item">
                     <NavLink
                       activeClassName="active"
                       isActive={(match, location) => {
                         if (
-                          location.pathname.toLowerCase().includes("users") &&
+                          location.pathname.toLowerCase().includes('users') &&
                           !location.pathname
                             .toLowerCase()
-                            .includes("organizations/")
+                            .includes('organizations/')
                         ) {
                           return true;
                         }
 
-                        if (location.pathname.toLowerCase().includes("sales")) {
+                        if (location.pathname.toLowerCase().includes('sales')) {
                           return true;
                         }
 
@@ -300,8 +300,8 @@ class Navbar extends Component {
                 )}
 
               {CONFIG.FEATURES.ROLES.ENABLED &&
-                typeof user.hasPermission === "function" &&
-                user.hasPermission("VIEW_ROLES_AND_PERMISSIONS") && (
+                typeof user.hasPermission === 'function' &&
+                user.hasPermission('VIEW_ROLES_AND_PERMISSIONS') && (
                   <li className="nav-item">
                     <NavLink activeClassName="active" to={ROUTES_ROLES.LIST}>
                       <span>Roles</span>
@@ -320,7 +320,7 @@ Navbar.defaultProps = {};
 
 Navbar.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default Navbar;

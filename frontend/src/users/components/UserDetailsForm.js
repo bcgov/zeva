@@ -16,7 +16,7 @@ const UserDetailsForm = (props) => {
     user,
     handleInputChange,
     handleSubmit,
-    roles,
+    roles
   } = props;
 
   if (loading) {
@@ -31,13 +31,21 @@ const UserDetailsForm = (props) => {
           editPermission = true;
         }
       });
-    } else if (!permissions && typeof user.hasPermission === 'function' && user.hasPermission('EDIT_USERS')) {
+    } else if (
+      !permissions &&
+      typeof user.hasPermission === 'function' &&
+      user.hasPermission('EDIT_USERS')
+    ) {
       editPermission = true;
     } else {
       editPermission = false;
     }
 
-    if (editPermission && details.username === user.username && !user.isGovernment) {
+    if (
+      editPermission &&
+      details.username === user.username &&
+      !user.isGovernment
+    ) {
       return true;
     }
     return false;
@@ -48,16 +56,29 @@ const UserDetailsForm = (props) => {
       return false;
     }
 
-    return details.roles.filter((detailRole) => detailRole.id === role.id).length > 0;
+    return (
+      details.roles.filter((detailRole) => detailRole.id === role.id).length > 0
+    );
   };
 
-  const rolesCheckboxes = roles.filter(
-    (role) => role.isGovernmentRole === details.organization.isGovernment,
-  ).map((role) => (
-    <ul key={role.id}>
-      <input type="checkbox" id={role.id} onChange={handleInputChange} name="roles-manager" defaultChecked={checked(role)} disabled={disableEditing(role.permissions)} /> {role.roleCode} <FontAwesomeIcon data-tip={role.description} icon="info-circle" />
-    </ul>
-  ));
+  const rolesCheckboxes = roles
+    .filter(
+      (role) => role.isGovernmentRole === details.organization.isGovernment
+    )
+    .map((role) => (
+      <ul key={role.id}>
+        <input
+          type="checkbox"
+          id={role.id}
+          onChange={handleInputChange}
+          name="roles-manager"
+          defaultChecked={checked(role)}
+          disabled={disableEditing(role.permissions)}
+        />{' '}
+        {role.roleCode}{' '}
+        <FontAwesomeIcon data-tip={role.description} icon="info-circle" />
+      </ul>
+    ));
 
   const accountType = details.organization.isGovernment ? 'IDIR' : 'BCeID';
 
@@ -67,7 +88,7 @@ const UserDetailsForm = (props) => {
       <div className="row mb-2">
         <div className="col-md-12">
           <h2 className="mb-2">{details.organization.name} User Management</h2>
-          <h3>{`${(details && details.id) ? 'Edit' : 'New'} User`}</h3>
+          <h3>{`${details && details.id ? 'Edit' : 'New'} User`}</h3>
         </div>
       </div>
       <form onSubmit={(event) => handleSubmit(event)}>
@@ -78,7 +99,9 @@ const UserDetailsForm = (props) => {
                 <span className="col-md-8">
                   <TextInput
                     defaultValue={details.firstName}
-                    errorMessage={'firstName' in errorFields && errorFields.firstName}
+                    errorMessage={
+                      'firstName' in errorFields && errorFields.firstName
+                    }
                     handleInputChange={handleInputChange}
                     id="firstName"
                     label="First Name"
@@ -87,7 +110,9 @@ const UserDetailsForm = (props) => {
                   />
                   <TextInput
                     defaultValue={details.lastName}
-                    errorMessage={'lastName' in errorFields && errorFields.lastName}
+                    errorMessage={
+                      'lastName' in errorFields && errorFields.lastName
+                    }
                     handleInputChange={handleInputChange}
                     id="lastName"
                     label="Last Name"
@@ -105,7 +130,9 @@ const UserDetailsForm = (props) => {
                   />
                   <TextInput
                     defaultValue={details.username}
-                    errorMessage={'username' in errorFields && errorFields.username}
+                    errorMessage={
+                      'username' in errorFields && errorFields.username
+                    }
                     handleInputChange={handleInputChange}
                     id="username"
                     label={`${accountType} User Id`}
@@ -114,11 +141,20 @@ const UserDetailsForm = (props) => {
                   />
                   <TextInput
                     defaultValue={details.keycloakEmail}
-                    details={accountType === 'BCeID' ? `the email associated with the ${accountType} account` : ''}
-                    errorMessage={'keycloakEmail' in errorFields && errorFields.keycloakEmail}
+                    details={
+                      accountType === 'BCeID'
+                        ? `the email associated with the ${accountType} account`
+                        : ''
+                    }
+                    errorMessage={
+                      'keycloakEmail' in errorFields &&
+                      errorFields.keycloakEmail
+                    }
                     handleInputChange={handleInputChange}
                     id="email"
-                    label={`${accountType === 'BCeID' ? accountType : ''} Email`}
+                    label={`${
+                      accountType === 'BCeID' ? accountType : ''
+                    } Email`}
                     mandatory
                     name="keycloakEmail"
                   />
@@ -145,38 +181,55 @@ const UserDetailsForm = (props) => {
                 </span>
 
                 <span className="col-md-4">
-                  {typeof user.hasPermission === 'function' && user.hasPermission('EDIT_USERS') && (
-                    <div className="form-group">
-                      <div className="col-sm-4">
+                  {typeof user.hasPermission === 'function' &&
+                    user.hasPermission('EDIT_USERS') && (
+                      <div className="form-group">
+                        <div className="col-sm-4">
+                          <label
+                            className="col-form-label"
+                            htmlFor="statusRadio"
+                          >
+                            Status
+                          </label>
+                        </div>
+                        <div className="col-sm-12">
+                          <input
+                            type="radio"
+                            id="active"
+                            onChange={handleInputChange}
+                            name="isActive"
+                            value="true"
+                            defaultChecked={details.isActive}
+                            disabled={disableEditing()}
+                          />
+                          Active, user can log in to ZEVA
+                          <br />
+                          <input
+                            type="radio"
+                            id="inactive"
+                            onChange={handleInputChange}
+                            name="isActive"
+                            value="false"
+                            defaultChecked={!details.isActive}
+                            disabled={disableEditing()}
+                          />
+                          Inactive, user cannot log in to ZEVA
+                        </div>
+                      </div>
+                    )}
+                  {typeof user.hasPermission === 'function' &&
+                    (user.hasPermission('ASSIGN_BCEID_ROLES') ||
+                      user.hasPermission('ASSIGN_IDIR_ROLES')) && (
+                      <div className="form-group">
                         <label
-                          className="col-form-label"
-                          htmlFor="statusRadio"
+                          className="col-sm-4 col-form-label"
+                          htmlFor="rolesRadio"
                         >
-                          Status
+                          Roles
                         </label>
+                        <div className="col-sm-8">{rolesCheckboxes}</div>
                       </div>
-                      <div className="col-sm-12">
-                        <input type="radio" id="active" onChange={handleInputChange} name="isActive" value="true" defaultChecked={details.isActive} disabled={disableEditing()} />
-                        Active, user can log in to ZEVA<br />
-                        <input type="radio" id="inactive" onChange={handleInputChange} name="isActive" value="false" defaultChecked={!details.isActive} disabled={disableEditing()} />
-                        Inactive, user cannot log in to ZEVA
-                      </div>
-
-                    </div>
-                  )}
-                  {typeof user.hasPermission === 'function' && (user.hasPermission('ASSIGN_BCEID_ROLES') || user.hasPermission('ASSIGN_IDIR_ROLES')) && (
-                  <div className="form-group">
-                    <label
-                      className="col-sm-4 col-form-label"
-                      htmlFor="rolesRadio"
-                    >
-                      Roles
-                    </label>
-                    <div className="col-sm-8">
-                      {rolesCheckboxes}
-                    </div>
-                  </div>
-                  )}
+                    )}
                 </span>
               </div>
             </fieldset>
@@ -190,7 +243,11 @@ const UserDetailsForm = (props) => {
               </span>
 
               <span className="right-content">
-                <Button buttonType="save" optionalClassname="button primary" action={handleSubmit} />
+                <Button
+                  buttonType="save"
+                  optionalClassname="button primary"
+                  action={handleSubmit}
+                />
               </span>
             </div>
           </div>
@@ -201,31 +258,25 @@ const UserDetailsForm = (props) => {
 };
 
 UserDetailsForm.defaultProps = {
-  errorFields: {},
+  errorFields: {}
 };
 
 UserDetailsForm.propTypes = {
   details: PropTypes.shape({
     email: PropTypes.string,
     firstName: PropTypes.string,
-    id: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.string,
-    ]),
-    isActive: PropTypes.oneOfType([
-      PropTypes.bool,
-      PropTypes.string,
-    ]),
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    isActive: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
     keycloakEmail: PropTypes.string,
     lastName: PropTypes.string,
     organization: PropTypes.shape({
       isGovernment: PropTypes.bool,
-      name: PropTypes.string,
+      name: PropTypes.string
     }),
     phone: PropTypes.string,
     roles: PropTypes.arrayOf(PropTypes.shape()),
     title: PropTypes.string,
-    username: PropTypes.string,
+    username: PropTypes.string
   }).isRequired,
   errorFields: PropTypes.shape(),
   handleInputChange: PropTypes.func.isRequired,
@@ -234,10 +285,10 @@ UserDetailsForm.propTypes = {
   roles: PropTypes.arrayOf(
     PropTypes.shape({
       description: PropTypes.string,
-      id: PropTypes.number,
-    }),
+      id: PropTypes.number
+    })
   ).isRequired,
-  user: CustomPropTypes.user.isRequired,
+  user: CustomPropTypes.user.isRequired
 };
 
 export default UserDetailsForm;

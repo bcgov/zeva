@@ -11,5 +11,4 @@ describe('format numeric', () => {
   it('should return 3.00 if we pass it 3', () => {
     expect(formatNumeric(3)).toBe('3.00');
   });
-
 });

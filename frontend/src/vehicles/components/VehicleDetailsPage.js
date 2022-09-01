@@ -25,7 +25,7 @@ const VehicleDetailsPage = (props) => {
     title,
     user,
     locationState,
-    isActiveChange,
+    isActiveChange
   } = props;
   const [requestChangeCheck, setRequestChangeCheck] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -36,14 +36,20 @@ const VehicleDetailsPage = (props) => {
   }
   const { id } = details;
   const handleChange = (event) => {
-    setComments({ ...comments, vehicleComment: { comment: event.target.value } });
+    setComments({
+      ...comments,
+      vehicleComment: { comment: event.target.value }
+    });
   };
 
   const handleCheckboxClick = (event) => {
     const { checked } = event.target;
     if (checked) {
       setRequestChangeCheck(true);
-      setComments({ ...comments, vehicleComment: { comment: 'Please provide range test results.' } });
+      setComments({
+        ...comments,
+        vehicleComment: { comment: 'Please provide range test results.' }
+      });
     } else {
       setRequestChangeCheck(false);
     }
@@ -53,40 +59,56 @@ const VehicleDetailsPage = (props) => {
     case 'makeInactive':
       modalProps = {
         confirmLabel: 'Make Inactive',
-        modalText: 'Making a ZEV model inactive will remove it from various areas of the system including the Credit Application Excel template and the compliance calculator. Inactive ZEV models can be re-activated if required.',
+        modalText:
+          'Making a ZEV model inactive will remove it from various areas of the system including the Credit Application Excel template and the compliance calculator. Inactive ZEV models can be re-activated if required.',
         title: 'Make ZEV Model Inactive?',
-        handleSubmit: () => { setShowModal(false); isActiveChange(false); },
+        handleSubmit: () => {
+          setShowModal(false);
+          isActiveChange(false);
+        }
       };
       break;
     case 'makeActive':
       modalProps = {
         confirmLabel: 'Make Active',
         modalText: 'Make ZEV model active for submitting consumer sales?',
-        handleSubmit: () => { setShowModal(false); isActiveChange(true); },
+        handleSubmit: () => {
+          setShowModal(false);
+          isActiveChange(true);
+        }
       };
       break;
     case 'submit':
       modalProps = {
         confirmLabel: ' Submit',
-        handleSubmit: () => { requestStateChange('SUBMITTED'); },
+        handleSubmit: () => {
+          requestStateChange('SUBMITTED');
+        },
         buttonClass: 'button primary',
-        modalText: details.attachments.length > 0 ? 'Submit vehicle model and range test results to Government of B.C.?' : 'Submit ZEV model to Government of B.C.?',
+        modalText:
+          details.attachments.length > 0
+            ? 'Submit vehicle model and range test results to Government of B.C.?'
+            : 'Submit ZEV model to Government of B.C.?'
       };
       break;
     case 'accept':
       modalProps = {
         confirmLabel: 'Validate',
-        handleSubmit: () => { requestStateChange('VALIDATED'); },
+        handleSubmit: () => {
+          requestStateChange('VALIDATED');
+        },
         buttonClass: 'button primary',
-        modalText: 'Validate ZEV model',
+        modalText: 'Validate ZEV model'
       };
       break;
     case 'reject':
       modalProps = {
-        handleSubmit: () => { postComment('REJECTED'); },
+        handleSubmit: () => {
+          postComment('REJECTED');
+        },
         confirmLabel: 'Reject',
         buttonClass: 'btn-outline-danger',
-        modalText: 'Reject ZEV model',
+        modalText: 'Reject ZEV model'
       };
       break;
     case 'request':
@@ -94,15 +116,19 @@ const VehicleDetailsPage = (props) => {
         confirmLabel: 'Request',
         buttonClass: 'button primary',
         modalText: 'Request range change/test results',
-        handleSubmit: () => { postComment('CHANGES_REQUESTED'); },
+        handleSubmit: () => {
+          postComment('CHANGES_REQUESTED');
+        }
       };
       break;
     case 'delete':
       modalProps = {
         confirmLabel: 'Delete',
         modalText: 'Delete the ZEV model?',
-        handleSubmit: () => { requestStateChange('DELETED'); },
-        buttonClass: 'btn-outline-danger',
+        handleSubmit: () => {
+          requestStateChange('DELETED');
+        },
+        buttonClass: 'btn-outline-danger'
       };
       break;
     default:
@@ -110,7 +136,7 @@ const VehicleDetailsPage = (props) => {
         confirmLabel: '',
         buttonClass: '',
         modalText: '',
-        handleSubmit: () => {},
+        handleSubmit: () => {}
       };
       break;
   }
@@ -130,37 +156,78 @@ const VehicleDetailsPage = (props) => {
           <VehicleAlert
             isActive={details.isActive}
             status={details.validationStatus}
-            user={alertUser && alertUser.displayName ? alertUser.displayName : alertUser}
+            user={
+              alertUser && alertUser.displayName
+                ? alertUser.displayName
+                : alertUser
+            }
             date={moment(details.updateTimestamp).format('MMM D, YYYY')}
           />
         </div>
       </div>
       <div className="row align-items-center">
         <div className="col-md-12 col-lg-9 col-xl-7">
-          {details.vehicleComment && (details.validationStatus === 'CHANGES_REQUESTED' || details.validationStatus === 'REJECTED')
-          && (
-            <Comment commentArray={[details.vehicleComment]} />
-          )}
+          {details.vehicleComment &&
+            (details.validationStatus === 'CHANGES_REQUESTED' ||
+              details.validationStatus === 'REJECTED') && (
+              <Comment commentArray={[details.vehicleComment]} />
+            )}
           <div className="form p-4">
             {user.isGovernment && (
-              <DetailField label="Supplier" value={details.organization.shortName || details.organization.name} />
+              <DetailField
+                label="Supplier"
+                value={
+                  details.organization.shortName || details.organization.name
+                }
+              />
             )}
             <DetailField label="Model Year" value={details.modelYear.name} />
             <DetailField label="Make" value={details.make} />
             <DetailField label="Model" value={details.modelName} />
-            <DetailField label="ZEV Type" value={details.vehicleZevType.description} />
-            {['EREV', 'PHEV'].indexOf(details.vehicleZevType.vehicleZevCode) >= 0 && (
-              <DetailField label="Passed US06 Test" value={details.hasPassedUs06Test ? 'Yes' : 'No'} />
+            <DetailField
+              label="ZEV Type"
+              value={details.vehicleZevType.description}
+            />
+            {['EREV', 'PHEV'].indexOf(details.vehicleZevType.vehicleZevCode) >=
+              0 && (
+              <DetailField
+                label="Passed US06 Test"
+                value={details.hasPassedUs06Test ? 'Yes' : 'No'}
+              />
             )}
-            <DetailField label="Electric EPA Range (km)" value={details.range} />
-            <DetailField label="Body Type" value={details.vehicleClassCode.description} />
+            <DetailField
+              label="Electric EPA Range (km)"
+              value={details.range}
+            />
+            <DetailField
+              label="Body Type"
+              value={details.vehicleClassCode.description}
+            />
             <DetailField label="Weight (kg)" value={details.weightKg} />
-            <DetailField label="Vehicle Class" id={eligibleWeight ? '' : 'danger-text'} value={eligibleWeight ? 'LDV (calculated)' : 'Not within LDV range (calculated)'} />
+            <DetailField
+              label="Vehicle Class"
+              id={eligibleWeight ? '' : 'danger-text'}
+              value={
+                eligibleWeight
+                  ? 'LDV (calculated)'
+                  : 'Not within LDV range (calculated)'
+              }
+            />
             {details.creditClass && (
-              <DetailField label="ZEV Class" value={eligibleWeight ? ` ${details.creditClass} (calculated)` : ''} />
+              <DetailField
+                label="ZEV Class"
+                value={
+                  eligibleWeight ? ` ${details.creditClass} (calculated)` : ''
+                }
+              />
             )}
             {(details.creditValue > 0 || details.creditValue < 0) && (
-              <DetailField label="Credit Entitlement" value={eligibleWeight ? ` ${details.creditValue} (calculated)` : ''} />
+              <DetailField
+                label="Credit Entitlement"
+                value={
+                  eligibleWeight ? ` ${details.creditValue} (calculated)` : ''
+                }
+              />
             )}
 
             {details.attachments.length > 0 && (
@@ -177,28 +244,35 @@ const VehicleDetailsPage = (props) => {
                       <button
                         className="link"
                         onClick={() => {
-                          axios.get(attachment.url, {
-                            responseType: 'blob',
-                            headers: {
-                              Authorization: null,
-                            },
-                          }).then((response) => {
-                            const objectURL = window.URL.createObjectURL(
-                              new Blob([response.data]),
-                            );
-                            const link = document.createElement('a');
-                            link.href = objectURL;
-                            link.setAttribute('download', attachment.filename);
-                            document.body.appendChild(link);
-                            link.click();
-                          });
+                          axios
+                            .get(attachment.url, {
+                              responseType: 'blob',
+                              headers: {
+                                Authorization: null
+                              }
+                            })
+                            .then((response) => {
+                              const objectURL = window.URL.createObjectURL(
+                                new Blob([response.data])
+                              );
+                              const link = document.createElement('a');
+                              link.href = objectURL;
+                              link.setAttribute(
+                                'download',
+                                attachment.filename
+                              );
+                              document.body.appendChild(link);
+                              link.click();
+                            });
                         }}
                         type="button"
                       >
                         {attachment.filename}
                       </button>
                     </div>
-                    <div className="col-3 size">{getFileSize(attachment.size)}</div>
+                    <div className="col-3 size">
+                      {getFileSize(attachment.size)}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -207,27 +281,46 @@ const VehicleDetailsPage = (props) => {
         </div>
       </div>
 
-      {details.validationStatus === 'SUBMITTED'
-      && user.isGovernment
-      && typeof user.hasPermission === 'function'
-      && user.hasPermission('REQUEST_ZEV_CHANGES')
-      && (
-      <div className="row">
-        <div className="col-md-12 col-lg-9 col-xl-7 pt-4 pb-2">
-          <div className="form">
-            <div className="request-changes-check">
-              <input type="checkbox" onChange={handleCheckboxClick} />
-              Request range results and/or a change to the range value from the vehicle supplier, specify below.
-            </div>
-            <div>Add a comment to the vehicle supplier for request or rejection.</div>
-            <textarea className="form-control" rows="3" onChange={handleChange} defaultValue={comments.vehicleComment.comment} />
-            <div className="text-right">
-              <button className="button primary" disabled={!requestChangeCheck || !comments.vehicleComment} type="button" key="REQUEST" onClick={() => { setModalType('request'); setShowModal(true); }}>Request Range Change/Test Results</button>
+      {details.validationStatus === 'SUBMITTED' &&
+        user.isGovernment &&
+        typeof user.hasPermission === 'function' &&
+        user.hasPermission('REQUEST_ZEV_CHANGES') && (
+          <div className="row">
+            <div className="col-md-12 col-lg-9 col-xl-7 pt-4 pb-2">
+              <div className="form">
+                <div className="request-changes-check">
+                  <input type="checkbox" onChange={handleCheckboxClick} />
+                  Request range results and/or a change to the range value from
+                  the vehicle supplier, specify below.
+                </div>
+                <div>
+                  Add a comment to the vehicle supplier for request or
+                  rejection.
+                </div>
+                <textarea
+                  className="form-control"
+                  rows="3"
+                  onChange={handleChange}
+                  defaultValue={comments.vehicleComment.comment}
+                />
+                <div className="text-right">
+                  <button
+                    className="button primary"
+                    disabled={!requestChangeCheck || !comments.vehicleComment}
+                    type="button"
+                    key="REQUEST"
+                    onClick={() => {
+                      setModalType('request');
+                      setShowModal(true);
+                    }}
+                  >
+                    Request Range Change/Test Results
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-      )}
+        )}
 
       <div className="row">
         <div className="col-12">
@@ -238,84 +331,108 @@ const VehicleDetailsPage = (props) => {
                 locationRoute={ROUTES_VEHICLES.LIST}
                 locationState={locationState}
               />
-              {details.validationStatus  && (details.validationStatus === 'CHANGES_REQUESTED' || details.validationStatus === 'DRAFT')
-              && (
-              <Button
-                buttonType="delete"
-                action={() => { setModalType('delete'); setShowModal(true); }}
-              />
-              )}
+              {details.validationStatus &&
+                (details.validationStatus === 'CHANGES_REQUESTED' ||
+                  details.validationStatus === 'DRAFT') && (
+                  <Button
+                    buttonType="delete"
+                    action={() => {
+                      setModalType('delete');
+                      setShowModal(true);
+                    }}
+                  />
+                )}
             </span>
             <span className="right-content">
-              {['DRAFT', 'CHANGES_REQUESTED'].indexOf(details.validationStatus) >= 0
-              && !user.isGovernment && (
-                <>
+              {['DRAFT', 'CHANGES_REQUESTED'].indexOf(
+                details.validationStatus
+              ) >= 0 &&
+                !user.isGovernment && (
+                  <>
+                    <button
+                      className="button primary"
+                      onClick={() => {
+                        history.push(ROUTES_VEHICLES.EDIT.replace(/:id/gi, id));
+                      }}
+                      type="button"
+                    >
+                      <FontAwesomeIcon icon="edit" /> Edit
+                    </button>
+                    <Button
+                      buttonType="submit"
+                      disabled={!eligibleWeight}
+                      action={() => {
+                        setModalType('submit');
+                        setShowModal(true);
+                      }}
+                    />
+                  </>
+                )}
+              {['VALIDATED'].indexOf(details.validationStatus) >= 0 &&
+                !user.isGovernment &&
+                details.isActive && (
+                  <Button
+                    buttonType="makeInactive"
+                    optionalText="Make Inactive"
+                    action={() => {
+                      setModalType('makeInactive');
+                      setShowModal(true);
+                    }}
+                  />
+                )}
+              {['VALIDATED'].indexOf(details.validationStatus) >= 0 &&
+                !user.isGovernment &&
+                !details.isActive && (
+                  <Button
+                    buttonType="makeActive"
+                    optionalText="Make Active"
+                    action={() => {
+                      setModalType('makeActive');
+                      setShowModal(true);
+                    }}
+                  />
+                )}
+              {details.validationStatus === 'SUBMITTED' &&
+                user.isGovernment &&
+                typeof user.hasPermission === 'function' &&
+                user.hasPermission('VALIDATE_ZEV') && [
+                  <button
+                    className="btn btn-outline-danger"
+                    disabled={
+                      !comments.vehicleComment.comment || requestChangeCheck
+                    }
+                    type="button"
+                    key="REJECTED"
+                    onClick={() => {
+                      setModalType('reject');
+                      setShowModal(true);
+                    }}
+                  >
+                    Reject
+                  </button>,
                   <button
                     className="button primary"
-                    onClick={() => {
-                      history.push(ROUTES_VEHICLES.EDIT.replace(/:id/gi, id));
-                    }}
+                    disabled={
+                      comments.vehicleComment.comment || requestChangeCheck
+                    }
                     type="button"
+                    key="VALIDATED"
+                    onClick={() => {
+                      setModalType('accept');
+                      setShowModal(true);
+                    }}
                   >
-                    <FontAwesomeIcon icon="edit" /> Edit
+                    Validate
                   </button>
-                  <Button
-                    buttonType="submit"
-                    disabled={!eligibleWeight}
-                    action={() => { setModalType('submit'); setShowModal(true); }}
-                  />
-                </>
-              )}
-              {['VALIDATED'].indexOf(details.validationStatus) >= 0
-              && !user.isGovernment && details.isActive && (
-              <Button
-                buttonType="makeInactive"
-                optionalText="Make Inactive"
-                action={() => { setModalType('makeInactive'); setShowModal(true); }}
-              />
-              )}
-              {['VALIDATED'].indexOf(details.validationStatus) >= 0
-              && !user.isGovernment && !details.isActive && (
-              <Button
-                buttonType="makeActive"
-                optionalText="Make Active"
-                action={() => { setModalType('makeActive'); setShowModal(true); }}
-              />
-              )}
-              {details.validationStatus === 'SUBMITTED'
-              && user.isGovernment
-              && typeof user.hasPermission === 'function'
-              && user.hasPermission('VALIDATE_ZEV')
-              && ([
-                <button
-                  className="btn btn-outline-danger"
-                  disabled={!comments.vehicleComment.comment || requestChangeCheck}
-                  type="button"
-                  key="REJECTED"
-                  onClick={() => {
-                    setModalType('reject');
-                    setShowModal(true);
-                  }}
-                >Reject
-                </button>,
-                <button
-                  className="button primary"
-                  disabled={comments.vehicleComment.comment || requestChangeCheck}
-                  type="button"
-                  key="VALIDATED"
-                  onClick={() => {
-                    setModalType('accept');
-                    setShowModal(true);
-                  }}
-                >Validate
-                </button>,
-              ])}
+                ]}
             </span>
           </div>
 
           <Modal
             confirmLabel={modalProps.confirmLabel}
-            handleCancel={() => { setShowModal(false); }}
+            handleCancel={() => {
+              setShowModal(false);
+            }}
             handleSubmit={modalProps.handleSubmit}
             modalClass="w-75"
             showModal={showModal}
@@ -323,15 +440,20 @@ const VehicleDetailsPage = (props) => {
             title={modalProps.title ? modalProps.title : 'Confirm'}
           >
             <div>
-              <div><br /><br /></div>
+              <div>
+                <br />
+                <br />
+              </div>
               <h3 className="d-inline">{modalProps.modalText}</h3>
-              <div><br /><br /></div>
+              <div>
+                <br />
+                <br />
+              </div>
             </div>
           </Modal>
         </div>
       </div>
     </div>
-
   );
 };
 
@@ -340,58 +462,52 @@ VehicleDetailsPage.defaultProps = {
   postComment: undefined,
   setComments: undefined,
   title: 'Vehicle Details',
-  locationState: undefined,
+  locationState: undefined
 };
 
 VehicleDetailsPage.propTypes = {
   comments: PropTypes.shape({
     vehicleComment: PropTypes.shape({
-      comment: PropTypes.string.isRequired,
-    }),
+      comment: PropTypes.string.isRequired
+    })
   }),
   details: PropTypes.shape({
     actions: PropTypes.arrayOf(PropTypes.string),
     attachments: PropTypes.arrayOf(PropTypes.shape()),
     createUser: PropTypes.oneOfType([
       PropTypes.shape({
-        displayName: PropTypes.string,
+        displayName: PropTypes.string
       }),
-      PropTypes.string,
+      PropTypes.string
     ]),
     creditClass: PropTypes.string,
     creditValue: PropTypes.number,
     hasPassedUs06Test: PropTypes.bool,
     history: PropTypes.arrayOf(PropTypes.object),
-    id: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.string,
-    ]),
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     make: PropTypes.string,
     modelName: PropTypes.string,
     modelYear: PropTypes.shape({
-      name: PropTypes.string,
+      name: PropTypes.string
     }),
     organization: PropTypes.shape(),
-    range: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.string,
-    ]),
+    range: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     validationStatus: PropTypes.string,
     vehicleClassCode: PropTypes.shape({
-      description: PropTypes.string,
+      description: PropTypes.string
     }),
     updateUser: PropTypes.oneOfType([
       PropTypes.shape({
-        displayName: PropTypes.string,
+        displayName: PropTypes.string
       }),
-      PropTypes.string,
+      PropTypes.string
     ]),
     vehicleComment: PropTypes.shape(),
     vehicleZevType: PropTypes.shape({
       description: PropTypes.string,
-      vehicleZevCode: PropTypes.string,
+      vehicleZevCode: PropTypes.string
     }),
-    weightKg: PropTypes.string,
+    weightKg: PropTypes.string
   }).isRequired,
   loading: PropTypes.bool.isRequired,
   postComment: PropTypes.func,
@@ -400,7 +516,7 @@ VehicleDetailsPage.propTypes = {
   title: PropTypes.string,
   user: CustomPropTypes.user.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),
-  isActiveChange: PropTypes.func.isRequired,
+  isActiveChange: PropTypes.func.isRequired
 };
 
 export default VehicleDetailsPage;

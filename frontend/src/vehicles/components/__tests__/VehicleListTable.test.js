@@ -8,15 +8,17 @@ afterEach(cleanup);
 describe('Vehicle List', () => {
   it('renders without crashing', () => {
     const user = {
-      isGovernment: false,
+      isGovernment: false
     };
 
-    render(<VehicleListTable
-      items={[]}
-      user={user}
-      filtered={[]}
-      setFiltered={() => {}}
-      showSupplier
-    />);
+    render(
+      <VehicleListTable
+        items={[]}
+        user={user}
+        filtered={[]}
+        setFiltered={() => {}}
+        showSupplier
+      />
+    );
   });
 });

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Switch } from 'react-router';
 import { Route, Redirect, Router as BrowserRouter } from 'react-router-dom';
+import SessionTimeout from './components/SessionTimeout';
 
 import DashboardContainer from '../dashboard/DashboardContainer';
 import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
@@ -41,7 +42,7 @@ import ConsumerSalesContainer from '../compliance/ConsumerSalesContainer';
 import CreditAgreementsEditContainer from '../creditagreements/CreditAgreementsEditContainer';
 import CreditAgreementsDetailsContainer from '../creditagreements/CreditAgreementsDetailsContainer';
 import SupplementaryContainer from '../supplementary/SupplementaryContainer';
-import ActiveUsersListContainer from '../users/ActiveUsersListContainer'
+import ActiveUsersListContainer from '../users/ActiveUsersListContainer';
 import ErrorHandler from './components/ErrorHandler';
 import Loading from './components/Loading';
 import StatusInterceptor from './components/StatusInterceptor';
@@ -63,11 +64,10 @@ import ROUTES_SUPPLEMENTARY from './routes/SupplementaryReport';
 class Router extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       loading: true,
       statusCode: null,
-      user: {},
+      user: {}
     };
 
     const { keycloak } = props;
@@ -76,29 +76,32 @@ class Router extends Component {
     axios.defaults.baseURL = CONFIG.APIBASE;
     axios.defaults.headers.common.Authorization = `Bearer ${token}`;
     axios.interceptors.response.use(
-      (response) => (response),
+      (response) => response,
       (error) => {
         if (error.response && error.response.status >= 400) {
           this.setState({
             loading: false,
-            statusCode: error.response.status,
+            statusCode: error.response.status
           });
         }
 
         throw error;
-      },
+      }
     );
 
     keycloak.onTokenExpired = () => {
-      keycloak.updateToken(5).then((refreshed) => {
-        if (refreshed) {
-          const { token: newToken } = keycloak;
+      keycloak
+        .updateToken(5)
+        .then((refreshed) => {
+          if (refreshed) {
+            const { token: newToken } = keycloak;
 
-          axios.defaults.headers.common.Authorization = `Bearer ${newToken}`;
-        }
-      }).catch(() => {
-        props.logout();
-      });
+            axios.defaults.headers.common.Authorization = `Bearer ${newToken}`;
+          }
+        })
+        .catch(() => {
+          props.logout();
+        });
     };
   }
 
@@ -113,15 +116,16 @@ class Router extends Component {
               const { permissions } = response.data;
 
               if (permissions) {
-                return permissions.findIndex((permission) => (
-                  permission.permissionCode === permissionCode
-                )) >= 0;
+                return (
+                  permissions.findIndex(
+                    (permission) => permission.permissionCode === permissionCode
+                  ) >= 0
+                );
               }
             }
-
             return false;
-          },
-        },
+          }
+        }
       });
     });
   }
@@ -129,7 +133,6 @@ class Router extends Component {
   render() {
     const { keycloak } = this.props;
     const { loading, statusCode, user } = this.state;
-
     if (loading) {
       return <Loading />;
     }
@@ -138,247 +141,444 @@ class Router extends Component {
       <BrowserRouter history={History}>
         <PageLayout keycloak={keycloak} user={user}>
           <ErrorHandler statusCode={statusCode}>
+            <SessionTimeout />
             <Switch>
               <Route
                 path={ROUTES_USERS.ACTIVE}
-                render={() => <ActiveUsersListContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <ActiveUsersListContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 path={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS}
-                render={() => <SupplementaryContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <SupplementaryContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 path={ROUTES_SUPPLEMENTARY.CREATE}
-                render={() => <SupplementaryContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <SupplementaryContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 path={ROUTES_SUPPLEMENTARY.REASSESSMENT}
-                render={() => <SupplementaryContainer keycloak={keycloak} user={user} reassessment />}
+                render={() => (
+                  <SupplementaryContainer
+                    keycloak={keycloak}
+                    user={user}
+                    reassessment
+                  />
+                )}
               />
               <Route
                 path={ROUTES_COMPLIANCE.REPORT_ASSESSMENT}
-                render={() => <AssessmentContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <AssessmentContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 path={ROUTES_COMPLIANCE.ASSESSMENT_EDIT}
-                render={() => <AssessmentEditContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <AssessmentEditContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 path={ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY}
-                render={() => <ComplianceObligationContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <ComplianceObligationContainer
+                    keycloak={keycloak}
+                    user={user}
+                  />
+                )}
               />
               <Route
                 path={ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION}
-                render={() => <SupplierInformationContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <SupplierInformationContainer
+                    keycloak={keycloak}
+                    user={user}
+                  />
+                )}
               />
               <Route
                 exact
                 key="route-conpliance-report-new"
                 path={ROUTES_COMPLIANCE.NEW}
-                render={() => <SupplierInformationContainer keycloak={keycloak} user={user} newReport />}
-              />,
+                render={() => (
+                  <SupplierInformationContainer
+                    keycloak={keycloak}
+                    user={user}
+                    newReport
+                  />
+                )}
+              />
+              ,
               <Route
                 path={ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES}
-                render={() => <ConsumerSalesContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <ConsumerSalesContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 path={ROUTES_COMPLIANCE.CALCULATOR}
-                render={() => ((typeof user.hasPermission === 'function' && user.hasPermission('EDIT_SALES') && !user.isGovernment)
-                  ? <ComplianceCalculatorContainer keycloak={keycloak} user={user} /> : (
-                    <ComplianceReportsContainer keycloak={keycloak} user={user} />
-                  ))}
+                render={() =>
+                  typeof user.hasPermission === 'function' &&
+                  user.hasPermission('EDIT_SALES') &&
+                  !user.isGovernment ? (
+                    <ComplianceCalculatorContainer
+                      keycloak={keycloak}
+                      user={user}
+                    />
+                  ) : (
+                    <ComplianceReportsContainer
+                      keycloak={keycloak}
+                      user={user}
+                    />
+                  )
+                }
               />
               <Route
                 path={ROUTES_COMPLIANCE.REPORT_SUMMARY}
-                render={() => <ComplianceReportSummaryContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <ComplianceReportSummaryContainer
+                    keycloak={keycloak}
+                    user={user}
+                  />
+                )}
               />
               <Route
                 path={ROUTES_COMPLIANCE.REPORTS}
-                render={() => <ComplianceReportsContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <ComplianceReportsContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 path={ROUTES_COMPLIANCE.RATIOS}
-                render={() => <ComplianceRatiosContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <ComplianceRatiosContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 exact
                 path={ROUTES_ORGANIZATIONS.MINE_ADD_USER}
-                render={() => <UserEditContainer keycloak={keycloak} user={user} newUser />}
+                render={() => (
+                  <UserEditContainer keycloak={keycloak} user={user} newUser />
+                )}
               />
               <Route
                 exact
                 path={ROUTES_ORGANIZATIONS.MINE}
-                render={() => <OrganizationDetailsContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <OrganizationDetailsContainer
+                    keycloak={keycloak}
+                    user={user}
+                  />
+                )}
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.NEW}
                 render={() => (
-                  <VehicleSupplierEditContainer keycloak={keycloak} user={user} newSupplier />
+                  <VehicleSupplierEditContainer
+                    keycloak={keycloak}
+                    user={user}
+                    newSupplier
+                  />
                 )}
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.ADD_USER}
-                render={() => <UserEditContainer keycloak={keycloak} user={user} newUser />}
+                render={() => (
+                  <UserEditContainer keycloak={keycloak} user={user} newUser />
+                )}
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.USERS}
-                render={() => <VehicleSupplierUserListContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <VehicleSupplierUserListContainer
+                    keycloak={keycloak}
+                    user={user}
+                  />
+                )}
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.REPORTS}
-                render={() => <VehicleSupplierReportListContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <VehicleSupplierReportListContainer
+                    keycloak={keycloak}
+                    user={user}
+                  />
+                )}
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.VEHICLES}
-                render={() => <VehicleSupplierModelListContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <VehicleSupplierModelListContainer
+                    keycloak={keycloak}
+                    user={user}
+                  />
+                )}
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.TRANSACTIONS}
                 render={() => (
-                  <VehicleSupplierCreditTransactionListContainer keycloak={keycloak} user={user} />
+                  <VehicleSupplierCreditTransactionListContainer
+                    keycloak={keycloak}
+                    user={user}
+                  />
                 )}
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.EDIT}
-                render={() => ((typeof user.hasPermission === 'function' && user.hasPermission('EDIT_ORGANIZATIONS') && user.isGovernment)
-                  ? <VehicleSupplierEditContainer keycloak={keycloak} user={user} /> : (
-                    <Redirect
-                      to={{ path: '/' }}
+                render={() =>
+                  typeof user.hasPermission === 'function' &&
+                  user.hasPermission('EDIT_ORGANIZATIONS') &&
+                  user.isGovernment ? (
+                    <VehicleSupplierEditContainer
+                      keycloak={keycloak}
+                      user={user}
                     />
-                  ))}
+                  ) : (
+                    <Redirect to={{ path: '/' }} />
+                  )
+                }
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.DETAILS}
-                render={() => <VehicleSupplierDetailsContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <VehicleSupplierDetailsContainer
+                    keycloak={keycloak}
+                    user={user}
+                  />
+                )}
               />
               <Route
                 exact
                 path={ROUTES_VEHICLES.EDIT}
-                render={() => <VehicleEditContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <VehicleEditContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 path={ROUTES_ORGANIZATIONS.LIST}
-                render={() => <OrganizationListContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <OrganizationListContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 path={ROUTES_NOTIFICATIONS.LIST}
-                render={() => <NotificationListContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <NotificationListContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 exact
                 path={ROUTES_VEHICLES.ADD}
-                render={() => <VehicleEditContainer keycloak={keycloak} user={user} newVehicle />}
+                render={() => (
+                  <VehicleEditContainer
+                    keycloak={keycloak}
+                    user={user}
+                    newVehicle
+                  />
+                )}
               />
               <Route
                 exact
                 path={ROUTES_VEHICLES.LIST}
-                render={() => <VehicleListContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <VehicleListContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 exact
                 path={ROUTES_VEHICLES.DETAILS}
-                render={() => <VehicleDetailsContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <VehicleDetailsContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 path={ROUTES_USERS.EDIT}
-                render={() => <UserEditContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <UserEditContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 exact
                 path={ROUTES_CREDITS.LIST}
-                render={() => <CreditsContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <CreditsContainer keycloak={keycloak} user={user} />
+                )}
               />
               <Route
                 exact
                 path={ROUTES_CREDITS.UPLOAD_VERIFICATION}
-                render={() => <UploadICBCVerificationContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <UploadICBCVerificationContainer
+                    keycloak={keycloak}
+                    user={user}
+                  />
+                )}
               />
-              {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED && ([
+              {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED && [
                 <Route
                   exact
                   key="route-credit-transfers-list"
                   path={ROUTES_CREDIT_TRANSFERS.LIST}
-                  render={() => <CreditTransferListContainer keycloak={keycloak} user={user} />}
+                  render={() => (
+                    <CreditTransferListContainer
+                      keycloak={keycloak}
+                      user={user}
+                    />
+                  )}
                 />,
                 <Route
                   exact
                   key="route-credit-transfers-new"
                   path={ROUTES_CREDIT_TRANSFERS.NEW}
-                  render={() => <CreditTransfersEditContainer keycloak={keycloak} user={user} newTransfer />}
+                  render={() => (
+                    <CreditTransfersEditContainer
+                      keycloak={keycloak}
+                      user={user}
+                      newTransfer
+                    />
+                  )}
                 />,
                 <Route
                   exact
                   key="route-credit-transfers-edit"
                   path={ROUTES_CREDIT_TRANSFERS.EDIT}
-                  render={() => <CreditTransfersEditContainer keycloak={keycloak} user={user} />}
+                  render={() => (
+                    <CreditTransfersEditContainer
+                      keycloak={keycloak}
+                      user={user}
+                    />
+                  )}
                 />,
                 <Route
                   key="route-credit-transfers-details"
                   path={ROUTES_CREDIT_TRANSFERS.DETAILS}
                   render={() => (
-                    <CreditTransfersDetailsContainer keycloak={keycloak} user={user} />
+                    <CreditTransfersDetailsContainer
+                      keycloak={keycloak}
+                      user={user}
+                    />
                   )}
-                />,
-              ])}
+                />
+              ]}
               <Route
                 exact
                 path={ROUTES_CREDIT_REQUESTS.NEW}
-                render={() => <UploadCreditRequestContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <UploadCreditRequestContainer
+                    keycloak={keycloak}
+                    user={user}
+                  />
+                )}
               />
               <Route
                 path={ROUTES_CREDIT_REQUESTS.VALIDATED}
                 render={() => (
-                  <CreditRequestDetailsContainer keycloak={keycloak} user={user} validatedOnly />
+                  <CreditRequestDetailsContainer
+                    keycloak={keycloak}
+                    user={user}
+                    validatedOnly
+                  />
                 )}
               />
               <Route
                 exact
                 path={ROUTES_CREDIT_REQUESTS.EDIT}
-                render={() => <UploadCreditRequestContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <UploadCreditRequestContainer
+                    keycloak={keycloak}
+                    user={user}
+                  />
+                )}
               />
               <Route
                 path={ROUTES_CREDIT_REQUESTS.VALIDATED_DETAILS}
-                render={() => <CreditRequestValidatedDetailsContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <CreditRequestValidatedDetailsContainer
+                    keycloak={keycloak}
+                    user={user}
+                  />
+                )}
               />
               <Route
                 path={ROUTES_CREDIT_REQUESTS.VALIDATE}
-                render={() => <CreditRequestVINListContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <CreditRequestVINListContainer
+                    keycloak={keycloak}
+                    user={user}
+                  />
+                )}
               />
               <Route
                 path={ROUTES_CREDIT_REQUESTS.DETAILS}
-                render={() => <CreditRequestDetailsContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <CreditRequestDetailsContainer
+                    keycloak={keycloak}
+                    user={user}
+                  />
+                )}
               />
               <Route
                 exact
                 path={ROUTES_CREDIT_REQUESTS.LIST}
-                render={() => <CreditRequestListContainer keycloak={keycloak} user={user} />}
+                render={() => (
+                  <CreditRequestListContainer keycloak={keycloak} user={user} />
+                )}
               />
-              {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED && ([
+              {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED && [
                 <Route
                   exact
                   key="route-credit-agreements-list"
                   path={ROUTES_CREDIT_AGREEMENTS.LIST}
-                  render={() => <CreditAgreementListContainer keycloak={keycloak} user={user} />}
+                  render={() => (
+                    <CreditAgreementListContainer
+                      keycloak={keycloak}
+                      user={user}
+                    />
+                  )}
                 />,
                 <Route
                   exact
                   key="route-credit-agreements-edit"
                   path={ROUTES_CREDIT_AGREEMENTS.EDIT}
-                  render={() => <CreditAgreementsEditContainer keycloak={keycloak} user={user} />}
+                  render={() => (
+                    <CreditAgreementsEditContainer
+                      keycloak={keycloak}
+                      user={user}
+                    />
+                  )}
                 />,
                 <Route
                   exact
                   key="route-credit-agreements-new"
                   path={ROUTES_CREDIT_AGREEMENTS.NEW}
-                  render={() => (user.isGovernment ? <CreditAgreementsEditContainer keycloak={keycloak} user={user} /> : <></>)}
+                  render={() =>
+                    user.isGovernment ? (
+                      <CreditAgreementsEditContainer
+                        keycloak={keycloak}
+                        user={user}
+                      />
+                    ) : (
+                      <></>
+                    )
+                  }
                 />,
                 <Route
                   exact
                   key="route-credit-agreements-details"
                   path={ROUTES_CREDIT_AGREEMENTS.DETAILS}
-                  render={() => <CreditAgreementsDetailsContainer keycloak={keycloak} user={user} />}
-                />,
-              ])}
+                  render={() => (
+                    <CreditAgreementsDetailsContainer
+                      keycloak={keycloak}
+                      user={user}
+                    />
+                  )}
+                />
+              ]}
               <Route
                 exact
                 path="/"
@@ -386,9 +586,7 @@ class Router extends Component {
               />
               <Route
                 path="/"
-                render={() => (
-                  <StatusInterceptor statusCode={404} />
-                )}
+                render={() => <StatusInterceptor statusCode={404} />}
               />
             </Switch>
           </ErrorHandler>
@@ -400,7 +598,7 @@ class Router extends Component {
 
 Router.propTypes = {
   keycloak: PropTypes.shape().isRequired,
-  logout: PropTypes.func.isRequired,
+  logout: PropTypes.func.isRequired
 };
 
 export default Router;

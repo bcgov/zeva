@@ -11,9 +11,7 @@ import history from '../../app/History';
 require('bootstrap/js/dist/collapse.js');
 
 const ComplianceHistory = (props) => {
-  const {
-    id, activePage, supplementaryId: detailsId, reportYear,
-  } = props;
+  const { id, activePage, supplementaryId: detailsId, reportYear } = props;
 
   let { supplementaryId } = useParams();
 
@@ -21,12 +19,16 @@ const ComplianceHistory = (props) => {
     supplementaryId = detailsId;
   }
 
-  const [supplementalReportHistory, setSupplementalReportHistory] = useState([]);
+  const [supplementalReportHistory, setSupplementalReportHistory] = useState(
+    []
+  );
 
   useEffect(() => {
-    axios.get(ROUTES_COMPLIANCE.SUPPLEMENTAL_HISTORY.replace(/:id/g, id)).then((response) => {
-      setSupplementalReportHistory(response.data);
-    });
+    axios
+      .get(ROUTES_COMPLIANCE.SUPPLEMENTAL_HISTORY.replace(/:id/g, id))
+      .then((response) => {
+        setSupplementalReportHistory(response.data);
+      });
   }, []);
 
   const getHistory = (itemHistory) => {
@@ -35,15 +37,21 @@ const ComplianceHistory = (props) => {
     if (itemHistory) {
       itemHistory.forEach((obj) => {
         if (['SUBMITTED', 'DRAFT'].indexOf(obj.status) >= 0) {
-          const found = tempHistory.findIndex((each) => ['SUBMITTED', 'DRAFT'].indexOf(each.status) >= 0);
+          const found = tempHistory.findIndex(
+            (each) => ['SUBMITTED', 'DRAFT'].indexOf(each.status) >= 0
+          );
 
           if (found < 0) {
             tempHistory.push(obj);
           }
         }
 
-        if (['RECOMMENDED', 'ASSESSED', 'REASSESSED'].indexOf(obj.status) >= 0) {
-          const found = tempHistory.findIndex((each) => obj.status === each.status);
+        if (
+          ['RECOMMENDED', 'ASSESSED', 'REASSESSED'].indexOf(obj.status) >= 0
+        ) {
+          const found = tempHistory.findIndex(
+            (each) => obj.status === each.status
+          );
 
           if (found < 0) {
             tempHistory.push(obj);
@@ -61,7 +69,13 @@ const ComplianceHistory = (props) => {
     if (status === 'draft') {
       status = ' saved ';
     }
-
+    if (status === 'recommended') {
+      if (item.isSupplementary) {
+        status = ' recommended to Director ';
+      } else {
+        status = ' assessment recommended to Director ';
+      }
+    }
     if (status === 'submitted') {
       status = ' signed and submitted to the Government of B.C. ';
     }
@@ -92,7 +106,9 @@ const ComplianceHistory = (props) => {
       }
     }
 
-    return `${reportType} ${status} ${moment(each.updateTimestamp).format('MMM D, YYYY')} ${byUser}`;
+    return `${reportType} ${status} ${moment(each.updateTimestamp).format(
+      'MMM D, YYYY'
+    )} ${byUser}`;
   };
 
   const getColor = (status) => {
@@ -124,7 +140,11 @@ const ComplianceHistory = (props) => {
   };
 
   const getShow = (item) => {
-    if (activePage === 'supplementary' && item.isSupplementary && Number(item.id) === Number(detailsId)) {
+    if (
+      activePage === 'supplementary' &&
+      item.isSupplementary &&
+      Number(item.id) === Number(detailsId)
+    ) {
       return 'show';
     }
 
@@ -138,49 +158,72 @@ const ComplianceHistory = (props) => {
   return (
     Object.keys(supplementalReportHistory).length > 0 && (
       <div className="m-0 pt-2">
-        <h3>
-          {reportYear} Model Year Reporting History
-        </h3>
+        <h3>{reportYear} Model Year Reporting History</h3>
         <div className="mt-2" id="complianceHistory">
-          {supplementalReportHistory && supplementalReportHistory.map((item, index) => (
-            <div id={`item-${index}`} key={`item-${index}`} className="card">
-              <div className={`card-header px-0 py-1 ${getColor(item.status)}`}>
-                <h2 className="mb-0">
-                  <button
-                    className={`btn ${getShow(item) === 'show' ? '' : 'btn-link'}`}
-                    type="button"
-                    data-toggle="collapse"
-                    data-target={`#collapse${item.id}`}
-                    aria-expanded="true"
-                    aria-controls={`collapse${item.id}`}
-                    onClick={() => {
-                      if (item.isSupplementary) {
-                        history.push(ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id).replace(':supplementaryId', item.id));
-                      } else {
-                        history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
-                      }
-                    }}
-                  >
-                    Model Year {item.isSupplementary ? 'Supplementary' : ''} Report - {item.status}
-                  </button>
-                </h2>
-              </div>
+          {supplementalReportHistory &&
+            supplementalReportHistory.map((item, index) => (
+              <div id={`item-${index}`} key={`item-${index}`} className="card">
+                <div
+                  className={`card-header px-0 py-1 ${getColor(item.status)}`}
+                >
+                  <h2 className="mb-0">
+                    <button
+                      className={`btn ${
+                        getShow(item) === 'show' ? '' : 'btn-link'
+                      }`}
+                      type="button"
+                      data-toggle="collapse"
+                      data-target={`#collapse${item.id}`}
+                      aria-expanded="true"
+                      aria-controls={`collapse${item.id}`}
+                      onClick={() => {
+                        if (item.isSupplementary) {
+                          history.push(
+                            ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
+                              ':id',
+                              id
+                            ).replace(':supplementaryId', item.id)
+                          );
+                        } else {
+                          history.push(
+                            ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(
+                              ':id',
+                              id
+                            )
+                          );
+                        }
+                      }}
+                    >
+                      Model Year {item.isSupplementary ? 'Supplementary' : ''}{' '}
+                      Report -{' '}
+                      {item.status === 'RECOMMENDED'
+                        ? 'ASSESSMENT RECOMMENDED'
+                        : item.status}
+                    </button>
+                  </h2>
+                </div>
 
-              <div
-                id={`collapse${item.id}`}
-                className={`collapse ${getShow(item)}`}
-                data-parent="#complianceHistory"
-              >
-                <div className="card-body p-2">
-                  <ul className="py-0 my-0 px-4">
-                    {item.history && getHistory(item.history).map((each, eachIndex) => (
-                      <li id={`each-${eachIndex}`} key={`each-${eachIndex}`}>{getStatus(item, each)}</li>
-                    ))}
-                  </ul>
+                <div
+                  id={`collapse${item.id}`}
+                  className={`collapse ${getShow(item)}`}
+                  data-parent="#complianceHistory"
+                >
+                  <div className="card-body p-2">
+                    <ul className="py-0 my-0 px-4">
+                      {item.history &&
+                        getHistory(item.history).map((each, eachIndex) => (
+                          <li
+                            id={`each-${eachIndex}`}
+                            key={`each-${eachIndex}`}
+                          >
+                            {getStatus(item, each)}
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     )
@@ -188,13 +231,14 @@ const ComplianceHistory = (props) => {
 };
 
 ComplianceHistory.defaultProps = {
-  supplementaryId: null,
+  supplementaryId: null
 };
 
 ComplianceHistory.propTypes = {
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   activePage: PropTypes.string.isRequired,
   supplementaryId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  reportYear: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+  reportYear: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    .isRequired
 };
 export default ComplianceHistory;
