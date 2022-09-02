@@ -58,29 +58,29 @@ const CreditRequestVINListContainer = (props) => {
 
             // Initialize content and reason values
             const { data } = contentResponse;
-            let contentListData = data.content
-            let reasonListData = []
+            let contentListData = data.content;
+            let reasonListData = [];
 
             // Set content and reason values for each model row
             contentListData.forEach((row, idx) => {
               const subId = Number(row.id);
-              const noMatch = row.warnings?.includes("NO_ICBC_MATCH")
-              if(reset) {
-                contentListData[idx].reason = noMatch ? reasons[0] : ''
+              const noMatch = row.warnings?.includes('NO_ICBC_MATCH');
+              if (reset) {
+                contentListData[idx].reason = noMatch ? reasons[0] : '';
                 reasonListData.push({
                   id: subId,
                   reason: noMatch ? reasons[0] : ''
-                })
+                });
               } else {
                 reasonListData.push({
                   id: subId,
                   reason: row.reason
                 });
               }
-            })
+            });
 
-            setContent(contentListData)
-            setReasonList(reasonListData)
+            setContent(contentListData);
+            setReasonList(reasonListData);
             setLoading(false);
           }
         )
@@ -92,10 +92,10 @@ const CreditRequestVINListContainer = (props) => {
   }, [id]);
 
   const handleChangeReason = (submissionId, value = false) => {
-    let newContent = content
+    let newContent = content;
     const subId = Number(submissionId);
-    const reasonIdx = reasonList.findIndex(r => Number(r.id) == subId);
-    const contentIdx = content.findIndex(c => Number(c.id) == subId);
+    const reasonIdx = reasonList.findIndex((r) => Number(r.id) == subId);
+    const contentIdx = content.findIndex((c) => Number(c.id) == subId);
 
     if (reasonIdx >= 0) {
       reasonList[reasonIdx].reason = value;
@@ -105,8 +105,8 @@ const CreditRequestVINListContainer = (props) => {
         reason: value
       });
     }
-    if(contentIdx >= 0) {
-      newContent[contentIdx].reason = value
+    if (contentIdx >= 0) {
+      newContent[contentIdx].reason = value;
     }
 
     setReasonList(reasonList);
@@ -119,59 +119,57 @@ const CreditRequestVINListContainer = (props) => {
     const { value: submissionId, checked } = event.target;
 
     const subId = Number(submissionId);
-    const contentIdx = content.findIndex(c => Number(c.id) == subId);
-    const noMatch = content[contentIdx].warnings?.includes("NO_ICBC_MATCH")
+    const contentIdx = content.findIndex((c) => Number(c.id) == subId);
+    const noMatch = content[contentIdx].warnings?.includes('NO_ICBC_MATCH');
 
-    updateInvalidated(checked, subId)
-    updateContent(checked, noMatch, contentIdx)
-    updateReasons(checked, noMatch, subId)
-    updateModified(subId)
+    updateInvalidated(checked, subId);
+    updateContent(checked, noMatch, contentIdx);
+    updateReasons(checked, noMatch, subId);
+    updateModified(subId);
   };
 
   const updateInvalidated = (checked, subId) => {
-    if(checked) {
-      setInvalidatedList(
-        invalidatedList.filter((i) => Number(i) !== subId)
-      );
+    if (checked) {
+      setInvalidatedList(invalidatedList.filter((i) => Number(i) !== subId));
     } else {
       setInvalidatedList(() => [...invalidatedList, subId]);
     }
-  }
+  };
 
   const updateContent = (checked, noMatch, idx) => {
-    let newContent = content
-    if(checked) {
-      newContent[idx].reason = noMatch ? reasons[0] : ''
+    let newContent = content;
+    if (checked) {
+      newContent[idx].reason = noMatch ? reasons[0] : '';
     } else {
-      newContent[idx].reason = ''
+      newContent[idx].reason = '';
     }
     setContent(newContent);
-  }
+  };
 
   const updateReasons = (checked, noMatch, subId) => {
-    const reasonIdx = reasonList.findIndex(r => Number(r.id) == subId);
-    if(checked) {
-      if(reasonIdx >= 0) {
-        reasonList[reasonIdx].reason = noMatch ? reasons[0] : ''
+    const reasonIdx = reasonList.findIndex((r) => Number(r.id) == subId);
+    if (checked) {
+      if (reasonIdx >= 0) {
+        reasonList[reasonIdx].reason = noMatch ? reasons[0] : '';
       } else {
         reasonList.push({
           id: subId,
           reason: noMatch ? reasons[0] : ''
-        })
-      } 
+        });
+      }
     } else {
-      if(reasonIdx >= 0) {
-        reasonList[reasonIdx].reason = ''
+      if (reasonIdx >= 0) {
+        reasonList[reasonIdx].reason = '';
       }
     }
     setReasonList(reasonList);
-  }
+  };
 
   const updateModified = (id) => {
-    const modifiedIdx = modified.findIndex(m => Number(m.id) == id);
+    const modifiedIdx = modified.findIndex((m) => Number(m.id) == id);
     modifiedIdx >= 0 ? modified.splice(modifiedIdx, 1) : modified.push(id);
     setModified(modified);
-  }
+  };
 
   const handleSubmit = () => {
     setLoading(true);

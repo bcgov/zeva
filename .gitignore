@@ -19,3 +19,5 @@ backend/db.json
 minio/minio_files/.minio.sys/
 
 package-lock.json
+
+storybook-static/

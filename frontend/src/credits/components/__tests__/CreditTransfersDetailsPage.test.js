@@ -125,37 +125,27 @@ const RenderCreditTransfersDetailsPage = (user) => {
         }}
       />
     </>
-  )
-}
+  );
+};
 
 it('renders without crashing', () => {
-  render(
-    <Router>
-      {RenderCreditTransfersDetailsPage(user)}
-    </Router>
-  );
+  render(<Router>{RenderCreditTransfersDetailsPage(user)}</Router>);
 });
 
 it('shows an action bar with just a back button if the user is government', () => {
-  const { container } = render(
-    RenderCreditTransfersDetailsPage(govUser)
-  );
+  const { container } = render(RenderCreditTransfersDetailsPage(govUser));
   expect(findByTestId(container, 'action-bar-basic')).toBeInTheDocument;
 });
 
 it('shows the comment box and reject button (but not rescind button) if the user is from the receiving supplier', () => {
-  const { container } = render(
-    RenderCreditTransfersDetailsPage(user)
-  );
+  const { container } = render(RenderCreditTransfersDetailsPage(user));
   const commentbox = findByTestId(container, 'transfer-comment');
   expect(commentbox).toBeInTheDocument;
   expect(queryByText(container, 'Rescind')).not.toBeInTheDocument;
 });
 
 it('shows the reject modal if the user selects the reject button', () => {
-  const { container } = render(
-    RenderCreditTransfersDetailsPage(user2)
-  );
+  const { container } = render(RenderCreditTransfersDetailsPage(user2));
   fireEvent.click(getByText(container, 'Reject Notice'));
   expect(queryByText(container, 'Reject notice?')).toBeInTheDocument;
   expect(
@@ -175,9 +165,7 @@ it('if its a draft, initiating company can submit to partner or press back', () 
       createTimestamp: '2020-12-01T09:27:21.098202-07:00'
     }
   ];
-  const { container } = render(
-    RenderCreditTransfersDetailsPage(user)
-  );
+  const { container } = render(RenderCreditTransfersDetailsPage(user));
   fireEvent.click(getByTestId(container, 'submit-to-partner'));
   expect(
     queryByText(container, 'Submit credit transfer notice to trade partner?')
@@ -204,9 +192,7 @@ it('shows the submit modal if the user selects the submit button', () => {
       createTimestamp: '2020-12-01T09:27:21.098202-07:00'
     }
   ];
-  const { container } = render(
-    RenderCreditTransfersDetailsPage(user)
-  );
+  const { container } = render(RenderCreditTransfersDetailsPage(user));
   fireEvent.click(getByTestId(container, 'submit-to-partner'));
   expect(
     queryByText(container, 'Submit transfer to government of B.C. Director?')
@@ -225,20 +211,14 @@ it('shows the submission and signed date if the transfer partner opens it', () =
       createTimestamp: '2020-12-01T09:27:21.098202-07:00'
     }
   ];
-  const { container } = render(
-    RenderCreditTransfersDetailsPage(user2)
-  );
-
+  const { container } = render(RenderCreditTransfersDetailsPage(user2));
   expect(findByTestId(container, 'submit-signature')).toBeInTheDocument;
   expect(findByTestId(container, 'approve-signature')).not.toBeInTheDocument;
 });
 // do not show the rescind button if the user is partner and status is submitted
 it('does not show the rescind button to the partner if the partner hasnt approved', () => {
   submission.status = 'SUBMITTED';
-  const { container } = render(
-    RenderCreditTransfersDetailsPage(user2)
-  );
-
+  const { container } = render(RenderCreditTransfersDetailsPage(user2));
   expect(queryByText(container, 'Rescind')).not.toBeInTheDocument;
   expect(queryByText(container, 'Reject')).toBeInTheDocument;
 });
@@ -262,17 +242,12 @@ it('shows the submission and approved signature dates if status is approved', ()
       createTimestamp: '2020-12-02T09:27:21.098202-07:00'
     }
   ];
-  const { container } = render(
-    RenderCreditTransfersDetailsPage(user)
-  );
-
+  const { container } = render(RenderCreditTransfersDetailsPage(user));
   expect(findByTestId(container, 'submit-signature')).toBeInTheDocument;
   expect(findByTestId(container, 'approve-signature')).toBeInTheDocument;
 });
 it('shows the comment box to the director if user is analyst', () => {
-  const { container } = render(
-    RenderCreditTransfersDetailsPage(govUser)
-  );
+  const { container } = render(RenderCreditTransfersDetailsPage(govUser));
   const commentbox = findByTestId(container, 'transfer-comment-analyst');
   expect(commentbox).toBeInTheDocument;
   // fireEvent.click(getByText(container, 'Recommend transfer'));
@@ -298,9 +273,7 @@ it('does not show the commment box if the submission is already rejected', () =>
       createTimestamp: '2020-12-10T09:27:21.098202-07:00'
     }
   ];
-  const { container } = render(
-    RenderCreditTransfersDetailsPage(user)
-  );
+  const { container } = render(RenderCreditTransfersDetailsPage(user));
   expect(findByTestId(container, 'transfer-comment')).not.toBeInTheDocument;
 });
 
