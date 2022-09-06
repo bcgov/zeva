@@ -29,7 +29,8 @@ const AssessmentEditPage = (props) => {
     handleSubmit,
     ratios,
     sales,
-    supplierMakes
+    supplierMakes,
+    enableSave
   } = props;
 
   if (loading) {
@@ -65,6 +66,7 @@ const AssessmentEditPage = (props) => {
           </span>
           <span className="right-content mr-3">
             <Button
+              disabled={!enableSave}
               optionalClassname="button primary"
               buttonType="save"
               action={(event) => {

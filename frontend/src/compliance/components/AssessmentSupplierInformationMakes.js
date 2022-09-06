@@ -71,7 +71,7 @@ const AssessmentSupplierInformationMakes = (props) => {
                         <div className="col-1 delete">
                           <button
                             onClick={() => {
-                              handleDeleteMake(index);
+                              handleDeleteMake(item);
                             }}
                             type="button"
                           >

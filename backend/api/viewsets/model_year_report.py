@@ -478,17 +478,46 @@ class ModelYearReportViewset(
                 model_year = ModelYear.objects.filter(
                     name=key
                 ).first()
+                input = int(value)
                 if model_year:
-                    ModelYearReportLDVSales.objects.update_or_create(
+                    # check if theres multiple records for ldv sales
+                    # -if theres one (original report) and it matches what is
+                    #    being sent, do not do anything
+                    # -if theres one and it doesn't match whats being sent, add
+                    #     a new record
+                    # -if theres two and the updated one doesn't match either
+                    #     record, add a new record
+                    # -if theres more than one and the number matches the most
+                    #     recent, do not do anything
+                    # -if theres more than one and the new number matches the
+                    #     original, delete the most recent one
+                    sales_records = ModelYearReportLDVSales.objects.filter(
                         model_year_id=model_year.id,
-                        model_year_report=report,
-                        from_gov=True,
-                        defaults={
-                            'ldv_sales': value,
-                            'create_user': request.user.username,
-                            'update_user': request.user.username
-                        }
-                    )
+                        model_year_report=report)
+
+                    if (sales_records.count() == 2 and
+                        input != sales_records[0].ldv_sales and
+                        input != sales_records[1].ldv_sales) or (
+                            sales_records.count() == 1 and
+                            input != sales_records[0].ldv_sales):
+
+                        ModelYearReportLDVSales.objects.update_or_create(
+                                model_year_id=model_year.id,
+                                model_year_report=report,
+                                from_gov=True,
+                                defaults={
+                                    'ldv_sales': value,
+                                    'create_user': request.user.username,
+                                    'update_user': request.user.username
+                                }
+                            )
+
+                    if sales_records.count() == 2 and (
+                        input == sales_records[0].ldv_sales) and (
+                            input != sales_records[1].ldv_sales):
+                        ModelYearReportLDVSales.objects.get(
+                                id=sales_records[1].id
+                            ).delete()
 
         report = get_object_or_404(ModelYearReport, pk=pk)
 
