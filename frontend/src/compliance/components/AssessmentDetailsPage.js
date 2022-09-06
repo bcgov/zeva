@@ -49,7 +49,8 @@ const AssessmentDetailsPage = (props) => {
     updatedBalances,
     supplementaryStatus,
     supplementaryId,
-    createdByGov
+    createdByGov,
+    handleCancelConfirmation
   } = props;
 
   const [showModal, setShowModal] = useState(false);
@@ -58,6 +59,7 @@ const AssessmentDetailsPage = (props) => {
     details.assessment.assessmentPenalty,
     0
   );
+
   const assessmentDecision =
     details.assessment.decision && details.assessment.decision.description
       ? details.assessment.decision.description
@@ -77,6 +79,7 @@ const AssessmentDetailsPage = (props) => {
       handleSubmit={() => {
         setShowModal(false);
         handleSubmit('DRAFT');
+        handleCancelConfirmation();
       }}
       modalClass="w-75"
       showModal={showModal}

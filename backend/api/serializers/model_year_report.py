@@ -464,11 +464,17 @@ class ModelYearReportSaveSerializer(
 
         if delete_confirmations:
             module = request.data.get('module', None)
-            ModelYearReportConfirmation.objects.filter(
-                model_year_report=instance,
-                signing_authority_assertion__module=module
-            ).delete()
-
+            if isinstance(module, list):
+                for each in module:
+                    ModelYearReportConfirmation.objects.filter(
+                        model_year_report=instance,
+                        signing_authority_assertion__module=each
+                        ).delete()
+            else:
+                ModelYearReportConfirmation.objects.filter(
+                    model_year_report=instance,
+                    signing_authority_assertion__module=module
+                ).delete()
             return instance
 
         makes = validated_data.pop('makes')
