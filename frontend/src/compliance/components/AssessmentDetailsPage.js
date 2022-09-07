@@ -211,7 +211,8 @@ const AssessmentDetailsPage = (props) => {
                 details.idirComment.length > 0 ||
                 statuses.assessment.status !== 'ASSESSED') && (
                 <div className="grey-border-area p-3 comment-box mt-2">
-                  {details.changelog.ldvChanges &&
+                  {(details.changelog.ldvChanges ||
+                    details.changelog.makesAdditions) &&
                     (Object.keys(details.changelog.makesAdditions) ||
                       details.changelog.ldvChanges > 0) && (
                       <>
@@ -228,19 +229,22 @@ const AssessmentDetailsPage = (props) => {
                                 )
                               )}
                               {/* {details.analystChanges.ldvChanges.map((change) => ( */}
-                              <li>
-                                changed the {details.changelog.ldvChanges.year}{' '}
-                                Model Year LDV Sales\Leases total from{' '}
-                                {formatNumeric(
-                                  details.changelog.ldvChanges.notFromGov,
-                                  0
-                                )}{' '}
-                                to{' '}
-                                {formatNumeric(
-                                  details.changelog.ldvChanges.fromGov,
-                                  0
-                                )}
-                              </li>
+                              {details.changelog.ldvChanges && (
+                                <li>
+                                  changed the{' '}
+                                  {details.changelog.ldvChanges.year} Model Year
+                                  LDV Sales\Leases total from{' '}
+                                  {formatNumeric(
+                                    details.changelog.ldvChanges.notFromGov,
+                                    0
+                                  )}{' '}
+                                  to{' '}
+                                  {formatNumeric(
+                                    details.changelog.ldvChanges.fromGov,
+                                    0
+                                  )}
+                                </li>
+                              )}
                             </ul>
                           )}
                         </div>
