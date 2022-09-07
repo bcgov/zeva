@@ -132,6 +132,10 @@ it('renders without crashing', () => {
   render(<Router>{RenderCreditTransfersDetailsPage(user)}</Router>);
 });
 
+it('renders without crashing', () => {
+  render(<Router>{RenderCreditTransfersDetailsPage(user)}</Router>);
+});
+
 it('shows an action bar with just a back button if the user is government', () => {
   const { container } = render(RenderCreditTransfersDetailsPage(govUser));
   expect(findByTestId(container, 'action-bar-basic')).toBeInTheDocument;
