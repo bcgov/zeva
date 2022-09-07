@@ -54,6 +54,24 @@ const AssessmentContainer = (props) => {
   const handleCommentChangeBceid = (text) => {
     setBceidComment(text);
   };
+  const handleCancelConfirmation = () => {
+    const data = {
+      delete_confirmations: true,
+      module: [
+        'consumer_sales',
+        'compliance_obligation',
+        'supplier_information',
+        'compliance_summary'
+      ]
+    };
+
+    axios
+      .patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data)
+      .then((response) => {
+        history.push(ROUTES_COMPLIANCE.REPORTS);
+        history.replace(ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id));
+      });
+  };
 
   const handleAddIdirComment = () => {
     const comment = { comment: idirComment, director: true };
@@ -513,6 +531,7 @@ const AssessmentContainer = (props) => {
         supplementaryStatus={supplementaryStatus}
         supplementaryId={supplementaryId}
         createdByGov={createdByGov}
+        handleCancelConfirmation={handleCancelConfirmation}
       />
     </>
   );
