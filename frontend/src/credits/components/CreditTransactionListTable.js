@@ -114,7 +114,8 @@ const CreditTransactionListTable = (props) => {
   });
 
   items.forEach((item) => {
-    const totalValue = Math.round((item.totalValue + Number.EPSILON) * 100) / 100
+    const totalValue =
+      Math.round((item.totalValue + Number.EPSILON) * 100) / 100;
 
     if (item.creditClass.creditClass === 'A') {
       totalA += parseFloat(totalValue);
