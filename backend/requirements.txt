@@ -26,13 +26,13 @@ lazy-object-proxy==1.4.3
 Markdown==3.1.1
 mccabe==0.6.1
 minio==5.0.10
-numpy==1.18.2
+numpy==1.22.0
 pandas==1.0.3
 pika==1.1.0
 psycopg2-binary==2.8.4
 pycodestyle==2.5.0
 pycparser==2.19
-PyJWT==1.7.1
+PyJWT==2.4.0
 pylint==2.4.4
 pylint-django==2.0.13
 pylint-plugin-utils==0.6
