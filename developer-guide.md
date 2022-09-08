@@ -66,8 +66,6 @@ ticket number the task is associated with
 
 ### Commit Message Conventions
 
-We use [gitlint](https://jorisroovers.com/gitlint/) to check commit message formatting. You can enable it by using `pre-commit install --hook-type commit-msg`.
-
 This project follows the commit message conventions outlined by [Convential Commits](https://www.conventionalcommits.org/). Besides the standard commit types (message prefixes) **feat** and **fix**, we use some other types described there based on the Angular convention; some common ones among those are **test**, **docs**, **chore** and **refactor**.
 
 We also extend this prefix convention to the naming of **branches**, eg: `docs/add-readme` or `feat/some-feature`.
