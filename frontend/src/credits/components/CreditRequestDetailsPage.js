@@ -67,13 +67,14 @@ const CreditRequestDetailsPage = (props) => {
 
   let modalProps = {};
 
-  const transferCommentsIDIR =
+  const submissionCommentsIdirOnly =
     submission &&
     submission.salesSubmissionComment &&
     submission.salesSubmissionComment
       .filter((each) => each.toGovt == true && each.comment)
       .map((item) => item);
-  const transferCommentsSupplier =
+
+  const submissionCommentsToSupplier =
     submission &&
     submission.salesSubmissionComment &&
     submission.salesSubmissionComment
@@ -82,7 +83,6 @@ const CreditRequestDetailsPage = (props) => {
   const handleCommentChange = (content) => {
     setComment(content);
   };
-
   const analystToSupplier = (
     <div>
       <label className="mt-3" htmlFor="reject-comment">
@@ -339,20 +339,31 @@ const CreditRequestDetailsPage = (props) => {
                 }
                 invalidSubmission={invalidSubmission}
               />
-              {((transferCommentsIDIR && transferCommentsIDIR.length > 0) ||
-                (transferCommentsSupplier &&
-                  transferCommentsSupplier.length > 0) ||
+
+              {((submissionCommentsIdirOnly &&
+                submissionCommentsIdirOnly.length > 0) ||
+                (submissionCommentsToSupplier &&
+                  submissionCommentsToSupplier.length > 0) ||
                 user.isGovernment) && (
                 <div className="comment-box mt-2">
-                  {transferCommentsIDIR &&
-                    transferCommentsIDIR.length > 0 &&
+                  {submissionCommentsIdirOnly &&
+                    submissionCommentsIdirOnly.length > 0 &&
                     user.isGovernment && (
-                      <DisplayComment commentArray={transferCommentsIDIR} />
+                      <>
+                        <b>Internal Comments</b>
+                        <DisplayComment
+                          commentArray={submissionCommentsIdirOnly}
+                        />
+                      </>
                     )}
-                  {transferCommentsSupplier &&
-                    transferCommentsSupplier.length > 0 &&
-                    !user.isGovernment && (
-                      <DisplayComment commentArray={transferCommentsSupplier} />
+                  {submissionCommentsToSupplier &&
+                    submissionCommentsToSupplier.length > 0 && (
+                      <>
+                        <b>Comments to Supplier</b>
+                        <DisplayComment
+                          commentArray={submissionCommentsToSupplier}
+                        />
+                      </>
                     )}
                   {((analystAction && validatedOnly) || directorAction) &&
                     idirCommentSection}
