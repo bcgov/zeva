@@ -1,4 +1,4 @@
-## For each release, the value of workflow name, branches and PR_NUMBER need to be adjusted accordingly
+## For each release, the value of workflow name, branches, PR_NUMBER and RELEASE_NAME need to be adjusted accordingly
 
 name: CI/CD ZEVA release-1.40.0
 
