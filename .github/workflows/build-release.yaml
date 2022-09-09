@@ -1,0 +1,119 @@
+## For each release, the value of workflow name, branches, PR_NUMBER and RELEASE_NAME need to be adjusted accordingly
+
+name: CI/CD ZEVA release-1.40.0
+
+on:
+  push:
+    branches: [ release-1.40.0 ]
+  workflow_dispatch:
+  workflow_call:
+
+env:
+  ## The pull request number of the Tracking pull request to merge the release branch to main
+  PR_NUMBER: 1034
+  RELEASE_NAME: release-1.40.0
+
+jobs:
+
+  ## This is the CI job
+  build:
+
+    name: Build ITVR on Openshift
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+
+      ## it will checkout to /home/runner/work/itvr/itvr
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      ## Log in to Openshift with a token of service account
+      - name: Log in to Openshift
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
+
+      ## Run build on Openshift
+      - name: Run build
+        run: |
+          cd .pipeline
+          npm install
+          npm run build -- --pr=${{ env.PR_NUMBER }} --env=build 
+
+  deploy-on-test:
+
+    name: Deploy ITVR on Test Environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    needs: build
+
+    steps:
+
+      ## it will checkout to /home/runner/work/itvr/itvr
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Log in to Openshift
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools    
+
+      - name: Ask for approval for ITVR Test deployment
+        uses: trstringer/manual-approval@v1.6.0
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: AlexZorkin,emi-hi,tim738745,vibhiquartech,kuanfandevops
+          minimum-approvals: 1
+          issue-title: "ITVR ${{ env.RELEASE_NAME }} Test Deployment"
+          timeout-minutes: 240
+
+      - name: Run BCDK deployment on ITVR Test environment
+        run: |
+          cd .pipeline
+          echo "Deploying ITVR ${{ env.RELEASE_NAME }} on Test"
+          npm install
+          npm run deploy -- --pr=${{ env.PR_NUMBER }} --env=test
+
+  deploy-on-prod:
+
+    name: Deploy ITVR on Prod Environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 2880
+    needs: deploy-on-test
+
+    steps:
+
+      ## it will checkout to /home/runner/work/itvr/itvr
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Log in to Openshift
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools    
+
+      - name: Ask for approval for ITVR Prod deployment
+        uses: trstringer/manual-approval@v1.6.0
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: AlexZorkin,kuanfandevops
+          minimum-approvals: 2
+          issue-title: "ITVR ${{ env.RELEASE_NAME }} Prod Deployment"
+          timeout-minutes: 2880
+
+      - name: Run BCDK deployment on ITVR Test environment
+        run: |
+          cd .pipeline
+          echo "Deploying ITVR ${{ env.RELEASE_NAME }} on Prod"
+          npm install
+          npm run deploy -- --pr=${{ env.PR_NUMBER }} --env=prod          
