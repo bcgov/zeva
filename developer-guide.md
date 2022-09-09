@@ -77,21 +77,15 @@ docker-compose exec db psql -U postgres postgres
 
 #### Copy down Test/Prod data from Openshift
 
-To copy test/prod data into your local database use the following steps.
+Copy test/prod data into your local database using the /openshift/import-data.sh script
+This is a bash script that creates a pg_dump .tar file from and openshift postgres container
+and imports it into a local postgres container
 
-1. Open a local terminal and Login to openshift console using your login command
-2. SSH into the database container in openshift
-``` oc rsh patroni-test-0 ```
-3. Create a database dump in the container
-``` pg_dump -U postgres -F t zeva > zeva.tar ```
-4. Move .tar file to tmp directory, create directory if it doesnt exist
-``` mkdir /tmp ```
-``` mv zeva.tar /tmp ```
-5. From a new terminal window, Download the .tar to your local
-``` oc rsync patroni-test-0:/tmp/zeva.tar ./ ```
-6. Copy the .tar file to your running local database container (if using docker-compose)
-``` docker cp zeva.tar <container_name>:/tmp/zeva.tar ```
-7. login to an interactive docker shell
-``` docker exec -it <container_name> sh ```
-8. Use pg_restore to drop and restore your local database
-``` pg_restore -U postgres -Ft -c -d postgres < zeva.tar ```
+There are # 2 Arguments 
+- $1 = 'test' or 'prod'
+- #2 = 'local container name or id'
+# example command
+- . import-data.sh test 398cd4661173
+
+You will need to be logged into Openshift using oc
+You will also need your ZEVA postgres docker container running
