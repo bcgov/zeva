@@ -18,13 +18,13 @@ jobs:
   ## This is the CI job
   build:
 
-    name: Build ITVR on Openshift
+    name: Build ZEVA on Openshift
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
     steps:
 
-      ## it will checkout to /home/runner/work/itvr/itvr
+      ## it will checkout to /home/runner/work/zeva/zeva
       - name: Check out repository
         uses: actions/checkout@v2
 
@@ -46,14 +46,13 @@ jobs:
 
   deploy-on-test:
 
-    name: Deploy ITVR on Test Environment
+    name: Deploy ZEVA on Test Environment
     runs-on: ubuntu-latest
     timeout-minutes: 240
     needs: build
 
     steps:
 
-      ## it will checkout to /home/runner/work/itvr/itvr
       - name: Check out repository
         uses: actions/checkout@v2
 
@@ -65,32 +64,31 @@ jobs:
           insecure_skip_tls_verify: true
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools    
 
-      - name: Ask for approval for ITVR Test deployment
+      - name: Ask for approval for ZEVA Test deployment
         uses: trstringer/manual-approval@v1.6.0
         with:
           secret: ${{ github.TOKEN }}
           approvers: AlexZorkin,emi-hi,tim738745,vibhiquartech,kuanfandevops
           minimum-approvals: 1
-          issue-title: "ITVR ${{ env.RELEASE_NAME }} Test Deployment"
+          issue-title: "ZEVA ${{ env.RELEASE_NAME }} Test Deployment"
           timeout-minutes: 240
 
-      - name: Run BCDK deployment on ITVR Test environment
+      - name: Run BCDK deployment on ZEVA Test environment
         run: |
           cd .pipeline
-          echo "Deploying ITVR ${{ env.RELEASE_NAME }} on Test"
+          echo "Deploying ZEVA ${{ env.RELEASE_NAME }} on Test"
           npm install
           npm run deploy -- --pr=${{ env.PR_NUMBER }} --env=test
 
   deploy-on-prod:
 
-    name: Deploy ITVR on Prod Environment
+    name: Deploy ZEVA on Prod Environment
     runs-on: ubuntu-latest
     timeout-minutes: 2880
     needs: deploy-on-test
 
     steps:
 
-      ## it will checkout to /home/runner/work/itvr/itvr
       - name: Check out repository
         uses: actions/checkout@v2
 
@@ -102,18 +100,18 @@ jobs:
           insecure_skip_tls_verify: true
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools    
 
-      - name: Ask for approval for ITVR Prod deployment
+      - name: Ask for approval for ZEVA Prod deployment
         uses: trstringer/manual-approval@v1.6.0
         with:
           secret: ${{ github.TOKEN }}
           approvers: AlexZorkin,kuanfandevops
           minimum-approvals: 2
-          issue-title: "ITVR ${{ env.RELEASE_NAME }} Prod Deployment"
+          issue-title: "ZEVA ${{ env.RELEASE_NAME }} Prod Deployment"
           timeout-minutes: 2880
 
-      - name: Run BCDK deployment on ITVR Test environment
+      - name: Run BCDK deployment on ZEVA Test environment
         run: |
           cd .pipeline
-          echo "Deploying ITVR ${{ env.RELEASE_NAME }} on Prod"
+          echo "Deploying ZEVA ${{ env.RELEASE_NAME }} on Prod"
           npm install
           npm run deploy -- --pr=${{ env.PR_NUMBER }} --env=prod          
