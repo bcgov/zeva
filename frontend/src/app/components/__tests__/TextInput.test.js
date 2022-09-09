@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  render,
-  cleanup,
-  getByTestId,
-  fireEvent,
-  waitForElement
-} from '@testing-library/react';
+import { render, cleanup, fireEvent } from '@testing-library/react';
 import TextInput from '../TextInput';
 
 require('@babel/core');

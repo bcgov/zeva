@@ -11,7 +11,8 @@ const getOptions = (inputObj, displayField) => {
       })
     )
   ];
-  return uniqueArr.sort().map((each) => <option key={each}>{each}</option>);
+  uniqueArr.sort();
+  return uniqueArr.map((each) => <option key={each}>{each}</option>);
 };
 
 export default getOptions;

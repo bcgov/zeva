@@ -16,7 +16,8 @@ const CreditAgreementsFilter = (props) => {
     const uniqueArr = [
       ...new Set(inputObj.map((eachItem) => eachItem.organization.name))
     ];
-    return uniqueArr.sort().map((each) => <option key={each}>{each}</option>);
+    uniqueArr.sort();
+    return uniqueArr.map((each) => <option key={each}>{each}</option>);
   };
 
   return (
