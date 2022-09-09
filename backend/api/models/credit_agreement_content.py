@@ -28,7 +28,9 @@ class CreditAgreementContent(Auditable):
         on_delete=models.PROTECT,
         null=False
     )
-    number_of_credits = models.IntegerField(
+    number_of_credits = models.DecimalField(
+        max_digits=20,
+        decimal_places=2,
         db_comment="Number of credits."
     )
     
