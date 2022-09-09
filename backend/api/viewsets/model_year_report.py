@@ -478,7 +478,7 @@ class ModelYearReportViewset(
                 model_year = ModelYear.objects.filter(
                     name=key
                 ).first()
-                input = int(value)
+                inputValue = int(value)
                 if model_year:
                     # check if theres multiple records for ldv sales
                     # -if theres one (original report) and it matches what is
@@ -496,10 +496,10 @@ class ModelYearReportViewset(
                         model_year_report=report)
 
                     if (sales_records.count() == 2 and
-                        input != sales_records[0].ldv_sales and
-                        input != sales_records[1].ldv_sales) or (
+                        inputValue != sales_records[0].ldv_sales and
+                        inputValue != sales_records[1].ldv_sales) or (
                             sales_records.count() == 1 and
-                            input != sales_records[0].ldv_sales):
+                            inputValue != sales_records[0].ldv_sales):
 
                         ModelYearReportLDVSales.objects.update_or_create(
                                 model_year_id=model_year.id,
@@ -513,8 +513,8 @@ class ModelYearReportViewset(
                             )
 
                     if sales_records.count() == 2 and (
-                        input == sales_records[0].ldv_sales) and (
-                            input != sales_records[1].ldv_sales):
+                        inputValue == sales_records[0].ldv_sales) and (
+                            inputValue != sales_records[1].ldv_sales):
                         ModelYearReportLDVSales.objects.get(
                                 id=sales_records[1].id
                             ).delete()

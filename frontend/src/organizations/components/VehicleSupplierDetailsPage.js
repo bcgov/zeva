@@ -30,6 +30,29 @@ const VehicleSupplierDetailsPage = (props) => {
     return <Loading />;
   }
 
+  const renderAddressType = (type) => {
+    if (organizationAddress) {
+      return organizationAddress.map((address) => {
+        if (address.addressType.addressType == type) {
+          return (
+            <div key={address.id}>
+              {address.representativeName && (
+                <div> {address.representativeName} </div>
+              )}
+              <div> {address.addressLine1} </div>
+              <div> {address.addressLine2} </div>
+              <div>
+                {' '}
+                {address.city} {address.state} {address.country}{' '}
+              </div>
+              <div> {address.postalCode} </div>
+            </div>
+          );
+        }
+      });
+    }
+  };
+
   return (
     <div id="vehicle-supplier-details" className="page">
       <div className="row mt-3">
@@ -58,45 +81,11 @@ const VehicleSupplierDetailsPage = (props) => {
           <div className="row">
             <div className="d-inline-block col-5 mr-5 mt-3">
               <h4>Service Address</h4>
-              {organizationAddress &&
-                organizationAddress.map(
-                  (address) =>
-                    address.addressType.addressType === 'Service' && (
-                      <div key={address.id}>
-                        {address.representativeName && (
-                          <div> {address.representativeName} </div>
-                        )}
-                        <div> {address.addressLine1} </div>
-                        <div> {address.addressLine2} </div>
-                        <div>
-                          {' '}
-                          {address.city} {address.state} {address.country}{' '}
-                        </div>
-                        <div> {address.postalCode} </div>
-                      </div>
-                    )
-                )}
+              {renderAddressType('Service')}
             </div>
             <div className="d-inline-block col-5 mt-3">
               <h4>Records Address</h4>
-              {organizationAddress &&
-                organizationAddress.map(
-                  (address) =>
-                    address.addressType.addressType === 'Records' && (
-                      <div key={address.id}>
-                        {address.representativeName && (
-                          <div> {address.representativeName} </div>
-                        )}
-                        <div> {address.addressLine1} </div>
-                        <div> {address.addressLine2} </div>
-                        <div>
-                          {' '}
-                          {address.city} {address.state} {address.country}{' '}
-                        </div>
-                        <div> {address.postalCode} </div>
-                      </div>
-                    )
-                )}
+              {renderAddressType('Records')}
             </div>
           </div>
 

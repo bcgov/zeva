@@ -94,18 +94,21 @@ const VehicleForm = (props) => {
       title={modalProps.title ? modalProps.title : 'Confirm'}
     >
       <div>
-        <div>
-          <br />
-          <br />
-        </div>
+        {spaces()}
         <h3 className="d-inline">{modalProps.modalText}</h3>
-        <div>
-          <br />
-          <br />
-        </div>
+        {spaces()}
       </div>
     </Modal>
   );
+
+  const spaces = () => {
+    return (
+      <div>
+        <br />
+        <br />
+      </div>
+    )
+  }
 
   const deleteFile = (attachmentId) => {
     setDeleteFiles([...deleteFiles, attachmentId]);

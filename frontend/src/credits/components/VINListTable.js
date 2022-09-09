@@ -18,20 +18,15 @@ const VINListTable = (props) => {
     filtered,
     handleChangeReason,
     loading,
-    modified,
     pages,
-    query,
     readOnly,
     reasons,
     refreshContent,
     setFiltered,
-    setLoading,
     setReactTable
   } = props;
 
   const [tableInitialized, setTableInitialized] = useState(false);
-
-  const reset = query && query.reset;
 
   const getErrorCodes = (item, fields = false) => {
     let errorCodes = '';
