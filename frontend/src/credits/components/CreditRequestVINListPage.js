@@ -64,7 +64,6 @@ const CreditRequestVINListPage = (props) => {
         if (each.desc) {
           value = `-${value}`;
         }
-
         sorted.push(value);
       });
 
