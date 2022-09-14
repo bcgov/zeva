@@ -84,9 +84,12 @@ class SalesSubmissionContent(Auditable):
 
     @property
     def icbc_verification(self):
-        return IcbcRegistrationData.objects.filter(
-            vin__iexact=self.xls_vin
-        ).first()
+        q = 'select * from icbc_registration_data where vin=\'{}\' limit 1'.format(self.xls_vin)
+        registration = IcbcRegistrationData.objects.raw(q)
+        if registration:
+            return registration[0]
+        else:
+            return None
 
     @property
     def is_duplicate(self):
@@ -170,14 +173,15 @@ class SalesSubmissionContent(Auditable):
         if self.is_duplicate:
             warnings.append('DUPLICATE_VIN')
 
-        if self.icbc_verification is None:
+        icbc_verification = self.icbc_verification
+        if icbc_verification is None:
             warnings.append('NO_ICBC_MATCH')
         elif self.vehicle is not None:
-            if self.icbc_verification.icbc_vehicle.model_year != \
+            if icbc_verification.icbc_vehicle.model_year != \
                     self.vehicle.model_year:
                 warnings.append('MODEL_YEAR_MISMATCHED')
 
-            if self.icbc_verification.icbc_vehicle.make != \
+            if icbc_verification.icbc_vehicle.make != \
                     self.vehicle.make:
                 warnings.append('MAKE_MISMATCHED')
 
