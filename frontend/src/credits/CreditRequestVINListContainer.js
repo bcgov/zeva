@@ -58,8 +58,8 @@ const CreditRequestVINListContainer = (props) => {
             const reset = query && query.reset;
 
             // Initialize content and reason values
-            const { content: contentListData, pages: numPages } = contentResponse.data;
-            // let contentListData = data.content;
+            const { content: contentListData, pages: numPages } =
+              contentResponse.data;
             let reasonListData = [];
 
             // Set content and reason values for each model row

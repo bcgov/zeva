@@ -107,8 +107,8 @@ const VehicleForm = (props) => {
         <br />
         <br />
       </div>
-    )
-  }
+    );
+  };
 
   const deleteFile = (attachmentId) => {
     setDeleteFiles([...deleteFiles, attachmentId]);

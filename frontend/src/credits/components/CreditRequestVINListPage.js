@@ -54,8 +54,7 @@ const CreditRequestVINListPage = (props) => {
   };
 
   const refreshContent = async (state, filters = []) => {
-
-    clearTimeout(refreshTimeout)
+    clearTimeout(refreshTimeout);
     refreshTimeout = await setTimeout(async () => {
       const sorted = [];
 
@@ -137,7 +136,7 @@ const CreditRequestVINListPage = (props) => {
           setReasonList(reasonList);
           setLoading(false);
         });
-    }, 750)
+    }, 750);
   };
 
   const clearFilters = () => {
