@@ -7,6 +7,8 @@ import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 import CustomPropTypes from '../../app/utilities/props';
 import VINListTable from './VINListTable';
 
+let refreshTimeout;
+
 const CreditRequestVINListPage = (props) => {
   const {
     content,
@@ -16,6 +18,7 @@ const CreditRequestVINListPage = (props) => {
     handleSubmit,
     modified,
     query,
+    initialPageCount,
     reasons,
     setContent,
     setReasonList,
@@ -26,10 +29,9 @@ const CreditRequestVINListPage = (props) => {
 
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [pages, setPages] = useState(-1);
+  const [pages, setPages] = useState(initialPageCount);
   const [reactTable, setReactTable] = useState(null);
   const [selectedOption, setSelectedOption] = useState('');
-  const [cancelToken, setCancelToken] = useState(null);
 
   const filterWarnings = (event) => {
     const { value } = event.target;
@@ -52,92 +54,89 @@ const CreditRequestVINListPage = (props) => {
   };
 
   const refreshContent = async (state, filters = []) => {
-    if (cancelToken) {
-      cancelToken.cancel('Cancelling previous requests');
-    }
+    clearTimeout(refreshTimeout);
+    refreshTimeout = await setTimeout(async () => {
+      const sorted = [];
 
-    const sorted = [];
+      state.sorted.forEach((each) => {
+        let value = each.id;
 
-    state.sorted.forEach((each) => {
-      let value = each.id;
+        if (each.desc) {
+          value = `-${value}`;
+        }
 
-      if (each.desc) {
-        value = `-${value}`;
-      }
-
-      sorted.push(value);
-    });
-
-    setLoading(true);
-
-    const newCancelToken = axios.CancelToken.source();
-
-    setCancelToken(newCancelToken);
-
-    await axios
-      .get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', submission.id), {
-        params: {
-          filters,
-          page: state.page + 1, // page from front-end is zero index, but in the back-end we need the actual page number
-          page_size: state.pageSize,
-          sorted: sorted.join(',')
-        },
-        cancelToken: newCancelToken.token
-      })
-      .then((response) => {
-        const { content: refreshedContent, pages: numPages } = response.data;
-
-        refreshedContent.forEach((row, idx) => {
-          const reasonIndex = reasonList.findIndex(
-            (x) => Number(x.id) === Number(row.id)
-          );
-
-          // The reasonList stores any changes to reasons
-          // a user has made. If the user filters or sorts, the content
-          // value can be different when it comes back from the server
-          // and their changes would be lost.
-          // To account for this we set the refreshedContent reason value
-          // to the value in the reasonList so we don't lose the user changes.
-          if (reasonIndex >= 0) {
-            refreshedContent[idx].reason = reasonList[reasonIndex].reason;
-          } else if (reasonIndex < 0) {
-            // If the reason with id doesn't exist in the reasonList
-            // then we add it here matching the content reason value
-            reasonList.push({
-              id: Number(row.id),
-              reason: row.reason
-            });
-          }
-        });
-
-        refreshedContent.forEach((row, idx) => {
-          const reasonIndex = reasonList.findIndex(
-            (x) => Number(x.id) === Number(row.id)
-          );
-
-          // The reasonList stores any changes to reasons
-          // a user has made. If the user filters or sorts, the content
-          // value can be different when it comes back from the server
-          // and their changes would be lost.
-          // To account for this we set the refreshedContent reason value
-          // to the value in the reasonList so we don't lose the user changes.
-          if (reasonIndex >= 0) {
-            refreshedContent[idx].reason = reasonList[reasonIndex].reason;
-          } else if (reasonIndex < 0) {
-            // If the reason with id doesn't exist in the reasonList
-            // then we add it here matching the content reason value
-            reasonList.push({
-              id: Number(row.id),
-              reason: row.reason
-            });
-          }
-        });
-
-        setContent(refreshedContent);
-        setReasonList(reasonList);
-        setLoading(false);
-        setPages(numPages);
+        sorted.push(value);
       });
+
+      setLoading(true);
+
+      const reset = query && query.reset;
+
+      await axios
+        .get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', submission.id), {
+          params: {
+            filters,
+            page: state.page + 1, // page from front-end is zero index, but in the back-end we need the actual page number
+            page_size: state.pageSize,
+            sorted: sorted.join(','),
+            reset: reset
+          }
+        })
+        .then((response) => {
+          const { content: refreshedContent, pages: numPages } = response.data;
+
+          refreshedContent.forEach((row, idx) => {
+            const reasonIndex = reasonList.findIndex(
+              (x) => Number(x.id) === Number(row.id)
+            );
+
+            // The reasonList stores any changes to reasons
+            // a user has made. If the user filters or sorts, the content
+            // value can be different when it comes back from the server
+            // and their changes would be lost.
+            // To account for this we set the refreshedContent reason value
+            // to the value in the reasonList so we don't lose the user changes.
+            if (reasonIndex >= 0) {
+              refreshedContent[idx].reason = reasonList[reasonIndex].reason;
+            } else if (reasonIndex < 0) {
+              // If the reason with id doesn't exist in the reasonList
+              // then we add it here matching the content reason value
+              reasonList.push({
+                id: Number(row.id),
+                reason: row.reason
+              });
+            }
+          });
+
+          refreshedContent.forEach((row, idx) => {
+            const reasonIndex = reasonList.findIndex(
+              (x) => Number(x.id) === Number(row.id)
+            );
+
+            // The reasonList stores any changes to reasons
+            // a user has made. If the user filters or sorts, the content
+            // value can be different when it comes back from the server
+            // and their changes would be lost.
+            // To account for this we set the refreshedContent reason value
+            // to the value in the reasonList so we don't lose the user changes.
+            if (reasonIndex >= 0) {
+              refreshedContent[idx].reason = reasonList[reasonIndex].reason;
+            } else if (reasonIndex < 0) {
+              // If the reason with id doesn't exist in the reasonList
+              // then we add it here matching the content reason value
+              reasonList.push({
+                id: Number(row.id),
+                reason: row.reason
+              });
+            }
+          });
+
+          setPages(numPages);
+          setContent(refreshedContent);
+          setReasonList(reasonList);
+          setLoading(false);
+        });
+    }, 750);
   };
 
   const clearFilters = () => {

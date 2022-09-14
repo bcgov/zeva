@@ -26,6 +26,7 @@ const CreditRequestVINListContainer = (props) => {
   const [reasons, setReasons] = useState([]);
   const [modified, setModified] = useState([]);
   const [reasonList, setReasonList] = useState([]);
+  const [initialPageCount, setInitialPageCount] = useState(-1);
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 
@@ -57,8 +58,8 @@ const CreditRequestVINListContainer = (props) => {
             const reset = query && query.reset;
 
             // Initialize content and reason values
-            const { data } = contentResponse;
-            let contentListData = data.content;
+            const { content: contentListData, pages: numPages } =
+              contentResponse.data;
             let reasonListData = [];
 
             // Set content and reason values for each model row
@@ -79,6 +80,7 @@ const CreditRequestVINListContainer = (props) => {
               }
             });
 
+            setInitialPageCount(numPages);
             setContent(contentListData);
             setReasonList(reasonListData);
             setLoading(false);
@@ -205,6 +207,7 @@ const CreditRequestVINListContainer = (props) => {
       invalidatedList={invalidatedList}
       modified={modified}
       query={query}
+      initialPageCount={initialPageCount}
       reasons={reasons}
       routeParams={match.params}
       setContent={setContent}

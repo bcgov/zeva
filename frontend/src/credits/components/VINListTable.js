@@ -284,6 +284,7 @@ const VINListTable = (props) => {
       data={items}
       filtered={filtered}
       filterable
+      defaultPageSize={100}
       onFilteredChange={(input) => {
         setFiltered(input);
       }}
@@ -332,7 +333,7 @@ const VINListTable = (props) => {
       loading={loading}
       manual
       onFetchData={(state) => {
-        // onFetchData is called on component load
+        // onFetchData is called on component load (and on changes afterword)
         // which we want to avoid, so this tableInitialized
         // variable cancels out the first call to this method
         if (!tableInitialized) {
