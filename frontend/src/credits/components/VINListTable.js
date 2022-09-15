@@ -17,8 +17,10 @@ const VINListTable = (props) => {
     invalidatedList,
     filtered,
     handleChangeReason,
+    modified,
     loading,
     pages,
+    query,
     readOnly,
     reasons,
     refreshContent,
@@ -26,7 +28,10 @@ const VINListTable = (props) => {
     setReactTable
   } = props;
 
+  console.log(modified);
+
   const [tableInitialized, setTableInitialized] = useState(false);
+  const reset = query && query.reset;
 
   const getErrorCodes = (item, fields = false) => {
     let errorCodes = '';
@@ -242,8 +247,16 @@ const VINListTable = (props) => {
               return false;
             }
 
-            // Only show reasons if the validation checkbox is clicked
-            if (invalidatedList.includes(row.id)) {
+            // On re-verify, only show reasons on edited rows
+            if (reset && !modified.includes(row.id)) {
+              return false;
+            }
+
+            if (
+              !reset &&
+              (!row.reason || row.reason === '') &&
+              !modified.includes(row.id)
+            ) {
               return false;
             }
 
