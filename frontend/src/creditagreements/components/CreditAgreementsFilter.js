@@ -8,7 +8,8 @@ import handleFilterChange from '../../app/utilities/handleFilterChange';
 
 const CreditAgreementsFilter = (props) => {
   const { user, items, handleClear, filtered, setFiltered } = props;
-
+  const isDirector = user.isGovernment
+    && user.roles.some(r => r.roleCode === 'Director');
   const handleChange = (event) => {
     setFiltered(handleFilterChange(event, filtered));
   };
@@ -60,7 +61,7 @@ const CreditAgreementsFilter = (props) => {
         <button className="button" onClick={handleClear} type="button">
           Clear Filters
         </button>
-        {user.isGovernment && (
+        {user.isGovernment && !isDirector && (
           <button
             className="button primary"
             type="button"
