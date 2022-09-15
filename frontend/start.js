@@ -31,15 +31,9 @@ const devServerOptions = {
     index: '/generated_index.html',
     publicPath: '/'
   },
-  client: {
-    webSocketURL: {
-      hostname: '0.0.0.0',
-      pathname: '/',
-      port: 5002
-    }
-  },
   port: 3000,
-  hot: true
+  hot: false,
+  client: false
 };
 
 const compiler = Webpack(webpackConfig);
