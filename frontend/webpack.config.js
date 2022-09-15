@@ -16,8 +16,10 @@ const config = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   entry: {
     bundle: [
+      // Runtime code for hot module replacement
       'webpack/hot/dev-server',
-      'react-hot-loader/patch',
+      // Dev server client for web socket transport, hot and live reload logic
+      'webpack-dev-server/client/index.js?hot=true&live-reload=true',
       '@babel/polyfill',
       mainPath
     ]
@@ -98,10 +100,6 @@ const config = {
         ]
       }
     ]
-  },
-  devServer: {
-    host: 'localhost',
-    port: 3000
   },
   devtool: 'source-map',
   plugins: [
