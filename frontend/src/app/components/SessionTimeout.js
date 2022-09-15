@@ -28,7 +28,7 @@ const SessionTimeout = (keycloak) => {
     for (let i in events) {
       window.addEventListener(events[i], resetIdleTimeout);
     }
-    resetIdleTimeout;
+    resetIdleTimeout();
     return () => {
       for (let i in events) {
         window.removeEventListener(events[i], resetIdleTimeout);

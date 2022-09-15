@@ -47,8 +47,9 @@ const CreditRequestsUploadPage = (props) => {
     });
   };
 
-  const downloadSalesEvidenceTemplate = () =>
+  const downloadSalesEvidenceTemplate = () => {
     window.open('/SalesEvidenceTemplate.docx');
+  };
 
   return (
     <div id="sales-edit" className="page">
@@ -154,8 +155,8 @@ const CreditRequestsUploadPage = (props) => {
                 <Button
                   buttonType="download"
                   optionalText="Download Sales Evidence Template"
-                  action={(e) => {
-                    downloadSalesEvidenceTemplate(e);
+                  action={() => {
+                    downloadSalesEvidenceTemplate();
                   }}
                 />
               </div>

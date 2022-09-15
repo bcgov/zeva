@@ -17,20 +17,18 @@ const VINListTable = (props) => {
     invalidatedList,
     filtered,
     handleChangeReason,
-    loading,
     modified,
+    loading,
     pages,
     query,
     readOnly,
     reasons,
     refreshContent,
     setFiltered,
-    setLoading,
     setReactTable
   } = props;
 
   const [tableInitialized, setTableInitialized] = useState(false);
-
   const reset = query && query.reset;
 
   const getErrorCodes = (item, fields = false) => {
@@ -231,7 +229,7 @@ const VINListTable = (props) => {
         },
         {
           Cell: (data) => {
-            const row = data.original
+            const row = data.original;
             if (
               row.warnings &&
               row.warnings.some(
@@ -247,8 +245,16 @@ const VINListTable = (props) => {
               return false;
             }
 
-            // Only show reasons if the validation checkbox is clicked
-            if (invalidatedList.includes(row.id)) {
+            // On re-verify, only show reasons on edited rows
+            if (reset && !modified.includes(row.id)) {
+              return false;
+            }
+
+            if (
+              !reset &&
+              (!row.reason || row.reason === '') &&
+              !modified.includes(row.id)
+            ) {
               return false;
             }
 
@@ -277,7 +283,7 @@ const VINListTable = (props) => {
           filterable: false,
           sortable: false,
           Header: 'Reason',
-          id: 'reason',
+          id: 'reason'
         }
       ]
     }
@@ -289,6 +295,7 @@ const VINListTable = (props) => {
       data={items}
       filtered={filtered}
       filterable
+      defaultPageSize={100}
       onFilteredChange={(input) => {
         setFiltered(input);
       }}
@@ -337,14 +344,13 @@ const VINListTable = (props) => {
       loading={loading}
       manual
       onFetchData={(state) => {
-        // onFetchData is called on component load
+        // onFetchData is called on component load (and on changes afterword)
         // which we want to avoid, so this tableInitialized
         // variable cancels out the first call to this method
-        if(!tableInitialized) {
-          setTableInitialized(true)
-          return
+        if (!tableInitialized) {
+          setTableInitialized(true);
+          return;
         }
-
         const filters = {};
 
         state.filtered.forEach((each) => {

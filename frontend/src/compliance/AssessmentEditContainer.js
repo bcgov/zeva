@@ -22,6 +22,8 @@ const AssessmentEditContainer = (props) => {
   const [modelYear, setModelYear] = useState(
     CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR
   );
+  const [reportMakes, setReportMakes] = useState('');
+  const [reportSales, setReportSales] = useState('');
   const { user, keycloak } = props;
   const [statuses, setStatuses] = useState({
     assessment: {
@@ -32,7 +34,7 @@ const AssessmentEditContainer = (props) => {
   const [sales, setSales] = useState({});
   const [ratios, setRatios] = useState({});
   const [years, setYears] = useState([]);
-
+  const [enableSave, setEnableSave] = useState(false);
   const handleChangeMake = (event) => {
     const { value } = event.target;
     setMake(value.toUpperCase());
@@ -45,32 +47,61 @@ const AssessmentEditContainer = (props) => {
     });
   };
 
-  const handleDeleteMake = (index) => {
-    makes.splice(index, 1);
-    setMakes([...makes]);
+  const handleDeleteMake = (makeToDelete) => {
+    setMakes((prev) => prev.filter((each) => each !== makeToDelete));
   };
 
   const handleSubmitMake = (event) => {
     event.preventDefault();
-
-    setMake('');
-    setMakes([...makes, make]);
+    if (make.length > 0) {
+      setMake('');
+      setMakes([...makes, make]);
+    }
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    const data = {
-      makes,
-      sales
-    };
-
+    let data = {};
+    if (makes.length > 0) {
+      data = { makes };
+    }
+    for (let i in reportSales) {
+      if (sales[i] != reportSales[i]) {
+        data = { ...data, sales };
+      }
+    }
     axios
       .patch(ROUTES_COMPLIANCE.REPORT_ASSESSMENT_SAVE.replace(/:id/g, id), data)
       .then(() => {
         history.push(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id));
       });
   };
+
+  const equalsIgnoreOrder = (a, b) => {
+    if (a.length !== b.length) return false;
+    const uniqueValues = new Set([...a, ...b]);
+    for (const v of uniqueValues) {
+      const aCount = a.filter((e) => e === v).length;
+      const bCount = b.filter((e) => e === v).length;
+      if (aCount !== bCount) return false;
+    }
+    return true;
+  };
+
+  useEffect(() => {
+    if (
+      sales[modelYear] != reportSales[modelYear] ||
+      !equalsIgnoreOrder(makes, reportMakes)
+    ) {
+      setEnableSave(true);
+    } else if (
+      sales[modelYear] == reportSales[modelYear] &&
+      equalsIgnoreOrder(makes, reportMakes)
+    ) {
+      setEnableSave(false);
+    }
+  }, [makes, sales]);
 
   const refreshDetails = () => {
     const detailsPromise = axios.get(
@@ -106,13 +137,14 @@ const AssessmentEditContainer = (props) => {
       setModelYear(year);
       setStatuses(reportStatuses);
 
+      const analystMakes = govMakes.map((each) => each.make);
+      setReportMakes(analystMakes);
+      setMakes(analystMakes);
       if (modelYearReportMakes) {
         const supplierCurrentMakes = supplierMakes.map((each) => each.make);
-        const analystMakes = govMakes.map((each) => each.make);
-        setMakes(analystMakes);
+
         setSupplierMakesList(supplierCurrentMakes);
       }
-
       let ldvSales = reportLdvSales;
 
       if (
@@ -139,6 +171,10 @@ const AssessmentEditContainer = (props) => {
           validationStatus
         },
         supplierClass
+      });
+
+      setReportSales({
+        [year]: reportLdvSales
       });
 
       setSales({
@@ -190,6 +226,7 @@ const AssessmentEditContainer = (props) => {
         sales={sales}
         supplierMakes={supplierMakesList}
         years={years}
+        enableSave={enableSave}
       />
     </>
   );

@@ -3,26 +3,24 @@ import { render } from '@testing-library/react';
 import ActionBarGov from '../ActionBarGov';
 
 const vehicles = [];
-const handleSubmit = () => {
-  console.log('test');
+const handle = (msg) => {
+  console.log(msg);
 };
+
 it('renders without crashing', () => {
   render(
     <ActionBarGov
       handleClear={() => {
-        console.log('hi');
+        handle('clear');
       }}
       handleSubmit={() => {
-        console.log('hi');
+        handle('submit');
       }}
       setFiltered={() => {
-        console.log('hi');
+        handle('setFiltered');
       }}
       filtered={[{ 1: 'test' }]}
       vehicles={vehicles}
     />
   );
 });
-() => {
-  console.log('hi');
-};

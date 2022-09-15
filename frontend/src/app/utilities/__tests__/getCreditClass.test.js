@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  render,
-  cleanup,
-  getByTestId,
-  fireEvent
-} from '@testing-library/react';
+import { render, cleanup } from '@testing-library/react';
 import getCreditClass from '../getCreditClass';
 
 require('@babel/core');

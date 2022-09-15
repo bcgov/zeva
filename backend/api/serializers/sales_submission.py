@@ -438,7 +438,7 @@ class SalesSubmissionSerializer(
         else:
             sales_submission_comment = SalesSubmissionComment.objects.filter(
                 sales_submission=obj,
-                to_govt=True
+                to_govt=False
             ).order_by('-create_timestamp')
 
         if sales_submission_comment.exists():

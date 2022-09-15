@@ -6,8 +6,7 @@ import Alert from '../../app/components/Alert';
 
 const CreditTransfersAlert = (props) => {
   const { user, submission } = props;
-  const { history, status, debitFrom, creditTo, sufficientCredits, id } =
-    submission;
+  const { history, status, debitFrom, creditTo, id } = submission;
   let message = '';
   let title;
   let classname;

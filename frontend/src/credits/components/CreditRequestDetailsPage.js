@@ -36,7 +36,8 @@ const CreditRequestDetailsPage = (props) => {
   const { id } = useParams();
   const validatedOnly = submission.validationStatus === 'CHECKED';
   const submittedOnly = submission.validationStatus === 'SUBMITTED';
-  const submittedOnlyTooltip = 'You must verify once with ICBC data before reviewing details.';
+  const submittedOnlyTooltip =
+    'You must verify once with ICBC data before reviewing details.';
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
   const [comment, setComment] = useState('');
@@ -66,13 +67,14 @@ const CreditRequestDetailsPage = (props) => {
 
   let modalProps = {};
 
-  const transferCommentsIDIR =
+  const submissionCommentsIdirOnly =
     submission &&
     submission.salesSubmissionComment &&
     submission.salesSubmissionComment
       .filter((each) => each.toGovt == true && each.comment)
       .map((item) => item);
-  const transferCommentsSupplier =
+
+  const submissionCommentsToSupplier =
     submission &&
     submission.salesSubmissionComment &&
     submission.salesSubmissionComment
@@ -81,7 +83,6 @@ const CreditRequestDetailsPage = (props) => {
   const handleCommentChange = (content) => {
     setComment(content);
   };
-
   const analystToSupplier = (
     <div>
       <label className="mt-3" htmlFor="reject-comment">
@@ -121,13 +122,10 @@ const CreditRequestDetailsPage = (props) => {
   };
 
   const verifyWithICBCData = () => {
-    let url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(
-      /:id/g,
-      submission.id
-    );
-    url += "?reset=Y";
+    let url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id);
+    url += '?reset=Y';
     history.push(url);
-  }
+  };
 
   switch (modalType) {
     case 'submit':
@@ -182,14 +180,22 @@ const CreditRequestDetailsPage = (props) => {
         modalText: 'Reject the application?'
       };
       break;
-    case "verify":
+    case 'verify':
       modalProps = {
-        confirmLabel: "Verify with ICBC Data",
+        confirmLabel: 'Verify with ICBC Data',
         handleSubmit: () => {
           verifyWithICBCData();
         },
-        buttonClass: "button primary",
-        modalText: <div><h2 className="mb-2">Verify submission with ICBC Data?</h2><p>This will clear all existing validation and re-calculate with the latest uploaded ICBC data.</p></div>
+        buttonClass: 'button primary',
+        modalText: (
+          <div>
+            <h2 className="mb-2">Verify submission with ICBC Data?</h2>
+            <p>
+              This will clear all existing validation and re-calculate with the
+              latest uploaded ICBC data.
+            </p>
+          </div>
+        )
       };
       break;
     default:
@@ -333,20 +339,31 @@ const CreditRequestDetailsPage = (props) => {
                 }
                 invalidSubmission={invalidSubmission}
               />
-              {((transferCommentsIDIR && transferCommentsIDIR.length > 0) ||
-                (transferCommentsSupplier &&
-                  transferCommentsSupplier.length > 0) ||
+
+              {((submissionCommentsIdirOnly &&
+                submissionCommentsIdirOnly.length > 0) ||
+                (submissionCommentsToSupplier &&
+                  submissionCommentsToSupplier.length > 0) ||
                 user.isGovernment) && (
                 <div className="comment-box mt-2">
-                  {transferCommentsIDIR &&
-                    transferCommentsIDIR.length > 0 &&
+                  {submissionCommentsIdirOnly &&
+                    submissionCommentsIdirOnly.length > 0 &&
                     user.isGovernment && (
-                      <DisplayComment commentArray={transferCommentsIDIR} />
+                      <>
+                        <b>Internal Comments</b>
+                        <DisplayComment
+                          commentArray={submissionCommentsIdirOnly}
+                        />
+                      </>
                     )}
-                  {transferCommentsSupplier &&
-                    transferCommentsSupplier.length > 0 &&
-                    !user.isGovernment && (
-                      <DisplayComment commentArray={transferCommentsSupplier} />
+                  {submissionCommentsToSupplier &&
+                    submissionCommentsToSupplier.length > 0 && (
+                      <>
+                        <b>Comments to Supplier</b>
+                        <DisplayComment
+                          commentArray={submissionCommentsToSupplier}
+                        />
+                      </>
                     )}
                   {((analystAction && validatedOnly) || directorAction) &&
                     idirCommentSection}
@@ -540,10 +557,10 @@ const CreditRequestDetailsPage = (props) => {
                   <button
                     className="button"
                     onClick={() => {
-                      if(submittedOnly) {
+                      if (submittedOnly) {
                         verifyWithICBCData();
                       } else {
-                        setModalType("verify");
+                        setModalType('verify');
                         setShowModal(true);
                       }
                     }}
@@ -552,7 +569,9 @@ const CreditRequestDetailsPage = (props) => {
                     Verify with ICBC Data
                   </button>
                   <Button
-                    optionalClassname={validatedOnly ? 'button' : 'button primary'}
+                    optionalClassname={
+                      validatedOnly ? 'button' : 'button primary'
+                    }
                     buttonType="button"
                     optionalText="Review Details"
                     disabled={submittedOnly}

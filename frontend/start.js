@@ -1,5 +1,5 @@
 const Webpack = require('webpack');
-const WebpackDevServer = require('webpack-dev-server');
+const DevServer = require('webpack-dev-server');
 const path = require('path');
 const http = require('http');
 
@@ -7,10 +7,16 @@ const webpackConfig = require('./webpack.config');
 const notifications = require('./notifications');
 
 const devServerOptions = {
-  contentBase: path.join(__dirname, 'public/build'),
-  publicPath: '/',
-  index: '/generated_index.html',
-  disableHostCheck: true,
+  static: {
+    directory: path.join(__dirname, 'public/build'),
+    publicPath: '/',
+    serveIndex: true,
+    watch: {
+      ignored: ['node_modules'],
+      usePolling: true
+    }
+  },
+  allowedHosts: 'all',
   historyApiFallback: {
     verbose: true,
     index: '/generated_index.html',
@@ -21,19 +27,17 @@ const devServerOptions = {
       }
     ]
   },
+  devMiddleware: {
+    index: '/generated_index.html',
+    publicPath: '/'
+  },
   port: 3000,
-  compress: true,
-  public: 'localhost',
-  hot: true,
-  watchOptions: {
-    ignored: ['node_modules'],
-    poll: 1500
-  }
+  hot: false,
+  client: false
 };
 
-WebpackDevServer.addDevServerEntrypoints(webpackConfig, devServerOptions);
 const compiler = Webpack(webpackConfig);
-const devServer = new WebpackDevServer(compiler, devServerOptions);
+const devServer = new DevServer(devServerOptions, compiler);
 
 const websocketServer = http.createServer((req, res) => {
   res.end();
@@ -45,4 +49,8 @@ notifications.setup(io);
 
 websocketServer.listen(5002, '0.0.0.0');
 
-devServer.listen(3000, '0.0.0.0', () => {});
+(async () => {
+  await devServer.start();
+
+  console.log('Running');
+})();

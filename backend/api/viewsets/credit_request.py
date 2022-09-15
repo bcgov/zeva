@@ -403,13 +403,15 @@ class CreditRequestViewset(
                 'xls_vin', flat=True
             ).filter(vin_count__gt=1))
 
-            awarded_vins = Subquery(RecordOfSale.objects.exclude(
+            pre_existing_vins = Subquery(RecordOfSale.objects.exclude(
                 submission_id=pk
+            ).exclude(
+                submission__validation_status='REJECTED'
             ).values_list('vin', flat=True))
 
             unselected_vins = submission_content.filter(
                 Q(xls_vin__in=duplicate_vins) |
-                Q(xls_vin__in=awarded_vins) |
+                Q(xls_vin__in=pre_existing_vins) |
                 ~Q(xls_vin__in=Subquery(
                     IcbcRegistrationData.objects.values('vin')
                 )) |

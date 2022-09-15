@@ -7,8 +7,11 @@ const ocpName = 'apps.silver.devops'
 
 //if work directly on bcgov repo, the value is bcgov
 //if work on forked developer repo, the value is the developer's GitHub Id
-//without this line of code, the pr deployment cann't removed when the pr is closed
+//without this line of code, the pr deployment cann't be removed when the pr is closed
 options.git.owner='bcgov'
+//Have to set options.git.repository to be zeva otherwise an error will be thrown as the label github-repo 
+//will contain https://github.com/bcgov/zeva which is not allowed as a valid label
+options.git.repository='zeva'
 
 const phases = {
 

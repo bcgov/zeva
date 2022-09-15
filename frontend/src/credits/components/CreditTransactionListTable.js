@@ -44,6 +44,9 @@ const CreditTransactionListTable = (props) => {
         }
         return 'Initiative Agreement';
       case 'credit adjustment reduction':
+        if (item.detailTransactionType) {
+          return item.detailTransactionType;
+        }
         return 'Administrative Credit Reduction';
       case 'reduction':
         return `${name} Model Year Report Credit Reduction`;
@@ -114,12 +117,15 @@ const CreditTransactionListTable = (props) => {
   });
 
   items.forEach((item) => {
+    const totalValue =
+      Math.round((item.totalValue + Number.EPSILON) * 100) / 100;
+
     if (item.creditClass.creditClass === 'A') {
-      totalA += parseFloat(item.totalValue);
+      totalA += parseFloat(totalValue);
     }
 
     if (item.creditClass.creditClass === 'B') {
-      totalB += parseFloat(item.totalValue);
+      totalB += parseFloat(totalValue);
     }
 
     const found = transactions.findIndex(
@@ -136,19 +142,19 @@ const CreditTransactionListTable = (props) => {
         ...transactions[found],
         creditsA:
           item.creditClass.creditClass === 'A'
-            ? transactions[found].creditsA + item.totalValue
+            ? transactions[found].creditsA + totalValue
             : transactions[found].creditsA,
         creditsB:
           item.creditClass.creditClass === 'B'
-            ? transactions[found].creditsB + item.totalValue
+            ? transactions[found].creditsB + totalValue
             : transactions[found].creditsB,
         displayTotalA: totalA,
         displayTotalB: totalB
       };
     } else {
       transactions.push({
-        creditsA: item.creditClass.creditClass === 'A' ? item.totalValue : 0,
-        creditsB: item.creditClass.creditClass === 'B' ? item.totalValue : 0,
+        creditsA: item.creditClass.creditClass === 'A' ? totalValue : 0,
+        creditsB: item.creditClass.creditClass === 'B' ? totalValue : 0,
         displayTotalA: totalA,
         displayTotalB: totalB,
         foreignKey: item.foreignKey,
@@ -221,7 +227,7 @@ const CreditTransactionListTable = (props) => {
           className: 'text-right credits-left',
           Header: 'A',
           Cell: (item) => (
-            <span className={item.value < 0 ? 'text-danger' : ''}>
+            <span className={item.original.creditsA < 0 ? 'text-danger' : ''}>
               {item.value}
             </span>
           ),
@@ -234,7 +240,7 @@ const CreditTransactionListTable = (props) => {
             item.creditsB ? formatNumeric(item.creditsB, 2) : '-',
           className: 'text-right',
           Cell: (item) => (
-            <span className={item.value < 0 ? 'text-danger' : ''}>
+            <span className={item.original.creditsB < 0 ? 'text-danger' : ''}>
               {item.value}
             </span>
           ),
@@ -292,6 +298,10 @@ const CreditTransactionListTable = (props) => {
         {
           id: 'date',
           desc: true
+        },
+        {
+          id: 'transaction',
+          desc: false
         }
       ]}
       filterable={false}

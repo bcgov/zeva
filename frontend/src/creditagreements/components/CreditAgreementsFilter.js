@@ -8,7 +8,8 @@ import handleFilterChange from '../../app/utilities/handleFilterChange';
 
 const CreditAgreementsFilter = (props) => {
   const { user, items, handleClear, filtered, setFiltered } = props;
-
+  const isDirector = user.isGovernment
+    && user.roles.some(r => r.roleCode === 'Director');
   const handleChange = (event) => {
     setFiltered(handleFilterChange(event, filtered));
   };
@@ -16,7 +17,8 @@ const CreditAgreementsFilter = (props) => {
     const uniqueArr = [
       ...new Set(inputObj.map((eachItem) => eachItem.organization.name))
     ];
-    return uniqueArr.sort().map((each) => <option key={each}>{each}</option>);
+    uniqueArr.sort();
+    return uniqueArr.map((each) => <option key={each}>{each}</option>);
   };
 
   return (
@@ -59,7 +61,7 @@ const CreditAgreementsFilter = (props) => {
         <button className="button" onClick={handleClear} type="button">
           Clear Filters
         </button>
-        {user.isGovernment && (
+        {user.isGovernment && !isDirector && (
           <button
             className="button primary"
             type="button"

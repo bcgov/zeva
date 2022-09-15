@@ -2,6 +2,8 @@
 
 Facilitates online Zero-Emission Vehicle (ZEV) sales reporting by regulated parties (automakers), plus issuance and transfer of ZEV credits. This is to support compliance with the ZEV Act regulations that require increasing sales of ZEVs to reduce GHG emissions from vehicles in the province.
 
+[![Lifecycle:Stable](https://img.shields.io/badge/Lifecycle-Stable-97ca00)](https://www2.gov.bc.ca/gov/content/industry/electricity-alternative-energy/transportation-energies/clean-transportation-policies-programs/zero-emission-vehicles-act)
+
 # Project Architecture
 
 The project is a typical we application, it has frontend, backend and database.
@@ -16,6 +18,8 @@ The project is a typical we application, it has frontend, backend and database.
 - Database Documentation: [SchemaSpy](http://schemaspy.org/)
 
 ## Development
+
+Additional developer information - [Developer guide](./developer-guide.md)
 
 Unfortunately we do not have a licence to use Docker Desktop at BC Gov. If you are on a mac [here is a blogpost](https://naomiaro.hashnode.dev/replacing-docker-desktop-with-lima-on-mac-os) about how to setup Lima as an alternative solution for development purposes.
 
@@ -58,8 +62,6 @@ We take advantage that MinIO is S3 compatible and use [django-storages](https://
 
 We are using a shared realm [Keycloak](https://www.keycloak.org/) client. Shared realm clients can be accessed and configured via [Common Hosted Single Sign-on (CSS)](https://bcgov.github.io/sso-requests)
 
-to access keycloak console on local, go to localhost:8888
-when developing locally, you may want to assign different users to different profiles, for example, have a 'government' profile as well as a 'supplier' profile. To update keycloak profiles, go to the keycloak console (8888), then click users, then view all users. select one, then click attributes. Look at the database user_profiles table, find one that has an organization that matches what you want, or update one, then use that username as the 'Value' on keycloak. Different users have different permissions to view pages and complete actions.
 
 ### Email
 
@@ -77,6 +79,7 @@ There's training on Openshift offered by BCDevExchange. Check the [schedule here
 
 We use git for version control.
 Each developer has their own fork of the repo and works off of branches from there
+Read more in the [Developer guide](./developer-guide.md)
 
 ### Testing
 
