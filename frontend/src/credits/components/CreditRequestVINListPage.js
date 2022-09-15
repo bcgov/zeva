@@ -64,7 +64,6 @@ const CreditRequestVINListPage = (props) => {
         if (each.desc) {
           value = `-${value}`;
         }
-
         sorted.push(value);
       });
 
@@ -84,29 +83,6 @@ const CreditRequestVINListPage = (props) => {
         })
         .then((response) => {
           const { content: refreshedContent, pages: numPages } = response.data;
-
-          refreshedContent.forEach((row, idx) => {
-            const reasonIndex = reasonList.findIndex(
-              (x) => Number(x.id) === Number(row.id)
-            );
-
-            // The reasonList stores any changes to reasons
-            // a user has made. If the user filters or sorts, the content
-            // value can be different when it comes back from the server
-            // and their changes would be lost.
-            // To account for this we set the refreshedContent reason value
-            // to the value in the reasonList so we don't lose the user changes.
-            if (reasonIndex >= 0) {
-              refreshedContent[idx].reason = reasonList[reasonIndex].reason;
-            } else if (reasonIndex < 0) {
-              // If the reason with id doesn't exist in the reasonList
-              // then we add it here matching the content reason value
-              reasonList.push({
-                id: Number(row.id),
-                reason: row.reason
-              });
-            }
-          });
 
           refreshedContent.forEach((row, idx) => {
             const reasonIndex = reasonList.findIndex(
