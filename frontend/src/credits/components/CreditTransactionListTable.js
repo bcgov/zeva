@@ -44,6 +44,9 @@ const CreditTransactionListTable = (props) => {
         }
         return 'Initiative Agreement';
       case 'credit adjustment reduction':
+        if (item.detailTransactionType) {
+          return item.detailTransactionType;
+        }
         return 'Administrative Credit Reduction';
       case 'reduction':
         return `${name} Model Year Report Credit Reduction`;
