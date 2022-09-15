@@ -28,8 +28,6 @@ const VINListTable = (props) => {
     setReactTable
   } = props;
 
-  console.log(modified);
-
   const [tableInitialized, setTableInitialized] = useState(false);
   const reset = query && query.reset;
 
