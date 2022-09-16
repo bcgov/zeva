@@ -48,7 +48,7 @@ jobs:
 
     name: Deploy ZEVA on Test Environment
     runs-on: ubuntu-latest
-    timeout-minutes: 240
+    timeout-minutes: 60
     needs: build
 
     steps:
@@ -83,7 +83,7 @@ jobs:
 
     name: Deploy ZEVA on Prod Environment
     runs-on: ubuntu-latest
-    timeout-minutes: 2880
+    timeout-minutes: 60
     needs: deploy-on-test
 
     steps:
