@@ -34,7 +34,6 @@ const CreditAgreementsForm = (props) => {
     modelYearReports
   } = props;
 
-  let supplierReports = [{ modelYear: '-', id: '-' }];
   const removeFile = (removedFile) => {
     const found = files.findIndex((file) => file === removedFile);
     files.splice(found, 1);
@@ -48,16 +47,17 @@ const CreditAgreementsForm = (props) => {
       : false;
 
   const modelYearValues = () => {
+    const supplierReports = [];
     if (
       agreementDetails.vehicleSupplier &&
       (agreementDetails.transactionType === 'Reassessment Allocation' ||
         agreementDetails.transactionType === 'Reassessment Reduction')
     ) {
-      supplierReports = modelYearReports.map((each) =>
-        each.organizationId == parseInt(agreementDetails.vehicleSupplier)
-          ? each
-          : {}
-      );
+      for (const modelYearReport of modelYearReports) {
+        if (modelYearReport.organizationId == parseInt(agreementDetails.vehicleSupplier)) {
+          supplierReports.push(modelYearReport);
+        }
+      }
     }
     return supplierReports;
   };
@@ -174,7 +174,7 @@ const CreditAgreementsForm = (props) => {
                 dropdownData={suppliers}
                 dropdownName="Vehicle Supplier"
                 handleInputChange={(event) => {
-                  handleChangeDetails(event.target.value, 'vehicleSupplier');
+                  handleChangeDetails(event.target.value, 'vehicleSupplier', true);
                 }}
                 fieldName="vehicleSupplier"
                 accessor={(supplier) => supplier.id}
@@ -189,7 +189,7 @@ const CreditAgreementsForm = (props) => {
                 dropdownData={transactionTypes}
                 dropdownName="Transaction Type"
                 handleInputChange={(event) => {
-                  handleChangeDetails(event.target.value, 'transactionType');
+                  handleChangeDetails(event.target.value, 'transactionType', true);
                 }}
                 fieldName="transactionType"
                 accessor={(transactionType) => transactionType.name}
