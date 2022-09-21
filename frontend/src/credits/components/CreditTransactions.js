@@ -12,9 +12,7 @@ const CreditTransactions = (props) => {
       <div className="row my-3">
         <div className="col-sm-5">
           <h2 className="mb-2">Detailed Credit Balance</h2>
-          <CreditBalanceTable
-            items={balances.filter((each) => Number(each.totalValue) > 0)}
-          />
+          <CreditBalanceTable items={balances} />
         </div>
       </div>
 
