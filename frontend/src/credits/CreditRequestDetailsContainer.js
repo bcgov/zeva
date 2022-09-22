@@ -85,16 +85,23 @@ const CreditRequestDetailsContainer = (props) => {
       });
   };
 
-  const handleInternalCommentEdit = (submissionComment) => {
-    setSubmission(
-      produce((draft) => {
-        const comment = draft.salesSubmissionComment.find(
-          (comment) => comment.id === submissionComment.id
-        );
-        comment.comment = submissionComment.comment;
-        comment.updateTimestamp = submissionComment.updateTimestamp;
+  const handleInternalCommentEdit = (commentId, commentText) => {
+    axios
+      .patch(ROUTES_CREDIT_REQUESTS.UPDATE_COMMENT.replace(':id', commentId), {
+        comment: commentText
       })
-    );
+      .then((response) => {
+        const submissionComment = response.data;
+        setSubmission(
+          produce((draft) => {
+            const comment = draft.salesSubmissionComment.find(
+              (comment) => comment.id === submissionComment.id
+            );
+            comment.comment = submissionComment.comment;
+            comment.updateTimestamp = submissionComment.updateTimestamp;
+          })
+        );
+      });
   };
 
   if (loading) {

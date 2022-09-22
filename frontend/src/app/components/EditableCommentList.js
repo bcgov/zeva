@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import EditComment from './EditComment';
 import moment from 'moment-timezone';
 import parse from 'html-react-parser';
-import axios from 'axios';
-import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
 
 const EditableCommentList = ({ comments, user, handleCommentEdit }) => {
   const [commentIdsBeingEdited, setCommentIdsBeingEdited] = useState([]);
@@ -15,20 +13,8 @@ const EditableCommentList = ({ comments, user, handleCommentEdit }) => {
   };
 
   const handleSave = (commentId, commentText) => {
-    axios
-      .patch(ROUTES_CREDIT_REQUESTS.UPDATE_COMMENT.replace(':id', commentId), {
-        comment: commentText
-      })
-      .then((response) => {
-        handleCommentEdit(response.data);
-      })
-      .finally(() => {
-        setCommentIdsBeingEdited((prev) => {
-          return prev.filter((id) => {
-            return id !== commentId;
-          });
-        });
-      });
+    handleCommentEdit(commentId, commentText);
+    handleCancel(commentId);
   };
 
   const handleCancel = (commentId) => {
