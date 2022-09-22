@@ -15,9 +15,10 @@ import formatNumeric from '../../app/utilities/formatNumeric';
 import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable';
 import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued';
 import CommentInput from '../../app/components/CommentInput';
-import DisplayComment from '../../app/components/DisplayComment';
 import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
 import ComplianceHistory from './ComplianceHistory';
+import DisplayCommentEditable from '../../app/components/DisplayCommentEditable';
+import CommentInputEditable from '../../app/components/CommentInputEditable';
 
 const AssessmentDetailsPage = (props) => {
   const {
@@ -28,6 +29,7 @@ const AssessmentDetailsPage = (props) => {
     handleAddIdirComment,
     handleCommentChangeBceid,
     handleCommentChangeIdir,
+    handleEditComment,
     loading,
     makes,
     reportYear,
@@ -55,6 +57,9 @@ const AssessmentDetailsPage = (props) => {
 
   const [showModal, setShowModal] = useState(false);
   const [showModalAssess, setShowModalAssess] = useState(false);
+  const [editableComment, setEditableComment] = useState(null);
+  const [editText, setEditText] = useState('');
+
   const formattedPenalty = formatNumeric(
     details.assessment.assessmentPenalty,
     0
@@ -178,6 +183,33 @@ const AssessmentDetailsPage = (props) => {
     }
   };
 
+  const editComment = (comment) => {
+    const text = comment.comment
+    setEditableComment(comment)
+    setEditText(text)
+    handleCommentChangeBceid(text)
+    handleCommentChangeIdir(text)
+  }
+
+  const updateEditableCommentText = (text) => {
+    setEditText(text)
+    handleCommentChangeBceid(text)
+    handleCommentChangeIdir(text)
+  }
+
+  const saveEditableComment = () => {
+    let comment = editableComment
+    comment.comment = editText
+    handleEditComment(comment)
+  }
+
+  const cancelEditableComment = () => {
+    setEditText('')
+    setEditableComment(null)
+    handleCommentChangeIdir('')
+    handleCommentChangeBceid('')
+  }
+
   return (
     <div id="assessment-details" className="page">
       <ComplianceHistory
@@ -216,7 +248,7 @@ const AssessmentDetailsPage = (props) => {
                     (Object.keys(details.changelog.makesAdditions) ||
                       details.changelog.ldvChanges > 0) && (
                       <>
-                        <h3>Assessment Adjustments</h3>
+                        <h3>Internal Record of Assessment</h3>
                         <div className="text-blue">
                           The analyst made the following adjustments:
                           {details.changelog.makesAdditions && (
@@ -253,18 +285,27 @@ const AssessmentDetailsPage = (props) => {
                   {details.idirComment &&
                     details.idirComment.length > 0 &&
                     user.isGovernment && (
-                      <DisplayComment commentArray={details.idirComment} />
+                      <DisplayCommentEditable 
+                        commentArray={details.idirComment}
+                        editComment={editComment}
+                        user={user}
+                      />
                     )}
                   {statuses.assessment.status !== 'ASSESSED' && (
-                    <CommentInput
+                    <CommentInputEditable
                       handleAddComment={handleAddIdirComment}
-                      handleCommentChange={handleCommentChangeIdir}
+                      handleCommentChange={updateEditableCommentText}
+                      saveEditableComment={saveEditableComment}
+                      cancelEditableComment={cancelEditableComment}
+                      editing={editableComment != null}
+                      value={editText}
                       title={
+                        editableComment ? 'Editing comment:' :
                         analystAction
                           ? 'Add comment to director: '
                           : 'Add comment to the analyst'
                       }
-                      buttonText="Add Comment"
+                      buttonText={editableComment ? "Save Comment" : "Add Comment"}
                     />
                   )}
                 </div>
@@ -663,6 +704,7 @@ AssessmentDetailsPage.propTypes = {
   handleAddIdirComment: PropTypes.func.isRequired,
   handleCommentChangeBceid: PropTypes.func.isRequired,
   handleCommentChangeIdir: PropTypes.func.isRequired,
+  handleEditComment: PropTypes.func.isRequired,
   radioDescriptions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   setDetails: PropTypes.func.isRequired,
   classAReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
