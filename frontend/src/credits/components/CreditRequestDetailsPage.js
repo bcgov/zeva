@@ -22,6 +22,7 @@ import getFileSize from '../../app/utilities/getFileSize';
 import DisplayComment from '../../app/components/DisplayComment';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import DownloadAllSubmissionContentButton from './DownloadAllSubmissionContentButton';
+import EditableCommentList from '../../app/components/EditableCommentList';
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -30,7 +31,8 @@ const CreditRequestDetailsPage = (props) => {
     submission,
     user,
     issueAsMY,
-    handleCheckboxClick
+    handleCheckboxClick,
+    handleInternalCommentEdit
   } = props;
 
   const { id } = useParams();
@@ -351,8 +353,10 @@ const CreditRequestDetailsPage = (props) => {
                     user.isGovernment && (
                       <>
                         <b>Internal Comments</b>
-                        <DisplayComment
-                          commentArray={submissionCommentsIdirOnly}
+                        <EditableCommentList
+                          comments={submissionCommentsIdirOnly}
+                          user={user}
+                          handleCommentEdit={handleInternalCommentEdit}
                         />
                       </>
                     )}

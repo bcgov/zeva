@@ -14,6 +14,7 @@ import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
 import CustomPropTypes from '../app/utilities/props';
 import CreditRequestDetailsPage from './components/CreditRequestDetailsPage';
 import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification';
+import produce from 'immer';
 
 const CreditRequestDetailsContainer = (props) => {
   const { location, match, user, validatedOnly } = props;
@@ -84,6 +85,18 @@ const CreditRequestDetailsContainer = (props) => {
       });
   };
 
+  const handleInternalCommentEdit = (submissionComment) => {
+    setSubmission(
+      produce((draft) => {
+        const comment = draft.salesSubmissionComment.find(
+          (comment) => comment.id === submissionComment.id
+        );
+        comment.comment = submissionComment.comment;
+        comment.updateTimestamp = submissionComment.updateTimestamp;
+      })
+    );
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -101,6 +114,7 @@ const CreditRequestDetailsContainer = (props) => {
       validatedOnly={validatedOnly}
       handleCheckboxClick={handleCheckboxClick}
       issueAsMY={issueAsMY}
+      handleInternalCommentEdit={handleInternalCommentEdit}
     />
   ];
 };
