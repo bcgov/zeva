@@ -16,7 +16,7 @@ const formatNumeric = (value, decimals = 2, roundBracket) => {
   }
   if (roundBracket) {
     if (newValue < 0) {
-      newValue = `(${newValue * -1})`;
+      newValue = `(${(newValue * -1).toFixed(decimals)})`;
     }
   }
   if (typeof newValue === 'number') {

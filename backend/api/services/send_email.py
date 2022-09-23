@@ -176,17 +176,17 @@ def notifications_model_year_report(validation_status, request):
     request_type = 'model_year_report'
     email_type = '<b>model year report update</b>'
     notifications = None
-    if validation_status == 'ASSESSED':
+    if validation_status == ModelYearReportStatuses.ASSESSED.name:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             Q(notification_code='MODEL_YEAR_REPORT_ASSESSED_SUPPLIER') |
             Q(notification_code='MODEL_YEAR_REPORT_ASSESSED_GOVT'))
-    elif validation_status == 'SUBMITTED':
+    elif validation_status == ModelYearReportStatuses.SUBMITTED.name:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='MODEL_YEAR_REPORT_SUBMITTED') 
-    elif validation_status == 'RECOMMENDED':
+    elif validation_status == ModelYearReportStatuses.RECOMMENDED.name:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='MODEL_YEAR_REPORT_RECOMMENDED') 
-    elif validation_status == 'RETURNED':
+    elif validation_status == ModelYearReportStatuses.RETURNED.name:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='MODEL_YEAR_REPORT_RETURNED') 
 
@@ -242,20 +242,20 @@ def notifications_zev_model(request: object, validation_status: str):
     request_type = 'zev_model'
     email_type = '<b>ZEV model update</b>'
     notifications = None
-    if validation_status == VehicleDefinitionStatuses.VALIDATED:
+    if validation_status == VehicleDefinitionStatuses.VALIDATED.name:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='ZEV_MODEL_VALIDATED')
 
-    elif validation_status == VehicleDefinitionStatuses.REJECTED:
+    elif validation_status == VehicleDefinitionStatuses.REJECTED.name:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='ZEV_MODEL_REJECTED')
 
-    elif validation_status == VehicleDefinitionStatuses.SUBMITTED:
+    elif validation_status == VehicleDefinitionStatuses.SUBMITTED.name:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             Q(notification_code='ZEV_MODEL_SUBMITTED') |
             Q(notification_code='ZEV_MODEL_RANGE_REPORT_SUBMITTED'))
 
-    elif validation_status == VehicleDefinitionStatuses.CHANGES_REQUESTED:
+    elif validation_status == VehicleDefinitionStatuses.CHANGES_REQUESTED.name:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='ZEV_MODEL_RANGE_REPORT_TEST_RESULT_REQUESTED')
 

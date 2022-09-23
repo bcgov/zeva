@@ -1,19 +1,19 @@
 /* BC Sans Regular */
 @font-face {
-  font-family: "BCSans";
+  font-family: 'BCSans';
   src: url('./fonts/BCSans-Regular.woff') format('woff');
 }
 
 /* BC Sans Bold */
 @font-face {
-  font-family: "BCSans";
+  font-family: 'BCSans';
   font-weight: bold;
   src: url('./fonts/BCSans-Bold.woff') format('woff');
 }
 
 /* BC Sans Bold + Italic */
 @font-face {
-  font-family: "BCSans";
+  font-family: 'BCSans';
   font-style: italic;
   font-weight: bold;
   src: url('./fonts/BCSans-BoldItalic.woff') format('woff');
@@ -21,7 +21,7 @@
 
 /* BC Sans Italic */
 @font-face {
-  font-family: "BCSans";
+  font-family: 'BCSans';
   font-style: italic;
   src: url('./fonts/BCSans-Italic.woff') format('woff');
 }
@@ -40,36 +40,38 @@
 /* variables for colours */
 $alert-danger: #721c24;
 $alert-success: #155724;
-$background-light-green: #D4EDDA;
-$background-light-blue: #CCE5FF;
-$background-danger: #FFF1F2;
-$background-warning: #FFFED2;
-$border-grey: #E0E0E0;
-$default-background-blue: #38598A;
-$default-background-grey: #F2F2F2;
-$default-link-blue: #568DBA;
+$background-light-green: #d4edda;
+$background-light-blue: #cce5ff;
+$background-danger: #fff1f2;
+$background-warning: #fffed2;
+$border-grey: #e0e0e0;
+$default-background-blue: #38598a;
+$default-background-grey: #f2f2f2;
+$default-link-blue: #568dba;
 $default-text-black: #494949;
-$default-text-blue: #1A5A96;
-$form-background-grey: #FCFCFC;
-$nav-border: #DEE2E6;
+$default-text-blue: #1a5a96;
+$form-background-grey: #fcfcfc;
+$nav-border: #dee2e6;
 $primary-blue: #003366;
-$primary-yellow: #FCBA19;
+$primary-yellow: #fcba19;
 $react-border: rgba(0, 0, 0, 0.1);
-$red: #EB0022;
-$white: #FFFFFF;
-$yellow: #E3AB2B;
+$red: #eb0022;
+$white: #ffffff;
+$yellow: #e3ab2b;
 
 /* variables for screen sizes */
 $md: 991px;
 
-body, html, #root {
+body,
+html,
+#root {
   background-color: $default-background-grey;
   height: 100%;
 }
 
 body {
   color: $default-text-black;
-  font-family: "BCSans", sans-serif;
+  font-family: 'BCSans', sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -94,7 +96,6 @@ p {
     margin: -1.5rem;
   }
 }
-
 
 .action-bar {
   background-color: $default-background-grey;
@@ -126,8 +127,6 @@ p {
   #supplier {
     width: auto;
   }
-
-
 
   label {
     margin-top: 1rem;
@@ -179,7 +178,7 @@ p {
   border-radius: 0.2rem;
   color: $primary-blue;
   padding: 0.5rem 1rem;
-  
+
   svg {
     margin-right: 0.25rem;
   }
@@ -195,7 +194,7 @@ p {
   }
 
   &.primary:disabled {
-    background-color: rgba(56, 89, 138, .5);
+    background-color: rgba(56, 89, 138, 0.5);
     color: $white;
     border-color: transparent;
   }
@@ -240,7 +239,8 @@ p {
       border: 1px solid $nav-border;
       border-bottom: none;
 
-      a, button {
+      a,
+      button {
         color: $default-text-black;
       }
     }
@@ -285,14 +285,19 @@ p {
   }
 
   h5 {
-    font-size: .75rem;
+    font-size: 0.75rem;
   }
 
   h6 {
-    font-size: .5rem;
+    font-size: 0.5rem;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     color: $default-text-blue;
     font-weight: bold;
     margin: 0;
@@ -300,17 +305,18 @@ p {
   }
 }
 .text-red {
-  color: $red
+  color: $red;
 }
 .text-blue {
   color: $default-text-blue;
 
-  &.disabled, .disabled {
+  &.disabled,
+  .disabled {
     color: rgba(26, 90, 150, 0.5);
   }
 }
 .text-black {
-  color: $default-text-black
+  color: $default-text-black;
 }
 
 .well {
@@ -349,4 +355,8 @@ p {
 #danger-text {
   color: $red;
   font-weight: bold;
+}
+
+.ql-editor {
+  height: auto;
 }

@@ -100,8 +100,12 @@ const CreditAgreementsEditContainer = (props) => {
     setCreditRows([...creditRows]);
   };
 
-  const handleChangeDetails = (value, property) => {
-    setAgreementDetails({ ...agreementDetails, [property]: value });
+  const handleChangeDetails = (value, property, resetModelYearReportId) => {
+    const updatedAgreementDetails = { ...agreementDetails, [property]: value };
+    if (resetModelYearReportId) {
+      delete updatedAgreementDetails.modelYearReportId;
+    }
+    setAgreementDetails(updatedAgreementDetails);
   };
 
   const saveAgreement = (data) => {

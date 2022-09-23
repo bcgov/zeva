@@ -80,6 +80,14 @@ const VehicleForm = (props) => {
       };
       break;
   }
+  const spaces = () => {
+    return (
+      <div>
+        <br />
+        <br />
+      </div>
+    );
+  };
 
   const modal = (
     <Modal
@@ -100,15 +108,6 @@ const VehicleForm = (props) => {
       </div>
     </Modal>
   );
-
-  const spaces = () => {
-    return (
-      <div>
-        <br />
-        <br />
-      </div>
-    );
-  };
 
   const deleteFile = (attachmentId) => {
     setDeleteFiles([...deleteFiles, attachmentId]);
