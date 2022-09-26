@@ -54,7 +54,10 @@ const CreditAgreementsForm = (props) => {
         agreementDetails.transactionType === 'Reassessment Reduction')
     ) {
       for (const modelYearReport of modelYearReports) {
-        if (modelYearReport.organizationId == parseInt(agreementDetails.vehicleSupplier)) {
+        if (
+          modelYearReport.organizationId ==
+          parseInt(agreementDetails.vehicleSupplier)
+        ) {
           supplierReports.push(modelYearReport);
         }
       }
@@ -174,7 +177,11 @@ const CreditAgreementsForm = (props) => {
                 dropdownData={suppliers}
                 dropdownName="Vehicle Supplier"
                 handleInputChange={(event) => {
-                  handleChangeDetails(event.target.value, 'vehicleSupplier', true);
+                  handleChangeDetails(
+                    event.target.value,
+                    'vehicleSupplier',
+                    true
+                  );
                 }}
                 fieldName="vehicleSupplier"
                 accessor={(supplier) => supplier.id}
@@ -189,7 +196,11 @@ const CreditAgreementsForm = (props) => {
                 dropdownData={transactionTypes}
                 dropdownName="Transaction Type"
                 handleInputChange={(event) => {
-                  handleChangeDetails(event.target.value, 'transactionType', true);
+                  handleChangeDetails(
+                    event.target.value,
+                    'transactionType',
+                    true
+                  );
                 }}
                 fieldName="transactionType"
                 accessor={(transactionType) => transactionType.name}

@@ -184,31 +184,31 @@ const AssessmentDetailsPage = (props) => {
   };
 
   const editComment = (comment) => {
-    const text = comment.comment
-    setEditableComment(comment)
-    setEditText(text)
-    handleCommentChangeBceid(text)
-    handleCommentChangeIdir(text)
-  }
+    const text = comment.comment;
+    setEditableComment(comment);
+    setEditText(text);
+    handleCommentChangeBceid(text);
+    handleCommentChangeIdir(text);
+  };
 
   const updateEditableCommentText = (text) => {
-    setEditText(text)
-    handleCommentChangeBceid(text)
-    handleCommentChangeIdir(text)
-  }
+    setEditText(text);
+    handleCommentChangeBceid(text);
+    handleCommentChangeIdir(text);
+  };
 
   const saveEditableComment = () => {
-    let comment = editableComment
-    comment.comment = editText
-    handleEditComment(comment)
-  }
+    let comment = editableComment;
+    comment.comment = editText;
+    handleEditComment(comment);
+  };
 
   const cancelEditableComment = () => {
-    setEditText('')
-    setEditableComment(null)
-    handleCommentChangeIdir('')
-    handleCommentChangeBceid('')
-  }
+    setEditText('');
+    setEditableComment(null);
+    handleCommentChangeIdir('');
+    handleCommentChangeBceid('');
+  };
 
   return (
     <div id="assessment-details" className="page">
@@ -285,7 +285,7 @@ const AssessmentDetailsPage = (props) => {
                   {details.idirComment &&
                     details.idirComment.length > 0 &&
                     user.isGovernment && (
-                      <AssessmentEditableCommentList 
+                      <AssessmentEditableCommentList
                         commentArray={details.idirComment}
                         editComment={editComment}
                         user={user}
@@ -300,12 +300,15 @@ const AssessmentDetailsPage = (props) => {
                       editing={editableComment != null}
                       value={editText}
                       title={
-                        editableComment ? 'Editing comment:' :
-                        analystAction
+                        editableComment
+                          ? 'Editing comment:'
+                          : analystAction
                           ? 'Add comment to director: '
                           : 'Add comment to the analyst'
                       }
-                      buttonText={editableComment ? "Save Comment" : "Add Comment"}
+                      buttonText={
+                        editableComment ? 'Save Comment' : 'Add Comment'
+                      }
                     />
                   )}
                 </div>
