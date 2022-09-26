@@ -8,10 +8,13 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Subquery, Count, Q
 from django.db.models.expressions import RawSQL
 from django.http import HttpResponse, HttpResponseForbidden
+from api.models.sales_submission_comment import SalesSubmissionComment
+from api.serializers.sales_submission_comment import SalesSubmissionCommentSerializer
 
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework import status
 
 from api.models.icbc_registration_data import IcbcRegistrationData
 from api.models.record_of_sale import RecordOfSale
@@ -478,3 +481,17 @@ class CreditRequestViewset(
             )
         )
         return response
+
+    @action(detail=True, methods=["PATCH"])
+    def update_comment(self, request, pk):
+        comment_text = request.data.get("comment")
+        username = request.user.username
+        comment = SalesSubmissionComment.objects.get(
+            id=pk
+        )
+        if username == comment.create_user:
+            serializer = SalesSubmissionCommentSerializer(comment, data={'comment': comment_text}, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+        return Response(status=status.HTTP_403_FORBIDDEN)
