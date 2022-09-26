@@ -14,7 +14,6 @@ import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
 import CustomPropTypes from '../app/utilities/props';
 import CreditRequestDetailsPage from './components/CreditRequestDetailsPage';
 import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification';
-import produce from 'immer';
 
 const CreditRequestDetailsContainer = (props) => {
   const { location, match, user, validatedOnly } = props;
@@ -91,16 +90,26 @@ const CreditRequestDetailsContainer = (props) => {
         comment: commentText
       })
       .then((response) => {
-        const submissionComment = response.data;
-        setSubmission(
-          produce((draft) => {
-            const comment = draft.salesSubmissionComment.find(
-              (comment) => comment.id === submissionComment.id
-            );
-            comment.comment = submissionComment.comment;
-            comment.updateTimestamp = submissionComment.updateTimestamp;
-          })
-        );
+        const updatedComment = response.data;
+        setSubmission((prev) => {
+          const commentIndex = prev.salesSubmissionComment.findIndex(
+            (comment) => {
+              return comment.id === updatedComment.id;
+            }
+          );
+          const comment = prev.salesSubmissionComment[commentIndex];
+          const commentCopy = { ...comment };
+          commentCopy.comment = updatedComment.comment;
+          commentCopy.updateTimestamp = updatedComment.updateTimestamp;
+
+          const comments = prev.salesSubmissionComment;
+          const commentsCopy = [...comments];
+          commentsCopy[commentIndex] = commentCopy;
+
+          const submissionCopy = { ...prev };
+          submissionCopy.salesSubmissionComment = commentsCopy;
+          return submissionCopy;
+        });
       });
   };
 
