@@ -271,8 +271,10 @@ Send email to the users based on their notification subscription
 def subscribed_users(notifications: list, request: object, request_type: str, email_type: str):
     user_email = None
     try:
-        subscribed_users = NotificationSubscription.objects.values_list('user_profile_id', flat=True).filter(notification__id__in=notifications)
-
+        subscribed_users = NotificationSubscription.objects.values_list('user_profile_id', flat=True).filter(
+          notification__id__in=notifications).filter(
+            user_profile__is_active=True
+          )
         if subscribed_users:
             govt_org = Organization.objects.filter(is_government=True).first()
             if request_type == 'credit_transfer':
