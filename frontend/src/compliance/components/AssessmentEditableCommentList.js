@@ -5,7 +5,7 @@ import parse from 'html-react-parser';
 import { Link } from 'react-router-dom';
 
 
-const DisplayCommentEditable = (props) => {
+const AssessmentEditableCommentList = (props) => {
   const { commentArray, editComment, user } = props;
   return (
     <div className="bcgov-callout" role="alert">
@@ -13,14 +13,21 @@ const DisplayCommentEditable = (props) => {
         {commentArray &&
           commentArray.map((each) => {
             const comment = typeof each.comment === 'string' ? each : each.comment
-            const isOwner = user.id == each.createUser.id
+            const userEditable = user.id == each.createUser.id
             return (
               <div
                 key={typeof each.comment === 'string' ? each.id : each.comment.id}
               >
-                <b>{'Comments '}</b>{!isOwner && <span>&#8212; </span>}
-                {isOwner &&
-                  <span>[<Link to={'#'} onClick={() => editComment(comment)}>edit</Link>] &#8212; </span>
+                <b>{'Comments '}</b>{!userEditable && <span>&#8212; </span>}
+                {userEditable &&
+                  <button
+                  className="inline-edit"
+                  onClick={() => {
+                    editComment(comment);
+                  }}
+                  >
+                    [edit] &#8212;
+                  </button>
                 }
                 {each.createUser.displayName},{' '}
                 {moment(each.createTimestamp).format('YYYY-MM-DD h[:]mm a')} :{' '}
@@ -34,11 +41,11 @@ const DisplayCommentEditable = (props) => {
   );
 };
 
-DisplayCommentEditable.defaultProps = {
+AssessmentEditableCommentList.defaultProps = {
   commentArray: [],
 };
-DisplayCommentEditable.propTypes = {
+AssessmentEditableCommentList.propTypes = {
   commentArray: PropTypes.arrayOf(PropTypes.shape()),
   editComment: PropTypes.func.isRequired
 };
-export default DisplayCommentEditable;
+export default AssessmentEditableCommentList;

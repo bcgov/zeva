@@ -17,8 +17,8 @@ import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableC
 import CommentInput from '../../app/components/CommentInput';
 import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
 import ComplianceHistory from './ComplianceHistory';
-import DisplayCommentEditable from '../../app/components/DisplayCommentEditable';
-import CommentInputEditable from '../../app/components/CommentInputEditable';
+import AssessmentEditableCommentList from './AssessmentEditableCommentList';
+import AssessmentEditableCommentInput from './AssessmentEditableCommentInput';
 
 const AssessmentDetailsPage = (props) => {
   const {
@@ -285,14 +285,14 @@ const AssessmentDetailsPage = (props) => {
                   {details.idirComment &&
                     details.idirComment.length > 0 &&
                     user.isGovernment && (
-                      <DisplayCommentEditable 
+                      <AssessmentEditableCommentList 
                         commentArray={details.idirComment}
                         editComment={editComment}
                         user={user}
                       />
                     )}
                   {statuses.assessment.status !== 'ASSESSED' && (
-                    <CommentInputEditable
+                    <AssessmentEditableCommentInput
                       handleAddComment={handleAddIdirComment}
                       handleCommentChange={updateEditableCommentText}
                       saveEditableComment={saveEditableComment}

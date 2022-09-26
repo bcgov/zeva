@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import ReactQuill from 'react-quill';
 import ReactTooltip from 'react-tooltip';
 
-const CommentInputEditable = (props) => {
+const AssessmentEditableCommentInput = (props) => {
   const {
     handleAddComment,
     handleCommentChange,
@@ -75,14 +75,14 @@ const CommentInputEditable = (props) => {
   );
 };
 
-CommentInputEditable.defaultProps = {
+AssessmentEditableCommentInput.defaultProps = {
   buttonText: null,
   editing: false,
   disable: false,
   handleAddComment: () => {},
   tooltip: ''
 };
-CommentInputEditable.propTypes = {
+AssessmentEditableCommentInput.propTypes = {
   handleAddComment: PropTypes.func,
   handleCommentChange: PropTypes.func.isRequired,
   saveEditableComment: PropTypes.func.isRequired,
@@ -92,4 +92,4 @@ CommentInputEditable.propTypes = {
   disable: PropTypes.bool,
   tooltip: PropTypes.string
 };
-export default CommentInputEditable;
+export default AssessmentEditableCommentInput;

@@ -360,3 +360,10 @@ p {
 .ql-editor {
   height: auto;
 }
+
+button {
+  &.inline-edit {
+    color: #003366;
+    border: none;
+  }
+}
