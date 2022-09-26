@@ -8,8 +8,8 @@ import handleFilterChange from '../../app/utilities/handleFilterChange';
 
 const CreditAgreementsFilter = (props) => {
   const { user, items, handleClear, filtered, setFiltered } = props;
-  const isDirector = user.isGovernment
-    && user.roles.some(r => r.roleCode === 'Director');
+  const isDirector =
+    user.isGovernment && user.roles.some((r) => r.roleCode === 'Director');
   const handleChange = (event) => {
     setFiltered(handleFilterChange(event, filtered));
   };
