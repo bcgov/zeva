@@ -676,11 +676,14 @@ const SupplementaryDetailsPage = (props) => {
                 (isEditable ||
                   ['SUBMITTED', 'RECOMMENDED'].indexOf(details.status) >= 0) &&
                 user.isGovernment &&
-                ((currentStatus === 'SUBMITTED' &&
+                (((currentStatus === 'SUBMITTED' ||
+                  currentStatus === 'RETURNED') &&
+                  analystAction &&
                   details &&
                   details.reassessment &&
                   !details.reassessment.isReassessment) ||
                   (currentStatus === 'RECOMMENDED' &&
+                    directorAction &&
                     details &&
                     details.reassessment &&
                     details.reassessment.isReassessment)) && (
@@ -695,7 +698,8 @@ const SupplementaryDetailsPage = (props) => {
                     }}
                     type="button"
                   >
-                    {currentStatus === 'SUBMITTED'
+                    {currentStatus === 'SUBMITTED' ||
+                    currentStatus === 'RETURNED'
                       ? 'Return to Vehicle Supplier'
                       : 'Return to Analyst'}
                   </button>
