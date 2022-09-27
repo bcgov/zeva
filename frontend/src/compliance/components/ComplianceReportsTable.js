@@ -175,52 +175,26 @@ const ComplianceReportsTable = (props) => {
                 supplementalStatus
               } = row.original;
 
-              if (supplementalStatus === 'REASSESSED' && supplementalId) {
-                history.push(
-                  ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
-                    /:id/g,
-                    id
-                  ).replace(/:supplementaryId/g, supplementalId)
-                );
-              } else if (
-                supplementalStatus === 'SUPPLEMENTARY SUBMITTED' &&
-                supplementalId
-              ) {
-                if (user.isGovernment) {
-                  history.push({
-                    pathname:
-                      ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
-                        /:id/g,
-                        id
-                      ).replace(/:supplementaryId/g, supplementalId),
-                    search: '?reassessment=Y'
-                  });
-                } else {
-                  history.push(
-                    ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
-                      /:id/g,
-                      id
-                    ).replace(/:supplementaryId/g, supplementalId)
-                  );
-                }
-              } else if (
-                ['REASSESSMENT DRAFT', 'REASSESSMENT RECOMMENDED'].indexOf(
-                  supplementalStatus
-                ) >= 0 &&
-                supplementalId &&
-                user.isGovernment
-              ) {
-                history.push(
-                  ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
-                    /:id/g,
-                    id
-                  ).replace(/:supplementaryId/g, supplementalId)
-                );
-              } else if (validationStatus === 'ASSESSED') {
+              if (validationStatus === 'ASSESSED') {
                 history.push(
                   ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id)
                 );
-              } else if (supplementalId) {
+                return
+              }
+
+              if (supplementalStatus === 'SUPPLEMENTARY SUBMITTED' &&
+                supplementalId && user.isGovernment) {
+                history.push({
+                  pathname:
+                    ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
+                      /:id/g,
+                      id
+                    ).replace(/:supplementaryId/g, supplementalId),
+                  search: '?reassessment=Y'
+                });
+              }
+
+              if (supplementalId) {
                 history.push(
                   ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
                     /:id/g,
@@ -239,6 +213,7 @@ const ComplianceReportsTable = (props) => {
                   )
                 );
               }
+
             },
             className: 'clickable'
           };
@@ -252,7 +227,7 @@ const ComplianceReportsTable = (props) => {
 
 ComplianceReportsTable.defaultProps = {
   filtered: [],
-  setFiltered: () => {}
+  setFiltered: () => { }
 };
 
 ComplianceReportsTable.propTypes = {
