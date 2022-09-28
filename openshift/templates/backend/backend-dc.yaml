@@ -314,7 +314,7 @@ objects:
                       name: ${NAME}-config${SUFFIX}
                       key: rabbitmq_port
                 - name: APP_CONFIG
-                  value: /opt/app-root/src/gunicorn.cfg
+                  value: /opt/app-root/src/gunicorn.cfg.py
                 - name: ENV_NAME
                   valueFrom:
                     configMapKeyRef:
