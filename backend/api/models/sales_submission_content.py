@@ -113,7 +113,9 @@ class SalesSubmissionContent(Auditable):
             submission_id=self.submission_id
         ).filter(
             vin=self.xls_vin
-        ).exclude(update_timestamp__gte=self.update_timestamp).first()
+        ).exclude(
+            update_timestamp__gte=self.update_timestamp
+        ).first()
 
         if has_been_awarded:
             return True
