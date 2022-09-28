@@ -84,7 +84,10 @@ class SalesSubmissionContent(Auditable):
 
     @property
     def icbc_verification(self):
-        q = 'select * from icbc_registration_data where vin=\'{}\' limit 1'.format(self.xls_vin)
+        q = 'select * from icbc_registration_data join icbc_upload_date on \
+            icbc_upload_date.id = icbc_upload_date_id where \
+                vin=\'{}\' and upload_date < \'{}\' limit 1'.format(
+                    self.xls_vin, self.update_timestamp)
         registration = IcbcRegistrationData.objects.raw(q)
         if registration:
             return registration[0]
@@ -114,7 +117,7 @@ class SalesSubmissionContent(Auditable):
         ).filter(
             vin=self.xls_vin
         ).exclude(
-            update_timestamp__gte=self.update_timestamp
+            create_timestamp__gte=self.update_timestamp
         ).first()
 
         if has_been_awarded:
