@@ -166,53 +166,63 @@ const ConsumerSalesDetailsPage = (props) => {
           </div>
         </div>
       </div>
-      <div className="row">
-        <div className="col-12 my-3">
-          <ComplianceReportSignOff
-            assertions={assertions}
-            checkboxes={checkboxes}
-            handleCheckboxClick={handleCheckboxClick}
-            disabledCheckboxes={disabledCheckboxes}
-            user={user}
-          />
-        </div>
-      </div>
-
-      <div className="row d-print-none">
-        <div className="col-sm-12">
-          <div className="action-bar mt-0">
-            <span className="left-content">
-              <Button buttonType="back" locationRoute="/compliance/reports" />
-            </span>
-            <span className="right-content">
-              <Button
-                buttonType="next"
-                optionalClassname="button"
-                optionalText="Next"
-                action={() => {
-                  history.push(
-                    ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(':id', id)
-                  );
-                }}
+      {statuses.consumerSales.status == 'DRAFT' && (
+        <>
+          <div className="row">
+            <div className="col-12 my-3">
+              <ComplianceReportSignOff
+                assertions={assertions}
+                checkboxes={checkboxes}
+                handleCheckboxClick={handleCheckboxClick}
+                disabledCheckboxes={disabledCheckboxes}
+                user={user}
               />
-              {!user.isGovernment && (
-                <Button
-                  buttonType="save"
-                  disabled={
-                    ['SAVED', 'UNSAVED'].indexOf(
-                      statuses.consumerSales.status
-                    ) < 0 || disableSave()
-                  }
-                  optionalClassname="button primary"
-                  action={(event) => {
-                    handleSave(event);
-                  }}
-                />
-              )}
-            </span>
+            </div>
           </div>
-        </div>
-      </div>
+
+          <div className="row d-print-none">
+            <div className="col-sm-12">
+              <div className="action-bar mt-0">
+                <span className="left-content">
+                  <Button
+                    buttonType="back"
+                    locationRoute="/compliance/reports"
+                  />
+                </span>
+                <span className="right-content">
+                  <Button
+                    buttonType="next"
+                    optionalClassname="button"
+                    optionalText="Next"
+                    action={() => {
+                      history.push(
+                        ROUTES_COMPLIANCE.REPORT_CREDIT_ACTIVITY.replace(
+                          ':id',
+                          id
+                        )
+                      );
+                    }}
+                  />
+                  {!user.isGovernment && (
+                    <Button
+                      buttonType="save"
+                      disabled={
+                        ['SAVED', 'UNSAVED'].indexOf(
+                          statuses.consumerSales.status
+                        ) < 0 || disableSave()
+                      }
+                      optionalClassname="button primary"
+                      action={(event) => {
+                        handleSave(event);
+                      }}
+                    />
+                  )}
+                </span>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
       {modal}
     </div>
   );
