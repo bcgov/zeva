@@ -7,6 +7,7 @@ from ..models.record_of_sale_statuses import RecordOfSaleStatuses
 from ..models.sales_submission import SalesSubmission
 from ..models.vehicle import Vehicle
 from ..models.vin_statuses import VINStatuses
+from ..models.sales_submission_statuses import SalesSubmissionStatuses
 
 
 class TestSales(BaseTestCase):
@@ -45,7 +46,7 @@ class TestSales(BaseTestCase):
         sub = SalesSubmission.objects.create(
             organization=self.users['RTAN_BCEID'].organization,
             submission_sequence=1,
-            validation_status='DRAFT'
+            validation_status=SalesSubmissionStatuses.NEW
         )
 
         request = {
@@ -55,17 +56,15 @@ class TestSales(BaseTestCase):
         # try changing from status NEW to VALIDATED, this should fail
         # ie it should throw a Validation Error
         self.assertRaises(
-            ValidationError, sub.validate_validation_status(
-                'VALIDATED', request
-            )
+            ValidationError, sub.validate_validation_status, SalesSubmissionStatuses.VALIDATED, request
         )
 
-        sub.validation_status = 'RECOMMEND_APPROVAL'
+        sub.validation_status = SalesSubmissionStatuses.RECOMMEND_APPROVAL
         sub.save()
 
         # try changing from status RECOMMEND_APPROVAL to DELETED, this should
         # fail
         # ie it should throw a Validation Error
         self.assertRaises(
-            ValidationError, sub.validate_validation_status('DELETED', request)
+            ValidationError, sub.validate_validation_status, SalesSubmissionStatuses.DELETED, request
         )        
