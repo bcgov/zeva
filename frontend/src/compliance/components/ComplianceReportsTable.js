@@ -175,37 +175,36 @@ const ComplianceReportsTable = (props) => {
                 supplementalStatus
               } = row.original;
 
-              if (validationStatus === 'ASSESSED') {
-                history.push(
-                  ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id)
-                );
-                return
-              }
-
-              if (supplementalStatus === 'SUPPLEMENTARY SUBMITTED' &&
-                supplementalId && user.isGovernment) {
+              if (
+                supplementalStatus === 'SUPPLEMENTARY SUBMITTED' &&
+                supplementalId &&
+                user.isGovernment
+              ) {
                 history.push({
-                  pathname:
-                    ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
-                      /:id/g,
-                      id
-                    ).replace(/:supplementaryId/g, supplementalId),
+                  pathname: ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
+                    /:id/g,
+                    id
+                  ).replace(/:supplementaryId/g, supplementalId),
                   search: '?reassessment=Y'
                 });
+                return;
               }
 
               if (supplementalId) {
+                // Shows latest supplementary report if one exists
                 history.push(
                   ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
                     /:id/g,
                     id
                   ).replace(/:supplementaryId/g, supplementalId)
                 );
-              } else if (user.isGovernment) {
+              } else if (validationStatus === 'ASSESSED') {
+                // If there is no supplementary report then we default to the first myr
                 history.push(
                   ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id)
                 );
               } else {
+                // Default show the supplier information page
                 history.push(
                   ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(
                     /:id/g,
@@ -213,7 +212,6 @@ const ComplianceReportsTable = (props) => {
                   )
                 );
               }
-
             },
             className: 'clickable'
           };
@@ -227,7 +225,7 @@ const ComplianceReportsTable = (props) => {
 
 ComplianceReportsTable.defaultProps = {
   filtered: [],
-  setFiltered: () => { }
+  setFiltered: () => {}
 };
 
 ComplianceReportsTable.propTypes = {
