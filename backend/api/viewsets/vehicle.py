@@ -15,7 +15,8 @@ from api.permissions.vehicle import VehiclePermissions
 from api.serializers.vehicle import ModelYearSerializer, \
     VehicleZevTypeSerializer, VehicleClassSerializer, \
     VehicleSaveSerializer, VehicleSerializer, \
-    VehicleStatusChangeSerializer, VehicleIsActiveChangeSerializer
+    VehicleStatusChangeSerializer, VehicleIsActiveChangeSerializer, \
+    VehicleListSerializer
 from api.services.minio import minio_put_object
 from auditable.views import AuditableMixin
 from api.models.vehicle import VehicleDefinitionStatuses
@@ -30,6 +31,7 @@ class VehicleViewSet(
 
     serializer_classes = {
         'default': VehicleSerializer,
+        'list': VehicleListSerializer,
         'state_change': VehicleStatusChangeSerializer,
         'is_active_change': VehicleIsActiveChangeSerializer,
         'create': VehicleSaveSerializer,
