@@ -52,7 +52,7 @@ jobs:
           npm install
           npm run build -- --pr=${{ env.PR_NUMBER }} --env=build 
 
-  deploy-on-test:
+  deploy-on-dev-and-test:
 
     name: Deploy ZEVA on Test Environment
     runs-on: ubuntu-latest
@@ -71,6 +71,13 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           insecure_skip_tls_verify: true
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools    
+
+      - name: Run BCDK deployment on ZEVA Dev environment
+        run: |
+          cd .pipeline
+          echo "Deploying ZEVA ${{ env.RELEASE_NAME }} on Dev"
+          npm install
+          npm run deploy -- --pr=${{ env.PR_NUMBER }} --env=dev
 
       - name: Ask for approval for ZEVA Test deployment
         uses: trstringer/manual-approval@v1.6.0
