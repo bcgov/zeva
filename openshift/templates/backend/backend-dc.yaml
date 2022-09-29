@@ -168,7 +168,7 @@ objects:
                 - /bin/sh
                 - '-c'
                 - |-
-                  sleep 90
+                  sleep 45
                   python ./manage.py migrate
                   if [ $? -eq 0 ]; then 
                     python ./manage.py load_ops_data --directory ./api/fixtures/operational
@@ -314,7 +314,7 @@ objects:
                       name: ${NAME}-config${SUFFIX}
                       key: rabbitmq_port
                 - name: APP_CONFIG
-                  value: /opt/app-root/src/gunicorn.cfg
+                  value: /opt/app-root/src/gunicorn.cfg.py
                 - name: ENV_NAME
                   valueFrom:
                     configMapKeyRef:
@@ -362,19 +362,11 @@ objects:
                     secretKeyRef:
                       name: email-service
                       key: SENDER_EMAIL              
-              livenessProbe:
-                failureThreshold: 30
-                tcpSocket:
-                  port: 8080
-                initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
-                periodSeconds: 15
-                successThreshold: 1
-                timeoutSeconds: 3
               ports:
                 - containerPort: 8080
                   protocol: TCP
               readinessProbe:
-                failureThreshold: 30
+                failureThreshold: 90
                 tcpSocket:
                   port: 8080
                 initialDelaySeconds: ${{HEALTH_CHECK_DELAY}}
