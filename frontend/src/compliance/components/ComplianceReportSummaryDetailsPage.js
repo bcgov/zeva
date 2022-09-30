@@ -229,46 +229,52 @@ const ComplianceReportSummaryDetailsPage = (props) => {
           </div>
         </div>
       </div>
-
-      <div className="row">
-        <div className="col-12 my-3">
-          <ComplianceReportSignOff
-            assertions={assertions}
-            handleCheckboxClick={handleCheckboxClick}
-            user={user}
-            checkboxes={checkboxes}
-            disabledCheckboxes={disableCheckbox()}
-          />
-        </div>
-      </div>
-
-      <div className="row  d-print-none">
-        <div className="col-sm-12">
-          <div className="action-bar mt-0">
-            <span className="left-content">
-              <Button buttonType="back" locationRoute="/compliance/reports" />
-            </span>
-            <span className="right-content">
-              {!user.isGovernment &&
-                confirmationStatuses.assessment.status !== 'ASSESSED' && (
-                  <Button
-                    buttonType="submit"
-                    disabled={
-                      disableSubmitBtn ||
-                      confirmationStatuses.reportSummary.status ===
-                        'SUBMITTED' ||
-                      !user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
-                    }
-                    optionalClassname="button primary"
-                    action={() => {
-                      setShowModal(true);
-                    }}
-                  />
-                )}
-            </span>
+      {confirmationStatuses.reportSummary.status == 'DRAFT' && (
+        <>
+          <div className="row">
+            <div className="col-12 my-3">
+              <ComplianceReportSignOff
+                assertions={assertions}
+                handleCheckboxClick={handleCheckboxClick}
+                user={user}
+                checkboxes={checkboxes}
+                disabledCheckboxes={disableCheckbox()}
+              />
+            </div>
           </div>
-        </div>
-      </div>
+
+          <div className="row  d-print-none">
+            <div className="col-sm-12">
+              <div className="action-bar mt-0">
+                <span className="left-content">
+                  <Button
+                    buttonType="back"
+                    locationRoute="/compliance/reports"
+                  />
+                </span>
+                <span className="right-content">
+                  {!user.isGovernment &&
+                    confirmationStatuses.assessment.status !== 'ASSESSED' && (
+                      <Button
+                        buttonType="submit"
+                        disabled={
+                          disableSubmitBtn ||
+                          confirmationStatuses.reportSummary.status ===
+                            'SUBMITTED' ||
+                          !user.hasPermission('SUBMIT_COMPLIANCE_REPORT')
+                        }
+                        optionalClassname="button primary"
+                        action={() => {
+                          setShowModal(true);
+                        }}
+                      />
+                    )}
+                </span>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
       {modal}
     </div>
   );
