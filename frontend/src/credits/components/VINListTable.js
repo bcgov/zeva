@@ -25,7 +25,8 @@ const VINListTable = (props) => {
     reasons,
     refreshContent,
     setFiltered,
-    setReactTable
+    setReactTable,
+    preInitialize
   } = props;
 
   const [tableInitialized, setTableInitialized] = useState(false);
@@ -347,7 +348,9 @@ const VINListTable = (props) => {
         // onFetchData is called on component load (and on changes afterword)
         // which we want to avoid, so this tableInitialized
         // variable cancels out the first call to this method
-        if (!tableInitialized) {
+        if(preInitialize) {
+          setTableInitialized(true);
+        } else if (!tableInitialized) {
           setTableInitialized(true);
           return;
         }
