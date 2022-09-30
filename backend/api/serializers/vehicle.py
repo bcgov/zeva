@@ -5,6 +5,7 @@ from rest_framework.serializers import ModelSerializer, \
 
 from api.models.model_year import ModelYear
 from api.models.credit_class import CreditClass
+from api.models.organization import Organization
 from api.models.vehicle import Vehicle
 from api.models.vehicle_attachment import VehicleAttachment
 from api.models.vehicle_change_history import VehicleChangeHistory
@@ -148,6 +149,45 @@ class VehicleHistorySerializer(
     class Meta:
         model = VehicleChangeHistory
         fields = ('create_timestamp', 'create_user', 'validation_status')
+
+
+class VehicleListSerializer(
+    ModelSerializer, EnumSupportSerializerMixin
+):
+    organization = SerializerMethodField()
+    validation_status = EnumField(VehicleDefinitionStatuses, read_only=True)
+    credit_value = SerializerMethodField()
+    credit_class = SerializerMethodField()
+    model_year = SerializerMethodField()
+    vehicle_zev_type = SerializerMethodField()
+
+    def get_organization(self, obj):
+        organization = Organization.objects.get(id=obj.organization_id)
+        name = organization.name
+        short_name = organization.short_name
+        return {'name': name, 'short_name': short_name}
+
+    def get_credit_value(self, instance):
+        return instance.get_credit_value()
+
+    def get_credit_class(self, instance):
+        return instance.get_credit_class()
+
+    def get_model_year(self, obj):
+        model_year = ModelYear.objects.get(id=obj.model_year_id)
+        return model_year.name
+
+    def get_vehicle_zev_type(self, obj):
+        zev_type = ZevType.objects.filter(id=obj.vehicle_zev_type_id).first()
+        return zev_type.vehicle_zev_code
+
+    class Meta:
+        model = Vehicle
+        fields = ('id', 'organization',  'validation_status',
+                  'credit_value', 'credit_class',
+                  'model_year', 'model_name', 'make',
+                  'range', 'vehicle_zev_type', 'is_active'
+                  )
 
 
 class VehicleSerializer(

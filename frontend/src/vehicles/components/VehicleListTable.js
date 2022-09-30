@@ -54,7 +54,7 @@ const VehicleListTable = (props) => {
       width: 125
     },
     {
-      accessor: (row) => (row.modelYear ? row.modelYear.name : ''),
+      accessor: (row) => row.modelYear,
       className: 'text-center',
       Header: 'Model Year',
       id: 'col-my',
@@ -80,7 +80,7 @@ const VehicleListTable = (props) => {
       width: 125
     },
     {
-      accessor: (row) => row.vehicleZevType.vehicleZevCode,
+      accessor: (row) => row.vehicleZevType,
       className: 'text-center',
       Header: 'ZEV Type',
       id: 'zev-type',
