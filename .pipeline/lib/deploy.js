@@ -148,6 +148,7 @@ module.exports = settings => {
   })) 
   
   //deploy schemaspy
+  /*
   if(phase === 'dev') {
     objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/schemaspy/schemaspy-dc.yaml`, {
       'param': {
@@ -161,7 +162,7 @@ module.exports = settings => {
         'OCP_NAME': phases[phase].ocpName
       }
     }))
-  }
+  }*/
 
   /** 
   //deploy rabbitmq, use docker image directly
