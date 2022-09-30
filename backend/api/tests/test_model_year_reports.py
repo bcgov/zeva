@@ -119,9 +119,3 @@ class TestModelYearReports(BaseTestCase):
         # check that second record is updated, and no new record created
         self.assertEqual(sales_records.count(), 2)
         self.assertEqual(sales_record.ldv_sales, 50)
-
-
-        
-
-
-
