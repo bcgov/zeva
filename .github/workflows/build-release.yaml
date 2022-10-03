@@ -54,7 +54,7 @@ jobs:
 
   deploy-on-dev:
 
-    name: Deploy ZEVA on Test Environment
+    name: Deploy ZEVA on Dev Environment
     runs-on: ubuntu-latest
     timeout-minutes: 60
     needs: build
