@@ -73,7 +73,7 @@ objects:
       sourceStrategy:
         from:
           kind: ImageStreamTag
-          name: nodejs:14-1-28
+          name: nodejs-16:1-59
           namespace: e52f12-tools
         pullSecret:
           name: zeva-image-pull-secret
