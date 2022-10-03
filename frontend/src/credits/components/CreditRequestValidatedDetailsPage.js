@@ -201,6 +201,7 @@ const CreditRequestValidatedDetailsPage = (props) => {
             setPages={setPages}
             setReactTable={setReactTable}
             user={user}
+            preInitialize={true}
           />
         </div>
       </div>
