@@ -7,13 +7,32 @@ import ReactTable from '../../app/components/ReactTable';
 import history from '../../app/History';
 import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements';
 import formatStatus from '../../app/utilities/formatStatus';
+import formatNumeric from '../../app/utilities/formatNumeric';
 
 const CreditAgreementsListTable = (props) => {
   const { items, filtered, setFiltered } = props;
-
+  const getCredits = (item, type) => {
+    let totalCredits = 0;
+    item.creditAgreementContent.forEach((eachContent) => {
+      if (eachContent.creditClass === type) {
+        if (
+          [
+            'Administrative Credit Reduction',
+            'Automatic Administrative Penalty',
+            'Reassessment Reduction'
+          ].includes(item.transactionType)
+        ) {
+          totalCredits -= parseFloat(eachContent.numberOfCredits);
+        } else {
+          totalCredits += parseFloat(eachContent.numberOfCredits);
+        }
+      }
+    });
+    return formatNumeric(totalCredits);
+  };
   const COLUMNS = [
     {
-      Header: 'Transaction ID',
+      Header: 'ID',
       accessor: (row) => {
         let transactionInitial = '';
 
@@ -45,16 +64,10 @@ const CreditAgreementsListTable = (props) => {
         return transactionInitial.concat('-', row.id);
       },
       id: 'col-transactionId',
-      className: 'text-center'
+      className: 'text-right'
     },
     {
-      Header: 'Transaction Type',
-      accessor: (row) => row.transactionType,
-      id: 'col-transactionType',
-      className: 'text-center'
-    },
-    {
-      Header: 'Transaction Date',
+      Header: 'Date',
       accessor: 'effectiveDate',
       id: 'col-transactionDate',
       className: 'text-center'
@@ -63,36 +76,33 @@ const CreditAgreementsListTable = (props) => {
       Header: 'Supplier',
       accessor: (row) => row.organization.name,
       id: 'col-supplier',
+      className: 'text-left'
+    },
+    {
+      Header: 'Transaction',
+      accessor: (row) => row.transactionType,
+      id: 'col-transactionType',
       className: 'text-center'
     },
     {
       Header: 'A-Credits',
-      accessor: (row) => {
-        let aCredits = 0;
-        row.creditAgreementContent.forEach((eachContent) => {
-          if (eachContent.creditClass === 'A') {
-            aCredits += eachContent.numberOfCredits;
-          }
-        });
-        return aCredits;
-      },
-      id: 'col-aCredits',
-      className: 'text-right'
+      accessor: (item) => getCredits(item, 'A'),
+      id: 'colaCredits',
+      getProps: (state, rowInfo) => ({
+        className: `text-right ${
+          rowInfo.row.colaCredits.slice(0, 2) < 0 ? 'text-danger' : ''
+        }`
+      })
     },
     {
       Header: 'B-Credits',
-      accessor: (row) => {
-        let bCredits = 0;
-        row.creditAgreementContent.forEach((eachContent) => {
-          if (eachContent.creditClass === 'B') {
-            bCredits += eachContent.numberOfCredits;
-          }
-        });
-
-        return bCredits;
-      },
-      id: 'col-bCredits',
-      className: 'text-right'
+      accessor: (item) => getCredits(item, 'B'),
+      id: 'colbCredits',
+      getProps: (state, rowInfo) => ({
+        className: `text-right ${
+          rowInfo.row.colbCredits.slice(0, 2) < 0 ? 'text-danger' : ''
+        }`
+      })
     },
     {
       accessor: (row) => formatStatus(row.status),
