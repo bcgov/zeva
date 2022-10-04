@@ -113,6 +113,27 @@ const CreditRequestDetailsContainer = (props) => {
       });
   };
 
+  const handleInternalCommentDelete = (commentId) => {
+    axios
+      .patch(ROUTES_CREDIT_REQUESTS.DELETE_COMMENT.replace(':id', commentId))
+      .then(() => {
+        setSubmission((prev) => {
+          const commentIndex = prev.salesSubmissionComment.findIndex(
+            (comment) => {
+              return comment.id === commentId;
+            }
+          );
+          const comments = prev.salesSubmissionComment;
+          const commentsCopy = [...comments];
+          commentsCopy.splice(commentIndex, 1);
+
+          const submissionCopy = { ...prev };
+          submissionCopy.salesSubmissionComment = commentsCopy;
+          return submissionCopy;
+        });
+      });
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -131,6 +152,7 @@ const CreditRequestDetailsContainer = (props) => {
       handleCheckboxClick={handleCheckboxClick}
       issueAsMY={issueAsMY}
       handleInternalCommentEdit={handleInternalCommentEdit}
+      handleInternalCommentDelete={handleInternalCommentDelete}
     />
   ];
 };

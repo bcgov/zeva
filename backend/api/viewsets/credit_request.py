@@ -495,3 +495,14 @@ class CreditRequestViewset(
             serializer.save()
             return Response(serializer.data)
         return Response(status=status.HTTP_403_FORBIDDEN)
+
+    @action(detail=True, methods=["PATCH"])
+    def delete_comment(self, request, pk):
+        username = request.user.username
+        comment = SalesSubmissionComment.objects.get(
+            id=pk
+        )
+        if username == comment.create_user:
+            comment.delete()
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_403_FORBIDDEN)

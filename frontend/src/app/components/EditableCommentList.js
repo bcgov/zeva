@@ -3,7 +3,12 @@ import EditComment from './EditComment';
 import moment from 'moment-timezone';
 import parse from 'html-react-parser';
 
-const EditableCommentList = ({ comments, user, handleCommentEdit }) => {
+const EditableCommentList = ({
+  comments,
+  user,
+  handleCommentEdit,
+  handleCommentDelete
+}) => {
   const [commentIdsBeingEdited, setCommentIdsBeingEdited] = useState([]);
 
   const handleEditClick = (commentId) => {
@@ -25,6 +30,11 @@ const EditableCommentList = ({ comments, user, handleCommentEdit }) => {
     });
   };
 
+  const handleDelete = (commentId) => {
+    handleCommentDelete(commentId);
+    handleCancel(commentId);
+  };
+
   const commentElements = [];
   for (const comment of comments) {
     const commentId = comment.id;
@@ -38,6 +48,7 @@ const EditableCommentList = ({ comments, user, handleCommentEdit }) => {
             comment={comment.comment}
             handleSave={handleSave}
             handleCancel={handleCancel}
+            handleDelete={handleDelete}
           />
         </div>
       );

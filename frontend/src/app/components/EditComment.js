@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 
-const EditComment = ({ commentId, comment, handleSave, handleCancel }) => {
+const EditComment = ({
+  commentId,
+  comment,
+  handleSave,
+  handleCancel,
+  handleDelete
+}) => {
   const [value, setValue] = useState();
 
   useEffect(() => {
@@ -33,7 +39,11 @@ const EditComment = ({ commentId, comment, handleSave, handleCancel }) => {
       />
       <button
         onClick={() => {
-          handleSave(commentId, value);
+          if (!value || value === '<p><br></p>') {
+            handleDelete(commentId);
+          } else {
+            handleSave(commentId, value);
+          }
         }}
       >
         Save
