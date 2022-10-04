@@ -32,7 +32,8 @@ const CreditRequestDetailsPage = (props) => {
     user,
     issueAsMY,
     handleCheckboxClick,
-    handleInternalCommentEdit
+    handleInternalCommentEdit,
+    handleInternalCommentDelete
   } = props;
 
   const { id } = useParams();
@@ -357,6 +358,7 @@ const CreditRequestDetailsPage = (props) => {
                           comments={submissionCommentsIdirOnly}
                           user={user}
                           handleCommentEdit={handleInternalCommentEdit}
+                          handleCommentDelete={handleInternalCommentDelete}
                         />
                       </>
                     )}
