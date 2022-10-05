@@ -562,7 +562,6 @@ class ModelYearReportViewset(
 
         return Response(serializer.data)
 
-
     @action(detail=True, methods=['patch'])
     def comment_patch(self, request, pk):
         # only government users can edit comments
@@ -587,6 +586,27 @@ class ModelYearReportViewset(
 
         return Response(serializer.data)
 
+    @action(detail=True, methods=['patch'])
+    def comment_delete(self, request, pk):
+        # only government users can delete comments
+        if not request.user.is_government:
+            return HttpResponseForbidden()
+          
+        id = request.data.get('id')
+
+        modelYearReportAssessmentComment = get_object_or_404(ModelYearReportAssessmentComment, pk=id)
+
+        # only the original commenter can delete their comment
+        if request.user.username != modelYearReportAssessmentComment.create_user:
+            return HttpResponseForbidden()
+
+        modelYearReportAssessmentComment.delete()
+
+        report = get_object_or_404(ModelYearReport, pk=pk)
+
+        serializer = ModelYearReportSerializer(report, context={'request': request})
+
+        return Response(serializer.data)
 
     @action(detail=True, methods=['get'])
     def assessment(self, request, pk):

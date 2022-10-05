@@ -23,6 +23,7 @@ const COMPLIANCE = {
   REPORT_SUBMISSION: `${API_BASE_PATH}/reports/submission`,
   ASSESSMENT_COMMENT_SAVE: `${API_BASE_PATH}/reports/:id/comment_save`,
   ASSESSMENT_COMMENT_PATCH: `${API_BASE_PATH}/reports/:id/comment_patch`,
+  ASSESSMENT_COMMENT_DELETE: `${API_BASE_PATH}/reports/:id/comment_delete`,
   YEARS: `${API_BASE_PATH}/reports/years`,
   MAKES: `${API_BASE_PATH}/reports/:id/makes`,
   SUPPLEMENTAL_CREATE: `${API_BASE_PATH}/reports/:id/supplemental_save`,
