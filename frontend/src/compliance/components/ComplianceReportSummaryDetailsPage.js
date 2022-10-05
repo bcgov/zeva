@@ -229,7 +229,9 @@ const ComplianceReportSummaryDetailsPage = (props) => {
           </div>
         </div>
       </div>
-      {confirmationStatuses.reportSummary.status == 'DRAFT' && (
+      {['SUBMITTED', 'ASSESSED', 'REASSESSED'].indexOf(
+        confirmationStatuses.reportSummary.status
+      ) == -1 && (
         <>
           <div className="row">
             <div className="col-12 my-3">
