@@ -9,6 +9,7 @@ const AssessmentEditableCommentInput = (props) => {
     handleCommentChange,
     saveEditableComment,
     cancelEditableComment,
+    deleteEditableComment,
     editing,
     title,
     buttonText,
@@ -45,8 +46,10 @@ const AssessmentEditableCommentInput = (props) => {
             <button
               className="button mt-2"
               onClick={() => {
-                if (editing) {
+                if (editing && (value && value !== '<p><br></p>')) {
                   saveEditableComment();
+                } else if (editing && (!value || value === '<p><br></p>')) {
+                  deleteEditableComment();
                 } else {
                   handleAddComment();
                 }

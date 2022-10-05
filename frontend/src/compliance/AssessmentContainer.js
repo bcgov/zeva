@@ -111,6 +111,18 @@ const AssessmentContainer = (props) => {
       });
   };
 
+  const handleDeleteComment = (comment) => {
+    axios
+      .patch(
+        ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_DELETE.replace(':id', id),
+        comment
+      )
+      .then(() => {
+        history.push(ROUTES_COMPLIANCE.REPORTS);
+        history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+      });
+  };
+
   const refreshDetails = () => {
     if (id) {
       axios
@@ -526,6 +538,7 @@ const AssessmentContainer = (props) => {
         handleCommentChangeBceid={handleCommentChangeBceid}
         handleCommentChangeIdir={handleCommentChangeIdir}
         handleEditComment={handleEditComment}
+        handleDeleteComment={handleDeleteComment}
         handleSubmit={handleSubmit}
         id={id}
         loading={loading}
