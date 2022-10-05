@@ -169,7 +169,9 @@ const ComplianceObligationDetailsPage = (props) => {
           user={user}
         />
       </div>
-      {statuses.complianceObligation.status == 'DRAFT' && (
+      {['SUBMITTED', 'ASSESSED', 'REASSESSED'].indexOf(
+        statuses.complianceObligation.status
+      ) == -1 && (
         <>
           <ComplianceReportSignoff
             assertions={assertions}

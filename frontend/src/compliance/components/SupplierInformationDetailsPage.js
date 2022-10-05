@@ -298,7 +298,9 @@ const SupplierInformationDetailsPage = (props) => {
           </div>
         </div>
       </div>
-      {statuses.supplierInformation.status == 'DRAFT' && (
+      {['SUBMITTED', 'ASSESSED', 'REASSESSED'].indexOf(
+        statuses.supplierInformation.status
+      ) == -1 && (
         <>
           <div className="row">
             <div className="col-12 my-3">
