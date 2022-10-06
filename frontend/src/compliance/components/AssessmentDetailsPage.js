@@ -573,7 +573,7 @@ const AssessmentDetailsPage = (props) => {
                                   'Section 10 (3) applies'
                                 ) < 0
                               }
-                              type="text"
+                              type="number"
                               className="ml-4 mr-1"
                               defaultValue={
                                 details.assessment.assessmentPenalty

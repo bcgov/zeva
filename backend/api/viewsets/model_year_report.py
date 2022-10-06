@@ -821,7 +821,7 @@ class ModelYearReportViewset(
                         defaults={
                             'update_user': request.user.username,
                             'supplemental_report_assessment_description_id': description,
-                            'penalty': penalty
+                            'penalty': None if penalty is "" else penalty
                         }
                     )
                 if validation_status == 'SUBMITTED':
