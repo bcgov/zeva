@@ -32,11 +32,18 @@ const CreditAgreementsListTable = (props) => {
   };
   const COLUMNS = [
     {
+      id: 'id',
+      accessor: 'id',
+      className: 'text-center',
       Header: 'ID',
-      accessor: (row) => {
+      maxWidth: 100,
+      sortMethod: (a, b) => {
+        return b.id - a.id;
+      },
+      Cell: (item) => {
         let transactionInitial = '';
 
-        switch (row.transactionType) {
+        switch (item.original.transactionType) {
           case 'Initiative Agreement':
             transactionInitial = 'IA';
             break;
@@ -61,9 +68,13 @@ const CreditAgreementsListTable = (props) => {
           default:
             transactionInitial = '';
         }
-        return transactionInitial.concat('-', row.id);
-      },
-      id: 'col-transactionId',
+        return <span>{transactionInitial.concat('-', item.original.id)}</span>;
+      }
+    },
+    {
+      Header: 'Transaction Type',
+      accessor: (row) => row.transactionType,
+      id: 'col-transactionType',
       className: 'text-right'
     },
     {
@@ -74,7 +85,7 @@ const CreditAgreementsListTable = (props) => {
     },
     {
       Header: 'Supplier',
-      accessor: (row) => row.organization.name,
+      accessor: (row) => row.organization.shortName,
       id: 'col-supplier',
       className: 'text-left'
     },
@@ -126,6 +137,11 @@ const CreditAgreementsListTable = (props) => {
       id: 'col-status'
     }
   ];
+
+  // Default sort by items by id int value
+  items.sort(function (a, b) {
+    return b.id - a.id;
+  });
 
   return (
     <ReactTable
