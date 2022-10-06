@@ -17,22 +17,32 @@ const CreditRequestListTable = (props) => {
   const columns = [
     {
       id: 'id',
-      accessor: (item) => `CA-${item.id}`,
-      className: 'text-right',
+      accessor: 'id',
+      className: 'text-center',
       Header: 'ID',
-      maxWidth: 75
+      maxWidth: 100,
+      sortMethod: (a, b) => { 
+        return b.id - a.id
+      },
+      Cell: (item) => (
+        <span>
+          CA-{item.original.id}
+        </span>
+      ),
     },
     {
       accessor: 'submissionHistory',
       className: 'text-center',
-      Header: 'Date'
+      Header: 'Date',
+      maxWidth: 150,
     },
     {
-      accessor: (item) => (item.organization ? item.organization.name : ''),
+      accessor: (item) => (item.organization ? item.organization.shortName : ''),
       className: 'text-left',
       Header: 'Supplier',
       id: 'supplier',
-      show: user.isGovernment
+      show: user.isGovernment,
+      maxWidth: 250,
     },
     {
       accessor: (item) => {
@@ -116,16 +126,15 @@ const CreditRequestListTable = (props) => {
     }
   ];
 
+  // Default sort by items by id int value
+  items.sort(function(a, b) { 
+    return b.id - a.id
+  });
+
   return (
     <ReactTable
       columns={columns}
       data={items}
-      defaultSorted={[
-        {
-          id: 'updateTimestamp',
-          desc: true
-        }
-      ]}
       filtered={filtered}
       getTrProps={(state, row) => {
         if (row && row.original) {

@@ -44,11 +44,19 @@ const CreditTransfersListTable = (props) => {
 
   const columns = [
     {
-      accessor: (item) => `CT-${item.id}`,
-      className: 'text-right',
-      Header: 'ID',
       id: 'id',
-      maxWidth: 75
+      accessor: 'id',
+      className: 'text-center',
+      Header: 'ID',
+      maxWidth: 100,
+      sortMethod: (a, b) => { 
+        return b.id - a.id
+      },
+      Cell: (item) => (
+        <span>
+          CT-{item.original.id}
+        </span>
+      ),
     },
     {
       accessor: (row) => moment(row.createTimestamp).format('YYYY-MM-DD'),
@@ -58,13 +66,13 @@ const CreditTransfersListTable = (props) => {
       maxWidth: 150
     },
     {
-      accessor: 'debitFrom.name',
+      accessor: 'debitFrom.shortName',
       className: 'text-left',
       Header: 'Seller',
       id: 'seller'
     },
     {
-      accessor: 'creditTo.name',
+      accessor: 'creditTo.shortName',
       className: 'text-left',
       Header: 'Buyer',
       id: 'buyer'
@@ -149,16 +157,15 @@ const CreditTransfersListTable = (props) => {
     }
   ];
 
+  // Default sort by items by id int value
+  items.sort(function(a, b) { 
+    return b.id - a.id
+  });
+
   return (
     <ReactTable
       columns={columns}
       data={items}
-      defaultSorted={[
-        {
-          id: 'updateTimestamp',
-          desc: true
-        }
-      ]}
       filtered={filtered}
       setFiltered={setFiltered}
       getTrProps={(state, row) => {

@@ -61,7 +61,7 @@ const CreditAgreementsListTable = (props) => {
     },
     {
       Header: 'Supplier',
-      accessor: (row) => row.organization.name,
+      accessor: (row) => row.organization.shortName,
       id: 'col-supplier',
       className: 'text-center'
     },
