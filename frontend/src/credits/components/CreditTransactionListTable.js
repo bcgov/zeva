@@ -304,6 +304,7 @@ const CreditTransactionListTable = (props) => {
           desc: false
         }
       ]}
+      sortable={false}
       filterable={false}
       getTrProps={(state, row) => {
         if (row && row.original) {

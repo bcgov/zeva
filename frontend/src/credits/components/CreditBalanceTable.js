@@ -98,6 +98,7 @@ const CreditBalanceTable = (props) => {
     <ReactTable
       className="credit-balance-table"
       columns={columns}
+      sortable={false}
       data={Object.entries(balances)
         .map(([key, value]) => ({
           label: key,

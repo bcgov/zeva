@@ -61,6 +61,7 @@ class CustomReactTable extends Component {
       data,
       defaultSorted,
       filterable,
+      sortable,
       filtered,
       getTrProps,
       onFilteredChange,
@@ -73,6 +74,7 @@ class CustomReactTable extends Component {
         className={`searchable ${className}`}
         columns={columns}
         filtered={filtered}
+        sortable={sortable}
         data={data}
         defaultFilterMethod={CustomReactTable.defaultFilterMethod}
         defaultPageSize={this.defaultPageSize}
