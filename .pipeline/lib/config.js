@@ -1,7 +1,7 @@
 'use strict';
 const options= require('@bcgov/pipeline-cli').Util.parseArguments()
 const changeId = options.pr //aka pull-request
-const version = '1.42.0'
+const version = '1.43.0'
 const name = 'zeva'
 const ocpName = 'apps.silver.devops'
 
