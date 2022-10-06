@@ -49,14 +49,10 @@ const CreditTransfersListTable = (props) => {
       className: 'text-center',
       Header: 'ID',
       maxWidth: 100,
-      sortMethod: (a, b) => { 
-        return b.id - a.id
+      sortMethod: (a, b) => {
+        return b.id - a.id;
       },
-      Cell: (item) => (
-        <span>
-          CT-{item.original.id}
-        </span>
-      ),
+      Cell: (item) => <span>CT-{item.original.id}</span>
     },
     {
       accessor: (row) => moment(row.createTimestamp).format('YYYY-MM-DD'),
@@ -158,8 +154,8 @@ const CreditTransfersListTable = (props) => {
   ];
 
   // Default sort by items by id int value
-  items.sort(function(a, b) { 
-    return b.id - a.id
+  items.sort(function (a, b) {
+    return b.id - a.id;
   });
 
   return (

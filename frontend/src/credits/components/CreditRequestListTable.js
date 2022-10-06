@@ -21,28 +21,25 @@ const CreditRequestListTable = (props) => {
       className: 'text-center',
       Header: 'ID',
       maxWidth: 100,
-      sortMethod: (a, b) => { 
-        return b.id - a.id
+      sortMethod: (a, b) => {
+        return b.id - a.id;
       },
-      Cell: (item) => (
-        <span>
-          CA-{item.original.id}
-        </span>
-      ),
+      Cell: (item) => <span>CA-{item.original.id}</span>
     },
     {
       accessor: 'submissionHistory',
       className: 'text-center',
       Header: 'Date',
-      maxWidth: 150,
+      maxWidth: 150
     },
     {
-      accessor: (item) => (item.organization ? item.organization.shortName : ''),
-      className: 'text-left',
+      accessor: (item) =>
+        item.organization ? item.organization.shortName : '',
+      className: 'text-center',
       Header: 'Supplier',
       id: 'supplier',
       show: user.isGovernment,
-      maxWidth: 250,
+      maxWidth: 200
     },
     {
       accessor: (item) => {
@@ -127,8 +124,8 @@ const CreditRequestListTable = (props) => {
   ];
 
   // Default sort by items by id int value
-  items.sort(function(a, b) { 
-    return b.id - a.id
+  items.sort(function (a, b) {
+    return b.id - a.id;
   });
 
   return (
