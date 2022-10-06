@@ -30,6 +30,7 @@ const AssessmentDetailsPage = (props) => {
     handleCommentChangeBceid,
     handleCommentChangeIdir,
     handleEditComment,
+    handleDeleteComment,
     loading,
     makes,
     reportYear,
@@ -203,6 +204,11 @@ const AssessmentDetailsPage = (props) => {
     handleEditComment(comment);
   };
 
+  const deleteEditableComment = () => {
+    let comment = editableComment;
+    handleDeleteComment(comment);
+  };
+
   const cancelEditableComment = () => {
     setEditText('');
     setEditableComment(null);
@@ -297,6 +303,7 @@ const AssessmentDetailsPage = (props) => {
                       handleCommentChange={updateEditableCommentText}
                       saveEditableComment={saveEditableComment}
                       cancelEditableComment={cancelEditableComment}
+                      deleteEditableComment={deleteEditableComment}
                       editing={editableComment != null}
                       value={editText}
                       title={
@@ -566,7 +573,7 @@ const AssessmentDetailsPage = (props) => {
                                   'Section 10 (3) applies'
                                 ) < 0
                               }
-                              type="text"
+                              type="number"
                               className="ml-4 mr-1"
                               defaultValue={
                                 details.assessment.assessmentPenalty
@@ -708,6 +715,7 @@ AssessmentDetailsPage.propTypes = {
   handleCommentChangeBceid: PropTypes.func.isRequired,
   handleCommentChangeIdir: PropTypes.func.isRequired,
   handleEditComment: PropTypes.func.isRequired,
+  handleDeleteComment: PropTypes.func.isRequired,
   radioDescriptions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   setDetails: PropTypes.func.isRequired,
   classAReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,

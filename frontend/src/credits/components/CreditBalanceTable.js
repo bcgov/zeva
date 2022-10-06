@@ -18,7 +18,7 @@ const CreditBalanceTable = (props) => {
 
   const totalCredits = {};
 
-  items.forEach((balance) => {
+  items.slice().reverse().forEach((balance) => {
     if (balance.modelYear && balance.creditClass) {
       balances[balance.modelYear.name] = {
         ...balances[balance.modelYear.name],
@@ -49,6 +49,13 @@ const CreditBalanceTable = (props) => {
         [balance.creditClass.creditClass]:
           currentValue + parseFloat(balance.totalValue)
       };
+
+      // if there's a running deficit in a model year,
+      // then we zero out the displayed model year credit row.
+      // Deficit values should only be shown in the totals row.
+      if (totalCredits[balance.weightClass.weightClassCode][balance.creditClass.creditClass] <= 0) {
+        balances[balance.modelYear.name][balance.creditClass.creditClass] = 0
+      }
     }
   });
 
@@ -91,6 +98,7 @@ const CreditBalanceTable = (props) => {
     <ReactTable
       className="credit-balance-table"
       columns={columns}
+      sortable={false}
       data={Object.entries(balances)
         .map(([key, value]) => ({
           label: key,
