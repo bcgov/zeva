@@ -85,6 +85,32 @@ const AssessmentContainer = (props) => {
         history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
       });
   };
+
+  const handleAddBceidComment = () => {
+    const comment = { comment: bceidComment, director: false };
+    axios
+      .post(
+        ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id),
+        comment
+      )
+      .then(() => {
+        history.push(ROUTES_COMPLIANCE.REPORTS);
+        history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+      });
+  };
+
+  const handleEditComment = (comment) => {
+    axios
+      .patch(
+        ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_PATCH.replace(':id', id),
+        comment
+      )
+      .then(() => {
+        history.push(ROUTES_COMPLIANCE.REPORTS);
+        history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
+      });
+  };
+
   const refreshDetails = () => {
     if (id) {
       axios
@@ -485,19 +511,6 @@ const AssessmentContainer = (props) => {
       });
   };
 
-  const handleAddBceidComment = () => {
-    const comment = { comment: bceidComment, director: false };
-    axios
-      .post(
-        ROUTES_COMPLIANCE.ASSESSMENT_COMMENT_SAVE.replace(':id', id),
-        comment
-      )
-      .then(() => {
-        history.push(ROUTES_COMPLIANCE.REPORTS);
-        history.replace(ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(':id', id));
-      });
-  };
-
   return (
     <>
       <AssessmentDetailsPage
@@ -512,6 +525,7 @@ const AssessmentContainer = (props) => {
         handleAddIdirComment={handleAddIdirComment}
         handleCommentChangeBceid={handleCommentChangeBceid}
         handleCommentChangeIdir={handleCommentChangeIdir}
+        handleEditComment={handleEditComment}
         handleSubmit={handleSubmit}
         id={id}
         loading={loading}

@@ -169,49 +169,58 @@ const ComplianceObligationDetailsPage = (props) => {
           user={user}
         />
       </div>
-      <ComplianceReportSignoff
-        assertions={assertions}
-        checkboxes={checkboxes}
-        disabledCheckboxes={disabledCheckboxes}
-        handleCheckboxClick={handleCheckboxClick}
-        hoverText={hoverText}
-        user={user}
-      />
-      <div className="row  d-print-none">
-        <div className="col-sm-12">
-          <div className="action-bar mt-0">
-            <span className="left-content">
-              <Button buttonType="back" locationRoute="/compliance/reports" />
-            </span>
-            <span className="right-content">
-              <Button
-                buttonType="next"
-                optionalClassname="button"
-                optionalText="Next"
-                action={() => {
-                  history.push(
-                    ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id)
-                  );
-                }}
-              />
-              {!user.isGovernment && (
-                <Button
-                  buttonType="save"
-                  disabled={
-                    ['SAVED', 'UNSAVED'].indexOf(
-                      statuses.complianceObligation.status
-                    ) < 0
-                  }
-                  optionalClassname="button primary"
-                  action={() => {
-                    handleSave();
-                  }}
-                />
-              )}
-            </span>
+      {['SUBMITTED', 'ASSESSED', 'REASSESSED'].indexOf(
+        statuses.complianceObligation.status
+      ) == -1 && (
+        <>
+          <ComplianceReportSignoff
+            assertions={assertions}
+            checkboxes={checkboxes}
+            disabledCheckboxes={disabledCheckboxes}
+            handleCheckboxClick={handleCheckboxClick}
+            hoverText={hoverText}
+            user={user}
+          />
+          <div className="row  d-print-none">
+            <div className="col-sm-12">
+              <div className="action-bar mt-0">
+                <span className="left-content">
+                  <Button
+                    buttonType="back"
+                    locationRoute="/compliance/reports"
+                  />
+                </span>
+                <span className="right-content">
+                  <Button
+                    buttonType="next"
+                    optionalClassname="button"
+                    optionalText="Next"
+                    action={() => {
+                      history.push(
+                        ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id)
+                      );
+                    }}
+                  />
+                  {!user.isGovernment && (
+                    <Button
+                      buttonType="save"
+                      disabled={
+                        ['SAVED', 'UNSAVED'].indexOf(
+                          statuses.complianceObligation.status
+                        ) < 0
+                      }
+                      optionalClassname="button primary"
+                      action={() => {
+                        handleSave();
+                      }}
+                    />
+                  )}
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
       {modal}
     </div>
   );

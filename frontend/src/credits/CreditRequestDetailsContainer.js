@@ -84,6 +84,56 @@ const CreditRequestDetailsContainer = (props) => {
       });
   };
 
+  const handleInternalCommentEdit = (commentId, commentText) => {
+    axios
+      .patch(ROUTES_CREDIT_REQUESTS.UPDATE_COMMENT.replace(':id', commentId), {
+        comment: commentText
+      })
+      .then((response) => {
+        const updatedComment = response.data;
+        setSubmission((prev) => {
+          const commentIndex = prev.salesSubmissionComment.findIndex(
+            (comment) => {
+              return comment.id === updatedComment.id;
+            }
+          );
+          const comment = prev.salesSubmissionComment[commentIndex];
+          const commentCopy = { ...comment };
+          commentCopy.comment = updatedComment.comment;
+          commentCopy.updateTimestamp = updatedComment.updateTimestamp;
+
+          const comments = prev.salesSubmissionComment;
+          const commentsCopy = [...comments];
+          commentsCopy[commentIndex] = commentCopy;
+
+          const submissionCopy = { ...prev };
+          submissionCopy.salesSubmissionComment = commentsCopy;
+          return submissionCopy;
+        });
+      });
+  };
+
+  const handleInternalCommentDelete = (commentId) => {
+    axios
+      .patch(ROUTES_CREDIT_REQUESTS.DELETE_COMMENT.replace(':id', commentId))
+      .then(() => {
+        setSubmission((prev) => {
+          const commentIndex = prev.salesSubmissionComment.findIndex(
+            (comment) => {
+              return comment.id === commentId;
+            }
+          );
+          const comments = prev.salesSubmissionComment;
+          const commentsCopy = [...comments];
+          commentsCopy.splice(commentIndex, 1);
+
+          const submissionCopy = { ...prev };
+          submissionCopy.salesSubmissionComment = commentsCopy;
+          return submissionCopy;
+        });
+      });
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -101,6 +151,8 @@ const CreditRequestDetailsContainer = (props) => {
       validatedOnly={validatedOnly}
       handleCheckboxClick={handleCheckboxClick}
       issueAsMY={issueAsMY}
+      handleInternalCommentEdit={handleInternalCommentEdit}
+      handleInternalCommentDelete={handleInternalCommentDelete}
     />
   ];
 };

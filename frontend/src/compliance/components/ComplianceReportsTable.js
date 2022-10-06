@@ -175,41 +175,23 @@ const ComplianceReportsTable = (props) => {
                 supplementalStatus
               } = row.original;
 
-              if (supplementalStatus === 'REASSESSED' && supplementalId) {
-                history.push(
-                  ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
-                    /:id/g,
-                    id
-                  ).replace(/:supplementaryId/g, supplementalId)
-                );
-              } else if (
+              if (
                 supplementalStatus === 'SUPPLEMENTARY SUBMITTED' &&
-                supplementalId
-              ) {
-                if (user.isGovernment) {
-                  history.push({
-                    pathname:
-                      ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
-                        /:id/g,
-                        id
-                      ).replace(/:supplementaryId/g, supplementalId),
-                    search: '?reassessment=Y'
-                  });
-                } else {
-                  history.push(
-                    ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
-                      /:id/g,
-                      id
-                    ).replace(/:supplementaryId/g, supplementalId)
-                  );
-                }
-              } else if (
-                ['REASSESSMENT DRAFT', 'REASSESSMENT RECOMMENDED'].indexOf(
-                  supplementalStatus
-                ) >= 0 &&
                 supplementalId &&
                 user.isGovernment
               ) {
+                history.push({
+                  pathname: ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
+                    /:id/g,
+                    id
+                  ).replace(/:supplementaryId/g, supplementalId),
+                  search: '?reassessment=Y'
+                });
+                return;
+              }
+
+              if (supplementalId) {
+                // Shows latest supplementary report if one exists
                 history.push(
                   ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
                     /:id/g,
@@ -217,21 +199,12 @@ const ComplianceReportsTable = (props) => {
                   ).replace(/:supplementaryId/g, supplementalId)
                 );
               } else if (validationStatus === 'ASSESSED') {
-                history.push(
-                  ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id)
-                );
-              } else if (supplementalId) {
-                history.push(
-                  ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
-                    /:id/g,
-                    id
-                  ).replace(/:supplementaryId/g, supplementalId)
-                );
-              } else if (user.isGovernment) {
+                // If there is no supplementary report then we default to the first myr
                 history.push(
                   ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(/:id/g, id)
                 );
               } else {
+                // Default show the supplier information page
                 history.push(
                   ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(
                     /:id/g,

@@ -1,7 +1,7 @@
 import uuid
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from rest_framework.response import Response
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
@@ -561,6 +561,32 @@ class ModelYearReportViewset(
         serializer = ModelYearReportSerializer(report, context={'request': request})
 
         return Response(serializer.data)
+
+
+    @action(detail=True, methods=['patch'])
+    def comment_patch(self, request, pk):
+        # only government users can edit comments
+        if not request.user.is_government:
+            return HttpResponseForbidden()
+          
+        id = request.data.get('id')
+        comment = request.data.get('comment')
+
+        modelYearReportAssessmentComment = get_object_or_404(ModelYearReportAssessmentComment, pk=id)
+
+        # only the original commenter can edit a comment
+        if request.user.username != modelYearReportAssessmentComment.create_user:
+            return HttpResponseForbidden()
+
+        modelYearReportAssessmentComment.comment = comment
+        modelYearReportAssessmentComment.save()
+
+        report = get_object_or_404(ModelYearReport, pk=pk)
+
+        serializer = ModelYearReportSerializer(report, context={'request': request})
+
+        return Response(serializer.data)
+
 
     @action(detail=True, methods=['get'])
     def assessment(self, request, pk):

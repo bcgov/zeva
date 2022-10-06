@@ -16,7 +16,9 @@ const CREDIT_REQUESTS = {
   UPLOAD: `${API_BASE_PATH}/upload`,
   VALIDATE: `${API_BASE_PATH}/:id/validate`,
   VALIDATED: `${API_BASE_PATH}/:id/validated`,
-  VALIDATED_DETAILS: `${API_BASE_PATH}/:id/validated-details`
+  VALIDATED_DETAILS: `${API_BASE_PATH}/:id/validated-details`,
+  UPDATE_COMMENT: `${API_BASE_PATH}/:id/update_comment`,
+  DELETE_COMMENT: `${API_BASE_PATH}/:id/delete_comment`
 };
 
 export default CREDIT_REQUESTS;

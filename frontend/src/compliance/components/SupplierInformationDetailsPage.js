@@ -298,57 +298,71 @@ const SupplierInformationDetailsPage = (props) => {
           </div>
         </div>
       </div>
-
-      <div className="row">
-        <div className="col-12 my-3">
-          <ComplianceReportSignOff
-            assertions={assertions}
-            checkboxes={checkboxes}
-            handleCheckboxClick={handleCheckboxClick}
-            user={user}
-            disabledCheckboxes={disabledCheckboxes}
-          />
-        </div>
-      </div>
-
-      <div className="row d-print-none">
-        <div className="col-sm-12">
-          <div className="action-bar mt-0">
-            <span className="left-content">
-              <Button buttonType="back" locationRoute="/compliance/reports" />
-            </span>
-            <span className="right-content">
-              <Button
-                buttonType="next"
-                disabled={
-                  ['UNSAVED'].indexOf(statuses.supplierInformation.status) >= 0
-                }
-                optionalClassname="button"
-                optionalText="Next"
-                action={() => {
-                  history.push(
-                    ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(':id', id)
-                  );
-                }}
+      {['SUBMITTED', 'ASSESSED', 'REASSESSED'].indexOf(
+        statuses.supplierInformation.status
+      ) == -1 && (
+        <>
+          <div className="row">
+            <div className="col-12 my-3">
+              <ComplianceReportSignOff
+                assertions={assertions}
+                checkboxes={checkboxes}
+                handleCheckboxClick={handleCheckboxClick}
+                user={user}
+                disabledCheckboxes={disabledCheckboxes}
               />
-              {!user.isGovernment && (
-                <Button
-                  buttonType="save"
-                  disabled={
-                    ['SAVED', 'UNSAVED'].indexOf(
-                      statuses.supplierInformation.status
-                    ) < 0
-                  }
-                  optionalClassname="button primary"
-                  action={(event) => {
-                    handleSubmit(event);
-                  }}
-                />
-              )}
-            </span>
+            </div>
           </div>
-        </div>
-      </div>
+
+          <div className="row d-print-none">
+            <div className="col-sm-12">
+              <div className="action-bar mt-0">
+                <span className="left-content">
+                  <Button
+                    buttonType="back"
+                    locationRoute="/compliance/reports"
+                  />
+                </span>
+                <span className="right-content">
+                  <Button
+                    buttonType="next"
+                    disabled={
+                      ['UNSAVED'].indexOf(
+                        statuses.supplierInformation.status
+                      ) >= 0
+                    }
+                    optionalClassname="button"
+                    optionalText="Next"
+                    action={() => {
+                      history.push(
+                        ROUTES_COMPLIANCE.REPORT_CONSUMER_SALES.replace(
+                          ':id',
+                          id
+                        )
+                      );
+                    }}
+                  />
+                  {!user.isGovernment && (
+                    <Button
+                      buttonType="save"
+                      disabled={
+                        ['SAVED', 'UNSAVED'].indexOf(
+                          statuses.supplierInformation.status
+                        ) < 0
+                      }
+                      optionalClassname="button primary"
+                      action={(event) => {
+                        handleSubmit(event);
+                      }}
+                    />
+                  )}
+                </span>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
       {modal}
     </div>
   );
