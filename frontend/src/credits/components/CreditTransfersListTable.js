@@ -63,15 +63,17 @@ const CreditTransfersListTable = (props) => {
     },
     {
       accessor: 'debitFrom.shortName',
-      className: 'text-left',
+      className: 'text-center',
       Header: 'Seller',
-      id: 'seller'
+      id: 'seller',
+      maxWidth: 250
     },
     {
       accessor: 'creditTo.shortName',
-      className: 'text-left',
+      className: 'text-center',
       Header: 'Buyer',
-      id: 'buyer'
+      id: 'buyer',
+      maxWidth: 250
     },
     {
       accessor: (row) =>

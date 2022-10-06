@@ -87,7 +87,7 @@ const CreditAgreementsListTable = (props) => {
       Header: 'Supplier',
       accessor: (row) => row.organization.shortName,
       id: 'col-supplier',
-      className: 'text-left'
+      className: 'text-center'
     },
     {
       Header: 'Transaction',
@@ -101,7 +101,7 @@ const CreditAgreementsListTable = (props) => {
       id: 'colaCredits',
       getProps: (state, rowInfo) => ({
         className: `text-right ${
-          rowInfo.row.colaCredits.slice(0, 2) < 0 ? 'text-danger' : ''
+          rowInfo?.row?.colaCredits?.slice(0, 2) < 0 ? 'text-danger' : ''
         }`
       })
     },
@@ -111,7 +111,7 @@ const CreditAgreementsListTable = (props) => {
       id: 'colbCredits',
       getProps: (state, rowInfo) => ({
         className: `text-right ${
-          rowInfo.row.colbCredits.slice(0, 2) < 0 ? 'text-danger' : ''
+          rowInfo?.row?.colbCredits?.slice(0, 2) < 0 ? 'text-danger' : ''
         }`
       })
     },
