@@ -44,7 +44,7 @@ oc project $project_name
 echo
 
 echo "** Starting pg_dump"
-oc exec $pod_name -- bash -c 'pg_dump -U postgres -F t -c zeva > /tmp/zeva.tar'
+oc exec $pod_name -- bash -c 'pg_dump -U postgres -F t --no-privileges --no-owner -c -d zeva > /tmp/zeva.tar'
 echo
 
 echo "** Downloading .tar file"
@@ -56,12 +56,11 @@ docker cp zeva.tar $local_container:/tmp/zeva.tar
 echo
 
 echo "** Restoring local database"
-docker exec $local_container bash -c 'pg_restore -U postgres -Ft -c -d postgres < /tmp/zeva.tar'
+docker exec $local_container bash -c 'pg_restore -U postgres -F t --no-privileges --no-owner -c -d zeva < /tmp/zeva.tar' || true
+docker exec $local_container bash -c 'pg_restore -U postgres -F t --no-privileges --no-owner -c -d zeva < /tmp/zeva.tar'
 echo
 
 echo "** Cleaning up"
 rm zeva.tar
 
 echo "** Finished database restore"
-
-done
