@@ -43,9 +43,8 @@ const CreditTransactionTabs = (props) => {
       )}
       {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED &&
         typeof user.hasPermission === 'function' &&
-        ((user.hasPermission('VIEW_INITIATIVE_AGREEMENTS') &&
-          user.isGovernment) ||
-          !user.isGovernment) && (
+        user.hasPermission('VIEW_INITIATIVE_AGREEMENTS') &&
+        user.isGovernment && (
           <li
             className={`nav-item ${
               active === 'credit-agreements' ? 'active' : ''

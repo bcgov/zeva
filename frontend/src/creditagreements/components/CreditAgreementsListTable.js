@@ -100,9 +100,11 @@ const CreditAgreementsListTable = (props) => {
       accessor: (item) => getCredits(item, 'A'),
       id: 'colaCredits',
       getProps: (state, rowInfo) => ({
-        className: `text-right ${
-          rowInfo.row.colaCredits.slice(0, 2) < 0 ? 'text-danger' : ''
-        }`
+        className: rowInfo
+          ? `text-right ${
+              rowInfo.row.colaCredits.slice(0, 2) < 0 ? 'text-danger' : ''
+            }`
+          : ''
       })
     },
     {
@@ -110,9 +112,11 @@ const CreditAgreementsListTable = (props) => {
       accessor: (item) => getCredits(item, 'B'),
       id: 'colbCredits',
       getProps: (state, rowInfo) => ({
-        className: `text-right ${
-          rowInfo.row.colbCredits.slice(0, 2) < 0 ? 'text-danger' : ''
-        }`
+        className: rowInfo
+          ? `text-right ${
+              rowInfo.row.colbCredits.slice(0, 2) < 0 ? 'text-danger' : ''
+            }`
+          : ''
       })
     },
     {

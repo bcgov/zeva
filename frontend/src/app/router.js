@@ -534,23 +534,31 @@ class Router extends Component {
                   exact
                   key="route-credit-agreements-list"
                   path={ROUTES_CREDIT_AGREEMENTS.LIST}
-                  render={() => (
-                    <CreditAgreementListContainer
-                      keycloak={keycloak}
-                      user={user}
-                    />
-                  )}
+                  render={() =>
+                    user.isGovernment ? (
+                      <CreditAgreementListContainer
+                        keycloak={keycloak}
+                        user={user}
+                      />
+                    ) : (
+                      <></>
+                    )
+                  }
                 />,
                 <Route
                   exact
                   key="route-credit-agreements-edit"
                   path={ROUTES_CREDIT_AGREEMENTS.EDIT}
-                  render={() => (
-                    <CreditAgreementsEditContainer
-                      keycloak={keycloak}
-                      user={user}
-                    />
-                  )}
+                  render={() =>
+                    user.isGovernment ? (
+                      <CreditAgreementsEditContainer
+                        keycloak={keycloak}
+                        user={user}
+                      />
+                    ) : (
+                      <></>
+                    )
+                  }
                 />,
                 <Route
                   exact
@@ -571,12 +579,16 @@ class Router extends Component {
                   exact
                   key="route-credit-agreements-details"
                   path={ROUTES_CREDIT_AGREEMENTS.DETAILS}
-                  render={() => (
-                    <CreditAgreementsDetailsContainer
-                      keycloak={keycloak}
-                      user={user}
-                    />
-                  )}
+                  render={() =>
+                    user.isGovernment ? (
+                      <CreditAgreementsDetailsContainer
+                        keycloak={keycloak}
+                        user={user}
+                      />
+                    ) : (
+                      <></>
+                    )
+                  }
                 />
               ]}
               <Route
