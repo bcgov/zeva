@@ -96,6 +96,14 @@ class OrganizationSaveSerializer(serializers.ModelSerializer):
         is_active = validated_data.get('is_active')
         name = validated_data.get('name')
 
+        # disable all supplier users when we
+        # deactivate the organization
+        if obj.is_active and not is_active:
+            members = obj.members
+            for member in members:
+                member.is_active = False
+                member.save()
+
         obj.short_name = short_name
         obj.is_active = is_active
         obj.name = name

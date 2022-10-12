@@ -60,6 +60,7 @@ import ROUTES_USERS from './routes/Users';
 import ROUTES_VEHICLES from './routes/Vehicles';
 import ROUTES_COMPLIANCE from './routes/Compliance';
 import ROUTES_SUPPLEMENTARY from './routes/SupplementaryReport';
+import Unverified from './components/Unverified';
 
 class Router extends Component {
   constructor(props) {
@@ -67,7 +68,7 @@ class Router extends Component {
     this.state = {
       loading: true,
       statusCode: null,
-      user: {}
+      user: null,
     };
 
     const { keycloak } = props;
@@ -127,6 +128,12 @@ class Router extends Component {
           }
         }
       });
+    })
+    .catch((error) => {
+      this.setState({
+        loading: false,
+        user: null
+      })
     });
   }
 
@@ -135,6 +142,10 @@ class Router extends Component {
     const { loading, statusCode, user } = this.state;
     if (loading) {
       return <Loading />;
+    }
+
+    if(!user) {
+      return <Unverified logout={this.props.logout} />;
     }
 
     return (
