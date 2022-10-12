@@ -1,4 +1,6 @@
 from datetime import date
+from django.db.models import Q
+
 from django.db.models import Sum, Value
 from rest_framework import serializers
 from api.models.account_balance import AccountBalance
@@ -7,12 +9,12 @@ from api.models.model_year import ModelYear
 from api.models.model_year_report import ModelYearReport
 from api.models.model_year_report_compliance_obligation import ModelYearReportComplianceObligation
 from api.models.model_year_report_credit_offset import ModelYearReportCreditOffset
+from api.models.model_year_report_history import ModelYearReportHistory
 from api.models.sales_submission import SalesSubmission
+from api.models.user_profile import UserProfile
 from api.models.vehicle import Vehicle
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
-from api.serializers.credit_transaction import CreditTransactionObligationActivitySerializer
 from api.serializers.vehicle import ModelYearSerializer
-
 
 class ModelYearReportComplianceObligationOutputSerializer(serializers.ModelSerializer):
     model_year = ModelYearSerializer(read_only=True)
@@ -155,10 +157,22 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
         report_id = int(kwargs.get('id'))
         report_year = self.retrieve_year(report_id)
         request = self.context.get('request')
+        submission_date = None
+        report = ModelYearReport.objects.get(id=report_id)
+        if report.validation_status in ['SUBMITTED', 'RECOMMENDED', 'RETURNED', 'ASSESSED', 'REASSESSED']:
+            SubQuery = UserProfile.objects.filter(organization__is_government=True).values_list('username', flat=True) 
+            last_submitted_report = ModelYearReportHistory.objects.filter(
+                validation_status='SUBMITTED',
+                model_year_report_id=report.id,
+            ).exclude(Q(~Q(create_user__in=SubQuery))).order_by('update_timestamp').last()
+            submission_date = last_submitted_report.update_timestamp
+        else:
+            submission_date = date.today()
+
         pending_sales_submissions = SalesSubmission.objects.filter(
             organization=request.user.organization,
             validation_status__in=['SUBMITTED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'CHECKED'],
-            submission_date__lte=date(report_year, 9, 30),
+            submission_date__lte=submission_date,
             submission_date__gte=date(report_year-1, 10, 1),
         )
         totals = {}

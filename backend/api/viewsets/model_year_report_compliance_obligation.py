@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.db.models import Sum
 from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 from auditable.views import AuditableMixin
 from api.decorators.permission import permission_required
@@ -37,8 +38,8 @@ from api.serializers.credit_transaction import \
 from api.services.summary import parse_summary_serializer, \
     get_current_year_balance
 from api.models.organization_deficits import OrganizationDeficits
-
-
+from api.models.model_year_report_history import ModelYearReportHistory
+from api.models.user_profile import UserProfile
 class ModelYearReportComplianceObligationViewset(
         AuditableMixin, viewsets.GenericViewSet,
         mixins.ListModelMixin, mixins.RetrieveModelMixin,
@@ -219,7 +220,7 @@ class ModelYearReportComplianceObligationViewset(
             report_year = int(report_year_obj.name)
             from_date = None
             to_date = None
-            to_pending_date = None
+
 
             if report_year == 2020:
                 from_date = date(2018, 1, 2,)
@@ -228,7 +229,7 @@ class ModelYearReportComplianceObligationViewset(
                 from_date = date(report_year, 10, 1,)
                 to_date = date(report_year + 1, 10, 1,)
 
-            to_pending_date = date(report_year + 1, 10, 21,)
+            
 
             content = []
 
@@ -364,10 +365,20 @@ class ModelYearReportComplianceObligationViewset(
             for credits_sale in credit_sales_serializer.data:
                 parse_summary_serializer(content, credits_sale, 'creditsIssuedSales')
 
+            submission_date = None
+            if report.validation_status in ['SUBMITTED', 'RECOMMENDED', 'RETURNED', 'ASSESSED', 'REASSESSED']:
+                SubQuery = UserProfile.objects.filter(organization__is_government=True).values_list('username', flat=True) 
+                last_submitted_report = ModelYearReportHistory.objects.filter(
+                    validation_status='SUBMITTED',
+                    model_year_report_id=report.id,
+                ).exclude(Q(~Q(create_user__in=SubQuery))).order_by('update_timestamp').last()
+                submission_date = last_submitted_report.update_timestamp
+            else:
+                submission_date = date.today()
             pending_sales_submissions = SalesSubmission.objects.filter(
                 organization=organization,
                 validation_status__in=['SUBMITTED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'CHECKED'],
-                submission_date__lt=to_pending_date,
+                submission_date__lte=submission_date,
                 submission_date__gte=from_date,
             )
 
