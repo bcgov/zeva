@@ -94,9 +94,23 @@ class ModelYearReportAssessmentSerializer(
         prior_year_report_obj = ModelYearReport.objects.filter(
             model_year__name=prior_year_str
         ).first()
+
+        from_gov = False
+
+        # are there overrides?
+        # if so, then we should only get the ones from 
+        has_override = ModelYearReportComplianceObligation.objects.filter(
+            model_year_report_id=obj.id,
+            from_gov=True
+        ).first()
+
+        if has_override:
+            from_gov = True
+
         deficit_prior_year_obj = ModelYearReportComplianceObligation.objects.filter(
             model_year_report_id=prior_year_report_obj,
-            category='CreditDeficit'
+            category='CreditDeficit',
+            from_gov=from_gov
         ).first()
         if deficit_prior_year_obj:
             in_compliance['prior'] = False
@@ -105,7 +119,8 @@ class ModelYearReportAssessmentSerializer(
 
         deficit_report_year = ModelYearReportComplianceObligation.objects.filter(
             model_year_report_id=obj,
-            category='CreditDeficit'
+            category='CreditDeficit',
+            from_gov=from_gov
         ).first()
 
         if deficit_report_year:
