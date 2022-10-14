@@ -10,7 +10,6 @@ from api.models.model_year_report_credit_offset import ModelYearReportCreditOffs
 from api.models.sales_submission import SalesSubmission
 from api.models.vehicle import Vehicle
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
-from api.serializers.credit_transaction import CreditTransactionObligationActivitySerializer
 from api.serializers.vehicle import ModelYearSerializer
 
 
@@ -157,9 +156,7 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
         request = self.context.get('request')
         pending_sales_submissions = SalesSubmission.objects.filter(
             organization=request.user.organization,
-            validation_status__in=['SUBMITTED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'CHECKED'],
-            submission_date__lte=date(report_year, 9, 30),
-            submission_date__gte=date(report_year-1, 10, 1),
+            validation_status__in=['SUBMITTED', 'RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION', 'CHECKED']
         )
         totals = {}
         for obj in pending_sales_submissions:
@@ -167,6 +164,8 @@ class ModelYearReportComplianceObligationDetailsSerializer(serializers.ModelSeri
                 try:
                     model_year = float(record['xls_model_year'])
                 except ValueError:
+                    continue
+                if int(model_year) != int(report_year):
                     continue
                 vehicle = Vehicle.objects.filter(
                     make__iexact=record['xls_make'],

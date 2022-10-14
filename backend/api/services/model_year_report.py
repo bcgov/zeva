@@ -323,7 +323,8 @@ def adjust_credits(id, request):
 
     deficits = ModelYearReportComplianceObligation.objects.filter(
         model_year_report_id=id,
-        category='CreditDeficit'
+        category='CreditDeficit',
+        from_gov=from_gov
     )
 
     for deficit in deficits:
