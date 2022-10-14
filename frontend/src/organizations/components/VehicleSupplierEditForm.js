@@ -49,8 +49,8 @@ const VehicleSupplierEditForm = (props) => {
       <p>
         You have selected to make this vehicle supplier Inactive. <br />
         <br />
-        They will no longer have the ability to make any further changes within
-        their account and all their users will have read only access
+        They will no longer have the ability to access their account 
+        and all their users will be made Inactive.
       </p>
       <br />
       <p>Do you want to make this supplier Inactive?</p>
