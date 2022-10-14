@@ -10,7 +10,7 @@ on:
 
 env:
   ## The pull request number of the Tracking pull request to merge the release branch to main
-  PR_NUMBER: 1300
+  PR_NUMBER: 1176
   RELEASE_NAME: release-1.44.0
 
 jobs:
