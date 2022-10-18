@@ -80,6 +80,8 @@ class SalesSubmissionContent(Auditable):
             model_year__name=int(model_year),
             organization_id=self.submission.organization_id,
             validation_status=VehicleDefinitionStatuses.VALIDATED,
+        ).exclude(
+            create_timestamp__gte=self.update_timestamp
         ).first()
 
     @property
@@ -101,6 +103,8 @@ class SalesSubmissionContent(Auditable):
             xls_vin=self.xls_vin
         ).exclude(
             id=self.id
+        ).exclude(
+            create_timestamp__gte=self.update_timestamp
         ).first()
 
         if contains_duplicate:
@@ -155,6 +159,8 @@ class SalesSubmissionContent(Auditable):
             submission_id=self.submission_id,
             vehicle=self.vehicle,
             vin=self.xls_vin
+        ).exclude(
+            create_timestamp__gte=self.update_timestamp
         ).first()
 
     @property

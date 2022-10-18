@@ -185,14 +185,7 @@ class CreditRequestViewset(
         page_size = request.GET.get('page_size', 100)
         page = request.GET.get('page', 1)
         sort_by = request.GET.get('sorted')
-
-        try:
-            page = int(page)
-        except:
-            page = 1
-
-        if page < 1:
-            page = 1
+        verify_with_icbc_data = request.GET.get('reset', None)
 
         # only government should be able to view the contents for icbc
         # verification
@@ -202,6 +195,20 @@ class CreditRequestViewset(
         submission_content = SalesSubmissionContent.objects.filter(
             submission_id=pk
         )
+
+        if verify_with_icbc_data == 'Y':
+            # updates update_timestamp fields on submission content
+            # which will update warning flags to match current data
+            for sub in submission_content.all():
+                sub.save()
+
+        try:
+            page = int(page)
+        except:
+            page = 1
+
+        if page < 1:
+            page = 1
 
         extra_filter_by = []
         extra_filter_params = []
