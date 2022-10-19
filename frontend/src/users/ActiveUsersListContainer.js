@@ -23,12 +23,18 @@ const ActiveUsersListContainer = (props) => {
       let filteredBceid = '';
       axios.get(ROUTES_USERS.LIST).then((response) => {
         response.data.forEach((userProfile) => {
-          if (userProfile.isActive === true && userProfile.email) {
+          if (
+            userProfile.isActive === true &&
+            (userProfile.email || userProfile.keycloakEmail)
+          ) {
+            const email = userProfile.email
+              ? userProfile.email
+              : userProfile.keycloakEmail;
             if (userProfile.isGovernment) {
-              filteredIdir += userProfile.email;
+              filteredIdir += email;
               filteredIdir += '; ';
             } else {
-              filteredBceid += userProfile.email;
+              filteredBceid += email;
               filteredBceid += '; ';
             }
           }
