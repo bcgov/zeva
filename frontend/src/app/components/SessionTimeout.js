@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-
-const SessionTimeout = (keycloak) => {
-  // const [showTimeout, setShowTimeout] = useState(false);
+import getSessionTimeout from '../utilities/getSessionTimeout';
+const SessionTimeout = (props) => {
+  const {keycloak} = props;
+  const [showTimeout, setShowTimeout] = useState(false);
   // const [diffTime, setDiffTime] = useState(10476000); //2 hours 55 mins 10476000,
   //to test with one minute use 60000 and update keykoak
 
   // the following code is for retrieving the time until warning from keycloak settings
-  let tokenExp = new Date(keycloak.refreshTokenParsed.exp * 1000);
-  diffTime = getSessionTimeout(tokenExp);
+  const [diffTime, setDiffTime] = useState(getSessionTimeout(new Date(keycloak.refreshTokenParsed.exp * 1000)));
+
 
   let timeout = setTimeout(() => {
     setShowTimeout(true);
