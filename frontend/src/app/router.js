@@ -152,7 +152,7 @@ class Router extends Component {
       <BrowserRouter history={History}>
         <PageLayout keycloak={keycloak} user={user}>
           <ErrorHandler statusCode={statusCode}>
-            <SessionTimeout />
+            <SessionTimeout keycloak={keycloak} />
             <Switch>
               <Route
                 path={ROUTES_USERS.ACTIVE}
