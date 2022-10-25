@@ -8,6 +8,7 @@ import SupplementaryDetailsPage from './components/SupplementaryDetailsPage';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import history from '../app/History';
 import CustomPropTypes from '../app/utilities/props';
+import reconcileSupplementaries from '../app/utilities/reconcileSupplementaries';
 
 const qs = require('qs');
 
@@ -459,6 +460,9 @@ const SupplementaryContainer = (props) => {
           }`
         ),
         axios.get(
+          `${ROUTES_SUPPLEMENTARY.ASSESSED_SUPPLEMENTALS.replace(':id', id)}`
+        ),
+        axios.get(
           ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)
         ),
         axios.get(ROUTES_COMPLIANCE.RATIOS),
@@ -471,12 +475,56 @@ const SupplementaryContainer = (props) => {
       ])
       .then(
         axios.spread(
-          (response, complianceResponse, ratioResponse, assessmentResponse) => {
+          (
+            response,
+            assessedSupplementals,
+            complianceResponse,
+            ratioResponse,
+            assessmentResponse
+          ) => {
             if (response.data) {
+              let assessedSupplementalsData = assessedSupplementals.data;
               if (query && query.new === 'Y') {
                 setNewReport(true);
               } else {
+                if (
+                  assessedSupplementalsData &&
+                  assessedSupplementalsData.length > 0
+                ) {
+                  const suppId = response.data.id;
+                  const suppIndex = assessedSupplementalsData.findIndex(
+                    (element) => {
+                      const reassessmentReportId =
+                        response.data.reassessment &&
+                        response.data.reassessment.reassessmentReportId
+                          ? response.data.reassessment.reassessmentReportId
+                          : undefined;
+                      return (
+                        element.id === suppId ||
+                        element.id === reassessmentReportId
+                      );
+                    }
+                  );
+                  if (suppIndex > -1) {
+                    assessedSupplementalsData = assessedSupplementalsData.slice(
+                      0,
+                      suppIndex
+                    );
+                  }
+                }
                 setNewReport(false);
+              }
+              const {
+                reconciledAssessmentData,
+                reconciledLdvSales,
+                reconciledComplianceObligation
+              } = reconcileSupplementaries(
+                response.data.assessmentData,
+                assessedSupplementalsData,
+                complianceResponse.data
+              );
+              if (reconciledAssessmentData) {
+                response.data.assessmentData = reconciledAssessmentData;
               }
               setDetails(response.data);
               const newSupplier = response.data.supplierInformation;
@@ -616,16 +664,13 @@ const SupplementaryContainer = (props) => {
                 creditActivity
               });
 
-              if (
-                complianceResponse.data &&
-                complianceResponse.data.complianceObligation
-              ) {
-                obligationDetails =
-                  complianceResponse.data.complianceObligation;
-                setObligationDetails(
-                  complianceResponse.data.complianceObligation
-                );
-                setLdvSales(complianceResponse.data.ldvSales);
+              if (reconciledComplianceObligation) {
+                obligationDetails = reconciledComplianceObligation;
+                setObligationDetails(reconciledComplianceObligation);
+              }
+
+              if (reconciledLdvSales) {
+                setLdvSales(reconciledLdvSales);
               }
 
               calculateBalance(creditActivity);
