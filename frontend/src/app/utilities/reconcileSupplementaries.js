@@ -107,6 +107,12 @@ const reconcileSupplementaries = (
               const creditActivity = creditActivites[category][modelYear];
               creditActivity.creditAValue = suppCreditActivity.creditAValue;
               creditActivity.creditBValue = suppCreditActivity.creditBValue;
+            } else {
+              if (!creditActivites[category]) {
+                creditActivites[category] = {};
+              }
+              creditActivites[category][modelYear] = suppCreditActivity;
+              complianceData.complianceObligation.push(suppCreditActivity);
             }
           }
         }
