@@ -54,7 +54,8 @@ const AssessmentDetailsPage = (props) => {
     supplementaryStatus,
     supplementaryId,
     createdByGov,
-    handleCancelConfirmation
+    handleCancelConfirmation,
+    reassessmentExists
   } = props;
 
   const [showModal, setShowModal] = useState(false);
@@ -325,9 +326,13 @@ const AssessmentDetailsPage = (props) => {
                   (supplementaryStatus === 'DRAFT' && createdByGov) ||
                   supplementaryStatus === 'DELETED' ||
                   supplementaryStatus === 'ASSESSED') && (
-                  <button
-                    className="btn button primary"
-                    onClick={() => {
+                  <Button
+                    buttonTooltip="at this time its not possible as government has begun a reassessment"
+                    buttonType="submit"
+                    optionalClassname="btn button primary"
+                    optionalText="Create Supplementary Report"
+                    disabled={reassessmentExists}
+                    action={() => {
                       history.push(
                         `${ROUTES_SUPPLEMENTARY.CREATE.replace(
                           /:id/g,
@@ -335,10 +340,7 @@ const AssessmentDetailsPage = (props) => {
                         )}?new=Y`
                       );
                     }}
-                    type="button"
-                  >
-                    Create Supplementary Report
-                  </button>
+                  />
                 )}
 
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&

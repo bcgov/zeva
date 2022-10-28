@@ -50,6 +50,7 @@ const AssessmentContainer = (props) => {
   const [totalReduction, setTotalReduction] = useState(0);
   const [unspecifiedReductions, setUnspecifiedReductions] = useState([]);
   const [updatedBalances, setUpdatedBalances] = useState({});
+  const [reassessmentExists, setReassessmentExists] = useState(false);
 
   const handleCommentChangeBceid = (text) => {
     setBceidComment(text);
@@ -157,6 +158,11 @@ const AssessmentContainer = (props) => {
                 supplementaryResponse.data &&
                 supplementaryResponse.data.status
               ) {
+                setReassessmentExists(
+                  supplementaryResponse.data.reassessment.reassessmentReportId
+                    ? true
+                    : false
+                );
                 setSupplementaryId(supplementaryResponse.data.id);
                 setSupplementaryStatus(supplementaryResponse.data.status);
                 if (
@@ -559,6 +565,7 @@ const AssessmentContainer = (props) => {
         supplementaryId={supplementaryId}
         createdByGov={createdByGov}
         handleCancelConfirmation={handleCancelConfirmation}
+        reassessmentExists={reassessmentExists}
       />
     </>
   );

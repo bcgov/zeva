@@ -357,8 +357,8 @@ class ModelYearReportListSerializer(
                     supplemental_record = supplemental_records.filter(id=supplemental_record.supplemental_id).first()
                 if user and user.is_government and supplemental_record.status.value != 'ASSESSED':
                     supplemental_record = supplemental_records.filter(id=supplemental_record.supplemental_id).first()
-
-            return supplemental_record.id
+            if supplemental_record:
+                return supplemental_record.id
 
         return None
 
