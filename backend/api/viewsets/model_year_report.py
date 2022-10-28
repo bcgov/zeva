@@ -934,6 +934,16 @@ class ModelYearReportViewset(
                 create_user=request.user.username,
             )
 
+            if validation_status == "RECOMMENDED" and description:
+                penalty = request.data.get("penalty")
+                SupplementalReportAssessment.objects.create(
+                    supplemental_report_id=supplemental_id,
+                    update_user=request.user.username,
+                    create_user=request.user.username,
+                    supplemental_report_assessment_description_id=description,
+                    penalty=None if penalty is "" else penalty,
+                )
+
         report = get_object_or_404(ModelYearReport, pk=pk)
 
         if not supplemental_id:
