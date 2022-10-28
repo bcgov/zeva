@@ -14,33 +14,31 @@ const reconcileSupplementaries = (
   };
 
   if (assessedSupplementaries && assessedSupplementaries.length > 0) {
+    const latest_supplemental =
+      assessedSupplementaries[assessedSupplementaries.length - 1];
+
     //reconcile legal name, makes, vehicle supplier class, addresses
-    for (const supplementary of assessedSupplementaries) {
-      if (supplementary.supplierInformation) {
-        for (const supplierInfoAtom of supplementary.supplierInformation) {
-          const category = supplierInfoAtom.category;
-          const value = supplierInfoAtom.value;
-          if (category === 'LEGAL_NAME') {
-            assessmentData.legalName = value;
-          } else if (category === 'LDV_MAKES') {
-            assessmentData.makes = value.split('\n');
-          } else if (category === 'SUPPLIER_CLASS') {
-            assessmentData.supplierClass = value;
-          } else if (category === 'SERVICE_ADDRESS') {
-            assessmentData.reconciledServiceAddress = value;
-          } else if (category === 'RECORDS_ADDRESS') {
-            assessmentData.reconciledRecordsAddress = value;
-          }
+    if (latest_supplemental.supplierIndormation) {
+      for (const supplierInfoAtom of latest_supplemental.supplierInformation) {
+        const category = supplierInfoAtom.category;
+        const value = supplierInfoAtom.value;
+        if (category === 'LEGAL_NAME') {
+          assessmentData.legalName = value;
+        } else if (category === 'LDV_MAKES') {
+          assessmentData.makes = value.split('\n');
+        } else if (category === 'SUPPLIER_CLASS') {
+          assessmentData.supplierClass = value;
+        } else if (category === 'SERVICE_ADDRESS') {
+          assessmentData.reconciledServiceAddress = value;
+        } else if (category === 'RECORDS_ADDRESS') {
+          assessmentData.reconciledRecordsAddress = value;
         }
       }
     }
 
     //reconcile ldv sales:
-    for (const supplementary of assessedSupplementaries) {
-      const ldvSales = supplementary.ldvSales;
-      if (ldvSales) {
-        result.reconciledLdvSales = ldvSales;
-      }
+    if (latest_supplemental.ldvSales || latest_supplemental.ldvSales === 0) {
+      result.reconciledLdvSales = latest_supplemental.ldvSales;
     }
 
     //reconcile zev sales:
@@ -94,26 +92,20 @@ const reconcileSupplementaries = (
           creditActivites[category][modelYear] = creditActivity;
         }
       }
-      for (const supplementary of assessedSupplementaries) {
-        const suppCreditActivities = supplementary.creditActivity;
-        if (suppCreditActivities) {
-          for (const suppCreditActivity of suppCreditActivities) {
-            const category = suppCreditActivity.category;
-            const modelYear = suppCreditActivity.modelYear.name;
-            if (
-              creditActivites[category] &&
-              creditActivites[category][modelYear]
-            ) {
-              const creditActivity = creditActivites[category][modelYear];
-              creditActivity.creditAValue = suppCreditActivity.creditAValue;
-              creditActivity.creditBValue = suppCreditActivity.creditBValue;
-            } else {
-              if (!creditActivites[category]) {
-                creditActivites[category] = {};
-              }
-              creditActivites[category][modelYear] = suppCreditActivity;
-              complianceData.complianceObligation.push(suppCreditActivity);
-            }
+      const suppCreditActivities = latest_supplemental.creditActivity;
+      if (suppCreditActivities) {
+        for (const suppCreditActivity of suppCreditActivities) {
+          const category = suppCreditActivity.category;
+          const modelYear = suppCreditActivity.modelYear.name;
+          if (
+            creditActivites[category] &&
+            creditActivites[category][modelYear]
+          ) {
+            const creditActivity = creditActivites[category][modelYear];
+            creditActivity.creditAValue = suppCreditActivity.creditAValue;
+            creditActivity.creditBValue = suppCreditActivity.creditBValue;
+          } else {
+            complianceData.complianceObligation.push(suppCreditActivity);
           }
         }
       }
