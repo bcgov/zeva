@@ -148,8 +148,14 @@ const CreditTransactionListTable = (props) => {
           item.creditClass.creditClass === 'B'
             ? transactions[found].creditsB + totalValue
             : transactions[found].creditsB,
-        displayTotalA: totalA,
-        displayTotalB: totalB
+        displayTotalA:
+          item.creditClass.creditClass === 'A'
+            ? transactions[found].displayTotalA + totalValue
+            : transactions[found].displayTotalA,
+        displayTotalB:
+          item.creditClass.creditClass === 'B'
+            ? transactions[found].displayTotalB + totalValue
+            : transactions[found].displayTotalB,
       };
     } else {
       transactions.push({
