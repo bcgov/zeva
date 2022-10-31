@@ -13,6 +13,14 @@ const reconcileSupplementaries = (
       : undefined
   };
 
+  const zevSales = {};
+  if (assessmentData.zevSales) {
+    for (const zevSale of assessmentData.zevSales) {
+      zevSale.fromModelYearReport = true;
+      zevSales[zevSale.id] = zevSale;
+    }
+  }
+
   if (assessedSupplementaries && assessedSupplementaries.length > 0) {
     const latest_supplemental =
       assessedSupplementaries[assessedSupplementaries.length - 1];
@@ -42,42 +50,73 @@ const reconcileSupplementaries = (
     }
 
     //reconcile zev sales:
-    const zevSales = {};
-    for (const zevSale of assessmentData.zevSales) {
-      zevSales[zevSale.id] = zevSale;
+    const suppOriginZevSales = {};
+    for (const supplementary of assessedSupplementaries) {
+      const suppZevSales = supplementary.zevSales;
+      if (suppZevSales) {
+        for (const suppZevSale of suppZevSales) {
+          const modelYearReportVehicleId = suppZevSale.modelYearReportVehicle;
+          const suppOriginZevSaleId = suppZevSale.supplementalOriginZevSaleId;
+          if (!modelYearReportVehicleId && !suppOriginZevSaleId) {
+            suppZevSale.fromModelYearReport = false;
+            suppZevSale.salesIssued = suppZevSale.sales;
+            suppOriginZevSales[suppZevSale.id] = suppZevSale;
+          }
+        }
+      }
     }
     for (const supplementary of assessedSupplementaries) {
       const suppZevSales = supplementary.zevSales;
       if (suppZevSales) {
         for (const suppZevSale of suppZevSales) {
-          const modelYearReportVehicle = suppZevSale.modelYearReportVehicle;
-          if (modelYearReportVehicle && zevSales[modelYearReportVehicle]) {
-            const zevSale = zevSales[modelYearReportVehicle];
+          const modelYearReportVehicleId = suppZevSale.modelYearReportVehicle;
+          const suppOriginZevSaleId = suppZevSale.supplementalOriginZevSaleId;
+          let saleInQuestion;
+          if (
+            modelYearReportVehicleId &&
+            !suppOriginZevSaleId &&
+            zevSales[modelYearReportVehicleId]
+          ) {
+            saleInQuestion = zevSales[modelYearReportVehicleId];
+          } else if (
+            !modelYearReportVehicleId &&
+            suppOriginZevSaleId &&
+            suppOriginZevSales[suppOriginZevSaleId]
+          ) {
+            saleInQuestion = suppOriginZevSales[suppOriginZevSaleId];
+          }
+          if (saleInQuestion) {
             if (suppZevSale.sales || suppZevSale.sales === 0) {
-              zevSale.salesIssued = suppZevSale.sales;
+              saleInQuestion.salesIssued = suppZevSale.sales;
             }
             if (suppZevSale.make) {
-              zevSale.make = make;
+              saleInQuestion.make = suppZevSale.make;
             }
             if (suppZevSale.modelName) {
-              zevSale.modelName = suppZevSale.modelName;
+              saleInQuestion.modelName = suppZevSale.modelName;
             }
             if (suppZevSale.modelYear) {
-              zevSale.modelYear = suppZevSale.modelYear;
+              saleInQuestion.modelYear = suppZevSale.modelYear;
             }
             if (suppZevSale.range) {
-              zevSale.range = suppZevSale.range;
+              saleInQuestion.range = suppZevSale.range;
             }
             if (suppZevSale.vehicleZevType) {
-              zevSale.vehicleZevType = suppZevSale.vehicleZevType;
+              saleInQuestion.vehicleZevType = suppZevSale.vehicleZevType;
             }
             if (suppZevSale.zevClass) {
-              zevSale.zevClass = suppZevSale.zevClass;
+              saleInQuestion.zevClass = suppZevSale.zevClass;
             }
           }
         }
       }
     }
+    if (!assessmentData.zevSales) {
+      assessmentData.zevSales = [];
+    }
+    assessmentData.zevSales = assessmentData.zevSales.concat(
+      Object.values(suppOriginZevSales)
+    );
 
     //reconcile credit activities:
     if (complianceData) {

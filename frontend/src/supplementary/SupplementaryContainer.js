@@ -343,10 +343,7 @@ const SupplementaryContainer = (props) => {
           evidenceAttachments.attachments = attachments;
         }
 
-        const zevSales =
-          newData &&
-          newData.zevSales &&
-          newData.zevSales.filter((each) => Number(each.sales) > 0);
+        const zevSales = newData && newData.zevSales;
 
         if (status) {
           const data = {
@@ -423,12 +420,18 @@ const SupplementaryContainer = (props) => {
         (each, index) => Number(index) === Number(rowId)
       );
       if (index >= 0) {
-        salesRows[index].newData = {
+        const newSalesData = {
           ...salesRows[index].newData,
-          [type]: value,
-          modelYearReportVehicle:
-            salesRows[index].oldData.modelYearReportVehicle
+          [type]: value
         };
+        if (salesRows[index].oldData.modelYearReportVehicle) {
+          newSalesData.modelYearReportVehicle =
+            salesRows[index].oldData.modelYearReportVehicle;
+        } else if (salesRows[index].oldData.supplementalOriginZevSaleId) {
+          newSalesData.supplementalOriginZevSaleId =
+            salesRows[index].oldData.supplementalOriginZevSaleId;
+        }
+        salesRows[index].newData = newSalesData;
       }
       const zevSales = [];
       salesRows.forEach((each) => {
@@ -595,18 +598,23 @@ const SupplementaryContainer = (props) => {
               const salesData = [];
               // sales from assessment
               response.data.assessmentData.zevSales.forEach((item) => {
+                const oldData = {
+                  make: item.make,
+                  model: item.modelName,
+                  modelYear: item.modelYear,
+                  sales: item.salesIssued,
+                  range: item.range,
+                  zevClass: item.zevClass,
+                  zevType: item.vehicleZevType
+                };
+                if (item.fromModelYearReport) {
+                  oldData.modelYearReportVehicle = item.id;
+                } else {
+                  oldData.supplementalOriginZevSaleId = item.id;
+                }
                 salesData.push({
                   newData: {},
-                  oldData: {
-                    make: item.make,
-                    model: item.modelName,
-                    modelYear: item.modelYear,
-                    sales: item.salesIssued,
-                    modelYearReportVehicle: item.id,
-                    range: item.range,
-                    zevClass: item.zevClass,
-                    zevType: item.vehicleZevType
-                  }
+                  oldData: oldData
                 });
               });
               // new /adjusted sales
@@ -617,6 +625,17 @@ const SupplementaryContainer = (props) => {
                       (record) =>
                         record.oldData.modelYearReportVehicle ===
                         item.modelYearReportVehicle
+                    );
+                    if (match >= 0) {
+                      salesData[match].newData = item;
+                    } else {
+                      salesData.push({ newData: item, oldData: {} });
+                    }
+                  } else if (item.supplementalOriginZevSaleId) {
+                    const match = salesData.findIndex(
+                      (record) =>
+                        record.oldData.supplementalOriginZevSaleId ===
+                        item.supplementalOriginZevSaleId
                     );
                     if (match >= 0) {
                       salesData[match].newData = item;
