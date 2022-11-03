@@ -12,21 +12,16 @@ class SupplementalReportSales(Auditable):
     """
 
     supplemental_report = models.ForeignKey(
-        'SupplementalReport',
-        related_name='supplemental_report_sales',
+        "SupplementalReport",
+        related_name="supplemental_report_sales",
         on_delete=models.PROTECT,
-        null=False
+        null=False,
     )
     sales = models.IntegerField(
-        db_comment="Sum of issued sales for zev models",
-        null=True,
-        blank=True
+        db_comment="Sum of issued sales for zev models", null=True, blank=True
     )
     model_year = models.CharField(
-        blank=True,
-        null=True,
-        max_length=4,
-        db_comment="model year"
+        blank=True, null=True, max_length=4, db_comment="model year"
     )
     make = models.CharField(
         blank=True,
@@ -41,33 +36,30 @@ class SupplementalReportSales(Auditable):
         max_length=250,
     )
     vehicle_zev_type = models.CharField(
-        blank=True,
-        null=True,
-        max_length=4,
-        db_comment="zev type"
+        blank=True, null=True, max_length=4, db_comment="zev type"
     )
     range = models.DecimalField(
         blank=True,
         decimal_places=2,
         max_digits=20,
         null=True,
-        db_comment="vehicle range in km"
+        db_comment="vehicle range in km",
     )
     zev_class = models.CharField(
-        null=True,
-        blank=True,
-        max_length=3,
-        db_comment="zev class"
+        null=True, blank=True, max_length=3, db_comment="zev class"
     )
     model_year_report_vehicle = models.ForeignKey(
-        'ModelYearReportVehicle',
-        related_name=None,
-        on_delete=models.PROTECT,
-        null=True
+        "ModelYearReportVehicle", related_name=None, on_delete=models.PROTECT, null=True
+    )
+    supplemental_origin_zev_sale_id = models.IntegerField(
+        null=True,
+        blank=True,
+        db_comment="This will reference the original, newly added zev sale if this sale is based on that sale",
     )
 
     class Meta:
         db_table = "supplemental_report_sales"
 
-    db_table_comment = "Table containes ZEV vehicle sales"\
-                       "information based on supplemental report"
+    db_table_comment = (
+        "Table containes ZEV vehicle sales" "information based on supplemental report"
+    )

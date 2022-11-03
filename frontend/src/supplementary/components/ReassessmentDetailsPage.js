@@ -117,20 +117,22 @@ const ReassessmentDetailsPage = (props) => {
 
   const newCreditActivities = {};
   if (newData && newData.creditActivity) {
-    for (const activity of newData.creditActivity) {
+    for (const i in newData.creditActivity) {
+      const activity = newData.creditActivity[i];
       const category = activity.category;
       const modelYear = activity.modelYear;
       const value = {
         creditAValue: activity.creditAValue,
         creditBValue: activity.creditBValue
       };
-      if (!newCreditActivities.category) {
+      if (!newCreditActivities[category]) {
         newCreditActivities[category] = {};
       }
-      newCreditActivities[category][modelYear] = value;
+      newCreditActivities[category][modelYear] = { value: value, index: i };
     }
   }
 
+  const indicesOfIncludedNewCreditActivities = [];
   const complianceObligationDetails = [];
   for (const detail of obligationDetails) {
     const category = detail.category;
@@ -139,12 +141,37 @@ const ReassessmentDetailsPage = (props) => {
       newCreditActivities[category] &&
       newCreditActivities[category][modelYear]
     ) {
+      indicesOfIncludedNewCreditActivities.push(
+        newCreditActivities[category][modelYear].index
+      );
       complianceObligationDetails.push({
         ...detail,
-        ...newCreditActivities[category][modelYear]
+        ...newCreditActivities[category][modelYear].value
       });
     } else {
       complianceObligationDetails.push(detail);
+    }
+  }
+
+  if (newData && newData.creditActivity) {
+    for (const i in newData.creditActivity) {
+      const activity = newData.creditActivity[i];
+      if (!indicesOfIncludedNewCreditActivities.includes(i)) {
+        const actualModelYear = activity.modelYear;
+        const effectiveDate = actualModelYear + '-01-01';
+        const expirationDate = actualModelYear + '-12-31';
+        const refinedActivity = {
+          ...activity,
+          ...{
+            modelYear: {
+              name: actualModelYear,
+              effectiveDate: effectiveDate,
+              expirationDate: expirationDate
+            }
+          }
+        };
+        complianceObligationDetails.push(refinedActivity);
+      }
     }
   }
 
