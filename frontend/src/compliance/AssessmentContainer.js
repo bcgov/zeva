@@ -51,7 +51,7 @@ const AssessmentContainer = (props) => {
   const [unspecifiedReductions, setUnspecifiedReductions] = useState([]);
   const [updatedBalances, setUpdatedBalances] = useState({});
   const [reassessmentExists, setReassessmentExists] = useState(false);
-
+  const [reassessmentTooltip, setReassessmentTooltip] = useState('');
   const handleCommentChangeBceid = (text) => {
     setBceidComment(text);
   };
@@ -158,11 +158,10 @@ const AssessmentContainer = (props) => {
                 supplementaryResponse.data &&
                 supplementaryResponse.data.status
               ) {
-                setReassessmentExists(
-                  supplementaryResponse.data.reassessment.reassessmentReportId
-                    ? true
-                    : false
-                );
+                if (supplementaryResponse.data.reassessment && supplementaryResponse.data.reassessment.reassessmentReportId) {
+                  setReassessmentExists(true);
+                    setReassessmentTooltip('at this time its not possible as government has begun a reassessment')
+                  }
                 setSupplementaryId(supplementaryResponse.data.id);
                 setSupplementaryStatus(supplementaryResponse.data.status);
                 if (
@@ -566,6 +565,7 @@ const AssessmentContainer = (props) => {
         createdByGov={createdByGov}
         handleCancelConfirmation={handleCancelConfirmation}
         reassessmentExists={reassessmentExists}
+        reassessmentTooltip={reassessmentTooltip}
       />
     </>
   );

@@ -55,7 +55,8 @@ const AssessmentDetailsPage = (props) => {
     supplementaryId,
     createdByGov,
     handleCancelConfirmation,
-    reassessmentExists
+    reassessmentExists,
+    reassessmentTooltip,
   } = props;
 
   const [showModal, setShowModal] = useState(false);
@@ -327,7 +328,7 @@ const AssessmentDetailsPage = (props) => {
                   supplementaryStatus === 'DELETED' ||
                   supplementaryStatus === 'ASSESSED') && (
                   <Button
-                    buttonTooltip="at this time its not possible as government has begun a reassessment"
+                    buttonTooltip={reassessmentTooltip}
                     buttonType="submit"
                     optionalClassname="btn button primary"
                     optionalText="Create Supplementary Report"
