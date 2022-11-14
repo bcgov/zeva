@@ -247,10 +247,9 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
                     model_year_report_id=obj.model_year_report_id,
                     id=obj.supplemental_id
                 ).first()
-
-                supplementary_report_status = supplemental_report.status.value
-
-                supplemental_user = UserProfile.objects.filter(username=supplemental_report.create_user).first()
+                if supplemental_report:
+                    supplementary_report_status = supplemental_report.status.value
+                    supplemental_user = UserProfile.objects.filter(username=supplemental_report.create_user).first()
 
                 if supplemental_user.is_government:
                     supplementary_report_is_reassessment = True
