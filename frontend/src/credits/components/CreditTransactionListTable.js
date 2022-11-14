@@ -116,6 +116,21 @@ const CreditTransactionListTable = (props) => {
     return 0;
   });
 
+  // for items  with the same date in transactionTimestamp, if item transactionType is 'Reduction' then it should be considered last in the list
+  items.sort((a, b) => {
+    if (moment(a.transactionTimestamp).format('YYYY-MM-DD') === moment(b.transactionTimestamp).format('YYYY-MM-DD')) {
+      if (a.transactionType.transactionType === 'Reduction') {
+        return 1;
+      }
+
+      if (b.transactionType.transactionType === 'Reduction') {
+        return -1;
+      }
+    }
+
+    return 0;
+  });
+  
   items.forEach((item) => {
     const totalValue =
       Math.round((item.totalValue + Number.EPSILON) * 100) / 100;
