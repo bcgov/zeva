@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import getSessionTimeout from '../utilities/getSessionTimeout';
+import CONFIG from '../config';
 
 const SessionTimeout = (props) => {
   const {keycloak} = props;
@@ -11,6 +12,16 @@ const SessionTimeout = (props) => {
   let timeout = setTimeout(() => {
     setShowTimeout(true);
   }, diffTime);
+
+  useEffect(() => {
+    if (showTimeout) {
+      setTimeout(() => {
+        if (showTimeout) {
+          keycloak.logout({redirectUri: CONFIG.KEYCLOAK.LOGOUT_URL});
+        }
+      }, 5 * 60 * 1000);
+    }
+  })
 
   const closeModal = () => {
     setShowTimeout(false);

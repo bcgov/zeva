@@ -42,10 +42,24 @@ const SupplierInformation = (props) => {
     return recordAddress;
   };
 
-  const checkAddressChanges = (data, addressType, supplierAddress) => {
+  const checkAddressChanges = (
+    data,
+    addressType,
+    supplierAddress,
+    reconciledAddress
+  ) => {
     let returnClassName = '';
 
-    if (data && data.reportAddress && data.reportAddress && supplierAddress) {
+    if (supplierAddress && reconciledAddress) {
+      if (supplierAddress !== reconciledAddress) {
+        returnClassName = 'highlight';
+      }
+    } else if (
+      data &&
+      data.reportAddress &&
+      data.reportAddress &&
+      supplierAddress
+    ) {
       data.reportAddress.forEach((address) => {
         if (
           address &&
@@ -128,32 +142,37 @@ const SupplierInformation = (props) => {
             Service Address
           </label>
           <div className="w-75">
-            {assessmentData &&
-              assessmentData.reportAddress &&
-              assessmentData.reportAddress.map(
-                (address) =>
-                  address.addressType.addressType === 'Service' && (
-                    <div className="p-0" key={address.id}>
-                      {address.representativeName && (
-                        <div> {address.representativeName} </div>
-                      )}
-                      {address.addressLine1} {address.addressLine2} <br />
-                      {address.city} {address.state} {address.country}{' '}
-                      {address.postalCode}
-                    </div>
-                  )
-              )}
+            {assessmentData && assessmentData.reconciledServiceAddress
+              ? assessmentData.reconciledServiceAddress
+              : assessmentData &&
+                assessmentData.reportAddress &&
+                assessmentData.reportAddress.map(
+                  (address) =>
+                    address.addressType.addressType === 'Service' && (
+                      <div className="p-0" key={address.id}>
+                        {address.representativeName && (
+                          <div> {address.representativeName} </div>
+                        )}
+                        {address.addressLine1} {address.addressLine2} <br />
+                        {address.city} {address.state} {address.country}{' '}
+                        {address.postalCode}
+                      </div>
+                    )
+                )}
           </div>
         </div>
         <textarea
           className={`form-control d-inline-block align-top mt-4 col-sm-5 ${checkAddressChanges(
             assessmentData,
             'Service',
-            supplierInfo.serviceAddress
+            supplierInfo.serviceAddress,
+            assessmentData.reconciledServiceAddress
           )}`}
           defaultValue={
             supplierInfo.serviceAddress
               ? supplierInfo.serviceAddress
+              : assessmentData && assessmentData.reconciledServiceAddress
+              ? assessmentData.reconciledServiceAddress
               : servAddress()
           }
           id="serviceAddress"
@@ -173,32 +192,37 @@ const SupplierInformation = (props) => {
             Records Address
           </label>
           <div className="w-75">
-            {assessmentData &&
-              assessmentData.reportAddress &&
-              assessmentData.reportAddress.map(
-                (address) =>
-                  address.addressType.addressType === 'Records' && (
-                    <div className="p-0" key={address.id}>
-                      {address.representativeName && (
-                        <div> {address.representativeName} </div>
-                      )}
-                      {address.addressLine1} {address.addressLine2} <br />
-                      {address.city} {address.state} {address.country}{' '}
-                      {address.postalCode}
-                    </div>
-                  )
-              )}
+            {assessmentData && assessmentData.reconciledRecordsAddress
+              ? assessmentData.reconciledRecordsAddress
+              : assessmentData &&
+                assessmentData.reportAddress &&
+                assessmentData.reportAddress.map(
+                  (address) =>
+                    address.addressType.addressType === 'Records' && (
+                      <div className="p-0" key={address.id}>
+                        {address.representativeName && (
+                          <div> {address.representativeName} </div>
+                        )}
+                        {address.addressLine1} {address.addressLine2} <br />
+                        {address.city} {address.state} {address.country}{' '}
+                        {address.postalCode}
+                      </div>
+                    )
+                )}
           </div>
         </div>
         <textarea
           className={`form-control d-inline-block align-top mt-4 col-sm-5 ${checkAddressChanges(
             assessmentData,
             'Records',
-            supplierInfo.recordsAddress
+            supplierInfo.recordsAddress,
+            assessmentData.reconciledRecordsAddress
           )}`}
           defaultValue={
             supplierInfo.recordsAddress
               ? supplierInfo.recordsAddress
+              : assessmentData && assessmentData.reconciledRecordsAddress
+              ? assessmentData.reconciledRecordsAddress
               : recAddress()
           }
           id="recordsAddress"

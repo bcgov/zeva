@@ -156,6 +156,12 @@ class ModelYearReport(Auditable):
             id=supplemental_id
         ).first()
 
+    def get_assessed_supplementals(self):
+        return SupplementalReport.objects.filter(
+            model_year_report_id=self.id,
+            status=ModelYearReportStatuses.ASSESSED
+        ).order_by("create_timestamp")
+
     def get_avg_sales(self):
         avg_sales = self.organization.get_avg_ldv_sales(
             year=self.model_year.name

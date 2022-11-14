@@ -8,6 +8,7 @@ import SupplementaryDetailsPage from './components/SupplementaryDetailsPage';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import history from '../app/History';
 import CustomPropTypes from '../app/utilities/props';
+import reconcileSupplementaries from '../app/utilities/reconcileSupplementaries';
 
 const qs = require('qs');
 
@@ -342,10 +343,7 @@ const SupplementaryContainer = (props) => {
           evidenceAttachments.attachments = attachments;
         }
 
-        const zevSales =
-          newData &&
-          newData.zevSales &&
-          newData.zevSales.filter((each) => Number(each.sales) > 0);
+        const zevSales = newData && newData.zevSales;
 
         if (status) {
           const data = {
@@ -422,12 +420,18 @@ const SupplementaryContainer = (props) => {
         (each, index) => Number(index) === Number(rowId)
       );
       if (index >= 0) {
-        salesRows[index].newData = {
+        const newSalesData = {
           ...salesRows[index].newData,
-          [type]: value,
-          modelYearReportVehicle:
-            salesRows[index].oldData.modelYearReportVehicle
+          [type]: value
         };
+        if (salesRows[index].oldData.modelYearReportVehicle) {
+          newSalesData.modelYearReportVehicle =
+            salesRows[index].oldData.modelYearReportVehicle;
+        } else if (salesRows[index].oldData.supplementalOriginZevSaleId) {
+          newSalesData.supplementalOriginZevSaleId =
+            salesRows[index].oldData.supplementalOriginZevSaleId;
+        }
+        salesRows[index].newData = newSalesData;
       }
       const zevSales = [];
       salesRows.forEach((each) => {
@@ -459,6 +463,9 @@ const SupplementaryContainer = (props) => {
           }`
         ),
         axios.get(
+          `${ROUTES_SUPPLEMENTARY.ASSESSED_SUPPLEMENTALS.replace(':id', id)}`
+        ),
+        axios.get(
           ROUTES_COMPLIANCE.REPORT_COMPLIANCE_DETAILS_BY_ID.replace(':id', id)
         ),
         axios.get(ROUTES_COMPLIANCE.RATIOS),
@@ -471,12 +478,56 @@ const SupplementaryContainer = (props) => {
       ])
       .then(
         axios.spread(
-          (response, complianceResponse, ratioResponse, assessmentResponse) => {
+          (
+            response,
+            assessedSupplementals,
+            complianceResponse,
+            ratioResponse,
+            assessmentResponse
+          ) => {
             if (response.data) {
+              let assessedSupplementalsData = assessedSupplementals.data;
               if (query && query.new === 'Y') {
                 setNewReport(true);
               } else {
+                if (
+                  assessedSupplementalsData &&
+                  assessedSupplementalsData.length > 0
+                ) {
+                  const suppId = response.data.id;
+                  const suppIndex = assessedSupplementalsData.findIndex(
+                    (element) => {
+                      const reassessmentReportId =
+                        response.data.reassessment &&
+                        response.data.reassessment.reassessmentReportId
+                          ? response.data.reassessment.reassessmentReportId
+                          : undefined;
+                      return (
+                        element.id === suppId ||
+                        element.id === reassessmentReportId
+                      );
+                    }
+                  );
+                  if (suppIndex > -1) {
+                    assessedSupplementalsData = assessedSupplementalsData.slice(
+                      0,
+                      suppIndex
+                    );
+                  }
+                }
                 setNewReport(false);
+              }
+              const {
+                reconciledAssessmentData,
+                reconciledLdvSales,
+                reconciledComplianceObligation
+              } = reconcileSupplementaries(
+                response.data.assessmentData,
+                assessedSupplementalsData,
+                complianceResponse.data
+              );
+              if (reconciledAssessmentData) {
+                response.data.assessmentData = reconciledAssessmentData;
               }
               setDetails(response.data);
               const newSupplier = response.data.supplierInformation;
@@ -547,18 +598,23 @@ const SupplementaryContainer = (props) => {
               const salesData = [];
               // sales from assessment
               response.data.assessmentData.zevSales.forEach((item) => {
+                const oldData = {
+                  make: item.make,
+                  model: item.modelName,
+                  modelYear: item.modelYear,
+                  sales: item.salesIssued,
+                  range: item.range,
+                  zevClass: item.zevClass,
+                  zevType: item.vehicleZevType
+                };
+                if (item.fromModelYearReport) {
+                  oldData.modelYearReportVehicle = item.id;
+                } else {
+                  oldData.supplementalOriginZevSaleId = item.id;
+                }
                 salesData.push({
                   newData: {},
-                  oldData: {
-                    make: item.make,
-                    model: item.modelName,
-                    modelYear: item.modelYear,
-                    sales: item.salesIssued,
-                    modelYearReportVehicle: item.id,
-                    range: item.range,
-                    zevClass: item.zevClass,
-                    zevType: item.vehicleZevType
-                  }
+                  oldData: oldData
                 });
               });
               // new /adjusted sales
@@ -569,6 +625,17 @@ const SupplementaryContainer = (props) => {
                       (record) =>
                         record.oldData.modelYearReportVehicle ===
                         item.modelYearReportVehicle
+                    );
+                    if (match >= 0) {
+                      salesData[match].newData = item;
+                    } else {
+                      salesData.push({ newData: item, oldData: {} });
+                    }
+                  } else if (item.supplementalOriginZevSaleId) {
+                    const match = salesData.findIndex(
+                      (record) =>
+                        record.oldData.supplementalOriginZevSaleId ===
+                        item.supplementalOriginZevSaleId
                     );
                     if (match >= 0) {
                       salesData[match].newData = item;
@@ -616,16 +683,13 @@ const SupplementaryContainer = (props) => {
                 creditActivity
               });
 
-              if (
-                complianceResponse.data &&
-                complianceResponse.data.complianceObligation
-              ) {
-                obligationDetails =
-                  complianceResponse.data.complianceObligation;
-                setObligationDetails(
-                  complianceResponse.data.complianceObligation
-                );
-                setLdvSales(complianceResponse.data.ldvSales);
+              if (reconciledComplianceObligation) {
+                obligationDetails = reconciledComplianceObligation;
+                setObligationDetails(reconciledComplianceObligation);
+              }
+
+              if (reconciledLdvSales) {
+                setLdvSales(reconciledLdvSales);
               }
 
               calculateBalance(creditActivity);

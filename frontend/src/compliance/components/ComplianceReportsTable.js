@@ -27,6 +27,18 @@ const ComplianceReportsTable = (props) => {
       return 'Small';
     }
 
+    if (paramClass === 'Large Volume Supplier') {
+      return 'Large';
+    }
+
+    if (paramClass === 'Medium Volume Supplier') {
+      return 'Medium';
+    }
+
+    if (paramClass === 'Small Volume Supplier') {
+      return 'Small';
+    }
+
     return '-';
   };
 
@@ -74,7 +86,10 @@ const ComplianceReportsTable = (props) => {
 
   const columns = [
     {
-      accessor: (item) => item.organizationName,
+      accessor: (item) =>
+        item.organizationShortName
+          ? item.organizationShortName
+          : item.organizationName,
       className: 'text-center',
       Header: 'Supplier',
       headerClassName: 'font-weight-bold ',
@@ -144,6 +159,7 @@ const ComplianceReportsTable = (props) => {
       Header: 'Obligation Total',
       headerClassName: 'font-weight-bold',
       id: 'obligation-total',
+      show: !showSupplier,
       maxWidth: 260
     },
     {
@@ -152,6 +168,7 @@ const ComplianceReportsTable = (props) => {
       Header: 'Obligation A Credits',
       headerClassName: 'font-weight-bold',
       id: 'obligation-a-credits',
+      show: !showSupplier,
       maxWidth: 260
     }
   ];
