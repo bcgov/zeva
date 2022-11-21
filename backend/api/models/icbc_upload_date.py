@@ -8,6 +8,12 @@ class IcbcUploadDate(Auditable):
         db_comment="the date the icbc data is current to",
         null=False,
         auto_now=False)
+    filename = models.CharField(
+        blank=True,
+        max_length=500,
+        null=True,
+        db_comment="Filename of the uploaded data"
+    )
 
     class Meta:
         db_table = 'icbc_upload_date'
