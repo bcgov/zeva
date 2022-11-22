@@ -1,4 +1,4 @@
-FROM sleighzy/keycloak:16.1.0-arm64
+FROM jboss/keycloak:latest
 COPY realm.json /tmp/realm.json
 COPY themes/bcgov-with-login-form /opt/jboss/keycloak/themes/bcgov-with-login-form
 
