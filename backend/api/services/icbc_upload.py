@@ -19,15 +19,6 @@ def trim_all_columns(df):
 
 
 def format_dataframe(df):
-    print('Before formatting shape: ', df.shape)
-
-    df['VIN'].fillna(0, inplace=True)
-    df.drop(df[df['VIN'] == 0].index, inplace = True)
-
-    df['MODEL_YEAR'].fillna(0, inplace=True)
-    df['MODEL_YEAR'] = pd.to_numeric(df['MODEL_YEAR'])
-    df.drop(df[df['MODEL_YEAR'] <= 2018].index, inplace = True)
-
     df = df[
         (df.HYBRID_VEHICLE_FLAG != 'N') |
         (df.ELECTRIC_VEHICLE_FLAG != 'N') |
@@ -35,7 +26,15 @@ def format_dataframe(df):
         (df.FUEL_TYPE.str.upper() == 'HYDROGEN') |
         (df.FUEL_TYPE.str.upper() == 'GASOLINEELECTRIC')
     ]
-    print('After formatting shape: ', df.shape)
+
+    df['MODEL_YEAR'].fillna(0, inplace=True)
+    df['MODEL_YEAR'] = pd.to_numeric(df['MODEL_YEAR'])
+    df.drop(df[df['MODEL_YEAR'] <= 2018].index, inplace = True)
+
+    df['VIN'].fillna(0, inplace=True)
+    df.drop(df[df['VIN'] == 0].index, inplace = True)
+
+    df = df[['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN']]
 
     return df
 
@@ -53,31 +52,45 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo, previous_
     page_count = 0
 
     print("Processing Started")
+    # get header names
+    df_first_row = pd.read_csv(excelfile, sep="|", nrows=1)
+    df_first_row.columns = map(str.upper, df_first_row.columns)
+    header_names = list(df_first_row.columns.values)
 
-    # previous file processing
-    df_p = pd.read_csv(previous_excelfile, sep="|", memory_map=True)
-    df_p['SOURCE'] = 'PREVIOUS'
-    df_p.columns = map(str.upper, df_p.columns)
-    header_names = list(df_p.columns.values)
-    df_p = format_dataframe(df_p)
+    # Previous file processing
+    df_p = []
+    for df in pd.read_csv(
+        previous_excelfile, sep="|", error_bad_lines=False, iterator=True, low_memory=True,
+        chunksize=50000, names=header_names, header=None, skiprows=1
+    ):
+        df = format_dataframe(df)
+        df['SOURCE'] = 'PREVIOUS'
+        df_p.extend(df.values.tolist())
+
     print("Read previous file", time.time() - start_time)
+    print("Previous file rows", len(df_p))
 
-    # latest file processing
-    df = pd.read_csv(excelfile, sep="|", memory_map=True)
-    df['SOURCE'] = 'LATEST'
-    df.columns = map(str.upper, df.columns)
-    header_names = list(df.columns.values)
-    df = format_dataframe(df)
+    # Latest file processing
+    df_l = []
+    for df in pd.read_csv(
+        excelfile, sep="|", error_bad_lines=False, iterator=True, low_memory=True,
+        chunksize=50000, names=header_names, header=None, skiprows=1
+    ):
+        df = format_dataframe(df)
+        df['SOURCE'] = 'LATEST'
+        df_l.extend(df.values.tolist())
+
     print("Read latest file", time.time() - start_time)
+    print("Latest file rows", len(df_l))
+
+    df_p = pd.DataFrame(df_p, columns=['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN', 'SOURCE'])
+    df_l = pd.DataFrame(df_l, columns=['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN', 'SOURCE'])
 
     # calculate any changes in the data between the latest file and the previously uploaded file
-    c_result = pd.concat([df_p, df]).drop_duplicates(subset=['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN']).reset_index(drop=True)
+    c_result = pd.concat([df_p, df_l]).drop_duplicates(subset=['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN']).reset_index(drop=True)
     c_result = c_result[c_result['SOURCE'] == 'LATEST']
     print("Compared files", time.time() - start_time)
-
-    print("Latest file rows", df.shape)
-    print("Previous file rows", df_p.shape)
-    print("Changed rows", c_result)
+    print("Changed rows", c_result.shape)
 
     # If no changes detected then we end here
     # and update the IcbcUploadDate Filename to the

@@ -21,3 +21,5 @@ minio/minio_files/.minio.sys/
 package-lock.json
 
 storybook-static/
+
+minio/minio_files/zeva
