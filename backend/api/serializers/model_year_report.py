@@ -31,6 +31,7 @@ from api.serializers.model_year_report_history import ModelYearReportHistorySeri
 from api.serializers.user import MemberSerializer
 from api.serializers.vehicle import ModelYearSerializer
 from api.services.model_year_report import get_model_year_report_statuses
+from django.db.models import Q
 
 
 class ModelYearReportSerializer(ModelSerializer):
@@ -239,9 +240,11 @@ class ModelYearReportListSerializer(ModelSerializer, EnumSupportSerializerMixin)
         latest_supplemental = None
         latest_assessed_supplemental = None
         latest_supplemental_assessment = None
-        supplementals = SupplementalReport.objects.filter(
-            model_year_report=instance
-        ).order_by("-create_timestamp")
+        supplementals = (
+            SupplementalReport.objects.filter(model_year_report=instance)
+            .filter(~Q(status=ModelYearReportStatuses.DELETED))
+            .order_by("-create_timestamp")
+        )
         supplementals_length = len(supplementals)
         if supplementals_length > 0:
             latest_supplemental = supplementals[0]
