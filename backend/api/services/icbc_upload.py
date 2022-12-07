@@ -20,11 +20,11 @@ def trim_all_columns(df):
 
 def format_dataframe(df):
     df = df[
-        (df.HYBRID_VEHICLE_FLAG != 'N') |
-        (df.ELECTRIC_VEHICLE_FLAG != 'N') |
-        (df.FUEL_TYPE.str.upper() == 'ELECTRIC') |
-        (df.FUEL_TYPE.str.upper() == 'HYDROGEN') |
-        (df.FUEL_TYPE.str.upper() == 'GASOLINEELECTRIC')
+        (df['HYBRID_VEHICLE_FLAG'] != 'N') |
+        (df['ELECTRIC_VEHICLE_FLAG'] != 'N') |
+        (df['FUEL_TYPE'].str.upper() == 'ELECTRIC') |
+        (df['FUEL_TYPE'].str.upper() == 'HYDROGEN') |
+        (df['FUEL_TYPE'].str.upper() == 'GASOLINEELECTRIC')
     ]
 
     df['MODEL_YEAR'].fillna(0, inplace=True)
@@ -54,7 +54,7 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo, previous_
     print("Processing Started")
     # get header names
     df_first_row = pd.read_csv(excelfile, sep="|", nrows=1)
-    df_first_row.columns = map(str.upper, df_first_row.columns)
+    df_first_row.columns = map(str.upper, df_first_row.columns.str.strip())
     header_names = list(df_first_row.columns.values)
 
     # Previous file processing
@@ -63,7 +63,7 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo, previous_
         previous_excelfile, sep="|", error_bad_lines=False, iterator=True, low_memory=True,
         chunksize=50000, names=header_names, header=None, skiprows=1
     ):
-        df = format_dataframe(df)
+        # df = format_dataframe(df) # pre-processing manually for now
         df['SOURCE'] = 'PREVIOUS'
         df_p.extend(df.values.tolist())
 
@@ -76,7 +76,7 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo, previous_
         excelfile, sep="|", error_bad_lines=False, iterator=True, low_memory=True,
         chunksize=50000, names=header_names, header=None, skiprows=1
     ):
-        df = format_dataframe(df)
+        # df = format_dataframe(df) # pre-processing manually for now
         df['SOURCE'] = 'LATEST'
         df_l.extend(df.values.tolist())
 
