@@ -227,7 +227,9 @@ const SupplementaryDetailsPage = (props) => {
       }}
       handleSubmit={() => {
         setShowModalDelete(false);
-        handleSubmit('DELETED');
+        if(!newReport) {
+          handleSubmit('DELETED');
+        }
       }}
       modalClass="w-75"
       showModal={showModalDelete}
@@ -681,6 +683,8 @@ const SupplementaryDetailsPage = (props) => {
                   <Button
                     buttonType="delete"
                     action={() => setShowModalDelete(true)}
+                    disabled={newReport}
+                    buttonTooltip={'Delete is disabled until draft is saved.'}
                     optionalText={
                       details &&
                       details.reassessment &&
