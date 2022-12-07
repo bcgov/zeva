@@ -82,26 +82,30 @@ class IcbcVerificationViewSet(
 
             print("Starting Ingest")
             date_current_to = request.data.get('submission_current_date')
-            done = ingest_icbc_spreadsheet(filename, user, date_current_to, previous_filename)
+            try:
+                done = ingest_icbc_spreadsheet(filename, user, date_current_to, previous_filename)
+            except:
+                return HttpResponse(status=400, content='Error processing data file. Please contact your administrator for assistance.')
 
             # remove files from local directory
             os.remove(filename)
             os.remove(previous_filename)
 
-            if done:
+            if done[0]:
                 # We remove the previous file from minio but keep the 
                 # latest one so we can use it for compare on next upload
                 minio_remove_object(previous_filename)
                 print('Done processing')
 
         except Exception as error:
-            print(error)
             return HttpResponse(status=400, content=error)
 
         return HttpResponse(
             status=201,
             content=json.dumps({
-                'dateCurrentTo': date_current_to
+                'dateCurrentTo': date_current_to,
+                'createdRecords': done[1],
+                'updatedRecords': done[2]
             }),
             content_type='application/json'
         )
