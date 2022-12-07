@@ -212,4 +212,3 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo, previous_
         return (True, created_records_count, updated_records_count)
     except Exception as e:
         print(e)
-

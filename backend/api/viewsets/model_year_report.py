@@ -810,8 +810,11 @@ class ModelYearReportViewset(
             and create_user.is_government == request.user.is_government
             and not new_report
         ):
-
             if request.data.get("status") == "DELETED":
+                report = SupplementalReport.objects.filter(id=supplemental_report.id).first()
+                if report.status.value == "ASSESSED" or report.status.value == "REASSESSED":
+                    return HttpResponse(status=403, content='Cannot delete an assessed report.')
+
                 SupplementalReportAttachment.objects.filter(
                     supplemental_report_id=supplemental_report.id
                 ).delete()
