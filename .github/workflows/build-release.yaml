@@ -146,7 +146,7 @@ jobs:
           minimum-approvals: 2
           issue-title: "ZEVA ${{ env.RELEASE_NAME }} Prod Deployment"
 
-      - name: Run BCDK deployment on ZEVA Test environment
+      - name: Run BCDK deployment on ZEVA Prod environment
         run: |
           cd .pipeline
           echo "Deploying ZEVA ${{ env.RELEASE_NAME }} on Prod"
