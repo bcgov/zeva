@@ -3,7 +3,7 @@ asgiref==3.2.10
 astroid==2.3.3
 billiard==3.6.1.0
 celery==4.4.0
-certifi==2019.11.28
+certifi==2022.12.7
 cffi
 chardet==3.0.4
 configparser==5.0.0
