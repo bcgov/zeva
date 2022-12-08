@@ -679,7 +679,7 @@ const SupplementaryDetailsPage = (props) => {
               />
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 isEditable &&
-                ['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0 && (
+                ['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0 && !isDirector && (
                   <Button
                     buttonType="delete"
                     action={() => setShowModalDelete(true)}
