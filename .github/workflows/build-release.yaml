@@ -1,17 +1,17 @@
 ## For each release, the value of workflow name, branches, PR_NUMBER and RELEASE_NAME need to be adjusted accordingly
 ## Also change the .pipelin/lib/config.js version number
-name: ZEVA v1.44.0
+name: ZEVA v1.45.0
 
 on:
   push:
-    branches: [ release-1.44.0 ]
+    branches: [ release-1.45.0 ]
   workflow_dispatch:
   workflow_call:
 
 env:
   ## The pull request number of the Tracking pull request to merge the release branch to main
-  PR_NUMBER: 1176
-  RELEASE_NAME: release-1.44.0
+  PR_NUMBER: 1232
+  RELEASE_NAME: release-1.45.0
 
 jobs:
 
