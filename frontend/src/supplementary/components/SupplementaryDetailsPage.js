@@ -91,9 +91,6 @@ const SupplementaryDetailsPage = (props) => {
   const isDirector =
     user.isGovernment && user.roles.some((r) => r.roleCode === 'Director');
 
-  const isAnalyst =
-    user.isGovernment && user.roles.some((r) => r.roleCode === 'Engineer/Analyst');
-
   let showTabs =
     !newReport &&
     user.isGovernment &&
@@ -682,7 +679,7 @@ const SupplementaryDetailsPage = (props) => {
               />
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 isEditable &&
-                ['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0 && isAnalyst && (
+                ['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0 && !isDirector && (
                   <Button
                     buttonType="delete"
                     action={() => setShowModalDelete(true)}
