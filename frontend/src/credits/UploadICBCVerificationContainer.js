@@ -70,9 +70,19 @@ const UploadICBCVerificationContainer = (props) => {
                 submissionCurrentDate: dateCurrentTo
               })
               .then((postResponse) => {
-                const { dateCurrentTo: updatedDateCurrentTo } =
+                const { dateCurrentTo: updatedDateCurrentTo, createdRecords, updatedRecords } =
                   postResponse.data;
                 setPreviousDateCurrentTo(updatedDateCurrentTo);
+                if (createdRecords == 0 && updatedRecords == 0) {
+                  setAlertMessage('upload successful - no new records were found.')
+                } else {
+                  setAlertMessage('upload successful - ' + 
+                    createdRecords + ' new records were created and ' + 
+                      updatedRecords + ' records were updated.');
+                }
+                toastr.success('upload successful!', '', {
+                  positionClass: 'toast-bottom-right'
+                });
               })
               .catch((error) => {
                 console.error(error);
@@ -86,10 +96,6 @@ const UploadICBCVerificationContainer = (props) => {
                 }
               })
               .finally(() => {
-                setAlertMessage('upload successful');
-                toastr.success('upload successful!', '', {
-                  positionClass: 'toast-bottom-right'
-                });
                 setFiles([]);
                 setShowProcessing(false);
                 setShowProgressBar(false);

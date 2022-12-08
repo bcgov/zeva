@@ -78,7 +78,7 @@ const UploadVerificationData = (props) => {
               <Alert
                 message={alertMessage}
                 classname={
-                  alertMessage === 'upload successful'
+                  alertMessage.includes('upload successful')
                     ? 'alert-success'
                     : 'alert-danger'
                 }
