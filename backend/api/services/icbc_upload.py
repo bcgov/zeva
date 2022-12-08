@@ -1,5 +1,7 @@
 import pandas as pd
+import numpy as np
 import math
+import time
 from django.db import transaction
 
 from api.models.icbc_registration_data import IcbcRegistrationData
@@ -16,90 +18,163 @@ def trim_all_columns(df):
     return df.applymap(trim_strings)
 
 
+def format_dataframe(df):
+    df = df[
+        (df['HYBRID_VEHICLE_FLAG'] != 'N') |
+        (df['ELECTRIC_VEHICLE_FLAG'] != 'N') |
+        (df['FUEL_TYPE'].str.upper() == 'ELECTRIC') |
+        (df['FUEL_TYPE'].str.upper() == 'HYDROGEN') |
+        (df['FUEL_TYPE'].str.upper() == 'GASOLINEELECTRIC')
+    ]
+
+    df['MODEL_YEAR'].fillna(0, inplace=True)
+    df['MODEL_YEAR'] = pd.to_numeric(df['MODEL_YEAR'])
+    df.drop(df[df['MODEL_YEAR'] <= 2018].index, inplace = True)
+
+    df['VIN'].fillna(0, inplace=True)
+    df.drop(df[df['VIN'] == 0].index, inplace = True)
+
+    df = df[['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN']]
+
+    return df
+
+
 @transaction.atomic
-def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
-    current_to_date = IcbcUploadDate.objects.create(
-        upload_date=dateCurrentTo,
-        create_user=requesting_user.username,
-        update_user=requesting_user.username,
-    )
+def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo, previous_excelfile):
+    try:
+        start_time = time.time()
 
-    page_count = 0
+        current_to_date = IcbcUploadDate.objects.create(
+            upload_date=dateCurrentTo,
+            create_user=requesting_user.username,
+            update_user=requesting_user.username,
+        )
 
-    df = pd.read_csv(excelfile, sep="|", memory_map=True, nrows=1)
-    df.columns = map(str.upper, df.columns)
-    header_names = list(df.columns.values)
+        page_count = 0
 
-    number_of_rows = sum(1 for _ in open(excelfile))
-    number_of_pages = 1
-    if number_of_rows > 50000:
-        number_of_pages = int(math.ceil(number_of_rows / 50000))
+        print("Processing Started")
 
-    x = range(number_of_pages)
-    for n in x:
+        # Previous file processing
+        df_p = []
         for df in pd.read_csv(
-                excelfile, sep="|", error_bad_lines=False, iterator=True,
-                chunksize=50000, memory_map=True, nrows=50000,
-                header=None,
-                names=header_names,
-                skiprows=(n * 50000) + 1
+            previous_excelfile, sep=",", error_bad_lines=False, iterator=True, low_memory=True,
+            chunksize=50000, header=0
         ):
-            # This is to tell postgres that we're still processing and keep the
-            # connection alive
+            # df = format_dataframe(df) # pre-processing manually for now
+            df['SOURCE'] = 'PREVIOUS'
+            df_p.extend(df.values.tolist())
+
+        print("Read previous file", time.time() - start_time)
+        print("Previous file rows", len(df_p))
+
+        # Latest file processing
+        df_l = []
+        for df in pd.read_csv(
+            excelfile, sep=",", error_bad_lines=False, iterator=True, low_memory=True,
+            chunksize=50000, header=0
+        ):
+            # df = format_dataframe(df) # pre-processing manually for now
+            df['SOURCE'] = 'LATEST'
+            df_l.extend(df.values.tolist())
+
+        print("Read latest file", time.time() - start_time)
+        print("Latest file rows", len(df_l))
+
+        df_p = pd.DataFrame(df_p, columns=['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN', 'SOURCE'])
+        df_l = pd.DataFrame(df_l, columns=['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN', 'SOURCE'])
+
+        # calculate any changes in the data between the latest file and the previously uploaded file
+        c_result = pd.concat([df_p, df_l]).drop_duplicates(subset=['MODEL_YEAR', 'MAKE', 'MODEL', 'VIN']).reset_index(drop=True)
+        c_result = c_result[c_result['SOURCE'] == 'LATEST']
+        print("Compared files", time.time() - start_time)
+        print("Changed rows", c_result.shape)
+
+        # If no changes detected then we end here
+        # and update the IcbcUploadDate Filename to the
+        # latest filename
+        if c_result.empty:
+            print("No file changes detected.")
+            current_to_date.filename = excelfile
+            current_to_date.save()
+            return (True, 0, 0)
+
+        chunks = np.array_split(c_result, int(math.ceil(c_result.shape[0] / 25000)))
+        print("Number of Pages to process", len(chunks))
+
+        icbc_vehicles = IcbcVehicle.objects.all()
+        print("icbc_vehicles count:", len(icbc_vehicles))
+
+        # stats variables
+        created_records_count = 0
+        updated_records_count = 0
+        for df_ch in chunks:
+            chunk_time = time.time()
+            # This tells postgres to keep the db connection alive
             _ = IcbcUploadDate.objects.get(
                 id=current_to_date.id
             )
+
             print('Processing page: ' + str(page_count))
+            print('Row Count: ' + str(df_ch.shape[0]))
             page_count += 1
 
-            df['MODEL_YEAR'].fillna(0, inplace=True)
-            df['VIN'].fillna(0, inplace=True)
+            if df_ch.shape[0] <= 0:
+                continue
 
-            df.query('MODEL_YEAR > 2018', inplace=True)
-            # df = df[(df.MODEL_YEAR > 2018)]
-            # df.query('HYBRID_VEHICLE_FLAG != "N"', inplace=True)
-            # df.query('ELECTRIC_VEHICLE_FLAG != "N"', inplace=True)
-            # df['FUEL_TYPE'] = df['FUEL_TYPE'].str.upper()
-            # df.query('FUEL_TYPE in ["ELECTRIC", "HYDROGEN", "GASOLINEELECTRIC"]')
-            df = df[
-                (df.HYBRID_VEHICLE_FLAG != 'N') |
-                (df.ELECTRIC_VEHICLE_FLAG != 'N') |
-                (df.FUEL_TYPE.str.upper() == 'ELECTRIC') |
-                (df.FUEL_TYPE.str.upper() == 'HYDROGEN') |
-                (df.FUEL_TYPE.str.upper() == 'GASOLINEELECTRIC')
-            ]
-            df.query('VIN != 0')
-            # df = df[(df.VIN != 0)]
+            unique_model_years = df_ch['MODEL_YEAR'].unique()
+            # unique_models = df_ch['MODEL'].unique()
+            # unique_makes = df_ch['MAKE'].unique()
+            # unique_vins = df_ch['VIN'].unique()
+            # print("unique_model_years", unique_model_years.shape[0])
+            # print("unique_models", unique_models.shape[0])
+            # print("unique_makes", unique_makes.shape[0])
+            # print("unique_vins", unique_vins.shape[0])
 
-            # pd.options.display.float_format = '{:.0f}'.format
-            try:
-                # iterate through df and check if vehicle exists, if it doesn't,
-                # add it!
-                with transaction.atomic():
-                    for _, row in df.iterrows():
-                        icbc_vehicle_model = str(row['MODEL']).upper().strip()
-                        icbc_vehicle_year = str(int(row['MODEL_YEAR'])).strip()
-                        icbc_vehicle_make = str(row['MAKE']).upper().strip()
-                        icbc_vehicle_vin = str(row['VIN']).upper().strip()
-
-                        (model_year, _) = ModelYear.objects.get_or_create(
-                            name=icbc_vehicle_year,
+            model_years = []
+            for unique_model_year in unique_model_years:
+                (model_year, _) = ModelYear.objects.get_or_create(
+                            name=unique_model_year,
                             defaults={
                                 'create_user': requesting_user.username,
                                 'update_user': requesting_user.username
                             })
-                        icbc_vehicle_year_id = model_year.id
+                model_years.append(model_year)
 
-                        (vehicle, _) = IcbcVehicle.objects.get_or_create(
-                                model_name=icbc_vehicle_model,
-                                model_year_id=icbc_vehicle_year_id,
-                                make=icbc_vehicle_make,
-                                defaults={
-                                    'create_user': requesting_user.username,
-                                    'update_user': requesting_user.username
-                                })
-                        vehicle_id = vehicle.id
+            try:
+                with transaction.atomic():
+                    for _, row in df_ch.iterrows():
+                        icbc_vehicle_year = str(int(row['MODEL_YEAR'])).strip()
+                        icbc_vehicle_model = str(row['MODEL']).upper().strip()
+                        icbc_vehicle_make = str(row['MAKE']).upper().strip()
+                        icbc_vehicle_vin = str(row['VIN']).upper().strip()
 
+                        # Searching for Model Year
+                        for model_year in model_years:
+                            if model_year.name == icbc_vehicle_year:
+                                icbc_vehicle_year_id = model_year.id
+
+                        # Searching for Vehicle Id
+                        vehicle_id = None
+                        for vh in icbc_vehicles:
+                            if vh.model_name == icbc_vehicle_model \
+                              and vh.model_year == icbc_vehicle_year \
+                                and vh.make == icbc_vehicle_make:
+                                    vehicle_id = vh.id
+                                    break
+                        
+                        # Create new vehicle
+                        if vehicle_id == None:
+                            (vehicle, _) = IcbcVehicle.objects.get_or_create(
+                                    model_name=icbc_vehicle_model,
+                                    model_year_id=icbc_vehicle_year_id,
+                                    make=icbc_vehicle_make,
+                                    defaults={
+                                        'create_user': requesting_user.username,
+                                        'update_user': requesting_user.username
+                                    })
+                            vehicle_id = vehicle.id
+                        
+                        # Create new vin record
                         (row, created) = IcbcRegistrationData.objects.get_or_create(
                             vin=icbc_vehicle_vin,
                             defaults={
@@ -108,14 +183,32 @@ def ingest_icbc_spreadsheet(excelfile, requesting_user, dateCurrentTo):
                                 'icbc_vehicle_id': vehicle_id,
                                 'icbc_upload_date_id': current_to_date.id
                             })
+                        
+                        if created:
+                            created_records_count += 1
 
+                        # if vehicle id doesn't match then update id, date, username
                         if not created and row.icbc_vehicle_id != vehicle_id:
                             row.icbc_vehicle_id = vehicle_id
                             row.icbc_upload_date_id = current_to_date.id
                             row.update_user = requesting_user.username
                             row.save()
+                            updated_records_count += 1
 
             except Exception as e:
                 print(e)
 
-    return True
+            print("Page Time: ", time.time() - chunk_time)
+
+        """ Update IcbcUploadDate filename now that processing 
+        has completed. If the upload failed then the IcbcUploadDate
+        object will have an empty filename which we can skip on
+        next upload """
+        current_to_date.filename = excelfile
+        current_to_date.save()
+
+        print("Total processing time: ", time.time() - start_time)
+
+        return (True, created_records_count, updated_records_count)
+    except Exception as e:
+        print(e)

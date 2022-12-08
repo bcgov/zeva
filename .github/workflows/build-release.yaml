@@ -1,17 +1,17 @@
 ## For each release, the value of workflow name, branches, PR_NUMBER and RELEASE_NAME need to be adjusted accordingly
 ## Also change the .pipelin/lib/config.js version number
-name: ZEVA v1.43.0
+name: ZEVA v1.44.0
 
 on:
   push:
-    branches: [ release-1.43.0 ]
+    branches: [ release-1.44.0 ]
   workflow_dispatch:
   workflow_call:
 
 env:
   ## The pull request number of the Tracking pull request to merge the release branch to main
-  PR_NUMBER: 1149
-  RELEASE_NAME: release-1.43.0
+  PR_NUMBER: 1176
+  RELEASE_NAME: release-1.44.0
 
 jobs:
 
@@ -38,7 +38,8 @@ jobs:
 
       ## Log in to Openshift with a token of service account
       - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1
+        ##uses: redhat-actions/oc-login@v1
+        uses: smlgbl/oc-login@main
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
@@ -65,7 +66,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1
+        ##uses: redhat-actions/oc-login@v1
+        uses: smlgbl/oc-login@main
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
@@ -92,7 +94,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1
+        ##uses: redhat-actions/oc-login@v1
+        uses: smlgbl/oc-login@main
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
@@ -127,7 +130,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Log in to Openshift
-        uses: redhat-actions/oc-login@v1
+        ##uses: redhat-actions/oc-login@v1
+        uses: smlgbl/oc-login@main
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}

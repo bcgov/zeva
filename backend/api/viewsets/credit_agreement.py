@@ -93,6 +93,11 @@ class CreditAgreementViewSet(
         types_list = []
 
         for data in CreditAgreementTransactionTypes:
+            # The following two transaction types are
+            # deprecated but kept to maintain transaction history
+            if data == CreditAgreementTransactionTypes.REASSESSMENT_ALLOCATION \
+              or data == CreditAgreementTransactionTypes.REASSESSMENT_REDUCTION:
+                continue
             types_list.append(data.value)
 
         return Response(types_list)

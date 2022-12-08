@@ -227,7 +227,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                           )
                         });
                       }}
-                      readOnly={readOnly}
+                      readOnly={readOnly || each.modelYear != reportYear}
                     />
                   </td>
                   <td>
@@ -269,7 +269,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                           creditB: value
                         });
                       }}
-                      readOnly={readOnly}
+                      readOnly={readOnly || each.modelYear != reportYear}
                     />
                   </td>
                 </>
@@ -456,59 +456,67 @@ const ComplianceObligationTableCreditsIssued = (props) => {
           Object.keys(administrativeReduction).length > 0) ||
         (automaticAdministrativePenalty &&
           Object.keys(automaticAdministrativePenalty).length > 0)) && (
-        <table className="mb-4">
-          <tbody>
-            {automaticAdministrativePenalty &&
-              Object.keys(automaticAdministrativePenalty).length > 0 &&
-              tableSection(
-                automaticAdministrativePenalty,
-                'Automatic Administrative Penalty'
-              )}
+        <>
+          <div className="text-blue my-3">
+            Only credits of the same model year of this report can be edited.
+          </div>
+          <table className="mb-4">
+            <tbody>
+              {automaticAdministrativePenalty &&
+                Object.keys(automaticAdministrativePenalty).length > 0 &&
+                tableSection(
+                  automaticAdministrativePenalty,
+                  'Automatic Administrative Penalty'
+                )}
 
-            {Object.keys(creditsIssuedSales).length > 0 &&
-              tableSection(creditsIssuedSales, 'Issued for Consumer ZEV Sales')}
+              {Object.keys(creditsIssuedSales).length > 0 &&
+                tableSection(
+                  creditsIssuedSales,
+                  'Issued for Consumer ZEV Sales'
+                )}
 
-            {Object.keys(pendingBalance).length > 0 &&
-              tableSection(
-                pendingBalance,
-                'Pending Issuance for Consumer ZEV Sales'
-              )}
+              {Object.keys(pendingBalance).length > 0 &&
+                tableSection(
+                  pendingBalance,
+                  'Pending Issuance for Consumer ZEV Sales'
+                )}
 
-            {initiativeAgreement &&
-              Object.keys(initiativeAgreement).length > 0 &&
-              tableSection(
-                initiativeAgreement,
-                'Issued from Initiative Agreements'
-              )}
+              {initiativeAgreement &&
+                Object.keys(initiativeAgreement).length > 0 &&
+                tableSection(
+                  initiativeAgreement,
+                  'Issued from Initiative Agreements'
+                )}
 
-            {purchaseAgreement &&
-              Object.keys(purchaseAgreement).length > 0 &&
-              tableSection(
-                purchaseAgreement,
-                'Issued from Purchase Agreements'
-              )}
+              {purchaseAgreement &&
+                Object.keys(purchaseAgreement).length > 0 &&
+                tableSection(
+                  purchaseAgreement,
+                  'Issued from Purchase Agreements'
+                )}
 
-            {administrativeAllocation &&
-              Object.keys(administrativeAllocation).length > 0 &&
-              tableSection(
-                administrativeAllocation,
-                'Administrative Credit Allocation'
-              )}
+              {administrativeAllocation &&
+                Object.keys(administrativeAllocation).length > 0 &&
+                tableSection(
+                  administrativeAllocation,
+                  'Administrative Credit Allocation'
+                )}
 
-            {Object.keys(transfersIn).length > 0 &&
-              tableSection(transfersIn, 'Transferred In')}
+              {Object.keys(transfersIn).length > 0 &&
+                tableSection(transfersIn, 'Transferred In')}
 
-            {administrativeReduction &&
-              Object.keys(administrativeReduction).length > 0 &&
-              tableSection(
-                administrativeReduction,
-                'Administrative Credit Reduction'
-              )}
+              {administrativeReduction &&
+                Object.keys(administrativeReduction).length > 0 &&
+                tableSection(
+                  administrativeReduction,
+                  'Administrative Credit Reduction'
+                )}
 
-            {Object.keys(transfersOut).length > 0 &&
-              tableSection(transfersOut, 'Transferred Away')}
-          </tbody>
-        </table>
+              {Object.keys(transfersOut).length > 0 &&
+                tableSection(transfersOut, 'Transferred Away')}
+            </tbody>
+          </table>
+        </>
       )}
 
       <table>

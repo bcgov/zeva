@@ -33,7 +33,9 @@ const ComplianceReportsContainer = (props) => {
       setFiltered([...filtered, ...location.state]);
     }
     const ratiosPromise = axios.get(ROUTES_COMPLIANCE.RATIOS);
-    const reportsPromise = axios.get(ROUTES_COMPLIANCE.REPORTS);
+    const reportsPromise = axios.get(
+      ROUTES_COMPLIANCE.REPORTS + '?consider-supplemental=Y'
+    );
 
     Promise.all([reportsPromise, ratiosPromise]).then(
       ([response, ratiosResponse]) => {

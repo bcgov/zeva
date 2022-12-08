@@ -19,6 +19,7 @@ import formatNumeric from '../../app/utilities/formatNumeric';
 import CustomPropTypes from '../../app/utilities/props';
 import ComplianceHistory from '../../compliance/components/ComplianceHistory';
 import CONFIG from '../../app/config';
+import ReassessmentDetailsPage from './ReassessmentDetailsPage';
 
 const SupplementaryDetailsPage = (props) => {
   const {
@@ -86,6 +87,9 @@ const SupplementaryDetailsPage = (props) => {
       supplementaryReportId: details.id
     };
   }
+
+  const isDirector =
+    user.isGovernment && user.roles.some((r) => r.roleCode === 'Director');
 
   let showTabs =
     !newReport &&
@@ -223,7 +227,9 @@ const SupplementaryDetailsPage = (props) => {
       }}
       handleSubmit={() => {
         setShowModalDelete(false);
-        handleSubmit('DELETED');
+        if(!newReport) {
+          handleSubmit('DELETED');
+        }
       }}
       modalClass="w-75"
       showModal={showModalDelete}
@@ -397,35 +403,51 @@ const SupplementaryDetailsPage = (props) => {
           }}
         />
         <div>
-          <SupplierInformation
-            isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
-            user={user}
-            details={details}
-            handleInputChange={handleInputChange}
-            loading={loading}
-            newData={newData}
-          />
-          <ZevSales
-            addSalesRow={addSalesRow}
-            details={details}
-            handleInputChange={handleInputChange}
-            salesRows={salesRows}
-            isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
-          />
-          <CreditActivity
-            creditReductionSelection={creditReductionSelection}
-            details={details}
-            handleInputChange={handleInputChange}
-            handleSupplementalChange={handleSupplementalChange}
-            ldvSales={ldvSales}
-            newBalances={newBalances}
-            newData={newData}
-            newLdvSales={newLdvSales || ldvSales}
-            obligationDetails={obligationDetails}
-            ratios={ratios}
-            supplierClass={supplierClass}
-            isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
-          />
+          {reassessment.isReassessment &&
+          currentStatus === 'ASSESSED' &&
+          isDirector ? (
+            <ReassessmentDetailsPage
+              details={details}
+              ldvSales={ldvSales}
+              newBalances={newBalances}
+              newData={newData}
+              obligationDetails={obligationDetails}
+              ratios={ratios}
+              user={user}
+            />
+          ) : (
+            <>
+              <SupplierInformation
+                isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
+                user={user}
+                details={details}
+                handleInputChange={handleInputChange}
+                loading={loading}
+                newData={newData}
+              />
+              <ZevSales
+                addSalesRow={addSalesRow}
+                details={details}
+                handleInputChange={handleInputChange}
+                salesRows={salesRows}
+                isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
+              />
+              <CreditActivity
+                creditReductionSelection={creditReductionSelection}
+                details={details}
+                handleInputChange={handleInputChange}
+                handleSupplementalChange={handleSupplementalChange}
+                ldvSales={ldvSales}
+                newBalances={newBalances}
+                newData={newData}
+                newLdvSales={newLdvSales || ldvSales}
+                obligationDetails={obligationDetails}
+                ratios={ratios}
+                supplierClass={supplierClass}
+                isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
+              />
+            </>
+          )}
         </div>
         <div id="comment-input">
           {!user.isGovernment && (currentStatus === 'DRAFT' || newReport) && (
@@ -657,10 +679,12 @@ const SupplementaryDetailsPage = (props) => {
               />
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 isEditable &&
-                ['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0 && (
+                ['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0 && !isDirector && (
                   <Button
                     buttonType="delete"
                     action={() => setShowModalDelete(true)}
+                    disabled={newReport}
+                    buttonTooltip={'Delete is disabled until draft is saved.'}
                     optionalText={
                       details &&
                       details.reassessment &&

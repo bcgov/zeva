@@ -116,6 +116,21 @@ const CreditTransactionListTable = (props) => {
     return 0;
   });
 
+  // for items  with the same date in transactionTimestamp, if item transactionType is 'Reduction' then it should be considered last in the list
+  items.sort((a, b) => {
+    if (moment(a.transactionTimestamp).format('YYYY-MM-DD') === moment(b.transactionTimestamp).format('YYYY-MM-DD')) {
+      if (a.transactionType.transactionType === 'Reduction') {
+        return 1;
+      }
+
+      if (b.transactionType.transactionType === 'Reduction') {
+        return -1;
+      }
+    }
+
+    return 0;
+  });
+  
   items.forEach((item) => {
     const totalValue =
       Math.round((item.totalValue + Number.EPSILON) * 100) / 100;
@@ -148,8 +163,14 @@ const CreditTransactionListTable = (props) => {
           item.creditClass.creditClass === 'B'
             ? transactions[found].creditsB + totalValue
             : transactions[found].creditsB,
-        displayTotalA: totalA,
-        displayTotalB: totalB
+        displayTotalA:
+          item.creditClass.creditClass === 'A'
+            ? transactions[found].displayTotalA + totalValue
+            : transactions[found].displayTotalA,
+        displayTotalB:
+          item.creditClass.creditClass === 'B'
+            ? transactions[found].displayTotalB + totalValue
+            : transactions[found].displayTotalB,
       };
     } else {
       transactions.push({

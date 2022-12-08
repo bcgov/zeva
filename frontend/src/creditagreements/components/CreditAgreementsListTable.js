@@ -72,12 +72,6 @@ const CreditAgreementsListTable = (props) => {
       }
     },
     {
-      Header: 'Transaction Type',
-      accessor: (row) => row.transactionType,
-      id: 'col-transactionType',
-      className: 'text-right'
-    },
-    {
       Header: 'Date',
       accessor: 'effectiveDate',
       id: 'col-transactionDate',
@@ -93,7 +87,7 @@ const CreditAgreementsListTable = (props) => {
       Header: 'Transaction',
       accessor: (row) => row.transactionType,
       id: 'col-transactionType',
-      className: 'text-center'
+      className: 'text-left'
     },
     {
       Header: 'A-Credits',

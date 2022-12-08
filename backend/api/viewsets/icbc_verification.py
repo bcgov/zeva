@@ -57,25 +57,55 @@ class IcbcVerificationViewSet(
         filename = request.data.get('filename')
 
         try:
+            try:
+                # get previous upload file so we can compare
+                last_icbc_date = IcbcUploadDate.objects \
+                  .exclude(filename__isnull=True).latest('create_timestamp')
+            except IcbcUploadDate.DoesNotExist:
+              raise Exception(
+                """ 
+                No previous IcbcUploadDate found with filename. Update previous Date with current filename.
+                """)
+
+            print("Last upload date", last_icbc_date.upload_date)
+            
+            # download previously uploaded file from minio to local directory
+            previous_filename = last_icbc_date.filename
+            print("Downlading previous file", previous_filename)
+            last_url = minio_get_object(previous_filename)
+            urllib.request.urlretrieve(last_url, previous_filename)
+            
+            # download latest file from minio to local directory
+            print("Downlading latest file", filename)
             url = minio_get_object(filename)
             urllib.request.urlretrieve(url, filename)
+
+            print("Starting Ingest")
             date_current_to = request.data.get('submission_current_date')
+            try:
+                done = ingest_icbc_spreadsheet(filename, user, date_current_to, previous_filename)
+            except:
+                return HttpResponse(status=400, content='Error processing data file. Please contact your administrator for assistance.')
 
-            done = ingest_icbc_spreadsheet(filename, user, date_current_to)
+            # remove files from local directory
+            os.remove(filename)
+            os.remove(previous_filename)
 
-            if done:
+            if done[0]:
+                # We remove the previous file from minio but keep the 
+                # latest one so we can use it for compare on next upload
+                minio_remove_object(previous_filename)
                 print('Done processing')
-                os.remove(filename)
-                minio_remove_object(filename)
 
         except Exception as error:
-            print(error)
             return HttpResponse(status=400, content=error)
 
         return HttpResponse(
             status=201,
             content=json.dumps({
-                'dateCurrentTo': date_current_to
+                'dateCurrentTo': date_current_to,
+                'createdRecords': done[1],
+                'updatedRecords': done[2]
             }),
             content_type='application/json'
         )

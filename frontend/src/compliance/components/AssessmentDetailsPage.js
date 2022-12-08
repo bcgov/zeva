@@ -19,6 +19,7 @@ import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
 import ComplianceHistory from './ComplianceHistory';
 import AssessmentEditableCommentList from './AssessmentEditableCommentList';
 import AssessmentEditableCommentInput from './AssessmentEditableCommentInput';
+import NoticeOfAssessmentSection from './NoticeOfAssessmentSection';
 
 const AssessmentDetailsPage = (props) => {
   const {
@@ -53,7 +54,9 @@ const AssessmentDetailsPage = (props) => {
     supplementaryStatus,
     supplementaryId,
     createdByGov,
-    handleCancelConfirmation
+    handleCancelConfirmation,
+    reassessmentExists,
+    reassessmentTooltip,
   } = props;
 
   const [showModal, setShowModal] = useState(false);
@@ -172,17 +175,6 @@ const AssessmentDetailsPage = (props) => {
   if (loading) {
     return <Loading />;
   }
-
-  const getClassDescriptions = (_supplierClass) => {
-    switch (_supplierClass) {
-      case 'L':
-        return 'Large';
-      case 'M':
-        return 'Medium';
-      default:
-        return 'Small';
-    }
-  };
 
   const editComment = (comment) => {
     const text = comment.comment;
@@ -335,9 +327,13 @@ const AssessmentDetailsPage = (props) => {
                   (supplementaryStatus === 'DRAFT' && createdByGov) ||
                   supplementaryStatus === 'DELETED' ||
                   supplementaryStatus === 'ASSESSED') && (
-                  <button
-                    className="btn button primary"
-                    onClick={() => {
+                  <Button
+                    buttonTooltip={reassessmentTooltip}
+                    buttonType="submit"
+                    optionalClassname="btn button primary"
+                    optionalText="Create Supplementary Report"
+                    disabled={reassessmentExists}
+                    action={() => {
                       history.push(
                         `${ROUTES_SUPPLEMENTARY.CREATE.replace(
                           /:id/g,
@@ -345,10 +341,7 @@ const AssessmentDetailsPage = (props) => {
                         )}?new=Y`
                       );
                     }}
-                    type="button"
-                  >
-                    Create Supplementary Report
-                  </button>
+                  />
                 )}
 
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
@@ -403,75 +396,14 @@ const AssessmentDetailsPage = (props) => {
               />
             </span>
 
-            <h3>Notice of Assessment</h3>
-            <div className="mt-3">
-              <h3> {details.organization.name} </h3>
-            </div>
-            {details.organization.organizationAddress &&
-              details.organization.organizationAddress.length > 0 && (
-                <div>
-                  <div className="d-inline-block mr-5 mt-3 col-5 text-blue">
-                    <h4>Service Address</h4>
-                    {details.organization.organizationAddress.map(
-                      (address) =>
-                        address.addressType.addressType === 'Service' && (
-                          <div key={address.id}>
-                            {address.representativeName && (
-                              <div> {address.representativeName} </div>
-                            )}
-                            <div> {address.addressLine1} </div>
-                            <div> {address.addressLine2} </div>
-                            <div>
-                              {' '}
-                              {address.city} {address.state} {address.country}{' '}
-                            </div>
-                            <div> {address.postalCode} </div>
-                          </div>
-                        )
-                    )}
-                  </div>
-                  <div className="d-inline-block mt-3 col-xs-12 col-sm-5 text-blue">
-                    <h4>Records Address</h4>
-                    {details.organization.organizationAddress.map(
-                      (address) =>
-                        address.addressType.addressType === 'Records' && (
-                          <div key={address.id}>
-                            {address.representativeName && (
-                              <div> {address.representativeName} </div>
-                            )}
-                            <div> {address.addressLine1} </div>
-                            <div> {address.addressLine2} </div>
-                            <div>
-                              {' '}
-                              {address.city} {address.state} {address.country}{' '}
-                            </div>
-                            <div> {address.postalCode} </div>
-                          </div>
-                        )
-                    )}
-                  </div>
-                </div>
-              )}
-            <div className="mt-4">
-              <h4>Light Duty Vehicle Makes:</h4>
-              {makes.length > 0 && (
-                <div
-                  className={`mt-0 list ${disabledInputs ? 'disabled' : ''}`}
-                >
-                  <ul>
-                    {makes.map((item, index) => (
-                      <li key={index}>
-                        <div className="col-11">{item}</div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              <h4 className="d-inline">Vehicle Supplier Class:</h4>
-              <p className="d-inline ml-2">
-                {getClassDescriptions(supplierClass)} Volume Supplier
-              </p>
-            </div>
+            <NoticeOfAssessmentSection
+              name={details.organization.name}
+              addresses={details.organization.organizationAddress}
+              addressesAreStrings={false}
+              makes={makes}
+              supplierClass={supplierClass}
+              disabledInputs={disabledInputs}
+            />
 
             <div className="mt-4">
               <ComplianceObligationAmountsTable

@@ -29,12 +29,13 @@ const CreditRequestVINListContainer = (props) => {
   const [initialPageCount, setInitialPageCount] = useState(-1);
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
+  const reset = query && query.reset;
 
   const refreshDetails = () => {
     axios
       .all([
         axios.get(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id)),
-        axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id)),
+        axios.get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', id) + (reset ? '?reset=Y' : '')),
         axios.get(ROUTES_CREDIT_REQUESTS.UNSELECTED.replace(':id', id), {
           params: query
         }),
@@ -54,8 +55,6 @@ const CreditRequestVINListContainer = (props) => {
             setInvalidatedList(unselected);
             const { data: reasonsData } = reasonsResponse;
             setReasons(reasonsData);
-
-            const reset = query && query.reset;
 
             // Initialize content and reason values
             const { content: contentListData, pages: numPages } =
@@ -181,7 +180,7 @@ const CreditRequestVINListContainer = (props) => {
         invalidated: invalidatedList,
         validationStatus: 'CHECKED',
         reasons: reasonList,
-        reset: query && query.reset
+        reset: reset
       })
       .then(() => {
         const url = ROUTES_CREDIT_REQUESTS.VALIDATED.replace(
