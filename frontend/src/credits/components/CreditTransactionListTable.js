@@ -197,6 +197,20 @@ const CreditTransactionListTable = (props) => {
 
     return 0;
   });
+  transactions.sort((a, b) => {
+    if (moment(a.transactionTimestamp).format('YYYY-MM-DD') === moment(b.transactionTimestamp).format('YYYY-MM-DD')) {
+      if (a.transactionType.transactionType === 'Reduction') {
+        return -1;
+      }
+
+      if (b.transactionType.transactionType === 'Reduction') {
+        return 1;
+      }
+    }
+
+    return 0;
+  });
+  console.log(transactions)
   const columns = [
     {
       Header: '',
