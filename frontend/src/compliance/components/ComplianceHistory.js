@@ -11,7 +11,7 @@ import history from '../../app/History';
 require('bootstrap/js/dist/collapse.js');
 
 const ComplianceHistory = (props) => {
-  const { id, activePage, supplementaryId: detailsId, reportYear } = props;
+  const { id, activePage, supplementaryId: detailsId, reportYear, newReassessment } = props;
 
   let { supplementaryId } = useParams();
 
@@ -182,14 +182,14 @@ const ComplianceHistory = (props) => {
                             ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
                               ':id',
                               id
-                            ).replace(':supplementaryId', item.id)
+                            ).replace(':supplementaryId', item.id) + (newReassessment ? '?reassessment=Y' : '')
                           );
                         } else {
                           history.push(
                             ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(
                               ':id',
                               id
-                            )
+                            ) + (newReassessment ? '?reassessment=Y' : '')
                           );
                         }
                       }}
@@ -236,6 +236,7 @@ ComplianceHistory.defaultProps = {
 ComplianceHistory.propTypes = {
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   activePage: PropTypes.string.isRequired,
+  newReassessment: PropTypes.bool,
   supplementaryId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   reportYear: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
     .isRequired
