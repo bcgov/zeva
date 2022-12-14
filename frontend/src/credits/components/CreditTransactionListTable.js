@@ -187,17 +187,6 @@ const CreditTransactionListTable = (props) => {
     }
   });
   transactions.sort((a, b) => {
-    if (a.transactionTimestamp > b.transactionTimestamp) {
-      return -1;
-    }
-
-    if (a.transactionTimestamp < b.transactionTimestamp) {
-      return 1;
-    }
-
-    return 0;
-  });
-  transactions.sort((a, b) => {
     if (moment(a.transactionTimestamp).format('YYYY-MM-DD') === moment(b.transactionTimestamp).format('YYYY-MM-DD')) {
       if (a.transactionType.transactionType === 'Reduction') {
         return -1;
@@ -208,9 +197,17 @@ const CreditTransactionListTable = (props) => {
       }
     }
 
+    if (a.transactionTimestamp > b.transactionTimestamp) {
+      return -1;
+    }
+
+    if (a.transactionTimestamp < b.transactionTimestamp) {
+      return 1;
+    }
+
     return 0;
   });
-  console.log(transactions)
+  
   const columns = [
     {
       Header: '',
