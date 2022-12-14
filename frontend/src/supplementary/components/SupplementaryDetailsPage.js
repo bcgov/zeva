@@ -61,11 +61,6 @@ const SupplementaryDetailsPage = (props) => {
   let { newData } = props;
   let { reassessment } = details;
 
-  console.log(id)
-  console.log(details)
-  console.log(reassessment)
-  console.log(newReport)
-
   if (loading) {
     return <Loading />;
   }
@@ -136,7 +131,6 @@ const SupplementaryDetailsPage = (props) => {
   if (selectedTab == tabNames[1] && currentStatus == 'SUBMITTED') {
     isEditable = true
   }
-
 
   const formattedPenalty = details.assessment
     ? formatNumeric(details.assessment.assessmentPenalty, 0)
