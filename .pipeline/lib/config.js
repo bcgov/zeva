@@ -1,7 +1,7 @@
 'use strict';
 const options= require('@bcgov/pipeline-cli').Util.parseArguments()
 const changeId = options.pr //aka pull-request
-const version = '1.44.0'
+const version = '1.45.0'
 const name = 'zeva'
 const ocpName = 'apps.silver.devops'
 
@@ -22,7 +22,7 @@ const phases = {
   dev: {namespace:'e52f12-dev', transient:true, name: `${name}`, ssoSuffix:'-dev', 
         ssoName:'dev.oidc.gov.bc.ca', phase: 'dev'  , changeId:`${changeId}`, suffix: `-dev-${changeId}`, 
         instance: `${name}-dev-${changeId}`  , version:`${version}-${changeId}`, tag:`dev-${version}-${changeId}`, 
-        host: `zeva-dev-${changeId}.${ocpName}.gov.bc.ca`, djangoDebug: 'True', logoutHostName: 'logontest.gov.bc.ca',
+        host: `zeva-dev-${changeId}.${ocpName}.gov.bc.ca`, djangoDebug: 'True', logoutHostName: 'logontest7.gov.bc.ca',
         frontendCpuRequest: '100m', frontendCpuLimit: '700m', frontendMemoryRequest: '300M', frontendMemoryLimit: '4G', frontendReplicas: 1,
             complianceReportEnabled: 'true', 
             complianceCalculatorEnabled: 'true',
@@ -45,7 +45,7 @@ const phases = {
   test: {namespace:'e52f12-test', name: `${name}`, ssoSuffix:'-test', 
         ssoName:'test.oidc.gov.bc.ca', phase: 'test'  ,  changeId:`${changeId}`, suffix: `-test`, 
         instance: `${name}-test`, version:`${version}`, tag:`test-${version}`, 
-        host: `zeva-test.${ocpName}.gov.bc.ca`, djangoDebug: 'False', logoutHostName: 'logontest.gov.bc.ca',
+        host: `zeva-test.${ocpName}.gov.bc.ca`, djangoDebug: 'False', logoutHostName: 'logontest7.gov.bc.ca',
         frontendCpuRequest: '300m', frontendCpuLimit: '600m', frontendMemoryRequest: '500M', frontendMemoryLimit: '1G', frontendReplicas: 2, frontendMinReplicas: 2, frontendMaxReplicas: 5,
             complianceReportEnabled: 'true',     
             complianceCalculatorEnabled: 'true',

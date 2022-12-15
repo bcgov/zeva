@@ -186,7 +186,28 @@ const CreditTransactionListTable = (props) => {
       });
     }
   });
+  transactions.sort((a, b) => {
+    if (moment(a.transactionTimestamp).format('YYYY-MM-DD') === moment(b.transactionTimestamp).format('YYYY-MM-DD')) {
+      if (a.transactionType.transactionType === 'Reduction') {
+        return -1;
+      }
 
+      if (b.transactionType.transactionType === 'Reduction') {
+        return 1;
+      }
+    }
+
+    if (a.transactionTimestamp > b.transactionTimestamp) {
+      return -1;
+    }
+
+    if (a.transactionTimestamp < b.transactionTimestamp) {
+      return 1;
+    }
+
+    return 0;
+  });
+  
   const columns = [
     {
       Header: '',
@@ -315,16 +336,7 @@ const CreditTransactionListTable = (props) => {
       className="credit-transaction-list-table"
       columns={columns}
       data={transactions}
-      defaultSorted={[
-        {
-          id: 'date',
-          desc: true
-        },
-        {
-          id: 'transaction',
-          desc: false
-        }
-      ]}
+      defaultSorted={[]}
       sortable={false}
       filterable={false}
       getTrProps={(state, row) => {

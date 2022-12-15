@@ -711,7 +711,7 @@ const SupplementaryContainer = (props) => {
 
   useEffect(() => {
     refreshDetails();
-  }, [keycloak.authenticated, location.pathname]);
+  }, [keycloak.authenticated, location.pathname, location.search]);
 
   return (
     <SupplementaryDetailsPage

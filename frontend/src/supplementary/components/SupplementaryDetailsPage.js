@@ -20,6 +20,8 @@ import CustomPropTypes from '../../app/utilities/props';
 import ComplianceHistory from '../../compliance/components/ComplianceHistory';
 import CONFIG from '../../app/config';
 import ReassessmentDetailsPage from './ReassessmentDetailsPage';
+import SupplementaryTab from './SupplementaryTab';
+import ReactTooltip from 'react-tooltip';
 
 const SupplementaryDetailsPage = (props) => {
   const {
@@ -81,49 +83,55 @@ const SupplementaryDetailsPage = (props) => {
     currentStatus = 'DRAFT';
   }
 
-  if (query && query.reassessment === 'Y') {
+  const isGovernment = user.isGovernment
+  const isDirector = isGovernment && user.roles.some((r) => r.roleCode === 'Director');
+  const newReassessment = query && query.reassessment === 'Y'
+
+  if (newReassessment) {
     reassessment = {
       isReassessment: true,
       supplementaryReportId: details.id
     };
   }
 
-  const isDirector =
-    user.isGovernment && user.roles.some((r) => r.roleCode === 'Director');
-
-  let showTabs =
-    !newReport &&
-    user.isGovernment &&
-    ((!reassessment.isReassessment && reassessment.reassessmentReportId) ||
-      (reassessment.isReassessment && reassessment.supplementaryReportId) ||
-      ['SUBMITTED'].indexOf(currentStatus) >= 0) &&
-    reassessment &&
-    !reassessment.supplementaryReportIsReassessment;
-
-  if (!user.isGovernment && details.actualStatus === 'ASSESSED') {
-    showTabs = true;
-  }
-
-  if (newReport && !user.isGovernment) {
+  if (newReport && !isGovernment) {
     reassessment = {
       isReassessment: false
     };
-
-    showTabs = false;
-
     details.actualStatus = 'DRAFT';
-
     newData = { zevSales: [], creditActivity: [], supplierInfo: {} };
   }
 
-  const isEditable =
+  const isAssessed = currentStatus === 'ASSESSED' ||
+    currentStatus === 'REASSESSED'
+
+  const tabNames = ['supplemental', 'recommendation', 'reassessment']
+  const selectedTab = query?.tab ? query.tab : isAssessed ? tabNames[2] :
+    (isGovernment ? tabNames[1] : tabNames[0])
+
+  const isReassessment = reassessment?.isReassessment
+  const reassessmentStatus = reassessment?.status ? reassessment.status : details.status
+  const supplementaryReportId = reassessment?.supplementaryReportId ? reassessment?.supplementaryReportId : 
+    (newReassessment ? details.id : null)
+  const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
+  const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
+  console.log(currentStatus)
+
+  let isEditable =
     ['DRAFT', 'RETURNED'].indexOf(details.status) >= 0 ||
-    (reassessment &&
-      reassessment.isReassessment &&
-      user.isGovernment &&
+    (isReassessment &&
+      isGovernment &&
       currentStatus !== 'ASSESSED' &&
-      (analystAction || directorAction)) ||
+      (analystAction || directorAction)) &&
     newReport;
+  
+  if (selectedTab == tabNames[0] && currentStatus == 'SUBMITTED') {
+    isEditable = false
+  }
+  if (selectedTab == tabNames[1] && currentStatus == 'SUBMITTED') {
+    isEditable = true
+  }
+
   const formattedPenalty = details.assessment
     ? formatNumeric(details.assessment.assessmentPenalty, 0)
     : 0;
@@ -210,7 +218,7 @@ const SupplementaryDetailsPage = (props) => {
     >
       <div className="my-3">
         <h3>
-          {reassessment && reassessment.isReassessment
+          {isReassessment
             ? 'Are you sure you want to recommend this?'
             : 'This will create a reassessment report from the supplementary report'}
         </h3>
@@ -257,9 +265,9 @@ const SupplementaryDetailsPage = (props) => {
       confirmClass="button primary"
     >
       <div className="my-3">
-        {user.isGovernment && (
+        {isGovernment && (
           <h3>
-            {reassessment && reassessment.isReassessment
+            {isReassessment
               ? 'This will create a reassessment report'
               : 'This will create a reassessment report from the supplementary report'}
           </h3>
@@ -277,18 +285,67 @@ const SupplementaryDetailsPage = (props) => {
       'Please select an Analyst Recommendation before recommending this assessment.';
   }
 
+  const tabUrl = (supplementalId, tabName) => {
+    return ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id)
+      .replace(':supplementaryId', supplementalId) +
+        `?tab=${tabName}${newReassessment ? '&reassessment=Y' : ''}`
+  }
+
+  const renderTabs = () => {
+    return (
+      
+      <ul
+        className="nav nav-pills nav-justified supplementary-report-tabs"
+        key="tabs"
+        role="tablist"
+      >
+        <ReactTooltip/>
+        <SupplementaryTab
+          selected={selectedTab == tabNames[0]}
+          title={'Supplementary Details'}
+          url={tabUrl(supplementaryReportId, tabNames[0])}
+          disabled={supplementaryReportId == null}
+          tooltip={'No supplementary report found. Analyst initiated reassessment.'}
+          status={reassessmentStatus}
+          assessed={isAssessed}
+        />
+        {isGovernment &&
+          <SupplementaryTab
+            selected={selectedTab == tabNames[1]}
+            title={'Reassessment Recommendation'}
+            url={tabUrl(newReport ? supplementaryReportId : reassessmentReportId, tabNames[1])}
+            disabled={false}
+            tooltip={'No supplementary report found. Analyst initiated reassessment.'}
+            status={reassessmentStatus}
+            assessed={isAssessed}
+          />
+        }
+        <SupplementaryTab
+          selected={selectedTab == tabNames[2]}
+          title={'Reassessment'}
+          url={tabUrl(reassessmentReportId, tabNames[2])}
+          disabled={!isAssessed}
+          tooltip={'Reassessment visible once a director approves the recommendation.'}
+          status={reassessmentStatus}
+          assessed={isAssessed}
+        />
+      </ul>
+    )
+  }
+
   return (
     <div id="supplementary" className="page">
       {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED && !newReport && (
         <ComplianceHistory
           activePage="supplementary"
           id={id}
+          newReassessment={newReassessment}
           reportYear={reportYear}
           supplementaryId={
-            reassessment.isReassessment &&
-            reassessment.supplementaryReportId &&
-            !reassessment.supplementaryReportIsReassessment
-              ? reassessment.supplementaryReportId
+            isReassessment &&
+            supplementaryReportId &&
+            !supplementaryReportIsReassessment
+              ? supplementaryReportId
               : details.id
           }
           user={user}
@@ -297,80 +354,16 @@ const SupplementaryDetailsPage = (props) => {
       <div className="row">
         <div className="col">
           <h2 className="mb-2 mt-3">
-            {reassessment.isReassessment
+            {isReassessment
               ? `${reportYear} Model Year Report Reassessment`
               : `${reportYear} Model Year Supplementary Report`}
           </h2>
         </div>
       </div>
-      {showTabs && (
-        <ul
-          className="nav nav-pills nav-justified supplementary-report-tabs"
-          key="tabs"
-          role="tablist"
-        >
-          <li
-            className={`nav-item ${
-              !reassessment.isReassessment ? 'active' : ''
-            } ${
-              reassessment && reassessment.status
-                ? reassessment.status
-                : details.status
-            } ${currentStatus === 'ASSESSED' ? 'ASSESSED' : ''}`}
-            role="presentation"
-          >
-            {reassessment.isReassessment ? (
-              <Link
-                to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
-                  ':id',
-                  id
-                ).replace(
-                  ':supplementaryId',
-                  reassessment.supplementaryReportId
-                )}
-              >
-                Supplementary Report
-              </Link>
-            ) : (
-              <span>Supplementary Report</span>
-            )}
-          </li>
-          <li
-            className={`nav-item ${
-              reassessment.isReassessment ? 'active' : ''
-            } ${details.actualStatus}`}
-            role="presentation"
-          >
-            {!reassessment.isReassessment &&
-              reassessment.reassessmentReportId && (
-                <Link
-                  to={ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
-                    ':id',
-                    id
-                  ).replace(
-                    ':supplementaryId',
-                    reassessment.reassessmentReportId
-                  )}
-                >
-                  Reassessment
-                </Link>
-              )}
-            {!reassessment.isReassessment &&
-              !reassessment.reassessmentReportId && (
-                <Link
-                  to={`${ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
-                    ':id',
-                    id
-                  ).replace(':supplementaryId', details.id)}?reassessment=Y`}
-                >
-                  Reassessment
-                </Link>
-              )}
-            {reassessment.isReassessment && <span>Reassessment</span>}
-          </li>
-        </ul>
-      )}
-      {isEditable && user.isGovernment && (
+
+      {renderTabs()}
+
+      {isEditable && isGovernment && (
         <div className="supplementary-form my-3">
           {commentArray &&
             commentArray.idirComment &&
@@ -403,7 +396,7 @@ const SupplementaryDetailsPage = (props) => {
           }}
         />
         <div>
-          {reassessment.isReassessment &&
+          {isReassessment &&
           currentStatus === 'ASSESSED' &&
           isDirector ? (
             <ReassessmentDetailsPage
@@ -450,7 +443,7 @@ const SupplementaryDetailsPage = (props) => {
           )}
         </div>
         <div id="comment-input">
-          {!user.isGovernment && (currentStatus === 'DRAFT' || newReport) && (
+          {!isGovernment && (currentStatus === 'DRAFT' || newReport) && (
             <CommentInput
               defaultComment={
                 details &&
@@ -464,7 +457,7 @@ const SupplementaryDetailsPage = (props) => {
             />
           )}
         </div>
-        {!user.isGovernment && (currentStatus === 'DRAFT' || newReport) && (
+        {!isGovernment && (currentStatus === 'DRAFT' || newReport) && (
           <UploadEvidence
             details={details}
             deleteFiles={deleteFiles}
@@ -542,8 +535,8 @@ const SupplementaryDetailsPage = (props) => {
         supplementaryAssessmentData.supplementaryAssessment.decision &&
         supplementaryAssessmentData.supplementaryAssessment.decision
           .description &&
-        (!user.isGovernment ||
-          (user.isGovernment &&
+        (!isGovernment ||
+          (isGovernment &&
             ['ASSESSED', 'RECOMMENDED'].indexOf(currentStatus) >= 0)) &&
         !newReport && (
           <>
@@ -567,7 +560,7 @@ const SupplementaryDetailsPage = (props) => {
             </div>
           </>
         )}
-      {isEditable && user.isGovernment && (
+      {isEditable && isGovernment && (
         <>
           {['RECOMMENDED'].indexOf(currentStatus) < 0 && (
             <h3 className="mt-4 mb-1">
@@ -645,7 +638,7 @@ const SupplementaryDetailsPage = (props) => {
           </div>
         </>
       )}
-      {!user.isGovernment &&
+      {!isGovernment &&
         user.hasPermission('SUBMIT_COMPLIANCE_REPORT') &&
         (['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0 || newReport) && (
           <div className="mt-3">
@@ -695,11 +688,10 @@ const SupplementaryDetailsPage = (props) => {
                   />
                 )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                query &&
-                query.reassessment !== 'Y' &&
+                selectedTab == tabNames[2] &&
                 (isEditable ||
                   ['SUBMITTED', 'RECOMMENDED'].indexOf(details.status) >= 0) &&
-                user.isGovernment &&
+                isGovernment &&
                 (((currentStatus === 'SUBMITTED' ||
                   currentStatus === 'RETURNED') &&
                   analystAction &&
@@ -735,11 +727,11 @@ const SupplementaryDetailsPage = (props) => {
                 (['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0 ||
                   newReport ||
                   (['SUBMITTED'].indexOf(currentStatus) >= 0 &&
-                    user.isGovernment)) && (
+                    isGovernment)) && (
                   <Button
                     buttonType="save"
                     action={
-                      user.isGovernment
+                      isGovernment
                         ? () => {
                             handleGovSubmitDraft(currentStatus);
                           }
@@ -781,7 +773,7 @@ const SupplementaryDetailsPage = (props) => {
                   />
                 )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                !user.isGovernment &&
+                !isGovernment &&
                 (['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0 ||
                   newReport) &&
                 user.hasPermission('SUBMIT_COMPLIANCE_REPORT') && (
