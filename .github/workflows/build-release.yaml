@@ -26,7 +26,7 @@ jobs:
 
       ## it will checkout to /home/runner/work/zeva/zeva
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # open it when zeva updated the python packages
       #- name: Run django tests 
@@ -63,7 +63,7 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Log in to Openshift
         ##uses: redhat-actions/oc-login@v1
@@ -91,7 +91,7 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Log in to Openshift
         ##uses: redhat-actions/oc-login@v1
@@ -127,7 +127,7 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Log in to Openshift
         ##uses: redhat-actions/oc-login@v1
