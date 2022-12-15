@@ -62,12 +62,15 @@ def vehicles_sales(model_year, organization):
         )
     ).filter(submission__in=org_submission)
 
+    all_sales = sales.values_list('xls_model_year', 'xls_make', 'xls_model')
+    unique_sales = list(set(all_sales))
+
     vehicles = Vehicle.objects.none()
-    for sale in sales:
-        model_year = ModelYear.objects.get(name=sale['xls_model_year'][0:4])
+    for sale in unique_sales:
+        model_year = ModelYear.objects.get(name=sale[0][0:4])
         vehicles |= Vehicle.objects.filter(
-            make__iexact=sale['xls_make'],
-            model_name=sale['xls_model'],
+            make__iexact=sale[1],
+            model_name=sale[2],
             model_year=model_year)
 
     return vehicles
