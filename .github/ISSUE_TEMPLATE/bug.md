@@ -1,6 +1,6 @@
 ---
 name: Bug
-about: Bug
+about: An undesirable behaviour that needs correction
 title: BUG
 labels: ''
 assignees: ''
@@ -19,7 +19,7 @@ A clear and concise description of what actually happens.
 **Implications**
 A clear and concise description of any implications.
 
-** Steps To Reproduce**
+**Steps To Reproduce**
 Steps to reproduce the behaviour:
 User/Role:
 1. Go to '...'
