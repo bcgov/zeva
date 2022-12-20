@@ -9,7 +9,10 @@ minio = Minio(
     secret_key=MINIO['SECRET_KEY'],
     secure=MINIO['USE_SSL']
 )
-
+try:
+    minio.make_bucket("zeva")
+except:
+    pass
 
 def minio_get_object(object_name):
     return minio.presigned_get_object(
