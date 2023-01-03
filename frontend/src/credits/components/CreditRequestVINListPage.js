@@ -24,7 +24,8 @@ const CreditRequestVINListPage = (props) => {
     setReasonList,
     submission,
     user,
-    invalidatedList
+    invalidatedList,
+    errors
   } = props;
 
   const [filtered, setFiltered] = useState([]);
@@ -163,15 +164,15 @@ const CreditRequestVINListPage = (props) => {
               value={selectedOption}
             >
               <option value="">Filter by Error Type</option>
-              <option value="1">1 - Show all warnings</option>
-              <option value="11">11 - VIN not registered in B.C.</option>
-              <option value="21">21 - VIN already issued credits</option>
-              <option value="31">31 - Duplicate VIN</option>
+              <option value="1">1 - Show all warnings ({errors.TOTAL?errors.TOTAL:0})</option>
+              <option value="11">11 - VIN not registered in B.C. ({errors.NO_ICBC_MATCH?errors.NO_ICBC_MATCH:0})</option>
+              <option value="21">21 - VIN already issued credits ({errors.VIN_ALREADY_AWARDED?errors.VIN_ALREADY_AWARDED:0})</option>
+              <option value="31">31 - Duplicate VIN ({errors.DUPLICATE_VIN?errors.DUPLICATE_VIN:0})</option>
               <option value="41">
-                41 - Model year and/or make does not match
+                41 - Model year and/or make does not match ({errors.ERROR_41?errors.ERROR_41:0})
               </option>
-              <option value="51">51 - Sale prior to Jan 2018</option>
-              <option value="61">61 - Invalid date format</option>
+              <option value="51">51 - Sale prior to Jan 2018 ({errors.EXPIRED_REGISTRATION_DATE?errors.EXPIRED_REGISTRATION_DATE:0})</option>
+              <option value="61">61 - Invalid date format ({errors.INVALID_DATE?errors.INVALID_DATE:0})</option>
             </select>
           </span>
 

@@ -37,6 +37,7 @@ from api.services.sales_spreadsheet import create_sales_spreadsheet, \
     create_errors_spreadsheet, create_details_spreadsheet
 from api.services.send_email import notifications_credit_application
 from auditable.views import AuditableMixin
+import numpy as np
 
 
 class CreditRequestViewset(
@@ -387,10 +388,30 @@ class CreditRequestViewset(
         serializer = SalesSubmissionContentSerializer(
             paginated, many=True, read_only=True, context={'request': request}
         )
-
+        errorList = list(np.concatenate([x['warnings'] for x in serializer.data if 'warnings' in x]))
+        newErrorList = []
+        for error in errorList:
+            if error == 'NO_ICBC_MATCH':
+                newErrorList.append('NO_ICBC_MATCH')
+            if error == 'VIN_ALREADY_AWARDED':
+                newErrorList.append('VIN_ALREADY_AWARDED')
+            if error == 'DUPLICATE_VIN':
+                newErrorList.append('DUPLICATE_VIN')
+            if error in ['INVALID_MODEL', 'MODEL_YEAR_MISMATCHED', 'MAKE_MISMATCHED']:
+                newErrorList.append('ERROR_41')
+            if error == 'EXPIRED_REGISTRATION_DATE':
+                newErrorList.append('EXPIRED_REGISTRATION_DATE')
+            if error == 'INVALID_DATE':
+                newErrorList.append('INVALID_DATE')
+            else:
+                pass
+        errorKey, eorroCounts = np.unique(newErrorList, return_counts=True)
+        errorDict = dict(zip(errorKey, eorroCounts))
+        errorDict.update({"TOTAL": sum(list(eorroCounts))})
         return Response({
             'content': serializer.data,
-            'pages': submission_content_paginator.num_pages
+            'pages': submission_content_paginator.num_pages,
+            'errors': errorDict
         })
 
     @action(detail=True)
