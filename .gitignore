@@ -23,3 +23,5 @@ package-lock.json
 storybook-static/
 
 minio/minio_files/zeva
+
+*.sql
