@@ -273,7 +273,6 @@ const SupplementaryContainer = (props) => {
 
   const handleSupplementalChange = (obj) => {
     let creditActivity = [];
-
     if (newData.creditActivity) {
       ({ creditActivity } = newData);
     } else {
@@ -287,40 +286,47 @@ const SupplementaryContainer = (props) => {
           each.category === obj.title
         );
       });
-
       if (index >= 0) {
+
         if (
-          (obj.creditA || creditActivity[index].creditAValue) &&
-          (obj.creditB || creditActivity[index].creditBValue)
+          ((obj.creditA || obj.creditA == "" ) && (obj.creditB || obj.creditB == ""))
         ) {
+          //contains both credit type changes
           creditActivity[index] = {
             ...newData.creditActivity[index],
-            creditAValue: obj.creditA || creditActivity[index].creditAValue,
-            creditBValue: obj.creditB || creditActivity[index].creditBValue
+            creditAValue: obj.creditA,
+            creditBValue: obj.creditB,
+            originalAValue: obj.originalAValue,
+            originalBValue: obj.originalBValue,
           };
-        } else if (obj.creditA || creditActivity[index].creditAValue) {
+        } else if (obj.creditA || obj.creditA == "") {
+          // contains A credit changes
           creditActivity[index] = {
             ...newData.creditActivity[index],
-            creditAValue: obj.creditA || creditActivity[index].creditAValue
+            creditAValue: obj.creditA,
+            originalAValue: obj.originalAValue,
+            originalBValue: obj.originalBValue,
           };
-        } else if (obj.creditB || creditActivity[index].creditBValue) {
+        } else if (obj.creditB || obj.creditB == "") {
+          //contains B credit changes
           creditActivity[index] = {
             ...newData.creditActivity[index],
-            creditBValue: obj.creditB || creditActivity[index].creditBValue
+            creditBValue: obj.creditB,
+            originalAValue: obj.originalAValue,
+            originalBValue: obj.originalBValue,
           };
         }
       } else {
         creditActivity.push({
+          originalAValue: obj.originalAValue,
+          originalBValue: obj.originalBValue,
           category: obj.title,
           modelYear: obj.modelYear,
           creditAValue: obj.creditA,
           creditBValue: obj.creditB
         });
       }
-
-      calculateBalance(creditActivity);
     }
-
     setNewData({
       ...newData,
       creditActivity: [...creditActivity]
@@ -342,19 +348,45 @@ const SupplementaryContainer = (props) => {
         if (attachments.length > 0) {
           evidenceAttachments.attachments = attachments;
         }
-
-        const zevSales = newData && newData.zevSales;
-
+        let zevSales = JSON.parse(JSON.stringify(newData.zevSales));
+        for (let each of zevSales) {
+          if (each.sales == "") {
+            //if sales are null then use the number from the original
+            each.sales = each.oldData.sales
+          }
+          if (each.range == "") {
+            each.range = each.oldData.range
+          }
+        }
+        //create a new array, if any rows from newData.creditActivity are null, pass the original value to new array otherwise pass new value
+        const creditActivity = [];
+        for (let each of newData.creditActivity) {
+          let creditActivityAddition = {category:each.category, modelYear: each.modelYear}
+          if (each.creditAValue == "" && each.creditBValue == "") {
+            creditActivityAddition = {...creditActivityAddition, creditAValue: each.originalAValue, creditBValue: each.originalBValue}
+          }
+          else if (each.creditAValue == "") {
+            creditActivityAddition = {...creditActivityAddition, creditAValue: each.originalAValue, creditBValue: each.creditBValue}
+          }
+          else if (each.creditBValue == "") {
+            creditActivityAddition = {...creditActivityAddition, creditAValue: each.creditAValue, creditBValue: each.originalBValue}
+          }
+          else if (each.creditAValue != "" && each.creditBValue != "") {
+            creditActivityAddition = {...creditActivityAddition, creditAValue: each.creditAValue, creditBValue: each.creditBValue}
+          }
+          creditActivity.push(creditActivityAddition)
+        }
+        setNewData({...newData, creditActivity: creditActivity})
         if (status) {
           const data = {
             ...newData,
+            creditActivity,
             zevSales,
             status,
             evidenceAttachments,
             deleteFiles,
             fromSupplierComment: comment
           };
-
           if (
             (status === 'RECOMMENDED' || status === 'DRAFT') &&
             paramNewReport
@@ -368,7 +400,10 @@ const SupplementaryContainer = (props) => {
             data.description =
               supplementaryAssessmentData.supplementaryAssessment.decision.id;
           }
+          if (data.supplierInfo.ldvSales == "") {
+            data.supplierInfo.ldvSales = ldvSales;
 
+          }
           axios
             .patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data)
             .then((response) => {
@@ -436,13 +471,17 @@ const SupplementaryContainer = (props) => {
       const zevSales = [];
       salesRows.forEach((each) => {
         if (each.newData && Object.keys(each.newData).length > 0) {
-          zevSales.push(each.newData);
+          let dataToAdd = each.newData
+          if (each.oldData) {
+            dataToAdd.oldData = each.oldData 
+          }
+          zevSales.push(dataToAdd);
         }
       });
       newData.zevSales = zevSales;
-      if (forceSetNewData) {
-        setNewData({ ...newData });
-      }
+      // if (forceSetNewData) {
+      //   setNewData({ ...newData });
+      // }
     } else {
       const dataToUpdate = {
         ...newData[name],

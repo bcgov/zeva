@@ -217,6 +217,8 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                         }
 
                         handleSupplementalChange({
+                          originalAValue: Number(each.A),
+                          originalBValue: Number(each.B),
                           title: category,
                           modelYear: each.modelYear,
                           creditA: value,
@@ -259,6 +261,8 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                         }
 
                         handleSupplementalChange({
+                          originalAValue: Number(each.A),
+                          originalBValue: Number(each.B),
                           title: category,
                           modelYear: each.modelYear,
                           creditA: Number(
@@ -347,6 +351,8 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                       type="text"
                       onChange={(event) => {
                         handleSupplementalChange({
+                          originalAValue: each.A,
+                          originalBValue: each.B,
                           title: 'creditBalanceStart',
                           modelYear: each,
                           creditA: event.target.value
@@ -379,6 +385,8 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                       type="text"
                       onChange={(event) => {
                         handleSupplementalChange({
+                          originalAValue: each.A,
+                          originalBValue: each.B,
                           title: 'creditBalanceStart',
                           modelYear: each,
                           creditB: event.target.value
@@ -409,6 +417,8 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                       type="text"
                       onChange={(event) => {
                         handleSupplementalChange({
+                          originalAValue: 0.00,
+                          originalBValue: 0.00,
                           title: 'creditBalanceStart',
                           modelYear: reportYear,
                           creditA: event.target.value
@@ -428,6 +438,8 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                       type="text"
                       onChange={(event) => {
                         handleSupplementalChange({
+                          originalAValue: "0.00",
+                          originalBValue: "0.00",
                           title: 'creditBalanceStart',
                           modelYear: reportYear,
                           creditB: event.target.value
