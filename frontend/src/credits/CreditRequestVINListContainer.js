@@ -27,6 +27,7 @@ const CreditRequestVINListContainer = (props) => {
   const [modified, setModified] = useState([]);
   const [reasonList, setReasonList] = useState([]);
   const [initialPageCount, setInitialPageCount] = useState(-1);
+  const [errors, setError] = useState([])
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
   const reset = query && query.reset;
@@ -57,7 +58,7 @@ const CreditRequestVINListContainer = (props) => {
             setReasons(reasonsData);
 
             // Initialize content and reason values
-            const { content: contentListData, pages: numPages } =
+            const { content: contentListData, pages: numPages, errors: errorDict } =
               contentResponse.data;
             let reasonListData = [];
 
@@ -82,6 +83,7 @@ const CreditRequestVINListContainer = (props) => {
             setInitialPageCount(numPages);
             setContent(contentListData);
             setReasonList(reasonListData);
+            setError(errorDict)
             setLoading(false);
           }
         )
@@ -213,6 +215,7 @@ const CreditRequestVINListContainer = (props) => {
       setReasonList={setReasonList}
       submission={submission}
       user={user}
+      errors={errors}
     />
   );
 };
