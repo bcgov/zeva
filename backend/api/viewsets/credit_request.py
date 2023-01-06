@@ -405,9 +405,9 @@ class CreditRequestViewset(
                 newErrorList.append('INVALID_DATE')
             else:
                 pass
-        errorKey, eorroCounts = np.unique(newErrorList, return_counts=True)
-        errorDict = dict(zip(errorKey, eorroCounts))
-        errorDict.update({"TOTAL": sum(list(eorroCounts))})
+        errorKey, errorCounts = np.unique(newErrorList, return_counts=True)
+        errorDict = dict(zip(errorKey, errorCounts))
+        errorDict.update({"TOTAL": sum(list(errorCounts))})
         return Response({
             'content': serializer.data,
             'pages': submission_content_paginator.num_pages,
