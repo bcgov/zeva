@@ -9,6 +9,9 @@ import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import history from '../app/History';
 import CustomPropTypes from '../app/utilities/props';
 import reconcileSupplementaries from '../app/utilities/reconcileSupplementaries';
+import SupplementarySupplierDetails from './components/SupplementarySupplierDetails';
+import SupplementaryDirectorDetails from './components/SupplementaryDirectorDetails';
+import SupplementaryAnalystDetails from './components/SupplementaryAnalystDetails';
 
 const qs = require('qs');
 
@@ -752,43 +755,39 @@ const SupplementaryContainer = (props) => {
     refreshDetails();
   }, [keycloak.authenticated, location.pathname, location.search]);
 
-  return (
-    <SupplementaryDetailsPage
-      addSalesRow={addSalesRow}
-      analystAction={analystAction}
-      checkboxConfirmed={checkboxConfirmed}
-      commentArray={commentArray}
-      deleteFiles={deleteFiles}
-      details={details}
-      directorAction={directorAction}
-      errorMessage={errorMessage}
-      files={files}
-      handleAddIdirComment={handleAddIdirComment}
-      handleCheckboxClick={handleCheckboxClick}
-      handleCommentChange={handleCommentChange}
-      handleCommentChangeBceid={handleCommentChangeBceid}
-      handleCommentChangeIdir={handleCommentChangeIdir}
-      handleInputChange={handleInputChange}
-      handleSubmit={handleSubmit}
-      handleSupplementalChange={handleSupplementalChange}
-      id={id}
-      ldvSales={ldvSales}
-      loading={loading}
-      newBalances={newBalances}
-      newData={newData}
-      newReport={newReport}
-      obligationDetails={obligationDetails}
-      query={query}
-      radioDescriptions={radioDescriptions}
-      ratios={ratios}
-      salesRows={salesRows}
-      setDeleteFiles={setDeleteFiles}
-      setSupplementaryAssessmentData={setSupplementaryAssessmentData}
-      setUploadFiles={setFiles}
-      supplementaryAssessmentData={supplementaryAssessmentData}
-      user={user}
-    />
-  );
+  const isSupplier = !user.isGovernment
+  const isAnalyst = user.isGovernment && !user.roles.some((r) => r.roleCode === 'Director')
+  const isDirector = user.isGovernment && user.roles.some((r) => r.roleCode === 'Director')
+
+  const detailsProps = {
+    addSalesRow, analystAction, checkboxConfirmed, commentArray, deleteFiles, details,
+    directorAction, errorMessage, files, handleAddIdirComment, handleCheckboxClick,
+    handleCommentChange, handleCommentChangeBceid, handleCommentChangeIdir,
+    handleInputChange, handleSubmit, handleSupplementalChange,
+    id, ldvSales, loading, newBalances, newData, obligationDetails,
+    query, radioDescriptions, ratios, salesRows, user,
+    setDeleteFiles, setSupplementaryAssessmentData, supplementaryAssessmentData,
+    setUploadFiles: setFiles
+  }
+
+  if (isSupplier) {
+    return (
+      <SupplementarySupplierDetails
+        {...detailsProps}
+      />)
+  } else if (isDirector) {
+    return (
+      <SupplementaryDirectorDetails
+        {...detailsProps}
+      />)
+  } else if (isAnalyst) {
+    return (
+      <SupplementaryAnalystDetails
+        {...detailsProps}
+      />)
+  } else {
+    return <></>
+  }
 };
 
 SupplementaryContainer.defaultProps = {

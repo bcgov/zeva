@@ -216,6 +216,7 @@ const AssessmentDetailsPage = (props) => {
         activePage="assessment"
         reportYear={reportYear}
         supplementaryId={details.id}
+        tabName={'supplemental'}
       />
       <div className="row">
         <div className="col-sm-12">
