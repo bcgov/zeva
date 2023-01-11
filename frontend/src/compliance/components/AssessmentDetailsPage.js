@@ -216,6 +216,7 @@ const AssessmentDetailsPage = (props) => {
         activePage="assessment"
         reportYear={reportYear}
         supplementaryId={details.id}
+        tabName={'supplemental'}
       />
       <div className="row">
         <div className="col-sm-12">
@@ -338,7 +339,7 @@ const AssessmentDetailsPage = (props) => {
                         `${ROUTES_SUPPLEMENTARY.CREATE.replace(
                           /:id/g,
                           id
-                        )}?new=Y`
+                        )}`
                       );
                     }}
                   />
@@ -360,7 +361,7 @@ const AssessmentDetailsPage = (props) => {
                           `${ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(
                             /:id/g,
                             id
-                          )}?new=Y`
+                          )}`
                         );
                       }}
                       type="button"
