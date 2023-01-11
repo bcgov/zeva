@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { useParams, useLocation } from 'react-router-dom';
 
 import ROUTES_SUPPLEMENTARY from '../app/routes/SupplementaryReport';
-import SupplementaryDetailsPage from './components/SupplementaryDetailsPage';
 import ROUTES_COMPLIANCE from '../app/routes/Compliance';
 import history from '../app/History';
 import CustomPropTypes from '../app/utilities/props';
@@ -12,6 +11,7 @@ import reconcileSupplementaries from '../app/utilities/reconcileSupplementaries'
 import SupplementarySupplierDetails from './components/SupplementarySupplierDetails';
 import SupplementaryDirectorDetails from './components/SupplementaryDirectorDetails';
 import SupplementaryAnalystDetails from './components/SupplementaryAnalystDetails';
+import SupplementaryCreate from './components/SupplementaryCreate';
 
 const qs = require('qs');
 
@@ -39,7 +39,6 @@ const SupplementaryContainer = (props) => {
   const [radioDescriptions, setRadioDescriptions] = useState([
     { id: 0, description: '' }
   ]);
-  const [newReport, setNewReport] = useState(false);
   const location = useLocation();
 
   const query = qs.parse(location.search, { ignoreQueryPrefix: true });
@@ -529,9 +528,7 @@ const SupplementaryContainer = (props) => {
           ) => {
             if (response.data) {
               let assessedSupplementalsData = assessedSupplementals.data;
-              if (query && query.new === 'Y') {
-                setNewReport(true);
-              } else {
+              if (!props.newReport) {
                 if (
                   assessedSupplementalsData &&
                   assessedSupplementalsData.length > 0
@@ -557,7 +554,6 @@ const SupplementaryContainer = (props) => {
                     );
                   }
                 }
-                setNewReport(false);
               }
               const {
                 reconciledAssessmentData,
@@ -758,7 +754,6 @@ const SupplementaryContainer = (props) => {
   const isSupplier = !user.isGovernment
   const isAnalyst = user.isGovernment && !user.roles.some((r) => r.roleCode === 'Director')
   const isDirector = user.isGovernment && user.roles.some((r) => r.roleCode === 'Director')
-
   const detailsProps = {
     addSalesRow, analystAction, checkboxConfirmed, commentArray, deleteFiles, details,
     directorAction, errorMessage, files, handleAddIdirComment, handleCheckboxClick,
@@ -770,7 +765,13 @@ const SupplementaryContainer = (props) => {
     setUploadFiles: setFiles
   }
 
-  if (isSupplier) {
+  if(props.newReport) {
+    return (
+      <SupplementaryCreate
+        {...detailsProps}
+      />
+    )
+  } else if (isSupplier) {
     return (
       <SupplementarySupplierDetails
         {...detailsProps}
@@ -796,8 +797,9 @@ SupplementaryContainer.defaultProps = {
 
 SupplementaryContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
+  user: CustomPropTypes.user.isRequired,
   reassessment: PropTypes.bool,
-  user: CustomPropTypes.user.isRequired
+  newReport: PropTypes.bool
 };
 
 export default SupplementaryContainer;

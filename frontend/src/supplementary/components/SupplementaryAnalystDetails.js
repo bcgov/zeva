@@ -72,14 +72,6 @@ const SupplementaryAnalystDetails = (props) => {
     ? details.actualStatus
     : details.status;
 
-  const newReassessment = query && query.reassessment === 'Y'
-  if (newReassessment) {
-    reassessment = {
-      isReassessment: true,
-      supplementaryReportId: details.id
-    };
-  }
-
   const isAssessed = currentStatus === 'ASSESSED' || currentStatus === 'REASSESSED'
 
   const tabNames = ['supplemental', 'recommendation', 'reassessment']
@@ -248,7 +240,7 @@ const SupplementaryAnalystDetails = (props) => {
   const tabUrl = (supplementalId, tabName) => {
     return ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id)
       .replace(':supplementaryId', supplementalId) +
-        `?tab=${tabName}${newReassessment ? '&reassessment=Y' : ''}`
+        `?tab=${tabName}${isReassessment ? '&reassessment=Y' : ''}`
   }
 
   const renderTabs = () => {
@@ -296,7 +288,7 @@ const SupplementaryAnalystDetails = (props) => {
         <ComplianceHistory
           activePage="supplementary"
           id={id}
-          newReassessment={newReassessment}
+          isReassessment={isReassessment}
           reportYear={reportYear}
           supplementaryId={
             isReassessment &&

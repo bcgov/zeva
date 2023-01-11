@@ -339,7 +339,7 @@ const AssessmentDetailsPage = (props) => {
                         `${ROUTES_SUPPLEMENTARY.CREATE.replace(
                           /:id/g,
                           id
-                        )}?new=Y`
+                        )}`
                       );
                     }}
                   />
@@ -361,7 +361,7 @@ const AssessmentDetailsPage = (props) => {
                           `${ROUTES_SUPPLEMENTARY.REASSESSMENT.replace(
                             /:id/g,
                             id
-                          )}?new=Y`
+                          )}`
                         );
                       }}
                       type="button"

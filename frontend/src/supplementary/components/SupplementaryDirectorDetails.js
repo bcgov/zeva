@@ -76,9 +76,7 @@ const SupplementaryDirectorDetails = (props) => {
     currentStatus = 'DRAFT';
   }
 
-  const newReassessment = query && query.reassessment === 'Y'
-
-  if (newReassessment) {
+  if (query && query.reassessment === 'Y') {
     reassessment = {
       isReassessment: true,
       supplementaryReportId: details.id
@@ -94,7 +92,7 @@ const SupplementaryDirectorDetails = (props) => {
   const isReassessment = reassessment?.isReassessment
   const reassessmentStatus = reassessment?.status ? reassessment.status : details.status
   const supplementaryReportId = reassessment?.supplementaryReportId ? reassessment?.supplementaryReportId : 
-    (newReassessment ? details.id : null)
+    (isReassessment ? details.id : null)
   const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
   const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
 
@@ -104,6 +102,9 @@ const SupplementaryDirectorDetails = (props) => {
     isEditable = false
   }
   if (selectedTab == tabNames[1] && currentStatus == 'SUBMITTED') {
+    isEditable = true
+  }
+  if (selectedTab == tabNames[2] && currentStatus == 'RECOMMENDED') {
     isEditable = true
   }
 
@@ -253,12 +254,11 @@ const SupplementaryDirectorDetails = (props) => {
   const tabUrl = (supplementalId, tabName) => {
     return ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id)
       .replace(':supplementaryId', supplementalId) +
-        `?tab=${tabName}${newReassessment ? '&reassessment=Y' : ''}`
+        `?tab=${tabName}${isReassessment ? '&reassessment=Y' : ''}`
   }
 
   const renderTabs = () => {
     return (
-      
       <ul
         className="nav nav-pills nav-justified supplementary-report-tabs"
         key="tabs"
@@ -287,7 +287,7 @@ const SupplementaryDirectorDetails = (props) => {
           selected={selectedTab == tabNames[2]}
           title={'Reassessment'}
           url={tabUrl(reassessmentReportId, tabNames[2])}
-          disabled={!isAssessed}
+          // disabled={!isAssessed}
           tooltip={'Reassessment visible once a director approves the recommendation.'}
           status={reassessmentStatus}
           assessed={isAssessed}
@@ -302,7 +302,7 @@ const SupplementaryDirectorDetails = (props) => {
         <ComplianceHistory
           activePage="supplementary"
           id={id}
-          newReassessment={newReassessment}
+          isReassessment={isReassessment}
           reportYear={reportYear}
           supplementaryId={
             isReassessment &&
@@ -374,7 +374,7 @@ const SupplementaryDirectorDetails = (props) => {
           ) : (
             <>
               <SupplierInformation
-                isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
+                isEditable={isEditable}
                 user={user}
                 details={details}
                 handleInputChange={handleInputChange}
@@ -386,7 +386,7 @@ const SupplementaryDirectorDetails = (props) => {
                 details={details}
                 handleInputChange={handleInputChange}
                 salesRows={salesRows}
-                isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
+                isEditable={isEditable}
               />
               <CreditActivity
                 creditReductionSelection={creditReductionSelection}
@@ -400,7 +400,7 @@ const SupplementaryDirectorDetails = (props) => {
                 obligationDetails={obligationDetails}
                 ratios={ratios}
                 supplierClass={supplierClass}
-                isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
+                isEditable={isEditable}
               />
             </>
           )}
@@ -599,8 +599,7 @@ const SupplementaryDirectorDetails = (props) => {
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 isEditable &&
                 (['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0 ||
-                  (['SUBMITTED'].indexOf(currentStatus) >= 0 &&
-                    isGovernment)) && (
+                  (['SUBMITTED'].indexOf(currentStatus) >= 0)) && (
                   <Button
                     buttonType="save"
                     action={() => {

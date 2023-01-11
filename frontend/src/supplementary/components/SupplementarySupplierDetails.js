@@ -79,9 +79,7 @@ const SupplementarySupplierDetails = (props) => {
     ? details.actualStatus
     : details.status;
 
-  const newReassessment = query && query.reassessment === 'Y'
-
-  if (newReassessment) {
+  if (query && query.reassessment === 'Y') {
     reassessment = {
       isReassessment: true,
       supplementaryReportId: details.id
@@ -97,7 +95,7 @@ const SupplementarySupplierDetails = (props) => {
   const isReassessment = reassessment?.isReassessment
   const reassessmentStatus = reassessment?.status ? reassessment.status : details.status
   const supplementaryReportId = reassessment?.supplementaryReportId ? reassessment?.supplementaryReportId : 
-    (newReassessment ? details.id : null)
+    (isReassessment ? details.id : null)
   const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
   const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
 
@@ -211,7 +209,7 @@ const SupplementarySupplierDetails = (props) => {
   const tabUrl = (supplementalId, tabName) => {
     return ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id)
       .replace(':supplementaryId', supplementalId) +
-        `?tab=${tabName}${newReassessment ? '&reassessment=Y' : ''}`
+        `?tab=${tabName}${isReassessment ? '&reassessment=Y' : ''}`
   }
 
   const renderTabs = () => {
@@ -251,7 +249,7 @@ const SupplementarySupplierDetails = (props) => {
         <ComplianceHistory
           activePage="supplementary"
           id={id}
-          newReassessment={newReassessment}
+          isReassessment={isReassessment}
           reportYear={reportYear}
           supplementaryId={
             isReassessment &&
