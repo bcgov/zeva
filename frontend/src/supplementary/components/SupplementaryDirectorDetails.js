@@ -23,19 +23,14 @@ import ReassessmentDetailsPage from './ReassessmentDetailsPage';
 import SupplementaryTab from './SupplementaryTab';
 import ReactTooltip from 'react-tooltip';
 
-const SupplementaryDetailsPage = (props) => {
+const SupplementaryDirectorDetails = (props) => {
   const {
     addSalesRow,
     analystAction,
-    checkboxConfirmed,
     commentArray,
     deleteFiles,
     details,
-    directorAction,
-    files,
     handleAddIdirComment,
-    handleCheckboxClick,
-    handleCommentChange,
     handleCommentChangeBceid,
     handleCommentChangeIdir,
     handleInputChange,
@@ -49,9 +44,7 @@ const SupplementaryDetailsPage = (props) => {
     radioDescriptions,
     ratios,
     salesRows,
-    setDeleteFiles,
     setSupplementaryAssessmentData,
-    setUploadFiles,
     supplementaryAssessmentData,
     user,
     newReport,
@@ -83,52 +76,35 @@ const SupplementaryDetailsPage = (props) => {
     currentStatus = 'DRAFT';
   }
 
-  const isGovernment = user.isGovernment
-  const isDirector = isGovernment && user.roles.some((r) => r.roleCode === 'Director');
-  const newReassessment = query && query.reassessment === 'Y'
-
-  if (newReassessment) {
+  if (query && query.reassessment === 'Y') {
     reassessment = {
       isReassessment: true,
       supplementaryReportId: details.id
     };
   }
 
-  if (newReport && !isGovernment) {
-    reassessment = {
-      isReassessment: false
-    };
-    details.actualStatus = 'DRAFT';
-    newData = { zevSales: [], creditActivity: [], supplierInfo: {} };
-  }
-
   const isAssessed = currentStatus === 'ASSESSED' ||
     currentStatus === 'REASSESSED'
 
   const tabNames = ['supplemental', 'recommendation', 'reassessment']
-  const selectedTab = query?.tab ? query.tab : isAssessed ? tabNames[2] :
-    (isGovernment ? tabNames[1] : tabNames[0])
+  const selectedTab = query?.tab ? query.tab : isAssessed ? tabNames[2] : tabNames[1]
 
   const isReassessment = reassessment?.isReassessment
   const reassessmentStatus = reassessment?.status ? reassessment.status : details.status
   const supplementaryReportId = reassessment?.supplementaryReportId ? reassessment?.supplementaryReportId : 
-    (newReassessment ? details.id : null)
+    (isReassessment ? details.id : null)
   const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
   const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
-  console.log(currentStatus)
 
-  let isEditable =
-    ['DRAFT', 'RETURNED'].indexOf(details.status) >= 0 ||
-    (isReassessment &&
-      isGovernment &&
-      currentStatus !== 'ASSESSED' &&
-      (analystAction || directorAction)) &&
-    newReport;
+  let isEditable = ['DRAFT', 'RETURNED'].indexOf(details.status) >= 0
   
   if (selectedTab == tabNames[0] && currentStatus == 'SUBMITTED') {
     isEditable = false
   }
   if (selectedTab == tabNames[1] && currentStatus == 'SUBMITTED') {
+    isEditable = true
+  }
+  if (selectedTab == tabNames[2] && currentStatus == 'RECOMMENDED') {
     isEditable = true
   }
 
@@ -161,9 +137,7 @@ const SupplementaryDetailsPage = (props) => {
           type="radio"
           name="assessment"
           disabled={
-            !analystAction ||
-            (['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) >= 0 &&
-              !newReport)
+            ['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) >= 0
           }
           onChange={() => {
             setSupplementaryAssessmentData({
@@ -194,11 +168,7 @@ const SupplementaryDetailsPage = (props) => {
   };
 
   const handleGovSubmitDraft = (status) => {
-    if (newReport) {
-      setShowModalDraft(true);
-    } else {
-      handleSubmit(status, newReport);
-    }
+    handleSubmit(status, false);
   };
 
   const modal = (
@@ -210,7 +180,7 @@ const SupplementaryDetailsPage = (props) => {
       }}
       handleSubmit={() => {
         setShowModal(false);
-        handleSubmit('RECOMMENDED', newReport);
+        handleSubmit('RECOMMENDED', false);
       }}
       modalClass="w-75"
       showModal={showModal}
@@ -235,9 +205,7 @@ const SupplementaryDetailsPage = (props) => {
       }}
       handleSubmit={() => {
         setShowModalDelete(false);
-        if(!newReport) {
-          handleSubmit('DELETED');
-        }
+        handleSubmit('DELETED');
       }}
       modalClass="w-75"
       showModal={showModalDelete}
@@ -265,13 +233,11 @@ const SupplementaryDetailsPage = (props) => {
       confirmClass="button primary"
     >
       <div className="my-3">
-        {isGovernment && (
-          <h3>
-            {isReassessment
-              ? 'This will create a reassessment report'
-              : 'This will create a reassessment report from the supplementary report'}
-          </h3>
-        )}
+        <h3>
+          {isReassessment
+            ? 'This will create a reassessment report'
+            : 'This will create a reassessment report from the supplementary report'}
+        </h3>
       </div>
     </Modal>
   );
@@ -288,12 +254,11 @@ const SupplementaryDetailsPage = (props) => {
   const tabUrl = (supplementalId, tabName) => {
     return ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id)
       .replace(':supplementaryId', supplementalId) +
-        `?tab=${tabName}${newReassessment ? '&reassessment=Y' : ''}`
+        `?tab=${tabName}${isReassessment ? '&reassessment=Y' : ''}`
   }
 
   const renderTabs = () => {
     return (
-      
       <ul
         className="nav nav-pills nav-justified supplementary-report-tabs"
         key="tabs"
@@ -309,22 +274,20 @@ const SupplementaryDetailsPage = (props) => {
           status={reassessmentStatus}
           assessed={isAssessed}
         />
-        {isGovernment &&
-          <SupplementaryTab
-            selected={selectedTab == tabNames[1]}
-            title={'Reassessment Recommendation'}
-            url={tabUrl(newReport ? supplementaryReportId : reassessmentReportId, tabNames[1])}
-            disabled={false}
-            tooltip={'No supplementary report found. Analyst initiated reassessment.'}
-            status={reassessmentStatus}
-            assessed={isAssessed}
-          />
-        }
+        <SupplementaryTab
+          selected={selectedTab == tabNames[1]}
+          title={'Reassessment Recommendation'}
+          url={tabUrl(newReport ? supplementaryReportId : reassessmentReportId, tabNames[1])}
+          disabled={false}
+          tooltip={'No supplementary report found. Analyst initiated reassessment.'}
+          status={reassessmentStatus}
+          assessed={isAssessed}
+        />
         <SupplementaryTab
           selected={selectedTab == tabNames[2]}
           title={'Reassessment'}
           url={tabUrl(reassessmentReportId, tabNames[2])}
-          disabled={!isAssessed}
+          // disabled={!isAssessed}
           tooltip={'Reassessment visible once a director approves the recommendation.'}
           status={reassessmentStatus}
           assessed={isAssessed}
@@ -335,11 +298,11 @@ const SupplementaryDetailsPage = (props) => {
 
   return (
     <div id="supplementary" className="page">
-      {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED && !newReport && (
+      {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED && (
         <ComplianceHistory
           activePage="supplementary"
           id={id}
-          newReassessment={newReassessment}
+          isReassessment={isReassessment}
           reportYear={reportYear}
           supplementaryId={
             isReassessment &&
@@ -349,6 +312,7 @@ const SupplementaryDetailsPage = (props) => {
               : details.id
           }
           user={user}
+          tabName={selectedTab}
         />
       )}
       <div className="row">
@@ -363,7 +327,7 @@ const SupplementaryDetailsPage = (props) => {
 
       {renderTabs()}
 
-      {isEditable && isGovernment && (
+      {isEditable && (
         <div className="supplementary-form my-3">
           {commentArray &&
             commentArray.idirComment &&
@@ -397,8 +361,7 @@ const SupplementaryDetailsPage = (props) => {
         />
         <div>
           {isReassessment &&
-          currentStatus === 'ASSESSED' &&
-          isDirector ? (
+            currentStatus === 'ASSESSED' ? (
             <ReassessmentDetailsPage
               details={details}
               ldvSales={ldvSales}
@@ -411,7 +374,7 @@ const SupplementaryDetailsPage = (props) => {
           ) : (
             <>
               <SupplierInformation
-                isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
+                isEditable={isEditable}
                 user={user}
                 details={details}
                 handleInputChange={handleInputChange}
@@ -423,7 +386,7 @@ const SupplementaryDetailsPage = (props) => {
                 details={details}
                 handleInputChange={handleInputChange}
                 salesRows={salesRows}
-                isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
+                isEditable={isEditable}
               />
               <CreditActivity
                 creditReductionSelection={creditReductionSelection}
@@ -437,35 +400,11 @@ const SupplementaryDetailsPage = (props) => {
                 obligationDetails={obligationDetails}
                 ratios={ratios}
                 supplierClass={supplierClass}
-                isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
+                isEditable={isEditable}
               />
             </>
           )}
         </div>
-        <div id="comment-input">
-          {!isGovernment && (currentStatus === 'DRAFT' || newReport) && (
-            <CommentInput
-              defaultComment={
-                details &&
-                details.fromSupplierComments &&
-                details.fromSupplierComments.length > 0
-                  ? details.fromSupplierComments[0]
-                  : {}
-              }
-              handleCommentChange={handleCommentChange}
-              title="Provide details in the comment box below for any changes above."
-            />
-          )}
-        </div>
-        {!isGovernment && (currentStatus === 'DRAFT' || newReport) && (
-          <UploadEvidence
-            details={details}
-            deleteFiles={deleteFiles}
-            files={files}
-            setDeleteFiles={setDeleteFiles}
-            setUploadFiles={setUploadFiles}
-          />
-        )}
         {details &&
           details.status === 'SUBMITTED' &&
           ((details.fromSupplierComments &&
@@ -533,34 +472,30 @@ const SupplementaryDetailsPage = (props) => {
       </div>
       {supplementaryAssessmentData.supplementaryAssessment &&
         supplementaryAssessmentData.supplementaryAssessment.decision &&
-        supplementaryAssessmentData.supplementaryAssessment.decision
-          .description &&
-        (!isGovernment ||
-          (isGovernment &&
-            ['ASSESSED', 'RECOMMENDED'].indexOf(currentStatus) >= 0)) &&
-        !newReport && (
-          <>
-            <h3 className="mt-4 mb-1">Director Reassessment</h3>
-            <div className="row mb-3">
-              <div className="col-12">
-                <div className="grey-border-area comment-box p-3 mt-2">
-                  <div className="text-blue">
-                    <div>
-                      The Director has assessed that {assessmentDecision}
+        supplementaryAssessmentData.supplementaryAssessment.decision.description &&
+          ['ASSESSED', 'RECOMMENDED'].indexOf(currentStatus) >= 0 &&
+            <>
+              <h3 className="mt-4 mb-1">Director Reassessment</h3>
+              <div className="row mb-3">
+                <div className="col-12">
+                  <div className="grey-border-area comment-box p-3 mt-2">
+                    <div className="text-blue">
+                      <div>
+                        The Director has assessed that {assessmentDecision}
+                      </div>
+                      {commentArray.bceidComment &&
+                        commentArray.bceidComment.comment && (
+                          <div className="mt-2">
+                            {parse(commentArray.bceidComment.comment)}
+                          </div>
+                        )}
                     </div>
-                    {commentArray.bceidComment &&
-                      commentArray.bceidComment.comment && (
-                        <div className="mt-2">
-                          {parse(commentArray.bceidComment.comment)}
-                        </div>
-                      )}
                   </div>
                 </div>
               </div>
-            </div>
-          </>
-        )}
-      {isEditable && isGovernment && (
+            </>
+        }
+      {isEditable && (
         <>
           {['RECOMMENDED'].indexOf(currentStatus) < 0 && (
             <h3 className="mt-4 mb-1">
@@ -587,8 +522,7 @@ const SupplementaryDetailsPage = (props) => {
                         <div>
                           <input
                             disabled={
-                              (directorAction &&
-                                currentStatus == 'RECOMMENDED') ||
+                              (currentStatus == 'RECOMMENDED') ||
                               assessmentDecision.indexOf(
                                 'Section 10 (3) applies'
                               ) < 0
@@ -617,48 +551,25 @@ const SupplementaryDetailsPage = (props) => {
                       </label>
                     </>
                   )}
-                  {(analystAction || directorAction) && (
-                    <div id="comment-input">
-                      <CommentInput
-                        // disable={details.assessment.validationStatus === 'ASSESSED'}
-                        defaultComment={
-                          commentArray && commentArray.bceidComment
-                            ? commentArray.bceidComment
-                            : {}
-                        }
-                        // handleAddComment={handleAddBceidComment}
-                        handleCommentChange={handleCommentChangeBceid}
-                        title="Assessment Message to the Supplier: "
-                      />
-                    </div>
-                  )}
+                  <div id="comment-input">
+                    <CommentInput
+                      // disable={details.assessment.validationStatus === 'ASSESSED'}
+                      defaultComment={
+                        commentArray && commentArray.bceidComment
+                          ? commentArray.bceidComment
+                          : {}
+                      }
+                      // handleAddComment={handleAddBceidComment}
+                      handleCommentChange={handleCommentChangeBceid}
+                      title="Assessment Message to the Supplier: "
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </>
       )}
-      {!isGovernment &&
-        user.hasPermission('SUBMIT_COMPLIANCE_REPORT') &&
-        (['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0 || newReport) && (
-          <div className="mt-3">
-            <input
-              defaultChecked={checkboxConfirmed}
-              className="mr-2"
-              id="supplier-confirm-checkbox"
-              name="confirmations"
-              onChange={(event) => {
-                handleCheckboxClick(event);
-              }}
-              type="checkbox"
-            />
-            <label htmlFor="supplier-confirm-checkbox">
-              On behalf of {details.assessmentData.legalName} I confirm the
-              information included in the this Supplementary Report is complete
-              and correct.
-            </label>
-          </div>
-        )}
       <div className="row d-print-none">
         <div className="col-12">
           <div className="action-bar">
@@ -671,116 +582,38 @@ const SupplementaryDetailsPage = (props) => {
                 )}
               />
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                isEditable &&
-                ['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0 && !isDirector && (
-                  <Button
-                    buttonType="delete"
-                    action={() => setShowModalDelete(true)}
-                    disabled={newReport}
-                    buttonTooltip={'Delete is disabled until draft is saved.'}
-                    optionalText={
-                      details &&
-                      details.reassessment &&
-                      details.reassessment.isReassessment
-                        ? 'Delete Reassessment'
-                        : 'Delete'
-                    }
-                  />
-                )}
-              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 selectedTab == tabNames[2] &&
-                (isEditable ||
-                  ['SUBMITTED', 'RECOMMENDED'].indexOf(details.status) >= 0) &&
-                isGovernment &&
-                (((currentStatus === 'SUBMITTED' ||
-                  currentStatus === 'RETURNED') &&
-                  analystAction &&
-                  details &&
-                  details.reassessment &&
-                  !details.reassessment.isReassessment) ||
-                  (currentStatus === 'RECOMMENDED' &&
-                    directorAction &&
-                    details &&
-                    details.reassessment &&
-                    details.reassessment.isReassessment)) && (
+                  currentStatus === 'RECOMMENDED' &&
                   <button
                     className="button text-danger"
                     onClick={() => {
-                      if (currentStatus === 'SUBMITTED') {
-                        handleSubmit('RETURNED');
-                      } else {
-                        handleSubmit('DRAFT');
-                      }
+                      handleSubmit('RETURNED');
                     }}
                     type="button"
                   >
-                    {currentStatus === 'SUBMITTED' ||
-                    currentStatus === 'RETURNED'
-                      ? 'Return to Vehicle Supplier'
-                      : 'Return to Analyst'}
+                    'Return to Analyst'
                   </button>
-                )}
+              }
             </span>
             <span className="right-content">
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 isEditable &&
                 (['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0 ||
-                  newReport ||
-                  (['SUBMITTED'].indexOf(currentStatus) >= 0 &&
-                    isGovernment)) && (
+                  (['SUBMITTED'].indexOf(currentStatus) >= 0)) && (
                   <Button
                     buttonType="save"
-                    action={
-                      isGovernment
-                        ? () => {
-                            handleGovSubmitDraft(currentStatus);
-                          }
-                        : () => {
-                            handleSubmit('DRAFT', newReport);
-                          }
-                    }
-                  />
-                )}
-              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                isEditable &&
-                analystAction &&
-                (['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) < 0 ||
-                  currentStatus === 'RETURNED' ||
-                  newReport) && (
-                  <Button
-                    buttonTooltip={recommendTooltip}
-                    buttonType="submit"
-                    optionalClassname="button primary"
-                    optionalText="Recommend Reassessment"
-                    disabled={disabledRecommendBtn}
                     action={() => {
-                      if (newReport) {
-                        setShowModal(true);
-                      } else {
-                        handleSubmit('RECOMMENDED');
-                      }
+                      handleGovSubmitDraft(currentStatus)
                     }}
                   />
                 )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                directorAction &&
                 currentStatus === 'RECOMMENDED' && (
                   <Button
                     buttonType="submit"
                     optionalClassname="button primary"
                     optionalText="Issue Assessment"
                     action={() => handleSubmit('ASSESSED')}
-                  />
-                )}
-              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                !isGovernment &&
-                (['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0 ||
-                  newReport) &&
-                user.hasPermission('SUBMIT_COMPLIANCE_REPORT') && (
-                  <Button
-                    disabled={!checkboxConfirmed}
-                    buttonType="submit"
-                    action={() => handleSubmit('SUBMITTED')}
                   />
                 )}
             </span>
@@ -794,7 +627,7 @@ const SupplementaryDetailsPage = (props) => {
   );
 };
 
-SupplementaryDetailsPage.defaultProps = {
+SupplementaryDirectorDetails.defaultProps = {
   isReassessment: undefined,
   ldvSales: undefined,
   newReport: false,
@@ -803,18 +636,13 @@ SupplementaryDetailsPage.defaultProps = {
   ratios: {}
 };
 
-SupplementaryDetailsPage.propTypes = {
+SupplementaryDirectorDetails.propTypes = {
   addSalesRow: PropTypes.func.isRequired,
   analystAction: PropTypes.bool.isRequired,
-  checkboxConfirmed: PropTypes.bool.isRequired,
   commentArray: PropTypes.shape().isRequired,
   deleteFiles: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   details: PropTypes.shape().isRequired,
-  directorAction: PropTypes.bool.isRequired,
-  files: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   handleAddIdirComment: PropTypes.func.isRequired,
-  handleCheckboxClick: PropTypes.func.isRequired,
-  handleCommentChange: PropTypes.func.isRequired,
   handleCommentChangeBceid: PropTypes.func.isRequired,
   handleCommentChangeIdir: PropTypes.func.isRequired,
   handleInputChange: PropTypes.func.isRequired,
@@ -832,11 +660,9 @@ SupplementaryDetailsPage.propTypes = {
   radioDescriptions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   ratios: PropTypes.shape(),
   salesRows: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  setDeleteFiles: PropTypes.func.isRequired,
   setSupplementaryAssessmentData: PropTypes.func.isRequired,
-  setUploadFiles: PropTypes.func.isRequired,
   supplementaryAssessmentData: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired
 };
 
-export default SupplementaryDetailsPage;
+export default SupplementaryDirectorDetails;
