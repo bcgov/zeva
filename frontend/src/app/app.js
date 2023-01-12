@@ -30,10 +30,9 @@ class App extends Component {
 
     keycloak
       .init({
-        onLoad: 'check-sso',
-        checkLoginIframe: false,
-        promiseType: 'native',
-        flow: 'hybrid'
+        pkceMethod: 'S256',
+        redirectUri: CONFIG.KEYCLOAK.CALLBACK_URL,
+        idpHint: 'idir'
       })
       .then((authenticated) => {
         this.setState({
