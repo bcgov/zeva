@@ -16,12 +16,5 @@ def config():
             'KEYCLOAK_DOWNLOAD_CERTS',
             'true'
         ).lower() in ['true', '1']),
-        'SERVICE_ACCOUNT_REALM': os.getenv('KEYCLOAK_SA_REALM', 'standard'),
-        'SERVICE_ACCOUNT_CLIENT_ID': os.getenv('KEYCLOAK_SA_CLIENT_ID', 'zeva-on-gold-4543'),
-        'SERVICE_ACCOUNT_KEYCLOAK_API_BASE': os.getenv(
-            'KEYCLOAK_SA_BASEURL',
-            'https://dev.loginproxy.gov.bc.ca'
-        ),
-        'SERVICE_ACCOUNT_CLIENT_SECRET': os.getenv('KEYCLOAK_SA_CLIENT_SECRET', ''),
         'RS256_KEY': None
     }

@@ -1,10 +1,7 @@
 import json
 import jwt
-from jwt import InvalidTokenError
-from jwt.algorithms import RSAAlgorithm
 import requests
 
-from cryptography.hazmat.primitives import serialization
 from django.core.cache import caches
 from django.conf import settings
 from django.db.models import Q
@@ -13,7 +10,6 @@ from rest_framework import exceptions
 
 from api.models.user_profile import UserProfile
 from api.models.user_creation_request import UserCreationRequest
-from api.services.keycloak_api import map_user
 from zeva.settings import WELL_KNOWN_ENDPOINT
 
 cache = caches['keycloak']

@@ -31,6 +31,7 @@ class App extends Component {
     keycloak
       .init({
         pkceMethod: 'S256',
+        promiseType: 'native',
         redirectUri: CONFIG.KEYCLOAK.CALLBACK_URL,
         idpHint: 'idir'
       })
