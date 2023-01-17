@@ -138,21 +138,21 @@ class Router extends Component {
   }
 
   render() {
-    const { keycloak } = this.props;
+    const { keycloak, logout } = this.props;
     const { loading, statusCode, user } = this.state;
     if (loading) {
       return <Loading />;
     }
 
     if(!user) {
-      return <Unverified logout={this.props.logout} />;
+      return <Unverified logout={logout} />;
     }
 
     return (
       <BrowserRouter history={History}>
-        <PageLayout keycloak={keycloak} user={user}>
+        <PageLayout keycloak={keycloak} user={user} logout={logout}>
           <ErrorHandler statusCode={statusCode}>
-            <SessionTimeout keycloak={keycloak} />
+            <SessionTimeout keycloak={keycloak} logout={logout} />
             <Switch>
               <Route
                 path={ROUTES_USERS.ACTIVE}

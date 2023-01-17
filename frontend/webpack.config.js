@@ -132,6 +132,10 @@ const config = {
         'KEYCLOAK_LOGOUT_REDIRECT_URL' in process.env
           ? JSON.stringify(process.env.KEYCLOAK_LOGOUT_REDIRECT_URL)
           : "'http://localhost/'",
+      __KEYCLOAK_SITEMINDER_LOGOUT_REDIRECT_URL__:
+        'KEYCLOAK_SITEMINDER_LOGOUT_REDIRECT_URL' in process.env
+          ? JSON.stringify(process.env.KEYCLOAK_SITEMINDER_LOGOUT_REDIRECT_URL)
+          : "'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl='",
       __KEYCLOAK_CALLBACK_URL__:
         'KEYCLOAK_CALLBACK_URL' in process.env
           ? JSON.stringify(process.env.KEYCLOAK_CALLBACK_URL)

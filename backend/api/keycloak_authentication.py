@@ -67,7 +67,7 @@ class UserAuthentication(authentication.BaseAuthentication):
 
         user_token = None
         token_validation_errors = []
-
+        
         jwks_client = jwt.PyJWKClient(self.jwks_uri)
 
         try:
@@ -85,7 +85,7 @@ class UserAuthentication(authentication.BaseAuthentication):
                 audience=settings.KEYCLOAK['AUDIENCE'],
                 options={"verify_exp": True},
             )
-        except (jwt.InvalidTokenError, jwt.ExpiredSignature, jwt.DecodeError) as exc:
+        except (jwt.InvalidTokenError, jwt.ExpiredSignatureError, jwt.DecodeError) as exc:
             print(str(exc))
             token_validation_errors.append(exc)
             raise Exception(str(exc))
@@ -135,7 +135,7 @@ class UserAuthentication(authentication.BaseAuthentication):
                 raise Exception('unknown identity provider')
 
             # filter out if the user has already been mapped
-            creation_request.filter(user__keycloak_user_id=None)
+            creation_request.filter(user_profile__keycloak_user_id=None)
 
             if not creation_request.exists():
                 print("No User with that configuration exists.")
@@ -145,7 +145,7 @@ class UserAuthentication(authentication.BaseAuthentication):
             user_creation_request = creation_request.first()
 
             # map keycloak user to tfrs user
-            user = user_creation_request.user
+            user = user_creation_request.user_profile
             user.keycloak_user_id = user_token['preferred_username']
             if user_token['display_name']:
                 user._display_name = user_token['display_name']
