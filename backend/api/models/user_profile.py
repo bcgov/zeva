@@ -67,6 +67,15 @@ class UserProfile(Auditable):
         null=True,
         db_comment="BCEID/IDIR Email Address"
     )
+    keycloak_user_id = models.CharField(
+        max_length=150,
+        blank=True,
+        null=True,
+        db_comment="This is the unique id returned from Keycloak and is the main" +
+          " mapping key between the TFRS user and the Keycloak user. The identity" +
+          " provider type will be appended as a suffix after an @ symbol. For ex." +
+          " asdf1234@bceidbasic or asdf1234@idir"
+    )
 
     objects = UserProfileManager()
 

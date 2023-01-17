@@ -3,7 +3,7 @@ import getSessionTimeout from '../utilities/getSessionTimeout';
 import CONFIG from '../config';
 
 const SessionTimeout = (props) => {
-  const {keycloak} = props;
+  const { keycloak, logout } = props;
   const [showTimeout, setShowTimeout] = useState(false);
 
   // the following code is for retrieving the time until warning from keycloak settings
@@ -17,7 +17,7 @@ const SessionTimeout = (props) => {
     if (showTimeout) {
       setTimeout(() => {
         if (showTimeout) {
-          keycloak.logout({redirectUri: CONFIG.KEYCLOAK.LOGOUT_URL});
+          logout()
         }
       }, 5 * 60 * 1000);
     }

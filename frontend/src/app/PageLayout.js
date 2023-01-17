@@ -16,12 +16,12 @@ import CustomPropTypes from './utilities/props';
 library.add(fab, far, fas);
 
 const PageLayout = (props) => {
-  const { children, user, keycloak } = props;
+  const { children, user, keycloak, logout } = props;
 
   return (
     <>
       <div id="main" key="main">
-        <Navbar user={user} keycloak={keycloak} />
+        <Navbar user={user} keycloak={keycloak} logout={logout} />
 
         <div id="content">{children}</div>
       </div>
