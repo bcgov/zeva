@@ -59,7 +59,7 @@ class Navbar extends Component {
   }
 
   render() {
-    const { user, keycloak } = this.props;
+    const { user, logout } = this.props;
     const { collapsed, userMenuCollapsed } = this.state;
 
     return (
@@ -143,9 +143,7 @@ class Navbar extends Component {
                 <div className="dropdown-item">
                   <button
                     onClick={() =>
-                      keycloak.logout({
-                        redirectUri: CONFIG.KEYCLOAK.LOGOUT_URL
-                      })
+                      logout()
                     }
                     type="button"
                   >

@@ -16,15 +16,6 @@ services:
       retries: 5
     volumes:
       - postgres-data:/var/lib/postgresql/data
-  keycloak:
-    build: ./keycloak
-    hostname: "keycloak"
-    ports:
-      - 8888:8080
-      - 8443:8443
-    expose:
-      - 8888
-      - 8443
   api:
     build: ./backend
     command: >

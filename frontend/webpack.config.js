@@ -127,19 +127,27 @@ const config = {
       __KEYCLOAK_CLIENT_ID__:
         'KEYCLOAK_CLIENT_ID' in process.env
           ? JSON.stringify(process.env.KEYCLOAK_CLIENT_ID)
-          : "'zeva-app'",
+          : "'zeva-on-gold-4543'",
       __KEYCLOAK_LOGOUT_REDIRECT_URL__:
         'KEYCLOAK_LOGOUT_REDIRECT_URL' in process.env
           ? JSON.stringify(process.env.KEYCLOAK_LOGOUT_REDIRECT_URL)
           : "'http://localhost/'",
+      __KEYCLOAK_SITEMINDER_LOGOUT_REDIRECT_URL__:
+        'KEYCLOAK_SITEMINDER_LOGOUT_REDIRECT_URL' in process.env
+          ? JSON.stringify(process.env.KEYCLOAK_SITEMINDER_LOGOUT_REDIRECT_URL)
+          : "'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl='",
+      __KEYCLOAK_CALLBACK_URL__:
+        'KEYCLOAK_CALLBACK_URL' in process.env
+          ? JSON.stringify(process.env.KEYCLOAK_CALLBACK_URL)
+          : "'http://localhost/'",
       __KEYCLOAK_REALM_NAME__:
         'KEYCLOAK_REALM_NAME' in process.env
           ? JSON.stringify(process.env.KEYCLOAK_REALM_NAME)
-          : "'zeva'",
+          : "'standard'",
       __KEYCLOAK_URL__:
         'KEYCLOAK_URL' in process.env
           ? JSON.stringify(process.env.KEYCLOAK_URL)
-          : "'http://localhost:8888/auth'",
+          : "'https://dev.loginproxy.gov.bc.ca/auth'",
       __VERSION__: JSON.stringify(packageJson.version)
     }),
     new HtmlWebpackPlugin({

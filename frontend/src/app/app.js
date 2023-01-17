@@ -30,10 +30,10 @@ class App extends Component {
 
     keycloak
       .init({
-        onLoad: 'check-sso',
-        checkLoginIframe: false,
+        pkceMethod: 'S256',
         promiseType: 'native',
-        flow: 'hybrid'
+        redirectUri: CONFIG.KEYCLOAK.CALLBACK_URL,
+        idpHint: 'idir'
       })
       .then((authenticated) => {
         this.setState({
@@ -50,9 +50,14 @@ class App extends Component {
 
     const { keycloak } = this.state;
 
-    keycloak.logout({
-      redirectUri: CONFIG.KEYCLOAK.LOGOUT_URL
-    });
+    const kcLogoutUrl = keycloak.endpoints.logout() +
+      '?post_logout_redirect_uri=' + CONFIG.KEYCLOAK.LOGOUT_URL +
+      '&client_id=' + keycloak.clientId +
+      '&id_token_hint=' + keycloak.idToken
+
+    const url = CONFIG.KEYCLOAK.SITEMINDER_LOGOUT_URL + encodeURIComponent(kcLogoutUrl)
+
+    window.location = url
   }
 
   render() {
