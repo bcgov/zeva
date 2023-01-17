@@ -213,6 +213,16 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-config${SUFFIX}
                       key: keycloak_logout_redirect_url
+                - name: KEYCLOAK_SITEMINDER_LOGOUT_REDIRECT_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-config${SUFFIX}
+                      key: keycloak_siteminder_logout_redirect_url
+                - name: KEYCLOAK_CALLBACK_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-config${SUFFIX}
+                      key: keycloak_callback_url                    
               image:
               imagePullPolicy: IfNotPresent
               livenessProbe:
