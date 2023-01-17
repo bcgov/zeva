@@ -43,25 +43,17 @@ spec:
             - name: POSTGRESQL_SERVICE_PORT
               value: '5432'
             - name: KEYCLOAK_CERTS_URL
-              value: 'http://keycloak:8080/auth/realms/zeva/protocol/openid-connect/certs'
+              value: 'https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs'
             - name: KEYCLOAK_REALM
-              value: 'http://localhost:8888/auth/realms/zeva'
+              value: 'https://dev.loginproxy.gov.bc.ca/auth/realms/standard'
             - name: KEYCLOAK_AUTHORITY
-              value: 'http://localhost:8888/auth/realms/zeva'
+              value: 'https://dev.loginproxy.gov.bc.ca/auth/realms/standard'
             - name: KEYCLOAK_ISSUER
-              value: 'http://localhost:8888/auth/realms/zeva'
+              value: 'https://dev.loginproxy.gov.bc.ca/auth/realms/standard'
             - name: KEYCLOAK_AUDIENCE
-              value: 'zeva-app'
+              value: 'zeva-on-gold-4543'
             - name: KEYCLOAK_CLIENT_ID
-              value: 'zeva-app'
-            - name: KEYCLOAK_SA_BASEURL
-              value: 'http://keycloak:8080'
-            - name: KEYCLOAK_SA_REALM
-              value: 'zeva'
-            - name: KEYCLOAK_SA_CLIENT_ID
-              value: 'zeva-app-sa'
-            - name: KEYCLOAK_SA_CLIENT_SECRET
-              value: '06dc71d6-1800-4f5d-b7b3-4c4fda226599'
+              value: 'zeva-on-gold-4543'
             - name: DJANGO_DEBUG
               value: 'True'
             - name: RABBITMQ_VHOST
