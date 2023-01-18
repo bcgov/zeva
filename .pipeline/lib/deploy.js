@@ -30,6 +30,7 @@ module.exports = settings => {
       'DJANGO_DEBUG': phases[phase].djangoDebug,
       'OCP_NAME': phases[phase].ocpName,
       'LOGOUT_HOST_NAME': phases[phase].logoutHostName,
+      'WELL_KNOWN_ENDPOINT': phases[phase].wellKnownEndpoint
     }
   }))
 
@@ -50,8 +51,7 @@ module.exports = settings => {
       'NOTIFICATIONS_ENABLED': phases[phase].notificationsEnabled,
       'ROLES_ENABLED': phases[phase].rolesEnabled,
       'CREDIT_AGREEMENTS_ENABLED': phases[phase].creditAgreementsEnabled,
-      'SUPPLEMENTAL_ENABLED': phases[phase].supplementalEnabled,
-      'WELL_KNOWN_ENDPOINT': phases[phase].wellKnownEndpoint
+      'SUPPLEMENTAL_ENABLED': phases[phase].supplementalEnabled
     }
   }))
 
