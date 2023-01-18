@@ -367,8 +367,6 @@ objects:
                     secretKeyRef:
                       name: email-service
                       key: SENDER_EMAIL  
-
-                      WELL_KNOWN_ENDPOINT            
               ports:
                 - containerPort: 8080
                   protocol: TCP
