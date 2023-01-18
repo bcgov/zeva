@@ -34,21 +34,21 @@ spec:
             - containerPort: 5002
           env:
             - name: KEYCLOAK_CERTS_URL
-              value: 'http://keycloak:8080/auth/realms/zeva/protocol/openid-connect/certs'
+              value: 'https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs'
             - name: KEYCLOAK_REALM
-              value: 'http://localhost:8888/auth/realms/zeva'
+              value: 'https://dev.loginproxy.gov.bc.ca/auth/realms/standard'
             - name: KEYCLOAK_AUTHORITY
-              value: 'http://localhost:8888/auth/realms/zeva'
+              value: 'https://dev.loginproxy.gov.bc.ca/auth/realms/standard'
             - name: KEYCLOAK_ISSUER
-              value: 'http://localhost:8888/auth/realms/zeva'
+              value: 'https://dev.loginproxy.gov.bc.ca/auth/realms/standard'
             - name: KEYCLOAK_URL
-              value: 'http://localhost:8888/auth'
+              value: 'https://dev.loginproxy.gov.bc.ca/auth'
             - name: KEYCLOAK_AUDIENCE
-              value: 'zeva-app'
+              value: 'zeva-on-gold-4543'
             - name: KEYCLOAK_CLIENT_ID
-              value: 'zeva-app'
+              value: 'zeva-on-gold-4543'
             - name: KEYCLOAK_REALM_NAME
-              value: 'zeva'
+              value: 'standard'
             - name: RABBITMQ_ENABLED
               value: 'False'
             - name: APIBASE
