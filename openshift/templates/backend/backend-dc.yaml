@@ -273,6 +273,11 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-config${SUFFIX}
                       key: keycloak_sa_client_id
+                - name: WELL_KNOWN_ENDPOINT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-config${SUFFIX}
+                      key: well_known_endpoint     
                 - name: KEYCLOAK_SA_CLIENT_SECRET
                   valueFrom:
                     secretKeyRef:
@@ -361,7 +366,9 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       name: email-service
-                      key: SENDER_EMAIL              
+                      key: SENDER_EMAIL  
+
+                      WELL_KNOWN_ENDPOINT            
               ports:
                 - containerPort: 8080
                   protocol: TCP

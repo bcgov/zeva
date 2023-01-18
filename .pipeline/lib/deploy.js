@@ -50,7 +50,8 @@ module.exports = settings => {
       'NOTIFICATIONS_ENABLED': phases[phase].notificationsEnabled,
       'ROLES_ENABLED': phases[phase].rolesEnabled,
       'CREDIT_AGREEMENTS_ENABLED': phases[phase].creditAgreementsEnabled,
-      'SUPPLEMENTAL_ENABLED': phases[phase].supplementalEnabled
+      'SUPPLEMENTAL_ENABLED': phases[phase].supplementalEnabled,
+      'WELL_KNOWN_ENDPOINT': phases[phase].wellKnownEndpoint
     }
   }))
 
