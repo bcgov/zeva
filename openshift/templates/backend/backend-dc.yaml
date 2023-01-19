@@ -196,12 +196,12 @@ objects:
                 - name: DATABASE_USER
                   valueFrom:
                     secretKeyRef:
-                      name: patroni${SUFFIX}
+                      name: zeva-patroni-app
                       key: app-db-username
                 - name: DATABASE_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: patroni${SUFFIX}
+                      name: zeva-patroni-app
                       key: app-db-password
                 - name: DATABASE_ENGINE
                   valueFrom:
