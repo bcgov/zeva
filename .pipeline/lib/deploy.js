@@ -80,7 +80,6 @@ module.exports = settings => {
       'VERSION': phases[phase].tag,
       'ENV_NAME': phases[phase].phase,
       'BACKEND_HOST_NAME': phases[phase].backendHost,
-      'RABBITMQ_CLUSTER_NAME': 'rabbitmq-cluster',
       'CPU_REQUEST': phases[phase].backendCpuRequest,
       'CPU_LIMIT': phases[phase].backendCpuLimit,
       'MEMORY_REQUEST': phases[phase].backendMemoryRequest,
