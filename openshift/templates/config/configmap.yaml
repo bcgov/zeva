@@ -56,7 +56,11 @@ parameters:
   - name: LOGOUT_HOST_NAME
     displayName: The logoff host name
     description: The value should be either logontest.gov.bc.ca or logon7.gov.bc.ca
-    required: true     
+    required: true       
+  - name: DATABASE_SERVICE_NAME
+    displayName: Database service name
+    description: Database service name
+    required: true       
   - name: WELL_KNOWN_ENDPOINT
     displayName: well known endpoint
     description: well known endpoint
@@ -71,7 +75,7 @@ objects:
       apibase: https://${BACKEND_HOST_NAME}/api/
       database_engine: postgresql
       database_name: zeva
-      database_service_name: patroni-master${SUFFIX}
+      database_service_name: ${DATABASE_SERVICE_NAME}
       django_debug: ${DJANGO_DEBUG}
       email_from_address: donotreply@gov.bc.ca
       email_sending_enabled: 'False'
@@ -93,7 +97,7 @@ objects:
       keycloak_siteminder_logout_redirect_url: ${KEYCLOAK_SITEMINDER_LOGOUT_REDIRECT_URL}
       well_known_endpoint: ${WELL_KNOWN_ENDPOINT}
       minio_endpoint: zeva-minio-${ENV_NAME}.${OCP_NAME}.gov.bc.ca
-      postgresql_service_host: patroni-master${SUFFIX}.e52f12-${ENV_NAME}.svc.cluster.local
+      postgresql_service_host: ${DATABASE_SERVICE_NAME}.e52f12-${ENV_NAME}.svc.cluster.local
       postgresql_service_port: '5432'
       rabbitmq_enabled: 'False'
       rabbitmq_host: ${NAME}${SUFFIX}-rabbitmq-cluster.e52f12-${ENV_NAME}.svc.cluster.local
