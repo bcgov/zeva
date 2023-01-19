@@ -23,7 +23,7 @@ const phases = {
         ssoName:'dev.loginproxy.gov.bc.ca', phase: 'dev'  , changeId:`${changeId}`, suffix: '-dev', 
         instance: `${name}-dev`  , version:`${version}`, tag:`dev-${version}`, 
         host: `zeva-dev.${ocpName}.gov.bc.ca`, djangoDebug: 'True', logoutHostName: 'logontest7.gov.bc.ca',
-        keycloakCallbackUrl: 'https://localhost:3000/', keycloakSiteminderLogoutRedirectUrl: 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=',
+        keycloakCallbackUrl: 'https://zeva-dev.apps.silver.devops.gov.bc.ca/', keycloakSiteminderLogoutRedirectUrl: 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=',
         databaseServiceName: 'zeva-spilo',
         wellKnownEndpoint: 'https://dev.loginproxy.gov.bc.ca/auth/realms/standard/.well-known/openid-configuration',
         frontendCpuRequest: '100m', frontendCpuLimit: '700m', frontendMemoryRequest: '300M', frontendMemoryLimit: '4G', frontendReplicas: 1,
