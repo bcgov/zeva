@@ -30,7 +30,8 @@ module.exports = settings => {
       'DJANGO_DEBUG': phases[phase].djangoDebug,
       'OCP_NAME': phases[phase].ocpName,
       'LOGOUT_HOST_NAME': phases[phase].logoutHostName,
-      'DATABASE_SERVICE_NAME': phases[phase].databaseServiceName
+      'DATABASE_SERVICE_NAME': phases[phase].databaseServiceName,
+      'WELL_KNOWN_ENDPOINT': phases[phase].wellKnownEndpoint
     }
   }))
 
