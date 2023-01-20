@@ -25,10 +25,6 @@ parameters:
     displayName: Host name for route
     description: Host name for route
     required: true    
-  - name: RABBITMQ_CLUSTER_NAME
-    displayName: rabbitmq cluser name
-    description: rabbitmq cluser name
-    required: true        
   - name: CPU_REQUEST
     displayName: Requested CPU
     description: Requested CPU
@@ -196,12 +192,12 @@ objects:
                 - name: DATABASE_USER
                   valueFrom:
                     secretKeyRef:
-                      name: patroni${SUFFIX}
+                      name: zeva-patroni-app
                       key: app-db-username
                 - name: DATABASE_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: patroni${SUFFIX}
+                      name: zeva-patroni-app
                       key: app-db-password
                 - name: DATABASE_ENGINE
                   valueFrom:
@@ -273,6 +269,11 @@ objects:
                     configMapKeyRef:
                       name: ${NAME}-config${SUFFIX}
                       key: keycloak_sa_client_id
+                - name: WELL_KNOWN_ENDPOINT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ${NAME}-config${SUFFIX}
+                      key: well_known_endpoint     
                 - name: KEYCLOAK_SA_CLIENT_SECRET
                   valueFrom:
                     secretKeyRef:
@@ -288,31 +289,6 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-django${SUFFIX}
                       key: DJANGO_SECRET_KEY
-                - name: RABBITMQ_VHOST
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: rabbitmq_vhost
-                - name: RABBITMQ_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}${SUFFIX}-${RABBITMQ_CLUSTER_NAME}-secret
-                      key: username
-                - name: RABBITMQ_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}${SUFFIX}-${RABBITMQ_CLUSTER_NAME}-secret
-                      key: password
-                - name: RABBITMQ_HOST
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: rabbitmq_host
-                - name: RABBITMQ_PORT
-                  valueFrom:
-                    configMapKeyRef:
-                      name: ${NAME}-config${SUFFIX}
-                      key: rabbitmq_port
                 - name: APP_CONFIG
                   value: /opt/app-root/src/gunicorn.cfg.py
                 - name: ENV_NAME
@@ -361,7 +337,7 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       name: email-service
-                      key: SENDER_EMAIL              
+                      key: SENDER_EMAIL  
               ports:
                 - containerPort: 8080
                   protocol: TCP

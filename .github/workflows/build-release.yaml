@@ -38,8 +38,7 @@ jobs:
 
       ## Log in to Openshift with a token of service account
       - name: Log in to Openshift
-        ##uses: redhat-actions/oc-login@v1
-        uses: smlgbl/oc-login@main
+        uses: redhat-actions/oc-login@v1.2
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
@@ -66,20 +65,19 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Log in to Openshift
-        ##uses: redhat-actions/oc-login@v1
-        uses: smlgbl/oc-login@main
+        uses: redhat-actions/oc-login@v1.2
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           insecure_skip_tls_verify: true
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools    
 
-      #- name: Run BCDK deployment on ZEVA Dev environment
-      #  run: |
-      #    cd .pipeline
-      #    echo "Deploying ZEVA ${{ env.RELEASE_NAME }} on Dev"
-      #    npm install
-      #    npm run deploy -- --pr=${{ env.PR_NUMBER }} --env=dev
+      - name: Run BCDK deployment on ZEVA Dev environment
+        run: |
+          cd .pipeline
+          echo "Deploying ZEVA ${{ env.RELEASE_NAME }} on Dev"
+          npm install
+          npm run deploy -- --pr=${{ env.PR_NUMBER }} --env=dev
 
   deploy-on-test:
 
@@ -94,8 +92,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Log in to Openshift
-        ##uses: redhat-actions/oc-login@v1
-        uses: smlgbl/oc-login@main
+        uses: redhat-actions/oc-login@v1.2
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
@@ -130,8 +127,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Log in to Openshift
-        ##uses: redhat-actions/oc-login@v1
-        uses: smlgbl/oc-login@main
+        uses: redhat-actions/oc-login@v1.2
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}

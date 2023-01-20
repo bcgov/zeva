@@ -30,6 +30,8 @@ module.exports = settings => {
       'DJANGO_DEBUG': phases[phase].djangoDebug,
       'OCP_NAME': phases[phase].ocpName,
       'LOGOUT_HOST_NAME': phases[phase].logoutHostName,
+      'DATABASE_SERVICE_NAME': phases[phase].databaseServiceName,
+      'WELL_KNOWN_ENDPOINT': phases[phase].wellKnownEndpoint
     }
   }))
 
@@ -78,7 +80,6 @@ module.exports = settings => {
       'VERSION': phases[phase].tag,
       'ENV_NAME': phases[phase].phase,
       'BACKEND_HOST_NAME': phases[phase].backendHost,
-      'RABBITMQ_CLUSTER_NAME': 'rabbitmq-cluster',
       'CPU_REQUEST': phases[phase].backendCpuRequest,
       'CPU_LIMIT': phases[phase].backendCpuLimit,
       'MEMORY_REQUEST': phases[phase].backendMemoryRequest,
