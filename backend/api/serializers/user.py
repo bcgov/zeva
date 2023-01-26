@@ -16,13 +16,17 @@ class MemberSerializer(serializers.ModelSerializer):
     organization of the user so it doesn't do an infinite loop.
     """
     roles = RoleSerializer(read_only=True, many=True)
+    is_mapped = serializers.SerializerMethodField()
+
+    def get_is_mapped(self, obj):
+        return obj.keycloak_user_id is not None
 
     class Meta:
         model = UserProfile
         fields = (
             'id', 'first_name', 'last_name', 'email',
             'display_name', 'is_active', 'phone',
-            'roles',
+            'roles', 'is_mapped'
         )
 
 
@@ -33,6 +37,10 @@ class UserSerializer(serializers.ModelSerializer):
     organization = OrganizationSerializer(read_only=True)
     permissions = PermissionSerializer(read_only=True, many=True)
     roles = RoleSerializer(read_only=True, many=True)
+    is_mapped = serializers.SerializerMethodField()
+
+    def get_is_mapped(self, obj):
+        return obj.keycloak_user_id is not None
 
     class Meta:
         model = UserProfile
@@ -40,7 +48,7 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'first_name', 'last_name', 'email', 'username',
             'display_name', 'is_active', 'organization', 'phone',
             'is_government', 'keycloak_email', 'roles', 'title',
-            'permissions',
+            'permissions', 'is_mapped'
         )
 
 
