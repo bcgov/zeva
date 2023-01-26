@@ -23,7 +23,7 @@ Additional developer information - [Developer guide](./developer-guide.md)
 
 Unfortunately we do not have a licence to use Docker Desktop at BC Gov. If you are on a mac [here is a blogpost](https://naomiaro.hashnode.dev/replacing-docker-desktop-with-lima-on-mac-os) about how to setup Lima as an alternative solution for development purposes.
 
-### Backend
+### Docker
 
 The backend and all services are setup to run via docker. To start everything up you can run in the project folder:
 
@@ -41,6 +41,10 @@ Add this entry to your `/etc/hosts` file:
 
 to view the database use:
 docker-compose exec db psql -U postgres postgres
+
+## Running on an M1 Macbook
+
+M1 macbooks run on a different chip than intel macbooks and pcs, which can cause problems with Docker. For ZEVA, ARM64 images can be run on an m1, but not on an intel computer. Currently it should be fine for either but if there's an issue in the future we may need to specify the source of some images.
 
 #### Django
 
