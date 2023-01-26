@@ -595,14 +595,10 @@ class Router extends Component {
                   key="route-credit-agreements-details"
                   path={ROUTES_CREDIT_AGREEMENTS.DETAILS}
                   render={() =>
-                    user.isGovernment ? (
-                      <CreditAgreementsDetailsContainer
-                        keycloak={keycloak}
-                        user={user}
-                      />
-                    ) : (
-                      <></>
-                    )
+                    <CreditAgreementsDetailsContainer
+                      keycloak={keycloak}
+                      user={user}
+                    />
                   }
                 />
               ]}
