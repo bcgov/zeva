@@ -101,9 +101,13 @@ class CreditTransactionBalanceSerializer(ModelSerializer):
     """
     Serializer for credit transactions
     """
+    total_value = SerializerMethodField()
     credit_class = SerializerMethodField()
     weight_class = SerializerMethodField()
     model_year = SerializerMethodField()
+
+    def get_total_value(self, obj):
+        return obj.get('total_value')
 
     def get_credit_class(self, obj):
         credit_class = CreditClass.objects.get(id=obj.get('credit_class_id'))
