@@ -9,7 +9,6 @@ from rest_framework import authentication
 from rest_framework import exceptions
 
 from api.models.user_profile import UserProfile
-from api.models.user_creation_request import UserCreationRequest
 from zeva.settings import WELL_KNOWN_ENDPOINT
 
 cache = caches['keycloak']
@@ -119,40 +118,32 @@ class UserAuthentication(authentication.BaseAuthentication):
         # fall through to here if no mapped user is found
         if 'email' in user_token:
             # we map users by email and external_username
-            creation_request = UserCreationRequest.objects.filter(
+            user_profile = UserProfile.objects.filter(
                 keycloak_email__iexact=user_token['email']
             ).filter(
-              external_username__iexact=external_username
+              username__iexact=external_username
             )
 
             # Ensure that idir users can only be mapped to bcgov org
             # and external users are mapped only to supplier orgs
             if user_token['identity_provider'] == 'idir':
-                creation_request.filter(user_profile__organization=1)
+                user_profile.filter(organization=1)
             elif user_token['identity_provider'] == 'bceidbusiness':
-                creation_request.filter(~Q(user_profile__organization=1))
+                user_profile.filter(~Q(organization=1))
             else:
                 raise Exception('unknown identity provider')
 
             # filter out if the user has already been mapped
-            creation_request.filter(user_profile__keycloak_user_id=None)
+            user = user_profile.filter(keycloak_user_id=None).first()
 
-            if not creation_request.exists():
+            if not user:
                 print("No User with that configuration exists.")
                 raise exceptions.AuthenticationFailed(
                     "No User with that configuration exists.")
 
-            user_creation_request = creation_request.first()
-
             # map keycloak user to tfrs user
-            user = user_creation_request.user_profile
             user.keycloak_user_id = user_token['preferred_username']
-            if user_token['display_name']:
-                user._display_name = user_token['display_name']
             user.save()
-
-            user_creation_request.is_mapped = True
-            user_creation_request.save()
         else:
             raise exceptions.AuthenticationFailed(
                 'preffered_username or email is required in jwt payload')
