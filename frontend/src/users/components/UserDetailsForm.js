@@ -82,6 +82,8 @@ const UserDetailsForm = (props) => {
 
   const accountType = details.organization.isGovernment ? 'IDIR' : 'BCeID';
 
+  const activationText = details.isMapped ? 'User account is mapped.' : 'User account has not been mapped.'
+
   return (
     <div id="form" className="page">
       <ReactTooltip />
@@ -230,6 +232,14 @@ const UserDetailsForm = (props) => {
                         <div className="col-sm-8">{rolesCheckboxes}</div>
                       </div>
                     )}
+                  <div className="form-group">
+                    <label
+                      className="col-sm-4 col-form-label"
+                    >
+                      Account
+                    </label>
+                    <div className="col-sm-8">{activationText}</div>
+                  </div>
                 </span>
               </div>
             </fieldset>
