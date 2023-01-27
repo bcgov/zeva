@@ -11,7 +11,7 @@ on:
 
 env:
   ## The pull request number of the Tracking pull request to merge the release branch to main
-  PR_NUMBER: 1248s
+  PR_NUMBER: 1330
   RELEASE_NAME: helm-conversion-1.46.0
   VERSION: 1.46.0
 
