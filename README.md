@@ -42,6 +42,7 @@ Add this entry to your `/etc/hosts` file:
 to view the database use:
 docker-compose exec db psql -U postgres postgres
 
+
 #### Django
 
 Django offers many helpful [mangement commands](https://docs.djangoproject.com/en/4.0/ref/django-admin/) out of the box. To be able to use these with docker you can access the python environment with bash:

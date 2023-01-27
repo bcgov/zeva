@@ -13,6 +13,10 @@ zeva_minio_1
 zeva_rabbitmq_1  
 zeva_mailslurper_1
 
+
+## Running on an M1 Macbook
+M1 macbooks run on a different chip than intel macbooks and pcs, which can cause problems with Docker. Currently it should be fine for either but if there's an issue in the future we may need to specify the source of some images.
+ 
 ## Code style and Linting
 
 We use [Eslint](https://eslint.org/) to lint the app's code and [Prettier](https://prettier.io/) to format it. The following npm scripts can be used to trigger linting and formatting:
@@ -72,6 +76,14 @@ We also extend this prefix convention to the naming of **branches**, eg: `docs/a
 
 to view the database via docker use:
 docker-compose exec db psql -U postgres postgres
+
+### To insert your first idir user
+
+INSERT INTO user_profile (
+    create_timestamp,    update_timestamp,    username,    first_name,    last_name,    is_active,    keycloak_email,    display_name,    organization_id,    create_user  
+VALUES (
+    NOW(),    NOW(),    'idirusername',    'Firstname',    'Lastname',    TRUE,    
+    'idir.email@gov.bc.ca',    'displayname',    1,    'SYSTEM'  );
 
 #### Copy down Test/Prod data from Openshift
 
