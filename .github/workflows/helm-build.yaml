@@ -44,4 +44,4 @@ jobs:
         run: |
           cd openshift/templates/backend
           oc process -f ./backend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=${{ env.VERSION }} GIT_URL=https://github.com/bcgov/zeva.git GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
-          oc start-build zeva-backend-build-${{ env.PR_NUMBER }}
+          oc start-build --wait=true zeva-backend-build-${{ env.PR_NUMBER }}
