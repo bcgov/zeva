@@ -259,7 +259,7 @@ class DashboardListSerializer(ModelSerializer):
             many=True,
             context={'request': request}
         )
-        # Combining similar objects
+        
         combined = defaultdict(int)
         for item in credit_request_serializer.data:
             combined[item['status']] += item['total']
