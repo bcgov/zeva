@@ -465,8 +465,10 @@ class ModelYearReportViewset(
 
             if validation_status == "ASSESSED":
                 adjust_credits(model_year_report_id, request)
-
-            notifications_model_year_report(validation_status, request.user)
+                notifications_model_year_report(validation_status, request.user)
+                
+            if self.request.method != "PATCH":
+                notifications_model_year_report(validation_status, request.user)
 
         if confirmations:
             for confirmation in confirmations:
