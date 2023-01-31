@@ -20,6 +20,7 @@ from api.models.credit_agreement import CreditAgreement
 from api.models.credit_agreement_statuses import CreditAgreementStatuses
 from datetime import date
 from dateutil.relativedelta import relativedelta
+from collections import defaultdict, OrderedDict
 three_months_ago = date.today() - relativedelta(months=+3)
 twenty_eight_days_ago = date.today() - relativedelta(days=+28)
 
@@ -34,7 +35,7 @@ class CreditRequestCountSerializer(ModelSerializer):
         request = self.context.get('request')
 
         if not request.user.is_government:
-            if obj['validation_status'].value == 'RECOMMEND_APPROVAL' or obj['validation_status'].value == 'RECOMMEND_REJECTION':
+            if obj['validation_status'].value == 'RECOMMEND_APPROVAL' or obj['validation_status'].value == 'RECOMMEND_REJECTION' or obj['validation_status'].value == 'CHECKED':
                 return 'SUBMITTED'
         return obj['validation_status'].value
 
@@ -258,12 +259,17 @@ class DashboardListSerializer(ModelSerializer):
             many=True,
             context={'request': request}
         )
-
+        
+        combined = defaultdict(int)
+        for item in credit_request_serializer.data:
+            combined[item['status']] += item['total']
+        merged_data = [{'status': k, 'total': v} for k, v in combined.items()]
+        merged_data = [OrderedDict(d) for d in merged_data]
         # return dictionary with activity type as key and number as value
         return {
             'model_year_report': report_status_dict_list,
             'vehicle': vehicle_serializer.data,
-            'credit_request': credit_request_serializer.data,
+            'credit_request': merged_data,
             'credit_transfer': credit_transfer_serializer.data,
             'credit_agreement': credit_agreement_serializer.data
             
