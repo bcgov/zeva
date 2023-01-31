@@ -35,7 +35,7 @@ class CreditRequestCountSerializer(ModelSerializer):
         request = self.context.get('request')
 
         if not request.user.is_government:
-            if obj['validation_status'].value == 'RECOMMEND_APPROVAL' or obj['validation_status'].value == 'RECOMMEND_REJECTION':
+            if obj['validation_status'].value == 'RECOMMEND_APPROVAL' or obj['validation_status'].value == 'RECOMMEND_REJECTION' or obj['validation_status'].value == 'CHECKED':
                 return 'SUBMITTED'
         return obj['validation_status'].value
 
