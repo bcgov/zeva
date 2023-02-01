@@ -24,6 +24,7 @@ from api.models.weight_class import WeightClass
 from api.models.organization import Organization
 from api.models.account_balance import AccountBalance
 from api.models.model_year_report_credit_transaction import ModelYearReportCreditTransaction
+from api.services.send_email import notifications_model_year_report
 
 
 def get_model_year_report_statuses(report, request_user=None):
@@ -363,3 +364,7 @@ def adjust_credits(id, request):
                 organization_id=organization_id,
                 model_year_id=model_year_id
             ).delete()
+
+def check_validation_status_change(current_status, new_status, user):
+        if new_status != current_status and new_status != "DRAFT":
+            notifications_model_year_report(new_status, user)

@@ -42,7 +42,7 @@ from api.services.model_year_report import (
     get_model_year_report_statuses,
     adjust_credits,
 )
-from api.services.send_email import notifications_model_year_report
+from api.services.model_year_report import check_validation_status_change
 from api.serializers.organization_ldv_sales import OrganizationLDVSalesSerializer
 from api.serializers.model_year_report import (
     ModelYearReportSerializer,
@@ -416,10 +416,15 @@ class ModelYearReportViewset(
         confirmations = request.data.get("confirmation", None)
         description = request.data.get("description")
         remove_submission_confirmation = request.data.get("remove_confirmation", None)
+        user = request.data.get("user")
 
         model_year_report_update = ModelYearReport.objects.filter(
-            id=model_year_report_id
+            id=model_year_report_id,
         )
+
+        model_year_report_check = ModelYearReport.objects.filter(
+            id=model_year_report_id,
+        ).first()
 
         if remove_submission_confirmation:
             assertion_id = SigningAuthorityAssertion.objects.filter(
@@ -430,6 +435,9 @@ class ModelYearReportViewset(
                 signing_authority_assertion_id=assertion_id,
             )
             item.delete()
+
+        print("validation", validation_status, model_year_report_check)
+        check_validation_status_change(model_year_report_check.validation_status, validation_status, user)
 
         if validation_status:
             if validation_status == "RECOMMENDED" and not description:
@@ -465,10 +473,6 @@ class ModelYearReportViewset(
 
             if validation_status == "ASSESSED":
                 adjust_credits(model_year_report_id, request)
-                notifications_model_year_report(validation_status, request.user)
-                
-            if self.request.method != "PATCH":
-                notifications_model_year_report(validation_status, request.user)
 
         if confirmations:
             for confirmation in confirmations:
