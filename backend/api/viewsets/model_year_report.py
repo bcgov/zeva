@@ -436,7 +436,6 @@ class ModelYearReportViewset(
             )
             item.delete()
 
-        print("validation", validation_status, model_year_report_check)
         check_validation_status_change(model_year_report_check.validation_status, validation_status, user)
 
         if validation_status:
