@@ -127,7 +127,7 @@ Code released under the [Apache License, Version 2.0](./LICENSE).
 
 This is a list that was created on 2023-02-01 with all Zelda Devs to provide alternative work instead of bringing in a new ticket.  
 
-- *Team Rule* Do not bring in ticket After Friday 
+**Team Rule* Do not bring in ticket After Friday 
 
 1. Help another Dev - see if other Devs need help to finish their ticket 
 
