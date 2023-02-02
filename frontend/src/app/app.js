@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { Component } from 'react';
 import Keycloak from 'keycloak-js';
 
@@ -28,14 +29,60 @@ class App extends Component {
       url: CONFIG.KEYCLOAK.URL
     });
 
+    keycloak.onTokenExpired = () => {
+      keycloak
+        .updateToken(5)
+        .then((refreshed) => {
+          if (refreshed) {
+            const { token: newToken } = keycloak;
+            axios.defaults.headers.common.Authorization = `Bearer ${newToken}`;
+            if (keycloak.idToken) {
+              window.sessionStorage.setItem("idToken", keycloak.idToken)
+            }
+            if (keycloak.refreshToken) {
+              window.sessionStorage.setItem("refreshToken", keycloak.refreshToken)
+            }
+            if (keycloak.idTokenParsed?.exp) {
+              window.sessionStorage.setItem("expiry", keycloak.idTokenParsed.exp)
+            }
+          }
+        })
+        .catch((err) => {
+          this.logout();
+        });
+    };
+
+    let authParams = {
+      pkceMethod: 'S256',
+      redirectUri: CONFIG.KEYCLOAK.CALLBACK_URL,
+      promiseType: 'native',
+      idpHint: 'idir'
+    }
+
+    const idToken = sessionStorage.getItem("idToken")
+    const refreshToken = sessionStorage.getItem("refreshToken")
+    const expiry = sessionStorage.getItem("expiry")
+    
+    const now = Math.round(Date.now() / 1000)
+    const expired = now > expiry
+
+    if (idToken && refreshToken && !expired) {
+      authParams['idToken'] = idToken
+      authParams['refreshToken'] = refreshToken
+    }
+
     keycloak
-      .init({
-        pkceMethod: 'S256',
-        promiseType: 'native',
-        redirectUri: CONFIG.KEYCLOAK.CALLBACK_URL,
-        idpHint: 'idir'
-      })
+      .init(authParams)
       .then((authenticated) => {
+        if (keycloak.idToken) {
+          window.sessionStorage.setItem("idToken", keycloak.idToken)
+        }
+        if (keycloak.refreshToken) {
+          window.sessionStorage.setItem("refreshToken", keycloak.refreshToken)
+        }
+        if (keycloak.idTokenParsed?.exp) {
+          window.sessionStorage.setItem("expiry", keycloak.idTokenParsed.exp)
+        }
         this.setState({
           keycloak,
           authenticated
@@ -50,10 +97,12 @@ class App extends Component {
 
     const { keycloak } = this.state;
 
+    const idToken = sessionStorage.getItem("idToken")
+
     const kcLogoutUrl = keycloak.endpoints.logout() +
       '?post_logout_redirect_uri=' + CONFIG.KEYCLOAK.LOGOUT_URL +
       '&client_id=' + keycloak.clientId +
-      '&id_token_hint=' + keycloak.idToken
+      '&id_token_hint=' + idToken
 
     const url = CONFIG.KEYCLOAK.SITEMINDER_LOGOUT_URL + encodeURIComponent(kcLogoutUrl)
 
