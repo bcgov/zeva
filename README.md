@@ -127,21 +127,21 @@ Code released under the [Apache License, Version 2.0](./LICENSE).
 
 This is a list that was created on 2023-02-01 with all Zelda Devs to provide alternative work instead of bringing in a new ticket.  
 
-*Team Rule* Do not bring in ticket After Friday 
+- *Team Rule* Do not bring in ticket After Friday 
 
-Help another Dev - see if other Devs need help to finish their ticket 
+1. Help another Dev - see if other Devs need help to finish their ticket 
 
-PR Reviews – linked to the task above 
+2. PR Reviews – linked to the task above 
 
-Writing additional tests – for both tront and back end 
+3. Writing additional tests – for both tront and back end 
 
-Take a look at Tech Debt tickets - If we bring in tickets let's bring in Tech Debt first 
+4. Take a look at Tech Debt tickets - If we bring in tickets let's bring in Tech Debt first 
 
-Learning time: 
+5. Learning time: 
 
-Take the opportunity to familiarize yourself with business logic, tech (anything around work we do) 
+- Take the opportunity to familiarize yourself with business logic, tech (anything around work we do) 
 
-New learning and applying it to our work 
+- New learning and applying it to our work 
 
-Innovation work 
+- Innovation work 
 
