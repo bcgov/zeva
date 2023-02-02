@@ -89,21 +89,6 @@ class Router extends Component {
         throw error;
       }
     );
-
-    keycloak.onTokenExpired = () => {
-      keycloak
-        .updateToken(5)
-        .then((refreshed) => {
-          if (refreshed) {
-            const { token: newToken } = keycloak;
-
-            axios.defaults.headers.common.Authorization = `Bearer ${newToken}`;
-          }
-        })
-        .catch(() => {
-          props.logout();
-        });
-    };
   }
 
   componentDidMount() {
