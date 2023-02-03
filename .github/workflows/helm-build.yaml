@@ -78,8 +78,8 @@ jobs:
           oc tag e52f12-tools/zeva-frontend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} e52f12-dev/zeva-frontend:dev-${{ env.VERSION }}-${{ env.PR_NUMBER }}
 
       - name: Deply ZEVA Helm Charts on Dev
+        shell: bash {0}
         run: |
-          set +x
           cd charts/zeva-apps/charts/zeva-frontend
           helm version
           helm status -n e52f12-dev zeva-frontend
