@@ -79,6 +79,7 @@ jobs:
 
       - name: Deply ZEVA Helm Charts on Dev
         run: |
+          set +x
           cd charts/zeva-apps/charts/zeva-frontend
           helm version
           helm status -n e52f12-dev zeva-frontend
