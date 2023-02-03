@@ -3,6 +3,7 @@ kind: ConfigMap
 metadata:
   creationTimestamp: null
   name: zeva-config
+  labels: {{ include "zeva-frontend.labels" . | nindent 4 }}
 data:
   apibase: https://{{ .Values.appConfigMap.backendHostName }}/api/
   database_engine: postgresql

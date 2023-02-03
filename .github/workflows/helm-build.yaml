@@ -46,11 +46,11 @@ jobs:
       #    oc process -f ./backend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.REPO_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
       #   oc start-build --wait=true zeva-backend-build-${{ env.PR_NUMBER }}
 
-      - name: Build ZEVA Frontend
-        run: |
-          cd openshift/templates/frontend
-          oc process -f ./frontend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.REPO_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
-          oc start-build --wait=true zeva-frontend-build-${{ env.PR_NUMBER }}
+      # - name: Build ZEVA Frontend
+      #  run: |
+      #    cd openshift/templates/frontend
+      #    oc process -f ./frontend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.REPO_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
+      #    oc start-build --wait=true zeva-frontend-build-${{ env.PR_NUMBER }}
 
   deploy-on-dev:
 
@@ -80,5 +80,7 @@ jobs:
       - name: Deply ZEVA Helm Charts on Dev
         run: |
           cd charts/zeva-apps/charts/zeva-frontend
-          helm install -n ef52f12-dev -f ./values-dev zeva-frontend .
+          helm uninstall -n ef52f12-dev zeva-frontend
+          echo "zeva-frontend uninstalled"
+          helm install -n ef52f12-dev -f ./values-dev.yaml zeva-frontend .
         
