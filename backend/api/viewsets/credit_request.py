@@ -86,7 +86,8 @@ class CreditRequestViewset(
         if submission.validation_status == SalesSubmissionStatuses.VALIDATED:
             award_credits(submission)
 
-        notifications_credit_application(submission)
+        if self.request.method != "PATCH":
+            notifications_credit_application(submission)
 
     @action(detail=False)
     def template(self, request):
