@@ -80,7 +80,5 @@ jobs:
       - name: Deply ZEVA Helm Charts on Dev
         run: |
           cd charts/zeva-apps/charts/zeva-frontend
-          helm uninstall -n ef52f12-dev zeva-frontend
-          echo "zeva-frontend uninstalled"
           helm install -n ef52f12-dev -f ./values-dev.yaml zeva-frontend .
         
