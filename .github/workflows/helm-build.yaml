@@ -72,13 +72,21 @@ jobs:
           insecure_skip_tls_verify: true
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools    
       
-      # remeber to change 
-      - name: Tag Frontend Image to e52f12-dev/zeva-frontend:dev-${{ env.VERSION }}${{ env.PR_NUMBER }} to e52f12-dev/zeva-frontend:dev-${{ env.VERSION }}
+      # remeber to change e52f12-dev/zeva-frontend:dev-${{ env.VERSION }}${{ env.PR_NUMBER }} to e52f12-dev/zeva-frontend:dev-${{ env.VERSION }}
+      - name: Tag Frontend Image form tools to dev
         run: |
           oc tag e52f12-tools/zeva-frontend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} e52f12-dev/zeva-frontend:dev-${{ env.VERSION }}-${{ env.PR_NUMBER }}
 
       - name: Deply ZEVA Helm Charts on Dev
         run: |
           cd charts/zeva-apps/charts/zeva-frontend
-          helm install -n ef52f12-dev -f ./values-dev.yaml zeva-frontend .
-        
+          helm version
+          helm status -n e52f12-dev zeva-frontend
+          if [ $? -eq 0 ]; then
+            echo "zeva-frontend release exists already"
+            helm upgrade -n e52f12-dev -f ./values-dev.yaml zeva-frontend .
+          else
+            echo "zeva-frontend release does not exist"
+            helm install -n e52f12-dev -f ./values-dev.yaml zeva-frontend .
+          fi
+          
