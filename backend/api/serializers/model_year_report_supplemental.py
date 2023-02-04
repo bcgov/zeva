@@ -271,8 +271,10 @@ class ModelYearReportSupplementalSerializer(ModelSerializer):
         if reassessment_report:
             reassessment_report_id = reassessment_report.id
 
+        # if the reassessment report exists and is not associated with a supplier-created supplementary report, obj.id should be None
         return {
             'is_reassessment': False,
+            "supplementary_report_id": obj.id,
             'reassessment_report_id': reassessment_report_id,
             'status': obj.status.value
         }
