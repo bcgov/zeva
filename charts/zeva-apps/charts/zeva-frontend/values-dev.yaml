@@ -39,3 +39,7 @@ appConfigMap:
   logoutHostName: logontest7.gov.bc.ca
   hostName: zeva-dev.apps.silver.devops.gov.bc.ca
 
+autoscaling:
+  minReplicas: 1
+  maxReplicas: 2
+  cpuAverageUtilization: 80

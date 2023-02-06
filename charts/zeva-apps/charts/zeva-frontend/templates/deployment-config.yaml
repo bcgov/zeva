@@ -5,6 +5,7 @@ metadata:
   annotations:
     description: Defines how to deploy the frontend application
   creationTimestamp: null
+  labels: {{ include "zeva-frontend.labels" . | nindent 8 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: 10

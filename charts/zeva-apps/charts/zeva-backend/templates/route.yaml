@@ -1,0 +1,21 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  creationTimestamp: 
+  annotations:      
+    haproxy.router.openshift.io/timeout: 1500s      
+  name: {{ template "zeva-backend.fullname" . }}
+  labels: {{ include "zeva-backend.labels" . | nindent 8 }}
+spec:
+  host: {{ .Values.backendHost }}
+  path: /api
+  port:
+    targetPort: backend
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: {{ template "zeva-backend.fullname" . }}
+    weight: 100
+  wildcardPolicy: None
