@@ -450,7 +450,7 @@ class ModelYearReportViewset(
                 model_year_report_id=model_year_report_id,
                 validation_status=validation_status,
                 update_user=request.user.username,
-                create_user=request.user.username,
+                create_user=model_year_report_update[0].create_user,
             )
 
             # check for if validation status is recommended
