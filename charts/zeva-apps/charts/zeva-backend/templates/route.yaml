@@ -1,3 +1,4 @@
+{{- if .Values.backendRoute.create }}
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
@@ -7,7 +8,7 @@ metadata:
   name: {{ template "zeva-backend.fullname" . }}
   labels: {{ include "zeva-backend.labels" . | nindent 8 }}
 spec:
-  host: {{ .Values.backendHost }}
+  host: {{ .Values.backendRoute.hostName }}
   path: /api
   port:
     targetPort: backend
@@ -19,3 +20,4 @@ spec:
     name: {{ template "zeva-backend.fullname" . }}
     weight: 100
   wildcardPolicy: None
+  {{- end }}
