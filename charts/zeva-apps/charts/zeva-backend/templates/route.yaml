@@ -20,4 +20,4 @@ spec:
     name: {{ template "zeva-backend.fullname" . }}
     weight: 100
   wildcardPolicy: None
-  {{- end }}
+{{- end }}

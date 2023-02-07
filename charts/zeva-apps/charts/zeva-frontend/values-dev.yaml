@@ -44,3 +44,6 @@ autoscaling:
   maxReplicas: 2
   cpuAverageUtilization: 80
 
+# the fronend host name is appConfigMap.hostName
+frontendRoute: 
+  create: true

@@ -1,3 +1,4 @@
+{{- if .Values.frontendRoute.create }}
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
@@ -38,3 +39,4 @@ spec:
     name: {{ template "zeva-frontend.fullname" . }}
     weight: 100
   wildcardPolicy: None
+{{- end }}
