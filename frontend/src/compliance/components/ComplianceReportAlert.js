@@ -36,6 +36,12 @@ const ComplianceReportAlert = (props) => {
           user: statusFilter('SUBMITTED').createUser.displayName
         };
       }
+      if (validationStatus === 'RECOMMENDED') {
+        date = moment(statusFilter('SUBMITTED').createTimestamp).format(
+            'MMM D, YYYY'
+          )
+          userName = statusFilter('SUBMITTED').createUser.displayName
+      }
     }
   }
 
@@ -151,7 +157,7 @@ const ComplianceReportAlert = (props) => {
 
     case 'SUBMITTED':
       title = 'Model Year Report Submitted';
-      message = `Model Year Report Submitted ${date} by ${userName} — ${type} confirmed ${confirmedBy.date} by ${confirmedBy.user}`;
+      message = `{type} confirmed ${confirmedBy.date} by ${confirmedBy.user}`;
       classname = 'alert-primary';
       break;
 
