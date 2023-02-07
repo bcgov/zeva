@@ -40,11 +40,11 @@ jobs:
           insecure_skip_tls_verify: true
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
 
-      - name: Build ZEVA Backend
-        run: |
-          cd openshift/templates/backend
-          oc process -f ./backend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.REPO_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
-          oc start-build --wait=true zeva-backend-build-${{ env.PR_NUMBER }}
+      # - name: Build ZEVA Backend
+      #  run: |
+      #    cd openshift/templates/backend
+      #    oc process -f ./backend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.REPO_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
+      #    oc start-build --wait=true zeva-backend-build-${{ env.PR_NUMBER }}
 
       # - name: Build ZEVA Frontend
       #  run: |
@@ -78,11 +78,11 @@ jobs:
           oc tag ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools/zeva-frontend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev/zeva-frontend:dev-${{ env.VERSION }}-${{ env.PR_NUMBER }}
           oc tag ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools/zeva-backend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev/zeva-backend:dev-${{ env.VERSION }}-${{ env.PR_NUMBER }}
 
-      - name: Deply zeva-frontend Dev
+      # helm status will show an error if the helm release doesn't exist. The error will be ignored.
+      - name: Deply zeva-frontend on Dev
         shell: bash {0}
         run: |
           cd charts/zeva-apps/charts/zeva-frontend
-          helm version
           helm status -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev zeva-frontend
           if [ $? -eq 0 ]; then
             echo "zeva-frontend release exists already"
@@ -92,11 +92,11 @@ jobs:
             helm install -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev -f ./values-dev.yaml zeva-frontend .
           fi
           
-      - name: Deply zeva-backend Dev
+      # helm status will show an error if the helm release doesn't exist. The error will be ignored.
+      - name: Deply zeva-backend on Dev
         shell: bash {0}
         run: |
           cd charts/zeva-apps/charts/zeva-backend
-          helm version
           helm status -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev zeva-backend
           if [ $? -eq 0 ]; then
             echo "zeva-backend release exists already"
