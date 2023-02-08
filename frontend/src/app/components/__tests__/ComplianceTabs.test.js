@@ -11,7 +11,7 @@ const user = {
   hasPermission: jest.fn().mockReturnValue(true)
 };
 
-test('renders tab for Model Year Reports', () => {
+it('renders tab for Model Year Reports', () => {
   const { getByText } = render(
     <MemoryRouter>
       <ComplianceTabs active="reports" user={user} />
@@ -21,7 +21,7 @@ test('renders tab for Model Year Reports', () => {
   expect(linkElement).toBeTruthy();
 });
 
-test('renders tab for Compliance Ratios', () => {
+it('renders tab for Compliance Ratios', () => {
   const { getByText } = render(
     <MemoryRouter>
       <ComplianceTabs active="ratios" user={user} />
@@ -31,7 +31,7 @@ test('renders tab for Compliance Ratios', () => {
   expect(linkElement).toBeTruthy();
 });
 
-test('renders tab for Compliance Calculator', () => {
+it('renders tab for Compliance Calculator', () => {
   const { getByText } = render(
     <MemoryRouter>
       <ComplianceTabs active="calculator" user={user} />
@@ -41,7 +41,7 @@ test('renders tab for Compliance Calculator', () => {
   expect(linkElement).toBeTruthy();
 });
 
-test('does not render tab for Compliance Calculator for government users', () => {
+it('does not render tab for Compliance Calculator for government users', () => {
   const governmentUser = {
     isGovernment: true,
     hasPermission: jest.fn().mockReturnValue(false)
