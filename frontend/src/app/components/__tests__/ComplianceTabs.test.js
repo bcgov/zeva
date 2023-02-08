@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link, MemoryRouter } from 'react-router-dom';
-import { render, cleanup, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { render, cleanup } from '@testing-library/react';
 
 import ComplianceTabs from '../ComplianceTabs';
 

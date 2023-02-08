@@ -62,7 +62,7 @@ describe('CommentInput component', () => {
     const buttonText = 'Add Comment';
     const handleCommentChange = jest.fn();
     const handleAddComment = jest.fn();
-    const { getByTestId, getByText } = render(
+    const { getByText } = render(
       <CommentInput
         title={title}
         handleCommentChange={handleCommentChange}

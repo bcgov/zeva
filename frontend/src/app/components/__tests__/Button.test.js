@@ -45,7 +45,7 @@ describe('Button component', () => {
 
   it('should call the action prop when the submit button is clicked', () => {
     const handleClick = jest.fn();
-    const { getByText, getByTestId } = render(
+    const { getByTestId } = render(
       <Button buttonType="submit" action={handleClick} testid="submit-button" />
     );
     const button = getByTestId('submit-button');
