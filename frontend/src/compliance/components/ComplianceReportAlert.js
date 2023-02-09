@@ -151,7 +151,7 @@ const ComplianceReportAlert = (props) => {
 
     case 'SUBMITTED':
       title = 'Model Year Report Submitted';
-      message = `Model Year Report Submitted ${date} by ${userName} — ${type} confirmed ${confirmedBy.date} by ${confirmedBy.user}`;
+      message = `${type} confirmed ${confirmedBy.date} by ${confirmedBy.user}`;
       classname = 'alert-primary';
       break;
 

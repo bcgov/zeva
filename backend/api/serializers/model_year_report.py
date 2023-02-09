@@ -190,7 +190,7 @@ class ModelYearReportSerializer(ModelSerializer):
             create_user__in=users,
         )
 
-        serializer = ModelYearReportHistorySerializer(history, many=True)
+        serializer = ModelYearReportHistorySerializer(history, many=True, context={'request': request, 'original_creator': history.first()})
 
         return serializer.data
 

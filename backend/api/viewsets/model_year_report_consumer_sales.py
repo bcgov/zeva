@@ -150,8 +150,7 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
 
         validation_status = report.validation_status.value
 
-        if not request.user.is_government and \
-                report.validation_status == ModelYearReportStatuses.RETURNED:
+        if not request.user.is_government and (report.validation_status == ModelYearReportStatuses.RETURNED or ModelYearReportStatuses.RECOMMENDED):
             validation_status = ModelYearReportStatuses.SUBMITTED.value
 
         return Response({

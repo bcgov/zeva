@@ -12,7 +12,16 @@ class ModelYearReportHistorySerializer(ModelSerializer):
     validation_status = EnumField(ModelYearReportStatuses, read_only=True)
 
     def get_create_user(self, obj):
+        request = self.context.get("request")
+        original_creator = self.context.get("original_creator")
+        is_government = False
+        if request:
+            is_government = request.user.is_government
         user_profile = UserProfile.objects.filter(username=obj.create_user)
+        if is_government and obj.validation_status is ModelYearReportStatuses.RECOMMENDED:
+            user_profile = UserProfile.objects.filter(username=original_creator.create_user)
+        else:
+            user_profile = UserProfile.objects.filter(username=obj.create_user)
 
         if user_profile.exists():
             serializer = MemberSerializer(user_profile.first(), read_only=True)
