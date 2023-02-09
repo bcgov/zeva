@@ -27,11 +27,9 @@ jobs:
 
     steps:
 
-      ## it will checkout to /home/runner/work/zeva/zeva
       - name: Check out repository
         uses: actions/checkout@v3
 
-      ## Log in to Openshift with a token of service account
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.2
         with:
@@ -46,7 +44,7 @@ jobs:
           oc process -f ./backend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.REPO_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
           oc start-build --wait=true zeva-backend-build-${{ env.PR_NUMBER }}
 
-       - name: Build ZEVA Frontend
+      - name: Build ZEVA Frontend
         run: |
           cd openshift/templates/frontend
           oc process -f ./frontend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.REPO_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
