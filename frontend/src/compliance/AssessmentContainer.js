@@ -202,7 +202,6 @@ const AssessmentContainer = (props) => {
                   bceidCommentResponse = item;
                 }
               });
-              
               const {
                 makes: modelYearReportMakes,
                 modelYearReportAddresses,
@@ -505,7 +504,6 @@ const AssessmentContainer = (props) => {
           modelYearReportId: id,
           validation_status: status,
           modelYear: reportYear,
-          //organization: details.organization
         };
 
         if (analystAction) {

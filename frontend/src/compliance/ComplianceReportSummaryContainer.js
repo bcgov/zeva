@@ -44,8 +44,7 @@ const ComplianceReportSummaryContainer = (props) => {
     const data = {
       modelYearReportId: id,
       validation_status: status,
-      confirmation: checkboxes,
-      //organization: supplierDetails.organization
+      confirmation: checkboxes
     };
 
     axios.patch(ROUTES_COMPLIANCE.REPORT_SUBMISSION, data).then(() => {
