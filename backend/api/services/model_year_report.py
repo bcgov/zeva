@@ -365,6 +365,6 @@ def adjust_credits(id, request):
                 model_year_id=model_year_id
             ).delete()
 
-def check_validation_status_change(current_status, new_status, user):
-        if new_status != current_status and new_status != "DRAFT":
-            notifications_model_year_report(new_status, user)
+def check_validation_status_change(current_status, new_status, request):
+        if new_status != current_status:
+            notifications_model_year_report(new_status, request)
