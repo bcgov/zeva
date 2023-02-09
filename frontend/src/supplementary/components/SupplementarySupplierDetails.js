@@ -235,7 +235,7 @@ const SupplementarySupplierDetails = (props) => {
           title={'Reassessment'}
           url={tabUrl(reassessmentReportId, tabNames[2])}
           disabled={!isAssessed}
-          tooltip={'Reassessment visible once a director approves the recommendation.'}
+          tooltip={null}
           status={reassessmentStatus}
           assessed={isAssessed}
         />
