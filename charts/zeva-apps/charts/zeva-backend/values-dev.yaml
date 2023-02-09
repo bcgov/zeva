@@ -1,0 +1,30 @@
+replicaCount: 1
+
+openshiftLicensePlate: e52f12
+envName: dev
+backendImageTagname: dev-1.46.0-1330
+
+resources:
+  cpuRequest: 50m
+  memoryRequest: 350Mi
+  cpuLimit: 100m
+  memoryLimit: 700Mi
+
+autoscaling:
+  minReplicas: 1
+  maxReplicas: 2
+  cpuAverageUtilization: 80
+
+healthCheckDelay:  30
+
+resources:
+  limits:
+    cpu: 160m
+    memory: 400Mi
+  requests:
+    cpu: 80m
+    memory: 200Mi
+    
+backendRoute: 
+  create: true
+  hostName: zeva-backend-dev.apps.silver.devops.gov.bc.ca

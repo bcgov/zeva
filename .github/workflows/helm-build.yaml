@@ -1,0 +1,108 @@
+## This pipeline is used to try replacing BCDK with Helm
+## The build job uses oc command with Openshift Build Templates
+
+name: ZEVA Helm Test
+
+on:
+  push:
+    branches: [ helm-conversion-1.46.0 ]
+  workflow_dispatch:
+  workflow_call:
+
+env:
+  ## The pull request number of the Tracking pull request to merge the release branch to main
+  PR_NUMBER: 1330
+  RELEASE_NAME: helm-conversion-1.46.0
+  VERSION: 1.46.0
+  REPO_URL: https://github.com/bcgov/zeva.git 
+
+jobs:
+
+  ## This is the CI job
+  build:
+
+    name: Build ZEVA on Openshift
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+
+      ## it will checkout to /home/runner/work/zeva/zeva
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      ## Log in to Openshift with a token of service account
+      - name: Log in to Openshift
+        uses: redhat-actions/oc-login@v1.2
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
+
+      # - name: Build ZEVA Backend
+      #  run: |
+      #    cd openshift/templates/backend
+      #    oc process -f ./backend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.REPO_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
+      #    oc start-build --wait=true zeva-backend-build-${{ env.PR_NUMBER }}
+
+      # - name: Build ZEVA Frontend
+      #  run: |
+      #    cd openshift/templates/frontend
+      #    oc process -f ./frontend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.REPO_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
+      #    oc start-build --wait=true zeva-frontend-build-${{ env.PR_NUMBER }}
+
+  deploy-on-dev:
+
+    name: Deploy ZEVA on Dev
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: build
+
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Log in to Openshift
+        uses: redhat-actions/oc-login@v1.2
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools    
+      
+      # remeber to change -dev/zeva-frontend:dev-${{ env.VERSION }}${{ env.PR_NUMBER }} to -dev/zeva-frontend:dev-${{ env.VERSION }}
+      - name: Tag Frontend Image form tools to dev
+        run: |
+          oc tag ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools/zeva-frontend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev/zeva-frontend:dev-${{ env.VERSION }}-${{ env.PR_NUMBER }}
+          oc tag ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools/zeva-backend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev/zeva-backend:dev-${{ env.VERSION }}-${{ env.PR_NUMBER }}
+
+      # helm status will show an error if the helm release doesn't exist. The error will be ignored.
+      - name: Deply zeva-frontend on Dev
+        shell: bash {0}
+        run: |
+          cd charts/zeva-apps/charts/zeva-frontend
+          helm status -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev zeva-frontend
+          if [ $? -eq 0 ]; then
+            echo "zeva-frontend release exists already"
+            helm upgrade -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev -f ./values-dev.yaml zeva-frontend .
+          else
+            echo "zeva-frontend release does not exist"
+            helm install -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev -f ./values-dev.yaml zeva-frontend .
+          fi
+          
+      # helm status will show an error if the helm release doesn't exist. The error will be ignored.
+      - name: Deply zeva-backend on Dev
+        shell: bash {0}
+        run: |
+          cd charts/zeva-apps/charts/zeva-backend
+          helm status -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev zeva-backend
+          if [ $? -eq 0 ]; then
+            echo "zeva-backend release exists already"
+            helm upgrade -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev -f ./values-dev.yaml zeva-backend .
+          else
+            echo "zeva-backend release does not exist"
+            helm install -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev -f ./values-dev.yaml zeva-backend .
+          fi
+          
