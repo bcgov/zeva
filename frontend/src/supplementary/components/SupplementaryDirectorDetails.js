@@ -267,7 +267,7 @@ const SupplementaryDirectorDetails = (props) => {
         <ReactTooltip/>
         <SupplementaryTab
           selected={selectedTab == tabNames[0]}
-          title={'Supplementary Details'}
+          title={'Supplementary Report'}
           url={tabUrl(supplementaryReportId, tabNames[0])}
           disabled={supplementaryReportId == null}
           tooltip={'No supplementary report found. Analyst initiated reassessment.'}
