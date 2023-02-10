@@ -245,7 +245,7 @@ const SupplementarySupplierDetails = (props) => {
 
   return (
     <div id="supplementary" className="page">
-      {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED && (
+      {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED ? (
         <ComplianceHistory
           activePage="supplementary"
           id={id}
@@ -260,16 +260,19 @@ const SupplementarySupplierDetails = (props) => {
           }
           user={user}
         />
-      )}
-      <div className="row">
-        <div className="col">
-          <h2 className="mb-2 mt-3">
-            {isReassessment
-              ? `${reportYear} Model Year Report Reassessment`
-              : `${reportYear} Model Year Supplementary Report`}
-          </h2>
+        ) : (
+        <div className="row">
+          <div className="col">
+            <h2 className="mb-2 mt-3">
+              {isReassessment
+                ? `${reportYear} Model Year Report Reassessment`
+                : `${reportYear} Model Year Supplementary Report`}
+            </h2>
+          </div>
         </div>
-      </div>
+        )
+      }
+      
 
       {renderTabs()}
 
