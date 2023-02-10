@@ -84,14 +84,11 @@ const ComplianceReportAlert = (props) => {
         classname = 'alert-primary';
         break;
 
-
       case 'ASSESSED':
         title = 'Model Year Report Assessed';
         message = `Model Year Report Assessed ${date} by Government of B.C. — ${type} submitted ${confirmedBy.date} by ${confirmedBy.user}`;
         classname = 'alert-success';
         break;
-      
-
 
       default:
         title = '';
@@ -132,7 +129,6 @@ const ComplianceReportAlert = (props) => {
       message = `${type} confirmed ${confirmedBy.date} by ${confirmedBy.user}`;
       classname = 'alert-primary';
       break;
-
 
     case 'ASSESSED':
       title = 'Model Year Report Assessed';
