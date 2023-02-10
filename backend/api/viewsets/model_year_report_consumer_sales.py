@@ -149,9 +149,8 @@ class ModelYearReportConsumerSalesViewSet(mixins.ListModelMixin,
         history = ModelYearReportHistorySerializer(history_list, many=True)
 
         validation_status = report.validation_status.value
-
         if not request.user.is_government and \
-                report.validation_status == ModelYearReportStatuses.RETURNED:
+                (report.validation_status == ModelYearReportStatuses.RETURNED or report.validation_status == ModelYearReportStatuses.RECOMMENDED):
             validation_status = ModelYearReportStatuses.SUBMITTED.value
 
         return Response({

@@ -112,14 +112,17 @@ def get_model_year_report_statuses(report, request_user=None):
 
     if report.validation_status == ModelYearReportStatuses.RECOMMENDED:
         assessment_status = 'RECOMMENDED'
+        supplier_information_status = 'RECOMMENDED'
+        consumer_sales_status = 'RECOMMENDED'
+        compliance_obligation_status = 'RECOMMENDED'
+        summary_status = 'RECOMMENDED'
 
         if not request_user.is_government:
             assessment_status = 'SUBMITTED'
-
-        supplier_information_status = 'SUBMITTED'
-        consumer_sales_status = 'SUBMITTED'
-        compliance_obligation_status = 'SUBMITTED'
-        summary_status = 'SUBMITTED'
+            supplier_information_status = 'SUBMITTED'
+            consumer_sales_status = 'SUBMITTED'
+            compliance_obligation_status = 'SUBMITTED'
+            summary_status = 'SUBMITTED'
 
         user_profile = UserProfile.objects.filter(username=report.update_user)
         if user_profile.exists():
@@ -132,9 +135,16 @@ def get_model_year_report_statuses(report, request_user=None):
 
     if report.validation_status == ModelYearReportStatuses.RETURNED:
         assessment_status = 'RETURNED'
-
+        supplier_information_status = 'RETURNED'
+        consumer_sales_status = 'RETURNED'
+        compliance_obligation_status = 'RETURNED'
+        summary_status = 'RETURNED'
         if not request_user.is_government:
             assessment_status = 'SUBMITTED'
+            supplier_information_status = 'SUBMITTED'
+            consumer_sales_status = 'SUBMITTED'
+            compliance_obligation_status = 'SUBMITTED'
+            summary_status = 'SUBMITTED'
 
         user_profile = UserProfile.objects.filter(username=report.update_user)
         if user_profile.exists():

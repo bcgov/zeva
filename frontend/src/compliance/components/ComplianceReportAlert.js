@@ -72,55 +72,28 @@ const ComplianceReportAlert = (props) => {
         classname = 'alert-primary';
         break;
 
+      case 'RECOMMENDED':
+        title = 'Model Year Report Recommended';
+        message = `Model Year Report Recommended ${date} by ${userName}`;
+        classname = 'alert-primary';
+        break;
+
       case 'ASSESSED':
         title = 'Model Year Report Assessed';
         message = `Model Year Report Assessed ${date} by Government of B.C. — ${type} submitted ${confirmedBy.date} by ${confirmedBy.user}`;
         classname = 'alert-success';
         break;
-
-      default:
-        title = '';
-    }
-
-    return (
-      <Alert
-        title={title}
-        icon={icon}
-        classname={classname}
-        message={message}
-      />
-    );
-  }
-  if (type === 'Assessment') {
-    switch (status && status.status) {
-      case 'UNSAVED':
-        title = 'Submitted';
-        message = ` Model year report signed and submitted ${date} by ${userName}. Pending analyst review and Director assessment.`;
-        classname = 'alert-warning';
-        break;
-      case 'SUBMITTED':
-        title = 'Submitted';
-        message = ` Model year report signed and submitted ${date} by ${userName}. Pending analyst review and Director assessment.`;
-        classname = 'alert-warning';
-        break;
-      case 'RECOMMENDED':
-        title = 'Recommended';
-        message = `Model Year Report recommended ${date} by ${userName}, pending Director assessment. Signed and submitted ${confirmedBy.date} by ${confirmedBy.user}`;
-        classname = 'alert-primary';
-        break;
+      
       case 'RETURNED':
-        title = 'Returned';
-        message = `Model Year Report returned ${date} by Director, Pending analyst review and Director assessment. Signed and submitted ${confirmedBy.date} by ${confirmedBy.user}`;
+        title = 'Model Year Report Returned';
+        message = `Model Year Report Returned ${date} by ${userName}`;
         classname = 'alert-primary';
         break;
-      case 'ASSESSED':
-        title = 'Assessed';
-        message = `Model Year Report Assessed ${date} by Government of B.C.`;
-        classname = 'alert-success';
-        break;
+
       default:
         title = '';
     }
+
     return (
       <Alert
         title={title}
@@ -155,11 +128,23 @@ const ComplianceReportAlert = (props) => {
       classname = 'alert-primary';
       break;
 
+    case 'RECOMMENDED':
+        title = 'Recommended';
+        message = `Model Year Report recommended ${date} by ${userName}, pending Director assessment. Signed and submitted ${confirmedBy.date} by ${confirmedBy.user}`;
+        classname = 'alert-primary';
+        break;
+
     case 'ASSESSED':
       title = 'Model Year Report Assessed';
       message = `Model Year Report Assessed ${date} by Government of B.C. — ${type} confirmed ${confirmedBy.date} by ${confirmedBy.user}`;
       classname = 'alert-success';
       break;
+    
+    case 'RETURNED':
+        title = 'Model Year Report Returned';
+        message = `Model Year Report Returned ${date} by ${userName}`;
+        classname = 'alert-primary';
+        break;
 
     default:
       title = '';
