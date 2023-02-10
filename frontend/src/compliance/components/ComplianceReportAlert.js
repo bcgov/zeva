@@ -36,6 +36,16 @@ const ComplianceReportAlert = (props) => {
           user: statusFilter('SUBMITTED').createUser.displayName
         };
       }
+      if (validationStatus === 'RETURNED' || validationStatus === 'RECOMMENDED') {
+        // if the status is returned or recommended, we now want to see the user
+        // who submitted originally, so if we ever change our minds and want to see
+        // the actual alert information (ie the director that returned or the analyst
+        // that recommended),this needs to be updated
+          date = moment(statusFilter('SUBMITTED').createTimestamp).format(
+            'MMM D, YYYY'
+          ),
+          userName = statusFilter('SUBMITTED').createUser.displayName
+      }
     }
   }
 
@@ -67,16 +77,13 @@ const ComplianceReportAlert = (props) => {
         break;
 
       case 'SUBMITTED':
+      case 'RETURNED':
+      case 'RECOMMENDED':
         title = 'Model Year Report Submitted';
         message = `Model Year Report Submitted ${date} by ${userName}`;
         classname = 'alert-primary';
         break;
 
-      case 'RECOMMENDED':
-        title = 'Model Year Report Recommended';
-        message = `Model Year Report Recommended ${date} by ${userName}`;
-        classname = 'alert-primary';
-        break;
 
       case 'ASSESSED':
         title = 'Model Year Report Assessed';
@@ -84,11 +91,7 @@ const ComplianceReportAlert = (props) => {
         classname = 'alert-success';
         break;
       
-      case 'RETURNED':
-        title = 'Model Year Report Returned';
-        message = `Model Year Report Returned ${date} by ${userName}`;
-        classname = 'alert-primary';
-        break;
+
 
       default:
         title = '';
@@ -123,16 +126,13 @@ const ComplianceReportAlert = (props) => {
       break;
 
     case 'SUBMITTED':
+    case 'RETURNED':
+    case 'RECOMMENDED':
       title = 'Model Year Report Submitted';
-      message = `Model Year Report Submitted ${date} by ${userName} — ${type} confirmed ${confirmedBy.date} by ${confirmedBy.user}`;
+      message = `${type} confirmed ${confirmedBy.date} by ${confirmedBy.user}`;
       classname = 'alert-primary';
       break;
 
-    case 'RECOMMENDED':
-        title = 'Recommended';
-        message = `Model Year Report recommended ${date} by ${userName}, pending Director assessment. Signed and submitted ${confirmedBy.date} by ${confirmedBy.user}`;
-        classname = 'alert-primary';
-        break;
 
     case 'ASSESSED':
       title = 'Model Year Report Assessed';
@@ -140,12 +140,6 @@ const ComplianceReportAlert = (props) => {
       classname = 'alert-success';
       break;
     
-    case 'RETURNED':
-        title = 'Model Year Report Returned';
-        message = `Model Year Report Returned ${date} by ${userName}`;
-        classname = 'alert-primary';
-        break;
-
     default:
       title = '';
   }
