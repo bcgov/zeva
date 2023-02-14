@@ -26,7 +26,7 @@ const reconcileSupplementaries = (
       assessedSupplementaries[assessedSupplementaries.length - 1];
 
     //reconcile legal name, makes, vehicle supplier class, addresses
-    if (latest_supplemental.supplierIndormation) {
+    if (latest_supplemental.supplierInformation) {
       for (const supplierInfoAtom of latest_supplemental.supplierInformation) {
         const category = supplierInfoAtom.category;
         const value = supplierInfoAtom.value;
