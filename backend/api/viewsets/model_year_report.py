@@ -942,7 +942,7 @@ class ModelYearReportViewset(
                 create_user=request.user.username,
             )
 
-            if validation_status == "RECOMMENDED" and description:
+            if (validation_status == "RECOMMENDED" or validation_status == "DRAFT") and description:
                 penalty = request.data.get("penalty")
                 SupplementalReportAssessment.objects.create(
                     supplemental_report_id=supplemental_id,

@@ -75,7 +75,7 @@ We also extend this prefix convention to the naming of **branches**, eg: `docs/a
 ### Database Postgres
 
 to view the database via docker use:
-docker-compose exec db psql -U postgres postgres
+docker-compose exec db psql -U postgres zeva
 
 ### To insert your first idir user
 
