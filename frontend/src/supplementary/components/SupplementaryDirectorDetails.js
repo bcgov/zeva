@@ -265,7 +265,7 @@ const SupplementaryDirectorDetails = (props) => {
         role="tablist"
       >
         <ReactTooltip/>
-        <SupplementaryTab
+        {supplementaryReportId == null ? null : (<SupplementaryTab
           selected={selectedTab == tabNames[0]}
           title={'Supplementary Details'}
           url={tabUrl(supplementaryReportId, tabNames[0])}
@@ -273,7 +273,7 @@ const SupplementaryDirectorDetails = (props) => {
           tooltip={'No supplementary report found. Analyst initiated reassessment.'}
           status={reassessmentStatus}
           assessed={isAssessed}
-        />
+        />)}
         <SupplementaryTab
           selected={selectedTab == tabNames[1]}
           title={'Reassessment Recommendation'}
