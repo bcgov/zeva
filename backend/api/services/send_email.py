@@ -277,6 +277,7 @@ def subscribed_users(notifications: list, request: object, request_type: str, em
           )
         if subscribed_users:
             govt_org = Organization.objects.filter(is_government=True).first()
+
             if request_type == 'credit_transfer':
                 user_email = UserProfile.objects.values_list('email', flat=True).filter(
                     Q(organization_id__in=[request.debit_from_id,
@@ -285,10 +286,16 @@ def subscribed_users(notifications: list, request: object, request_type: str, em
                     Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=request.update_user)
 
             else:
-                user_email = UserProfile.objects.values_list('email', flat=True).filter(
-                    Q(organization_id__in=[request.organization,
+                if request_type == 'model_year_report':
+                    user_email = UserProfile.objects.values_list('email', flat=True).filter(
+                        Q(organization_id__in=[request.user.organization.id,
                                            govt_org.id]) &
-                    Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=request.update_user)
+                        Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=request.user.update_user)
+                else:        
+                    user_email = UserProfile.objects.values_list('email', flat=True).filter(
+                        Q(organization_id__in=[request.organization,
+                                            govt_org.id]) &
+                        Q(id__in=subscribed_users)).exclude(email__isnull=True).exclude(email__exact='').exclude(username=request.update_user)
                     
             if user_email:
                 send_email(list(user_email), email_type)
