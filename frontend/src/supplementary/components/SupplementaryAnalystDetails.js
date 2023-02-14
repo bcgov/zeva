@@ -83,12 +83,12 @@ const SupplementaryAnalystDetails = (props) => {
   const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
   const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
 
-  let isEditable = ['DRAFT', 'RETURNED'].indexOf(details.status) >= 0 // || currentStatus !== 'ASSESSED'
+  let isEditable = ['DRAFT', 'RETURNED', 'ASSESSED'].indexOf(details.status) >= 0 // || currentStatus !== 'ASSESSED'
   
-  if (selectedTab == tabNames[0] && currentStatus == 'SUBMITTED') {
-    isEditable = false
+  if (selectedTab == tabNames[0] && (currentStatus == 'SUBMITTED' || currentStatus == 'ASSESSED')) {
+    isEditable = true
   }
-  if (selectedTab == tabNames[1] && currentStatus == 'SUBMITTED') {
+  if (selectedTab == tabNames[1] && (currentStatus == 'SUBMITTED' || currentStatus == 'ASSESSED')) {
     isEditable = true
   }
 

@@ -393,7 +393,7 @@ const CreditActivity = (props) => {
           newBalances={newBalances}
           newData={newData}
           pendingBalanceExist={false}
-          readOnly={!isEditable}
+          readOnly={isEditable}
           reportDetails={reportDetails}
           reportYear={reportYear}
           supplementalReport
