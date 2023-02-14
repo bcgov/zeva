@@ -36,6 +36,16 @@ const ComplianceReportAlert = (props) => {
           user: statusFilter('SUBMITTED').createUser.displayName
         };
       }
+      if (validationStatus === 'RETURNED' || validationStatus === 'RECOMMENDED') {
+        // if the status is returned or recommended, we now want to see the user
+        // who submitted originally, so if we ever change our minds and want to see
+        // the actual alert information (ie the director that returned or the analyst
+        // that recommended),this needs to be updated
+          date = moment(statusFilter('SUBMITTED').createTimestamp).format(
+            'MMM D, YYYY'
+          ),
+          userName = statusFilter('SUBMITTED').createUser.displayName
+      }
     }
   }
 
@@ -67,6 +77,8 @@ const ComplianceReportAlert = (props) => {
         break;
 
       case 'SUBMITTED':
+      case 'RETURNED':
+      case 'RECOMMENDED':
         title = 'Model Year Report Submitted';
         message = `Model Year Report Submitted ${date} by ${userName}`;
         classname = 'alert-primary';
@@ -82,45 +94,6 @@ const ComplianceReportAlert = (props) => {
         title = '';
     }
 
-    return (
-      <Alert
-        title={title}
-        icon={icon}
-        classname={classname}
-        message={message}
-      />
-    );
-  }
-  if (type === 'Assessment') {
-    switch (status && status.status) {
-      case 'UNSAVED':
-        title = 'Submitted';
-        message = ` Model year report signed and submitted ${date} by ${userName}. Pending analyst review and Director assessment.`;
-        classname = 'alert-warning';
-        break;
-      case 'SUBMITTED':
-        title = 'Submitted';
-        message = ` Model year report signed and submitted ${date} by ${userName}. Pending analyst review and Director assessment.`;
-        classname = 'alert-warning';
-        break;
-      case 'RECOMMENDED':
-        title = 'Recommended';
-        message = `Model Year Report recommended ${date} by ${userName}, pending Director assessment. Signed and submitted ${confirmedBy.date} by ${confirmedBy.user}`;
-        classname = 'alert-primary';
-        break;
-      case 'RETURNED':
-        title = 'Returned';
-        message = `Model Year Report returned ${date} by Director, Pending analyst review and Director assessment. Signed and submitted ${confirmedBy.date} by ${confirmedBy.user}`;
-        classname = 'alert-primary';
-        break;
-      case 'ASSESSED':
-        title = 'Assessed';
-        message = `Model Year Report Assessed ${date} by Government of B.C.`;
-        classname = 'alert-success';
-        break;
-      default:
-        title = '';
-    }
     return (
       <Alert
         title={title}
@@ -150,8 +123,10 @@ const ComplianceReportAlert = (props) => {
       break;
 
     case 'SUBMITTED':
+    case 'RETURNED':
+    case 'RECOMMENDED':
       title = 'Model Year Report Submitted';
-      message = `Model Year Report Submitted ${date} by ${userName} — ${type} confirmed ${confirmedBy.date} by ${confirmedBy.user}`;
+      message = `${type} confirmed ${confirmedBy.date} by ${confirmedBy.user}`;
       classname = 'alert-primary';
       break;
 
@@ -160,7 +135,7 @@ const ComplianceReportAlert = (props) => {
       message = `Model Year Report Assessed ${date} by Government of B.C. — ${type} confirmed ${confirmedBy.date} by ${confirmedBy.user}`;
       classname = 'alert-success';
       break;
-
+    
     default:
       title = '';
   }
