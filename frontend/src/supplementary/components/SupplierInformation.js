@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import formatAddress from '../../app/utilities/formatAddress';
 
 import CustomPropTypes from '../../app/utilities/props';
 
@@ -12,14 +13,7 @@ const SupplierInformation = (props) => {
     let serviceAddress = '';
     assessmentData.reportAddress.map((address) => {
       if (address.addressType.addressType === 'Service') {
-        serviceAddress = `${
-          address.representativeName ? `${address.representativeName} ` : ' '
-        }${address.addressLine1}${', '}${
-          address.addressLine2 ? `${address.addressLine2}, ` : ''
-        }${address.city}${', '}${address.state}${', '}${
-          address.country
-        }${', '}${address.postalCode}`;
-        return serviceAddress;
+        serviceAddress = formatAddress(address);
       }
     });
     return serviceAddress;
@@ -29,14 +23,7 @@ const SupplierInformation = (props) => {
     let recordAddress = '';
     assessmentData.reportAddress.map((address) => {
       if (address.addressType.addressType === 'Records') {
-        recordAddress = `${
-          address.representativeName ? `${address.representativeName} ` : ' '
-        }${address.addressLine1}${', '}${
-          address.addressLine2 ? `${address.addressLine2}, ` : ''
-        }${address.city}${', '}${address.state}${', '}${
-          address.country
-        }${', '}${address.postalCode}`;
-        return recordAddress;
+        recordAddress = formatAddress(address);
       }
     });
     return recordAddress;

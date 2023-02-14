@@ -416,7 +416,6 @@ class ModelYearReportViewset(
         confirmations = request.data.get("confirmation", None)
         description = request.data.get("description")
         remove_submission_confirmation = request.data.get("remove_confirmation", None)
-        user = request.data.get("user")
 
         model_year_report_update = ModelYearReport.objects.filter(
             id=model_year_report_id,
@@ -436,13 +435,12 @@ class ModelYearReportViewset(
             )
             item.delete()
 
-        check_validation_status_change(model_year_report_check.validation_status, validation_status, user)
-
         if validation_status:
             if validation_status == "RECOMMENDED" and not description:
                 # returning a 200 to bypass the rest of the update
                 return HttpResponse(status=200, content="Recommendation is required")
 
+            check_validation_status_change(model_year_report_check.validation_status, validation_status, request)
             model_year_report_update.update(validation_status=validation_status)
             model_year_report_update.update(update_user=request.user.username)
 
@@ -561,6 +559,8 @@ class ModelYearReportViewset(
                         ).delete()
 
         report = get_object_or_404(ModelYearReport, pk=pk)
+
+        check_validation_status_change(report.validation_status, request.data.get('validation_status'), request)
 
         serializer = ModelYearReportSerializer(report, context={"request": request})
 
@@ -942,7 +942,7 @@ class ModelYearReportViewset(
                 create_user=request.user.username,
             )
 
-            if validation_status == "RECOMMENDED" and description:
+            if (validation_status == "RECOMMENDED" or validation_status == "DRAFT") and description:
                 penalty = request.data.get("penalty")
                 SupplementalReportAssessment.objects.create(
                     supplemental_report_id=supplemental_id,

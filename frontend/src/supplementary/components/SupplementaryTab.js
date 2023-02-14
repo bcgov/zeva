@@ -15,7 +15,7 @@ const SupplementaryTab = (props) => {
           <span>{title}</span>
         ) : (
           <>
-            <span data-tip={disabled ? tooltip : null}>
+            <span className={`${disabled ? 'disabled' : ''}`}>
               <Link 
                 to={url}
                 style={disabled ? {pointerEvents: "none"} : null}
