@@ -65,9 +65,11 @@ const SupplementaryAnalystDetails = (props) => {
   const creditReductionSelection =
     details.assessmentData && details.assessmentData.creditReductionSelection;
 
-  const newLdvSales =
+  let newLdvSales =
     newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
-    
+  if (newLdvSales === null) {
+    newLdvSales = ldvSales;
+  }
   let currentStatus = details.actualStatus
     ? details.actualStatus
     : details.status;
@@ -281,7 +283,6 @@ const SupplementaryAnalystDetails = (props) => {
       </ul>
     )
   }
-
   return (
     <div id="supplementary" className="page">
         <ComplianceHistory
@@ -346,6 +347,7 @@ const SupplementaryAnalystDetails = (props) => {
             salesRows={salesRows}
             isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
           />
+          {console.log(details)}
           <CreditActivity
             creditReductionSelection={creditReductionSelection}
             details={details}
@@ -354,7 +356,7 @@ const SupplementaryAnalystDetails = (props) => {
             ldvSales={ldvSales}
             newBalances={newBalances}
             newData={newData}
-            newLdvSales={newLdvSales || ldvSales}
+            newLdvSales={newLdvSales}
             obligationDetails={obligationDetails}
             ratios={ratios}
             supplierClass={supplierClass}

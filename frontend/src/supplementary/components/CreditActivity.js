@@ -290,7 +290,7 @@ const CreditActivity = (props) => {
                       name="supplierInfo"
                       type="text"
                       onChange={handleInputChange}
-                      defaultValue={newLdvSales || ldvSales}
+                      defaultValue={newLdvSales}
                       readOnly={!isEditable}
                     />
                   </td>
@@ -305,7 +305,7 @@ const CreditActivity = (props) => {
                       totalReduction !== newTotalReduction ? 'highlight' : ''
                     }`}
                   >
-                    {newLdvSales && (
+                    {newLdvSales >= 0 && (
                       <span>{formatNumeric(newTotalReduction, 2)}</span>
                     )}
                   </td>
@@ -329,7 +329,7 @@ const CreditActivity = (props) => {
                             : ''
                         }`}
                       >
-                        {newLdvSales && (
+                        {newLdvSales >= 0 && (
                           <span>{formatNumeric(newClassAReduction, 2)}</span>
                         )}
                       </td>
@@ -349,7 +349,7 @@ const CreditActivity = (props) => {
                             : ''
                         }`}
                       >
-                        {newLdvSales && (
+                        {newLdvSales >= 0 && (
                           <span>{formatNumeric(newLeftoverReduction, 2)}</span>
                         )}
                       </td>
@@ -376,7 +376,7 @@ const CreditActivity = (props) => {
                           : ''
                       }`}
                     >
-                      {newLdvSales && (
+                      {newLdvSales >= 0 && (
                         <span>{formatNumeric(newLeftoverReduction, 2)}</span>
                       )}
                     </td>
