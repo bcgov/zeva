@@ -14,7 +14,8 @@ const CommentInput = (props) => {
     buttonDisable,
     tooltip,
     testid,
-    buttontestid
+    buttontestid,
+    disableTextOnly,
   } = props;
   return (
     <div className="text-editor no-print">
@@ -23,7 +24,7 @@ const CommentInput = (props) => {
       </label>
       <ReactQuill
         data-testid={testid}
-        readOnly={disable}
+        readOnly={disable || disableTextOnly}
         defaultValue={defaultComment ? defaultComment.comment : ''}
         theme="snow"
         modules={{
@@ -64,6 +65,7 @@ CommentInput.defaultProps = {
   buttonText: null,
   defaultComment: null,
   disable: false,
+  disableTextOnly: false,
   handleAddComment: () => {},
   tooltip: ''
 };
@@ -74,6 +76,7 @@ CommentInput.propTypes = {
   buttonText: PropTypes.string,
   title: PropTypes.string.isRequired,
   disable: PropTypes.bool,
+  disableTextOnly: PropTypes.bool,
   tooltip: PropTypes.string,
   buttontestid: PropTypes.string,
   testid: PropTypes.string
