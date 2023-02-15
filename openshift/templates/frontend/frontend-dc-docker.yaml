@@ -72,13 +72,9 @@ objects:
     spec:
       ports:
         - name: web
-          port: 3000
           protocol: TCP
-          targetPort: 3000
-        - name: websocket-notifications
-          port: 5002
-          protocol: TCP
-          targetPort: 5002
+          port: 8080
+          targetPort: 8080
       selector:
         name: ${NAME}-frontend${SUFFIX}
       sessionAffinity: None
@@ -227,25 +223,23 @@ objects:
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 10
-                initialDelaySeconds: 50
+                initialDelaySeconds: 30
                 periodSeconds: 10
                 successThreshold: 1
                 tcpSocket:
-                  port: 3000
+                  port: 8080
                 timeoutSeconds: 3
               name: frontend
               ports:
-                - containerPort: 3000
-                  protocol: TCP
-                - containerPort: 5002
+                - containerPort: 8080
                   protocol: TCP
               readinessProbe:
                 failureThreshold: 10
-                initialDelaySeconds: 40
+                initialDelaySeconds: 20
                 periodSeconds: 10
                 successThreshold: 1
                 tcpSocket:
-                  port: 3000
+                  port: 8080
                 timeoutSeconds: 3
               resources:
                 limits:
