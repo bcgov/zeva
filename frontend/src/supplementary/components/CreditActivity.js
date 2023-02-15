@@ -750,7 +750,6 @@ const CreditActivity = (props) => {
 CreditActivity.defaultProps = {
   creditReductionSelection: '',
   isEditable: false,
-  newLdvSales: null,
   supplierClass: ''
 };
 
@@ -764,7 +763,6 @@ CreditActivity.propTypes = {
     .isRequired,
   newBalances: PropTypes.shape().isRequired,
   newData: PropTypes.shape().isRequired,
-  newLdvSales: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   obligationDetails: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   ratios: PropTypes.shape().isRequired,
   supplierClass: PropTypes.string
