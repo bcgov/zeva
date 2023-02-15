@@ -67,17 +67,8 @@ objects:
     strategy:
       dockerStrategy:
         dockerfilePath: ./Dockerfile-Openshift
-        env:
-          - name: ARTIFACTORY_USER
-            valueFrom:
-              secretKeyRef:
-                name: docker-artifactory-secret
-                key: username
-          - name: ARTIFACTORY_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: docker-artifactory-secret
-                key: password
+        pullSecret:
+          name: docker-artifactory-secret
       type: Docker
     triggers:
     - type: ConfigChange
