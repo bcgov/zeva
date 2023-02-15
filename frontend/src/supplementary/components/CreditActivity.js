@@ -291,7 +291,7 @@ const CreditActivity = (props) => {
                       type="text"
                       onChange={handleInputChange}
                       defaultValue={newLdvSales || ldvSales}
-                      readOnly={!isEditable}
+                      readOnly={isEditable}
                     />
                   </td>
                   <td className="text-blue font-weight-bold" width="30%">
@@ -393,7 +393,7 @@ const CreditActivity = (props) => {
           newBalances={newBalances}
           newData={newData}
           pendingBalanceExist={false}
-          readOnly={isEditable}
+          readOnly={!isEditable}
           reportDetails={reportDetails}
           reportYear={reportYear}
           supplementalReport

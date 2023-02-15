@@ -116,7 +116,7 @@ const SupplierInformation = (props) => {
                 ? supplierInfo.legalName
                 : assessmentData.legalName
             }
-            readOnly={!isEditable}
+            readOnly={isEditable}
           />
         </div>
       </div>
@@ -166,7 +166,7 @@ const SupplierInformation = (props) => {
           min="0"
           name="supplierInfo"
           onChange={handleInputChange}
-          readOnly={!isEditable}
+          readOnly={isEditable}
           rows="4"
         />
       </div>
@@ -216,7 +216,7 @@ const SupplierInformation = (props) => {
           min="0"
           name="supplierInfo"
           onChange={handleInputChange}
-          readOnly={!isEditable}
+          readOnly={isEditable}
           rows="4"
         />
       </div>
@@ -249,7 +249,7 @@ const SupplierInformation = (props) => {
           min="0"
           name="supplierInfo"
           onChange={handleInputChange}
-          readOnly={!isEditable}
+          readOnly={isEditable}
         />
       </div>
       <div className="my-4">
@@ -277,7 +277,7 @@ const SupplierInformation = (props) => {
           min="0"
           name="supplierInfo"
           onChange={handleInputChange}
-          readOnly={!isEditable}
+          readOnly={isEditable}
         />
       </div>
     </>

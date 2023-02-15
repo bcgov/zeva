@@ -96,17 +96,17 @@ const SupplementaryDirectorDetails = (props) => {
   const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
   const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
 
-  let isEditable = ['DRAFT', 'RETURNED', 'ASSESSED'].indexOf(details.status) >= 0
+  let isEditable = ['DRAFT', 'RETURNED', 'ASSESSED', 'SUBMITTED', 'RECOMMENDED'].indexOf(details.status) < 0
   
-  if (selectedTab == tabNames[0] && (currentStatus == 'SUBMITTED' || currentStatus == 'ASSESSED')) {
-    isEditable = true
-  }
-  if (selectedTab == tabNames[1] && (currentStatus == 'SUBMITTED' || currentStatus == 'ASSESSED')) {
-    isEditable = true
-  }
-  if (selectedTab == tabNames[2] && (currentStatus == 'RECOMMENDED' || currentStatus == 'ASSESSED')) {
-    isEditable = true
-  }
+  // if (selectedTab == tabNames[0] && currentStatus == 'SUBMITTED') {
+  //   isEditable = false
+  // }
+  // if (selectedTab == tabNames[1] && currentStatus == 'SUBMITTED') {
+  //   isEditable = true
+  // }
+  // if (selectedTab == tabNames[2] && currentStatus == 'RECOMMENDED') {
+  //   isEditable = true
+  // }
 
   const formattedPenalty = details.assessment
     ? formatNumeric(details.assessment.assessmentPenalty, 0)
