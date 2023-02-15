@@ -36,7 +36,6 @@ module.exports = settings => {
   }))
 
   //build backend
-  /*
   objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/templates/backend/backend-bc.yaml`, {
     'param':{
       'NAME': phases[phase].name,
@@ -45,7 +44,7 @@ module.exports = settings => {
       'GIT_URL': oc.git.http_url,
       'GIT_REF': oc.git.ref
     }
-  }))*/
+  }))
 
   oc.applyRecommendedLabels(
     objects,
