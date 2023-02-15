@@ -101,12 +101,12 @@ const SupplementarySupplierDetails = (props) => {
 
   let isEditable = ['DRAFT', 'RETURNED'].indexOf(details.status) >= 0
   
-  // if (selectedTab == tabNames[0] && currentStatus == 'SUBMITTED') {
-  //   isEditable = false
-  // }
-  // if (selectedTab == tabNames[1] && currentStatus == 'SUBMITTED') {
-  //   isEditable = true
-  // }
+  if (selectedTab == tabNames[0] && (currentStatus == 'SUBMITTED' || currentStatus == 'DRAFT' || currentStatus == 'ASSESSED')) {
+    isEditable = false
+  }
+  if (selectedTab == tabNames[1] && (currentStatus == 'SUBMITTED' || currentStatus == 'DRAFT' || currentStatus == 'ASSESSED')) {
+    isEditable = false
+  }
 
   const formattedPenalty = details.assessment
     ? formatNumeric(details.assessment.assessmentPenalty, 0)
