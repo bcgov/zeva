@@ -20,13 +20,16 @@ const CreditActivity = (props) => {
     ldvSales,
     newBalances,
     newData,
-    newLdvSales,
     obligationDetails,
     ratios,
     supplierClass,
     isEditable
   } = props;
-
+  let newLdvSales =
+    newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
+  if (newLdvSales === null) {
+    newLdvSales = ldvSales;
+  }
   let reportYear = false;
 
   if (details && details.assessmentData) {

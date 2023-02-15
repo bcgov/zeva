@@ -67,11 +67,6 @@ const SupplementaryDirectorDetails = (props) => {
     details.assessmentData && details.assessmentData.supplierClass[0];
   const creditReductionSelection =
     details.assessmentData && details.assessmentData.creditReductionSelection;
-  let newLdvSales =
-    newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
-  if (newLdvSales === null) {
-    newLdvSales = ldvSales;
-  }
   let currentStatus = details.actualStatus
     ? details.actualStatus
     : details.status;
@@ -388,7 +383,6 @@ const SupplementaryDirectorDetails = (props) => {
                 ldvSales={ldvSales}
                 newBalances={newBalances}
                 newData={newData}
-                newLdvSales={newLdvSales}
                 obligationDetails={obligationDetails}
                 ratios={ratios}
                 supplierClass={supplierClass}
