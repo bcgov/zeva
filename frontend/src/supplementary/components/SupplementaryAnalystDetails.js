@@ -347,7 +347,6 @@ const SupplementaryAnalystDetails = (props) => {
             salesRows={salesRows}
             isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
           />
-          {console.log(details)}
           <CreditActivity
             creditReductionSelection={creditReductionSelection}
             details={details}
