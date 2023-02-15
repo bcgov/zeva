@@ -328,6 +328,7 @@ const SupplementaryAnalystDetails = (props) => {
               buttonText="Add Comment"
               handleAddComment={handleAddIdirComment}
               tooltip="Please save the report first, before adding comments"
+              buttonDisable={details.id === null? true: false}
             />
           </div>
         </div>
