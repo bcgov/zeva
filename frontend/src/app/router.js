@@ -157,7 +157,7 @@ class Router extends Component {
                   <SupplementaryContainer 
                     keycloak={keycloak} 
                     user={user} 
-                    newReport 
+                    newReport
                   />
                 )}
               />
@@ -168,6 +168,7 @@ class Router extends Component {
                     keycloak={keycloak}
                     user={user}
                     reassessment
+                    newReport
                   />
                 )}
               />
