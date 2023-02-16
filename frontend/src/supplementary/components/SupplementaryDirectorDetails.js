@@ -389,7 +389,7 @@ const SupplementaryDirectorDetails = (props) => {
                 obligationDetails={obligationDetails}
                 ratios={ratios}
                 supplierClass={supplierClass}
-                isEditable={!isEditable && currentStatus !== 'RECOMMENDED'}
+                isEditable={!isEditable}
               />
             </>
           )}
