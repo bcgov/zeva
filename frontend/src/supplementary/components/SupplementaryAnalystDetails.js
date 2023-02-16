@@ -81,7 +81,7 @@ const SupplementaryAnalystDetails = (props) => {
   const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
   const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
 
-  let isEditable = ['DRAFT', 'RETURNED'].indexOf(details.status) >= 0 // || currentStatus !== 'ASSESSED'
+  let isEditable = ['DRAFT', 'RETURNED'].indexOf(details.status) >= 0
   
   if (selectedTab == tabNames[0] && currentStatus == 'SUBMITTED') {
     isEditable = false
@@ -271,7 +271,6 @@ const SupplementaryAnalystDetails = (props) => {
           selected={selectedTab == tabNames[2]}
           title={'Reassessment'}
           url={tabUrl(reassessmentReportId, tabNames[2])}
-          //disabled={!isAssessed}
           tooltip={'Reassessment visible once a director approves the recommendation.'}
           status={reassessmentStatus}
           assessed={isAssessed}
