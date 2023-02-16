@@ -67,8 +67,6 @@ const SupplementaryDirectorDetails = (props) => {
     details.assessmentData && details.assessmentData.supplierClass[0];
   const creditReductionSelection =
     details.assessmentData && details.assessmentData.creditReductionSelection;
-  const newLdvSales =
-    newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
   let currentStatus = details.actualStatus
     ? details.actualStatus
     : details.status;
@@ -78,9 +76,11 @@ const SupplementaryDirectorDetails = (props) => {
 
   const isAssessed = currentStatus === 'ASSESSED' ||
     currentStatus === 'REASSESSED'
+  
+  const isRecommended = currentStatus === 'RECOMMENDED';
 
   const tabNames = ['supplemental', 'recommendation', 'reassessment']
-  const selectedTab = query?.tab ? query.tab : isAssessed ? tabNames[2] : tabNames[1]
+  const selectedTab = query?.tab ? query.tab : isAssessed || isRecommended ? tabNames[2] : tabNames[1]
 
   const isReassessment = reassessment?.isReassessment
   const reassessmentStatus = reassessment?.status ? reassessment.status : details.status
@@ -255,15 +255,15 @@ const SupplementaryDirectorDetails = (props) => {
         role="tablist"
       >
         <ReactTooltip/>
-        <SupplementaryTab
+        {supplementaryReportId == null ? null : (<SupplementaryTab
           selected={selectedTab == tabNames[0]}
-          title={'Supplementary Details'}
+          title={'Supplementary Report'}
           url={tabUrl(supplementaryReportId, tabNames[0])}
           disabled={supplementaryReportId == null}
           tooltip={'No supplementary report found. Analyst initiated reassessment.'}
           status={reassessmentStatus}
           assessed={isAssessed}
-        />
+        />)}
         <SupplementaryTab
           selected={selectedTab == tabNames[1]}
           title={'Reassessment Recommendation'}
@@ -288,7 +288,6 @@ const SupplementaryDirectorDetails = (props) => {
 
   return (
     <div id="supplementary" className="page">
-      {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED && (
         <ComplianceHistory
           activePage="supplementary"
           id={id}
@@ -304,16 +303,6 @@ const SupplementaryDirectorDetails = (props) => {
           user={user}
           tabName={selectedTab}
         />
-      )}
-      <div className="row">
-        <div className="col">
-          <h2 className="mb-2 mt-3">
-            {isReassessment
-              ? `${reportYear} Model Year Report Reassessment`
-              : `${reportYear} Model Year Supplementary Report`}
-          </h2>
-        </div>
-      </div>
 
       {renderTabs()}
 
@@ -387,7 +376,6 @@ const SupplementaryDirectorDetails = (props) => {
                 ldvSales={ldvSales}
                 newBalances={newBalances}
                 newData={newData}
-                newLdvSales={newLdvSales || ldvSales}
                 obligationDetails={obligationDetails}
                 ratios={ratios}
                 supplierClass={supplierClass}
@@ -599,7 +587,7 @@ const SupplementaryDirectorDetails = (props) => {
                   />
                 )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                currentStatus === 'RECOMMENDED' && (
+                currentStatus === 'RECOMMENDED' && selectedTab == tabNames[2] && (
                   <Button
                     buttonType="submit"
                     optionalClassname="button primary"

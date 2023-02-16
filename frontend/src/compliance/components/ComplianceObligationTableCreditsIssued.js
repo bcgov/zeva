@@ -299,6 +299,9 @@ const ComplianceObligationTableCreditsIssued = (props) => {
     );
   }
 
+  const currentReportYearCreditBalanceStartA = getNewData('creditBalanceStart', reportYear, 'creditAValue');
+  const currentReportYearCreditBalanceStartB = getNewData('creditBalanceStart', reportYear, 'creditBValue');
+
   return (
     <>
       <table>
@@ -316,8 +319,11 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               </>
             )}
           </tr>
-          {Object.keys(creditBalanceStart).map((each) => (
-            <tr key={each}>
+          {Object.keys(creditBalanceStart).map((each) => {
+            const newCreditBalanceStartA = getNewData('creditBalanceStart', each, 'creditAValue');
+            const newCreditBalanceStartB = getNewData('creditBalanceStart', each, 'creditBValue');
+            return (
+              <tr key={each}>
               <td className="text-blue">&bull; &nbsp; &nbsp; {each} Credits</td>
               <td className="text-right">
                 {formatNumeric(creditBalanceStart[each].A, 2)}
@@ -329,7 +335,14 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                 <>
                   <td>
                     <input
-                      className="form-control"
+                      className={`form-control ${
+                        newCreditBalanceStartA &&
+                        creditBalanceStart && 
+                        creditBalanceStart[each] && 
+                        creditBalanceStart[each].A != newCreditBalanceStartA ? 
+                        'highlight' : 
+                        ''}`
+                      }
                       defaultValue={
                         getNewData(
                           'creditBalanceStart',
@@ -351,8 +364,8 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                       type="text"
                       onChange={(event) => {
                         handleSupplementalChange({
-                          originalAValue: each.A,
-                          originalBValue: each.B,
+                          originalAValue: creditBalanceStart[each].A,
+                          originalBValue: creditBalanceStart[each].B,
                           title: 'creditBalanceStart',
                           modelYear: each,
                           creditA: event.target.value
@@ -363,7 +376,14 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                   </td>
                   <td>
                     <input
-                      className="form-control"
+                      className={`form-control ${
+                        newCreditBalanceStartB &&
+                        creditBalanceStart && 
+                        creditBalanceStart[each] && 
+                        creditBalanceStart[each].B != newCreditBalanceStartB ? 
+                        'highlight' : 
+                        ''}`
+                      }
                       defaultValue={
                         getNewData(
                           'creditBalanceStart',
@@ -385,8 +405,8 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                       type="text"
                       onChange={(event) => {
                         handleSupplementalChange({
-                          originalAValue: each.A,
-                          originalBValue: each.B,
+                          originalAValue: creditBalanceStart[each].A,
+                          originalBValue: creditBalanceStart[each].B,
                           title: 'creditBalanceStart',
                           modelYear: each,
                           creditB: event.target.value
@@ -398,7 +418,8 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                 </>
               )}
             </tr>
-          ))}
+            );
+          })}
           {Object.keys(creditBalanceStart).length === 0 && (
             <tr>
               <td className="text-blue">&bull; &nbsp; &nbsp; Credits</td>
@@ -408,7 +429,12 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                 <>
                   <td>
                     <input
-                      className="form-control"
+                      className={`form-control ${
+                        currentReportYearCreditBalanceStartA && 
+                        currentReportYearCreditBalanceStartA != 0 ? 
+                        'highlight' : 
+                        ''}`
+                      }
                       defaultValue={getNewData(
                         'creditBalanceStart',
                         reportYear,
@@ -429,7 +455,12 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                   </td>
                   <td>
                     <input
-                      className="form-control"
+                      className={`form-control ${
+                        currentReportYearCreditBalanceStartB && 
+                        currentReportYearCreditBalanceStartB != 0 ? 
+                        'highlight' : 
+                        ''}`
+                      }
                       defaultValue={getNewData(
                         'creditBalanceStart',
                         reportYear,

@@ -66,9 +66,6 @@ const SupplementaryAnalystDetails = (props) => {
   const creditReductionSelection =
     details.assessmentData && details.assessmentData.creditReductionSelection;
 
-  const newLdvSales =
-    newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
-    
   let currentStatus = details.actualStatus
     ? details.actualStatus
     : details.status;
@@ -252,15 +249,15 @@ const SupplementaryAnalystDetails = (props) => {
         role="tablist"
       >
         <ReactTooltip/>
-        <SupplementaryTab
+        {supplementaryReportId == null ? null : (<SupplementaryTab
           selected={selectedTab == tabNames[0]}
-          title={'Supplementary Details'}
+          title={'Supplementary Report'}
           url={tabUrl(supplementaryReportId, tabNames[0])}
           disabled={supplementaryReportId == null}
           tooltip={'No supplementary report found. Analyst initiated reassessment.'}
           status={reassessmentStatus}
           assessed={isAssessed}
-        />
+        />)}
         <SupplementaryTab
           selected={selectedTab == tabNames[1]}
           title={'Reassessment Recommendation'}
@@ -282,10 +279,8 @@ const SupplementaryAnalystDetails = (props) => {
       </ul>
     )
   }
-
   return (
     <div id="supplementary" className="page">
-      {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED && (
         <ComplianceHistory
           activePage="supplementary"
           id={id}
@@ -301,16 +296,6 @@ const SupplementaryAnalystDetails = (props) => {
           user={user}
           tabName={selectedTab}
         />
-      )}
-      <div className="row">
-        <div className="col">
-          <h2 className="mb-2 mt-3">
-            {isReassessment
-              ? `${reportYear} Model Year Report Reassessment`
-              : `${reportYear} Model Year Supplementary Report`}
-          </h2>
-        </div>
-      </div>
 
       {renderTabs()}
 

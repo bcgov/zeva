@@ -1,0 +1,49 @@
+replicaCount: 1
+
+openshiftLicensePlate: e52f12
+envName: dev
+frontendImageTagname: dev-1.46.0-1330
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+frontendConfigMap:
+  complianceReportEnabled: true
+  complianceCalculatorEnabled: true
+  complianceRatiosEnabled: true
+  creditTransfersEnabled: true
+  creditTransactionsEnabled: true
+  initiativeAgreementsEnabled: true
+  modelYearReportEnabled: true
+  purchaseRequestsEnabled: true
+  notificationsEnabled: true
+  rolesEnabled: true
+  creditAgreementsEnabled: true
+  supplementalEnabled: true
+
+resources:
+  cpuRequest: 50m
+  memoryRequest: 350Mi
+  cpuLimit: 100m
+  memoryLimit: 700Mi
+
+appConfigMap:
+  backendHostName: zeva-backend-dev.apps.silver.devops.gov.bc.ca
+  databaseServiceName: zeva-spilo
+  djangoDebug: true
+  ssoName: dev.loginproxy.gov.bc.ca
+  keycloakRealm: standard
+  logoutHostName: logontest7.gov.bc.ca
+  hostName: zeva-dev.apps.silver.devops.gov.bc.ca
+
+autoscaling:
+  minReplicas: 1
+  maxReplicas: 2
+  cpuAverageUtilization: 80
+
+# the fronend host name is appConfigMap.hostName
+frontendRoute: 
+  create: true

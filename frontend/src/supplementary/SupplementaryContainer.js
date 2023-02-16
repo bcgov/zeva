@@ -27,7 +27,7 @@ const SupplementaryContainer = (props) => {
   const [deleteFiles, setDeleteFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
   const [newData, setNewData] = useState({ zevSales: [], creditActivity: [] });
-  let [obligationDetails, setObligationDetails] = useState([]);
+  const [obligationDetails, setObligationDetails] = useState([]);
   const [ldvSales, setLdvSales] = useState();
   const [ratios, setRatios] = useState();
   const [newBalances, setNewBalances] = useState({});
@@ -36,6 +36,7 @@ const SupplementaryContainer = (props) => {
   const [bceidComment, setBceidComment] = useState([]);
   const [supplementaryAssessmentData, setSupplementaryAssessmentData] =
     useState({});
+  const [overridingCreditActivity, setOverridingCreditActivity] = useState([]);
   const [radioDescriptions, setRadioDescriptions] = useState([
     { id: 0, description: '' }
   ]);
@@ -60,7 +61,7 @@ const SupplementaryContainer = (props) => {
   const directorAction =
     user.isGovernment && user.hasPermission('SIGN_COMPLIANCE_REPORT');
 
-  const calculateBalance = (creditActivity) => {
+  const calculateBalance = () => {
     const balances = {};
 
     obligationDetails.forEach((each) => {
@@ -83,18 +84,18 @@ const SupplementaryContainer = (props) => {
           'transfersIn'
         ].indexOf(each.category) >= 0
       ) {
-        const found = creditActivity.findIndex(
+        const found = overridingCreditActivity.findIndex(
           (activity) =>
             activity.category === each.category &&
             Number(activity.modelYear) === Number(each.modelYear.name)
         );
 
         if (found >= 0) {
-          balances[each.modelYear.name].A += creditActivity[found].creditAValue
-            ? Number(getNumeric(creditActivity[found].creditAValue))
+          balances[each.modelYear.name].A += overridingCreditActivity[found].creditAValue
+            ? Number(getNumeric(overridingCreditActivity[found].creditAValue))
             : Number(getNumeric(each.creditAValue));
-          balances[each.modelYear.name].B += creditActivity[found].creditBValue
-            ? Number(getNumeric(creditActivity[found].creditBValue))
+          balances[each.modelYear.name].B += overridingCreditActivity[found].creditBValue
+            ? Number(getNumeric(overridingCreditActivity[found].creditBValue))
             : Number(getNumeric(each.creditBValue));
         } else {
           balances[each.modelYear.name].A += Number(
@@ -111,18 +112,18 @@ const SupplementaryContainer = (props) => {
           each.category
         ) >= 0
       ) {
-        const found = creditActivity.findIndex(
+        const found = overridingCreditActivity.findIndex(
           (activity) =>
             activity.category === each.category &&
             Number(activity.modelYear) === Number(each.modelYear.name)
         );
 
         if (found >= 0) {
-          balances[each.modelYear.name].A -= creditActivity[found].creditAValue
-            ? Number(getNumeric(creditActivity[found].creditAValue))
+          balances[each.modelYear.name].A -= overridingCreditActivity[found].creditAValue
+            ? Number(getNumeric(overridingCreditActivity[found].creditAValue))
             : Number(getNumeric(each.creditAValue));
-          balances[each.modelYear.name].B -= creditActivity[found].creditBValue
-            ? Number(getNumeric(creditActivity[found].creditBValue))
+          balances[each.modelYear.name].B -= overridingCreditActivity[found].creditBValue
+            ? Number(getNumeric(overridingCreditActivity[found].creditBValue))
             : Number(getNumeric(each.creditBValue));
         } else {
           balances[each.modelYear.name].A -= Number(
@@ -333,6 +334,30 @@ const SupplementaryContainer = (props) => {
       ...newData,
       creditActivity: [...creditActivity]
     });
+    for (let i = 0; i < overridingCreditActivity.length; i++) {
+      const atomicActivity = overridingCreditActivity[i];
+      if (obj.modelYear === atomicActivity.modelYear && obj.title === atomicActivity.category) {
+        const replacementAtomicActivity = {...atomicActivity};
+        if (obj.creditA === '') {
+          replacementAtomicActivity.creditAValue = (obj.originalAValue).toString();
+        } else if (!isNaN(Number(obj.creditA))) {
+          replacementAtomicActivity.creditAValue = (obj.creditA).toString();
+        } else {
+          replacementAtomicActivity.creditAValue = (obj.originalAValue).toString();
+        }
+        if (obj.creditB === '') {
+          replacementAtomicActivity.creditBValue = (obj.originalBValue).toString();
+        } else if (!isNaN(Number(obj.creditB))) {
+          replacementAtomicActivity.creditBValue = (obj.creditB).toString();
+        } else {
+          replacementAtomicActivity.creditBValue = (obj.originalBValue).toString();
+        }
+        const replacementCreditActivity = [...overridingCreditActivity];
+        replacementCreditActivity[i] = replacementAtomicActivity;
+        setOverridingCreditActivity(replacementCreditActivity);
+        return;
+      }
+    }
   };
 
   const handleSubmit = (status, paramNewReport) => {
@@ -690,6 +715,8 @@ const SupplementaryContainer = (props) => {
                 });
               });
 
+              setOverridingCreditActivity(creditActivity);
+
               setSupplementaryAssessmentData({
                 supplementaryAssessment: {
                   inCompliance,
@@ -714,15 +741,12 @@ const SupplementaryContainer = (props) => {
               });
 
               if (reconciledComplianceObligation) {
-                obligationDetails = reconciledComplianceObligation;
                 setObligationDetails(reconciledComplianceObligation);
               }
 
               if (reconciledLdvSales) {
                 setLdvSales(reconciledLdvSales);
               }
-
-              calculateBalance(creditActivity);
             }
 
             const reportYear =
@@ -742,6 +766,10 @@ const SupplementaryContainer = (props) => {
   useEffect(() => {
     refreshDetails();
   }, [keycloak.authenticated, location.pathname, location.search]);
+
+  useEffect(() => {
+    calculateBalance();
+  }, [overridingCreditActivity, obligationDetails]);
 
   const isSupplier = !user.isGovernment
   const isAnalyst = user.isGovernment && !user.roles.some((r) => r.roleCode === 'Director')

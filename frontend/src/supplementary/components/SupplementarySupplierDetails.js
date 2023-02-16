@@ -72,9 +72,6 @@ const SupplementarySupplierDetails = (props) => {
   const creditReductionSelection =
     details.assessmentData && details.assessmentData.creditReductionSelection;
 
-  const newLdvSales =
-    newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
-
   let currentStatus = details.actualStatus
     ? details.actualStatus
     : details.status;
@@ -224,7 +221,7 @@ const SupplementarySupplierDetails = (props) => {
         <ReactTooltip/>
         <SupplementaryTab
           selected={selectedTab == tabNames[0]}
-          title={'Supplementary Details'}
+          title={'Supplementary Report'}
           url={tabUrl(supplementaryReportId, tabNames[0])}
           disabled={supplementaryReportId == null}
           tooltip={'No supplementary report found. Analyst initiated reassessment.'}
@@ -236,7 +233,7 @@ const SupplementarySupplierDetails = (props) => {
           title={'Reassessment'}
           url={tabUrl(reassessmentReportId, tabNames[2])}
           disabled={!isAssessed}
-          tooltip={'Reassessment visible once a director approves the recommendation.'}
+          tooltip={null}
           status={reassessmentStatus}
           assessed={isAssessed}
         />
@@ -246,7 +243,6 @@ const SupplementarySupplierDetails = (props) => {
 
   return (
     <div id="supplementary" className="page">
-      {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED && (
         <ComplianceHistory
           activePage="supplementary"
           id={id}
@@ -261,16 +257,6 @@ const SupplementarySupplierDetails = (props) => {
           }
           user={user}
         />
-      )}
-      <div className="row">
-        <div className="col">
-          <h2 className="mb-2 mt-3">
-            {isReassessment
-              ? `${reportYear} Model Year Report Reassessment`
-              : `${reportYear} Model Year Supplementary Report`}
-          </h2>
-        </div>
-      </div>
 
       {renderTabs()}
 
@@ -307,7 +293,6 @@ const SupplementarySupplierDetails = (props) => {
             ldvSales={ldvSales}
             newBalances={newBalances}
             newData={newData}
-            newLdvSales={newLdvSales || ldvSales}
             obligationDetails={obligationDetails}
             ratios={ratios}
             supplierClass={supplierClass}

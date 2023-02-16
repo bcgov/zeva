@@ -154,10 +154,10 @@ class Router extends Component {
               <Route
                 path={ROUTES_SUPPLEMENTARY.CREATE}
                 render={() => (
-                  <SupplementaryContainer 
-                    keycloak={keycloak} 
-                    user={user} 
-                    newReport 
+                  <SupplementaryContainer
+                    keycloak={keycloak}
+                    user={user}
+                    newReport
                   />
                 )}
               />
@@ -168,6 +168,7 @@ class Router extends Component {
                     keycloak={keycloak}
                     user={user}
                     reassessment
+                    newReport
                   />
                 )}
               />
