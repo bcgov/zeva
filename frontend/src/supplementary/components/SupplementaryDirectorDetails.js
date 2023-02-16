@@ -74,13 +74,6 @@ const SupplementaryDirectorDetails = (props) => {
     currentStatus = 'DRAFT';
   }
 
-  if (query && query.reassessment === 'Y') {
-    reassessment = {
-      isReassessment: true,
-      supplementaryReportId: details.id
-    };
-  }
-
   const isAssessed = currentStatus === 'ASSESSED' ||
     currentStatus === 'REASSESSED'
   
@@ -96,15 +89,12 @@ const SupplementaryDirectorDetails = (props) => {
   const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
   const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
 
-  let isEditable = ['DRAFT', 'RETURNED'].indexOf(details.status) >= 0
+  let isEditable = ['DRAFT'].indexOf(details.status) >= 0
   
   if (selectedTab == tabNames[0] && currentStatus == 'SUBMITTED') {
     isEditable = false
   }
   if (selectedTab == tabNames[1] && currentStatus == 'SUBMITTED') {
-    isEditable = true
-  }
-  if (selectedTab == tabNames[2] && currentStatus == 'RECOMMENDED') {
     isEditable = true
   }
 
@@ -254,7 +244,7 @@ const SupplementaryDirectorDetails = (props) => {
   const tabUrl = (supplementalId, tabName) => {
     return ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id)
       .replace(':supplementaryId', supplementalId) +
-        `?tab=${tabName}${isReassessment ? '&reassessment=Y' : ''}`
+        `?tab=${tabName}`
   }
 
   const renderTabs = () => {
@@ -350,7 +340,8 @@ const SupplementaryDirectorDetails = (props) => {
         />
         <div>
           {isReassessment &&
-            currentStatus === 'ASSESSED' ? (
+            currentStatus === 'ASSESSED' || isReassessment 
+            && selectedTab == tabNames[2] ? (
             <ReassessmentDetailsPage
               details={details}
               ldvSales={ldvSales}
@@ -485,7 +476,7 @@ const SupplementaryDirectorDetails = (props) => {
         }
       {isEditable && (
         <>
-          {['RECOMMENDED'].indexOf(currentStatus) < 0 && (
+          {['RECOMMENDED', 'RETURNED'].indexOf(currentStatus) < 0 && (
             <h3 className="mt-4 mb-1">
               Analyst Recommended Director Assessment
             </h3>
@@ -494,7 +485,7 @@ const SupplementaryDirectorDetails = (props) => {
             <div className="col-12">
               <div className="grey-border-area  p-3 mt-2">
                 <div>
-                  {['RECOMMENDED'].indexOf(currentStatus) < 0 && (
+                  {['RECOMMENDED', 'RETURNED'].indexOf(currentStatus) < 0 && (
                     <>
                       {radioDescriptions &&
                         radioDescriptions.map(
