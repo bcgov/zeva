@@ -358,7 +358,7 @@ const SupplementaryAnalystDetails = (props) => {
             obligationDetails={obligationDetails}
             ratios={ratios}
             supplierClass={supplierClass}
-            isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
+            isEditable={!isEditable && (currentStatus !== 'RECOMMENDED' && currentStatus !== 'ASSESSED')}
           />
         </div>
         {details &&

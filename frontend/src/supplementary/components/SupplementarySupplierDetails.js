@@ -99,7 +99,7 @@ const SupplementarySupplierDetails = (props) => {
   const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
   const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
 
-  let isEditable = ['DRAFT', 'RETURNED'].indexOf(details.status) >= 0
+  let isEditable = !(['DRAFT', 'RETURNED'].indexOf(details.status) >= 0)
   
   // if (selectedTab == tabNames[0] && currentStatus == 'SUBMITTED') {
   //   isEditable = false

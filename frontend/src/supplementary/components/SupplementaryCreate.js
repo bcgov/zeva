@@ -181,7 +181,7 @@ const SupplementaryCreate = (props) => {
             obligationDetails={obligationDetails}
             ratios={ratios}
             supplierClass={supplierClass}
-            isEditable={true}
+            isEditable={false}
           />
         </div>
         <div id="comment-input">
