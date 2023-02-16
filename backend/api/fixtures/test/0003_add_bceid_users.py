@@ -17,42 +17,50 @@ class AddBCEIDUsers(OperationalDataScript):
         "first_name": "Alasdair",
         "last_name": "Ring",
         "display_name": "Alasdair Ring",
-        "username": "ARING_BCEID"
+        "username": "ARING_BCEID",
+        "keycloak_user_id": "ARING_BCEID"
     }, {
         "first_name": "Emily",
         "last_name": "Hillier",
         "display_name": "Emily Hillier",
-        "username": "EMHILLIE_BCEID"
+        "username": "EMHILLIE_BCEID",
+        "keycloak_user_id": "EMHILLIE_BCEID"
     }, {
         "first_name": "James",
         "last_name": "Donald",
         "display_name": "James Donald",
-        "username": "JADONALD_BCEID"
+        "username": "JADONALD_BCEID",
+        "keycloak_user_id": "JADONALD_BCEID"
     }, {
         "first_name": "Katie",
         "last_name": "Menke",
         "display_name": "Katie Menke",
-        "username": "KMENKE_BCEID"
+        "username": "KMENKE_BCEID",
+        "keycloak_user_id": "KMENKE_BCEID"
     }, {
         "first_name": "Kristin",
         "last_name": "Lefler",
         "display_name": "Kristin Lefler",
-        "username": "KLEFLER_BCEID"
+        "username": "KLEFLER_BCEID",
+        "keycloak_user_id": "KLEFLER_BCEID"
     }, {
         "first_name": "Kuan",
         "last_name": "Fan",
         "display_name": "Kuan Fan",
-        "username": "KFAN_BCEID"
+        "username": "KFAN_BCEID",
+        "keycloak_user_id": "KFAN_BCEID"
     }, {
         "first_name": "Richard",
         "last_name": "Tan",
         "display_name": "Richard Tan",
-        "username": "RTAN_BCEID"
+        "username": "RTAN_BCEID",
+        "keycloak_user_id": "RTAN_BCEID"
     }, {
         "first_name": "Anton",
         "last_name": "Coetzer",
         "display_name": "Anton Coetzer",
-        "username": "ALCOETZE_BCEID"
+        "username": "ALCOETZE_BCEID",
+        "keycloak_user_id": "ALCOETZE_BCEID"
     }]
 
     def check_run_preconditions(self):
@@ -80,6 +88,7 @@ class AddBCEIDUsers(OperationalDataScript):
                 last_name=user.get("last_name"),
                 organization=organization,
                 username=user.get("username"),
+                keycloak_user_id=user.get("keycloak_user_id"),
                 defaults={
                     "is_active": True,
                     "display_name": user.get("display_name")

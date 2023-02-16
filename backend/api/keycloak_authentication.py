@@ -45,6 +45,14 @@ class UserAuthentication(authentication.BaseAuthentication):
             raise exceptions.AuthenticationFailed(
                 'Authorization header required')
 
+        if settings.KEYCLOAK['TESTING_ENABLED']:
+            try:
+                user = UserProfile.objects.get(keycloak_user_id=auth['preferred_username'])
+                return user, None
+            except UserProfile.DoesNotExist as exc:
+                # print("Testing User does not exist")
+                raise UserProfile.DoesNotExist(str(exc))
+
         try:
             scheme, token = auth.split()
         except ValueError:

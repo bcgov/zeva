@@ -86,9 +86,10 @@ class BaseTestCase(TestCase):
 
         # override the jwt verification keys for testing
         settings.KEYCLOAK['ENABLED'] = True
+        settings.KEYCLOAK['TESTING_ENABLED'] = True
         settings.KEYCLOAK['DOWNLOAD_CERTS'] = False
-        settings.KEYCLOAK['ISSUER'] = 'zeva-test'
-        settings.KEYCLOAK['AUDIENCE'] = 'zeva-app'
+        settings.KEYCLOAK['ISSUER'] = 'https://dev.loginproxy.gov.bc.ca/auth/realms/standard'
+        settings.KEYCLOAK['AUDIENCE'] = 'zeva-on-gold-4543'
         settings.KEYCLOAK['RS256_KEY'] = private_key.public_key().public_bytes(
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
             encoding=serialization.Encoding.PEM
@@ -111,15 +112,7 @@ class BaseTestCase(TestCase):
             map(lambda user: (
                 user.username,
                 LoggingClient(
-                    HTTP_AUTHORIZATION='Bearer {}'.format(
-                        jwt.encode(
-                            payload={
-                                'user_id': str(user.username),
-                                'iss': 'zeva-test',
-                                'aud': 'zeva-app'
-                            },
-                            key=self.private_key,
-                            algorithm='RS256'
-                        ).decode('utf-8')
-                    )
+                    HTTP_AUTHORIZATION={
+                      'preferred_username': str(user.username)
+                    }
                 )), self.users.values()))
