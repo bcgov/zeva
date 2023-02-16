@@ -72,9 +72,6 @@ const SupplementarySupplierDetails = (props) => {
   const creditReductionSelection =
     details.assessmentData && details.assessmentData.creditReductionSelection;
 
-  const newLdvSales =
-    newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
-
   let currentStatus = details.actualStatus
     ? details.actualStatus
     : details.status;
@@ -295,7 +292,6 @@ const SupplementarySupplierDetails = (props) => {
             ldvSales={ldvSales}
             newBalances={newBalances}
             newData={newData}
-            newLdvSales={newLdvSales || ldvSales}
             obligationDetails={obligationDetails}
             ratios={ratios}
             supplierClass={supplierClass}
