@@ -120,7 +120,7 @@ const config = {
     }),
     new Webpack.HotModuleReplacementPlugin(),
     new Webpack.DefinePlugin(
-      process.env.NODE_ENV === 'production' ? {} : {
+      process.env.NODE_ENV === 'production' ? {__VERSION__: JSON.stringify(packageJson.version)} : {
       __APIBASE__:
         'APIBASE' in process.env
           ? JSON.stringify(process.env.APIBASE)
