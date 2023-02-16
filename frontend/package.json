@@ -102,7 +102,7 @@
   },
   "scripts": {
     "start": "node start",
-    "dist": "webpack",
+    "dist": "NODE_ENV=production webpack",
     "test": "jest --coverage",
     "production": "NODE_ENV=production node start",
     "lint": "eslint src",
