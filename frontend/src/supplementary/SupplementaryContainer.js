@@ -410,16 +410,8 @@ const SupplementaryContainer = (props) => {
             .patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data)
             .then((response) => {
               const { id: supplementalId } = response.data;
-              if (status === 'DELETED') {
+              if (status === 'DELETED' || status == 'RETURNED') {
                 history.push(ROUTES_COMPLIANCE.REPORTS);
-              } else if (status === 'RETURNED') {
-                history.push(ROUTES_COMPLIANCE.REPORTS);
-                history.replace(
-                  ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
-                    ':id',
-                    id
-                  ).replace(':supplementaryId', '')
-                );
               } else {
                 const commentData = {
                   fromGovtComment: bceidComment,

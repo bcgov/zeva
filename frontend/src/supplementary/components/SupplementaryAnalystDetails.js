@@ -19,6 +19,7 @@ import ComplianceHistory from '../../compliance/components/ComplianceHistory';
 import CONFIG from '../../app/config';
 import SupplementaryTab from './SupplementaryTab';
 import ReactTooltip from 'react-tooltip';
+import ReassessmentDetailsPage from './ReassessmentDetailsPage';
 
 const SupplementaryAnalystDetails = (props) => {
   const {
@@ -273,7 +274,7 @@ const SupplementaryAnalystDetails = (props) => {
           selected={selectedTab == tabNames[2]}
           title={'Reassessment'}
           url={tabUrl(reassessmentReportId, tabNames[2])}
-          disabled={!isAssessed}
+          //disabled={!isAssessed}
           tooltip={'Reassessment visible once a director approves the recommendation.'}
           status={reassessmentStatus}
           assessed={isAssessed}
@@ -342,35 +343,51 @@ const SupplementaryAnalystDetails = (props) => {
           }}
         />
         <div>
-          <SupplierInformation
-            isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
-            user={user}
-            details={details}
-            handleInputChange={handleInputChange}
-            loading={loading}
-            newData={newData}
-          />
-          <ZevSales
-            addSalesRow={addSalesRow}
-            details={details}
-            handleInputChange={handleInputChange}
-            salesRows={salesRows}
-            isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
-          />
-          <CreditActivity
-            creditReductionSelection={creditReductionSelection}
-            details={details}
-            handleInputChange={handleInputChange}
-            handleSupplementalChange={handleSupplementalChange}
-            ldvSales={ldvSales}
-            newBalances={newBalances}
-            newData={newData}
-            newLdvSales={newLdvSales || ldvSales}
-            obligationDetails={obligationDetails}
-            ratios={ratios}
-            supplierClass={supplierClass}
-            isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
-          />
+        {isReassessment &&
+            currentStatus === 'ASSESSED' || isReassessment 
+            && selectedTab == tabNames[2] ? (
+            <ReassessmentDetailsPage
+              details={details}
+              ldvSales={ldvSales}
+              newBalances={newBalances}
+              newData={newData}
+              obligationDetails={obligationDetails}
+              ratios={ratios}
+              user={user}
+            />
+          ) : (
+            <>
+            <SupplierInformation
+              isEditable={isEditable && currentStatus !== 'RECOMMENDED' && currentStatus !== 'DRAFT'}
+              user={user}
+              details={details}
+              handleInputChange={handleInputChange}
+              loading={loading}
+              newData={newData}
+            />
+            <ZevSales
+              addSalesRow={addSalesRow}
+              details={details}
+              handleInputChange={handleInputChange}
+              salesRows={salesRows}
+              isEditable={isEditable && currentStatus !== 'RECOMMENDED' && currentStatus !== 'DRAFT'}
+            />
+            <CreditActivity
+              creditReductionSelection={creditReductionSelection}
+              details={details}
+              handleInputChange={handleInputChange}
+              handleSupplementalChange={handleSupplementalChange}
+              ldvSales={ldvSales}
+              newBalances={newBalances}
+              newData={newData}
+              newLdvSales={newLdvSales || ldvSales}
+              obligationDetails={obligationDetails}
+              ratios={ratios}
+              supplierClass={supplierClass}
+              isEditable={isEditable && currentStatus !== 'RECOMMENDED' && currentStatus !== 'DRAFT'}
+            />
+          </>
+        )}
         </div>
         {details &&
           details.status === 'SUBMITTED' &&
@@ -464,7 +481,7 @@ const SupplementaryAnalystDetails = (props) => {
         )}
       {isEditable && (
         <>
-          {['RECOMMENDED'].indexOf(currentStatus) < 0 && (
+          {['RECOMMENDED', 'DRAFT'].indexOf(currentStatus) < 0 && (
             <h3 className="mt-4 mb-1">
               Analyst Recommended Director Assessment
             </h3>
@@ -473,7 +490,7 @@ const SupplementaryAnalystDetails = (props) => {
             <div className="col-12">
               <div className="grey-border-area  p-3 mt-2">
                 <div>
-                  {['RECOMMENDED'].indexOf(currentStatus) < 0 && (
+                  {['RECOMMENDED', 'DRAFT'].indexOf(currentStatus) < 0 && (
                     <>
                       {radioDescriptions &&
                         radioDescriptions.map(
@@ -562,24 +579,18 @@ const SupplementaryAnalystDetails = (props) => {
                   />
                 )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                selectedTab == tabNames[2] &&
+                selectedTab == tabNames[1] &&
+                ['DRAFT'].indexOf(details.status) < 0 &&
                 (isEditable ||
-                  ['SUBMITTED', 'RECOMMENDED'].indexOf(details.status) >= 0) &&
+                  ['SUBMITTED'].indexOf(details.status) >= 0) &&
                     <button
                       className="button text-danger"
                       onClick={() => {
-                        if (currentStatus === 'SUBMITTED') {
-                          handleSubmit('RETURNED');
-                        } else {
-                          handleSubmit('DRAFT');
-                        }
+                        handleSubmit('DRAFT');
                       }}
                       type="button"
                     >
-                      {currentStatus === 'SUBMITTED' ||
-                      currentStatus === 'RETURNED'
-                        ? 'Return to Vehicle Supplier'
-                        : 'Return to Analyst'}
+                      Return to Vehicle Supplier
                     </button>
               }
             </span>
@@ -594,7 +605,9 @@ const SupplementaryAnalystDetails = (props) => {
                   />
                 )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                isEditable && (
+                isEditable &&
+                ['DRAFT'].indexOf(details.status) < 0 &&
+                (
                   <Button
                     buttonTooltip={recommendTooltip}
                     buttonType="submit"
