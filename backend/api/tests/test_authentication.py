@@ -7,6 +7,7 @@ from rest_framework import exceptions
 from api.keycloak_authentication import UserAuthentication
 import jwt
 from .base_test_case import BaseTestCase
+from api.models.user_profile import UserProfile
 
 
 class TestAuthentication(BaseTestCase):
@@ -28,7 +29,7 @@ class TestAuthentication(BaseTestCase):
             }
         }
 
-        with self.assertRaises(exceptions.AuthenticationFailed):
+        with self.assertRaises(UserProfile.DoesNotExist):
             _user, _auth = self.userauth.authenticate(request)
 
     def test_jwt_no_token(self):
