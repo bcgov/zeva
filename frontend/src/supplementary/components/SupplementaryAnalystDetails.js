@@ -91,6 +91,9 @@ const SupplementaryAnalystDetails = (props) => {
   if (selectedTab == tabNames[1] && currentStatus == 'SUBMITTED') {
     isEditable = true
   }
+  if (selectedTab == tabNames[2]){
+    isEditable = false
+  }
 
   const formattedPenalty = details.assessment
     ? formatNumeric(details.assessment.assessmentPenalty, 0)
@@ -273,8 +276,8 @@ const SupplementaryAnalystDetails = (props) => {
           selected={selectedTab == tabNames[2]}
           title={'Reassessment'}
           url={tabUrl(reassessmentReportId, tabNames[2])}
-          disabled={!isAssessed}
-          tooltip={'Reassessment visible once a director approves the recommendation.'}
+          disabled={false}
+          tooltip={''}
           status={reassessmentStatus}
           assessed={isAssessed}
         />
