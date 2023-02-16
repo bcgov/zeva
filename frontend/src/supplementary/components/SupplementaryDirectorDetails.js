@@ -85,9 +85,11 @@ const SupplementaryDirectorDetails = (props) => {
 
   const isAssessed = currentStatus === 'ASSESSED' ||
     currentStatus === 'REASSESSED'
+  
+  const isRecommended = currentStatus === 'RECOMMENDED';
 
   const tabNames = ['supplemental', 'recommendation', 'reassessment']
-  const selectedTab = query?.tab ? query.tab : isAssessed ? tabNames[2] : tabNames[1]
+  const selectedTab = query?.tab ? query.tab : isAssessed || isRecommended ? tabNames[2] : tabNames[1]
 
   const isReassessment = reassessment?.isReassessment
   const reassessmentStatus = reassessment?.status ? reassessment.status : details.status
@@ -580,7 +582,7 @@ const SupplementaryDirectorDetails = (props) => {
                     }}
                     type="button"
                   >
-                    'Return to Analyst'
+                    Return to Analyst
                   </button>
               }
             </span>
@@ -597,7 +599,7 @@ const SupplementaryDirectorDetails = (props) => {
                   />
                 )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                currentStatus === 'RECOMMENDED' && (
+                currentStatus === 'RECOMMENDED' && selectedTab == tabNames[2] && (
                   <Button
                     buttonType="submit"
                     optionalClassname="button primary"
