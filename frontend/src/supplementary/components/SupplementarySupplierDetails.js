@@ -72,9 +72,6 @@ const SupplementarySupplierDetails = (props) => {
   const creditReductionSelection =
     details.assessmentData && details.assessmentData.creditReductionSelection;
 
-  const newLdvSales =
-    newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
-
   let currentStatus = details.actualStatus
     ? details.actualStatus
     : details.status;
@@ -99,14 +96,7 @@ const SupplementarySupplierDetails = (props) => {
   const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
   const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
 
-  let isEditable = ['DRAFT', 'RETURNED'].indexOf(details.status) >= 0
-  
-  // if (selectedTab == tabNames[0] && currentStatus == 'SUBMITTED') {
-  //   isEditable = false
-  // }
-  // if (selectedTab == tabNames[1] && currentStatus == 'SUBMITTED') {
-  //   isEditable = true
-  // }
+  let isEditable = ['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0
 
   const formattedPenalty = details.assessment
     ? formatNumeric(details.assessment.assessmentPenalty, 0)
@@ -169,33 +159,6 @@ const SupplementarySupplierDetails = (props) => {
       </div>
     </Modal>
   );
-
-  // const modalDraft = (
-  //   <Modal
-  //     cancelLabel="No"
-  //     confirmLabel="Yes"
-  //     handleCancel={() => {
-  //       setShowModalDraft(false);
-  //     }}
-  //     handleSubmit={() => {
-  //       setShowModalDraft(false);
-  //       handleSubmit(currentStatus, false);
-  //     }}
-  //     modalClass="w-75"
-  //     showModal={showModalDraft}
-  //     confirmClass="button primary"
-  //   >
-  //     <div className="my-3">
-  //       {isGovernment && (
-  //         <h3>
-  //           {isReassessment
-  //             ? 'This will create a reassessment report'
-  //             : 'This will create a reassessment report from the supplementary report'}
-  //         </h3>
-  //       )}
-  //     </div>
-  //   </Modal>
-  // );
 
   let disabledRecommendBtn = false;
   let recommendTooltip = '';
@@ -295,7 +258,6 @@ const SupplementarySupplierDetails = (props) => {
             ldvSales={ldvSales}
             newBalances={newBalances}
             newData={newData}
-            newLdvSales={newLdvSales || ldvSales}
             obligationDetails={obligationDetails}
             ratios={ratios}
             supplierClass={supplierClass}
