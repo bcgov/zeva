@@ -21,12 +21,14 @@ class UpdateModelYear(OperationalDataScript):
     @transaction.atomic
     def run(self):
         ModelYear.objects.create(
+            id=8,
             effective_date="2017-01-01",
             expiration_date="2017-12-31",
             name="2017"
         )
 
         ModelYear.objects.create(
+            id=9,
             effective_date="2018-01-01",
             expiration_date="2018-12-31",
             name="2018"
