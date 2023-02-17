@@ -15,16 +15,14 @@ const mainPath = path.resolve(__dirname, 'src', 'index.js');
 const config = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   entry: {
-    bundle: process.env.NODE_ENV
-      ? ['@babel/polyfill', mainPath]
-      : [
-        // Runtime code for hot module replacement
-        'webpack/hot/dev-server',
-        // Dev server client for web socket transport, hot and live reload logic
-        'webpack-dev-server/client/index.js?hot=true&live-reload=true',
-        '@babel/polyfill',
-        mainPath
-        ]
+    bundle: [
+      // Runtime code for hot module replacement
+      'webpack/hot/dev-server',
+      // Dev server client for web socket transport, hot and live reload logic
+      'webpack-dev-server/client/index.js?hot=true&live-reload=true',
+      '@babel/polyfill',
+      mainPath
+    ]
   },
   optimization: {
     splitChunks: {
@@ -121,10 +119,7 @@ const config = {
       ]
     }),
     new Webpack.HotModuleReplacementPlugin(),
-    new Webpack.DefinePlugin(
-      process.env.NODE_ENV 
-      ? { __VERSION__: JSON.stringify(packageJson.version) }
-      : {
+    new Webpack.DefinePlugin({
       __APIBASE__:
         'APIBASE' in process.env
           ? JSON.stringify(process.env.APIBASE)

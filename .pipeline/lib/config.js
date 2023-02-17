@@ -26,7 +26,7 @@ const phases = {
         keycloakCallbackUrl: 'https://zeva-dev.apps.silver.devops.gov.bc.ca/', keycloakSiteminderLogoutRedirectUrl: 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=',
         databaseServiceName: 'zeva-spilo',
         wellKnownEndpoint: 'https://dev.loginproxy.gov.bc.ca/auth/realms/standard/.well-known/openid-configuration',
-        frontendCpuRequest: '40m', frontendCpuLimit: '80m', frontendMemoryRequest: '60Mi', frontendMemoryLimit: '120Mi', frontendReplicas: 1,
+        frontendCpuRequest: '100m', frontendCpuLimit: '700m', frontendMemoryRequest: '300M', frontendMemoryLimit: '4G', frontendReplicas: 1,
             complianceReportEnabled: 'true', 
             complianceCalculatorEnabled: 'true',
             complianceRatiosEnabled: 'true',            
