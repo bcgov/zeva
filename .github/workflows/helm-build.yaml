@@ -5,14 +5,14 @@ name: ZEVA Helm Test
 
 on:
   push:
-    branches: [ helm-conversion-1.46.0 ]
+    branches: [ helm-convertion2-1.46.0 ]
   workflow_dispatch:
   workflow_call:
 
 env:
   ## The pull request number of the Tracking pull request to merge the release branch to main
-  PR_NUMBER: 1330
-  RELEASE_NAME: helm-conversion-1.46.0
+  PR_NUMBER: 1383
+  RELEASE_NAME: helm-convertion2-1.46.0
   VERSION: 1.46.0
   REPO_URL: https://github.com/bcgov/zeva.git 
 
@@ -27,11 +27,9 @@ jobs:
 
     steps:
 
-      ## it will checkout to /home/runner/work/zeva/zeva
       - name: Check out repository
         uses: actions/checkout@v3
 
-      ## Log in to Openshift with a token of service account
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.2
         with:
@@ -40,17 +38,17 @@ jobs:
           insecure_skip_tls_verify: true
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
 
-      # - name: Build ZEVA Backend
-      #  run: |
-      #    cd openshift/templates/backend
-      #    oc process -f ./backend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.REPO_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
-      #    oc start-build --wait=true zeva-backend-build-${{ env.PR_NUMBER }}
+      - name: Build ZEVA Backend
+        run: |
+          cd openshift/templates/backend
+          oc process -f ./backend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.REPO_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
+          oc start-build --wait=true zeva-backend-build-${{ env.PR_NUMBER }}
 
-      # - name: Build ZEVA Frontend
-      #  run: |
-      #    cd openshift/templates/frontend
-      #    oc process -f ./frontend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.REPO_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
-      #    oc start-build --wait=true zeva-frontend-build-${{ env.PR_NUMBER }}
+      - name: Build ZEVA Frontend
+        run: |
+          cd openshift/templates/frontend
+          oc process -f ./frontend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.REPO_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
+          oc start-build --wait=true zeva-frontend-build-${{ env.PR_NUMBER }}
 
   deploy-on-dev:
 

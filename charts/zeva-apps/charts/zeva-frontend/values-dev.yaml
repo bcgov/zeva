@@ -25,10 +25,12 @@ frontendConfigMap:
   supplementalEnabled: true
 
 resources:
-  cpuRequest: 50m
-  memoryRequest: 350Mi
-  cpuLimit: 100m
-  memoryLimit: 700Mi
+  limits:
+    cpu: 300m
+    memory: 1200Mi
+  requests:
+    cpu: 150m
+    memory: 600Mi
 
 appConfigMap:
   backendHostName: zeva-backend-dev.apps.silver.devops.gov.bc.ca
@@ -47,3 +49,21 @@ autoscaling:
 # the fronend host name is appConfigMap.hostName
 frontendRoute: 
   create: true
+
+livenessProbe:
+  failureThreshold: 10
+  initialDelaySeconds: 50
+  periodSeconds: 10
+  successThreshold: 1
+  tcpSocket:
+    port: 3000
+  timeoutSeconds: 3
+
+readinessProbe:
+  failureThreshold: 10
+  initialDelaySeconds: 40
+  periodSeconds: 10
+  successThreshold: 1
+  tcpSocket:
+    port: 3000
+  timeoutSeconds: 3
