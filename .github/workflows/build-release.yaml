@@ -13,6 +13,10 @@ env:
   PR_NUMBER: 1248
   RELEASE_NAME: release-1.46.0
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
   ## This is the CI job
