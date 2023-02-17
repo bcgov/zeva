@@ -59,9 +59,6 @@ const SupplementaryCreate = (props) => {
   const creditReductionSelection =
     details.assessmentData && details.assessmentData.creditReductionSelection;
 
-  const newLdvSales =
-    newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
-
   const isGovernment = user.isGovernment
 
   if (query && query.reassessment === 'Y') {
@@ -177,7 +174,6 @@ const SupplementaryCreate = (props) => {
             ldvSales={ldvSales}
             newBalances={newBalances}
             newData={newData}
-            newLdvSales={newLdvSales || ldvSales}
             obligationDetails={obligationDetails}
             ratios={ratios}
             supplierClass={supplierClass}

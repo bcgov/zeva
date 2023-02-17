@@ -20,13 +20,16 @@ const CreditActivity = (props) => {
     ldvSales,
     newBalances,
     newData,
-    newLdvSales,
     obligationDetails,
     ratios,
     supplierClass,
     isEditable
   } = props;
-
+  let newLdvSales =
+    newData && newData.supplierInfo && newData.supplierInfo.ldvSales;
+  if (newLdvSales === null) {
+    newLdvSales = ldvSales;
+  }
   let reportYear = false;
 
   if (details && details.assessmentData) {
@@ -290,7 +293,7 @@ const CreditActivity = (props) => {
                       name="supplierInfo"
                       type="text"
                       onChange={handleInputChange}
-                      defaultValue={newLdvSales || ldvSales}
+                      defaultValue={newLdvSales}
                       readOnly={!isEditable}
                     />
                   </td>
@@ -305,7 +308,7 @@ const CreditActivity = (props) => {
                       totalReduction !== newTotalReduction ? 'highlight' : ''
                     }`}
                   >
-                    {newLdvSales && (
+                    {newLdvSales >= 0 && (
                       <span>{formatNumeric(newTotalReduction, 2)}</span>
                     )}
                   </td>
@@ -329,7 +332,7 @@ const CreditActivity = (props) => {
                             : ''
                         }`}
                       >
-                        {newLdvSales && (
+                        {newLdvSales >= 0 && (
                           <span>{formatNumeric(newClassAReduction, 2)}</span>
                         )}
                       </td>
@@ -349,7 +352,7 @@ const CreditActivity = (props) => {
                             : ''
                         }`}
                       >
-                        {newLdvSales && (
+                        {newLdvSales >= 0 && (
                           <span>{formatNumeric(newLeftoverReduction, 2)}</span>
                         )}
                       </td>
@@ -376,7 +379,7 @@ const CreditActivity = (props) => {
                           : ''
                       }`}
                     >
-                      {newLdvSales && (
+                      {newLdvSales >= 0 && (
                         <span>{formatNumeric(newLeftoverReduction, 2)}</span>
                       )}
                     </td>
@@ -747,7 +750,6 @@ const CreditActivity = (props) => {
 CreditActivity.defaultProps = {
   creditReductionSelection: '',
   isEditable: false,
-  newLdvSales: null,
   supplierClass: ''
 };
 
@@ -761,7 +763,6 @@ CreditActivity.propTypes = {
     .isRequired,
   newBalances: PropTypes.shape().isRequired,
   newData: PropTypes.shape().isRequired,
-  newLdvSales: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   obligationDetails: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   ratios: PropTypes.shape().isRequired,
   supplierClass: PropTypes.string

@@ -245,7 +245,7 @@ const ReassessmentDetailsPage = (props) => {
         page={'assessment'}
         ratios={ratios}
         reportYear={Number(details.assessmentData.modelYear)}
-        sales={sales}
+        sales={sales ? sales : ldvSales}
         statuses={{ assessment: { status: 'ASSESSED' } }}
         supplierClass={supplierClass}
         totalReduction={totalReduction}
