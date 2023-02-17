@@ -16,6 +16,10 @@ env:
   VERSION: 1.46.0
   REPO_URL: https://github.com/bcgov/zeva.git 
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+  
 jobs:
 
   ## This is the CI job
