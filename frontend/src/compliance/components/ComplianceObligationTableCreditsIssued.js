@@ -371,7 +371,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                           creditA: event.target.value
                         });
                       }}
-                      readOnly={readOnly}
+                      readOnly={true}
                     />
                   </td>
                   <td>
@@ -412,7 +412,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                           creditB: event.target.value
                         });
                       }}
-                      readOnly={readOnly}
+                      readOnly={true}
                     />
                   </td>
                 </>
