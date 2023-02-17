@@ -333,18 +333,9 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               </td>
               {supplementalReport && (
                 <>
-                  <td>
-                    <input
-                      className={`form-control ${
-                        newCreditBalanceStartA &&
-                        creditBalanceStart && 
-                        creditBalanceStart[each] && 
-                        creditBalanceStart[each].A != newCreditBalanceStartA ? 
-                        'highlight' : 
-                        ''}`
-                      }
-                      defaultValue={
-                        getNewData(
+                  <td className="text-right">
+                  {formatNumeric(
+                    getNewData(
                           'creditBalanceStart',
                           each,
                           'creditAValue'
@@ -354,38 +345,17 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                           each,
                           'creditAValue'
                         ) === null
-                          ? formatNumeric(creditBalanceStart[each].A, 2)
-                          : getNewData(
-                              'creditBalanceStart',
-                              each,
-                              'creditAValue'
-                            )
-                      }
-                      type="text"
-                      onChange={(event) => {
-                        handleSupplementalChange({
-                          originalAValue: creditBalanceStart[each].A,
-                          originalBValue: creditBalanceStart[each].B,
-                          title: 'creditBalanceStart',
-                          modelYear: each,
-                          creditA: event.target.value
-                        });
-                      }}
-                      readOnly={true}
-                    />
+                        ? formatNumeric(creditBalanceStart[each].A, 2)
+                        : getNewData(
+                            'creditBalanceStart',
+                            each,
+                            'creditAValue'
+                          )
+                      )}
                   </td>
-                  <td>
-                    <input
-                      className={`form-control ${
-                        newCreditBalanceStartB &&
-                        creditBalanceStart && 
-                        creditBalanceStart[each] && 
-                        creditBalanceStart[each].B != newCreditBalanceStartB ? 
-                        'highlight' : 
-                        ''}`
-                      }
-                      defaultValue={
-                        getNewData(
+                  <td className="text-right">
+                    {formatNumeric(
+                      getNewData(
                           'creditBalanceStart',
                           each,
                           'creditBValue'
@@ -395,25 +365,13 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                           each,
                           'creditBValue'
                         ) === null
-                          ? formatNumeric(creditBalanceStart[each].B, 2)
-                          : getNewData(
-                              'creditBalanceStart',
-                              each,
-                              'creditBValue'
-                            )
-                      }
-                      type="text"
-                      onChange={(event) => {
-                        handleSupplementalChange({
-                          originalAValue: creditBalanceStart[each].A,
-                          originalBValue: creditBalanceStart[each].B,
-                          title: 'creditBalanceStart',
-                          modelYear: each,
-                          creditB: event.target.value
-                        });
-                      }}
-                      readOnly={true}
-                    />
+                        ? formatNumeric(creditBalanceStart[each].B, 2)
+                        : getNewData(
+                            'creditBalanceStart',
+                            each,
+                            'creditBValue'
+                          )
+                      )}
                   </td>
                 </>
               )}
@@ -427,57 +385,23 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               <td className="text-right">0.00</td>
               {supplementalReport && (
                 <>
-                  <td>
-                    <input
-                      className={`form-control ${
-                        currentReportYearCreditBalanceStartA && 
-                        currentReportYearCreditBalanceStartA != 0 ? 
-                        'highlight' : 
-                        ''}`
-                      }
-                      defaultValue={getNewData(
+                  <td className="text-right">
+                    {formatNumeric(
+                      getNewData(
                         'creditBalanceStart',
                         reportYear,
                         'creditAValue'
-                      )}
-                      type="text"
-                      onChange={(event) => {
-                        handleSupplementalChange({
-                          originalAValue: 0.00,
-                          originalBValue: 0.00,
-                          title: 'creditBalanceStart',
-                          modelYear: reportYear,
-                          creditA: event.target.value
-                        });
-                      }}
-                      readOnly={readOnly}
-                    />
+                      ))
+                    }
                   </td>
-                  <td>
-                    <input
-                      className={`form-control ${
-                        currentReportYearCreditBalanceStartB && 
-                        currentReportYearCreditBalanceStartB != 0 ? 
-                        'highlight' : 
-                        ''}`
-                      }
-                      defaultValue={getNewData(
+                  <td className="text-right">
+                    {formatNumeric(
+                      getNewData(
                         'creditBalanceStart',
                         reportYear,
                         'creditBValue'
-                      )}
-                      type="text"
-                      onChange={(event) => {
-                        handleSupplementalChange({
-                          originalAValue: "0.00",
-                          originalBValue: "0.00",
-                          title: 'creditBalanceStart',
-                          modelYear: reportYear,
-                          creditB: event.target.value
-                        });
-                      }}
-                      readOnly={readOnly}
-                    />
+                      ))
+                    }
                   </td>
                 </>
               )}
