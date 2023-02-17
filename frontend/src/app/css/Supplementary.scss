@@ -2,6 +2,10 @@
   .supplementary-form {
     border: 1px solid $border-grey;
     padding: 1rem;
+
+    .ql-container {
+      height: auto !important;
+    }
   }
 
   .sales-table-container {
