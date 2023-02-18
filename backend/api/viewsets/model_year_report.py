@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseForbidden
 from rest_framework.response import Response
-from rest_framework import mixins, viewsets
+from rest_framework import mixins, viewsets, status
 from rest_framework.decorators import action
 
 from auditable.views import AuditableMixin
@@ -60,6 +60,7 @@ from api.serializers.model_year_report_assessment import (
 from api.serializers.model_year_report_supplemental import (
     ModelYearReportSupplementalSerializer,
     SupplementalReportAssessmentSerializer,
+    SupplementalReportAssessmentCommentSerializer,
 )
 from api.serializers.model_year_report_noa import (
     ModelYearReportNoaSerializer,
@@ -1129,6 +1130,34 @@ class ModelYearReportViewset(
                 )
 
         return Response({"status": "Saved"})
+
+    @action(detail=True, methods=["patch"])
+    def supplemental_comment_edit(self, request, pk):
+        comment_id = request.data.get("comment_id")
+        comment_text = request.data.get("comment")
+        username = request.user.username
+        comment = SupplementalReportAssessmentComment.objects.get(
+            id=comment_id
+        )
+        if username == comment.create_user:
+            serializer = SupplementalReportAssessmentCommentSerializer(comment, data={'comment': comment_text}, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    @action(detail=True, methods=["patch"])
+    def supplemental_comment_delete(self, request, pk):
+        comment_id = request.data.get("comment_id")
+        username = request.user.username
+        comment = SupplementalReportAssessmentComment.objects.get(
+            id=comment_id
+        )
+        if username == comment.create_user:
+            comment.delete()
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
 
     @action(detail=True, methods=["get"])
     def assessed_supplementals(self, request, pk):

@@ -235,6 +235,60 @@ const SupplementaryContainer = (props) => {
     setIdirComment(text);
   };
 
+  const handleEditIdirComment = (commentId, commentText) => {
+    axios
+      .patch(ROUTES_SUPPLEMENTARY.COMMENT_EDIT.replace(':id', id), {
+        commentId: commentId,
+        comment: commentText
+      })
+      .then((response) => {
+        const updatedComment = response.data;
+        setCommentArray((prev) => {
+          const commentIndex = prev.idirComment.findIndex(
+            (comment) => {
+              return comment.id === updatedComment.id;
+            }
+          );
+          const comment = prev.idirComment[commentIndex];
+          const commentCopy = { ...comment };
+          commentCopy.comment = updatedComment.comment;
+          commentCopy.updateTimestamp = updatedComment.updateTimestamp;
+
+          const comments = prev.idirComment;
+          const commentsCopy = [...comments];
+          commentsCopy[commentIndex] = commentCopy;
+
+          const commentArrayCopy = { ...prev };
+          commentArrayCopy.idirComment = commentsCopy;
+          return commentArrayCopy;
+        });
+        
+      });
+  };
+
+  const handleDeleteIdirComment = (commentId) => {
+    axios
+      .patch(ROUTES_SUPPLEMENTARY.COMMENT_DELETE.replace(':id', id), {
+        commentId: commentId,
+      })
+      .then(() => {
+        setCommentArray((prev) => {
+          const commentIndex = prev.idirComment.findIndex(
+            (comment) => {
+              return comment.id === commentId;
+            }
+          );
+          const comments = prev.idirComment;
+          const commentsCopy = [...comments];
+          commentsCopy.splice(commentIndex, 1);
+
+          const commentArrayCopy = { ...prev };
+          commentArrayCopy.idirComment = commentsCopy;
+          return commentArrayCopy;
+        });
+      });
+  };
+
   const handleCommentChangeBceid = (text) => {
     setBceidComment(text);
   };
@@ -774,8 +828,8 @@ const SupplementaryContainer = (props) => {
   const detailsProps = {
     addSalesRow, analystAction, checkboxConfirmed, commentArray, deleteFiles, details,
     directorAction, errorMessage, files, handleAddIdirComment, handleCheckboxClick,
-    handleCommentChange, handleCommentChangeBceid, handleCommentChangeIdir,
-    handleInputChange, handleSubmit, handleSupplementalChange,
+    handleCommentChange, handleCommentChangeBceid, handleCommentChangeIdir, handleDeleteIdirComment,
+    handleEditIdirComment, handleInputChange, handleSubmit, handleSupplementalChange,
     id, ldvSales, loading, newBalances, newData, obligationDetails,
     query, radioDescriptions, ratios, salesRows, user,
     setDeleteFiles, setSupplementaryAssessmentData, supplementaryAssessmentData,

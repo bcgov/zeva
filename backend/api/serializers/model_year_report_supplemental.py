@@ -77,7 +77,7 @@ class SupplementalReportAssessmentCommentSerializer(ModelSerializer):
     class Meta:
         model = SupplementalReportAssessmentComment
         fields = (
-            'id', 'comment', 'create_timestamp', 'create_user', 'to_director'
+            'id', 'comment', 'create_timestamp', 'update_timestamp', 'create_user', 'to_director'
         )
         read_only_fields = (
             'id',

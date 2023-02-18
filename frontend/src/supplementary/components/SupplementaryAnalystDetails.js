@@ -12,7 +12,6 @@ import CreditActivity from './CreditActivity';
 import CommentInput from '../../app/components/CommentInput';
 import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
 import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
-import DisplayComment from '../../app/components/DisplayComment';
 import formatNumeric from '../../app/utilities/formatNumeric';
 import CustomPropTypes from '../../app/utilities/props';
 import ComplianceHistory from '../../compliance/components/ComplianceHistory';
@@ -20,6 +19,7 @@ import CONFIG from '../../app/config';
 import SupplementaryTab from './SupplementaryTab';
 import ReactTooltip from 'react-tooltip';
 import ReassessmentDetailsPage from './ReassessmentDetailsPage';
+import EditableCommentList from '../../app/components/EditableCommentList';
 
 const SupplementaryAnalystDetails = (props) => {
   const {
@@ -30,6 +30,8 @@ const SupplementaryAnalystDetails = (props) => {
     handleAddIdirComment,
     handleCommentChangeBceid,
     handleCommentChangeIdir,
+    handleDeleteIdirComment,
+    handleEditIdirComment,
     handleInputChange,
     handleSubmit,
     handleSupplementalChange,
@@ -303,7 +305,12 @@ const SupplementaryAnalystDetails = (props) => {
           {commentArray &&
             commentArray.idirComment &&
             commentArray.idirComment.length > 0 && (
-              <DisplayComment commentArray={commentArray.idirComment} />
+              <EditableCommentList
+                comments={commentArray.idirComment}
+                user={user}
+                handleCommentEdit={handleEditIdirComment}
+                handleCommentDelete={handleDeleteIdirComment}
+              />
             )}
 
           <div id="comment-input">
@@ -633,6 +640,8 @@ SupplementaryAnalystDetails.propTypes = {
   handleAddIdirComment: PropTypes.func.isRequired,
   handleCommentChangeBceid: PropTypes.func.isRequired,
   handleCommentChangeIdir: PropTypes.func.isRequired,
+  handleDeleteIdirComment: PropTypes.func.isRequired,
+  handleEditIdirComment: PropTypes.func.isRequired,
   handleInputChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   handleSupplementalChange: PropTypes.func.isRequired,
