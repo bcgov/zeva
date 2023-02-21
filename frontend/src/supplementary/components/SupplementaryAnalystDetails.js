@@ -603,6 +603,7 @@ const SupplementaryAnalystDetails = (props) => {
                     buttonType="submit"
                     optionalClassname="button primary"
                     optionalText="Recommend Reassessment"
+                    disabled={disabledRecommendBtn}
                     action={() => {
                       handleSubmit('RECOMMENDED');
                     }}
