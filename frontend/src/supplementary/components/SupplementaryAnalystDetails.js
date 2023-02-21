@@ -371,7 +371,6 @@ const SupplementaryAnalystDetails = (props) => {
               ldvSales={ldvSales}
               newBalances={newBalances}
               newData={newData}
-              newLdvSales={newLdvSales || ldvSales}
               obligationDetails={obligationDetails}
               ratios={ratios}
               supplierClass={supplierClass}
@@ -604,7 +603,7 @@ const SupplementaryAnalystDetails = (props) => {
                     buttonType="submit"
                     optionalClassname="button primary"
                     optionalText="Recommend Reassessment"
-                    disabled={disabledRecommendBtn}
+                    // disabled={disabledRecommendBtn}
                     action={() => {
                       handleSubmit('RECOMMENDED');
                     }}
