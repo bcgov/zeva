@@ -371,7 +371,6 @@ const SupplementaryAnalystDetails = (props) => {
               ldvSales={ldvSales}
               newBalances={newBalances}
               newData={newData}
-              newLdvSales={newLdvSales || ldvSales}
               obligationDetails={obligationDetails}
               ratios={ratios}
               supplierClass={supplierClass}
