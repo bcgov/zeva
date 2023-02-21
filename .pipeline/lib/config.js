@@ -50,7 +50,7 @@ const phases = {
         instance: `${name}-test`, version:`${version}`, tag:`test-${version}`, 
         host: `zeva-test.${ocpName}.gov.bc.ca`, djangoDebug: 'False', logoutHostName: 'logontest7.gov.bc.ca',
         keycloakCallbackUrl: 'https://zeva-test.apps.silver.devops.gov.bc.ca/', keycloakSiteminderLogoutRedirectUrl: 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=',
-        databaseServiceName: 'patroni-master-test',
+        databaseServiceName: 'zeva-spilo',
         wellKnownEndpoint: 'https://test.loginproxy.gov.bc.ca/auth/realms/standard/.well-known/openid-configuration',
         frontendCpuRequest: '300m', frontendCpuLimit: '600m', frontendMemoryRequest: '500M', frontendMemoryLimit: '1G', frontendReplicas: 2, frontendMinReplicas: 2, frontendMaxReplicas: 5,
             complianceReportEnabled: 'true',     

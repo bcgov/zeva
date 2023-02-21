@@ -5,7 +5,7 @@ spilo:
   credentials:
     useExistingSecret: true
     existingSecret:
-      name: tfrs-patroni-admin
+      name: zeva-patroni-admin
       superuserKey: password-superuser
       adminKey: password-admin
       standbyKey: password-standby
@@ -16,17 +16,17 @@ spilo:
     retainBackups: 3
     storage: s3
     s3:
-      bucket: tfrsts/postgresbackup
-      secretName: tfrs-db-backup-s3
+      bucket: zevats/postgresbackup
+      secretName: zeva-db-backup-s3
 
   shipLogs:
     enabled: false
 #    s3:
-#      bucket: s3://tfrsts
+#      bucket: s3://zevats
 #      shipSchedule: 0 7 * * *
 
   persistentVolume:
-    size: 2Gi
+    size: 3Gi
     storageClass: netapp-block-standard
 
   resources:
