@@ -56,20 +56,21 @@ helm uninstall -n e52f12-test zeva-spilo
     verify permissions are granted:  select * from information_schema.role_table_grants where grantee='metabaseuser';
 
 ## Backup the existing v10 database and restore to v14 cluster
-* Make sure the application is stopped
+* Make sure the application is route to the maintenance page
+* Bring down all ZEVA apps but not the old patroni cluster and patroni-backup
+* Backup database on patroni-backup
+* bring down patroni-backup
 * Login to patroni-test leader pod
     * make an empty dir /home/postgres/migration and cd into it
     * backup zeva database: pg_dump zeva > zeva.sql
 * Restore zeva database
     * psql zeva < ./zeva.sql >> ./restore.log 2>&1
     * verify the restore.log when complete
-
-* Point the applications to v14 cluster, update the enviuronment variables for
-    * backend: DATABASE_SERVICE_NAME, POSTGRESQL_SERVICE_HOST
-    * celery: DATABASE_SERVICE_NAME
-    * scan-handler: DATABASE_SERVICE_NAME
+* Point the applications to v14 cluster, update the following key/value pairs in configmap zeva-patroni-app 
+    * database_service_name to zeva-spilo
+    * postgresql_service_host to zeva-spilo.e52f12-test.svc.cluster.local
 * Bring down the v10 cluster
-* Bring down the maintenance page
+* Roll out zeva-backend-test to make sure migration is correct
 * Bring up the zeva appliation
 * Update patroni backup to only backup minio data
 * Update metabase connection from CTHUB
