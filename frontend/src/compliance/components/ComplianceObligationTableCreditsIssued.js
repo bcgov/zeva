@@ -302,6 +302,16 @@ const ComplianceObligationTableCreditsIssued = (props) => {
   const currentReportYearCreditBalanceStartA = getNewData('creditBalanceStart', reportYear, 'creditAValue');
   const currentReportYearCreditBalanceStartB = getNewData('creditBalanceStart', reportYear, 'creditBValue');
 
+  const getSupplementalValue = (modelYear, creditAorBText) => {
+    const creditType = `credit${creditAorBText}Value`
+    const newData = getNewData('creditBalanceStart', modelYear, creditType)
+    if (newData == '' || newData == null) {
+      return formatNumeric(creditBalanceStart[modelYear][creditAorBText], 2)
+    } else {
+      return formatNumeric(newData)
+    }
+  }
+  
   return (
     <>
       <table>
@@ -334,44 +344,10 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               {supplementalReport && (
                 <>
                   <td className="text-right">
-                  {formatNumeric(
-                    getNewData(
-                          'creditBalanceStart',
-                          each,
-                          'creditAValue'
-                        ) === '' ||
-                        getNewData(
-                          'creditBalanceStart',
-                          each,
-                          'creditAValue'
-                        ) === null
-                        ? formatNumeric(creditBalanceStart[each].A, 2)
-                        : getNewData(
-                            'creditBalanceStart',
-                            each,
-                            'creditAValue'
-                          )
-                      )}
+                    {getSupplementalValue(each, 'A')}
                   </td>
                   <td className="text-right">
-                    {formatNumeric(
-                      getNewData(
-                          'creditBalanceStart',
-                          each,
-                          'creditBValue'
-                        ) === '' ||
-                        getNewData(
-                          'creditBalanceStart',
-                          each,
-                          'creditBValue'
-                        ) === null
-                        ? formatNumeric(creditBalanceStart[each].B, 2)
-                        : getNewData(
-                            'creditBalanceStart',
-                            each,
-                            'creditBValue'
-                          )
-                      )}
+                    {getSupplementalValue(each, 'B')}
                   </td>
                 </>
               )}
@@ -386,8 +362,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
               {supplementalReport && (
                 <>
                   <td className="text-right">
-                    {formatNumeric(
-                      getNewData(
+                    {formatNumeric(getNewData(
                         'creditBalanceStart',
                         reportYear,
                         'creditAValue'
@@ -395,8 +370,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                     }
                   </td>
                   <td className="text-right">
-                    {formatNumeric(
-                      getNewData(
+                    {formatNumeric(getNewData(
                         'creditBalanceStart',
                         reportYear,
                         'creditBValue'
