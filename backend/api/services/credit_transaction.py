@@ -342,7 +342,7 @@ def validate_transfer(transfer):
                     record['weight_class_id'] == weight_type
             ):
                 found = True
-                record['total_value'] -= credit_value
+                record['total_value'] -= float(credit_value)
                 if record['total_value'] < 0:
                     has_enough = False
         if not found:

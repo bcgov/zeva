@@ -22,6 +22,7 @@ class TestModelYearReports(BaseTestCase):
         gov = self.users['RTAN'].organization
 
         model_year_report = ModelYearReport.objects.create(
+            id=1,
             organization=org1,
             create_user='EMHILLIE_BCEID',
             validation_status=ModelYearReportStatuses.ASSESSED,

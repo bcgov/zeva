@@ -19,7 +19,8 @@ class AddUsers(OperationalDataScript):
         "username": "TEST_BCEID",
         "organization": Organization.objects.get(
             name="Tesla Motors Canada ULC"
-        ).id
+        ).id,
+        "keycloak_user_id": "TEST_BCEID"
     }, {
         "first_name": "Test",
         "last_name": "Idir",
@@ -27,7 +28,8 @@ class AddUsers(OperationalDataScript):
         "username": "TEST_IDIR",
         "organization": Organization.objects.get(
             name="Government of British Columbia"
-        ).id
+        ).id,
+        "keycloak_user_id": "TEST_IDIR"
     }]
 
     def check_run_preconditions(self):
@@ -47,6 +49,7 @@ class AddUsers(OperationalDataScript):
                 last_name=user.get("last_name"),
                 organization_id=user.get("organization"),
                 username=user.get("username"),
+                keycloak_user_id=user.get("keycloak_user_id"),
                 defaults={
                     "is_active": True,
                     "display_name": user.get("display_name")

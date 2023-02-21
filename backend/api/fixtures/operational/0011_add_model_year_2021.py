@@ -22,9 +22,38 @@ class AddModelYears2021(OperationalDataScript):
     @transaction.atomic
     def run(self):
         ModelYear.objects.create(
-            effective_date="2021-01-01",
-            expiration_date="2021-12-31",
-            name="2021"
+          id=3,
+          effective_date="2021-01-01",
+          expiration_date="2021-12-31",
+          name="2021"
+        )
+
+        ModelYear.objects.create(
+          id=4,
+          effective_date="2022-01-01",
+          expiration_date="2022-12-31",
+          name="2022"
+        )
+
+        ModelYear.objects.create(
+          id=5,
+          effective_date="2023-01-01",
+          expiration_date="2023-12-31",
+          name="2023"
+        )
+
+        ModelYear.objects.create(
+          id=6,
+          effective_date="2024-01-01",
+          expiration_date="2024-12-31",
+          name="2024"
+        )
+
+        ModelYear.objects.create(
+          id=7,
+          effective_date="2025-01-01",
+          expiration_date="2025-12-31",
+          name="2025"
         )
 
 

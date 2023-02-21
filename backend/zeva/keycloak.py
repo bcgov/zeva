@@ -16,5 +16,6 @@ def config():
             'KEYCLOAK_DOWNLOAD_CERTS',
             'true'
         ).lower() in ['true', '1']),
-        'RS256_KEY': None
+        'RS256_KEY': None,
+        'TESTING_ENABLED': os.getenv('TESTING_ENABLED', False)
     }
