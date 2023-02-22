@@ -441,7 +441,6 @@ class ModelYearReportViewset(
                 # returning a 200 to bypass the rest of the update
                 return HttpResponse(status=200, content="Recommendation is required")
 
-            print(model_year_report_check.validation_status, validation_status, request)
             check_validation_status_change(model_year_report_check.validation_status, validation_status, request)
             model_year_report_update.update(validation_status=validation_status)
             model_year_report_update.update(update_user=request.user.username)
@@ -562,7 +561,6 @@ class ModelYearReportViewset(
 
         report = get_object_or_404(ModelYearReport, pk=pk)
 
-        print('2', report.validation_status, request.data.get('validation_status'), request)
         check_validation_status_change(report.validation_status, request.data.get('validation_status'), request)
 
         serializer = ModelYearReportSerializer(report, context={"request": request})
@@ -788,7 +786,6 @@ class ModelYearReportViewset(
         create_user = None
         supplemental_id = None
 
-        print(report.validation_status, validation_status, request)
         check_validation_status_change(report.validation_status, validation_status, request)
 
         # update the existing supplemental if it exists

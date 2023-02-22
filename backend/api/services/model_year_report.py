@@ -381,6 +381,5 @@ def check_validation_status_change(current_status, new_status, request):
                 current_status = current_status.name
             except:
                 new_status = new_status.name
-        print('checking', current_status, new_status)
         if new_status != current_status or new_status == ModelYearReportStatuses.ASSESSED.name and current_status == ModelYearReportStatuses.ASSESSED.name:
             notifications_model_year_report(new_status, request, current_status)
