@@ -376,10 +376,10 @@ def adjust_credits(id, request):
             ).delete()
 
 def check_validation_status_change(current_status, new_status, request):
-        if type(current_status) is ModelYearReportStatuses or type(new_status) is ModelYearReportStatuses:
-            try:
-                current_status = current_status.name
-            except:
-                new_status = new_status.name
+        if type(current_status) is ModelYearReportStatuses:
+            current_status = current_status.name
+        elif type(new_status) is ModelYearReportStatuses:
+            new_status = new_status.name
+            
         if new_status != current_status or new_status == ModelYearReportStatuses.ASSESSED.name and current_status == ModelYearReportStatuses.ASSESSED.name:
             notifications_model_year_report(new_status, request, current_status)

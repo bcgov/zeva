@@ -176,7 +176,6 @@ def notifications_model_year_report(validation_status, request, previous_status 
     request_type = 'model_year_report'
     email_type = '<b>model year report update</b>'
     notifications = None
-    print('notifying', validation_status, previous_status)
     if validation_status == ModelYearReportStatuses.ASSESSED.name:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             Q(notification_code='MODEL_YEAR_REPORT_ASSESSED_SUPPLIER') |
