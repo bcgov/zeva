@@ -786,6 +786,8 @@ class ModelYearReportViewset(
         create_user = None
         supplemental_id = None
 
+        check_validation_status_change(report.validation_status, validation_status, request)
+
         # update the existing supplemental if it exists
         supplemental_report = report.get_latest_supplemental(request)
         if supplemental_report:

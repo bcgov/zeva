@@ -172,7 +172,7 @@ def notifications_credit_transfers(transfer: object):
     if notifications:
         subscribed_users(notifications, transfer, request_type, email_type)
 
-def notifications_model_year_report(validation_status, request):
+def notifications_model_year_report(validation_status, request, previous_status = 'NA'):
     request_type = 'model_year_report'
     email_type = '<b>model year report update</b>'
     notifications = None
@@ -187,6 +187,9 @@ def notifications_model_year_report(validation_status, request):
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='MODEL_YEAR_REPORT_RECOMMENDED') 
     elif validation_status == ModelYearReportStatuses.RETURNED.name:
+        notifications = Notification.objects.values_list('id', flat=True).filter(
+            notification_code='MODEL_YEAR_REPORT_RETURNED') 
+    elif validation_status == ModelYearReportStatuses.DRAFT.name and previous_status == ModelYearReportStatuses.ASSESSED.name:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='MODEL_YEAR_REPORT_RETURNED') 
 
