@@ -15,7 +15,9 @@ const mainPath = path.resolve(__dirname, 'src', 'index.js');
 const config = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   entry: {
-    bundle: [
+    bundle: process.env.NODE_ENV === 'production'
+    ? ['@babel/polyfill', mainPath]
+    : [
       // Runtime code for hot module replacement
       'webpack/hot/dev-server',
       // Dev server client for web socket transport, hot and live reload logic
