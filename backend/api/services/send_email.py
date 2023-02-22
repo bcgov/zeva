@@ -186,10 +186,7 @@ def notifications_model_year_report(validation_status, request, previous_status 
     elif validation_status == ModelYearReportStatuses.RECOMMENDED.name:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='MODEL_YEAR_REPORT_RECOMMENDED') 
-    elif validation_status == ModelYearReportStatuses.RETURNED.name:
-        notifications = Notification.objects.values_list('id', flat=True).filter(
-            notification_code='MODEL_YEAR_REPORT_RETURNED') 
-    elif validation_status == ModelYearReportStatuses.DRAFT.name and previous_status == ModelYearReportStatuses.ASSESSED.name:
+    elif validation_status == ModelYearReportStatuses.RETURNED.name or validation_status == ModelYearReportStatuses.DRAFT.name and previous_status == ModelYearReportStatuses.ASSESSED.name:
         notifications = Notification.objects.values_list('id', flat=True).filter(
             notification_code='MODEL_YEAR_REPORT_RETURNED') 
 
