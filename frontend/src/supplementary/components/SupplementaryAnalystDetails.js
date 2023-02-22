@@ -357,7 +357,7 @@ const SupplementaryAnalystDetails = (props) => {
           : (
             <>
             <SupplierInformation
-              isEditable={isEditable && currentStatus !== 'RECOMMENDED' && currentStatus !== 'DRAFT'}
+              isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
               user={user}
               details={details}
               handleInputChange={handleInputChange}
@@ -369,7 +369,7 @@ const SupplementaryAnalystDetails = (props) => {
               details={details}
               handleInputChange={handleInputChange}
               salesRows={salesRows}
-              isEditable={isEditable && currentStatus !== 'RECOMMENDED' && currentStatus !== 'DRAFT'}
+              isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
             />
             <CreditActivity
               creditReductionSelection={creditReductionSelection}
@@ -382,7 +382,7 @@ const SupplementaryAnalystDetails = (props) => {
               obligationDetails={obligationDetails}
               ratios={ratios}
               supplierClass={supplierClass}
-              isEditable={isEditable && currentStatus !== 'RECOMMENDED' && currentStatus !== 'DRAFT'}
+              isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
             />
           </>
             )}
@@ -479,7 +479,7 @@ const SupplementaryAnalystDetails = (props) => {
       )}
       {isEditable && (
         <>
-          {['RECOMMENDED', 'DRAFT'].indexOf(currentStatus) < 0 && (
+          {['RECOMMENDED'].indexOf(currentStatus) < 0 && (
             <h3 className="mt-4 mb-1">
               Analyst Recommended Director Assessment
             </h3>
@@ -488,7 +488,7 @@ const SupplementaryAnalystDetails = (props) => {
             <div className="col-12">
               <div className="grey-border-area  p-3 mt-2">
                 <div>
-                  {['RECOMMENDED', 'DRAFT'].indexOf(currentStatus) < 0 && (
+                  {['RECOMMENDED'].indexOf(currentStatus) < 0 && (
                     <>
                       {radioDescriptions &&
                         radioDescriptions.map(
@@ -604,7 +604,7 @@ const SupplementaryAnalystDetails = (props) => {
               )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 isEditable &&
-                ['DRAFT'].indexOf(details.status) < 0 &&
+                ['DRAFT'].indexOf(details.status) >= 0 &&
                 (
                   <Button
                     buttonTooltip={recommendTooltip}
