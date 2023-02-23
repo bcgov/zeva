@@ -1,11 +1,11 @@
 const getTotalReduction = (ldvSales, complianceRatio) => {
   if (!ldvSales || isNaN(ldvSales)) {
-    return 0;
+    return 0
   }
 
-  const totalReduction = ldvSales * (complianceRatio / 100);
+  const totalReduction = ldvSales * (complianceRatio / 100)
 
-  return totalReduction;
-};
+  return totalReduction
+}
 
-export default getTotalReduction;
+export default getTotalReduction

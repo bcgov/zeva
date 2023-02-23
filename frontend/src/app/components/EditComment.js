@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import ReactQuill from 'react-quill';
+import React, { useState, useEffect } from 'react'
+import ReactQuill from 'react-quill'
 
 const EditComment = ({
   commentId,
@@ -8,17 +8,17 @@ const EditComment = ({
   handleCancel,
   handleDelete
 }) => {
-  const [value, setValue] = useState();
+  const [value, setValue] = useState()
 
   useEffect(() => {
-    setValue(comment);
-  }, [comment]);
+    setValue(comment)
+  }, [comment])
 
   const handleChange = (editedComment) => {
     if (editedComment) {
-      setValue(editedComment);
+      setValue(editedComment)
     }
-  };
+  }
 
   return (
     <>
@@ -40,9 +40,9 @@ const EditComment = ({
       <button
         onClick={() => {
           if (!value || value === '<p><br></p>') {
-            handleDelete(commentId);
+            handleDelete(commentId)
           } else {
-            handleSave(commentId, value);
+            handleSave(commentId, value)
           }
         }}
       >
@@ -50,13 +50,13 @@ const EditComment = ({
       </button>
       <button
         onClick={() => {
-          handleCancel(commentId);
+          handleCancel(commentId)
         }}
       >
         Cancel
       </button>
     </>
-  );
-};
+  )
+}
 
-export default EditComment;
+export default EditComment

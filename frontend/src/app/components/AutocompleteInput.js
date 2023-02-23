@@ -1,7 +1,7 @@
-import Autosuggest from 'react-autosuggest';
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { KEY_RETURN } from 'keycode-js';
+import Autosuggest from 'react-autosuggest'
+import React, { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
+import { KEY_RETURN } from 'keycode-js'
 
 const AutocompleteInput = (props) => {
   const {
@@ -13,37 +13,37 @@ const AutocompleteInput = (props) => {
     errorMessage,
     handleInputChange,
     name
-  } = props;
-  const [isHighlighting, setIsHighlighting] = useState(false);
-  const [rowClass, setRowClass] = useState('form-group row');
-  const [suggestions, setSuggestions] = useState([]);
-  const [validationErrors, setValidationErrors] = useState('');
-  const [value, setValue] = useState(defaultValue);
+  } = props
+  const [isHighlighting, setIsHighlighting] = useState(false)
+  const [rowClass, setRowClass] = useState('form-group row')
+  const [suggestions, setSuggestions] = useState([])
+  const [validationErrors, setValidationErrors] = useState('')
+  const [value, setValue] = useState(defaultValue)
 
   const handleOnBlur = (event) => {
-    const { value: targetValue } = event.target;
+    const { value: targetValue } = event.target
     if (targetValue === '' && mandatory === true) {
-      setValidationErrors(`${label} cannot be left blank`);
-      setRowClass('form-group row error');
+      setValidationErrors(`${label} cannot be left blank`)
+      setRowClass('form-group row error')
     }
 
     if (targetValue !== '' || !mandatory) {
-      setValidationErrors('');
-      setRowClass('form-group row');
+      setValidationErrors('')
+      setRowClass('form-group row')
     }
 
-    setIsHighlighting(false);
-  };
+    setIsHighlighting(false)
+  }
   // Teach Autosuggest how to calculate suggestions for any given input value.
   const getSuggestions = (suggestion) => {
-    const inputValue = suggestion.trim().toLowerCase();
-    const inputLength = inputValue.length;
+    const inputValue = suggestion.trim().toLowerCase()
+    const inputLength = inputValue.length
     return inputLength === 0
       ? []
       : possibleChoicesList.filter(
-          (item) => item.toLowerCase().slice(0, inputLength) === inputValue
-        );
-  };
+        (item) => item.toLowerCase().slice(0, inputLength) === inputValue
+      )
+  }
 
   // When suggestion is clicked, Autosuggest needs to populate the input
   // based on the clicked suggestion. Teach Autosuggest how to calculate the
@@ -54,40 +54,40 @@ const AutocompleteInput = (props) => {
         name,
         value: suggestion
       }
-    });
+    })
 
-    return suggestion;
-  };
+    return suggestion
+  }
 
   // Use your imagination to render suggestions.
-  const renderSuggestion = (suggestion) => <div>{suggestion}</div>;
+  const renderSuggestion = (suggestion) => <div>{suggestion}</div>
 
   const onChange = (event, { newValue }) => {
     if (event.target.name) {
-      handleInputChange(event);
+      handleInputChange(event)
     }
 
-    setIsHighlighting(false);
-    setValue(newValue);
-  };
+    setIsHighlighting(false)
+    setValue(newValue)
+  }
 
   const onSuggestionHighlighted = (suggestion) => {
     if (suggestion.suggestion) {
-      setIsHighlighting(true);
+      setIsHighlighting(true)
     }
-  };
+  }
 
   const onSuggestionSelected = () => {
-    setIsHighlighting(false);
-  };
+    setIsHighlighting(false)
+  }
 
   const onSuggestionsFetchRequested = ({ value: suggestion }) => {
-    setSuggestions(getSuggestions(suggestion));
-  };
+    setSuggestions(getSuggestions(suggestion))
+  }
 
   const onSuggestionsClearRequested = () => {
-    setSuggestions([]);
-  };
+    setSuggestions([])
+  }
 
   // Autosuggest will pass through all these props to the input.
   const inputProps = {
@@ -96,24 +96,24 @@ const AutocompleteInput = (props) => {
     onChange,
     name,
     onBlur: (event) => {
-      handleOnBlur(event);
+      handleOnBlur(event)
     },
     onKeyDown: (event) => {
       if (!isHighlighting) {
-        return;
+        return
       }
 
-      const key = event.key || event.keyCode;
+      const key = event.key || event.keyCode
 
       if (key === 'Enter' || key === KEY_RETURN) {
-        event.preventDefault();
+        event.preventDefault()
       }
     }
-  };
+  }
 
   useEffect(() => {
-    setValue(defaultValue);
-  }, [defaultValue]);
+    setValue(defaultValue)
+  }, [defaultValue])
 
   return (
     <div id="autocomplete-container" className={rowClass}>
@@ -139,16 +139,16 @@ const AutocompleteInput = (props) => {
         </small>
       </div>
     </div>
-  );
-};
-export default AutocompleteInput;
+  )
+}
+export default AutocompleteInput
 
 AutocompleteInput.defaultProps = {
   defaultValue: '',
   errorMessage: '',
   mandatory: false,
   possibleChoicesList: []
-};
+}
 
 AutocompleteInput.propTypes = {
   errorMessage: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
@@ -159,4 +159,4 @@ AutocompleteInput.propTypes = {
   label: PropTypes.string.isRequired,
   mandatory: PropTypes.bool,
   name: PropTypes.string.isRequired
-};
+}

@@ -1,18 +1,18 @@
 /*
  * Presentational component
  */
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from 'prop-types'
+import React from 'react'
 
-import CustomPropTypes from '../../app/utilities/props';
-import ReactTable from '../../app/components/ReactTable';
-import formatNumeric from '../../app/utilities/formatNumeric';
-import formatStatus from '../../app/utilities/formatStatus';
-import history from '../../app/History';
-import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
+import CustomPropTypes from '../../app/utilities/props'
+import ReactTable from '../../app/components/ReactTable'
+import formatNumeric from '../../app/utilities/formatNumeric'
+import formatStatus from '../../app/utilities/formatStatus'
+import history from '../../app/History'
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
 
 const CreditRequestListTable = (props) => {
-  const { items, filtered, setFiltered, user } = props;
+  const { items, filtered, setFiltered, user } = props
 
   const columns = [
     {
@@ -22,7 +22,7 @@ const CreditRequestListTable = (props) => {
       Header: 'ID',
       maxWidth: 100,
       sortMethod: (a, b) => {
-        return b.id - a.id;
+        return b.id - a.id
       },
       Cell: (item) => <span>CA-{item.original.id}</span>
     },
@@ -44,11 +44,11 @@ const CreditRequestListTable = (props) => {
     {
       accessor: (item) => {
         if (['DRAFT', 'SUBMITTED'].indexOf(item.validationStatus) >= 0) {
-          const totals = item.totals.vins + item.unselected;
-          return totals > 0 ? totals : '-';
+          const totals = item.totals.vins + item.unselected
+          return totals > 0 ? totals : '-'
         }
 
-        return item.totals.vins > 0 ? item.totals.vins : '-';
+        return item.totals.vins > 0 ? item.totals.vins : '-'
       },
       className: 'text-right',
       Header: 'Total Eligible Sales',
@@ -84,49 +84,49 @@ const CreditRequestListTable = (props) => {
     },
     {
       accessor: (item) => {
-        const { validationStatus } = item;
-        const status = formatStatus(validationStatus);
+        const { validationStatus } = item
+        const status = formatStatus(validationStatus)
 
         if (status === 'checked') {
-          return 'validated';
+          return 'validated'
         }
 
         if (status === 'validated') {
-          return 'issued';
+          return 'issued'
         }
 
         if (status === 'recommend approval') {
-          return 'recommend issuance';
+          return 'recommend issuance'
         }
 
-        return status;
+        return status
       },
       className: 'text-center text-capitalize',
       filterMethod: (filter, row) => {
-        const filterValues = filter.value.split(',');
+        const filterValues = filter.value.split(',')
 
-        let returnValue = false;
+        let returnValue = false
 
         filterValues.forEach((filterValue) => {
-          const value = filterValue.toLowerCase().trim();
+          const value = filterValue.toLowerCase().trim()
 
           if (value !== '' && !returnValue) {
-            returnValue = row[filter.id].toLowerCase().includes(value);
+            returnValue = row[filter.id].toLowerCase().includes(value)
           }
-        });
+        })
 
-        return returnValue;
+        return returnValue
       },
       Header: 'Status',
       id: 'status',
       maxWidth: 250
     }
-  ];
+  ]
 
   // Default sort by items by id int value
   items.sort(function (a, b) {
-    return b.id - a.id;
-  });
+    return b.id - a.id
+  })
 
   return (
     <ReactTable
@@ -137,34 +137,34 @@ const CreditRequestListTable = (props) => {
         if (row && row.original) {
           return {
             onClick: () => {
-              const { id } = row.original;
+              const { id } = row.original
 
               history.push(
                 ROUTES_CREDIT_REQUESTS.DETAILS.replace(/:id/g, id),
                 filtered
-              );
+              )
             },
             className: 'clickable'
-          };
+          }
         }
 
-        return {};
+        return {}
       }}
       setFiltered={setFiltered}
     />
-  );
-};
+  )
+}
 
 CreditRequestListTable.defaultProps = {
   filtered: undefined,
   setFiltered: undefined
-};
+}
 
 CreditRequestListTable.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.shape()),
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setFiltered: PropTypes.func,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default CreditRequestListTable;
+export default CreditRequestListTable

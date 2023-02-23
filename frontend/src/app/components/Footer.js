@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 /* global __VERSION__ */
 
@@ -22,10 +22,10 @@ const Footer = () => (
       <a href="http://www.gov.bc.ca/contactus">Contact Us</a>
     </div>
   </div>
-);
+)
 
-Footer.defaultProps = {};
+Footer.defaultProps = {}
 
-Footer.propTypes = {};
+Footer.propTypes = {}
 
-export default Footer;
+export default Footer

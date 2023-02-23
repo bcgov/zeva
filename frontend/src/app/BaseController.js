@@ -2,36 +2,36 @@
  * Base Container component
  * All data handling & manipulation should be handled here.
  */
-import { Component } from 'react';
+import { Component } from 'react'
 
 class BaseController extends Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
 
     this.state = {
       fields: {}
-    };
+    }
 
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  handleInputChange(event) {
-    const { fields } = this.state;
-    const { value, name } = event.target;
+  handleInputChange (event) {
+    const { fields } = this.state
+    const { value, name } = event.target
 
-    fields[name] = value;
+    fields[name] = value
     this.setState({
       fields
-    });
+    })
   }
 
-  handleSubmit(event) {
-    event.preventDefault();
-    console.log(this.state);
+  handleSubmit (event) {
+    event.preventDefault()
+    console.log(this.state)
 
-    return false;
+    return false
   }
 }
 
-export default BaseController;
+export default BaseController

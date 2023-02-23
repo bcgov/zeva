@@ -1,12 +1,12 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react'
+import { Link } from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
-import CustomPropTypes from '../../app/utilities/props';
+import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations'
+import CustomPropTypes from '../../app/utilities/props'
 
 const Administration = (props) => {
-  const { user } = props;
+  const { user } = props
 
   return (
     <div id="administration" className="dashboard-fieldset">
@@ -23,7 +23,7 @@ const Administration = (props) => {
               </Link>
             </div>
           </div>
-        )}
+      )}
 
       {typeof user.hasPermission === 'function' &&
         user.hasPermission('VIEW_ORGANIZATIONS') &&
@@ -36,13 +36,13 @@ const Administration = (props) => {
               </Link>
             </div>
           </div>
-        )}
+      )}
     </div>
-  );
-};
+  )
+}
 
 Administration.propTypes = {
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default Administration;
+export default Administration

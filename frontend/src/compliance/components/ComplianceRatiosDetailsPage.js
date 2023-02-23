@@ -1,14 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import CustomPropTypes from '../../app/utilities/props';
-import Loading from '../../app/components/Loading';
-import ComplianceRatiosTable from './ComplianceRatiosTable';
+import React from 'react'
+import PropTypes from 'prop-types'
+import CustomPropTypes from '../../app/utilities/props'
+import Loading from '../../app/components/Loading'
+import ComplianceRatiosTable from './ComplianceRatiosTable'
 
 const ComplianceRatiosDetailsPage = (props) => {
-  const { user, complianceRatios, loading } = props;
+  const { user, complianceRatios, loading } = props
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   return (
@@ -25,11 +25,11 @@ const ComplianceRatiosDetailsPage = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 ComplianceRatiosDetailsPage.propTypes = {
   user: CustomPropTypes.user.isRequired,
   complianceRatios: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired
-};
-export default ComplianceRatiosDetailsPage;
+}
+export default ComplianceRatiosDetailsPage

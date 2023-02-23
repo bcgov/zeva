@@ -1,12 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Loading from '../../app/components/Loading';
+import React from 'react'
+import PropTypes from 'prop-types'
+import Loading from '../../app/components/Loading'
 
 const ActiveUsersListPage = (props) => {
-  const { activeIdirUsers, activeBceidUsers, loading } = props;
+  const { activeIdirUsers, activeBceidUsers, loading } = props
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   return (
@@ -33,13 +33,13 @@ const ActiveUsersListPage = (props) => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
 ActiveUsersListPage.propTypes = {
   activeIdirUsers: PropTypes.string.isRequired,
   activeBceidUsers: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired
-};
+}
 
-export default ActiveUsersListPage;
+export default ActiveUsersListPage

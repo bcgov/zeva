@@ -1,13 +1,13 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import FormDropdown from './FormDropdown';
-import TextInput from '../../app/components/TextInput';
+import PropTypes from 'prop-types'
+import React from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import FormDropdown from './FormDropdown'
+import TextInput from '../../app/components/TextInput'
 
 const TransferFormRow = (props) => {
-  const { years, rowId, handleRowInputChange, removeRow, rows } = props;
+  const { years, rowId, handleRowInputChange, removeRow, rows } = props
 
-  const radioName = `creditType-${rowId}`;
+  const radioName = `creditType-${rowId}`
   return (
     <div className="mb-2">
       <div className="form-group">
@@ -21,7 +21,7 @@ const TransferFormRow = (props) => {
               handleRowInputChange(
                 { target: { name: 'creditType', value: event.target.value } },
                 rowId
-              );
+              )
             }}
           />
           <label htmlFor={radioName}>A credits</label>
@@ -35,7 +35,7 @@ const TransferFormRow = (props) => {
               handleRowInputChange(
                 { target: { name: 'creditType', value: event.target.value } },
                 rowId
-              );
+              )
             }}
           />
           <label htmlFor={radioName}>B credits</label>
@@ -44,7 +44,7 @@ const TransferFormRow = (props) => {
           dropdownData={years}
           dropdownName="model year"
           handleInputChange={(event) => {
-            handleRowInputChange(event, rowId);
+            handleRowInputChange(event, rowId)
           }}
           fieldName="modelYear"
           accessor={(year) => year.name}
@@ -59,7 +59,7 @@ const TransferFormRow = (props) => {
           name="quantity"
           defaultValue={rows[rowId].quantity || 0}
           handleInputChange={(event) => {
-            handleRowInputChange(event, rowId);
+            handleRowInputChange(event, rowId)
           }}
           labelSize="mr-2 col-form-label d-inline-block align-middle"
           inputSize="d-inline-block align-middle transfer-input-width"
@@ -73,7 +73,7 @@ const TransferFormRow = (props) => {
           name="value"
           defaultValue={rows[rowId].value || 0}
           handleInputChange={(event) => {
-            handleRowInputChange(event, rowId);
+            handleRowInputChange(event, rowId)
           }}
           labelSize="mr-2 col-form-label d-inline-block align-middle"
           inputSize="d-inline-block align-middle transfer-input-width"
@@ -86,17 +86,17 @@ const TransferFormRow = (props) => {
           type="button"
           className="transfer-row-x"
           onClick={() => {
-            removeRow(rowId);
+            removeRow(rowId)
           }}
         >
           <FontAwesomeIcon icon="times" />
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-TransferFormRow.defaultProps = {};
+TransferFormRow.defaultProps = {}
 
 TransferFormRow.propTypes = {
   years: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -104,6 +104,6 @@ TransferFormRow.propTypes = {
   handleRowInputChange: PropTypes.func.isRequired,
   removeRow: PropTypes.func.isRequired,
   rows: PropTypes.arrayOf(PropTypes.shape()).isRequired
-};
+}
 
-export default TransferFormRow;
+export default TransferFormRow

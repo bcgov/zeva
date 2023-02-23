@@ -1,12 +1,12 @@
-import React from 'react';
+import React from 'react'
 
-import { render, cleanup } from '@testing-library/react';
+import { render, cleanup } from '@testing-library/react'
 
-import VehicleFormDropdown from '../VehicleFormDropdown';
+import VehicleFormDropdown from '../VehicleFormDropdown'
 
-import handleInputChange from '../../VehicleEditContainer';
+import handleInputChange from '../../VehicleEditContainer'
 
-afterEach(cleanup);
+afterEach(cleanup)
 
 describe('Vehicle Form Dropdown', () => {
   it('renders without crashing', () => {
@@ -19,6 +19,6 @@ describe('Vehicle Form Dropdown', () => {
         fieldName="modelYear"
         selectedOption="test"
       />
-    );
-  });
-});
+    )
+  })
+})

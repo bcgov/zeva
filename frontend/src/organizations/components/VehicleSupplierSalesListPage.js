@@ -1,17 +1,17 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
-import Button from '../../app/components/Button';
-import CustomPropTypes from '../../app/utilities/props';
-import Loading from '../../app/components/Loading';
-import CreditTransactions from '../../credits/components/CreditTransactions';
-import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
+import Button from '../../app/components/Button'
+import CustomPropTypes from '../../app/utilities/props'
+import Loading from '../../app/components/Loading'
+import CreditTransactions from '../../credits/components/CreditTransactions'
+import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations'
 
 const VehicleSupplierSalesListPage = (props) => {
-  const { loading, locationState, user, items, reports, balances } = props;
+  const { loading, locationState, user, items, reports, balances } = props
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   return (
@@ -42,12 +42,12 @@ const VehicleSupplierSalesListPage = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 VehicleSupplierSalesListPage.defaultProps = {
   locationState: undefined
-};
+}
 
 VehicleSupplierSalesListPage.propTypes = {
   balances: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -56,6 +56,6 @@ VehicleSupplierSalesListPage.propTypes = {
   locationState: PropTypes.arrayOf(PropTypes.shape()),
   reports: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default VehicleSupplierSalesListPage;
+export default VehicleSupplierSalesListPage

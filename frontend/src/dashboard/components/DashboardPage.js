@@ -1,15 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
-import CustomPropTypes from '../../app/utilities/props';
-import ActionsBceid from './ActionsBceid';
-import ActionsIdir from './ActionsIdir';
-import Administration from './Administration';
-import Feedback from './Feedback';
-import UserSettings from './UserSettings';
+import CustomPropTypes from '../../app/utilities/props'
+import ActionsBceid from './ActionsBceid'
+import ActionsIdir from './ActionsIdir'
+import Administration from './Administration'
+import Feedback from './Feedback'
+import UserSettings from './UserSettings'
 
 const DashboardPage = (props) => {
-  const { user, activityCount, loading } = props;
+  const { user, activityCount, loading } = props
 
   return (
     <div id="dashboard">
@@ -22,7 +22,7 @@ const DashboardPage = (props) => {
             (user.hasPermission('EDIT_ORGANIZATIONS') ||
               user.hasPermission('EDIT_ORGANIZATION_INFORMATION')) && (
               <Administration user={user} />
-            )}
+          )}
         </div>
 
         <div className="col-xl-8 col-lg-8 col-md-12">
@@ -42,17 +42,17 @@ const DashboardPage = (props) => {
                 loading={loading}
                 user={user}
               />
-            )}
+          )}
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 DashboardPage.propTypes = {
   activityCount: PropTypes.shape().isRequired,
   loading: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default DashboardPage;
+export default DashboardPage

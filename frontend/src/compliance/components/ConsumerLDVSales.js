@@ -1,10 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
-import getTotalReduction from '../../app/utilities/getTotalReduction';
-import getClassAReduction from '../../app/utilities/getClassAReduction';
-import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClassReduction';
-import formatNumeric from '../../app/utilities/formatNumeric';
+import getTotalReduction from '../../app/utilities/getTotalReduction'
+import getClassAReduction from '../../app/utilities/getClassAReduction'
+import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClassReduction'
+import formatNumeric from '../../app/utilities/formatNumeric'
 
 const ConsumerLDVSales = (props) => {
   const {
@@ -17,7 +17,7 @@ const ConsumerLDVSales = (props) => {
     supplierClass,
     totalReduction,
     updatedSales
-  } = props;
+  } = props
 
   return (
     <>
@@ -40,7 +40,7 @@ const ConsumerLDVSales = (props) => {
             className="text-right"
             type="text"
             onChange={(event) => {
-              handleChangeSale(modelYear, event.target.value);
+              handleChangeSale(modelYear, event.target.value)
             }}
             value={updatedSales}
           />
@@ -90,10 +90,10 @@ const ConsumerLDVSales = (props) => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-ConsumerLDVSales.defaultProps = {};
+ConsumerLDVSales.defaultProps = {}
 
 ConsumerLDVSales.propTypes = {
   classAReduction: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
@@ -111,6 +111,6 @@ ConsumerLDVSales.propTypes = {
     .isRequired,
   updatedSales: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
     .isRequired
-};
+}
 
-export default ConsumerLDVSales;
+export default ConsumerLDVSales

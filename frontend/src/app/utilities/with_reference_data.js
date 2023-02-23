@@ -1,43 +1,43 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import Loading from '../components/Loading';
-import ROUTES_VEHICLES from '../routes/Vehicles';
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
+import Loading from '../components/Loading'
+import ROUTES_VEHICLES from '../routes/Vehicles'
 
-function getDisplayName(WrappedComponent) {
-  return WrappedComponent.displayName || WrappedComponent.name || 'Component';
+function getDisplayName (WrappedComponent) {
+  return WrappedComponent.displayName || WrappedComponent.name || 'Component'
 }
 
-function withReferenceData(WrappedComponent) {
+function withReferenceData (WrappedComponent) {
   return () => {
     const ReferenceDataSupport = (props) => {
-      const [loading, setLoading] = useState(true);
+      const [loading, setLoading] = useState(true)
       const [referenceData, setReferenceData] = useState({
         years: []
-      });
+      })
 
       useEffect(() => {
-        setLoading(true);
+        setLoading(true)
 
         axios.get(ROUTES_VEHICLES.YEARS).then((response) => {
           setReferenceData({
             years: response.data
-          });
-          setLoading(false);
-        });
-      }, []);
+          })
+          setLoading(false)
+        })
+      }, [])
 
       if (loading) {
-        return <Loading />;
+        return <Loading />
       }
-      return <WrappedComponent referenceData={referenceData} {...props} />;
-    };
+      return <WrappedComponent referenceData={referenceData} {...props} />
+    }
 
     ReferenceDataSupport.displayName = `ReferenceDataSupport(${getDisplayName(
       WrappedComponent
-    )})`;
+    )})`
 
-    return ReferenceDataSupport;
-  };
+    return ReferenceDataSupport
+  }
 }
 
-export default withReferenceData;
+export default withReferenceData

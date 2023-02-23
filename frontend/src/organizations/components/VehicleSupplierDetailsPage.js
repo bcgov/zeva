@@ -1,12 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
-import Button from '../../app/components/Button';
-import Loading from '../../app/components/Loading';
-import CustomPropTypes from '../../app/utilities/props';
-import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
-import VehicleSupplierClass from './VehicleSupplierClass';
-import formatNumeric from '../../app/utilities/formatNumeric';
+import Button from '../../app/components/Button'
+import Loading from '../../app/components/Loading'
+import CustomPropTypes from '../../app/utilities/props'
+import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations'
+import VehicleSupplierClass from './VehicleSupplierClass'
+import formatNumeric from '../../app/utilities/formatNumeric'
 
 const VehicleSupplierDetailsPage = (props) => {
   const {
@@ -23,35 +23,34 @@ const VehicleSupplierDetailsPage = (props) => {
     handleDeleteSale,
     isEditable,
     setIsEditable
-  } = props;
-  const { organizationAddress } = details;
+  } = props
+  const { organizationAddress } = details
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   const renderAddressType = (type) => {
     if (organizationAddress) {
-      return organizationAddress.map((address) => {
-        if (address.addressType.addressType == type) {
-          return (
-            <div key={address.id}>
-              {address.representativeName && (
-                <div> {address.representativeName} </div>
-              )}
-              <div> {address.addressLine1} </div>
-              <div> {address.addressLine2} </div>
-              <div>
-                {' '}
-                {address.city} {address.state} {address.country}{' '}
-              </div>
-              <div> {address.postalCode} </div>
+      const addresses = organizationAddress.filter(address => address.addressType.addressType === type)
+      return addresses.map((address) => {
+        return (
+          <div key={address.id}>
+            {address.representativeName && (
+              <div> {address.representativeName} </div>
+            )}
+            <div> {address.addressLine1} </div>
+            <div> {address.addressLine2} </div>
+            <div>
+              {' '}
+              {address.city} {address.state} {address.country}{' '}
             </div>
-          );
-        }
-      });
+            <div> {address.postalCode} </div>
+          </div>
+        )
+      })
     }
-  };
+  }
 
   return (
     <div id="vehicle-supplier-details" className="page">
@@ -153,27 +152,29 @@ const VehicleSupplierDetailsPage = (props) => {
                       Add
                     </button>
 
-                    {!isEditable ? (
+                    {!isEditable
+                      ? (
                       <button
                         className="btn button ml-3 primary"
                         onClick={() => {
-                          setIsEditable(true);
+                          setIsEditable(true)
                         }}
                         type="button"
                       >
                         Edit
                       </button>
-                    ) : (
+                        )
+                      : (
                       <button
                         className="btn button ml-3"
                         onClick={() => {
-                          setIsEditable(false);
+                          setIsEditable(false)
                         }}
                         type="button"
                       >
                         Cancel
                       </button>
-                    )}
+                        )}
                   </div>
                 </div>
 
@@ -190,7 +191,7 @@ const VehicleSupplierDetailsPage = (props) => {
                         {isEditable && (
                           <button
                             onClick={() => {
-                              handleDeleteSale(sale);
+                              handleDeleteSale(sale)
                             }}
                             type="button"
                           >
@@ -223,14 +224,14 @@ const VehicleSupplierDetailsPage = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 VehicleSupplierDetailsPage.defaultProps = {
   inputLDVSales: '',
   locationState: undefined,
   selectedModelYear: ''
-};
+}
 
 VehicleSupplierDetailsPage.propTypes = {
   details: CustomPropTypes.organizationDetails.isRequired,
@@ -244,6 +245,6 @@ VehicleSupplierDetailsPage.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   inputLDVSales: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   selectedModelYear: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-};
+}
 
-export default VehicleSupplierDetailsPage;
+export default VehicleSupplierDetailsPage

@@ -1,18 +1,18 @@
-import axios from 'axios';
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from 'prop-types';
-import moment from 'moment-timezone';
-import Button from '../../app/components/Button';
-import Modal from '../../app/components/Modal';
-import Loading from '../../app/components/Loading';
-import DetailField from '../../app/components/DetailField';
-import history from '../../app/History';
-import ROUTES_VEHICLES from '../../app/routes/Vehicles';
-import getFileSize from '../../app/utilities/getFileSize';
-import CustomPropTypes from '../../app/utilities/props';
-import VehicleAlert from './VehicleAlert';
-import Comment from '../../app/components/Comment';
+import axios from 'axios'
+import React, { useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import PropTypes from 'prop-types'
+import moment from 'moment-timezone'
+import Button from '../../app/components/Button'
+import Modal from '../../app/components/Modal'
+import Loading from '../../app/components/Loading'
+import DetailField from '../../app/components/DetailField'
+import history from '../../app/History'
+import ROUTES_VEHICLES from '../../app/routes/Vehicles'
+import getFileSize from '../../app/utilities/getFileSize'
+import CustomPropTypes from '../../app/utilities/props'
+import VehicleAlert from './VehicleAlert'
+import Comment from '../../app/components/Comment'
 
 const VehicleDetailsPage = (props) => {
   const {
@@ -26,35 +26,35 @@ const VehicleDetailsPage = (props) => {
     user,
     locationState,
     isActiveChange
-  } = props;
-  const [requestChangeCheck, setRequestChangeCheck] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState('');
-  const eligibleWeight = details.weightKg <= 3856;
+  } = props
+  const [requestChangeCheck, setRequestChangeCheck] = useState(false)
+  const [showModal, setShowModal] = useState(false)
+  const [modalType, setModalType] = useState('')
+  const eligibleWeight = details.weightKg <= 3856
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
-  const { id } = details;
+  const { id } = details
   const handleChange = (event) => {
     setComments({
       ...comments,
       vehicleComment: { comment: event.target.value }
-    });
-  };
+    })
+  }
 
   const handleCheckboxClick = (event) => {
-    const { checked } = event.target;
+    const { checked } = event.target
     if (checked) {
-      setRequestChangeCheck(true);
+      setRequestChangeCheck(true)
       setComments({
         ...comments,
         vehicleComment: { comment: 'Please provide range test results.' }
-      });
+      })
     } else {
-      setRequestChangeCheck(false);
+      setRequestChangeCheck(false)
     }
-  };
-  let modalProps;
+  }
+  let modalProps
   switch (modalType) {
     case 'makeInactive':
       modalProps = {
@@ -63,90 +63,90 @@ const VehicleDetailsPage = (props) => {
           'Making a ZEV model inactive will remove it from various areas of the system including the Credit Application Excel template and the compliance calculator. Inactive ZEV models can be re-activated if required.',
         title: 'Make ZEV Model Inactive?',
         handleSubmit: () => {
-          setShowModal(false);
-          isActiveChange(false);
+          setShowModal(false)
+          isActiveChange(false)
         }
-      };
-      break;
+      }
+      break
     case 'makeActive':
       modalProps = {
         confirmLabel: 'Make Active',
         modalText: 'Make ZEV model active for submitting consumer sales?',
         handleSubmit: () => {
-          setShowModal(false);
-          isActiveChange(true);
+          setShowModal(false)
+          isActiveChange(true)
         }
-      };
-      break;
+      }
+      break
     case 'submit':
       modalProps = {
         confirmLabel: ' Submit',
         handleSubmit: () => {
-          requestStateChange('SUBMITTED');
+          requestStateChange('SUBMITTED')
         },
         buttonClass: 'button primary',
         modalText:
           details.attachments.length > 0
             ? 'Submit vehicle model and range test results to Government of B.C.?'
             : 'Submit ZEV model to Government of B.C.?'
-      };
-      break;
+      }
+      break
     case 'accept':
       modalProps = {
         confirmLabel: 'Validate',
         handleSubmit: () => {
-          requestStateChange('VALIDATED');
+          requestStateChange('VALIDATED')
         },
         buttonClass: 'button primary',
         modalText: 'Validate ZEV model'
-      };
-      break;
+      }
+      break
     case 'reject':
       modalProps = {
         handleSubmit: () => {
-          postComment('REJECTED');
+          postComment('REJECTED')
         },
         confirmLabel: 'Reject',
         buttonClass: 'btn-outline-danger',
         modalText: 'Reject ZEV model'
-      };
-      break;
+      }
+      break
     case 'request':
       modalProps = {
         confirmLabel: 'Request',
         buttonClass: 'button primary',
         modalText: 'Request range change/test results',
         handleSubmit: () => {
-          postComment('CHANGES_REQUESTED');
+          postComment('CHANGES_REQUESTED')
         }
-      };
-      break;
+      }
+      break
     case 'delete':
       modalProps = {
         confirmLabel: 'Delete',
         modalText: 'Delete the ZEV model?',
         handleSubmit: () => {
-          requestStateChange('DELETED');
+          requestStateChange('DELETED')
         },
         buttonClass: 'btn-outline-danger'
-      };
-      break;
+      }
+      break
     default:
       modalProps = {
         confirmLabel: '',
         buttonClass: '',
         modalText: '',
         handleSubmit: () => {}
-      };
-      break;
+      }
+      break
   }
 
-  let alertUser;
+  let alertUser
 
   if (details.validationStatus === 'SUBMITTED') {
-    alertUser = details.createUser;
+    alertUser = details.createUser
   } else {
-    alertUser = details.updateUser;
+    alertUser = details.updateUser
   }
   return (
     <div id="vehicle-validation" className="page">
@@ -171,7 +171,7 @@ const VehicleDetailsPage = (props) => {
             (details.validationStatus === 'CHANGES_REQUESTED' ||
               details.validationStatus === 'REJECTED') && (
               <Comment commentArray={[details.vehicleComment]} />
-            )}
+          )}
           <div className="form p-4">
             {user.isGovernment && (
               <DetailField
@@ -254,16 +254,16 @@ const VehicleDetailsPage = (props) => {
                             .then((response) => {
                               const objectURL = window.URL.createObjectURL(
                                 new Blob([response.data])
-                              );
-                              const link = document.createElement('a');
-                              link.href = objectURL;
+                              )
+                              const link = document.createElement('a')
+                              link.href = objectURL
                               link.setAttribute(
                                 'download',
                                 attachment.filename
-                              );
-                              document.body.appendChild(link);
-                              link.click();
-                            });
+                              )
+                              document.body.appendChild(link)
+                              link.click()
+                            })
                         }}
                         type="button"
                       >
@@ -310,8 +310,8 @@ const VehicleDetailsPage = (props) => {
                     type="button"
                     key="REQUEST"
                     onClick={() => {
-                      setModalType('request');
-                      setShowModal(true);
+                      setModalType('request')
+                      setShowModal(true)
                     }}
                   >
                     Request Range Change/Test Results
@@ -320,7 +320,7 @@ const VehicleDetailsPage = (props) => {
               </div>
             </div>
           </div>
-        )}
+      )}
 
       <div className="row">
         <div className="col-12">
@@ -337,11 +337,11 @@ const VehicleDetailsPage = (props) => {
                   <Button
                     buttonType="delete"
                     action={() => {
-                      setModalType('delete');
-                      setShowModal(true);
+                      setModalType('delete')
+                      setShowModal(true)
                     }}
                   />
-                )}
+              )}
             </span>
             <span className="right-content">
               {['DRAFT', 'CHANGES_REQUESTED'].indexOf(
@@ -352,7 +352,7 @@ const VehicleDetailsPage = (props) => {
                     <button
                       className="button primary"
                       onClick={() => {
-                        history.push(ROUTES_VEHICLES.EDIT.replace(/:id/gi, id));
+                        history.push(ROUTES_VEHICLES.EDIT.replace(/:id/gi, id))
                       }}
                       type="button"
                     >
@@ -362,12 +362,12 @@ const VehicleDetailsPage = (props) => {
                       buttonType="submit"
                       disabled={!eligibleWeight}
                       action={() => {
-                        setModalType('submit');
-                        setShowModal(true);
+                        setModalType('submit')
+                        setShowModal(true)
                       }}
                     />
                   </>
-                )}
+              )}
               {['VALIDATED'].indexOf(details.validationStatus) >= 0 &&
                 !user.isGovernment &&
                 details.isActive && (
@@ -375,11 +375,11 @@ const VehicleDetailsPage = (props) => {
                     buttonType="makeInactive"
                     optionalText="Make Inactive"
                     action={() => {
-                      setModalType('makeInactive');
-                      setShowModal(true);
+                      setModalType('makeInactive')
+                      setShowModal(true)
                     }}
                   />
-                )}
+              )}
               {['VALIDATED'].indexOf(details.validationStatus) >= 0 &&
                 !user.isGovernment &&
                 !details.isActive && (
@@ -387,11 +387,11 @@ const VehicleDetailsPage = (props) => {
                     buttonType="makeActive"
                     optionalText="Make Active"
                     action={() => {
-                      setModalType('makeActive');
-                      setShowModal(true);
+                      setModalType('makeActive')
+                      setShowModal(true)
                     }}
                   />
-                )}
+              )}
               {details.validationStatus === 'SUBMITTED' &&
                 user.isGovernment &&
                 typeof user.hasPermission === 'function' &&
@@ -404,8 +404,8 @@ const VehicleDetailsPage = (props) => {
                     type="button"
                     key="REJECTED"
                     onClick={() => {
-                      setModalType('reject');
-                      setShowModal(true);
+                      setModalType('reject')
+                      setShowModal(true)
                     }}
                   >
                     Reject
@@ -418,20 +418,20 @@ const VehicleDetailsPage = (props) => {
                     type="button"
                     key="VALIDATED"
                     onClick={() => {
-                      setModalType('accept');
-                      setShowModal(true);
+                      setModalType('accept')
+                      setShowModal(true)
                     }}
                   >
                     Validate
                   </button>
-                ]}
+              ]}
             </span>
           </div>
 
           <Modal
             confirmLabel={modalProps.confirmLabel}
             handleCancel={() => {
-              setShowModal(false);
+              setShowModal(false)
             }}
             handleSubmit={modalProps.handleSubmit}
             modalClass="w-75"
@@ -454,8 +454,8 @@ const VehicleDetailsPage = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 VehicleDetailsPage.defaultProps = {
   comments: undefined,
@@ -463,7 +463,7 @@ VehicleDetailsPage.defaultProps = {
   setComments: undefined,
   title: 'Vehicle Details',
   locationState: undefined
-};
+}
 
 VehicleDetailsPage.propTypes = {
   comments: PropTypes.shape({
@@ -517,6 +517,6 @@ VehicleDetailsPage.propTypes = {
   user: CustomPropTypes.user.isRequired,
   locationState: PropTypes.arrayOf(PropTypes.shape()),
   isActiveChange: PropTypes.func.isRequired
-};
+}
 
-export default VehicleDetailsPage;
+export default VehicleDetailsPage

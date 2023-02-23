@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import formatNumeric from '../../app/utilities/formatNumeric';
+import React from 'react'
+import PropTypes from 'prop-types'
+import formatNumeric from '../../app/utilities/formatNumeric'
 
 const ComplianceObligationTableCreditsIssued = (props) => {
   const {
@@ -12,14 +12,14 @@ const ComplianceObligationTableCreditsIssued = (props) => {
     pendingBalanceExist,
     readOnly,
     supplementalReport
-  } = props;
+  } = props
 
   const {
     creditBalanceStart,
     pendingBalance,
     provisionalBalance,
     transactions
-  } = reportDetails;
+  } = reportDetails
 
   const {
     administrativeAllocation,
@@ -30,7 +30,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
     purchaseAgreement,
     transfersIn,
     transfersOut
-  } = transactions;
+  } = transactions
 
   const getNewData = (category, modelYear, value) => {
     if (newData && newData.creditActivity) {
@@ -38,15 +38,15 @@ const ComplianceObligationTableCreditsIssued = (props) => {
         (each) =>
           each.category === category &&
           Number(each.modelYear) === Number(modelYear)
-      );
+      )
 
       if (found) {
-        return found[value];
+        return found[value]
       }
     }
 
-    return '';
-  };
+    return ''
+  }
 
   const getDefault = (category, each, classType) => {
     if (
@@ -56,67 +56,67 @@ const ComplianceObligationTableCreditsIssued = (props) => {
       if (classType === 'creditAValue') {
         return Number(each.A) > 0
           ? formatNumeric(each.A, 2)
-          : formatNumeric(each.A * -1, 2);
+          : formatNumeric(each.A * -1, 2)
       }
       if (classType === 'creditBValue') {
         return Number(each.B) > 0
           ? formatNumeric(each.B, 2)
-          : formatNumeric(each.B * -1, 2);
+          : formatNumeric(each.B * -1, 2)
       }
     }
-    return getNewData(category, each.modelYear, classType);
-  };
+    return getNewData(category, each.modelYear, classType)
+  }
 
   const getNumeric = (parmValue) => {
-    let value = parmValue;
+    let value = parmValue
 
     if (value) {
-      value += '';
-      return value.replace(',', '');
+      value += ''
+      return value.replace(',', '')
     }
 
-    return value;
-  };
+    return value
+  }
 
   const tableSection = (input, title, negativeValue) => {
-    let numberClassname = 'text-right';
+    let numberClassname = 'text-right'
 
     if (negativeValue) {
-      numberClassname += ' text-red';
+      numberClassname += ' text-red'
     }
 
-    let category = '';
+    let category = ''
 
     switch (title) {
       case 'Administrative Credit Allocation':
-        category = 'administrativeAllocation';
-        break;
+        category = 'administrativeAllocation'
+        break
       case 'Administrative Credit Reduction':
-        category = 'administrativeReduction';
-        break;
+        category = 'administrativeReduction'
+        break
       case 'Automatic Administrative Penalty':
-        category = 'automaticAdministrativePenalty';
-        break;
+        category = 'automaticAdministrativePenalty'
+        break
       case 'Issued for Consumer ZEV Sales':
-        category = 'creditsIssuedSales';
-        break;
+        category = 'creditsIssuedSales'
+        break
       case 'Issued from Initiative Agreements':
-        category = 'initiativeAgreement';
-        break;
+        category = 'initiativeAgreement'
+        break
       case 'Issued from Purchase Agreements':
-        category = 'purchaseAgreement';
-        break;
+        category = 'purchaseAgreement'
+        break
       case 'Pending Issuance for Consumer ZEV Sales':
-        category = 'pendingBalance';
-        break;
+        category = 'pendingBalance'
+        break
       case 'Transferred Away':
-        category = 'transfersOut';
-        break;
+        category = 'transfersOut'
+        break
       case 'Transferred In':
-        category = 'transfersIn';
-        break;
+        category = 'transfersIn'
+        break
       default:
-        category = title;
+        category = title
     }
 
     return (
@@ -135,12 +135,12 @@ const ComplianceObligationTableCreditsIssued = (props) => {
         {input
           .sort((a, b) => {
             if (a.modelYear > b.modelYear) {
-              return 1;
+              return 1
             }
             if (a.modelYear < b.modelYear) {
-              return -1;
+              return -1
             }
-            return 0;
+            return 0
           })
           .map((each) => (
             <tr key={each.modelYear}>
@@ -151,7 +151,8 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                 Credits
               </td>
               {title === 'Transferred Away' ||
-              title === 'Administrative Credit Reduction' ? (
+              title === 'Administrative Credit Reduction'
+                ? (
                 <>
                   <td
                     className={`${numberClassname} ${
@@ -168,7 +169,8 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                     {formatNumeric(each.B * -1, 2)}
                   </td>
                 </>
-              ) : (
+                  )
+                : (
                 <>
                   <td
                     className={`${numberClassname} ${
@@ -185,7 +187,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                     {formatNumeric(each.B, 2)}
                   </td>
                 </>
-              )}
+                  )}
               {supplementalReport && (
                 <>
                   <td>
@@ -206,14 +208,14 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                       }${getDefault(category, each, 'creditAValue')}`}
                       type="text"
                       onChange={(event) => {
-                        let { value } = event.target;
+                        let { value } = event.target
 
                         if (
                           value < 0 &&
                           (title === 'Transferred Away' ||
                             title === 'Administrative Credit Reduction')
                         ) {
-                          value *= -1;
+                          value *= -1
                         }
 
                         handleSupplementalChange({
@@ -227,9 +229,9 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                               getDefault(category, each, 'creditBValue')
                             )
                           )
-                        });
+                        })
                       }}
-                      readOnly={readOnly || each.modelYear != reportYear}
+                      readOnly={readOnly || each.modelYear !== reportYear}
                     />
                   </td>
                   <td>
@@ -250,14 +252,14 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                       }${getDefault(category, each, 'creditBValue')}`}
                       type="text"
                       onChange={(event) => {
-                        let { value } = event.target;
+                        let { value } = event.target
 
                         if (
                           value < 0 &&
                           (title === 'Transferred Away' ||
                             title === 'Administrative Credit Reduction')
                         ) {
-                          value *= -1;
+                          value *= -1
                         }
 
                         handleSupplementalChange({
@@ -271,9 +273,9 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                             )
                           ),
                           creditB: value
-                        });
+                        })
                       }}
-                      readOnly={readOnly || each.modelYear != reportYear}
+                      readOnly={readOnly || each.modelYear !== reportYear}
                     />
                   </td>
                 </>
@@ -281,10 +283,10 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             </tr>
           ))}
       </>
-    );
-  };
+    )
+  }
 
-  const automaticAdministrativePenalty = [];
+  const automaticAdministrativePenalty = []
 
   if (
     tempAutomaticAdministrativePenalty &&
@@ -296,22 +298,19 @@ const ComplianceObligationTableCreditsIssued = (props) => {
         A: Number(aggregated.A) + Number(each.A),
         B: Number(aggregated.B) + Number(each.B)
       }))
-    );
+    )
   }
-
-  const currentReportYearCreditBalanceStartA = getNewData('creditBalanceStart', reportYear, 'creditAValue');
-  const currentReportYearCreditBalanceStartB = getNewData('creditBalanceStart', reportYear, 'creditBValue');
 
   const getSupplementalValue = (modelYear, creditAorBText) => {
     const creditType = `credit${creditAorBText}Value`
     const newData = getNewData('creditBalanceStart', modelYear, creditType)
-    if (newData == '' || newData == null) {
+    if (newData === '' || newData == null) {
       return formatNumeric(creditBalanceStart[modelYear][creditAorBText], 2)
     } else {
       return formatNumeric(newData)
     }
   }
-  
+
   return (
     <>
       <table>
@@ -330,8 +329,6 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             )}
           </tr>
           {Object.keys(creditBalanceStart).map((each) => {
-            const newCreditBalanceStartA = getNewData('creditBalanceStart', each, 'creditAValue');
-            const newCreditBalanceStartB = getNewData('creditBalanceStart', each, 'creditBValue');
             return (
               <tr key={each}>
               <td className="text-blue">&bull; &nbsp; &nbsp; {each} Credits</td>
@@ -352,7 +349,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                 </>
               )}
             </tr>
-            );
+            )
           })}
           {Object.keys(creditBalanceStart).length === 0 && (
             <tr>
@@ -363,18 +360,18 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                 <>
                   <td className="text-right">
                     {formatNumeric(getNewData(
-                        'creditBalanceStart',
-                        reportYear,
-                        'creditAValue'
-                      ))
+                      'creditBalanceStart',
+                      reportYear,
+                      'creditAValue'
+                    ))
                     }
                   </td>
                   <td className="text-right">
                     {formatNumeric(getNewData(
-                        'creditBalanceStart',
-                        reportYear,
-                        'creditBValue'
-                      ))
+                      'creditBalanceStart',
+                      reportYear,
+                      'creditBValue'
+                    ))
                     }
                   </td>
                 </>
@@ -481,12 +478,12 @@ const ComplianceObligationTableCreditsIssued = (props) => {
             Object.keys(provisionalBalance)
               .sort((a, b) => {
                 if (a.modelYear < b.modelYear) {
-                  return 1;
+                  return 1
                 }
                 if (a.modelYear > b.modelYear) {
-                  return -1;
+                  return -1
                 }
-                return 0;
+                return 0
               })
               .map(
                 (each) =>
@@ -540,15 +537,15 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                             <td />
                             <td />
                           </>
-                        )}
+                      )}
                     </tr>
                   )
               )}
         </tbody>
       </table>
     </>
-  );
-};
+  )
+}
 
 ComplianceObligationTableCreditsIssued.defaultProps = {
   handleSupplementalChange: () => {},
@@ -557,7 +554,7 @@ ComplianceObligationTableCreditsIssued.defaultProps = {
   pendingBalanceExist: false,
   readOnly: false,
   supplementalReport: false
-};
+}
 
 ComplianceObligationTableCreditsIssued.propTypes = {
   handleSupplementalChange: PropTypes.func,
@@ -568,5 +565,5 @@ ComplianceObligationTableCreditsIssued.propTypes = {
   reportDetails: PropTypes.shape().isRequired,
   reportYear: PropTypes.number.isRequired,
   supplementalReport: PropTypes.bool
-};
-export default ComplianceObligationTableCreditsIssued;
+}
+export default ComplianceObligationTableCreditsIssued

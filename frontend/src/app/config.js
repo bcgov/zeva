@@ -9,15 +9,15 @@
   __VERSION__
 */
 
-require('./config/features');
+require('./config/features')
 
 const getConfig = (value, def) => {
   if (global.zeva_config) {
-    return global.zeva_config[value] || def;
+    return global.zeva_config[value] || def
   }
 
-  return def;
-};
+  return def
+}
 
 const CONFIG = {
   APIBASE: __APIBASE__, // injected by webpack
@@ -70,6 +70,6 @@ const CONFIG = {
     URL: __KEYCLOAK_URL__
   },
   VERSION: __VERSION__
-};
+}
 
-export default CONFIG;
+export default CONFIG

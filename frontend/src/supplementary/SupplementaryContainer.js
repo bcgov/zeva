@@ -1,91 +1,91 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import PropTypes from 'prop-types';
-import { useParams, useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
+import PropTypes from 'prop-types'
+import { useParams, useLocation } from 'react-router-dom'
 
-import ROUTES_SUPPLEMENTARY from '../app/routes/SupplementaryReport';
-import ROUTES_COMPLIANCE from '../app/routes/Compliance';
-import history from '../app/History';
-import CustomPropTypes from '../app/utilities/props';
-import reconcileSupplementaries from '../app/utilities/reconcileSupplementaries';
-import SupplementarySupplierDetails from './components/SupplementarySupplierDetails';
-import SupplementaryDirectorDetails from './components/SupplementaryDirectorDetails';
-import SupplementaryAnalystDetails from './components/SupplementaryAnalystDetails';
-import SupplementaryCreate from './components/SupplementaryCreate';
+import ROUTES_SUPPLEMENTARY from '../app/routes/SupplementaryReport'
+import ROUTES_COMPLIANCE from '../app/routes/Compliance'
+import history from '../app/History'
+import CustomPropTypes from '../app/utilities/props'
+import reconcileSupplementaries from '../app/utilities/reconcileSupplementaries'
+import SupplementarySupplierDetails from './components/SupplementarySupplierDetails'
+import SupplementaryDirectorDetails from './components/SupplementaryDirectorDetails'
+import SupplementaryAnalystDetails from './components/SupplementaryAnalystDetails'
+import SupplementaryCreate from './components/SupplementaryCreate'
 
-const qs = require('qs');
+const qs = require('qs')
 
 const SupplementaryContainer = (props) => {
-  const { id, supplementaryId } = useParams();
-  const [checkboxConfirmed, setCheckboxConfirmed] = useState(false);
-  const [details, setDetails] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [comment, setComment] = useState('');
-  const [salesRows, setSalesRows] = useState([]);
-  const { keycloak, user } = props;
-  const [files, setFiles] = useState([]);
-  const [deleteFiles, setDeleteFiles] = useState([]);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [newData, setNewData] = useState({ zevSales: [], creditActivity: [] });
-  const [obligationDetails, setObligationDetails] = useState([]);
-  const [ldvSales, setLdvSales] = useState();
-  const [ratios, setRatios] = useState();
-  const [newBalances, setNewBalances] = useState({});
-  const [commentArray, setCommentArray] = useState({});
-  const [idirComment, setIdirComment] = useState([]);
-  const [bceidComment, setBceidComment] = useState([]);
+  const { id, supplementaryId } = useParams()
+  const [checkboxConfirmed, setCheckboxConfirmed] = useState(false)
+  const [details, setDetails] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [comment, setComment] = useState('')
+  const [salesRows, setSalesRows] = useState([])
+  const { keycloak, user } = props
+  const [files, setFiles] = useState([])
+  const [deleteFiles, setDeleteFiles] = useState([])
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [newData, setNewData] = useState({ zevSales: [], creditActivity: [] })
+  const [obligationDetails, setObligationDetails] = useState([])
+  const [ldvSales, setLdvSales] = useState()
+  const [ratios, setRatios] = useState()
+  const [newBalances, setNewBalances] = useState({})
+  const [commentArray, setCommentArray] = useState({})
+  const [idirComment, setIdirComment] = useState([])
+  const [bceidComment, setBceidComment] = useState([])
   const [supplementaryAssessmentData, setSupplementaryAssessmentData] =
-    useState({});
+    useState({})
   const [radioDescriptions, setRadioDescriptions] = useState([
     { id: 0, description: '' }
-  ]);
-  const location = useLocation();
+  ])
+  const location = useLocation()
 
-  const query = qs.parse(location.search, { ignoreQueryPrefix: true });
+  const query = qs.parse(location.search, { ignoreQueryPrefix: true })
 
   const getNumeric = (parmValue) => {
-    let value = parmValue;
+    let value = parmValue
 
     if (value) {
-      value += '';
-      return value.replace(',', '');
+      value += ''
+      return value.replace(',', '')
     }
 
-    return value;
-  };
+    return value
+  }
 
   const analystAction =
-    user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT');
+    user.isGovernment && user.hasPermission('RECOMMEND_COMPLIANCE_REPORT')
 
   const directorAction =
-    user.isGovernment && user.hasPermission('SIGN_COMPLIANCE_REPORT');
+    user.isGovernment && user.hasPermission('SIGN_COMPLIANCE_REPORT')
 
   const calculateBalance = () => {
-    const balances = {};
+    const balances = {}
 
-    const newDataCreditActivity = [];
+    const newDataCreditActivity = []
     if (newData && newData.creditActivity) {
       for (let i = 0; i < newData.creditActivity.length; i++) {
-        const creditAtom = {...newData.creditActivity[i]};
-        const creditAValue = creditAtom.creditAValue;
-        const creditBValue = creditAtom.creditBValue;
-        const originalAValue = creditAtom.originalAValue;
-        const originalBValue = creditAtom.originalBValue;
+        const creditAtom = { ...newData.creditActivity[i] }
+        const creditAValue = creditAtom.creditAValue
+        const creditBValue = creditAtom.creditBValue
+        const originalAValue = creditAtom.originalAValue
+        const originalBValue = creditAtom.originalBValue
         if ((creditAValue === '' || isNaN(Number(creditAValue)))) {
-          if (!originalAValue && originalAValue != 0) {
-            creditAtom.creditAValue = 0;
+          if (!originalAValue && originalAValue !== 0) {
+            creditAtom.creditAValue = 0
           } else {
-            creditAtom.creditAValue = originalAValue;
+            creditAtom.creditAValue = originalAValue
           }
         }
         if ((creditBValue === '' || isNaN(Number(creditBValue)))) {
-          if (!originalBValue && originalBValue != 0) {
-            creditAtom.creditBValue = 0;
+          if (!originalBValue && originalBValue !== 0) {
+            creditAtom.creditBValue = 0
           } else {
-            creditAtom.creditBValue = originalBValue;
+            creditAtom.creditBValue = originalBValue
           }
         }
-        newDataCreditActivity.push(creditAtom);
+        newDataCreditActivity.push(creditAtom)
       }
     }
 
@@ -94,7 +94,7 @@ const SupplementaryContainer = (props) => {
         balances[each.modelYear.name] = {
           A: 0,
           B: 0
-        };
+        }
       }
 
       if (
@@ -113,22 +113,22 @@ const SupplementaryContainer = (props) => {
           (activity) =>
             activity.category === each.category &&
             Number(activity.modelYear) === Number(each.modelYear.name)
-        );
+        )
 
         if (found >= 0) {
           balances[each.modelYear.name].A += newDataCreditActivity[found].creditAValue
             ? Number(getNumeric(newDataCreditActivity[found].creditAValue))
-            : Number(getNumeric(each.creditAValue));
+            : Number(getNumeric(each.creditAValue))
           balances[each.modelYear.name].B += newDataCreditActivity[found].creditBValue
             ? Number(getNumeric(newDataCreditActivity[found].creditBValue))
-            : Number(getNumeric(each.creditBValue));
+            : Number(getNumeric(each.creditBValue))
         } else {
           balances[each.modelYear.name].A += Number(
             getNumeric(each.creditAValue)
-          );
+          )
           balances[each.modelYear.name].B += Number(
             getNumeric(each.creditBValue)
-          );
+          )
         }
       }
 
@@ -141,56 +141,56 @@ const SupplementaryContainer = (props) => {
           (activity) =>
             activity.category === each.category &&
             Number(activity.modelYear) === Number(each.modelYear.name)
-        );
+        )
 
         if (found >= 0) {
           balances[each.modelYear.name].A -= newDataCreditActivity[found].creditAValue
             ? Number(getNumeric(newDataCreditActivity[found].creditAValue))
-            : Number(getNumeric(each.creditAValue));
+            : Number(getNumeric(each.creditAValue))
           balances[each.modelYear.name].B -= newDataCreditActivity[found].creditBValue
             ? Number(getNumeric(newDataCreditActivity[found].creditBValue))
-            : Number(getNumeric(each.creditBValue));
+            : Number(getNumeric(each.creditBValue))
         } else {
           balances[each.modelYear.name].A -= Number(
             getNumeric(each.creditAValue)
-          );
+          )
           balances[each.modelYear.name].B -= Number(
             getNumeric(each.creditBValue)
-          );
+          )
         }
       }
-    });
+    })
 
-    setNewBalances(balances);
-  };
+    setNewBalances(balances)
+  }
 
   const handleAddIdirComment = () => {
-    const commentData = { fromGovtComment: idirComment, director: true };
+    const commentData = { fromGovtComment: idirComment, director: true }
     if (query.reassessment === 'Y') {
       const zevSales =
         newData &&
         newData.zevSales &&
-        newData.zevSales.filter((each) => Number(each.sales) > 0);
+        newData.zevSales.filter((each) => Number(each.sales) > 0)
 
       const data = {
         ...newData,
         zevSales,
         status: 'DRAFT'
-      };
+      }
 
       if (analystAction) {
-        data.analystAction = true;
+        data.analystAction = true
         data.penalty =
-          supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty;
+          supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty
         data.description =
-          supplementaryAssessmentData.supplementaryAssessment.decision.id;
+          supplementaryAssessmentData.supplementaryAssessment.decision.id
       }
 
       axios
         .patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data)
         .then((response) => {
-          const { id: supplementalId } = response.data;
-          commentData.supplementalId = supplementalId;
+          const { id: supplementalId } = response.data
+          commentData.supplementalId = supplementalId
 
           axios
             .post(
@@ -198,108 +198,107 @@ const SupplementaryContainer = (props) => {
               commentData
             )
             .then(() => {
-              history.push(ROUTES_COMPLIANCE.REPORTS);
+              history.push(ROUTES_COMPLIANCE.REPORTS)
               history.replace(
                 ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
                   ':id',
                   id
                 ).replace(':supplementaryId', supplementalId)
-              );
-            });
-        });
+              )
+            })
+        })
     } else {
       axios
         .post(ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id), commentData)
         .then(() => {
-          history.push(ROUTES_COMPLIANCE.REPORTS);
+          history.push(ROUTES_COMPLIANCE.REPORTS)
           if (supplementaryId) {
             history.replace(
               ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
                 ':id',
                 id
               ).replace(':supplementaryId', supplementaryId)
-            );
+            )
           } else {
             history.replace(
               ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
                 ':id',
                 id
               ).replace(':supplementaryId', '')
-            );
+            )
           }
-        });
+        })
     }
-  };
+  }
 
   const handleCommentChangeIdir = (text) => {
-    setIdirComment(text);
-  };
+    setIdirComment(text)
+  }
 
   const handleEditIdirComment = (commentId, commentText) => {
     axios
       .patch(ROUTES_SUPPLEMENTARY.COMMENT_EDIT.replace(':id', id), {
-        commentId: commentId,
+        commentId,
         comment: commentText
       })
       .then((response) => {
-        const updatedComment = response.data;
+        const updatedComment = response.data
         setCommentArray((prev) => {
           const commentIndex = prev.idirComment.findIndex(
             (comment) => {
-              return comment.id === updatedComment.id;
+              return comment.id === updatedComment.id
             }
-          );
-          const comment = prev.idirComment[commentIndex];
-          const commentCopy = { ...comment };
-          commentCopy.comment = updatedComment.comment;
-          commentCopy.updateTimestamp = updatedComment.updateTimestamp;
+          )
+          const comment = prev.idirComment[commentIndex]
+          const commentCopy = { ...comment }
+          commentCopy.comment = updatedComment.comment
+          commentCopy.updateTimestamp = updatedComment.updateTimestamp
 
-          const comments = prev.idirComment;
-          const commentsCopy = [...comments];
-          commentsCopy[commentIndex] = commentCopy;
+          const comments = prev.idirComment
+          const commentsCopy = [...comments]
+          commentsCopy[commentIndex] = commentCopy
 
-          const commentArrayCopy = { ...prev };
-          commentArrayCopy.idirComment = commentsCopy;
-          return commentArrayCopy;
-        });
-        
-      });
-  };
+          const commentArrayCopy = { ...prev }
+          commentArrayCopy.idirComment = commentsCopy
+          return commentArrayCopy
+        })
+      })
+  }
 
   const handleDeleteIdirComment = (commentId) => {
     axios
       .patch(ROUTES_SUPPLEMENTARY.COMMENT_DELETE.replace(':id', id), {
-        commentId: commentId,
+        commentId
       })
       .then(() => {
         setCommentArray((prev) => {
           const commentIndex = prev.idirComment.findIndex(
             (comment) => {
-              return comment.id === commentId;
+              return comment.id === commentId
             }
-          );
-          const comments = prev.idirComment;
-          const commentsCopy = [...comments];
-          commentsCopy.splice(commentIndex, 1);
+          )
+          const comments = prev.idirComment
+          const commentsCopy = [...comments]
+          commentsCopy.splice(commentIndex, 1)
 
-          const commentArrayCopy = { ...prev };
-          commentArrayCopy.idirComment = commentsCopy;
-          return commentArrayCopy;
-        });
-      });
-  };
+          const commentArrayCopy = { ...prev }
+          commentArrayCopy.idirComment = commentsCopy
+          return commentArrayCopy
+        })
+      })
+  }
 
   const handleCommentChangeBceid = (text) => {
-    setBceidComment(text);
-  };
+    setBceidComment(text)
+  }
 
   const handleCommentChange = (content) => {
-    setComment(content);
-  };
+    setComment(content)
+  }
 
   const handleCheckboxClick = (event) => {
-    setCheckboxConfirmed(event.target.checked);
-  };
+    setCheckboxConfirmed(event.target.checked)
+  }
 
   const addSalesRow = () => {
     salesRows.push({
@@ -307,22 +306,22 @@ const SupplementaryContainer = (props) => {
       newData: {
         modelYearReportVehicle: ''
       }
-    });
-    setSalesRows([...salesRows]);
-  };
+    })
+    setSalesRows([...salesRows])
+  }
   const handleUpload = (paramId) => {
-    const promises = [];
+    const promises = []
     files.forEach((file, index) => {
       promises.push(
         new Promise((resolve, reject) => {
-          const reader = new FileReader();
+          const reader = new FileReader()
           reader.onload = () => {
-            const blob = reader.result;
+            const blob = reader.result
 
             axios
               .get(ROUTES_SUPPLEMENTARY.MINIO_URL.replace(/:id/gi, paramId))
               .then((response) => {
-                const { url: uploadUrl, minioObjectName } = response.data;
+                const { url: uploadUrl, minioObjectName } = response.data
                 axios
                   .put(uploadUrl, blob, {
                     headers: {
@@ -335,28 +334,28 @@ const SupplementaryContainer = (props) => {
                           mimeType: file.type,
                           minioObjectName,
                           size: file.size
-                        });
+                        })
                       }
                     }
                   })
-                  .catch(() => {
-                    reject();
-                  });
-              });
-          };
+                  .catch((error) => {
+                    reject(error)
+                  })
+              })
+          }
 
-          reader.readAsArrayBuffer(file);
+          reader.readAsArrayBuffer(file)
         })
-      );
-    });
+      )
+    })
 
-    return promises;
-  };
+    return promises
+  }
 
   const handleSupplementalChange = (obj) => {
-    let creditActivity = [];
+    let creditActivity = []
     if (newData && newData.creditActivity) {
-      creditActivity = [...newData.creditActivity];
+      creditActivity = [...newData.creditActivity]
     }
 
     if (obj.modelYear && obj.title) {
@@ -364,37 +363,36 @@ const SupplementaryContainer = (props) => {
         return (
           Number(each.modelYear) === Number(obj.modelYear) &&
           each.category === obj.title
-        );
-      });
+        )
+      })
       if (index >= 0) {
-
         if (
-          ((obj.creditA || obj.creditA == "" ) && (obj.creditB || obj.creditB == ""))
+          ((obj.creditA || obj.creditA === '') && (obj.creditB || obj.creditB === ''))
         ) {
-          //contains both credit type changes
+          // contains both credit type changes
           creditActivity[index] = {
             ...newData.creditActivity[index],
             creditAValue: obj.creditA,
             creditBValue: obj.creditB,
             originalAValue: obj.originalAValue,
-            originalBValue: obj.originalBValue,
-          };
-        } else if (obj.creditA || obj.creditA == "") {
+            originalBValue: obj.originalBValue
+          }
+        } else if (obj.creditA || obj.creditA === '') {
           // contains A credit changes
           creditActivity[index] = {
             ...newData.creditActivity[index],
             creditAValue: obj.creditA,
             originalAValue: obj.originalAValue,
-            originalBValue: obj.originalBValue,
-          };
-        } else if (obj.creditB || obj.creditB == "") {
-          //contains B credit changes
+            originalBValue: obj.originalBValue
+          }
+        } else if (obj.creditB || obj.creditB === '') {
+          // contains B credit changes
           creditActivity[index] = {
             ...newData.creditActivity[index],
             creditBValue: obj.creditB,
             originalAValue: obj.originalAValue,
-            originalBValue: obj.originalBValue,
-          };
+            originalBValue: obj.originalBValue
+          }
         }
       } else {
         creditActivity.push({
@@ -404,59 +402,56 @@ const SupplementaryContainer = (props) => {
           modelYear: obj.modelYear,
           creditAValue: obj.creditA,
           creditBValue: obj.creditB
-        });
+        })
       }
     }
     setNewData({
       ...newData,
-      creditActivity: creditActivity
-    });
-  };
+      creditActivity
+    })
+  }
 
   const handleSubmit = (status, paramNewReport) => {
     if (
       (status === 'ASSESSED' && paramNewReport) ||
       (status === 'SUBMITTED' && analystAction)
     ) {
-      status = 'DRAFT';
+      status = 'DRAFT'
     }
 
-    const uploadPromises = handleUpload(id);
+    const uploadPromises = handleUpload(id)
     Promise.all(uploadPromises)
       .then((attachments) => {
-        const evidenceAttachments = {};
+        const evidenceAttachments = {}
         if (attachments.length > 0) {
-          evidenceAttachments.attachments = attachments;
+          evidenceAttachments.attachments = attachments
         }
-        let zevSales = JSON.parse(JSON.stringify(newData.zevSales));
-        for (let each of zevSales) {
-          if (each.sales == "") {
-            //if sales are null then use the number from the original
+        const zevSales = JSON.parse(JSON.stringify(newData.zevSales))
+        for (const each of zevSales) {
+          if (each.sales === '') {
+            // if sales are null then use the number from the original
             each.sales = each.oldData.sales
           }
-          if (each.range == "") {
+          if (each.range === '') {
             each.range = each.oldData.range
           }
         }
-        //create a new array, if any rows from newData.creditActivity are null, pass the original value to new array otherwise pass new value
-        const creditActivity = [];
-        for (let each of newData.creditActivity) {
-          let creditActivityAddition = {category:each.category, modelYear: each.modelYear}
-          if (each.creditAValue == "" && each.creditBValue == "") {
-            creditActivityAddition = {...creditActivityAddition, creditAValue: each.originalAValue, creditBValue: each.originalBValue}
-          }
-          else if (each.creditAValue == "") {
-            creditActivityAddition = {...creditActivityAddition, creditAValue: each.originalAValue, creditBValue: each.creditBValue}
-          }
-          else if (each.creditBValue == "") {
-            creditActivityAddition = {...creditActivityAddition, creditAValue: each.creditAValue, creditBValue: each.originalBValue}
-          }
-          else if (each.creditAValue != "" && each.creditBValue != "") {
-            creditActivityAddition = {...creditActivityAddition, creditAValue: each.creditAValue, creditBValue: each.creditBValue}
+        // create a new array, if any rows from newData.creditActivity are null, pass the original value to new array otherwise pass new value
+        const creditActivity = []
+        for (const each of newData.creditActivity) {
+          let creditActivityAddition = { category: each.category, modelYear: each.modelYear }
+          if (each.creditAValue === '' && each.creditBValue === '') {
+            creditActivityAddition = { ...creditActivityAddition, creditAValue: each.originalAValue, creditBValue: each.originalBValue }
+          } else if (each.creditAValue === '') {
+            creditActivityAddition = { ...creditActivityAddition, creditAValue: each.originalAValue, creditBValue: each.creditBValue }
+          } else if (each.creditBValue === '') {
+            creditActivityAddition = { ...creditActivityAddition, creditAValue: each.creditAValue, creditBValue: each.originalBValue }
+          } else if (each.creditAValue !== '' && each.creditBValue !== '') {
+            creditActivityAddition = { ...creditActivityAddition, creditAValue: each.creditAValue, creditBValue: each.creditBValue }
           }
           creditActivity.push(creditActivityAddition)
         }
-        setNewData({...newData, creditActivity: creditActivity})
+        setNewData({ ...newData, creditActivity })
         if (status) {
           const data = {
             ...newData,
@@ -466,91 +461,90 @@ const SupplementaryContainer = (props) => {
             evidenceAttachments,
             deleteFiles,
             fromSupplierComment: comment
-          };
+          }
           if (
             (status === 'RECOMMENDED' || status === 'DRAFT') &&
             paramNewReport
           ) {
-            data.newReport = paramNewReport;
+            data.newReport = paramNewReport
           }
           if (analystAction) {
-            data.analystAction = true;
+            data.analystAction = true
             data.penalty =
-              supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty;
+              supplementaryAssessmentData.supplementaryAssessment.assessmentPenalty
             data.description =
-              supplementaryAssessmentData.supplementaryAssessment.decision.id;
+              supplementaryAssessmentData.supplementaryAssessment.decision.id
           }
-          if (data.supplierInfo.ldvSales == "") {
-            data.supplierInfo.ldvSales = ldvSales;
-
+          if (data.supplierInfo.ldvSales === '') {
+            data.supplierInfo.ldvSales = ldvSales
           }
           axios
             .patch(ROUTES_SUPPLEMENTARY.SAVE.replace(':id', id), data)
             .then((response) => {
-              const { id: supplementalId } = response.data;
-              if (status === 'DELETED' || status == 'RETURNED') {
-                history.push(ROUTES_COMPLIANCE.REPORTS);
+              const { id: supplementalId } = response.data
+              if (status === 'DELETED' || status === 'RETURNED') {
+                history.push(ROUTES_COMPLIANCE.REPORTS)
               } else {
                 const commentData = {
                   fromGovtComment: bceidComment,
                   director: false
-                };
+                }
                 axios
                   .post(
                     ROUTES_SUPPLEMENTARY.COMMENT_SAVE.replace(':id', id),
                     commentData
                   )
                   .then(() => {
-                    history.push(ROUTES_COMPLIANCE.REPORTS);
+                    history.push(ROUTES_COMPLIANCE.REPORTS)
                     history.replace(
                       ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
                         ':id',
                         id
                       ).replace(':supplementaryId', supplementalId)
-                    );
-                  });
+                    )
+                  })
               }
-            });
+            })
         }
       })
       .catch((e) => {
-        setErrorMessage(e);
-      });
-  };
+        setErrorMessage(e)
+      })
+  }
 
   const handleInputChange = (event, forceSetNewData = false) => {
-    const { id, name, value } = event.target;
+    const { id, name, value } = event.target
     if (name === 'zevSales') {
-      const rowId = id.split('-')[1];
-      const type = id.split('-')[0];
+      const rowId = id.split('-')[1]
+      const type = id.split('-')[0]
       const index = salesRows.findIndex(
         (each, index) => Number(index) === Number(rowId)
-      );
+      )
       if (index >= 0) {
         const newSalesData = {
           ...salesRows[index].newData,
           [type]: value
-        };
+        }
         if (salesRows[index].oldData.modelYearReportVehicle) {
           newSalesData.modelYearReportVehicle =
-            salesRows[index].oldData.modelYearReportVehicle;
+            salesRows[index].oldData.modelYearReportVehicle
         } else if (salesRows[index].oldData.supplementalOriginZevSaleId) {
           newSalesData.supplementalOriginZevSaleId =
-            salesRows[index].oldData.supplementalOriginZevSaleId;
+            salesRows[index].oldData.supplementalOriginZevSaleId
         }
-        salesRows[index].newData = newSalesData;
+        salesRows[index].newData = newSalesData
       }
-      const zevSales = [];
+      const zevSales = []
       salesRows.forEach((each) => {
         if (each.newData && Object.keys(each.newData).length > 0) {
-          let dataToAdd = each.newData
+          const dataToAdd = each.newData
           if (each.oldData) {
-            dataToAdd.oldData = each.oldData 
+            dataToAdd.oldData = each.oldData
           }
-          zevSales.push(dataToAdd);
+          zevSales.push(dataToAdd)
         }
-      });
-      newData.zevSales = zevSales;
+      })
+      newData.zevSales = zevSales
       // if (forceSetNewData) {
       //   setNewData({ ...newData });
       // }
@@ -558,13 +552,13 @@ const SupplementaryContainer = (props) => {
       const dataToUpdate = {
         ...newData[name],
         [id]: value
-      };
-      setNewData({ ...newData, [name]: dataToUpdate });
+      }
+      setNewData({ ...newData, [name]: dataToUpdate })
     }
-  };
+  }
 
   const refreshDetails = () => {
-    setLoading(true);
+    setLoading(true)
 
     axios
       .all([
@@ -597,31 +591,31 @@ const SupplementaryContainer = (props) => {
             assessmentResponse
           ) => {
             if (response.data) {
-              let assessedSupplementalsData = assessedSupplementals.data;
+              let assessedSupplementalsData = assessedSupplementals.data
               if (!props.newReport) {
                 if (
                   assessedSupplementalsData &&
                   assessedSupplementalsData.length > 0
                 ) {
-                  const suppId = response.data.id;
+                  const suppId = response.data.id
                   const suppIndex = assessedSupplementalsData.findIndex(
                     (element) => {
                       const reassessmentReportId =
                         response.data.reassessment &&
                         response.data.reassessment.reassessmentReportId
                           ? response.data.reassessment.reassessmentReportId
-                          : undefined;
+                          : undefined
                       return (
                         element.id === suppId ||
                         element.id === reassessmentReportId
-                      );
+                      )
                     }
-                  );
+                  )
                   if (suppIndex > -1) {
                     assessedSupplementalsData = assessedSupplementalsData.slice(
                       0,
                       suppIndex
-                    );
+                    )
                   }
                 }
               }
@@ -633,42 +627,42 @@ const SupplementaryContainer = (props) => {
                 response.data.assessmentData,
                 assessedSupplementalsData,
                 complianceResponse.data
-              );
+              )
               if (reconciledAssessmentData) {
-                response.data.assessmentData = reconciledAssessmentData;
+                response.data.assessmentData = reconciledAssessmentData
               }
-              setDetails(response.data);
-              const newSupplier = response.data.supplierInformation;
+              setDetails(response.data)
+              const newSupplier = response.data.supplierInformation
               const newLegalName =
                 newSupplier.find((each) => each.category === 'LEGAL_NAME') ||
-                '';
+                ''
               const newServiceAddress =
                 newSupplier.find(
                   (each) => each.category === 'SERVICE_ADDRESS'
-                ) || '';
+                ) || ''
               const newRecordsAddress =
                 newSupplier.find(
                   (each) => each.category === 'RECORDS_ADDRESS'
-                ) || '';
+                ) || ''
               const newMakes =
-                newSupplier.find((each) => each.category === 'LDV_MAKES') || '';
+                newSupplier.find((each) => each.category === 'LDV_MAKES') || ''
               const newSupplierClass =
                 newSupplier.find(
                   (each) => each.category === 'SUPPLIER_CLASS'
-                ) || '';
-              const idirCommentArrayResponse = [];
-              let bceidCommentResponse = response.data.fromSupplierComments;
+                ) || ''
+              const idirCommentArrayResponse = []
+              let bceidCommentResponse = response.data.fromSupplierComments
 
               const {
                 assessment,
                 descriptions: assessmentDescriptions,
                 assessmentComment
-              } = assessmentResponse.data;
+              } = assessmentResponse.data
 
-              let assessmentPenalty;
-              let decision;
-              let deficit;
-              let inCompliance;
+              let assessmentPenalty
+              let decision
+              let deficit
+              let inCompliance
 
               if (assessment) {
                 ({
@@ -676,23 +670,23 @@ const SupplementaryContainer = (props) => {
                   decision,
                   deficit,
                   inCompliance
-                } = assessment);
+                } = assessment)
               }
-              setRadioDescriptions(assessmentDescriptions);
+              setRadioDescriptions(assessmentDescriptions)
 
               if (assessmentComment) {
                 assessmentComment.forEach((item) => {
                   if (item.toDirector === true) {
-                    idirCommentArrayResponse.push(item);
+                    idirCommentArrayResponse.push(item)
                   } else if (item) {
-                    bceidCommentResponse = item;
+                    bceidCommentResponse = item
                   }
-                });
+                })
               }
               setCommentArray({
                 bceidComment: bceidCommentResponse,
                 idirComment: idirCommentArrayResponse
-              });
+              })
 
               const supplierInfo = {
                 legalName: newLegalName.value,
@@ -701,9 +695,9 @@ const SupplementaryContainer = (props) => {
                 ldvMakes: newMakes.value,
                 supplierClass: newSupplierClass.value,
                 ldvSales: response.data.ldvSales
-              };
-              const newZevSales = response.data.zevSales;
-              const salesData = [];
+              }
+              const newZevSales = response.data.zevSales
+              const salesData = []
               // sales from assessment
               response.data.assessmentData.zevSales.forEach((item) => {
                 const oldData = {
@@ -714,17 +708,17 @@ const SupplementaryContainer = (props) => {
                   range: item.range,
                   zevClass: item.zevClass,
                   zevType: item.vehicleZevType
-                };
+                }
                 if (item.fromModelYearReport) {
-                  oldData.modelYearReportVehicle = item.id;
+                  oldData.modelYearReportVehicle = item.id
                 } else {
-                  oldData.supplementalOriginZevSaleId = item.id;
+                  oldData.supplementalOriginZevSaleId = item.id
                 }
                 salesData.push({
                   newData: {},
-                  oldData: oldData
-                });
-              });
+                  oldData
+                })
+              })
               // new /adjusted sales
               if ((query && query.new !== 'Y') || user.isGovernment) {
                 newZevSales.forEach((item) => {
@@ -733,31 +727,31 @@ const SupplementaryContainer = (props) => {
                       (record) =>
                         record.oldData.modelYearReportVehicle ===
                         item.modelYearReportVehicle
-                    );
+                    )
                     if (match >= 0) {
-                      salesData[match].newData = item;
+                      salesData[match].newData = item
                     } else {
-                      salesData.push({ newData: item, oldData: {} });
+                      salesData.push({ newData: item, oldData: {} })
                     }
                   } else if (item.supplementalOriginZevSaleId) {
                     const match = salesData.findIndex(
                       (record) =>
                         record.oldData.supplementalOriginZevSaleId ===
                         item.supplementalOriginZevSaleId
-                    );
+                    )
                     if (match >= 0) {
-                      salesData[match].newData = item;
+                      salesData[match].newData = item
                     } else {
-                      salesData.push({ newData: item, oldData: {} });
+                      salesData.push({ newData: item, oldData: {} })
                     }
                   } else {
-                    salesData.push({ newData: item, oldData: {} });
+                    salesData.push({ newData: item, oldData: {} })
                   }
-                });
+                })
               }
-              setSalesRows(salesData);
+              setSalesRows(salesData)
 
-              const creditActivity = [];
+              const creditActivity = []
 
               response.data.creditActivity.forEach((each) => {
                 creditActivity.push({
@@ -765,8 +759,8 @@ const SupplementaryContainer = (props) => {
                   creditAValue: each.creditAValue,
                   creditBValue: each.creditBValue,
                   modelYear: each.modelYear.name
-                });
-              });
+                })
+              })
 
               setSupplementaryAssessmentData({
                 supplementaryAssessment: {
@@ -775,68 +769,94 @@ const SupplementaryContainer = (props) => {
                   decision,
                   deficit
                 }
-              });
+              })
 
-              const zevSales = [];
+              const zevSales = []
               salesData.forEach((each) => {
                 if (each.newData && Object.keys(each.newData).length > 0) {
-                  zevSales.push(each.newData);
+                  zevSales.push(each.newData)
                 }
-              });
-              newData.zevSales = zevSales;
+              })
+              newData.zevSales = zevSales
 
               setNewData({
                 ...newData,
                 supplierInfo,
                 creditActivity
-              });
+              })
 
               if (reconciledComplianceObligation) {
-                setObligationDetails(reconciledComplianceObligation);
+                setObligationDetails(reconciledComplianceObligation)
               }
 
               if (reconciledLdvSales) {
-                setLdvSales(reconciledLdvSales);
+                setLdvSales(reconciledLdvSales)
               }
             }
 
             const reportYear =
               response.data.assessmentData &&
-              response.data.assessmentData.modelYear;
+              response.data.assessmentData.modelYear
             const filteredRatios = ratioResponse.data.find(
               (data) => Number(data.modelYear) === Number(reportYear)
-            );
-            setRatios(filteredRatios);
+            )
+            setRatios(filteredRatios)
 
-            setLoading(false);
+            setLoading(false)
           }
         )
-      );
-  };
+      )
+  }
 
   useEffect(() => {
-    refreshDetails();
-  }, [keycloak.authenticated, location.pathname, location.search]);
+    refreshDetails()
+  }, [keycloak.authenticated, location.pathname, location.search])
 
   useEffect(() => {
-    calculateBalance();
-  }, [newData.creditActivity, obligationDetails]);
+    calculateBalance()
+  }, [newData.creditActivity, obligationDetails])
 
   const isSupplier = !user.isGovernment
   const isAnalyst = user.isGovernment && !user.roles.some((r) => r.roleCode === 'Director')
   const isDirector = user.isGovernment && user.roles.some((r) => r.roleCode === 'Director')
   const detailsProps = {
-    addSalesRow, analystAction, checkboxConfirmed, commentArray, deleteFiles, details,
-    directorAction, errorMessage, files, handleAddIdirComment, handleCheckboxClick,
-    handleCommentChange, handleCommentChangeBceid, handleCommentChangeIdir, handleDeleteIdirComment,
-    handleEditIdirComment, handleInputChange, handleSubmit, handleSupplementalChange,
-    id, ldvSales, loading, newBalances, newData, obligationDetails,
-    query, radioDescriptions, ratios, salesRows, user,
-    setDeleteFiles, setSupplementaryAssessmentData, supplementaryAssessmentData,
+    addSalesRow,
+    analystAction,
+    checkboxConfirmed,
+    commentArray,
+    deleteFiles,
+    details,
+    directorAction,
+    errorMessage,
+    files,
+    handleAddIdirComment,
+    handleCheckboxClick,
+    handleCommentChange,
+    handleCommentChangeBceid,
+    handleCommentChangeIdir,
+    handleDeleteIdirComment,
+    handleEditIdirComment,
+    handleInputChange,
+    handleSubmit,
+    handleSupplementalChange,
+    id,
+    ldvSales,
+    loading,
+    newBalances,
+    newData,
+    obligationDetails,
+    query,
+    radioDescriptions,
+    ratios,
+    salesRows,
+    user,
+    setDeleteFiles,
+    setSupplementaryAssessmentData,
+    supplementaryAssessmentData,
     setUploadFiles: setFiles
   }
 
-  if(props.newReport) {
+  if (props.newReport) {
     return (
       <SupplementaryCreate
         {...detailsProps}
@@ -860,17 +880,17 @@ const SupplementaryContainer = (props) => {
   } else {
     return <></>
   }
-};
+}
 
 SupplementaryContainer.defaultProps = {
   reassessment: false
-};
+}
 
 SupplementaryContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   user: CustomPropTypes.user.isRequired,
   reassessment: PropTypes.bool,
   newReport: PropTypes.bool
-};
+}
 
-export default SupplementaryContainer;
+export default SupplementaryContainer

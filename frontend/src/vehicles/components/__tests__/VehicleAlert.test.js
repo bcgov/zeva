@@ -1,12 +1,12 @@
-import React from 'react';
-import { render, cleanup } from '@testing-library/react';
+import React from 'react'
+import { render, cleanup } from '@testing-library/react'
 
-import VehicleAlert from '../VehicleAlert';
+import VehicleAlert from '../VehicleAlert'
 
-afterEach(cleanup);
+afterEach(cleanup)
 
 describe('VehicleAlert', () => {
   it('renders without crashing', () => {
-    render(<VehicleAlert optionalMessage="Test" />);
-  });
-});
+    render(<VehicleAlert optionalMessage="Test" />)
+  })
+})

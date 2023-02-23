@@ -1,18 +1,17 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 
-import Loading from '../../app/components/Loading';
-import Modal from '../../app/components/Modal';
-import Button from '../../app/components/Button';
-import ZevSales from './ZevSales';
-import SupplierInformation from './SupplierInformation';
-import CreditActivity from './CreditActivity';
-import UploadEvidence from './UploadEvidence';
-import CommentInput from '../../app/components/CommentInput';
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
-import formatNumeric from '../../app/utilities/formatNumeric';
-import CustomPropTypes from '../../app/utilities/props';
-import CONFIG from '../../app/config';
+import Loading from '../../app/components/Loading'
+import Modal from '../../app/components/Modal'
+import Button from '../../app/components/Button'
+import ZevSales from './ZevSales'
+import SupplierInformation from './SupplierInformation'
+import CreditActivity from './CreditActivity'
+import UploadEvidence from './UploadEvidence'
+import CommentInput from '../../app/components/CommentInput'
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import CustomPropTypes from '../../app/utilities/props'
+import CONFIG from '../../app/config'
 
 const SupplementaryCreate = (props) => {
   const {
@@ -35,29 +34,27 @@ const SupplementaryCreate = (props) => {
     salesRows,
     setDeleteFiles,
     setUploadFiles,
-    supplementaryAssessmentData,
     user,
     query
-  } = props;
+  } = props
 
-  let { newData } = props;
-  let { reassessment } = details;
+  let { newData } = props
+  let { reassessment } = details
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
   // if user is bceid then only draft is editable
   // if user is idir then draft or submitted is editable
-  const [showModal, setShowModal] = useState(false);
-  const [showModalDraft, setShowModalDraft] = useState(false);
+  const [showModalDraft, setShowModalDraft] = useState(false)
 
-  const reportYear = details.assessmentData && details.assessmentData.modelYear;
+  const reportYear = details.assessmentData && details.assessmentData.modelYear
 
   const supplierClass =
-    details.assessmentData && details.assessmentData.supplierClass[0];
+    details.assessmentData && details.assessmentData.supplierClass[0]
 
   const creditReductionSelection =
-    details.assessmentData && details.assessmentData.creditReductionSelection;
+    details.assessmentData && details.assessmentData.creditReductionSelection
 
   const isGovernment = user.isGovernment
 
@@ -65,45 +62,30 @@ const SupplementaryCreate = (props) => {
     reassessment = {
       isReassessment: true,
       supplementaryReportId: details.id
-    };
+    }
   }
 
   if (!isGovernment) {
     reassessment = {
       isReassessment: false
-    };
+    }
 
-    details.actualStatus = 'DRAFT';
-    newData = { zevSales: [], creditActivity: [], supplierInfo: {} };
+    details.actualStatus = 'DRAFT'
+    newData = { zevSales: [], creditActivity: [], supplierInfo: {} }
   }
 
   const isReassessment = reassessment?.isReassessment
-  const formattedPenalty = details.assessment
-    ? formatNumeric(details.assessment.assessmentPenalty, 0)
-    : 0;
-
-  const assessmentDecision =
-    supplementaryAssessmentData.supplementaryAssessment.decision &&
-    supplementaryAssessmentData.supplementaryAssessment.decision.description
-      ? supplementaryAssessmentData.supplementaryAssessment.decision.description
-          .replace(
-            /{user.organization.name}/g,
-            details.assessmentData.legalName
-          )
-          .replace(/{modelYear}/g, details.assessmentData.modelYear)
-          .replace(/{penalty}/g, `$${formattedPenalty} CAD`)
-      : '';
 
   const modalDraft = (
     <Modal
       cancelLabel="No"
       confirmLabel="Yes"
       handleCancel={() => {
-        setShowModalDraft(false);
+        setShowModalDraft(false)
       }}
       handleSubmit={() => {
-        setShowModalDraft(false);
-        handleSubmit('DRAFT', true);
+        setShowModalDraft(false)
+        handleSubmit('DRAFT', true)
       }}
       modalClass="w-75"
       showModal={showModalDraft}
@@ -119,16 +101,7 @@ const SupplementaryCreate = (props) => {
         )}
       </div>
     </Modal>
-  );
-
-  let disabledRecommendBtn = false;
-  let recommendTooltip = '';
-
-  if (!assessmentDecision) {
-    disabledRecommendBtn = true;
-    recommendTooltip =
-      'Please select an Analyst Recommendation before recommending this assessment.';
-  }
+  )
 
   return (
     <div id="supplementary" className="page">
@@ -147,7 +120,7 @@ const SupplementaryCreate = (props) => {
           optionalClassname="ml-2 mr-2 button btn float-right d-print-none"
           optionalText="Print Page"
           action={() => {
-            window.print();
+            window.print()
           }}
         />
         <div>
@@ -202,7 +175,7 @@ const SupplementaryCreate = (props) => {
         />
 
       </div>
-      
+
       {/* TODO CHECK IS GOV HAS THIS PERMISSION */}
       {user.hasPermission('SUBMIT_COMPLIANCE_REPORT') && (
         <div className="mt-3">
@@ -212,7 +185,7 @@ const SupplementaryCreate = (props) => {
             id="supplier-confirm-checkbox"
             name="confirmations"
             onChange={(event) => {
-              handleCheckboxClick(event);
+              handleCheckboxClick(event)
             }}
             type="checkbox"
           />
@@ -223,7 +196,7 @@ const SupplementaryCreate = (props) => {
           </label>
         </div>
       )}
-      
+
       <div className="row d-print-none">
         <div className="col-12">
           <div className="action-bar">
@@ -235,14 +208,14 @@ const SupplementaryCreate = (props) => {
                   id
                 )}
               />
- 
+
             </span>
             <span className="right-content">
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 <Button
                   buttonType="save"
                   action={() => {
-                    handleSubmit('DRAFT', true);
+                    handleSubmit('DRAFT', true)
                   }}
                 />
               }
@@ -252,8 +225,8 @@ const SupplementaryCreate = (props) => {
       </div>
       {modalDraft}
     </div>
-  );
-};
+  )
+}
 
 SupplementaryCreate.defaultProps = {
   isReassessment: undefined,
@@ -261,7 +234,7 @@ SupplementaryCreate.defaultProps = {
   obligationDetails: [],
   query: {},
   ratios: {}
-};
+}
 
 SupplementaryCreate.propTypes = {
   addSalesRow: PropTypes.func.isRequired,
@@ -288,6 +261,6 @@ SupplementaryCreate.propTypes = {
   setUploadFiles: PropTypes.func.isRequired,
   supplementaryAssessmentData: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default SupplementaryCreate;
+export default SupplementaryCreate

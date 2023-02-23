@@ -1,9 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import CustomPropTypes from '../../app/utilities/props';
-import ComplianceCalculatorDetailsTotals from './ComplianceCalculatorDetailsTotals';
-import ComplianceCalculatorModelTable from './ComplianceCalculatorModelTable';
-import ComplianceCalculatorDetailsInputs from './ComplianceCalculatorDetailsInputs';
+import React from 'react'
+import PropTypes from 'prop-types'
+import CustomPropTypes from '../../app/utilities/props'
+import ComplianceCalculatorDetailsTotals from './ComplianceCalculatorDetailsTotals'
+import ComplianceCalculatorModelTable from './ComplianceCalculatorModelTable'
+import ComplianceCalculatorDetailsInputs from './ComplianceCalculatorDetailsInputs'
 
 const ComplianceCalculatorDetailsPage = (props) => {
   const {
@@ -17,7 +17,7 @@ const ComplianceCalculatorDetailsPage = (props) => {
     estimatedModelSales,
     setEstimatedModelSales,
     user
-  } = props;
+  } = props
 
   return (
     <div id="compliance-ldvsales-details" className="page">
@@ -61,13 +61,13 @@ const ComplianceCalculatorDetailsPage = (props) => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
 ComplianceCalculatorDetailsPage.defaultProps = {
   supplierSize: '',
   selectedYearOption: '--',
   complianceNumbers: { total: '', classA: '', remaining: '' }
-};
+}
 ComplianceCalculatorDetailsPage.propTypes = {
   allVehicleModels: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   complianceNumbers: PropTypes.shape({
@@ -86,6 +86,6 @@ ComplianceCalculatorDetailsPage.propTypes = {
   estimatedModelSales: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setEstimatedModelSales: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default ComplianceCalculatorDetailsPage;
+export default ComplianceCalculatorDetailsPage

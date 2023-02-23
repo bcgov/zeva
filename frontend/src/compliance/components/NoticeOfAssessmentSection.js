@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 const NoticeOfAssessmentSection = ({
   name,
@@ -11,13 +11,13 @@ const NoticeOfAssessmentSection = ({
   const getClassDescriptions = (_supplierClass) => {
     switch (_supplierClass) {
       case 'L':
-        return 'Large';
+        return 'Large'
       case 'M':
-        return 'Medium';
+        return 'Medium'
       default:
-        return 'Small';
+        return 'Small'
     }
-  };
+  }
   return (
     <>
       <h3>Notice of Assessment</h3>
@@ -99,7 +99,7 @@ const NoticeOfAssessmentSection = ({
         </p>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default NoticeOfAssessmentSection;
+export default NoticeOfAssessmentSection

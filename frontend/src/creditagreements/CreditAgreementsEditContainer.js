@@ -1,56 +1,56 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
-import history from '../app/History';
-import CreditAgreementsForm from './components/CreditAgreementsForm';
-import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
-import Loading from '../app/components/Loading';
-import ROUTES_VEHICLES from '../app/routes/Vehicles';
-import ROUTES_ORGANIZATIONS from '../app/routes/Organizations';
-import ROUTES_CREDIT_AGREEMENTS from '../app/routes/CreditAgreements';
+import history from '../app/History'
+import CreditAgreementsForm from './components/CreditAgreementsForm'
+import CreditTransactionTabs from '../app/components/CreditTransactionTabs'
+import Loading from '../app/components/Loading'
+import ROUTES_VEHICLES from '../app/routes/Vehicles'
+import ROUTES_ORGANIZATIONS from '../app/routes/Organizations'
+import ROUTES_CREDIT_AGREEMENTS from '../app/routes/CreditAgreements'
 
 const CreditAgreementsEditContainer = (props) => {
-  const { keycloak, user } = props;
-  const { id } = useParams();
-  const [bceidComment, setBceidComment] = useState('');
+  const { keycloak, user } = props
+  const { id } = useParams()
+  const [bceidComment, setBceidComment] = useState('')
   const [creditRows, setCreditRows] = useState([
     {
       creditClass: 'A',
       modelYear: '2021',
       quantity: 0
     }
-  ]);
-  const [years, setYears] = useState([]);
-  const [suppliers, setSuppliers] = useState([]);
-  const [transactionTypes, setTransactionTypes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [agreementDetails, setAgreementDetails] = useState({});
-  const [modelYearReports, setModelYearReports] = useState({});
-  const [files, setFiles] = useState([]);
-  const [deleteFiles, setDeleteFiles] = useState([]);
+  ])
+  const [years, setYears] = useState([])
+  const [suppliers, setSuppliers] = useState([])
+  const [transactionTypes, setTransactionTypes] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [agreementDetails, setAgreementDetails] = useState({})
+  const [modelYearReports, setModelYearReports] = useState({})
+  const [files, setFiles] = useState([])
+  const [deleteFiles, setDeleteFiles] = useState([])
 
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null)
   const analystAction =
-    user.isGovernment && user.hasPermission('RECOMMEND_INITIATIVE_AGREEMENTS');
+    user.isGovernment && user.hasPermission('RECOMMEND_INITIATIVE_AGREEMENTS')
   const handleCommentChangeBceid = (text) => {
-    setBceidComment(text);
-  };
+    setBceidComment(text)
+  }
 
   const handleUpload = (paramId) => {
-    const promises = [];
+    const promises = []
     // setShowProgressBars(true);
     files.forEach((file, index) => {
       promises.push(
         new Promise((resolve, reject) => {
-          const reader = new FileReader();
+          const reader = new FileReader()
           reader.onload = () => {
-            const blob = reader.result;
+            const blob = reader.result
 
             axios
               .get(ROUTES_CREDIT_AGREEMENTS.MINIO_URL.replace(/:id/gi, paramId))
               .then((response) => {
-                const { url: uploadUrl, minioObjectName } = response.data;
+                const { url: uploadUrl, minioObjectName } = response.data
                 axios
                   .put(uploadUrl, blob, {
                     headers: {
@@ -65,48 +65,48 @@ const CreditAgreementsEditContainer = (props) => {
                           mimeType: file.type,
                           minioObjectName,
                           size: file.size
-                        });
+                        })
                       }
                     }
                   })
-                  .catch(() => {
-                    reject();
-                  });
-              });
-          };
+                  .catch((error) => {
+                    reject(error)
+                  })
+              })
+          }
 
-          reader.readAsArrayBuffer(file);
+          reader.readAsArrayBuffer(file)
         })
-      );
-    });
+      )
+    })
 
-    return promises;
-  };
+    return promises
+  }
   const addRow = () => {
     creditRows.push({
       creditClass: 'A',
       modelYear: '2021',
       quantity: 0
-    });
+    })
 
-    setCreditRows([...creditRows]);
-  };
+    setCreditRows([...creditRows])
+  }
   const handleDeleteRow = (index) => {
-    creditRows.splice(index, 1);
-    setCreditRows([...creditRows]);
-  };
+    creditRows.splice(index, 1)
+    setCreditRows([...creditRows])
+  }
   const handleChangeRow = (value, property, index) => {
-    creditRows[index][property] = value;
-    setCreditRows([...creditRows]);
-  };
+    creditRows[index][property] = value
+    setCreditRows([...creditRows])
+  }
 
   const handleChangeDetails = (value, property, resetModelYearReportId) => {
-    const updatedAgreementDetails = { ...agreementDetails, [property]: value };
+    const updatedAgreementDetails = { ...agreementDetails, [property]: value }
     if (resetModelYearReportId) {
-      delete updatedAgreementDetails.modelYearReportId;
+      delete updatedAgreementDetails.modelYearReportId
     }
-    setAgreementDetails(updatedAgreementDetails);
-  };
+    setAgreementDetails(updatedAgreementDetails)
+  }
 
   const saveAgreement = (data) => {
     if (id) {
@@ -116,11 +116,11 @@ const CreditAgreementsEditContainer = (props) => {
           ...data,
           deleteFiles
         }
-      );
+      )
     }
 
-    return axios.post(ROUTES_CREDIT_AGREEMENTS.LIST, data);
-  };
+    return axios.post(ROUTES_CREDIT_AGREEMENTS.LIST, data)
+  }
 
   const handleSubmit = () => {
     const data = {
@@ -128,17 +128,17 @@ const CreditAgreementsEditContainer = (props) => {
       agreementDetails,
       bceidComment,
       content: creditRows
-    };
+    }
 
     saveAgreement(data)
       .then((response) => {
         // after agreement is created, then post the content using the id from the response
-        const { id: agreementId } = response.data;
-        const uploadPromises = handleUpload(agreementId);
+        const { id: agreementId } = response.data
+        const uploadPromises = handleUpload(agreementId)
         Promise.all(uploadPromises).then((attachments) => {
-          const patchData = {};
+          const patchData = {}
           if (attachments.length > 0) {
-            patchData.agreementAttachments = attachments;
+            patchData.agreementAttachments = attachments
           }
           axios
             .patch(
@@ -150,26 +150,26 @@ const CreditAgreementsEditContainer = (props) => {
             .then(() => {
               history.push(
                 ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/gi, agreementId)
-              );
-            });
-        });
+              )
+            })
+        })
       })
       .catch((e) => {
-        setErrorMessage(e);
-      });
-  };
+        setErrorMessage(e)
+      })
+  }
   const refreshDetails = () => {
     const promises = [
       axios.get(ROUTES_VEHICLES.YEARS),
       axios.get(ROUTES_ORGANIZATIONS.LIST),
       axios.get(ROUTES_CREDIT_AGREEMENTS.TRANSACTION_TYPES),
       axios.get(ROUTES_CREDIT_AGREEMENTS.MODEL_YEAR_REPORTS)
-    ];
+    ]
 
     if (id) {
       promises.push(
         axios.get(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id))
-      );
+      )
     }
 
     Promise.all(promises).then(
@@ -180,10 +180,10 @@ const CreditAgreementsEditContainer = (props) => {
         modelYearReportResponse,
         detailsResponse
       ]) => {
-        setModelYearReports(modelYearReportResponse.data);
-        setYears(yearsResponse.data);
-        setSuppliers(supplierResponse.data);
-        setTransactionTypes(typesResponse.data.map((each) => ({ name: each })));
+        setModelYearReports(modelYearReportResponse.data)
+        setYears(yearsResponse.data)
+        setSuppliers(supplierResponse.data)
+        setTransactionTypes(typesResponse.data.map((each) => ({ name: each })))
 
         if (detailsResponse && detailsResponse.status === 200) {
           const {
@@ -193,15 +193,15 @@ const CreditAgreementsEditContainer = (props) => {
             optionalAgreementId: optionalAgreementID,
             organization,
             transactionType,
-            modelYearReportId: modelYearReportId
-          } = detailsResponse.data;
+            modelYearReportId
+          } = detailsResponse.data
 
           setCreditRows([
             ...creditAgreementContent.map((each) => ({
               ...each,
               quantity: each.numberOfCredits
             }))
-          ]);
+          ])
 
           setAgreementDetails({
             attachments,
@@ -210,18 +210,18 @@ const CreditAgreementsEditContainer = (props) => {
             modelYearReportId,
             transactionType,
             vehicleSupplier: organization ? organization.id : 0
-          });
+          })
         }
 
-        setLoading(false);
+        setLoading(false)
       }
-    );
-  };
+    )
+  }
   useEffect(() => {
-    refreshDetails();
-  }, [keycloak.authenticated]);
+    refreshDetails()
+  }, [keycloak.authenticated])
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
   return [
     <CreditTransactionTabs active="credit-agreements" key="tabs" user={user} />,
@@ -248,7 +248,7 @@ const CreditAgreementsEditContainer = (props) => {
       years={years}
       modelYearReports={modelYearReports}
     />
-  ];
-};
+  ]
+}
 
-export default CreditAgreementsEditContainer;
+export default CreditAgreementsEditContainer

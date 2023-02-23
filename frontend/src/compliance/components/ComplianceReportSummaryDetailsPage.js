@@ -1,21 +1,21 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import moment from 'moment-timezone';
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import moment from 'moment-timezone'
 
-import CustomPropTypes from '../../app/utilities/props';
-import Button from '../../app/components/Button';
-import Loading from '../../app/components/Loading';
-import ComplianceReportAlert from './ComplianceReportAlert';
-import ComplianceReportSignOff from './ComplianceReportSignOff';
-import SummaryCreditActivityTable from './SummaryCreditActivityTable';
-import SummarySupplierInfo from './SummarySupplierInfo';
-import SummaryConsumerSalesTable from './SummaryConsumerSalesTable';
-import Modal from '../../app/components/Modal';
+import CustomPropTypes from '../../app/utilities/props'
+import Button from '../../app/components/Button'
+import Loading from '../../app/components/Loading'
+import ComplianceReportAlert from './ComplianceReportAlert'
+import ComplianceReportSignOff from './ComplianceReportSignOff'
+import SummaryCreditActivityTable from './SummaryCreditActivityTable'
+import SummarySupplierInfo from './SummarySupplierInfo'
+import SummaryConsumerSalesTable from './SummaryConsumerSalesTable'
+import Modal from '../../app/components/Modal'
 
 const ComplianceReportSummaryDetailsPage = (props) => {
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false)
   const {
     assertions,
     checkboxes,
@@ -31,7 +31,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     pendingBalanceExist,
     supplierDetails,
     user
-  } = props;
+  } = props
   const signedInfomation = {
     supplierInformation: {
       nameSigned: 'Buzz Collins',
@@ -39,14 +39,14 @@ const ComplianceReportSummaryDetailsPage = (props) => {
     },
     consumerSales: { nameSigned: 'Buzz Collins', dateSigned: '2020-02-20' },
     creditActivity: { nameSigned: 'Buzz Collins', dateSigned: '2020-03-01' }
-  };
+  }
 
-  let disableSubmitBtn = true;
+  let disableSubmitBtn = true
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
   const signatureInformation = (input, title) => {
-    const { status, confirmedBy } = input;
+    const { status, confirmedBy } = input
 
     return (
       <div className="mt-3">
@@ -60,11 +60,11 @@ const ComplianceReportSummaryDetailsPage = (props) => {
           <span className="text-red">{title} pending confirmation</span>
         )}
       </div>
-    );
-  };
+    )
+  }
 
   const savedInformation = (timeStamp, input, title) => {
-    const { status } = input;
+    const { status } = input
     return (
       <div className="mt-3">
         {status === 'SAVED' && (
@@ -80,38 +80,38 @@ const ComplianceReportSummaryDetailsPage = (props) => {
           </span>
         )}
       </div>
-    );
-  };
+    )
+  }
 
   const disableCheckbox = () => {
     const { supplierInformation, consumerSales, complianceObligation } =
-      confirmationStatuses;
+      confirmationStatuses
     if (
       user.hasPermission('SUBMIT_COMPLIANCE_REPORT') &&
       supplierInformation.status === 'CONFIRMED' &&
       consumerSales.status === 'CONFIRMED' &&
       complianceObligation.status === 'CONFIRMED'
     ) {
-      return false;
+      return false
     }
-    return true;
-  };
+    return true
+  }
 
   assertions.forEach((assertion) => {
     if (checkboxes.indexOf(assertion.id) >= 0) {
-      disableSubmitBtn = false;
+      disableSubmitBtn = false
     }
-  });
+  })
 
   const modal = (
     <Modal
       confirmLabel="Submit"
       handleCancel={() => {
-        setShowModal(false);
+        setShowModal(false)
       }}
       handleSubmit={() => {
-        setShowModal(false);
-        handleSubmit('SUBMITTED');
+        setShowModal(false)
+        handleSubmit('SUBMITTED')
       }}
       modalClass="w-75"
       showModal={showModal}
@@ -132,7 +132,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
         </div>
       </div>
     </Modal>
-  );
+  )
 
   return (
     <div id="compliance-supplier-information-details" className="page">
@@ -151,7 +151,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
                 status={confirmationStatuses.reportSummary}
                 type="Report Summary"
               />
-            )}
+          )}
         </div>
       </div>
       <div className="row mt-1">
@@ -163,7 +163,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
                 optionalClassname="ml-2 mr-2 mb-2 button btn"
                 optionalText="Print Page"
                 action={() => {
-                  window.print();
+                  window.print()
                 }}
               />
             </span>
@@ -231,7 +231,7 @@ const ComplianceReportSummaryDetailsPage = (props) => {
       </div>
       {['SUBMITTED', 'ASSESSED', 'REASSESSED'].indexOf(
         confirmationStatuses.reportSummary.status
-      ) == -1 && (
+      ) === -1 && (
         <>
           <div className="row">
             <div className="col-12 my-3">
@@ -267,10 +267,10 @@ const ComplianceReportSummaryDetailsPage = (props) => {
                         }
                         optionalClassname="button primary"
                         action={() => {
-                          setShowModal(true);
+                          setShowModal(true)
                         }}
                       />
-                    )}
+                  )}
                 </span>
               </div>
             </div>
@@ -279,12 +279,12 @@ const ComplianceReportSummaryDetailsPage = (props) => {
       )}
       {modal}
     </div>
-  );
-};
+  )
+}
 
 ComplianceReportSummaryDetailsPage.defaultProps = {
   pendingBalanceExist: false
-};
+}
 
 ComplianceReportSummaryDetailsPage.propTypes = {
   assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -303,6 +303,6 @@ ComplianceReportSummaryDetailsPage.propTypes = {
   supplierDetails: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
   modelYear: PropTypes.number.isRequired
-};
+}
 
-export default ComplianceReportSummaryDetailsPage;
+export default ComplianceReportSummaryDetailsPage

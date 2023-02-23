@@ -1,19 +1,19 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
-import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React from 'react'
+import PropTypes from 'prop-types'
 
-import Loading from '../../app/components/Loading';
-import history from '../../app/History';
-import CustomPropTypes from '../../app/utilities/props';
-import CreditTransfersListTable from './CreditTransfersListTable';
-import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
+import Loading from '../../app/components/Loading'
+import history from '../../app/History'
+import CustomPropTypes from '../../app/utilities/props'
+import CreditTransfersListTable from './CreditTransfersListTable'
+import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers'
 
 const CreditTransfersListPage = (props) => {
   const { creditTransfers, filtered, handleClear, loading, setFiltered, user } =
-    props;
+    props
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   return (
@@ -38,13 +38,13 @@ const CreditTransfersListPage = (props) => {
               <button
                 className="button primary ml-3"
                 onClick={() => {
-                  history.push(ROUTES_CREDIT_TRANSFERS.NEW);
+                  history.push(ROUTES_CREDIT_TRANSFERS.NEW)
                 }}
                 type="button"
               >
                 <FontAwesomeIcon icon="plus" /> New Credit Transfer
               </button>
-            )}
+          )}
         </div>
       </div>
 
@@ -59,13 +59,13 @@ const CreditTransfersListPage = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 CreditTransfersListPage.defaultProps = {
   filtered: undefined,
   setFiltered: undefined
-};
+}
 
 CreditTransfersListPage.propTypes = {
   creditTransfers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -74,6 +74,6 @@ CreditTransfersListPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   setFiltered: PropTypes.func,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default CreditTransfersListPage;
+export default CreditTransfersListPage

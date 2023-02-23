@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
-import formatNumeric from '../../app/utilities/formatNumeric';
+import formatNumeric from '../../app/utilities/formatNumeric'
 
 const ComplianceObligationAmountsTable = (props) => {
   const {
@@ -15,15 +15,15 @@ const ComplianceObligationAmountsTable = (props) => {
     supplierClass,
     totalReduction,
     unspecifiedReductions
-  } = props;
+  } = props
 
   const filteredClassAReductions = classAReductions.find(
     (reduction) => Number(reduction.modelYear) === Number(reportYear)
-  );
+  )
 
   const filteredUnspecifiedReductions = unspecifiedReductions.find(
     (reduction) => Number(reduction.modelYear) === Number(reportYear)
-  );
+  )
 
   return (
     <div>
@@ -50,7 +50,7 @@ const ComplianceObligationAmountsTable = (props) => {
                           type="number"
                           value={sales}
                         />
-                      )}
+                    )}
                     {(page === 'assessment' ||
                       (page === 'obligation' &&
                         statuses.assessment.status === 'ASSESSED')) &&
@@ -94,12 +94,12 @@ const ComplianceObligationAmountsTable = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 ComplianceObligationAmountsTable.defaultProps = {
   handleChangeSales: () => {}
-};
+}
 
 ComplianceObligationAmountsTable.propTypes = {
   classAReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -113,6 +113,6 @@ ComplianceObligationAmountsTable.propTypes = {
   supplierClass: PropTypes.string.isRequired,
   totalReduction: PropTypes.number.isRequired,
   unspecifiedReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired
-};
+}
 
-export default ComplianceObligationAmountsTable;
+export default ComplianceObligationAmountsTable

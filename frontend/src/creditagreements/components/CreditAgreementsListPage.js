@@ -1,9 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Loading from '../../app/components/Loading';
-import CustomPropTypes from '../../app/utilities/props';
-import CreditAgreementsListTable from './CreditAgreementsListTable';
-import CreditAgreementsFilter from './CreditAgreementsFilter';
+import React from 'react'
+import PropTypes from 'prop-types'
+import Loading from '../../app/components/Loading'
+import CustomPropTypes from '../../app/utilities/props'
+import CreditAgreementsListTable from './CreditAgreementsListTable'
+import CreditAgreementsFilter from './CreditAgreementsFilter'
 
 const CreditAgreementsListPage = (props) => {
   const {
@@ -13,10 +13,10 @@ const CreditAgreementsListPage = (props) => {
     loading,
     setFiltered,
     user
-  } = props;
+  } = props
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   return (
@@ -50,13 +50,13 @@ const CreditAgreementsListPage = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 CreditAgreementsListPage.defaultProps = {
   filtered: undefined,
   setFiltered: undefined
-};
+}
 
 CreditAgreementsListPage.propTypes = {
   creditAgreements: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -65,6 +65,6 @@ CreditAgreementsListPage.propTypes = {
   loading: PropTypes.bool.isRequired,
   setFiltered: PropTypes.func,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default CreditAgreementsListPage;
+export default CreditAgreementsListPage

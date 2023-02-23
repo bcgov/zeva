@@ -1,28 +1,28 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useParams } from 'react-router-dom';
-import parse from 'html-react-parser';
-import ReactQuill from 'react-quill';
-import axios from 'axios';
-import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import moment from 'moment-timezone';
-import 'react-quill/dist/quill.snow.css';
-import _ from 'lodash';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useParams } from 'react-router-dom'
+import parse from 'html-react-parser'
+import ReactQuill from 'react-quill'
+import axios from 'axios'
+import PropTypes from 'prop-types'
+import React, { useState } from 'react'
+import moment from 'moment-timezone'
+import 'react-quill/dist/quill.snow.css'
+import _ from 'lodash'
 
-import CreditRequestAlert from './CreditRequestAlert';
-import Button from '../../app/components/Button';
-import Modal from '../../app/components/Modal';
-import history from '../../app/History';
-import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
-import download from '../../app/utilities/download';
-import CustomPropTypes from '../../app/utilities/props';
-import ModelListTable from './ModelListTable';
-import CreditRequestSummaryTable from './CreditRequestSummaryTable';
-import getFileSize from '../../app/utilities/getFileSize';
-import DisplayComment from '../../app/components/DisplayComment';
-import formatNumeric from '../../app/utilities/formatNumeric';
-import DownloadAllSubmissionContentButton from './DownloadAllSubmissionContentButton';
-import EditableCommentList from '../../app/components/EditableCommentList';
+import CreditRequestAlert from './CreditRequestAlert'
+import Button from '../../app/components/Button'
+import Modal from '../../app/components/Modal'
+import history from '../../app/History'
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
+import download from '../../app/utilities/download'
+import CustomPropTypes from '../../app/utilities/props'
+import ModelListTable from './ModelListTable'
+import CreditRequestSummaryTable from './CreditRequestSummaryTable'
+import getFileSize from '../../app/utilities/getFileSize'
+import DisplayComment from '../../app/components/DisplayComment'
+import formatNumeric from '../../app/utilities/formatNumeric'
+import DownloadAllSubmissionContentButton from './DownloadAllSubmissionContentButton'
+import EditableCommentList from '../../app/components/EditableCommentList'
 
 const CreditRequestDetailsPage = (props) => {
   const {
@@ -34,81 +34,81 @@ const CreditRequestDetailsPage = (props) => {
     handleCheckboxClick,
     handleInternalCommentEdit,
     handleInternalCommentDelete
-  } = props;
+  } = props
 
-  const { id } = useParams();
-  const validatedOnly = submission.validationStatus === 'CHECKED';
-  const submittedOnly = submission.validationStatus === 'SUBMITTED';
+  const { id } = useParams()
+  const validatedOnly = submission.validationStatus === 'CHECKED'
+  const submittedOnly = submission.validationStatus === 'SUBMITTED'
   const submittedOnlyTooltip =
-    'You must verify once with ICBC data before reviewing details.';
-  const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState('');
-  const [comment, setComment] = useState('');
+    'You must verify once with ICBC data before reviewing details.'
+  const [showModal, setShowModal] = useState(false)
+  const [modalType, setModalType] = useState('')
+  const [comment, setComment] = useState('')
 
   const serviceAddress = submission.organization.organizationAddress.find(
     (address) => address.addressType.addressType === 'Service'
-  );
+  )
   const recordsAddress = submission.organization.organizationAddress.find(
     (address) => address.addressType.addressType === 'Records'
-  );
+  )
 
   const downloadErrors = (e) => {
-    const element = e.currentTarget;
-    const original = element.innerHTML;
+    const element = e.currentTarget
+    const original = element.innerHTML
 
-    element.innerText = 'Downloading...';
-    element.disabled = true;
+    element.innerText = 'Downloading...'
+    element.disabled = true
 
     return download(
       ROUTES_CREDIT_REQUESTS.DOWNLOAD_ERRORS.replace(':id', submission.id),
       {}
     ).then(() => {
-      element.innerHTML = original;
-      element.disabled = false;
-    });
-  };
+      element.innerHTML = original
+      element.disabled = false
+    })
+  }
 
-  let modalProps = {};
+  let modalProps = {}
 
   const submissionCommentsIdirOnly =
     submission &&
     submission.salesSubmissionComment &&
     submission.salesSubmissionComment
-      .filter((each) => each.toGovt == true && each.comment)
-      .map((item) => item);
+      .filter((each) => each.toGovt === true && each.comment)
+      .map((item) => item)
 
   const submissionCommentsToSupplier =
     submission &&
     submission.salesSubmissionComment &&
     submission.salesSubmissionComment
-      .filter((each) => each.toGovt == false && each.comment)
-      .map((item) => item);
+      .filter((each) => each.toGovt === false && each.comment)
+      .map((item) => item)
   const handleCommentChange = (content) => {
-    setComment(content);
-  };
+    setComment(content)
+  }
   const analystToSupplier = (
     <div>
       <label className="mt-3" htmlFor="reject-comment">
         <h4> Comment to vehicle suppliers (mandatory to Reject)</h4>
       </label>
       <textarea
-        testid="reject-comment-analyst"
+        data-testid="reject-comment-analyst"
         name="reject-comment"
         className="col-sm-11"
         rows="3"
         onChange={(event) => {
-          const commentValue = `<p>${event.target.value}</p>`;
-          setComment(commentValue);
+          const commentValue = `<p>${event.target.value}</p>`
+          setComment(commentValue)
         }}
       />
     </div>
-  );
+  )
 
   const handleAddComment = () => {
-    const submissionContent = {};
+    const submissionContent = {}
     if (comment.length > 0) {
-      submissionContent.salesSubmissionComment = { comment: comment };
-      submissionContent.commentType = { govt: true };
+      submissionContent.salesSubmissionComment = { comment }
+      submissionContent.commentType = { govt: true }
     }
     axios
       .patch(
@@ -116,78 +116,78 @@ const CreditRequestDetailsPage = (props) => {
         submissionContent
       )
       .then(() => {
-        history.push(ROUTES_CREDIT_REQUESTS.EDIT.replace(':id', id));
-        const refreshed = true;
+        history.push(ROUTES_CREDIT_REQUESTS.EDIT.replace(':id', id))
+        const refreshed = true
         if (refreshed) {
-          history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id));
+          history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id))
         }
-      });
-  };
+      })
+  }
 
   const verifyWithICBCData = () => {
-    let url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id);
-    url += '?reset=Y';
-    history.push(url);
-  };
+    let url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(/:id/g, submission.id)
+    url += '?reset=Y'
+    history.push(url)
+  }
 
   switch (modalType) {
     case 'submit':
       modalProps = {
         confirmLabel: ' Submit',
         handleSubmit: () => {
-          handleSubmit('SUBMITTED');
+          handleSubmit('SUBMITTED')
         },
         buttonClass: 'button primary',
         modalText: 'Submit credit request to Government of B.C.?',
         icon: <FontAwesomeIcon icon="paper-plane" />
-      };
-      break;
+      }
+      break
     case 'delete':
       modalProps = {
         confirmLabel: ' Delete',
         handleSubmit: () => {
-          handleSubmit('DELETED');
+          handleSubmit('DELETED')
         },
         buttonClass: 'btn-outline-danger',
         modalText: 'Delete submission? WARNING: this action cannot be undone',
         icon: <FontAwesomeIcon icon="trash" />
-      };
-      break;
+      }
+      break
     case 'approve':
       modalProps = {
         confirmLabel: 'Recommend Issuance',
         handleSubmit: () => {
-          handleSubmit('RECOMMEND_APPROVAL');
+          handleSubmit('RECOMMEND_APPROVAL')
         },
         buttonClass: 'button primary',
         modalText: 'Recommend issuance of credits?'
-      };
-      break;
+      }
+      break
     case 'return':
       modalProps = {
         confirmLabel: 'Return to Analyst',
         handleSubmit: () => {
-          handleSubmit('CHECKED');
+          handleSubmit('CHECKED')
         },
         buttonClass: 'btn-outline-danger',
         modalText: 'Return submission to analyst?'
-      };
-      break;
+      }
+      break
     case 'analyst-reject':
       modalProps = {
         confirmLabel: 'Reject Application',
         handleSubmit: () => {
-          handleSubmit('REJECTED', comment);
+          handleSubmit('REJECTED', comment)
         },
         buttonClass: 'btn-outline-danger',
         modalText: 'Reject the application?'
-      };
-      break;
+      }
+      break
     case 'verify':
       modalProps = {
         confirmLabel: 'Verify with ICBC Data',
         handleSubmit: () => {
-          verifyWithICBCData();
+          verifyWithICBCData()
         },
         buttonClass: 'button primary',
         modalText: (
@@ -199,24 +199,24 @@ const CreditRequestDetailsPage = (props) => {
             </p>
           </div>
         )
-      };
-      break;
+      }
+      break
     default:
       modalProps = {
         confirmLabel: 'Issue Credits',
         buttonClass: 'button primary',
         modalText: 'Issue credits to vehicle supplier?',
         handleSubmit: () => {
-          handleSubmit('VALIDATED', '');
+          handleSubmit('VALIDATED', '')
         }
-      };
+      }
   }
 
   const modal = (
     <Modal
       confirmLabel={modalProps.confirmLabel}
       handleCancel={() => {
-        setShowModal(false);
+        setShowModal(false)
       }}
       handleSubmit={modalProps.handleSubmit}
       modalClass="w-75"
@@ -236,18 +236,18 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
     </Modal>
-  );
+  )
   const directorAction =
     user.isGovernment &&
     ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(
       submission.validationStatus
     ) >= 0 &&
-    user.hasPermission('SIGN_SALES');
+    user.hasPermission('SIGN_SALES')
 
   const analystAction =
     user.isGovernment &&
     ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0 &&
-    user.hasPermission('RECOMMEND_SALES');
+    user.hasPermission('RECOMMEND_SALES')
 
   const idirCommentSection = (
     <div className="text-editor mb-2 mt-2">
@@ -275,24 +275,24 @@ const CreditRequestDetailsPage = (props) => {
       <button
         className="button mt-2"
         onClick={() => {
-          handleAddComment();
+          handleAddComment()
         }}
         type="button"
       >
         Add Comment
       </button>
     </div>
-  );
+  )
 
-  let totalEligibleCredits = 0;
+  let totalEligibleCredits = 0
 
   submission.content.forEach((item) => {
-    const { vehicle } = item;
+    const { vehicle } = item
 
     if (submission.eligible) {
       const eligibleSales = submission.eligible.find(
         (eligible) => eligible.vehicleId === vehicle.id
-      );
+      )
 
       if (
         eligibleSales &&
@@ -302,14 +302,14 @@ const CreditRequestDetailsPage = (props) => {
       ) {
         totalEligibleCredits += parseFloat(
           eligibleSales.vinCount * _.round(vehicle.creditValue, 2)
-        );
+        )
       }
     }
-  });
+  })
 
   const invalidSubmission = submission.content.some(
     (row) => !row.vehicle || !row.vehicle.id || row.vehicle.modelName === ''
-  );
+  )
 
   return (
     <div id="credit-request-details" className="page">
@@ -361,7 +361,7 @@ const CreditRequestDetailsPage = (props) => {
                           handleCommentDelete={handleInternalCommentDelete}
                         />
                       </>
-                    )}
+                  )}
                   {submissionCommentsToSupplier &&
                     submissionCommentsToSupplier.length > 0 && (
                       <>
@@ -370,7 +370,7 @@ const CreditRequestDetailsPage = (props) => {
                           commentArray={submissionCommentsToSupplier}
                         />
                       </>
-                    )}
+                  )}
                   {((analystAction && validatedOnly) || directorAction) &&
                     idirCommentSection}
                 </div>
@@ -447,16 +447,16 @@ const CreditRequestDetailsPage = (props) => {
                                     const objectURL =
                                       window.URL.createObjectURL(
                                         new Blob([response.data])
-                                      );
-                                    const link = document.createElement('a');
-                                    link.href = objectURL;
+                                      )
+                                    const link = document.createElement('a')
+                                    link.href = objectURL
                                     link.setAttribute(
                                       'download',
                                       file.filename
-                                    );
-                                    document.body.appendChild(link);
-                                    link.click();
-                                  });
+                                    )
+                                    document.body.appendChild(link)
+                                    link.click()
+                                  })
                               }}
                               type="button"
                             >
@@ -504,7 +504,7 @@ const CreditRequestDetailsPage = (props) => {
               eligible ZEV sales.
             </div>
           </div>
-        )}
+      )}
       {analystAction && analystToSupplier}
 
       <div className="row">
@@ -527,8 +527,8 @@ const CreditRequestDetailsPage = (props) => {
                   buttonType="reject"
                   optionalText="Reject Application"
                   action={() => {
-                    setModalType('analyst-reject');
-                    setShowModal(true);
+                    setModalType('analyst-reject')
+                    setShowModal(true)
                   }}
                 />
               )}
@@ -539,17 +539,17 @@ const CreditRequestDetailsPage = (props) => {
                   <Button
                     buttonType="delete"
                     action={() => {
-                      setModalType('delete');
-                      setShowModal(true);
+                      setModalType('delete')
+                      setShowModal(true)
                     }}
                   />
-                )}
+              )}
               {directorAction && (
                 <button
                   className="button text-danger"
                   onClick={() => {
-                    setModalType('return');
-                    setShowModal(true);
+                    setModalType('return')
+                    setShowModal(true)
                   }}
                   type="button"
                 >
@@ -564,10 +564,10 @@ const CreditRequestDetailsPage = (props) => {
                     className="button"
                     onClick={() => {
                       if (submittedOnly) {
-                        verifyWithICBCData();
+                        verifyWithICBCData()
                       } else {
-                        setModalType('verify');
-                        setShowModal(true);
+                        setModalType('verify')
+                        setShowModal(true)
                       }
                     }}
                     type="button"
@@ -586,8 +586,8 @@ const CreditRequestDetailsPage = (props) => {
                       const url = ROUTES_CREDIT_REQUESTS.VALIDATE.replace(
                         /:id/g,
                         submission.id
-                      );
-                      history.push(url);
+                      )
+                      history.push(url)
                     }}
                   />
                   {validatedOnly && (
@@ -595,8 +595,8 @@ const CreditRequestDetailsPage = (props) => {
                       className={validatedOnly ? 'button primary' : 'button'}
                       key="recommend-approval"
                       onClick={() => {
-                        setModalType('approve');
-                        setShowModal(true);
+                        setModalType('approve')
+                        setShowModal(true)
                       }}
                       type="button"
                     >
@@ -610,8 +610,8 @@ const CreditRequestDetailsPage = (props) => {
                   className="button primary"
                   disabled={comment.length > 0}
                   onClick={() => {
-                    setModalType('issue');
-                    setShowModal(true);
+                    setModalType('issue')
+                    setShowModal(true)
                   }}
                   type="button"
                 >
@@ -621,7 +621,7 @@ const CreditRequestDetailsPage = (props) => {
               {user.isGovernment &&
                 submission.validationStatus === 'VALIDATED' && (
                   <DownloadAllSubmissionContentButton submission={submission} />
-                )}
+              )}
               {!user.isGovernment && (
                 <>
                   {submission.validationStatus === 'VALIDATED' && (
@@ -630,7 +630,7 @@ const CreditRequestDetailsPage = (props) => {
                       optionalText="Download Errors"
                       optionalClassname="button primary"
                       action={(e) => {
-                        downloadErrors(e);
+                        downloadErrors(e)
                       }}
                       disabled={submission.unselected === 0}
                     />
@@ -645,27 +645,27 @@ const CreditRequestDetailsPage = (props) => {
                           const url = ROUTES_CREDIT_REQUESTS.EDIT.replace(
                             /:id/g,
                             submission.id
-                          );
-                          history.push(url);
+                          )
+                          history.push(url)
                         }}
                         type="button"
                       >
                         <FontAwesomeIcon icon="upload" /> Re-upload files
                       </button>
-                    )}
+                  )}
                   {submission.validationStatus === 'DRAFT' &&
                     typeof user.hasPermission === 'function' &&
                     user.hasPermission('SUBMIT_SALES') && (
                       <Button
                         buttonType="submit"
                         action={() => {
-                          setModalType('submit');
-                          setShowModal(true);
+                          setModalType('submit')
+                          setShowModal(true)
                         }}
                         disabled={invalidSubmission}
                         key="submit"
                       />
-                    )}
+                  )}
                 </>
               )}
             </span>
@@ -673,12 +673,12 @@ const CreditRequestDetailsPage = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 CreditRequestDetailsPage.defaultProps = {
   locationState: undefined
-};
+}
 
 CreditRequestDetailsPage.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
@@ -694,6 +694,6 @@ CreditRequestDetailsPage.propTypes = {
   user: CustomPropTypes.user.isRequired,
   handleCheckboxClick: PropTypes.func.isRequired,
   issueAsMY: PropTypes.bool.isRequired
-};
+}
 
-export default CreditRequestDetailsPage;
+export default CreditRequestDetailsPage

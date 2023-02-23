@@ -1,13 +1,13 @@
-import axios from 'axios';
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import axios from 'axios'
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 
-import Button from '../../app/components/Button';
-import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
-import CustomPropTypes from '../../app/utilities/props';
-import VINListTable from './VINListTable';
+import Button from '../../app/components/Button'
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
+import CustomPropTypes from '../../app/utilities/props'
+import VINListTable from './VINListTable'
 
-let refreshTimeout;
+let refreshTimeout
 
 const CreditRequestVINListPage = (props) => {
   const {
@@ -26,51 +26,51 @@ const CreditRequestVINListPage = (props) => {
     user,
     invalidatedList,
     errors
-  } = props;
+  } = props
 
-  const [filtered, setFiltered] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [pages, setPages] = useState(initialPageCount);
-  const [reactTable, setReactTable] = useState(null);
-  const [selectedOption, setSelectedOption] = useState('');
+  const [filtered, setFiltered] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [pages, setPages] = useState(initialPageCount)
+  const [reactTable, setReactTable] = useState(null)
+  const [selectedOption, setSelectedOption] = useState('')
 
   const filterWarnings = (event) => {
-    const { value } = event.target;
+    const { value } = event.target
 
-    const index = filtered.findIndex((item) => item.id === 'warning');
+    const index = filtered.findIndex((item) => item.id === 'warning')
     const filter = {
       id: 'warning',
       value
-    };
-
-    if (index >= 0) {
-      filtered[index] = filter;
-    } else {
-      filtered.push(filter);
     }
 
-    setSelectedOption(value);
-    setFiltered([...filtered, { id: 'warning', value }]);
-    reactTable.filterColumn(reactTable.state.columns[3].columns[0], value);
-  };
+    if (index >= 0) {
+      filtered[index] = filter
+    } else {
+      filtered.push(filter)
+    }
+
+    setSelectedOption(value)
+    setFiltered([...filtered, { id: 'warning', value }])
+    reactTable.filterColumn(reactTable.state.columns[3].columns[0], value)
+  }
 
   const refreshContent = async (state, filters = []) => {
-    clearTimeout(refreshTimeout);
+    clearTimeout(refreshTimeout)
     refreshTimeout = await setTimeout(async () => {
-      const sorted = [];
+      const sorted = []
 
       state.sorted.forEach((each) => {
-        let value = each.id;
+        let value = each.id
 
         if (each.desc) {
-          value = `-${value}`;
+          value = `-${value}`
         }
-        sorted.push(value);
-      });
+        sorted.push(value)
+      })
 
-      setLoading(true);
+      setLoading(true)
 
-      const reset = query && query.reset;
+      const reset = query && query.reset
 
       await axios
         .get(ROUTES_CREDIT_REQUESTS.CONTENT.replace(':id', submission.id), {
@@ -79,16 +79,16 @@ const CreditRequestVINListPage = (props) => {
             page: state.page + 1, // page from front-end is zero index, but in the back-end we need the actual page number
             page_size: state.pageSize,
             sorted: sorted.join(','),
-            reset: reset
+            reset
           }
         })
         .then((response) => {
-          const { content: refreshedContent, pages: numPages } = response.data;
+          const { content: refreshedContent, pages: numPages } = response.data
 
           refreshedContent.forEach((row, idx) => {
             const reasonIndex = reasonList.findIndex(
               (x) => Number(x.id) === Number(row.id)
-            );
+            )
 
             // The reasonList stores any changes to reasons
             // a user has made. If the user filters or sorts, the content
@@ -97,33 +97,33 @@ const CreditRequestVINListPage = (props) => {
             // To account for this we set the refreshedContent reason value
             // to the value in the reasonList so we don't lose the user changes.
             if (reasonIndex >= 0) {
-              refreshedContent[idx].reason = reasonList[reasonIndex].reason;
+              refreshedContent[idx].reason = reasonList[reasonIndex].reason
             } else if (reasonIndex < 0) {
               // If the reason with id doesn't exist in the reasonList
               // then we add it here matching the content reason value
               reasonList.push({
                 id: Number(row.id),
                 reason: row.reason
-              });
+              })
             }
-          });
+          })
 
-          setPages(numPages);
-          setContent(refreshedContent);
-          setReasonList(reasonList);
-          setLoading(false);
-        });
-    }, 750);
-  };
+          setPages(numPages)
+          setContent(refreshedContent)
+          setReasonList(reasonList)
+          setLoading(false)
+        })
+    }, 750)
+  }
 
   const clearFilters = () => {
-    setSelectedOption('');
-    setFiltered([]);
+    setSelectedOption('')
+    setFiltered([])
 
-    const state = reactTable.getResolvedState();
+    const state = reactTable.getResolvedState()
 
-    refreshContent(state);
-  };
+    refreshContent(state)
+  }
 
   const actionBar = (
     <div className="action-bar">
@@ -134,13 +134,13 @@ const CreditRequestVINListPage = (props) => {
         <Button
           buttonType="save"
           action={() => {
-            handleSubmit();
+            handleSubmit()
           }}
           optionalClassname="button primary"
         />
       </span>
     </div>
-  );
+  )
 
   return (
     <div id="sales-details" className="page">
@@ -164,15 +164,15 @@ const CreditRequestVINListPage = (props) => {
               value={selectedOption}
             >
               <option value="">Filter by Error Type</option>
-              <option value="1">1 - Show all warnings ({errors.TOTAL?errors.TOTAL:0})</option>
-              <option value="11">11 - VIN not registered in B.C. ({errors.NO_ICBC_MATCH?errors.NO_ICBC_MATCH:0})</option>
-              <option value="21">21 - VIN already issued credits ({errors.VIN_ALREADY_AWARDED?errors.VIN_ALREADY_AWARDED:0})</option>
-              <option value="31">31 - Duplicate VIN ({errors.DUPLICATE_VIN?errors.DUPLICATE_VIN:0})</option>
+              <option value="1">1 - Show all warnings ({errors.TOTAL ? errors.TOTAL : 0})</option>
+              <option value="11">11 - VIN not registered in B.C. ({errors.NO_ICBC_MATCH ? errors.NO_ICBC_MATCH : 0})</option>
+              <option value="21">21 - VIN already issued credits ({errors.VIN_ALREADY_AWARDED ? errors.VIN_ALREADY_AWARDED : 0})</option>
+              <option value="31">31 - Duplicate VIN ({errors.DUPLICATE_VIN ? errors.DUPLICATE_VIN : 0})</option>
               <option value="41">
-                41 - Model year and/or make does not match ({errors.ERROR_41?errors.ERROR_41:0})
+                41 - Model year and/or make does not match ({errors.ERROR_41 ? errors.ERROR_41 : 0})
               </option>
-              <option value="51">51 - Sale prior to Jan 2018 ({errors.EXPIRED_REGISTRATION_DATE?errors.EXPIRED_REGISTRATION_DATE:0})</option>
-              <option value="61">61 - Invalid date format ({errors.INVALID_DATE?errors.INVALID_DATE:0})</option>
+              <option value="51">51 - Sale prior to Jan 2018 ({errors.EXPIRED_REGISTRATION_DATE ? errors.EXPIRED_REGISTRATION_DATE : 0})</option>
+              <option value="61">61 - Invalid date format ({errors.INVALID_DATE ? errors.INVALID_DATE : 0})</option>
             </select>
           </span>
 
@@ -180,7 +180,7 @@ const CreditRequestVINListPage = (props) => {
             className="button d-inline-block align-middle"
             disabled={filtered.length === 0}
             onClick={() => {
-              clearFilters();
+              clearFilters()
             }}
             type="button"
           >
@@ -218,12 +218,12 @@ const CreditRequestVINListPage = (props) => {
         <div className="col-sm-12">{actionBar}</div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 CreditRequestVINListPage.defaultProps = {
   query: null
-};
+}
 
 CreditRequestVINListPage.propTypes = {
   content: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -243,6 +243,6 @@ CreditRequestVINListPage.propTypes = {
   setReasonList: PropTypes.func.isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default CreditRequestVINListPage;
+export default CreditRequestVINListPage

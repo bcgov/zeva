@@ -1,5 +1,5 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
 const Modal = (props) => {
   const {
@@ -13,7 +13,7 @@ const Modal = (props) => {
     showModal,
     title,
     icon
-  } = props;
+  } = props
 
   return [
     <div
@@ -64,8 +64,8 @@ const Modal = (props) => {
       className={`modal-backdrop ${showModal ? 'd-block' : 'd-none'}`}
       key="modal-backdrop"
     />
-  ];
-};
+  ]
+}
 
 Modal.defaultProps = {
   children: undefined,
@@ -75,7 +75,7 @@ Modal.defaultProps = {
   confirmLabel: 'Confirm',
   modalClass: '',
   title: 'Confirm'
-};
+}
 
 Modal.propTypes = {
   cancelLabel: PropTypes.string,
@@ -91,6 +91,6 @@ Modal.propTypes = {
   showModal: PropTypes.bool.isRequired,
   title: PropTypes.string,
   icon: PropTypes.node
-};
+}
 
-export default Modal;
+export default Modal

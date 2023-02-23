@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import ReactQuill from 'react-quill';
-import ReactTooltip from 'react-tooltip';
+import React from 'react'
+import PropTypes from 'prop-types'
+import ReactQuill from 'react-quill'
+import ReactTooltip from 'react-tooltip'
 
 const CommentInput = (props) => {
   const {
@@ -15,7 +15,7 @@ const CommentInput = (props) => {
     tooltip,
     testid,
     buttontestid
-  } = props;
+  } = props
   return (
     <div className="text-editor no-print">
       <label htmlFor="comment" className="text-blue">
@@ -46,7 +46,7 @@ const CommentInput = (props) => {
               data-testid={buttontestid}
               className="button mt-2"
               onClick={() => {
-                handleAddComment();
+                handleAddComment()
               }}
               type="button"
               disabled={buttonDisable}
@@ -57,8 +57,8 @@ const CommentInput = (props) => {
         </>
       )}
     </div>
-  );
-};
+  )
+}
 
 CommentInput.defaultProps = {
   buttonText: null,
@@ -66,7 +66,7 @@ CommentInput.defaultProps = {
   disable: false,
   handleAddComment: () => {},
   tooltip: ''
-};
+}
 CommentInput.propTypes = {
   handleAddComment: PropTypes.func,
   handleCommentChange: PropTypes.func.isRequired,
@@ -77,5 +77,5 @@ CommentInput.propTypes = {
   tooltip: PropTypes.string,
   buttontestid: PropTypes.string,
   testid: PropTypes.string
-};
-export default CommentInput;
+}
+export default CommentInput

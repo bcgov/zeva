@@ -1,11 +1,11 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { NavLink } from 'react-router-dom';
+import React from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { NavLink } from 'react-router-dom'
 
-import CustomPropTypes from '../../app/utilities/props';
+import CustomPropTypes from '../../app/utilities/props'
 
 const UserSettings = (props) => {
-  const { details } = props;
+  const { details } = props
   return (
     <div id="user-settings" className="dashboard-fieldset">
       <h1>Welcome</h1>
@@ -78,13 +78,13 @@ const UserSettings = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-UserSettings.defaultProps = {};
+UserSettings.defaultProps = {}
 
 UserSettings.propTypes = {
   details: CustomPropTypes.user.isRequired
-};
+}
 
-export default UserSettings;
+export default UserSettings

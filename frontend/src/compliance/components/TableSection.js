@@ -1,11 +1,11 @@
-import React from 'react';
-import formatNumeric from '../../app/utilities/formatNumeric';
+import React from 'react'
+import formatNumeric from '../../app/utilities/formatNumeric'
 
 const TableSection = (props) => {
-  const { input, title, negativeValue } = props;
-  let numberClassname = 'text-right';
+  const { input, title, negativeValue } = props
+  let numberClassname = 'text-right'
   if (negativeValue) {
-    numberClassname += ' text-red';
+    numberClassname += ' text-red'
   }
   return (
     <>
@@ -17,12 +17,12 @@ const TableSection = (props) => {
       {input
         .sort((a, b) => {
           if (a.modelYear < b.modelYear) {
-            return 1;
+            return 1
           }
           if (a.modelYear > b.modelYear) {
-            return -1;
+            return -1
           }
-          return 0;
+          return 0
         })
         .map((each) => (
           <tr key={each.modelYear + each.B}>
@@ -34,7 +34,7 @@ const TableSection = (props) => {
           </tr>
         ))}
     </>
-  );
-};
+  )
+}
 
-export default TableSection;
+export default TableSection

@@ -1,7 +1,7 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import UploadVerificationData from '../UploadVerificationData';
+import React from 'react'
+import { render } from '@testing-library/react'
+import { BrowserRouter as Router } from 'react-router-dom'
+import UploadVerificationData from '../UploadVerificationData'
 
 // import '@testing-library/jest-dom/extend-expect';
 
@@ -19,5 +19,5 @@ it('renders without crashing', () => {
         user={{ isGovernment: true }}
       />
     </Router>
-  );
-});
+  )
+})

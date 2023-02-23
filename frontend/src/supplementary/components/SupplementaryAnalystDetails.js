@@ -1,25 +1,25 @@
-import axios from 'axios';
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import axios from 'axios'
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 
-import parse from 'html-react-parser';
-import Loading from '../../app/components/Loading';
-import Modal from '../../app/components/Modal';
-import Button from '../../app/components/Button';
-import ZevSales from './ZevSales';
-import SupplierInformation from './SupplierInformation';
-import CreditActivity from './CreditActivity';
-import CommentInput from '../../app/components/CommentInput';
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
-import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
-import formatNumeric from '../../app/utilities/formatNumeric';
-import CustomPropTypes from '../../app/utilities/props';
-import ComplianceHistory from '../../compliance/components/ComplianceHistory';
-import CONFIG from '../../app/config';
-import SupplementaryTab from './SupplementaryTab';
-import ReactTooltip from 'react-tooltip';
-import ReassessmentDetailsPage from './ReassessmentDetailsPage';
-import EditableCommentList from '../../app/components/EditableCommentList';
+import parse from 'html-react-parser'
+import Loading from '../../app/components/Loading'
+import Modal from '../../app/components/Modal'
+import Button from '../../app/components/Button'
+import ZevSales from './ZevSales'
+import SupplierInformation from './SupplierInformation'
+import CreditActivity from './CreditActivity'
+import CommentInput from '../../app/components/CommentInput'
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport'
+import formatNumeric from '../../app/utilities/formatNumeric'
+import CustomPropTypes from '../../app/utilities/props'
+import ComplianceHistory from '../../compliance/components/ComplianceHistory'
+import CONFIG from '../../app/config'
+import SupplementaryTab from './SupplementaryTab'
+import ReactTooltip from 'react-tooltip'
+import ReassessmentDetailsPage from './ReassessmentDetailsPage'
+import EditableCommentList from '../../app/components/EditableCommentList'
 
 const SupplementaryAnalystDetails = (props) => {
   const {
@@ -47,30 +47,30 @@ const SupplementaryAnalystDetails = (props) => {
     supplementaryAssessmentData,
     user,
     query
-  } = props;
+  } = props
 
-  let { newData } = props;
-  let { reassessment } = details;
+  const { newData } = props
+  const { reassessment } = details
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
   // if user is bceid then only draft is editable
   // if user is idir then draft or submitted is editable
-  const [showModal, setShowModal] = useState(false);
-  const [showModalDraft, setShowModalDraft] = useState(false);
-  const [showModalDelete, setShowModalDelete] = useState(false);
-  const reportYear = details.assessmentData && details.assessmentData.modelYear;
+  const [showModal, setShowModal] = useState(false)
+  const [showModalDraft, setShowModalDraft] = useState(false)
+  const [showModalDelete, setShowModalDelete] = useState(false)
+  const reportYear = details.assessmentData && details.assessmentData.modelYear
 
   const supplierClass =
-    details.assessmentData && details.assessmentData.supplierClass[0];
+    details.assessmentData && details.assessmentData.supplierClass[0]
 
   const creditReductionSelection =
-    details.assessmentData && details.assessmentData.creditReductionSelection;
+    details.assessmentData && details.assessmentData.creditReductionSelection
 
-  let currentStatus = details.actualStatus
+  const currentStatus = details.actualStatus
     ? details.actualStatus
-    : details.status;
+    : details.status
 
   const isAssessed = currentStatus === 'ASSESSED' || currentStatus === 'REASSESSED'
 
@@ -84,39 +84,39 @@ const SupplementaryAnalystDetails = (props) => {
   const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
 
   let isEditable = ['DRAFT', 'RETURNED'].indexOf(details.status) >= 0
-  
-  if (selectedTab == tabNames[0] && currentStatus == 'SUBMITTED') {
+
+  if (selectedTab === tabNames[0] && currentStatus === 'SUBMITTED') {
     isEditable = false
   }
-  if (selectedTab == tabNames[1] && currentStatus == 'SUBMITTED') {
+  if (selectedTab === tabNames[1] && currentStatus === 'SUBMITTED') {
     isEditable = true
   }
-  if (selectedTab == tabNames[2]){
+  if (selectedTab === tabNames[2]) {
     isEditable = false
   }
 
   const formattedPenalty = details.assessment
     ? formatNumeric(details.assessment.assessmentPenalty, 0)
-    : 0;
+    : 0
 
   const assessmentDecision =
     supplementaryAssessmentData.supplementaryAssessment.decision &&
     supplementaryAssessmentData.supplementaryAssessment.decision.description
       ? supplementaryAssessmentData.supplementaryAssessment.decision.description
-          .replace(
-            /{user.organization.name}/g,
-            details.assessmentData.legalName
-          )
-          .replace(/{modelYear}/g, details.assessmentData.modelYear)
-          .replace(/{penalty}/g, `$${formattedPenalty} CAD`)
-      : '';
+        .replace(
+          /{user.organization.name}/g,
+          details.assessmentData.legalName
+        )
+        .replace(/{modelYear}/g, details.assessmentData.modelYear)
+        .replace(/{penalty}/g, `$${formattedPenalty} CAD`)
+      : ''
 
   const showDescription = (each) => {
     const selectedId =
       supplementaryAssessmentData &&
       supplementaryAssessmentData.supplementaryAssessment &&
       supplementaryAssessmentData.supplementaryAssessment.decision &&
-      supplementaryAssessmentData.supplementaryAssessment.decision.id;
+      supplementaryAssessmentData.supplementaryAssessment.decision.id
 
     return (
       <div className="mb-3" key={each.id}>
@@ -138,7 +138,7 @@ const SupplementaryAnalystDetails = (props) => {
                   id: each.id
                 }
               }
-            });
+            })
           }}
         />
         {each.description && (
@@ -153,23 +153,23 @@ const SupplementaryAnalystDetails = (props) => {
           </label>
         )}
       </div>
-    );
-  };
+    )
+  }
 
   const handleGovSubmitDraft = (status) => {
-    handleSubmit(status, false);
-  };
+    handleSubmit(status, false)
+  }
 
   const modal = (
     <Modal
       cancelLabel="No"
       confirmLabel="Yes"
       handleCancel={() => {
-        setShowModal(false);
+        setShowModal(false)
       }}
       handleSubmit={() => {
-        setShowModal(false);
-        handleSubmit('RECOMMENDED', false);
+        setShowModal(false)
+        handleSubmit('RECOMMENDED', false)
       }}
       modalClass="w-75"
       showModal={showModal}
@@ -183,18 +183,18 @@ const SupplementaryAnalystDetails = (props) => {
         </h3>
       </div>
     </Modal>
-  );
+  )
 
   const modalDelete = (
     <Modal
       cancelLabel="No"
       confirmLabel="Yes"
       handleCancel={() => {
-        setShowModalDelete(false);
+        setShowModalDelete(false)
       }}
       handleSubmit={() => {
-        setShowModalDelete(false);
-        handleSubmit('DELETED');
+        setShowModalDelete(false)
+        handleSubmit('DELETED')
       }}
       modalClass="w-75"
       showModal={showModalDelete}
@@ -204,18 +204,18 @@ const SupplementaryAnalystDetails = (props) => {
         <h3>Are you sure you want to delete this?</h3>
       </div>
     </Modal>
-  );
+  )
 
   const modalDraft = (
     <Modal
       cancelLabel="No"
       confirmLabel="Yes"
       handleCancel={() => {
-        setShowModalDraft(false);
+        setShowModalDraft(false)
       }}
       handleSubmit={() => {
-        setShowModalDraft(false);
-        handleSubmit(currentStatus, false);
+        setShowModalDraft(false)
+        handleSubmit(currentStatus, false)
       }}
       modalClass="w-75"
       showModal={showModalDraft}
@@ -229,15 +229,15 @@ const SupplementaryAnalystDetails = (props) => {
         </h3>
       </div>
     </Modal>
-  );
+  )
 
-  let disabledRecommendBtn = false;
-  let recommendTooltip = '';
+  let disabledRecommendBtn = false
+  let recommendTooltip = ''
 
   if (!assessmentDecision) {
-    disabledRecommendBtn = true;
+    disabledRecommendBtn = true
     recommendTooltip =
-      'Please select an Analyst Recommendation before recommending this assessment.';
+      'Please select an Analyst Recommendation before recommending this assessment.'
   }
 
   const tabUrl = (supplementalId, tabName) => {
@@ -254,8 +254,10 @@ const SupplementaryAnalystDetails = (props) => {
         role="tablist"
       >
         <ReactTooltip/>
-        {supplementaryReportId == null ? null : (<SupplementaryTab
-          selected={selectedTab == tabNames[0]}
+        {supplementaryReportId == null
+          ? null
+          : (<SupplementaryTab
+          selected={selectedTab === tabNames[0]}
           title={'Supplementary Report'}
           url={tabUrl(supplementaryReportId, tabNames[0])}
           disabled={supplementaryReportId == null}
@@ -264,7 +266,7 @@ const SupplementaryAnalystDetails = (props) => {
           assessed={isAssessed}
         />)}
         <SupplementaryTab
-          selected={selectedTab == tabNames[1]}
+          selected={selectedTab === tabNames[1]}
           title={'Reassessment Recommendation'}
           url={tabUrl(reassessmentReportId, tabNames[1])}
           disabled={false}
@@ -273,7 +275,7 @@ const SupplementaryAnalystDetails = (props) => {
           assessed={isAssessed}
         />
         <SupplementaryTab
-          selected={selectedTab == tabNames[2]}
+          selected={selectedTab === tabNames[2]}
           title={'Reassessment'}
           url={tabUrl(reassessmentReportId, tabNames[2])}
           disabled={false}
@@ -315,7 +317,7 @@ const SupplementaryAnalystDetails = (props) => {
                 handleCommentEdit={handleEditIdirComment}
                 handleCommentDelete={handleDeleteIdirComment}
               />
-            )}
+          )}
 
           <div id="comment-input">
             <CommentInput
@@ -334,13 +336,14 @@ const SupplementaryAnalystDetails = (props) => {
           optionalClassname="ml-2 mr-2 button btn float-right d-print-none"
           optionalText="Print Page"
           action={() => {
-            window.print();
+            window.print()
           }}
         />
         <div>
         {isReassessment &&
-            currentStatus === 'ASSESSED' || isReassessment 
-            && selectedTab == tabNames[2] ? (
+            (currentStatus === 'ASSESSED' || (isReassessment &&
+            selectedTab === tabNames[2]))
+          ? (
             <ReassessmentDetailsPage
               details={details}
               ldvSales={ldvSales}
@@ -350,7 +353,8 @@ const SupplementaryAnalystDetails = (props) => {
               ratios={ratios}
               user={user}
             />
-          ) : (
+            )
+          : (
             <>
             <SupplierInformation
               isEditable={isEditable && currentStatus !== 'RECOMMENDED' && currentStatus !== 'DRAFT'}
@@ -381,7 +385,7 @@ const SupplementaryAnalystDetails = (props) => {
               isEditable={isEditable && currentStatus !== 'RECOMMENDED' && currentStatus !== 'DRAFT'}
             />
           </>
-        )}
+            )}
         </div>
         {details &&
           details.status === 'SUBMITTED' &&
@@ -398,7 +402,7 @@ const SupplementaryAnalystDetails = (props) => {
                       {parse(details.fromSupplierComments[0].comment)}
                     </span>
                   </div>
-                )}
+              )}
               {details &&
                 details.attachments &&
                 details.attachments.length > 0 && (
@@ -425,16 +429,16 @@ const SupplementaryAnalystDetails = (props) => {
                                     const objectURL =
                                       window.URL.createObjectURL(
                                         new Blob([response.data])
-                                      );
-                                    const link = document.createElement('a');
-                                    link.href = objectURL;
+                                      )
+                                    const link = document.createElement('a')
+                                    link.href = objectURL
                                     link.setAttribute(
                                       'download',
                                       attachment.filename
-                                    );
-                                    document.body.appendChild(link);
-                                    link.click();
-                                  });
+                                    )
+                                    document.body.appendChild(link)
+                                    link.click()
+                                  })
                               }}
                               type="button"
                             >
@@ -444,9 +448,9 @@ const SupplementaryAnalystDetails = (props) => {
                         </div>
                       ))}
                   </div>
-                )}
+              )}
             </div>
-          )}
+        )}
       </div>
       {supplementaryAssessmentData.supplementaryAssessment &&
         supplementaryAssessmentData.supplementaryAssessment.decision &&
@@ -466,13 +470,13 @@ const SupplementaryAnalystDetails = (props) => {
                         <div className="mt-2">
                           {parse(commentArray.bceidComment.comment)}
                         </div>
-                      )}
+                    )}
                   </div>
                 </div>
               </div>
             </div>
           </>
-        )}
+      )}
       {isEditable && (
         <>
           {['RECOMMENDED', 'DRAFT'].indexOf(currentStatus) < 0 && (
@@ -518,7 +522,7 @@ const SupplementaryAnalystDetails = (props) => {
                                   ...supplementaryAssessmentData.supplementaryAssessment,
                                   assessmentPenalty: e.target.value
                                 }
-                              });
+                              })
                             }}
                           />
                           <label className="text-grey" htmlFor="penalty-amount">
@@ -571,16 +575,16 @@ const SupplementaryAnalystDetails = (props) => {
                         : 'Delete'
                     }
                   />
-                )}
+              )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                selectedTab == tabNames[1] &&
+                selectedTab === tabNames[1] &&
                 ['DRAFT'].indexOf(details.status) < 0 &&
                 (isEditable ||
                   ['SUBMITTED'].indexOf(details.status) >= 0) &&
                     <button
                       className="button text-danger"
                       onClick={() => {
-                        handleSubmit('DRAFT');
+                        handleSubmit('DRAFT')
                       }}
                       type="button"
                     >
@@ -597,7 +601,7 @@ const SupplementaryAnalystDetails = (props) => {
                       handleGovSubmitDraft(currentStatus)
                     }}
                   />
-                )}
+              )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 isEditable &&
                 ['DRAFT'].indexOf(details.status) < 0 &&
@@ -609,11 +613,11 @@ const SupplementaryAnalystDetails = (props) => {
                     optionalText="Recommend Reassessment"
                     disabled={disabledRecommendBtn}
                     action={() => {
-                      handleSubmit('RECOMMENDED');
+                      handleSubmit('RECOMMENDED')
                     }}
                   />
                 )}
-              
+
             </span>
           </div>
         </div>
@@ -624,8 +628,8 @@ const SupplementaryAnalystDetails = (props) => {
       {modalDelete}
 
     </div>
-  );
-};
+  )
+}
 
 SupplementaryAnalystDetails.defaultProps = {
   isReassessment: undefined,
@@ -633,7 +637,7 @@ SupplementaryAnalystDetails.defaultProps = {
   obligationDetails: [],
   query: {},
   ratios: {}
-};
+}
 
 SupplementaryAnalystDetails.propTypes = {
   addSalesRow: PropTypes.func.isRequired,
@@ -662,6 +666,6 @@ SupplementaryAnalystDetails.propTypes = {
   setSupplementaryAssessmentData: PropTypes.func.isRequired,
   supplementaryAssessmentData: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default SupplementaryAnalystDetails;
+export default SupplementaryAnalystDetails

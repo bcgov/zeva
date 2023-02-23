@@ -1,19 +1,19 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
-import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
-import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
-import ROUTES_VEHICLES from '../../app/routes/Vehicles';
-import Loading from '../../app/components/Loading';
-import CustomPropTypes from '../../app/utilities/props';
-import ActivityBanner from './ActivityBanner';
-import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements';
-import CONFIG from '../../app/config';
+import React from 'react'
+import PropTypes from 'prop-types'
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
+import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers'
+import ROUTES_VEHICLES from '../../app/routes/Vehicles'
+import Loading from '../../app/components/Loading'
+import CustomPropTypes from '../../app/utilities/props'
+import ActivityBanner from './ActivityBanner'
+import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements'
+import CONFIG from '../../app/config'
 
 const ActionsIdir = (props) => {
-  const { user, activityCount, loading } = props;
+  const { user, activityCount, loading } = props
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
   return (
     <div id="actions" className="dashboard-card">
@@ -28,7 +28,7 @@ const ActionsIdir = (props) => {
               regularText={`${activityCount.modelsAwaitingValidation} submitted for validation`}
               linkTo={`${ROUTES_VEHICLES.LIST}?col-status=Submitted`}
             />
-          )}
+        )}
         {user.hasPermission('VALIDATE_ZEV') &&
           activityCount.modelsAwaitingValidation === 0 && (
             <ActivityBanner
@@ -38,7 +38,7 @@ const ActionsIdir = (props) => {
               regularText="no current activity"
               linkTo={ROUTES_VEHICLES.LIST}
             />
-          )}
+        )}
         {activityCount.creditsAnalyst > 0 &&
           user.hasPermission('RECOMMEND_SALES') && (
             <ActivityBanner
@@ -48,7 +48,7 @@ const ActionsIdir = (props) => {
               regularText={`${activityCount.creditsAnalyst} require analyst/engineer validation`}
               linkTo={`${ROUTES_CREDIT_REQUESTS.LIST}?status=Submitted,Validated`}
             />
-          )}
+        )}
         {activityCount.creditsRecommendApprove > 0 && (
           <ActivityBanner
             colour="blue"
@@ -92,7 +92,7 @@ const ActionsIdir = (props) => {
               regularText={`${activityCount.transfersAwaitingPartner} awaiting partner confirmation`}
               linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Submitted%20to%20Transfer%20Partner`}
             />
-          )}
+        )}
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED &&
           activityCount.transfersAwaitingAnalyst > 0 &&
           user.hasPermission('RECOMMEND_CREDIT_TRANSFER') && (
@@ -103,7 +103,7 @@ const ActionsIdir = (props) => {
               regularText={`${activityCount.transfersAwaitingAnalyst} require analyst recommendation`}
               linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Submitted%20to%20Government`}
             />
-          )}
+        )}
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED &&
           activityCount.transfersAwaitingDirector > 0 &&
           user.hasPermission('SIGN_CREDIT_TRANSFERS') && (
@@ -114,7 +114,7 @@ const ActionsIdir = (props) => {
               regularText={`${activityCount.transfersAwaitingDirector} recommended for director action`}
               linkTo={`${ROUTES_CREDIT_TRANSFERS.LIST}?status=Recommend`}
             />
-          )}
+        )}
         {CONFIG.FEATURES.CREDIT_TRANSFERS.ENABLED &&
           ((user.hasPermission('SIGN_CREDIT_TRANSFERS') &&
             activityCount.transfersAwaitingDirector === 0) ||
@@ -127,7 +127,7 @@ const ActionsIdir = (props) => {
               regularText="no current activity"
               linkTo={ROUTES_CREDIT_TRANSFERS.LIST}
             />
-          )}
+        )}
         {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED &&
           activityCount.creditAgreementsAnalyst > 0 &&
           user.hasPermission('CREATE_INITIATIVE_AGREEMENTS') && (
@@ -138,7 +138,7 @@ const ActionsIdir = (props) => {
               regularText={`${activityCount.creditAgreementsAnalyst} require analyst/engineer action`}
               linkTo={`${ROUTES_CREDIT_AGREEMENTS.LIST}?col-status=Draft, Returned`}
             />
-          )}
+        )}
         {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED &&
           activityCount.creditAgreementsRecommended > 0 &&
           user.hasPermission('SIGN_INITIATIVE_AGREEMENTS') && (
@@ -149,7 +149,7 @@ const ActionsIdir = (props) => {
               regularText={`${activityCount.creditAgreementsRecommended} recommended for director action`}
               linkTo={`${ROUTES_CREDIT_AGREEMENTS.LIST}?col-status=Recommended`}
             />
-          )}
+        )}
         {CONFIG.FEATURES.CREDIT_AGREEMENTS.ENABLED &&
           ((activityCount.creditAgreementsRecommended === 0 &&
             user.hasPermission('SIGN_INITIATIVE_AGREEMENTS')) ||
@@ -162,7 +162,7 @@ const ActionsIdir = (props) => {
               regularText="no current activity"
               linkTo={ROUTES_CREDIT_AGREEMENTS.LIST}
             />
-          )}
+        )}
         {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED &&
           activityCount.reportsAnalyst > 0 &&
           user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && (
@@ -173,7 +173,7 @@ const ActionsIdir = (props) => {
               regularText={`${activityCount.reportsAnalyst} require analyst/engineer action`}
               linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Submitted, Draft`}
             />
-          )}
+        )}
         {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED &&
           activityCount.reportsReturned > 0 &&
           user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') && (
@@ -184,7 +184,7 @@ const ActionsIdir = (props) => {
               regularText={`${activityCount.reportsReturned} were returned by the director`}
               linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Returned`}
             />
-          )}
+        )}
         {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED &&
           ((user.hasPermission('RECOMMEND_COMPLIANCE_REPORT') &&
             activityCount.reportsAnalyst === 0 &&
@@ -205,7 +205,7 @@ const ActionsIdir = (props) => {
               regularText="no current activity"
               linkTo={ROUTES_COMPLIANCE.REPORTS}
             />
-          )}
+        )}
         {CONFIG.FEATURES.MODEL_YEAR_REPORT.ENABLED &&
           user.hasPermission('SIGN_COMPLIANCE_REPORT') &&
           activityCount.reportsDirector > 0 && (
@@ -216,18 +216,18 @@ const ActionsIdir = (props) => {
               regularText={`${activityCount.reportsDirector} recommended for director action`}
               linkTo={`${ROUTES_COMPLIANCE.REPORTS}?status=Recommended`}
             />
-          )}
+        )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-ActionsIdir.defaultProps = {};
+ActionsIdir.defaultProps = {}
 
 ActionsIdir.propTypes = {
   activityCount: PropTypes.shape().isRequired,
   loading: PropTypes.bool.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default ActionsIdir;
+export default ActionsIdir

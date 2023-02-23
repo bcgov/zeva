@@ -1,14 +1,13 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { fab } from '@fortawesome/free-brands-svg-icons';
-import { far } from '@fortawesome/free-regular-svg-icons';
-import { fas } from '@fortawesome/free-solid-svg-icons';
-import { storiesOf } from '@storybook/react';
-import '../app/css/index.scss';
-import CreditRequestAlert from '../credits/components/CreditRequestAlert';
+import React from 'react'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { fab } from '@fortawesome/free-brands-svg-icons'
+import { far } from '@fortawesome/free-regular-svg-icons'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { storiesOf } from '@storybook/react'
+import '../app/css/index.scss'
+import CreditRequestAlert from '../credits/components/CreditRequestAlert'
 // import{ action } from "@storybook/addon-actions";
-library.add(fab, far, fas);
+library.add(fab, far, fas)
 const historyData = [
   {
     createTimestamp: '2020-01-01T15:51:51.602702-07:00',
@@ -69,7 +68,7 @@ const historyData = [
     },
     validationStatus: 'VALIDATED'
   }
-];
+]
 
 const submissionDraft = {
   content: [],
@@ -77,35 +76,35 @@ const submissionDraft = {
   unselected: 1,
   history: historyData,
   filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls'
-};
+}
 const submissionErrors = {
   content: [],
   validationStatus: 'DRAFT',
   unselected: 1,
   history: historyData,
   filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls'
-};
+}
 const submissionSubmitted = {
   content: [],
   validationStatus: 'SUBMITTED',
   unselected: 1,
   history: historyData,
   filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls'
-};
+}
 const submissionValidated = {
   content: [],
   validationStatus: 'VALIDATED',
   unselected: 1,
   history: historyData,
   filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls'
-};
+}
 const submissionRecommend = {
   content: [],
   validationStatus: 'RECOMMEND_APPROVAL',
   unselected: 1,
   history: historyData,
   filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls'
-};
+}
 const submissionChecked = {
   content: [],
   validationStatus: 'CHECKED',
@@ -115,7 +114,7 @@ const submissionChecked = {
   unselected: 1,
   history: historyData,
   filename: 'BC-ZEVA_Sales_Template_Toyota__2020-10-08.xls'
-};
+}
 storiesOf('credit alert', module)
   .add('errors bceid', () => (
     <CreditRequestAlert submission={submissionErrors} invalidSubmission />
@@ -148,4 +147,4 @@ storiesOf('credit alert', module)
       isGovernment
       icbcDate="Oct 1, 2020"
     />
-  ));
+  ))

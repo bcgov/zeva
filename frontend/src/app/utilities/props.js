@@ -1,11 +1,11 @@
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 
 // to avoid duplication below. not exported.
 const yearArrayType = PropTypes.arrayOf(
   PropTypes.shape({
     name: PropTypes.string
   })
-);
+)
 
 const CustomPropTypes = {
   keycloak: PropTypes.shape({
@@ -55,6 +55,6 @@ const CustomPropTypes = {
       id: PropTypes.string
     })
   })
-};
+}
 
-export default CustomPropTypes;
+export default CustomPropTypes

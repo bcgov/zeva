@@ -1,10 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import CustomPropTypes from '../../app/utilities/props';
-import formatNumeric from '../../app/utilities/formatNumeric';
+import React from 'react'
+import PropTypes from 'prop-types'
+import CustomPropTypes from '../../app/utilities/props'
+import formatNumeric from '../../app/utilities/formatNumeric'
 
 const ComplianceCalculatorDetailsTotals = (props) => {
-  const { complianceNumbers, supplierSize, estimatedModelSales, user } = props;
+  const { complianceNumbers, supplierSize, estimatedModelSales, user } = props
 
   return (
     <div className="col-lg-4 col-12 px-3 compliance-calculator-totals m-lg-2">
@@ -81,15 +81,15 @@ const ComplianceCalculatorDetailsTotals = (props) => {
         </table>
       </div>
     </div>
-  );
-};
-ComplianceCalculatorDetailsTotals.defaultProps = {};
+  )
+}
+ComplianceCalculatorDetailsTotals.defaultProps = {}
 
 ComplianceCalculatorDetailsTotals.propTypes = {
   complianceNumbers: PropTypes.shape().isRequired,
   estimatedModelSales: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   supplierSize: PropTypes.string.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default ComplianceCalculatorDetailsTotals;
+export default ComplianceCalculatorDetailsTotals

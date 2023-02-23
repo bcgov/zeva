@@ -1,31 +1,31 @@
 /*
  * Presentational component
  */
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from 'prop-types'
+import React from 'react'
 
-import ReactTable from '../../app/components/ReactTable';
-import formatNumeric from '../../app/utilities/formatNumeric';
+import ReactTable from '../../app/components/ReactTable'
+import formatNumeric from '../../app/utilities/formatNumeric'
 
 const CreditBalanceTable = (props) => {
-  const { items } = props;
+  const { items } = props
 
-  const balances = {};
+  const balances = {}
 
   items.sort(
     (a, b) => parseFloat(b.modelYear.name) - parseFloat(a.modelYear.name)
-  );
+  )
 
-  const totalCredits = {};
+  const totalCredits = {}
 
   items.slice().reverse().forEach((balance) => {
     if (balance.modelYear && balance.creditClass) {
       balances[balance.modelYear.name] = {
         ...balances[balance.modelYear.name],
         [balance.creditClass.creditClass]: parseFloat(balance.totalValue)
-      };
+      }
 
-      let currentValue = 0;
+      let currentValue = 0
       if (
         totalCredits[balance.weightClass.weightClassCode] &&
         totalCredits[balance.weightClass.weightClassCode][
@@ -36,7 +36,7 @@ const CreditBalanceTable = (props) => {
           totalCredits[balance.weightClass.weightClassCode][
             balance.creditClass.creditClass
           ]
-        );
+        )
       }
 
       /*
@@ -48,7 +48,7 @@ const CreditBalanceTable = (props) => {
         label: `Total ${balance.weightClass.weightClassCode}`,
         [balance.creditClass.creditClass]:
           currentValue + parseFloat(balance.totalValue)
-      };
+      }
 
       // if there's a running deficit in a model year,
       // then we zero out the displayed model year credit row.
@@ -57,7 +57,7 @@ const CreditBalanceTable = (props) => {
         balances[balance.modelYear.name][balance.creditClass.creditClass] = 0
       }
     }
-  });
+  })
 
   const columns = [
     {
@@ -92,7 +92,7 @@ const CreditBalanceTable = (props) => {
       id: 'credit-class-B',
       maxWidth: 150
     }
-  ];
+  ]
 
   return (
     <ReactTable
@@ -117,20 +117,20 @@ const CreditBalanceTable = (props) => {
           if (rowInfo.row.label.toLowerCase().includes('total')) {
             return {
               className: 'font-weight-bold'
-            };
+            }
           }
         }
 
-        return {};
+        return {}
       }}
     />
-  );
-};
+  )
+}
 
-CreditBalanceTable.defaultProps = {};
+CreditBalanceTable.defaultProps = {}
 
 CreditBalanceTable.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired
-};
+}
 
-export default CreditBalanceTable;
+export default CreditBalanceTable

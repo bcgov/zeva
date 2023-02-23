@@ -2,25 +2,25 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { withRouter } from 'react-router';
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
+import { withRouter } from 'react-router'
 
-import ROUTES_USERS from '../app/routes/Users';
-import CustomPropTypes from '../app/utilities/props';
-import ActiveUsersListPage from './components/ActiveUsersListPage';
+import ROUTES_USERS from '../app/routes/Users'
+import CustomPropTypes from '../app/utilities/props'
+import ActiveUsersListPage from './components/ActiveUsersListPage'
 
 const ActiveUsersListContainer = (props) => {
-  const [loading, setLoading] = useState(false);
-  const [activeIdirUsers, setActiveIdirUsers] = useState('');
-  const [activeBceidUsers, setActiveBceidUsers] = useState('');
-  const { keycloak, user } = props;
+  const [loading, setLoading] = useState(false)
+  const [activeIdirUsers, setActiveIdirUsers] = useState('')
+  const [activeBceidUsers, setActiveBceidUsers] = useState('')
+  const { keycloak, user } = props
 
   const refreshDetails = () => {
     if (user.isGovernment) {
-      setLoading(true);
-      let filteredIdir = '';
-      let filteredBceid = '';
+      setLoading(true)
+      let filteredIdir = ''
+      let filteredBceid = ''
       axios.get(ROUTES_USERS.LIST).then((response) => {
         response.data.forEach((userProfile) => {
           if (
@@ -29,28 +29,28 @@ const ActiveUsersListContainer = (props) => {
           ) {
             const email = userProfile.email
               ? userProfile.email
-              : userProfile.keycloakEmail;
+              : userProfile.keycloakEmail
             if (userProfile.isGovernment) {
-              filteredIdir += email;
-              filteredIdir += '; ';
+              filteredIdir += email
+              filteredIdir += '; '
             } else {
-              filteredBceid += email;
-              filteredBceid += '; ';
+              filteredBceid += email
+              filteredBceid += '; '
             }
           }
-        });
-        filteredIdir = filteredIdir.substring(0, filteredIdir.length - 2);
-        filteredBceid = filteredBceid.substring(0, filteredBceid.length - 2);
-        setActiveIdirUsers(filteredIdir);
-        setActiveBceidUsers(filteredBceid);
-        setLoading(false);
-      });
+        })
+        filteredIdir = filteredIdir.substring(0, filteredIdir.length - 2)
+        filteredBceid = filteredBceid.substring(0, filteredBceid.length - 2)
+        setActiveIdirUsers(filteredIdir)
+        setActiveBceidUsers(filteredBceid)
+        setLoading(false)
+      })
     }
-  };
+  }
 
   useEffect(() => {
-    refreshDetails();
-  }, [keycloak.authenticated]);
+    refreshDetails()
+  }, [keycloak.authenticated])
 
   return (
     <>
@@ -62,12 +62,12 @@ const ActiveUsersListContainer = (props) => {
         />
       )}
     </>
-  );
-};
+  )
+}
 
 ActiveUsersListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default withRouter(ActiveUsersListContainer);
+export default withRouter(ActiveUsersListContainer)

@@ -1,15 +1,15 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import getOptions from '../../app/utilities/getOptions';
-import handleFilterChange from '../../app/utilities/handleFilterChange';
+import PropTypes from 'prop-types'
+import React from 'react'
+import getOptions from '../../app/utilities/getOptions'
+import handleFilterChange from '../../app/utilities/handleFilterChange'
 
 const ActionBarGov = (props) => {
   const { vehicles, handleClear, filtered, setFiltered, showOrganization } =
-    props;
+    props
 
   const handleChange = (event) => {
-    setFiltered(handleFilterChange(event, filtered));
-  };
+    setFiltered(handleFilterChange(event, filtered))
+  }
 
   return (
     <div className="action-bar no-bg p-0 m-0 justify-content-end">
@@ -41,8 +41,8 @@ const ActionBarGov = (props) => {
               filtered.length > 0 &&
               filtered.findIndex((arr) => arr.id === 'col-supplier') >= 0
                 ? filtered[
-                    filtered.findIndex((arr) => arr.id === 'col-supplier')
-                  ].value
+                  filtered.findIndex((arr) => arr.id === 'col-supplier')
+                ].value
                 : ''
             }
           >
@@ -60,12 +60,12 @@ const ActionBarGov = (props) => {
         </button>
       </span>
     </div>
-  );
-};
+  )
+}
 
 ActionBarGov.defaultProps = {
   showOrganization: true
-};
+}
 
 ActionBarGov.propTypes = {
   handleClear: PropTypes.func.isRequired,
@@ -73,6 +73,6 @@ ActionBarGov.propTypes = {
   setFiltered: PropTypes.func.isRequired,
   showOrganization: PropTypes.bool,
   vehicles: PropTypes.arrayOf(PropTypes.shape).isRequired
-};
+}
 
-export default ActionBarGov;
+export default ActionBarGov

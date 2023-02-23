@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import ReactTooltip from 'react-tooltip';
-import CustomPropTypes from '../../app/utilities/props';
+import PropTypes from 'prop-types'
+import React from 'react'
+import ReactTooltip from 'react-tooltip'
+import CustomPropTypes from '../../app/utilities/props'
 
 const CreditTransferSignOff = (props) => {
   const {
@@ -11,7 +11,7 @@ const CreditTransferSignOff = (props) => {
     handleCheckboxClick,
     hoverText,
     user
-  } = props;
+  } = props
   return (
     <>
       {hoverText && <ReactTooltip />}
@@ -30,7 +30,7 @@ const CreditTransferSignOff = (props) => {
                 id={assertion.id}
                 name="terms"
                 onChange={(event) => {
-                  handleCheckboxClick(event);
+                  handleCheckboxClick(event)
                 }}
                 type="checkbox"
               />
@@ -49,15 +49,15 @@ const CreditTransferSignOff = (props) => {
         ))}
       </div>
     </>
-  );
-};
+  )
+}
 
 CreditTransferSignOff.defaultProps = {
   assertions: [],
   checkboxes: [],
   disableCheckboxes: false,
   hoverText: ''
-};
+}
 CreditTransferSignOff.propTypes = {
   assertions: PropTypes.arrayOf(PropTypes.shape()),
   checkboxes: PropTypes.arrayOf(
@@ -67,6 +67,6 @@ CreditTransferSignOff.propTypes = {
   handleCheckboxClick: PropTypes.func.isRequired,
   hoverText: PropTypes.string,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default CreditTransferSignOff;
+export default CreditTransferSignOff

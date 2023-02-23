@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import _ from 'lodash';
-import ReactTable from '../../app/components/ReactTable';
+import PropTypes from 'prop-types'
+import React from 'react'
+import _ from 'lodash'
+import ReactTable from '../../app/components/ReactTable'
 
 const ConsumerSalesLDVModalTable = (props) => {
-  const { vehicles } = props;
+  const { vehicles } = props
 
   const columns = [
     {
@@ -81,7 +81,7 @@ const ConsumerSalesLDVModalTable = (props) => {
       id: 'zev-class',
       maxWidth: 200
     }
-  ];
+  ]
 
   return (
     <ReactTable
@@ -90,13 +90,13 @@ const ConsumerSalesLDVModalTable = (props) => {
       data={vehicles}
       filterable={false}
     />
-  );
-};
+  )
+}
 
-ConsumerSalesLDVModalTable.defaultProps = {};
+ConsumerSalesLDVModalTable.defaultProps = {}
 
 ConsumerSalesLDVModalTable.propTypes = {
   vehicles: PropTypes.arrayOf(PropTypes.shape({})).isRequired
-};
+}
 
-export default ConsumerSalesLDVModalTable;
+export default ConsumerSalesLDVModalTable

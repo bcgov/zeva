@@ -1,58 +1,58 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import CreditAgreementsDetailsPage from './components/CreditAgreementsDetailsPage';
-import Loading from '../app/components/Loading';
-import ROUTES_CREDIT_AGREEMENTS from '../app/routes/CreditAgreements';
-import CustomPropTypes from '../app/utilities/props';
-import history from '../app/History';
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import axios from 'axios'
+import CreditAgreementsDetailsPage from './components/CreditAgreementsDetailsPage'
+import Loading from '../app/components/Loading'
+import ROUTES_CREDIT_AGREEMENTS from '../app/routes/CreditAgreements'
+import CustomPropTypes from '../app/utilities/props'
+import history from '../app/History'
 
 const CreditAgreementsDetailsContainer = (props) => {
-  const { keycloak, user } = props;
-  const [idirComment, setIdirComment] = useState([]);
-  const [bceidComment, setBceidComment] = useState([]);
-  const { id } = useParams();
-  const [loading, setLoading] = useState(true);
-  const [details, setDetails] = useState({});
+  const { keycloak, user } = props
+  const [idirComment, setIdirComment] = useState([])
+  const [bceidComment, setBceidComment] = useState([])
+  const { id } = useParams()
+  const [loading, setLoading] = useState(true)
+  const [details, setDetails] = useState({})
   const directorAction =
-    user.isGovernment && user.hasPermission('SIGN_INITIATIVE_AGREEMENTS');
+    user.isGovernment && user.hasPermission('SIGN_INITIATIVE_AGREEMENTS')
   const analystAction =
-    user.isGovernment && user.hasPermission('RECOMMEND_INITIATIVE_AGREEMENTS');
+    user.isGovernment && user.hasPermission('RECOMMEND_INITIATIVE_AGREEMENTS')
 
   const handleCommentChangeIdir = (text) => {
-    setIdirComment(text);
-  };
+    setIdirComment(text)
+  }
   const handleCommentChangeBceid = (text) => {
-    setBceidComment(text);
-  };
+    setBceidComment(text)
+  }
   const handleSubmit = (status) => {
     axios
       .patch(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id), {
         validationStatus: status
       })
       .then(() => {
-        history.push(ROUTES_CREDIT_AGREEMENTS.LIST);
+        history.push(ROUTES_CREDIT_AGREEMENTS.LIST)
 
         if (status !== 'DELETED') {
-          history.replace(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id));
+          history.replace(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id))
         }
-      });
-  };
+      })
+  }
   const handleAddComment = (commentType) => {
-    let comment = {};
+    let comment = {}
     if (commentType === 'bceidComment') {
-      comment = { comment: bceidComment, director: false };
+      comment = { comment: bceidComment, director: false }
     } else {
-      comment = { comment: idirComment, director: true };
+      comment = { comment: idirComment, director: true }
     }
 
     axios
       .post(ROUTES_CREDIT_AGREEMENTS.COMMENT_SAVE.replace(':id', id), comment)
       .then(() => {
-        history.push(ROUTES_CREDIT_AGREEMENTS.LIST);
-        history.replace(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id));
-      });
-  };
+        history.push(ROUTES_CREDIT_AGREEMENTS.LIST)
+        history.replace(ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(':id', id))
+      })
+  }
 
   const refreshDetails = () => {
     axios
@@ -68,16 +68,16 @@ const CreditAgreementsDetailsContainer = (props) => {
           updateTimestamp,
           attachments,
           creditAgreementContent
-        } = response.data;
-        let filteredIdirComments;
-        let filteredBceidComments;
+        } = response.data
+        let filteredIdirComments
+        let filteredBceidComments
         if (comments && comments.length > 0) {
           filteredIdirComments = comments.filter(
             (data) => data.toDirector === true
-          );
+          )
           filteredBceidComments = comments.filter(
             (data) => data.toDirector === false
-          );
+          )
         }
 
         setDetails({
@@ -91,16 +91,16 @@ const CreditAgreementsDetailsContainer = (props) => {
           updateTimestamp,
           attachments,
           creditAgreementContent
-        });
-        setLoading(false);
-      });
-  };
+        })
+        setLoading(false)
+      })
+  }
 
   useEffect(() => {
-    refreshDetails();
-  }, [keycloak.authenticated]);
+    refreshDetails()
+  }, [keycloak.authenticated])
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   return (
@@ -115,12 +115,12 @@ const CreditAgreementsDetailsContainer = (props) => {
       details={details}
       handleSubmit={handleSubmit}
     />
-  );
-};
+  )
+}
 
 CreditAgreementsDetailsContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default CreditAgreementsDetailsContainer;
+export default CreditAgreementsDetailsContainer

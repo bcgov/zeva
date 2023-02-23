@@ -12,4 +12,4 @@ window.zeva_config = {
   'roles.enabled': false,
   'supplemental.enabled': true,
   'model_year_report.years': [2020, 2021, 2022, 2023]
-};
+}

@@ -1,8 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
 const DetailField = (props) => {
-  const { className, label, value, id } = props;
+  const { className, label, value, id } = props
 
   return (
     <div className="detail-field row">
@@ -11,19 +11,19 @@ const DetailField = (props) => {
         {value}
       </div>
     </div>
-  );
-};
+  )
+}
 
 DetailField.defaultProps = {
   className: '',
   id: ''
-};
+}
 
 DetailField.propTypes = {
   className: PropTypes.string,
   label: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   id: PropTypes.string
-};
+}
 
-export default DetailField;
+export default DetailField

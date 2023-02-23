@@ -1,17 +1,17 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types'
+import React from 'react'
+import { Link } from 'react-router-dom'
 
-import ROUTES_CREDIT_REQUESTS from '../routes/CreditRequests';
-import ROUTES_CREDIT_TRANSFERS from '../routes/CreditTransfers';
-import ROUTES_CREDIT_AGREEMENTS from '../routes/CreditAgreements';
-import ROUTES_CREDITS from '../routes/Credits';
-import CustomPropTypes from '../utilities/props';
+import ROUTES_CREDIT_REQUESTS from '../routes/CreditRequests'
+import ROUTES_CREDIT_TRANSFERS from '../routes/CreditTransfers'
+import ROUTES_CREDIT_AGREEMENTS from '../routes/CreditAgreements'
+import ROUTES_CREDITS from '../routes/Credits'
+import CustomPropTypes from '../utilities/props'
 
-import CONFIG from '../config';
+import CONFIG from '../config'
 
 const CreditTransactionTabs = (props) => {
-  const { active, user } = props;
+  const { active, user } = props
 
   return (
     <ul className="nav nav-tabs" key="tabs" role="tablist">
@@ -53,7 +53,7 @@ const CreditTransactionTabs = (props) => {
           >
             <Link to={ROUTES_CREDIT_AGREEMENTS.LIST}>Credit Agreements</Link>
           </li>
-        )}
+      )}
       {typeof user.hasPermission === 'function' &&
         user.hasPermission('EDIT_ICBC_DATA') &&
         user.isGovernment && (
@@ -65,7 +65,7 @@ const CreditTransactionTabs = (props) => {
               Update ICBC Data
             </Link>
           </li>
-        )}
+      )}
       {CONFIG.FEATURES.INITIATIVE_AGREEMENTS.ENABLED && (
         <li
           className={`nav-item ${
@@ -87,12 +87,12 @@ const CreditTransactionTabs = (props) => {
         </li>
       )}
     </ul>
-  );
-};
+  )
+}
 
 CreditTransactionTabs.propTypes = {
   active: PropTypes.string.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default CreditTransactionTabs;
+export default CreditTransactionTabs

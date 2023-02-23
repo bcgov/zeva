@@ -1,10 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import ReactTable from '../../app/components/ReactTable';
-import formatNumeric from '../../app/utilities/formatNumeric';
+import React from 'react'
+import PropTypes from 'prop-types'
+import ReactTable from '../../app/components/ReactTable'
+import formatNumeric from '../../app/utilities/formatNumeric'
 
 const CreditTransfersDetailsTable = (props) => {
-  const { submission } = props;
+  const { submission } = props
 
   const tableText = (
     <>
@@ -16,7 +16,7 @@ const CreditTransfersDetailsTable = (props) => {
         {submission.debitFrom.name} will transfer to {submission.creditTo.name}:
       </div>
     </>
-  );
+  )
 
   const submissionProposalColumns = [
     {
@@ -52,7 +52,7 @@ const CreditTransfersDetailsTable = (props) => {
       className: 'text-right',
       width: 175
     }
-  ];
+  ]
   return (
     <div className="row mb-3">
       <div className="col-sm-11">
@@ -64,11 +64,11 @@ const CreditTransfersDetailsTable = (props) => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
 CreditTransfersDetailsTable.propTypes = {
   submission: PropTypes.shape().isRequired
-};
+}
 
-export default CreditTransfersDetailsTable;
+export default CreditTransfersDetailsTable

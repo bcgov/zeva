@@ -1,17 +1,17 @@
-import React from 'react';
-import axios from 'axios';
-import moment from 'moment-timezone';
-import PropTypes from 'prop-types';
-import parse from 'html-react-parser';
+import React from 'react'
+import axios from 'axios'
+import moment from 'moment-timezone'
+import PropTypes from 'prop-types'
+import parse from 'html-react-parser'
 
-import Button from '../../app/components/Button';
-import CreditAgreementsAlert from './CreditAgreementsAlert';
-import CreditAgreementsDetailsTable from './CreditAgreementsDetailsTable';
-import DisplayComment from '../../app/components/DisplayComment';
-import CommentInput from '../../app/components/CommentInput';
-import history from '../../app/History';
-import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements';
-import CustomPropTypes from '../../app/utilities/props';
+import Button from '../../app/components/Button'
+import CreditAgreementsAlert from './CreditAgreementsAlert'
+import CreditAgreementsDetailsTable from './CreditAgreementsDetailsTable'
+import DisplayComment from '../../app/components/DisplayComment'
+import CommentInput from '../../app/components/CommentInput'
+import history from '../../app/History'
+import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements'
+import CustomPropTypes from '../../app/utilities/props'
 
 const CreditAgreementsDetailsPage = (props) => {
   const {
@@ -24,7 +24,7 @@ const CreditAgreementsDetailsPage = (props) => {
     handleSubmit,
     id,
     user
-  } = props;
+  } = props
   return (
     <div id="credit-agreements-detail-page" className="page">
       <div className="row mt-3 mb-2">
@@ -53,7 +53,7 @@ const CreditAgreementsDetailsPage = (props) => {
                 details.filteredIdirComments &&
                 details.filteredIdirComments.length > 0 && (
                   <DisplayComment commentArray={details.filteredIdirComments} />
-                )}
+              )}
               <div>
                 <CommentInput
                   handleAddComment={handleAddComment}
@@ -115,16 +115,16 @@ const CreditAgreementsDetailsPage = (props) => {
                             .then((response) => {
                               const objectURL = window.URL.createObjectURL(
                                 new Blob([response.data])
-                              );
-                              const link = document.createElement('a');
-                              link.href = objectURL;
+                              )
+                              const link = document.createElement('a')
+                              link.href = objectURL
                               link.setAttribute(
                                 'download',
                                 attachment.filename
-                              );
-                              document.body.appendChild(link);
-                              link.click();
-                            });
+                              )
+                              document.body.appendChild(link)
+                              link.click()
+                            })
                         }}
                         type="button"
                       >
@@ -132,7 +132,7 @@ const CreditAgreementsDetailsPage = (props) => {
                       </button>
                     </div>
                   </div>
-                ))
+              ))
               : ' - '}
           </div>
         </div>
@@ -158,7 +158,7 @@ const CreditAgreementsDetailsPage = (props) => {
                 <CreditAgreementsDetailsTable
                   items={details.creditAgreementContent}
                 />
-              )}
+            )}
           </span>
         </div>
       </div>
@@ -196,7 +196,7 @@ const CreditAgreementsDetailsPage = (props) => {
                   <button
                     className="button text-danger"
                     onClick={() => {
-                      handleSubmit('RETURNED');
+                      handleSubmit('RETURNED')
                     }}
                     type="button"
                   >
@@ -210,7 +210,7 @@ const CreditAgreementsDetailsPage = (props) => {
                     optionalClassname="button"
                     optionalText="Save"
                     action={() => {
-                      handleAddComment('bceidComment');
+                      handleAddComment('bceidComment')
                     }}
                   />
                   <Button
@@ -218,7 +218,7 @@ const CreditAgreementsDetailsPage = (props) => {
                     optionalClassname="button primary"
                     optionalText="Issue Transaction"
                     action={() => {
-                      handleSubmit('ISSUED');
+                      handleSubmit('ISSUED')
                     }}
                   />
                 </span>
@@ -236,7 +236,7 @@ const CreditAgreementsDetailsPage = (props) => {
                       buttonType="delete"
                       optionalText="Delete"
                       action={() => {
-                        handleSubmit('DELETED');
+                        handleSubmit('DELETED')
                       }}
                     />
                   </span>
@@ -247,7 +247,7 @@ const CreditAgreementsDetailsPage = (props) => {
                       action={() => {
                         history.push(
                           ROUTES_CREDIT_AGREEMENTS.EDIT.replace(/:id/g, id)
-                        );
+                        )
                       }}
                     />
                     <Button
@@ -255,12 +255,12 @@ const CreditAgreementsDetailsPage = (props) => {
                       optionalClassname="button primary"
                       optionalText="Submit to Director"
                       action={() => {
-                        handleSubmit('RECOMMENDED');
+                        handleSubmit('RECOMMENDED')
                       }}
                     />
                   </span>
                 </>
-              )}
+            )}
             {details.status === 'ISSUED' && (
               <>
                 <span className="left-content">
@@ -276,8 +276,8 @@ const CreditAgreementsDetailsPage = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 CreditAgreementsDetailsPage.propTypes = {
   details: PropTypes.shape({
@@ -300,6 +300,6 @@ CreditAgreementsDetailsPage.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   id: PropTypes.string.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default CreditAgreementsDetailsPage;
+export default CreditAgreementsDetailsPage

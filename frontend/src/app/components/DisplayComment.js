@@ -1,11 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import moment from 'moment-timezone';
-import parse from 'html-react-parser';
+import React from 'react'
+import PropTypes from 'prop-types'
+import moment from 'moment-timezone'
+import parse from 'html-react-parser'
 // shows array of comments like
 // Comments (bold) - Name, Date: Comment
 const DisplayComment = (props) => {
-  const { commentArray } = props;
+  const { commentArray } = props
   return (
     <div className="bcgov-callout" role="alert">
       <span>
@@ -23,13 +23,13 @@ const DisplayComment = (props) => {
           ))}
       </span>
     </div>
-  );
-};
+  )
+}
 
 DisplayComment.defaultProps = {
   commentArray: []
-};
+}
 DisplayComment.propTypes = {
   commentArray: PropTypes.arrayOf(PropTypes.shape())
-};
-export default DisplayComment;
+}
+export default DisplayComment

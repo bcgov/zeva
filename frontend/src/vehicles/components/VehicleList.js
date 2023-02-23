@@ -1,16 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
-import Loading from '../../app/components/Loading';
-import ActionBarGov from './ActionBarGov';
-import ActionBarNonGov from './ActionBarNonGov';
-import VehicleListTable from './VehicleListTable';
+import Loading from '../../app/components/Loading'
+import ActionBarGov from './ActionBarGov'
+import ActionBarNonGov from './ActionBarNonGov'
+import VehicleListTable from './VehicleListTable'
 
 const VehicleList = (props) => {
-  const { loading, vehicles, user, filtered, setFiltered, handleClear } = props;
+  const { loading, vehicles, user, filtered, setFiltered, handleClear } = props
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   return (
@@ -49,10 +49,10 @@ const VehicleList = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-VehicleList.defaultProps = {};
+VehicleList.defaultProps = {}
 
 VehicleList.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -63,6 +63,6 @@ VehicleList.propTypes = {
     isGovernment: PropTypes.bool
   }).isRequired,
   vehicles: PropTypes.arrayOf(PropTypes.object).isRequired
-};
+}
 
-export default VehicleList;
+export default VehicleList

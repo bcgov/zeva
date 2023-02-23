@@ -1,8 +1,8 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import CreditTransactionListTable from '../CreditTransactionListTable';
-import '@testing-library/jest-dom/extend-expect';
-import { BrowserRouter as Router } from 'react-router-dom';
+import React from 'react'
+import { render } from '@testing-library/react'
+import CreditTransactionListTable from '../CreditTransactionListTable'
+import '@testing-library/jest-dom/extend-expect'
+import { BrowserRouter as Router } from 'react-router-dom'
 
 const data = [
   {
@@ -32,7 +32,7 @@ const data = [
     transactionType: { transactionType: 'Validation' }
   },
   {}
-];
+]
 
 const reports = [
   {
@@ -55,21 +55,21 @@ const reports = [
     supplierClass: 'L',
     validationStatus: 'ASSESSED'
   }
-];
+]
 
 it('renders without crashing', () => {
   render(
     <Router>
       <CreditTransactionListTable items={data} reports={reports} />
     </Router>
-  );
-});
+  )
+})
 
 it('rounds the credit balance correctly', () => {
   const { getByText } = render(
     <Router>
       <CreditTransactionListTable items={data} reports={reports} />
     </Router>
-  );
-  expect(getByText('80')).toBeInTheDocument();
-});
+  )
+  expect(getByText('80')).toBeInTheDocument()
+})

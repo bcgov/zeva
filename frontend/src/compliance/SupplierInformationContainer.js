@@ -1,62 +1,61 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
-import { withRouter } from 'react-router';
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
+import { withRouter } from 'react-router'
 
-import CONFIG from '../app/config';
-import history from '../app/History';
-import ROUTES_COMPLIANCE from '../app/routes/Compliance';
-import ROUTES_VEHICLES from '../app/routes/Vehicles';
-import CustomPropTypes from '../app/utilities/props';
-import ComplianceReportTabs from './components/ComplianceReportTabs';
-import SupplierInformationDetailsPage from './components/SupplierInformationDetailsPage';
-import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions';
+import CONFIG from '../app/config'
+import history from '../app/History'
+import ROUTES_COMPLIANCE from '../app/routes/Compliance'
+import ROUTES_VEHICLES from '../app/routes/Vehicles'
+import CustomPropTypes from '../app/utilities/props'
+import ComplianceReportTabs from './components/ComplianceReportTabs'
+import SupplierInformationDetailsPage from './components/SupplierInformationDetailsPage'
+import ROUTES_SIGNING_AUTHORITY_ASSERTIONS from '../app/routes/SigningAuthorityAssertions'
 
-const qs = require('qs');
+const qs = require('qs')
 
 const SupplierInformationContainer = (props) => {
-  const { location, keycloak, user } = props;
-  const { id } = useParams();
-  const [assertions, setAssertions] = useState([]);
-  const [checkboxes, setCheckboxes] = useState([]);
-  const [disabledCheckboxes, setDisabledCheckboxes] = useState('');
-  const [details, setDetails] = useState({});
+  const { location, keycloak, user } = props
+  const { id } = useParams()
+  const [assertions, setAssertions] = useState([])
+  const [checkboxes, setCheckboxes] = useState([])
+  const [details, setDetails] = useState({})
   const [modelYear, setModelYear] = useState(
     CONFIG.FEATURES.MODEL_YEAR_REPORT.DEFAULT_YEAR
-  );
+  )
   const [statuses, setStatuses] = useState({
     supplierInformation: {
       status: 'UNSAVED',
       confirmedBy: null
     }
-  });
+  })
 
-  const query = qs.parse(location.search, { ignoreQueryPrefix: true });
+  const query = qs.parse(location.search, { ignoreQueryPrefix: true })
 
-  const [loading, setLoading] = useState(true);
-  const [makes, setMakes] = useState([]);
-  const [make, setMake] = useState('');
+  const [loading, setLoading] = useState(true)
+  const [makes, setMakes] = useState([])
+  const [make, setMake] = useState('')
 
   const handleChangeMake = (event) => {
-    const { value } = event.target;
-    setMake(value.toUpperCase());
-  };
+    const { value } = event.target
+    setMake(value.toUpperCase())
+  }
 
   const handleDeleteMake = (index) => {
-    makes.splice(index, 1);
-    setMakes([...makes]);
-  };
+    makes.splice(index, 1)
+    setMakes([...makes])
+  }
 
   const handleSubmitMake = (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
-    setMake('');
-    setMakes([...makes, make]);
-  };
+    setMake('')
+    setMakes([...makes, make])
+  }
 
   const handleSubmit = (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     const data = {
       class: user.organization.supplierClass,
@@ -65,86 +64,86 @@ const SupplierInformationContainer = (props) => {
       makes,
       modelYear,
       confirmations: checkboxes
-    };
+    }
 
     if (id && id !== 'new') {
       axios
         .patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data)
         .then((response) => {
-          history.push(ROUTES_COMPLIANCE.REPORTS);
+          history.push(ROUTES_COMPLIANCE.REPORTS)
           history.replace(
             ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(
               ':id',
               response.data.id
             )
-          );
-        });
+          )
+        })
     } else {
       axios.post(ROUTES_COMPLIANCE.REPORTS, data).then((response) => {
-        history.push(ROUTES_COMPLIANCE.REPORTS);
+        history.push(ROUTES_COMPLIANCE.REPORTS)
         history.replace(
           ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(
             ':id',
             response.data.id
           )
-        );
-      });
+        )
+      })
     }
-  };
+  }
 
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
       const checked = checkboxes.filter(
         (each) => Number(each) !== Number(event.target.id)
-      );
-      setCheckboxes(checked);
+      )
+      setCheckboxes(checked)
     }
 
     if (event.target.checked) {
-      const checked = checkboxes.concat(event.target.id);
-      setCheckboxes(checked);
+      const checked = checkboxes.concat(event.target.id)
+      setCheckboxes(checked)
     }
-  };
+  }
 
   const getClassDescriptions = (supplierClass) => {
-    let supplierClassString = {};
+    let supplierClassString = {}
     if (supplierClass === 'L') {
       supplierClassString = {
         class: 'Large',
         secondaryText: '(5,000 or more total LDV sales)'
-      };
+      }
     } else if (supplierClass === 'M') {
       supplierClassString = {
         class: 'Medium',
         secondaryText: '(1,000 to 4,999 total LDV sales)'
-      };
+      }
     } else if (supplierClass === 'S') {
       supplierClassString = {
         class: 'Small',
         secondaryText: '(less than  1,000 total LDV sales)'
-      };
+      }
     }
-    return supplierClassString;
-  };
+    return supplierClassString
+  }
 
   const handleCancelConfirmation = () => {
     const data = {
       delete_confirmations: true,
       module: 'supplier_information'
-    };
+    }
 
     axios
       .patch(ROUTES_COMPLIANCE.REPORT_DETAILS.replace(/:id/g, id), data)
       .then((response) => {
-        history.push(ROUTES_COMPLIANCE.REPORTS);
+        history.push(ROUTES_COMPLIANCE.REPORTS)
         history.replace(
           ROUTES_COMPLIANCE.REPORT_SUPPLIER_INFORMATION.replace(
             ':id',
             response.data.id
           )
-        );
-      });
-  };
+        )
+      })
+  }
 
   const refreshDetails = () => {
     if (id && id !== 'new') {
@@ -163,18 +162,18 @@ const SupplierInformationContainer = (props) => {
             modelYear: reportModelYear,
             confirmations,
             statuses: reportStatuses
-          } = response.data;
-          setModelYear(parseInt(reportModelYear.name, 10));
+          } = response.data
+          setModelYear(parseInt(reportModelYear.name, 10))
 
           if (modelYearReportMakes) {
-            const currentMakes = modelYearReportMakes.map((each) => each.make);
+            const currentMakes = modelYearReportMakes.map((each) => each.make)
 
-            setMakes(currentMakes);
+            setMakes(currentMakes)
           }
           const ldvSales = ldvSalesPrevious.sort((a, b) =>
             a.modelYear > b.modelYear ? 1 : -1
-          );
-          const supplierClassString = getClassDescriptions(supplierClass);
+          )
+          const supplierClassString = getClassDescriptions(supplierClass)
           setDetails({
             supplierClassString,
             organization: {
@@ -187,41 +186,39 @@ const SupplierInformationContainer = (props) => {
               history: modelYearReportHistory,
               validationStatus
             }
-          });
+          })
 
-          setCheckboxes(confirmations);
-          setStatuses(reportStatuses);
+          setCheckboxes(confirmations)
+          setStatuses(reportStatuses)
 
-          setLoading(false);
-        });
+          setLoading(false)
+        })
     } else {
       axios.get(ROUTES_VEHICLES.LIST).then((response) => {
-        const { data } = response;
+        const { data } = response
         // const previousSales = user.organization.ldvSales;
         const supplierClassString = getClassDescriptions(
           user.organization.supplierClass
-        );
+        )
         setMakes([
           ...new Set(data.map((vehicle) => vehicle.make.toUpperCase()))
-        ]);
-        const yearTemp = parseInt(query.year, 10);
+        ])
+        const yearTemp = parseInt(query.year, 10)
         const yearsArray = [
           (yearTemp - 1).toString(),
           (yearTemp - 2).toString(),
           (yearTemp - 3).toString()
-        ];
-        const previousSales = user.organization.ldvSales.filter((each) => {
-          if (yearsArray.includes(each.modelYear.toString())) {
-            return each;
-          }
-        });
-        previousSales.sort((a, b) => (a.modelYear > b.modelYear ? 1 : -1));
+        ]
+        const previousSales = user.organization.ldvSales.filter(
+          sales => yearsArray.includes(sales.modelYear.toString())
+        )
+        previousSales.sort((a, b) => (a.modelYear > b.modelYear ? 1 : -1))
         const newOrg = {
           ldvSales: previousSales.length >= 3 ? previousSales : [],
           avgLdvSales: user.organization.avgLdvSales,
           organizationAddress: user.organization.organizationAddress,
           name: user.organization.name
-        };
+        }
 
         setDetails({
           organization: newOrg,
@@ -230,26 +227,26 @@ const SupplierInformationContainer = (props) => {
             history: [],
             validationStatus: 'DRAFT'
           }
-        });
+        })
         if (!isNaN(query.year) && id === 'new') {
-          setModelYear(parseInt(query.year, 10));
+          setModelYear(parseInt(query.year, 10))
         }
 
-        setLoading(false);
-      });
+        setLoading(false)
+      })
     }
 
     axios.get(ROUTES_SIGNING_AUTHORITY_ASSERTIONS.LIST).then((response) => {
       const filteredAssertions = response.data.filter(
         (data) => data.module === 'supplier_information'
-      );
-      setAssertions(filteredAssertions);
-    });
-  };
+      )
+      setAssertions(filteredAssertions)
+    })
+  }
 
   useEffect(() => {
-    refreshDetails();
-  }, [keycloak.authenticated]);
+    refreshDetails()
+  }, [keycloak.authenticated])
 
   return (
     <>
@@ -263,7 +260,7 @@ const SupplierInformationContainer = (props) => {
         assertions={assertions}
         checkboxes={checkboxes}
         details={details}
-        disabledCheckboxes={disabledCheckboxes}
+        disabledCheckboxes={''}
         handleCancelConfirmation={handleCancelConfirmation}
         handleChangeMake={handleChangeMake}
         handleCheckboxClick={handleCheckboxClick}
@@ -279,13 +276,13 @@ const SupplierInformationContainer = (props) => {
         user={user}
       />
     </>
-  );
-};
+  )
+}
 
 SupplierInformationContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   location: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default withRouter(SupplierInformationContainer);
+export default withRouter(SupplierInformationContainer)
