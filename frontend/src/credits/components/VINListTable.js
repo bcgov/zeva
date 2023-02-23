@@ -1,13 +1,13 @@
 /*
  * Presentational component
  */
-import moment from 'moment-timezone';
-import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import ReactTable from 'react-table';
+import moment from 'moment-timezone'
+import PropTypes from 'prop-types'
+import React, { useState } from 'react'
+import ReactTable from 'react-table'
 
-import CREDIT_ERROR_CODES from '../../app/constants/errorCodes';
-import CustomPropTypes from '../../app/utilities/props';
+import CREDIT_ERROR_CODES from '../../app/constants/errorCodes'
+import CustomPropTypes from '../../app/utilities/props'
 
 const VINListTable = (props) => {
   const {
@@ -27,35 +27,35 @@ const VINListTable = (props) => {
     setFiltered,
     setReactTable,
     preInitialize
-  } = props;
+  } = props
 
-  const [tableInitialized, setTableInitialized] = useState(false);
-  const reset = query && query.reset;
+  const [tableInitialized, setTableInitialized] = useState(false)
+  const reset = query && query.reset
 
   const getErrorCodes = (item, fields = false) => {
-    let errorCodes = '';
+    let errorCodes = ''
 
     if (!item.warnings) {
-      return errorCodes;
+      return errorCodes
     }
 
     item.warnings.forEach((warning) => {
       if (CREDIT_ERROR_CODES[warning]) {
         if (fields) {
-          errorCodes += ` ${CREDIT_ERROR_CODES[warning].errorField} `;
+          errorCodes += ` ${CREDIT_ERROR_CODES[warning].errorField} `
         } else if (
           !errorCodes.includes(CREDIT_ERROR_CODES[warning].errorCode)
         ) {
           if (errorCodes !== '' && CREDIT_ERROR_CODES[warning].errorCode) {
-            errorCodes += ', ';
+            errorCodes += ', '
           }
-          errorCodes += CREDIT_ERROR_CODES[warning].errorCode;
+          errorCodes += CREDIT_ERROR_CODES[warning].errorCode
         }
       }
-    });
+    })
 
-    return errorCodes;
-  };
+    return errorCodes
+  }
 
   const columns = [
     {
@@ -64,13 +64,13 @@ const VINListTable = (props) => {
       columns: [
         {
           accessor: (row) => {
-            const { xlsModelYear } = row;
+            const { xlsModelYear } = row
 
             if (Number.isNaN(xlsModelYear)) {
-              return xlsModelYear;
+              return xlsModelYear
             }
 
-            return Math.trunc(row.xlsModelYear);
+            return Math.trunc(row.xlsModelYear)
           },
           className: 'text-center',
           Header: 'MY',
@@ -124,13 +124,13 @@ const VINListTable = (props) => {
           accessor: (item) => {
             if (item.icbcVerification) {
               if (item.icbcVerification.icbcSnapshot) {
-                return item.icbcVerification.icbcSnapshot.modelYear;
+                return item.icbcVerification.icbcSnapshot.modelYear
               }
 
-              return item.icbcVerification.icbcVehicle.modelYear.name;
+              return item.icbcVerification.icbcVehicle.modelYear.name
             }
 
-            return '-';
+            return '-'
           },
           className: 'icbc-model-year text-center',
           Header: 'MY',
@@ -142,13 +142,13 @@ const VINListTable = (props) => {
           accessor: (item) => {
             if (item.icbcVerification) {
               if (item.icbcVerification.icbcSnapshot) {
-                return item.icbcVerification.icbcSnapshot.make;
+                return item.icbcVerification.icbcSnapshot.make
               }
 
-              return item.icbcVerification.icbcVehicle.make;
+              return item.icbcVerification.icbcVehicle.make
             }
 
-            return '-';
+            return '-'
           },
           className: 'icbc-make',
           Header: 'Make',
@@ -159,13 +159,13 @@ const VINListTable = (props) => {
           accessor: (item) => {
             if (item.icbcVerification) {
               if (item.icbcVerification.icbcSnapshot) {
-                return item.icbcVerification.icbcSnapshot.modelName;
+                return item.icbcVerification.icbcSnapshot.modelName
               }
 
-              return item.icbcVerification.icbcVehicle.modelName;
+              return item.icbcVerification.icbcVehicle.modelName
             }
 
-            return '-';
+            return '-'
           },
           className: 'icbc-model',
           Header: 'Model',
@@ -201,7 +201,7 @@ const VINListTable = (props) => {
                   ].indexOf(warning) >= 0
               )
             ) {
-              return false;
+              return false
             }
 
             return (
@@ -212,13 +212,13 @@ const VINListTable = (props) => {
                   ) < 0
                 }
                 onChange={(event) => {
-                  handleCheckboxClick(event);
+                  handleCheckboxClick(event)
                 }}
                 disabled={readOnly}
                 type="checkbox"
                 value={row.id}
               />
-            );
+            )
           },
           className: 'text-center validated',
           filterable: false,
@@ -230,7 +230,7 @@ const VINListTable = (props) => {
         },
         {
           Cell: (data) => {
-            const row = data.original;
+            const row = data.original
             if (
               row.warnings &&
               row.warnings.some(
@@ -243,12 +243,12 @@ const VINListTable = (props) => {
                   ].indexOf(warning) >= 0
               )
             ) {
-              return false;
+              return false
             }
 
             // On re-verify, only show reasons on edited rows
             if (reset && !modified.includes(row.id)) {
-              return false;
+              return false
             }
 
             if (
@@ -256,19 +256,19 @@ const VINListTable = (props) => {
               (!row.reason || row.reason === '') &&
               !modified.includes(row.id)
             ) {
-              return false;
+              return false
             }
 
             if (row.reason && readOnly) {
-              return <div className="text-left">{row.reason}</div>;
+              return <div className="text-left">{row.reason}</div>
             }
 
             return (
               <select
                 defaultValue={row.reason}
                 onChange={(event) => {
-                  const { value } = event.target;
-                  handleChangeReason(row.id, value);
+                  const { value } = event.target
+                  handleChangeReason(row.id, value)
                 }}
               >
                 {reasons.map((reason) => (
@@ -278,7 +278,7 @@ const VINListTable = (props) => {
                 ))}
                 <option value=""> </option>
               </select>
-            );
+            )
           },
           className: 'reason text-center',
           filterable: false,
@@ -288,7 +288,7 @@ const VINListTable = (props) => {
         }
       ]
     }
-  ];
+  ]
 
   return (
     <ReactTable
@@ -298,7 +298,7 @@ const VINListTable = (props) => {
       filterable
       defaultPageSize={100}
       onFilteredChange={(input) => {
-        setFiltered(input);
+        setFiltered(input)
       }}
       defaultSorted={[
         {
@@ -308,39 +308,39 @@ const VINListTable = (props) => {
       ]}
       getTrProps={(state, rowInfo) => {
         if (rowInfo) {
-          const warnings = rowInfo.row.warning.split(', ');
+          const warnings = rowInfo.row.warning.split(', ')
 
           if (warnings.some((each) => ['21', '31', '51'].includes(each))) {
             return {
               className: 'icbc-danger'
-            };
+            }
           }
 
           if (warnings.some((each) => ['11', '41', '61'].includes(each))) {
-            let className = 'icbc-warning';
+            let className = 'icbc-warning'
 
             if (rowInfo.original.warnings.includes('INVALID_DATE')) {
-              className += ' warning-sales-date';
+              className += ' warning-sales-date'
             }
 
             if (rowInfo.original.warnings.includes('MAKE_MISMATCHED')) {
-              className += ' warning-icbc-make';
+              className += ' warning-icbc-make'
             }
 
             if (rowInfo.original.warnings.includes('MODEL_YEAR_MISMATCHED')) {
-              className += ' warning-icbc-model-year';
+              className += ' warning-icbc-model-year'
             }
 
             if (rowInfo.original.warnings.includes('NO_ICBC_MATCH')) {
-              className += ' warning-vin';
+              className += ' warning-vin'
             }
 
             return {
               className
-            };
+            }
           }
         }
-        return {};
+        return {}
       }}
       loading={loading}
       manual
@@ -349,41 +349,41 @@ const VINListTable = (props) => {
         // which we want to avoid, so this tableInitialized
         // variable cancels out the first call to this method
         if (!tableInitialized && preInitialize) {
-          setTableInitialized(true);
+          setTableInitialized(true)
         } else if (!tableInitialized) {
-          setTableInitialized(true);
-          return;
+          setTableInitialized(true)
+          return
         }
-        const filters = {};
+        const filters = {}
 
         state.filtered.forEach((each) => {
-          filters[each.id] = each.value;
-        });
-        const sorted = [];
+          filters[each.id] = each.value
+        })
+        const sorted = []
 
         state.sorted.forEach((each) => {
-          let value = each.id;
+          let value = each.id
 
           if (each.desc) {
-            value = `-${value}`;
+            value = `-${value}`
           }
 
-          sorted.push(value);
-        });
+          sorted.push(value)
+        })
 
         if (Object.keys(filters).length === 0 && sorted.length <= 0) {
-          return;
+          return
         }
 
-        refreshContent(state, filters);
+        refreshContent(state, filters)
       }}
       pages={pages}
       ref={(ref) => {
-        setReactTable(ref);
+        setReactTable(ref)
       }}
     />
-  );
-};
+  )
+}
 
 VINListTable.defaultProps = {
   filtered: undefined,
@@ -394,7 +394,7 @@ VINListTable.defaultProps = {
   reasons: [],
   handleCheckboxClick: undefined,
   handleChangeReason: undefined
-};
+}
 
 VINListTable.propTypes = {
   handleCheckboxClick: PropTypes.func,
@@ -417,6 +417,6 @@ VINListTable.propTypes = {
   setLoading: PropTypes.func.isRequired,
   setReactTable: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default VINListTable;
+export default VINListTable

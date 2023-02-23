@@ -1,10 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import history from '../../app/History';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import history from '../../app/History'
 
 const ActivityBanner = (props) => {
-  const { colour, icon, boldText, regularText, linkTo } = props;
+  const { colour, icon, boldText, regularText, linkTo } = props
 
   return (
     <button
@@ -14,7 +14,7 @@ const ActivityBanner = (props) => {
       className="alert alert-light activity-banner"
       key={regularText}
       onClick={() => {
-        history.push(linkTo);
+        history.push(linkTo)
       }}
     >
       <div>
@@ -28,14 +28,14 @@ const ActivityBanner = (props) => {
         <FontAwesomeIcon icon="chevron-right" size="2x" className={colour} />
       </div>
     </button>
-  );
-};
+  )
+}
 
-export default ActivityBanner;
+export default ActivityBanner
 
 ActivityBanner.defaultProps = {
   linkTo: ''
-};
+}
 
 ActivityBanner.propTypes = {
   colour: PropTypes.string.isRequired,
@@ -43,4 +43,4 @@ ActivityBanner.propTypes = {
   boldText: PropTypes.string.isRequired,
   regularText: PropTypes.string.isRequired,
   linkTo: PropTypes.string
-};
+}

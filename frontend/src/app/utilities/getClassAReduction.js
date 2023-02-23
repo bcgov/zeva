@@ -1,11 +1,11 @@
 const getClassAReduction = (ldvSales, zevClassARatio, supplierClass = 'L') => {
   if (supplierClass !== 'L' || !ldvSales) {
-    return 0;
+    return 0
   }
 
-  const totalReduction = ldvSales * (zevClassARatio / 100);
+  const totalReduction = ldvSales * (zevClassARatio / 100)
 
-  return totalReduction;
-};
+  return totalReduction
+}
 
-export default getClassAReduction;
+export default getClassAReduction

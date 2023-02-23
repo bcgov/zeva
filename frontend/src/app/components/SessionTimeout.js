@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import getSessionTimeout from '../utilities/getSessionTimeout';
-import CONFIG from '../config';
+import React, { useEffect, useState } from 'react'
+import getSessionTimeout from '../utilities/getSessionTimeout'
 
 const SessionTimeout = (props) => {
-  const { keycloak, logout } = props;
-  const [showTimeout, setShowTimeout] = useState(false);
+  const { keycloak, logout } = props
+  const [showTimeout, setShowTimeout] = useState(false)
 
   // the following code is for retrieving the time until warning from keycloak settings
-  const [diffTime, setDiffTime] = useState(getSessionTimeout(new Date(keycloak.refreshTokenParsed.exp * 1000)));
+  const diffTime = getSessionTimeout(new Date(keycloak.refreshTokenParsed.exp * 1000))
 
   let timeout = setTimeout(() => {
-    setShowTimeout(true);
-  }, diffTime);
+    setShowTimeout(true)
+  }, diffTime)
 
   useEffect(() => {
     if (showTimeout) {
@@ -19,33 +18,33 @@ const SessionTimeout = (props) => {
         if (showTimeout) {
           logout()
         }
-      }, 5 * 60 * 1000);
+      }, 5 * 60 * 1000)
     }
   })
 
   const closeModal = () => {
-    setShowTimeout(false);
-  };
+    setShowTimeout(false)
+  }
   const resetIdleTimeout = () => {
-    clearTimeout(timeout);
+    clearTimeout(timeout)
     timeout = setTimeout(() => {
-      setShowTimeout(true);
-    }, diffTime);
-  };
+      setShowTimeout(true)
+    }, diffTime)
+  }
 
   useEffect(() => {
-    const events = ['load', 'mousedown', 'click', 'scroll', 'keypress'];
-    for (let i in events) {
-      window.addEventListener(events[i], resetIdleTimeout);
+    const events = ['load', 'mousedown', 'click', 'scroll', 'keypress']
+    for (const i in events) {
+      window.addEventListener(events[i], resetIdleTimeout)
     }
-    resetIdleTimeout();
+    resetIdleTimeout()
     return () => {
-      for (let i in events) {
-        window.removeEventListener(events[i], resetIdleTimeout);
-        clearTimeout(timeout);
+      for (const i in events) {
+        window.removeEventListener(events[i], resetIdleTimeout)
+        clearTimeout(timeout)
       }
-    };
-  });
+    }
+  })
   return (
     <>
       {showTimeout && (
@@ -83,6 +82,6 @@ const SessionTimeout = (props) => {
         </div>
       )}
     </>
-  );
-};
-export default SessionTimeout;
+  )
+}
+export default SessionTimeout

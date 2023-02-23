@@ -1,15 +1,15 @@
-import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
-import ReactTable from 'react-table';
+import PropTypes from 'prop-types'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React from 'react'
+import ReactTable from 'react-table'
 
 const ZevSales = (props) => {
   const { addSalesRow, details, handleInputChange, salesRows, isEditable } =
-    props;
+    props
 
   const currentStatus = details.actualStatus
     ? details.actualStatus
-    : details.status;
+    : details.status
 
   const columns = [
     {
@@ -26,24 +26,24 @@ const ZevSales = (props) => {
                 : item.original.oldData.sales
             }
             onBlur={(event) => {
-              event.persist();
+              event.persist()
 
               setTimeout(() => {
-                handleInputChange(event, true);
-              }, 100);
+                handleInputChange(event, true)
+              }, 100)
             }}
             onChange={(event) => {
-              handleInputChange(event);
+              handleInputChange(event)
 
-              const ele = document.getElementById(`sales-${item.index}`);
+              const ele = document.getElementById(`sales-${item.index}`)
               if (
                 Number(item.original.oldData.sales) ===
                 Number(event.target.value)
               ) {
-                const { className } = ele;
-                ele.className = className.replace(/highlight/g, '');
+                const { className } = ele
+                ele.className = className.replace(/highlight/g, '')
               } else {
-                ele.className += ' highlight';
+                ele.className += ' highlight'
               }
             }}
             readOnly={!isEditable}
@@ -71,24 +71,24 @@ const ZevSales = (props) => {
             name="zevSales"
             id={`modelYear-${item.index}`}
             onBlur={(event) => {
-              event.persist();
+              event.persist()
 
               setTimeout(() => {
-                handleInputChange(event, true);
-              }, 100);
+                handleInputChange(event, true)
+              }, 100)
             }}
             onChange={(event) => {
-              handleInputChange(event);
+              handleInputChange(event)
 
-              const ele = document.getElementById(`modelYear-${item.index}`);
+              const ele = document.getElementById(`modelYear-${item.index}`)
               if (
                 Number(item.original.oldData.modelYear) ===
                 Number(event.target.value)
               ) {
-                const { className } = ele;
-                ele.className = className.replace(/highlight/g, '');
+                const { className } = ele
+                ele.className = className.replace(/highlight/g, '')
               } else {
-                ele.className += ' highlight';
+                ele.className += ' highlight'
               }
             }}
             size="4"
@@ -125,21 +125,21 @@ const ZevSales = (props) => {
             name="zevSales"
             id={`make-${item.index}`}
             onBlur={(event) => {
-              event.persist();
+              event.persist()
 
               setTimeout(() => {
-                handleInputChange(event, true);
-              }, 100);
+                handleInputChange(event, true)
+              }, 100)
             }}
             onChange={(event) => {
-              handleInputChange(event);
+              handleInputChange(event)
 
-              const ele = document.getElementById(`make-${item.index}`);
+              const ele = document.getElementById(`make-${item.index}`)
               if (item.original.oldData.make === event.target.value) {
-                const { className } = ele;
-                ele.className = className.replace(/highlight/g, '');
+                const { className } = ele
+                ele.className = className.replace(/highlight/g, '')
               } else {
-                ele.className += ' highlight';
+                ele.className += ' highlight'
               }
             }}
             defaultValue={
@@ -173,21 +173,21 @@ const ZevSales = (props) => {
             name="zevSales"
             id={`modelName-${item.index}`}
             onBlur={(event) => {
-              event.persist();
+              event.persist()
 
               setTimeout(() => {
-                handleInputChange(event, true);
-              }, 100);
+                handleInputChange(event, true)
+              }, 100)
             }}
             onChange={(event) => {
-              handleInputChange(event);
+              handleInputChange(event)
 
-              const ele = document.getElementById(`modelName-${item.index}`);
+              const ele = document.getElementById(`modelName-${item.index}`)
               if (item.original.oldData.model === event.target.value) {
-                const { className } = ele;
-                ele.className = className.replace(/highlight/g, '');
+                const { className } = ele
+                ele.className = className.replace(/highlight/g, '')
               } else {
-                ele.className += ' highlight';
+                ele.className += ' highlight'
               }
             }}
             defaultValue={
@@ -221,23 +221,23 @@ const ZevSales = (props) => {
             name="zevSales"
             id={`vehicleZevType-${item.index}`}
             onBlur={(event) => {
-              event.persist();
+              event.persist()
 
               setTimeout(() => {
-                handleInputChange(event, true);
-              }, 100);
+                handleInputChange(event, true)
+              }, 100)
             }}
             onChange={(event) => {
-              handleInputChange(event);
+              handleInputChange(event)
 
               const ele = document.getElementById(
                 `vehicleZevType-${item.index}`
-              );
+              )
               if (item.original.oldData.zevType === event.target.value) {
-                const { className } = ele;
-                ele.className = className.replace(/highlight/g, '');
+                const { className } = ele
+                ele.className = className.replace(/highlight/g, '')
               } else {
-                ele.className += ' highlight';
+                ele.className += ' highlight'
               }
             }}
             defaultValue={
@@ -272,24 +272,24 @@ const ZevSales = (props) => {
             name="zevSales"
             id={`range-${item.index}`}
             onBlur={(event) => {
-              event.persist();
+              event.persist()
 
               setTimeout(() => {
-                handleInputChange(event, true);
-              }, 100);
+                handleInputChange(event, true)
+              }, 100)
             }}
             onChange={(event) => {
-              handleInputChange(event);
+              handleInputChange(event)
 
-              const ele = document.getElementById(`range-${item.index}`);
+              const ele = document.getElementById(`range-${item.index}`)
               if (
                 Number(item.original.oldData.range) ===
                 Number(event.target.value)
               ) {
-                const { className } = ele;
-                ele.className = className.replace(/highlight/g, '');
+                const { className } = ele
+                ele.className = className.replace(/highlight/g, '')
               } else {
-                ele.className += ' highlight';
+                ele.className += ' highlight'
               }
             }}
             defaultValue={
@@ -324,21 +324,21 @@ const ZevSales = (props) => {
             name="zevSales"
             id={`zevClass-${item.index}`}
             onBlur={(event) => {
-              event.persist();
+              event.persist()
 
               setTimeout(() => {
-                handleInputChange(event, true);
-              }, 100);
+                handleInputChange(event, true)
+              }, 100)
             }}
             onChange={(event) => {
-              handleInputChange(event);
+              handleInputChange(event)
 
-              const ele = document.getElementById(`zevClass-${item.index}`);
+              const ele = document.getElementById(`zevClass-${item.index}`)
               if (item.original.oldData.zevClass === event.target.value) {
-                const { className } = ele;
-                ele.className = className.replace(/highlight/g, '');
+                const { className } = ele
+                ele.className = className.replace(/highlight/g, '')
               } else {
-                ele.className += ' highlight';
+                ele.className += ' highlight'
               }
             }}
             defaultValue={
@@ -363,7 +363,7 @@ const ZevSales = (props) => {
       sortable: false,
       minWidth: 110
     }
-  ];
+  ]
   return (
     <>
       <h3>
@@ -390,7 +390,7 @@ const ZevSales = (props) => {
           <button
             className="transfer-add-line m-2"
             onClick={() => {
-              addSalesRow();
+              addSalesRow()
             }}
             type="button"
           >
@@ -399,14 +399,14 @@ const ZevSales = (props) => {
         )}
       </div>
     </>
-  );
-};
+  )
+}
 
 ZevSales.propTypes = {
   addSalesRow: PropTypes.func.isRequired,
   details: PropTypes.shape().isRequired,
   handleInputChange: PropTypes.func.isRequired,
   salesRows: PropTypes.arrayOf(PropTypes.shape()).isRequired
-};
+}
 
-export default ZevSales;
+export default ZevSales

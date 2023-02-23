@@ -1,20 +1,20 @@
-import axios from 'axios';
-import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import moment from 'moment-timezone';
+import axios from 'axios'
+import PropTypes from 'prop-types'
+import React, { useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import moment from 'moment-timezone'
 
-import Button from '../../app/components/Button';
-import AutocompleteInput from '../../app/components/AutocompleteInput';
-import ExcelFileDrop from '../../app/components/FileDrop';
-import Loading from '../../app/components/Loading';
-import Modal from '../../app/components/Modal';
-import TextInput from '../../app/components/TextInput';
-import ROUTES_VEHICLES from '../../app/routes/Vehicles';
-import getFileSize from '../../app/utilities/getFileSize';
-import VehicleFormDropdown from './VehicleFormDropdown';
-import VehicleAlert from './VehicleAlert';
-import Comment from '../../app/components/Comment';
+import Button from '../../app/components/Button'
+import AutocompleteInput from '../../app/components/AutocompleteInput'
+import ExcelFileDrop from '../../app/components/FileDrop'
+import Loading from '../../app/components/Loading'
+import Modal from '../../app/components/Modal'
+import TextInput from '../../app/components/TextInput'
+import ROUTES_VEHICLES from '../../app/routes/Vehicles'
+import getFileSize from '../../app/utilities/getFileSize'
+import VehicleFormDropdown from './VehicleFormDropdown'
+import VehicleAlert from './VehicleAlert'
+import Comment from '../../app/components/Comment'
 
 const VehicleForm = (props) => {
   const {
@@ -39,46 +39,46 @@ const VehicleForm = (props) => {
     vehicleYears,
     newVehicle,
     requestStateChange
-  } = props;
-  const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState('');
-  const eligibleWeight = fields.weightKg <= 3856;
+  } = props
+  const [showModal, setShowModal] = useState(false)
+  const [modalType, setModalType] = useState('')
+  const eligibleWeight = fields.weightKg <= 3856
   const modalText =
     fields && fields.hasPassedUs06Test
       ? 'Submit vehicle model and range test results to Government of B.C.'
-      : 'Submit ZEV model to Government of B.C.?';
+      : 'Submit ZEV model to Government of B.C.?'
 
-  let modalProps;
+  let modalProps
   switch (modalType) {
     case 'submit':
       modalProps = {
         confirmLabel: ' Submit',
         handleSubmit: (event) => {
-          handleSubmit(event, 'SUBMITTED');
-          setShowModal(false);
+          handleSubmit(event, 'SUBMITTED')
+          setShowModal(false)
         },
         buttonClass: 'button primary',
         modalText
-      };
-      break;
+      }
+      break
     case 'delete':
       modalProps = {
         confirmLabel: 'Delete',
         modalText: 'Delete the ZEV model?',
         handleSubmit: () => {
-          requestStateChange('DELETED');
+          requestStateChange('DELETED')
         },
         buttonClass: 'btn-outline-danger'
-      };
-      break;
+      }
+      break
     default:
       modalProps = {
         confirmLabel: '',
         buttonClass: '',
         modalText: '',
         handleSubmit: () => {}
-      };
-      break;
+      }
+      break
   }
   const spaces = () => {
     return (
@@ -86,14 +86,14 @@ const VehicleForm = (props) => {
         <br />
         <br />
       </div>
-    );
-  };
+    )
+  }
 
   const modal = (
     <Modal
       confirmLabel={modalProps.confirmLabel}
       handleCancel={() => {
-        setShowModal(false);
+        setShowModal(false)
       }}
       handleSubmit={modalProps.handleSubmit}
       modalClass="w-75"
@@ -107,24 +107,24 @@ const VehicleForm = (props) => {
         {spaces()}
       </div>
     </Modal>
-  );
+  )
 
   const deleteFile = (attachmentId) => {
-    setDeleteFiles([...deleteFiles, attachmentId]);
-  };
+    setDeleteFiles([...deleteFiles, attachmentId])
+  }
 
   const removeFile = (removedFile) => {
-    const found = files.findIndex((file) => file === removedFile);
-    files.splice(found, 1);
+    const found = files.findIndex((file) => file === removedFile)
+    files.splice(found, 1)
 
-    setUploadFiles([...files]);
-  };
+    setUploadFiles([...files])
+  }
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
   const selectedZevType =
-    fields.vehicleZevType.vehicleZevCode || fields.vehicleZevType;
+    fields.vehicleZevType.vehicleZevCode || fields.vehicleZevType
   return (
     <div id="form" className="page">
       <div className="row mb-2">
@@ -311,16 +311,16 @@ const VehicleForm = (props) => {
                                       const objectURL =
                                         window.URL.createObjectURL(
                                           new Blob([response.data])
-                                        );
-                                      const link = document.createElement('a');
-                                      link.href = objectURL;
+                                        )
+                                      const link = document.createElement('a')
+                                      link.href = objectURL
                                       link.setAttribute(
                                         'download',
                                         attachment.filename
-                                      );
-                                      document.body.appendChild(link);
-                                      link.click();
-                                    });
+                                      )
+                                      document.body.appendChild(link)
+                                      link.click()
+                                    })
                                 }}
                                 type="button"
                               >
@@ -334,7 +334,7 @@ const VehicleForm = (props) => {
                               <button
                                 className="delete"
                                 onClick={() => {
-                                  deleteFile(attachment.id);
+                                  deleteFile(attachment.id)
                                 }}
                                 type="button"
                               >
@@ -354,7 +354,7 @@ const VehicleForm = (props) => {
                             <button
                               className="delete"
                               onClick={() => {
-                                removeFile(file);
+                                removeFile(file)
                               }}
                               type="button"
                             >
@@ -403,11 +403,11 @@ const VehicleForm = (props) => {
                     <Button
                       buttonType="delete"
                       action={() => {
-                        setModalType('delete');
-                        setShowModal(true);
+                        setModalType('delete')
+                        setShowModal(true)
                       }}
                     />
-                  )}
+                )}
               </span>
 
               <span className="right-content">
@@ -415,7 +415,7 @@ const VehicleForm = (props) => {
                   buttonType="save"
                   optionalText="Save Draft"
                   action={(e) => {
-                    handleSubmit(e);
+                    handleSubmit(e)
                   }}
                 />
                 <Button
@@ -428,8 +428,8 @@ const VehicleForm = (props) => {
                         fields.attachments.length <= deleteFiles.length))
                   }
                   action={() => {
-                    setModalType('submit');
-                    setShowModal(true);
+                    setModalType('submit')
+                    setShowModal(true)
                   }}
                 />
               </span>
@@ -439,8 +439,8 @@ const VehicleForm = (props) => {
         </div>
       </form>
     </div>
-  );
-};
+  )
+}
 
 VehicleForm.defaultProps = {
   deleteFiles: [],
@@ -452,7 +452,7 @@ VehicleForm.defaultProps = {
   showProgressBars: false,
   status: undefined,
   vehicleComment: {}
-};
+}
 
 VehicleForm.propTypes = {
   deleteFiles: PropTypes.arrayOf(PropTypes.number),
@@ -474,6 +474,6 @@ VehicleForm.propTypes = {
   vehicleYears: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleClasses: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   vehicleComment: PropTypes.shape()
-};
+}
 
-export default VehicleForm;
+export default VehicleForm

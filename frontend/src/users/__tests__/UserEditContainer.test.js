@@ -1,20 +1,20 @@
-import React from 'react';
-import { render, cleanup } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import React from 'react'
+import { render, cleanup } from '@testing-library/react'
+import { BrowserRouter } from 'react-router-dom'
 
-import UserEditContainer from '../UserEditContainer';
+import UserEditContainer from '../UserEditContainer'
 
-afterEach(cleanup);
+afterEach(cleanup)
 
 describe('UserEditContainer', () => {
-  const keycloak = {};
-  const location = {};
+  const keycloak = {}
+  const location = {}
   const user = {
     isGovernment: false,
     organization: {
       id: 2
     }
-  };
+  }
 
   it('renders without crashing', () => {
     render(
@@ -25,6 +25,6 @@ describe('UserEditContainer', () => {
           user={user}
         />
       </BrowserRouter>
-    );
-  });
-});
+    )
+  })
+})

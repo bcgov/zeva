@@ -1,37 +1,37 @@
 /*
  * Presentational component
  */
-import moment from 'moment-timezone';
-import PropTypes from 'prop-types';
-import React from 'react';
-import history from '../../app/History';
-import ReactTable from '../../app/components/ReactTable';
-import CustomPropTypes from '../../app/utilities/props';
-import formatNumeric from '../../app/utilities/formatNumeric';
-import formatStatus from '../../app/utilities/formatStatus';
-import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
+import moment from 'moment-timezone'
+import PropTypes from 'prop-types'
+import React from 'react'
+import history from '../../app/History'
+import ReactTable from '../../app/components/ReactTable'
+import CustomPropTypes from '../../app/utilities/props'
+import formatNumeric from '../../app/utilities/formatNumeric'
+import formatStatus from '../../app/utilities/formatStatus'
+import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers'
 
 const CreditTransfersListTable = (props) => {
-  const { user, filtered, setFiltered } = props;
-  let { items } = props;
+  const { user, filtered, setFiltered } = props
+  let { items } = props
   const statusFilter = (item) =>
-    item.history.filter((each) => each.status === item.status).reverse()[0];
+    item.history.filter((each) => each.status === item.status).reverse()[0]
   items = items.map((item) => {
-    let totalCreditsA = 0;
-    let totalCreditsB = 0;
-    let totalTransferValue = 0;
+    let totalCreditsA = 0
+    let totalCreditsB = 0
+    let totalTransferValue = 0
 
     if (item.creditTransferContent) {
       item.creditTransferContent.forEach((row) => {
         if (row.creditClass.creditClass === 'A') {
-          totalCreditsA += parseFloat(row.creditValue);
+          totalCreditsA += parseFloat(row.creditValue)
         }
         if (row.creditClass.creditClass === 'B') {
-          totalCreditsB += parseFloat(row.creditValue);
+          totalCreditsB += parseFloat(row.creditValue)
         }
 
-        totalTransferValue += parseFloat(row.dollarValue) * row.creditValue;
-      });
+        totalTransferValue += parseFloat(row.dollarValue) * row.creditValue
+      })
     }
 
     return {
@@ -39,8 +39,8 @@ const CreditTransfersListTable = (props) => {
       totalCreditsA,
       totalCreditsB,
       totalTransferValue
-    };
-  });
+    }
+  })
 
   const columns = [
     {
@@ -50,7 +50,7 @@ const CreditTransfersListTable = (props) => {
       Header: 'ID',
       maxWidth: 100,
       sortMethod: (a, b) => {
-        return b.id - a.id;
+        return b.id - a.id
       },
       Cell: (item) => <span>CT-{item.original.id}</span>
     },
@@ -100,65 +100,65 @@ const CreditTransfersListTable = (props) => {
     },
     {
       accessor: (item) => {
-        const { status } = item;
-        const formattedStatus = formatStatus(status);
+        const { status } = item
+        const formattedStatus = formatStatus(status)
 
         if (formattedStatus === 'validated') {
-          return 'recorded';
+          return 'recorded'
         }
         if (formattedStatus === 'recommend rejection') {
-          return 'recommend rejection';
+          return 'recommend rejection'
         }
         if (formattedStatus === 'recommend approval') {
-          return 'recommend approval';
+          return 'recommend approval'
         }
         if (formattedStatus === 'approved') {
-          return 'submitted to government';
+          return 'submitted to government'
         }
         if (formattedStatus === 'submitted') {
-          return 'submitted to transfer partner';
+          return 'submitted to transfer partner'
         }
         if (
           formattedStatus === 'rescind pre approval' ||
           formattedStatus === 'rescinded'
         ) {
-          const rescindorg = statusFilter(item).createUser.organization.name;
-          return `rescinded by ${rescindorg}`;
+          const rescindorg = statusFilter(item).createUser.organization.name
+          return `rescinded by ${rescindorg}`
         }
         if (formattedStatus === 'rejected') {
-          return 'rejected by government';
+          return 'rejected by government'
         }
         if (formattedStatus === 'disapproved') {
-          return 'rejected by transfer partner';
+          return 'rejected by transfer partner'
         }
 
-        return formattedStatus;
+        return formattedStatus
       },
       className: 'text-center text-capitalize',
       filterMethod: (filter, row) => {
-        const filterValues = filter.value.split(',');
-        let returnValue = false;
+        const filterValues = filter.value.split(',')
+        let returnValue = false
 
         filterValues.forEach((filterValue) => {
-          const value = filterValue.toLowerCase().trim();
+          const value = filterValue.toLowerCase().trim()
 
           if (value !== '' && !returnValue) {
-            returnValue = row[filter.id].toLowerCase().includes(value);
+            returnValue = row[filter.id].toLowerCase().includes(value)
           }
-        });
+        })
 
-        return returnValue;
+        return returnValue
       },
       Header: 'Status',
       id: 'status',
       maxWidth: 250
     }
-  ];
+  ]
 
   // Default sort by items by id int value
   items.sort(function (a, b) {
-    return b.id - a.id;
-  });
+    return b.id - a.id
+  })
 
   return (
     <ReactTable
@@ -170,35 +170,35 @@ const CreditTransfersListTable = (props) => {
         if (row && row.original) {
           return {
             onClick: () => {
-              const { id, status, debitFrom } = row.original;
+              const { id, status, debitFrom } = row.original
               if (
                 (status === 'DRAFT' ||
                   status === 'RESCINDED' ||
                   status === 'RESCIND_PRE_APPROVAL') &&
                 user.organization.id === debitFrom.id
               ) {
-                history.push(ROUTES_CREDIT_TRANSFERS.EDIT.replace(/:id/g, id));
+                history.push(ROUTES_CREDIT_TRANSFERS.EDIT.replace(/:id/g, id))
               } else {
                 history.push(
                   ROUTES_CREDIT_TRANSFERS.DETAILS.replace(/:id/g, id),
                   filtered
-                );
+                )
               }
             },
             className: 'clickable'
-          };
+          }
         }
 
-        return {};
+        return {}
       }}
     />
-  );
-};
+  )
+}
 
 CreditTransfersListTable.defaultProps = {
   filtered: undefined,
   setFiltered: undefined
-};
+}
 
 CreditTransfersListTable.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.shape()),
@@ -209,6 +209,6 @@ CreditTransfersListTable.propTypes = {
   ).isRequired,
   setFiltered: PropTypes.func,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default CreditTransfersListTable;
+export default CreditTransfersListTable

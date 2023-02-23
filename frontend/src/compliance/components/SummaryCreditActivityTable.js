@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import formatNumeric from '../../app/utilities/formatNumeric';
+import React from 'react'
+import PropTypes from 'prop-types'
+import formatNumeric from '../../app/utilities/formatNumeric'
 
 const SummaryCreditActivityTable = (props) => {
   const {
@@ -8,8 +8,8 @@ const SummaryCreditActivityTable = (props) => {
     consumerSalesDetails,
     complianceRatios,
     pendingBalanceExist
-  } = props;
-  const { year } = consumerSalesDetails;
+  } = props
+  const { year } = consumerSalesDetails
 
   const {
     creditBalanceStart,
@@ -19,7 +19,7 @@ const SummaryCreditActivityTable = (props) => {
     ldvSales,
     supplierClass,
     provisionalBalanceAfterCreditReduction
-  } = creditActivityDetails;
+  } = creditActivityDetails
 
   const tableSection = (input, title, numberClassname = 'text-right') => {
     if (
@@ -35,9 +35,11 @@ const SummaryCreditActivityTable = (props) => {
           <th className="large-column text-blue">{title}</th>
           <td className={`${numberClassname} a-class`}>
             {title.indexOf('Balance after Credit Reduction') >= 0 &&
-            input.A < 0 ? (
+            input.A < 0
+              ? (
               <span>({formatNumeric(input.A * -1)})</span>
-            ) : (
+                )
+              : (
               <span
                 className={
                   input.A < 0 ||
@@ -49,13 +51,15 @@ const SummaryCreditActivityTable = (props) => {
                 {title === 'Credit Reduction:' && input.A > 0 && '-'}
                 {formatNumeric(input.A) || 0.0}
               </span>
-            )}
+                )}
           </td>
           <td className={numberClassname}>
             {title.indexOf('Balance after Credit Reduction') >= 0 &&
-            input.B < 0 ? (
+            input.B < 0
+              ? (
               <span>({formatNumeric(input.B * -1)})</span>
-            ) : (
+                )
+              : (
               <span
                 className={
                   input.B < 0 ||
@@ -67,14 +71,14 @@ const SummaryCreditActivityTable = (props) => {
                 {title === 'Credit Reduction:' && input.B > 0 && '-'}
                 {formatNumeric(input.B) || 0.0}
               </span>
-            )}
+                )}
           </td>
         </tr>
-      );
+      )
     }
 
-    return false;
-  };
+    return false
+  }
 
   return (
     <table id="summary-credit-activity">
@@ -220,18 +224,18 @@ const SummaryCreditActivityTable = (props) => {
           )}
       </tbody>
     </table>
-  );
-};
+  )
+}
 
 SummaryCreditActivityTable.defaultProps = {
   pendingBalanceExist: false
-};
+}
 
 SummaryCreditActivityTable.propTypes = {
   complianceRatios: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   consumerSalesDetails: PropTypes.shape().isRequired,
   creditActivityDetails: PropTypes.shape().isRequired,
   pendingBalanceExist: PropTypes.bool
-};
+}
 
-export default SummaryCreditActivityTable;
+export default SummaryCreditActivityTable

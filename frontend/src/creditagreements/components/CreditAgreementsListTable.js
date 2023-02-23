@@ -1,18 +1,18 @@
 /*
  * Presentational component
  */
-import PropTypes from 'prop-types';
-import React from 'react';
-import ReactTable from '../../app/components/ReactTable';
-import history from '../../app/History';
-import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements';
-import formatStatus from '../../app/utilities/formatStatus';
-import formatNumeric from '../../app/utilities/formatNumeric';
+import PropTypes from 'prop-types'
+import React from 'react'
+import ReactTable from '../../app/components/ReactTable'
+import history from '../../app/History'
+import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements'
+import formatStatus from '../../app/utilities/formatStatus'
+import formatNumeric from '../../app/utilities/formatNumeric'
 
 const CreditAgreementsListTable = (props) => {
-  const { items, filtered, setFiltered } = props;
+  const { items, filtered, setFiltered } = props
   const getCredits = (item, type) => {
-    let totalCredits = 0;
+    let totalCredits = 0
     item.creditAgreementContent.forEach((eachContent) => {
       if (eachContent.creditClass === type) {
         if (
@@ -22,14 +22,14 @@ const CreditAgreementsListTable = (props) => {
             'Reassessment Reduction'
           ].includes(item.transactionType)
         ) {
-          totalCredits -= parseFloat(eachContent.numberOfCredits);
+          totalCredits -= parseFloat(eachContent.numberOfCredits)
         } else {
-          totalCredits += parseFloat(eachContent.numberOfCredits);
+          totalCredits += parseFloat(eachContent.numberOfCredits)
         }
       }
-    });
-    return formatNumeric(totalCredits);
-  };
+    })
+    return formatNumeric(totalCredits)
+  }
   const COLUMNS = [
     {
       id: 'id',
@@ -38,37 +38,37 @@ const CreditAgreementsListTable = (props) => {
       Header: 'ID',
       maxWidth: 100,
       sortMethod: (a, b) => {
-        return b.id - a.id;
+        return b.id - a.id
       },
       Cell: (item) => {
-        let transactionInitial = '';
+        let transactionInitial = ''
 
         switch (item.original.transactionType) {
           case 'Initiative Agreement':
-            transactionInitial = 'IA';
-            break;
+            transactionInitial = 'IA'
+            break
           case 'Purchase Agreement':
-            transactionInitial = 'PA';
-            break;
+            transactionInitial = 'PA'
+            break
           case 'Administrative Credit Allocation':
-            transactionInitial = 'AA';
-            break;
+            transactionInitial = 'AA'
+            break
           case 'Administrative Credit Reduction':
-            transactionInitial = 'AR';
-            break;
+            transactionInitial = 'AR'
+            break
           case 'Automatic Administrative Penalty':
-            transactionInitial = 'AP';
-            break;
+            transactionInitial = 'AP'
+            break
           case 'Reassessment Allocation':
-            transactionInitial = 'RA';
-            break;
+            transactionInitial = 'RA'
+            break
           case 'Reassessment Reduction':
-            transactionInitial = 'RR';
-            break;
+            transactionInitial = 'RR'
+            break
           default:
-            transactionInitial = '';
+            transactionInitial = ''
         }
-        return <span>{transactionInitial.concat('-', item.original.id)}</span>;
+        return <span>{transactionInitial.concat('-', item.original.id)}</span>
       }
     },
     {
@@ -116,30 +116,30 @@ const CreditAgreementsListTable = (props) => {
     {
       accessor: (row) => formatStatus(row.status),
       filterMethod: (filter, row) => {
-        const filterValues = filter.value.split(',');
+        const filterValues = filter.value.split(',')
 
-        let returnValue = false;
+        let returnValue = false
 
         filterValues.forEach((filterValue) => {
-          const value = filterValue.toLowerCase().trim();
+          const value = filterValue.toLowerCase().trim()
 
           if (value !== '' && !returnValue) {
-            returnValue = row[filter.id].toLowerCase().includes(value);
+            returnValue = row[filter.id].toLowerCase().includes(value)
           }
-        });
+        })
 
-        return returnValue;
+        return returnValue
       },
       className: 'text-center text-capitalize',
       Header: 'Status',
       id: 'col-status'
     }
-  ];
+  ]
 
   // Default sort by items by id int value
   items.sort(function (a, b) {
-    return b.id - a.id;
-  });
+    return b.id - a.id
+  })
 
   return (
     <ReactTable
@@ -151,26 +151,26 @@ const CreditAgreementsListTable = (props) => {
         if (row && row.original) {
           return {
             onClick: () => {
-              const { id } = row.original;
+              const { id } = row.original
               history.push(
                 ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(/:id/g, id),
                 filtered
-              );
+              )
             },
             className: 'clickable'
-          };
+          }
         }
 
-        return {};
+        return {}
       }}
     />
-  );
-};
+  )
+}
 
 CreditAgreementsListTable.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.object).isRequired,
   setFiltered: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape).isRequired
-};
+}
 
-export default CreditAgreementsListTable;
+export default CreditAgreementsListTable

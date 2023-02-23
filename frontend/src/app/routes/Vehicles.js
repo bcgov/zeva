@@ -1,4 +1,4 @@
-const API_BASE_PATH = '/vehicles';
+const API_BASE_PATH = '/vehicles'
 
 const VEHICLES = {
   ADD: `${API_BASE_PATH}/add`,
@@ -11,6 +11,6 @@ const VEHICLES = {
   MODELS: `${API_BASE_PATH}/models`,
   YEARS: `${API_BASE_PATH}/years`,
   ZEV_TYPES: `${API_BASE_PATH}/zev_types`
-};
+}
 
-export default VEHICLES;
+export default VEHICLES

@@ -1,19 +1,19 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { fab } from '@fortawesome/free-brands-svg-icons';
-import { far } from '@fortawesome/free-regular-svg-icons';
-import { fas } from '@fortawesome/free-solid-svg-icons';
-import '../app/css/index.scss';
+import React from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { fab } from '@fortawesome/free-brands-svg-icons'
+import { far } from '@fortawesome/free-regular-svg-icons'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import '../app/css/index.scss'
 // import { storiesOf } from "@storybook/react";
 // import { action } from "@storybook/addon-actions";
-import { storiesOf } from '@storybook/react';
+import { storiesOf } from '@storybook/react'
 
-import Modal from '../app/components/Modal';
+import Modal from '../app/components/Modal'
 
-library.add(fab, far, fas);
-const handleCancel = () => console.log('CANCEL!');
-const handleSubmit = () => console.log('SUBMIT!');
+library.add(fab, far, fas)
+const handleCancel = () => console.log('CANCEL!')
+const handleSubmit = () => console.log('SUBMIT!')
 
 storiesOf('modal', module)
   .add('basic modal', () => (
@@ -34,4 +34,4 @@ storiesOf('modal', module)
       title="our awesome modal!"
       icon={<FontAwesomeIcon icon="paper-plane" />}
     />
-  ));
+  ))

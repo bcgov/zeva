@@ -1,14 +1,14 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from 'prop-types';
-import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import PropTypes from 'prop-types'
+import React from 'react'
 
-import history from '../../app/History';
-import CustomPropTypes from '../../app/utilities/props';
-import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
-import CreditRequestListTable from './CreditRequestListTable';
+import history from '../../app/History'
+import CustomPropTypes from '../../app/utilities/props'
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
+import CreditRequestListTable from './CreditRequestListTable'
 
 const CreditRequestsPage = (props) => {
-  const { filtered, handleClear, setFiltered, submissions, user } = props;
+  const { filtered, handleClear, setFiltered, submissions, user } = props
 
   return (
     <div id="credit-requests-list" className="page">
@@ -32,13 +32,13 @@ const CreditRequestsPage = (props) => {
               <button
                 className="button primary ml-3"
                 onClick={() => {
-                  history.push(ROUTES_CREDIT_REQUESTS.NEW);
+                  history.push(ROUTES_CREDIT_REQUESTS.NEW)
                 }}
                 type="button"
               >
                 <FontAwesomeIcon icon="plus" /> New Credit Application
               </button>
-            )}
+          )}
         </div>
       </div>
       <div className="row">
@@ -52,10 +52,10 @@ const CreditRequestsPage = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-CreditRequestsPage.defaultProps = {};
+CreditRequestsPage.defaultProps = {}
 
 CreditRequestsPage.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -63,6 +63,6 @@ CreditRequestsPage.propTypes = {
   setFiltered: PropTypes.func.isRequired,
   submissions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default CreditRequestsPage;
+export default CreditRequestsPage

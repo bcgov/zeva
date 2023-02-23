@@ -1,27 +1,25 @@
-import axios from 'axios';
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import axios from 'axios'
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 
-import parse from 'html-react-parser';
-import Loading from '../../app/components/Loading';
-import Modal from '../../app/components/Modal';
-import Button from '../../app/components/Button';
-import ZevSales from './ZevSales';
-import SupplierInformation from './SupplierInformation';
-import CreditActivity from './CreditActivity';
-import UploadEvidence from './UploadEvidence';
-import CommentInput from '../../app/components/CommentInput';
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
-import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
-import formatNumeric from '../../app/utilities/formatNumeric';
-import CustomPropTypes from '../../app/utilities/props';
-import ComplianceHistory from '../../compliance/components/ComplianceHistory';
-import CONFIG from '../../app/config';
-import ReassessmentDetailsPage from './ReassessmentDetailsPage';
-import SupplementaryTab from './SupplementaryTab';
-import ReactTooltip from 'react-tooltip';
-import EditableCommentList from '../../app/components/EditableCommentList';
+import parse from 'html-react-parser'
+import Loading from '../../app/components/Loading'
+import Modal from '../../app/components/Modal'
+import Button from '../../app/components/Button'
+import ZevSales from './ZevSales'
+import SupplierInformation from './SupplierInformation'
+import CreditActivity from './CreditActivity'
+import CommentInput from '../../app/components/CommentInput'
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport'
+import formatNumeric from '../../app/utilities/formatNumeric'
+import CustomPropTypes from '../../app/utilities/props'
+import ComplianceHistory from '../../compliance/components/ComplianceHistory'
+import CONFIG from '../../app/config'
+import ReassessmentDetailsPage from './ReassessmentDetailsPage'
+import SupplementaryTab from './SupplementaryTab'
+import ReactTooltip from 'react-tooltip'
+import EditableCommentList from '../../app/components/EditableCommentList'
 
 const SupplementaryDirectorDetails = (props) => {
   const {
@@ -51,75 +49,76 @@ const SupplementaryDirectorDetails = (props) => {
     user,
     newReport,
     query
-  } = props;
+  } = props
 
-  let { newData } = props;
-  let { reassessment } = details;
+  const { newData } = props
+  const { reassessment } = details
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
   // if user is bceid then only draft is editable
   // if user is idir then draft or submitted is editable
-  const [showModal, setShowModal] = useState(false);
-  const [showModalDraft, setShowModalDraft] = useState(false);
-  const [showModalDelete, setShowModalDelete] = useState(false);
-  const reportYear = details.assessmentData && details.assessmentData.modelYear;
+  const [showModal, setShowModal] = useState(false)
+  const [showModalDraft, setShowModalDraft] = useState(false)
+  const [showModalDelete, setShowModalDelete] = useState(false)
+  const reportYear = details.assessmentData && details.assessmentData.modelYear
   const supplierClass =
-    details.assessmentData && details.assessmentData.supplierClass[0];
+    details.assessmentData && details.assessmentData.supplierClass[0]
   const creditReductionSelection =
-    details.assessmentData && details.assessmentData.creditReductionSelection;
+    details.assessmentData && details.assessmentData.creditReductionSelection
   let currentStatus = details.actualStatus
     ? details.actualStatus
-    : details.status;
+    : details.status
   if (currentStatus === 'ASSESSED' && newReport) {
-    currentStatus = 'DRAFT';
+    currentStatus = 'DRAFT'
   }
 
   const isAssessed = currentStatus === 'ASSESSED' ||
     currentStatus === 'REASSESSED'
-  
-  const isRecommended = currentStatus === 'RECOMMENDED';
+
+  const isRecommended = currentStatus === 'RECOMMENDED'
 
   const tabNames = ['supplemental', 'recommendation', 'reassessment']
   const selectedTab = query?.tab ? query.tab : isAssessed || isRecommended ? tabNames[2] : tabNames[1]
 
   const isReassessment = reassessment?.isReassessment
   const reassessmentStatus = reassessment?.status ? reassessment.status : details.status
-  const supplementaryReportId = reassessment?.supplementaryReportId ? reassessment?.supplementaryReportId : 
-    (isReassessment ? details.id : null)
+  const supplementaryReportId = reassessment?.supplementaryReportId
+    ? reassessment?.supplementaryReportId
+    : (isReassessment ? details.id : null)
   const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
   const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
 
   let isEditable = ['DRAFT'].indexOf(details.status) >= 0
-  
-  if (selectedTab == tabNames[0] && currentStatus == 'SUBMITTED') {
+
+  if (selectedTab === tabNames[0] && currentStatus === 'SUBMITTED') {
     isEditable = false
   }
-  if (selectedTab == tabNames[1] && currentStatus == 'SUBMITTED') {
+  if (selectedTab === tabNames[1] && currentStatus === 'SUBMITTED') {
     isEditable = true
   }
 
   const formattedPenalty = details.assessment
     ? formatNumeric(details.assessment.assessmentPenalty, 0)
-    : 0;
+    : 0
   const assessmentDecision =
     supplementaryAssessmentData.supplementaryAssessment.decision &&
     supplementaryAssessmentData.supplementaryAssessment.decision.description
       ? supplementaryAssessmentData.supplementaryAssessment.decision.description
-          .replace(
-            /{user.organization.name}/g,
-            details.assessmentData.legalName
-          )
-          .replace(/{modelYear}/g, details.assessmentData.modelYear)
-          .replace(/{penalty}/g, `$${formattedPenalty} CAD`)
-      : '';
+        .replace(
+          /{user.organization.name}/g,
+          details.assessmentData.legalName
+        )
+        .replace(/{modelYear}/g, details.assessmentData.modelYear)
+        .replace(/{penalty}/g, `$${formattedPenalty} CAD`)
+      : ''
   const showDescription = (each) => {
     const selectedId =
       supplementaryAssessmentData &&
       supplementaryAssessmentData.supplementaryAssessment &&
       supplementaryAssessmentData.supplementaryAssessment.decision &&
-      supplementaryAssessmentData.supplementaryAssessment.decision.id;
+      supplementaryAssessmentData.supplementaryAssessment.decision.id
 
     return (
       <div className="mb-3" key={each.id}>
@@ -141,7 +140,7 @@ const SupplementaryDirectorDetails = (props) => {
                   id: each.id
                 }
               }
-            });
+            })
           }}
         />
         {each.description && (
@@ -156,23 +155,23 @@ const SupplementaryDirectorDetails = (props) => {
           </label>
         )}
       </div>
-    );
-  };
+    )
+  }
 
   const handleGovSubmitDraft = (status) => {
-    handleSubmit(status, false);
-  };
+    handleSubmit(status, false)
+  }
 
   const modal = (
     <Modal
       cancelLabel="No"
       confirmLabel="Yes"
       handleCancel={() => {
-        setShowModal(false);
+        setShowModal(false)
       }}
       handleSubmit={() => {
-        setShowModal(false);
-        handleSubmit('RECOMMENDED', false);
+        setShowModal(false)
+        handleSubmit('RECOMMENDED', false)
       }}
       modalClass="w-75"
       showModal={showModal}
@@ -186,18 +185,18 @@ const SupplementaryDirectorDetails = (props) => {
         </h3>
       </div>
     </Modal>
-  );
+  )
 
   const modalDelete = (
     <Modal
       cancelLabel="No"
       confirmLabel="Yes"
       handleCancel={() => {
-        setShowModalDelete(false);
+        setShowModalDelete(false)
       }}
       handleSubmit={() => {
-        setShowModalDelete(false);
-        handleSubmit('DELETED');
+        setShowModalDelete(false)
+        handleSubmit('DELETED')
       }}
       modalClass="w-75"
       showModal={showModalDelete}
@@ -207,18 +206,18 @@ const SupplementaryDirectorDetails = (props) => {
         <h3>Are you sure you want to delete this?</h3>
       </div>
     </Modal>
-  );
+  )
 
   const modalDraft = (
     <Modal
       cancelLabel="No"
       confirmLabel="Yes"
       handleCancel={() => {
-        setShowModalDraft(false);
+        setShowModalDraft(false)
       }}
       handleSubmit={() => {
-        setShowModalDraft(false);
-        handleSubmit(currentStatus, newReport);
+        setShowModalDraft(false)
+        handleSubmit(currentStatus, newReport)
       }}
       modalClass="w-75"
       showModal={showModalDraft}
@@ -232,16 +231,7 @@ const SupplementaryDirectorDetails = (props) => {
         </h3>
       </div>
     </Modal>
-  );
-
-  let disabledRecommendBtn = false;
-  let recommendTooltip = '';
-
-  if (!assessmentDecision) {
-    disabledRecommendBtn = true;
-    recommendTooltip =
-      'Please select an Analyst Recommendation before recommending this assessment.';
-  }
+  )
 
   const tabUrl = (supplementalId, tabName) => {
     return ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id)
@@ -257,8 +247,10 @@ const SupplementaryDirectorDetails = (props) => {
         role="tablist"
       >
         <ReactTooltip/>
-        {supplementaryReportId == null ? null : (<SupplementaryTab
-          selected={selectedTab == tabNames[0]}
+        {supplementaryReportId == null
+          ? null
+          : (<SupplementaryTab
+          selected={selectedTab === tabNames[0]}
           title={'Supplementary Report'}
           url={tabUrl(supplementaryReportId, tabNames[0])}
           disabled={supplementaryReportId == null}
@@ -267,7 +259,7 @@ const SupplementaryDirectorDetails = (props) => {
           assessed={isAssessed}
         />)}
         <SupplementaryTab
-          selected={selectedTab == tabNames[1]}
+          selected={selectedTab === tabNames[1]}
           title={'Reassessment Recommendation'}
           url={tabUrl(newReport ? supplementaryReportId : reassessmentReportId, tabNames[1])}
           disabled={false}
@@ -276,7 +268,7 @@ const SupplementaryDirectorDetails = (props) => {
           assessed={isAssessed}
         />
         <SupplementaryTab
-          selected={selectedTab == tabNames[2]}
+          selected={selectedTab === tabNames[2]}
           title={'Reassessment'}
           url={tabUrl(reassessmentReportId, tabNames[2])}
           // disabled={!isAssessed}
@@ -319,7 +311,7 @@ const SupplementaryDirectorDetails = (props) => {
                 handleCommentEdit={handleEditIdirComment}
                 handleCommentDelete={handleDeleteIdirComment}
               />
-            )}
+          )}
 
           <div id="comment-input">
             <CommentInput
@@ -342,13 +334,14 @@ const SupplementaryDirectorDetails = (props) => {
           optionalClassname="ml-2 mr-2 button btn float-right d-print-none"
           optionalText="Print Page"
           action={() => {
-            window.print();
+            window.print()
           }}
         />
         <div>
           {isReassessment &&
-            currentStatus === 'ASSESSED' || isReassessment 
-            && selectedTab == tabNames[2] ? (
+            (currentStatus === 'ASSESSED' || (isReassessment &&
+            selectedTab === tabNames[2]))
+            ? (
             <ReassessmentDetailsPage
               details={details}
               ldvSales={ldvSales}
@@ -358,7 +351,8 @@ const SupplementaryDirectorDetails = (props) => {
               ratios={ratios}
               user={user}
             />
-          ) : (
+              )
+            : (
             <>
               <SupplierInformation
                 isEditable={isEditable}
@@ -389,7 +383,7 @@ const SupplementaryDirectorDetails = (props) => {
                 isEditable={isEditable}
               />
             </>
-          )}
+              )}
         </div>
         {details &&
           details.status === 'SUBMITTED' &&
@@ -406,7 +400,7 @@ const SupplementaryDirectorDetails = (props) => {
                       {parse(details.fromSupplierComments[0].comment)}
                     </span>
                   </div>
-                )}
+              )}
               {details &&
                 details.attachments &&
                 details.attachments.length > 0 && (
@@ -433,16 +427,16 @@ const SupplementaryDirectorDetails = (props) => {
                                     const objectURL =
                                       window.URL.createObjectURL(
                                         new Blob([response.data])
-                                      );
-                                    const link = document.createElement('a');
-                                    link.href = objectURL;
+                                      )
+                                    const link = document.createElement('a')
+                                    link.href = objectURL
                                     link.setAttribute(
                                       'download',
                                       attachment.filename
-                                    );
-                                    document.body.appendChild(link);
-                                    link.click();
-                                  });
+                                    )
+                                    document.body.appendChild(link)
+                                    link.click()
+                                  })
                               }}
                               type="button"
                             >
@@ -452,9 +446,9 @@ const SupplementaryDirectorDetails = (props) => {
                         </div>
                       ))}
                   </div>
-                )}
+              )}
             </div>
-          )}
+        )}
       </div>
       {supplementaryAssessmentData.supplementaryAssessment &&
         supplementaryAssessmentData.supplementaryAssessment.decision &&
@@ -474,7 +468,7 @@ const SupplementaryDirectorDetails = (props) => {
                           <div className="mt-2">
                             {parse(commentArray.bceidComment.comment)}
                           </div>
-                        )}
+                      )}
                     </div>
                   </div>
                 </div>
@@ -508,7 +502,7 @@ const SupplementaryDirectorDetails = (props) => {
                         <div>
                           <input
                             disabled={
-                              (currentStatus == 'RECOMMENDED') ||
+                              (currentStatus === 'RECOMMENDED') ||
                               assessmentDecision.indexOf(
                                 'Section 10 (3) applies'
                               ) < 0
@@ -527,7 +521,7 @@ const SupplementaryDirectorDetails = (props) => {
                                   ...supplementaryAssessmentData.supplementaryAssessment,
                                   assessmentPenalty: e.target.value
                                 }
-                              });
+                              })
                             }}
                           />
                           <label className="text-grey" htmlFor="penalty-amount">
@@ -568,12 +562,12 @@ const SupplementaryDirectorDetails = (props) => {
                 )}
               />
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                selectedTab == tabNames[2] &&
+                selectedTab === tabNames[2] &&
                   currentStatus === 'RECOMMENDED' &&
                   <button
                     className="button text-danger"
                     onClick={() => {
-                      handleSubmit('RETURNED');
+                      handleSubmit('RETURNED')
                     }}
                     type="button"
                   >
@@ -592,16 +586,16 @@ const SupplementaryDirectorDetails = (props) => {
                       handleGovSubmitDraft(currentStatus)
                     }}
                   />
-                )}
+              )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                currentStatus === 'RECOMMENDED' && selectedTab == tabNames[2] && (
+                currentStatus === 'RECOMMENDED' && selectedTab === tabNames[2] && (
                   <Button
                     buttonType="submit"
                     optionalClassname="button primary"
                     optionalText="Issue Assessment"
                     action={() => handleSubmit('ASSESSED')}
                   />
-                )}
+              )}
             </span>
           </div>
         </div>
@@ -610,8 +604,8 @@ const SupplementaryDirectorDetails = (props) => {
       {modalDraft}
       {modalDelete}
     </div>
-  );
-};
+  )
+}
 
 SupplementaryDirectorDetails.defaultProps = {
   isReassessment: undefined,
@@ -620,7 +614,7 @@ SupplementaryDirectorDetails.defaultProps = {
   obligationDetails: [],
   query: {},
   ratios: {}
-};
+}
 
 SupplementaryDirectorDetails.propTypes = {
   addSalesRow: PropTypes.func.isRequired,
@@ -651,6 +645,6 @@ SupplementaryDirectorDetails.propTypes = {
   setSupplementaryAssessmentData: PropTypes.func.isRequired,
   supplementaryAssessmentData: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default SupplementaryDirectorDetails;
+export default SupplementaryDirectorDetails

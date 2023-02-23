@@ -1,5 +1,5 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const Feedback = () => (
   <div id="feedback" className="dashboard-card">
@@ -24,6 +24,6 @@ const Feedback = () => (
       </p>
     </div>
   </div>
-);
+)
 
-export default Feedback;
+export default Feedback

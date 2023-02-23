@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import CustomPropTypes from '../../app/utilities/props';
-import Loading from '../../app/components/Loading';
-import ComplianceReportAlert from './ComplianceReportAlert';
-import Button from '../../app/components/Button';
-import Modal from '../../app/components/Modal';
-import history from '../../app/History';
-import ComplianceReportSignOff from './ComplianceReportSignOff';
-import ConsumerSalesLDVModalTable from './ConsumerSalesLDVModelTable';
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
+import CustomPropTypes from '../../app/utilities/props'
+import Loading from '../../app/components/Loading'
+import ComplianceReportAlert from './ComplianceReportAlert'
+import Button from '../../app/components/Button'
+import Modal from '../../app/components/Modal'
+import history from '../../app/History'
+import ComplianceReportSignOff from './ComplianceReportSignOff'
+import ConsumerSalesLDVModalTable from './ConsumerSalesLDVModelTable'
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
 
 const ConsumerSalesDetailsPage = (props) => {
   const {
@@ -26,13 +26,13 @@ const ConsumerSalesDetailsPage = (props) => {
     statuses,
     id,
     checked
-  } = props;
+  } = props
 
-  const [showModal, setShowModal] = useState(false);
-  let disabledCheckboxes = propsDisabledCheckboxes;
+  const [showModal, setShowModal] = useState(false)
+  let disabledCheckboxes = propsDisabledCheckboxes
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   const modal = (
@@ -40,11 +40,11 @@ const ConsumerSalesDetailsPage = (props) => {
       cancelLabel="No"
       confirmLabel="Yes"
       handleCancel={() => {
-        setShowModal(false);
+        setShowModal(false)
       }}
       handleSubmit={() => {
-        setShowModal(false);
-        handleCancelConfirmation();
+        setShowModal(false)
+        handleCancelConfirmation()
       }}
       modalClass="w-75"
       showModal={showModal}
@@ -59,30 +59,30 @@ const ConsumerSalesDetailsPage = (props) => {
         </h3>
       </div>
     </Modal>
-  );
-  let enableEditBtnForAnalyst = false;
+  )
+  let enableEditBtnForAnalyst = false
   const pendingSalesExist = () => {
     if (Object.keys(vehicles).length > 0) {
       vehicles.forEach((each) => {
         if (each.pendingSales > 0) {
-          enableEditBtnForAnalyst = true;
+          enableEditBtnForAnalyst = true
         }
-      });
+      })
     }
-  };
+  }
 
   assertions.forEach((assertion) => {
     if (checkboxes.indexOf(assertion.id) >= 0) {
-      disabledCheckboxes = 'disabled';
+      disabledCheckboxes = 'disabled'
     }
-  });
+  })
 
   const disableSave = () => {
     if (vehicles.length <= 0 && !checked) {
-      return true;
+      return true
     }
-    return false;
-  };
+    return false
+  }
 
   return (
     <div id="compliance-consumer-sales-details" className="page">
@@ -103,7 +103,7 @@ const ConsumerSalesDetailsPage = (props) => {
                 status={statuses.consumerSales}
                 type="Consumer ZEV Sales"
               />
-            )}
+          )}
         </div>
       </div>
 
@@ -118,19 +118,19 @@ const ConsumerSalesDetailsPage = (props) => {
                   <button
                     className="btn button primary"
                     onClick={() => {
-                      setShowModal(true);
+                      setShowModal(true)
                     }}
                     type="button"
                   >
                     Edit
                   </button>
-                )}
+              )}
               <Button
                 buttonType="button"
                 optionalClassname="ml-2 mr-2 button btn"
                 optionalText="Print Page"
                 action={() => {
-                  window.print();
+                  window.print()
                 }}
               />
             </span>
@@ -145,7 +145,7 @@ const ConsumerSalesDetailsPage = (props) => {
                 <button
                   className="text-primary credit-request-link"
                   onClick={() => {
-                    history.push('/credit-requests/new');
+                    history.push('/credit-requests/new')
                   }}
                   type="button"
                 >
@@ -168,7 +168,7 @@ const ConsumerSalesDetailsPage = (props) => {
       </div>
       {['SUBMITTED', 'ASSESSED', 'REASSESSED'].indexOf(
         statuses.consumerSales.status
-      ) == -1 && (
+      ) === -1 && (
         <>
           <div className="row">
             <div className="col-12 my-3">
@@ -202,7 +202,7 @@ const ConsumerSalesDetailsPage = (props) => {
                           ':id',
                           id
                         )
-                      );
+                      )
                     }}
                   />
                   {!user.isGovernment && (
@@ -215,7 +215,7 @@ const ConsumerSalesDetailsPage = (props) => {
                       }
                       optionalClassname="button primary"
                       action={(event) => {
-                        handleSave(event);
+                        handleSave(event)
                       }}
                     />
                   )}
@@ -227,12 +227,12 @@ const ConsumerSalesDetailsPage = (props) => {
       )}
       {modal}
     </div>
-  );
-};
+  )
+}
 ConsumerSalesDetailsPage.defaultProps = {
   assertions: [],
   checkboxes: []
-};
+}
 
 ConsumerSalesDetailsPage.propTypes = {
   details: PropTypes.shape({
@@ -253,5 +253,5 @@ ConsumerSalesDetailsPage.propTypes = {
   disabledCheckboxes: PropTypes.string.isRequired,
   modelYear: PropTypes.number.isRequired,
   statuses: PropTypes.shape().isRequired
-};
-export default ConsumerSalesDetailsPage;
+}
+export default ConsumerSalesDetailsPage

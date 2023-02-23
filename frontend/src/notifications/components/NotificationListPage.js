@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import ReactTooltip from 'react-tooltip';
-import Loading from '../../app/components/Loading';
+import PropTypes from 'prop-types'
+import React from 'react'
+import ReactTooltip from 'react-tooltip'
+import Loading from '../../app/components/Loading'
 
 const NotificationListPage = (props) => {
   const {
@@ -13,10 +13,10 @@ const NotificationListPage = (props) => {
     subscribe,
     unsubscribe,
     loading
-  } = props;
+  } = props
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   return (
@@ -26,7 +26,7 @@ const NotificationListPage = (props) => {
           type="radio"
           id="Unsubscribe"
           onChange={(event) => {
-            handleChange(event);
+            handleChange(event)
           }}
           name="Subscription"
           value="Unsubscribe"
@@ -40,7 +40,7 @@ const NotificationListPage = (props) => {
           type="radio"
           id="Subscribe"
           onChange={(event) => {
-            handleChange(event);
+            handleChange(event)
           }}
           name="Subscription"
           value="Subscribe"
@@ -65,7 +65,7 @@ const NotificationListPage = (props) => {
                 id={notification.id}
                 name="notifications"
                 onChange={(event) => {
-                  handleCheckboxClick(event);
+                  handleCheckboxClick(event)
                 }}
                 type="checkbox"
               />
@@ -80,15 +80,15 @@ const NotificationListPage = (props) => {
           </div>
         ))}
     </div>
-  );
-};
+  )
+}
 
 NotificationListPage.defaultProps = {
   notifications: [],
   checkboxes: [],
   subscribe: false,
   unsubscribe: false
-};
+}
 
 NotificationListPage.propTypes = {
   notifications: PropTypes.arrayOf(PropTypes.shape()),
@@ -101,6 +101,6 @@ NotificationListPage.propTypes = {
   subscribe: PropTypes.bool,
   unsubscribe: PropTypes.bool,
   loading: PropTypes.bool.isRequired
-};
+}
 
-export default NotificationListPage;
+export default NotificationListPage

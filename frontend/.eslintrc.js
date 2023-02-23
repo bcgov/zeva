@@ -1,7 +1,8 @@
 module.exports = {
   env: {
     browser: true,
-    es2021: true
+    es2021: true,
+    jest: true
   },
   extends: [
     'plugin:react/recommended',
@@ -18,7 +19,9 @@ module.exports = {
     sourceType: 'module'
   },
   plugins: ['react'],
-  rules: {},
+  rules: {
+    'react/prop-types': 'off'
+  },
   settings: {
     react: {
       version: 'detect'

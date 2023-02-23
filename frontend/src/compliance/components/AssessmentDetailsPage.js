@@ -1,25 +1,25 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import parse from 'html-react-parser';
-import CONFIG from '../../app/config';
-import Button from '../../app/components/Button';
-import Loading from '../../app/components/Loading';
-import history from '../../app/History';
-import Modal from '../../app/components/Modal';
-import CustomPropTypes from '../../app/utilities/props';
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
-import ComplianceObligationAmountsTable from './ComplianceObligationAmountsTable';
-import ComplianceReportTabs from './ComplianceReportTabs';
-import formatNumeric from '../../app/utilities/formatNumeric';
-import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable';
-import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued';
-import CommentInput from '../../app/components/CommentInput';
-import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
-import ComplianceHistory from './ComplianceHistory';
-import AssessmentEditableCommentList from './AssessmentEditableCommentList';
-import AssessmentEditableCommentInput from './AssessmentEditableCommentInput';
-import NoticeOfAssessmentSection from './NoticeOfAssessmentSection';
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
+import parse from 'html-react-parser'
+import CONFIG from '../../app/config'
+import Button from '../../app/components/Button'
+import Loading from '../../app/components/Loading'
+import history from '../../app/History'
+import Modal from '../../app/components/Modal'
+import CustomPropTypes from '../../app/utilities/props'
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import ComplianceObligationAmountsTable from './ComplianceObligationAmountsTable'
+import ComplianceReportTabs from './ComplianceReportTabs'
+import formatNumeric from '../../app/utilities/formatNumeric'
+import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable'
+import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued'
+import CommentInput from '../../app/components/CommentInput'
+import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport'
+import ComplianceHistory from './ComplianceHistory'
+import AssessmentEditableCommentList from './AssessmentEditableCommentList'
+import AssessmentEditableCommentInput from './AssessmentEditableCommentInput'
+import NoticeOfAssessmentSection from './NoticeOfAssessmentSection'
 
 const AssessmentDetailsPage = (props) => {
   const {
@@ -56,39 +56,39 @@ const AssessmentDetailsPage = (props) => {
     createdByGov,
     handleCancelConfirmation,
     reassessmentExists,
-    reassessmentTooltip,
-  } = props;
+    reassessmentTooltip
+  } = props
 
-  const [showModal, setShowModal] = useState(false);
-  const [showModalAssess, setShowModalAssess] = useState(false);
-  const [editableComment, setEditableComment] = useState(null);
-  const [editText, setEditText] = useState('');
+  const [showModal, setShowModal] = useState(false)
+  const [showModalAssess, setShowModalAssess] = useState(false)
+  const [editableComment, setEditableComment] = useState(null)
+  const [editText, setEditText] = useState('')
 
   const formattedPenalty = formatNumeric(
     details.assessment.assessmentPenalty,
     0
-  );
+  )
 
   const assessmentDecision =
     details.assessment.decision && details.assessment.decision.description
       ? details.assessment.decision.description
-          .replace(/{user.organization.name}/g, details.organization.name)
-          .replace(/{modelYear}/g, reportYear)
-          .replace(/{penalty}/g, `$${formattedPenalty} CAD`)
-      : '';
-  const disabledInputs = false;
+        .replace(/{user.organization.name}/g, details.organization.name)
+        .replace(/{modelYear}/g, reportYear)
+        .replace(/{penalty}/g, `$${formattedPenalty} CAD`)
+      : ''
+  const disabledInputs = false
 
   const modalReturn = (
     <Modal
       cancelLabel="Cancel"
       confirmLabel="Return to Supplier"
       handleCancel={() => {
-        setShowModal(false);
+        setShowModal(false)
       }}
       handleSubmit={() => {
-        setShowModal(false);
-        handleSubmit('DRAFT');
-        handleCancelConfirmation();
+        setShowModal(false)
+        handleSubmit('DRAFT')
+        handleCancelConfirmation()
       }}
       modalClass="w-75"
       showModal={showModal}
@@ -98,18 +98,18 @@ const AssessmentDetailsPage = (props) => {
         <h3>Do you wish to return this Model Year report to the supplier?</h3>
       </div>
     </Modal>
-  );
+  )
 
   const modalIssueAssessment = (
     <Modal
       cancelLabel="Cancel"
       confirmLabel="Issue Assessment"
       handleCancel={() => {
-        setShowModalAssess(false);
+        setShowModalAssess(false)
       }}
       handleSubmit={() => {
-        setShowModalAssess(false);
-        handleSubmit('ASSESSED');
+        setShowModalAssess(false)
+        handleSubmit('ASSESSED')
       }}
       modalClass="w-75"
       showModal={showModalAssess}
@@ -119,7 +119,7 @@ const AssessmentDetailsPage = (props) => {
         <h3>Are you sure you want to issue this assessment?</h3>
       </div>
     </Modal>
-  );
+  )
   const showDescription = (each) => (
     <div className="mb-3" key={each.id}>
       <input
@@ -145,7 +145,7 @@ const AssessmentDetailsPage = (props) => {
                 id: each.id
               }
             }
-          });
+          })
         }}
       />
       {each.description && (
@@ -156,57 +156,57 @@ const AssessmentDetailsPage = (props) => {
         </label>
       )}
     </div>
-  );
-  let disabledRecommendBtn = false;
-  let recommendTooltip = '';
+  )
+  let disabledRecommendBtn = false
+  let recommendTooltip = ''
 
   if (!assessmentDecision) {
-    disabledRecommendBtn = true;
+    disabledRecommendBtn = true
     recommendTooltip =
-      'Please select an Analyst Recommendation before recommending this assessment.';
+      'Please select an Analyst Recommendation before recommending this assessment.'
   }
 
   if (pendingBalanceExist) {
-    disabledRecommendBtn = true;
+    disabledRecommendBtn = true
     recommendTooltip =
-      'There are credit applications that must be issued prior to recommending this assessment.';
+      'There are credit applications that must be issued prior to recommending this assessment.'
   }
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   const editComment = (comment) => {
-    const text = comment.comment;
-    setEditableComment(comment);
-    setEditText(text);
-    handleCommentChangeBceid(text);
-    handleCommentChangeIdir(text);
-  };
+    const text = comment.comment
+    setEditableComment(comment)
+    setEditText(text)
+    handleCommentChangeBceid(text)
+    handleCommentChangeIdir(text)
+  }
 
   const updateEditableCommentText = (text) => {
-    setEditText(text);
-    handleCommentChangeBceid(text);
-    handleCommentChangeIdir(text);
-  };
+    setEditText(text)
+    handleCommentChangeBceid(text)
+    handleCommentChangeIdir(text)
+  }
 
   const saveEditableComment = () => {
-    let comment = editableComment;
-    comment.comment = editText;
-    handleEditComment(comment);
-  };
+    const comment = editableComment
+    comment.comment = editText
+    handleEditComment(comment)
+  }
 
   const deleteEditableComment = () => {
-    let comment = editableComment;
-    handleDeleteComment(comment);
-  };
+    const comment = editableComment
+    handleDeleteComment(comment)
+  }
 
   const cancelEditableComment = () => {
-    setEditText('');
-    setEditableComment(null);
-    handleCommentChangeIdir('');
-    handleCommentChangeBceid('');
-  };
+    setEditText('')
+    setEditableComment(null)
+    handleCommentChangeIdir('')
+    handleCommentChangeBceid('')
+  }
 
   return (
     <div id="assessment-details" className="page">
@@ -280,7 +280,7 @@ const AssessmentDetailsPage = (props) => {
                           )}
                         </div>
                       </>
-                    )}
+                  )}
                   {details.idirComment &&
                     details.idirComment.length > 0 &&
                     user.isGovernment && (
@@ -289,7 +289,7 @@ const AssessmentDetailsPage = (props) => {
                         editComment={editComment}
                         user={user}
                       />
-                    )}
+                  )}
                   {statuses.assessment.status !== 'ASSESSED' && (
                     <AssessmentEditableCommentInput
                       handleAddComment={handleAddIdirComment}
@@ -303,8 +303,8 @@ const AssessmentDetailsPage = (props) => {
                         editableComment
                           ? 'Editing comment:'
                           : analystAction
-                          ? 'Add comment to director: '
-                          : 'Add comment to the analyst'
+                            ? 'Add comment to director: '
+                            : 'Add comment to the analyst'
                       }
                       buttonText={
                         editableComment ? 'Save Comment' : 'Add Comment'
@@ -340,10 +340,10 @@ const AssessmentDetailsPage = (props) => {
                           /:id/g,
                           id
                         )}`
-                      );
+                      )
                     }}
                   />
-                )}
+              )}
 
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 user.isGovernment &&
@@ -362,14 +362,14 @@ const AssessmentDetailsPage = (props) => {
                             /:id/g,
                             id
                           )}`
-                        );
+                        )
                       }}
                       type="button"
                     >
                       Create Reassessment Report
                     </button>
                   </>
-                )}
+              )}
 
               {analystAction &&
                 ['RETURNED', 'SUBMITTED', 'UNSAVED'].indexOf(
@@ -380,19 +380,19 @@ const AssessmentDetailsPage = (props) => {
                     onClick={() => {
                       history.push(
                         ROUTES_COMPLIANCE.ASSESSMENT_EDIT.replace(':id', id)
-                      );
+                      )
                     }}
                     type="button"
                   >
                     Edit
                   </button>
-                )}
+              )}
               <Button
                 buttonType="button"
                 optionalClassname="ml-2 mr-2 button btn"
                 optionalText="Print Page"
                 action={() => {
-                  window.print();
+                  window.print()
                 }}
               />
             </span>
@@ -470,7 +470,7 @@ const AssessmentDetailsPage = (props) => {
               </div>
             </div>
           </>
-        )}
+      )}
       {(analystAction || directorAction) &&
         ['ASSESSED'].indexOf(statuses.assessment.status) < 0 && (
           <>
@@ -519,7 +519,7 @@ const AssessmentDetailsPage = (props) => {
                                     ...details.assessment,
                                     assessmentPenalty: e.target.value
                                   }
-                                });
+                                })
                               }}
                             />
                             <label
@@ -548,7 +548,7 @@ const AssessmentDetailsPage = (props) => {
               </div>
             </div>
           </>
-        )}
+      )}
 
       <div className="row d-print-none">
         <div className="col-sm-12">
@@ -560,7 +560,7 @@ const AssessmentDetailsPage = (props) => {
                 <button
                   className="button text-danger"
                   onClick={() => {
-                    handleSubmit('RETURNED');
+                    handleSubmit('RETURNED')
                   }}
                   type="button"
                 >
@@ -571,7 +571,7 @@ const AssessmentDetailsPage = (props) => {
                 <button
                   className="button text-danger"
                   onClick={() => {
-                    setShowModal(true);
+                    setShowModal(true)
                   }}
                   type="button"
                 >
@@ -589,7 +589,7 @@ const AssessmentDetailsPage = (props) => {
                   optionalText="Save"
                   disabled={disabledRecommendBtn}
                   action={() => {
-                    handleSubmit(details.assessment.validationStatus);
+                    handleSubmit(details.assessment.validationStatus)
                   }}
                 />
               )}
@@ -601,7 +601,7 @@ const AssessmentDetailsPage = (props) => {
                   optionalText="Recommend Assessment"
                   disabled={disabledRecommendBtn}
                   action={() => {
-                    handleSubmit('RECOMMENDED');
+                    handleSubmit('RECOMMENDED')
                   }}
                 />
               )}
@@ -611,7 +611,7 @@ const AssessmentDetailsPage = (props) => {
                   optionalClassname="button primary"
                   optionalText="Issue Assessment"
                   action={() => {
-                    setShowModalAssess(true);
+                    setShowModalAssess(true)
                   }}
                 />
               )}
@@ -622,13 +622,13 @@ const AssessmentDetailsPage = (props) => {
       {modalReturn}
       {modalIssueAssessment}
     </div>
-  );
-};
+  )
+}
 
 AssessmentDetailsPage.defaultProps = {
   pendingBalanceExist: false,
   sales: 0
-};
+}
 
 AssessmentDetailsPage.propTypes = {
   creditActivityDetails: PropTypes.shape().isRequired,
@@ -660,5 +660,5 @@ AssessmentDetailsPage.propTypes = {
   deductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   updatedBalances: PropTypes.shape().isRequired,
   supplementaryStatus: PropTypes.string
-};
-export default AssessmentDetailsPage;
+}
+export default AssessmentDetailsPage

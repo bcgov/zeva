@@ -35,6 +35,6 @@ const CREDIT_ERROR_CODES = {
     errorCode: 21,
     errorField: 'vin'
   }
-};
+}
 
-export default CREDIT_ERROR_CODES;
+export default CREDIT_ERROR_CODES

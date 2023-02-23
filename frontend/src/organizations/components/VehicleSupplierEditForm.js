@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Button from '../../app/components/Button';
-import TextInput from '../../app/components/TextInput';
-import Loading from '../../app/components/Loading';
-import Modal from '../../app/components/Modal';
-import History from '../../app/History';
-import CustomPropTypes from '../../app/utilities/props';
-import AddressForm from './AddressForm';
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
+import Button from '../../app/components/Button'
+import TextInput from '../../app/components/TextInput'
+import Loading from '../../app/components/Loading'
+import Modal from '../../app/components/Modal'
+import CustomPropTypes from '../../app/utilities/props'
+import AddressForm from './AddressForm'
 
 const VehicleSupplierEditForm = (props) => {
   const {
@@ -22,26 +20,26 @@ const VehicleSupplierEditForm = (props) => {
     setDetails,
     setServiceSame,
     serviceSame
-  } = props;
-  const [showModal, setShowModal] = useState(false);
+  } = props
+  const [showModal, setShowModal] = useState(false)
 
   const modal = (
     <Modal
       confirmClass="btn-outline-danger"
       confirmLabel="Make Inactive"
       handleCancel={() => {
-        setShowModal(false);
+        setShowModal(false)
         setDetails({
           ...details,
           isActive: true
-        });
+        })
       }}
       handleSubmit={() => {
-        setShowModal(false);
+        setShowModal(false)
         setDetails({
           ...details,
           isActive: false
-        });
+        })
       }}
       showModal={showModal}
       title="Make Supplier Inactive"
@@ -49,23 +47,23 @@ const VehicleSupplierEditForm = (props) => {
       <p>
         You have selected to make this vehicle supplier Inactive. <br />
         <br />
-        They will no longer have the ability to access their account 
+        They will no longer have the ability to access their account
         and all their users will be made Inactive.
       </p>
       <br />
       <p>Do you want to make this supplier Inactive?</p>
     </Modal>
-  );
-  let addressDetails = {};
+  )
+  let addressDetails = {}
 
   if (details.organizationAddress) {
     addressDetails = {
       ...details.organizationAddress
-    };
+    }
   }
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
   return (
     <div id="form" className="page">
@@ -98,7 +96,7 @@ const VehicleSupplierEditForm = (props) => {
                             setDetails({
                               ...details,
                               isActive: true
-                            });
+                            })
                           }}
                           name="isActive"
                           value="true"
@@ -184,7 +182,7 @@ const VehicleSupplierEditForm = (props) => {
                   buttonType="save"
                   optionalClassname="button primary"
                   action={() => {
-                    handleSubmit();
+                    handleSubmit()
                   }}
                 />
               </span>
@@ -193,12 +191,12 @@ const VehicleSupplierEditForm = (props) => {
         </div>
       </form>
     </div>
-  );
-};
+  )
+}
 
 VehicleSupplierEditForm.defaultProps = {
   errorFields: {}
-};
+}
 
 VehicleSupplierEditForm.propTypes = {
   details: CustomPropTypes.organizationDetails.isRequired,
@@ -212,6 +210,6 @@ VehicleSupplierEditForm.propTypes = {
   serviceSame: PropTypes.bool.isRequired,
   setDetails: PropTypes.func.isRequired,
   setServiceSame: PropTypes.func.isRequired
-};
+}
 
-export default VehicleSupplierEditForm;
+export default VehicleSupplierEditForm

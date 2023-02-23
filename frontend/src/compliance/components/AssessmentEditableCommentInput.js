@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import ReactQuill from 'react-quill';
-import ReactTooltip from 'react-tooltip';
+import React from 'react'
+import PropTypes from 'prop-types'
+import ReactQuill from 'react-quill'
+import ReactTooltip from 'react-tooltip'
 
 const AssessmentEditableCommentInput = (props) => {
   const {
@@ -17,7 +17,7 @@ const AssessmentEditableCommentInput = (props) => {
     buttonDisable,
     tooltip,
     value
-  } = props;
+  } = props
   return (
     <div className="text-editor no-print">
       <label htmlFor="comment" className="text-blue">
@@ -47,11 +47,11 @@ const AssessmentEditableCommentInput = (props) => {
               className="button mt-2"
               onClick={() => {
                 if (editing && (value && value !== '<p><br></p>')) {
-                  saveEditableComment();
+                  saveEditableComment()
                 } else if (editing && (!value || value === '<p><br></p>')) {
-                  deleteEditableComment();
+                  deleteEditableComment()
                 } else {
-                  handleAddComment();
+                  handleAddComment()
                 }
               }}
               type="button"
@@ -64,7 +64,7 @@ const AssessmentEditableCommentInput = (props) => {
               <button
                 className="button mt-2 ml-2"
                 onClick={() => {
-                  cancelEditableComment();
+                  cancelEditableComment()
                 }}
                 type="button"
               >
@@ -75,8 +75,8 @@ const AssessmentEditableCommentInput = (props) => {
         </>
       )}
     </div>
-  );
-};
+  )
+}
 
 AssessmentEditableCommentInput.defaultProps = {
   buttonText: null,
@@ -84,7 +84,7 @@ AssessmentEditableCommentInput.defaultProps = {
   disable: false,
   handleAddComment: () => {},
   tooltip: ''
-};
+}
 AssessmentEditableCommentInput.propTypes = {
   handleAddComment: PropTypes.func,
   handleCommentChange: PropTypes.func.isRequired,
@@ -94,5 +94,5 @@ AssessmentEditableCommentInput.propTypes = {
   title: PropTypes.string.isRequired,
   disable: PropTypes.bool,
   tooltip: PropTypes.string
-};
-export default AssessmentEditableCommentInput;
+}
+export default AssessmentEditableCommentInput

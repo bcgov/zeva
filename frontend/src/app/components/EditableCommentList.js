@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import EditComment from './EditComment';
-import moment from 'moment-timezone';
-import parse from 'html-react-parser';
+import React, { useState } from 'react'
+import EditComment from './EditComment'
+import moment from 'moment-timezone'
+import parse from 'html-react-parser'
 
 const EditableCommentList = ({
   comments,
@@ -9,37 +9,37 @@ const EditableCommentList = ({
   handleCommentEdit,
   handleCommentDelete
 }) => {
-  const [commentIdsBeingEdited, setCommentIdsBeingEdited] = useState([]);
+  const [commentIdsBeingEdited, setCommentIdsBeingEdited] = useState([])
 
   const handleEditClick = (commentId) => {
     setCommentIdsBeingEdited((prev) => {
-      return [...prev, commentId];
-    });
-  };
+      return [...prev, commentId]
+    })
+  }
 
   const handleSave = (commentId, commentText) => {
-    handleCommentEdit(commentId, commentText);
-    handleCancel(commentId);
-  };
+    handleCommentEdit(commentId, commentText)
+    handleCancel(commentId)
+  }
 
   const handleCancel = (commentId) => {
     setCommentIdsBeingEdited((prev) => {
       return prev.filter((id) => {
-        return id !== commentId;
-      });
-    });
-  };
+        return id !== commentId
+      })
+    })
+  }
 
   const handleDelete = (commentId) => {
-    handleCommentDelete(commentId);
-    handleCancel(commentId);
-  };
+    handleCommentDelete(commentId)
+    handleCancel(commentId)
+  }
 
-  const commentElements = [];
+  const commentElements = []
   for (const comment of comments) {
-    const commentId = comment.id;
-    const beingEdited = commentIdsBeingEdited.includes(commentId);
-    const userEditable = comment.createUser.id == user.id;
+    const commentId = comment.id
+    const beingEdited = commentIdsBeingEdited.includes(commentId)
+    const userEditable = comment.createUser.id === user.id
     if (beingEdited) {
       commentElements.push(
         <div key={commentId}>
@@ -51,7 +51,7 @@ const EditableCommentList = ({
             handleDelete={handleDelete}
           />
         </div>
-      );
+      )
     } else {
       commentElements.push(
         <div key={commentId}>
@@ -60,7 +60,7 @@ const EditableCommentList = ({
             <button
               className="inline-edit"
               onClick={() => {
-                handleEditClick(commentId);
+                handleEditClick(commentId)
               }}
             >
               [edit]
@@ -71,14 +71,14 @@ const EditableCommentList = ({
           {parse(comment.comment)}
           <br />
         </div>
-      );
+      )
     }
   }
   return (
     <div className="bcgov-callout" role="alert">
       <span>{commentElements}</span>
     </div>
-  );
-};
+  )
+}
 
-export default EditableCommentList;
+export default EditableCommentList

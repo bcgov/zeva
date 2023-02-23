@@ -1,13 +1,13 @@
-import React from 'react';
-import { render, cleanup, fireEvent } from '@testing-library/react';
+import React from 'react'
+import { render, cleanup, fireEvent } from '@testing-library/react'
 
-import ActivityBanner from '../ActivityBanner';
-import history from '../../../app/History';
+import ActivityBanner from '../ActivityBanner'
+import history from '../../../app/History'
 
-require('@babel/core');
-require('@babel/polyfill');
+require('@babel/core')
+require('@babel/polyfill')
 
-afterEach(cleanup);
+afterEach(cleanup)
 
 describe('activity banner', () => {
   it('renders without crashing', () => {
@@ -18,8 +18,8 @@ describe('activity banner', () => {
         boldText="ZEV Models"
         regularText="1 submitted for validation"
       />
-    );
-  });
+    )
+  })
   it('renders a clickable button', () => {
     const { getByRole } = render(
       <ActivityBanner
@@ -29,11 +29,11 @@ describe('activity banner', () => {
         regularText="1 submitted for validation"
         linkTo="/models"
       />
-    );
+    )
     const button = getByRole('button', {
       name: 'ZEV Models — 1 submitted for validation'
-    });
-    fireEvent.click(button);
-    expect(history.location.pathname).toEqual('/models');
-  });
-});
+    })
+    fireEvent.click(button)
+    expect(history.location.pathname).toEqual('/models')
+  })
+})

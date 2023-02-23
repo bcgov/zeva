@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import formatNumeric from '../../app/utilities/formatNumeric';
+import React from 'react'
+import PropTypes from 'prop-types'
+import formatNumeric from '../../app/utilities/formatNumeric'
 
 const SummarySupplierInfo = ({
   supplierDetails,
@@ -8,32 +8,31 @@ const SummarySupplierInfo = ({
   creditActivityDetails,
   modelYear
 }) => {
-  const { supplierClassText } = creditActivityDetails;
-  const { organization } = supplierDetails;
+  const { supplierClassText } = creditActivityDetails
+  const { organization } = supplierDetails
 
   const formatAddressType = (addressType) => {
     if (organization.organizationAddress) {
-      organization.organizationAddress.map((address) => {
-        if (address.addressType.addressType === addressType) {
-          return (
-            <div key={address.id}>
-              {address.representativeName && (
-                <div className="text-black"> {address.representativeName} </div>
-              )}
-              <div className="text-black"> {address.addressLine1} </div>
-              <div className="text-black"> {address.addressLine2} </div>
-              <div className="text-black">
-                {' '}
-                {address.city} {address.state} {address.country}{' '}
-              </div>
-              <div className="text-black"> {address.postalCode} </div>
+      const addresses = organization.organizationAddress.filter(address => address.addressType.addressType === addressType)
+      addresses.map((address) => {
+        return (
+          <div key={address.id}>
+            {address.representativeName && (
+              <div className="text-black"> {address.representativeName} </div>
+            )}
+            <div className="text-black"> {address.addressLine1} </div>
+            <div className="text-black"> {address.addressLine2} </div>
+            <div className="text-black">
+              {' '}
+              {address.city} {address.state} {address.country}{' '}
             </div>
-          );
-        }
-      });
+            <div className="text-black"> {address.postalCode} </div>
+          </div>
+        )
+      })
     }
-    return <></>;
-  };
+    return <></>
+  }
 
   return (
     <>
@@ -74,12 +73,12 @@ const SummarySupplierInfo = ({
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 SummarySupplierInfo.propTypes = {
   supplierDetails: PropTypes.shape().isRequired,
   makes: PropTypes.arrayOf(PropTypes.string).isRequired,
   creditActivityDetails: PropTypes.shape().isRequired,
   modelYear: PropTypes.number.isRequired
-};
-export default SummarySupplierInfo;
+}
+export default SummarySupplierInfo

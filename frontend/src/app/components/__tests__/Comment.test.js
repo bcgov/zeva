@@ -1,5 +1,5 @@
-import React from 'react';
-import Comment from '../Comment';
+import React from 'react'
+import Comment from '../Comment'
 import renderer from 'react-test-renderer'
 
 describe('Comment component', () => {
@@ -17,15 +17,15 @@ describe('Comment component', () => {
         createTimestamp: '2022-01-02T01:00:00.000Z',
         comment: 'Another sample comment'
       }
-    ];
-    const component = renderer.create(<Comment commentArray={commentArray} />);
-    const tree = component.toJSON();
-    expect(tree).toMatchSnapshot();
-  });
+    ]
+    const component = renderer.create(<Comment commentArray={commentArray} />)
+    const tree = component.toJSON()
+    expect(tree).toMatchSnapshot()
+  })
 
   it('renders correctly with empty commentArray', () => {
-    const component = renderer.create(<Comment />);
-    const tree = component.toJSON();
-    expect(tree).toMatchSnapshot();
-  });
-});
+    const component = renderer.create(<Comment />)
+    const tree = component.toJSON()
+    expect(tree).toMatchSnapshot()
+  })
+})

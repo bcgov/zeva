@@ -1,17 +1,17 @@
-import React from 'react';
-import { render, cleanup } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import React from 'react'
+import { render, cleanup } from '@testing-library/react'
+import { BrowserRouter } from 'react-router-dom'
 
-import VehicleDetailsContainer from '../VehicleDetailsContainer';
+import VehicleDetailsContainer from '../VehicleDetailsContainer'
 
-afterEach(cleanup);
+afterEach(cleanup)
 
 describe('VehicleDetailsContainer', () => {
-  const keycloak = {};
-  const location = {};
+  const keycloak = {}
+  const location = {}
   const user = {
     isGovernment: false
-  };
+  }
 
   it('renders without crashing', () => {
     render(
@@ -22,6 +22,6 @@ describe('VehicleDetailsContainer', () => {
           user={user}
         />
       </BrowserRouter>
-    );
-  });
-});
+    )
+  })
+})

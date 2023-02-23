@@ -1,18 +1,18 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import Button from '../../app/components/Button';
-import Loading from '../../app/components/Loading';
-import CustomPropTypes from '../../app/utilities/props';
-import ComplianceReportAlert from './ComplianceReportAlert';
-import ComplianceObligationAmountsTable from './ComplianceObligationAmountsTable';
-import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable';
-import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued';
-import ComplianceReportSignoff from './ComplianceReportSignOff';
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
+import Button from '../../app/components/Button'
+import Loading from '../../app/components/Loading'
+import CustomPropTypes from '../../app/utilities/props'
+import ComplianceReportAlert from './ComplianceReportAlert'
+import ComplianceObligationAmountsTable from './ComplianceObligationAmountsTable'
+import ComplianceObligationReductionOffsetTable from './ComplianceObligationReductionOffsetTable'
+import ComplianceObligationTableCreditsIssued from './ComplianceObligationTableCreditsIssued'
+import ComplianceReportSignoff from './ComplianceReportSignOff'
 
-import Modal from '../../app/components/Modal';
-import history from '../../app/History';
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
+import Modal from '../../app/components/Modal'
+import history from '../../app/History'
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
 
 const ComplianceObligationDetailsPage = (props) => {
   const {
@@ -40,22 +40,22 @@ const ComplianceObligationDetailsPage = (props) => {
     unspecifiedReductions,
     updatedBalances,
     user
-  } = props;
+  } = props
 
-  const [showModal, setShowModal] = useState(false);
-  let disabledCheckboxes = '';
-  let hoverText = '';
+  const [showModal, setShowModal] = useState(false)
+  let disabledCheckboxes = ''
+  let hoverText = ''
 
   const modal = (
     <Modal
       cancelLabel="No"
       confirmLabel="Yes"
       handleCancel={() => {
-        setShowModal(false);
+        setShowModal(false)
       }}
       handleSubmit={() => {
-        setShowModal(false);
-        handleCancelConfirmation();
+        setShowModal(false)
+        handleCancelConfirmation()
       }}
       modalClass="w-75"
       showModal={showModal}
@@ -70,22 +70,22 @@ const ComplianceObligationDetailsPage = (props) => {
         </h3>
       </div>
     </Modal>
-  );
+  )
 
   assertions.forEach((assertion) => {
     if (checkboxes.indexOf(assertion.id) >= 0) {
-      disabledCheckboxes = 'disabled';
+      disabledCheckboxes = 'disabled'
     }
-  });
+  })
 
   if (!creditReductionSelection || sales === '') {
-    disabledCheckboxes = 'disabled';
+    disabledCheckboxes = 'disabled'
     hoverText =
-      'You must enter an LDV Sales Total and select a ZEV class credit preference for your Unspecified ZEV Class Credit Reduction';
+      'You must enter an LDV Sales Total and select a ZEV class credit preference for your Unspecified ZEV Class Credit Reduction'
   }
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   return (
@@ -106,7 +106,7 @@ const ComplianceObligationDetailsPage = (props) => {
                 status={statuses.complianceObligation}
                 type="Compliance Obligation"
               />
-            )}
+          )}
         </div>
       </div>
       <div id="compliance-obligation-page">
@@ -117,19 +117,19 @@ const ComplianceObligationDetailsPage = (props) => {
                 <button
                   className="btn button primary mb-2"
                   onClick={() => {
-                    setShowModal(true);
+                    setShowModal(true)
                   }}
                   type="button"
                 >
                   Edit
                 </button>
-              )}
+            )}
             <Button
               buttonType="button"
               optionalClassname="ml-2 mr-2 mb-2 button btn"
               optionalText="Print Page"
               action={() => {
-                window.print();
+                window.print()
               }}
             />
           </span>
@@ -171,7 +171,7 @@ const ComplianceObligationDetailsPage = (props) => {
       </div>
       {['SUBMITTED', 'ASSESSED', 'REASSESSED'].indexOf(
         statuses.complianceObligation.status
-      ) == -1 && (
+      ) === -1 && (
         <>
           <ComplianceReportSignoff
             assertions={assertions}
@@ -198,7 +198,7 @@ const ComplianceObligationDetailsPage = (props) => {
                     action={() => {
                       history.push(
                         ROUTES_COMPLIANCE.REPORT_SUMMARY.replace(':id', id)
-                      );
+                      )
                     }}
                   />
                   {!user.isGovernment && (
@@ -211,7 +211,7 @@ const ComplianceObligationDetailsPage = (props) => {
                       }
                       optionalClassname="button primary"
                       action={() => {
-                        handleSave();
+                        handleSave()
                       }}
                     />
                   )}
@@ -223,8 +223,8 @@ const ComplianceObligationDetailsPage = (props) => {
       )}
       {modal}
     </div>
-  );
-};
+  )
+}
 
 ComplianceObligationDetailsPage.defaultProps = {
   creditReductionSelection: null,
@@ -234,7 +234,7 @@ ComplianceObligationDetailsPage.defaultProps = {
     zevClassA: 0
   },
   sales: 0
-};
+}
 
 ComplianceObligationDetailsPage.propTypes = {
   assertions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -266,5 +266,5 @@ ComplianceObligationDetailsPage.propTypes = {
   unspecifiedReductions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   updatedBalances: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired
-};
-export default ComplianceObligationDetailsPage;
+}
+export default ComplianceObligationDetailsPage

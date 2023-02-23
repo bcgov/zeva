@@ -1,9 +1,9 @@
-import React from 'react';
-import formatNumeric from '../../app/utilities/formatNumeric';
+import React from 'react'
+import formatNumeric from '../../app/utilities/formatNumeric'
 
 const SummaryConsumerSalesTable = (props) => {
-  const { consumerSalesDetails } = props;
-  const { zevSales, pendingZevSales } = consumerSalesDetails;
+  const { consumerSalesDetails } = props
+  const { zevSales, pendingZevSales } = consumerSalesDetails
 
   return (
     <>
@@ -22,6 +22,6 @@ const SummaryConsumerSalesTable = (props) => {
         </tbody>
       </table>
     </>
-  );
-};
-export default SummaryConsumerSalesTable;
+  )
+}
+export default SummaryConsumerSalesTable

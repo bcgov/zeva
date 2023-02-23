@@ -1,20 +1,20 @@
 const getCreditClass = (vehicle) => {
   if (!vehicle || !vehicle.vehicleZevType) {
-    return '';
+    return ''
   }
   if (
     (vehicle.vehicleZevType.vehicleZevCode === 'BEV' &&
       vehicle.range < 80.47) ||
     vehicle.range < 16
   ) {
-    return 'C';
+    return 'C'
   }
 
   if (vehicle.vehicleZevType.vehicleZevCode === 'BEV') {
-    return 'A';
+    return 'A'
   }
 
-  return 'B';
-};
+  return 'B'
+}
 
-export default getCreditClass;
+export default getCreditClass

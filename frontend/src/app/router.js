@@ -1,81 +1,81 @@
-import axios from 'axios';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Switch } from 'react-router';
-import { Route, Redirect, Router as BrowserRouter } from 'react-router-dom';
-import SessionTimeout from './components/SessionTimeout';
+import axios from 'axios'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import { Switch } from 'react-router'
+import { Route, Redirect, Router as BrowserRouter } from 'react-router-dom'
+import SessionTimeout from './components/SessionTimeout'
 
-import DashboardContainer from '../dashboard/DashboardContainer';
-import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer';
-import OrganizationListContainer from '../organizations/OrganizationListContainer';
-import NotificationListContainer from '../notifications/NotificationListContainer';
-import VehicleSupplierCreditTransactionListContainer from '../organizations/VehicleSupplierCreditTransactionListContainer';
-import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer';
-import VehicleSupplierEditContainer from '../organizations/VehicleSupplierEditContainer';
-import VehicleSupplierModelListContainer from '../organizations/VehicleSupplierModelListContainer';
-import VehicleSupplierReportListContainer from '../organizations/VehicleSupplierReportListContainer';
-import VehicleSupplierUserListContainer from '../organizations/VehicleSupplierUserListContainer';
-import CreditsContainer from '../credits/CreditsContainer';
-import CreditRequestListContainer from '../credits/CreditRequestListContainer';
-import CreditTransfersEditContainer from '../credits/CreditTransfersEditContainer';
-import CreditTransferListContainer from '../credits/CreditTransferListContainer';
-import CreditAgreementListContainer from '../creditagreements/CreditAgreementListContainer';
-import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContainer';
-import CreditTransfersDetailsContainer from '../credits/CreditTransfersDetailsContainer';
-import CreditRequestVINListContainer from '../credits/CreditRequestVINListContainer';
-import CreditRequestValidatedDetailsContainer from '../credits/CreditRequestValidatedDetailsContainer';
-import UploadCreditRequestContainer from '../credits/UploadCreditRequestContainer';
-import UploadICBCVerificationContainer from '../credits/UploadICBCVerificationContainer';
-import UserEditContainer from '../users/UserEditContainer';
-import VehicleDetailsContainer from '../vehicles/VehicleDetailsContainer';
-import VehicleEditContainer from '../vehicles/VehicleEditContainer';
-import VehicleListContainer from '../vehicles/VehicleListContainer';
-import ComplianceCalculatorContainer from '../compliance/ComplianceCalculatorContainer';
-import ComplianceReportsContainer from '../compliance/ComplianceReportsContainer';
-import ComplianceReportSummaryContainer from '../compliance/ComplianceReportSummaryContainer';
-import ComplianceRatiosContainer from '../compliance/ComplianceRatiosContainer';
-import AssessmentContainer from '../compliance/AssessmentContainer';
-import AssessmentEditContainer from '../compliance/AssessmentEditContainer';
-import SupplierInformationContainer from '../compliance/SupplierInformationContainer';
-import ComplianceObligationContainer from '../compliance/ComplianceObligationContainer';
-import ConsumerSalesContainer from '../compliance/ConsumerSalesContainer';
-import CreditAgreementsEditContainer from '../creditagreements/CreditAgreementsEditContainer';
-import CreditAgreementsDetailsContainer from '../creditagreements/CreditAgreementsDetailsContainer';
-import SupplementaryContainer from '../supplementary/SupplementaryContainer';
-import ActiveUsersListContainer from '../users/ActiveUsersListContainer';
-import ErrorHandler from './components/ErrorHandler';
-import Loading from './components/Loading';
-import StatusInterceptor from './components/StatusInterceptor';
+import DashboardContainer from '../dashboard/DashboardContainer'
+import OrganizationDetailsContainer from '../organizations/OrganizationDetailsContainer'
+import OrganizationListContainer from '../organizations/OrganizationListContainer'
+import NotificationListContainer from '../notifications/NotificationListContainer'
+import VehicleSupplierCreditTransactionListContainer from '../organizations/VehicleSupplierCreditTransactionListContainer'
+import VehicleSupplierDetailsContainer from '../organizations/VehicleSupplierDetailsContainer'
+import VehicleSupplierEditContainer from '../organizations/VehicleSupplierEditContainer'
+import VehicleSupplierModelListContainer from '../organizations/VehicleSupplierModelListContainer'
+import VehicleSupplierReportListContainer from '../organizations/VehicleSupplierReportListContainer'
+import VehicleSupplierUserListContainer from '../organizations/VehicleSupplierUserListContainer'
+import CreditsContainer from '../credits/CreditsContainer'
+import CreditRequestListContainer from '../credits/CreditRequestListContainer'
+import CreditTransfersEditContainer from '../credits/CreditTransfersEditContainer'
+import CreditTransferListContainer from '../credits/CreditTransferListContainer'
+import CreditAgreementListContainer from '../creditagreements/CreditAgreementListContainer'
+import CreditRequestDetailsContainer from '../credits/CreditRequestDetailsContainer'
+import CreditTransfersDetailsContainer from '../credits/CreditTransfersDetailsContainer'
+import CreditRequestVINListContainer from '../credits/CreditRequestVINListContainer'
+import CreditRequestValidatedDetailsContainer from '../credits/CreditRequestValidatedDetailsContainer'
+import UploadCreditRequestContainer from '../credits/UploadCreditRequestContainer'
+import UploadICBCVerificationContainer from '../credits/UploadICBCVerificationContainer'
+import UserEditContainer from '../users/UserEditContainer'
+import VehicleDetailsContainer from '../vehicles/VehicleDetailsContainer'
+import VehicleEditContainer from '../vehicles/VehicleEditContainer'
+import VehicleListContainer from '../vehicles/VehicleListContainer'
+import ComplianceCalculatorContainer from '../compliance/ComplianceCalculatorContainer'
+import ComplianceReportsContainer from '../compliance/ComplianceReportsContainer'
+import ComplianceReportSummaryContainer from '../compliance/ComplianceReportSummaryContainer'
+import ComplianceRatiosContainer from '../compliance/ComplianceRatiosContainer'
+import AssessmentContainer from '../compliance/AssessmentContainer'
+import AssessmentEditContainer from '../compliance/AssessmentEditContainer'
+import SupplierInformationContainer from '../compliance/SupplierInformationContainer'
+import ComplianceObligationContainer from '../compliance/ComplianceObligationContainer'
+import ConsumerSalesContainer from '../compliance/ConsumerSalesContainer'
+import CreditAgreementsEditContainer from '../creditagreements/CreditAgreementsEditContainer'
+import CreditAgreementsDetailsContainer from '../creditagreements/CreditAgreementsDetailsContainer'
+import SupplementaryContainer from '../supplementary/SupplementaryContainer'
+import ActiveUsersListContainer from '../users/ActiveUsersListContainer'
+import ErrorHandler from './components/ErrorHandler'
+import Loading from './components/Loading'
+import StatusInterceptor from './components/StatusInterceptor'
 
-import CONFIG from './config';
-import History from './History';
-import PageLayout from './PageLayout';
-import ROUTES_CREDIT_REQUESTS from './routes/CreditRequests';
-import ROUTES_CREDIT_TRANSFERS from './routes/CreditTransfers';
-import ROUTES_CREDIT_AGREEMENTS from './routes/CreditAgreements';
-import ROUTES_CREDITS from './routes/Credits';
-import ROUTES_ORGANIZATIONS from './routes/Organizations';
-import ROUTES_NOTIFICATIONS from './routes/Notifications';
-import ROUTES_USERS from './routes/Users';
-import ROUTES_VEHICLES from './routes/Vehicles';
-import ROUTES_COMPLIANCE from './routes/Compliance';
-import ROUTES_SUPPLEMENTARY from './routes/SupplementaryReport';
-import Unverified from './components/Unverified';
+import CONFIG from './config'
+import History from './History'
+import PageLayout from './PageLayout'
+import ROUTES_CREDIT_REQUESTS from './routes/CreditRequests'
+import ROUTES_CREDIT_TRANSFERS from './routes/CreditTransfers'
+import ROUTES_CREDIT_AGREEMENTS from './routes/CreditAgreements'
+import ROUTES_CREDITS from './routes/Credits'
+import ROUTES_ORGANIZATIONS from './routes/Organizations'
+import ROUTES_NOTIFICATIONS from './routes/Notifications'
+import ROUTES_USERS from './routes/Users'
+import ROUTES_VEHICLES from './routes/Vehicles'
+import ROUTES_COMPLIANCE from './routes/Compliance'
+import ROUTES_SUPPLEMENTARY from './routes/SupplementaryReport'
+import Unverified from './components/Unverified'
 
 class Router extends Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
     this.state = {
       loading: true,
       statusCode: null,
-      user: null,
-    };
+      user: null
+    }
 
-    const { keycloak } = props;
-    const { token } = keycloak;
+    const { keycloak } = props
+    const { token } = keycloak
 
-    axios.defaults.baseURL = CONFIG.APIBASE;
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    axios.defaults.baseURL = CONFIG.APIBASE
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`
     axios.interceptors.response.use(
       (response) => response,
       (error) => {
@@ -83,15 +83,15 @@ class Router extends Component {
           this.setState({
             loading: false,
             statusCode: error.response.status
-          });
+          })
         }
 
-        throw error;
+        throw error
       }
-    );
+    )
   }
 
-  componentDidMount() {
+  componentDidMount () {
     axios.get(ROUTES_USERS.ME).then((response) => {
       this.setState({
         loading: false,
@@ -99,38 +99,39 @@ class Router extends Component {
           ...response.data,
           hasPermission: (permissionCode) => {
             if (response.data) {
-              const { permissions } = response.data;
+              const { permissions } = response.data
 
               if (permissions) {
                 return (
                   permissions.findIndex(
                     (permission) => permission.permissionCode === permissionCode
                   ) >= 0
-                );
+                )
               }
             }
-            return false;
+            return false
           }
         }
-      });
-    })
-    .catch((error) => {
-      this.setState({
-        loading: false,
-        user: null
       })
-    });
+    })
+      .catch((error) => {
+        console.log(error)
+        this.setState({
+          loading: false,
+          user: null
+        })
+      })
   }
 
-  render() {
-    const { keycloak, logout } = this.props;
-    const { loading, statusCode, user } = this.state;
+  render () {
+    const { keycloak, logout } = this.props
+    const { loading, statusCode, user } = this.state
     if (loading) {
-      return <Loading />;
+      return <Loading />
     }
 
-    if(!user) {
-      return <Unverified logout={logout} />;
+    if (!user) {
+      return <Unverified logout={logout} />
     }
 
     return (
@@ -226,17 +227,19 @@ class Router extends Component {
                 render={() =>
                   typeof user.hasPermission === 'function' &&
                   user.hasPermission('EDIT_SALES') &&
-                  !user.isGovernment ? (
+                  !user.isGovernment
+                    ? (
                     <ComplianceCalculatorContainer
                       keycloak={keycloak}
                       user={user}
                     />
-                  ) : (
+                      )
+                    : (
                     <ComplianceReportsContainer
                       keycloak={keycloak}
                       user={user}
                     />
-                  )
+                      )
                 }
               />
               <Route
@@ -334,14 +337,16 @@ class Router extends Component {
                 render={() =>
                   typeof user.hasPermission === 'function' &&
                   user.hasPermission('EDIT_ORGANIZATIONS') &&
-                  user.isGovernment ? (
+                  user.isGovernment
+                    ? (
                     <VehicleSupplierEditContainer
                       keycloak={keycloak}
                       user={user}
                     />
-                  ) : (
+                      )
+                    : (
                     <Redirect to={{ path: '/' }} />
-                  )
+                      )
                 }
               />
               <Route
@@ -536,14 +541,16 @@ class Router extends Component {
                   key="route-credit-agreements-list"
                   path={ROUTES_CREDIT_AGREEMENTS.LIST}
                   render={() =>
-                    user.isGovernment ? (
+                    user.isGovernment
+                      ? (
                       <CreditAgreementListContainer
                         keycloak={keycloak}
                         user={user}
                       />
-                    ) : (
+                        )
+                      : (
                       <></>
-                    )
+                        )
                   }
                 />,
                 <Route
@@ -551,14 +558,16 @@ class Router extends Component {
                   key="route-credit-agreements-edit"
                   path={ROUTES_CREDIT_AGREEMENTS.EDIT}
                   render={() =>
-                    user.isGovernment ? (
+                    user.isGovernment
+                      ? (
                       <CreditAgreementsEditContainer
                         keycloak={keycloak}
                         user={user}
                       />
-                    ) : (
+                        )
+                      : (
                       <></>
-                    )
+                        )
                   }
                 />,
                 <Route
@@ -566,14 +575,16 @@ class Router extends Component {
                   key="route-credit-agreements-new"
                   path={ROUTES_CREDIT_AGREEMENTS.NEW}
                   render={() =>
-                    user.isGovernment ? (
+                    user.isGovernment
+                      ? (
                       <CreditAgreementsEditContainer
                         keycloak={keycloak}
                         user={user}
                       />
-                    ) : (
+                        )
+                      : (
                       <></>
-                    )
+                        )
                   }
                 />,
                 <Route
@@ -601,13 +612,13 @@ class Router extends Component {
           </ErrorHandler>
         </PageLayout>
       </BrowserRouter>
-    );
+    )
   }
 }
 
 Router.propTypes = {
   keycloak: PropTypes.shape().isRequired,
   logout: PropTypes.func.isRequired
-};
+}
 
-export default Router;
+export default Router

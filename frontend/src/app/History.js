@@ -1,7 +1,7 @@
-import { createBrowserHistory } from 'history';
+import { createBrowserHistory } from 'history'
 
-const config = {};
+const config = {}
 
-const history = createBrowserHistory(config);
+const history = createBrowserHistory(config)
 
-export default history;
+export default history

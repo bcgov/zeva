@@ -2,57 +2,57 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-import axios from 'axios';
-import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
-import { withRouter } from 'react-router';
+import axios from 'axios'
+import PropTypes from 'prop-types'
+import React, { useEffect, useState } from 'react'
+import { withRouter } from 'react-router'
 
-import Button from '../app/components/Button';
-import ROUTES_NOTIFICATIONS from '../app/routes/Notifications';
-import CustomPropTypes from '../app/utilities/props';
-import Alert from '../app/components/Alert';
-import NotificationListPage from './components/NotificationListPage';
+import Button from '../app/components/Button'
+import ROUTES_NOTIFICATIONS from '../app/routes/Notifications'
+import CustomPropTypes from '../app/utilities/props'
+import Alert from '../app/components/Alert'
+import NotificationListPage from './components/NotificationListPage'
 
 const NotificationListContainer = (props) => {
-  const [notifications, setNotifications] = useState([]);
-  const [checkboxes, setCheckboxes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [alertMessage, setAlertMessage] = useState(null);
-  const [status, setStaus] = useState(null);
-  const [displayList, setDisplayList] = useState(false);
-  const [subscribe, setSubscribe] = useState();
-  const [unsubscribe, setUnsubscribe] = useState();
-  const [icon, setIcon] = useState(null);
+  const [notifications, setNotifications] = useState([])
+  const [checkboxes, setCheckboxes] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [alertMessage, setAlertMessage] = useState(null)
+  const [status, setStaus] = useState(null)
+  const [displayList, setDisplayList] = useState(false)
+  const [subscribe, setSubscribe] = useState()
+  const [unsubscribe, setUnsubscribe] = useState()
+  const [icon, setIcon] = useState(null)
 
-  const { keycloak, user } = props;
+  const { keycloak, user } = props
 
   const handleCheckboxClick = (event) => {
     if (!event.target.checked) {
       const checked = checkboxes.filter(
         (each) => Number(each) !== Number(event.target.id)
-      );
-      setCheckboxes(checked);
+      )
+      setCheckboxes(checked)
     }
 
     if (event.target.checked) {
-      const checked = checkboxes.concat(event.target.id);
-      setCheckboxes(checked);
+      const checked = checkboxes.concat(event.target.id)
+      setCheckboxes(checked)
     }
-  };
+  }
 
   const handleChange = (event) => {
-    let items;
+    let items
     if (event.target.checked && event.target.value === 'Subscribe') {
-      items = notifications.map((notification) => notification.id);
-      setCheckboxes(items);
-      setDisplayList(true);
+      items = notifications.map((notification) => notification.id)
+      setCheckboxes(items)
+      setDisplayList(true)
     }
     if (event.target.checked && event.target.value === 'Unsubscribe') {
-      items = [0];
-      setCheckboxes(items);
-      setDisplayList(false);
+      items = [0]
+      setCheckboxes(items)
+      setDisplayList(false)
     }
-  };
+  }
 
   const handleSave = (checkboxes) => {
     axios
@@ -60,54 +60,54 @@ const NotificationListContainer = (props) => {
         notification: checkboxes
       })
       .then(() => {
-        setAlertMessage('Email notification preferences saved.');
-        setStaus('SAVED');
-        setIcon('check-circle');
+        setAlertMessage('Email notification preferences saved.')
+        setStaus('SAVED')
+        setIcon('check-circle')
       })
       .catch(() => {
         setAlertMessage(
           'Something went wrong, please try again after some time.'
-        );
-        setStaus('ERROR');
-        setIcon('exclamation-circle');
-      });
-  };
+        )
+        setStaus('ERROR')
+        setIcon('exclamation-circle')
+      })
+  }
 
   const filterNotifications = (notifications) => {
     const filteredNotifications = notifications.filter((notification) =>
       user.hasPermission(notification.permission)
-    );
-    setNotifications(filteredNotifications);
-  };
+    )
+    setNotifications(filteredNotifications)
+  }
 
   const refreshList = (showLoading) => {
-    setLoading(showLoading);
-    let notificationList = axios
+    setLoading(showLoading)
+    const notificationList = axios
       .get(ROUTES_NOTIFICATIONS.LIST)
       .then((response) => {
-        filterNotifications(response.data);
-      });
-    let subscriptionList = axios
+        filterNotifications(response.data)
+      })
+    const subscriptionList = axios
       .get(ROUTES_NOTIFICATIONS.SUBSCRIPTIONS)
       .then((response) => {
         if (response.data.length === 0) {
-          setUnsubscribe(true);
-          setSubscribe(false);
+          setUnsubscribe(true)
+          setSubscribe(false)
         } else {
-          setUnsubscribe(false);
-          setSubscribe(true);
-          setDisplayList(true);
-          setCheckboxes(response.data);
+          setUnsubscribe(false)
+          setSubscribe(true)
+          setDisplayList(true)
+          setCheckboxes(response.data)
         }
-      });
+      })
     Promise.all([notificationList, subscriptionList]).then(() => {
-      setLoading(false);
-    });
-  };
+      setLoading(false)
+    })
+  }
 
   useEffect(() => {
-    refreshList(true);
-  }, [keycloak.authenticated]);
+    refreshList(true)
+  }, [keycloak.authenticated])
 
   const actionbar = (
     <div className="row">
@@ -120,14 +120,14 @@ const NotificationListContainer = (props) => {
               disabled={checkboxes.length < 1}
               buttonType="save"
               action={() => {
-                handleSave(checkboxes);
+                handleSave(checkboxes)
               }}
             />
           </span>
         </div>
       </div>
     </div>
-  );
+  )
   return (
     <div id="notification-list" className="page">
       <div className="row mt-3 mb-2">
@@ -178,13 +178,13 @@ const NotificationListContainer = (props) => {
         </form>
       </div>
     </div>
-  );
-};
+  )
+}
 
 NotificationListContainer.propTypes = {
   keycloak: CustomPropTypes.keycloak.isRequired,
   location: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default withRouter(NotificationListContainer);
+export default withRouter(NotificationListContainer)

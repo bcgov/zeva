@@ -1,16 +1,16 @@
-import axios from 'axios';
-import React from 'react';
-import getFileSize from '../../app/utilities/getFileSize';
+import axios from 'axios'
+import React from 'react'
+import getFileSize from '../../app/utilities/getFileSize'
 
 const creditApplicationHeader = (props) => {
-  const { submission } = props;
+  const { submission } = props
 
   const serviceAddress = submission.organization.organizationAddress.find(
     (address) => address.addressType.addressType === 'Service'
-  );
+  )
   const recordsAddress = submission.organization.organizationAddress.find(
     (address) => address.addressType.addressType === 'Records'
-  );
+  )
 
   return (
     <div className="p-2">
@@ -60,13 +60,13 @@ const creditApplicationHeader = (props) => {
                             .then((response) => {
                               const objectURL = window.URL.createObjectURL(
                                 new Blob([response.data])
-                              );
-                              const link = document.createElement('a');
-                              link.href = objectURL;
-                              link.setAttribute('download', file.filename);
-                              document.body.appendChild(link);
-                              link.click();
-                            });
+                              )
+                              const link = document.createElement('a')
+                              link.href = objectURL
+                              link.setAttribute('download', file.filename)
+                              document.body.appendChild(link)
+                              link.click()
+                            })
                         }}
                         type="button"
                       >
@@ -82,7 +82,7 @@ const creditApplicationHeader = (props) => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default creditApplicationHeader;
+export default creditApplicationHeader

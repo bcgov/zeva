@@ -2,54 +2,54 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { withRouter } from 'react-router';
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
+import { withRouter } from 'react-router'
 
-import Loading from '../app/components/Loading';
-import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
-import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
-import CustomPropTypes from '../app/utilities/props';
-import CreditRequestsPage from './components/CreditRequestsPage';
+import Loading from '../app/components/Loading'
+import CreditTransactionTabs from '../app/components/CreditTransactionTabs'
+import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests'
+import CustomPropTypes from '../app/utilities/props'
+import CreditRequestsPage from './components/CreditRequestsPage'
 
-const qs = require('qs');
+const qs = require('qs')
 
 const CreditRequestListContainer = (props) => {
-  const { location, user } = props;
-  const [loading, setLoading] = useState(true);
-  const [submissions, setSubmissions] = useState([]);
-  const [filtered, setFiltered] = useState([]);
+  const { location, user } = props
+  const [loading, setLoading] = useState(true)
+  const [submissions, setSubmissions] = useState([])
+  const [filtered, setFiltered] = useState([])
 
-  const query = qs.parse(location.search, { ignoreQueryPrefix: true });
+  const query = qs.parse(location.search, { ignoreQueryPrefix: true })
 
   const handleClear = () => {
-    setFiltered([]);
-  };
+    setFiltered([])
+  }
 
   const refreshList = (showLoading) => {
-    setLoading(showLoading);
+    setLoading(showLoading)
 
-    const queryFilter = [];
+    const queryFilter = []
     Object.entries(query).forEach(([key, value]) => {
-      queryFilter.push({ id: key, value });
-    });
-    setFiltered([...filtered, ...queryFilter]);
+      queryFilter.push({ id: key, value })
+    })
+    setFiltered([...filtered, ...queryFilter])
     if (location.state) {
-      setFiltered([...filtered, ...location.state]);
+      setFiltered([...filtered, ...location.state])
     }
 
     axios.get(ROUTES_CREDIT_REQUESTS.LIST).then((response) => {
-      setSubmissions(response.data);
-      setLoading(false);
-    });
-  };
+      setSubmissions(response.data)
+      setLoading(false)
+    })
+  }
 
   useEffect(() => {
-    refreshList(true);
-  }, []);
+    refreshList(true)
+  }, [])
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   return [
@@ -62,11 +62,11 @@ const CreditRequestListContainer = (props) => {
       submissions={submissions}
       user={user}
     />
-  ];
-};
+  ]
+}
 
 CreditRequestListContainer.propTypes = {
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default withRouter(CreditRequestListContainer);
+export default withRouter(CreditRequestListContainer)

@@ -1,17 +1,16 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ActionsBceid from '../dashboard/components/ActionsBceid';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { fab } from '@fortawesome/free-brands-svg-icons';
-import { far } from '@fortawesome/free-regular-svg-icons';
-import { fas } from '@fortawesome/free-solid-svg-icons';
-import '../app/css/index.scss';
+import React from 'react'
+import ActionsBceid from '../dashboard/components/ActionsBceid'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { fab } from '@fortawesome/free-brands-svg-icons'
+import { far } from '@fortawesome/free-regular-svg-icons'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import '../app/css/index.scss'
 // import { storiesOf } from "@storybook/react";
 // import { action } from "@storybook/addon-actions";
-import { storiesOf } from '@storybook/react';
-import ActivityBanner from '../dashboard/components/ActivityBanner';
+import { storiesOf } from '@storybook/react'
+import ActivityBanner from '../dashboard/components/ActivityBanner'
 
-library.add(fab, far, fas);
+library.add(fab, far, fas)
 
 const BceidUser = {
   displayName: 'Bob Boss',
@@ -33,22 +32,22 @@ const BceidUser = {
     username: 'fs1'
   },
   hasPermission: () => ['EDIT_ORGANIZATONS']
-};
+}
 
-const activityCountIdir = {
-  creditsAnalyst: 2,
-  creditsAwaiting: 0,
-  creditsIssued: 0,
-  creditsRecommendApprove: 1,
-  creditsRecommendReject: 1,
-  modelAwaitingValidation: 0,
-  modelInfoRequest: 0,
-  modelValidated: 0,
-  submittedVehicles: 7,
-  transfersAwaitingGovernment: 0,
-  transfersAwaitingPartner: 0,
-  transfersRecorded: 0
-};
+// const activityCountIdir = {
+//   creditsAnalyst: 2,
+//   creditsAwaiting: 0,
+//   creditsIssued: 0,
+//   creditsRecommendApprove: 1,
+//   creditsRecommendReject: 1,
+//   modelAwaitingValidation: 0,
+//   modelInfoRequest: 0,
+//   modelValidated: 0,
+//   submittedVehicles: 7,
+//   transfersAwaitingGovernment: 0,
+//   transfersAwaitingPartner: 0,
+//   transfersRecorded: 0
+// }
 
 const activityCountBceid = {
   creditsAwaiting: 6,
@@ -63,7 +62,7 @@ const activityCountBceid = {
   transfersAwaitingGovernment: 1,
   transfersAwaitingPartner: 2,
   transfersRecorded: 5
-};
+}
 
 const activityCountBceidNone = {
   creditsAwaiting: 0,
@@ -78,7 +77,7 @@ const activityCountBceidNone = {
   transfersAwaitingGovernment: 0,
   transfersAwaitingPartner: 0,
   transfersRecorded: 0
-};
+}
 
 storiesOf('Activity Banner BCEID', module)
   .add('yellow range information request', () => (
@@ -151,7 +150,7 @@ storiesOf('Activity Banner BCEID', module)
         className="no-hover"
       />
     </div>
-  ));
+  ))
 
 storiesOf('Actions page bceid', module)
   .add('whole page', () => (
@@ -167,4 +166,4 @@ storiesOf('Actions page bceid', module)
       loading={false}
       user={BceidUser}
     />
-  ));
+  ))

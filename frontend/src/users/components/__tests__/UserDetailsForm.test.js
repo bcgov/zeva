@@ -1,28 +1,27 @@
-import React from 'react';
+import React from 'react'
 
-import { render, cleanup } from '@testing-library/react';
+import { render, cleanup } from '@testing-library/react'
 
-import UserDetailsForm from '../UserDetailsForm';
+import UserDetailsForm from '../UserDetailsForm'
 
-afterEach(cleanup);
+afterEach(cleanup)
 
 const handleInputChange = (event) => {
-  const { name } = event.target;
+  const { name } = event.target
   if (name === 'roles-manager') {
     if (!event.target.checked) {
-      console.log('unchecked');
+      console.log('unchecked')
     }
     if (event.target.checked) {
-      console.log('checked');
+      console.log('checked')
     }
   }
-  console.log('!');
-};
+  console.log('!')
+}
 
 const handleSubmit = () => {
-  console.log(userToView);
-  console.log(roles);
-};
+  console.log('handleSubmit')
+}
 
 const details = {
   id: 2,
@@ -35,7 +34,7 @@ const details = {
   organization: {
     name: 'test organization'
   }
-};
+}
 const user = {
   id: 2,
   firstName: 'Test F Name',
@@ -52,7 +51,7 @@ const user = {
   },
   phone: '(604) 111-1111',
   isGovernment: false
-};
+}
 describe('User Form', () => {
   it('renders without crashing', () => {
     render(
@@ -65,6 +64,6 @@ describe('User Form', () => {
         rolesList={['test']}
         roles={[{ 1: 'test' }, { 2: 'test1' }]}
       />
-    );
-  });
-});
+    )
+  })
+})

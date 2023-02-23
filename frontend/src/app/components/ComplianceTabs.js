@@ -1,13 +1,13 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import React from 'react'
+import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types'
 
-import CONFIG from '../config';
-import ROUTES_COMPLIANCE from '../routes/Compliance';
-import CustomPropTypes from '../utilities/props';
+import CONFIG from '../config'
+import ROUTES_COMPLIANCE from '../routes/Compliance'
+import CustomPropTypes from '../utilities/props'
 
 const ComplianceTabs = (props) => {
-  const { active, user } = props;
+  const { active, user } = props
 
   return (
     <ul className="nav nav-tabs" key="tabs" role="tablist">
@@ -36,14 +36,14 @@ const ComplianceTabs = (props) => {
           >
             <Link to={ROUTES_COMPLIANCE.CALCULATOR}>Compliance Calculator</Link>
           </li>
-        )}
+      )}
     </ul>
-  );
-};
+  )
+}
 
 ComplianceTabs.propTypes = {
   active: PropTypes.string.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default ComplianceTabs;
+export default ComplianceTabs

@@ -1,146 +1,145 @@
 /*
  * Presentational component
  */
-import PropTypes from 'prop-types';
-import React from 'react';
-import _ from 'lodash';
-import moment from 'moment-timezone';
+import PropTypes from 'prop-types'
+import React from 'react'
+import moment from 'moment-timezone'
 
-import ReactTable from '../../app/components/ReactTable';
-import formatNumeric from '../../app/utilities/formatNumeric';
-import history from '../../app/History';
-import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
-import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements';
-import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers';
-import ROUTES_CREDITS from '../../app/routes/Credits';
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
+import ReactTable from '../../app/components/ReactTable'
+import formatNumeric from '../../app/utilities/formatNumeric'
+import history from '../../app/History'
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
+import ROUTES_CREDIT_AGREEMENTS from '../../app/routes/CreditAgreements'
+import ROUTES_CREDIT_TRANSFERS from '../../app/routes/CreditTransfers'
+import ROUTES_CREDITS from '../../app/routes/Credits'
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
 
 const CreditTransactionListTable = (props) => {
-  const { items, reports } = props;
+  const { items, reports } = props
   const translateTransactionType = (item) => {
     if (!item.transactionType) {
-      return false;
+      return false
     }
-    const { transactionType } = item.transactionType;
+    const { transactionType } = item.transactionType
 
-    let name = '';
+    let name = ''
 
     if (transactionType.toLowerCase() === 'reduction') {
       const report = reports.find(
         (each) => Number(each.id) === item.foreignKey
-      );
+      )
 
       if (report) {
-        ({ name } = report.modelYear);
+        ({ name } = report.modelYear)
       }
     }
 
     switch (transactionType.toLowerCase()) {
       case 'validation':
-        return 'Credit Application';
+        return 'Credit Application'
       case 'credit adjustment validation':
         if (item.detailTransactionType) {
-          return item.detailTransactionType;
+          return item.detailTransactionType
         }
-        return 'Initiative Agreement';
+        return 'Initiative Agreement'
       case 'credit adjustment reduction':
         if (item.detailTransactionType) {
-          return item.detailTransactionType;
+          return item.detailTransactionType
         }
-        return 'Administrative Credit Reduction';
+        return 'Administrative Credit Reduction'
       case 'reduction':
-        return `${name} Model Year Report Credit Reduction`;
+        return `${name} Model Year Report Credit Reduction`
       default:
-        return transactionType;
+        return transactionType
     }
-  };
+  }
 
   const abbreviateTransactionType = (item) => {
     if (!item.transactionType) {
-      return false;
+      return false
     }
 
-    const { transactionType } = item.transactionType;
+    const { transactionType } = item.transactionType
 
     switch (transactionType.toLowerCase()) {
       case 'validation':
-        return 'CA';
+        return 'CA'
       case 'credit transfer':
-        return 'CT';
+        return 'CT'
       case 'credit adjustment validation':
         if (item.detailTransactionType === 'Automatic Administrative Penalty') {
-          return 'AP';
+          return 'AP'
         }
 
         if (item.detailTransactionType === 'Purchase Agreement') {
-          return 'PA';
+          return 'PA'
         }
 
         if (item.detailTransactionType === 'Administrative Credit Allocation') {
-          return 'AA';
+          return 'AA'
         }
         if (item.detailTransactionType === 'Reassessment Allocation') {
-          return 'RA';
+          return 'RA'
         }
 
-        return 'IA';
+        return 'IA'
       case 'credit adjustment reduction':
         if (item.detailTransactionType === 'Administrative Credit Reduction') {
-          return 'AR';
+          return 'AR'
         }
         if (item.detailTransactionType === 'Reassessment Reduction') {
-          return 'RR';
+          return 'RR'
         }
-        break;
+        break
       case 'reduction':
-        return 'CR';
+        return 'CR'
       default:
-        return transactionType;
+        return transactionType
     }
-  };
+  }
 
-  let totalA = 0;
-  let totalB = 0;
+  let totalA = 0
+  let totalB = 0
 
-  const transactions = [];
+  const transactions = []
 
   items.sort((a, b) => {
     if (a.transactionTimestamp < b.transactionTimestamp) {
-      return -1;
+      return -1
     }
 
     if (a.transactionTimestamp > b.transactionTimestamp) {
-      return 1;
+      return 1
     }
 
-    return 0;
-  });
+    return 0
+  })
 
   // for items  with the same date in transactionTimestamp, if item transactionType is 'Reduction' then it should be considered last in the list
   items.sort((a, b) => {
     if (moment(a.transactionTimestamp).format('YYYY-MM-DD') === moment(b.transactionTimestamp).format('YYYY-MM-DD')) {
       if (a.transactionType.transactionType === 'Reduction') {
-        return 1;
+        return 1
       }
 
       if (b.transactionType.transactionType === 'Reduction') {
-        return -1;
+        return -1
       }
     }
 
-    return 0;
-  });
-  
+    return 0
+  })
+
   items.forEach((item) => {
     const totalValue =
-      Math.round((item.totalValue + Number.EPSILON) * 100) / 100;
+      Math.round((item.totalValue + Number.EPSILON) * 100) / 100
 
     if (item.creditClass.creditClass === 'A') {
-      totalA += parseFloat(totalValue);
+      totalA += parseFloat(totalValue)
     }
 
     if (item.creditClass.creditClass === 'B') {
-      totalB += parseFloat(totalValue);
+      totalB += parseFloat(totalValue)
     }
 
     const found = transactions.findIndex(
@@ -150,7 +149,7 @@ const CreditTransactionListTable = (props) => {
         item.transactionType &&
         transaction.transactionType.transactionType ===
           item.transactionType.transactionType
-    );
+    )
 
     if (found >= 0) {
       transactions[found] = {
@@ -170,8 +169,8 @@ const CreditTransactionListTable = (props) => {
         displayTotalB:
           item.creditClass.creditClass === 'B'
             ? transactions[found].displayTotalB + totalValue
-            : transactions[found].displayTotalB,
-      };
+            : transactions[found].displayTotalB
+      }
     } else {
       transactions.push({
         creditsA: item.creditClass.creditClass === 'A' ? totalValue : 0,
@@ -183,31 +182,31 @@ const CreditTransactionListTable = (props) => {
         modelYear: item.modelYear,
         transactionType: item.transactionType,
         detailTransactionType: item.detailTransactionType
-      });
+      })
     }
-  });
+  })
   transactions.sort((a, b) => {
     if (moment(a.transactionTimestamp).format('YYYY-MM-DD') === moment(b.transactionTimestamp).format('YYYY-MM-DD')) {
       if (a.transactionType.transactionType === 'Reduction') {
-        return -1;
+        return -1
       }
 
       if (b.transactionType.transactionType === 'Reduction') {
-        return 1;
+        return 1
       }
     }
 
     if (a.transactionTimestamp > b.transactionTimestamp) {
-      return -1;
+      return -1
     }
 
     if (a.transactionTimestamp < b.transactionTimestamp) {
-      return 1;
+      return 1
     }
 
-    return 0;
-  });
-  
+    return 0
+  })
+
   const columns = [
     {
       Header: '',
@@ -219,10 +218,10 @@ const CreditTransactionListTable = (props) => {
               item.transactionType.transactionType === 'Reduction' &&
               !item.foreignKey
             ) {
-              return 'AR';
+              return 'AR'
             }
 
-            return `${abbreviateTransactionType(item)}-${item.foreignKey}`;
+            return `${abbreviateTransactionType(item)}-${item.foreignKey}`
           },
           className: 'text-center',
           Header: 'Transaction ID',
@@ -329,7 +328,7 @@ const CreditTransactionListTable = (props) => {
         }
       ]
     }
-  ];
+  ]
 
   return (
     <ReactTable
@@ -344,12 +343,12 @@ const CreditTransactionListTable = (props) => {
           return {
             onClick: () => {
               if (!row.original.transactionType) {
-                return false;
+                return false
               }
 
-              const item = row.original;
+              const item = row.original
 
-              const { transactionType } = item.transactionType;
+              const { transactionType } = item.transactionType
               switch (transactionType.toLowerCase()) {
                 case 'credit transfer':
                   history.push(
@@ -358,8 +357,8 @@ const CreditTransactionListTable = (props) => {
                       item.foreignKey
                     ),
                     { href: ROUTES_CREDITS.LIST }
-                  );
-                  break;
+                  )
+                  break
                 case 'validation':
                   history.push(
                     ROUTES_CREDIT_REQUESTS.DETAILS.replace(
@@ -367,8 +366,8 @@ const CreditTransactionListTable = (props) => {
                       item.foreignKey
                     ),
                     { href: ROUTES_CREDITS.LIST }
-                  );
-                  break;
+                  )
+                  break
                 case 'credit adjustment validation':
                   history.push(
                     ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(
@@ -376,8 +375,8 @@ const CreditTransactionListTable = (props) => {
                       item.foreignKey
                     ),
                     { href: ROUTES_CREDITS.LIST }
-                  );
-                  break;
+                  )
+                  break
                 case 'reduction':
                   history.push(
                     ROUTES_COMPLIANCE.REPORT_ASSESSMENT.replace(
@@ -385,8 +384,8 @@ const CreditTransactionListTable = (props) => {
                       item.foreignKey
                     ),
                     { href: ROUTES_CREDITS.LIST }
-                  );
-                  break;
+                  )
+                  break
                 case 'credit adjustment reduction':
                   history.push(
                     ROUTES_CREDIT_AGREEMENTS.DETAILS.replace(
@@ -394,28 +393,28 @@ const CreditTransactionListTable = (props) => {
                       item.foreignKey
                     ),
                     { href: ROUTES_CREDITS.LIST }
-                  );
-                  break;
+                  )
+                  break
                 default:
               }
 
-              return false;
+              return false
             },
             className: 'clickable'
-          };
+          }
         }
 
-        return {};
+        return {}
       }}
     />
-  );
-};
+  )
+}
 
-CreditTransactionListTable.defaultProps = {};
+CreditTransactionListTable.defaultProps = {}
 
 CreditTransactionListTable.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   reports: PropTypes.arrayOf(PropTypes.shape({})).isRequired
-};
+}
 
-export default CreditTransactionListTable;
+export default CreditTransactionListTable

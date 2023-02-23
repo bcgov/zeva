@@ -1,5 +1,5 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
 const VehicleFormDropdown = (props) => {
   const {
@@ -11,13 +11,13 @@ const VehicleFormDropdown = (props) => {
     fieldName,
     handleInputChange,
     selectedOption
-  } = props;
+  } = props
 
   const selectionList = dropdownData.map((obj) => (
     <option key={accessor(obj)} value={accessor(obj)}>
       {obj.name || obj.description}
     </option>
-  ));
+  ))
   return (
     <div className={`form-group row ${className}`}>
       <label className="col-sm-4 col-form-label" htmlFor={dropdownName}>
@@ -41,14 +41,14 @@ const VehicleFormDropdown = (props) => {
         <small className="form-text text-danger">{errorMessage}</small>
       </div>
     </div>
-  );
-};
+  )
+}
 
 VehicleFormDropdown.defaultProps = {
   accessor: (obj) => obj.id,
   className: '',
   errorMessage: ''
-};
+}
 
 VehicleFormDropdown.propTypes = {
   accessor: PropTypes.func,
@@ -66,5 +66,5 @@ VehicleFormDropdown.propTypes = {
   handleInputChange: PropTypes.func.isRequired,
   selectedOption: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
     .isRequired
-};
-export default VehicleFormDropdown;
+}
+export default VehicleFormDropdown

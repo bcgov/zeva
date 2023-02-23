@@ -1,27 +1,24 @@
-import axios from 'axios';
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import axios from 'axios'
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 
-import parse from 'html-react-parser';
-import Loading from '../../app/components/Loading';
-import Modal from '../../app/components/Modal';
-import Button from '../../app/components/Button';
-import ZevSales from './ZevSales';
-import SupplierInformation from './SupplierInformation';
-import CreditActivity from './CreditActivity';
-import UploadEvidence from './UploadEvidence';
-import CommentInput from '../../app/components/CommentInput';
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
-import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport';
-import DisplayComment from '../../app/components/DisplayComment';
-import formatNumeric from '../../app/utilities/formatNumeric';
-import CustomPropTypes from '../../app/utilities/props';
-import ComplianceHistory from '../../compliance/components/ComplianceHistory';
-import CONFIG from '../../app/config';
-import ReassessmentDetailsPage from './ReassessmentDetailsPage';
-import SupplementaryTab from './SupplementaryTab';
-import ReactTooltip from 'react-tooltip';
+import parse from 'html-react-parser'
+import Loading from '../../app/components/Loading'
+import Modal from '../../app/components/Modal'
+import Button from '../../app/components/Button'
+import ZevSales from './ZevSales'
+import SupplierInformation from './SupplierInformation'
+import CreditActivity from './CreditActivity'
+import UploadEvidence from './UploadEvidence'
+import CommentInput from '../../app/components/CommentInput'
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import ROUTES_SUPPLEMENTARY from '../../app/routes/SupplementaryReport'
+import formatNumeric from '../../app/utilities/formatNumeric'
+import CustomPropTypes from '../../app/utilities/props'
+import ComplianceHistory from '../../compliance/components/ComplianceHistory'
+import CONFIG from '../../app/config'
+import SupplementaryTab from './SupplementaryTab'
+import ReactTooltip from 'react-tooltip'
 
 const SupplementarySupplierDetails = (props) => {
   const {
@@ -33,7 +30,6 @@ const SupplementarySupplierDetails = (props) => {
     files,
     handleCheckboxClick,
     handleCommentChange,
-    handleCommentChangeBceid,
     handleInputChange,
     handleSubmit,
     handleSupplementalChange,
@@ -45,42 +41,40 @@ const SupplementarySupplierDetails = (props) => {
     ratios,
     salesRows,
     setDeleteFiles,
-    setSupplementaryAssessmentData,
     setUploadFiles,
     supplementaryAssessmentData,
     user,
     query
-  } = props;
+  } = props
 
-  let { newData } = props;
-  let { reassessment } = details;
+  const { newData } = props
+  let { reassessment } = details
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
   // if user is bceid then only draft is editable
   // if user is idir then draft or submitted is editable
-  const [showModal, setShowModal] = useState(false);
-  const [showModalDraft, setShowModalDraft] = useState(false);
-  const [showModalDelete, setShowModalDelete] = useState(false);
+  const [showModal, setShowModal] = useState(false)
+  const [showModalDelete, setShowModalDelete] = useState(false)
 
-  const reportYear = details.assessmentData && details.assessmentData.modelYear;
+  const reportYear = details.assessmentData && details.assessmentData.modelYear
 
   const supplierClass =
-    details.assessmentData && details.assessmentData.supplierClass[0];
+    details.assessmentData && details.assessmentData.supplierClass[0]
 
   const creditReductionSelection =
-    details.assessmentData && details.assessmentData.creditReductionSelection;
+    details.assessmentData && details.assessmentData.creditReductionSelection
 
-  let currentStatus = details.actualStatus
+  const currentStatus = details.actualStatus
     ? details.actualStatus
-    : details.status;
+    : details.status
 
   if (query && query.reassessment === 'Y') {
     reassessment = {
       isReassessment: true,
       supplementaryReportId: details.id
-    };
+    }
   }
 
   const isAssessed = currentStatus === 'ASSESSED' ||
@@ -91,39 +85,40 @@ const SupplementarySupplierDetails = (props) => {
 
   const isReassessment = reassessment?.isReassessment
   const reassessmentStatus = reassessment?.status ? reassessment.status : details.status
-  const supplementaryReportId = reassessment?.supplementaryReportId ? reassessment?.supplementaryReportId : 
-    (isReassessment ? details.id : null)
+  const supplementaryReportId = reassessment?.supplementaryReportId
+    ? reassessment?.supplementaryReportId
+    : (isReassessment ? details.id : null)
   const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
   const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
 
-  let isEditable = ['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0
+  const isEditable = ['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0
 
   const formattedPenalty = details.assessment
     ? formatNumeric(details.assessment.assessmentPenalty, 0)
-    : 0;
+    : 0
 
   const assessmentDecision =
     supplementaryAssessmentData.supplementaryAssessment.decision &&
     supplementaryAssessmentData.supplementaryAssessment.decision.description
       ? supplementaryAssessmentData.supplementaryAssessment.decision.description
-          .replace(
-            /{user.organization.name}/g,
-            details.assessmentData.legalName
-          )
-          .replace(/{modelYear}/g, details.assessmentData.modelYear)
-          .replace(/{penalty}/g, `$${formattedPenalty} CAD`)
-      : '';
+        .replace(
+          /{user.organization.name}/g,
+          details.assessmentData.legalName
+        )
+        .replace(/{modelYear}/g, details.assessmentData.modelYear)
+        .replace(/{penalty}/g, `$${formattedPenalty} CAD`)
+      : ''
 
   const modal = (
     <Modal
       cancelLabel="No"
       confirmLabel="Yes"
       handleCancel={() => {
-        setShowModal(false);
+        setShowModal(false)
       }}
       handleSubmit={() => {
-        setShowModal(false);
-        handleSubmit('RECOMMENDED', false);
+        setShowModal(false)
+        handleSubmit('RECOMMENDED', false)
       }}
       modalClass="w-75"
       showModal={showModal}
@@ -137,18 +132,18 @@ const SupplementarySupplierDetails = (props) => {
         </h3>
       </div>
     </Modal>
-  );
+  )
 
   const modalDelete = (
     <Modal
       cancelLabel="No"
       confirmLabel="Yes"
       handleCancel={() => {
-        setShowModalDelete(false);
+        setShowModalDelete(false)
       }}
       handleSubmit={() => {
-        setShowModalDelete(false);
-        handleSubmit('DELETED');
+        setShowModalDelete(false)
+        handleSubmit('DELETED')
       }}
       modalClass="w-75"
       showModal={showModalDelete}
@@ -158,16 +153,7 @@ const SupplementarySupplierDetails = (props) => {
         <h3>Are you sure you want to delete this?</h3>
       </div>
     </Modal>
-  );
-
-  let disabledRecommendBtn = false;
-  let recommendTooltip = '';
-
-  if (!assessmentDecision) {
-    disabledRecommendBtn = true;
-    recommendTooltip =
-      'Please select an Analyst Recommendation before recommending this assessment.';
-  }
+  )
 
   const tabUrl = (supplementalId, tabName) => {
     return ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(':id', id)
@@ -177,7 +163,7 @@ const SupplementarySupplierDetails = (props) => {
 
   const renderTabs = () => {
     return (
-      
+
       <ul
         className="nav nav-pills nav-justified supplementary-report-tabs"
         key="tabs"
@@ -185,16 +171,16 @@ const SupplementarySupplierDetails = (props) => {
       >
         <ReactTooltip/>
         <SupplementaryTab
-          selected={selectedTab == tabNames[0]}
+          selected={selectedTab === tabNames[0]}
           title={'Supplementary Report'}
           url={tabUrl(supplementaryReportId, tabNames[0])}
-          disabled={supplementaryReportId == null}
+          disabled={supplementaryReportId === null}
           tooltip={'No supplementary report found. Analyst initiated reassessment.'}
           status={reassessmentStatus}
           assessed={isAssessed}
         />
         <SupplementaryTab
-          selected={selectedTab == tabNames[2]}
+          selected={selectedTab === tabNames[2]}
           title={'Reassessment'}
           url={tabUrl(reassessmentReportId, tabNames[2])}
           disabled={!isAssessed}
@@ -231,7 +217,7 @@ const SupplementarySupplierDetails = (props) => {
           optionalClassname="ml-2 mr-2 button btn float-right d-print-none"
           optionalText="Print Page"
           action={() => {
-            window.print();
+            window.print()
           }}
         />
         <div>
@@ -303,7 +289,7 @@ const SupplementarySupplierDetails = (props) => {
                       {parse(details.fromSupplierComments[0].comment)}
                     </span>
                   </div>
-                )}
+              )}
               {details &&
                 details.attachments &&
                 details.attachments.length > 0 && (
@@ -330,16 +316,16 @@ const SupplementarySupplierDetails = (props) => {
                                     const objectURL =
                                       window.URL.createObjectURL(
                                         new Blob([response.data])
-                                      );
-                                    const link = document.createElement('a');
-                                    link.href = objectURL;
+                                      )
+                                    const link = document.createElement('a')
+                                    link.href = objectURL
                                     link.setAttribute(
                                       'download',
                                       attachment.filename
-                                    );
-                                    document.body.appendChild(link);
-                                    link.click();
-                                  });
+                                    )
+                                    document.body.appendChild(link)
+                                    link.click()
+                                  })
                               }}
                               type="button"
                             >
@@ -349,9 +335,9 @@ const SupplementarySupplierDetails = (props) => {
                         </div>
                       ))}
                   </div>
-                )}
+              )}
             </div>
-          )}
+        )}
       </div>
       {supplementaryAssessmentData.supplementaryAssessment?.decision?.description &&
         <>
@@ -368,7 +354,7 @@ const SupplementarySupplierDetails = (props) => {
                       <div className="mt-2">
                         {parse(commentArray.bceidComment.comment)}
                       </div>
-                    )}
+                  )}
                 </div>
               </div>
             </div>
@@ -384,7 +370,7 @@ const SupplementarySupplierDetails = (props) => {
               id="supplier-confirm-checkbox"
               name="confirmations"
               onChange={(event) => {
-                handleCheckboxClick(event);
+                handleCheckboxClick(event)
               }}
               type="checkbox"
             />
@@ -424,12 +410,12 @@ const SupplementarySupplierDetails = (props) => {
                 )} */}
             </span>
             <span className="right-content">
-              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED && 
-                isEditable && 
+              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
+                isEditable &&
                   <Button
                     buttonType="save"
                     action={() => {
-                      handleSubmit('DRAFT', false);
+                      handleSubmit('DRAFT', false)
                     }}
                   />
               }
@@ -449,8 +435,8 @@ const SupplementarySupplierDetails = (props) => {
       {/* {modalDraft} */}
       {modalDelete}
     </div>
-  );
-};
+  )
+}
 
 SupplementarySupplierDetails.defaultProps = {
   isReassessment: undefined,
@@ -458,7 +444,7 @@ SupplementarySupplierDetails.defaultProps = {
   obligationDetails: [],
   query: {},
   ratios: {}
-};
+}
 
 SupplementarySupplierDetails.propTypes = {
   addSalesRow: PropTypes.func.isRequired,
@@ -488,6 +474,6 @@ SupplementarySupplierDetails.propTypes = {
   setUploadFiles: PropTypes.func.isRequired,
   supplementaryAssessmentData: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default SupplementarySupplierDetails;
+export default SupplementarySupplierDetails

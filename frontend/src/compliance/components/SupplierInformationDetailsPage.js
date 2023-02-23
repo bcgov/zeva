@@ -1,16 +1,16 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 
-import Button from '../../app/components/Button';
-import Loading from '../../app/components/Loading';
-import Modal from '../../app/components/Modal';
-import history from '../../app/History';
-import CustomPropTypes from '../../app/utilities/props';
-import ROUTES_COMPLIANCE from '../../app/routes/Compliance';
-import FormatNumeric from '../../app/utilities/formatNumeric';
-import ComplianceReportAlert from './ComplianceReportAlert';
-import ComplianceReportSignOff from './ComplianceReportSignOff';
+import Button from '../../app/components/Button'
+import Loading from '../../app/components/Loading'
+import Modal from '../../app/components/Modal'
+import history from '../../app/History'
+import CustomPropTypes from '../../app/utilities/props'
+import ROUTES_COMPLIANCE from '../../app/routes/Compliance'
+import FormatNumeric from '../../app/utilities/formatNumeric'
+import ComplianceReportAlert from './ComplianceReportAlert'
+import ComplianceReportSignOff from './ComplianceReportSignOff'
 
 const SupplierInformationDetailsPage = (props) => {
   const {
@@ -31,12 +31,12 @@ const SupplierInformationDetailsPage = (props) => {
     modelYear,
     statuses,
     id
-  } = props;
-  const [showModal, setShowModal] = useState(false);
-  let disabledCheckboxes = propsDisabledCheckboxes;
-  let disabledInputs = false;
+  } = props
+  const [showModal, setShowModal] = useState(false)
+  let disabledCheckboxes = propsDisabledCheckboxes
+  let disabledInputs = false
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   const modal = (
@@ -44,11 +44,11 @@ const SupplierInformationDetailsPage = (props) => {
       cancelLabel="No"
       confirmLabel="Yes"
       handleCancel={() => {
-        setShowModal(false);
+        setShowModal(false)
       }}
       handleSubmit={() => {
-        setShowModal(false);
-        handleCancelConfirmation();
+        setShowModal(false)
+        handleCancelConfirmation()
       }}
       modalClass="w-75"
       showModal={showModal}
@@ -63,17 +63,17 @@ const SupplierInformationDetailsPage = (props) => {
         </h3>
       </div>
     </Modal>
-  );
+  )
 
   assertions.forEach((assertion) => {
     if (checkboxes.indexOf(assertion.id) >= 0) {
-      disabledCheckboxes = 'disabled';
+      disabledCheckboxes = 'disabled'
     }
-  });
+  })
 
   if (['SAVED', 'UNSAVED'].indexOf(statuses.supplierInformation.status) < 0) {
-    disabledCheckboxes = 'disabled';
-    disabledInputs = true;
+    disabledCheckboxes = 'disabled'
+    disabledInputs = true
   }
 
   return (
@@ -94,7 +94,7 @@ const SupplierInformationDetailsPage = (props) => {
                 status={statuses.supplierInformation}
                 type="Supplier Information"
               />
-            )}
+          )}
         </div>
       </div>
       <div className="row mt-1">
@@ -106,19 +106,19 @@ const SupplierInformationDetailsPage = (props) => {
                   <button
                     className="btn button primary"
                     onClick={() => {
-                      setShowModal(true);
+                      setShowModal(true)
                     }}
                     type="button"
                   >
                     Edit
                   </button>
-                )}
+              )}
               <Button
                 buttonType="button"
                 optionalClassname="ml-2 mr-2 button btn"
                 optionalText="Print Page"
                 action={() => {
-                  window.print();
+                  window.print()
                 }}
               />
             </span>
@@ -183,7 +183,7 @@ const SupplierInformationDetailsPage = (props) => {
                       </div>
                     </div>
                   </>
-                )}
+              )}
               <div className="mt-1 row">
                 <div className="col-sm-12 col-md-6">
                   <div className="mt-2 row">
@@ -224,7 +224,7 @@ const SupplierInformationDetailsPage = (props) => {
                         </div>
                       </div>
                     </div>
-                  )}
+                )}
               </div>
               <div className="d-block mt-3">
                 If there is an error in any of the information above, please
@@ -267,7 +267,7 @@ const SupplierInformationDetailsPage = (props) => {
                           </button>
                         </div>
                       </div>
-                    )}
+                  )}
                 </form>
 
                 {makes.length > 0 && (
@@ -281,7 +281,7 @@ const SupplierInformationDetailsPage = (props) => {
                           <div className="col-1 delete">
                             <button
                               onClick={() => {
-                                handleDeleteMake(index);
+                                handleDeleteMake(index)
                               }}
                               type="button"
                             >
@@ -300,7 +300,7 @@ const SupplierInformationDetailsPage = (props) => {
       </div>
       {['SUBMITTED', 'ASSESSED', 'REASSESSED'].indexOf(
         statuses.supplierInformation.status
-      ) == -1 && (
+      ) === -1 && (
         <>
           <div className="row">
             <div className="col-12 my-3">
@@ -339,7 +339,7 @@ const SupplierInformationDetailsPage = (props) => {
                           ':id',
                           id
                         )
-                      );
+                      )
                     }}
                   />
                   {!user.isGovernment && (
@@ -352,7 +352,7 @@ const SupplierInformationDetailsPage = (props) => {
                       }
                       optionalClassname="button primary"
                       action={(event) => {
-                        handleSubmit(event);
+                        handleSubmit(event)
                       }}
                     />
                   )}
@@ -365,10 +365,10 @@ const SupplierInformationDetailsPage = (props) => {
 
       {modal}
     </div>
-  );
-};
+  )
+}
 
-SupplierInformationDetailsPage.defaultProps = {};
+SupplierInformationDetailsPage.defaultProps = {}
 
 SupplierInformationDetailsPage.propTypes = {
   details: PropTypes.shape({
@@ -394,5 +394,5 @@ SupplierInformationDetailsPage.propTypes = {
   disabledCheckboxes: PropTypes.string.isRequired,
   modelYear: PropTypes.number.isRequired,
   statuses: PropTypes.shape().isRequired
-};
-export default SupplierInformationDetailsPage;
+}
+export default SupplierInformationDetailsPage

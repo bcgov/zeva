@@ -1,18 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import history from '../../app/History';
-import Loading from '../../app/components/Loading';
-import OrganizationsTable from './OrganizationsTable';
-import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations';
-import ROUTES_USERS from '../../app/routes/Users';
-import CustomPropTypes from '../../app/utilities/props';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import history from '../../app/History'
+import Loading from '../../app/components/Loading'
+import OrganizationsTable from './OrganizationsTable'
+import ROUTES_ORGANIZATIONS from '../../app/routes/Organizations'
+import ROUTES_USERS from '../../app/routes/Users'
+import CustomPropTypes from '../../app/utilities/props'
 
 const OrganizationListPage = (props) => {
-  const { filtered, loading, organizations, setFiltered, user } = props;
+  const { filtered, loading, organizations, setFiltered, user } = props
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   return (
@@ -31,18 +31,18 @@ const OrganizationListPage = (props) => {
                   className="button primary"
                   type="button"
                   onClick={() => {
-                    history.push(ROUTES_ORGANIZATIONS.NEW);
+                    history.push(ROUTES_ORGANIZATIONS.NEW)
                   }}
                 >
                   <FontAwesomeIcon icon="plus" /> New Supplier
                 </button>
-              )}
+            )}
             {user.isGovernment && (
               <button
                 className="button primary ml-2"
                 type="button"
                 onClick={() => {
-                  history.push(ROUTES_USERS.ACTIVE);
+                  history.push(ROUTES_USERS.ACTIVE)
                 }}
               >
                 Email Addresses
@@ -62,12 +62,12 @@ const OrganizationListPage = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 OrganizationListPage.defaultProps = {
   organizations: []
-};
+}
 
 OrganizationListPage.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -75,6 +75,6 @@ OrganizationListPage.propTypes = {
   organizations: PropTypes.arrayOf(PropTypes.shape()),
   setFiltered: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default OrganizationListPage;
+export default OrganizationListPage

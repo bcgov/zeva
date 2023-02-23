@@ -1,9 +1,9 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from 'prop-types';
+import React from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import PropTypes from 'prop-types'
 
 const Alert = (props) => {
-  const { message, title, icon, classname, historyMessage, status } = props;
+  const { message, title, icon, classname, historyMessage, status } = props
 
   return (
     <div className={`${classname} status-alert`} role="alert">
@@ -24,8 +24,8 @@ const Alert = (props) => {
         )}
       </span>
     </div>
-  );
-};
+  )
+}
 
 Alert.defaultProps = {
   title: '',
@@ -34,7 +34,7 @@ Alert.defaultProps = {
   icon: 'exclamation-circle',
   historyMessage: '',
   status: 'STATUS'
-};
+}
 Alert.propTypes = {
   message: PropTypes.string,
   title: PropTypes.string,
@@ -42,5 +42,5 @@ Alert.propTypes = {
   icon: PropTypes.string,
   historyMessage: PropTypes.string,
   status: PropTypes.string
-};
-export default Alert;
+}
+export default Alert

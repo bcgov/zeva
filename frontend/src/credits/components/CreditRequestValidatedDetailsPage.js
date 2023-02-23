@@ -1,15 +1,14 @@
-import axios from 'axios';
-import React, { useState } from 'react';
-import ReactQuill from 'react-quill';
-import PropTypes from 'prop-types';
+import axios from 'axios'
+import React, { useState } from 'react'
+import ReactQuill from 'react-quill'
+import PropTypes from 'prop-types'
 
-import Button from '../../app/components/Button';
-import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
-import CustomPropTypes from '../../app/utilities/props';
-import VINListTable from './VINListTable';
-import DisplayComment from '../../app/components/DisplayComment';
-import download from '../../app/utilities/download';
-import DownloadAllSubmissionContentButton from './DownloadAllSubmissionContentButton';
+import Button from '../../app/components/Button'
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
+import CustomPropTypes from '../../app/utilities/props'
+import VINListTable from './VINListTable'
+import DisplayComment from '../../app/components/DisplayComment'
+import DownloadAllSubmissionContentButton from './DownloadAllSubmissionContentButton'
 
 const CreditRequestValidatedDetailsPage = (props) => {
   const {
@@ -20,67 +19,53 @@ const CreditRequestValidatedDetailsPage = (props) => {
     setContent,
     submission,
     user
-  } = props;
+  } = props
 
-  const [filtered, setFiltered] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [pages, setPages] = useState(-1);
-  const [reactTable, setReactTable] = useState(null);
-  const [selectedOption, setSelectedOption] = useState('');
-  const downloadAll = (e) => {
-    const element = e.currentTarget;
-    const original = element.innerHTML;
+  const [filtered, setFiltered] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [pages, setPages] = useState(-1)
+  const [reactTable, setReactTable] = useState(null)
+  const [selectedOption, setSelectedOption] = useState('')
 
-    element.innerText = 'Downloading...';
-    element.disabled = true;
-
-    return download(
-      ROUTES_CREDIT_REQUESTS.DOWNLOAD_DETAILS.replace(':id', submission.id),
-      {}
-    ).then(() => {
-      element.innerHTML = original;
-      element.disabled = false;
-    });
-  };
   const filterWarnings = (event) => {
-    const { value } = event.target;
+    const { value } = event.target
 
-    const index = filtered.findIndex((item) => item.id === 'warning');
+    const index = filtered.findIndex((item) => item.id === 'warning')
     const filter = {
       id: 'warning',
       value
-    };
-
-    if (index >= 0) {
-      filtered[index] = filter;
-    } else {
-      filtered.push(filter);
     }
 
-    setSelectedOption(value);
-    setFiltered([...filtered, { id: 'warning', value }]);
-    reactTable.filterColumn(reactTable.state.columns[3].columns[0], value);
-  };
+    if (index >= 0) {
+      filtered[index] = filter
+    } else {
+      filtered.push(filter)
+    }
+
+    setSelectedOption(value)
+    setFiltered([...filtered, { id: 'warning', value }])
+    reactTable.filterColumn(reactTable.state.columns[3].columns[0], value)
+  }
 
   const refreshContent = (state, paramFilters = {}) => {
-    const filters = paramFilters;
-    const sorted = [];
+    const filters = paramFilters
+    const sorted = []
 
     state.sorted.forEach((each) => {
-      let value = each.id;
+      let value = each.id
 
       if (each.desc) {
-        value = `-${value}`;
+        value = `-${value}`
       }
 
-      sorted.push(value);
-    });
+      sorted.push(value)
+    })
 
-    setLoading(true);
+    setLoading(true)
 
     if (!filters.warning) {
-      filters.warning = '1';
-      filters.include_overrides = true;
+      filters.warning = '1'
+      filters.include_overrides = true
     }
 
     axios
@@ -93,22 +78,22 @@ const CreditRequestValidatedDetailsPage = (props) => {
         }
       })
       .then((response) => {
-        const { content: refreshedContent, pages: numPages } = response.data;
+        const { content: refreshedContent, pages: numPages } = response.data
 
-        setContent(refreshedContent);
-        setLoading(false);
-        setPages(numPages);
-      });
-  };
+        setContent(refreshedContent)
+        setLoading(false)
+        setPages(numPages)
+      })
+  }
 
   const clearFilters = () => {
-    setSelectedOption('');
-    setFiltered([]);
+    setSelectedOption('')
+    setFiltered([])
 
-    const state = reactTable.getResolvedState();
+    const state = reactTable.getResolvedState()
 
-    refreshContent(state);
-  };
+    refreshContent(state)
+  }
 
   const actionBar = (
     <>
@@ -122,21 +107,21 @@ const CreditRequestValidatedDetailsPage = (props) => {
         )}
       </div>
     </>
-  );
+  )
 
   const analystAction =
     user.isGovernment &&
     ['CHECKED', 'SUBMITTED'].indexOf(submission.validationStatus) >= 0 &&
-    user.hasPermission('RECOMMEND_SALES');
+    user.hasPermission('RECOMMEND_SALES')
 
-  const validatedOnly = submission.validationStatus === 'CHECKED';
+  const validatedOnly = submission.validationStatus === 'CHECKED'
 
   const directorAction =
     user.isGovernment &&
     ['RECOMMEND_APPROVAL', 'RECOMMEND_REJECTION'].indexOf(
       submission.validationStatus
     ) >= 0 &&
-    user.hasPermission('SIGN_SALES');
+    user.hasPermission('SIGN_SALES')
 
   return (
     <div id="sales-details" className="page">
@@ -176,7 +161,7 @@ const CreditRequestValidatedDetailsPage = (props) => {
             className="button d-inline-block align-middle"
             disabled={filtered.length === 0}
             onClick={() => {
-              clearFilters();
+              clearFilters()
             }}
             type="button"
           >
@@ -245,7 +230,7 @@ const CreditRequestValidatedDetailsPage = (props) => {
                     <button
                       className="button mt-2"
                       onClick={() => {
-                        handleAddComment();
+                        handleAddComment()
                       }}
                       type="button"
                     >
@@ -254,7 +239,7 @@ const CreditRequestValidatedDetailsPage = (props) => {
                   </div>
                 )}
               </div>
-            )}
+          )}
         </div>
       </div>
 
@@ -262,10 +247,10 @@ const CreditRequestValidatedDetailsPage = (props) => {
         <div className="col-sm-12">{actionBar}</div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-CreditRequestValidatedDetailsPage.defaultProps = {};
+CreditRequestValidatedDetailsPage.defaultProps = {}
 
 CreditRequestValidatedDetailsPage.propTypes = {
   content: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -277,6 +262,6 @@ CreditRequestValidatedDetailsPage.propTypes = {
   setContent: PropTypes.func.isRequired,
   submission: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default CreditRequestValidatedDetailsPage;
+export default CreditRequestValidatedDetailsPage

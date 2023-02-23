@@ -1,12 +1,12 @@
 /*
  * Presentational component
  */
-import PropTypes from 'prop-types';
-import React from 'react';
-import ReactTable from '../../app/components/ReactTable';
+import PropTypes from 'prop-types'
+import React from 'react'
+import ReactTable from '../../app/components/ReactTable'
 
 const ComplianceRatiosTable = (props) => {
-  const { data } = props;
+  const { data } = props
   const columns = [
     {
       accessor: (item) => item.modelYear,
@@ -35,7 +35,7 @@ const ComplianceRatiosTable = (props) => {
       sortable: false,
       maxWidth: 200
     }
-  ];
+  ]
 
   return (
     <ReactTable
@@ -44,13 +44,13 @@ const ComplianceRatiosTable = (props) => {
       data={data}
       filterable={false}
     />
-  );
-};
+  )
+}
 
-ComplianceRatiosTable.defaultProps = {};
+ComplianceRatiosTable.defaultProps = {}
 
 ComplianceRatiosTable.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({})).isRequired
-};
+}
 
-export default ComplianceRatiosTable;
+export default ComplianceRatiosTable

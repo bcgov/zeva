@@ -1,21 +1,21 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import ReactTable from '../../app/components/ReactTable';
+import React from 'react'
+import PropTypes from 'prop-types'
+import ReactTable from '../../app/components/ReactTable'
 
-import formatNumeric from '../../app/utilities/formatNumeric';
-import getSupplierSummary from '../../app/utilities/getSupplierSummary';
+import formatNumeric from '../../app/utilities/formatNumeric'
+import getSupplierSummary from '../../app/utilities/getSupplierSummary'
 
 const CreditTransfersDetailsSupplierTable = (props) => {
-  const { submission } = props;
+  const { submission } = props
 
   const tableText = (
     <div className="text-blue my-3">
       Issuing this transfer will result in the following credit balance change
       to each supplier.
     </div>
-  );
+  )
 
-  const supplierBalanceData = getSupplierSummary(submission);
+  const supplierBalanceData = getSupplierSummary(submission)
   const supplierBalanceColumns = [
     {
       Header: 'Supplier',
@@ -81,7 +81,7 @@ const CreditTransfersDetailsSupplierTable = (props) => {
         }
       ]
     }
-  ];
+  ]
   return (
     <div className="row mb-4 mt-2">
       <div className="col-sm-11">
@@ -96,9 +96,9 @@ const CreditTransfersDetailsSupplierTable = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 CreditTransfersDetailsSupplierTable.propTypes = {
   submission: PropTypes.shape().isRequired
-};
-export default CreditTransfersDetailsSupplierTable;
+}
+export default CreditTransfersDetailsSupplierTable

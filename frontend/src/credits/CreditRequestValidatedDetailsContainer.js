@@ -2,30 +2,30 @@
  * Container component
  * All data handling & manipulation should be handled here.
  */
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { withRouter } from 'react-router';
-import PropTypes from 'prop-types';
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
+import { withRouter } from 'react-router'
+import PropTypes from 'prop-types'
 
-import history from '../app/History';
-import Loading from '../app/components/Loading';
-import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests';
-import CustomPropTypes from '../app/utilities/props';
-import CreditRequestValidatedDetailsPage from './components/CreditRequestValidatedDetailsPage';
+import history from '../app/History'
+import Loading from '../app/components/Loading'
+import ROUTES_CREDIT_REQUESTS from '../app/routes/CreditRequests'
+import CustomPropTypes from '../app/utilities/props'
+import CreditRequestValidatedDetailsPage from './components/CreditRequestValidatedDetailsPage'
 
-const qs = require('qs');
+const qs = require('qs')
 
 const CreditRequestValidatedDetailsContainer = (props) => {
-  const { location, match, user } = props;
-  const { id } = match.params;
+  const { location, match, user } = props
+  const { id } = match.params
 
-  const [comment, setComment] = useState('');
-  const [content, setContent] = useState([]);
-  const [submission, setSubmission] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [invalidatedList, setInvalidatedList] = useState([]);
+  const [comment, setComment] = useState('')
+  const [content, setContent] = useState([])
+  const [submission, setSubmission] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [invalidatedList, setInvalidatedList] = useState([])
 
-  const query = qs.parse(location.search, { ignoreQueryPrefix: true });
+  const query = qs.parse(location.search, { ignoreQueryPrefix: true })
 
   const refreshDetails = () => {
     axios
@@ -37,27 +37,27 @@ const CreditRequestValidatedDetailsContainer = (props) => {
       ])
       .then(
         axios.spread((submissionResponse, unselectedResponse) => {
-          const { data: submissionData } = submissionResponse;
-          setSubmission(submissionData);
+          const { data: submissionData } = submissionResponse
+          setSubmission(submissionData)
 
-          const { data: unselected } = unselectedResponse;
-          setInvalidatedList(unselected);
-          setLoading(false);
+          const { data: unselected } = unselectedResponse
+          setInvalidatedList(unselected)
+          setLoading(false)
           if (submissionData.validationStatus !== 'VALIDATED') {
-            throw new Error("Credit Request hasn't been validated yet.");
+            throw new Error("Credit Request hasn't been validated yet.")
           }
         })
-      );
-  };
+      )
+  }
 
   const handleCommentChange = (text) => {
-    setComment(text);
-  };
+    setComment(text)
+  }
 
   const handleAddComment = () => {
-    const submissionContent = {};
+    const submissionContent = {}
     if (comment.length > 0) {
-      submissionContent.salesSubmissionComment = { comment };
+      submissionContent.salesSubmissionComment = { comment }
     }
     axios
       .patch(
@@ -65,23 +65,23 @@ const CreditRequestValidatedDetailsContainer = (props) => {
         submissionContent
       )
       .then(() => {
-        history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id));
-        const refreshed = true;
+        history.push(ROUTES_CREDIT_REQUESTS.DETAILS.replace(':id', id))
+        const refreshed = true
 
         if (refreshed) {
           history.push(
             ROUTES_CREDIT_REQUESTS.VALIDATED_DETAILS.replace(':id', id)
-          );
+          )
         }
-      });
-  };
+      })
+  }
 
   useEffect(() => {
-    refreshDetails();
-  }, [id]);
+    refreshDetails()
+  }, [id])
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   return (
@@ -95,13 +95,13 @@ const CreditRequestValidatedDetailsContainer = (props) => {
       submission={submission}
       user={user}
     />
-  );
-};
+  )
+}
 
 CreditRequestValidatedDetailsContainer.propTypes = {
   location: PropTypes.shape().isRequired,
   user: CustomPropTypes.user.isRequired,
   match: CustomPropTypes.routeMatch.isRequired
-};
+}
 
-export default withRouter(CreditRequestValidatedDetailsContainer);
+export default withRouter(CreditRequestValidatedDetailsContainer)

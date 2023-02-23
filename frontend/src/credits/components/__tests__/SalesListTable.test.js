@@ -1,8 +1,8 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import jest from 'jest-mock';
-import VINListTable from '../VINListTable';
-import '@testing-library/jest-dom/extend-expect';
+import React from 'react'
+import { render } from '@testing-library/react'
+import jest from 'jest-mock'
+import VINListTable from '../VINListTable'
+import '@testing-library/jest-dom/extend-expect'
 
 const baseProps = {
   handleCheckboxClick: jest.fn(),
@@ -36,7 +36,7 @@ const baseProps = {
     isGovernment: true
   },
   validatedList: [0, 1, 2]
-};
+}
 const basePropsNoError = {
   items: [
     {
@@ -63,7 +63,7 @@ const basePropsNoError = {
       xlsVin: '123456810'
     }
   ]
-};
+}
 const basePropsNoMatch = {
   items: [
     {
@@ -91,7 +91,7 @@ const basePropsNoMatch = {
     }
   ],
   validatedList: []
-};
+}
 
 it('renders without crashing', () => {
   render(
@@ -104,8 +104,8 @@ it('renders without crashing', () => {
       user={baseProps.user}
       validatedList={baseProps.validatedList}
     />
-  );
-});
+  )
+})
 
 it('gives an error code of 21 if vin has already been validated', () => {
   const { getByText } = render(
@@ -119,9 +119,9 @@ it('gives an error code of 21 if vin has already been validated', () => {
       user={baseProps.user}
       validatedList={baseProps.validatedList}
     />
-  );
-  expect(getByText('21')).toBeInTheDocument();
-});
+  )
+  expect(getByText('21')).toBeInTheDocument()
+})
 
 it('gives an error code of 11 if there is no matching icbc vin', () => {
   const { getByText } = render(
@@ -136,9 +136,9 @@ it('gives an error code of 11 if there is no matching icbc vin', () => {
       user={baseProps.user}
       validatedList={basePropsNoMatch.validatedList}
     />
-  );
-  expect(getByText('11')).toBeInTheDocument();
-});
+  )
+  expect(getByText('11')).toBeInTheDocument()
+})
 
 it('gives no error code if everything matches with icbcdata', () => {
   const { queryByText } = render(
@@ -153,7 +153,7 @@ it('gives no error code if everything matches with icbcdata', () => {
       user={baseProps.user}
       validatedList={baseProps.validatedList}
     />
-  );
-  expect(queryByText('21')).not.toBeInTheDocument();
-  expect(queryByText('11')).not.toBeInTheDocument();
-});
+  )
+  expect(queryByText('21')).not.toBeInTheDocument()
+  expect(queryByText('11')).not.toBeInTheDocument()
+})

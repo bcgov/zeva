@@ -1,56 +1,56 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import toastr from 'toastr';
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
+import toastr from 'toastr'
 
-import CreditTransactionTabs from '../app/components/CreditTransactionTabs';
-import Loading from '../app/components/Loading';
-import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification';
-import ROUTES_UPLOADS from '../app/routes/Uploads';
-import CustomPropTypes from '../app/utilities/props';
-import UploadVerificationData from './components/UploadVerificationData';
+import CreditTransactionTabs from '../app/components/CreditTransactionTabs'
+import Loading from '../app/components/Loading'
+import ROUTES_ICBCVERIFICATION from '../app/routes/ICBCVerification'
+import ROUTES_UPLOADS from '../app/routes/Uploads'
+import CustomPropTypes from '../app/utilities/props'
+import UploadVerificationData from './components/UploadVerificationData'
 
 const UploadICBCVerificationContainer = (props) => {
-  const [loading, setLoading] = useState(true);
-  const { user } = props;
-  const [dateCurrentTo, setDateCurrentTo] = useState('');
+  const [loading, setLoading] = useState(true)
+  const { user } = props
+  const [dateCurrentTo, setDateCurrentTo] = useState('')
   const [previousDateCurrentTo, setPreviousDateCurrentTo] = useState(
     'No ICBC data uploaded yet'
-  );
-  const [files, setFiles] = useState([]);
-  const [alertMessage, setAlertMessage] = useState(null);
-  const [showProcessing, setShowProcessing] = useState(false);
-  const [showProgressBar, setShowProgressBar] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  )
+  const [files, setFiles] = useState([])
+  const [alertMessage, setAlertMessage] = useState(null)
+  const [showProcessing, setShowProcessing] = useState(false)
+  const [showProgressBar, setShowProgressBar] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
 
-  const today = new Date();
+  const today = new Date()
   const date = `${today.getFullYear()}-${
     today.getMonth() + 1
-  }-${today.getDate()}`;
+  }-${today.getDate()}`
 
   const refreshList = (showLoading) => {
-    setLoading(showLoading);
+    setLoading(showLoading)
     axios.get(ROUTES_ICBCVERIFICATION.DATE).then((response) => {
       if (response.data.uploadDate) {
-        setPreviousDateCurrentTo(response.data.uploadDate);
+        setPreviousDateCurrentTo(response.data.uploadDate)
       }
-      setLoading(false);
-    });
-    setDateCurrentTo(date);
-  };
+      setLoading(false)
+    })
+    setDateCurrentTo(date)
+  }
 
   const updateProgressBar = (progressEvent) => {
     const percentage = Math.round(
       (100 * progressEvent.loaded) / progressEvent.total
-    );
-    setUploadProgress(percentage);
-  };
+    )
+    setUploadProgress(percentage)
+  }
 
   const doUpload = () => {
-    setShowProgressBar(true);
+    setShowProgressBar(true)
 
     files.forEach((file) => {
       axios.get(ROUTES_UPLOADS.MINIO_URL).then((response) => {
-        const { url: uploadUrl, minioObjectName: filename } = response.data;
+        const { url: uploadUrl, minioObjectName: filename } = response.data
 
         axios
           .put(uploadUrl, file, {
@@ -58,11 +58,11 @@ const UploadICBCVerificationContainer = (props) => {
               Authorization: null
             },
             onUploadProgress: (progressEvent) => {
-              updateProgressBar(progressEvent);
+              updateProgressBar(progressEvent)
             }
           })
           .then(() => {
-            setShowProcessing(true);
+            setShowProcessing(true)
 
             axios
               .post(ROUTES_ICBCVERIFICATION.UPLOAD, {
@@ -71,52 +71,52 @@ const UploadICBCVerificationContainer = (props) => {
               })
               .then((postResponse) => {
                 const { dateCurrentTo: updatedDateCurrentTo, createdRecords, updatedRecords } =
-                  postResponse.data;
-                setPreviousDateCurrentTo(updatedDateCurrentTo);
-                if (createdRecords == 0 && updatedRecords == 0) {
+                  postResponse.data
+                setPreviousDateCurrentTo(updatedDateCurrentTo)
+                if (createdRecords === 0 && updatedRecords === 0) {
                   setAlertMessage('upload successful - no new records were found.')
                 } else {
-                  setAlertMessage('upload successful - ' + 
-                    createdRecords + ' new records were created and ' + 
-                      updatedRecords + ' records were updated.');
+                  setAlertMessage('upload successful - ' +
+                    createdRecords + ' new records were created and ' +
+                      updatedRecords + ' records were updated.')
                 }
                 toastr.success('upload successful!', '', {
                   positionClass: 'toast-bottom-right'
-                });
+                })
               })
               .catch((error) => {
-                console.error(error);
-                const { response: errorResponse } = error;
+                console.error(error)
+                const { response: errorResponse } = error
                 if (errorResponse.status === 400) {
-                  setAlertMessage(errorResponse.data);
+                  setAlertMessage(errorResponse.data)
                 } else {
                   setAlertMessage(
                     'An error has occurred while uploading. Please try again later.'
-                  );
+                  )
                 }
               })
               .finally(() => {
-                setFiles([]);
-                setShowProcessing(false);
-                setShowProgressBar(false);
-              });
+                setFiles([])
+                setShowProcessing(false)
+                setShowProgressBar(false)
+              })
           })
           .catch((error) => {
-            console.error(error);
+            console.error(error)
             setAlertMessage(
               'An error has occurred while uploading. Please try again later.'
-            );
-          });
-      });
-    });
-  };
+            )
+          })
+      })
+    })
+  }
 
   useEffect(() => {
-    refreshList(true);
-  }, []);
+    refreshList(true)
+  }, [])
 
   if (loading) {
-    return <Loading />;
+    return <Loading />
   }
 
   return [
@@ -136,11 +136,11 @@ const UploadICBCVerificationContainer = (props) => {
       uploadProgress={uploadProgress}
       user={user}
     />
-  ];
-};
+  ]
+}
 
 UploadICBCVerificationContainer.propTypes = {
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default UploadICBCVerificationContainer;
+export default UploadICBCVerificationContainer

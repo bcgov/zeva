@@ -1,11 +1,11 @@
 /*
  * Presentational component
  */
-import React from 'react';
-import PropTypes from 'prop-types';
-import CustomPropTypes from '../../app/utilities/props';
-import ReactTable from '../../app/components/ReactTable';
-import history from '../../app/History';
+import React from 'react'
+import PropTypes from 'prop-types'
+import CustomPropTypes from '../../app/utilities/props'
+import ReactTable from '../../app/components/ReactTable'
+import history from '../../app/History'
 
 const UsersTable = (props) => {
   const columns = [
@@ -18,18 +18,18 @@ const UsersTable = (props) => {
       accessor: (item) =>
         item.roles
           .sort((a, b) => {
-            const A = a.roleCode.toUpperCase();
-            const B = b.roleCode.toUpperCase();
+            const A = a.roleCode.toUpperCase()
+            const B = b.roleCode.toUpperCase()
 
             if (A < B) {
-              return -1;
+              return -1
             }
 
             if (A > B) {
-              return 1;
+              return 1
             }
 
-            return 0;
+            return 0
           })
           .map((role) => role.roleCode)
           .join(', '),
@@ -43,9 +43,9 @@ const UsersTable = (props) => {
       Header: 'Status',
       id: 'status'
     }
-  ];
+  ]
 
-  const { filtered, items, setFiltered, user } = props;
+  const { filtered, items, setFiltered, user } = props
   return (
     <ReactTable
       columns={columns}
@@ -65,27 +65,27 @@ const UsersTable = (props) => {
         ) {
           return {
             onClick: () => {
-              const { id } = row.original;
-              history.push(`/users/${id}/edit`);
+              const { id } = row.original
+              history.push(`/users/${id}/edit`)
             },
             className: 'clickable'
-          };
+          }
         }
 
-        return {};
+        return {}
       }}
       setFiltered={setFiltered}
     />
-  );
-};
+  )
+}
 
-UsersTable.defaultProps = {};
+UsersTable.defaultProps = {}
 
 UsersTable.propTypes = {
   filtered: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   items: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   setFiltered: PropTypes.func.isRequired,
   user: CustomPropTypes.user.isRequired
-};
+}
 
-export default UsersTable;
+export default UsersTable

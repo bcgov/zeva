@@ -1,10 +1,10 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
-import PropTypes from 'prop-types';
-import Button from '../../app/components/Button';
-import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests';
-import download from '../../app/utilities/download';
-import FileDropArea from '../../app/components/FileDropArea';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React from 'react'
+import PropTypes from 'prop-types'
+import Button from '../../app/components/Button'
+import ROUTES_CREDIT_REQUESTS from '../../app/routes/CreditRequests'
+import download from '../../app/utilities/download'
+import FileDropArea from '../../app/components/FileDropArea'
 
 const CreditRequestsUploadPage = (props) => {
   const {
@@ -27,29 +27,29 @@ const CreditRequestsUploadPage = (props) => {
     uploadEvidenceFiles,
     upload,
     uploadNewExcel
-  } = props;
+  } = props
 
   const handleCheckboxChange = (event) => {
-    const { name, checked } = event.target;
+    const { name, checked } = event.target
     if (name === 'evidence-upload-checkbox') {
-      setEvidenceCheckbox(checked);
+      setEvidenceCheckbox(checked)
     } else {
-      setUploadNewExcel(checked);
+      setUploadNewExcel(checked)
     }
-  };
+  }
 
   const downloadTemplate = (e) => {
-    const element = e.target;
-    const original = element.innerHTML;
-    element.firstChild.textContent = ' Downloading...';
+    const element = e.target
+    const original = element.innerHTML
+    element.firstChild.textContent = ' Downloading...'
     return download(ROUTES_CREDIT_REQUESTS.TEMPLATE, {}).then(() => {
-      element.innerHTML = original;
-    });
-  };
+      element.innerHTML = original
+    })
+  }
 
   const downloadSalesEvidenceTemplate = () => {
-    window.open('/SalesEvidenceTemplate.docx');
-  };
+    window.open('/SalesEvidenceTemplate.docx')
+  }
 
   return (
     <div id="sales-edit" className="page">
@@ -70,7 +70,7 @@ const CreditRequestsUploadPage = (props) => {
               buttonType="download"
               optionalText="Download Excel Sales Template"
               action={(e) => {
-                downloadTemplate(e);
+                downloadTemplate(e)
               }}
             />
           </div>
@@ -102,7 +102,7 @@ const CreditRequestsUploadPage = (props) => {
                   name="new-sales-upload-checkbox"
                   id="new-sales-upload-checkbox"
                   onChange={(event) => {
-                    handleCheckboxChange(event);
+                    handleCheckboxChange(event)
                   }}
                   className="m-3"
                 />
@@ -135,7 +135,7 @@ const CreditRequestsUploadPage = (props) => {
               name="evidence-upload-checkbox"
               id="evidence-upload-checkbox"
               onChange={(event) => {
-                handleCheckboxChange(event);
+                handleCheckboxChange(event)
               }}
               defaultChecked={evidenceCheckbox}
               className="m-3"
@@ -156,7 +156,7 @@ const CreditRequestsUploadPage = (props) => {
                   buttonType="download"
                   optionalText="Download Sales Evidence Template"
                   action={() => {
-                    downloadSalesEvidenceTemplate();
+                    downloadSalesEvidenceTemplate()
                   }}
                 />
               </div>
@@ -196,8 +196,8 @@ const CreditRequestsUploadPage = (props) => {
         </span>
       </div>
     </div>
-  );
-};
+  )
+}
 
 CreditRequestsUploadPage.defaultProps = {
   errorMessage: '',
@@ -208,7 +208,7 @@ CreditRequestsUploadPage.defaultProps = {
   showProgressBars: false,
   submission: {},
   uploadNewExcel: false
-};
+}
 
 CreditRequestsUploadPage.propTypes = {
   errorMessage: PropTypes.string,
@@ -232,6 +232,6 @@ CreditRequestsUploadPage.propTypes = {
   ).isRequired,
   upload: PropTypes.func.isRequired,
   uploadNewExcel: PropTypes.bool
-};
+}
 
-export default CreditRequestsUploadPage;
+export default CreditRequestsUploadPage
