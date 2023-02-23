@@ -1,18 +1,18 @@
 ## This pipeline is used to try replacing BCDK with Helm
 ## The build job uses oc command with Openshift Build Templates
 
-name: ZEVA Helm Test
+name: New Frontend Build
 
 on:
   push:
-    branches: [ helm-convertion2-1.46.0 ]
+    branches: [ new-frontend-build-1.46.0 ]
   workflow_dispatch:
   workflow_call:
 
 env:
   ## The pull request number of the Tracking pull request to merge the release branch to main
   PR_NUMBER: 1383
-  RELEASE_NAME: helm-convertion2-1.46.0
+  RELEASE_NAME: new-frontend-build-1.46.0
   VERSION: 1.46.0
   REPO_URL: https://github.com/bcgov/zeva.git 
 
