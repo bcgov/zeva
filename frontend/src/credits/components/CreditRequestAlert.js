@@ -69,10 +69,12 @@ const CreditRequestAlert = (props) => {
         statusFilter('SUBMITTED').createUser.displayName
       }. Awaiting review by Government of B.C.`
       title = 'Submitted'
-      if (isGovernment || excelUploadMessage === '') {
+      if (isGovernment) {
         classname = 'alert-warning'
       } else {
         classname = 'alert-primary'
+      }
+      if (excelUploadMessage) {
         historyMessage = `${excelUploadMessage}. `
       }
       break
@@ -80,7 +82,7 @@ const CreditRequestAlert = (props) => {
       title = 'Issued'
       classname = 'alert-success'
       icon = 'check-circle'
-      if (isGovernment || excelUploadMessage === '') {
+      if (isGovernment) {
         message = `CA-${id} issued ${moment(
           statusFilter('VALIDATED').createTimestamp
         ).format('MMM D, YYYY')} by ${
@@ -90,18 +92,20 @@ const CreditRequestAlert = (props) => {
         message = `CA-${id} issued ${moment(
           statusFilter('VALIDATED').createTimestamp
         ).format('MMM D, YYYY')} by Government of B.C.`
-        historyMessage = `${excelUploadMessage}. Application submitted to Government of B.C. ${moment(
-          statusFilter('SUBMITTED').createTimestamp
-        ).format('MMM D, YYYY')} by ${
-          statusFilter('SUBMITTED').createUser.displayName
-        }`
+      }
+      historyMessage = `Application submitted to Government of B.C. ${moment(
+        statusFilter('SUBMITTED').createTimestamp
+      ).format('MMM D, YYYY')} by ${
+        statusFilter('SUBMITTED').createUser.displayName
+      }`
+      if (excelUploadMessage) {
+        historyMessage = `${excelUploadMessage}. ` + historyMessage
       }
       break
     case 'REJECTED':
       title = 'Rejected'
       classname = 'alert-danger'
       if (!isGovernment) {
-        historyMessage = `${excelUploadMessage}. `
         message = `CA-${id}  rejected ${moment(
           statusFilter('REJECTED').createTimestamp
         ).format('MMM D, YYYY')} by Government of B.C.`
@@ -111,6 +115,9 @@ const CreditRequestAlert = (props) => {
         ).format('MMM D, YYYY')} by ${
           statusFilter('REJECTED').createUser.displayName
         }.`
+      }
+      if (excelUploadMessage) {
+        historyMessage = `${excelUploadMessage}. `
       }
       break
     case 'RECOMMEND_APPROVAL':
