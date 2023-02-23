@@ -42,17 +42,17 @@ jobs:
           insecure_skip_tls_verify: true
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
 
-      - name: Build ZEVA Backend
-        run: |
-          cd openshift/templates/backend
-          oc process -f ./backend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.REPO_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
-          oc start-build --wait=true zeva-backend-build-${{ env.PR_NUMBER }}
+#      - name: Build ZEVA Backend
+#        run: |
+#          cd openshift/templates/backend
+#          oc process -f ./backend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.REPO_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
+#          oc start-build --wait=true zeva-backend-build-${{ env.PR_NUMBER }}
 
-      - name: Build ZEVA Frontend
-        run: |
-          cd openshift/templates/frontend
-          oc process -f ./frontend-bc-docker.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.REPO_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
-          oc start-build --wait=true zeva-frontend-build-${{ env.PR_NUMBER }}
+#      - name: Build ZEVA Frontend
+#        run: |
+#          cd openshift/templates/frontend
+#          oc process -f ./frontend-bc-docker.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.REPO_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
+#          oc start-build --wait=true zeva-frontend-build-${{ env.PR_NUMBER }}
 
   deploy-on-dev:
 
