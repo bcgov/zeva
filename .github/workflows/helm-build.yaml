@@ -11,7 +11,7 @@ on:
 
 env:
   ## The pull request number of the Tracking pull request to merge the release branch to main
-  PR_NUMBER: 1383
+  PR_NUMBER: 1444
   RELEASE_NAME: new-frontend-build-1.46.0
   VERSION: 1.46.0
   REPO_URL: https://github.com/bcgov/zeva.git 
