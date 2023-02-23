@@ -52,18 +52,18 @@ frontendRoute:
 
 livenessProbe:
   failureThreshold: 10
-  initialDelaySeconds: 50
-  periodSeconds: 10
-  successThreshold: 1
-  tcpSocket:
-    port: 3000
-  timeoutSeconds: 3
-
-readinessProbe:
-  failureThreshold: 10
   initialDelaySeconds: 40
   periodSeconds: 10
   successThreshold: 1
   tcpSocket:
-    port: 3000
+    port: 8080
+  timeoutSeconds: 3
+
+readinessProbe:
+  failureThreshold: 10
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  successThreshold: 1
+  tcpSocket:
+    port: 8080
   timeoutSeconds: 3
