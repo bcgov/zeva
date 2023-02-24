@@ -39,6 +39,7 @@ const SupplementaryAnalystDetails = (props) => {
     ldvSales,
     loading,
     newBalances,
+    newData,
     obligationDetails,
     radioDescriptions,
     ratios,
@@ -49,7 +50,6 @@ const SupplementaryAnalystDetails = (props) => {
     query
   } = props
 
-  const { newData } = props
   const { reassessment } = details
 
   if (loading) {
