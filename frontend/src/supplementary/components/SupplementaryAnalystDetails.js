@@ -47,10 +47,13 @@ const SupplementaryAnalystDetails = (props) => {
     setSupplementaryAssessmentData,
     supplementaryAssessmentData,
     user,
-    query
+    query,
+    isReassessment,
+    reassessmentStatus,
+    supplementaryReportId,
+    reassessmentReportId,
+    supplementaryReportIsReassessment
   } = props
-
-  const { reassessment } = details
 
   if (loading) {
     return <Loading />
@@ -76,12 +79,6 @@ const SupplementaryAnalystDetails = (props) => {
 
   const tabNames = ['supplemental', 'recommendation', 'reassessment']
   const selectedTab = query?.tab ? query.tab : isAssessed ? tabNames[2] : tabNames[1]
-
-  const isReassessment = reassessment?.isReassessment
-  const reassessmentStatus = reassessment?.status ? reassessment.status : details.status
-  const supplementaryReportId = reassessment?.supplementaryReportId ? reassessment?.supplementaryReportId : null
-  const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
-  const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
 
   let isEditable = ['DRAFT', 'RETURNED'].indexOf(details.status) >= 0
 
@@ -245,7 +242,6 @@ const SupplementaryAnalystDetails = (props) => {
       .replace(':supplementaryId', supplementalId) +
         `?tab=${tabName}${isReassessment ? '&reassessment=Y' : ''}`
   }
-
   const renderTabs = () => {
     return (
       <ul
@@ -254,9 +250,7 @@ const SupplementaryAnalystDetails = (props) => {
         role="tablist"
       >
         <ReactTooltip/>
-        {supplementaryReportId == null
-          ? null
-          : (<SupplementaryTab
+        {supplementaryReportId && (<SupplementaryTab
           selected={selectedTab === tabNames[0]}
           title={'Supplementary Report'}
           url={tabUrl(supplementaryReportId, tabNames[0])}
@@ -322,7 +316,7 @@ const SupplementaryAnalystDetails = (props) => {
           <div id="comment-input">
             <CommentInput
               handleCommentChange={handleCommentChangeIdir}
-              title={'Add comment to director: '}
+              title='Add comment to director: '
               buttonText="Add Comment"
               handleAddComment={handleAddIdirComment}
               tooltip="Please save the report first, before adding comments"
@@ -341,8 +335,7 @@ const SupplementaryAnalystDetails = (props) => {
         />
         <div>
         {isReassessment &&
-            (currentStatus === 'ASSESSED' || (isReassessment &&
-            selectedTab === tabNames[2]))
+            selectedTab === tabNames[2]
           ? (
             <ReassessmentDetailsPage
               details={details}
@@ -594,7 +587,7 @@ const SupplementaryAnalystDetails = (props) => {
             </span>
             <span className="right-content">
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                isEditable && (
+                isEditable && selectedTab === tabNames[1](
                   <Button
                     buttonType="save"
                     action={() => {

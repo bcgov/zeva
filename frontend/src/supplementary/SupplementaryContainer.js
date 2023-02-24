@@ -816,6 +816,15 @@ const SupplementaryContainer = (props) => {
     calculateBalance()
   }, [newData.creditActivity, obligationDetails])
 
+  const { reassessment } = details
+  const isReassessment = reassessment?.isReassessment
+  const reassessmentStatus = reassessment?.status ? reassessment.status : details.status
+  // supplementaryReportId is specific to reports submitted by bceid ie its NOT a reassessment
+  const supplementaryReportId = reassessment?.supplementaryReportId
+    ? reassessment?.supplementaryReportId
+    : (!isReassessment ? details.id : null)
+  const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
+  const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
   const isSupplier = !user.isGovernment
   const isAnalyst = user.isGovernment && !user.roles.some((r) => r.roleCode === 'Director')
   const isDirector = user.isGovernment && user.roles.some((r) => r.roleCode === 'Director')
@@ -853,7 +862,12 @@ const SupplementaryContainer = (props) => {
     setDeleteFiles,
     setSupplementaryAssessmentData,
     supplementaryAssessmentData,
-    setUploadFiles: setFiles
+    setUploadFiles: setFiles,
+    isReassessment,
+    reassessmentStatus,
+    supplementaryReportId,
+    reassessmentReportId,
+    supplementaryReportIsReassessment
   }
 
   if (props.newReport) {
