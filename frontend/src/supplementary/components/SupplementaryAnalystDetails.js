@@ -587,7 +587,7 @@ const SupplementaryAnalystDetails = (props) => {
             </span>
             <span className="right-content">
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                isEditable && selectedTab === tabNames[1](
+                isEditable && selectedTab === tabNames[1] && (
                   <Button
                     buttonType="save"
                     action={() => {
