@@ -8,7 +8,10 @@ const SupplierInformation = (props) => {
   const { details, handleInputChange, newData, user, isEditable } = props
   const { assessmentData } = details
   const { supplierInfo } = newData
-
+  const ldvRows = supplierInfo && supplierInfo.ldvMakes &&
+  supplierInfo.ldvMakes.split('\n').length + 1 > 4
+    ? supplierInfo.ldvMakes.split('\n').length + 1
+    : 4
   const servAddress = () => {
     let serviceAddress = ''
     assessmentData.reportAddress.forEach((address) => {
@@ -248,9 +251,11 @@ const SupplierInformation = (props) => {
               ? supplierInfo.ldvMakes
               : assessmentData.makes.join('\n')
           }
+          // style = {{ height: inputHeight + 'px' }}
           id="ldvMakes"
           min="0"
           name="supplierInfo"
+          rows={ldvRows}
           onChange={handleInputChange}
           readOnly={!isEditable}
         />

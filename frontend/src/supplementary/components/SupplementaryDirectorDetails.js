@@ -24,7 +24,6 @@ import EditableCommentList from '../../app/components/EditableCommentList'
 const SupplementaryDirectorDetails = (props) => {
   const {
     addSalesRow,
-    analystAction,
     commentArray,
     deleteFiles,
     details,
@@ -47,12 +46,15 @@ const SupplementaryDirectorDetails = (props) => {
     setSupplementaryAssessmentData,
     supplementaryAssessmentData,
     user,
+    newData,
     newReport,
-    query
+    query,
+    isReassessment,
+    reassessmentStatus,
+    supplementaryReportId,
+    reassessmentReportId,
+    supplementaryReportIsReassessment
   } = props
-
-  const { newData } = props
-  const { reassessment } = details
 
   if (loading) {
     return <Loading />
@@ -81,14 +83,6 @@ const SupplementaryDirectorDetails = (props) => {
 
   const tabNames = ['supplemental', 'recommendation', 'reassessment']
   const selectedTab = query?.tab ? query.tab : isAssessed || isRecommended ? tabNames[2] : tabNames[1]
-
-  const isReassessment = reassessment?.isReassessment
-  const reassessmentStatus = reassessment?.status ? reassessment.status : details.status
-  const supplementaryReportId = reassessment?.supplementaryReportId
-    ? reassessment?.supplementaryReportId
-    : (isReassessment ? details.id : null)
-  const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
-  const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
 
   let isEditable = ['DRAFT'].indexOf(details.status) >= 0
 
@@ -127,9 +121,7 @@ const SupplementaryDirectorDetails = (props) => {
           className="mr-3"
           type="radio"
           name="assessment"
-          disabled={
-            ['RECOMMENDED', 'ASSESSED'].indexOf(currentStatus) >= 0
-          }
+          disabled={ true }
           onChange={() => {
             setSupplementaryAssessmentData({
               ...supplementaryAssessmentData,
@@ -247,13 +239,10 @@ const SupplementaryDirectorDetails = (props) => {
         role="tablist"
       >
         <ReactTooltip/>
-        {supplementaryReportId == null
-          ? null
-          : (<SupplementaryTab
+        {supplementaryReportId && (<SupplementaryTab
           selected={selectedTab === tabNames[0]}
           title={'Supplementary Report'}
           url={tabUrl(supplementaryReportId, tabNames[0])}
-          disabled={supplementaryReportId == null}
           tooltip={'No supplementary report found. Analyst initiated reassessment.'}
           status={reassessmentStatus}
           assessed={isAssessed}
@@ -316,11 +305,7 @@ const SupplementaryDirectorDetails = (props) => {
           <div id="comment-input">
             <CommentInput
               handleCommentChange={handleCommentChangeIdir}
-              title={
-                analystAction
-                  ? 'Add comment to director: '
-                  : 'Add comment to the analyst'
-              }
+              title='Add comment to the analyst: '
               buttonText="Add Comment"
               handleAddComment={handleAddIdirComment}
               tooltip="Please save the report first, before adding comments"
@@ -339,8 +324,7 @@ const SupplementaryDirectorDetails = (props) => {
         />
         <div>
           {isReassessment &&
-            (currentStatus === 'ASSESSED' || (isReassessment &&
-            selectedTab === tabNames[2]))
+            selectedTab === tabNames[2]
             ? (
             <ReassessmentDetailsPage
               details={details}
@@ -531,19 +515,19 @@ const SupplementaryDirectorDetails = (props) => {
                       </label>
                     </>
                   )}
+                  {currentStatus === 'RECOMMENDED' && (
                   <div id="comment-input">
                     <CommentInput
-                      // disable={details.assessment.validationStatus === 'ASSESSED'}
                       defaultComment={
                         commentArray && commentArray.bceidComment
                           ? commentArray.bceidComment
                           : {}
                       }
-                      // handleAddComment={handleAddBceidComment}
                       handleCommentChange={handleCommentChangeBceid}
                       title="Assessment Message to the Supplier: "
                     />
                   </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -576,11 +560,9 @@ const SupplementaryDirectorDetails = (props) => {
               }
             </span>
             <span className="right-content">
-              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                isEditable &&
-                (['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0 ||
-                  (['SUBMITTED'].indexOf(currentStatus) >= 0)) && (
+              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED && currentStatus === 'RECOMMENDED' && (
                   <Button
+                    tooltip="only analysts can save reports at this stage"
                     buttonType="save"
                     action={() => {
                       handleGovSubmitDraft(currentStatus)
