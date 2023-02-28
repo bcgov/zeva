@@ -2,7 +2,6 @@ replicaCount: 1
 
 openshiftLicensePlate: e52f12
 envName: dev
-frontendImageTagname: dev-1.46.0-1444
 
 image:
   repository: nginx
