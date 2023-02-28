@@ -24,9 +24,6 @@ env:
   TEST_VERSION: test-${{ env.VERSION }}-${{ env.PR_NUMBER }}
   PROD_VERSION: prod-${{ env.VERSION }}-${{ env.PR_NUMBER }}
   GIT_REF: refs/pull/${{ env.PR_NUMBER }}/head
-  frontendImageTagname
-  
-
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
