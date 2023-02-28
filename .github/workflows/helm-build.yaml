@@ -19,7 +19,7 @@ env:
   DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
   TEST_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-test
   PROD_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-prod
-  BUILD_VERSION: build-${{ env.VERSION }}-${{ env.PR_NUMBER }}
+  BUILD_VERSION: build-${{ VERSION }}-${{ PR_NUMBER }}
   DEV_VERSION: dev-${{ env.VERSION }}-${{ env.PR_NUMBER }}
   TEST_VERSION: test-${{ env.VERSION }}-${{ env.PR_NUMBER }}
   PROD_VERSION: prod-${{ env.VERSION }}-${{ env.PR_NUMBER }}
