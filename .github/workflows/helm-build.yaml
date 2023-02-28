@@ -93,10 +93,10 @@ jobs:
           helm status -n ${{ env.DEV_NAMESPACE }} zeva-frontend
           if [ $? -eq 0 ]; then
             echo "zeva-frontend release exists already"
-            helm upgrade --set frontendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend .
+            helm upgrade --set frontendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend .
           else
             echo "zeva-frontend release does not exist"
-            helm install --set frontendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend .
+            helm install --set frontendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }}openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend .
           fi
           
       # helm status will show an error if the helm release doesn't exist. The error will be ignored.

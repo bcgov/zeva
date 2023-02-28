@@ -1,6 +1,5 @@
 replicaCount: 1
 
-openshiftLicensePlate: e52f12
 envName: dev
 
 resources:
