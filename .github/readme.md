@@ -18,3 +18,10 @@ After the release is deployed on Prod
 
 ## Update frontend/package.json
 * version
+
+# Helm Build Often Used Commands
+* helm list -n namespace
+* helm get -n namespace all zeva-backend --revision 1
+* helm history -n namespace zeva-backend
+* helm get values zeva-backend -n namespace
+* helm get values zeva-backend -n namespace --revision 1
