@@ -121,7 +121,7 @@ const CreditRequestAlert = (props) => {
       }
       break
     case 'RECOMMEND_APPROVAL':
-      if (isGovernment || excelUploadMessage === '') {
+      if (isGovernment) {
         title = 'Recommended'
         message = `CA-${id} Application reviewed and recommended to Director ${moment(
           statusFilter('RECOMMEND_APPROVAL').createTimestamp
@@ -129,6 +129,9 @@ const CreditRequestAlert = (props) => {
           statusFilter('RECOMMEND_APPROVAL').createUser.displayName
         }.  ICBC data used was current to ${icbcDate}.`
         classname = 'alert-warning'
+      }
+      if (excelUploadMessage) {
+        historyMessage = `${excelUploadMessage}. `
       }
       break
     case 'CHECKED':
@@ -139,6 +142,9 @@ const CreditRequestAlert = (props) => {
         statusFilter('CHECKED').createUser.displayName
       }. ICBC data used was current to: ${icbcDate}`
       classname = 'alert-warning'
+      if (excelUploadMessage) {
+        historyMessage = `${excelUploadMessage}. `
+      }
       break
     default:
       title = ''
