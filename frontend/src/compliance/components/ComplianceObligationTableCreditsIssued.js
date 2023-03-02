@@ -217,7 +217,6 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                         ) {
                           value *= -1
                         }
-
                         handleSupplementalChange({
                           originalAValue: Number(each.A),
                           originalBValue: Number(each.B),
@@ -231,8 +230,8 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                           )
                         })
                       }}
-                      readOnly={readOnly || each.modelYear !== reportYear}
-                    />
+                      readOnly={readOnly || each.modelYear.toString() !== reportYear.toString()}
+                      />
                   </td>
                   <td>
                     <input
@@ -275,7 +274,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                           creditB: value
                         })
                       }}
-                      readOnly={readOnly || each.modelYear !== reportYear}
+                      readOnly={readOnly || each.modelYear.toString() !== reportYear.toString()}
                     />
                   </td>
                 </>

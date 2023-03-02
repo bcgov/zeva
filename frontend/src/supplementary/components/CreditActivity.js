@@ -27,7 +27,7 @@ const CreditActivity = (props) => {
   } = props
   let newLdvSales =
     newData && newData.supplierInfo && newData.supplierInfo.ldvSales
-  if (newLdvSales === null) {
+  if (newLdvSales === null || !newLdvSales) {
     newLdvSales = ldvSales
   }
   let reportYear = false

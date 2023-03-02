@@ -1,30 +1,32 @@
-const Webpack = require('webpack');
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-require('dotenv').config();
+const Webpack = require('webpack')
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+require('dotenv').config()
 
-const packageJson = require('./package.json');
+const packageJson = require('./package.json')
 
-const nodeModulesPath = path.resolve(__dirname, 'node_modules');
-const buildPath = path.resolve(__dirname, 'public', 'build');
-const mainPath = path.resolve(__dirname, 'src', 'index.js');
+const nodeModulesPath = path.resolve(__dirname, 'node_modules')
+const buildPath = path.resolve(__dirname, 'public', 'build')
+const mainPath = path.resolve(__dirname, 'src', 'index.js')
+
+console.log('Building for ' + (process.env.NODE_ENV ? 'Production' : 'Development'))
 
 const config = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   entry: {
     bundle: process.env.NODE_ENV === 'production'
-    ? ['@babel/polyfill', mainPath]
-    : [
-      // Runtime code for hot module replacement
-      'webpack/hot/dev-server',
-      // Dev server client for web socket transport, hot and live reload logic
-      'webpack-dev-server/client/index.js?hot=true&live-reload=true',
-      '@babel/polyfill',
-      mainPath
-    ]
+      ? ['@babel/polyfill', mainPath]
+      : [
+        // Runtime code for hot module replacement
+          'webpack/hot/dev-server',
+          // Dev server client for web socket transport, hot and live reload logic
+          'webpack-dev-server/client/index.js?hot=true&live-reload=true',
+          '@babel/polyfill',
+          mainPath
+        ]
   },
   optimization: {
     splitChunks: {
@@ -155,12 +157,12 @@ const config = {
     new HtmlWebpackPlugin({
       title: 'ZEVA',
       chunks: ['bundle', 'vendor'],
-      filename: 'generated_index.html',
+      filename: 'index.html',
       inject: true,
       favicon: './favicon.ico',
       template: './template.html'
     })
   ]
-};
+}
 
-module.exports = config;
+module.exports = config

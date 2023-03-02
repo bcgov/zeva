@@ -8,7 +8,10 @@ const SupplierInformation = (props) => {
   const { details, handleInputChange, newData, user, isEditable } = props
   const { assessmentData } = details
   const { supplierInfo } = newData
-
+  const ldvRows = supplierInfo && supplierInfo.ldvMakes &&
+  supplierInfo.ldvMakes.split('\n').length + 1 > 4
+    ? supplierInfo.ldvMakes.split('\n').length + 1
+    : 4
   const servAddress = () => {
     let serviceAddress = ''
     assessmentData.reportAddress.forEach((address) => {
@@ -103,6 +106,7 @@ const SupplierInformation = (props) => {
         <div className="d-inline-block align-top mt-4 col-sm-5 p-0">
           <input
             className={`form-control ${
+              supplierInfo &&
               supplierInfo.legalName &&
               supplierInfo.legalName !== assessmentData.legalName
                 ? 'highlight'
@@ -112,6 +116,7 @@ const SupplierInformation = (props) => {
             name="supplierInfo"
             onChange={handleInputChange}
             defaultValue={
+              supplierInfo &&
               supplierInfo.legalName
                 ? supplierInfo.legalName
                 : assessmentData.legalName
@@ -152,10 +157,11 @@ const SupplierInformation = (props) => {
           className={`form-control d-inline-block align-top mt-4 col-sm-5 ${checkAddressChanges(
             assessmentData,
             'Service',
-            supplierInfo.serviceAddress,
+            supplierInfo && supplierInfo.serviceAddress,
             assessmentData.reconciledServiceAddress
           )}`}
           defaultValue={
+            supplierInfo &&
             supplierInfo.serviceAddress
               ? supplierInfo.serviceAddress
               : assessmentData && assessmentData.reconciledServiceAddress
@@ -202,11 +208,11 @@ const SupplierInformation = (props) => {
           className={`form-control d-inline-block align-top mt-4 col-sm-5 ${checkAddressChanges(
             assessmentData,
             'Records',
-            supplierInfo.recordsAddress,
+            supplierInfo && supplierInfo.recordsAddress,
             assessmentData.reconciledRecordsAddress
           )}`}
           defaultValue={
-            supplierInfo.recordsAddress
+            supplierInfo && supplierInfo.recordsAddress
               ? supplierInfo.recordsAddress
               : assessmentData && assessmentData.reconciledRecordsAddress
                 ? assessmentData.reconciledRecordsAddress
@@ -238,16 +244,18 @@ const SupplierInformation = (props) => {
         <textarea
           className={`form-control d-inline-block align-top mt-4 col-sm-5 ${checkMakesChanges(
             assessmentData,
-            supplierInfo.ldvMakes
+            supplierInfo && supplierInfo.ldvMakes
           )}`}
           defaultValue={
-            supplierInfo.ldvMakes
+            supplierInfo && supplierInfo.ldvMakes
               ? supplierInfo.ldvMakes
               : assessmentData.makes.join('\n')
           }
+          // style = {{ height: inputHeight + 'px' }}
           id="ldvMakes"
           min="0"
           name="supplierInfo"
+          rows={ldvRows}
           onChange={handleInputChange}
           readOnly={!isEditable}
         />
@@ -263,13 +271,13 @@ const SupplierInformation = (props) => {
         </div>
         <input
           className={`form-control d-inline-block align-top mt-4 col-sm-5 ${
-            supplierInfo.supplierClass &&
+            supplierInfo && supplierInfo.supplierClass &&
             supplierInfo.supplierClass !== assessmentData.supplierClass
               ? 'highlight'
               : ''
           }`}
           defaultValue={
-            supplierInfo.supplierClass
+            supplierInfo && supplierInfo.supplierClass
               ? supplierInfo.supplierClass
               : assessmentData.supplierClass
           }

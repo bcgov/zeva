@@ -19,6 +19,7 @@ import ComplianceHistory from '../../compliance/components/ComplianceHistory'
 import CONFIG from '../../app/config'
 import SupplementaryTab from './SupplementaryTab'
 import ReactTooltip from 'react-tooltip'
+import ReassessmentDetailsPage from './ReassessmentDetailsPage'
 
 const SupplementarySupplierDetails = (props) => {
   const {
@@ -37,6 +38,7 @@ const SupplementarySupplierDetails = (props) => {
     ldvSales,
     loading,
     newBalances,
+    newData,
     obligationDetails,
     ratios,
     salesRows,
@@ -44,11 +46,13 @@ const SupplementarySupplierDetails = (props) => {
     setUploadFiles,
     supplementaryAssessmentData,
     user,
-    query
+    query,
+    isReassessment,
+    reassessmentStatus,
+    supplementaryReportId,
+    reassessmentReportId,
+    supplementaryReportIsReassessment
   } = props
-
-  const { newData } = props
-  let { reassessment } = details
 
   if (loading) {
     return <Loading />
@@ -70,27 +74,11 @@ const SupplementarySupplierDetails = (props) => {
     ? details.actualStatus
     : details.status
 
-  if (query && query.reassessment === 'Y') {
-    reassessment = {
-      isReassessment: true,
-      supplementaryReportId: details.id
-    }
-  }
-
   const isAssessed = currentStatus === 'ASSESSED' ||
     currentStatus === 'REASSESSED'
 
   const tabNames = ['supplemental', 'recommendation', 'reassessment']
   const selectedTab = query?.tab ? query.tab : isAssessed ? tabNames[2] : tabNames[0]
-
-  const isReassessment = reassessment?.isReassessment
-  const reassessmentStatus = reassessment?.status ? reassessment.status : details.status
-  const supplementaryReportId = reassessment?.supplementaryReportId
-    ? reassessment?.supplementaryReportId
-    : (isReassessment ? details.id : null)
-  const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
-  const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
-
   const isEditable = ['DRAFT', 'RETURNED'].indexOf(currentStatus) >= 0
 
   const formattedPenalty = details.assessment
@@ -170,7 +158,7 @@ const SupplementarySupplierDetails = (props) => {
         role="tablist"
       >
         <ReactTooltip/>
-        <SupplementaryTab
+        {supplementaryReportId && (<SupplementaryTab
           selected={selectedTab === tabNames[0]}
           title={'Supplementary Report'}
           url={tabUrl(supplementaryReportId, tabNames[0])}
@@ -178,7 +166,7 @@ const SupplementarySupplierDetails = (props) => {
           tooltip={'No supplementary report found. Analyst initiated reassessment.'}
           status={reassessmentStatus}
           assessed={isAssessed}
-        />
+        />)}
         <SupplementaryTab
           selected={selectedTab === tabNames[2]}
           title={'Reassessment'}
@@ -221,6 +209,22 @@ const SupplementarySupplierDetails = (props) => {
           }}
         />
         <div>
+          {isReassessment &&
+            (currentStatus === 'ASSESSED' || (isReassessment &&
+            selectedTab === tabNames[2]))
+            ? (
+            <ReassessmentDetailsPage
+              details={details}
+              ldvSales={ldvSales}
+              newBalances={newBalances}
+              newData={newData}
+              obligationDetails={obligationDetails}
+              ratios={ratios}
+              user={user}
+            />
+              )
+            : (
+            <>
           <SupplierInformation
             isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
             user={user}
@@ -249,6 +253,8 @@ const SupplementarySupplierDetails = (props) => {
             supplierClass={supplierClass}
             isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
           />
+          </>
+              )}
         </div>
         <div id="comment-input">
           {currentStatus === 'DRAFT' &&

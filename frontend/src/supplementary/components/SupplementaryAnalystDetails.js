@@ -39,6 +39,7 @@ const SupplementaryAnalystDetails = (props) => {
     ldvSales,
     loading,
     newBalances,
+    newData,
     obligationDetails,
     radioDescriptions,
     ratios,
@@ -46,11 +47,13 @@ const SupplementaryAnalystDetails = (props) => {
     setSupplementaryAssessmentData,
     supplementaryAssessmentData,
     user,
-    query
+    query,
+    isReassessment,
+    reassessmentStatus,
+    supplementaryReportId,
+    reassessmentReportId,
+    supplementaryReportIsReassessment
   } = props
-
-  const { newData } = props
-  const { reassessment } = details
 
   if (loading) {
     return <Loading />
@@ -76,12 +79,6 @@ const SupplementaryAnalystDetails = (props) => {
 
   const tabNames = ['supplemental', 'recommendation', 'reassessment']
   const selectedTab = query?.tab ? query.tab : isAssessed ? tabNames[2] : tabNames[1]
-
-  const isReassessment = reassessment?.isReassessment
-  const reassessmentStatus = reassessment?.status ? reassessment.status : details.status
-  const supplementaryReportId = reassessment?.supplementaryReportId ? reassessment?.supplementaryReportId : null
-  const reassessmentReportId = reassessment?.reassessmentReportId ? reassessment?.reassessmentReportId : details.id
-  const supplementaryReportIsReassessment = reassessment?.supplementaryReportIsReassessment
 
   let isEditable = ['DRAFT', 'RETURNED'].indexOf(details.status) >= 0
 
@@ -245,7 +242,6 @@ const SupplementaryAnalystDetails = (props) => {
       .replace(':supplementaryId', supplementalId) +
         `?tab=${tabName}${isReassessment ? '&reassessment=Y' : ''}`
   }
-
   const renderTabs = () => {
     return (
       <ul
@@ -254,9 +250,7 @@ const SupplementaryAnalystDetails = (props) => {
         role="tablist"
       >
         <ReactTooltip/>
-        {supplementaryReportId == null
-          ? null
-          : (<SupplementaryTab
+        {supplementaryReportId && (<SupplementaryTab
           selected={selectedTab === tabNames[0]}
           title={'Supplementary Report'}
           url={tabUrl(supplementaryReportId, tabNames[0])}
@@ -322,7 +316,7 @@ const SupplementaryAnalystDetails = (props) => {
           <div id="comment-input">
             <CommentInput
               handleCommentChange={handleCommentChangeIdir}
-              title={'Add comment to director: '}
+              title='Add comment to director: '
               buttonText="Add Comment"
               handleAddComment={handleAddIdirComment}
               tooltip="Please save the report first, before adding comments"
@@ -341,8 +335,7 @@ const SupplementaryAnalystDetails = (props) => {
         />
         <div>
         {isReassessment &&
-            (currentStatus === 'ASSESSED' || (isReassessment &&
-            selectedTab === tabNames[2]))
+            selectedTab === tabNames[2]
           ? (
             <ReassessmentDetailsPage
               details={details}
@@ -357,7 +350,7 @@ const SupplementaryAnalystDetails = (props) => {
           : (
             <>
             <SupplierInformation
-              isEditable={isEditable && currentStatus !== 'RECOMMENDED' && currentStatus !== 'DRAFT'}
+              isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
               user={user}
               details={details}
               handleInputChange={handleInputChange}
@@ -369,7 +362,7 @@ const SupplementaryAnalystDetails = (props) => {
               details={details}
               handleInputChange={handleInputChange}
               salesRows={salesRows}
-              isEditable={isEditable && currentStatus !== 'RECOMMENDED' && currentStatus !== 'DRAFT'}
+              isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
             />
             <CreditActivity
               creditReductionSelection={creditReductionSelection}
@@ -382,7 +375,7 @@ const SupplementaryAnalystDetails = (props) => {
               obligationDetails={obligationDetails}
               ratios={ratios}
               supplierClass={supplierClass}
-              isEditable={isEditable && currentStatus !== 'RECOMMENDED' && currentStatus !== 'DRAFT'}
+              isEditable={isEditable && currentStatus !== 'RECOMMENDED'}
             />
           </>
             )}
@@ -479,7 +472,7 @@ const SupplementaryAnalystDetails = (props) => {
       )}
       {isEditable && (
         <>
-          {['RECOMMENDED', 'DRAFT'].indexOf(currentStatus) < 0 && (
+          {['RECOMMENDED'].indexOf(currentStatus) < 0 && (
             <h3 className="mt-4 mb-1">
               Analyst Recommended Director Assessment
             </h3>
@@ -488,7 +481,7 @@ const SupplementaryAnalystDetails = (props) => {
             <div className="col-12">
               <div className="grey-border-area  p-3 mt-2">
                 <div>
-                  {['RECOMMENDED', 'DRAFT'].indexOf(currentStatus) < 0 && (
+                  {['RECOMMENDED'].indexOf(currentStatus) < 0 && (
                     <>
                       {radioDescriptions &&
                         radioDescriptions.map(
@@ -594,7 +587,7 @@ const SupplementaryAnalystDetails = (props) => {
             </span>
             <span className="right-content">
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                isEditable && (
+                isEditable && selectedTab === tabNames[1] && (
                   <Button
                     buttonType="save"
                     action={() => {
@@ -604,7 +597,7 @@ const SupplementaryAnalystDetails = (props) => {
               )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 isEditable &&
-                ['DRAFT'].indexOf(details.status) < 0 &&
+                ['DRAFT'].indexOf(details.status) >= 0 &&
                 (
                   <Button
                     buttonTooltip={recommendTooltip}
