@@ -31,3 +31,14 @@ to be sent with your certificate request
 A challenge password []:
 3. list the csr
 openssl req -text -noout -in ./lowcarbonfuels.gov.bc.ca.csr
+
+### Commands for creating csr for itvr
+* create password protecting privatekey  
+    openssl rand -base64 48 > passphrase.txt
+* create encrypted privatekey protected by the above password  
+    openssl genrsa -aes256 -passout file:passphrase.txt -out server.key 2048
+* create the csr  
+    openssl req -new -newkey rsa:2048 -nodes -key ./server.key -out ./electric-vehicle-rebates.gov.bc.ca.csr
+* decrypt the encrypted privatekey, it requires to enter the password in passphrase.txt  
+    openssl rsa -in ./server.key -out ./privatekey.txt
+    

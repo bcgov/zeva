@@ -12,11 +12,11 @@ spilo:
 
   continuousArchive:
     enabled: false
-    scheduleCronJob: "0 10 * * *"
+    scheduleCronJob: "0 */3 * * *"
     retainBackups: 3
     storage: s3
     s3:
-      bucket: zevadv
+      bucket: zevadv/postgresbackup
       secretName: zeva-db-backup-s3
 
   shipLogs:
