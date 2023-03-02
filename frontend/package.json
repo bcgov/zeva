@@ -49,6 +49,7 @@
     "socket.io": "^2.4.0",
     "socket.io-client": "^2.3.0",
     "toastr": "^2.1.4",
+    "webpack-encoding-plugin": "^0.3.1",
     "winston": "^3.2.1"
   },
   "devDependencies": {

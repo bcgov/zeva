@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const EncodingPlugin = require('webpack-encoding-plugin')
 require('dotenv').config()
 
 const packageJson = require('./package.json')
@@ -161,6 +162,9 @@ const config = {
       inject: true,
       favicon: './favicon.ico',
       template: './template.html'
+    }),
+    new EncodingPlugin({
+      encoding: 'utf8'
     })
   ]
 }
