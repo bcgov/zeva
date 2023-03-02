@@ -7,7 +7,6 @@ import PropTypes from 'prop-types'
 import React, { useState } from 'react'
 import moment from 'moment-timezone'
 import 'react-quill/dist/quill.snow.css'
-import _ from 'lodash'
 
 import CreditRequestAlert from './CreditRequestAlert'
 import Button from '../../app/components/Button'
@@ -301,7 +300,7 @@ const CreditRequestDetailsPage = (props) => {
         vehicle.creditValue !== 0
       ) {
         totalEligibleCredits += parseFloat(
-          eligibleSales.vinCount * _.round(vehicle.creditValue, 2)
+          eligibleSales.vinCount * (Math.round((vehicle.creditValue + Number.EPSILON) * 100) / 100)
         )
       }
     }
@@ -500,7 +499,7 @@ const CreditRequestDetailsPage = (props) => {
               It is recommended that the Director issue a total of{' '}
               {formatNumeric(totalEligibleCredits, 2)} ZEV credits to{' '}
               {submission.organization.name} based on{' '}
-              {formatNumeric(_.sumBy(submission.eligible, 'vinCount'), 0)}{' '}
+              {formatNumeric(submission.eligible.map(e => e.vinCount).reduce((a, b) => a + b, 0))}{' '}
               eligible ZEV sales.
             </div>
           </div>
