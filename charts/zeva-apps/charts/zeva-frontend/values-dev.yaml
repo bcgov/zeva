@@ -9,6 +9,13 @@ image:
   tag: ""
 
 frontendConfigMap:
+  apiBase: zeva-dev.apps.silver.devops.gov.bc.ca/api
+  keycloakRealm: standard
+  keycloakClientId: zeva-on-gold-4543
+  keycloakAuthUrl: https://dev.loginproxy.gov.bc.ca/auth
+  keycloakCallbackUrl: zeva-dev.apps.silver.devops.gov.bc.ca
+  keycloakPostLogoutUrl: zeva-dev.apps.silver.devops.gov.bc.ca
+  keycloakSiteminderLogoutUrl: https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=
   complianceReportEnabled: true
   complianceCalculatorEnabled: true
   complianceRatiosEnabled: true

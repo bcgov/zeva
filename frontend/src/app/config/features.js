@@ -1,4 +1,11 @@
 window.zeva_config = {
+  api_base: 'http://localhost:8000/api',
+  'keycloak.realm': 'standard',
+  'keycloak.client_id': 'zeva-on-gold-4543',
+  'keycloak.auth_url': 'https://dev.loginproxy.gov.bc.ca/auth',
+  'keycloak.callback_url': 'http://localhost:3000/',
+  'keycloak.post_logout_url': 'http://localhost:3000/',
+  'keycloak.siteminder_logout_url': 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=',
   'compliance_report.enabled': true,
   'compliance_calculator.enabled': true,
   'compliance_ratios.enabled': true,
