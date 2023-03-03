@@ -31,11 +31,11 @@ frontendConfigMap:
 
 resources:
   limits:
-    cpu: 300m
-    memory: 1200Mi
+    cpu: 80m
+    memory: 120Mi
   requests:
-    cpu: 150m
-    memory: 600Mi
+    cpu: 40m
+    memory: 60Mi
 
 appConfigMap:
   backendHostName: zeva-backend-dev.apps.silver.devops.gov.bc.ca
