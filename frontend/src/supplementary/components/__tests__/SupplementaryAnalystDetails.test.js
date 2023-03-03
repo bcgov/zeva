@@ -119,3 +119,25 @@ describe('SupplementaryAnalystDetails', () => {
     )
   })
 })
+// TESTS TO WRITE
+
+// as an analyst
+// if i view a supplemental report in submitted status
+// i should be able to edit fields, add comments to supplier or director,
+// click a radio button for the assessment, and save/recommend to director or return to supplier
+
+// as an analyst
+// if i view a supplemental report in recommended status
+// I should be able to view a read only version of all 3 tabs
+
+// as an analyst
+// if i view a supplemental report in any status
+// I should be able to view all 3 tabs
+
+// as an analyst
+// if i view a reassessment report in any status
+// I should be able to view the second two tabs
+
+// as an analyst
+// if i view a supplemental report in submitted status
+// I should be able to view a editable version of all 3 tabs
