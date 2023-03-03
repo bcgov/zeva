@@ -26,7 +26,7 @@ class App extends Component {
     const keycloak = Keycloak({
       clientId: CONFIG.KEYCLOAK.CLIENT_ID,
       realm: CONFIG.KEYCLOAK.REALM,
-      url: CONFIG.KEYCLOAK.URL
+      url: CONFIG.KEYCLOAK.AUTH_URL
     })
 
     keycloak.onTokenExpired = () => {
