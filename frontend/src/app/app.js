@@ -101,11 +101,11 @@ class App extends Component {
     const idToken = sessionStorage.getItem('idToken')
 
     const kcLogoutUrl = keycloak.endpoints.logout() +
-      '?post_logout_redirect_uri=' + CONFIG.KEYCLOAK.LOGOUT_URL +
+      '?post_logout_redirect_uri=' + CONFIG.KEYCLOAK.POST_LOGOUT_URL +
       '&client_id=' + keycloak.clientId +
       '&id_token_hint=' + idToken
 
-    const url = CONFIG.KEYCLOAK.SITEMINDER_LOGOUT_URL + encodeURIComponent(kcLogoutUrl)
+    const url = CONFIG.KEYCLOAK.SM_LOGOUT_URL + encodeURIComponent(kcLogoutUrl)
 
     window.location = url
   }
