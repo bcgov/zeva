@@ -2,8 +2,6 @@
   __VERSION__
 */
 
-require('./config/features')
-
 const getConfig = (value, def) => {
   if (global.zeva_config) {
     return global.zeva_config[value] || def
