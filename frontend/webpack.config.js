@@ -116,13 +116,16 @@ const config = {
       filename: '[name].css',
       chunkFilename: '[id].css'
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: 'static'
-        }
-      ]
-    }),
+    new CopyWebpackPlugin(
+      process.env.NODE_ENV === 'production'
+        ? { patterns: [{ from: 'static' }] }
+        : {
+            patterns: [
+              { from: 'static' },
+              { from: 'public/config/', to: 'opt/app-root/src/app/config/' } // add local dev config
+            ]
+          }
+    ),
     new Webpack.HotModuleReplacementPlugin(),
     new Webpack.DefinePlugin({
       __VERSION__: JSON.stringify(packageJson.version)
