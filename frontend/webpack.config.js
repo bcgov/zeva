@@ -121,7 +121,7 @@ const config = {
         : {
             patterns: [
               { from: 'static' },
-              { from: 'public/config/', to: 'app/config/' } // add local dev config
+              { from: 'public/config/', to: 'config/' } // add local dev config
             ]
           }
     ),
