@@ -46,13 +46,13 @@ metadata:
 data:
   features.js: |
     window.zeva_config = {
-      'api_base': {{ .Values.frontendConfigMap.apiBase }},
-      'keycloak.realm': {{ .Values.frontendConfigMap.keycloakRealm }},
-      'keycloak.client_id': {{ .Values.frontendConfigMap.keycloakClientId }},
-      'keycloak.auth_url': {{ .Values.frontendConfigMap.keycloakAuthUrl }},
-      'keycloak.callback_url': {{ .Values.frontendConfigMap.keycloakCallbackUrl }},
-      'keycloak.post_logout_url': {{ .Values.frontendConfigMap.keycloakPostLogoutUrl }},
-      'keycloak.siteminder_logout_url': {{ .Values.frontendConfigMap.keycloakSiteminderLogoutUrl }},
+      'api_base': "{{ .Values.frontendConfigMap.apiBase }}",
+      'keycloak.realm': "{{ .Values.frontendConfigMap.keycloakRealm }}",
+      'keycloak.client_id': "{{ .Values.frontendConfigMap.keycloakClientId }}",
+      'keycloak.auth_url': "{{ .Values.frontendConfigMap.keycloakAuthUrl }}",
+      'keycloak.callback_url': "{{ .Values.frontendConfigMap.keycloakCallbackUrl }}",
+      'keycloak.post_logout_url': "{{ .Values.frontendConfigMap.keycloakPostLogoutUrl }}",
+      'keycloak.siteminder_logout_url': "{{ .Values.frontendConfigMap.keycloakSiteminderLogoutUrl }}",
       'compliance_report.enabled': {{ .Values.frontendConfigMap.complianceReportEnabled }},
       'compliance_calculator.enabled': {{ .Values.frontendConfigMap.complianceCalculatorEnabled }},
       'compliance_ratios.enabled': {{ .Values.frontendConfigMap.complianceRatiosEnabled }},
