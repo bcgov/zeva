@@ -398,7 +398,7 @@ const SupplementarySupplierDetails = (props) => {
                   id
                 )}
               />
-              {/* {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
+              {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 isEditable && (
                   <Button
                     buttonType="delete"
@@ -413,7 +413,7 @@ const SupplementarySupplierDetails = (props) => {
                         : 'Delete'
                     }
                   />
-                )} */}
+              )}
             </span>
             <span className="right-content">
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&

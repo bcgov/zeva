@@ -694,16 +694,18 @@ class ModelYearReportViewset(
             if not data:
                 return HttpResponse(status=404, content=None)
 
+            create_user = UserProfile.objects.get(username=data.create_user)
             if data.status == ModelYearReportStatuses.DELETED:
                 return HttpResponse(status=404, content=None)
 
-            if not request.user.is_government and data.status not in [
+            if (not request.user.is_government and data.status not in [
                 ModelYearReportStatuses.DRAFT,
                 ModelYearReportStatuses.SUBMITTED,
                 ModelYearReportStatuses.ASSESSED,
                 ModelYearReportStatuses.REASSESSED,
                 ModelYearReportStatuses.RETURNED,
-            ]:
+            ]) or (request.user.is_government and data.status == ModelYearReportStatuses.DRAFT
+                   and not create_user.is_government):
                 return HttpResponse(status=404, content=None)
         else:
             data = report.get_latest_supplemental(request)

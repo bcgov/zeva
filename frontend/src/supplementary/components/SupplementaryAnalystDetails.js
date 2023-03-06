@@ -153,10 +153,6 @@ const SupplementaryAnalystDetails = (props) => {
     )
   }
 
-  const handleGovSubmitDraft = (status) => {
-    handleSubmit(status, false)
-  }
-
   const modal = (
     <Modal
       cancelLabel="No"
@@ -556,7 +552,7 @@ const SupplementaryAnalystDetails = (props) => {
                 )}
               />
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
-                isEditable && (
+                isEditable && isReassessment && (
                   <Button
                     buttonType="delete"
                     action={() => setShowModalDelete(true)}
@@ -591,13 +587,13 @@ const SupplementaryAnalystDetails = (props) => {
                   <Button
                     buttonType="save"
                     action={() => {
-                      handleGovSubmitDraft(currentStatus)
+                      handleSubmit(currentStatus, false)
                     }}
                   />
               )}
               {CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED &&
                 isEditable &&
-                ['DRAFT'].indexOf(details.status) >= 0 &&
+                ['DRAFT', 'SUBMITTED'].indexOf(details.status) >= 0 &&
                 (
                   <Button
                     buttonTooltip={recommendTooltip}

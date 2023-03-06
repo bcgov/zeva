@@ -84,15 +84,6 @@ const SupplementaryDirectorDetails = (props) => {
   const tabNames = ['supplemental', 'recommendation', 'reassessment']
   const selectedTab = query?.tab ? query.tab : isAssessed || isRecommended ? tabNames[2] : tabNames[1]
 
-  let isEditable = ['DRAFT'].indexOf(details.status) >= 0
-
-  if (selectedTab === tabNames[0] && currentStatus === 'SUBMITTED') {
-    isEditable = false
-  }
-  if (selectedTab === tabNames[1] && currentStatus === 'SUBMITTED') {
-    isEditable = true
-  }
-
   const formattedPenalty = details.assessment
     ? formatNumeric(details.assessment.assessmentPenalty, 0)
     : 0
@@ -288,8 +279,7 @@ const SupplementaryDirectorDetails = (props) => {
         />
 
       {renderTabs()}
-
-      {isEditable && (
+      {selectedTab === tabNames[2] && ['RECOMMENDED'].indexOf(currentStatus) >= 0 && (
         <div className="supplementary-form my-3">
           {commentArray &&
             commentArray.idirComment &&
@@ -339,7 +329,7 @@ const SupplementaryDirectorDetails = (props) => {
             : (
             <>
               <SupplierInformation
-                isEditable={isEditable}
+                isEditable={false}
                 user={user}
                 details={details}
                 handleInputChange={handleInputChange}
@@ -351,7 +341,7 @@ const SupplementaryDirectorDetails = (props) => {
                 details={details}
                 handleInputChange={handleInputChange}
                 salesRows={salesRows}
-                isEditable={isEditable}
+                isEditable={false}
               />
               <CreditActivity
                 creditReductionSelection={creditReductionSelection}
@@ -364,7 +354,7 @@ const SupplementaryDirectorDetails = (props) => {
                 obligationDetails={obligationDetails}
                 ratios={ratios}
                 supplierClass={supplierClass}
-                isEditable={isEditable}
+                isEditable={false}
               />
             </>
               )}
@@ -459,7 +449,7 @@ const SupplementaryDirectorDetails = (props) => {
               </div>
             </>
         }
-      {isEditable && (
+      {selectedTab === tabNames[1] && (
         <>
           {['RECOMMENDED', 'RETURNED'].indexOf(currentStatus) < 0 && (
             <h3 className="mt-4 mb-1">
