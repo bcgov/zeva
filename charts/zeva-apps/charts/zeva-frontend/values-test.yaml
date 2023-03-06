@@ -9,7 +9,7 @@ image:
   tag: ""
 
 frontendConfigMap:
-  apiBase: zeva-backend-test.apps.silver.devops.gov.bc.ca/api
+  apiBase: https://zeva-backend-test.apps.silver.devops.gov.bc.ca/api
   keycloakRealm: standard
   keycloakClientId: zeva-on-gold-4543
   keycloakAuthUrl: https://test.loginproxy.gov.bc.ca/auth
