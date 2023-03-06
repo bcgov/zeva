@@ -139,6 +139,9 @@ class VehicleViewSet(
             return Response(serializer.errors)
 
         serializer.save()
+        vehicle = Vehicle.objects.filter(id=pk).first()
+        request.organization = vehicle.organization
+        request.update_user = vehicle.update_user
 
         notifications_zev_model(request, request.data['validation_status'])
 
