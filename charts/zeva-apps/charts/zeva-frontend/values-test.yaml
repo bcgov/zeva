@@ -1,6 +1,6 @@
-replicaCount: 1
+replicaCount: 2
 
-envName: dev
+envName: test
 
 image:
   repository: nginx
@@ -9,12 +9,12 @@ image:
   tag: ""
 
 frontendConfigMap:
-  apiBase: zeva-backend-dev.apps.silver.devops.gov.bc.ca/api
+  apiBase: zeva-backend-test.apps.silver.devops.gov.bc.ca/api
   keycloakRealm: standard
   keycloakClientId: zeva-on-gold-4543
-  keycloakAuthUrl: https://dev.loginproxy.gov.bc.ca/auth
-  keycloakCallbackUrl: zeva-dev.apps.silver.devops.gov.bc.ca
-  keycloakPostLogoutUrl: zeva-dev.apps.silver.devops.gov.bc.ca
+  keycloakAuthUrl: https://test.loginproxy.gov.bc.ca/auth
+  keycloakCallbackUrl: zeva-test.apps.silver.devops.gov.bc.ca
+  keycloakPostLogoutUrl: zeva-test.apps.silver.devops.gov.bc.ca
   keycloakSiteminderLogoutUrl: https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=
   complianceReportEnabled: true
   complianceCalculatorEnabled: true
@@ -38,17 +38,17 @@ resources:
     memory: 60Mi
 
 appConfigMap:
-  backendHostName: zeva-backend-dev.apps.silver.devops.gov.bc.ca
+  backendHostName: zeva-backend-test.apps.silver.devops.gov.bc.ca
   databaseServiceName: zeva-spilo
   djangoDebug: true
-  ssoName: dev.loginproxy.gov.bc.ca
+  ssoName: test.loginproxy.gov.bc.ca
   keycloakRealm: standard
   logoutHostName: logontest7.gov.bc.ca
-  hostName: zeva-dev.apps.silver.devops.gov.bc.ca
+  hostName: zeva-test.apps.silver.devops.gov.bc.ca
 
 autoscaling:
-  minReplicas: 1
-  maxReplicas: 2
+  minReplicas: 2
+  maxReplicas: 3
   cpuAverageUtilization: 80
 
 # the fronend host name is appConfigMap.hostName
