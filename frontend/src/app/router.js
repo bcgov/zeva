@@ -74,7 +74,7 @@ class Router extends Component {
     const { keycloak } = props
     const { token } = keycloak
 
-    axios.defaults.baseURL = CONFIG.APIBASE
+    axios.defaults.baseURL = CONFIG.API_BASE
     axios.defaults.headers.common.Authorization = `Bearer ${token}`
     axios.interceptors.response.use(
       (response) => response,

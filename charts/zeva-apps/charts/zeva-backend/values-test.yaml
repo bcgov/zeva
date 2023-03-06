@@ -1,6 +1,6 @@
-replicaCount: 1
+replicaCount: 2
 
-envName: dev
+envName: test
 
 resources:
   cpuRequest: 50m
@@ -25,4 +25,4 @@ resources:
     
 backendRoute: 
   create: true
-  hostName: zeva-backend-dev.apps.silver.devops.gov.bc.ca
+  hostName: zeva-backend-test.apps.silver.devops.gov.bc.ca

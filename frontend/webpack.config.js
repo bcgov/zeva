@@ -1,30 +1,32 @@
-const Webpack = require('webpack');
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-require('dotenv').config();
+const Webpack = require('webpack')
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+require('dotenv').config()
 
-const packageJson = require('./package.json');
+const packageJson = require('./package.json')
 
-const nodeModulesPath = path.resolve(__dirname, 'node_modules');
-const buildPath = path.resolve(__dirname, 'public', 'build');
-const mainPath = path.resolve(__dirname, 'src', 'index.js');
+const nodeModulesPath = path.resolve(__dirname, 'node_modules')
+const buildPath = path.resolve(__dirname, 'public', 'build')
+const mainPath = path.resolve(__dirname, 'src', 'index.js')
+
+console.log('Building for ' + (process.env.NODE_ENV ? 'Production' : 'Development'))
 
 const config = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   entry: {
     bundle: process.env.NODE_ENV === 'production'
-    ? ['@babel/polyfill', mainPath]
-    : [
-      // Runtime code for hot module replacement
-      'webpack/hot/dev-server',
-      // Dev server client for web socket transport, hot and live reload logic
-      'webpack-dev-server/client/index.js?hot=true&live-reload=true',
-      '@babel/polyfill',
-      mainPath
-    ]
+      ? ['@babel/polyfill', mainPath]
+      : [
+        // Runtime code for hot module replacement
+          'webpack/hot/dev-server',
+          // Dev server client for web socket transport, hot and live reload logic
+          'webpack-dev-server/client/index.js?hot=true&live-reload=true',
+          '@babel/polyfill',
+          mainPath
+        ]
   },
   optimization: {
     splitChunks: {
@@ -113,54 +115,29 @@ const config = {
       filename: '[name].css',
       chunkFilename: '[id].css'
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: 'static'
-        }
-      ]
-    }),
+    new CopyWebpackPlugin(
+      process.env.NODE_ENV === 'production'
+        ? { patterns: [{ from: 'static' }] }
+        : {
+            patterns: [
+              { from: 'static' },
+              { from: 'public/config/', to: 'config/' } // add local dev config
+            ]
+          }
+    ),
     new Webpack.HotModuleReplacementPlugin(),
     new Webpack.DefinePlugin({
-      __APIBASE__:
-        'APIBASE' in process.env
-          ? JSON.stringify(process.env.APIBASE)
-          : "'http://localhost/api/'",
-      __KEYCLOAK_CLIENT_ID__:
-        'KEYCLOAK_CLIENT_ID' in process.env
-          ? JSON.stringify(process.env.KEYCLOAK_CLIENT_ID)
-          : "'zeva-on-gold-4543'",
-      __KEYCLOAK_LOGOUT_REDIRECT_URL__:
-        'KEYCLOAK_LOGOUT_REDIRECT_URL' in process.env
-          ? JSON.stringify(process.env.KEYCLOAK_LOGOUT_REDIRECT_URL)
-          : "'http://localhost/'",
-      __KEYCLOAK_SITEMINDER_LOGOUT_REDIRECT_URL__:
-        'KEYCLOAK_SITEMINDER_LOGOUT_REDIRECT_URL' in process.env
-          ? JSON.stringify(process.env.KEYCLOAK_SITEMINDER_LOGOUT_REDIRECT_URL)
-          : "'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl='",
-      __KEYCLOAK_CALLBACK_URL__:
-        'KEYCLOAK_CALLBACK_URL' in process.env
-          ? JSON.stringify(process.env.KEYCLOAK_CALLBACK_URL)
-          : "'http://localhost/'",
-      __KEYCLOAK_REALM_NAME__:
-        'KEYCLOAK_REALM_NAME' in process.env
-          ? JSON.stringify(process.env.KEYCLOAK_REALM_NAME)
-          : "'standard'",
-      __KEYCLOAK_URL__:
-        'KEYCLOAK_URL' in process.env
-          ? JSON.stringify(process.env.KEYCLOAK_URL)
-          : "'https://dev.loginproxy.gov.bc.ca/auth'",
       __VERSION__: JSON.stringify(packageJson.version)
     }),
     new HtmlWebpackPlugin({
       title: 'ZEVA',
       chunks: ['bundle', 'vendor'],
-      filename: 'generated_index.html',
+      filename: 'index.html',
       inject: true,
       favicon: './favicon.ico',
       template: './template.html'
     })
   ]
-};
+}
 
-module.exports = config;
+module.exports = config

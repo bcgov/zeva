@@ -1,15 +1,6 @@
 /* global
-  __APIBASE__
-  __KEYCLOAK_CLIENT_ID__
-  __KEYCLOAK_LOGOUT_REDIRECT_URL__
-  __KEYCLOAK_SITEMINDER_LOGOUT_REDIRECT_URL__
-  __KEYCLOAK_CALLBACK_URL__
-  __KEYCLOAK_REALM_NAME__
-  __KEYCLOAK_URL__
   __VERSION__
 */
-
-require('./config/features')
 
 const getConfig = (value, def) => {
   if (global.zeva_config) {
@@ -20,7 +11,15 @@ const getConfig = (value, def) => {
 }
 
 const CONFIG = {
-  APIBASE: __APIBASE__, // injected by webpack
+  API_BASE: getConfig('api_base', `${window.location.protocol}//${window.location.host}:8000/api`),
+  KEYCLOAK: {
+    REALM: getConfig('keycloak.realm', false),
+    CLIENT_ID: getConfig('keycloak.client_id', 'unconfigured'),
+    AUTH_URL: getConfig('keycloak.auth_url', 'unconfigured'),
+    CALLBACK_URL: getConfig('keycloak.callback_url', 'unconfigured'),
+    POST_LOGOUT_URL: getConfig('keycloak.post_logout_url', 'unconfigured'),
+    SM_LOGOUT_URL: getConfig('keycloak.siteminder_logout_url', 'unconfigured')
+  },
   FEATURES: {
     CREDIT_TRANSFERS: {
       ENABLED: getConfig('credit_transfers.enabled', false)
@@ -60,14 +59,6 @@ const CONFIG = {
     SUPPLEMENTAL_REPORT: {
       ENABLED: getConfig('supplemental.enabled', false)
     }
-  },
-  KEYCLOAK: {
-    CLIENT_ID: __KEYCLOAK_CLIENT_ID__,
-    LOGOUT_URL: __KEYCLOAK_LOGOUT_REDIRECT_URL__,
-    SITEMINDER_LOGOUT_URL: __KEYCLOAK_SITEMINDER_LOGOUT_REDIRECT_URL__,
-    CALLBACK_URL: __KEYCLOAK_CALLBACK_URL__,
-    REALM: __KEYCLOAK_REALM_NAME__,
-    URL: __KEYCLOAK_URL__
   },
   VERSION: __VERSION__
 }

@@ -3,7 +3,6 @@
  */
 import PropTypes from 'prop-types'
 import React from 'react'
-import _ from 'lodash'
 
 import ReactTable from '../../app/components/ReactTable'
 import CustomPropTypes from '../../app/utilities/props'
@@ -37,13 +36,12 @@ const ModelListTable = (props) => {
           accessor: 'sales',
           className: 'text-right gap-left sales-submitted',
           Footer: (reactTable) => {
-            const sum = _.sumBy(reactTable.data, (item) => {
+            const sum = reactTable.data.map(item => {
               if (isNaN(item.sales)) {
                 return 0
               }
-
               return item.sales
-            })
+            }).reduce((a, b) => a + b)
 
             if (sum === 0) {
               return '-'
@@ -65,7 +63,7 @@ const ModelListTable = (props) => {
             }
 
             if (vehicle && vehicle.creditValue && vehicle.creditValue !== 0) {
-              return (sales * _.round(vehicle.creditValue, 2)).toFixed(2)
+              return (sales * (Math.round((vehicle.creditValue + Number.EPSILON) * 100) / 100)).toFixed(2)
             }
 
             return '-'
@@ -74,19 +72,18 @@ const ModelListTable = (props) => {
             !user.isGovernment ? 'd-none' : ''
           }`,
           Footer: (reactTable) => {
-            const sum = _.sumBy(reactTable.data, (item) => {
+            const sum = reactTable.data.map(item => {
               if (isNaN(item['credits-applied-for'])) {
                 return 0
               }
-
               return Number(item['credits-applied-for'])
-            })
+            }).reduce((a, b) => a + b)
 
             if (sum === 0) {
               return '-'
             }
 
-            return _.round(sum, 2).toFixed(2)
+            return (Math.round((sum + Number.EPSILON) * 100) / 100).toFixed(2)
           },
           Header: 'Credits Applied For',
           headerClassName: `${!user.isGovernment ? 'd-none' : ''}`,
@@ -134,7 +131,7 @@ const ModelListTable = (props) => {
 
             if (vehicle && vehicle.creditValue && vehicle.creditValue !== 0) {
               return (
-                eligibleSales.vinCount * _.round(vehicle.creditValue, 2)
+                eligibleSales.vinCount * (Math.round((vehicle.creditValue + Number.EPSILON) * 100) / 100)
               ).toFixed(2)
             }
 
@@ -174,7 +171,7 @@ const ModelListTable = (props) => {
             const { vehicle } = item
 
             if (vehicle && vehicle.creditValue && vehicle.creditValue !== 0) {
-              return _.round(vehicle.creditValue, 2).toFixed(2)
+              return (Math.round((vehicle.creditValue + Number.EPSILON) * 100) / 100).toFixed(2)
             }
 
             return '-'
