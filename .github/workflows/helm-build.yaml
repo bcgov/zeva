@@ -27,12 +27,97 @@ concurrency:
   
 jobs:
 
+  ## This is the CI job
+  build:
+
+    name: Build ZEVA on Openshift
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Log in to Openshift
+        uses: redhat-actions/oc-login@v1.2
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ env.TOOLS_NAMESPACE }}
+
+      - name: Build ZEVA Backend
+        run: |
+          cd openshift/templates/backend
+          oc process -f ./backend-bc.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.GIT_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
+          oc start-build --wait=true zeva-backend-build-${{ env.PR_NUMBER }}
+
+      - name: Build ZEVA Frontend
+        run: |
+          cd openshift/templates/frontend
+          oc process -f ./frontend-bc-docker.yaml NAME=zeva SUFFIX=-build-${{ env.PR_NUMBER }} VERSION=build-${{ env.VERSION }}-${{ env.PR_NUMBER }} GIT_URL=${{ env.GIT_URL }} GIT_REF=refs/pull/${{ env.PR_NUMBER }}/head | oc apply --wait=true -f - -n ${{ env.TOOLS_NAMESPACE }}
+          oc start-build --wait=true zeva-frontend-build-${{ env.PR_NUMBER }}
+
+  deploy-on-dev:
+
+    name: Deploy ZEVA on Dev
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: build
+ 
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Log in to Openshift
+        uses: redhat-actions/oc-login@v1.2
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ env.TOOLS_NAMESPACE }}  
+      
+      - name: Tag Frontend Image from tools to dev
+        run: |
+          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.DEV_NAMESPACE }}/zeva-frontend:dev-${{ env.VERSION }}
+          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.DEV_NAMESPACE }}/zeva-backend:dev-${{ env.VERSION }}
+
+      # helm status will show an error if the helm release doesn't exist. The error will be ignored.
+      - name: Deply zeva-frontend on Dev
+        shell: bash {0}
+        run: |
+          cd charts/zeva-apps/charts/zeva-frontend
+          helm status -n ${{ env.DEV_NAMESPACE }} zeva-frontend
+          if [ $? -eq 0 ]; then
+            echo "zeva-frontend release exists already"
+            helm upgrade --set frontendImageTagname=dev-${{ env.VERSION }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend .
+          else
+            echo "zeva-frontend release does not exist"
+            helm install --set frontendImageTagname=dev-${{ env.VERSION }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend .
+          fi
+          
+      # helm status will show an error if the helm release doesn't exist. The error will be ignored.
+      - name: Deply zeva-backend on Dev
+        shell: bash {0}
+        run: |
+          cd charts/zeva-apps/charts/zeva-backend
+          helm status -n ${{ env.DEV_NAMESPACE }} zeva-backend
+          if [ $? -eq 0 ]; then
+            echo "zeva-backend release exists already"
+            helm upgrade --set backendImageTagname=dev-${{ env.VERSION }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-backend .
+          else
+            echo "zeva-backend release does not exist"
+            helm install --set backendImageTagname=dev-${{ env.VERSION }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-backend .
+          fi
+          
   deploy-on-test:
 
     name: Deploy ZEVA on Test
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    # needs: deploy-on-dev
+    needs: deploy-on-dev
  
     steps:
 

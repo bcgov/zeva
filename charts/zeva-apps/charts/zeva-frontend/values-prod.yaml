@@ -13,8 +13,8 @@ frontendConfigMap:
   keycloakRealm: standard
   keycloakClientId: zeva-on-gold-4543
   keycloakAuthUrl: https://loginproxy.gov.bc.ca/auth
-  keycloakCallbackUrl: zeroemissionvehicles.gov.bc.ca
-  keycloakPostLogoutUrl: zeroemissionvehicles.gov.bc.ca
+  keycloakCallbackUrl: https://zeroemissionvehicles.gov.bc.ca
+  keycloakPostLogoutUrl: https://zeroemissionvehicles.gov.bc.ca
   keycloakSiteminderLogoutUrl: https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=
   complianceReportEnabled: true
   complianceCalculatorEnabled: true
