@@ -21,11 +21,11 @@ frontendConfigMap:
   complianceRatiosEnabled: true
   creditTransfersEnabled: true
   creditTransactionsEnabled: true
-  initiativeAgreementsEnabled: true
+  initiativeAgreementsEnabled: false
   modelYearReportEnabled: true
-  purchaseRequestsEnabled: true
+  purchaseRequestsEnabled: false
   notificationsEnabled: true
-  rolesEnabled: true
+  rolesEnabled: false
   creditAgreementsEnabled: true
   supplementalEnabled: true
 
