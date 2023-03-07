@@ -14,9 +14,26 @@ objects:
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
-      name: allow-minio-accepts-nagios
+      name: allow-backend-accepts-frontend
     spec:
-      ## Allow minio to accept communication from nagios
+      ## Allow backend to accept communication from frontend
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/instance: zeva-backend
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: zeva-frontend
+          ports:
+            - protocol: TCP
+              port: 8080
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-minio-accepts-backend
+    spec:
+      ## Allow minio to accept communication from backend
       podSelector:
         matchLabels:
           app: zeva-minio-${ENVIRONMENT}
@@ -24,49 +41,24 @@ objects:
         - from:
             - podSelector:
                 matchLabels:
-                  app: nagios
+                  app.kubernetes.io/instance: zeva-backend
           ports:
             - protocol: TCP
-              port: 9000                
+              port: 9000                  
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
-      name: allow-patroni-accepts-cthub-metabase-${ENVIRONMENT}
+      name: allow-backend-accepts-schemaspy
     spec:
-      ## Allow patroni to accept communications from cthub metabase
+      ## Allow backend to accept communication from schemaspy
       podSelector:
         matchLabels:
-          cluster-name: patroni-${ENVIRONMENT}
+           app.kubernetes.io/instance: zeva-backend
       ingress:
         - from:
-            - namespaceSelector:
-                matchLabels:
-                  name: 30b186
-                  environment: ${ENVIRONMENT}
             - podSelector:
                 matchLabels:
-                  app: metabase
+                  name: schemaspy-public-${ENVIRONMENT}
           ports:
             - protocol: TCP
-              port: 5432                                      
-  - apiVersion: networking.k8s.io/v1
-    kind: NetworkPolicy
-    metadata:
-      name: allow-patroni-accepts-cthub-superset-${ENVIRONMENT}
-    spec:
-      ## Allow patroni to accept communications from cthub superset
-      podSelector:
-        matchLabels:
-          cluster-name: patroni-${ENVIRONMENT}
-      ingress:
-        - from:
-            - namespaceSelector:
-                matchLabels:
-                  name: 30b186
-                  environment: ${ENVIRONMENT}
-            - podSelector:
-                matchLabels:
-                  app: superset
-          ports:
-            - protocol: TCP
-              port: 5432        
+              port: 8080

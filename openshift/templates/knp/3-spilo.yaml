@@ -18,10 +18,8 @@ objects:
     spec:
       ## Allow zeva-spilo to accept communications from backend
       ## Allow zeva-spilo to accept communications from backend-mid
-      ## Allow zeva-spilo to accept communications from self
       ## Allow zeva-spilo to accept communications from schema-public
       ## Allow zeva-spilo to accept communications from schema-audit
-      ## Allow zeva-spilo to accept communications from nagios
       ## Allow zeva-spilo to accept communications from backup-container
       ## Allow zeva-spilo to accept communications from metabase from cthub
       podSelector:
@@ -31,7 +29,7 @@ objects:
         - from:
             - podSelector:
                 matchLabels:
-                  name: zeva-backend-${ENVIRONMENT}
+                  app.kubernetes.io/instance: zeva-backend
           ports:
             - protocol: TCP
               port: 5432       
@@ -42,15 +40,6 @@ objects:
           ports:
             - protocol: TCP
               port: 5432              
-        - from:
-            - podSelector:
-                matchLabels:
-                  app.kubernetes.io/instance: zeva-spilo
-          ports:
-            - protocol: TCP
-              port: 5432    
-            - protocol: TCP
-              port: 8008     
         - from:
             - podSelector:
                 matchLabels:
@@ -65,13 +54,6 @@ objects:
           ports:
             - protocol: TCP
               port: 5432    
-        - from:
-            - podSelector:
-                matchLabels:
-                  app: nagios
-          ports:
-            - protocol: TCP
-              port: 5432                             
         - from:
             - podSelector:
                 matchLabels:
