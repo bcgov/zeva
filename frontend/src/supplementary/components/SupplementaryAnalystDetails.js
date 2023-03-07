@@ -20,6 +20,7 @@ import SupplementaryTab from './SupplementaryTab'
 import ReactTooltip from 'react-tooltip'
 import ReassessmentDetailsPage from './ReassessmentDetailsPage'
 import EditableCommentList from '../../app/components/EditableCommentList'
+import UploadEvidence from './UploadEvidence'
 
 const SupplementaryAnalystDetails = (props) => {
   const {
@@ -27,6 +28,7 @@ const SupplementaryAnalystDetails = (props) => {
     commentArray,
     deleteFiles,
     details,
+    files,
     handleAddIdirComment,
     handleCommentChangeBceid,
     handleCommentChangeIdir,
@@ -44,7 +46,9 @@ const SupplementaryAnalystDetails = (props) => {
     radioDescriptions,
     ratios,
     salesRows,
+    setDeleteFiles,
     setSupplementaryAssessmentData,
+    setUploadFiles,
     supplementaryAssessmentData,
     user,
     query,
@@ -534,6 +538,13 @@ const SupplementaryAnalystDetails = (props) => {
                       title="Assessment Message to the Supplier: "
                     />
                   </div>
+                    <UploadEvidence
+                      details={details}
+                      deleteFiles={deleteFiles}
+                      files={files}
+                      setDeleteFiles={setDeleteFiles}
+                      setUploadFiles={setUploadFiles}
+                    />
                 </div>
               </div>
             </div>
