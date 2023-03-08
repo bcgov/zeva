@@ -152,7 +152,6 @@ class ModelYearReportComplianceObligationViewset(
                 credit_b_value=credit_b_value,
                 from_gov=True
             )
-            print(credit_activity)
             compliance_obj.save()
 
         return HttpResponse(
@@ -429,12 +428,10 @@ class ModelYearReportComplianceObligationViewset(
                     'model_year__name'
 
                 )
-                print('previous', previous_report_latest_supplemental)
             
 
             if starting_balances:
                 for balance in starting_balances:
-                    print(balance)
                     if balance and (
                             balance.credit_a_value > 0 or
                             balance.credit_b_value > 0
@@ -514,12 +511,6 @@ class ModelYearReportComplianceObligationViewset(
             serializer = ModelYearReportComplianceObligationSnapshotSerializer(
                 snapshot, context={'request': request, 'kwargs': kwargs}, many=True
             )
-        print('LOOK LOOK LOOK', request.user.is_government and request.GET.get('assessment') == 'True' and
-                report.validation_status not in [
-                    ModelYearReportStatuses.ASSESSED,
-                    ModelYearReportStatuses.RECOMMENDED
-                ], not request.user.is_government and not confirmation and
-                    report.validation_status == ModelYearReportStatuses.DRAFT, request.user.is_government, confirmation, report.validation_status)
         return Response({
             'compliance_obligation': serializer.data,
             'compliance_offset': compliance_offset,
