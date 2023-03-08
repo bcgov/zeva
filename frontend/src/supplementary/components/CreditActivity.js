@@ -29,7 +29,6 @@ const CreditActivity = (props) => {
       structuredProvisionalBalance.creditB = updatedBalances.balances[index].newCreditB
       structuredProvisionalBalance.originalAValue = updatedBalances.balances[index].creditA
       structuredProvisionalBalance.originalBValue = updatedBalances.balances[index].creditB
-      console.log(structuredProvisionalBalance)
 
     handleSupplementalChange(structuredProvisionalBalance)
   }, [newLdvSales])
