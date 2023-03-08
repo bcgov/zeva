@@ -12,6 +12,28 @@ import getTotalReduction from '../../app/utilities/getTotalReduction'
 import getUnspecifiedClassReduction from '../../app/utilities/getUnspecifiedClassReduction'
 
 const CreditActivity = (props) => {
+
+  useEffect(() => {
+    let structuredProvisionalBalance = {}
+
+    structuredProvisionalBalance.title = "ProvisionalBalanceAfterCreditReduction"
+    
+    let index = null
+    updatedBalances.balances.forEach((obj, i) => {
+      if(obj.modelYear === reportYear){
+        index = i
+      }
+    })
+      structuredProvisionalBalance.modelYear = updatedBalances.balances[index].modelYear
+      structuredProvisionalBalance.creditA = updatedBalances.balances[index].newCreditA
+      structuredProvisionalBalance.creditB = updatedBalances.balances[index].newCreditB
+      structuredProvisionalBalance.originalAValue = updatedBalances.balances[index].creditA
+      structuredProvisionalBalance.originalBValue = updatedBalances.balances[index].creditB
+      console.log(structuredProvisionalBalance)
+
+    handleSupplementalChange(structuredProvisionalBalance)
+  }, [newLdvSales])
+
   const {
     creditReductionSelection,
     details,
@@ -259,27 +281,6 @@ const CreditActivity = (props) => {
       }
     })
   }
-
-  useEffect(() => {
-    let structuredProvisionalBalance = {}
-
-    structuredProvisionalBalance.title = "ProvisionalBalanceAfterCreditReduction"
-    
-    let index = null
-    updatedBalances.balances.forEach((obj, i) => {
-      if(obj.modelYear === reportYear){
-        index = i
-      }
-    })
-      structuredProvisionalBalance.modelYear = updatedBalances.balances[index].modelYear
-      structuredProvisionalBalance.creditA = updatedBalances.balances[index].newCreditA
-      structuredProvisionalBalance.creditB = updatedBalances.balances[index].newCreditB
-      structuredProvisionalBalance.originalAValue = updatedBalances.balances[index].creditA
-      structuredProvisionalBalance.originalBValue = updatedBalances.balances[index].creditB
-      console.log(structuredProvisionalBalance)
-
-    handleSupplementalChange(structuredProvisionalBalance)
-  }, [newLdvSales])
 
   return (
     <>
