@@ -162,6 +162,13 @@ class ModelYearReport(Auditable):
             status=ModelYearReportStatuses.ASSESSED
         ).order_by("create_timestamp")
 
+    def get_previous_model_report(self):
+        return ModelYearReport.objects.filter(
+            organization=self.organization
+        ).filter(
+            model_year__name=int(self.model_year.name) - 1
+        ).first()
+
     def get_avg_sales(self):
         avg_sales = self.organization.get_avg_ldv_sales(
             year=self.model_year.name

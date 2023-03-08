@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import ComplianceObligationTableCreditsIssued from '../../compliance/components/ComplianceObligationTableCreditsIssued'
@@ -142,7 +142,6 @@ const CreditActivity = (props) => {
       creditB
     })
   })
-
   Object.keys(newBalances).forEach((year) => {
     const { A: creditA, B: creditB } = newBalances[year]
     newTempBalances.push({
@@ -260,6 +259,27 @@ const CreditActivity = (props) => {
       }
     })
   }
+
+  useEffect(() => {
+    let structuredProvisionalBalance = {}
+
+    structuredProvisionalBalance.title = "ProvisionalBalanceAfterCreditReduction"
+    
+    let index = null
+    updatedBalances.balances.forEach((obj, i) => {
+      if(obj.modelYear === reportYear){
+        index = i
+      }
+    })
+      structuredProvisionalBalance.modelYear = updatedBalances.balances[index].modelYear
+      structuredProvisionalBalance.creditA = updatedBalances.balances[index].newCreditA
+      structuredProvisionalBalance.creditB = updatedBalances.balances[index].newCreditB
+      structuredProvisionalBalance.originalAValue = updatedBalances.balances[index].creditA
+      structuredProvisionalBalance.originalBValue = updatedBalances.balances[index].creditB
+      console.log(structuredProvisionalBalance)
+
+    handleSupplementalChange(structuredProvisionalBalance)
+  }, [newLdvSales])
 
   return (
     <>

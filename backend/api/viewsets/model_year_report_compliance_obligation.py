@@ -20,6 +20,8 @@ from api.models.model_year_report_statuses import \
     ModelYearReportStatuses
 from api.models.model_year_report_compliance_obligation import \
     ModelYearReportComplianceObligation
+from api.models.supplemental_report_credit_activity import \
+    SupplementalReportCreditActivity
 from api.models.sales_submission import SalesSubmission
 from api.models.vehicle import Vehicle
 from api.models.vehicle_statuses import VehicleDefinitionStatuses
@@ -150,6 +152,7 @@ class ModelYearReportComplianceObligationViewset(
                 credit_b_value=credit_b_value,
                 from_gov=True
             )
+            print(credit_activity)
             compliance_obj.save()
 
         return HttpResponse(
@@ -397,24 +400,41 @@ class ModelYearReportComplianceObligationViewset(
                     'model_year': {'name': key}
                 })
 
-            previous_report_id = None
+
+
+            previous_report = report.get_previous_model_report()
+            previous_report_latest_supplemental = None
+            if(previous_report):
+                previous_report_latest_supplemental = previous_report.get_latest_supplemental(request)
+
             prior_year_balance_a = 0
             prior_year_balance_b = 0
             prior_year = report_year - 1
-            previous_report_id = ModelYearReport.objects.values_list('id', flat=True).filter(
-                model_year__name=str(prior_year)
-            ).filter(organization_name=organization.name).first()
+            starting_balances = []
 
-            if previous_report_id:
-                starting_balances = ModelYearReportComplianceObligation.objects.filter(
-                    model_year_report_id=previous_report_id,
-                    category='ProvisionalBalanceAfterCreditReduction',
-                    from_gov=True
+            if previous_report_latest_supplemental and report.validation_status == ModelYearReportStatuses.DRAFT:
+                starting_balances = SupplementalReportCreditActivity.objects.filter(
+                    supplemental_report=previous_report_latest_supplemental.id,
+                    category='ProvisionalBalanceAfterCreditReduction'
                 ).order_by(
                     'model_year__name'
                 )
 
+            elif previous_report:
+                starting_balances = ModelYearReportComplianceObligation.objects.filter(
+                    model_year_report_id=previous_report.id,
+                    category='ProvisionalBalanceAfterCreditReduction',
+                    from_gov=True
+                ).order_by(
+                    'model_year__name'
+
+                )
+                print('previous', previous_report_latest_supplemental)
+            
+
+            if starting_balances:
                 for balance in starting_balances:
+                    print(balance)
                     if balance and (
                             balance.credit_a_value > 0 or
                             balance.credit_b_value > 0
@@ -494,7 +514,12 @@ class ModelYearReportComplianceObligationViewset(
             serializer = ModelYearReportComplianceObligationSnapshotSerializer(
                 snapshot, context={'request': request, 'kwargs': kwargs}, many=True
             )
-
+        print('LOOK LOOK LOOK', request.user.is_government and request.GET.get('assessment') == 'True' and
+                report.validation_status not in [
+                    ModelYearReportStatuses.ASSESSED,
+                    ModelYearReportStatuses.RECOMMENDED
+                ], not request.user.is_government and not confirmation and
+                    report.validation_status == ModelYearReportStatuses.DRAFT, request.user.is_government, confirmation, report.validation_status)
         return Response({
             'compliance_obligation': serializer.data,
             'compliance_offset': compliance_offset,

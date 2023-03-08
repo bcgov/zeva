@@ -207,7 +207,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                           : ''
                       }${getDefault(category, each, 'creditAValue')}`}
                       type="text"
-                      onChange={(event) => {
+                      onInput={(event) => {
                         let { value } = event.target
 
                         if (
@@ -250,7 +250,7 @@ const ComplianceObligationTableCreditsIssued = (props) => {
                           : ''
                       }${getDefault(category, each, 'creditBValue')}`}
                       type="text"
-                      onChange={(event) => {
+                      onInput={(event) => {
                         let { value } = event.target
 
                         if (
