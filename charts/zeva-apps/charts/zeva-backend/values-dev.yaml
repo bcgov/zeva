@@ -2,12 +2,6 @@ replicaCount: 1
 
 envName: dev
 
-resources:
-  cpuRequest: 50m
-  memoryRequest: 350Mi
-  cpuLimit: 100m
-  memoryLimit: 700Mi
-
 autoscaling:
   minReplicas: 1
   maxReplicas: 2

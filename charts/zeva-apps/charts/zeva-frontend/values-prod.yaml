@@ -39,7 +39,7 @@ resources:
 
 appConfigMap:
   backendHostName: zeva-backend-prod.apps.silver.devops.gov.bc.ca
-  databaseServiceName: zeva-spilo
+  databaseServiceName: patroni-master-prod
   djangoDebug: true
   ssoName: loginproxy.gov.bc.ca
   keycloakRealm: standard
