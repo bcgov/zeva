@@ -9,18 +9,6 @@ on:
   workflow_dispatch:
   workflow_call:
 
-env:
-  ## The pull request number of the Tracking pull request to merge the release branch to main
-  PR_NUMBER: 1496
-  RELEASE_NAME: unittest-pipeline-1.46.0
-  VERSION: 1.46.0
-  GIT_URL: https://github.com/bcgov/zeva.git 
-  TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
-  DEV_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-dev
-  TEST_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-test
-  PROD_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-prod
-
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -39,7 +27,7 @@ jobs:
       
       - name: Run coverage report for django tests 
         uses: kuanfandevops/django-test-action@itvr-django-test
-        continue-on-error: true
+        continue-on-error: false
         with:
           settings-dir-path: "backend/api"
           requirements-file: "backend/requirements.txt"
