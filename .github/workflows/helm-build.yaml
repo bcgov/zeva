@@ -202,3 +202,34 @@ jobs:
           issue-title: "ZEVA ${{ env.RELEASE_NAME }} Prod Deployment"
           timeout-minutes: 60
       
+#      - name: Tag Frontend Image from tools to Prod
+#        run: |
+#          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.PROD_NAMESPACE }}/zeva-frontend:prod-${{ env.VERSION }}
+#          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.PROD_NAMESPACE }}/zeva-backend:prod-${{ env.VERSION }}
+
+#      - name: Deply zeva-frontend on Prod
+#        shell: bash {0}
+#        run: |
+#          cd charts/zeva-apps/charts/zeva-frontend
+#          helm status -n ${{ env.PROD_NAMESPACE }} zeva-frontend
+#          if [ $? -eq 0 ]; then
+#            echo "zeva-frontend release exists already"
+#            helm upgrade --set frontendImageTagname=prod-${{ env.VERSION }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml zeva-frontend .
+#          else
+#            echo "zeva-frontend release does not exist"
+#            helm install --set frontendImageTagname=prod-${{ env.VERSION }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml zeva-frontend .
+#          fi
+          
+#      - name: Deply zeva-backend on Prod
+#        shell: bash {0}
+#        run: |
+#          cd charts/zeva-apps/charts/zeva-backend
+#          helm status -n ${{ env.PROD_NAMESPACE }} zeva-backend
+#          if [ $? -eq 0 ]; then
+#            echo "zeva-backend release exists already"
+#            helm upgrade --set backendImageTagname=prod-${{ env.VERSION }} -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml zeva-backend .
+#          else
+#            echo "zeva-backend release does not exist"
+#            helm install --set backendImageTagname=prod-${{ env.VERSION }} -n ${{ env.PROD_NAMESPACE }} -f ./values-prod.yaml zeva-backend .
+#          fi
+                                        
