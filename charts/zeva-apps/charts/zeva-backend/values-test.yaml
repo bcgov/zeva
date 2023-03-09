@@ -2,15 +2,9 @@ replicaCount: 2
 
 envName: test
 
-resources:
-  cpuRequest: 50m
-  memoryRequest: 350Mi
-  cpuLimit: 100m
-  memoryLimit: 700Mi
-
 autoscaling:
-  minReplicas: 1
-  maxReplicas: 2
+  minReplicas: 2
+  maxReplicas: 3
   cpuAverageUtilization: 80
 
 healthCheckDelay:  30
