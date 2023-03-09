@@ -5,7 +5,7 @@ name: Backend Unit Test 1.46.0
 
 on:
   push:
-    branches: [ unittest-pipeline-1.46.0 ]
+    branches: [ release-1.46.0 ]
   workflow_dispatch:
   workflow_call:
 
