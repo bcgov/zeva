@@ -1,7 +1,7 @@
 ## For each release, please update the value of workflow name, branches, PR_NUMBER and RELEASE_NAME
 ## Also update frontend/package.json version
 
-name: Unit Test 1.46.0
+name: Backend Unit Test 1.46.0
 
 on:
   push:
