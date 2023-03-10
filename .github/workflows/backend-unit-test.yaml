@@ -5,7 +5,7 @@ name: Backend Unit Test 1.46.0
 
 on:
   push:
-    branches: [ release-1.46.0 ]
+    branches: [ debug-backend-unittest-1.46.0 ]
   workflow_dispatch:
   workflow_call:
 
@@ -28,9 +28,14 @@ jobs:
       - name: Run coverage report for django tests 
         uses: kuanfandevops/django-test-action@itvr-django-test
         continue-on-error: false
+        env:
+          MINIO_ENDPOINT: minio:9000
+          MINIO_ACCESS_KEY: minioadmin
+          MINIO_SECRET_KEY: minioadmin
         with:
           settings-dir-path: "backend/api"
           requirements-file: "backend/requirements.txt"
           managepy-dir: backend
+        
 
 
