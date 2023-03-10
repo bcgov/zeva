@@ -1,7 +1,7 @@
 ## For each release, please update the value of workflow name, branches, PR_NUMBER and RELEASE_NAME
 ## Also update frontend/package.json version
 
-name: Backend Unit Test 1.46.0
+name: Frontend Unit Test 1.46.0
 
 on:
   push:
@@ -15,22 +15,22 @@ concurrency:
   
 jobs:
 
-  backend-unit-test:
+  frontend-unit-test:
 
-    name: Run Backend Unit Tests
+    name: Run Frontend Unit Tests
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
     steps:
+
       - name: Checkout
         uses: actions/checkout@v3
-      
-      - name: Run coverage report for django tests 
-        uses: kuanfandevops/django-test-action@itvr-django-test
+
+      - name: Fronend Jest coverage report
+        uses: ArtiomTr/jest-coverage-report-action@v2.2.1
         continue-on-error: false
         with:
-          settings-dir-path: "backend/api"
-          requirements-file: "backend/requirements.txt"
-          managepy-dir: backend
-
+          working-directory: frontend
+          test-script: npm run test
+        
 
