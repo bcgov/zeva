@@ -5,7 +5,7 @@ name: Frontend Unit Test 1.46.0
 
 on:
   push:
-    branches: [ release-1.46.0 ]
+    branches: [ frontend-unittest-1.46.0 ]
   workflow_dispatch:
   workflow_call:
 
@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 60
 
     steps:
-    
+
       - name: Checkout
         uses: actions/checkout@v3
 
