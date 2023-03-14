@@ -1,4 +1,7 @@
 
+# How to build a single pull request
+
+
 # TFRS Post Release Work
 After the release is deployed on Prod
 * Merge the tracking pull request to master
@@ -11,7 +14,6 @@ After the release is deployed on Prod
 * name
 * branches
 * PR_NUMBER
-* RELEASE_NAME
 
 ## Update .pipeline/lib/config.js
 * const version
