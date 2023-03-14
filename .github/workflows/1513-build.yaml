@@ -1,7 +1,7 @@
 ## For each release, please update the value of workflow name, PR_NUMBER and VERSION (the version this pr will be merged into)
 ## Also update frontend/package.json version
 
-name: PR-1511
+name: PR-1513
 
 on:
   workflow_dispatch:
