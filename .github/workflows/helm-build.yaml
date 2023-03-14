@@ -1,4 +1,4 @@
-## For each release, please update the value of workflow name, branches, PR_NUMBER and RELEASE_NAME
+## For each release, please update the value of workflow name, branches and PR_NUMBER
 ## Also update frontend/package.json version
 
 name: Helm Build 1.46.0
@@ -12,7 +12,6 @@ on:
 env:
   ## The pull request number of the Tracking pull request to merge the release branch to main
   PR_NUMBER: 1248
-  RELEASE_NAME: release-1.46.0
   VERSION: 1.46.0
   GIT_URL: https://github.com/bcgov/zeva.git 
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
@@ -178,7 +177,7 @@ jobs:
           secret: ${{ github.TOKEN }}
           approvers: AlexZorkin,emi-hi,tim738745,vibhiquartech,kuanfandevops
           minimum-approvals: 1
-          issue-title: "ZEVA ${{ env.RELEASE_NAME }} Test Deployment"
+          issue-title: "ZEVA ${{ env.VERSION }} Test Deployment"
       
       - name: Tag Frontend Image from tools to Test
         run: |
@@ -239,7 +238,7 @@ jobs:
           secret: ${{ github.TOKEN }}
           approvers: AlexZorkin,kuanfandevops,tim738745,emi-hi
           minimum-approvals: 2
-          issue-title: "ZEVA ${{ env.RELEASE_NAME }} Prod Deployment"
+          issue-title: "ZEVA ${{ env.VERSION }} Prod Deployment"
           timeout-minutes: 60
       
 #      - name: Tag Frontend Image from tools to Prod
