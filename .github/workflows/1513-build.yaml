@@ -8,7 +8,7 @@ on:
 
 env:
   ## The pull request number of the Tracking pull request to merge the release branch to main
-  PR_NUMBER: 1511
+  PR_NUMBER: 1513
   VERSION: 1.46.0
   GIT_URL: https://github.com/bcgov/zeva.git 
   TOOLS_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE_PLATE }}-tools
