@@ -88,8 +88,13 @@ jobs:
       - name: Start Database
         run: |
           cd charts/zeva-spilo
-          helm install -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-pr.yaml --wait zeva-spilo-${{ env.PR_NUMBER }} .
-          oc -n ${{ env.DEV_NAMESPACE }} set volume statefulset/zeva-spilo-${{ env.PR_NUMBER }} --add --mount-path=/db-backups -t pvc --claim-name=db-backups
+          helm status -n ${{ env.DEV_NAMESPACE }} zeva-spilo-${{ env.PR_NUMBER }}
+          if [ $? -eq 0 ]; then
+            echo "zeva-frontend release exists already"
+          else
+            helm install -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-pr.yaml --wait zeva-spilo-${{ env.PR_NUMBER }} .
+            oc -n ${{ env.DEV_NAMESPACE }} set volume statefulset/zeva-spilo-${{ env.PR_NUMBER }} --add --mount-path=/db-backups -t pvc --claim-name=db-backups
+          fi
 
   # build:
 
