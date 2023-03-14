@@ -66,7 +66,7 @@ jobs:
 
   database:
 
-    name: Start Database for PR-1513
+    name: Start Database
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
@@ -87,7 +87,7 @@ jobs:
 
       - name: Start Database
         run: |
-          cd charts/zeva-spil
+          cd charts/zeva-spilo
           helm install -n ${{ env.DEV_NAMESPACE }} -f ./value-dev-pr.yaml zeva-spilo-${{ env.PR_NUMBER }} .
 
   # build:
