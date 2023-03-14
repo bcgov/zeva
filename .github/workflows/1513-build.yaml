@@ -88,7 +88,7 @@ jobs:
       - name: Start Database
         run: |
           cd charts/zeva-spilo
-          helm install -n ${{ env.DEV_NAMESPACE }} -f ./value-dev-pr.yaml zeva-spilo-${{ env.PR_NUMBER }} .
+          helm install -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-pr.yaml zeva-spilo-${{ env.PR_NUMBER }} .
 
   # build:
 
