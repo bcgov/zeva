@@ -6,6 +6,9 @@ name: Helm Build 1.46.0
 on:
   push:
     branches: [ release-1.46.0 ]
+    paths:
+      - frontend/**
+      - backend/**
   workflow_dispatch:
   workflow_call:
 
