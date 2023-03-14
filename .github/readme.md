@@ -11,7 +11,6 @@ After the release is deployed on Prod
 * name
 * branches
 * PR_NUMBER
-* RELEASE_NAME
 
 ## Update .pipeline/lib/config.js
 * const version
