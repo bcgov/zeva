@@ -1,8 +1,9 @@
 import React from 'react'
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, screen } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 import { BrowserRouter } from 'react-router-dom'
 import SupplementaryDirectorDetails from '../SupplementaryDirectorDetails'
+import CONFIG from '../../../app/config'
 
 jest.mock('../../../compliance/components/ComplianceHistory', () => {
   const ComplianceHistoryMock = () => <div>ComplianceHistory</div>
@@ -40,8 +41,35 @@ jest.mock('../CreditActivity', () => {
   return CreditActivityMock
 })
 
+const mockHandleSubmit = jest.fn()
+
+jest.mock('../../../app/components/Button', () => {
+  const React = require('react')
+  const { Link } = require('react-router-dom')
+
+  return jest.fn().mockImplementation(({ buttonType, action, optionalText, optionalClassname, locationRoute, ...props }) => {
+    const buttonText = optionalText || buttonType
+    const className = optionalClassname ? `${optionalClassname} button` : 'button'
+
+    if (locationRoute) {
+      return (
+        <Link to={locationRoute} className={className} data-testid={buttonType} {...props}>
+          {buttonText}
+        </Link>
+      )
+    }
+
+    return (
+      <button data-testid={buttonType} className={className} onClick={action} {...props}>
+        {buttonText}
+      </button>
+    )
+  })
+})
+
 describe('SupplementaryDirectorDetails', () => {
   beforeEach(() => {
+    CONFIG.FEATURES.SUPPLEMENTAL_REPORT.ENABLED = true
   })
 
   const testFunction = () => {}
@@ -202,8 +230,8 @@ describe('SupplementaryDirectorDetails', () => {
     expect(getByText('CreditActivity')).toBeInTheDocument()
   })
 
-  it('renders ReassessmentDetailsPage when conditions are met', () => {
-    const { getByText } = render(
+  it('renders the correct style of ReassessmentDetailsPage when conditions are met', () => {
+    const { queryByText } = render(
       <BrowserRouter>
         <SupplementaryDirectorDetails
           {...props}
@@ -212,7 +240,25 @@ describe('SupplementaryDirectorDetails', () => {
         />
       </BrowserRouter>
     )
-    expect(getByText('ReassessmentDetailsPage')).toBeInTheDocument()
+    expect(queryByText('ReassessmentDetailsPage')).toBeInTheDocument()
+    expect(queryByText('SupplierInformation')).not.toBeInTheDocument()
+    expect(queryByText('ZevSales')).not.toBeInTheDocument()
+    expect(queryByText('CreditActivity')).not.toBeInTheDocument()
+  })
+
+  it('does not render ReassessmentDetailsPage when conditions are incorrect', () => {
+    const { queryByText } = render(
+      <BrowserRouter>
+        <SupplementaryDirectorDetails
+          {...props}
+          isReassessment={false}
+        />
+      </BrowserRouter>
+    )
+    expect(queryByText('ReassessmentDetailsPage')).not.toBeInTheDocument()
+    expect(queryByText('SupplierInformation')).toBeInTheDocument()
+    expect(queryByText('ZevSales')).toBeInTheDocument()
+    expect(queryByText('CreditActivity')).toBeInTheDocument()
   })
 
   // Test rendering of EditableCommentList when conditions are met
@@ -223,7 +269,6 @@ describe('SupplementaryDirectorDetails', () => {
           {...props}
           details={{ ...details, actualStatus: 'RECOMMENDED' }}
           query={{ tab: 'reassessment' }}
-          // commentArray={commentArray}
         />
       </BrowserRouter>
     )
@@ -243,29 +288,169 @@ describe('SupplementaryDirectorDetails', () => {
     fireEvent.click(getByText('Print Page'))
     expect(window.print).toHaveBeenCalledTimes(1)
   })
+
+  it('should not render "Director Reassessment" section when conditions are not met', () => {
+    render(
+      <BrowserRouter>
+        <SupplementaryDirectorDetails
+          {...props}
+          currentStatus={'INCORRECT_STATUS'}
+        />
+      </BrowserRouter>
+    )
+    const reassessmentHeader = screen.queryByText('Director Reassessment')
+    expect(reassessmentHeader).not.toBeInTheDocument()
+  })
+
+  it('should render "Director Reassessment" section when conditions are met', () => {
+    render(
+      <BrowserRouter>
+        <SupplementaryDirectorDetails
+          {...props}
+          details={{ ...details, actualStatus: 'ASSESSED' }}
+          supplementaryAssessmentData={
+            {
+              supplementaryAssessment: {
+                decision: {
+                  description: 'Some description'
+                }
+              }
+            }
+          }
+        />
+      </BrowserRouter>
+    )
+    const reassessmentHeader = screen.getByText('Director Reassessment')
+    expect(reassessmentHeader).toBeInTheDocument()
+  })
+
+  it('should display assessment decision text correctly', () => {
+    render(
+      <BrowserRouter>
+        <SupplementaryDirectorDetails
+          {...props}
+          details={{ ...details, actualStatus: 'ASSESSED' }}
+          supplementaryAssessmentData={
+            {
+              supplementaryAssessment: {
+                decision: {
+                  description: 'this model year of {modelYear} is assessed.'
+                }
+              }
+            }
+          }
+          assessmentDecision={'Complaint'}
+        />
+      </BrowserRouter>
+    )
+    const decisionText = screen.getByText('The Director has assessed that this model year of 2021 is assessed.')
+    expect(decisionText).toBeInTheDocument()
+  })
+
+  it('should display comment when available', () => {
+    render(
+      <BrowserRouter>
+        <SupplementaryDirectorDetails
+          {...props}
+          details={{ ...details, actualStatus: 'ASSESSED' }}
+          supplementaryAssessmentData={
+            {
+              supplementaryAssessment: {
+                decision: {
+                  description: 'Some description'
+                }
+              }
+            }
+          }
+          assessmentDecision={'Complaint'}
+          commentArray={
+            {
+              bceidComment: {
+                comment: 'This is a sample comment.'
+              }
+            }
+         }
+        />
+      </BrowserRouter>
+    )
+    const commentText = screen.getByText('This is a sample comment.')
+    expect(commentText).toBeInTheDocument()
+  })
+
+  it('should trigger setSupplementaryAssessmentData when input changes', () => {
+    const setSupplementaryAssessmentData = jest.fn()
+    render(
+      <BrowserRouter>
+        <SupplementaryDirectorDetails
+          {...props}
+          details={{ ...details, actualStatus: 'ASSESSED' }}
+          setSupplementaryAssessmentData={setSupplementaryAssessmentData}
+          supplementaryAssessmentData={
+            {
+              supplementaryAssessment: {
+                assessmentPenalty: 0
+              }
+            }
+          }
+          query={{ tab: 'recommendation' }}
+        />
+      </BrowserRouter>
+    )
+    const recommendedHeader = screen.queryByText('Analyst Recommended Director Assessment')
+    expect(recommendedHeader).toBeInTheDocument()
+
+    fireEvent.change(screen.getByRole('spinbutton'), { target: { value: 5 } })
+
+    expect(setSupplementaryAssessmentData).toHaveBeenCalled()
+  })
+
+  it('should render back button', () => {
+    const { getByTestId } = render(
+      <BrowserRouter>
+        <SupplementaryDirectorDetails
+          {...props}
+          details={{ ...details, actualStatus: 'RECOMMENDED' }}
+          handleSubmit={mockHandleSubmit}
+        />
+      </BrowserRouter>
+    )
+    const backButton = getByTestId('back')
+    expect(backButton).toBeInTheDocument()
+  })
+
+  it('should trigger handleSubmit with "RETURNED" when return button is clicked', () => {
+    const { queryByText } = render(
+      <BrowserRouter>
+        <SupplementaryDirectorDetails
+          {...props}
+          details={{ ...details, actualStatus: 'RECOMMENDED' }}
+          handleSubmit={mockHandleSubmit}
+          query={{ tab: 'reassessment' }}
+        />
+      </BrowserRouter>
+    )
+
+    const returnButton = queryByText('Return to Analyst')
+    fireEvent.click(returnButton)
+
+    expect(mockHandleSubmit).toHaveBeenCalledWith('RETURNED')
+  })
+
+  it('should trigger handleSubmit with "ASSESSED" when issue assessment button is clicked', () => {
+    const { queryByText } = render(
+      <BrowserRouter>
+        <SupplementaryDirectorDetails
+          {...props}
+          details={{ ...details, actualStatus: 'RECOMMENDED' }}
+          handleSubmit={mockHandleSubmit}
+          query={{ tab: 'reassessment' }}
+        />
+      </BrowserRouter>
+    )
+
+    const issueAssessmentButton = queryByText('Issue Assessment')
+    fireEvent.click(issueAssessmentButton)
+
+    expect(mockHandleSubmit).toHaveBeenCalledWith('ASSESSED')
+  })
 })
-
-// TESTS TO WRITE
-
-// as an analyst
-// if i view a supplemental report in submitted status
-// i should be able to edit fields, add comments to supplier or director,
-// click a radio button for the assessment, and save/recommend to director or return to supplier
-
-// as an analyst
-// if i view a supplemental report in recommended status
-// I should be able to view a read only version of all 3 tabs
-
-// as an analyst
-// if i view a supplemental report in any status
-// I should be able to view all 3 tabs
-
-// as an analyst
-// if i view a reassessment report in any status
-// I should be able to view the second two tabs
-
-// as an analyst
-// if i view a supplemental report in submitted status
-// I should be able to view a editable version of all 3 tabs
-
-// Replace these constants with the relevant data for your tests
