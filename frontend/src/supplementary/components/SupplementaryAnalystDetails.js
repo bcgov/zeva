@@ -300,19 +300,24 @@ const SupplementaryAnalystDetails = (props) => {
 
       {renderTabs()}
 
-      {isEditable && (
-        <div className="supplementary-form my-3">
+      {selectedTab === tabNames[1] && (
+        // analyst can see comments on the RECOMMENDATION tab in any status
+        // and can leave/edit comments if its NOT Assessed or Recommended
+        <>
           {commentArray &&
             commentArray.idirComment &&
             commentArray.idirComment.length > 0 && (
+          <div className="supplementary-form my-3">
               <EditableCommentList
+                enableEditing={!['ASSESSED', 'RECOMMENDED'].includes(currentStatus)}
                 comments={commentArray.idirComment}
                 user={user}
                 handleCommentEdit={handleEditIdirComment}
                 handleCommentDelete={handleDeleteIdirComment}
               />
+            </div>
           )}
-
+          {isEditable && (
           <div id="comment-input">
             <CommentInput
               handleCommentChange={handleCommentChangeIdir}
@@ -322,7 +327,8 @@ const SupplementaryAnalystDetails = (props) => {
               tooltip="Please save the report first, before adding comments"
             />
           </div>
-        </div>
+          )}
+      </>
       )}
       <div className="supplementary-form mt-2">
         <Button

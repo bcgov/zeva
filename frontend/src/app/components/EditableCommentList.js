@@ -2,15 +2,16 @@ import React, { useState } from 'react'
 import EditComment from './EditComment'
 import moment from 'moment-timezone'
 import parse from 'html-react-parser'
+import PropTypes from 'prop-types'
 
 const EditableCommentList = ({
   comments,
   user,
   handleCommentEdit,
-  handleCommentDelete
+  handleCommentDelete,
+  enableEditing
 }) => {
   const [commentIdsBeingEdited, setCommentIdsBeingEdited] = useState([])
-
   const handleEditClick = (commentId) => {
     setCommentIdsBeingEdited((prev) => {
       return [...prev, commentId]
@@ -56,7 +57,7 @@ const EditableCommentList = ({
       commentElements.push(
         <div key={commentId}>
           <b>{'Comments - '}</b>
-          {userEditable && (
+          {userEditable && enableEditing && (
             <button
               className="inline-edit"
               onClick={() => {
@@ -80,5 +81,12 @@ const EditableCommentList = ({
     </div>
   )
 }
+EditableCommentList.defaultProps = {
+  enableEditing: true
 
+}
+
+EditableCommentList.propTypes = {
+  enableEditing: PropTypes.bool
+}
 export default EditableCommentList
