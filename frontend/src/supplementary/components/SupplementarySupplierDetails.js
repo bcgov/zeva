@@ -374,6 +374,7 @@ const SupplementarySupplierDetails = (props) => {
               defaultChecked={checkboxConfirmed}
               className="mr-2"
               id="supplier-confirm-checkbox"
+              data-testid="supplier-confirm-checkbox"
               name="confirmations"
               onChange={(event) => {
                 handleCheckboxClick(event)
