@@ -185,9 +185,7 @@ const ComplianceHistory = (props) => {
                             ROUTES_SUPPLEMENTARY.SUPPLEMENTARY_DETAILS.replace(
                               ':id',
                               id
-                            ).replace(':supplementaryId', item.id) +
-                              (isReassessment ? '?reassessment=Y' : '') +
-                              `?tab=${tabName}`
+                            ).replace(':supplementaryId', item.id)
                           )
                         } else {
                           history.push(
