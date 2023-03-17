@@ -387,7 +387,6 @@ const SupplementaryAnalystDetails = (props) => {
             )}
         </div>
         {details &&
-          details.status === 'SUBMITTED' &&
           ((details.fromSupplierComments &&
             details.fromSupplierComments.length > 0) ||
             (details.attachments && details.attachments.length > 0)) && (
