@@ -14,7 +14,9 @@ module.exports = {
     '^.+\\.(css|less|scss)$': '<rootDir>/__mocks__/style.js'
   },
   setupFiles: ['./jest.setup.js'],
-  testURL: 'http://localhost/',
+  testEnvironmentOptions: {
+    url: 'http://localhost/'
+  },
   transform: {
     '^.+\\.(js|jsx)$': 'babel-jest'
   },
@@ -23,4 +25,4 @@ module.exports = {
   globals: {
     __VERSION__: ''
   }
-};
+}
