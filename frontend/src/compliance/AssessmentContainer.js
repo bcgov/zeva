@@ -160,7 +160,7 @@ const AssessmentContainer = (props) => {
               ) {
                 if (supplementaryResponse.data.reassessment && supplementaryResponse.data.reassessment.reassessmentReportId) {
                   setReassessmentExists(true)
-                  setReassessmentTooltip('at this time its not possible as government has begun a reassessment')
+                  setReassessmentTooltip('at this time it is not possible as government has begun a reassessment')
                 }
                 setSupplementaryId(supplementaryResponse.data.id)
                 setSupplementaryStatus(supplementaryResponse.data.status)
