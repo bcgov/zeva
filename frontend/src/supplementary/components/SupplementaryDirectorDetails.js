@@ -277,21 +277,25 @@ const SupplementaryDirectorDetails = (props) => {
           user={user}
           tabName={selectedTab}
         />
-
       {renderTabs()}
-      {selectedTab === tabNames[2] && ['RECOMMENDED'].indexOf(currentStatus) >= 0 && (
-        <div className="supplementary-form my-3">
+      {selectedTab === tabNames[2] && (
+        // director can see comments on the REASSESSMENT tab in any status
+        // but can only leave or edit comments if its in Recommended Status,
+        <>
           {commentArray &&
             commentArray.idirComment &&
             commentArray.idirComment.length > 0 && (
+              <div className="supplementary-form my-3">
               <EditableCommentList
+                enableEditing={currentStatus === 'RECOMMENDED'}
                 comments={commentArray.idirComment}
                 user={user}
                 handleCommentEdit={handleEditIdirComment}
                 handleCommentDelete={handleDeleteIdirComment}
               />
+              </div>
           )}
-
+          {currentStatus === 'RECOMMENDED' && (
           <div id="comment-input">
             <CommentInput
               handleCommentChange={handleCommentChangeIdir}
@@ -301,7 +305,9 @@ const SupplementaryDirectorDetails = (props) => {
               tooltip="Please save the report first, before adding comments"
             />
           </div>
-        </div>
+          )}
+        </>
+
       )}
       <div className="supplementary-form mt-2">
         <Button
