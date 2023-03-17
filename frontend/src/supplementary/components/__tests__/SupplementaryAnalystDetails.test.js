@@ -51,7 +51,8 @@ const details = {
       id: 123,
       postalCode: 'V8Z 4K8',
       state: 'BC'
-    }]
+    }],
+    creditReductionSelection: 'A'
   }
 }
 const newData = {}
@@ -73,6 +74,23 @@ const salesRows = [
   { newData: {}, oldData: { creditAValue: '2700.00', creditBValue: '100.00', modelYear: '2021', category: 'creditsIssuedSales' } },
   { newData: {}, oldData: { creditAValue: '10.00', creditBValue: '10.00', modelYear: '2021', category: 'creditBalanceStart' } }
 ]
+
+const obligationDetails = [
+  {
+    creditClass: { creditClass: 'A' },
+    detailTransactionType: null,
+    foreignKey: 159,
+    modelYear: {
+      name: '2021',
+      effectiveDate: '2019-01-01',
+      expirationDate: '2019-12-31'
+    },
+    totalValue: 10.1417,
+    transactionTimestamp: '2021-08-31T10:54:43.299000-07:00',
+    transactionType: { transactionType: 'Validation' }
+  }
+]
+
 describe('SupplementaryAnalystDetails', () => {
   it('renders without crashing', () => {
     render(
@@ -101,6 +119,7 @@ describe('SupplementaryAnalystDetails', () => {
             id: 1,
             zevClassA: 8.00
           }}
+          obligationDetails={obligationDetails}
           radioDescriptions={radioDescriptions}
           salesRows={salesRows}
           setSupplementaryAssessmentData={testFunction}

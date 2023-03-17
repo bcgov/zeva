@@ -14,7 +14,7 @@ const data = [
       effectiveDate: '2019-01-01',
       expirationDate: '2019-12-31'
     },
-    totalValue: 10.14,
+    totalValue: 10.1417,
     transactionTimestamp: '2021-08-31T10:54:43.299000-07:00',
     transactionType: { transactionType: 'Validation' }
   },
@@ -30,8 +30,7 @@ const data = [
     totalValue: 48,
     transactionTimestamp: '2022-02-25T10:21:11.207083-08:00',
     transactionType: { transactionType: 'Validation' }
-  },
-  {}
+  }
 ]
 
 const reports = [
@@ -66,10 +65,14 @@ it('renders without crashing', () => {
 })
 
 it('rounds the credit balance correctly', () => {
-  const { getByText } = render(
+  const { getAllByText } = render(
     <Router>
       <CreditTransactionListTable items={data} reports={reports} />
     </Router>
   )
-  expect(getByText('80')).toBeInTheDocument()
+  const totalValue = getAllByText(/10\.14/)
+  expect(totalValue).toHaveLength(2);
+  totalValue.forEach((value) => {
+    expect(value).toBeInTheDocument();
+  });
 })

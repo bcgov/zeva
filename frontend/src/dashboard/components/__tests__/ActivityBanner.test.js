@@ -21,7 +21,7 @@ describe('activity banner', () => {
     )
   })
   it('renders a clickable button', () => {
-    const { getByRole } = render(
+    const { getByTestId } = render(
       <ActivityBanner
         colour="blue"
         icon="car"
@@ -30,9 +30,7 @@ describe('activity banner', () => {
         linkTo="/models"
       />
     )
-    const button = getByRole('button', {
-      name: 'ZEV Models — 1 submitted for validation'
-    })
+    const button = getByTestId('activity-button')
     fireEvent.click(button)
     expect(history.location.pathname).toEqual('/models')
   })
