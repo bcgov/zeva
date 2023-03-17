@@ -24,12 +24,13 @@ const CreditActivity = (props) => {
         index = i
       }
     })
+    if(index) {
       structuredProvisionalBalance.modelYear = updatedBalances.balances[index].modelYear
       structuredProvisionalBalance.creditA = updatedBalances.balances[index].newCreditA
       structuredProvisionalBalance.creditB = updatedBalances.balances[index].newCreditB
       structuredProvisionalBalance.originalAValue = updatedBalances.balances[index].creditA
       structuredProvisionalBalance.originalBValue = updatedBalances.balances[index].creditB
-
+    }
     handleSupplementalChange(structuredProvisionalBalance)
   }, [newLdvSales])
 
