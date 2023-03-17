@@ -5,7 +5,7 @@ metadata:
   creationTimestamp: 
   annotations:      
     haproxy.router.openshift.io/timeout: 1500s      
-  name: {{ template "zeva-backend.fullname" . }}
+  name: {{ template "zeva-backend.name" . }}{{ .Values.suffix }}
   labels: {{ include "zeva-backend.labels" . | nindent 8 }}
 spec:
   host: {{ .Values.backendRoute.hostName }}
@@ -17,7 +17,7 @@ spec:
     termination: edge
   to:
     kind: Service
-    name: {{ template "zeva-backend.fullname" . }}
+    name: {{ template "zeva-backend.name" . }}{{ .Values.suffix }}
     weight: 100
   wildcardPolicy: None
 {{- end }}

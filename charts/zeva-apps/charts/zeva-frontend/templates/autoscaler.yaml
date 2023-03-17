@@ -1,11 +1,11 @@
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ template "zeva-frontend.fullname" . }}-autoscaler
+  name: {{ template "zeva-frontend.name" . }}{{ .Values.suffix }}
 spec:
   scaleTargetRef:
     kind: DeploymentConfig
-    name: {{ template "zeva-frontend.fullname" . }}
+    name: {{ template "zeva-frontend.name" . }}{{ .Values.suffix }}
     apiVersion: apps.openshift.io/v1
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}

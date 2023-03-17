@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "zeva-backend.fullname" . }}
+  name: {{ template "zeva-backend.name" . }}{{ .Values.suffix }}
   labels: {{- include "zeva-backend.labels" . | nindent 4 }}
 spec:
   ports:

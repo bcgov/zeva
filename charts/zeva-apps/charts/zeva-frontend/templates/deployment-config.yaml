@@ -1,7 +1,7 @@
 apiVersion: apps.openshift.io/v1
 kind: DeploymentConfig
 metadata:
-  name: {{ template "zeva-frontend.fullname" . }}
+  name: {{ template "zeva-frontend.name" . }}{{ .Values.suffix }}
   annotations:
     description: Defines how to deploy the frontend application
   creationTimestamp: null
@@ -26,73 +26,73 @@ spec:
             - name: KEYCLOAK_CERTS_URL
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_certs_url
             - name: KEYCLOAK_REALM
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_realm
             - name: KEYCLOAK_AUTHORITY
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_authority
             - name: KEYCLOAK_ISSUER
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_issuer
             - name: KEYCLOAK_URL
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_url
             - name: KEYCLOAK_AUDIENCE
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_audience
             - name: KEYCLOAK_CLIENT_ID
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_client_id
             - name: KEYCLOAK_REALM_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_realm_name
             - name: RABBITMQ_ENABLED
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: rabbitmq_enabled
             - name: APIBASE
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: apibase
             - name: KEYCLOAK_LOGOUT_REDIRECT_URL
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_logout_redirect_url
             - name: KEYCLOAK_SITEMINDER_LOGOUT_REDIRECT_URL
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_siteminder_logout_redirect_url
             - name: KEYCLOAK_CALLBACK_URL
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_callback_url                    
           image:
           imagePullPolicy: IfNotPresent
           livenessProbe:
 {{ toYaml .Values.livenessProbe | indent 12 }}
-          name: {{ template "zeva-frontend.fullname" . }}
+          name: {{ template "zeva-frontend.name" . }}
           ports:
             - containerPort: 3000
               protocol: TCP
@@ -106,7 +106,7 @@ spec:
           terminationMessagePolicy: File
           volumeMounts:
             - mountPath: /app/config
-              name: {{ template "zeva-frontend.fullname" . }}-config             
+              name: {{ template "zeva-frontend.name" . }}-config{{ .Values.suffix }}         
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -115,17 +115,17 @@ spec:
       volumes:
         - configMap:
             defaultMode: 444
-            name: {{ template "zeva-frontend.fullname" . }}-config
-          name: {{ template "zeva-frontend.fullname" . }}-config
+            name: {{ template "zeva-frontend.name" . }}-config{{ .Values.suffix }}
+          name: {{ template "zeva-frontend.name" . }}-config{{ .Values.suffix }}
   test: false
   triggers:
     - imageChangeParams:
         automatic: true
         containerNames:
-          - {{ template "zeva-frontend.fullname" . }}
+          - {{ template "zeva-frontend.name" . }}
         from:
           kind: ImageStreamTag
-          name: {{ template "zeva-frontend.fullname" . }}:{{ .Values.frontendImageTagname }}
+          name: {{ template "zeva-frontend.name" . }}:{{ .Values.frontendImageTagname }}
         lastTriggeredImage:
       type: ImageChange
     - type: ConfigChange

@@ -11,7 +11,7 @@ spilo:
       standbyKey: password-standby
 
   continuousArchive:
-    enabled: true
+    enabled: false
     scheduleCronJob: "0 */3 * * *"
     retainBackups: 3
     storage: s3

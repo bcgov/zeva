@@ -4,7 +4,7 @@ kind: Route
 metadata:
   creationTimestamp: null
   labels: {{ include "zeva-frontend.labels" . | nindent 4 }}
-  name: {{ template "zeva-frontend.fullname" . }}-sockjs-node
+  name: {{ template "zeva-frontend.name" . }}-sockjs-node{{ .Values.suffix}}
 spec:
   host: {{ .Values.appConfigMap.hostName }}
   path: /sockjs-node
@@ -15,7 +15,7 @@ spec:
     termination: edge
   to:
     kind: Service
-    name: {{ template "zeva-frontend.fullname" . }}
+    name: {{ template "zeva-frontend.name" . }}{{ .Values.suffix}}
     weight: 100
   wildcardPolicy: None
 ---
@@ -26,7 +26,7 @@ metadata:
   annotations:      
     haproxy.router.openshift.io/timeout: 1500s            
   labels: {{ include "zeva-frontend.labels" . | nindent 4 }}
-  name: {{ template "zeva-frontend.fullname" . }}
+  name: {{ template "zeva-frontend.name" . }}{{ .Values.suffix}}
 spec:
   host: {{ .Values.appConfigMap.hostName }}
   port:
@@ -36,7 +36,7 @@ spec:
     termination: edge
   to:
     kind: Service
-    name: {{ template "zeva-frontend.fullname" . }}
+    name: {{ template "zeva-frontend.name" . }}{{ .Values.suffix}}
     weight: 100
   wildcardPolicy: None
 {{- end }}

@@ -6,6 +6,10 @@ labels:
 metadata:
   name: zeva-network-policy
 parameters:
+  - name: SUFFIX
+    displayName: null
+    description: such as -dev or -dev-1513
+    required: true  
   - name: ENVIRONMENT
     displayName: null
     description: such as dev, test or prod
