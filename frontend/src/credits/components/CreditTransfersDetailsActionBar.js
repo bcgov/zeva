@@ -28,10 +28,10 @@ const CreditTransfersDetailsActionBar = (props) => {
       <div className="col-sm-12">
         <div className="action-bar">
           <span className="left-content">
-            <Button buttonType="back" locationRoute="/credit-transfers" />
+            <Button buttonType="back" locationRoute="/credit-transfers" data-testid="back-to"/>
             {transferRole.tradePartner && (
               <Button
-                testid="reject-transfer"
+                data-testid="reject-transfer"
                 buttonType="reject"
                 optionalText="Reject Notice"
                 disabled={comment.length === 0 || allChecked}
@@ -53,7 +53,7 @@ const CreditTransfersDetailsActionBar = (props) => {
             )}
             {transferRole.governmentAnalyst && (
               <Button
-                testid="recommend-reject-transfer"
+                data-testid="recommend-reject-transfer"
                 buttonType="reject"
                 optionalText="Recommend Rejection"
                 action={() => {
@@ -64,7 +64,7 @@ const CreditTransfersDetailsActionBar = (props) => {
             )}
             {transferRole.governmentDirector && (
               <Button
-                testid="director-return-transfer"
+                data-testid="director-return-transfer"
                 buttonType="reject"
                 optionalText="Return to Analyst"
                 action={() => {
@@ -78,7 +78,7 @@ const CreditTransfersDetailsActionBar = (props) => {
             {transferRole.initiatingSupplier &&
               user.hasPermission('SUBMIT_CREDIT_TRANSFER_PROPOSAL') && (
                 <Button
-                  testid="submit-to-partner"
+                  data-testid="submit-to-partner"
                   buttonType="submit"
                   action={() => {
                     setModalType('initiating-submit')
@@ -106,7 +106,7 @@ const CreditTransfersDetailsActionBar = (props) => {
             )}
             {transferRole.tradePartner && (
               <Button
-                testid="submit-to-gov"
+                data-testid="submit-to-gov"
                 buttonTooltip={submitTooltip}
                 buttonType="submit"
                 action={() => {

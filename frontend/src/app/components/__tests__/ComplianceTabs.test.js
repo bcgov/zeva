@@ -4,6 +4,19 @@ import { render, cleanup } from '@testing-library/react'
 
 import ComplianceTabs from '../ComplianceTabs'
 
+jest.mock('../../config', () => ({
+  FEATURES: {
+    MODEL_YEAR_REPORT: {
+      ENABLED: true
+    },
+    COMPLIANCE_RATIOS: {
+      ENABLED: true
+    },
+    COMPLIANCE_CALCULATOR: {
+      ENABLED: true
+    }
+  }
+}));
 afterEach(cleanup)
 
 const user = {

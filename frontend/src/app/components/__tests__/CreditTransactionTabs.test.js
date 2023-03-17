@@ -8,6 +8,23 @@ import ROUTES_CREDIT_AGREEMENTS from '../../routes/CreditAgreements'
 import ROUTES_CREDITS from '../../routes/Credits'
 import CreditTransactionTabs from '../CreditTransactionTabs'
 
+jest.mock('../../config', () => ({
+  FEATURES: {
+    CREDIT_TRANSFERS: {
+      ENABLED: true
+    },
+    CREDIT_AGREEMENTS: {
+      ENABLED: true
+    },
+    INITIATIVE_AGREEMENTS: {
+      ENABLED: false
+    },
+    PURCHASE_REQUESTS: {
+      ENABLED: false
+    }
+  }
+}));
+
 let container = null
 beforeEach(() => {
   container = document.createElement('div')

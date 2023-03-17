@@ -1,11 +1,10 @@
 import React from 'react'
 import {
   render,
-  findByTestId,
   fireEvent,
   queryByText,
-  getByText,
-  getByTestId
+  getByTestId,
+  queryByTestId
 } from '@testing-library/react'
 import CreditTransfersDetailsPage from '../CreditTransfersDetailsPage'
 import '@testing-library/jest-dom/extend-expect'
@@ -31,11 +30,24 @@ const submission = {
     }
   ],
   creditTo: {
+    avgLdvSales: 5806,
     balance: { A: 0, B: 0 },
     createTimestamp: '2020-05-26T09:27:21.098202-07:00',
     id: 1,
     isActive: true,
     isGovernment: false,
+    ldvSales:[
+      {
+        "id": 248,
+        "ldvSales": 4736,
+        "modelYear": "2021"
+      },
+      {
+        "id": 139,
+        "ldvSales": 5280,
+        "modelYear": "2020"
+      }
+    ],
     name: 'FCA Canada Inc.',
     organizationAddress: [],
     shortName: null
@@ -46,28 +58,33 @@ const submission = {
       creditValue: '100.00',
       dollarValue: '75.00',
       creditClass: { creditClass: 'A' },
-      modelYear: { name: '2020' }
+      modelYear: { name: '2020' },
+      weightClass: []
     },
     {
       creditValue: '110.00',
       dollarValue: '25.00',
       creditClass: { creditClass: 'A' },
-      modelYear: { name: '2019' }
+      modelYear: { name: '2019' },
+      weightClass: []
     },
     {
       creditValue: '5.00',
       dollarValue: '86.00',
       creditClass: { creditClass: 'A' },
-      modelYear: { name: '2018' }
+      modelYear: { name: '2018' },
+      weightClass: []
     },
     {
       creditValue: '30.00',
       dollarValue: '75.00',
       creditClass: { creditClass: 'A' },
-      modelYear: { name: '2020' }
+      modelYear: { name: '2020' },
+      weightClass: []
     }
   ],
   debitFrom: {
+    avgLdvSales: 9275.3,
     balance: {
       A: 0,
       B: 40.55
@@ -76,6 +93,18 @@ const submission = {
     id: 61,
     isActive: true,
     isGovernment: false,
+    ldvSales:[
+      {
+        "id": 248,
+        "ldvSales": 4736,
+        "modelYear": "2021"
+      },
+      {
+        "id": 139,
+        "ldvSales": 5280,
+        "modelYear": "2020"
+      }
+    ],
     name: 'Toyota Canada Inc.',
     organizationAddress: [],
     shortName: 'Toyota'
@@ -104,8 +133,28 @@ const govUser = {
   organization: {
     id: 2,
     name: 'Government of B.C.'
-  }
+  },
+  isGovernment: true
 }
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: () => ({ id: 10 })
+}))
+
+jest.mock('../../../app/components/Button', () => {
+  const React = require('react');
+  const { Link } = require('react-router-dom')
+  return jest.fn().mockImplementation(({ buttonType, action, optionalText, optionalClassname, locationRoute, buttonTooltip, disabled, ...props }) => {
+    const buttonText = optionalText
+    return (
+      <button onClick={action} {...props}>
+        {buttonText}
+        {disabled}
+      </button>
+    )
+  })
+})
 
 const RenderCreditTransfersDetailsPage = (user) => {
   return (
@@ -128,24 +177,24 @@ it('renders without crashing', () => {
 })
 
 it('renders without crashing', () => {
-  render(<Router>{RenderCreditTransfersDetailsPage(user)}</Router>)
+  render(<Router>{RenderCreditTransfersDetailsPage(user2)}</Router>)
 })
 
 it('shows an action bar with just a back button if the user is government', () => {
   const { container } = render(RenderCreditTransfersDetailsPage(govUser))
-  expect(findByTestId(container, 'action-bar-basic')).toBeInTheDocument()
+  expect(getByTestId(container, 'back-to')).toBeInTheDocument()
 })
 
 it('shows the comment box and reject button (but not rescind button) if the user is from the receiving supplier', () => {
-  const { container } = render(RenderCreditTransfersDetailsPage(user))
-  const commentbox = findByTestId(container, 'transfer-comment')
+  const { container } = render(RenderCreditTransfersDetailsPage(user2))
+  const commentbox = getByTestId(container, 'transfer-comment')
   expect(commentbox).toBeInTheDocument()
   expect(queryByText(container, 'Rescind')).not.toBeInTheDocument()
 })
 
 it('shows the reject modal if the user selects the reject button', () => {
   const { container } = render(RenderCreditTransfersDetailsPage(user2))
-  fireEvent.click(getByText(container, 'Reject Notice'))
+  fireEvent.click(getByTestId(container, 'reject-transfer'))
   expect(queryByText(container, 'Reject notice?')).toBeInTheDocument()
   expect(
     queryByText(container, 'Submit transfer to government of B.C. Director?')
@@ -172,16 +221,8 @@ it('if its a draft, initiating company can submit to partner or press back', () 
 })
 
 it('shows the submit modal if the user selects the submit button', () => {
-  submission.status = 'DRAFT'
+  submission.status = 'SUBMITTED'
   submission.history = [
-    {
-      status: 'DRAFT',
-      createUser: {
-        displayName: 'emily',
-        organization: { name: 'Toyota Canada Inc.' }
-      },
-      createTimestamp: '2020-12-01T09:27:21.098202-07:00'
-    },
     {
       status: 'SUBMITTED',
       createUser: {
@@ -191,8 +232,8 @@ it('shows the submit modal if the user selects the submit button', () => {
       createTimestamp: '2020-12-01T09:27:21.098202-07:00'
     }
   ]
-  const { container } = render(RenderCreditTransfersDetailsPage(user))
-  fireEvent.click(getByTestId(container, 'submit-to-partner'))
+  const { container } = render(RenderCreditTransfersDetailsPage(user2))
+  fireEvent.click(getByTestId(container, 'submit-to-gov'))
   expect(
     queryByText(container, 'Submit transfer to government of B.C. Director?')
   ).toBeInTheDocument()
@@ -211,15 +252,15 @@ it('shows the submission and signed date if the transfer partner opens it', () =
     }
   ]
   const { container } = render(RenderCreditTransfersDetailsPage(user2))
-  expect(findByTestId(container, 'submit-signature')).toBeInTheDocument()
-  expect(findByTestId(container, 'approve-signature')).not.toBeInTheDocument()
+  expect(getByTestId(container, 'submit-signature')).toBeInTheDocument()
+  expect(queryByTestId(container, 'approve-signature')).not.toBeInTheDocument()
 })
-// do not show the rescind button if the user is partner and status is submitted
+// // do not show the rescind button if the user is partner and status is submitted
 it('does not show the rescind button to the partner if the partner hasnt approved', () => {
   submission.status = 'SUBMITTED'
   const { container } = render(RenderCreditTransfersDetailsPage(user2))
   expect(queryByText(container, 'Rescind')).not.toBeInTheDocument()
-  expect(queryByText(container, 'Reject')).toBeInTheDocument()
+  expect(queryByText(container, 'Reject Notice')).toBeInTheDocument()
 })
 it('shows the submission and approved signature dates if status is approved', () => {
   submission.status = 'APPROVED'
@@ -242,12 +283,31 @@ it('shows the submission and approved signature dates if status is approved', ()
     }
   ]
   const { container } = render(RenderCreditTransfersDetailsPage(user))
-  expect(findByTestId(container, 'submit-signature')).toBeInTheDocument()
-  expect(findByTestId(container, 'approve-signature')).toBeInTheDocument()
+  expect(getByTestId(container, 'submit-signature')).toBeInTheDocument()
+  expect(getByTestId(container, 'approve-signature')).toBeInTheDocument()
 })
 it('shows the comment box to the director if user is analyst', () => {
+  submission.status = 'RECOMMEND_REJECTION' 
+  submission.history = [
+    {
+      status: 'RECOMMEND_REJECTION',
+      createUser: {
+        displayName: 'emily',
+        organization: { name: 'Toyota Canada Inc.' }
+      },
+      createTimestamp: '2020-12-01T09:27:21.098202-07:00'
+    },
+    {
+      status: 'SUBMITTED',
+      createUser: {
+        displayName: 'emily',
+        organization: { name: 'Toyota Canada Inc.' }
+      },
+      createTimestamp: '2020-12-01T09:27:21.098202-07:00'
+    }
+  ]
   const { container } = render(RenderCreditTransfersDetailsPage(govUser))
-  const commentbox = findByTestId(container, 'transfer-comment-analyst')
+  const commentbox = getByTestId(container, 'transfer-comment-analyst')
   expect(commentbox).toBeInTheDocument()
   // fireEvent.click(getByText(container, 'Recommend transfer'));
   // expect(queryByText(container, 'Recommend the Director record the Transfer?')).toBeInTheDocument;
@@ -273,7 +333,7 @@ it('does not show the commment box if the submission is already rejected', () =>
     }
   ]
   const { container } = render(RenderCreditTransfersDetailsPage(user))
-  expect(findByTestId(container, 'transfer-comment')).not.toBeInTheDocument()
+  expect(queryByTestId(container, 'transfer-comment')).not.toBeInTheDocument()
 })
 
 // show the rescind button if the user is bceid (initiator) and the status is approved, submitted, accepted

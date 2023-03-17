@@ -1,8 +1,9 @@
 import React from 'react'
-import { render, cleanup, findByTestId } from '@testing-library/react'
+import { render, cleanup, queryByTestId, findByTestId } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import Router from '../router'
 import axios from 'axios'
+import '@testing-library/jest-dom/extend-expect';
 
 afterEach(cleanup)
 
@@ -47,30 +48,16 @@ const dashboardResponse = {
 }
 const failedResponse = { detail: 'failed verification' }
 
-axios.get
-  .mockImplementationOnce(() => Promise.resolve(successfulResponse))
-  .mockImplementationOnce(() => Promise.resolve(dashboardResponse))
-  .mockImplementation(() => Promise.reject(failedResponse))
-  .mockImplementation(() => Promise.reject(failedResponse))
-
 describe('Router Success', () => {
   const keycloak = {}
   const logout = jest.fn()
-
-  it('does not load the unverified page when current user call is successful', () => {
-    const { container } = render(
-      <BrowserRouter>
-        <Router
-          keycloak={keycloak}
-          logout={logout}
-        />
-      </BrowserRouter>
-    )
-    const unverified = findByTestId(container, 'unverified-user')
-    expect(unverified).not.toBeInTheDocument()
+  beforeEach(() => {
+    axios.get.mockReset()
   })
 
-  it('loads the unverified page when the current user call failes', () => {
+  it('does not load the unverified page when current user call is successful', () => {
+    axios.get.mockImplementationOnce(() => Promise.resolve(successfulResponse))
+    axios.get.mockImplementationOnce(() => Promise.resolve(dashboardResponse))
     const { container } = render(
       <BrowserRouter>
         <Router
@@ -79,11 +66,26 @@ describe('Router Success', () => {
         />
       </BrowserRouter>
     )
-    const unverified = findByTestId(container, 'unverified-user')
-    expect(unverified).toBeInTheDocument()
+    const unverifiedUser = queryByTestId(container, 'unverified-user')
+    expect(unverifiedUser).not.toBeInTheDocument()
+  })
+
+  it('loads the unverified page when the current user call fails', async () => {
+    axios.get.mockImplementationOnce(() => Promise.reject(failedResponse))
+    const { container } = render(
+      <BrowserRouter>
+        <Router
+          keycloak={keycloak}
+          logout={logout}
+        />
+      </BrowserRouter>
+    )
+    const unverifiedUser = await findByTestId(container, 'unverified-user')
+    expect(unverifiedUser).toBeInTheDocument()
   })
 
   it('renders without crashing', () => {
+    axios.get.mockImplementationOnce(() => Promise.reject(failedResponse))
     render(
       <BrowserRouter>
         <Router

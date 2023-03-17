@@ -100,9 +100,12 @@ it('renders without crashing', () => {
       items={baseProps.items}
       refreshContent={() => {}}
       setLoading={() => {}}
+      loading={false}
       setReactTable={() => {}}
       user={baseProps.user}
       validatedList={baseProps.validatedList}
+      invalidatedList={[]}
+      pages={1}
     />
   )
 })
@@ -118,6 +121,8 @@ it('gives an error code of 21 if vin has already been validated', () => {
       setReactTable={() => {}}
       user={baseProps.user}
       validatedList={baseProps.validatedList}
+      invalidatedList={[]}
+      pages={1}
     />
   )
   expect(getByText('21')).toBeInTheDocument()
@@ -135,6 +140,7 @@ it('gives an error code of 11 if there is no matching icbc vin', () => {
       setReactTable={() => {}}
       user={baseProps.user}
       validatedList={basePropsNoMatch.validatedList}
+      pages={1}
     />
   )
   expect(getByText('11')).toBeInTheDocument()
@@ -152,6 +158,7 @@ it('gives no error code if everything matches with icbcdata', () => {
       setReactTable={() => {}}
       user={baseProps.user}
       validatedList={baseProps.validatedList}
+      pages={1}
     />
   )
   expect(queryByText('21')).not.toBeInTheDocument()
