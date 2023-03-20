@@ -1,6 +1,7 @@
 replicaCount: 3
 
 envName: prod
+suffix: -prod
 
 image:
   repository: nginx

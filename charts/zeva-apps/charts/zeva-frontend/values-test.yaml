@@ -1,6 +1,7 @@
 replicaCount: 2
 
 envName: test
+suffix: -test
 
 image:
   repository: nginx
