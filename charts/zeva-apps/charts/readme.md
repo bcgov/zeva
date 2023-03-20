@@ -18,11 +18,8 @@
 * Remove zeva-django-{envName} and template.django-secret
 
 ## Helm sample commands
-* helm template zeva-backend . --set backendImageTagname=dev-1.46.0 -f ./values-dev.yaml
-* helm template zeva-frontend . --set frontendImageTagname=dev-1.46.0,openshiftLicensePlate=e52f12 -f ./values-dev.yaml
-
-## todo
-* before merging to release branch, remember to remove the pr number at the end of image name
+* helm template zeva-backend-dev . --set backendImageTagname=dev-1.46.0 -f ./values-dev.yaml
+* helm template zeva-frontend-dev-dev . --set frontendImageTagname=dev-1.46.0,openshiftLicensePlate=e52f12 -f ./values-dev.yaml
 
 # Preparation of applying Helm to prod
 1. done - Create zeva-django secret same as zeva-django-prod
