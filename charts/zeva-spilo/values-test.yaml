@@ -1,3 +1,6 @@
+# install spilo for dev
+# helm -n e52f12-test install zeva-spilo-test . -f ./values-test.yaml
+
 spilo:
 
   replicaCount: 2
@@ -21,12 +24,9 @@ spilo:
 
   shipLogs:
     enabled: false
-#    s3:
-#      bucket: s3://zevats
-#      shipSchedule: 0 7 * * *
 
   persistentVolume:
-    size: 3Gi
+    size: 2Gi
     storageClass: netapp-block-standard
 
   resources:
