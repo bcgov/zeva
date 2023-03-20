@@ -24,7 +24,7 @@ const CreditActivity = (props) => {
         index = i
       }
     })
-    if(index) {
+    if(index !== null) {
       structuredProvisionalBalance.modelYear = updatedBalances.balances[index].modelYear
       structuredProvisionalBalance.creditA = updatedBalances.balances[index].newCreditA
       structuredProvisionalBalance.creditB = updatedBalances.balances[index].newCreditB
