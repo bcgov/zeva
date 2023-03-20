@@ -155,7 +155,7 @@ jobs:
         shell: bash {0}
         run: |
           cd charts/zeva-apps/charts/zeva-backend
-          helm status -n ${{ env.DEV_NAMESPACE }} zeva-backend
+          helm status -n ${{ env.DEV_NAMESPACE }} zeva-backend-dev
           if [ $? -eq 0 ]; then
             echo "zeva-backend-dev release exists already"
             helm upgrade --set backendImageTagname=dev-${{ env.VERSION }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-backend-dev .
