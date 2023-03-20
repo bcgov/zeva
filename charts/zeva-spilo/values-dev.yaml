@@ -1,3 +1,6 @@
+# install spilo for dev
+# helm -n e52f12-dev install zeva-spilo-dev . -f ./values-dev.yaml
+
 spilo:
 
   replicaCount: 2

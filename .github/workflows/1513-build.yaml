@@ -131,13 +131,13 @@ jobs:
         shell: bash {0}
         run: |
           cd charts/zeva-apps/charts/zeva-frontend
-          helm status -n ${{ env.DEV_NAMESPACE }} zeva-frontend-${{ env.PR_NUMBER }}
+          helm status -n ${{ env.DEV_NAMESPACE }} zeva-frontend-dev-${{ env.PR_NUMBER }}
           if [ $? -eq 0 ]; then
-            echo "zeva-frontend release exists already"
-            helm upgrade --set frontendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend-${{ env.PR_NUMBER }} .
+            echo "zeva-frontend-dev-${{ env.PR_NUMBER }} release exists already"
+            helm upgrade --set frontendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-${{ env.PR_NUMBER }}.yaml zeva-frontend-dev-${{ env.PR_NUMBER }} .
           else
-            echo "zeva-frontend release does not exist"
-            helm install --set frontendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend-${{ env.PR_NUMBER }} .
+            echo "zeva-frontend-dev-${{ env.PR_NUMBER }} release does not exist"
+            helm install --set frontendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-${{ env.PR_NUMBER }}.yaml zeva-frontend-dev-${{ env.PR_NUMBER }} .
           fi
           
       # helm status will show an error if the helm release doesn't exist. The error will be ignored.
@@ -147,11 +147,11 @@ jobs:
           cd charts/zeva-apps/charts/zeva-backend
           helm status -n ${{ env.DEV_NAMESPACE }} zeva-backend
           if [ $? -eq 0 ]; then
-            echo "zeva-backend release exists already"
-            helm upgrade --set backendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-backend-${{ env.PR_NUMBER }} .
+            echo "zeva-backend-dev-${{ env.PR_NUMBER }} release exists already"
+            helm upgrade --set backendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-${{ env.PR_NUMBER }}.yaml zeva-backend-dev-${{ env.PR_NUMBER }} .
           else
-            echo "zeva-backend release does not exist"
-            helm install --set backendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-backend-${{ env.PR_NUMBER }} .
+            echo "zeva-backend-dev-${{ env.PR_NUMBER }} release does not exist"
+            helm install --set backendImageTagname=dev-${{ env.VERSION }}-${{ env.PR_NUMBER }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev-${{ env.PR_NUMBER }}.yaml zeva-backend-dev-${{ env.PR_NUMBER }} .
           fi
           
 
