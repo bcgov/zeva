@@ -4,7 +4,7 @@ metadata:
   annotations:
     description: Defines how to deploy the application server
   creationTimestamp: null
-  name: {{ template "zeva-backend.fullname" . }}
+  name: {{ template "zeva-backend.name" . }}{{ .Values.suffix }}
 spec:
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: 10
@@ -55,77 +55,77 @@ spec:
             - name: DATABASE_ENGINE
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: database_engine
             - name: DATABASE_SERVICE_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: database_service_name
             - name: POSTGRESQL_SERVICE_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: postgresql_service_host
             - name: POSTGRESQL_SERVICE_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: postgresql_service_port
             - name: KEYCLOAK_CERTS_URL
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_certs_url
             - name: KEYCLOAK_REALM
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_realm
             - name: KEYCLOAK_REALM_URL
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_realm_url
             - name: KEYCLOAK_AUTHORITY
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_authority
             - name: KEYCLOAK_ISSUER
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_issuer
             - name: KEYCLOAK_AUDIENCE
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_audience
             - name: KEYCLOAK_CLIENT_ID
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_client_id
             - name: KEYCLOAK_SA_BASEURL
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_sa_baseurl
             - name: KEYCLOAK_SA_REALM
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_sa_realm
             - name: KEYCLOAK_SA_CLIENT_ID
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: keycloak_sa_client_id
             - name: WELL_KNOWN_ENDPOINT
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: well_known_endpoint     
             - name: KEYCLOAK_SA_CLIENT_SECRET
               valueFrom:
@@ -135,7 +135,7 @@ spec:
             - name: DJANGO_DEBUG
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: django_debug
             - name: DJANGO_SECRET_KEY
               valueFrom:
@@ -147,7 +147,7 @@ spec:
             - name: ENV_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: env_name
             - name: MINIO_USE_SSL
               value: 'true'
@@ -164,7 +164,7 @@ spec:
             - name: MINIO_ENDPOINT
               valueFrom:
                 configMapKeyRef:
-                  name: zeva-config
+                  name: zeva-config{{ .Values.suffix }}
                   key: minio_endpoint
             - name: EMAIL_SERVICE_CLIENT_ID
               valueFrom:
@@ -219,7 +219,7 @@ spec:
           - backend
         from:
           kind: ImageStreamTag
-          name: {{ template "zeva-backend.fullname" . }}:{{ .Values.backendImageTagname }}
+          name: {{ template "zeva-backend.name" . }}:{{ .Values.backendImageTagname }}
         lastTriggeredImage: null
       type: ImageChange
     - type: ConfigChange

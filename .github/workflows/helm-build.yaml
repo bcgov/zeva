@@ -29,47 +29,46 @@ concurrency:
   
 jobs:
 
-  frontend-unit-test:
+  # frontend-unit-test:
 
-    name: Run Frontend Unit Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
+  #   name: Run Frontend Unit Tests
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 60
 
-    steps:
+  #   steps:
 
-      - name: Checkout
-        uses: actions/checkout@v3
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Fronend Jest coverage report
-        uses: ArtiomTr/jest-coverage-report-action@v2.2.1
-        continue-on-error: false
-        with:
-          working-directory: frontend
-          test-script: npm run test
+  #     - name: Fronend Jest coverage report
+  #       uses: ArtiomTr/jest-coverage-report-action@v2.2.1
+  #       continue-on-error: false
+  #       with:
+  #         working-directory: frontend
+  #         test-script: npm run test
         
-  backend-unit-test:
+  # backend-unit-test:
 
-    name: Run Backend Unit Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
+  #   name: Run Backend Unit Tests
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 60
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
       
-      - name: Run coverage report for django tests 
-        uses: kuanfandevops/django-test-action@itvr-django-test
-        continue-on-error: false
-        env:
-          MINIO_ENDPOINT: minio:9000
-          MINIO_ACCESS_KEY: testtest
-          MINIO_SECRET_KEY: testtest
-        with:
-          settings-dir-path: "backend/api"
-          requirements-file: "backend/requirements.txt"
-          managepy-dir: backend
+  #     - name: Run coverage report for django tests 
+  #       uses: kuanfandevops/django-test-action@itvr-django-test
+  #       continue-on-error: false
+  #       env:
+  #         MINIO_ENDPOINT: minio:9000
+  #         MINIO_ACCESS_KEY: testtest
+  #         MINIO_SECRET_KEY: testtest
+  #       with:
+  #         settings-dir-path: "backend/api"
+  #         requirements-file: "backend/requirements.txt"
+  #         managepy-dir: backend
 
-  ## This is the CI job
   build:
 
     name: Build ZEVA on Openshift
@@ -110,8 +109,19 @@ jobs:
  
     steps:
 
+      - name: Please confirm ZEVA database on Dev has been setup properly
+        uses: trstringer/manual-approval@v1.6.0
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: AlexZorkin,kuanfandevops,tim738745,emi-hi,JulianForeman,jig-patel,vibhiquartech
+          minimum-approvals: 1
+          issue-title: "Please confirm ZEVA database on Dev has been setup properly"
+          timeout-minutes: 60
+
       - name: Check out repository
         uses: actions/checkout@v3
+        with:
+          ref: refs/pull/${{ env.PR_NUMBER }}/head
 
       - name: Log in to Openshift
         uses: redhat-actions/oc-login@v1.2
@@ -123,21 +133,21 @@ jobs:
       
       - name: Tag Frontend Image from tools to dev
         run: |
-          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.DEV_NAMESPACE }}/zeva-frontend:dev-${{ env.VERSION }}
-          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.DEV_NAMESPACE }}/zeva-backend:dev-${{ env.VERSION }}
+          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-frontend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.DEV_NAMESPACE }}/zeva-frontend:dev-${{ env.VERSION }}-${{ env.PR_NUMBER }}
+          oc tag ${{ env.TOOLS_NAMESPACE }}/zeva-backend:build-${{ env.VERSION }}-${{ env.PR_NUMBER }} ${{ env.DEV_NAMESPACE }}/zeva-backend:dev-${{ env.VERSION }}-${{ env.PR_NUMBER }}
 
       # helm status will show an error if the helm release doesn't exist. The error will be ignored.
       - name: Deply zeva-frontend on Dev
         shell: bash {0}
         run: |
           cd charts/zeva-apps/charts/zeva-frontend
-          helm status -n ${{ env.DEV_NAMESPACE }} zeva-frontend
+          helm status -n ${{ env.DEV_NAMESPACE }} zeva-frontend-dev
           if [ $? -eq 0 ]; then
-            echo "zeva-frontend release exists already"
-            helm upgrade --set frontendImageTagname=dev-${{ env.VERSION }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend .
+            echo "zeva-frontend-dev release exists already"
+            helm upgrade --set frontendImageTagname=dev-${{ env.VERSION }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend-dev .
           else
-            echo "zeva-frontend release does not exist"
-            helm install --set frontendImageTagname=dev-${{ env.VERSION }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend .
+            echo "zeva-frontend-dev release does not exist"
+            helm install --set frontendImageTagname=dev-${{ env.VERSION }},openshiftLicensePlate=${{ secrets.OPENSHIFT_NAMESPACE_PLATE }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-frontend-dev .
           fi
           
       # helm status will show an error if the helm release doesn't exist. The error will be ignored.
@@ -147,11 +157,11 @@ jobs:
           cd charts/zeva-apps/charts/zeva-backend
           helm status -n ${{ env.DEV_NAMESPACE }} zeva-backend
           if [ $? -eq 0 ]; then
-            echo "zeva-backend release exists already"
-            helm upgrade --set backendImageTagname=dev-${{ env.VERSION }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-backend .
+            echo "zeva-backend-dev release exists already"
+            helm upgrade --set backendImageTagname=dev-${{ env.VERSION }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-backend-dev .
           else
-            echo "zeva-backend release does not exist"
-            helm install --set backendImageTagname=dev-${{ env.VERSION }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-backend .
+            echo "zeva-backend-dev release does not exist"
+            helm install --set backendImageTagname=dev-${{ env.VERSION }} -n ${{ env.DEV_NAMESPACE }} -f ./values-dev.yaml zeva-backend-dev .
           fi
           
   deploy-on-test:

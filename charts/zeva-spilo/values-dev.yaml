@@ -1,3 +1,6 @@
+# install spilo for dev
+# helm -n e52f12-dev install zeva-spilo-dev . -f ./values-dev.yaml
+
 spilo:
 
   replicaCount: 2
@@ -11,7 +14,7 @@ spilo:
       standbyKey: password-standby
 
   continuousArchive:
-    enabled: true
+    enabled: false
     scheduleCronJob: "0 */3 * * *"
     retainBackups: 3
     storage: s3

@@ -1,11 +1,15 @@
 {{/*
 Expand the name of the chart.
+Add nameOverride key/valur pair in values file in order to override .Chart.Name
+exmaple: 
+    zeva-frontend.name: zeva-frontend
 */}}
 {{- define "zeva-frontend.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
+We can ingore this for now as we don't create service account
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
@@ -24,6 +28,7 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{/*
+At the date of 20230317, zeva version 1.46.0, zeva-frontend.chart doesn't take an important role, we keep the value unchanged even the templates could be updated
 Create chart name and version as used by the chart label.
 */}}
 {{- define "zeva-frontend.chart" -}}
@@ -31,7 +36,13 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
-Common labels
+Common labels:
+Exaples
+    app.kubernetes.io/name: zeva-frontend
+    app.kubernetes.io/instance: zeva-frontend-dev or zeva-frontend-dev-1513
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/version: 1.46.0
+    helm.sh/chart: zeva-frontend-1.0.0
 */}}
 {{- define "zeva-frontend.labels" -}}
 helm.sh/chart: {{ include "zeva-frontend.chart" . }}
@@ -43,7 +54,14 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
-Selector labels
+.Release.Name is the value when run helm install, for example: zeva-frontend-dev-1513
+    helm install -n namespace zeva-frontend-dev-1513 ...
+Selector labels:
+    app.kubernetes.io/name: The name of the application, example mysql
+    app.kubernetes.io/instance: A unique name identifying the instance of an application, example mysql-standard
+for zeva releases, the above two values are same, for example:
+    app.kubernetes.io/name: zeva-frontend
+    app.kubernetes.io/instance: zeva-frontend-dev or zeva-frontend-dev-1513
 */}}
 {{- define "zeva-frontend.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "zeva-frontend.name" . }}

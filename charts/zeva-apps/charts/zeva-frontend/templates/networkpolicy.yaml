@@ -1,0 +1,78 @@
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name:  allow-backend-accepts-frontend{{ .Values.suffix }}
+  labels: {{ include "zeva-frontend.labels" . | nindent 4 }}
+spec:
+  ## Allow backend to accept communication from frontend
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: zeva-backend{{ .Values.suffix }}
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: zeva-frontend{{ .Values.suffix }}
+      ports:
+        - protocol: TCP
+          port: 8080
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name:  allow-minio-accepts-backend{{ .Values.suffix }}
+  labels: {{ include "zeva-frontend.labels" . | nindent 4 }}
+spec:
+  ## Allow minio to accept communication from backend
+  podSelector:
+    matchLabels:
+      app: zeva-minio-{{ .Values.envName }}
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: zeva-backend{{ .Values.suffix }}
+      ports:
+        - protocol: TCP
+          port: 9000  
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name:  allow-zeva-spilo-accepts{{ .Values.suffix }}
+  labels: {{ include "zeva-frontend.labels" . | nindent 4 }}
+spec:
+  ## Allow zeva-spilo to accept communications from backend
+  ## Allow zeva-spilo to accept communications from backend-mid
+  ## Allow zeva-spilo to accept communications from backup-container
+  ## Allow zeva-spilo to accept communications from metabase from cthub
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: zeva-spilo{{ .Values.suffix }}
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: zeva-backend{{ .Values.suffix }}
+      ports:
+        - protocol: TCP
+          port: 5432       
+    - from:
+        - podSelector:
+            matchLabels:
+              openshift.io/deployer-pod.type: hook-mid
+      ports:
+        - protocol: TCP
+          port: 5432              
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: 30b186
+              environment: {{ .Values.envName }}
+        - podSelector:
+            matchLabels:
+              app: metabase
+      ports:
+        - protocol: TCP
+          port: 5432     

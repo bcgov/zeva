@@ -1,7 +1,7 @@
 replicaCount: 1
 
 envName: dev
-suffix: -dev
+suffix: -dev-1513
 
 autoscaling:
   minReplicas: 1
@@ -20,4 +20,4 @@ resources:
     
 backendRoute: 
   create: true
-  hostName: zeva-backend-dev.apps.silver.devops.gov.bc.ca
+  hostName: zeva-backend-dev-1513.apps.silver.devops.gov.bc.ca

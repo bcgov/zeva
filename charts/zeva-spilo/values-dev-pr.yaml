@@ -1,3 +1,6 @@
+
+# install spilo for specific pr on dev
+# helm -n e52f12-dev install zeva-spilo-dev-1513 . -f ./values-dev-pr.yaml
 spilo:
 
   replicaCount: 1

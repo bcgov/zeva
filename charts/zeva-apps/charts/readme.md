@@ -35,3 +35,8 @@
 8. update route to use the new services
 9. cleanup: remove configmap/zeva-config-prod configmap/zeva-frnotend-config-prod
 10. cleanup: network policies
+
+## Explaination of Helm chart
+
+* .Chart.* are the fields from Chart.yaml
+* .Release.* are the attrivutes from teh release object, the examples of a releases are zeva-backend, zeva-frontend and etc.

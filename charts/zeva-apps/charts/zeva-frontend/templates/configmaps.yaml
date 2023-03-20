@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: zeva-config
+  name:  zeva-config{{ .Values.suffix }}
   labels: {{ include "zeva-frontend.labels" . | nindent 4 }}
 data:
   apibase: https://{{ .Values.appConfigMap.backendHostName }}/api/
@@ -41,7 +41,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: {{ template "zeva-frontend.fullname" . }}-config
+  name: {{ template "zeva-frontend.name" . }}-config{{ .Values.suffix }}
   labels: {{ include "zeva-frontend.labels" . | nindent 4 }}
 data:
   features.js: |
