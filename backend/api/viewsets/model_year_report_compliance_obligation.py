@@ -400,7 +400,7 @@ class ModelYearReportComplianceObligationViewset(
                 })
 
 
-
+            current_supplemental = report.get_latest_supplemental(request)
             previous_report = report.get_previous_model_report()
             previous_report_latest_supplemental = None
             if(previous_report):
@@ -411,7 +411,8 @@ class ModelYearReportComplianceObligationViewset(
             prior_year = report_year - 1
             starting_balances = []
 
-            if previous_report_latest_supplemental and report.validation_status == ModelYearReportStatuses.DRAFT:
+            if previous_report_latest_supplemental and report.validation_status == ModelYearReportStatuses.DRAFT and current_supplemental is None:
+                # Check to see if there is a supplemental report from the previous year and none for the current year.
                 starting_balances = SupplementalReportCreditActivity.objects.filter(
                     supplemental_report=previous_report_latest_supplemental.id,
                     category='ProvisionalBalanceAfterCreditReduction'
@@ -419,14 +420,26 @@ class ModelYearReportComplianceObligationViewset(
                     'model_year__name'
                 )
 
+            elif report.validation_status == ModelYearReportStatuses.DRAFT and current_supplemental:
+                # This does not set the ldv sales because the current year's supplemental ldv sales will be used.
+                starting_balances = SupplementalReportCreditActivity.objects.filter(
+                    supplemental_report=current_supplemental.id,
+                    category='ProvisionalBalanceAfterCreditReduction'
+                ).order_by(
+                    'model_year__name'
+                )
+                if current_supplemental.ldv_sales:
+                    # If there is a supplemental report that exists from the previous with year containing ldvSales the new report should use that value.
+                    report.ldv_sales = current_supplemental.ldv_sales
+
             elif previous_report:
+                # If there is no supplemental from the previous year or the current year then this is a new or existing report and should be pulling values from the year prior.
                 starting_balances = ModelYearReportComplianceObligation.objects.filter(
                     model_year_report_id=previous_report.id,
                     category='ProvisionalBalanceAfterCreditReduction',
                     from_gov=True
                 ).order_by(
                     'model_year__name'
-
                 )
             
 
