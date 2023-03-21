@@ -232,7 +232,6 @@ const ComplianceHistory = (props) => {
                   data-parent="#complianceHistory"
                 >
                   <div className="card-body p-2">
-                    {console.log(item)}
                     <ul className="py-0 my-0 px-4">
                       {item.history &&
                         getHistory(item.history).map((each, eachIndex) => (
