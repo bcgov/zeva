@@ -13,9 +13,8 @@ require('bootstrap/js/dist/collapse.js')
 const ComplianceHistory = (props) => {
   const {
     id, activePage, supplementaryId: detailsId,
-    reportYear, isReassessment, tabName
+    reportYear, isReassessment, tabName, user
   } = props
-
   let { supplementaryId } = useParams()
 
   if (!supplementaryId && detailsId) {
@@ -115,7 +114,9 @@ const ComplianceHistory = (props) => {
 
     if (status === 'assessed') {
       status = ' assessed '
-      byUser = ' by Government of B.C. '
+      if (!user.isGovernment) {
+        byUser = ' by Government of B.C. '
+      }
     }
 
     let reportType = 'Model year report '
