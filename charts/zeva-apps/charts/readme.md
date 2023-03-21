@@ -28,6 +28,7 @@
 4. done - Add allow-all-internal network policies
 5. done - Backup configmap/zeva-config-prod configmap/zeva-frontend-config-prod
 6. done - Backup prod route
+7. done - backup database
 7. Remove DC/zeva-backend DC/zeva-frontend
 8. Remove above two configmaps
 9. Remove service/zeva-backend-prod, service/zeva-frontend-prod
